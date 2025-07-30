@@ -6,10 +6,12 @@ import {
   Route,
   Navigate,
 } from "react-router-dom";
+
 import App from "../App";
 import LoadingSpinner from "../components/spiner/spiner";
 import PrivateRoute from "../routes/PrivateRoute";
 import PublicRoute from "../routes/PublicRoute";
+
 import Dashboard from "../components/layout/dashboard/dashboard";
 import {
   Login,
@@ -21,13 +23,14 @@ import {
   EmployeMyhistory,
   EmpolyesReportsIndex,
 } from "../pages";
+import RoleBasedRoute from "./RoleBasedRoute";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
     <Route path="/" element={<App />}>
-      {/* Public Route */}
+      {/* Public Route for login only */}
       <Route
-        path="/"
+        index
         element={
           <PublicRoute>
             <Suspense fallback={<LoadingSpinner tip="Loading login..." />}>
@@ -37,7 +40,7 @@ const router = createBrowserRouter(
         }
       />
 
-      {/* Protected Dashboard Route */}
+      {/* Protected Route - Requires auth_token */}
       <Route
         path="PAD"
         element={
@@ -49,17 +52,50 @@ const router = createBrowserRouter(
         }
       >
         <Route index element={<Home />} />
-        {/* Employee  */}
-        <Route path="approvals" element={<EmployeApproval />} />
-        <Route path="portfolios" element={<EmployeProtfolio />} />
-        <Route path="transactions" element={<EmployeMyTransaction />} />
-        <Route path="history" element={<EmployeMyhistory />} />
-        <Route path="reports" element={<EmpolyesReportsIndex />} />
-        {/* Faq's */}
+        <Route
+          path="approvals"
+          element={
+            <RoleBasedRoute allowedRoles={[2]}>
+              <EmployeApproval />
+            </RoleBasedRoute>
+          }
+        />
+        <Route
+          path="portfolios"
+          element={
+            <RoleBasedRoute allowedRoles={[2]}>
+              <EmployeProtfolio />{" "}
+            </RoleBasedRoute>
+          }
+        />
+        <Route
+          path="transactions"
+          element={
+            <RoleBasedRoute allowedRoles={[2]}>
+              <EmployeMyTransaction />{" "}
+            </RoleBasedRoute>
+          }
+        />
+        <Route
+          path="history"
+          element={
+            <RoleBasedRoute allowedRoles={[2]}>
+              <EmployeMyhistory />{" "}
+            </RoleBasedRoute>
+          }
+        />
+        <Route
+          path="reports"
+          element={
+            <RoleBasedRoute allowedRoles={[2]}>
+              <EmpolyesReportsIndex />{" "}
+            </RoleBasedRoute>
+          }
+        />
         <Route path="faq" element={<Faqs />} />
       </Route>
 
-      {/* Redirect anything else to /login */}
+      {/* Redirect all unknown routes to login */}
       <Route path="*" element={<Navigate to="/" replace />} />
     </Route>
   )

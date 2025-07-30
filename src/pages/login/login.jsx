@@ -6,7 +6,11 @@ import logo from "../../assets/img/pad-logo-text.png";
 import { useNavigate } from "react-router-dom";
 import { Button, TextField } from "../../components";
 import { useNotification } from "../../components/NotificationProvider/NotificationProvider";
-import { CheckCircleOutlined } from '@ant-design/icons';
+import { CheckCircleOutlined } from "@ant-design/icons";
+import { useApi } from "../../context/ApiContext";
+import Cookies from "js-cookie";
+import { login } from "../../api/loginApi";
+import { useUserProfileContext } from "../../context/userProfileContext";
 
 const { Text } = Typography;
 
@@ -20,7 +24,9 @@ const Login = () => {
     password: "",
   });
   const [errors, setErrors] = useState({});
-
+  const { callApi } = useApi();
+  const { setProfile, setRoles } = useUserProfileContext();
+  const [disableClick, setDisableClick] = useState(false);
   /**
    * Handles input changes and updates form state
    * @param {string} name - Field name ('username' or 'password')
@@ -34,23 +40,24 @@ const Login = () => {
    * Handles form submission
    * @param {Object} values - Form values {username, password}
    */
-
-  const onFinish = (values) => {
-    if (values.username && values.password) {
-      showNotification({
-        type: "success",
-        title: "Success!",
-        description: "We couldn’t complete your request. Please try again shortly.",
-        className: "custom-notification",
-        icon: <CheckCircleOutlined />,
+  const handleLogin = async (values) => {
+    setDisableClick(true); // Disable button
+    try {
+      await login({
+        username: values.username,
+        password: values.password,
+        navigate,
+        setProfile,
+        callApi,
+        showNotification,
+        setRoles,
       });
-
-      localStorage.setItem("auth", "true");
-      navigate("/PAD"); // Redirect to dashboard on success
+    } catch (error) {
+      // Optionally handle error here
+    } finally {
+      setDisableClick(false); // Re-enable button
     }
-    // Note: Form validation rules prevent empty submissions
   };
-
   return (
     <>
       <Row gutter={[16, 16]} className={style["login-container"]}>
@@ -71,7 +78,7 @@ const Login = () => {
               <Form
                 form={form}
                 name="login-form"
-                onFinish={onFinish}
+                onFinish={handleLogin}
                 className={style["login-form"]}
               >
                 {/* Username Field */}
@@ -117,6 +124,7 @@ const Login = () => {
                     text="Sign In"
                     className="extra-large-dark-button"
                     htmlType="submit"
+                    disabled={disableClick}
                   />
                 </Form.Item>
               </Form>

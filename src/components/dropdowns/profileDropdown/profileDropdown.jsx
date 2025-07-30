@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { Dropdown } from "antd";
+import React, { useMemo, useState } from "react";
+import { Avatar, Dropdown } from "antd";
 import {
   DownOutlined,
   SwapOutlined,
@@ -11,10 +11,13 @@ import {
 import { Link } from "react-router-dom";
 import ProfileImg from "../../../assets/img/profile.png";
 import style from "./profileDropdown.module.css";
-
+import { useUserProfileContext } from "../../../context/userProfileContext";
 const ProfileDropdown = () => {
-  const name = localStorage.getItem("name") || "Shawn Alex";
   const roll = localStorage.getItem("admin") || "main";
+  const { profile, setRoles } = useUserProfileContext();
+  const name = useMemo(() => {
+    return [profile.firstName, profile.lastName].filter(Boolean).join(" ");
+  }, [profile]);
 
   const [isOpen, setIsOpen] = useState(false);
 
@@ -76,7 +79,15 @@ const ProfileDropdown = () => {
       onOpenChange={(open) => setIsOpen(open)}
     >
       <div className={style["profile-dropdown-trigger"]}>
-        <img src={ProfileImg} alt="Profile" className={style["profile-img"]} />
+        {profile.profilePictureURL !== "" ? (
+          <img
+            src={ProfileImg}
+            alt="Profile"
+            className={style["profile-img"]}
+          />
+        ) : (
+          <Avatar icon={<UserOutlined />} />
+        )}
         <span className={style["profile-name"]}>{name}</span>
         <DownOutlined
           className={`${style["dropdown-arrow"]} ${
