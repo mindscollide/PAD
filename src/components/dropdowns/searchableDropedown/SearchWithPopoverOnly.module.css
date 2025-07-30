@@ -1,0 +1,113 @@
+.searchWrapper {
+  width: 100%;
+  background-color: #fff;
+  border-radius: 6.95px;
+  border: 0.87px solid #b4b4b4;
+  transition: all 0.2s;
+  display: flex; /* Required to keep input and button aligned */
+}
+
+.searchWrapper:hover,
+.searchWrapper:focus-within {
+  background: var(--White-Hover, #fff);
+  box-shadow: 4px 4px 6px 0px #00000033;
+  border: 0.87px solid #b4b4b4;
+  transition: all 0.2s;
+}
+
+/* ====== Input Wrapper ====== */
+.inputWrapper {
+  height: 56px;
+  opacity: 1;
+  transition: width 0.3s ease, height 0.3s ease;
+  border-color: transparent;
+}
+
+.inputWrapperCollapsed {
+  height: 56px;
+  transition: width 0.3s ease, height 0.3s ease;
+  border-color: transparent;
+}
+.inputWrapper:hover {
+  border-color: transparent;
+}
+.inputWrapper:focus {
+  border-color: transparent;
+  box-shadow:none
+}
+.inputWrapperCollapsed:hover {
+  border-color: transparent;
+}
+.inputWrapperCollapsed:focus {
+  border-color: transparent;
+  box-shadow:none
+}
+/* ====== Filter Button & Icon ====== */
+.filterButton {
+  width: 20px;
+  height: 20px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+}
+
+.filterIcon {
+  width: 26.052255630493164px;
+  height: 26.052255630493164px;
+  margin: 14px;
+  object-fit: contain;
+}
+/* ====== Popover Wrapper (Dynamic Width) ====== */
+.filterContentWrapper {
+  /* width: 575px; */
+  max-width: 90vw;
+  transition: all 0.3s ease;
+}
+
+.filterContentWrapperCollapsed {
+  /* width: 810px; */
+  max-width: 90vw;
+  transition: all 0.3s ease;
+}
+
+/* Responsive for Filter Content */
+@media (max-width: 768px) {
+  .filterContentWrapper,
+  .filterContentWrapperCollapsed {
+    width: 100% !important;
+    padding: 10px;
+  }
+}
+
+/* ====== Popover Content Matching Input Width ====== */
+.popoverContent {
+  width: 98% !important;
+  /* max-width: 600px; */
+  padding: 0 !important;
+  z-index: 2;
+  inset: 62px 6px auto auto !important;
+  border: 1px solid #b4b4b4;
+  border-radius: 6.95px;
+}
+
+.popoverContenCollapsed {
+  width: 98% !important;
+  /* max-width: 835px; */
+  padding: 0 !important;
+  z-index: 2;
+  inset: 62px 6px auto auto !important;
+  border: 1px solid #b4b4b4;
+  border-radius: 6.95px;
+}
+
+/* Optional Responsive max width */
+@media (max-width: 768px) {
+  .popoverContent,
+  .popoverContenCollapsed {
+    max-width: 100vw;
+  }
+}

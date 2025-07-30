@@ -1,0 +1,1105 @@
+/**
+ * BUTTON STYLES COMPONENT
+ * 
+ * A comprehensive button system with variants across:
+ * - 3 sizes (Small, Big, Large)
+ * - 2 color schemes (Light, Dark)
+ * - 3 states (Default, Hover, Disabled)
+ * - 2 icon positions (Left, Right - where applicable)
+ * 
+ * All buttons feature:
+ * - Consistent border-radius: 6.95px
+ * - Switzer Variable font family
+ * - 0.2s transition on hover states
+ * - Proper disabled state handling
+ * 
+ * Dimensions:
+ * - Small: 120×38px (regular), 143×38px (icon)
+ * - Big: 140×46px (regular), 169×46px (icon)
+ * - Large: 242×23px (regular), 263×23px (icon)
+ * - Extra Large: 441x46 (regular)
+ */
+
+/* ====================== */
+/* BASE BUTTON PROPERTIES */
+/* ====================== */
+/**
+ * Shared properties across all buttons:
+ * - Font family: Switzer Variable
+ * - Font weight: 500 (Medium)
+ * - Line height: 100%
+ * - Letter spacing: 0%
+ * - Cursor: pointer (when enabled)
+ * - Disabled state: #d9d9d9 background with white text
+ */
+
+/* ====================== */
+/* SMALL BUTTON VARIANTS */
+/* ====================== */
+
+/**
+ * SMALL LIGHT BUTTON (120×38px)
+ * Usage: Secondary actions in compact spaces
+ * Default: White BG, gray border (#717171), dark gray text (#424242)
+ * Hover: Subtle shadow (4px 4px 6px rgba(0,0,0,0.2))
+ * Disabled: Light gray BG (#d9d9d9), white text
+ */
+.small-light-button {
+  /* width: 120px !important; */
+  height: 38px !important;
+  background: #ffffff !important;
+  border: 1px solid #717171 !important;
+  color: #424242 !important;
+  border-radius: 6.95px !important;
+  font-family: "Switzer Variable" !important;
+  font-weight: 500 !important;
+  font-size: 14px !important;
+  line-height: 100% !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease !important;
+}
+
+.small-light-button:not(:disabled):hover {
+  box-shadow: 4px 4px 6px 0px #00000033 !important;
+}
+
+.small-light-button:disabled {
+  background: #d9d9d9 !important;
+  border: 1px solid #d9d9d9 !important;
+  color: #ffffff !important;
+  cursor: not-allowed !important;
+}
+/* ================================= */
+/* SMALL CARD BUTTONS (143×38px) */
+/* ================================= */
+
+/**
+ * SMALL LIGHT BUTTON (165.8x37.3)
+ * Usage: Secondary actions in compact spaces
+ * Default: ffffff, gray border (#717171), dark gray text (#424242)
+ * Disabled: Light gray BG (#d9d9d9), white text
+ */
+.small-card-light-button {
+  /* width: 165.8px; */
+  height: 37.3px;
+  opacity: 1;
+  border-radius: 6.95px;
+  border: none;
+  color: #424242;
+
+  background: #ffffff;
+  font-family: "Switzer Variable" !important;
+  font-weight: 500 !important;
+  font-size: 14px !important;
+  line-height: 100% !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease !important;
+}
+
+.small-card-light-button:not(:disabled):hover {
+  color: #424242 !important;
+}
+
+.small-card-light-button:disabled {
+  background: #d9d9d9 !important;
+  border: 1px solid #d9d9d9 !important;
+  color: #ffffff !important;
+  cursor: not-allowed !important;
+}
+
+/**
+ * SMALL DARK BUTTON (120×38px)
+ * Usage: Primary actions in compact spaces
+ * Default: Blue BG (#30426a), white text
+ * Hover: Subtle shadow
+ * Disabled: Light gray BG, white text
+ */
+.small-dark-button {
+  /* width: 120px !important; */
+  height: 38px !important;
+  background: var(--Blue-V1, #30426a) !important;
+  border: 1px solid var(--Blue-V1, #30426a) !important;
+  color: #ffffff !important;
+  border-radius: 6.95px !important;
+  font-family: "Switzer Variable" !important;
+  font-weight: 500 !important;
+  font-size: 14px !important;
+  line-height: 100% !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease !important;
+}
+
+.small-dark-button:not(:disabled):hover {
+  box-shadow: 4px 4px 6px 0px #00000033 !important;
+}
+
+.small-dark-button:disabled {
+  background: #d9d9d9 !important;
+  border: 1px solid #d9d9d9 !important;
+  color: #ffffff !important;
+  cursor: not-allowed !important;
+}
+
+/* ================================= */
+/* SMALL ICON BUTTONS (143×38px) */
+/* ================================= */
+
+/**
+ * SMALL LIGHT LEFT ICON BUTTON
+ * Features:
+ * - Icon positioned left of text
+ * - 6px gap between icon and text
+ * - Icon inherits text color in default state
+ * - Icon becomes white in disabled state
+ */
+.small-light-left-icon-button {
+  /* width: 143px !important; */
+  height: 38px !important;
+  background: #ffffff !important;
+  border: 1px solid #717171 !important;
+  color: #424242 !important;
+  border-radius: 6.95px !important;
+  font-family: "Switzer Variable" !important;
+  font-weight: 500 !important;
+  font-size: 14px !important;
+  display: inline-flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  gap: 6px !important;
+  padding: 0 10px !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease !important;
+}
+
+.small-light-left-icon-button .ant-btn-icon {
+  display: flex !important;
+  align-items: center !important;
+  margin-right: 6px !important;
+}
+
+.small-light-left-icon-button:disabled .ant-btn-icon img {
+  filter: brightness(0) invert(1) !important;
+}
+
+.small-light-left-icon-button:not(:disabled):hover {
+  box-shadow: 4px 4px 6px 0px rgba(0, 0, 0, 0.2) !important;
+}
+
+.small-light-left-icon-button:disabled {
+  background: #d9d9d9 !important;
+  border: 1px solid #d9d9d9 !important;
+  color: #ffffff !important;
+  cursor: not-allowed !important;
+}
+
+/**
+ * SMALL DARK LEFT ICON BUTTON
+ * Features:
+ * - White icon (automatically inverted)
+ * - Blue background (#30426a)
+ * - Consistent spacing with light variant
+ */
+.small-dark-left-icon-button {
+  /* width: 143px !important; */
+  height: 38px !important;
+  background: var(--Blue-V1, #30426a) !important;
+  border: 1px solid var(--Blue-V1, #30426a) !important;
+  color: #ffffff !important;
+  border-radius: 6.95px !important;
+  font-family: "Switzer Variable" !important;
+  font-weight: 500 !important;
+  font-size: 14px !important;
+  display: inline-flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  gap: 6px !important;
+  padding: 0 10px !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease !important;
+}
+
+.small-dark-left-icon-button .ant-btn-icon {
+  display: flex !important;
+  align-items: center !important;
+}
+span.ant-btn-icon {
+  filter: invert(100%) brightness(200%);
+}
+
+.small-dark-left-icon-button .ant-btn-icon img {
+  filter: brightness(0) invert(1) !important;
+}
+
+.small-dark-left-icon-button:not(:disabled):hover {
+  box-shadow: 4px 4px 6px 0px rgba(0, 0, 0, 0.2) !important;
+}
+
+.small-dark-left-icon-button:disabled {
+  background: #d9d9d9 !important;
+  border: 1px solid #d9d9d9 !important;
+  color: #ffffff !important;
+  cursor: not-allowed !important;
+}
+
+/**
+ * SMALL LIGHT RIGHT ICON BUTTON
+ * Features:
+ * - Icon positioned right of text (order: 2)
+ * - 6px margin-left for proper spacing
+ */
+.small-light-right-icon-button {
+  /* width: 143px !important; */
+  height: 38px !important;
+  background: #ffffff !important;
+  border: 1px solid #717171 !important;
+  color: #424242 !important;
+  border-radius: 6.95px !important;
+  font-family: "Switzer Variable" !important;
+  font-weight: 500 !important;
+  font-size: 14px !important;
+  display: inline-flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  gap: 6px !important;
+  padding: 0 10px !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease !important;
+}
+
+.small-light-right-icon-button .ant-btn-icon {
+  order: 2 !important;
+  margin-left: 6px !important;
+  display: flex !important;
+  align-items: center !important;
+}
+
+.small-light-right-icon-button:not(:disabled):hover {
+  box-shadow: 4px 4px 6px 0px rgba(0, 0, 0, 0.2) !important;
+}
+
+.small-light-right-icon-button:disabled {
+  background: #d9d9d9 !important;
+  border: 1px solid #d9d9d9 !important;
+  color: #ffffff !important;
+  cursor: not-allowed !important;
+}
+
+.small-light-right-icon-button:disabled .ant-btn-icon img {
+  filter: brightness(0) invert(1) !important;
+}
+
+/**
+ * SMALL DARK RIGHT ICON BUTTON
+ * Features:
+ * - White icon (automatically inverted)
+ * - Consistent right-aligned icon behavior
+ */
+.small-dark-right-icon-button {
+  /* width: 143px !important; */
+  height: 38px !important;
+  background: var(--Blue-V1, #30426a) !important;
+  border: 1px solid var(--Blue-V1, #30426a) !important;
+  color: #ffffff !important;
+  border-radius: 6.95px !important;
+  font-family: "Switzer Variable" !important;
+  font-weight: 500 !important;
+  font-size: 14px !important;
+  display: inline-flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  gap: 6px !important;
+  padding: 0 10px !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease !important;
+}
+
+.small-dark-right-icon-button .ant-btn-icon {
+  order: 2 !important;
+  margin-left: 6px !important;
+  display: flex !important;
+  align-items: center !important;
+}
+
+.small-dark-right-icon-button .ant-btn-icon img {
+  filter: brightness(0) invert(1) !important;
+}
+
+.small-dark-right-icon-button:not(:disabled):hover {
+  box-shadow: 4px 4px 6px 0px rgba(0, 0, 0, 0.2) !important;
+}
+
+.small-dark-right-icon-button:disabled {
+  background: #d9d9d9 !important;
+  border: 1px solid #d9d9d9 !important;
+  color: #ffffff !important;
+  cursor: not-allowed !important;
+}
+
+/* ====================== */
+/* BIG BUTTON VARIANTS */
+/* ====================== */
+
+/**
+ * BIG LIGHT BUTTON (140×46px)
+ * Usage: Primary actions with more prominence
+ * Default: White BG, gray border, dark gray text
+ * Font size: 20px (larger than small variant)
+ */
+.big-light-button {
+  /* width: 140px !important; */
+  height: 46px !important;
+  background: #ffffff !important;
+  border: 1px solid #717171 !important;
+  color: #424242 !important;
+  border-radius: 6.95px !important;
+  font-family: "Switzer Variable" !important;
+  font-weight: 500 !important;
+  font-size: 20px !important;
+  line-height: 100% !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease !important;
+}
+
+.big-light-button:not(:disabled):hover {
+  box-shadow: 4px 4px 6px 0px #00000033 !important;
+}
+
+.big-light-button:disabled {
+  background: #d9d9d9 !important;
+  border: 1px solid #d9d9d9 !important;
+  color: #ffffff !important;
+  cursor: not-allowed !important;
+}
+
+/**
+ * BIG DARK BUTTON (140×46px)
+ * Usage: Primary actions needing emphasis
+ * Default: Blue BG, white text
+ */
+.big-dark-button {
+  /* width: 140px !important; */
+  height: 46px !important;
+  background: var(--Blue-V1, #30426a) !important;
+  border: 1px solid var(--Blue-V1, #30426a) !important;
+  color: #ffffff !important;
+  border-radius: 6.95px !important;
+  font-family: "Switzer Variable" !important;
+  font-weight: 500 !important;
+  font-size: 20px !important;
+  line-height: 100% !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease !important;
+}
+
+.big-dark-button:not(:disabled):hover {
+  box-shadow: 4px 4px 6px 0px #00000033 !important;
+}
+
+.big-dark-button:disabled {
+  background: #d9d9d9 !important;
+  border: 1px solid #d9d9d9 !important;
+  color: #ffffff !important;
+  cursor: not-allowed !important;
+}
+
+/* ================================= */
+/* BIG ICON BUTTONS (169×46px) */
+/* ================================= */
+
+/**
+ * BIG LIGHT LEFT ICON BUTTON
+ * Features:
+ * - 8px gap between icon and text
+ * - 12px horizontal padding
+ * - Larger dimensions than small variant
+ */
+.big-light-left-icon-button {
+  /* width: 169px !important; */
+  height: 46px !important;
+  background: #ffffff !important;
+  border: 1px solid #717171 !important;
+  color: #424242 !important;
+  border-radius: 6.95px !important;
+  font-family: "Switzer Variable" !important;
+  font-weight: 500 !important;
+  font-size: 20px !important;
+  display: inline-flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  gap: 8px !important;
+  padding: 0 12px !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease !important;
+}
+
+.big-light-left-icon-button .ant-btn-icon {
+  display: flex !important;
+  align-items: center !important;
+}
+
+.big-light-left-icon-button:disabled .ant-btn-icon img {
+  filter: brightness(0) invert(1) !important;
+}
+
+.big-light-left-icon-button:not(:disabled):hover {
+  box-shadow: 4px 4px 6px 0px #00000033 !important;
+}
+
+.big-light-left-icon-button:disabled {
+  background: #d9d9d9 !important;
+  border: 1px solid #d9d9d9 !important;
+  color: #ffffff !important;
+  cursor: not-allowed !important;
+}
+
+/**
+ * BIG DARK LEFT ICON BUTTON
+ * Features:
+ * - White icon (automatically inverted)
+ * - Consistent spacing with light variant
+ */
+.big-dark-left-icon-button {
+  /* width: 169px !important; */
+  height: 46px !important;
+  background: var(--Blue-V1, #30426a) !important;
+  border: 1px solid var(--Blue-V1, #30426a) !important;
+  color: #ffffff !important;
+  border-radius: 6.95px !important;
+  font-family: "Switzer Variable" !important;
+  font-weight: 500 !important;
+  font-size: 20px !important;
+  display: inline-flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  gap: 8px !important;
+  padding: 0 12px !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease !important;
+}
+
+.big-dark-left-icon-button .ant-btn-icon {
+  display: flex !important;
+  align-items: center !important;
+}
+
+.big-dark-left-icon-button .ant-btn-icon img {
+  filter: brightness(0) invert(1) !important;
+}
+
+.big-dark-left-icon-button:not(:disabled):hover {
+  box-shadow: 4px 4px 6px 0px rgba(0, 0, 0, 0.2) !important;
+}
+
+.big-dark-left-icon-button:disabled {
+  background: #d9d9d9 !important;
+  border: 1px solid #d9d9d9 !important;
+  color: #ffffff !important;
+  cursor: not-allowed !important;
+}
+
+/**
+ * BIG LIGHT RIGHT ICON BUTTON
+ * Features:
+ * - Icon positioned right (order: 2)
+ * - 8px left margin for proper spacing
+ */
+.big-light-right-icon-button {
+  /* width: 169px !important; */
+  height: 46px !important;
+  background: #ffffff !important;
+  border: 1px solid #717171 !important;
+  color: #424242 !important;
+  border-radius: 6.95px !important;
+  font-family: "Switzer Variable" !important;
+  font-weight: 500 !important;
+  font-size: 20px !important;
+  display: inline-flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  gap: 8px !important;
+  padding: 0 12px !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease !important;
+}
+
+.big-light-right-icon-button .ant-btn-icon {
+  order: 2 !important;
+  margin-left: 8px !important;
+  display: flex !important;
+  align-items: center !important;
+}
+
+.big-light-right-icon-button:not(:disabled):hover {
+  box-shadow: 4px 4px 6px 0px rgba(0, 0, 0, 0.2) !important;
+}
+
+.big-light-right-icon-button:disabled {
+  background: #d9d9d9 !important;
+  border: 1px solid #d9d9d9 !important;
+  color: #ffffff !important;
+  cursor: not-allowed !important;
+}
+
+.big-light-right-icon-button:disabled .ant-btn-icon img {
+  filter: brightness(0) invert(1) !important;
+}
+
+/**
+ * BIG DARK RIGHT ICON BUTTON
+ * Features:
+ * - White icon (automatically inverted)
+ * - Consistent right-aligned icon behavior
+ */
+.big-dark-right-icon-button {
+  /* width: 169px !important; */
+  height: 46px !important;
+  background: var(--Blue-V1, #30426a) !important;
+  border: 1px solid var(--Blue-V1, #30426a) !important;
+  color: #ffffff !important;
+  border-radius: 6.95px !important;
+  font-family: "Switzer Variable" !important;
+  font-weight: 500 !important;
+  font-size: 20px !important;
+  display: inline-flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  gap: 8px !important;
+  padding: 0 12px !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease !important;
+}
+
+.big-dark-right-icon-button .ant-btn-icon {
+  order: 2 !important;
+  margin-left: 8px !important;
+  display: flex !important;
+  align-items: center !important;
+}
+
+.big-dark-right-icon-button .ant-btn-icon img {
+  filter: brightness(0) invert(1) !important;
+}
+
+.big-dark-right-icon-button:not(:disabled):hover {
+  box-shadow: 4px 4px 6px 0px rgba(0, 0, 0, 0.2) !important;
+}
+
+.big-dark-right-icon-button:disabled {
+  background: #d9d9d9 !important;
+  border: 1px solid #d9d9d9 !important;
+  color: #ffffff !important;
+  cursor: not-allowed !important;
+}
+
+/* ====================== */
+/* BIG ORANGE BUTTON VARIANTS */
+/* ====================== */
+.big-orange-button {
+  /* width: 160px !important; */
+  height: 38px !important;
+  color: #ffffff !important;
+  border-radius: 6.95px !important;
+  font-family: "Switzer Variable" !important;
+  font-weight: 500 !important;
+  font-size: 14px !important;
+  display: inline-flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  gap: 8px !important;
+  padding: 0 12px !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease !important;
+  background: var(--Blue-V1, #f67f29) !important;
+  border: 1px solid var(--Blue-V1, #f67f29) !important;
+}
+
+.big-orange-button:disabled {
+  background: #d9d9d9 !important;
+  border: 1px solid #d9d9d9 !important;
+  color: #ffffff !important;
+  cursor: not-allowed !important;
+}
+
+/* ====================== */
+/* BIG WHITE BUTTON VARIANTS */
+/* ====================== */
+.big-white-button {
+  /* width: 160px !important; */
+  height: 38px !important;
+  color: #424242 !important;
+  border-radius: 6.95px !important;
+  font-family: "Switzer Variable" !important;
+  font-weight: 500 !important;
+  font-size: 14px !important;
+  display: inline-flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  gap: 8px !important;
+  padding: 0 12px !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease !important;
+  background: var(--Blue-V1, #ffffff) !important;
+  border: 1px solid var(--Blue-V1, #717171) !important;
+}
+
+.big-white-button:disabled {
+  background: #d9d9d9 !important;
+  border: 1px solid #d9d9d9 !important;
+  color: #ffffff !important;
+  cursor: not-allowed !important;
+}
+
+/* ====================== */
+/* BIG WHITE BUTTON VARIANTS */
+/* ====================== */
+.big-white-card-button {
+  /* width: 169px !important; */
+  height: 38px !important;
+  color: #424242 !important;
+  border-radius: 6.95px !important;
+  font-family: "Switzer Variable" !important;
+  font-weight: 500 !important;
+  font-size: 14px !important;
+  display: inline-flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  gap: 8px !important;
+  padding: 0 12px !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease !important;
+  background: var(--Blue-V1, #ffffff) !important;
+  border: 1px solid var(--Blue-V1, #717171) !important;
+}
+
+.big-white-card-button:disabled {
+  background: #d9d9d9 !important;
+  border: 1px solid #d9d9d9 !important;
+  color: #ffffff !important;
+  cursor: not-allowed !important;
+}
+.big-white-card-button:not(:disabled):hover {
+  box-shadow: 4px 4px 6px 0px #00000033;
+}
+
+/* ====================== */
+/* LARGE TRANSPARENT button BUTTON VARIANTS */
+/* ====================== */
+
+/**
+ * LARGE LIGHT BUTTON (242×38px)
+ * Usage: Extra prominent standalone actions
+ * Default: White BG, gray border (#717171), dark gray text (#424242)
+ * Hover: Subtle shadow (4px 4px 6px rgba(0,0,0,0.2))
+ * Disabled: Light gray BG (#d9d9d9), white text
+ */
+.large-transparent-button {
+  width: 221px !important;
+  height: 38px !important;
+  background: transparent !important;
+  border: 1px solid #717171 !important;
+  color: #424242 !important;
+  border-radius: 6.95px !important;
+  font-family: "Switzer Variable" !important;
+  font-weight: 500 !important;
+  font-size: 14px !important;
+  line-height: 100% !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease !important;
+}
+
+/* .large-transparent-button:not(:disabled):hover {
+  box-shadow: 4px 4px 6px 0px #00000033 !important;
+} */
+
+.large-transparent-button:disabled {
+  background: #d9d9d9 !important;
+  border: 1px solid #d9d9d9 !important;
+  color: #ffffff !important;
+  cursor: not-allowed !important;
+}
+/* ====================== */
+/* LARGE BUTTON VARIANTS */
+/* ====================== */
+
+/**
+ * LARGE LIGHT BUTTON (242×38px)
+ * Usage: Extra prominent standalone actions
+ * Default: White BG, gray border (#717171), dark gray text (#424242)
+ * Hover: Subtle shadow (4px 4px 6px rgba(0,0,0,0.2))
+ * Disabled: Light gray BG (#d9d9d9), white text
+ */
+.large-light-button {
+  width: 242px !important;
+  height: 38px !important;
+  background: #ffffff !important;
+  border: 1px solid #717171 !important;
+  color: #424242 !important;
+  border-radius: 6.95px !important;
+  font-family: "Switzer Variable" !important;
+  font-weight: 500 !important;
+  font-size: 14px !important;
+  line-height: 100% !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease !important;
+}
+
+.large-light-button:not(:disabled):hover {
+  box-shadow: 4px 4px 6px 0px #00000033 !important;
+}
+
+.large-light-button:disabled {
+  background: #d9d9d9 !important;
+  border: 1px solid #d9d9d9 !important;
+  color: #ffffff !important;
+  cursor: not-allowed !important;
+}
+
+/**
+ * LARGE DARK BUTTON (242×23px)
+ * Usage: Most prominent primary actions
+ * Default: Blue BG (#30426a), white text
+ * Hover: Subtle shadow
+ * Disabled: Light gray BG, white text
+ */
+.large-dark-button {
+  width: 242px !important;
+  height: 38px !important;
+  background: var(--Blue-V1, #30426a) !important;
+  border: 1px solid var(--Blue-V1, #30426a) !important;
+  color: #ffffff !important;
+  border-radius: 6.95px !important;
+  font-family: "Switzer Variable" !important;
+  font-weight: 500 !important;
+  font-size: 14px !important;
+  line-height: 100% !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease !important;
+}
+
+.large-dark-button:not(:disabled):hover {
+  box-shadow: 4px 4px 6px 0px #00000033 !important;
+}
+
+.large-dark-button:disabled {
+  background: #d9d9d9 !important;
+  border: 1px solid #d9d9d9 !important;
+  color: #ffffff !important;
+  cursor: not-allowed !important;
+}
+
+/* ================================= */
+/* LARGE ICON BUTTONS (263×38px) */
+/* ================================= */
+
+/**
+ * LARGE LIGHT LEFT ICON BUTTON
+ * Features:
+ * - Icon positioned left of text
+ * - 6px gap between icon and text
+ * - Icon inherits text color in default state
+ * - Icon becomes white in disabled state
+ */
+.large-light-left-icon-button {
+  width: 263px !important;
+  height: 38px !important;
+  background: #ffffff !important;
+  border: 1px solid #717171 !important;
+  color: #424242 !important;
+  border-radius: 6.95px !important;
+  font-family: "Switzer Variable" !important;
+  font-weight: 500 !important;
+  font-size: 14px !important;
+  display: inline-flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  gap: 6px !important;
+  padding: 0 10px !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease !important;
+}
+
+.large-light-left-icon-button .ant-btn-icon {
+  display: flex !important;
+  align-items: center !important;
+  margin-right: 6px !important;
+}
+
+.large-light-left-icon-button:disabled .ant-btn-icon img {
+  filter: brightness(0) invert(1) !important;
+}
+
+.large-light-left-icon-button:not(:disabled):hover {
+  box-shadow: 4px 4px 6px 0px rgba(0, 0, 0, 0.2) !important;
+}
+
+.large-light-left-icon-button:disabled {
+  background: #d9d9d9 !important;
+  border: 1px solid #d9d9d9 !important;
+  color: #ffffff !important;
+  cursor: not-allowed !important;
+}
+
+/**
+ * LARGE DARK LEFT ICON BUTTON
+ * Features:
+ * - White icon (automatically inverted)
+ * - Blue background (#30426a)
+ * - Consistent spacing with light variant
+ */
+.large-dark-left-icon-button {
+  width: 263px !important;
+  height: 38px !important;
+  background: var(--Blue-V1, #30426a) !important;
+  border: 1px solid var(--Blue-V1, #30426a) !important;
+  color: #ffffff !important;
+  border-radius: 6.95px !important;
+  font-family: "Switzer Variable" !important;
+  font-weight: 500 !important;
+  font-size: 14px !important;
+  display: inline-flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  gap: 6px !important;
+  padding: 0 10px !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease !important;
+}
+
+.large-dark-left-icon-button .ant-btn-icon {
+  display: flex !important;
+  align-items: center !important;
+}
+
+.large-dark-left-icon-button .ant-btn-icon img {
+  filter: brightness(0) invert(1) !important;
+}
+
+.large-dark-left-icon-button:not(:disabled):hover {
+  box-shadow: 4px 4px 6px 0px rgba(0, 0, 0, 0.2) !important;
+}
+
+.large-dark-left-icon-button:disabled {
+  background: #d9d9d9 !important;
+  border: 1px solid #d9d9d9 !important;
+  color: #ffffff !important;
+  cursor: not-allowed !important;
+}
+
+/**
+ * LARGE LIGHT RIGHT ICON BUTTON
+ * Features:
+ * - Icon positioned right of text (order: 2)
+ * - 6px margin-left for proper spacing
+ */
+.large-light-right-icon-button {
+  width: 263px !important;
+  height: 38px !important;
+  background: #ffffff !important;
+  border: 1px solid #717171 !important;
+  color: #424242 !important;
+  border-radius: 6.95px !important;
+  font-family: "Switzer Variable" !important;
+  font-weight: 500 !important;
+  font-size: 14px !important;
+  display: inline-flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  gap: 6px !important;
+  padding: 0 10px !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease !important;
+}
+
+.large-light-right-icon-button .ant-btn-icon {
+  order: 2 !important;
+  margin-left: 6px !important;
+  display: flex !important;
+  align-items: center !important;
+}
+
+.large-light-right-icon-button:not(:disabled):hover {
+  box-shadow: 4px 4px 6px 0px rgba(0, 0, 0, 0.2) !important;
+}
+
+.large-light-right-icon-button:disabled {
+  background: #d9d9d9 !important;
+  border: 1px solid #d9d9d9 !important;
+  color: #ffffff !important;
+  cursor: not-allowed !important;
+}
+
+.large-light-right-icon-button:disabled .ant-btn-icon img {
+  filter: brightness(0) invert(1) !important;
+}
+
+/**
+ * LARGE DARK RIGHT ICON BUTTON
+ * Features:
+ * - White icon (automatically inverted)
+ * - Consistent right-aligned icon behavior
+ */
+.large-dark-right-icon-button {
+  width: 263px !important;
+  height: 38px !important;
+  background: var(--Blue-V1, #30426a) !important;
+  border: 1px solid var(--Blue-V1, #30426a) !important;
+  color: #ffffff !important;
+  border-radius: 6.95px !important;
+  font-family: "Switzer Variable" !important;
+  font-weight: 500 !important;
+  font-size: 14px !important;
+  display: inline-flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  gap: 6px !important;
+  padding: 0 10px !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease !important;
+}
+
+.large-dark-right-icon-button .ant-btn-icon {
+  order: 2 !important;
+  margin-left: 6px !important;
+  display: flex !important;
+  align-items: center !important;
+}
+
+.large-dark-right-icon-button .ant-btn-icon img {
+  filter: brightness(0) invert(1) !important;
+  width: 24px;
+  height: 24px;
+}
+
+.large-dark-right-icon-button:not(:disabled):hover {
+  box-shadow: 4px 4px 6px 0px rgba(0, 0, 0, 0.2) !important;
+}
+
+.large-dark-right-icon-button:disabled {
+  background: #d9d9d9 !important;
+  border: 1px solid #d9d9d9 !important;
+  color: #ffffff !important;
+  cursor: not-allowed !important;
+}
+
+.custom-btn .ant-btn-icon {
+  margin-left: 8px; /* Adjust as needed */
+  margin-right: 0;
+}
+
+/* ========================================== */
+/* EXTRA LARGE DARK BUTTON (441×46px)         */
+/* ========================================== */
+/**
+ * EXTRA LARGE DARK BUTTON
+ * Usage:
+ * - Highly prominent primary actions (e.g. Submit, Proceed)
+ * - Often used on wide layouts or hero sections
+ *
+ * Dimensions: 441×46px
+ * Features:
+ * - Dark blue background (#30426a)
+ * - White text
+ * - Medium font weight (500)
+ * - Rounded corners: 6.95px
+ * - Smooth hover effect (box-shadow)
+ * - Disabled state with light gray background
+ */
+.extra-large-dark-button {
+  width: 441px !important;
+  height: 46px !important;
+  background: var(--Blue-V1, #30426a) !important;
+  border: 1px solid var(--Blue-V1, #30426a) !important;
+  color: #ffffff !important;
+  border-radius: 6.95px !important;
+  font-family: "Switzer Variable" !important;
+  font-weight: 500 !important;
+  font-size: 20px !important;
+  line-height: 100% !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease !important;
+}
+
+.extra-large-dark-button:not(:disabled):hover {
+  box-shadow: 4px 4px 6px 0px #00000033 !important;
+}
+
+.extra-large-dark-button:disabled {
+  background: #d9d9d9 !important;
+  border: 1px solid #d9d9d9 !important;
+  color: #ffffff !important;
+  cursor: not-allowed !important;
+}
+
+/* ========================================= */
+/* SMALL COPY LIGHT ICON BUTTON (28.25×28.25) */
+/* ========================================= */
+/**
+ * SMALL COPY LIGHT ICON BUTTON
+ * Usage:
+ * - Minimalist icon-only button (e.g. copy, actions)
+ * - Typically used inside forms, tooltips, or inline actions
+ *
+ * Dimensions: 28.25×28.25px
+ * Features:
+ * - Transparent background in all states (including hover/focus)
+ * - No border or radius
+ * - Icon-only (image or SVG)
+ * - No hover or active background color
+ * - Optional box-shadow on hover (commented out)
+ * - Clickable only when enabled
+ */
+
+.small-copy-light-button {
+  width: 28.25px;
+  height: 28.25px;
+  background: none !important;
+  border: none !important;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0;
+  cursor: pointer;
+  transition: box-shadow 0.2s ease;
+}
+
+.small-copy-light-button:hover:not(:disabled),
+.small-copy-light-button:focus-visible:not(:disabled) {
+  /* box-shadow: 4px 4px 6px rgba(0, 0, 0, 0.2); */
+  background: none !important;
+}
+
+.small-copy-light-button img,
+.small-copy-light-button svg {
+  background: none !important;
+  border: none !important;
+  border-radius: 0 !important;
+}
+
+/* ========================================= */
+/* ONLY TEXT BUTTON */
+/* ========================================= */
+
+.only-tex-not-selected {
+  font-family: Switzer Variable !important;
+  font-weight: 400 !important;
+  font-style: Regular !important;
+  font-size: 26px !important;
+  leading-trim: NONE !important;
+  line-height: 100% !important;
+  letter-spacing: 0% !important;
+  color: #717171 !important;
+  background-color: transparent !important;
+}
+.only-tex-selected {
+  font-family: Switzer Variable !important;
+  font-weight: 700 !important;
+  font-style: Bold !important;
+  font-size: 26px !important;
+  leading-trim: NONE !important;
+  line-height: 100% !important;
+  letter-spacing: 0% !important;
+  color: var(--Blue-V1, #30426a) !important;
+  background-color: transparent !important;
+}

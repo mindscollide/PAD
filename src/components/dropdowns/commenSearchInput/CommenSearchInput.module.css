@@ -1,0 +1,62 @@
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 4;
+}
+
+.label {
+  font-family: Switzer Variable;
+  font-weight: 700;
+  font-style: Bold;
+  font-size: 14px;
+  leading-trim: NONE;
+  line-height: 100%;
+  letter-spacing: 0%;
+  color: var(--Blue-V1, #30426a);
+  margin-bottom: 4px !important;
+}
+
+.customSelect :global(.ant-select-selector) {
+  height: 56px !important;
+  border-radius: 6.95px !important;
+  border: 0.87px solid #717171 !important;
+  display: flex;
+  align-items: center;
+}
+
+/* Placeholder & Input Text */
+.customSelect :global(.ant-select-selection-placeholder){
+  font-family: "Switzer Variable";
+  font-weight: 500;
+  font-style: Medium;
+  font-size: 18px;
+  line-height: 100%;
+  color: #B4B4B4;
+  display: flex;
+  align-items: center;
+}
+.customSelect :global(.ant-select-selection-item) {
+  font-family: "Switzer Variable";
+  font-weight: 500;
+  font-style: Medium;
+  font-size: 18px;
+  line-height: 100%;
+  color: #717171;
+  display: flex;
+  align-items: center;
+}
+/* Dropdown options */
+:global(.ant-select-dropdown) {
+  font-family: "Switzer Variable";
+  font-weight: 500;
+  font-style: Medium;
+  font-size: 14px;
+  line-height: 100%;
+  color: #717171;
+}
+.customSelect :global(.ant-select-arrow) {
+  right: 16px; /* Adjust if needed */
+  display: flex;
+  align-items: center;
+  height: 100%;
+}

@@ -1,0 +1,115 @@
+/* profileDropdown_module.css */
+
+/* Dropdown Trigger */
+.profile-dropdown-trigger {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  padding: 8px 16px;
+  border-radius: 4px;
+  transition: all 0.3s;
+  /* width: 302.52587890625px; */
+  width: auto;
+  height: 55.3292236328125px;
+  border: 1px solid #b4b4b4;
+  background: #ffffff;
+  color: #424242;
+  /* margin-right: auto; */
+}
+
+.ant-dropdown .ant-dropdown-menu .ant-dropdown-menu-title-content > a {
+  font-family: Switzer Variable;
+  font-weight: 500;
+  font-style: Medium;
+  font-size: 18px;
+  leading-trim: NONE;
+  line-height: 100%;
+  letter-spacing: 0%;
+  color: #424242;
+  /* color: inherit; */
+  transition: all 0.2s;
+}
+
+.profile-dropdown-trigger:hover {
+  background: var(--White-Hover, #f3f3f3);
+  box-shadow: 4px 4px 6px 0px #00000033;
+  border: 1px solid #b4b4b4;
+}
+
+/* Dropdown Menu */
+.profile-dropdown-overlay {
+  width: 240px;
+  border-radius: 8px;
+  box-shadow: 0 6px 16px 0 rgba(0, 0, 0, 0.08);
+  background: #ffffff;
+  border: 1px solid #b4b4b4;
+}
+
+.profile-dropdown-overlay .ant-dropdown-menu {
+  padding: 8px 0;
+  background: transparent;
+}
+
+.dropdown-menu-item {
+  display: flex;
+  align-items: center;
+  padding: 12px 16px;
+  color: #424242; /* White text */
+  font-size: 14px;
+  transition: all 0.3s;
+}
+
+.dropdown-menu-item:hover {
+  background: #edf3ff;
+  border-radius: 8px;
+}
+
+.dropdown-menu-icon {
+  margin-right: 12px;
+  font-size: 16px;
+  color: #424242;
+}
+
+.profile-dropdown-overlay .ant-dropdown-menu-item-divider {
+  margin: 8px 0;
+  background-color: rgba(255, 255, 255, 0.1); /* Light divider */
+}
+
+/* Profile image and text */
+.profile-img {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.profile-name {
+  font-weight: 500;
+  flex-grow: 1;
+  font-family: "Switzer Variable";
+  font-style: Medium;
+  font-size: 18px;
+  line-height: 100%;
+  letter-spacing: 0%;
+  color: #424242;
+
+  /* Ellipsis settings */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.dropdown-arrow {
+  font-size: 12px;
+  margin-left: 6px;
+  transition: transform 0.3s ease;
+}
+
+.open {
+  transform: rotate(190deg);
+}
+/* li.ant-dropdown-menu-item.ant-dropdown-menu-item-only-child {
+  background: transparent !important;
+} */

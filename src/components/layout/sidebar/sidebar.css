@@ -1,0 +1,196 @@
+/* ============================================ */
+/* SIDEBAR LAYOUT & CONTAINER STYLES */
+/* ============================================ */
+.sidebar-container {
+  /* DIMENSIONS & SCROLLING */
+  height: 100vh; /* Full viewport height */
+  display: flex;
+  flex-direction: column;
+  overflow: hidden; /* Prevent scrolling of entire sidebar */
+
+  /* VISUAL STYLING */
+  background: #30426a; /* Primary dark blue background */
+  border-radius: 0 8px 8px 0; /* Rounded corners on right side only */
+
+  /* LAYOUT */
+  position: relative; /* Establish positioning context */
+  z-index: 10; /* Ensure sidebar stays above content */
+}
+
+/* ============================================ */
+/* SCROLLABLE MENU CONTAINER */
+/* ============================================ */
+.menu-scroll-container {
+  flex: 1; /* Take remaining space */
+  overflow-y: auto; /* Enable vertical scrolling */
+  overflow-x: hidden; /* Prevent horizontal scroll */
+  padding-right: 4px; /* Space for scrollbar */
+}
+
+/* Custom scrollbar styling */
+.menu-scroll-container::-webkit-scrollbar {
+  width: 4px; /* Thin scrollbar */
+}
+
+.menu-scroll-container::-webkit-scrollbar-thumb {
+  background-color: rgba(255, 255, 255, 0.2); /* Semi-transparent white */
+  border-radius: 2px; /* Rounded corners */
+}
+
+/* ============================================ */
+/* MENU SYSTEM BASE STYLES */
+/* ============================================ */
+.custom-menu {
+  background: transparent; /* Transparent menu background */
+  border-right: none; /* Remove default border */
+  padding: 8px 0; /* Vertical padding for menu items */
+  margin: 0 16px; /* Horizontal margins */
+}
+
+.custom-menu-dark.custom-menu-inline-collapsed {
+  margin: 0; /* Remove margins when collapsed */
+}
+
+/* ============================================ */
+/* MENU ITEM STATES */
+/* ============================================ */
+
+/* DEFAULT MENU ITEM STYLE */
+.custom-menu-dark.custom-menu-inline .custom-menu-item {
+  /* DIMENSIONS */
+  width: 223px;
+  height: 57.52px;
+  margin: 4px 0; /* Vertical spacing between items */
+
+  /* VISUAL STYLING */
+  background: #2a3c65; /* Darker blue item background */
+  border-radius: 6.95px; /* Slightly rounded corners */
+
+  /* TYPOGRAPHY */
+  font-family: "Switzer Variable";
+  font-weight: 500; /* Medium font weight */
+  font-size: 14px;
+  line-height: 100%; /* Tight line spacing */
+  color: #ffffff; /* White text color */
+
+  /* LAYOUT & SPACING */
+  display: flex;
+  align-items: center;
+  gap: 8.68px; /* Space between icon and text */
+  padding: 0 16px; /* Horizontal padding */
+  transition: all 0.2s ease; /* Smooth hover transitions */
+}
+
+/* HOVER STATE */
+.custom-menu-dark:not(.custom-menu-horizontal)
+  .custom-menu-item:not(.custom-menu-item-selected):hover {
+  background: #213155; /* Slightly darker hover state */
+}
+
+/* SELECTED/ACTIVE STATE */
+.custom-menu-dark.custom-menu-inline .custom-menu-item-selected {
+  background: #ffffff; /* White background when selected */
+  color: #30426a; /* Dark blue text for contrast */
+  font-weight: 500;
+}
+
+/* ============================================ */
+/* COLLAPSED MENU STATE */
+/* ============================================ */
+
+/* COLLAPSED MENU ITEM */
+.custom-menu-inline-collapsed > .custom-menu-item {
+  /* DIMENSIONS */
+  width: 52.5px;
+  height: 55px;
+  margin: 6px 0 0 6px; /* Adjusted margins for compact view */
+
+  /* LAYOUT */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0 !important; /* Remove all padding */
+
+  /* VISUAL STYLING */
+  background: #2a3c65; /* Maintain dark background */
+}
+
+/* HIDE TEXT IN COLLAPSED STATE */
+:where(.css-dev-only-do-not-override-1rfzxih).custom-menu-inline-collapsed
+  > .custom-menu-item
+  .custom-menu-item-icon
+  + span {
+  display: none !important;
+}
+
+/* COLLAPSED MENU ICON STYLING */
+.custom-menu-inline-collapsed > .custom-menu-item .custom-menu-item-icon {
+  /* DIMENSIONS */
+  width: 26px;
+  height: 29px;
+  margin: 0 auto !important; /* Perfectly center the icon */
+
+  /* LAYOUT */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* SELECTED ITEM IN COLLAPSED STATE */
+.custom-menu-dark .custom-menu-item-selected {
+  background: #ffffff; /* White background when selected */
+}
+
+/* ============================================ */
+/* TOGGLE BUTTON STYLES */
+/* ============================================ */
+
+/* TOGGLE BUTTON CONTAINER */
+.toggle-button-container {
+  /* LAYOUT */
+  display: flex;
+  align-items: center;
+  height: 57.52px; /* Match menu item height */
+  padding: 0 16px;
+
+  /* COLLAPSED STATE */
+  &.collapsed {
+    justify-content: center; /* Center icon when collapsed */
+    padding: 0; /* Remove padding when collapsed */
+  }
+}
+
+/* TOGGLE BUTTON ITSELF */
+.toggle-button {
+  /* RESET DEFAULTS */
+  padding: 0;
+  border: none;
+  background: transparent;
+  box-shadow: none;
+  width: 46.88px;
+  height: 46.88px;
+
+  /* VISUAL STYLING */
+  cursor: pointer; /* Show pointer on hover */
+  transition: opacity 0.2s; /* Smooth hover effect */
+
+  &:hover {
+    opacity: 0.8; /* Slight fade on hover */
+  }
+}
+
+/* TOGGLE ICON IMAGE */
+.toggle-icon {
+  width: 46px;
+  height: 46px;
+  object-fit: contain; /* Maintain aspect ratio */
+}
+
+/* ============================================ */
+/* ROLE DIVIDER STYLES */
+/* ============================================ */
+:where(.css-dev-only-do-not-override-1rfzxih).custom-menu
+  .custom-menu-item-divider {
+  padding: 5px;
+  border-style: none;
+}

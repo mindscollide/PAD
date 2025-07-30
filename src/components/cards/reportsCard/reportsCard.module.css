@@ -1,0 +1,112 @@
+/* Common hover animation */
+.home-reprot-card {
+  transition: all 300ms ease-out;
+  transform: scale(1);
+  cursor: pointer;
+  border-radius: 12px;
+}
+
+/* Hover effect */
+.home-reprot-card:hover {
+  transform: scale(1.02);
+  box-shadow: 4px 4px 6px 0px #00000033;
+}
+
+.home-reprot-card {
+  width: 100%;
+  height: 286px;
+  opacity: 1;
+  border-radius: 13.89px;
+  border-width: 0.87px;
+  border: 0.87px solid #b4b4b4;
+  background: #ffffff;
+}
+
+.home-reprot-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.home-reprot-card-title {
+  opacity: 1;
+  font-family: Switzer Variable !important;
+  font-weight: 700 !important;
+  font-style: Bold !important;
+  font-size: 26px !important;
+  leading-trim: NONE !important;
+  line-height: 100%;
+  letter-spacing: 0%;
+  color: var(--Blue-V1, #30426a) !important;
+  word-break: break-word;
+  white-space: normal;
+  overflow-wrap: break-word;
+}
+.home-reprot-card-buttonContainer {
+  display: flex;
+  align-items: center;
+}
+
+.seeMore {
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  padding: 2px 10px;
+  font-size: 12px;
+}
+
+.reportList {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.home-reprot-card-reportItem {
+  background-color: #edf3ff;
+  padding: 10px 12px;
+  border-radius: 10.42px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transform: scale(1);
+  transition: all 300ms ease-out;
+}
+
+/* Hover effect */
+.home-reprot-card-reportItem:hover {
+  background: var(--Hover, #dae6ff);
+  transform: scale(1.02);
+  box-shadow: 4px 4px 6px 0px #00000033;
+}
+
+.left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.icon {
+  font-size: 16px;
+  color: #5a5a5a;
+}
+
+.label {
+  font-family: Switzer Variable;
+  font-weight: 400;
+  font-style: Regular;
+  font-size: 26px;
+  leading-trim: NONE;
+  line-height: 100%;
+  letter-spacing: 0%;
+  color: var(--Blue-V1, #30426A);
+
+}
+
+.viewButton {
+  background-color: #ffffff;
+  border: none;
+  padding: 4px 12px;
+  font-size: 12px;
+  border-radius: 6px;
+  box-shadow: 0 0 2px rgba(0, 0, 0, 0.1);
+}

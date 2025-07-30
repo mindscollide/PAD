@@ -1,0 +1,82 @@
+.dropdownButton {
+  background: var(--Blue-V1, #30426a);
+  height: 46.7px;
+  angle: 0 deg;
+  border-radius: 6.94px;
+  color: white;
+  border: none;
+  font-family: Switzer Variable;
+  font-weight: 600;
+  font-style: Semibold;
+  font-size: 20px;
+  leading-trim: NONE;
+  letter-spacing: 0%;
+  padding: 6px 40px;
+}
+
+.dropdownButton:not(:disabled):hover {
+  box-shadow: 4px 4px 6px 0px #00000033 !important;
+  background: var(--Blue-V1, #30426a) !important;
+  color: white !important;
+}
+.dropdownButton:disabled {
+  background: #d9d9d9 !important;
+  border: 1px solid #d9d9d9 !important;
+  color: #ffffff !important;
+  cursor: not-allowed !important;
+}
+/* Example of dynamic class */
+.primary {
+  background-color: #1890ff;
+}
+
+.secondary {
+  background-color: #52c41a;
+}
+
+.danger {
+  background-color: #ff4d4f;
+}
+
+.arrowIcon {
+  transition: transform 0.3s ease;
+  font-size: 12px;
+  
+}
+
+.open {
+  transform: rotate(180deg);
+}
+
+/* Override AntD menu popup */
+.customMenu {
+  border-radius: 8px;
+  min-width: 160px;
+  padding: 8px 0;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  font-family: Switzer Variable;
+  font-weight: 500;
+  font-style: Medium;
+  font-size: 18px;
+  leading-trim: NONE;
+  line-height: 100%;
+  letter-spacing: 0%;
+}
+
+/* Style individual menu items */
+.customMenuItem {
+  padding: 8px 16px;
+  font-size: 14px;
+  transition: background-color 0.3s ease;
+  font-family: Switzer Variable;
+  font-weight: 500;
+  font-style: Medium;
+  font-size: 18px;
+  leading-trim: NONE;
+  line-height: 100%;
+  letter-spacing: 0%;
+}
+
+.customMenuItem:hover {
+  background-color: #f0f0f0;
+}

@@ -1,0 +1,140 @@
+.form-group {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 6px !important;
+  width: 100% !important;
+}
+
+.label {
+  font-family: Switzer Variable !important;
+  font-style: Bold !important;
+  line-height: 100% !important;
+  letter-spacing: 0% !important;
+  color: var(--Blue-V1, #30426a) !important;
+}
+
+.label-small {
+  font-weight: 600 !important;
+  font-size: 12px !important;
+}
+
+.label-medium {
+  font-weight: 700 !important;
+  font-size: 14px !important;
+}
+
+.label-large {
+  font-weight: 800 !important;
+  font-size: 16px !important;
+}
+
+.input {
+  height: 56px;
+  font-family: Switzer Variable !important;
+  width: 100% !important;
+  border: 0.87px solid #717171 !important;
+  border-radius: 6.95px !important;
+  gap: 8.69px !important;
+}
+
+.input-small {
+  font-family: Switzer Variable !important;
+  font-size: 12px !important;
+  padding: 4px 8px !important;
+}
+
+.input-medium {
+  font-family: Switzer Variable !important;
+  font-size: 14px !important;
+  padding: 6px 10px !important;
+}
+
+.input-large {
+  font-family: Switzer Variable !important;
+  font-size: 16px !important;
+  padding: 8px 12px !important;
+}
+
+.input-error {
+  font-family: Switzer Variable !important;
+  border: 1px solid red !important;
+}
+
+.required {
+  font-family: Switzer Variable !important;
+  color: red !important;
+  margin-left: 4px !important;
+}
+
+.error-text {
+  font-family: Switzer Variable !important;
+  color: red !important;
+  font-weight: 400 !important;
+}
+
+.error-text-small {
+  font-size: 11px !important;
+}
+
+.error-text-medium {
+  font-size: 13px !important;
+}
+
+.error-text-large {
+  font-size: 14px !important;
+}
+
+.search-bar-filter-input {
+  height: 56px !important;
+  angle: 0 deg !important;
+  opacity: 1 !important;
+  border-radius: 6.95px !important;
+  border-width: 0.87px !important;
+  gap: 8.69px !important;
+  background: #ffffff !important;
+  border: 0.87px solid #717171 !important;
+}
+
+/* 🔁 Unified hover, focus, and active design across all sizes */
+.small .input:hover,
+.input-small:hover,
+.medium .input:hover,
+.input-medium:hover,
+.large .input:hover,
+.input-large:hover,
+.small .input:focus,
+.input-small:focus,
+.medium .input:focus,
+.input-medium:focus,
+.large .input:focus,
+.input-large:focus,
+.small .input:active,
+.input-small:active,
+.medium .input:active,
+.input-medium:active,
+.large .input:active,
+.input-large:active {
+  border-radius: 6.67px!important; /* Rounded edges */
+  background: #ffffff!important; 
+  border: 0.83px solid #717171!important; /* Standard grey border */
+
+}
+.small .input:hover,
+.input-small:hover,
+.medium .input:hover,
+.input-medium:hover,
+.large .input:hover,
+.input-large:hover {
+background: var(--White-Hover, #F3F3F3)!important;
+}
+
+.small .input:disabled,
+.input-small:disabled,
+.medium .input:disabled,
+.input-medium:disabled,
+.large .input:disabled,
+.input-large:disabled {
+background: var(--White-Hover, #F3F3F3)!important;
+border: 0.87px solid #D9D9D9!important;
+
+}

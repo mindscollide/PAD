@@ -1,0 +1,41 @@
+.heading {
+  /* width: 204px; */
+  /* height: 34px; */
+  opacity: 1;
+  font-family: Switzer Variable;
+  font-weight: 700;
+  font-style: Bold;
+  font-size: 26px;
+  line-height: 100%;
+  letter-spacing: 0%;
+  color: var(--Blue-V1, #30426A);
+
+}
+
+.filter-tags-container {
+  padding: 0 32px;
+  margin-bottom: 12px;
+  margin-top: 10px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.filter-tag {
+  display: flex;
+  align-items: center;
+  height: 35px;
+  padding: 8px 12px;
+  background: #30426a;
+  color: white;
+  border-radius: 7.09px;
+  font-size: 14px;
+  gap: 10px;
+}
+
+.filter-tag-close {
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 16px;
+  line-height: 1;
+}

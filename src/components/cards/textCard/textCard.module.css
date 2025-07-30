@@ -1,0 +1,122 @@
+/* --- Small Card (was employeeWelcomeCard) --- */
+.smallCard {
+  border: 0.87px solid #b4b4b4;
+  border-radius: 13.89px;
+  background-color: #ffffff;
+  display: flex;
+  align-items: center;
+  padding: 20px;
+  transition: all 0.3s ease;
+  width: 100%;
+  height: 176px;
+  box-sizing: border-box;
+  margin-bottom: 20px;
+}
+
+.smallCardCollapsed {
+  max-width: 100%;
+}
+.smallCardExpanded {
+  max-width: 100%;
+}
+
+.smallCardContent {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.smallCardTitle,
+.smallCardSubtitle {
+  font-family: "Switzer Variable";
+  font-weight: 400;
+  font-size: 4vw;
+  line-height: 100%;
+  color: #30426a;
+  margin: 0;
+  display: block;
+  white-space: normal;
+  word-break: break-word;
+}
+
+.smallCardSubtitle {
+  font-weight: 700;
+}
+
+/* --- Big Card (was lineManagerWelcomeCard) --- */
+.bigCard {
+  border: 0.87px solid #b4b4b4;
+  border-radius: 13.89px;
+  background-color: #ffffff;
+  display: flex;
+  align-items: center;
+  padding: 20px;
+  transition: all 0.3s ease;
+  width: 100%;
+  height: 176px;
+  box-sizing: border-box;
+  margin-bottom: 20px;
+}
+
+.bigCardCollapsed {
+  max-width: 100%;
+}
+.bigCardExpanded {
+  max-width: 100%;
+}
+
+.bigCardContent {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.bigCardTitle,
+.bigCardSubtitle {
+  font-family: "Switzer Variable";
+  font-weight: 400;
+  font-size: 4vw;
+  line-height: 100%;
+  color: #30426a;
+  margin: 0;
+  display: block;
+  white-space: normal;
+  word-break: break-word;
+}
+
+.bigCardSubtitle {
+  font-weight: 700;
+}
+/* Common hover animation */
+/* .smallCard,
+.bigCard{
+  transition: all 300ms ease-out;
+  transform: scale(1);
+  cursor: pointer;
+  border-radius: 12px;
+}
+
+/* Hover effect */
+/*.smallCard:hover,
+.bigCard:hover{
+  transform: scale(1.02);
+  box-shadow: 4px 4px 6px 0px #00000033;
+} */
+/* --- Responsive Font for Both Cards --- */
+@media (min-width: 768px) {
+  .smallCardTitle,
+  .smallCardSubtitle,
+  .bigCardTitle,
+  .bigCardSubtitle {
+    font-size: 2rem;
+  }
+}
+
+@media (min-width: 1200px) {
+  .smallCardTitle,
+  .smallCardSubtitle,
+  .bigCardTitle,
+  .bigCardSubtitle {
+    font-size: 36px;
+  }
+}

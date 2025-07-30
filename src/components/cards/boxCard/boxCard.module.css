@@ -1,0 +1,275 @@
+/* Common hover animation */
+.mediumHomeSideCard,
+.smallShareHomeCardstatBox,
+.smallShareHomeCard,
+.mediumHomeCard,
+.mediumHomeCardstatBox,
+.mediumHomeSideCardstatBox {
+  transition: all 300ms ease-out;
+  transform: scale(1);
+  cursor: pointer;
+  border-radius: 12px;
+}
+
+/* Hover effect */
+.mediumHomeSideCard:hover,
+.mediumHomeCard:hover,
+.smallShareHomeCard:hover,
+.smallShareHomeCardstatBox:hover,
+.mediumHomeCardstatBox:hover,
+.mediumHomeSideCardstatBox:hover {
+  transform: scale(1.02);
+  box-shadow: 4px 4px 6px 0px #00000033;
+}
+
+
+
+.smallShareHomeCard {
+  height: 176px;
+  background: #fff;
+  border-radius: 13.89px;
+  padding: 0px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  border: 0.87px solid #b4b4b4;
+  margin-bottom: 20px;
+}
+
+.smallShareHomeCardcardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 8px;
+}
+
+.smallShareHomeCardcardTitle {
+  font-family: "Switzer Variable";
+  font-weight: 700;
+  font-size: 26px;
+  color: var(--Blue-V1, #30426a);
+
+  /* ✅ ADD for wrapping */
+  word-break: break-word;
+  white-space: normal;
+  overflow-wrap: break-word;
+}
+
+.smallShareHomeCardbuttonContainer {
+  display: flex;
+  align-items: center;
+}
+
+.smallShareHomeCardstatBox {
+  padding: 12px 16px;
+  border-radius: 8px;
+  min-height: 70px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.smallShareHomeCardcount {
+  font-family: "Switzer Variable";
+  font-weight: 700;
+  font-size: 50px;
+  line-height: 99%;
+  letter-spacing: 0%;
+  font-family: "Switzer Variable";
+  font-weight: 700;
+  font-size: 26px;
+  line-height: 100%;
+  color: var(--Blue-V1, #30426a);
+
+  /* ✅ ADD for wrapping */
+  word-break: break-word;
+  white-space: normal;
+  overflow-wrap: break-word;
+}
+
+.smallShareHomeCardlabel {
+  font-family: "Switzer Variable";
+  font-weight: 700;
+  font-size: 12px;
+  line-height: 100%;
+  word-break: break-word;
+  white-space: normal;
+  overflow-wrap: break-word;
+}
+
+/* medium card */
+.mediumHomeCard {
+  height: 286px;
+  background: #fff;
+  border-radius: 13.89px;
+  padding: 0px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  border: 0.87px solid #b4b4b4;
+  margin-bottom: 20px;
+}
+
+.mediumHomeCardcardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 8px;
+}
+
+.mediumHomeCardcardTitle {
+  font-family: "Switzer Variable";
+  font-weight: 700;
+  font-size: 26px;
+  color: var(--Blue-V1, #30426a);
+
+  /* ✅ ADD for wrapping */
+  word-break: break-word;
+  white-space: normal;
+  overflow-wrap: break-word;
+}
+
+.mediumHomeCardbuttonContainer {
+  display: flex;
+  align-items: center;
+}
+
+.mediumHomeCardstatBox {
+  padding: 12px 16px;
+  border-radius: 13.89px;
+  height: 191px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.mediumHomeCardcount {
+  font-family: Switzer Variable;
+  font-weight: 700;
+  font-style: Bold;
+  font-size: 50px;
+  line-height: 99%;
+  letter-spacing: 0%;
+  text-align: center;
+
+  /* ✅ ADD for wrapping */
+  word-break: break-word;
+  white-space: normal;
+  overflow-wrap: break-word;
+}
+
+.mediumHomeCardlabel {
+  font-family: Switzer Variable;
+  font-weight: 700;
+  font-style: Bold;
+  font-size: 18px;
+  line-height: 100%;
+  letter-spacing: 0%;
+  text-align: center;
+  text-transform: uppercase;
+
+  word-break: break-word;
+  white-space: normal;
+  overflow-wrap: break-word;
+}
+
+/* medium side card */
+
+/* medium card */
+.mediumHomeSideCard {
+  height: 286px;
+  background: #fff;
+  border-radius: 13.89px;
+  padding: 0px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  border: 0.87px solid #b4b4b4;
+  margin-bottom: 20px;
+}
+
+.mediumHomeSideCardcardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 8px;
+}
+
+.mediumHomeSideCardcardTitle {
+  font-family: "Switzer Variable";
+  font-weight: 700;
+  font-size: 26px;
+  color: var(--Blue-V1, #30426a);
+
+  /* ✅ ADD for wrapping */
+  word-break: break-word;
+  white-space: normal;
+  overflow-wrap: break-word;
+}
+
+.mediumHomeSideCardbuttonContainer {
+  display: flex;
+  align-items: center;
+}
+
+.mediumHomeSideCardstatBox {
+  padding: 12px 16px;
+  border-radius: 13.89px;
+  height: 191px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.mediumHomeSideCardcount {
+  font-family: Switzer Variable;
+  font-weight: 700;
+  font-style: Bold;
+  font-size: 50px;
+  line-height: 99%;
+  letter-spacing: 0%;
+  text-align: center;
+
+  /* ✅ ADD for wrapping */
+  word-break: break-word;
+  white-space: normal;
+  overflow-wrap: break-word;
+}
+
+.mediumHomeSideCardlabel {
+  font-family: Switzer Variable;
+  font-weight: 700;
+  font-style: Bold;
+  font-size: 18px;
+  line-height: 100%;
+  letter-spacing: 0%;
+  text-align: center;
+  text-transform: uppercase;
+
+  /* white-space: normal;
+  word-break: break-word;
+  overflow-wrap: break-word;
+  display: block; */
+  max-width: 100%;
+  text-align: left;
+}
+
+.mediumHomeCardcardTitle,
+.mediumHomeCardcount,
+.mediumHomeCardlabel,
+.mediumHomeSideCardcardTitle,
+.mediumHomeSideCardcount,
+.mediumHomeSideCardlabel,
+.smallShareHomeCardcardTitle,
+.smallShareHomeCardcount,
+.smallShareHomeCardlabel {
+  display: -webkit-box;
+  -webkit-line-clamp: 1; /* ✅ Show only 2 lines */
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+
+  word-break: break-word;
+  white-space: normal;
+}

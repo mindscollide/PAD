@@ -1,0 +1,32 @@
+.customCheckbox {
+  display: flex;
+  align-items: center;
+  gap: 8px; /* Adjust spacing between checkbox and label */
+  line-height: normal; /* Prevent vertical stacking */
+}
+
+/* Customize the checkbox input itself */
+.customCheckbox :global(.ant-checkbox-input) {
+  cursor: pointer;
+}
+
+/* Customize the checkbox appearance */
+.customCheckbox :global(.ant-checkbox-inner) {
+  border-radius: 4px;
+  border: 1px solid #b4b4b4;
+  width: 23.7px;
+  height: 23.7px;
+  angle: 0 deg;
+  opacity: 1;
+}
+
+/* When checkbox is checked */
+.customCheckbox :global(.ant-checkbox-checked .ant-checkbox-inner) {
+  background: var(--V1, #30426a) !important;
+  border-color: var(--V1, #30426a) !important;
+}
+
+/* Optional: hover effect */
+.customCheckbox :global(.ant-checkbox:hover .ant-checkbox-inner) {
+  border-color: var(--V1, #30426a) !important;
+}

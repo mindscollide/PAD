@@ -1,0 +1,30 @@
+.dropdownContainer {
+  padding: 16px;
+  min-width: 190px;
+  max-width: 150px;
+  border: 0.74px solid #b4b4b4;
+  background: #ffffff;
+  angle: 0 deg;
+  opacity: 1;
+  border-radius: 5.94px;
+  border-width: 0.74px;
+}
+
+.checkboxList {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-height: 230px;
+  overflow-y: auto;
+  margin-bottom: 16px;
+}
+
+.buttonGroup {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.divider {
+  margin: 0px auto !important;
+  border: 0.74px solid #d4d4d4 !important;
+}

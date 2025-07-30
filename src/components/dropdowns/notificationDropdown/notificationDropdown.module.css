@@ -1,0 +1,262 @@
+/* ============================================ */
+/* DROPDOWN TRIGGER STYLES */
+/* ============================================ */
+
+/**
+ * Container for the dropdown trigger button
+ * - Fixed dimensions for consistent sizing
+ * - White background with subtle border
+ * - Centered content with flexbox
+ * - Hover effects for better UX
+ */
+.dropdown-trigger-container {
+  width: 56px;
+  height: 56px;
+  background-color: #fff;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  position: relative; /* For absolute positioning of child elements */
+  border: 1px solid #b4b4b4;
+  transition: background-color 0.3s; /* Smooth transition for hover effects */
+}
+
+/* Hover state for trigger container */
+.dropdown-trigger-container:hover {
+  background: var(--White-Hover, #F3F3F3);
+  transform: rotate(0deg);
+  border: 1px solid #b4b4b4;
+  box-shadow: 4px 4px 6px 0px #00000033;
+}
+
+/* Active/open state for trigger container */
+.dropdown-open {
+  background: var(--Blue-V1, #30426a);
+  border: 1px solid var(--Blue-V1, #30426a);
+}
+
+/* Icon inside the trigger container */
+.dropdown-icon {
+  width: 27.29px;
+  height: 27.29px;
+}
+
+/* Badge positioning adjustment */
+.ant-badge {
+  display: block;
+  z-index: 2;
+}
+
+/* ============================================ */
+/* DROPDOWN OVERLAY STYLES */
+/* ============================================ */
+
+/**
+ * Main dropdown overlay container
+ * - Fixed width with max-height for scrolling
+ * - Custom border radius and shadow
+ * - Clean white background
+ */
+.dropdown-overlay {
+  width: 439.324px;
+  max-height: 626.697px;
+  opacity: 1;
+  transform: rotate(0deg);
+  border-radius: 12px;
+  overflow-y: auto;
+  overflow-x: hidden !important; /* Ensure no horizontal scroll */
+  background-color: #fff;
+  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+  border: 1px solid #b4b4b4;
+}
+
+/* Wrapper for dropdown content */
+.custom-dropdown-wrapper {
+  width: 440px;
+  max-height: 600px;
+  overflow-y: auto;
+  overflow-x: hidden !important;
+  padding: 0; /* Remove default padding */
+}
+
+/* ============================================ */
+/* DROPDOWN HEADER STYLES */
+/* ============================================ */
+
+/**
+ * Header section of dropdown
+ * - Custom typography using Switzer Variable font
+ * - Bottom border for visual separation
+ * - Proper spacing
+ */
+.dropdown-header {
+  font-family: "Switzer Variable";
+  position: sticky;
+  z-index: 1;
+  padding: 12px 16px;
+  font-weight: 600;
+
+  font-weight: 700;
+  font-size: 18px;
+  color: #30426a;
+  padding: 12px 16px;
+  margin: 16px 20px 12px 5px;
+  width: 108px;
+  height: 24px;
+  line-height: 100%;
+  letter-spacing: 0%;
+}
+
+/* ============================================ */
+/* NOTIFICATION ITEM STYLES */
+/* ============================================ */
+
+/* Container for list of notifications */
+.notification-list {
+  /* padding: 10px 0; */
+  display: flex;
+  flex-direction: column;
+  gap: 4px; /* optional */
+}
+
+/* Individual notification item */
+.notification-item {
+  display: flex;
+  padding: 12px 16px;
+  /* border-bottom: 1px solid #f0f0f0; */
+  border-bottom: 0.91px solid #9e9e9e; /* Apply border */
+
+  gap: 12px;
+}
+
+.notification-item:last-child {
+  border-bottom: none; /* Remove border for the last item */
+}
+/* Notification icon container */
+.notification-icon-div {
+  width: 52.76px;
+  height: 52.76px;
+  opacity: 1;
+  background: #edf3ff;
+  border-radius: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Notification icon image */
+.notification-icon {
+  width: 32.74px;
+  height: 32.74px;
+  margin: 10px;
+}
+
+/* Notification content area */
+.notification-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Notification title */
+.notification-title {
+  width: 152px;
+  height: 24px;
+  color: #30426a;
+  font-family: "Switzer Variable";
+  font-weight: 500;
+  font-size: 18px;
+  line-height: 100%;
+  letter-spacing: 0%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Notification timestamp */
+.notification-time {
+  width: 86px;
+  height: 16px;
+  color: #30426a;
+  font-family: "Switzer Variable";
+  font-weight: 700;
+  font-size: 12px;
+  line-height: 100%;
+  letter-spacing: 0%;
+  text-align: right;
+  white-space: nowrap;
+  align-self: flex-end;
+}
+
+/* Notification message text */
+.notification-message {
+  width: 291.06px;
+  /* height: 32px; */
+  color: #575757;
+  font-family: "Switzer Variable";
+  font-weight: 500;
+  font-size: 12px;
+  /* line-height: 100%; */
+  letter-spacing: 0%;
+  display: -webkit-box;
+  -webkit-line-clamp: 2; /* Limit to 2 lines */
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  word-wrap: break-word;
+  line-height: 1.4em;
+  max-height: 2.8em;
+}
+
+/* ============================================ */
+/* FOOTER/ACTION STYLES */
+/* ============================================ */
+
+/**
+ * "Mark all as read" action at bottom
+ * - Centered text with top border
+ * - Custom typography
+ * - Pointer cursor for interaction
+ */
+.mark-all {
+  text-align: center;
+  padding: 12px;
+  color: #30426a;
+  font-weight: 600;
+  cursor: pointer;
+  border-top: 1px solid #eee;
+}
+
+/* === 🔧 SCROLLBAR CUSTOMIZATION (Only show thumb, hide background) === */
+/* Limit the height of the notification list and enable scroll */
+.notification-list {
+  max-height: 70vh; /* Or any height you prefer */
+  overflow-y: auto;
+  padding-right: 4px; /* Slight padding to prevent content under scrollbar */
+}
+
+/* Hide scrollbar track and background - only show thumb */
+.notification-list::-webkit-scrollbar {
+  width: 6px;
+}
+
+.notification-list::-webkit-scrollbar-track {
+  background: transparent; /* No track background */
+}
+
+.notification-list::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.3); /* Semi-visible scrollbar thumb */
+  border-radius: 10px;
+}
+
+.notification-list::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+/* For Firefox */
+.notification-list {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 0, 0, 0.3) transparent;
+}

@@ -1,0 +1,247 @@
+/* -----------------------------------------------------------
+   ✅ Font Setup
+----------------------------------------------------------- */
+@font-face {
+  font-family: "Switzer Variable";
+  src: url("/fonts/Switzer-Variable.ttf") format("truetype");
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* -----------------------------------------------------------
+   ✅ Root/Base Styling
+----------------------------------------------------------- */
+html,
+body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow-x: auto;
+  font-family: "Switzer Variable", sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  font-synthesis: none;
+}
+
+#root {
+  font-family: inherit;
+}
+
+/* -----------------------------------------------------------
+   ✅ Layout Styling
+----------------------------------------------------------- */
+/* Main layout container */
+:where(.css-dev-only-do-not-override-1rfzxih).ant-layout {
+  /* background: #ebf4f9; Optional soft background */
+}
+
+/* Transparent header */
+:where(.css-dev-only-do-not-override-1rfzxih).ant-layout-header {
+  background: transparent !important;
+}
+
+/* Main content scrollable areas */
+.pad_content,
+.home-content {
+  height: calc(100vh - 80px) !important;
+  overflow-y: auto !important;
+  overflow-x: hidden;
+}
+
+/* -----------------------------------------------------------
+   ✅ Typography & Animations
+----------------------------------------------------------- */
+.logo {
+  height: 6em;
+  padding: 1.5em;
+  transition: filter 300ms;
+  will-change: filter;
+}
+
+.logo:hover {
+  filter: drop-shadow(0 0 2em #646cffaa);
+}
+
+.logo.react:hover {
+  filter: drop-shadow(0 0 2em #61dafbaa);
+}
+
+@keyframes logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  a:nth-of-type(2) .logo {
+    animation: logo-spin infinite 20s linear;
+  }
+}
+
+/* -----------------------------------------------------------
+   ✅ Card & Helper Text
+----------------------------------------------------------- */
+.card {
+  padding: 2em;
+}
+
+.read-the-docs {
+  color: #888;
+}
+
+/* -----------------------------------------------------------
+   ✅ Ant Design Customizations
+----------------------------------------------------------- */
+
+/* ❌ Input field error text */
+.ant-form-item-explain-error {
+  color: #a50000 !important;
+  font-family: "Switzer Variable" !important;
+  font-weight: 700 !important;
+  font-size: 14px;
+  font-style: normal !important;
+}
+
+/* ❌ Input field border error */
+:where(.css-dev-only-do-not-override-1rfzxih)
+  .ant-input-outlined.ant-input-status-error:not(.ant-input-disabled) {
+  background: #ffffff;
+  border: 0.83px solid #a50000 !important;
+}
+
+/* ✅ Base input fields (input, picker) */
+.ant-input,
+.ant-picker {
+  border: none !important;
+  box-shadow: none !important;
+  outline: none !important;
+  background-color: white;
+}
+
+.ant-input:hover,
+.ant-picker:hover,
+.ant-input:focus,
+.ant-picker:focus,
+.ant-input:focus-within,
+.ant-picker:focus-within,
+.ant-input:blur,
+.ant-picker:blur {
+  border: none !important;
+  box-shadow: none !important;
+  outline: none !important;
+}
+
+/* Compact input groups */
+:where(.css-dev-only-do-not-override-1rfzxih)
+  .ant-input-compact-item:not(.ant-input-compact-last-item)
+  .ant-input-compact-first-item {
+  border: none;
+  border-color: transparent;
+}
+
+/* Popover arrow hidden */
+.ant-popover-arrow {
+  display: none !important;
+}
+
+/* Affix wrapper padding */
+.ant-input-affix-wrapper {
+  padding: 20px 11px;
+}
+
+/* ✅ Date picker active bar hidden */
+:where(.css-dev-only-do-not-override-1rfzxih).ant-picker-range
+  .ant-picker-active-bar {
+  height: 0px;
+  background: transparent !important;
+  opacity: 0;
+  pointer-events: none;
+  bottom: 0px;
+}
+
+/* -----------------------------------------------------------
+   ✅ Custom Notification (Success Toast)
+----------------------------------------------------------- */
+
+/* Main toast card */
+.ant-notification-notice.ant-notification-notice-success.ant-notification-notice-closable {
+  width: 572px;
+  height: 67px;
+  border-radius: 10px;
+  background: #f8fcff;
+  border: 1px solid #a50000;
+  box-shadow: 7px 4px 12px 0px #00000033;
+  padding: 10px 20px;
+  gap: 10px;
+}
+
+/* Toast message */
+:where(.css-dev-only-do-not-override-1rfzxih).ant-notification
+  .ant-notification-notice-wrapper
+  .ant-notification-notice-closable
+  .ant-notification-notice-message {
+  padding-left: 10px;
+  font-family: "Switzer Variable";
+  font-weight: 500;
+  font-size: 18px;
+  color: #a50000;
+  line-height: 100%;
+}
+
+/* Toast description (wrapped with ellipsis after 2 lines) */
+:where(.css-dev-only-do-not-override-1rfzxih).ant-notification
+  .ant-notification-notice-wrapper
+  .ant-notification-notice-description {
+  padding-left: 10px;
+  font-family: "Switzer Variable";
+  font-weight: 500;
+  font-size: 14px;
+  color: #424242;
+  line-height: 100%;
+  display: -webkit-box;
+  -webkit-line-clamp: 2; /* Show max 2 lines */
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Toast icon */
+:where(.css-dev-only-do-not-override-1rfzxih).ant-notification
+  .ant-notification-notice-wrapper
+  .ant-notification-notice-icon {
+  width: 40px;
+  height: 40px;
+  padding: 10px;
+  border-radius: 8px;
+  background: #ffdbdb;
+}
+
+.profolio-employee-accordian {
+  /* margin: 17px; */
+}
+:where(.css-dev-only-do-not-override-1rfzxih).ant-collapse-borderless
+  > .ant-collapse-item {
+  border-bottom: transparent;
+}
+:where(.css-dev-only-do-not-override-1rfzxih).ant-collapse
+  > .ant-collapse-item:first-child,
+:where(.css-dev-only-do-not-override-1rfzxih).ant-collapse
+  > .ant-collapse-item:first-child
+  > .ant-collapse-header {
+  border-radius: 6.94px;
+  min-height: 53.84px;
+}
+
+:where(.css-dev-only-do-not-override-1rfzxih).ant-collapse
+  > .ant-collapse-item:last-child,
+:where(.css-dev-only-do-not-override-1rfzxih).ant-collapse
+  > .ant-collapse-item:last-child
+  > .ant-collapse-header {
+  border-radius: 6.94px;
+  min-height: 53.84px;
+}

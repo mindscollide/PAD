@@ -1,0 +1,204 @@
+/* ===================================================== */
+/* ============== INPUT COMPONENT STYLING ============== */
+/* ===================================================== */
+
+/* ---------- Base Container Styles ---------- */
+.form-group {
+  margin-bottom: 1rem!important; /* Space between fields */
+  display: flex!important;
+  flex-direction: column!important; /* Stack label and input vertically */
+}
+
+/* ---------- Label Styling ---------- */
+.label {
+  font-family: "Switzer Variable"!important;
+  color: #1c2d5a!important; /* Dark blue for readability */
+  margin-bottom: 4px!important; /* Space between label and input */
+}
+
+/* ---------- Input Base Styling ---------- */
+.input {
+  font-family: "Switzer Variable"!important;
+  border-radius: 6.67px!important; /* Rounded edges */
+  border: 0.83px solid #717171!important; /* Standard grey border */
+  background: #ffffff!important; /* White background */
+  width: 100%!important; /* Full width */
+}
+
+/* ---------- Error State Styling ---------- */
+.input-error {
+  font-family: "Switzer Variable"!important;
+  border: 0.83px solid #a50000 !important; /* Red border for error */
+}
+
+.error-text {
+  font-family: "Switzer Variable"!important;
+  margin-top: 4px!important; /* Space above error text */
+  color: #a50000!important; /* Red text color */
+  font-weight: 500!important; /* Semi-bold text */
+}
+
+/* ===================================================== */
+/* ============== SIZE VARIANTS - LABEL =============== */
+/* ===================================================== */
+
+.label-small {
+  font-family: "Switzer Variable"!important;
+  font-size: 12px!important;
+  font-weight: 600!important; /* Medium-bold text */
+}
+
+.label-medium {
+  font-family: "Switzer Variable"!important;
+  font-size: 14px!important;
+  font-weight: 700!important; /* Medium-bold text */
+}
+
+.label-large {
+  font-family: "Switzer Variable"!important;
+  font-size: 16px!important;
+  font-weight: 800!important; /* Medium-bold text */
+}
+
+.label-extraLarge {
+  font-family: Switzer Variable!important;
+  font-weight: 700!important;
+  font-style: Bold!important;
+  font-size: 14px!important;
+  line-height: 100%!important;
+  letter-spacing: 0%!important;
+  width: 69px!important;
+  height: 18px!important;
+  opacity: 1!important;
+}
+
+/* ===================================================== */
+/* ============== SIZE VARIANTS - INPUT =============== */
+/* ===================================================== */
+
+.small .input,
+.input-small {
+  height: 56px!important;
+  font-size: 14px!important;
+  padding: 8px 12px!important;
+}
+
+.medium .input,
+.input-medium {
+  height: 56px!important;
+  font-size: 16px!important;
+  padding: 10px 14px!important;
+}
+
+.large .input,
+.input-large {
+  height: 56px!important;
+  font-size: 18px!important;
+  padding: 12px 16px!important;
+}
+
+.extraLarge .input,
+.input-extraLarge {
+  width: 440px!important;
+  height: 56px!important;
+  opacity: 1!important;
+  border-width: 0.83px!important;
+  border-radius: 6.67px!important;
+  gap: 10px!important;
+  padding: 16px!important;
+  border: 0.83px solid #717171!important;
+}
+
+/* ===================================================== */
+/* ============ SIZE VARIANTS - ERROR TEXT ============ */
+/* ===================================================== */
+
+.error-text-small {
+  font-size: 11px!important;
+}
+
+.error-text-medium {
+  font-size: 13px!important;
+}
+
+.error-text-large {
+  font-size: 14px!important;
+}
+
+.error-text-extraLarge {
+  font-family: Switzer Variable!important;
+  font-weight: 700!important;
+  font-style: Bold!important;
+  font-size: 14px!important;
+  line-height: 100%!important;
+  letter-spacing: 0%!important;
+  width: 153px!important;
+  height: 18px!important;
+  top: 395.18px!important;
+  left: 152.67px!important;
+  opacity: 1!important;
+}
+
+/* ===================================================== */
+/* ================= HOVER STATE ======================= */
+/* ===================================================== */
+
+.input:hover {
+  border-color: #717171!important; /* Keep border consistent on hover */
+  background-color: #ffffff!important;
+}
+
+/* ===================================================== */
+/* ============== REQUIRED ASTERISK ==================== */
+/* ===================================================== */
+
+.required {
+  color: #a50000!important; /* Red asterisk for required fields */
+  margin-left: 4px!important;
+}
+
+
+
+/* 🔁 Unified hover, focus, and active design across all sizes */
+.small .input:hover,
+.input-small:hover,
+.medium .input:hover,
+.input-medium:hover,
+.large .input:hover,
+.input-large:hover,
+.small .input:focus,
+.input-small:focus,
+.medium .input:focus,
+.input-medium:focus,
+.large .input:focus,
+.input-large:focus,
+.small .input:active,
+.input-small:active,
+.medium .input:active,
+.input-medium:active,
+.large .input:active,
+.input-large:active {
+  border-radius: 6.67px!important; /* Rounded edges */
+  background: #ffffff!important; 
+  border: 0.83px solid #717171!important; /* Standard grey border */
+
+}
+.small .input:hover,
+.input-small:hover,
+.medium .input:hover,
+.input-medium:hover,
+.large .input:hover,
+.input-large:hover {
+background: var(--White-Hover, #F3F3F3)!important;
+}
+
+.small .input:disabled,
+.input-small:disabled,
+.medium .input:disabled,
+.input-medium:disabled,
+.large .input:disabled,
+.input-large:disabled {
+background: var(--White-Hover, #F3F3F3)!important;
+border: 0.87px solid #D9D9D9!important;
+
+}
