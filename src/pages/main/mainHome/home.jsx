@@ -38,6 +38,8 @@ const Home = () => {
 
       try {
         const data = await GetUserDashBoardStats({ callApi, showNotification });
+        console.log("GetUserDashBoardStats",data);
+        
         if (!data) return;
 
         // Filter data based on user roles
@@ -52,6 +54,7 @@ const Home = () => {
           }
         });
 
+        console.log("GetUserDashBoardStats",filteredData);
         setDashboardData(filteredData);
       } catch (error) {
         console.error("Failed to fetch home summary", error);
