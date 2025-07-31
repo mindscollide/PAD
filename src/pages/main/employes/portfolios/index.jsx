@@ -135,7 +135,6 @@ const PortfolioIndex = () => {
   }, [employeePortfolioSearch.filterTrigger]);
 
   useEffect(() => {
-    console.log("pending check");
     if (!isPortfolio && employeePendingApprovalSearch.filterTrigger) {
       const snapshot = [];
 
@@ -145,8 +144,6 @@ const PortfolioIndex = () => {
           employeePendingApprovalSearch[key] !== undefined
             ? employeePendingApprovalSearch[key]
             : employeePendingApprovalSearch.key;
-        console.log("pending check", key);
-        console.log("pending check", value);
 
         if (key === "broker" && Array.isArray(value) && value.length > 0) {
           snapshot.push({ key, label, value });
@@ -171,7 +168,6 @@ const PortfolioIndex = () => {
           value: `${formattedStart} - ${formattedEnd}`,
         });
       }
-      console.log("pending check", snapshot);
       setSubmittedFilters(snapshot);
 
       // Reset trigger after processing

@@ -90,7 +90,7 @@ const sidebarItems = (collapsed, userRoles = [], selectedKey) => {
    * - Head of Compliance
    */
   const roleSections = {
-    employee: {
+    2: {
       title: "Employee",
       items: [
         {
@@ -150,7 +150,7 @@ const sidebarItems = (collapsed, userRoles = [], selectedKey) => {
         },
       ],
     },
-    lineManager: {
+    3: {
       title: "Line Manager",
       items: [
         {
@@ -192,7 +192,7 @@ const sidebarItems = (collapsed, userRoles = [], selectedKey) => {
         },
       ],
     },
-    complianceOfficer: {
+    4: {
       title: "Compliance Officer",
       items: [
         {
@@ -230,7 +230,7 @@ const sidebarItems = (collapsed, userRoles = [], selectedKey) => {
         },
       ],
     },
-    headOfTrade: {
+    5: {
       title: "Head of Trade Approval",
       items: [
         {
@@ -272,7 +272,7 @@ const sidebarItems = (collapsed, userRoles = [], selectedKey) => {
         },
       ],
     },
-    headOfCompliance: {
+    6: {
       title: "Head of Compliance",
       items: [
         {
@@ -314,7 +314,7 @@ const sidebarItems = (collapsed, userRoles = [], selectedKey) => {
 
   // Filter sections based on user roles
   const visibleSections = Object.entries(roleSections)
-    .filter(([role]) => userRoles.includes(role))
+    .filter(([role]) => userRoles.includes(Number(role))) // ✅ Fix applied here
     .map(([_, section]) => section);
 
   // Build final items array
@@ -349,26 +349,25 @@ const sidebarItems = (collapsed, userRoles = [], selectedKey) => {
 
 export default sidebarItems;
 
-
 // src/constants/routeMap.js or wherever you keep your constants
 
 export const routeMap = {
-  "1": "/PAD/approvals",
-  "2": "/PAD/transactions",
-  "3": "/PAD/history",
-  "4": "/PAD/portfolios",
-  "5": "/PAD/reports",
-  "6": "/PAD/approval-requests",
-  "7": "/PAD/my-actions",
-  "8": "/PAD/reports",                   // Reuse or change path if needed
-  "9": "/PAD/reconcile-transactions",
-  "10": "/PAD/my-actions",
-  "11": "/PAD/reports",
-  "12": "/PAD/escalated-requests",
-  "13": "/PAD/my-actions",
-  "14": "/PAD/reports",
-  "15": "/PAD/escalated-verifications",
-  "16": "/PAD/my-actions",
-  "17": "/PAD/reports",
+  1: "/PAD/approvals",
+  2: "/PAD/transactions",
+  3: "/PAD/history",
+  4: "/PAD/portfolios",
+  5: "/PAD/reports",
+  6: "/PAD/approval-requests",
+  7: "/PAD/my-actions",
+  8: "/PAD/reports", // Reuse or change path if needed
+  9: "/PAD/reconcile-transactions",
+  10: "/PAD/my-actions",
+  11: "/PAD/reports",
+  12: "/PAD/escalated-requests",
+  13: "/PAD/my-actions",
+  14: "/PAD/reports",
+  15: "/PAD/escalated-verifications",
+  16: "/PAD/my-actions",
+  17: "/PAD/reports",
   faq: "/PAD/faq",
 };

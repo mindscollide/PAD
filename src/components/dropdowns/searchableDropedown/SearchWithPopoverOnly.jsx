@@ -77,7 +77,6 @@ const SearchWithPopoverOnly = () => {
     { value: "2", label: "Lucy" },
     { value: "3", label: "Tom" },
   ];
-console.log("activeTab",activeTab)
   /**
    * Handles execution of the search logic when filters are applied.
    */
@@ -104,7 +103,6 @@ console.log("activeTab",activeTab)
             }));
             break;
           case "pending":
-            console.log("pending check")
             setEmployeePendingApprovalSearch((prev) => ({
               ...prev,
               filterTrigger: true,
@@ -146,14 +144,12 @@ console.log("activeTab",activeTab)
       case "4":
         switch (activeTab) {
           case "portfolio":
-            console.log("pending check")
             setEmployeePortfolioSearch((prev) => ({
               ...prev,
               filterTrigger: true,
             }));
             break;
           case "pending":
-            console.log("pending check")
             setEmployeePendingApprovalSearch((prev) => ({
               ...prev,
               filterTrigger: true,
@@ -174,9 +170,7 @@ console.log("activeTab",activeTab)
           filterTrigger: true,
         }));
     }
-    console.log("hello", employeeMyApprovalSearch.mainInstrumentName);
   };
-  console.log("hello", employeeMyApprovalSearch);
 
   return (
     <Space.Compact className={styles.searchWrapper}>

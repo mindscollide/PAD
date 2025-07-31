@@ -42,6 +42,7 @@ export const SearchBarProvider = ({ children }) => {
       mainInstrumentName: "", // Main instrument name for popover or modal
       type: [], // Type filter: ["Buy", "Sell"]
       status: [], // Status filter: ["Pending", "Approved", etc.]
+      broker:[],
       pageSize: "", // Pagination: size of page
       pageNumber: "", // Pagination: current page number
       filterTrigger: false,
@@ -114,6 +115,7 @@ export const SearchBarProvider = ({ children }) => {
       mainInstrumentName: "",
       type: [],
       status: [],
+      broker:[],
       pageSize: "",
       pageNumber: "",
       filterTrigger: true,
