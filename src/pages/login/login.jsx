@@ -6,21 +6,27 @@ import logo from "../../assets/img/pad-logo-text.png";
 import { useNavigate } from "react-router-dom";
 import { Button, TextField } from "../../components";
 import { useNotification } from "../../components/NotificationProvider/NotificationProvider";
-import { CheckCircleOutlined } from '@ant-design/icons';
+import { CheckCircleOutlined } from "@ant-design/icons";
+import { useApi } from "../../context/ApiContext";
+import Cookies from "js-cookie";
+import { login } from "../../api/loginApi";
+import { useUserProfileContext } from "../../context/userProfileContext";
 
 const { Text } = Typography;
 
 const Login = () => {
-  const { showNotification } = useNotification();
   // Hooks and State Management
   const navigate = useNavigate();
   const [form] = Form.useForm();
+  const { showNotification } = useNotification();
+  const { callApi } = useApi();
+  const { setProfile, setRoles } = useUserProfileContext();
   const [formValues, setFormValues] = useState({
     username: "",
     password: "",
   });
+  const [disableClick, setDisableClick] = useState(false);
   const [errors, setErrors] = useState({});
-
   /**
    * Handles input changes and updates form state
    * @param {string} name - Field name ('username' or 'password')
@@ -34,23 +40,22 @@ const Login = () => {
    * Handles form submission
    * @param {Object} values - Form values {username, password}
    */
-
-  const onFinish = (values) => {
-    if (values.username && values.password) {
-      showNotification({
-        type: "success",
-        title: "Success!",
-        description: "We couldn’t complete your request. Please try again shortly.",
-        className: "custom-notification",
-        icon: <CheckCircleOutlined />,
+  const handleLogin = async (values) => {
+    setDisableClick(true);
+    try {
+      await login({
+        username: values.username,
+        password: values.password,
+        navigate,
+        setProfile,
+        callApi,
+        showNotification,
+        setRoles,
       });
-
-      localStorage.setItem("auth", "true");
-      navigate("/PAD"); // Redirect to dashboard on success
+    } finally {
+      setDisableClick(false);
     }
-    // Note: Form validation rules prevent empty submissions
   };
-
   return (
     <>
       <Row gutter={[16, 16]} className={style["login-container"]}>
@@ -71,7 +76,7 @@ const Login = () => {
               <Form
                 form={form}
                 name="login-form"
-                onFinish={onFinish}
+                onFinish={handleLogin}
                 className={style["login-form"]}
               >
                 {/* Username Field */}
@@ -117,6 +122,7 @@ const Login = () => {
                     text="Sign In"
                     className="extra-large-dark-button"
                     htmlType="submit"
+                    disabled={disableClick}
                   />
                 </Form.Item>
               </Form>

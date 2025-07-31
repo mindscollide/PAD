@@ -169,7 +169,7 @@ body {
 ----------------------------------------------------------- */
 
 /* Main toast card */
-.ant-notification-notice.ant-notification-notice-success.ant-notification-notice-closable {
+.ant-notification-notice.ant-notification-notice-error.ant-notification-notice-closable {
   width: 572px;
   height: 67px;
   border-radius: 10px;
