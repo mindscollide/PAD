@@ -16,3 +16,4 @@ export { default as StatusFilterDropdown } from "./dropdowns/filters/statusFilte
 export { default as TypesFilterDropdown } from "./dropdowns/filters/typesFilterDropdown";
 export { default as ComonDropDown } from "./dropdowns/comonDropdown/comonDropDown";
 export { default as CommenSearchInput } from "./dropdowns/commenSearchInput/commenSearchInput";
+export { default as Loader } from "./loader/Loader";
