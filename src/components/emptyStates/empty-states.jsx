@@ -72,6 +72,7 @@ const EmptyState = ({
             src={IconSrc}
             alt={displayMessage}
             className={styles.emptyIcon}
+            // style={style}
           />
         ) : (
           <FileSearchOutlined className={styles.emptyIcon} />

@@ -11,6 +11,7 @@ import {
 } from "../../../commen/funtions/rejex";
 import { useNavigate } from "react-router-dom";
 import { useSidebarContext } from "../../../context/sidebarContaxt";
+import EmptyState from "../../emptyStates/empty-states";
 
 const { Text } = Typography;
 
@@ -45,7 +46,7 @@ const BoxCard = ({
   const base = mainClassName || "smallShareHomeCard"; // fallback class name
   const navigate = useNavigate();
   const { setSelectedKey } = useSidebarContext();
-const normalizedBoxes = Array.isArray(boxes) ? boxes : boxes ? [boxes] : [];
+  const normalizedBoxes = Array.isArray(boxes) ? boxes : boxes ? [boxes] : [];
   // Handles button click, navigates based on role and route
   const handleClick = () => {
     navigateToPage(userRole, route, setSelectedKey, navigate);
@@ -70,102 +71,141 @@ const normalizedBoxes = Array.isArray(boxes) ? boxes : boxes ? [boxes] : [];
       </div>
 
       {/* Content boxes */}
-      <Row className={styles[`${base}statBoxMain`]} gutter={[16, 16]}>
-        {normalizedBoxes.map((box, index) => {
-          // Get styles from typeColorMap or fallback
-          const { bgColor, textLableColor, textCountColor, textAlign } =
-            typeColorMap[box.type?.toLowerCase()] || {
-              bgColor: "#f0f0f0",
-              textColor: "#000",
-              textAlign: "center",
-            };
+      {normalizedBoxes.length > 0 ? (
+        <Row className={styles[`${base}statBoxMain`]} gutter={[16, 16]}>
+          {normalizedBoxes.map((box, index) => {
+            const { bgColor, textLableColor, textCountColor, textAlign } =
+              typeColorMap[box.type?.toLowerCase()] || {
+                bgColor: "#f0f0f0",
+                textLableColor: "#000",
+                textCountColor: "#000",
+                textAlign: "center",
+              };
 
-          // Label split for multi-line styling (left layout)
-          const [firstWord, ...rest] = box.label.split(" ");
-          const secondPart = rest.join(" ");
+            const [firstWord, ...rest] = box.label.split(" ");
+            const secondPart = rest.join(" ");
 
-          // Dynamic column span based on box count
-          const totalCols = 24;
-          const span =
-            normalizedBoxes.length > 0 ? Math.floor(totalCols / normalizedBoxes.length) : 24;
+            const totalCols = 24;
+            const span =
+              normalizedBoxes.length > 0
+                ? Math.floor(totalCols / normalizedBoxes.length)
+                : 24;
 
-          return (
-            <Col span={span} key={index}>
-              <div
-                className={styles[`${base}statBox`]}
-                style={{ backgroundColor: bgColor, textAlign }}
-              >
-                {/* Different Layouts: Down / Up / Left */}
-                {locationStyle === "down" ? (
-                  <>
-                    <Text
-                      className={styles[`${base}label`]}
-                      style={{ color: textLableColor }}
-                    >
-                      {box.label}
-                    </Text>
-                    <Text
-                      className={styles[`${base}count`]}
-                      style={{ color: textCountColor }}
-                    >
-                      {convertSingleDigittoDoubble(formatNumberWithCommas(box.count))}
-                    </Text>
-                  </>
-                ) : locationStyle === "up" ? (
-                  <>
-                    <Text
-                      className={styles[`${base}count`]}
-                      style={{ color: textCountColor }}
-                    >
-                      {convertSingleDigittoDoubble(formatNumberWithCommas(box.count))}
-                    </Text>
-                    <Text
-                      className={styles[`${base}label`]}
-                      style={{ color: textLableColor }}
-                    >
-                      {box.label}
-                    </Text>
-                  </>
-                ) : (
-                  // Left-aligned (count on left, label on right in two lines)
-                  <Row gutter={[16, 16]} align="middle" justify="space-between">
-                    <Col>
+            return (
+              <Col span={span} key={index}>
+                <div
+                  className={styles[`${base}statBox`]}
+                  style={{ backgroundColor: bgColor, textAlign }}
+                >
+                  {locationStyle === "down" ? (
+                    <>
+                      <Text
+                        className={styles[`${base}label`]}
+                        style={{ color: textLableColor }}
+                      >
+                        {box.label}
+                      </Text>
                       <Text
                         className={styles[`${base}count`]}
                         style={{ color: textCountColor }}
                       >
-                        {convertSingleDigittoDoubble(formatNumberWithCommas(box.count))}
+                        {convertSingleDigittoDoubble(
+                          formatNumberWithCommas(box.count)
+                        )}
                       </Text>
-                    </Col>
-                    <Col>
-                      <Row>
+                    </>
+                  ) : locationStyle === "up" ? (
+                    <>
+                      <Text
+                        className={styles[`${base}count`]}
+                        style={{ color: textCountColor }}
+                      >
+                        {convertSingleDigittoDoubble(
+                          formatNumberWithCommas(box.count)
+                        )}
+                      </Text>
+                      <Text
+                        className={styles[`${base}label`]}
+                        style={{ color: textLableColor }}
+                      >
+                        {box.label}
+                      </Text>
+                    </>
+                  ) : (
+                    <Row
+                      gutter={[16, 16]}
+                      align="middle"
+                      justify="space-between"
+                    >
+                      <Col>
                         <Text
-                          className={styles[`${base}label`]}
-                          style={{ color: textLableColor }}
+                          className={styles[`${base}count`]}
+                          style={{ color: textCountColor }}
                         >
-                          <span
-                            style={{ fontWeight: "bold", display: "block" }}
+                          {convertSingleDigittoDoubble(
+                            formatNumberWithCommas(box.count)
+                          )}
+                        </Text>
+                      </Col>
+                      <Col>
+                        <Row>
+                          <Text
+                            className={styles[`${base}label`]}
+                            style={{ color: textLableColor }}
                           >
-                            {firstWord}
-                          </span>
-                        </Text>
-                      </Row>
-                      <Row>
-                        <Text
-                          className={styles[`${base}label`]}
-                          style={{ color: textLableColor }}
-                        >
-                          <span style={{ display: "block" }}>{secondPart}</span>
-                        </Text>
-                      </Row>
-                    </Col>
-                  </Row>
-                )}
-              </div>
-            </Col>
-          );
-        })}
-      </Row>
+                            <span
+                              style={{ fontWeight: "bold", display: "block" }}
+                            >
+                              {firstWord}
+                            </span>
+                          </Text>
+                        </Row>
+                        <Row>
+                          <Text
+                            className={styles[`${base}label`]}
+                            style={{ color: textLableColor }}
+                          >
+                            <span style={{ display: "block" }}>
+                              {secondPart}
+                            </span>
+                          </Text>
+                        </Row>
+                      </Col>
+                    </Row>
+                  )}
+                </div>
+              </Col>
+            );
+          })}
+        </Row>
+      ) : route === "portfolio" ? (
+        <Row className={styles[`${base}statBoxMain`]} gutter={[16, 16]}>
+          <Col span={24}>
+            <div
+              className={styles[`${base}statBox`]}
+              style={{
+                backgroundColor: "#C5FFC7",
+                textAlign: "left",
+              }}
+            >
+              <Text
+                className={styles[`${base}label`]}
+                style={{ color: "#30426A" }}
+              >
+                No. of Shares
+              </Text>
+              <Text
+                className={styles[`${base}count`]}
+                style={{ color: "#00640A" }}
+              >
+                0
+              </Text>
+            </div>
+          </Col>
+        </Row>
+      ) : (
+        <EmptyState style={{ display: "contents" }} type={route} />
+      )}
     </Card>
   );
 };

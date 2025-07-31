@@ -59,6 +59,7 @@ const Home = () => {
           }
         });
 
+        console.log("GetUserDashBoardStats", filteredData);
         setDashboardData(filteredData);
       } catch (error) {
         console.error("Failed to fetch home summary", error);
