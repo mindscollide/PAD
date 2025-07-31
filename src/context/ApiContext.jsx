@@ -28,8 +28,10 @@ export const ApiProvider = ({ children }) => {
     setExpired(false);
 
     try {
-      const token = Cookies.get("auth_token");
-
+      let token = "";
+      if (withAuth) {
+        token = Cookies.get("auth_token");
+      }
       const form = new FormData();
       form.append("RequestMethod", requestMethod);
       form.append("RequestData", JSON.stringify(requestData));
@@ -43,9 +45,7 @@ export const ApiProvider = ({ children }) => {
         url: `${BASE_URL}${endpoint}`,
         data: form,
         headers: {
-          "Content-Type": "multipart/form-data",
-          ...(token ? { Authorization: `Bearer ${token}` } : {}),
-          ...headers,
+          ...(withAuth && token ? { _token: token } : {}),
         },
       };
 
