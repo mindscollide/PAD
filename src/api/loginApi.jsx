@@ -24,9 +24,9 @@ export const login = async ({
   callApi,
   showNotification,
   setRoles,
-  setLoader,
+  showLoader,
 }) => {
-  setLoader(true);
+  showLoader(true);
   const res = await callApi({
     requestMethod: import.meta.env.VITE_LOGIN_REQUEST_METHOD,
     endpoint: import.meta.env.VITE_API_AUTH,
@@ -40,7 +40,7 @@ export const login = async ({
   });
 
   if (!res?.result?.isExecuted) {
-    setLoader(false);
+    showLoader(false);
     return showNotification({
       type: "error",
       title: "Error",
@@ -73,13 +73,17 @@ export const login = async ({
       localStorage.setItem("auth", "true");
       setProfile(userProfileData);
       navigate("/PAD");
+
+      //Yaha success pa true rakha hai takay GetUserDashBoardStats ki API ka response anay tak loader chalay
+      showLoader(true);
     } else {
       showNotification({
         type: "error",
         title: message,
         description: "Please login again.",
       });
-      setLoader(false);
+
+      showLoader(false);
     }
   } else if (res.expired) {
     showNotification({
@@ -87,13 +91,15 @@ export const login = async ({
       title: "Session expired",
       description: "Please login again.",
     });
-    setLoader(false);
+
+    showLoader(false);
   } else {
     showNotification({
       type: "error",
       title: "Login Failed",
       description: getMessage(res.message),
     });
-    setLoader(false);
+
+    showLoader(false);
   }
 };

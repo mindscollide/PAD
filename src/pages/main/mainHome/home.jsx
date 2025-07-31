@@ -16,12 +16,15 @@ import { useUserProfileContext } from "../../../context/userProfileContext";
 
 // Utility for mapping roles to keys
 import { roleKeyMap, checkRoleMatch } from "./utills";
+import { useGlobalLoader } from "../../../context/LoaderContext";
 
 const Home = () => {
   const { showNotification } = useNotification();
   const { dashboardData, setDashboardData } = useDashboardContext();
   const { callApi } = useApi();
   const { roles, setRoles } = useUserProfileContext();
+  const { showLoader } = useGlobalLoader();
+  console.log(showLoader, "showLoadershowLoader");
 
   // Prevent multiple fetches on mount
   const hasFetched = useRef(false);
@@ -37,7 +40,11 @@ const Home = () => {
       }
 
       try {
-        const data = await GetUserDashBoardStats({ callApi, showNotification });
+        const data = await GetUserDashBoardStats({
+          callApi,
+          showNotification,
+          showLoader,
+        });
         if (!data) return;
 
         // Filter data based on user roles

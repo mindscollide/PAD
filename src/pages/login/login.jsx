@@ -11,6 +11,7 @@ import { useApi } from "../../context/ApiContext";
 import Cookies from "js-cookie";
 import { login } from "../../api/loginApi";
 import { useUserProfileContext } from "../../context/userProfileContext";
+import { useGlobalLoader } from "../../context/LoaderContext";
 
 const { Text } = Typography;
 
@@ -21,7 +22,9 @@ const Login = () => {
   const { showNotification } = useNotification();
   const { callApi } = useApi();
   const { setProfile, setRoles } = useUserProfileContext();
-  const [loader, setLoader] = useState(false);
+
+  //LoaderContext ka showLoader ko globally access krrahay hain
+  const { showLoader } = useGlobalLoader();
 
   const [formValues, setFormValues] = useState({
     username: "",
@@ -53,7 +56,7 @@ const Login = () => {
         callApi,
         showNotification,
         setRoles,
-        setLoader,
+        showLoader,
       });
     } finally {
       setDisableClick(false);
@@ -144,8 +147,6 @@ const Login = () => {
           </div>
         </Col>
       </Row>
-
-      {loader && <Loader show={loader} />}
     </>
   );
 };

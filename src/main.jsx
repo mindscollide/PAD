@@ -24,6 +24,7 @@ ReactDOM.createRoot(document.getElementById("root")).render(
                 <SearchBarProvider>
                   <LoaderProvider>
                     <RouterProvider router={router} />
+                    <Loader />
                   </LoaderProvider>
                 </SearchBarProvider>
               </SidebarProvider>

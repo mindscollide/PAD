@@ -1,25 +1,26 @@
-// src/context/LoaderContext.js
+// src/context/LoaderContext.jsx
 import React, { createContext, useContext, useState } from "react";
 
 const LoaderContext = createContext();
 
 export const LoaderProvider = ({ children }) => {
+  // Global loading state define ki — initially false
   const [isLoading, setIsLoading] = useState(false);
 
-  const showLoader = () => setIsLoading(true);
-  const hideLoader = () => setIsLoading(false);
+  // is function ke through kisi bhi component se loading ture/false ki ja sakti hai
+  const showLoader = (state) => {
+    setIsLoading(state);
+  };
 
   return (
-    <LoaderContext.Provider value={{ isLoading, showLoader, hideLoader }}>
+    // Context ka provider wrap karta hai children ko
+    // isLoading (bool) and showLoader (function) sab components mein accessible honge
+    <LoaderContext.Provider value={{ isLoading, showLoader }}>
       {children}
     </LoaderContext.Provider>
   );
 };
 
-export const useLoaderContext = () => {
-  const context = useContext(LoaderContext);
-  if (!context) {
-    throw new Error("useLoaderContext must be used within a LoaderProvider");
-  }
-  return context;
-};
+// 3️⃣ Custom Hook: is hook se kisi bhi component mein context ko easily access kar sakte hain
+// ❗️Use karne ke liye: const { isLoading, showLoader } = useGlobalLoader();
+export const useGlobalLoader = () => useContext(LoaderContext);

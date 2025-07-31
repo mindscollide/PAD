@@ -13,8 +13,14 @@ const getMessage = (code) =>
   responseMessages[code] || "Something went wrong. Please try again.";
 
 // API function
-export const GetUserDashBoardStats = async ({ callApi, showNotification }) => {
+export const GetUserDashBoardStats = async ({
+  callApi,
+  showNotification,
+  showLoader,
+}) => {
   try {
+    showLoader(true);
+
     const res = await callApi({
       requestMethod: import.meta.env.VITE_DASHBOARD_DATA_REQUEST_METHOD,
       endpoint: import.meta.env.VITE_API_TRADE,
@@ -22,6 +28,8 @@ export const GetUserDashBoardStats = async ({ callApi, showNotification }) => {
     });
 
     if (!res?.result?.isExecuted) {
+      showLoader(false);
+
       showNotification({
         type: "error",
         title: "Error",
@@ -37,6 +45,7 @@ export const GetUserDashBoardStats = async ({ callApi, showNotification }) => {
         responseMessage ===
         "PAD_Trade_TradeServiceManager_GetUserDashBoardStats_01"
       ) {
+        showLoader(false);
         return userDashBoardStats;
       } else {
         showNotification({
@@ -44,6 +53,7 @@ export const GetUserDashBoardStats = async ({ callApi, showNotification }) => {
           title: getMessage(responseMessage),
           description: "No data was returned from the server.",
         });
+        showLoader(false);
         return null;
       }
     }
@@ -54,12 +64,14 @@ export const GetUserDashBoardStats = async ({ callApi, showNotification }) => {
         title: "Session expired",
         description: "Please login again.",
       });
+      showLoader(false);
     } else {
       showNotification({
         type: "error",
         title: "Fetch Failed",
         description: getMessage(res.message),
       });
+      showLoader(false);
     }
 
     return null;
@@ -69,6 +81,7 @@ export const GetUserDashBoardStats = async ({ callApi, showNotification }) => {
       title: "Error",
       description: "An unexpected error occurred.",
     });
+    showLoader(false);
     return null;
   }
 };
