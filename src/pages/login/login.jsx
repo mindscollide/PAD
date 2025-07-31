@@ -15,18 +15,18 @@ import { useUserProfileContext } from "../../context/userProfileContext";
 const { Text } = Typography;
 
 const Login = () => {
-  const { showNotification } = useNotification();
   // Hooks and State Management
   const navigate = useNavigate();
   const [form] = Form.useForm();
+  const { showNotification } = useNotification();
+  const { callApi } = useApi();
+  const { setProfile, setRoles } = useUserProfileContext();
   const [formValues, setFormValues] = useState({
     username: "",
     password: "",
   });
-  const [errors, setErrors] = useState({});
-  const { callApi } = useApi();
-  const { setProfile, setRoles } = useUserProfileContext();
   const [disableClick, setDisableClick] = useState(false);
+  const [errors, setErrors] = useState({});
   /**
    * Handles input changes and updates form state
    * @param {string} name - Field name ('username' or 'password')
@@ -41,7 +41,7 @@ const Login = () => {
    * @param {Object} values - Form values {username, password}
    */
   const handleLogin = async (values) => {
-    setDisableClick(true); // Disable button
+    setDisableClick(true);
     try {
       await login({
         username: values.username,
@@ -52,10 +52,8 @@ const Login = () => {
         showNotification,
         setRoles,
       });
-    } catch (error) {
-      // Optionally handle error here
     } finally {
-      setDisableClick(false); // Re-enable button
+      setDisableClick(false);
     }
   };
   return (

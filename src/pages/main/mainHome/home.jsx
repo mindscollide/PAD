@@ -1,9 +1,66 @@
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import { Avatar, Col, Row } from "antd";
 import { BarChartOutlined, FileDoneOutlined } from "@ant-design/icons";
+
+// Reusable components
 import { BoxCard, ReportCard, TextCard } from "../../../components";
 
+// API call
+import { GetUserDashBoardStats } from "../../../api/dashboardApi";
+
+// Custom hooks and context
+import useNotification from "antd/es/notification/useNotification";
+import { useApi } from "../../../context/ApiContext";
+import { useDashboardContext } from "../../../context/dashboardContaxt";
+import { useUserProfileContext } from "../../../context/userProfileContext";
+
+// Utility for mapping roles to keys
+import { roleKeyMap } from "./utills";
+
 const Home = () => {
+  const { showNotification } = useNotification();
+  const { dashboardData, setDashboardData } = useDashboardContext();
+  const { callApi } = useApi();
+  const { roles, setRoles } = useUserProfileContext();
+
+  // Prevent multiple fetches on mount
+  const hasFetched = useRef(false);
+
+  useEffect(() => {
+    if (hasFetched.current) return;
+    hasFetched.current = true;
+
+    const fetchData = async () => {
+      if (!roles || roles.length === 0) {
+        hasFetched.current = false;
+        return;
+      }
+
+      try {
+        const data = await GetUserDashBoardStats({ callApi, showNotification });
+        if (!data) return;
+
+        // Filter data based on user roles
+        const filteredData = {
+          title: data.title, // Include title if needed
+        };
+
+        roles.forEach(({ roleID }) => {
+          const roleKey = roleKeyMap[roleID];
+          if (roleKey && data[roleKey]) {
+            filteredData[roleKey] = data[roleKey];
+          }
+        });
+
+        setDashboardData(filteredData);
+      } catch (error) {
+        console.error("Failed to fetch home summary", error);
+      }
+    };
+
+    fetchData();
+  }, [roles]);
+
   return (
     <div style={{ padding: " 24px " }}>
       <Row gutter={[16, 16]}>

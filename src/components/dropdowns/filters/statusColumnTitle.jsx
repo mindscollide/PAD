@@ -16,7 +16,6 @@ const StatusColumnTitle = ({
   const [tempSelected, setTempSelected] = useState([]);
 
   const selected = state?.status || [];
-  console.log("hello", selected);
   useEffect(() => {
     if (visible) {
       setTempSelected(selected);

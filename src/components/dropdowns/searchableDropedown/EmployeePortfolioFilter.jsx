@@ -38,7 +38,6 @@ export const EmployeePortfolioFilter = ({ handleSearch, dropdownOptions }) => {
    */
   const handleEmployeeApprovalInputChange = (e, setState) => {
     const { name, value } = e.target;
-    console.log("handleEmployeeApprovalInputChange", name, value);
     // Handle numeric validation for Quantity
     if (name === "Quantity") {
       if (value === "" || allowOnlyNumbers(value)) {
@@ -53,7 +52,6 @@ export const EmployeePortfolioFilter = ({ handleSearch, dropdownOptions }) => {
       [name]: removeFirstSpace(value),
     }));
   };
-  console.log("handleEmployeeApprovalInputChange", employeePortfolioSearch);
 
   return (
     <>

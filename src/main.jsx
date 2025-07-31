@@ -10,19 +10,22 @@ import { NotificationProvider } from "./components/NotificationProvider/Notifica
 import { PortfolioProvider } from "./context/portfolioContax";
 import { ApiProvider } from "./context/ApiContext";
 import { UserProfileProvider } from "./context/userProfileContext";
+import { DashboardProvider } from "./context/dashboardContaxt";
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
     <ApiProvider>
       <UserProfileProvider>
-        <NotificationProvider>
-          <PortfolioProvider>
-            <SidebarProvider>
-              <SearchBarProvider>
-                <RouterProvider router={router} />
-              </SearchBarProvider>
-            </SidebarProvider>
-          </PortfolioProvider>
-        </NotificationProvider>
+        <DashboardProvider>
+          <NotificationProvider>
+            <PortfolioProvider>
+              <SidebarProvider>
+                <SearchBarProvider>
+                  <RouterProvider router={router} />
+                </SearchBarProvider>
+              </SidebarProvider>
+            </PortfolioProvider>
+          </NotificationProvider>
+        </DashboardProvider>
       </UserProfileProvider>
     </ApiProvider>
   </React.StrictMode>
