@@ -120,7 +120,7 @@ export const EmployeeTransactionFilter = ({ handleSearch }) => {
           />
         </Col>
       </Row>
-      <Row gutter={[12, 12]} justify="end">
+      <Row gutter={[12, 12]} justify="end" style={{ marginTop: 16 }}>
         <Col>
           <Space>
             <Button
