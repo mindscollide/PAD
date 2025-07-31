@@ -4,13 +4,14 @@ import style from "./Login.module.css";
 import loginImage from "../../assets/img/login-icon.png";
 import logo from "../../assets/img/pad-logo-text.png";
 import { useNavigate } from "react-router-dom";
-import { Button, TextField } from "../../components";
+import { Button, Loader, TextField } from "../../components";
 import { useNotification } from "../../components/NotificationProvider/NotificationProvider";
 import { CheckCircleOutlined } from "@ant-design/icons";
 import { useApi } from "../../context/ApiContext";
 import Cookies from "js-cookie";
 import { login } from "../../api/loginApi";
 import { useUserProfileContext } from "../../context/userProfileContext";
+import { useGlobalLoader } from "../../context/LoaderContext";
 
 const { Text } = Typography;
 
@@ -21,6 +22,10 @@ const Login = () => {
   const { showNotification } = useNotification();
   const { callApi } = useApi();
   const { setProfile, setRoles } = useUserProfileContext();
+
+  //LoaderContext ka showLoader ko globally access krrahay hain
+  const { showLoader } = useGlobalLoader();
+
   const [formValues, setFormValues] = useState({
     username: "",
     password: "",
@@ -51,6 +56,7 @@ const Login = () => {
         callApi,
         showNotification,
         setRoles,
+        showLoader,
       });
     } finally {
       setDisableClick(false);

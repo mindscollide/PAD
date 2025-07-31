@@ -11,6 +11,8 @@ import { PortfolioProvider } from "./context/portfolioContax";
 import { ApiProvider } from "./context/ApiContext";
 import { UserProfileProvider } from "./context/userProfileContext";
 import { DashboardProvider } from "./context/dashboardContaxt";
+import { Loader } from "./components";
+import { LoaderProvider } from "./context/LoaderContext";
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
     <ApiProvider>
@@ -20,7 +22,10 @@ ReactDOM.createRoot(document.getElementById("root")).render(
             <PortfolioProvider>
               <SidebarProvider>
                 <SearchBarProvider>
-                  <RouterProvider router={router} />
+                  <LoaderProvider>
+                    <RouterProvider router={router} />
+                    <Loader />
+                  </LoaderProvider>
                 </SearchBarProvider>
               </SidebarProvider>
             </PortfolioProvider>
