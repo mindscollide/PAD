@@ -1,26 +1,22 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
+import { useLoaderContext } from "../../context/LoaderContext";
 import PADLoader from "../../assets/img/Loader-2-unscreen.gif";
-import LoaderImage from "../../assets/img/PAD-Loader-Heading.png"; // Make sure this path is correct
+import LoaderImage from "../../assets/img/PAD-Loader-Heading.png";
 import style from "./Loader.module.css";
 
 const Loader = () => {
-  const [showLoader, setShowLoader] = useState(true);
+  const { isLoading } = useLoaderContext();
 
-  useEffect(() => {
-    const timer = setTimeout(() => setShowLoader(false), 225000); // 1 second
-    return () => clearTimeout(timer); // Clean up timer
-  }, []);
-
-  if (!showLoader) return null;
+  if (!isLoading) return null;
 
   return (
     <div className={style["body-loader"]}>
       <div className={style["body-loader-inner"]}>
         <div className={style["logo-loader-wrapper"]}>
-          <img src={PADLoader} width={200} className={style["PAD_Loader"]} />
+          <img src={PADLoader} className={style["PAD_Loader"]} />
           <img
-            className={style["img-fluid"]}
             src={LoaderImage}
+            className={style["img-fluid"]}
             alt="Loading..."
           />
         </div>

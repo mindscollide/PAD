@@ -4,7 +4,7 @@ import style from "./Login.module.css";
 import loginImage from "../../assets/img/login-icon.png";
 import logo from "../../assets/img/pad-logo-text.png";
 import { useNavigate } from "react-router-dom";
-import { Button, TextField } from "../../components";
+import { Button, Loader, TextField } from "../../components";
 import { useNotification } from "../../components/NotificationProvider/NotificationProvider";
 import { CheckCircleOutlined } from "@ant-design/icons";
 import { useApi } from "../../context/ApiContext";
@@ -21,6 +21,8 @@ const Login = () => {
   const { showNotification } = useNotification();
   const { callApi } = useApi();
   const { setProfile, setRoles } = useUserProfileContext();
+  const [loader, setLoader] = useState(false);
+
   const [formValues, setFormValues] = useState({
     username: "",
     password: "",
@@ -51,6 +53,7 @@ const Login = () => {
         callApi,
         showNotification,
         setRoles,
+        setLoader,
       });
     } finally {
       setDisableClick(false);
@@ -141,6 +144,8 @@ const Login = () => {
           </div>
         </Col>
       </Row>
+
+      {loader && <Loader show={loader} />}
     </>
   );
 };

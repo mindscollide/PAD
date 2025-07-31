@@ -24,7 +24,9 @@ export const login = async ({
   callApi,
   showNotification,
   setRoles,
+  setLoader,
 }) => {
+  setLoader(true);
   const res = await callApi({
     requestMethod: import.meta.env.VITE_LOGIN_REQUEST_METHOD,
     endpoint: import.meta.env.VITE_API_AUTH,
@@ -34,10 +36,11 @@ export const login = async ({
       DeviceID: "1",
       DeviceName: "Mobile",
     },
-    withAuth:false
+    withAuth: false,
   });
 
   if (!res?.result?.isExecuted) {
+    setLoader(false);
     return showNotification({
       type: "error",
       title: "Error",
@@ -76,6 +79,7 @@ export const login = async ({
         title: message,
         description: "Please login again.",
       });
+      setLoader(false);
     }
   } else if (res.expired) {
     showNotification({
@@ -83,11 +87,13 @@ export const login = async ({
       title: "Session expired",
       description: "Please login again.",
     });
+    setLoader(false);
   } else {
     showNotification({
       type: "error",
       title: "Login Failed",
       description: getMessage(res.message),
     });
+    setLoader(false);
   }
 };
