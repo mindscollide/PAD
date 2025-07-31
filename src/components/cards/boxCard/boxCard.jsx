@@ -45,7 +45,7 @@ const BoxCard = ({
   const base = mainClassName || "smallShareHomeCard"; // fallback class name
   const navigate = useNavigate();
   const { setSelectedKey } = useSidebarContext();
-
+const normalizedBoxes = Array.isArray(boxes) ? boxes : boxes ? [boxes] : [];
   // Handles button click, navigates based on role and route
   const handleClick = () => {
     navigateToPage(userRole, route, setSelectedKey, navigate);
@@ -71,7 +71,7 @@ const BoxCard = ({
 
       {/* Content boxes */}
       <Row className={styles[`${base}statBoxMain`]} gutter={[16, 16]}>
-        {boxes.map((box, index) => {
+        {normalizedBoxes.map((box, index) => {
           // Get styles from typeColorMap or fallback
           const { bgColor, textLableColor, textCountColor, textAlign } =
             typeColorMap[box.type?.toLowerCase()] || {
@@ -87,7 +87,7 @@ const BoxCard = ({
           // Dynamic column span based on box count
           const totalCols = 24;
           const span =
-            boxes.length > 0 ? Math.floor(totalCols / boxes.length) : 24;
+            normalizedBoxes.length > 0 ? Math.floor(totalCols / normalizedBoxes.length) : 24;
 
           return (
             <Col span={span} key={index}>

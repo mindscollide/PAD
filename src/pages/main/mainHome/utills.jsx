@@ -5,3 +5,6 @@ export const roleKeyMap = {
   5: "headofTradeApproval",
   6: "headofComplianceOfficer",
 };
+export const checkRoleMatch = (roles, targetRoleID) => {
+  return roles.some(role => role.roleID === targetRoleID);
+};
