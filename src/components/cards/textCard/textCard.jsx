@@ -10,13 +10,13 @@ const TextCard = ({ title, subtitle, className }) => {
     const hour = new Date().getHours();
 
     if (hour >= 5 && hour < 12) {
-      return "GOOD MORNING!";
+      return "Good Morning!";
     } else if (hour >= 12 && hour < 17) {
-      return "GOOD AFTERNOON!";
+      return "Good Afternoon!";
     } else if (hour >= 17 && hour < 21) {
-      return "GOOD EVENING!";
+      return "Good Evening!";
     } else {
-      return "GOOD NIGHT!";
+      return "Good Night!";
     }
   };
   return (

@@ -1,6 +1,4 @@
 // src/api/loginApi.js
-import Cookies from "js-cookie";
-
 const responseMessages = {
   ERM_Auth_AuthServiceManager_Login_01: "Login Successful",
   ERM_Auth_AuthServiceManager_Login_02: "Login Failed",
@@ -24,7 +22,9 @@ export const login = async ({
   callApi,
   showNotification,
   setRoles,
+  showLoader,
 }) => {
+  showLoader(true);
   const res = await callApi({
     requestMethod: import.meta.env.VITE_LOGIN_REQUEST_METHOD,
     endpoint: import.meta.env.VITE_API_AUTH,
@@ -34,10 +34,10 @@ export const login = async ({
       DeviceID: "1",
       DeviceName: "Mobile",
     },
-    withAuth:false
+    withAuth: false,
   });
-
   if (!res?.result?.isExecuted) {
+    showLoader(false);
     return showNotification({
       type: "error",
       title: "Error",
@@ -45,37 +45,31 @@ export const login = async ({
     });
   }
 
-  if (res.success && res.responseCode === 200) {
+  if (res.success) {
     const { userAssignedRoles, userToken, userProfileData } = res.result;
     const message = getMessage(res.result.responseMessage);
     const responseCodeKey = res.result.responseMessage;
+    console.log("msg", message);
+    console.log("msg", responseCodeKey);
     if (responseCodeKey === "ERM_Auth_AuthServiceManager_Login_01") {
-      Cookies.set("auth_token", userToken.token, {
-        secure: true,
-        sameSite: "Strict",
-        expires: 1, // 1 day — adjust as needed
-      });
-      Cookies.set("refresh_token", userToken.refreshToken, {
-        secure: true,
-        sameSite: "Strict",
-        expires: 1, // 1 day — adjust as needed
-      });
-      Cookies.set("token_timeout", userToken.tokenTimeOut, {
-        secure: true,
-        sameSite: "Strict",
-        expires: 1, // 1 day — adjust as needed
-      });
+      sessionStorage.setItem("auth_token", userToken.token);
+      sessionStorage.setItem("refresh_token", userToken.refreshToken);
+      sessionStorage.setItem("token_timeout", userToken.tokenTimeOut);
 
       setRoles(userAssignedRoles);
-      localStorage.setItem("auth", "true");
       setProfile(userProfileData);
       navigate("/PAD");
+
+      //Yaha success pa true rakha hai takay GetUserDashBoardStats ki API ka response anay tak loader chalay
+      showLoader(true);
     } else {
       showNotification({
         type: "error",
         title: message,
         description: "Please login again.",
       });
+
+      showLoader(false);
     }
   } else if (res.expired) {
     showNotification({
@@ -83,11 +77,15 @@ export const login = async ({
       title: "Session expired",
       description: "Please login again.",
     });
+
+    showLoader(false);
   } else {
     showNotification({
       type: "error",
       title: "Login Failed",
       description: getMessage(res.message),
     });
+
+    showLoader(false);
   }
 };
