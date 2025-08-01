@@ -1,16 +1,17 @@
-import React, { createContext, useContext, useState } from "react";
+// src/context/ApiContext.jsx
+import React, { createContext, useContext } from "react";
 import axios from "axios";
-import Cookies from "js-cookie";
+import { refreshToken } from "../api/refreshTokenApi";
+import { useNotification } from "../components/NotificationProvider/NotificationProvider";
+import { useGlobalLoader } from "./LoaderContext";
 
 const ApiContext = createContext();
 
 const BASE_URL = import.meta.env.VITE_API_BASE_URL || "https://your-api.com";
 
 export const ApiProvider = ({ children }) => {
-  const [loading, setLoading] = useState(false);
-  const [response, setResponse] = useState(null);
-  const [error, setError] = useState(null);
-  const [expired, setExpired] = useState(false);
+  const { showNotification } = useNotification();
+  const { showLoader } = useGlobalLoader();
 
   const callApi = async ({
     endpoint = "",
@@ -19,19 +20,19 @@ export const ApiProvider = ({ children }) => {
     requestData = {},
     extraFormFields = {},
     headers = {},
-    withAuth = true, // 👈 Pass false if token is NOT required
-    retryOnExpire = false,
-    onExpireRetry = null,
+    withAuth = true,
+    retryOnExpire = true,
   }) => {
-    setLoading(true);
-    setError(null);
-    setExpired(false);
-
     try {
+      showLoader(true);
       let token = "";
       if (withAuth) {
-        token = Cookies.get("auth_token");
+        token = sessionStorage.getItem("auth_token");
+        if (!token) {
+          return { success: false, expired: true };
+        }
       }
+
       const form = new FormData();
       form.append("RequestMethod", requestMethod);
       form.append("RequestData", JSON.stringify(requestData));
@@ -52,19 +53,24 @@ export const ApiProvider = ({ children }) => {
       const res = await axios(config);
       const { responseCode, responseMessage, responseResult } = res.data;
 
+      showLoader(false);
+
       if (responseCode === 200) {
-        setResponse(responseResult);
         return {
           success: true,
           result: responseResult,
-          responseCode,
           responseMessage,
         };
       }
 
-      if (responseCode === 417) {
-        if (retryOnExpire && typeof onExpireRetry === "function") {
-          await onExpireRetry();
+      if (responseCode === 417 && retryOnExpire) {
+        const refreshed = await refreshToken(callApi, {
+          showNotification,
+          showLoader,
+        });
+
+        if (refreshed === true) {
+          // Retry the original request with fresh token
           return await callApi({
             endpoint,
             method,
@@ -73,30 +79,44 @@ export const ApiProvider = ({ children }) => {
             extraFormFields,
             headers,
             withAuth,
-            retryOnExpire: false, // avoid infinite loop
+            retryOnExpire: false, // Prevent infinite loops
           });
         }
 
-        setExpired(true);
-        setError("Session expired");
-        return { success: false, expired: true, responseCode };
+        return { success: false, expired: true };
+      }
+      if (responseCode === 401) {
+        showNotification({
+          type: "error",
+          title: "API Error",
+          description: "Tokens does not match",
+        });
+        return { success: false, expired: true };
+      }
+      return {
+        success: false,
+        message: responseMessage,
+        responseCode,
+      };
+    } catch (err) {
+      showLoader(false);
+      const message = err.response?.data?.responseMessage || err.message;
+
+      if (err.response?.status === 401 || err.response?.status === 403) {
+        return { success: false, expired: true };
       }
 
-      setError(responseMessage || "Unexpected error");
-      return { success: false, message: responseMessage, responseCode };
-    } catch (err) {
-      const message = err.response?.data?.responseMessage || err.message;
-      setError(message);
+      showNotification({
+        type: "error",
+        title: "API Error",
+        description: message,
+      });
       return { success: false, message };
-    } finally {
-      setLoading(false);
     }
   };
 
   return (
-    <ApiContext.Provider value={{ callApi, loading, response, error, expired }}>
-      {children}
-    </ApiContext.Provider>
+    <ApiContext.Provider value={{ callApi }}>{children}</ApiContext.Provider>
   );
 };
 
