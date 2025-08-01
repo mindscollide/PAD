@@ -1,6 +1,4 @@
 // src/api/loginApi.js
-import Cookies from "js-cookie";
-
 const responseMessages = {
   ERM_Auth_AuthServiceManager_Login_01: "Login Successful",
   ERM_Auth_AuthServiceManager_Login_02: "Login Failed",
@@ -38,7 +36,6 @@ export const login = async ({
     },
     withAuth: false,
   });
-
   if (!res?.result?.isExecuted) {
     showLoader(false);
     return showNotification({
@@ -48,29 +45,18 @@ export const login = async ({
     });
   }
 
-  if (res.success && res.responseCode === 200) {
+  if (res.success) {
     const { userAssignedRoles, userToken, userProfileData } = res.result;
     const message = getMessage(res.result.responseMessage);
     const responseCodeKey = res.result.responseMessage;
+    console.log("msg", message);
+    console.log("msg", responseCodeKey);
     if (responseCodeKey === "ERM_Auth_AuthServiceManager_Login_01") {
-      Cookies.set("auth_token", userToken.token, {
-        secure: true,
-        sameSite: "Strict",
-        expires: 1, // 1 day — adjust as needed
-      });
-      Cookies.set("refresh_token", userToken.refreshToken, {
-        secure: true,
-        sameSite: "Strict",
-        expires: 1, // 1 day — adjust as needed
-      });
-      Cookies.set("token_timeout", userToken.tokenTimeOut, {
-        secure: true,
-        sameSite: "Strict",
-        expires: 1, // 1 day — adjust as needed
-      });
+      sessionStorage.setItem("auth_token", userToken.token);
+      sessionStorage.setItem("refresh_token", userToken.refreshToken);
+      sessionStorage.setItem("token_timeout", userToken.tokenTimeOut);
 
       setRoles(userAssignedRoles);
-      localStorage.setItem("auth", "true");
       setProfile(userProfileData);
       navigate("/PAD");
 

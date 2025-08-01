@@ -2,7 +2,7 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 import { RouterProvider } from "react-router-dom";
-import router from "./routes/router"; // ✅ Path to your router.js
+import router from "./routes/router";
 import "./index.css";
 import { SidebarProvider } from "./context/sidebarContaxt";
 import { SearchBarProvider } from "./context/SearchBarContaxt";
@@ -13,28 +13,32 @@ import { UserProfileProvider } from "./context/userProfileContext";
 import { DashboardProvider } from "./context/dashboardContaxt";
 import { Loader } from "./components";
 import { LoaderProvider } from "./context/LoaderContext";
-import { GlobalModalProvider } from "./context/GlobalModalContext";
+
+const RootComponent = () => {
+  return (
+    <NotificationProvider>
+      <LoaderProvider>
+        <ApiProvider>
+          <UserProfileProvider>
+            <DashboardProvider>
+              <PortfolioProvider>
+                <SidebarProvider>
+                  <SearchBarProvider>
+                    <RouterProvider router={router} />
+                    <Loader />
+                  </SearchBarProvider>
+                </SidebarProvider>
+              </PortfolioProvider>
+            </DashboardProvider>
+          </UserProfileProvider>
+        </ApiProvider>
+      </LoaderProvider>
+    </NotificationProvider>
+  );
+};
+
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
-    <ApiProvider>
-      <UserProfileProvider>
-        <DashboardProvider>
-          <NotificationProvider>
-            <PortfolioProvider>
-              <SidebarProvider>
-                <SearchBarProvider>
-                  <GlobalModalProvider>
-                    <LoaderProvider>
-                      <RouterProvider router={router} />
-                      <Loader />
-                    </LoaderProvider>
-                  </GlobalModalProvider>
-                </SearchBarProvider>
-              </SidebarProvider>
-            </PortfolioProvider>
-          </NotificationProvider>
-        </DashboardProvider>
-      </UserProfileProvider>
-    </ApiProvider>
+    <RootComponent />
   </React.StrictMode>
 );

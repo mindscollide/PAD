@@ -9,7 +9,8 @@ import { BoxCard, ReportCard, TextCard } from "../../../components";
 import { GetUserDashBoardStats } from "../../../api/dashboardApi";
 
 // Custom hooks and context
-import useNotification from "antd/es/notification/useNotification";
+import { useNotification } from "../../../components/NotificationProvider/NotificationProvider";
+
 import { useApi } from "../../../context/ApiContext";
 import { useDashboardContext } from "../../../context/dashboardContaxt";
 import { useUserProfileContext } from "../../../context/userProfileContext";
@@ -17,9 +18,12 @@ import { useUserProfileContext } from "../../../context/userProfileContext";
 // Utility for mapping roles to keys
 import { roleKeyMap, checkRoleMatch } from "./utills";
 import { useGlobalLoader } from "../../../context/LoaderContext";
+import { useNavigate } from "react-router-dom";
 
 const Home = () => {
   const { showNotification } = useNotification();
+  const navigate = useNavigate();
+
   const { dashboardData, setDashboardData } = useDashboardContext();
   const { callApi } = useApi();
   const { roles, setRoles } = useUserProfileContext();
@@ -44,7 +48,10 @@ const Home = () => {
           callApi,
           showNotification,
           showLoader,
+          navigate
         });
+        // Handle session expiration
+        console.log("res", data);
         if (!data) return;
 
         // Filter data based on user roles
