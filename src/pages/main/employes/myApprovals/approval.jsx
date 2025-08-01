@@ -12,9 +12,13 @@ import { useNotification } from "../../../../components/NotificationProvider/Not
 import { useGlobalLoader } from "../../../../context/LoaderContext";
 import { useApi } from "../../../../context/ApiContext";
 import { SearchTadeApprovals } from "../../../../api/myApprovalApi";
+import { useGlobalModal } from "../../../../context/GlobalModalContext";
+import EquitiesApproval from "../Modals/EquitiesApprovalModal/EquitiesApproval";
 
 const Approval = () => {
   console.log("Is this My Approval data?");
+  const { showModal, hideModal } = useGlobalModal();
+
   const { showNotification } = useNotification();
   const { showLoader } = useGlobalLoader();
   const { callApi } = useApi();
@@ -92,7 +96,9 @@ const Approval = () => {
     {
       key: "1",
       label: "Equities",
-      onClick: () => console.log("Equities clicked"),
+      onClick: () => {
+        showModal();
+      },
     },
   ];
 
@@ -222,6 +228,7 @@ const Approval = () => {
                 buttonLabel="Add Approval Request"
                 className="dropedown-dark"
               />
+              {showModal ? <EquitiesApproval /> : null}
             </Col>
           </Row>
 

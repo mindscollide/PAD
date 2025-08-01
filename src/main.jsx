@@ -13,6 +13,7 @@ import { UserProfileProvider } from "./context/userProfileContext";
 import { DashboardProvider } from "./context/dashboardContaxt";
 import { Loader } from "./components";
 import { LoaderProvider } from "./context/LoaderContext";
+import { GlobalModalProvider } from "./context/GlobalModalContext";
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
     <ApiProvider>
@@ -22,10 +23,12 @@ ReactDOM.createRoot(document.getElementById("root")).render(
             <PortfolioProvider>
               <SidebarProvider>
                 <SearchBarProvider>
-                  <LoaderProvider>
-                    <RouterProvider router={router} />
-                    <Loader />
-                  </LoaderProvider>
+                  <GlobalModalProvider>
+                    <LoaderProvider>
+                      <RouterProvider router={router} />
+                      <Loader />
+                    </LoaderProvider>
+                  </GlobalModalProvider>
                 </SearchBarProvider>
               </SidebarProvider>
             </PortfolioProvider>
