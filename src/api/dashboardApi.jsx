@@ -1,5 +1,4 @@
 // src/api/dashboardApi.js
-import Cookies from "js-cookie";
 
 // Response code messages
 const responseMessages = {
@@ -17,19 +16,27 @@ export const GetUserDashBoardStats = async ({
   callApi,
   showNotification,
   showLoader,
+  navigate,
 }) => {
   try {
     showLoader(true);
-
     const res = await callApi({
       requestMethod: import.meta.env.VITE_DASHBOARD_DATA_REQUEST_METHOD,
       endpoint: import.meta.env.VITE_API_TRADE,
       requestData: {},
     });
 
-    if (!res?.result?.isExecuted) {
+    if (res.expired) {
+      // Clear tokens and redirect
+      sessionStorage.removeItem("auth_token");
+      sessionStorage.removeItem("refresh_token");
+      sessionStorage.removeItem("token_timeout");
+      navigate("/login");
       showLoader(false);
+      return null;
+    }
 
+    if (!res?.result?.isExecuted) {
       showNotification({
         type: "error",
         title: "Error",
@@ -38,42 +45,29 @@ export const GetUserDashBoardStats = async ({
       return null;
     }
 
-    if (res.success && res.responseCode === 200) {
+    if (res.success) {
       const { responseMessage, userDashBoardStats } = res.result;
 
       if (
         responseMessage ===
         "PAD_Trade_TradeServiceManager_GetUserDashBoardStats_01"
       ) {
-        showLoader(false);
         return userDashBoardStats;
-      } else {
-        showNotification({
-          type: "warning",
-          title: getMessage(responseMessage),
-          description: "No data was returned from the server.",
-        });
-        showLoader(false);
-        return null;
       }
+
+      showNotification({
+        type: "warning",
+        title: getMessage(responseMessage),
+        description: "No data was returned from the server.",
+      });
+      return null;
     }
 
-    if (res.expired) {
-      showNotification({
-        type: "error",
-        title: "Session expired",
-        description: "Please login again.",
-      });
-      showLoader(false);
-    } else {
-      showNotification({
-        type: "error",
-        title: "Fetch Failed",
-        description: getMessage(res.message),
-      });
-      showLoader(false);
-    }
-
+    showNotification({
+      type: "error",
+      title: "Fetch Failed",
+      description: getMessage(res.message),
+    });
     return null;
   } catch (error) {
     showNotification({
@@ -81,7 +75,8 @@ export const GetUserDashBoardStats = async ({
       title: "Error",
       description: "An unexpected error occurred.",
     });
-    showLoader(false);
     return null;
+  } finally {
+    showLoader(false);
   }
 };

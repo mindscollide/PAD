@@ -8,7 +8,6 @@ import { Button, Loader, TextField } from "../../components";
 import { useNotification } from "../../components/NotificationProvider/NotificationProvider";
 import { CheckCircleOutlined } from "@ant-design/icons";
 import { useApi } from "../../context/ApiContext";
-import Cookies from "js-cookie";
 import { login } from "../../api/loginApi";
 import { useUserProfileContext } from "../../context/userProfileContext";
 import { useGlobalLoader } from "../../context/LoaderContext";
