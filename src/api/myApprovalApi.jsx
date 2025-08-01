@@ -20,7 +20,8 @@ export const SearchTadeApprovals = async ({
   filters = {},
 }) => {
   try {
-    showLoader(true);
+    console.log("Fetching approvals...");
+
     const res = await callApi({
       requestMethod: import.meta.env.VITE_SEARCH_APPROVAL_DATA_REQUEST_METHOD,
       endpoint: import.meta.env.VITE_API_TRADE,
@@ -34,6 +35,7 @@ export const SearchTadeApprovals = async ({
         Length: filters.length || 10,
       },
     });
+    console.log("Fetching approvals...",res);
 
     if (!res?.result?.isExecuted) {
       showLoader(false);

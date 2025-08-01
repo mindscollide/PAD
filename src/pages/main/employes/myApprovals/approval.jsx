@@ -13,7 +13,7 @@ import { useGlobalLoader } from "../../../../context/LoaderContext";
 import { useApi } from "../../../../context/ApiContext";
 import { SearchTadeApprovals } from "../../../../api/myApprovalApi";
 import { useGlobalModal } from "../../../../context/GlobalModalContext";
-import EquitiesApproval from "../Modals/EquitiesApprovalModal/EquitiesApproval";
+import EquitiesApproval from "./modal/EquitiesApprovalModal/EquitiesApproval";
 
 const Approval = () => {
   console.log("Is this My Approval data?");
