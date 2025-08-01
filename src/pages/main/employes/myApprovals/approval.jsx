@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Col, Row } from "antd";
 import { Button, ComonDropDown } from "../../../../components";
 import BorderlessTable from "../../../../components/tables/borderlessTable/borderlessTable";
@@ -8,23 +8,26 @@ import PageLayout from "../../../../components/pageContainer/pageContainer";
 import EmptyState from "../../../../components/emptyStates/empty-states";
 import { useSearchBarContext } from "../../../../context/SearchBarContaxt";
 import style from "./approval.module.css";
+import { SearchTadeApprovals } from "../../../../api/myApprovalApi";
+// import { useGlobalModal } from "../../../../context/GlobalModalContext";
+import EquitiesApproval from "./modal/EquitiesApprovalModal/EquitiesApproval";
 import { useNotification } from "../../../../components/NotificationProvider/NotificationProvider";
 import { useGlobalLoader } from "../../../../context/LoaderContext";
 import { useApi } from "../../../../context/ApiContext";
-import { SearchTadeApprovals } from "../../../../api/myApprovalApi";
-import { useGlobalModal } from "../../../../context/GlobalModalContext";
-import EquitiesApproval from "./modal/EquitiesApprovalModal/EquitiesApproval";
+import { useNavigate } from "react-router-dom";
+import { useMyApproval } from "../../../../context/myApprovalContaxt";
 
 const Approval = () => {
-  console.log("Is this My Approval data?");
-  const { showModal, hideModal } = useGlobalModal();
+  const navigate = useNavigate();
+  const hasFetched = useRef(false);
+  const hasFetchedOnTriiger = useRef(false);
+
+  // const { showModal, hideModal } = useGlobalModal();
 
   const { showNotification } = useNotification();
-  const { showLoader } = useGlobalLoader();
+  const { isLoading, showLoader } = useGlobalLoader();
   const { callApi } = useApi();
-
-  const [approvalData, setApprovalData] = useState([]);
-  console.log(approvalData, "CheckApprovalDataCheckNow");
+  const { employeeMyApproval, setIsEmployeeMyApproval } = useMyApproval();
 
   // Global state for filter/search values
   const {
@@ -32,52 +35,10 @@ const Approval = () => {
     setEmployeeMyApprovalSearch,
     resetEmployeeMyApprovalSearch,
   } = useSearchBarContext();
-  console.log(employeeMyApprovalSearch, "employeeMyApprovalSearch");
-
-  useEffect(() => {
-    const fetchApprovals = async () => {
-      console.log("Fetching approvals...");
-      showLoader(true);
-
-      const data = await SearchTadeApprovals({
-        callApi,
-        showNotification,
-        showLoader,
-        filters: employeeMyApprovalSearch, // ✅ pass filters
-      });
-
-      showLoader(false);
-
-      if (data?.length > 0) {
-        const transformed = data.map((item) => ({
-          id: item.approvalID,
-          instrument: item.instrumentName,
-          type: item.tradeType?.typeName || "-",
-          requestDateTime: `${item.requestDate} | ${item.requestTime}`,
-          status: item.approvalStatus?.approvalStatusName || "-",
-          quantity: Number(item.quantity) || 0,
-          timeRemaining: item.timeRemainingToTrade || "-",
-        }));
-
-        setApprovalData(transformed);
-      } else {
-        setApprovalData([]);
-      }
-    };
-
-    if (employeeMyApprovalSearch.filterTrigger) {
-      fetchApprovals();
-
-      // Reset trigger
-      setEmployeeMyApprovalSearch((prev) => ({
-        ...prev,
-        filterTrigger: false,
-      }));
-    }
-  }, [employeeMyApprovalSearch.filterTrigger]);
 
   // Sort state for AntD Table
   const [sortedInfo, setSortedInfo] = useState({});
+  const [approvalData, setApprovalData] = useState([]);
 
   // Confirmed filters displayed as tags
   const [submittedFilters, setSubmittedFilters] = useState([]);
@@ -89,16 +50,15 @@ const Approval = () => {
     { key: "date", label: "Date" },
     { key: "quantity", label: "Quantity" },
   ];
-  console.log(submittedFilters, "submittedFilterssubmittedFilters");
 
   // Dropdown menu items for Add Approval Request
   const menuItems = [
     {
       key: "1",
       label: "Equities",
-      onClick: () => {
-        showModal();
-      },
+      // onClick: () => {
+      //   showModal();
+      // },
     },
   ];
 
@@ -109,6 +69,37 @@ const Approval = () => {
     employeeMyApprovalSearch,
     setEmployeeMyApprovalSearch
   );
+  const fetchApprovals = async () => {
+    showLoader(true);
+    let requestdata = {
+      InstrumentName:
+        employeeMyApprovalSearch.instrumentName ||
+        employeeMyApprovalSearch.mainInstrumentName,
+      StartDate: employeeMyApprovalSearch.date || "",
+      Quantity: employeeMyApprovalSearch.quantity || 0,
+      StatusIds: employeeMyApprovalSearch.status || [],
+      TypeIds: employeeMyApprovalSearch.type || [],
+      PageNumber: employeeMyApprovalSearch.pageNumber || 1,
+      Length: employeeMyApprovalSearch.pageSize || 10,
+    };
+    console.log("handleOk", requestdata);
+
+    const data = await SearchTadeApprovals({
+      callApi,
+      showNotification,
+      showLoader,
+      requestdata, // ✅ pass filters
+      navigate,
+    });
+    setIsEmployeeMyApproval(data);
+  };
+  useEffect(() => {
+    //  this is only used for not to recall more then 1 time
+    if (hasFetched.current) return;
+    hasFetched.current = true;
+
+    fetchApprovals();
+  }, []);
 
   /**
    * Removes a filter from both context and UI tags
@@ -171,6 +162,11 @@ const Approval = () => {
         ...prev,
         filterTrigger: false,
       }));
+      if (hasFetchedOnTriiger.current) {
+        fetchApprovals();
+      } else {
+        hasFetchedOnTriiger.current = true;
+      }
     }
   }, [employeeMyApprovalSearch.filterTrigger]);
 
@@ -192,7 +188,21 @@ const Approval = () => {
       );
     }
   }, []);
-
+  useEffect(() => {
+    if (employeeMyApproval) {
+      const transformed = employeeMyApproval?.map((item) => ({
+        id: item.approvalID,
+        instrument: item.instrumentName,
+        type: item.tradeType?.typeName || "-",
+        requestDateTime: `${item.requestDate} | ${item.requestTime}`,
+        status: item.approvalStatus?.approvalStatusName || "-",
+        quantity: Number(item.quantity) || 0,
+        timeRemaining: item.timeRemainingToTrade || "-",
+      }));
+      console.log("handleOk sss", transformed);
+      setApprovalData(transformed);
+    }
+  }, [employeeMyApproval]);
   return (
     <>
       {/* Filter Tags Display */}
@@ -228,7 +238,7 @@ const Approval = () => {
                 buttonLabel="Add Approval Request"
                 className="dropedown-dark"
               />
-              {showModal ? <EquitiesApproval /> : null}
+              {/* {showModal ? <EquitiesApproval /> : null} */}
             </Col>
           </Row>
 

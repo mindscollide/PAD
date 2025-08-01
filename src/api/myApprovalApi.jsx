@@ -1,5 +1,4 @@
 // src/api/dashboardApi.js
-import Cookies from "js-cookie";
 
 // Response code messages
 const responseMessages = {
@@ -17,79 +16,70 @@ export const SearchTadeApprovals = async ({
   callApi,
   showNotification,
   showLoader,
-  filters = {},
+  requestdata,
+  navigate,
 }) => {
   try {
-    console.log("Fetching approvals...");
+    console.log("handleOk", requestdata);
 
     const res = await callApi({
       requestMethod: import.meta.env.VITE_SEARCH_APPROVAL_DATA_REQUEST_METHOD,
       endpoint: import.meta.env.VITE_API_TRADE,
-      requestData: {
-        InstrumentName: filters.instrumentName || "",
-        StartDate: filters.date || "",
-        Quantity: filters.quantity || 0,
-        StatusIds: filters.statusIds || [],
-        TypeIds: filters.typeIds || [],
-        PageNumber: filters.pageNumber || 1,
-        Length: filters.length || 10,
-      },
+      requestData: requestdata,
     });
-    console.log("Fetching approvals...",res);
+    console.log("Fetching approvals...", res);
+
+    if (res.expired) {
+      // Clear tokens and redirect
+      sessionStorage.removeItem("auth_token");
+      sessionStorage.removeItem("refresh_token");
+      sessionStorage.removeItem("token_timeout");
+      navigate("/login");
+      showLoader(false);
+      return null;
+    }
 
     if (!res?.result?.isExecuted) {
-      showLoader(false);
       showNotification({
         type: "error",
         title: "Error",
         description: "Something went wrong. Please try again.",
       });
-      return [];
+      return null;
     }
 
-    if (res.success && res.responseCode === 200) {
+    if (res.success) {
       const { responseMessage, myTradeApprovals } = res.result;
 
       if (
         responseMessage ===
         "PAD_Trade_TradeServiceManager_SearchTradeApprovals_01"
       ) {
-        showLoader(false);
         return myTradeApprovals || [];
-      } else {
-        showNotification({
-          type: "warning",
-          title: getMessage(responseMessage),
-          description: "No data was returned from the server.",
-        });
-        showLoader;
-        return [];
       }
+
+      showNotification({
+        type: "warning",
+        title: getMessage(responseMessage),
+        description: "No data was returned from the server.",
+      });
+      return null;
     }
 
-    if (res.expired) {
-      showNotification({
-        type: "error",
-        title: "Session expired",
-        description: "Please login again.",
-      });
-      showLoader(false);
-    } else {
-      showNotification({
-        type: "error",
-        title: "Fetch Failed",
-        description: getMessage(res.message),
-      });
-    }
-    showLoader(false);
-    return [];
+    showNotification({
+      type: "error",
+      title: "Fetch Failed",
+      description: getMessage(res.message),
+    });
+    return null;
   } catch (error) {
     showNotification({
       type: "error",
       title: "Error",
       description: "An unexpected error occurred.",
     });
+    return null;
+  } finally {
     showLoader(false);
-    return [];
   }
 };
