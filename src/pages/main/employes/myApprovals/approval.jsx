@@ -8,110 +8,19 @@ import PageLayout from "../../../../components/pageContainer/pageContainer";
 import EmptyState from "../../../../components/emptyStates/empty-states";
 import { useSearchBarContext } from "../../../../context/SearchBarContaxt";
 import style from "./approval.module.css";
+import { useNotification } from "../../../../components/NotificationProvider/NotificationProvider";
+import { useGlobalLoader } from "../../../../context/LoaderContext";
+import { useApi } from "../../../../context/ApiContext";
+import { SearchTadeApprovals } from "../../../../api/myApprovalApi";
 
 const Approval = () => {
-  // Sample static approval request data
-  let data = [
-    {
-      id: 1,
-      instrument: "PSO-NOV",
-      type: "Buy",
-      requestDateTime: "2024-10-11 | 10:00 pm",
-      status: "Pending",
-      quantity: 20000,
-      timeRemaining: "-",
-      isEscalated: false,
-    },
-    {
-      id: 2,
-      instrument: "PSO-OCT",
-      type: "Sell",
-      requestDateTime: "2024-10-11 | 10:00 pm",
-      status: "Approved",
-      quantity: 20000,
-      timeRemaining: "02 days 20 hours left",
-      isEscalated: false,
-    },
-    {
-      id: 3,
-      instrument: "PRL-OCT",
-      type: "Buy",
-      requestDateTime: "2024-10-11 | 10:00 pm",
-      status: "Not Traded",
-      quantity: 40000,
-      timeRemaining: "-",
-      isEscalated: true,
-    },
-    {
-      id: 4,
-      instrument: "PRL-OCT",
-      type: "Buy",
-      requestDateTime: "2024-10-11 | 10:00 pm",
-      status: "Resubmitted",
-      quantity: 20000,
-      timeRemaining: "-",
-      isEscalated: true,
-    },
-    {
-      id: 5,
-      instrument: "PSO-OCT",
-      type: "Sell",
-      requestDateTime: "2024-10-11 | 10:00 pm",
-      status: "Approved",
-      quantity: 20000,
-      timeRemaining: "02 days 20 hours left",
-    },
-    {
-      id: 6,
-      instrument: "PRL-OCT",
-      type: "Buy",
-      requestDateTime: "2024-10-11 | 10:00 pm",
-      status: "Not Traded",
-      quantity: 40000,
-      timeRemaining: "-",
-      isEscalated: true,
-    },
-    {
-      id: 7,
-      instrument: "PRL-OCT",
-      type: "Buy",
-      requestDateTime: "2024-10-11 | 10:00 pm",
-      status: "Resubmitted",
-      quantity: 20000,
-      timeRemaining: "-",
-      isEscalated: true,
-    },
-    {
-      id: 8,
-      instrument: "PSO-OCT",
-      type: "Sell",
-      requestDateTime: "2024-10-11 | 10:00 pm",
-      status: "Approved",
-      quantity: 20000,
-      timeRemaining: "02 days 20 hours left",
-      isEscalated: true,
-    },
-    {
-      id: 9,
-      instrument: "PRL-OCT",
-      type: "Buy",
-      requestDateTime: "2024-10-11 | 10:00 pm",
-      status: "Not Traded",
-      quantity: 40000,
-      timeRemaining: "-",
-      isEscalated: true,
-    },
-    {
-      id: 10,
-      instrument: "PRL-OAACT",
-      type: "Buy",
-      requestDateTime: "2024-10-11 | 10:00 pm",
-      status: "Resubmitted",
-      quantity: 20000,
-      timeRemaining: "-",
-      isEscalated: false,
-    },
-  ];
+  console.log("Is this My Approval data?");
+  const { showNotification } = useNotification();
+  const { showLoader } = useGlobalLoader();
+  const { callApi } = useApi();
+
+  const [approvalData, setApprovalData] = useState([]);
+  console.log(approvalData, "CheckApprovalDataCheckNow");
 
   // Global state for filter/search values
   const {
@@ -119,6 +28,49 @@ const Approval = () => {
     setEmployeeMyApprovalSearch,
     resetEmployeeMyApprovalSearch,
   } = useSearchBarContext();
+  console.log(employeeMyApprovalSearch, "employeeMyApprovalSearch");
+
+  useEffect(() => {
+    const fetchApprovals = async () => {
+      console.log("Fetching approvals...");
+      showLoader(true);
+
+      const data = await SearchTadeApprovals({
+        callApi,
+        showNotification,
+        showLoader,
+        filters: employeeMyApprovalSearch, // ✅ pass filters
+      });
+
+      showLoader(false);
+
+      if (data?.length > 0) {
+        const transformed = data.map((item) => ({
+          id: item.approvalID,
+          instrument: item.instrumentName,
+          type: item.tradeType?.typeName || "-",
+          requestDateTime: `${item.requestDate} | ${item.requestTime}`,
+          status: item.approvalStatus?.approvalStatusName || "-",
+          quantity: Number(item.quantity) || 0,
+          timeRemaining: item.timeRemainingToTrade || "-",
+        }));
+
+        setApprovalData(transformed);
+      } else {
+        setApprovalData([]);
+      }
+    };
+
+    if (employeeMyApprovalSearch.filterTrigger) {
+      fetchApprovals();
+
+      // Reset trigger
+      setEmployeeMyApprovalSearch((prev) => ({
+        ...prev,
+        filterTrigger: false,
+      }));
+    }
+  }, [employeeMyApprovalSearch.filterTrigger]);
 
   // Sort state for AntD Table
   const [sortedInfo, setSortedInfo] = useState({});
@@ -133,6 +85,7 @@ const Approval = () => {
     { key: "date", label: "Date" },
     { key: "quantity", label: "Quantity" },
   ];
+  console.log(submittedFilters, "submittedFilterssubmittedFilters");
 
   // Dropdown menu items for Add Approval Request
   const menuItems = [
@@ -154,13 +107,43 @@ const Approval = () => {
   /**
    * Removes a filter from both context and UI tags
    */
-  const handleRemoveFilter = (key) => {
-    setEmployeeMyApprovalSearch((prev) => ({
-      ...prev,
-      [key]: "",
-    }));
 
-    setSubmittedFilters((prev) => prev.filter((item) => item.key !== key));
+  const handleRemoveFilter = (key) => {
+    // Pehlay puranay filters copy karo aur jis key ko remove karna hai usko empty string set karo
+    const updatedFilters = {
+      ...employeeMyApprovalSearch,
+      [key]: "",
+    };
+
+    // SubmittedFilters array mein se sirf woh filters rakho jo remove nahi kiya gaya
+    const updatedSubmitted = submittedFilters.filter(
+      (item) => item.key !== key
+    );
+
+    // SubmittedFilters update karo
+    setSubmittedFilters(updatedSubmitted);
+
+    // Filter state update karo, agar sare filters hat chuke hain toh filterTrigger true kar do
+    setEmployeeMyApprovalSearch({
+      ...updatedFilters,
+      filterTrigger: updatedSubmitted.length === 0, // Trigger fetch if this was the last tag
+    });
+
+    // Agar last tag bhi remove ho gaya hai (yani sab filters hat gaye)
+    if (updatedSubmitted.length === 0) {
+      // Toh search filters ko bilkul default values par reset kar do
+      setEmployeeMyApprovalSearch({
+        instrumentName: "",
+        mainInstrumentName: "",
+        date: "",
+        quantity: "",
+        statusIds: [],
+        typeIds: [],
+        pageNumber: 1,
+        length: 10,
+        filterTrigger: true, // filterTrigger ko true kar ke API call karni hai dobara
+      });
+    }
   };
 
   /**
@@ -185,24 +168,24 @@ const Approval = () => {
     }
   }, [employeeMyApprovalSearch.filterTrigger]);
 
-   useEffect(() => {
-      try {
-        // Get browser navigation entries (used to detect reload)
-        const navigationEntries = performance.getEntriesByType("navigation");
-        if (navigationEntries.length > 0) {
-          const navigationType = navigationEntries[0].type;
-          if (navigationType === "reload") {
-            // Check localStorage for previously saved selectedKey
-            resetEmployeeMyApprovalSearch();
-          }
+  useEffect(() => {
+    try {
+      // Get browser navigation entries (used to detect reload)
+      const navigationEntries = performance.getEntriesByType("navigation");
+      if (navigationEntries.length > 0) {
+        const navigationType = navigationEntries[0].type;
+        if (navigationType === "reload") {
+          // Check localStorage for previously saved selectedKey
+          resetEmployeeMyApprovalSearch();
         }
-      } catch (error) {
-        console.error(
-          "❌ Error detecting page reload or restoring state:",
-          error
-        );
       }
-    }, []);
+    } catch (error) {
+      console.error(
+        "❌ Error detecting page reload or restoring state:",
+        error
+      );
+    }
+  }, []);
 
   return (
     <>
@@ -243,9 +226,9 @@ const Approval = () => {
           </Row>
 
           {/* Table or Empty State */}
-          {data && data.length > 0 ? (
+          {approvalData && approvalData.length > 0 ? (
             <BorderlessTable
-              rows={data}
+              rows={approvalData}
               columns={columns}
               scroll={{ x: "max-content", y: 550 }}
               classNameTable="border-less-table-orange"
