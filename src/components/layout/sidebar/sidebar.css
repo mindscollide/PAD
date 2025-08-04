@@ -194,3 +194,17 @@
   padding: 5px;
   border-style: none;
 }
+
+:where(.custom-menu-inline-collapsed) 
+  .custom-menu-item .custom-menu-title-content,
+:where(.custom-menu-inline-collapsed) 
+  .custom-menu-submenu-title .custom-menu-title-content {
+  display: none !important;
+}
+
+/* Give top margin to the FAQ spacer group */
+.custom-menu .faq-spacer-group {
+  margin-top: 24px;
+  height: 1px;
+  background: transparent; /* Optional: visual separator if you want */
+}
