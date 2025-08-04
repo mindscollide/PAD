@@ -329,6 +329,12 @@ const sidebarItems = (collapsed, userRoles = [], selectedKey) => {
     }
     resultItems.push(...section.items);
   });
+  // Add Spacer before FAQ
+  resultItems.push({
+    key: "faq-spacer",
+    type: "group",
+    className: "faq-spacer-group", // You can target this in CSS
+  });
 
   // Add FAQ item
   resultItems.push({

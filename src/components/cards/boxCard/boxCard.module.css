@@ -33,7 +33,7 @@
   flex-direction: column;
   justify-content: space-between;
   border: 0.87px solid #b4b4b4;
-  margin-bottom: 20px;
+  margin-bottom: 18px;
 }
 
 .smallShareHomeCardcardHeader {
@@ -106,7 +106,7 @@
   flex-direction: column;
   justify-content: space-between;
   border: 0.87px solid #b4b4b4;
-  margin-bottom: 20px;
+  margin-bottom: 18px;
 }
 
 .mediumHomeCardcardHeader {
@@ -184,7 +184,7 @@
   flex-direction: column;
   justify-content: space-between;
   border: 0.87px solid #b4b4b4;
-  margin-bottom: 20px;
+  margin-bottom: 18px;
 }
 
 .mediumHomeSideCardcardHeader {

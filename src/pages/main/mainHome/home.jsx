@@ -78,7 +78,7 @@ const Home = () => {
   console.log("Failed to fetch home summary", dashboardData);
 
   return (
-    <div style={{ padding: " 24px " }}>
+    <div style={{ padding: " 16px 24px 0px 24px " }}>
       {checkRoleMatch(roles, 2) && (
         <>
           <Row gutter={[16, 16]}>
