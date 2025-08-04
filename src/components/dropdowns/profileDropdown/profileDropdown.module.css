@@ -16,6 +16,7 @@
   background: #ffffff;
   color: #424242;
   /* margin-right: auto; */
+  margin-top: 35px;
 }
 
 .ant-dropdown .ant-dropdown-menu .ant-dropdown-menu-title-content > a {
@@ -108,7 +109,7 @@
 }
 
 .open {
-  transform: rotate(190deg);
+  transform: rotate(180deg);
 }
 /* li.ant-dropdown-menu-item.ant-dropdown-menu-item-only-child {
   background: transparent !important;

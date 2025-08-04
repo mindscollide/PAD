@@ -15,7 +15,6 @@ const Headers = () => {
     useSidebarContext();
   const location = useLocation();
 
-
   return (
     <Header className={style["custom-header"]}>
       <Row
@@ -24,18 +23,18 @@ const Headers = () => {
         className={style["full-width-row"]}
       >
         {/* Left: Logo */}
-        <Col xs={24} sm={24} md={24} lg={4}>
-            <img
-              onClick={() => {
-                navigate("/PAD");
-                setSelectedKey("");
-              }}
-              src={Logo}
-              alt="logo"
-              className={style["logo"]}
-            />
+        <Col xs={24} sm={24} md={24} lg={4} style={{ marginTop: 19.82 }}>
+          <img
+            onClick={() => {
+              navigate("/PAD");
+              setSelectedKey("");
+            }}
+            src={Logo}
+            alt="logo"
+            className={style["logo"]}
+          />
         </Col>
-        <Col xs={24} sm={24} md={24} lg={20} style={{ marginTop: "17px" }}>
+        <Col xs={24} sm={24} md={24} lg={20}>
           <Row gutter={[16, 16]}>
             <Col xs={24} sm={24} md={24} lg={16}>
               {location.pathname !== "/PAD" && <SearchWithFilter />}
@@ -46,7 +45,6 @@ const Headers = () => {
             <Col xs={24} sm={14} md={10} lg={6}>
               <ProfileDropdown />
             </Col>
-         
           </Row>
 
           {/* </div> */}

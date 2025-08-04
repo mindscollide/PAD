@@ -4,7 +4,7 @@
 
 .custom-header {
   cursor: pointer;
-  background-color: #f3faff;
+  background-color: transparent;
   padding: 0px 25px;
   height: 10vh;
   display: flex;
@@ -17,7 +17,8 @@
 
 /* Logo container */
 .logo {
-  height: 69px;
+  /* height: 69px; */
+  margin-top: 19.82px !important;
   object-fit: contain;
 }
 
@@ -39,7 +40,7 @@
 /* Desktop and up: wider padding or spacing if needed */
 @media (min-width: 1200px) {
   .custom-header {
-    padding: 0 32px;
+    padding: 0px 40px 0px 23px;
   }
 }
 img.logo {

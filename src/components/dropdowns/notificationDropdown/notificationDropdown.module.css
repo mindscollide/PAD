@@ -21,11 +21,12 @@
   position: relative; /* For absolute positioning of child elements */
   border: 1px solid #b4b4b4;
   transition: background-color 0.3s; /* Smooth transition for hover effects */
+  margin-top: 35px;
 }
 
 /* Hover state for trigger container */
 .dropdown-trigger-container:hover {
-  background: var(--White-Hover, #F3F3F3);
+  background: var(--White-Hover, #f3f3f3);
   transform: rotate(0deg);
   border: 1px solid #b4b4b4;
   box-shadow: 4px 4px 6px 0px #00000033;
@@ -33,6 +34,10 @@
 
 /* Active/open state for trigger container */
 .dropdown-open {
+  background: var(--Blue-V1, #30426a);
+  border: 1px solid var(--Blue-V1, #30426a);
+}
+.dropdown-open.dropdown-trigger-container:hover {
   background: var(--Blue-V1, #30426a);
   border: 1px solid var(--Blue-V1, #30426a);
 }

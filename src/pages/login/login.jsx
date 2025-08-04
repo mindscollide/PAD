@@ -105,7 +105,7 @@ const Login = () => {
                 <Form.Item
                   name="password"
                   rules={[
-                    { required: true, message: "Please input your password" },
+                    { required: true, message: "Please enter your password" },
                   ]}
                 >
                   <TextField
