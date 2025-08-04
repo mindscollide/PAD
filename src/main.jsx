@@ -14,6 +14,7 @@ import { DashboardProvider } from "./context/dashboardContaxt";
 import { Loader } from "./components";
 import { LoaderProvider } from "./context/LoaderContext";
 import { MyApprovalProvider } from "./context/myApprovalContaxt";
+import { GlobalModalProvider } from "./context/GlobalModalContext";
 
 const RootComponent = () => {
   return (
@@ -26,8 +27,10 @@ const RootComponent = () => {
                 <PortfolioProvider>
                   <SidebarProvider>
                     <SearchBarProvider>
-                      <RouterProvider router={router} />
-                      <Loader />
+                      <GlobalModalProvider>
+                        <RouterProvider router={router} />
+                        <Loader />
+                      </GlobalModalProvider>
                     </SearchBarProvider>
                   </SidebarProvider>
                 </PortfolioProvider>

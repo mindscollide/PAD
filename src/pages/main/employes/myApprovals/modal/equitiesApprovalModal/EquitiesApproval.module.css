@@ -1,0 +1,106 @@
+.selectinstrumentclass :global(.ant-select-selector) {
+  height: 56px !important;
+  width: 100% !important;
+  border-radius: 6.95px !important;
+  border: 0.87px solid #717171 !important;
+  display: flex;
+  align-items: center;
+}
+
+.MainClassOfApprovals {
+  padding: 10px 30px !important;
+}
+
+.instruLabel {
+  font-family: "Switzer Variable" !important;
+  color: #30426a;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.TextFieldOfQuantity {
+  margin: 0% !important;
+}
+
+.mt3 {
+  margin-top: 3rem;
+}
+
+.mt1 {
+  margin-top: 1rem;
+}
+
+.linemanagerBackground {
+  background-color: #fff1e7 !important;
+  height: 79px !important;
+  width: 700.83px !important;
+  border-radius: 7px !important;
+  display: grid !important;
+  align-items: center !important;
+}
+
+.lineManagername {
+  margin: 0 !important;
+  font-size: 17.7287px;
+  font-family: "Switzer Variable";
+  font-style: normal;
+  color: #424242 !important;
+  padding: 0px 20px !important;
+}
+
+.instruLabelForManager {
+  font-family: "Switzer Variable" !important;
+  color: #30426a;
+  font-size: 14px;
+  font-weight: 700;
+  padding: 0px 20px !important;
+  margin-top: 15px !important;
+}
+
+.approvalHeading {
+  font-family: "Switzer Variable" !important;
+  font-size: 26px;
+  font-weight: 500;
+  color: #30426a;
+}
+
+.approvalEquities {
+  font-family: "Switzer Variable" !important;
+  font-size: 26px;
+  font-weight: 700;
+  color: #30426a;
+}
+
+.mainButtonDiv {
+  margin-bottom: 15px;
+  padding: 0px 20px !important;
+}
+
+.mtopPx {
+  margin-top: 8px !important;
+}
+
+.instrumentLabel {
+  font-family: "Switzer Variable" !important;
+  color: #30426a !important;
+  font-size: 15px !important;
+  font-weight: 700 !important;
+}
+
+.checkboxSelect {
+  width: 100% !important;
+  height: 56px !important;
+  display: flex;
+  align-items: center !important;
+  border: 0.87px solid #717171 !important;
+  border-radius: 6.95px !important;
+  margin-top: 3px;
+}
+
+.typeLabel {
+  font-family: "Switzer Variable" !important;
+  color: #30426a !important;
+  font-size: 15px !important;
+  font-weight: 700 !important;
+}
+

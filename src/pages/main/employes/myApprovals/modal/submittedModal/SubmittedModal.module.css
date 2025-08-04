@@ -1,0 +1,26 @@
+.SubmittedText {
+  font-size: 50px !important;
+  font-weight: 700;
+  font-family: "Switzer Variable";
+  color: #30426a;
+}
+
+.submittedTextSubHeading {
+  font-size: 20px !important;
+  font-weight: 500;
+  font-family: "Switzer Variable";
+  color: #424242 !important;
+}
+
+.SubmittedCenteralized {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 60px 20px; /* Optional spacing */
+}
+
+.mainButtonDiv {
+  margin-top: 30px !important;
+}

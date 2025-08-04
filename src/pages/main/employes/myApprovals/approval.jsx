@@ -16,13 +16,14 @@ import { useGlobalLoader } from "../../../../context/LoaderContext";
 import { useApi } from "../../../../context/ApiContext";
 import { useNavigate } from "react-router-dom";
 import { useMyApproval } from "../../../../context/myApprovalContaxt";
+import { useGlobalModal } from "../../../../context/GlobalModalContext";
 
 const Approval = () => {
   const navigate = useNavigate();
   const hasFetched = useRef(false);
   const hasFetchedOnTriiger = useRef(false);
 
-  // const { showModal, hideModal } = useGlobalModal();
+  const { showModal, hideModal, isEquitiesModalVisible } = useGlobalModal();
 
   const { showNotification } = useNotification();
   const { isLoading, showLoader } = useGlobalLoader();
@@ -56,9 +57,9 @@ const Approval = () => {
     {
       key: "1",
       label: "Equities",
-      // onClick: () => {
-      //   showModal();
-      // },
+      onClick: () => {
+        showModal();
+      },
     },
   ];
 
@@ -238,7 +239,6 @@ const Approval = () => {
                 buttonLabel="Add Approval Request"
                 className="dropedown-dark"
               />
-              {/* {showModal ? <EquitiesApproval /> : null} */}
             </Col>
           </Row>
 
@@ -258,6 +258,7 @@ const Approval = () => {
           )}
         </div>
       </PageLayout>
+      {isEquitiesModalVisible && <EquitiesApproval />}
     </>
   );
 };
