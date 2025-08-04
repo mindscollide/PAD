@@ -46,6 +46,7 @@
  */
 .small-light-button {
   /* width: 120px !important; */
+  padding: 0px 40px !important;
   height: 38px !important;
   background: #ffffff !important;
   border: 1px solid #717171 !important;
@@ -81,6 +82,7 @@
  */
 .small-card-light-button {
   /* width: 165.8px; */
+  padding: 0px 40px !important;
   height: 37.3px;
   opacity: 1;
   border-radius: 6.95px;
@@ -116,6 +118,7 @@
  */
 .small-dark-button {
   /* width: 120px !important; */
+  padding: 0px 40px !important;
   height: 38px !important;
   background: var(--Blue-V1, #30426a) !important;
   border: 1px solid var(--Blue-V1, #30426a) !important;
@@ -154,6 +157,7 @@
  */
 .small-light-left-icon-button {
   /* width: 143px !important; */
+  padding: 0px 40px !important;
   height: 38px !important;
   background: #ffffff !important;
   border: 1px solid #717171 !important;
@@ -201,6 +205,7 @@
  */
 .small-dark-left-icon-button {
   /* width: 143px !important; */
+  padding: 0px 40px !important;
   height: 38px !important;
   background: var(--Blue-V1, #30426a) !important;
   border: 1px solid var(--Blue-V1, #30426a) !important;
@@ -249,6 +254,7 @@ span.ant-btn-icon {
  */
 .small-light-right-icon-button {
   /* width: 143px !important; */
+  padding: 0px 40px !important;
   height: 38px !important;
   background: #ffffff !important;
   border: 1px solid #717171 !important;
@@ -296,6 +302,7 @@ span.ant-btn-icon {
  */
 .small-dark-right-icon-button {
   /* width: 143px !important; */
+  padding: 0px 40px !important;
   height: 38px !important;
   background: var(--Blue-V1, #30426a) !important;
   border: 1px solid var(--Blue-V1, #30426a) !important;
@@ -347,6 +354,7 @@ span.ant-btn-icon {
  */
 .big-light-button {
   /* width: 140px !important; */
+  padding: 0px 40px !important;
   height: 46px !important;
   background: #ffffff !important;
   border: 1px solid #717171 !important;
@@ -378,6 +386,7 @@ span.ant-btn-icon {
  */
 .big-dark-button {
   /* width: 140px !important; */
+  padding: 0px 40px !important;
   height: 46px !important;
   background: var(--Blue-V1, #30426a) !important;
   border: 1px solid var(--Blue-V1, #30426a) !important;
@@ -415,6 +424,7 @@ span.ant-btn-icon {
  */
 .big-light-left-icon-button {
   /* width: 169px !important; */
+  padding: 0px 40px !important;
   height: 46px !important;
   background: #ffffff !important;
   border: 1px solid #717171 !important;
@@ -427,7 +437,6 @@ span.ant-btn-icon {
   justify-content: center !important;
   align-items: center !important;
   gap: 8px !important;
-  padding: 0 12px !important;
   cursor: pointer !important;
   transition: all 0.2s ease !important;
 }
@@ -472,7 +481,8 @@ span.ant-btn-icon {
   justify-content: center !important;
   align-items: center !important;
   gap: 8px !important;
-  padding: 0 12px !important;
+  padding: 0px 40px !important;
+
   cursor: pointer !important;
   transition: all 0.2s ease !important;
 }
@@ -517,7 +527,8 @@ span.ant-btn-icon {
   justify-content: center !important;
   align-items: center !important;
   gap: 8px !important;
-  padding: 0 12px !important;
+  padding: 0px 40px !important;
+
   cursor: pointer !important;
   transition: all 0.2s ease !important;
 }
@@ -564,7 +575,8 @@ span.ant-btn-icon {
   justify-content: center !important;
   align-items: center !important;
   gap: 8px !important;
-  padding: 0 12px !important;
+  padding: 0px 40px !important;
+
   cursor: pointer !important;
   transition: all 0.2s ease !important;
 }
@@ -606,7 +618,8 @@ span.ant-btn-icon {
   justify-content: center !important;
   align-items: center !important;
   gap: 8px !important;
-  padding: 0 12px !important;
+  padding: 0px 40px !important;
+
   cursor: pointer !important;
   transition: all 0.2s ease !important;
   background: var(--Blue-V1, #f67f29) !important;
@@ -635,7 +648,8 @@ span.ant-btn-icon {
   justify-content: center !important;
   align-items: center !important;
   gap: 8px !important;
-  padding: 0 12px !important;
+  padding: 0px 40px !important;
+
   cursor: pointer !important;
   transition: all 0.2s ease !important;
   background: var(--Blue-V1, #ffffff) !important;
@@ -664,7 +678,8 @@ span.ant-btn-icon {
   justify-content: center !important;
   align-items: center !important;
   gap: 8px !important;
-  padding: 0 12px !important;
+  padding: 0px 40px !important;
+
   cursor: pointer !important;
   transition: all 0.2s ease !important;
   background: var(--Blue-V1, #ffffff) !important;
@@ -693,7 +708,7 @@ span.ant-btn-icon {
  * Disabled: Light gray BG (#d9d9d9), white text
  */
 .large-transparent-button {
-  width: 221px !important;
+  padding: 0px 40px !important;
   height: 38px !important;
   background: transparent !important;
   border: 1px solid #717171 !important;
@@ -729,6 +744,7 @@ span.ant-btn-icon {
  * Disabled: Light gray BG (#d9d9d9), white text
  */
 .large-light-button {
+  padding: 0px 100px !important;
   width: 242px !important;
   height: 38px !important;
   background: #ffffff !important;
@@ -762,7 +778,8 @@ span.ant-btn-icon {
  * Disabled: Light gray BG, white text
  */
 .large-dark-button {
-  width: 242px !important;
+  padding: 0px 100px !important;
+
   height: 38px !important;
   background: var(--Blue-V1, #30426a) !important;
   border: 1px solid var(--Blue-V1, #30426a) !important;
@@ -800,7 +817,8 @@ span.ant-btn-icon {
  * - Icon becomes white in disabled state
  */
 .large-light-left-icon-button {
-  width: 263px !important;
+  padding: 0px 100px !important;
+
   height: 38px !important;
   background: #ffffff !important;
   border: 1px solid #717171 !important;
@@ -847,7 +865,8 @@ span.ant-btn-icon {
  * - Consistent spacing with light variant
  */
 .large-dark-left-icon-button {
-  width: 263px !important;
+  padding: 0px 100px !important;
+
   height: 38px !important;
   background: var(--Blue-V1, #30426a) !important;
   border: 1px solid var(--Blue-V1, #30426a) !important;
@@ -892,7 +911,8 @@ span.ant-btn-icon {
  * - 6px margin-left for proper spacing
  */
 .large-light-right-icon-button {
-  width: 263px !important;
+  padding: 0px 100px !important;
+
   height: 38px !important;
   background: #ffffff !important;
   border: 1px solid #717171 !important;
@@ -939,7 +959,8 @@ span.ant-btn-icon {
  * - Consistent right-aligned icon behavior
  */
 .large-dark-right-icon-button {
-  width: 263px !important;
+  padding: 0px 100px !important;
+
   height: 38px !important;
   background: var(--Blue-V1, #30426a) !important;
   border: 1px solid var(--Blue-V1, #30426a) !important;
@@ -952,7 +973,6 @@ span.ant-btn-icon {
   justify-content: center !important;
   align-items: center !important;
   gap: 6px !important;
-  padding: 0 10px !important;
   cursor: pointer !important;
   transition: all 0.2s ease !important;
 }

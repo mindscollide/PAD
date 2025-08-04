@@ -5,6 +5,7 @@
   border: 0.87px solid #b4b4b4;
   transition: all 0.2s;
   display: flex; /* Required to keep input and button aligned */
+  margin-top: 35px;
 }
 
 .searchWrapper:hover,

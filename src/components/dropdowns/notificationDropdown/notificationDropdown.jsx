@@ -312,7 +312,7 @@ const NotificationDropdown = () => {
       <Badge
         count={unreadCount}
         size="small"
-        offset={[-5, 5]}
+        offset={[-5, 35]}
         className={styles["notification-badge"]}
       >
         <div

@@ -3,7 +3,7 @@
   background-color: #ffffff;
   border-radius: 6.94px;
   border: 1px solid #e0e0e0;
-  padding: 18px 26px;
+  padding: 6px 26px;
   box-shadow: 0px 1px 3px rgba(0, 0, 0, 0.05);
   max-width: 100%;
   width: calc(100% - 48px); /* full width minus horizontal margin */
@@ -12,6 +12,8 @@
   box-sizing: border-box;
   overflow-x: auto;
   min-height: 86vh;
+  margin-top: 30px;
+  overflow: hidden;
   /* overflow:hidden */
 }
 
