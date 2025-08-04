@@ -13,25 +13,28 @@ import { UserProfileProvider } from "./context/userProfileContext";
 import { DashboardProvider } from "./context/dashboardContaxt";
 import { Loader } from "./components";
 import { LoaderProvider } from "./context/LoaderContext";
+import { MyApprovalProvider } from "./context/myApprovalContaxt";
 
 const RootComponent = () => {
   return (
     <NotificationProvider>
       <LoaderProvider>
-        <ApiProvider>
-          <UserProfileProvider>
-            <DashboardProvider>
-              <PortfolioProvider>
-                <SidebarProvider>
-                  <SearchBarProvider>
-                    <RouterProvider router={router} />
-                    <Loader />
-                  </SearchBarProvider>
-                </SidebarProvider>
-              </PortfolioProvider>
-            </DashboardProvider>
-          </UserProfileProvider>
-        </ApiProvider>
+        <MyApprovalProvider>
+          <ApiProvider>
+            <UserProfileProvider>
+              <DashboardProvider>
+                <PortfolioProvider>
+                  <SidebarProvider>
+                    <SearchBarProvider>
+                      <RouterProvider router={router} />
+                      <Loader />
+                    </SearchBarProvider>
+                  </SidebarProvider>
+                </PortfolioProvider>
+              </DashboardProvider>
+            </UserProfileProvider>
+          </ApiProvider>
+        </MyApprovalProvider>
       </LoaderProvider>
     </NotificationProvider>
   );

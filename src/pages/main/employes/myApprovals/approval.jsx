@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Col, Row } from "antd";
 import { Button, ComonDropDown } from "../../../../components";
 import BorderlessTable from "../../../../components/tables/borderlessTable/borderlessTable";
@@ -8,110 +8,26 @@ import PageLayout from "../../../../components/pageContainer/pageContainer";
 import EmptyState from "../../../../components/emptyStates/empty-states";
 import { useSearchBarContext } from "../../../../context/SearchBarContaxt";
 import style from "./approval.module.css";
+import { SearchTadeApprovals } from "../../../../api/myApprovalApi";
+// import { useGlobalModal } from "../../../../context/GlobalModalContext";
+import EquitiesApproval from "./modal/EquitiesApprovalModal/EquitiesApproval";
+import { useNotification } from "../../../../components/NotificationProvider/NotificationProvider";
+import { useGlobalLoader } from "../../../../context/LoaderContext";
+import { useApi } from "../../../../context/ApiContext";
+import { useNavigate } from "react-router-dom";
+import { useMyApproval } from "../../../../context/myApprovalContaxt";
 
 const Approval = () => {
-  // Sample static approval request data
-  let data = [
-    {
-      id: 1,
-      instrument: "PSO-NOV",
-      type: "Buy",
-      requestDateTime: "2024-10-11 | 10:00 pm",
-      status: "Pending",
-      quantity: 20000,
-      timeRemaining: "-",
-      isEscalated: false,
-    },
-    {
-      id: 2,
-      instrument: "PSO-OCT",
-      type: "Sell",
-      requestDateTime: "2024-10-11 | 10:00 pm",
-      status: "Approved",
-      quantity: 20000,
-      timeRemaining: "02 days 20 hours left",
-      isEscalated: false,
-    },
-    {
-      id: 3,
-      instrument: "PRL-OCT",
-      type: "Buy",
-      requestDateTime: "2024-10-11 | 10:00 pm",
-      status: "Not Traded",
-      quantity: 40000,
-      timeRemaining: "-",
-      isEscalated: true,
-    },
-    {
-      id: 4,
-      instrument: "PRL-OCT",
-      type: "Buy",
-      requestDateTime: "2024-10-11 | 10:00 pm",
-      status: "Resubmitted",
-      quantity: 20000,
-      timeRemaining: "-",
-      isEscalated: true,
-    },
-    {
-      id: 5,
-      instrument: "PSO-OCT",
-      type: "Sell",
-      requestDateTime: "2024-10-11 | 10:00 pm",
-      status: "Approved",
-      quantity: 20000,
-      timeRemaining: "02 days 20 hours left",
-    },
-    {
-      id: 6,
-      instrument: "PRL-OCT",
-      type: "Buy",
-      requestDateTime: "2024-10-11 | 10:00 pm",
-      status: "Not Traded",
-      quantity: 40000,
-      timeRemaining: "-",
-      isEscalated: true,
-    },
-    {
-      id: 7,
-      instrument: "PRL-OCT",
-      type: "Buy",
-      requestDateTime: "2024-10-11 | 10:00 pm",
-      status: "Resubmitted",
-      quantity: 20000,
-      timeRemaining: "-",
-      isEscalated: true,
-    },
-    {
-      id: 8,
-      instrument: "PSO-OCT",
-      type: "Sell",
-      requestDateTime: "2024-10-11 | 10:00 pm",
-      status: "Approved",
-      quantity: 20000,
-      timeRemaining: "02 days 20 hours left",
-      isEscalated: true,
-    },
-    {
-      id: 9,
-      instrument: "PRL-OCT",
-      type: "Buy",
-      requestDateTime: "2024-10-11 | 10:00 pm",
-      status: "Not Traded",
-      quantity: 40000,
-      timeRemaining: "-",
-      isEscalated: true,
-    },
-    {
-      id: 10,
-      instrument: "PRL-OAACT",
-      type: "Buy",
-      requestDateTime: "2024-10-11 | 10:00 pm",
-      status: "Resubmitted",
-      quantity: 20000,
-      timeRemaining: "-",
-      isEscalated: false,
-    },
-  ];
+  const navigate = useNavigate();
+  const hasFetched = useRef(false);
+  const hasFetchedOnTriiger = useRef(false);
+
+  // const { showModal, hideModal } = useGlobalModal();
+
+  const { showNotification } = useNotification();
+  const { isLoading, showLoader } = useGlobalLoader();
+  const { callApi } = useApi();
+  const { employeeMyApproval, setIsEmployeeMyApproval } = useMyApproval();
 
   // Global state for filter/search values
   const {
@@ -122,6 +38,7 @@ const Approval = () => {
 
   // Sort state for AntD Table
   const [sortedInfo, setSortedInfo] = useState({});
+  const [approvalData, setApprovalData] = useState([]);
 
   // Confirmed filters displayed as tags
   const [submittedFilters, setSubmittedFilters] = useState([]);
@@ -139,7 +56,9 @@ const Approval = () => {
     {
       key: "1",
       label: "Equities",
-      onClick: () => console.log("Equities clicked"),
+      // onClick: () => {
+      //   showModal();
+      // },
     },
   ];
 
@@ -150,17 +69,78 @@ const Approval = () => {
     employeeMyApprovalSearch,
     setEmployeeMyApprovalSearch
   );
+  const fetchApprovals = async () => {
+    showLoader(true);
+    let requestdata = {
+      InstrumentName:
+        employeeMyApprovalSearch.instrumentName ||
+        employeeMyApprovalSearch.mainInstrumentName,
+      StartDate: employeeMyApprovalSearch.date || "",
+      Quantity: employeeMyApprovalSearch.quantity || 0,
+      StatusIds: employeeMyApprovalSearch.status || [],
+      TypeIds: employeeMyApprovalSearch.type || [],
+      PageNumber: employeeMyApprovalSearch.pageNumber || 1,
+      Length: employeeMyApprovalSearch.pageSize || 10,
+    };
+    console.log("handleOk", requestdata);
+
+    const data = await SearchTadeApprovals({
+      callApi,
+      showNotification,
+      showLoader,
+      requestdata, // ✅ pass filters
+      navigate,
+    });
+    setIsEmployeeMyApproval(data);
+  };
+  useEffect(() => {
+    //  this is only used for not to recall more then 1 time
+    if (hasFetched.current) return;
+    hasFetched.current = true;
+
+    fetchApprovals();
+  }, []);
 
   /**
    * Removes a filter from both context and UI tags
    */
-  const handleRemoveFilter = (key) => {
-    setEmployeeMyApprovalSearch((prev) => ({
-      ...prev,
-      [key]: "",
-    }));
 
-    setSubmittedFilters((prev) => prev.filter((item) => item.key !== key));
+  const handleRemoveFilter = (key) => {
+    // Pehlay puranay filters copy karo aur jis key ko remove karna hai usko empty string set karo
+    const updatedFilters = {
+      ...employeeMyApprovalSearch,
+      [key]: "",
+    };
+
+    // SubmittedFilters array mein se sirf woh filters rakho jo remove nahi kiya gaya
+    const updatedSubmitted = submittedFilters.filter(
+      (item) => item.key !== key
+    );
+
+    // SubmittedFilters update karo
+    setSubmittedFilters(updatedSubmitted);
+
+    // Filter state update karo, agar sare filters hat chuke hain toh filterTrigger true kar do
+    setEmployeeMyApprovalSearch({
+      ...updatedFilters,
+      filterTrigger: updatedSubmitted.length === 0, // Trigger fetch if this was the last tag
+    });
+
+    // Agar last tag bhi remove ho gaya hai (yani sab filters hat gaye)
+    if (updatedSubmitted.length === 0) {
+      // Toh search filters ko bilkul default values par reset kar do
+      setEmployeeMyApprovalSearch({
+        instrumentName: "",
+        mainInstrumentName: "",
+        date: "",
+        quantity: "",
+        statusIds: [],
+        typeIds: [],
+        pageNumber: 1,
+        length: 10,
+        filterTrigger: true, // filterTrigger ko true kar ke API call karni hai dobara
+      });
+    }
   };
 
   /**
@@ -182,28 +162,47 @@ const Approval = () => {
         ...prev,
         filterTrigger: false,
       }));
+      if (hasFetchedOnTriiger.current) {
+        fetchApprovals();
+      } else {
+        hasFetchedOnTriiger.current = true;
+      }
     }
   }, [employeeMyApprovalSearch.filterTrigger]);
 
-   useEffect(() => {
-      try {
-        // Get browser navigation entries (used to detect reload)
-        const navigationEntries = performance.getEntriesByType("navigation");
-        if (navigationEntries.length > 0) {
-          const navigationType = navigationEntries[0].type;
-          if (navigationType === "reload") {
-            // Check localStorage for previously saved selectedKey
-            resetEmployeeMyApprovalSearch();
-          }
+  useEffect(() => {
+    try {
+      // Get browser navigation entries (used to detect reload)
+      const navigationEntries = performance.getEntriesByType("navigation");
+      if (navigationEntries.length > 0) {
+        const navigationType = navigationEntries[0].type;
+        if (navigationType === "reload") {
+          // Check localStorage for previously saved selectedKey
+          resetEmployeeMyApprovalSearch();
         }
-      } catch (error) {
-        console.error(
-          "❌ Error detecting page reload or restoring state:",
-          error
-        );
       }
-    }, []);
-
+    } catch (error) {
+      console.error(
+        "❌ Error detecting page reload or restoring state:",
+        error
+      );
+    }
+  }, []);
+  useEffect(() => {
+    if (employeeMyApproval) {
+      const transformed = employeeMyApproval?.map((item) => ({
+        id: item.approvalID,
+        instrument: item.instrumentName,
+        type: item.tradeType?.typeName || "-",
+        requestDateTime: `${item.requestDate} | ${item.requestTime}`,
+        status: item.approvalStatus?.approvalStatusName || "-",
+        quantity: Number(item.quantity) || 0,
+        timeRemaining: item.timeRemainingToTrade || "-",
+      }));
+      console.log("handleOk sss", transformed);
+      setApprovalData(transformed);
+    }
+  }, [employeeMyApproval]);
   return (
     <>
       {/* Filter Tags Display */}
@@ -239,13 +238,14 @@ const Approval = () => {
                 buttonLabel="Add Approval Request"
                 className="dropedown-dark"
               />
+              {/* {showModal ? <EquitiesApproval /> : null} */}
             </Col>
           </Row>
 
           {/* Table or Empty State */}
-          {data && data.length > 0 ? (
+          {approvalData && approvalData.length > 0 ? (
             <BorderlessTable
-              rows={data}
+              rows={approvalData}
               columns={columns}
               scroll={{ x: "max-content", y: 550 }}
               classNameTable="border-less-table-orange"

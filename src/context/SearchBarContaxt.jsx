@@ -27,6 +27,7 @@ export const SearchBarProvider = ({ children }) => {
     pageSize: "", // Pagination: size of page
     pageNumber: "", // Pagination: current page number
     filterTrigger: false,
+    tableFilterTrigger: false,
   });
 
   /**
@@ -42,10 +43,11 @@ export const SearchBarProvider = ({ children }) => {
       mainInstrumentName: "", // Main instrument name for popover or modal
       type: [], // Type filter: ["Buy", "Sell"]
       status: [], // Status filter: ["Pending", "Approved", etc.]
-      broker:[],
+      broker: [],
       pageSize: "", // Pagination: size of page
       pageNumber: "", // Pagination: current page number
       filterTrigger: false,
+      tableFilterTrigger: false,
     });
 
   /**
@@ -63,6 +65,7 @@ export const SearchBarProvider = ({ children }) => {
     pageSize: "", // Pagination: size of page
     pageNumber: "", // Pagination: current page number
     filterTrigger: false,
+    tableFilterTrigger: false,
   });
 
   /**
@@ -82,10 +85,9 @@ export const SearchBarProvider = ({ children }) => {
       pageSize: "", // Pagination: size of page
       pageNumber: "", // Pagination: current page number
       filterTrigger: false,
+      tableFilterTrigger: false,
     });
 
-
-    
   /**
    * 🔁 Helper: Reset all Employee My Approval filters to initial state
    */
@@ -100,6 +102,7 @@ export const SearchBarProvider = ({ children }) => {
       pageSize: "",
       pageNumber: "",
       filterTrigger: true,
+      tableFilterTrigger: false,
     });
   };
 
@@ -115,10 +118,11 @@ export const SearchBarProvider = ({ children }) => {
       mainInstrumentName: "",
       type: [],
       status: [],
-      broker:[],
+      broker: [],
       pageSize: "",
       pageNumber: "",
       filterTrigger: true,
+      tableFilterTrigger: false,
     });
   };
 
@@ -137,6 +141,8 @@ export const SearchBarProvider = ({ children }) => {
       pageSize: "", // Pagination: size of page
       pageNumber: "", // Pagination: current page number
       filterTrigger: true,
+      tableFilterTrigger: false,
+
     });
   };
 
@@ -156,6 +162,8 @@ export const SearchBarProvider = ({ children }) => {
       pageSize: "",
       pageNumber: "",
       filterTrigger: true,
+      tableFilterTrigger: false,
+
     });
   };
 

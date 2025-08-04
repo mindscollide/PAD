@@ -17,3 +17,4 @@ export { default as TypesFilterDropdown } from "./dropdowns/filters/typesFilterD
 export { default as ComonDropDown } from "./dropdowns/comonDropdown/comonDropDown";
 export { default as CommenSearchInput } from "./dropdowns/commenSearchInput/commenSearchInput";
 export { default as Loader } from "./loader/Loader";
+export { default as GlobalModal } from "./modal/Modal";
