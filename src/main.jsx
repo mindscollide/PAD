@@ -1,5 +1,5 @@
 // src/main.jsx
-import React from "react";
+import React, { useEffect } from "react";
 import ReactDOM from "react-dom/client";
 import { RouterProvider } from "react-router-dom";
 import router from "./routes/router";
@@ -15,6 +15,26 @@ import { LoaderProvider } from "./context/LoaderContext";
 import { MyApprovalProvider } from "./context/myApprovalContaxt";
 
 const RootComponent = () => {
+  useEffect(() => {
+    const handleStorageChange = () => {
+      const token = sessionStorage.getItem("auth_token");
+      if (!token && window.location.pathname !== "/") {
+        window.history.replaceState(null, "", "/");
+        window.location.reload();
+      }
+    };
+
+    // Listen for storage changes
+    window.addEventListener("storage", handleStorageChange);
+
+    // Initial check
+    handleStorageChange();
+
+    return () => {
+      window.removeEventListener("storage", handleStorageChange);
+    };
+  }, []);
+
   return (
     <NotificationProvider>
       <LoaderProvider>

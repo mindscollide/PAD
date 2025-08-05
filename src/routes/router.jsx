@@ -39,7 +39,6 @@ const router = createBrowserRouter(
           </PublicRoute>
         }
       />
-
       {/* Protected Route - Requires auth_token */}
       <Route
         path="PAD"

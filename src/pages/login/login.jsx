@@ -34,12 +34,10 @@ const Login = () => {
    */
 
   useEffect(() => {
-    sessionStorage.removeItem("auth_token");
-    sessionStorage.removeItem("refresh_token");
-    sessionStorage.removeItem("token_timeout");
-    sessionStorage.removeItem("user_assigned_roles");
-    sessionStorage.removeItem("user_profile_data");
+    localStorage.clear();
+    sessionStorage.clear();
   }, []);
+
   const handleChange = (name, value) => {
     setFormValues({ ...formValues, [name]: value });
   };
