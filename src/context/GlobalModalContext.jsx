@@ -5,11 +5,16 @@ const ModalContext = createContext();
 export const GlobalModalProvider = ({ children }) => {
   //To Show Add Approval Modal
   const [isEquitiesModalVisible, setIsEquitiesModalVisible] = useState(false);
+
+  // To Show Submit Modal on AddApproval Submit Button
   const [isSubmit, setIsSubmit] = useState(false);
 
-  // To Hide Add approval and Show Approval Main Modal
-  const showModal = () => setIsEquitiesModalVisible(true);
-  const hideModal = () => setIsEquitiesModalVisible(false);
+  // To Show Restricted Modal on AddApproval Submit Button
+  const [isTradeRequestRestricted, setIsTradeRequestRestricted] =
+    useState(false);
+
+  // To Show View Modal on ViewDetail Button on add approval listing
+  const [isViewDetail, setIsViewDetail] = useState(false);
 
   // Global Submit Modal for all
 
@@ -18,10 +23,12 @@ export const GlobalModalProvider = ({ children }) => {
       value={{
         isEquitiesModalVisible,
         setIsEquitiesModalVisible,
-        showModal,
-        hideModal,
+        isTradeRequestRestricted,
+        setIsTradeRequestRestricted,
         isSubmit,
         setIsSubmit,
+        isViewDetail,
+        setIsViewDetail,
       }}
     >
       {children}

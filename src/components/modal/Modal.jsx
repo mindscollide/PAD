@@ -8,6 +8,7 @@ const GlobalModal = ({
   modalBody,
   modalFooter,
   width,
+  height,
   centered,
   closable,
   className = "",
@@ -25,6 +26,7 @@ const GlobalModal = ({
       centered={centered}
       closable={closable}
       width={width}
+      height={height}
       className={className}
       style={style}
       maskClosable={maskClosable}

@@ -16,6 +16,7 @@
     "paho-mqtt": "^1.1.0",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
+    "react-form-stepper": "^2.0.3",
     "react-router-dom": "^7.6.3"
   },
   "devDependencies": {

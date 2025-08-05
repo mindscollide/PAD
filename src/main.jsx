@@ -39,24 +39,22 @@ const RootComponent = () => {
   return (
     <NotificationProvider>
       <LoaderProvider>
-        <MyApprovalProvider>
-          <ApiProvider>
-            <UserProfileProvider>
+        <GlobalModalProvider>
+          <MyApprovalProvider>
+            <ApiProvider>
               <DashboardProvider>
                 <PortfolioProvider>
                   <SidebarProvider>
                     <SearchBarProvider>
-                      <GlobalModalProvider>
-                        <RouterProvider router={router} />
-                        <Loader />
-                      </GlobalModalProvider>
+                      <RouterProvider router={router} />
+                      <Loader />
                     </SearchBarProvider>
                   </SidebarProvider>
                 </PortfolioProvider>
               </DashboardProvider>
-            </UserProfileProvider>
-          </ApiProvider>
-        </MyApprovalProvider>
+            </ApiProvider>
+          </MyApprovalProvider>
+        </GlobalModalProvider>
       </LoaderProvider>
     </NotificationProvider>
   );

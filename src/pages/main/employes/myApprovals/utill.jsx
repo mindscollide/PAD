@@ -43,7 +43,8 @@ export const getBorderlessTableColumns = (
   approvalStatusMap,
   sortedInfo,
   employeeMyApprovalSearch,
-  setEmployeeMyApprovalSearch
+  setEmployeeMyApprovalSearch,
+  setIsViewDetail
 ) => [
   {
     title: (
@@ -195,6 +196,12 @@ export const getBorderlessTableColumns = (
     title: "",
     key: "actions",
     width: "10%",
-    render: () => <Button className="big-orange-button" text="View Details" />,
+    render: () => (
+      <Button
+        className="big-orange-button"
+        text="View Details"
+        onClick={() => setIsViewDetail(true)}
+      />
+    ),
   },
 ];

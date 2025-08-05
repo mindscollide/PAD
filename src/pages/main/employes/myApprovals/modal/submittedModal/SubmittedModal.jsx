@@ -12,14 +12,25 @@ import CustomButton from "../../../../../../components/buttons/button";
 import ApprovalsIcon from "../../../../../../assets/img/approval-icon.png";
 
 const SubmittedModal = () => {
-  const { isSubmit, setIsSubmit, isEquitiesModalVisible } = useGlobalModal();
+  const {
+    isSubmit,
+    setIsSubmit,
+    isEquitiesModalVisible,
+    setIsEquitiesModalVisible,
+  } = useGlobalModal();
 
   console.log(isSubmit, isEquitiesModalVisible, "is Coming SubmittedModal");
+
+  const onClickSubmit = () => {
+    setIsSubmit(false);
+    setIsEquitiesModalVisible(true);
+  };
 
   return (
     <GlobalModal
       visible={isSubmit}
-      width={"800px"}
+      width={"935px"}
+      height={"495px"}
       onCancel={() => setIsSubmit(false)}
       modalBody={
         <>
@@ -45,7 +56,11 @@ const SubmittedModal = () => {
 
             <Row className={styles.mainButtonDiv}>
               <Col>
-                <CustomButton text={"Close"} className="big-light-button" />
+                <CustomButton
+                  text={"Close"}
+                  className="big-light-button"
+                  onClick={onClickSubmit}
+                />
               </Col>
             </Row>
           </div>

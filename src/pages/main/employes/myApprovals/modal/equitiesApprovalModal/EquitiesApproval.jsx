@@ -14,13 +14,25 @@ import SubmittedModal from "../submittedModal/SubmittedModal";
 const EquitiesApproval = () => {
   const {
     isEquitiesModalVisible,
-    hideModal,
     setIsSubmit,
     isSubmit,
     setIsEquitiesModalVisible,
+    isTradeRequestRestricted,
+    setIsTradeRequestRestricted,
   } = useGlobalModal();
 
   const [selectedItems, setSelectedItems] = useState([]);
+
+  console.log("Checker Equities Approval open");
+  console.log(
+    isEquitiesModalVisible,
+    setIsSubmit,
+    isSubmit,
+    setIsEquitiesModalVisible,
+    isTradeRequestRestricted,
+    setIsTradeRequestRestricted,
+    "Checker Equities Approval open"
+  );
 
   const instrumentData = [
     {
@@ -74,7 +86,8 @@ const EquitiesApproval = () => {
 
   const clickOnSubmitButton = () => {
     setIsEquitiesModalVisible(false); // Close Equities modal
-    setIsSubmit(true);
+    // setIsSubmit(true);
+    setIsTradeRequestRestricted(true);
   };
 
   return (
@@ -82,7 +95,7 @@ const EquitiesApproval = () => {
       <GlobalModal
         visible={isEquitiesModalVisible}
         width={"800px"}
-        onCancel={hideModal}
+        onCancel={() => setIsEquitiesModalVisible(false)}
         modalBody={
           <>
             <div className={styles.MainClassOfApprovals}>
@@ -176,7 +189,11 @@ const EquitiesApproval = () => {
             >
               <Col>
                 <Space>
-                  <CustomButton text={"Close"} className="big-light-button" />
+                  <CustomButton
+                    text={"Close"}
+                    className="big-light-button"
+                    onClick={() => setIsEquitiesModalVisible(false)}
+                  />
                   <CustomButton
                     text={"Submit"}
                     className="big-dark-button"
@@ -188,8 +205,6 @@ const EquitiesApproval = () => {
           </>
         }
       />
-
-      {isSubmit && <SubmittedModal />}
     </>
   );
 };

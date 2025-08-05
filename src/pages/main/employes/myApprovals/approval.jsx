@@ -10,20 +10,32 @@ import { useSearchBarContext } from "../../../../context/SearchBarContaxt";
 import style from "./approval.module.css";
 import { SearchTadeApprovals } from "../../../../api/myApprovalApi";
 // import { useGlobalModal } from "../../../../context/GlobalModalContext";
-import EquitiesApproval from "./modal/EquitiesApprovalModal/EquitiesApproval";
+import EquitiesApproval from "./modal/equitiesApprovalModal/EquitiesApproval";
 import { useNotification } from "../../../../components/NotificationProvider/NotificationProvider";
 import { useGlobalLoader } from "../../../../context/LoaderContext";
 import { useApi } from "../../../../context/ApiContext";
 import { useNavigate } from "react-router-dom";
 import { useMyApproval } from "../../../../context/myApprovalContaxt";
 import { useGlobalModal } from "../../../../context/GlobalModalContext";
+import SubmittedModal from "./modal/submittedModal/SubmittedModal";
+import RequestRestrictedModal from "./modal/requestRestrictedModal/RequestRestrictedModal";
+import ViewDetailModal from "./modal/viewDetailModal/ViewDetailModal";
 
 const Approval = () => {
   const navigate = useNavigate();
   const hasFetched = useRef(false);
   const hasFetchedOnTriiger = useRef(false);
 
-  const { showModal, hideModal, isEquitiesModalVisible } = useGlobalModal();
+  const {
+    isEquitiesModalVisible,
+    setIsEquitiesModalVisible,
+    isSubmit,
+    setIsSubmit,
+    isTradeRequestRestricted,
+    setIsTradeRequestRestricted,
+    isViewDetail,
+    setIsViewDetail,
+  } = useGlobalModal();
 
   const { showNotification } = useNotification();
   const { isLoading, showLoader } = useGlobalLoader();
@@ -58,7 +70,9 @@ const Approval = () => {
       key: "1",
       label: "Equities",
       onClick: () => {
-        showModal();
+        setIsTradeRequestRestricted(false);
+        // setIsSubmit(false); // Reset submitted state
+        setIsEquitiesModalVisible(true);
       },
     },
   ];
@@ -68,7 +82,8 @@ const Approval = () => {
     approvalStatusMap,
     sortedInfo,
     employeeMyApprovalSearch,
-    setEmployeeMyApprovalSearch
+    setEmployeeMyApprovalSearch,
+    setIsViewDetail
   );
   const fetchApprovals = async () => {
     showLoader(true);
@@ -259,6 +274,9 @@ const Approval = () => {
         </div>
       </PageLayout>
       {isEquitiesModalVisible && <EquitiesApproval />}
+      {isSubmit && <SubmittedModal />}
+      {isTradeRequestRestricted && <RequestRestrictedModal />}
+      {isViewDetail && <ViewDetailModal />}
     </>
   );
 };
