@@ -130,3 +130,19 @@
     margin-top: 4px;
   }
 }
+.reportListWrapper {
+  max-height: 180px; /* Adjust as needed */
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding-right: 4px; /* prevent content being cut off by scrollbar */
+}
+
+/* Optional - hide scroll bar but still scrollable */
+.reportListWrapper::-webkit-scrollbar {
+  width: 6px;
+}
+
+.reportListWrapper::-webkit-scrollbar-thumb {
+  background-color: #ccc;
+  border-radius: 3px;
+}

@@ -141,7 +141,7 @@ const Home = () => {
                 route={"history"}
               />
             </Col>
-            <Col sxs={24} md={12} lg={12}>
+            <Col xs={24} md={12} lg={12}>
               <ReportCard
                 mainClassName={"home-reprot-card"}
                 title="Reports"
