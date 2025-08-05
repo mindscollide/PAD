@@ -28,7 +28,7 @@ const ReportCard = ({
   const onRowButtonClick = () => {
   };
   return (
-    <Card className={styles[base]}>
+    <Card className={styles[base]} style={{ padding: "10px 20px" }}>
       <div className={styles[`${base}-header`]}>
         <span className={styles[`${base}-title`]}>{title}</span>
 
