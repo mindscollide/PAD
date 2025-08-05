@@ -9,7 +9,6 @@ import { SearchBarProvider } from "./context/SearchBarContaxt";
 import { NotificationProvider } from "./components/NotificationProvider/NotificationProvider";
 import { PortfolioProvider } from "./context/portfolioContax";
 import { ApiProvider } from "./context/ApiContext";
-import { UserProfileProvider } from "./context/userProfileContext";
 import { DashboardProvider } from "./context/dashboardContaxt";
 import { Loader } from "./components";
 import { LoaderProvider } from "./context/LoaderContext";
@@ -21,18 +20,16 @@ const RootComponent = () => {
       <LoaderProvider>
         <MyApprovalProvider>
           <ApiProvider>
-            <UserProfileProvider>
-              <DashboardProvider>
-                <PortfolioProvider>
-                  <SidebarProvider>
-                    <SearchBarProvider>
-                      <RouterProvider router={router} />
-                      <Loader />
-                    </SearchBarProvider>
-                  </SidebarProvider>
-                </PortfolioProvider>
-              </DashboardProvider>
-            </UserProfileProvider>
+            <DashboardProvider>
+              <PortfolioProvider>
+                <SidebarProvider>
+                  <SearchBarProvider>
+                    <RouterProvider router={router} />
+                    <Loader />
+                  </SearchBarProvider>
+                </SidebarProvider>
+              </PortfolioProvider>
+            </DashboardProvider>
           </ApiProvider>
         </MyApprovalProvider>
       </LoaderProvider>

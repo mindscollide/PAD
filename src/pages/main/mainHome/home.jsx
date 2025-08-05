@@ -13,7 +13,6 @@ import { useNotification } from "../../../components/NotificationProvider/Notifi
 
 import { useApi } from "../../../context/ApiContext";
 import { useDashboardContext } from "../../../context/dashboardContaxt";
-import { useUserProfileContext } from "../../../context/userProfileContext";
 
 // Utility for mapping roles to keys
 import { roleKeyMap, checkRoleMatch } from "./utills";
@@ -26,16 +25,15 @@ const Home = () => {
 
   const { dashboardData, setDashboardData } = useDashboardContext();
   const { callApi } = useApi();
-  const { roles, setRoles } = useUserProfileContext();
   const { showLoader } = useGlobalLoader();
-  console.log(showLoader, "showLoadershowLoader");
+  const roles=JSON.parse(sessionStorage.getItem("user_assigned_roles"));
 
   // Prevent multiple fetches on mount
   const hasFetched = useRef(false);
 
   useEffect(() => {
-    if (hasFetched.current) return;
-    hasFetched.current = true;
+    // if (hasFetched.current) return;
+    // hasFetched.current = true;
 
     const fetchData = async () => {
       if (!roles || roles.length === 0) {
@@ -74,7 +72,7 @@ const Home = () => {
     };
 
     fetchData();
-  }, [roles]);
+  }, []);
   console.log("Failed to fetch home summary", dashboardData);
 
   return (

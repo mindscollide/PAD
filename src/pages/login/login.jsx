@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Form, Input, Typography, Row, Col } from "antd";
 import style from "./Login.module.css";
 import loginImage from "../../assets/img/login-icon.png";
@@ -9,7 +9,6 @@ import { useNotification } from "../../components/NotificationProvider/Notificat
 import { CheckCircleOutlined } from "@ant-design/icons";
 import { useApi } from "../../context/ApiContext";
 import { login } from "../../api/loginApi";
-import { useUserProfileContext } from "../../context/userProfileContext";
 import { useGlobalLoader } from "../../context/LoaderContext";
 
 const { Text } = Typography;
@@ -20,11 +19,8 @@ const Login = () => {
   const [form] = Form.useForm();
   const { showNotification } = useNotification();
   const { callApi } = useApi();
-  const { setProfile, setRoles } = useUserProfileContext();
-
   //LoaderContext ka showLoader ko globally access krrahay hain
   const { showLoader } = useGlobalLoader();
-
   const [formValues, setFormValues] = useState({
     username: "",
     password: "",
@@ -36,6 +32,14 @@ const Login = () => {
    * @param {string} name - Field name ('username' or 'password')
    * @param {string} value - New input value
    */
+
+  useEffect(() => {
+    sessionStorage.removeItem("auth_token");
+    sessionStorage.removeItem("refresh_token");
+    sessionStorage.removeItem("token_timeout");
+    sessionStorage.removeItem("user_assigned_roles");
+    sessionStorage.removeItem("user_profile_data");
+  }, []);
   const handleChange = (name, value) => {
     setFormValues({ ...formValues, [name]: value });
   };
@@ -51,10 +55,8 @@ const Login = () => {
         username: values.username,
         password: values.password,
         navigate,
-        setProfile,
         callApi,
         showNotification,
-        setRoles,
         showLoader,
       });
     } finally {

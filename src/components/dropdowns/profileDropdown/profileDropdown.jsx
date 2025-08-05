@@ -11,10 +11,9 @@ import {
 import { Link } from "react-router-dom";
 import ProfileImg from "../../../assets/img/profile.png";
 import style from "./profileDropdown.module.css";
-import { useUserProfileContext } from "../../../context/userProfileContext";
 const ProfileDropdown = () => {
-  const roll = localStorage.getItem("admin") || "main";
-  const { profile, setRoles } = useUserProfileContext();
+  const  profile=JSON.parse(sessionStorage.getItem("user_profile_data"))
+
   const name = useMemo(() => {
     return [profile.firstName, profile.lastName].filter(Boolean).join(" ");
   }, [profile]);

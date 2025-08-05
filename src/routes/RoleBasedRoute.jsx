@@ -1,11 +1,10 @@
 // src/routes/RoleBasedRoute.jsx
 import React from "react";
 import { Navigate } from "react-router-dom";
-import { useUserProfileContext } from "../context/userProfileContext";
 
 const RoleBasedRoute = ({ allowedRoles = [], children }) => {
-  const { roles } = useUserProfileContext();
   const userRoleIDs = roles?.map((role) => role.roleID) || [];
+  const roles=JSON.parse(sessionStorage.getItem("user_assigned_roles"));
 
   // Wait until roles are loaded (to avoid false redirect)
   if (roles === undefined || roles.length === 0) {
