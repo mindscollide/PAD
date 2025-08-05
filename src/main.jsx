@@ -1,5 +1,5 @@
 // src/main.jsx
-import React from "react";
+import React, { useEffect } from "react";
 import ReactDOM from "react-dom/client";
 import { RouterProvider } from "react-router-dom";
 import router from "./routes/router";
@@ -9,7 +9,6 @@ import { SearchBarProvider } from "./context/SearchBarContaxt";
 import { NotificationProvider } from "./components/NotificationProvider/NotificationProvider";
 import { PortfolioProvider } from "./context/portfolioContax";
 import { ApiProvider } from "./context/ApiContext";
-import { UserProfileProvider } from "./context/userProfileContext";
 import { DashboardProvider } from "./context/dashboardContaxt";
 import { Loader } from "./components";
 import { LoaderProvider } from "./context/LoaderContext";
@@ -17,6 +16,26 @@ import { MyApprovalProvider } from "./context/myApprovalContaxt";
 import { GlobalModalProvider } from "./context/GlobalModalContext";
 
 const RootComponent = () => {
+  useEffect(() => {
+    const handleStorageChange = () => {
+      const token = sessionStorage.getItem("auth_token");
+      if (!token && window.location.pathname !== "/") {
+        window.history.replaceState(null, "", "/");
+        window.location.reload();
+      }
+    };
+
+    // Listen for storage changes
+    window.addEventListener("storage", handleStorageChange);
+
+    // Initial check
+    handleStorageChange();
+
+    return () => {
+      window.removeEventListener("storage", handleStorageChange);
+    };
+  }, []);
+
   return (
     <NotificationProvider>
       <LoaderProvider>

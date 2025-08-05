@@ -18,10 +18,8 @@ export const login = async ({
   username,
   password,
   navigate,
-  setProfile,
   callApi,
   showNotification,
-  setRoles,
   showLoader,
 }) => {
   showLoader(true);
@@ -55,9 +53,14 @@ export const login = async ({
       sessionStorage.setItem("auth_token", userToken.token);
       sessionStorage.setItem("refresh_token", userToken.refreshToken);
       sessionStorage.setItem("token_timeout", userToken.tokenTimeOut);
-
-      setRoles(userAssignedRoles);
-      setProfile(userProfileData);
+      sessionStorage.setItem(
+        "user_assigned_roles",
+        JSON.stringify(userAssignedRoles)
+      );
+      sessionStorage.setItem(
+        "user_profile_data",
+        JSON.stringify(userProfileData)
+      );
       navigate("/PAD");
 
       //Yaha success pa true rakha hai takay GetUserDashBoardStats ki API ka response anay tak loader chalay

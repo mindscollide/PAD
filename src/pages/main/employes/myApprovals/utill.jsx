@@ -53,7 +53,7 @@ export const getBorderlessTableColumns = (
     ),
     dataIndex: "instrument",
     key: "instrument",
-    width: "12%",
+    width: "20%",
     ellipsis: true,
     sorter: (a, b) => a.instrument.localeCompare(b.instrument),
     sortDirections: ["ascend", "descend"],
@@ -82,7 +82,7 @@ export const getBorderlessTableColumns = (
     dataIndex: "type",
     key: "type",
     ellipsis: true,
-    width: "12%",
+    width: "15%",
     filteredValue: employeeMyApprovalSearch.type?.length
       ? employeeMyApprovalSearch.type
       : null,
@@ -102,7 +102,7 @@ export const getBorderlessTableColumns = (
     dataIndex: "requestDateTime",
     key: "requestDateTime",
     ellipsis: true,
-    width: "20%",
+    width: "15%",
     sorter: (a, b) => a.requestDateTime.localeCompare(b.requestDateTime),
     sortDirections: ["ascend", "descend"],
     sortOrder:
@@ -116,7 +116,7 @@ export const getBorderlessTableColumns = (
     dataIndex: "isEscalated",
     key: "isEscalated",
     ellipsis: true,
-    width: "3%",
+    width: "5%",
     render: (date) =>
       date && (
         <img
@@ -136,7 +136,7 @@ export const getBorderlessTableColumns = (
     dataIndex: "status",
     key: "status",
     ellipsis: true,
-    width: "18%",
+    width: "10%",
     filteredValue: employeeMyApprovalSearch.status?.length
       ? employeeMyApprovalSearch.status
       : null,
@@ -157,13 +157,6 @@ export const getBorderlessTableColumns = (
     },
   },
   {
-    title: "",
-    dataIndex: "",
-    key: "isEscalated",
-    ellipsis: true,
-    width: "5%",
-  },
-  {
     title: (
       <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
         Quantity {getSortIcon("quantity", sortedInfo)}
@@ -172,7 +165,7 @@ export const getBorderlessTableColumns = (
     dataIndex: "quantity",
     key: "quantity",
     ellipsis: true,
-    width: "15%",
+    width: "10%",
     sorter: (a, b) => a.quantity - b.quantity,
     sortDirections: ["ascend", "descend"],
     sortOrder: sortedInfo?.columnKey === "quantity" ? sortedInfo.order : null,
@@ -201,7 +194,7 @@ export const getBorderlessTableColumns = (
   {
     title: "",
     key: "actions",
-    width: "15%",
+    width: "10%",
     render: () => <Button className="big-orange-button" text="View Details" />,
   },
 ];

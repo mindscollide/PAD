@@ -7,7 +7,6 @@ import "./sidebar.css";
 import sidebarItems, { routeMap } from "./utils";
 import { useNavigate } from "react-router-dom";
 import { useSidebarContext } from "../../../context/sidebarContaxt";
-import { useUserProfileContext } from "../../../context/userProfileContext";
 
 const { Sider } = Layout;
 
@@ -15,7 +14,7 @@ const SideBar = () => {
   const navigate = useNavigate(); // ✅ Add navigate hook
   const { collapsed, setCollapsed, selectedKey, setSelectedKey } =
     useSidebarContext();
-  const { roles } = useUserProfileContext(); // 👈 Fetch role objects
+  let roles=JSON.parse(sessionStorage.getItem("user_assigned_roles"));
   const allRoleIDs = roles.map((role) => role.roleID);
   /**
    * Restores the last selected sidebar key from localStorage after a full page reload.

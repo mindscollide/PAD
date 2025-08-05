@@ -11,11 +11,19 @@ import {
 import { Link } from "react-router-dom";
 import ProfileImg from "../../../assets/img/profile.png";
 import style from "./profileDropdown.module.css";
-import { useUserProfileContext } from "../../../context/userProfileContext";
 const ProfileDropdown = () => {
-  const roll = localStorage.getItem("admin") || "main";
-  const { profile, setRoles } = useUserProfileContext();
+  const profile = useMemo(() => {
+    try {
+      const stored = sessionStorage.getItem("user_profile_data");
+      return stored ? JSON.parse(stored) : null;
+    } catch (err) {
+      console.error("Invalid JSON in user_profile_data:", err);
+      return null;
+    }
+  }, []);
+
   const name = useMemo(() => {
+    if (!profile) return "Guest"; // fallback display name
     return [profile.firstName, profile.lastName].filter(Boolean).join(" ");
   }, [profile]);
 
@@ -79,7 +87,7 @@ const ProfileDropdown = () => {
       onOpenChange={(open) => setIsOpen(open)}
     >
       <div className={style["profile-dropdown-trigger"]}>
-        {profile.profilePictureURL !== "" ? (
+        {profile?.profilePictureURL ? (
           <img
             src={ProfileImg}
             alt="Profile"
