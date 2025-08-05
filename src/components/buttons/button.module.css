@@ -679,7 +679,7 @@ span.ant-btn-icon {
   align-items: center !important;
   gap: 8px !important;
   padding: 0px 40px !important;
-
+  box-shadow: none;
   cursor: pointer !important;
   transition: all 0.2s ease !important;
   background: var(--Blue-V1, #ffffff) !important;

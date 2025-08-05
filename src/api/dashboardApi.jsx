@@ -31,7 +31,7 @@ export const GetUserDashBoardStats = async ({
       sessionStorage.removeItem("auth_token");
       sessionStorage.removeItem("refresh_token");
       sessionStorage.removeItem("token_timeout");
-      navigate("/login");
+      navigate("/");
       showLoader(false);
       return null;
     }

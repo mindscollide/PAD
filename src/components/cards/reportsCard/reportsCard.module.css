@@ -13,8 +13,8 @@
 }
 
 .home-reprot-card {
-  width: 100%;
-  height: 286px;
+  /* width: 100%; */
+  height: 251px;
   opacity: 1;
   border-radius: 13.89px;
   border-width: 0.87px;
@@ -26,7 +26,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 12px;
+  margin-bottom: 10px;
 }
 
 .home-reprot-card-title {
@@ -58,17 +58,18 @@
 .reportList {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 10px;
 }
 
 .home-reprot-card-reportItem {
   background-color: #edf3ff;
-  padding: 10px 12px;
+  padding: 8px 10px;
   border-radius: 10.42px;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  transform: scale(1);
+  flex-wrap: wrap; /* ✅ allows button and text to stack if needed */
+  gap: 8px; /* ✅ spacing between items on wrap */
   transition: all 300ms ease-out;
 }
 
@@ -98,8 +99,7 @@
   leading-trim: NONE;
   line-height: 100%;
   letter-spacing: 0%;
-  color: var(--Blue-V1, #30426A);
-
+  color: var(--Blue-V1, #30426a);
 }
 
 .viewButton {
@@ -109,4 +109,40 @@
   font-size: 12px;
   border-radius: 6px;
   box-shadow: 0 0 2px rgba(0, 0, 0, 0.1);
+}
+
+@media screen and (max-width: 600px) {
+  .home-reprot-card-reportItem {
+    flex-direction: column;
+    align-items: flex-start; /* stack content vertically on small screens */
+  }
+
+  .left {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap; /* wrap if content is too long */
+  }
+
+  .viewButton {
+    align-self: flex-end;
+    margin-top: 4px;
+  }
+}
+.reportListWrapper {
+  max-height: 180px; /* Adjust as needed */
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding-right: 4px; /* prevent content being cut off by scrollbar */
+}
+
+/* Optional - hide scroll bar but still scrollable */
+.reportListWrapper::-webkit-scrollbar {
+  width: 6px;
+}
+
+.reportListWrapper::-webkit-scrollbar-thumb {
+  background-color: #ccc;
+  border-radius: 3px;
 }

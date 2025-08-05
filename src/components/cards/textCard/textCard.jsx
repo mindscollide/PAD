@@ -24,6 +24,7 @@ const TextCard = ({ title, subtitle, className }) => {
       className={`${styles[base]} ${
         collapsed ? styles[`${base}Collapsed`] : styles[`${base}Expanded`]
       }`}
+      style={{ padding: "40px" }}
     >
       <div className={styles[`${base}Content`]}>
         <span className={styles[`${base}Title`]}>{title}</span>

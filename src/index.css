@@ -246,3 +246,7 @@ body {
   border-radius: 6.94px;
   min-height: 53.84px;
 }
+
+:where(.css-dev-only-do-not-override-1rfzxih).ant-card .ant-card-body {
+  padding: 0px !important;
+}

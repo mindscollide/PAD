@@ -53,7 +53,7 @@ const BoxCard = ({
   };
 
   return (
-    <Card className={styles[mainClassName]}>
+    <Card className={styles[mainClassName]} style={{ padding: "10px 20px" }}>
       {/* Header */}
       <div className={styles[`${base}cardHeader`]}>
         <span className={styles[`${base}cardTitle`]}>{title}</span>
