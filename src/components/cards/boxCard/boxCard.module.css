@@ -10,7 +10,9 @@
   cursor: pointer;
   border-radius: 12px;
 }
-
+.ant-card-body {
+  padding: 20px 10px !important;
+}
 /* Hover effect */
 .mediumHomeSideCard:hover,
 .mediumHomeCard:hover,
@@ -22,8 +24,6 @@
   box-shadow: 4px 4px 6px 0px #00000033;
 }
 
-
-
 .smallShareHomeCard {
   height: 176px;
   background: #fff;
@@ -33,7 +33,7 @@
   flex-direction: column;
   justify-content: space-between;
   border: 0.87px solid #b4b4b4;
-  margin-bottom: 18px;
+  margin-bottom: 10px;
 }
 
 .smallShareHomeCardcardHeader {
@@ -98,7 +98,7 @@
 
 /* medium card */
 .mediumHomeCard {
-  height: 286px;
+  height: 241px;
   background: #fff;
   border-radius: 13.89px;
   padding: 0px;
@@ -106,7 +106,7 @@
   flex-direction: column;
   justify-content: space-between;
   border: 0.87px solid #b4b4b4;
-  margin-bottom: 18px;
+  margin-bottom: 10px;
 }
 
 .mediumHomeCardcardHeader {
@@ -136,7 +136,7 @@
 .mediumHomeCardstatBox {
   padding: 12px 16px;
   border-radius: 13.89px;
-  height: 191px;
+  height: 163px;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -176,7 +176,7 @@
 
 /* medium card */
 .mediumHomeSideCard {
-  height: 286px;
+  height: 251px;
   background: #fff;
   border-radius: 13.89px;
   padding: 0px;
@@ -184,7 +184,7 @@
   flex-direction: column;
   justify-content: space-between;
   border: 0.87px solid #b4b4b4;
-  margin-bottom: 18px;
+  margin-bottom: 10px;
 }
 
 .mediumHomeSideCardcardHeader {
@@ -212,9 +212,9 @@
 }
 
 .mediumHomeSideCardstatBox {
-  padding: 12px 16px;
+  padding: 12px 40px;
   border-radius: 13.89px;
-  height: 191px;
+  height: 163px;
   display: flex;
   align-items: center;
   gap: 6px;
