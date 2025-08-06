@@ -1,29 +1,24 @@
 import React, { useState } from "react";
-import { Col, Row, Select, Space, Button, Checkbox } from "antd";
+import { Col, Row } from "antd";
 import { useGlobalModal } from "../../../../../../context/GlobalModalContext";
-import {
-  CommenSearchInput,
-  GlobalModal,
-  InstrumentSelect,
-  TextField,
-} from "../../../../../../components";
-import styles from "./SubmittedModal.module.css";
+import { GlobalModal } from "../../../../../../components";
+import styles from "./ResubmitIntimationModal.module.css";
 import CustomButton from "../../../../../../components/buttons/button";
 import ApprovalsIcon from "../../../../../../assets/img/approval-icon.png";
 
-const SubmittedModal = () => {
-  const { isSubmit, setIsSubmit } = useGlobalModal();
+const ResubmitIntimationModal = () => {
+  const { resubmitIntimation, setResubmitIntimation } = useGlobalModal();
 
   const onClickSubmit = () => {
-    setIsSubmit(false);
+    setResubmitIntimation(false);
   };
 
   return (
     <GlobalModal
-      visible={isSubmit}
+      visible={resubmitIntimation}
       width={"935px"}
       height={"495px"}
-      onCancel={() => setIsSubmit(false)}
+      onCancel={() => setResubmitIntimation(false)}
       modalBody={
         <>
           <div className={styles.SubmittedCenteralized}>
@@ -34,13 +29,13 @@ const SubmittedModal = () => {
             </Row>
             <Row>
               <Col>
-                <div className={styles.SubmittedText}>Submitted!</div>
+                <div className={styles.ResubmittedText}>Resubmitted!</div>
               </Col>
             </Row>
 
             <Row>
               <Col>
-                <div className={styles.submittedTextSubHeading}>
+                <div className={styles.resubmittedTextSubHeading}>
                   Your approval request has been submitted successfully
                 </div>
               </Col>
@@ -62,4 +57,4 @@ const SubmittedModal = () => {
   );
 };
 
-export default SubmittedModal;
+export default ResubmitIntimationModal;

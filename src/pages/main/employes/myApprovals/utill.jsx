@@ -1,6 +1,7 @@
 // components/pages/employee/approval/tableColumns.js
 
-import React from "react";
+import React, { useEffect, useRef, useState } from "react";
+import { debounce } from "lodash";
 import { Tag } from "antd";
 import { Button, StatusFilterDropdown } from "../../../../components";
 import style from "./approval.module.css";
@@ -46,7 +47,8 @@ export const getBorderlessTableColumns = (
   sortedInfo,
   employeeMyApprovalSearch,
   setEmployeeMyApprovalSearch,
-  setIsViewDetail
+  setIsViewDetail,
+  setIsResubmitted
 ) => [
   {
     title: (
@@ -187,6 +189,7 @@ export const getBorderlessTableColumns = (
         <Button
           className="large-transparent-button"
           text="Resubmit for Approval"
+          onClick={() => setIsResubmitted(true)}
         />
       ) : text ? (
         <span className="font-medium text-gray-700">{text}</span>
@@ -227,5 +230,3 @@ export const getBorderlessTableColumns = (
     // ),
   },
 ];
-
-

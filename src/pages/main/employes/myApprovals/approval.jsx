@@ -26,6 +26,9 @@ import {
 import { apiCallSeacrch } from "../../../../components/dropdowns/searchableDropedown/utill";
 import { SearchTadeApprovals } from "../../../../api/myApprovalApi";
 import ViewComment from "./modal/viewComment/ViewComment";
+import ResubmitModal from "./modal/resubmitModal/ResubmitModal";
+import ResubmitIntimationModal from "./modal/resubmitIntimationModal/ResubmitIntimationModal";
+import ConductTransaction from "./modal/conductTransaction/ConductTransaction";
 
 const Approval = () => {
   const navigate = useNavigate();
@@ -42,6 +45,10 @@ const Approval = () => {
     isViewDetail,
     setIsViewDetail,
     isViewComments,
+    isResubmitted,
+    setIsResubmitted,
+    resubmitIntimation,
+    isConductedTransaction,
   } = useGlobalModal();
 
   const { showNotification } = useNotification();
@@ -88,7 +95,8 @@ const Approval = () => {
     sortedInfo,
     employeeMyApprovalSearch,
     setEmployeeMyApprovalSearch,
-    setIsViewDetail
+    setIsViewDetail,
+    setIsResubmitted
   );
 
   /**
@@ -345,6 +353,12 @@ const Approval = () => {
       {isTradeRequestRestricted && <RequestRestrictedModal />}
       {isViewDetail && <ViewDetailModal />}
       {isViewComments && <ViewComment />}
+
+      {isResubmitted && <ResubmitModal />}
+
+      {resubmitIntimation && <ResubmitIntimationModal />}
+
+      {isConductedTransaction && <ConductTransaction />}
     </>
   );
 };

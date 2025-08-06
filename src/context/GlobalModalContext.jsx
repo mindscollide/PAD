@@ -19,6 +19,18 @@ export const GlobalModalProvider = ({ children }) => {
   // To show Selected Row Data in View Detail Modal
   const [selectedViewDetail, setSelectedViewDetail] = useState(null);
 
+  // To Show View Comments Modal while Declined Modal in View Detail on approval
+  const [isViewComments, setIsViewComments] = useState(false);
+
+  // To Show Resubmit Modal while Click on Resubmitted
+  const [isResubmitted, setIsResubmitted] = useState(false);
+
+  // To Show Resubmitted intimation Modal
+  const [resubmitIntimation, setResubmitIntimation] = useState(false);
+
+  // To show Conduct Transaction Modal
+  const [isConductedTransaction, setIsConductedTransaction] = useState(false);
+
   // Global Submit Modal for all
 
   return (
@@ -34,6 +46,14 @@ export const GlobalModalProvider = ({ children }) => {
         setIsViewDetail,
         selectedViewDetail,
         setSelectedViewDetail,
+        isViewComments,
+        setIsViewComments,
+        isResubmitted,
+        setIsResubmitted,
+        resubmitIntimation,
+        setResubmitIntimation,
+        isConductedTransaction,
+        setIsConductedTransaction,
       }}
     >
       {children}

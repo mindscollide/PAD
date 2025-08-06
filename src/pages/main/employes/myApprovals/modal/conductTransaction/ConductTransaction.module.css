@@ -1,0 +1,162 @@
+.modalBodyWrapper {
+  padding: 10px 50px; /* or any padding you want */
+}
+
+.conductedHeading {
+  font-size: 36px;
+  font-family: "Switzer Variable";
+  color: #30426a;
+  font-weight: 600;
+  text-transform: uppercase;
+  display: flex;
+  justify-content: center !important;
+}
+
+.conductBorderClass {
+  border: 2.65px dashed #30426a !important;
+  background-color: #edf3ff;
+  border-radius: 8px !important;
+  padding: 0px 20px !important;
+  gap: 10px !important;
+}
+
+.backgrounColorOfDetail {
+  background-color: #edf3ff !important;
+  padding: 10px 20px;
+  display: flex;
+  flex-direction: column !important;
+}
+
+.backgrounColorOfConduct {
+  position: relative;
+  background-color: #edf3ff !important;
+  padding: 10px 20px;
+  display: flex;
+  flex-direction: column !important;
+  border-radius: 8px;
+}
+
+.backgrounColorOfInstrument {
+  background-color: #edf3ff !important;
+  padding: 10px 20px;
+  display: flex;
+  flex-direction: column !important;
+  border-top-left-radius: 8px !important;
+}
+
+.backgrounColorOfApproved {
+  background-color: #edf3ff !important;
+  padding: 10px 20px;
+  display: flex;
+  flex-direction: column !important;
+  border-top-right-radius: 8px !important;
+}
+
+.viewDetailMainLabels {
+  font-size: 14px !important;
+  color: #30426a !important;
+  font-weight: 700;
+  font-family: "Switzer Variable";
+}
+.viewDetailSubLabels {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 20px !important;
+  color: #424242 !important;
+  font-weight: 500;
+  font-family: "Switzer Variable";
+}
+
+.backgrounColorOfBrokerDetail {
+  background-color: #edf3ff !important;
+  padding: 10px 20px;
+  display: flex;
+  flex-direction: column !important;
+  border-bottom-right-radius: 8px;
+  border-bottom-left-radius: 8px;
+}
+
+.tagContainer {
+  margin-top: 5px;
+  display: flex !important;
+  gap: 10px !important; /* horizontal space between tags */
+  flex-wrap: wrap !important; /* wrap to next line if too many tags */
+}
+
+.tagClasses {
+  font-size: 16px !important;
+  font-weight: 400 !important;
+  font-family: "Switzer Variable" !important;
+  color: #30426a !important;
+  border: none !important;
+  background-color: #ffffff !important;
+  border-radius: 7px !important;
+  padding: 5px 10px !important;
+  display: inline-flex !important;
+  align-items: center;
+}
+.mainButtonDivClose {
+  display: flex !important;
+  justify-content: end !important;
+  margin-top: 30px !important;
+  gap: 20px !important;
+}
+
+.sharedandCompliance {
+  color: #30426a;
+  font-size: 18px;
+  font-weight: 700;
+  font-family: "Switzer Variable";
+}
+
+.customTag {
+  display: inline-block;
+  width: 41px;
+  height: 24px;
+  padding: 0 4px;
+  text-align: center;
+
+  /* Typography */
+  font-family: "Switzer Variable";
+  font-size: 14px;
+  font-weight: 500;
+  color: white;
+
+  /* Styling */
+  background-color: #30426a; /* Single color for all */
+  border-radius: 4px;
+
+  /* Text handling */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.complianceHeading {
+  font-size: 18px !important;
+  color: #30426a !important;
+  font-weight: 700;
+  font-family: "Switzer Variable";
+  padding: 9px;
+}
+
+.complianceSubHeading {
+  font-size: 18px !important;
+  color: #424242 !important;
+  font-weight: 500;
+  font-family: "Switzer Variable";
+  margin-left: 5px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.copyEmailConductMainClass {
+  position: absolute;
+  left: auto !important;
+  right: 50px !important;
+  top: 40px !important;
+  cursor: pointer;
+
+}
