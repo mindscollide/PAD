@@ -8,6 +8,14 @@ import {
   removeFirstSpace,
 } from "../../../commen/funtions/rejex";
 
+/**
+ * EmployeeMyApprovalFilter
+ * -------------------------
+ * Filters data based on user input: instrument name, quantity, and start date.
+ * Syncs input with both local state (for UI) and global state (for logic).
+ *
+ * @param {Function} handleSearch - Function to call when the "Search" button is clicked.
+ */
 export const EmployeeMyApprovalFilter = ({ handleSearch }) => {
   const {
     employeeMyApprovalSearch,
@@ -15,14 +23,14 @@ export const EmployeeMyApprovalFilter = ({ handleSearch }) => {
     resetEmployeeMyApprovalSearch,
   } = useSearchBarContext();
 
-  // Local input state
+  // 🔹 Local state for form inputs
   const [localState, setLocalState] = useState({
     instrumentName: "",
     quantity: "",
     startDate: "",
   });
 
-  // Tracks if the user has interacted with a field
+  // 🔹 Track which fields the user has interacted with
   const [dirtyFields, setDirtyFields] = useState({
     instrumentName: false,
     quantity: false,
@@ -30,8 +38,9 @@ export const EmployeeMyApprovalFilter = ({ handleSearch }) => {
   });
 
   /**
-   * Returns the display value for an input field.
-   * If user hasn't touched the field, fallback to global value.
+   * Return the display value for a given field:
+   * - If dirty: use local input
+   * - If not: fallback to global state
    */
   const getFieldValue = (field) => {
     return dirtyFields[field]
@@ -40,7 +49,7 @@ export const EmployeeMyApprovalFilter = ({ handleSearch }) => {
   };
 
   /**
-   * Handles input change for instrumentName and quantity
+   * Handle text input change (instrument name & quantity)
    */
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -60,7 +69,7 @@ export const EmployeeMyApprovalFilter = ({ handleSearch }) => {
   };
 
   /**
-   * Handles date changes
+   * Handle date selection or clearing
    */
   const handleDateChange = (date) => {
     setLocalState((prev) => ({ ...prev, startDate: date }));
@@ -68,10 +77,9 @@ export const EmployeeMyApprovalFilter = ({ handleSearch }) => {
   };
 
   /**
-   * Constructs the final search payload by:
-   * - Using local value if dirty
-   * - Otherwise, using global value
-   * - BUT, if local value is empty and dirty, send empty instead of fallback
+   * Handle search click:
+   * - Merge local values (only if dirty) into global state
+   * - If input is cleared, reflect that in global state
    */
   const handleSearchClick = () => {
     const finalSearch = {
@@ -86,12 +94,13 @@ export const EmployeeMyApprovalFilter = ({ handleSearch }) => {
       }),
     };
 
+    // 🔸 Only update touched fields, preserve others in global state
     setEmployeeMyApprovalSearch((prev) => ({
       ...prev,
-      ...finalSearch, // only updates touched keys
+      ...finalSearch,
     }));
 
-    // Optionally reset dirty and local state
+    // 🔸 Clear local state and dirty flags after search
     setLocalState({ instrumentName: "", quantity: "", startDate: "" });
     setDirtyFields({
       instrumentName: false,
@@ -99,16 +108,25 @@ export const EmployeeMyApprovalFilter = ({ handleSearch }) => {
       startDate: false,
     });
 
-    // Trigger parent search function
+    // 🔸 Trigger parent-level search logic
     handleSearch();
   };
 
   /**
-   * Resets both local and global state
+   * Handle reset click:
+   * - Clears all local & global filter fields
+   * - Triggers a re-render via tableFilterTrigger if needed
    */
   const handleResetClick = () => {
-    resetEmployeeMyApprovalSearch();
+    setEmployeeMyApprovalSearch((prev) => ({
+      ...prev,
+      instrumentName: "",
+      quantity: 0,
+      startDate: "",
+      tableFilterTrigger: true, // optional: to notify table to refetch/reset
+    }));
 
+    // Reset local state and dirty flags
     setLocalState({ instrumentName: "", quantity: "", startDate: "" });
     setDirtyFields({
       instrumentName: false,
@@ -119,6 +137,7 @@ export const EmployeeMyApprovalFilter = ({ handleSearch }) => {
 
   return (
     <>
+      {/* 🔸 First Row: Instrument Name & Quantity */}
       <Row gutter={[12, 12]}>
         <Col xs={24} sm={24} md={12} lg={12}>
           <TextField
@@ -145,6 +164,7 @@ export const EmployeeMyApprovalFilter = ({ handleSearch }) => {
         </Col>
       </Row>
 
+      {/* 🔸 Second Row: Date Picker */}
       <Row gutter={[12, 12]}>
         <Col xs={24} sm={24} md={12} lg={12}>
           <CustomDatePicker
@@ -158,6 +178,7 @@ export const EmployeeMyApprovalFilter = ({ handleSearch }) => {
         </Col>
       </Row>
 
+      {/* 🔸 Third Row: Action Buttons */}
       <Row gutter={[12, 12]} justify="end" style={{ marginTop: 16 }}>
         <Col>
           <Space>
