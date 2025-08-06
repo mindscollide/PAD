@@ -4,8 +4,13 @@ import styles from "./filter.module.css";
 import { Button, CheckBox } from "../..";
 // import { statusOptions } from "./utills"; // your predefined status list
 import { Row, Col, Divider } from "antd";
-import { emaStatusOptions, emtStatusOptions } from "./utills";
+import { apiCallStatus, emaStatusOptions, emtStatusOptions } from "./utils";
 import { useSidebarContext } from "../../../context/sidebarContaxt";
+import { useApi } from "../../../context/ApiContext";
+import { useGlobalLoader } from "../../../context/LoaderContext";
+import useNotification from "antd/es/notification/useNotification";
+import { useMyApproval } from "../../../context/myApprovalContaxt";
+import { useNavigate } from "react-router-dom";
 
 /**
  * Dropdown for selecting status filters with local state management.
@@ -13,12 +18,19 @@ import { useSidebarContext } from "../../../context/sidebarContaxt";
 const StatusFilterDropdown = ({
   confirm,
   clearFilters,
+  state,
   setState,
   tempSelected,
   setTempSelected,
 }) => {
+  const navigate = useNavigate();
   const { selectedKey } = useSidebarContext();
+  const { callApi } = useApi();
+  const { showLoader } = useGlobalLoader();
+  const { showNotification } = useNotification();
+  const { setIsEmployeeMyApproval } = useMyApproval();
   const [filterOption, setFilterOptions] = useState([]);
+
   const toggleSelection = (status) => {
     setTempSelected((prev) =>
       prev.includes(status)
@@ -43,15 +55,38 @@ const StatusFilterDropdown = ({
     }
   }, [selectedKey]);
 
-  const handleOk = () => {
+  const handleOk = async () => {
     setState((prev) => ({
       ...prev,
       status: tempSelected,
     }));
+    let newdata = tempSelected;
+      console.log("hello test", newdata);
+    await apiCallStatus({
+      selectedKey,
+      newdata,
+      state,
+      callApi,
+      showNotification,
+      showLoader,
+      navigate,
+      setIsEmployeeMyApproval,
+    });
     confirm(); // close dropdown
   };
 
-  const handleReset = () => {
+  const handleReset = async () => {
+    let newdata = [];
+    await apiCallStatus({
+      selectedKey,
+      newdata,
+      state,
+      callApi,
+      showNotification,
+      showLoader,
+      navigate,
+      setIsEmployeeMyApproval,
+    });
     setTempSelected([]);
     setState((prev) => ({
       ...prev,

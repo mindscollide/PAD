@@ -85,7 +85,7 @@ const SearchWithPopoverOnly = () => {
       case "1":
         setEmployeeMyApprovalSearch((prev) => ({
           ...prev,
-          filterTrigger: true,
+          tableFilterTrigger: true,
         }));
         break;
       case "2":
@@ -132,7 +132,10 @@ const SearchWithPopoverOnly = () => {
       case "1":
         setEmployeeMyApprovalSearch((prev) => ({
           ...prev,
-          filterTrigger: true,
+          instrumentName: "",
+          quantity: 0,
+          startDate: null,
+          tableFilterTrigger: true,
         }));
         break;
       case "2":
