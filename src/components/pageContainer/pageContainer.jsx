@@ -9,7 +9,7 @@ const PageLayout = ({ children, background = "white", className = "" }) => {
       className={classNames(
         styles.pageLayout,               // base container layout (padding, width, etc.)
         styles[`bg-${background}`],      // dynamic background style from CSS module
-        className                        // any additional Tailwind/custom class
+        styles[className]                        // any additional Tailwind/custom class
       )}
     >
       {children}

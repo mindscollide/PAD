@@ -41,7 +41,7 @@ export const EmployeeMyApprovalFilter = ({ handleSearch }) => {
     // Handle numeric validation for Quantity
     if (name === "Quantity") {
       if (value === "" || allowOnlyNumbers(value)) {
-        setState((prev) => ({ ...prev, quantity: value }));
+        setState((prev) => ({ ...prev, quantity: Number(value) }));
       }
       return;
     }
@@ -52,17 +52,15 @@ export const EmployeeMyApprovalFilter = ({ handleSearch }) => {
       [name]: removeFirstSpace(value),
     }));
   };
- const handleemployeeApprovalResetChange = (e, setState) => {
-
-
+  const handleemployeeApprovalResetChange = (e, setState) => {
     // General handler
     setState((prev) => ({
       ...prev,
-      ["quantity"]: "",
+      ["quantity"]: 0,
       ["instrumentName"]: "",
-      ["date"]: "",
+      ["startDate"]: "",
     }));
-  }
+  };
   return (
     <>
       <Row gutter={[12, 12]}>
@@ -83,7 +81,11 @@ export const EmployeeMyApprovalFilter = ({ handleSearch }) => {
           <TextField
             label="Quantity"
             name="Quantity"
-            value={employeeMyApprovalSearch.quantity}
+            value={
+              employeeMyApprovalSearch.quantity != 0
+                ? employeeMyApprovalSearch.quantity
+                : ""
+            }
             onChange={(e) =>
               handleEmployeeApprovalInputChange(e, setEmployeeMyApprovalSearch)
             }
@@ -97,12 +99,13 @@ export const EmployeeMyApprovalFilter = ({ handleSearch }) => {
         <Col xs={24} sm={24} md={12} lg={12}>
           <CustomDatePicker
             label="Date"
+            name="startDate"
             size="medium"
-            value={employeeMyApprovalSearch.date}
+            value={employeeMyApprovalSearch.startDate}
             onChange={(date) =>
               setEmployeeMyApprovalSearch((prev) => ({
                 ...prev,
-                date: date, // or `date?.format("YYYY-MM-DD")` if needed
+                startDate: date, // or `date?.format("YYYY-MM-DD")` if needed
               }))
             }
             onClear={() => console.log("Date cleared")}

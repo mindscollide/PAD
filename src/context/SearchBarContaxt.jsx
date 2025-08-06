@@ -20,7 +20,7 @@ export const SearchBarProvider = ({ children }) => {
   const [employeeMyApprovalSearch, setEmployeeMyApprovalSearch] = useState({
     instrumentName: "", // Name of the instrument
     quantity: "", // Quantity filter
-    date: null, // Single date (could be Date object or string)
+    startDate: null, // Single date (could be Date object or string)
     mainInstrumentName: "", // Main instrument name for popover or modal
     type: [], // Type filter: ["Buy", "Sell"]
     status: [], // Status filter: ["Pending", "Approved", etc.]
@@ -37,7 +37,7 @@ export const SearchBarProvider = ({ children }) => {
   const [employeeMyTransactionSearch, setEmployeeMyTransactionSearch] =
     useState({
       instrumentName: "", // Name of the instrument
-      quantity: "", // Quantity filter
+      quantity: 0, // Quantity filter
       startDate: null, // Start of date range
       endDate: null, // End of date range
       mainInstrumentName: "", // Main instrument name for popover or modal
@@ -94,8 +94,8 @@ export const SearchBarProvider = ({ children }) => {
   const resetEmployeeMyApprovalSearch = () => {
     setEmployeeMyApprovalSearch({
       instrumentName: "",
-      quantity: "",
-      date: null,
+      quantity: 0,
+      startDate: null,
       mainInstrumentName: "",
       type: [],
       status: [],
