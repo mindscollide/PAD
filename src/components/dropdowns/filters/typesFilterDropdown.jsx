@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import styles from "./filter.module.css";
 import { Button, CheckBox } from "../..";
-import { mapBuySellToIds, typeOptions } from "./utills";
+import { apiCallType, mapBuySellToIds, typeOptions } from "./utils";
 import { Row, Col, Divider } from "antd";
 import { useSidebarContext } from "../../../context/sidebarContaxt";
 import { SearchTadeApprovals } from "../../../api/myApprovalApi";
@@ -38,61 +38,41 @@ const TypeFilterDropdown = ({
     );
   };
 
-  const apiCall = async (selectedKey, statusTypeIds) => {
-    switch (selectedKey) {
-      case "1":
-        console.log("handleOk", statusTypeIds);
-
-        let requestdata = {
-          InstrumentName: state.instrumentName || state.mainInstrumentName,
-          StartDate: state.date || "",
-          Quantity: state.quantity || 0,
-          StatusIds: state.status || [],
-          TypeIds: statusTypeIds || [],
-          PageNumber: state.pageNumber || 1,
-          Length: state.pageSize || 10,
-        };
-        console.log("handleOk", requestdata);
-        showLoader(true);
-
-        const data = await SearchTadeApprovals({
-          callApi,
-          showNotification,
-          showLoader,
-          requestdata, // ✅ pass filters
-          navigate,
-        });
-        console.log("handleOk", data);
-        setIsEmployeeMyApproval(data);
-
-        break;
-
-      case "2":
-        // callFixedIncomeAPI();
-        break;
-
-      case "3":
-        // callCommoditiesAPI();
-        break;
-
-      default:
-        console.warn("No matching key for API call");
-        break;
-    }
-  };
-  const handleOk = () => {
-    const statusTypeIds = mapBuySellToIds(tempSelected);
-
+  const handleOk = async () => {
     setState((prev) => ({
       ...prev,
       type: tempSelected,
     }));
-    console.log("handleOk", statusTypeIds);
-    apiCall(selectedKey, statusTypeIds);
+    console.log("hello test", tempSelected);
+    let newdata = tempSelected;
+    console.log("hello test", newdata);
+    await apiCallType({
+      selectedKey,
+      newdata,
+      state,
+      callApi,
+      showNotification,
+      showLoader,
+      navigate,
+      setIsEmployeeMyApproval,
+    });
+
     confirm(); // close dropdown
   };
 
-  const handleReset = () => {
+  const handleReset = async () => {
+    let newdata = [];
+    console.log("hello test", newdata);
+    await apiCallType({
+      selectedKey,
+      newdata,
+      state,
+      callApi,
+      showNotification,
+      showLoader,
+      navigate,
+      setIsEmployeeMyApproval,
+    });
     setTempSelected([]);
     setState((prev) => ({
       ...prev,

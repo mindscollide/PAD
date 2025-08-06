@@ -33,3 +33,7 @@
 .bg-transparent {
   background-color: transparent;
 }
+/* Add this new class */
+.changeHeight {
+  min-height: 82vh !important;
+}

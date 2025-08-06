@@ -250,3 +250,6 @@ body {
 :where(.css-dev-only-do-not-override-1rfzxih).ant-card .ant-card-body {
   padding: 0px !important;
 }
+.ant-card-body {
+  padding: 0px !important;
+}

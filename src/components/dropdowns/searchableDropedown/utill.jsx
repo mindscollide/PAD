@@ -1,3 +1,5 @@
+import { SearchTadeApprovals } from "../../../api/myApprovalApi";
+import { mapBuySellToIds, mapStatusToIds } from "../filters/utils";
 import { EmployeeMyApprovalFilter } from "./EmployeeMyApprovalFilter";
 import { EmployeePendingApprovalFilter } from "./EmployeePendingApprovalFilter";
 import { EmployeePortfolioFilter } from "./EmployeePortfolioFilter";
@@ -180,5 +182,49 @@ export const renderFilterContent = (
 
     default:
       return null; // Fallback if no matching key
+  }
+};
+
+
+export const apiCallSeacrch = async ({
+  selectedKey,
+  employeeMyApprovalSearch,
+  callApi,
+  showNotification,
+  showLoader,
+  navigate,
+}) => {
+  switch (selectedKey) {
+    case "1": {
+      console.log("hello state",employeeMyApprovalSearch);
+      const TypeIds = mapBuySellToIds(employeeMyApprovalSearch.type);
+      console.log("hello",TypeIds);
+
+      const statusIds = mapStatusToIds(employeeMyApprovalSearch.status);
+      console.log("hello",statusIds);
+      const requestdata = {
+        InstrumentName: employeeMyApprovalSearch.instrumentName || employeeMyApprovalSearch.mainInstrumentName,
+        StartDate: employeeMyApprovalSearch.startDate || "",
+        Quantity: employeeMyApprovalSearch.quantity || 0,
+        StatusIds: statusIds || [],
+        TypeIds: TypeIds || [],
+        PageNumber: employeeMyApprovalSearch.pageNumber || 1,
+        Length: employeeMyApprovalSearch.pageSize || 10,
+      };
+      showLoader(true);
+      SearchTadeApprovals({
+        callApi,
+        showNotification,
+        showLoader,
+        requestdata,
+        navigate,
+      });
+      break;
+    }
+
+    case "2":
+    case "3":
+    default:
+      break;
   }
 };
