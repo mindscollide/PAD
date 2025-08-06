@@ -165,7 +165,7 @@
 .mainButtonDivClose {
   display: flex;
   justify-content: end !important;
-  margin-top: 30px !important;
+  margin-top: 25px !important;
 }
 
 .modalBodyWrapper {
@@ -184,10 +184,10 @@
 }
 .backgrounColorOfStepper {
   background-color: #fff1e7 !important;
-  padding: 10px 11px;
+  padding: 5px 11px;
   display: flex;
   flex-direction: column !important;
-  margin-top: 20px;
+  margin-top: 10px;
   border-radius: 8px !important;
 }
 

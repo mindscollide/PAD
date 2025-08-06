@@ -98,7 +98,7 @@ const ViewDetailModal = () => {
 
               {statusData.label === "Approved" && (
                 <>
-                  <Row style={{ marginTop: "16px" }}>
+                  <Row style={{ marginTop: "5px" }}>
                     <Col span={24}>
                       <div
                         className={
