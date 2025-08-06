@@ -16,6 +16,9 @@ export const GlobalModalProvider = ({ children }) => {
   // To Show View Modal on ViewDetail Button on add approval listing
   const [isViewDetail, setIsViewDetail] = useState(false);
 
+  // To show Selected Row Data in View Detail Modal
+  const [selectedViewDetail, setSelectedViewDetail] = useState(null);
+
   // Global Submit Modal for all
 
   return (
@@ -29,6 +32,8 @@ export const GlobalModalProvider = ({ children }) => {
         setIsSubmit,
         isViewDetail,
         setIsViewDetail,
+        selectedViewDetail,
+        setSelectedViewDetail,
       }}
     >
       {children}

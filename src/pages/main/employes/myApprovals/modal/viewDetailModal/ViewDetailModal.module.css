@@ -1,5 +1,20 @@
-.borderClassViewDetail {
+.resubmittedBorderClass {
   border: 2.65px dashed #717171 !important;
+  border-radius: 8px !important;
+  padding: 0px 20px !important;
+  gap: 10px !important;
+}
+
+.pendingBorderClass {
+  border: 2.65px dashed #717171 !important;
+  border-radius: 8px !important;
+  padding: 0px 20px !important;
+  gap: 10px !important;
+}
+
+.approvedBorderClass {
+  border: 2.65px dashed #81d885 !important;
+  background-color: #c5ffc7 !important;
   border-radius: 8px !important;
   padding: 0px 20px !important;
   gap: 10px !important;
@@ -15,6 +30,26 @@
   justify-content: center !important;
 }
 
+.resubmittedDetailHeading {
+  font-size: 36px !important;
+  color: #424242 !important;
+  font-weight: 600;
+  font-family: "Switzer Variable";
+  text-transform: uppercase;
+  display: flex;
+  justify-content: center !important;
+}
+
+.approvedDetailHeading {
+  font-size: 36px !important;
+  color: #00640a !important;
+  font-weight: 600;
+  font-family: "Switzer Variable";
+  text-transform: uppercase;
+  display: flex;
+  justify-content: center !important;
+}
+
 .backgrounColorOfDetail {
   background-color: #fff1e7 !important;
   padding: 10px 20px;
@@ -22,6 +57,38 @@
   flex-direction: column !important;
 }
 
+.backgrounColorOfBrokerDetail {
+  background-color: #fff1e7 !important;
+  padding: 10px 20px;
+  display: flex;
+  flex-direction: column !important;
+  border-bottom-right-radius: 8px;
+  border-bottom-left-radius: 8px;
+}
+
+.backgroundColorOfInstrumentDetailApproved {
+  background-color: #fff1e7 !important;
+  padding: 10px 20px;
+  display: flex;
+  flex-direction: column !important;
+  border-top-left-radius: 8px !important;
+  border-top-right-radius: 8px !important;
+}
+
+.backgrounColorOfInstrumentDetail {
+  background-color: #fff1e7 !important;
+  padding: 10px 20px;
+  display: flex;
+  flex-direction: column !important;
+  border-top-left-radius: 8px;
+}
+.backgrounColorOfApprovalDetail {
+  background-color: #fff1e7 !important;
+  padding: 10px 20px;
+  display: flex;
+  flex-direction: column !important;
+  border-top-right-radius: 8px;
+}
 .viewDetailMainLabels {
   font-size: 14px !important;
   color: #30426a !important;
@@ -30,6 +97,9 @@
 }
 
 .viewDetailSubLabels {
+  display: flex;
+  align-items: center;
+  gap: 10px;
   font-size: 20px !important;
   color: #424242 !important;
   font-weight: 500;
@@ -64,15 +134,6 @@
 
 .modalBodyWrapper {
   padding: 10px 50px; /* or any padding you want */
-}
-
-.customstepper .stepper-step {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 8px; /* Space between image and text */
-  margin: 0 !important;
-  padding: 0 !important;
 }
 
 .customlabel {
@@ -125,4 +186,34 @@
   width: 100%;
   height: 100%;
   z-index: 1;
+}
+
+.customTag {
+  display: inline-block;
+  width: 41px;
+  height: 24px;
+  padding: 0 4px;
+  text-align: center;
+
+  /* Typography */
+  font-family: "Switzer Variable";
+  font-size: 14px;
+  font-weight: 500;
+  color: white;
+
+  /* Styling */
+  background-color: #30426a; /* Single color for all */
+  border-radius: 4px;
+
+  /* Text handling */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.approvedButtonClass {
+  display: flex;
+  justify-content: end;
+  align-items: center;
+  gap: 20px !important;
 }

@@ -10,6 +10,7 @@ import ArrowDown from "../../../../assets/img/arrow-down-dark.png";
 import { ArrowsAltOutlined } from "@ant-design/icons";
 import TypeColumnTitle from "../../../../components/dropdowns/filters/typeColumnTitle";
 import StatusColumnTitle from "../../../../components/dropdowns/filters/statusColumnTitle";
+import { useGlobalModal } from "../../../../context/GlobalModalContext";
 // import TypeColumnTitle from "./typeFilter";
 
 /**
@@ -19,6 +20,7 @@ import StatusColumnTitle from "../../../../components/dropdowns/filters/statusCo
  * @param {object} sortedInfo - Current sort state from the table
  * @returns {JSX.Element} The sort icon
  */
+
 const getSortIcon = (columnKey, sortedInfo) => {
   if (sortedInfo?.columnKey === columnKey) {
     return sortedInfo.order === "ascend" ? (
@@ -196,12 +198,32 @@ export const getBorderlessTableColumns = (
     title: "",
     key: "actions",
     width: "10%",
-    render: () => (
-      <Button
-        className="big-orange-button"
-        text="View Details"
-        onClick={() => setIsViewDetail(true)}
-      />
-    ),
+    render: (text, record) => {
+      //Global State to selected data to show in ViewDetailModal
+      const { setSelectedViewDetail } = useGlobalModal();
+      console.log(record, "Actions render fired:");
+      return (
+        <Button
+          className="big-orange-button"
+          text="View Details"
+          onClick={() => {
+            console.log(record, "Clicked record");
+            setSelectedViewDetail(record);
+            setIsViewDetail(true);
+          }}
+        />
+      );
+    },
+    //   (
+    //   <Button
+    //     className="big-orange-button"
+    //     text="View Details"
+    //     onClick={() => {
+    //       console.log(record, "CHeckerCheckrrecord");
+    //       setSelectedViewDetail(record);
+    //       setIsViewDetail(true);
+    //     }}
+    //   />
+    // ),
   },
 ];

@@ -52,6 +52,7 @@ const Approval = () => {
   // Sort state for AntD Table
   const [sortedInfo, setSortedInfo] = useState({});
   const [approvalData, setApprovalData] = useState([]);
+  console.log(employeeMyApprovalSearch, "checkerapprovalaproval");
 
   // Confirmed filters displayed as tags
   const [submittedFilters, setSubmittedFilters] = useState([]);
@@ -262,6 +263,7 @@ const Approval = () => {
             <BorderlessTable
               rows={approvalData}
               columns={columns}
+              rowKey="id"
               scroll={{ x: "max-content", y: 550 }}
               classNameTable="border-less-table-orange"
               onChange={(pagination, filters, sorter) => {

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Col, Row, Tag, Steps, Typography } from "antd";
+import { Col, Row, Tag } from "antd";
 import { useGlobalModal } from "../../../../../../context/GlobalModalContext";
 import { GlobalModal } from "../../../../../../components";
 import styles from "./ViewDetailModal.module.css";
@@ -8,9 +8,48 @@ import CustomButton from "../../../../../../components/buttons/button";
 import CheckIcon from "../../../../../../assets/img/Check.png";
 import EllipsesIcon from "../../../../../../assets/img/Ellipses.png";
 
-import { CheckCircleFilled, EllipsisOutlined } from "@ant-design/icons";
 const ViewDetailModal = () => {
-  const { isViewDetail, setIsViewDetail } = useGlobalModal();
+  const { isViewDetail, setIsViewDetail, selectedViewDetail } =
+    useGlobalModal();
+
+  const getStatusStyle = (status) => {
+    switch (status) {
+      case "Pending":
+        return {
+          label: "Pending",
+          labelClassName: styles.pendingDetailHeading,
+          divClassName: styles.pendingBorderClass,
+        };
+      case "Approved":
+        return {
+          label: "Approved",
+          labelClassName: styles.approvedDetailHeading,
+          divClassName: styles.approvedBorderClass,
+        };
+      case "Not Traded":
+        return {
+          label: "Not Traded",
+          labelClassName: styles.notTradedDetailHeading,
+          divClassName: styles.notTradedBorderClass,
+        };
+      case "Resubmitted":
+        return {
+          label: "Resubmitted",
+          labelClassName: styles.resubmittedDetailHeading,
+          divClassName: styles.resubmittedBorderClass,
+        };
+      default:
+        return {
+          label: "Detail",
+          labelClassName: styles.defaultDetailHeading,
+          divClassName: styles.defaultBorderClass,
+        };
+    }
+  };
+
+  const statusData = getStatusStyle(selectedViewDetail?.status);
+
+  console.log(statusData, "selectedViewDetail");
 
   return (
     <GlobalModal
@@ -23,30 +62,125 @@ const ViewDetailModal = () => {
           <div className={styles.modalBodyWrapper}>
             <Row>
               <Col span={24}>
-                <div className={styles.borderClassViewDetail}>
-                  <label className={styles.pendingDetailHeading}>Pending</label>
+                <div className={statusData.divClassName}>
+                  <label className={statusData.labelClassName}>
+                    {statusData.label}
+                  </label>
                 </div>
               </Col>
             </Row>
 
-            <Row gutter={[4, 4]} style={{ marginTop: "16px" }}>
+            {statusData.label === "Approved" && (
+              <>
+                <Row style={{ marginTop: "16px" }}>
+                  <Col span={24}>
+                    <div
+                      className={
+                        styles.backgroundColorOfInstrumentDetailApproved
+                      }
+                    >
+                      <label className={styles.viewDetailMainLabels}>
+                        Instrument
+                      </label>
+                      <label className={styles.viewDetailSubLabels}>
+                        <span className={styles.customTag}>EQ</span> PSO-OCT
+                      </label>
+                    </div>
+                  </Col>
+                </Row>
+              </>
+            )}
+
+            <Row
+              gutter={[4, 4]}
+              style={{
+                marginTop:
+                  statusData.label === "Pending" || "Resubmitted"
+                    ? "16px"
+                    : "3px",
+              }}
+            >
               <Col span={12}>
-                <div className={styles.backgrounColorOfDetail}>
+                <div
+                  className={
+                    statusData.label === "Pending"
+                      ? styles.backgrounColorOfInstrumentDetail
+                      : styles.backgrounColorOfDetail
+                  }
+                >
                   <label className={styles.viewDetailMainLabels}>
-                    Instrument
+                    {statusData.label === "Approved"
+                      ? "Time Remaining to Trade"
+                      : "Instrument"}
                   </label>
-                  <label className={styles.viewDetailSubLabels}>PSO-OCT</label>
+                  <label className={styles.viewDetailSubLabels}>
+                    {statusData.label === "Approved" ? (
+                      <>1 day 4 hours remaining</>
+                    ) : (
+                      <>
+                        <span className={styles.customTag}>EQ</span> PSO-OCT
+                      </>
+                    )}
+                  </label>
                 </div>
               </Col>
-              <Col span={12}>
-                <div className={styles.backgrounColorOfDetail}>
-                  <label className={styles.viewDetailMainLabels}>
-                    Approval ID
-                  </label>
-                  <label className={styles.viewDetailSubLabels}>REQ-001</label>
-                </div>
-              </Col>
+
+              {statusData.label === "Resubmitted" ? (
+                <>
+                  <Col span={6}>
+                    <div
+                      className={
+                        statusData.label === "Pending"
+                          ? styles.backgrounColorOfApprovalDetail
+                          : styles.backgrounColorOfDetail
+                      }
+                    >
+                      <label className={styles.viewDetailMainLabels}>
+                        Approval ID
+                      </label>
+                      <label className={styles.viewDetailSubLabels}>
+                        REQ-001
+                      </label>
+                    </div>
+                  </Col>
+                  <Col span={6}>
+                    {/* You can render some other related info here */}
+                    <div
+                      className={
+                        statusData.label === "Pending"
+                          ? styles.backgrounColorOfApprovalDetail
+                          : styles.backgrounColorOfDetail
+                      }
+                    >
+                      <label className={styles.viewDetailMainLabels}>
+                        Tracking ID
+                      </label>
+                      <label className={styles.viewDetailSubLabels}>
+                        REQ-002
+                      </label>
+                    </div>
+                  </Col>
+                </>
+              ) : (
+                <Col span={12}>
+                  <div
+                    className={
+                      statusData.label === "Pending"
+                        ? styles.backgrounColorOfApprovalDetail
+                        : styles.backgrounColorOfDetail
+                    }
+                  >
+                    <label className={styles.viewDetailMainLabels}>
+                      Approval ID
+                    </label>
+                    <label className={styles.viewDetailSubLabels}>
+                      REQ-001
+                    </label>
+                  </div>
+                </Col>
+              )}
             </Row>
+
             <Row gutter={[4, 4]} style={{ marginTop: "3px" }}>
               <Col span={12}>
                 <div className={styles.backgrounColorOfDetail}>
@@ -87,7 +221,7 @@ const ViewDetailModal = () => {
             </Row>
             <Row style={{ marginTop: "3px" }}>
               <Col span={24}>
-                <div className={styles.backgrounColorOfDetail}>
+                <div className={styles.backgrounColorOfBrokerDetail}>
                   <label className={styles.viewDetailMainLabels}>Brokers</label>
                   <div className={styles.tagContainer}>
                     <Tag className={styles.tagClasses}>
@@ -119,7 +253,6 @@ const ViewDetailModal = () => {
                     circleFontSize: "0px", // hide default number
                     labelFontSize: "17px",
                     borderRadius: "50%",
-                    
                   }}
                 >
                   {[0, 1, 2].map((step, index) => (
@@ -170,7 +303,22 @@ const ViewDetailModal = () => {
 
             <Row className={styles.mainButtonDivClose}>
               <Col>
-                <CustomButton text={"Close"} className="big-light-button" />
+                {statusData.label === "Approved" ? (
+                  <>
+                    <div className={styles.approvedButtonClass}>
+                      <CustomButton
+                        text={"View Comment"}
+                        className="big-light-button"
+                      />
+                      <CustomButton
+                        text={"Conduct Transaction"}
+                        className="big-dark-button"
+                      />
+                    </div>
+                  </>
+                ) : (
+                  <CustomButton text={"Close"} className="big-light-button" />
+                )}
               </Col>
             </Row>
           </div>
