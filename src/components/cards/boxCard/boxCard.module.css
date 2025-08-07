@@ -25,7 +25,7 @@
 }
 
 .smallShareHomeCard {
-  height: 176px;
+  height: 150px;
   background: #fff;
   border-radius: 13.89px;
   padding: 0px;
@@ -61,7 +61,7 @@
 }
 
 .smallShareHomeCardstatBox {
-  padding: 12px 16px;
+  padding: 5px 16px;
   border-radius: 8px;
   min-height: 70px;
   display: flex;
