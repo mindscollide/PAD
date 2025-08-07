@@ -65,8 +65,8 @@ const Approval = () => {
   } = useSearchBarContext();
   const { employeeBasedBrokersData, allInstrumentsData } =
     useDashboardContext();
-     console.log("employeeBasedBrokersData", employeeBasedBrokersData);
-  console.log("employeeBasedBrokersData", allInstrumentsData);
+  console.log("employeeBasedBrokersData", employeeBasedBrokersData);
+  console.log("allInstrumentsDataallInstrumentsData", allInstrumentsData);
   const [sortedInfo, setSortedInfo] = useState({});
   const [approvalData, setApprovalData] = useState([]);
   console.log(employeeMyApprovalSearch, "checkerapprovalaproval");
@@ -87,8 +87,7 @@ const Approval = () => {
       key: "1",
       label: "Equities",
       onClick: () => {
-        setIsTradeRequestRestricted(false);
-        // setIsSubmit(false); // Reset submitted state
+        // setIsTradeRequestRestricted(false);
         setIsEquitiesModalVisible(true);
       },
     },
@@ -352,10 +351,15 @@ const Approval = () => {
           )}
         </div>
       </PageLayout>
+
       {isEquitiesModalVisible && <EquitiesApproval />}
+
       {isSubmit && <SubmittedModal />}
+
       {isTradeRequestRestricted && <RequestRestrictedModal />}
+
       {isViewDetail && <ViewDetailModal />}
+
       {isViewComments && <ViewComment />}
 
       {isResubmitted && <ResubmitModal />}

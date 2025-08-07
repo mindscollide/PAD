@@ -74,6 +74,7 @@ const ViewDetailModal = () => {
   };
 
   console.log(statusData, "selectedViewDetail");
+  console.log(selectedViewDetail, "selectedViewDetail21212");
 
   return (
     <>

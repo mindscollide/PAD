@@ -253,3 +253,32 @@ body {
 .ant-card-body {
   padding: 0px !important;
 }
+
+/* This is For show Broker dropdown Insdie the Add Approval Request Modal */
+.ant-select-show-search:where(
+    .css-dev-only-do-not-override-1rfzxih
+  ).ant-select:not(.ant-select-customize-input)
+  .ant-select-selector {
+  cursor: text;
+  overflow: hidden;
+  max-height: 56px !important;
+  font-family: "Switzer Variable" !important;
+  overflow-y: auto !important;
+}
+
+:where(.css-dev-only-do-not-override-1rfzxih).ant-select-multiple
+  .ant-select-selection-overflow {
+  display: flex;
+  height: 50px !important;
+  align-items: center !important;
+  flex: auto;
+  flex-wrap: wrap;
+  max-width: 100%;
+}
+
+/* This is the ant design CheckBox Color inside the Add Approval Request Modal on Broker dropdow*/
+:where(.css-dev-only-do-not-override-1rfzxih).ant-checkbox-checked
+  .ant-checkbox-inner {
+  background-color: #30426a;
+  border-color: #30426a;
+}

@@ -88,19 +88,19 @@
 }
 
 .checkboxSelect {
-  width: 100% !important;
   height: 56px !important;
   display: flex;
   align-items: center !important;
-  border: 0.87px solid #717171 !important;
   border-radius: 6.95px !important;
   margin-top: 3px;
 }
 
-.typeLabel {
-  font-family: "Switzer Variable" !important;
-  color: #30426a !important;
-  font-size: 15px !important;
-  font-weight: 700 !important;
+.checkboxSelect :global(.ant-select-selector) {
+  cursor: pointer !important;
+  border: 1px solid #717171 !important;
+  box-shadow: none !important;
+  transition: none !important;
+  background-color: white !important;
+  font-size: 15px !important; /* Matches the Type Select */
+  line-height: 56px !important;
 }
-

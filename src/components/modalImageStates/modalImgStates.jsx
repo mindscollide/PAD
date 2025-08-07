@@ -1,6 +1,7 @@
 import React from "react";
 import styles from "./modalImgStates.module.css";
 import ApprovalsIcon from "../../assets/img/approval-icon.png";
+import Restricted from "../../assets/img/Restricted.png";
 
 const config = {
   Submitted: {
@@ -11,21 +12,41 @@ const config = {
   },
   Resubmitted: {
     heading: "Resubmitted",
-    subheading: "Your request has been successfully resubmitted.",
+    subheading: "Your approval request has been resubmitted successfully",
     image: ApprovalsIcon,
+  },
+  TradeRestricted: {
+    heading: "Trade Request Restricted",
+    subheading: (
+      <>
+        Your request to buy shares of PSO cannot be processed due to <br />
+        the violation of policy
+      </>
+    ),
+    image: Restricted,
   },
 };
 
-const ModalImgStates = ({ type = "Submitted", style }) => {
-  const { heading, subheading, image } = config[type] || {};
+const ModalImgStates = ({
+  type = "Submitted",
+  style = {},
+  headingClassName = "",
+  subheadingClassName = "",
+  containerClassName = "",
+}) => {
+  const state = config[type];
 
-  if (!heading || !subheading || !image) return null; // fallback if type is not valid
+  if (!state) return null;
+
+  const { heading, subheading, image } = state;
 
   return (
-    <div className={styles.container} style={style}>
+    <div className={`${styles.container} ${containerClassName}`} style={style}>
       <img src={image} alt={type} />
-      <div className={styles.heading}>{heading}</div>
-      <div className={styles.subheading}>{subheading}</div>
+      <div className={`${styles.heading} ${headingClassName}`}>{heading}</div>
+      <div className={`${styles.subheading} ${subheadingClassName}`}>
+        {subheading}
+      </div>
     </div>
   );
 };

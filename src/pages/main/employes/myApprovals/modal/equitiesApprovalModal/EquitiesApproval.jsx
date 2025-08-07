@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Col, Row, Select, Space, Button, Checkbox } from "antd";
+import { Col, Row, Select, Space, Checkbox } from "antd";
 import { useGlobalModal } from "../../../../../../context/GlobalModalContext";
 import {
   CommenSearchInput,
@@ -9,84 +9,74 @@ import {
 } from "../../../../../../components";
 import styles from "./EquitiesApproval.module.css";
 import CustomButton from "../../../../../../components/buttons/button";
-import SubmittedModal from "../submittedModal/SubmittedModal";
+import { useDashboardContext } from "../../../../../../context/dashboardContaxt";
 
 const EquitiesApproval = () => {
   const {
     isEquitiesModalVisible,
-    setIsSubmit,
-    isSubmit,
     setIsEquitiesModalVisible,
-    isTradeRequestRestricted,
     setIsTradeRequestRestricted,
   } = useGlobalModal();
 
-  const [selectedItems, setSelectedItems] = useState([]);
+  const { employeeBasedBrokersData, allInstrumentsData } =
+    useDashboardContext();
 
-  console.log("Checker Equities Approval open");
-  console.log(
-    isEquitiesModalVisible,
-    setIsSubmit,
-    isSubmit,
-    setIsEquitiesModalVisible,
-    isTradeRequestRestricted,
-    setIsTradeRequestRestricted,
-    "Checker Equities Approval open"
-  );
+  console.log(employeeBasedBrokersData.length, "employeeBasedBrokersData121");
+  console.log(allInstrumentsData.length, "employeeBasedBrokersData121");
 
-  const instrumentData = [
-    {
-      type: "EQ",
-      name: "PSO",
-      description: "Pakistan State Oil Company Limited - PSX",
-    },
-    {
-      type: "FT",
-      name: "PSO-OCT",
-      description: "PSO-OCT - PSX",
-    },
-    {
-      type: "FT",
-      name: "PSO-NOV",
-      description: "PSO-NOV - PSX",
-    },
-  ];
+  //For Instrument Dropdown show selected Name
+  const [selectedInstrument, setSelectedInstrument] = useState(null);
+  console.log(selectedInstrument, "selectedInstrument");
 
-  const options = [
-    { label: "K Trade Security", value: "1" },
-    { label: "Arif Habib Limited", value: "2" },
-    { label: "MRA Security Limited", value: "3" },
-    { label: "AKD Securities", value: "4" },
-  ];
+  // for employeeBroker state to show data in dropdown
+  const [selectedBrokers, setSelectedBrokers] = useState([]);
+  console.log(selectedBrokers, "selectedBrokersselectedBrokers1");
 
-  const handleSelect = (value) => {
-    console.log("Selected:", value);
-  };
+  // this is how I extract data fro the AllInstrumentsData which is stored in dashboardContextApi
+  const formattedInstruments = (allInstrumentsData || []).map((item) => ({
+    type: item?.instrumentID,
+    name: item?.instrumentCode,
+    description: item?.instrumentName,
+  }));
 
-  const handleAdd = (item) => {
-    console.log("Add clicked for:", item.name);
-  };
-
-  const customOptions = options.map((item) => ({
+  // 🔹 Memoize broker options to avoid unnecessary re-renders
+  // Format broker options
+  const brokerOptions = (employeeBasedBrokersData || []).map((broker) => ({
     label: (
       <div style={{ display: "flex", alignItems: "center" }}>
         <Checkbox
-          checked={selectedItems.includes(item.value)}
+          checked={selectedBrokers.some((b) => b.brokerID === broker.brokerID)}
           style={{ marginRight: 8 }}
         />
-        {item.label}
+        {broker.brokerName}
       </div>
     ),
-    value: item.value,
+    value: broker.brokerID,
+    raw: broker, // keep full broker data for later use
   }));
 
-  const handleChange = (values) => {
-    setSelectedItems(values);
+  // Handle when user selects/deselects brokers
+  const handleBrokerChange = (selectedIDs) => {
+    const selectedData = brokerOptions
+      .filter((item) => selectedIDs.includes(item.value))
+      .map((item) => item.raw);
+
+    setSelectedBrokers(selectedData);
+  };
+  //  Prepare selected values for Select's `value` prop
+  const selectedBrokerIDs = selectedBrokers.map((b) => b.brokerID);
+  console.log(selectedBrokerIDs, "selectedBrokerIDs");
+
+  const handleSelect = (value) => {
+    setSelectedInstrument(value);
+  };
+
+  const handleClearInstrument = () => {
+    setSelectedInstrument(null);
   };
 
   const clickOnSubmitButton = () => {
     setIsEquitiesModalVisible(false); // Close Equities modal
-    // setIsSubmit(true);
     setIsTradeRequestRestricted(true);
   };
 
@@ -95,6 +85,7 @@ const EquitiesApproval = () => {
       <GlobalModal
         visible={isEquitiesModalVisible}
         width={"800px"}
+        centered={true}
         onCancel={() => setIsEquitiesModalVisible(false)}
         modalBody={
           <>
@@ -111,21 +102,24 @@ const EquitiesApproval = () => {
                 <Col span={24}>
                   <label className={styles.instrumentLabel}>Instrument</label>
                   <InstrumentSelect
-                    data={instrumentData}
+                    data={formattedInstruments}
                     onSelect={handleSelect}
-                    onAdd={handleAdd}
+                    value={selectedInstrument}
+                    onClear={handleClearInstrument}
                     className={styles.selectinstrumentclass}
+                    disabled={allInstrumentsData.length === 0}
                   />
                 </Col>
               </Row>
 
               <Row className={styles.mt1} gutter={[20, 20]}>
-                <Col span={12} className={styles.mtopPx}>
-                  <CommenSearchInput
+                <Col span={12}>
+                  <label className={styles.instrumentLabel}>Type</label>
+                  <Select
                     label="Type"
                     name="broker"
                     placeholder={"Select"}
-                    className={styles.selectinstrumentclass}
+                    className={styles.checkboxSelect}
                   />
                 </Col>
                 <Col span={12}>
@@ -143,10 +137,11 @@ const EquitiesApproval = () => {
                     name="broker"
                     placeholder={"Select"}
                     mode="multiple"
-                    value={selectedItems}
-                    onChange={handleChange}
-                    options={customOptions}
+                    value={selectedBrokerIDs}
+                    onChange={handleBrokerChange}
+                    options={brokerOptions}
                     className={styles.checkboxSelect}
+                    disabled={employeeBasedBrokersData.length === 0}
                   />
                 </Col>
               </Row>

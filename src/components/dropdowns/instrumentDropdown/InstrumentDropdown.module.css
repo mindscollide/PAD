@@ -70,6 +70,24 @@
 .borderRadiusForselect {
   width: 100%;
   height: 56px;
-  border-radius: 6.95px;
-  border: 1px solid #717171;
+}
+
+/* Fully override Select hover/focus/active/open styles */
+.borderRadiusForselect :global(.ant-select-selector) {
+  border: 1px solid #717171 !important;
+  box-shadow: none !important;
+  transition: none !important;
+  background-color: white !important;
+}
+
+.borderRadiusForselect :global(.ant-select-focused .ant-select-selector),
+.borderRadiusForselect :global(.ant-select-selector:hover),
+.borderRadiusForselect :global(.ant-select-open .ant-select-selector) {
+  box-shadow: none !important;
+  background-color: white !important;
+}
+
+/* Optional: Remove arrow hover highlight */
+.borderRadiusForselect :global(.ant-select-arrow) {
+  color: #717171 !important;
 }

@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Col, Row, Tag } from "antd";
 import { useGlobalModal } from "../../../../../../context/GlobalModalContext";
-import { GlobalModal } from "../../../../../../components";
+import { GlobalModal, ModalImgStates } from "../../../../../../components";
 import styles from "./RequestRestrictedModal.module.css";
 import CustomButton from "../../../../../../components/buttons/button";
 import RestrictedIcon from "../../../../../../assets/img/Restricted.png";
@@ -27,6 +27,7 @@ const RequestRestrictedModal = () => {
   return (
     <GlobalModal
       visible={isTradeRequestRestricted}
+      centered={true}
       width={"946px"}
       height={"540px"}
       onCancel={() => setIsTradeRequestRestricted(false)}
@@ -35,25 +36,10 @@ const RequestRestrictedModal = () => {
           <div className={styles.RestrictedCenteralized}>
             <Row>
               <Col>
-                <img src={RestrictedIcon} alt="Approval Screen" />
-              </Col>
-            </Row>
-
-            <Row>
-              <Col>
-                <div className={styles.RestrictedText}>
-                  Trade Request Restricted
-                </div>
-              </Col>
-            </Row>
-
-            <Row>
-              <Col>
-                <div className={styles.RestrictedTextSubHeading}>
-                  Your request to buy shares of PSO cannot be processed due to
-                  <br />
-                  the violation of policy
-                </div>
+                <ModalImgStates
+                  type="TradeRestricted"
+                  subheadingClassName={styles.RestrictedTextSubHeading}
+                />
               </Col>
             </Row>
 

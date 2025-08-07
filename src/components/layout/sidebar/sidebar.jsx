@@ -50,11 +50,11 @@ const SideBar = () => {
           }
           if (getEmployeeBasedBrokersData) {
             setEmployeeBasedBrokersData(getEmployeeBasedBrokersData); // Restore key to context
-            // sessionStorage.removeItem("employeeBasedBrokersData"); // Clear it after usage
+            sessionStorage.removeItem("employeeBasedBrokersData"); // Clear it after usage
           }
           if (getAllInstrumentsData) {
             setAllInstrumentsData(getAllInstrumentsData); // Restore key to context
-            // sessionStorage.removeItem("allInstrumentsData"); // Clear it after usage
+            sessionStorage.removeItem("allInstrumentsData"); // Clear it after usage
           }
 
           console.log("🔄 Page was reloaded by browser.");

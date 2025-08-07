@@ -17,15 +17,15 @@
 
 .RestrictedCenteralized {
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  padding: 60px 20px; /* Optional spacing */
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  text-align: center !important;
+  padding: 30px 20px;
 }
 
 .mainButtonDiv {
-  margin-top: 30px !important;
+  margin-top: 50px !important;
 }
 
 .tagContainer {

@@ -8,7 +8,14 @@ import styles from "./InstrumentDropdown.module.css";
 const { Option } = Select;
 const { Text } = Typography;
 
-const InstrumentSelect = ({ data, onSelect, onAdd }) => {
+const InstrumentSelect = ({
+  data,
+  onSelect,
+  onAdd,
+  value,
+  disabled,
+  onClear,
+}) => {
   return (
     <div>
       <Select
@@ -16,10 +23,14 @@ const InstrumentSelect = ({ data, onSelect, onAdd }) => {
         placeholder="Select"
         className={styles.borderRadiusForselect}
         optionLabelProp="label"
+        value={value}
+        onClear={onClear}
+        allowClear
         filterOption={(input, option) =>
           (option?.label ?? "").toLowerCase().includes(input.toLowerCase())
         }
         onSelect={onSelect}
+        disabled={disabled}
       >
         {data.map((item) => (
           <Option key={item.name} value={item.name} label={item.name}>
