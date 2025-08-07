@@ -1,5 +1,7 @@
 // src/api/dashboardApi.js
 
+import { logout } from "./loginApi";
+
 // Response code messages
 const responseMessages = {
   PAD_Trade_TradeServiceManager_SearchTradeApprovals_01: "Data Available",
@@ -31,12 +33,7 @@ export const SearchTadeApprovals = async ({
 
     if (res.expired) {
       // Clear tokens and redirect
-      sessionStorage.removeItem("auth_token");
-      sessionStorage.removeItem("refresh_token");
-      sessionStorage.removeItem("token_timeout");
-      navigate("/login");
-      showLoader(false);
-      return null;
+      logout(navigate, showLoader);
     }
 
     if (!res?.result?.isExecuted) {

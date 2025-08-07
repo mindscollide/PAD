@@ -25,6 +25,7 @@ import { apiCallSeacrch } from "../../../../components/dropdowns/searchableDrope
 
 import style from "./approval.module.css";
 import { SearchTadeApprovals } from "../../../../api/myApprovalApi";
+import { useDashboardContext } from "../../../../context/dashboardContaxt";
 
 const Approval = () => {
   const navigate = useNavigate();
@@ -41,7 +42,10 @@ const Approval = () => {
     setEmployeeMyApprovalSearch,
     resetEmployeeMyApprovalSearch,
   } = useSearchBarContext();
-
+  const { employeeBasedBrokersData, allInstrumentsData } =
+    useDashboardContext();
+     console.log("employeeBasedBrokersData", employeeBasedBrokersData);
+  console.log("employeeBasedBrokersData", allInstrumentsData);
   const [sortedInfo, setSortedInfo] = useState({});
   const [approvalData, setApprovalData] = useState([]);
   const [submittedFilters, setSubmittedFilters] = useState([]);
