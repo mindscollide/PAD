@@ -15,3 +15,10 @@
 .mainDivComment {
   padding: 25px 50px !important;
 }
+
+.CommentsButtonClass {
+  display: flex;
+  justify-content: end;
+  align-items: center;
+  gap: 20px !important;
+}

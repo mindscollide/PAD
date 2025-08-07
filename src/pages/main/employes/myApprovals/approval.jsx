@@ -63,11 +63,8 @@ const Approval = () => {
     setEmployeeMyApprovalSearch,
     resetEmployeeMyApprovalSearch,
   } = useSearchBarContext();
-  const { employeeBasedBrokersData, allInstrumentsData } =
-    useDashboardContext();
-  console.log("employeeBasedBrokersData", employeeBasedBrokersData);
-  console.log("allInstrumentsDataallInstrumentsData", allInstrumentsData);
-  console.log("employeeBasedBrokersData", allInstrumentsData);
+
+
   const [sortedInfo, setSortedInfo] = useState({});
   const [approvalData, setApprovalData] = useState([]);
   console.log(employeeMyApprovalSearch, "checkerapprovalaproval");

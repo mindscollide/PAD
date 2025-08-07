@@ -18,19 +18,24 @@ const EquitiesApproval = () => {
     setIsTradeRequestRestricted,
   } = useGlobalModal();
 
-  const { employeeBasedBrokersData, allInstrumentsData } =
-    useDashboardContext();
+  const {
+    employeeBasedBrokersData,
+    allInstrumentsData,
+    addApprovalRequestData,
+  } = useDashboardContext();
 
-  console.log(employeeBasedBrokersData.length, "employeeBasedBrokersData121");
-  console.log(allInstrumentsData.length, "employeeBasedBrokersData121");
+  console.log(addApprovalRequestData, "employeeBasedBrokersData121");
 
   //For Instrument Dropdown show selected Name
   const [selectedInstrument, setSelectedInstrument] = useState(null);
-  console.log(selectedInstrument, "selectedInstrument");
 
   // for employeeBroker state to show data in dropdown
   const [selectedBrokers, setSelectedBrokers] = useState([]);
-  console.log(selectedBrokers, "selectedBrokersselectedBrokers1");
+
+  //For Type State to show Data in Type Dropdown
+  const [selectedType, setSelectedType] = useState(null);
+
+  console.log(selectedType, "SelectedTypeChecker");
 
   // this is how I extract data fro the AllInstrumentsData which is stored in dashboardContextApi
   const formattedInstruments = (allInstrumentsData || []).map((item) => ({
@@ -39,7 +44,6 @@ const EquitiesApproval = () => {
     description: item?.instrumentName,
   }));
 
-  // 🔹 Memoize broker options to avoid unnecessary re-renders
   // Format broker options
   const brokerOptions = (employeeBasedBrokersData || []).map((broker) => ({
     label: (
@@ -63,10 +67,17 @@ const EquitiesApproval = () => {
 
     setSelectedBrokers(selectedData);
   };
+
+  // Format type options from addApprovalRequestData show data in type Select
+  const typeOptions = (addApprovalRequestData?.Equities || []).map((item) => ({
+    label: item.type,
+    value: item.tradeApprovalTypeID,
+  }));
+
   //  Prepare selected values for Select's `value` prop
   const selectedBrokerIDs = selectedBrokers.map((b) => b.brokerID);
-  console.log(selectedBrokerIDs, "selectedBrokerIDs");
 
+  // Handle Select For Instrument Data
   const handleSelect = (value) => {
     setSelectedInstrument(value);
   };
@@ -117,14 +128,20 @@ const EquitiesApproval = () => {
                   <label className={styles.instrumentLabel}>Type</label>
                   <Select
                     label="Type"
-                    name="broker"
+                    name="Type"
                     placeholder={"Select"}
+                    allowClear
+                    options={typeOptions}
+                    value={selectedType}
+                    onChange={setSelectedType}
+                    disabled={typeOptions.length === 0}
                     className={styles.checkboxSelect}
                   />
                 </Col>
                 <Col span={12}>
                   <TextField
                     label="Quantity"
+                    placeholder="Quantity"
                     className={styles.TextFieldOfQuantity}
                   />
                 </Col>

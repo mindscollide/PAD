@@ -17,6 +17,7 @@ const ViewDetailModal = () => {
     selectedViewDetail,
     setIsViewComments,
     setIsConductedTransaction,
+    setIsResubmitted,
   } = useGlobalModal();
 
   const getStatusStyle = (status) => {
@@ -71,6 +72,15 @@ const ViewDetailModal = () => {
   const onClickOfConductTransaction = () => {
     setIsViewDetail(false);
     setIsConductedTransaction(true);
+  };
+
+  const onClickPendingClose = () => {
+    setIsViewDetail(false);
+  };
+
+  const onClickResubmitInNotTradedStatus = () => {
+    setIsViewDetail(false);
+    setIsResubmitted(true);
   };
 
   console.log(statusData, "selectedViewDetail");
@@ -148,10 +158,11 @@ const ViewDetailModal = () => {
                     </label>
                     <label className={styles.viewDetailSubLabels}>
                       {statusData.label === "Approved" ? (
-                        <>1 day 4 hours remaining</>
+                        <>{selectedViewDetail?.timeRemaining}</>
                       ) : (
                         <>
-                          <span className={styles.customTag}>EQ</span> PSO-OCT
+                          <span className={styles.customTag}>EQ</span>{" "}
+                          {selectedViewDetail?.instrument}
                         </>
                       )}
                     </label>
@@ -221,7 +232,9 @@ const ViewDetailModal = () => {
                 <Col span={12}>
                   <div className={styles.backgrounColorOfDetail}>
                     <label className={styles.viewDetailMainLabels}>Type</label>
-                    <label className={styles.viewDetailSubLabels}>Buy</label>
+                    <label className={styles.viewDetailSubLabels}>
+                      {selectedViewDetail?.type}
+                    </label>
                   </div>
                 </Col>
                 <Col span={12}>
@@ -229,7 +242,9 @@ const ViewDetailModal = () => {
                     <label className={styles.viewDetailMainLabels}>
                       Quantity
                     </label>
-                    <label className={styles.viewDetailSubLabels}>40,000</label>
+                    <label className={styles.viewDetailSubLabels}>
+                      {selectedViewDetail?.quantity}
+                    </label>
                   </div>
                 </Col>
               </Row>
@@ -240,7 +255,7 @@ const ViewDetailModal = () => {
                       Request Date
                     </label>
                     <label className={styles.viewDetailSubLabels}>
-                      2024-10-01
+                      {selectedViewDetail?.requestDateTime}
                     </label>
                   </div>
                 </Col>
@@ -353,6 +368,7 @@ const ViewDetailModal = () => {
                         <CustomButton
                           text={"View Comment"}
                           className="big-light-button"
+                          onClick={onClickViewModal}
                         />
                         <CustomButton
                           text={"Conduct Transaction"}
@@ -367,10 +383,12 @@ const ViewDetailModal = () => {
                         <CustomButton
                           text={"Close"}
                           className="big-light-button"
+                          onClick={onClickPendingClose}
                         />
                         <CustomButton
                           text={"Resubmit"}
                           className="big-dark-button"
+                          onClick={onClickResubmitInNotTradedStatus}
                         />
                       </div>
                     </>
@@ -388,6 +406,18 @@ const ViewDetailModal = () => {
                         />
                       </div>
                     </>
+                  ) : statusData.label === "Pending" ? (
+                    <CustomButton
+                      text={"Close"}
+                      className="big-light-button"
+                      onClick={onClickPendingClose}
+                    />
+                  ) : statusData.label === "Resubmitted" ? (
+                    <CustomButton
+                      text={"Close"}
+                      className="big-light-button"
+                      onClick={onClickPendingClose}
+                    />
                   ) : (
                     <CustomButton text={"Close"} className="big-light-button" />
                   )}

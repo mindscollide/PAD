@@ -14,6 +14,10 @@ const ViewComment = () => {
     setIsViewDetail(true);
   };
 
+  const onClickCloseComment = () => {
+    setIsViewComments(false);
+  };
+
   return (
     <GlobalModal
       visible={isViewComments}
@@ -46,12 +50,19 @@ const ViewComment = () => {
             </Row>
 
             <Row>
-              <Col span={24} style={{ textAlign: "right" }}>
-                <CustomButton
-                  text={"Go Back"}
-                  className="big-light-button"
-                  onClick={onClickGoBack}
-                />
+              <Col span={24}>
+                <div className={styles.CommentsButtonClass}>
+                  <CustomButton
+                    text={"Go Back"}
+                    className="big-light-button"
+                    onClick={onClickGoBack}
+                  />
+                  <CustomButton
+                    text={"Close"}
+                    className="big-light-button"
+                    onClick={onClickCloseComment}
+                  />
+                </div>
               </Col>
             </Row>
           </div>

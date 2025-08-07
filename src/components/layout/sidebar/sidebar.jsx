@@ -20,6 +20,8 @@ const SideBar = () => {
     setEmployeeBasedBrokersData,
     allInstrumentsData,
     setAllInstrumentsData,
+    addApprovalRequestData,
+    setAddApprovalRequestData,
   } = useDashboardContext();
   let roles = JSON.parse(sessionStorage.getItem("user_assigned_roles"));
   const allRoleIDs = roles.map((role) => role.roleID);
@@ -43,6 +45,9 @@ const SideBar = () => {
           let getAllInstrumentsData = JSON.parse(
             sessionStorage.getItem("allInstrumentsData")
           );
+          let getAllAddTradeApprovalData = JSON.parse(
+            sessionStorage.getItem("addApprovalRequestData")
+          );
 
           if (lastSelectedKey) {
             setSelectedKey(lastSelectedKey); // Restore key to context
@@ -55,6 +60,10 @@ const SideBar = () => {
           if (getAllInstrumentsData) {
             setAllInstrumentsData(getAllInstrumentsData); // Restore key to context
             sessionStorage.removeItem("allInstrumentsData"); // Clear it after usage
+          }
+          if (getAllAddTradeApprovalData) {
+            setAddApprovalRequestData(getAllAddTradeApprovalData); // Restore key to context
+            sessionStorage.removeItem("addApprovalRequestData"); // Clear it after usage
           }
 
           console.log("🔄 Page was reloaded by browser.");
@@ -85,6 +94,10 @@ const SideBar = () => {
         sessionStorage.setItem(
           "allInstrumentsData",
           JSON.stringify(allInstrumentsData)
+        );
+        sessionStorage.setItem(
+          "addApprovalRequestData",
+          JSON.stringify(addApprovalRequestData)
         );
       }
 

@@ -262,7 +262,9 @@ body {
   cursor: text;
   overflow: hidden;
   max-height: 56px !important;
-  font-family: "Switzer Variable" !important;
+  font-size: 17px !important;
+  font-family: "Switzer Variable";
+  font-weight: 400;
   overflow-y: auto !important;
 }
 
