@@ -5,11 +5,13 @@ import {
   CommenSearchInput,
   GlobalModal,
   InstrumentSelect,
+  ModalImgStates,
   TextField,
 } from "../../../../../../components";
 import styles from "./SubmittedModal.module.css";
 import CustomButton from "../../../../../../components/buttons/button";
-import ApprovalsIcon from "../../../../../../assets/img/approval-icon.png";
+// import ApprovalsIcon from "../../../../../../assets/img/approval-icon.png";
+import EmptyState from "../../../../../../components/emptyStates/empty-states";
 
 const SubmittedModal = () => {
   const { isSubmit, setIsSubmit } = useGlobalModal();
@@ -29,20 +31,7 @@ const SubmittedModal = () => {
           <div className={styles.SubmittedCenteralized}>
             <Row>
               <Col>
-                <img src={ApprovalsIcon} alt="Approval Screen" />
-              </Col>
-            </Row>
-            <Row>
-              <Col>
-                <div className={styles.SubmittedText}>Submitted!</div>
-              </Col>
-            </Row>
-
-            <Row>
-              <Col>
-                <div className={styles.submittedTextSubHeading}>
-                  Your approval request has been submitted successfully
-                </div>
+                <ModalImgStates type="Submitted" />
               </Col>
             </Row>
 

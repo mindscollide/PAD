@@ -4,6 +4,7 @@ import { useGlobalModal } from "../../../../../../context/GlobalModalContext";
 import { GlobalModal, TextField } from "../../../../../../components";
 import styles from "./ConductTransaction.module.css";
 import CustomButton from "../../../../../../components/buttons/button";
+import classNames from "classnames";
 import copyIcon from "../../../../../../assets/img/copy-dark.png";
 
 const ConductTransaction = () => {
@@ -13,6 +14,9 @@ const ConductTransaction = () => {
     setIsViewDetail,
     setIsSubmit,
   } = useGlobalModal();
+
+  const [quantity, setQuantity] = useState("");
+  const [error, setError] = useState("");
 
   const onCancelTransaction = () => {
     setIsConductedTransaction(false);
@@ -27,6 +31,21 @@ const ConductTransaction = () => {
   const onClickSubmit = () => {
     setIsConductedTransaction(false);
     setIsSubmit(true);
+  };
+
+  const handleQuantityChange = (e) => {
+    const value = e.target.value;
+    // Allow only numbers
+    if (!/^\d*$/.test(value)) return;
+
+    setQuantity(value);
+    if (parseInt(value) > 50000) {
+      setError(
+        "Please enter a quantity less than or equal to the approved quantity"
+      );
+    } else {
+      setError("");
+    }
   };
 
   return (
@@ -159,7 +178,15 @@ const ConductTransaction = () => {
                     <label className={styles.viewDetailMainLabels}>
                       Enter Quantity
                     </label>
-                    <TextField placeholder={0} size="medium" />
+                    <TextField
+                      placeholder={0}
+                      size="medium"
+                      value={quantity}
+                      onChange={handleQuantityChange}
+                      className={classNames({
+                        [styles["input-error"]]: error,
+                      })}
+                    />
                   </div>
                 </Col>
                 <Col span={18}>
@@ -181,6 +208,9 @@ const ConductTransaction = () => {
                     </div>
                   </div>
                 </Col>
+                {error && (
+                  <div className={styles.errorInsideClass}>{error}</div>
+                )}
               </Row>
 
               <Row>

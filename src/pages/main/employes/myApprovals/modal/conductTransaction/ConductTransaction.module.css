@@ -158,5 +158,20 @@
   right: 50px !important;
   top: 40px !important;
   cursor: pointer;
+}
 
+.errorInsideClass {
+  position: absolute !important;
+  color: #a50000 !important;
+  font-size: 14px !important;
+  font-weight: 700;
+  font-family: "Switzer Variable";
+  bottom: 82px;
+  left: 75px;
+}
+
+.input-error {
+  font-family: "Switzer Variable" !important;
+  border: 1px solid red !important;
+  border-radius: 8px;
 }

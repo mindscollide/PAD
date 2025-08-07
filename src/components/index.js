@@ -19,3 +19,4 @@ export { default as CommenSearchInput } from "./dropdowns/commenSearchInput/comm
 export { default as Loader } from "./loader/Loader";
 export { default as GlobalModal } from "./modal/Modal";
 export { default as InstrumentSelect } from "./dropdowns/instrumentDropdown/InstrumentDropdown";
+export { default as ModalImgStates } from "./modalImageStates/modalImgStates";
