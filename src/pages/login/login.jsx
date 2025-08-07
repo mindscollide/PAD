@@ -10,6 +10,7 @@ import { CheckCircleOutlined } from "@ant-design/icons";
 import { useApi } from "../../context/ApiContext";
 import { login } from "../../api/loginApi";
 import { useGlobalLoader } from "../../context/LoaderContext";
+import { useSidebarContext } from "../../context/sidebarContaxt";
 
 const { Text } = Typography;
 
@@ -27,6 +28,7 @@ const Login = () => {
   });
   const [disableClick, setDisableClick] = useState(false);
   const [errors, setErrors] = useState({});
+  const { setSelectedKey } = useSidebarContext();
   /**
    * Handles input changes and updates form state
    * @param {string} name - Field name ('username' or 'password')
@@ -36,6 +38,7 @@ const Login = () => {
   useEffect(() => {
     localStorage.clear();
     sessionStorage.clear();
+    setSelectedKey("0")
   }, []);
 
   const handleChange = (name, value) => {

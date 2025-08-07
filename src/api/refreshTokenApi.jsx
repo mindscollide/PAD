@@ -1,5 +1,7 @@
 // src/api/refreshToken.js
 
+import { logout } from "./loginApi";
+
 export const refreshToken = async (
   callApi,
   { showNotification, showLoader } = {}
@@ -33,7 +35,6 @@ export const refreshToken = async (
     }
 
     // Failed refresh case (expired or invalid)
-    showLoader?.(false);
     showNotification?.({
       type: "error",
       title: "Session expired",
@@ -41,10 +42,6 @@ export const refreshToken = async (
     });
 
     // Clear existing tokens
-    sessionStorage.removeItem("auth_token");
-    sessionStorage.removeItem("refresh_token");
-    sessionStorage.removeItem("token_timeout");
-
     return { expired: true };
   } catch (error) {
     showLoader?.(false);

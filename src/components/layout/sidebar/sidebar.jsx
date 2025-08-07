@@ -7,6 +7,7 @@ import "./sidebar.css";
 import sidebarItems, { routeMap } from "./utils";
 import { useNavigate } from "react-router-dom";
 import { useSidebarContext } from "../../../context/sidebarContaxt";
+import { useDashboardContext } from "../../../context/dashboardContaxt";
 
 const { Sider } = Layout;
 
@@ -14,10 +15,16 @@ const SideBar = () => {
   const navigate = useNavigate(); // ✅ Add navigate hook
   const { collapsed, setCollapsed, selectedKey, setSelectedKey } =
     useSidebarContext();
-  let roles=JSON.parse(sessionStorage.getItem("user_assigned_roles"));
+  const {
+    employeeBasedBrokersData,
+    setEmployeeBasedBrokersData,
+    allInstrumentsData,
+    setAllInstrumentsData,
+  } = useDashboardContext();
+  let roles = JSON.parse(sessionStorage.getItem("user_assigned_roles"));
   const allRoleIDs = roles.map((role) => role.roleID);
   /**
-   * Restores the last selected sidebar key from localStorage after a full page reload.
+   * Restores the last selected sidebar key from sessionStorage after a full page reload.
    */
   useEffect(() => {
     try {
@@ -28,12 +35,26 @@ const SideBar = () => {
         const navigationType = navigationEntries[0].type;
 
         if (navigationType === "reload") {
-          // Check localStorage for previously saved selectedKey
-          const lastSelectedKey = localStorage.getItem("selectedKey");
+          // Check sessionStorage for previously saved selectedKey
+          const lastSelectedKey = sessionStorage.getItem("selectedKey");
+          let getEmployeeBasedBrokersData = JSON.parse(
+            sessionStorage.getItem("employeeBasedBrokersData")
+          );
+          let getAllInstrumentsData = JSON.parse(
+            sessionStorage.getItem("allInstrumentsData")
+          );
 
           if (lastSelectedKey) {
             setSelectedKey(lastSelectedKey); // Restore key to context
-            localStorage.removeItem("selectedKey"); // Clear it after usage
+            sessionStorage.removeItem("selectedKey"); // Clear it after usage
+          }
+          if (getEmployeeBasedBrokersData) {
+            setEmployeeBasedBrokersData(getEmployeeBasedBrokersData); // Restore key to context
+            // sessionStorage.removeItem("employeeBasedBrokersData"); // Clear it after usage
+          }
+          if (getAllInstrumentsData) {
+            setAllInstrumentsData(getAllInstrumentsData); // Restore key to context
+            // sessionStorage.removeItem("allInstrumentsData"); // Clear it after usage
           }
 
           console.log("🔄 Page was reloaded by browser.");
@@ -50,13 +71,21 @@ const SideBar = () => {
   }, [setSelectedKey]);
 
   /**
-   * Saves the currently selected sidebar key to localStorage
+   * Saves the currently selected sidebar key to sessionStorage
    * before the page is refreshed or closed.
    */
   useEffect(() => {
     const handleBeforeUnload = () => {
       if (selectedKey !== "") {
-        localStorage.setItem("selectedKey", selectedKey);
+        sessionStorage.setItem("selectedKey", selectedKey);
+        sessionStorage.setItem(
+          "employeeBasedBrokersData",
+          JSON.stringify(employeeBasedBrokersData)
+        );
+        sessionStorage.setItem(
+          "allInstrumentsData",
+          JSON.stringify(allInstrumentsData)
+        );
       }
 
       // Optional: Show confirmation dialog (only in some browsers)
@@ -70,24 +99,6 @@ const SideBar = () => {
       window.removeEventListener("beforeunload", handleBeforeUnload);
     };
   }, [selectedKey]);
-
-  useEffect(() => {
-    const handleBeforeUnload = (e) => {
-      // You can do things here like saving state
-      if (selectedKey !== "") {
-        localStorage.setItem("selectedKey", selectedKey);
-      }
-      // Optional: Show confirmation dialog (only in some browsers)
-      // e.preventDefault();
-      // e.returnValue = '';
-    };
-
-    window.addEventListener("beforeunload", handleBeforeUnload);
-
-    return () => {
-      window.removeEventListener("beforeunload", handleBeforeUnload);
-    };
-  }, []);
 
   return (
     <Sider

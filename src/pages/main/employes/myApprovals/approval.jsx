@@ -29,6 +29,7 @@ import ViewComment from "./modal/viewComment/ViewComment";
 import ResubmitModal from "./modal/resubmitModal/ResubmitModal";
 import ResubmitIntimationModal from "./modal/resubmitIntimationModal/ResubmitIntimationModal";
 import ConductTransaction from "./modal/conductTransaction/ConductTransaction";
+import { useDashboardContext } from "../../../../context/dashboardContaxt";
 
 const Approval = () => {
   const navigate = useNavigate();
@@ -62,7 +63,10 @@ const Approval = () => {
     setEmployeeMyApprovalSearch,
     resetEmployeeMyApprovalSearch,
   } = useSearchBarContext();
-
+  const { employeeBasedBrokersData, allInstrumentsData } =
+    useDashboardContext();
+     console.log("employeeBasedBrokersData", employeeBasedBrokersData);
+  console.log("employeeBasedBrokersData", allInstrumentsData);
   const [sortedInfo, setSortedInfo] = useState({});
   const [approvalData, setApprovalData] = useState([]);
   console.log(employeeMyApprovalSearch, "checkerapprovalaproval");
