@@ -23,18 +23,25 @@ const Home = () => {
   const { showNotification } = useNotification();
   const navigate = useNavigate();
 
-  const { dashboardData, setDashboardData } = useDashboardContext();
+  const {
+    dashboardData,
+    setDashboardData,
+    setEmployeeBasedBrokersData,
+    employeeBasedBrokersData,
+    allInstrumentsData,
+    setAllInstrumentsData,
+  } = useDashboardContext();
   const { callApi } = useApi();
   const { showLoader } = useGlobalLoader();
-  const roles=JSON.parse(sessionStorage.getItem("user_assigned_roles"));
+  const roles = JSON.parse(sessionStorage.getItem("user_assigned_roles"));
 
   // Prevent multiple fetches on mount
   const hasFetched = useRef(false);
-
+  // console.log("employeeBasedBrokersData", employeeBasedBrokersData);
+  // console.log("employeeBasedBrokersData", allInstrumentsData);
   useEffect(() => {
-    // if (hasFetched.current) return;
-    // hasFetched.current = true;
-
+    if (hasFetched.current) return;
+    hasFetched.current = true;
     const fetchData = async () => {
       if (!roles || roles.length === 0) {
         hasFetched.current = false;
@@ -42,11 +49,14 @@ const Home = () => {
       }
 
       try {
+        console.log("res");
         const data = await GetUserDashBoardStats({
           callApi,
+          setEmployeeBasedBrokersData,
+          setAllInstrumentsData,
           showNotification,
           showLoader,
-          navigate
+          navigate,
         });
         // Handle session expiration
         console.log("res", data);

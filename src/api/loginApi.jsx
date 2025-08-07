@@ -92,3 +92,13 @@ export const login = async ({
     showLoader(false);
   }
 };
+
+export const logout = ({ navigate, showLoader }) => {
+  // Clear tokens and redirect
+  sessionStorage.removeItem("auth_token");
+  sessionStorage.removeItem("refresh_token");
+  sessionStorage.removeItem("token_timeout");
+  navigate("/");
+  showLoader(false);
+  return null;
+};

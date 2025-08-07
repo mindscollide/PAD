@@ -5,44 +5,49 @@ export const DashboardContext = createContext();
 
 // 2. Create a Provider component
 export const DashboardProvider = ({ children }) => {
-  // this state is used for sider bar open and closed 
+  // this state is used for sider bar open and closed
   const [dashboardData, setDashboardData] = useState({
-  "title": "",
-  "subTitle": "",
-  "employee": {
-    "Portfolio": {
-      "title": "Portfolio",
-      "data": []
+    title: "",
+    subTitle: "",
+    employee: {
+      Portfolio: {
+        title: "Portfolio",
+        data: [],
+      },
+      MyApprovals: {
+        title: "My Approvals",
+        data: [],
+      },
+      MyTransactions: {
+        title: "My Transactions",
+        data: [],
+      },
+      MyHistory: {
+        title: "My History",
+        data: [],
+      },
+      Reports: {
+        title: "Reports",
+        data: [],
+      },
     },
-    "MyApprovals": {
-      "title": "My Approvals",
-      "data": []
-    },
-    "MyTransactions": {
-      "title": "My Transactions",
-      "data": []
-    },
-    "MyHistory": {
-      "title": "My History",
-      "data": []
-    },
-    "Reports": {
-      "title": "Reports",
-      "data": []
-    }
-  },
-  "LineManager": {},
-  "ComplianceOfficer": {},
-  "HeadofTradeApproval": {},
-  "HeadofComplianceOfficer": {}
-});
-  // this state is used for side bar menu item selected
-
+    LineManager: {},
+    ComplianceOfficer: {},
+    HeadofTradeApproval: {},
+    HeadofComplianceOfficer: {},
+  });
+  // this state is used for get list of current user allowed brokers to deal with
+  const [employeeBasedBrokersData, setEmployeeBasedBrokersData] = useState([]);
+  const [allInstrumentsData, setAllInstrumentsData] = useState([]);
   return (
     <DashboardContext.Provider
       value={{
         dashboardData,
         setDashboardData,
+        employeeBasedBrokersData,
+        setEmployeeBasedBrokersData,
+        allInstrumentsData,
+        setAllInstrumentsData,
       }}
     >
       {children}
