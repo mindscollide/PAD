@@ -8,7 +8,17 @@ const responseMessages = {
   PAD_Trade_TradeServiceManager_SearchTradeApprovals_02: "No data available",
   PAD_Trade_TradeServiceManager_SearchTradeApprovals_03: "Exception",
 };
-
+/**
+ * 🔹 Handles logout if session is expired
+ */
+const handleExpiredSession = (res, navigate, showLoader) => {
+  if (res?.expired) {
+    console.log("heloo log", res);
+    logout({ navigate, showLoader });
+    return true;
+  }
+  return false;
+};
 // Utility to extract message by code
 const getMessage = (code) =>
   responseMessages[code] || "Something went wrong. Please try again.";
@@ -22,19 +32,14 @@ export const SearchTadeApprovals = async ({
   navigate,
 }) => {
   try {
-    console.log("handleOk", requestdata);
-
     const res = await callApi({
       requestMethod: import.meta.env.VITE_SEARCH_APPROVAL_DATA_REQUEST_METHOD,
       endpoint: import.meta.env.VITE_API_TRADE,
       requestData: requestdata,
     });
-    console.log("Fetching approvals...", res);
 
-    if (res.expired) {
-      // Clear tokens and redirect
-      logout(navigate, showLoader);
-    }
+    if (handleExpiredSession(res, navigate, showLoader)) return null;
+    console.log("heloo log", res);
 
     if (!res?.result?.isExecuted) {
       showNotification({

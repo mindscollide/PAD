@@ -44,7 +44,7 @@ const Approval = () => {
   } = useSearchBarContext();
   const { employeeBasedBrokersData, allInstrumentsData } =
     useDashboardContext();
-     console.log("employeeBasedBrokersData", employeeBasedBrokersData);
+  console.log("employeeBasedBrokersData", employeeBasedBrokersData);
   console.log("employeeBasedBrokersData", allInstrumentsData);
   const [sortedInfo, setSortedInfo] = useState({});
   const [approvalData, setApprovalData] = useState([]);
@@ -166,7 +166,7 @@ const Approval = () => {
       requestdata,
       navigate,
     });
-
+    console.log("heloo log");
     setIsEmployeeMyApproval(data);
   };
 
