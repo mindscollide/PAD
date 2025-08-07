@@ -94,11 +94,30 @@ export const login = async ({
 };
 
 export const logout = ({ navigate, showLoader }) => {
-  // Clear tokens and redirect
-  sessionStorage.removeItem("auth_token");
-  sessionStorage.removeItem("refresh_token");
-  sessionStorage.removeItem("token_timeout");
-  navigate("/");
-  showLoader(false);
-  return null;
+  try {
+    // Clear auth tokens and session info
+    sessionStorage.removeItem("auth_token");
+    sessionStorage.removeItem("refresh_token");
+    sessionStorage.removeItem("token_timeout");
+
+    // Optional: Clear entire sessionStorage if needed
+    // sessionStorage.clear();
+
+    console.log("User logged out");
+
+    // Hide loader if provided
+    if (typeof showLoader === "function") {
+      showLoader(false);
+    }
+
+    // Redirect to login/home page
+    if (typeof navigate === "function") {
+      navigate("/", { replace: true });
+    } else {
+      // Fallback: hard redirect
+      window.location.href = "/";
+    }
+  } catch (error) {
+    console.error("Error during logout:", error);
+  }
 };

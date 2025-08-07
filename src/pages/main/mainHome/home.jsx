@@ -37,8 +37,7 @@ const Home = () => {
 
   // Prevent multiple fetches on mount
   const hasFetched = useRef(false);
-  // console.log("employeeBasedBrokersData", employeeBasedBrokersData);
-  // console.log("employeeBasedBrokersData", allInstrumentsData);
+
   useEffect(() => {
     if (hasFetched.current) return;
     hasFetched.current = true;
@@ -83,7 +82,6 @@ const Home = () => {
 
     fetchData();
   }, []);
-  console.log("Failed to fetch home summary", dashboardData);
 
   return (
     <div style={{ padding: " 16px 24px 0px 24px " }}>

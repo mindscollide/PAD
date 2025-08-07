@@ -39,7 +39,7 @@ const RootComponent = () => {
     <NotificationProvider>
       <LoaderProvider>
         <MyApprovalProvider>
-          <ApiProvider>
+          <ApiProvider >
             <DashboardProvider>
               <PortfolioProvider>
                 <SidebarProvider>

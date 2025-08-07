@@ -1,7 +1,5 @@
 // src/api/refreshToken.js
 
-import { logout } from "./loginApi";
-
 export const refreshToken = async (
   callApi,
   { showNotification, showLoader } = {}
@@ -15,7 +13,11 @@ export const refreshToken = async (
     const res = await callApi({
       requestMethod: import.meta.env.VITE_REFRESH_TOKEN_REQUEST_METHOD,
       endpoint: import.meta.env.VITE_API_AUTH,
-      requestData: { RefreshToken: refreshToken, Token: token },
+      requestData: {
+        RefreshToken: refreshToken,
+        Token: token,
+        LastLoginDateTime: "",
+      },
       withAuth: false,
       retryOnExpire: false, // Prevent infinite refresh loops
     });
@@ -42,7 +44,7 @@ export const refreshToken = async (
     });
 
     // Clear existing tokens
-    return { expired: true };
+    return { success: false, expired: true };
   } catch (error) {
     showLoader?.(false);
     showNotification?.({
