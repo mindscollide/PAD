@@ -22,7 +22,7 @@ const getMessage = (code) =>
  */
 const handleExpiredSession = (res, navigate, showLoader) => {
   if (res?.expired) {
-    logout(navigate, showLoader);
+    logout({ navigate, showLoader });
     return true;
   }
   return false;
@@ -66,7 +66,6 @@ export const GetUserDashBoardStats = async ({
   navigate,
 }) => {
   try {
-    showLoader(true);
 
     const res = await callApi({
       requestMethod: import.meta.env.VITE_DASHBOARD_DATA_REQUEST_METHOD,

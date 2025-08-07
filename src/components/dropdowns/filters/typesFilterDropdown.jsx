@@ -4,7 +4,6 @@ import { Button, CheckBox } from "../..";
 import { apiCallType, mapBuySellToIds, typeOptions } from "./utils";
 import { Row, Col, Divider } from "antd";
 import { useSidebarContext } from "../../../context/sidebarContaxt";
-import { SearchTadeApprovals } from "../../../api/myApprovalApi";
 import { useNavigate } from "react-router-dom";
 import { useGlobalLoader } from "../../../context/LoaderContext";
 import { useApi } from "../../../context/ApiContext";

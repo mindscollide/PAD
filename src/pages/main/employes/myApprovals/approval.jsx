@@ -67,6 +67,7 @@ const Approval = () => {
     useDashboardContext();
   console.log("employeeBasedBrokersData", employeeBasedBrokersData);
   console.log("allInstrumentsDataallInstrumentsData", allInstrumentsData);
+  console.log("employeeBasedBrokersData", allInstrumentsData);
   const [sortedInfo, setSortedInfo] = useState({});
   const [approvalData, setApprovalData] = useState([]);
   console.log(employeeMyApprovalSearch, "checkerapprovalaproval");
@@ -196,7 +197,7 @@ const Approval = () => {
       requestdata,
       navigate,
     });
-
+    console.log("heloo log");
     setIsEmployeeMyApproval(data);
   };
 

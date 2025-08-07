@@ -4,6 +4,7 @@ import axios from "axios";
 import { refreshToken } from "../api/refreshTokenApi";
 import { useNotification } from "../components/NotificationProvider/NotificationProvider";
 import { useGlobalLoader } from "./LoaderContext";
+import { logout } from "../api/loginApi";
 
 const ApiContext = createContext();
 
@@ -63,12 +64,12 @@ export const ApiProvider = ({ children }) => {
         };
       }
 
-      if (responseCode === 417 && retryOnExpire) {
+      if ((responseCode === 417 || responseCode === 401) && retryOnExpire) {
         const refreshed = await refreshToken(callApi, {
           showNotification,
           showLoader,
         });
-
+        console.log("heloo log");
         if (refreshed === true) {
           // Retry the original request with fresh token
           return await callApi({
@@ -82,17 +83,11 @@ export const ApiProvider = ({ children }) => {
             retryOnExpire: false, // Prevent infinite loops
           });
         }
+        // logout(navigate, showLoader);
+        console.log("heloo log");
+        return { success: false, expired: true };
+      }
 
-        return { success: false, expired: true };
-      }
-      if (responseCode === 401) {
-        showNotification({
-          type: "error",
-          title: "API Error",
-          description: "Tokens does not match",
-        });
-        return { success: false, expired: true };
-      }
       return {
         success: false,
         message: responseMessage,
