@@ -1,0 +1,39 @@
+/* custom-table.css */
+.custom-spaced-table {
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.custom-spaced-table .ant-table-tbody > tr:not(.ant-table-expanded-row) {
+  margin-bottom: 16px;
+  display: table-row;
+}
+
+.custom-spaced-table .ant-table-tbody > tr > td {
+  background: #fff;
+  padding: 16px;
+  border-bottom: none;
+}
+
+.custom-spaced-table .ant-table-tbody > tr > td:first-child {
+  border-top-left-radius: 8px;
+  border-bottom-left-radius: 8px;
+}
+
+.custom-spaced-table .ant-table-tbody > tr > td:last-child {
+  border-top-right-radius: 8px;
+  border-bottom-right-radius: 8px;
+}
+
+.custom-spaced-table .ant-table-expanded-row {
+  margin: 0 !important;
+}
+
+.custom-spaced-table .ant-table-expanded-row > td {
+  padding: 0 !important;
+}
+
+.custom-spaced-table .ant-table {
+  border-spacing: 0 16px;
+  border-collapse: separate;
+}
