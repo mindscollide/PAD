@@ -253,3 +253,9 @@ body {
 .ant-card-body {
   padding: 0px !important;
 }
+
+/* Remove hover/focus background on dropdown menu items globally */
+li.ant-dropdown-menu-item.ant-dropdown-menu-item-only-child:hover,
+li.ant-dropdown-menu-item.ant-dropdown-menu-item-only-child:focus {
+  background-color: transparent !important;
+}

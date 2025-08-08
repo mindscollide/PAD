@@ -8,64 +8,66 @@ import {
   LoginOutlined,
 } from "@ant-design/icons";
 
-export const getProfileMenuItems = (
-  currentRole,
-  switchRole,
-  userRoles = []
-) => {
-  const items = [
+export const getMenuItems = (hasAdmin, style) => {
+  const baseItems = [
     {
-      key: "profile",
+      key: "1",
       label: (
-        <Link to="/profile" className="dropdown-menu-item">
-          <UserOutlined className="dropdown-menu-icon" />
+        <Link to="/profile" className={style["dropdown-menu-item"]}>
+          <UserOutlined className={style["dropdown-menu-icon"]} />
           <span>My Profile</span>
         </Link>
       ),
     },
     {
-      key: "brokers",
+      key: "2",
       label: (
-        <Link to="/brokers" className="dropdown-menu-item">
-          <TeamOutlined className="dropdown-menu-icon" />
+        <Link to="/brokers" className={style["dropdown-menu-item"]}>
+          <TeamOutlined className={style["dropdown-menu-icon"]} />
           <span>Manage Brokers</span>
         </Link>
       ),
     },
     {
-      key: "notifications",
+      key: "3",
       label: (
-        <Link to="/notifications" className="dropdown-menu-item">
-          <SettingOutlined className="dropdown-menu-icon" />
+        <Link to="/notifications" className={style["dropdown-menu-item"]}>
+          <SettingOutlined className={style["dropdown-menu-icon"]} />
           <span>Notification Settings</span>
         </Link>
       ),
     },
     {
-      key: "Logout",
+      key: "4",
       label: (
-        <Link to="/" className="dropdown-menu-item">
-          <LoginOutlined  className="dropdown-menu-icon" />
+        <Link to="/" className={style["dropdown-menu-item"]}>
+          <LoginOutlined className={style["dropdown-menu-icon"]} />
           <span>Logout</span>
         </Link>
       ),
     },
   ];
 
-  if (userRoles.length > 1) {
-    items.push({
-      key: "switch-role",
+  if (hasAdmin) {
+    baseItems.push({
+      key: "5",
       label: (
-        <div className="dropdown-menu-item">
-          <SwapOutlined className="dropdown-menu-icon" />
-          <span>
-            Switch to {currentRole === "admin" ? "Employee" : "Admin"}
-          </span>
-        </div>
+        <Link to="/Admin" className={style["dropdown-menu-item"]}>
+          <SwapOutlined className={style["dropdown-menu-icon"]} />
+          <span>Switch to Admin</span>
+        </Link>
       ),
-      onClick: () => switchRole(currentRole === "admin" ? "employee" : "admin"),
     });
   }
 
-  return items;
+  // Insert divider items between each item except after the last one
+  const itemsWithDividers = [];
+  baseItems.forEach((item, index) => {
+    itemsWithDividers.push(item);
+    if (index !== baseItems.length - 1) {
+      itemsWithDividers.push({ key: `divider-${index}`, type: "divider" });
+    }
+  });
+
+  return itemsWithDividers;
 };

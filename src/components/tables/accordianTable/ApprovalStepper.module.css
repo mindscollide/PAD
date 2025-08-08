@@ -1,0 +1,41 @@
+/* ApprovalStepper.module.css */
+.stepperContainer {
+  padding: 16px;
+  background: #fff;
+  border-radius: 8px;
+}
+
+/* Custom step icon styling */
+.stepIcon {
+  font-size: 14px;
+}
+
+/* Step title styling */
+.stepTitle {
+  font-weight: 500;
+}
+
+.actionType {
+  color: #333;
+}
+
+.approverName {
+  color: #1890ff;
+  font-weight: 600;
+}
+
+/* Date styling */
+.stepDate {
+  color: #666;
+  font-size: 12px;
+  margin-top: 4px;
+}
+
+/* Customize antd steps */
+:global(.ant-steps-item-icon) {
+  margin-right: 12px !important;
+}
+
+:global(.ant-steps-vertical .ant-steps-item-content) {
+  min-height: 48px;
+}

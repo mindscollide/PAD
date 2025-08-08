@@ -2,16 +2,19 @@ import React, { useMemo, useState } from "react";
 import { Avatar, Dropdown } from "antd";
 import {
   DownOutlined,
-  SwapOutlined,
   UserOutlined,
-  SettingOutlined,
-  TeamOutlined,
-  LoginOutlined,
 } from "@ant-design/icons";
 import { Link } from "react-router-dom";
 import ProfileImg from "../../../assets/img/profile.png";
 import style from "./profileDropdown.module.css";
+import { getMenuItems } from "./utills";  // make sure this path is correct
+
 const ProfileDropdown = () => {
+  // Get user roles from sessionStorage
+  let roles = JSON.parse(sessionStorage.getItem("user_assigned_roles"));
+  const hasAdmin = roles?.length > 0 && roles.some(role => role.roleID === 1);
+
+  // Get user profile data safely
   const profile = useMemo(() => {
     try {
       const stored = sessionStorage.getItem("user_profile_data");
@@ -22,64 +25,20 @@ const ProfileDropdown = () => {
     }
   }, []);
 
+  // Prepare display name fallback
   const name = useMemo(() => {
-    if (!profile) return "Guest"; // fallback display name
+    if (!profile) return "Guest";
     return [profile.firstName, profile.lastName].filter(Boolean).join(" ");
   }, [profile]);
 
   const [isOpen, setIsOpen] = useState(false);
 
-  const items = [
-    {
-      key: "1",
-      label: (
-        <Link to="/profile" className={style["dropdown-menu-item"]}>
-          <UserOutlined className={style["dropdown-menu-icon"]} />
-          <span>My Profile</span>
-        </Link>
-      ),
-    },
-    {
-      key: "2",
-      label: (
-        <Link to="/brokers" className={style["dropdown-menu-item"]}>
-          <TeamOutlined className={style["dropdown-menu-icon"]} />
-          <span>Manage Brokers</span>
-        </Link>
-      ),
-    },
-    {
-      key: "3",
-      label: (
-        <Link to="/notifications" className={style["dropdown-menu-item"]}>
-          <SettingOutlined className={style["dropdown-menu-icon"]} />
-          <span>Notification Settings</span>
-        </Link>
-      ),
-    },
-    {
-      key: "4",
-      label: (
-        <Link to="/" className={style["dropdown-menu-item"]}>
-          <LoginOutlined className={style["dropdown-menu-icon"]} />
-          <span>Logout</span>
-        </Link>
-      ),
-    },
-    {
-      key: "5",
-      label: (
-        <Link to="/Admin" className={style["dropdown-menu-item"]}>
-          <SwapOutlined className={style["dropdown-menu-icon"]} />
-          <span>Switch to Admin</span>
-        </Link>
-      ),
-    },
-  ];
+  // Get menu items passing correct styles object
+  const menuItems = getMenuItems(hasAdmin, style);
 
   return (
     <Dropdown
-      menu={{ items }}
+      menu={{ items: menuItems }} // pass items property here
       trigger={["click"]}
       placement="bottomRight"
       overlayClassName={style["profile-dropdown-overlay"]}
@@ -98,9 +57,7 @@ const ProfileDropdown = () => {
         )}
         <span className={style["profile-name"]}>{name}</span>
         <DownOutlined
-          className={`${style["dropdown-arrow"]} ${
-            isOpen ? style["open"] : ""
-          }`}
+          className={`${style["dropdown-arrow"]} ${isOpen ? style["open"] : ""}`}
         />
       </div>
     </Dropdown>
