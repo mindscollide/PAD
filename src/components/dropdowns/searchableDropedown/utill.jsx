@@ -32,7 +32,7 @@ export const getMainSearchInputValueByKey = (
         case "portfolio":
           return employeePortfolioSearch.mainInstrumentShortName;
         case "pending":
-          return employeePendingApprovalSearch.mainInstrumentName;;
+          return employeePendingApprovalSearch.mainInstrumentName;
         default:
           return "";
       }
@@ -128,7 +128,7 @@ export const handleSearchMainInputReset = ({
           }));
           break;
         case "pending":
-           setEmployeePendingApprovalSearch((prev) => ({
+          setEmployeePendingApprovalSearch((prev) => ({
             ...prev,
             mainInstrumentName: "",
           }));
@@ -185,7 +185,6 @@ export const renderFilterContent = (
   }
 };
 
-
 export const apiCallSeacrch = async ({
   selectedKey,
   employeeMyApprovalSearch,
@@ -196,20 +195,22 @@ export const apiCallSeacrch = async ({
 }) => {
   switch (selectedKey) {
     case "1": {
-      console.log("hello state",employeeMyApprovalSearch);
+      console.log("hello state", employeeMyApprovalSearch);
       const TypeIds = mapBuySellToIds(employeeMyApprovalSearch.type);
-      console.log("hello",TypeIds);
+      console.log("hello", TypeIds);
 
       const statusIds = mapStatusToIds(employeeMyApprovalSearch.status);
-      console.log("hello",statusIds);
+      console.log("hello", statusIds);
       const requestdata = {
-        InstrumentName: employeeMyApprovalSearch.instrumentName || employeeMyApprovalSearch.mainInstrumentName,
+        InstrumentName:
+          employeeMyApprovalSearch.instrumentName ||
+          employeeMyApprovalSearch.mainInstrumentName,
         StartDate: employeeMyApprovalSearch.startDate || "",
         Quantity: employeeMyApprovalSearch.quantity || 0,
         StatusIds: statusIds || [],
         TypeIds: TypeIds || [],
         PageNumber: employeeMyApprovalSearch.pageNumber || 1,
-        Length: employeeMyApprovalSearch.pageSize || 10,
+        Length: state.pageSize || 10,
       };
       showLoader(true);
       SearchTadeApprovals({

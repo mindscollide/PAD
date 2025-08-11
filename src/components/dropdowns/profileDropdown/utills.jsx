@@ -15,7 +15,7 @@ export const getMenuItems = (hasAdmin, style) => {
       label: (
         <Link to="/profile" className={style["dropdown-menu-item"]}>
           <UserOutlined className={style["dropdown-menu-icon"]} />
-          <span>My Profile</span>
+          <span className={style["dropdown-menu-options-title"]}>My Profile</span>
         </Link>
       ),
     },
@@ -24,7 +24,7 @@ export const getMenuItems = (hasAdmin, style) => {
       label: (
         <Link to="/brokers" className={style["dropdown-menu-item"]}>
           <TeamOutlined className={style["dropdown-menu-icon"]} />
-          <span>Manage Brokers</span>
+          <span className={style["dropdown-menu-options-title"]}>Manage Brokers</span>
         </Link>
       ),
     },
@@ -33,7 +33,7 @@ export const getMenuItems = (hasAdmin, style) => {
       label: (
         <Link to="/notifications" className={style["dropdown-menu-item"]}>
           <SettingOutlined className={style["dropdown-menu-icon"]} />
-          <span>Notification Settings</span>
+          <span className={style["dropdown-menu-options-title"]}>Notification Settings</span>
         </Link>
       ),
     },
@@ -42,7 +42,7 @@ export const getMenuItems = (hasAdmin, style) => {
       label: (
         <Link to="/" className={style["dropdown-menu-item"]}>
           <LoginOutlined className={style["dropdown-menu-icon"]} />
-          <span>Logout</span>
+          <span className={style["dropdown-menu-options-title"]}>Logout</span>
         </Link>
       ),
     },
@@ -54,7 +54,7 @@ export const getMenuItems = (hasAdmin, style) => {
       label: (
         <Link to="/Admin" className={style["dropdown-menu-item"]}>
           <SwapOutlined className={style["dropdown-menu-icon"]} />
-          <span>Switch to Admin</span>
+          <span className={style["dropdown-menu-options-title"]} >Switch to Admin</span>
         </Link>
       ),
     });

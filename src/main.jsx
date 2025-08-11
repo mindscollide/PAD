@@ -13,6 +13,7 @@ import { DashboardProvider } from "./context/dashboardContaxt";
 import { Loader } from "./components";
 import { LoaderProvider } from "./context/LoaderContext";
 import { MyApprovalProvider } from "./context/myApprovalContaxt";
+import { GlobalModalProvider } from "./context/GlobalModalContext";
 
 const RootComponent = () => {
   useEffect(() => {
@@ -38,20 +39,22 @@ const RootComponent = () => {
   return (
     <NotificationProvider>
       <LoaderProvider>
-        <MyApprovalProvider>
-          <ApiProvider >
-            <DashboardProvider>
-              <PortfolioProvider>
-                <SidebarProvider>
-                  <SearchBarProvider>
-                    <RouterProvider router={router} />
-                    <Loader />
-                  </SearchBarProvider>
-                </SidebarProvider>
-              </PortfolioProvider>
-            </DashboardProvider>
-          </ApiProvider>
-        </MyApprovalProvider>
+        <GlobalModalProvider>
+          <MyApprovalProvider>
+            <ApiProvider>
+              <DashboardProvider>
+                <PortfolioProvider>
+                  <SidebarProvider>
+                    <SearchBarProvider>
+                      <RouterProvider router={router} />
+                      <Loader />
+                    </SearchBarProvider>
+                  </SidebarProvider>
+                </PortfolioProvider>
+              </DashboardProvider>
+            </ApiProvider>
+          </MyApprovalProvider>
+        </GlobalModalProvider>
       </LoaderProvider>
     </NotificationProvider>
   );

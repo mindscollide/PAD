@@ -1,0 +1,15 @@
+
+.heading {
+  font-size: 50px !important;
+  font-weight: 700;
+  font-family: "Switzer Variable";
+  color: #30426a;
+}
+
+.subheading {
+  font-size: 20px !important;
+  font-weight: 500;
+  font-family: "Switzer Variable";
+  color: #424242 !important;
+  margin-top: 8px;
+}

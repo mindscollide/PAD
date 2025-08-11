@@ -6,30 +6,51 @@ import { getBorderlessTableColumns } from "./utill";
 import { approvalStatusMap } from "../../../../components/tables/borderlessTable/utill";
 import PageLayout from "../../../../components/pageContainer/pageContainer";
 import EmptyState from "../../../../components/emptyStates/empty-states";
-
-// Contexts
 import { useSearchBarContext } from "../../../../context/SearchBarContaxt";
+import style from "./approval.module.css";
+import EquitiesApproval from "./modal/equitiesApprovalModal/EquitiesApproval";
 import { useNotification } from "../../../../components/NotificationProvider/NotificationProvider";
 import { useGlobalLoader } from "../../../../context/LoaderContext";
 import { useApi } from "../../../../context/ApiContext";
 import { useNavigate } from "react-router-dom";
 import { useMyApproval } from "../../../../context/myApprovalContaxt";
+import { useGlobalModal } from "../../../../context/GlobalModalContext";
+import SubmittedModal from "./modal/submittedModal/SubmittedModal";
+import RequestRestrictedModal from "./modal/requestRestrictedModal/RequestRestrictedModal";
+import ViewDetailModal from "./modal/viewDetailModal/ViewDetailModal";
 import { useSidebarContext } from "../../../../context/sidebarContaxt";
-
-// Utility Functions
 import {
   mapBuySellToIds,
   mapStatusToIds,
 } from "../../../../components/dropdowns/filters/utils";
 import { apiCallSeacrch } from "../../../../components/dropdowns/searchableDropedown/utill";
-
-import style from "./approval.module.css";
 import { SearchTadeApprovals } from "../../../../api/myApprovalApi";
+import ViewComment from "./modal/viewComment/ViewComment";
+import ResubmitModal from "./modal/resubmitModal/ResubmitModal";
+import ResubmitIntimationModal from "./modal/resubmitIntimationModal/ResubmitIntimationModal";
+import ConductTransaction from "./modal/conductTransaction/ConductTransaction";
 import { useDashboardContext } from "../../../../context/dashboardContaxt";
 
 const Approval = () => {
   const navigate = useNavigate();
   const hasFetched = useRef(false);
+  const hasFetchedOnTriiger = useRef(false);
+
+  const {
+    isEquitiesModalVisible,
+    setIsEquitiesModalVisible,
+    isSubmit,
+    setIsSubmit,
+    isTradeRequestRestricted,
+    setIsTradeRequestRestricted,
+    isViewDetail,
+    setIsViewDetail,
+    isViewComments,
+    isResubmitted,
+    setIsResubmitted,
+    resubmitIntimation,
+    isConductedTransaction,
+  } = useGlobalModal();
 
   const { showNotification } = useNotification();
   const { selectedKey } = useSidebarContext();
@@ -42,12 +63,13 @@ const Approval = () => {
     setEmployeeMyApprovalSearch,
     resetEmployeeMyApprovalSearch,
   } = useSearchBarContext();
-  const { employeeBasedBrokersData, allInstrumentsData } =
-    useDashboardContext();
-  console.log("employeeBasedBrokersData", employeeBasedBrokersData);
-  console.log("employeeBasedBrokersData", allInstrumentsData);
+
+
   const [sortedInfo, setSortedInfo] = useState({});
   const [approvalData, setApprovalData] = useState([]);
+  console.log(employeeMyApprovalSearch, "checkerapprovalaproval");
+
+  // Confirmed filters displayed as tags
   const [submittedFilters, setSubmittedFilters] = useState([]);
 
   // Keys used to generate filter tags
@@ -62,6 +84,10 @@ const Approval = () => {
     {
       key: "1",
       label: "Equities",
+      onClick: () => {
+        // setIsTradeRequestRestricted(false);
+        setIsEquitiesModalVisible(true);
+      },
     },
   ];
 
@@ -69,7 +95,9 @@ const Approval = () => {
     approvalStatusMap,
     sortedInfo,
     employeeMyApprovalSearch,
-    setEmployeeMyApprovalSearch
+    setEmployeeMyApprovalSearch,
+    setIsViewDetail,
+    setIsResubmitted
   );
 
   /**
@@ -321,6 +349,22 @@ const Approval = () => {
           )}
         </div>
       </PageLayout>
+
+      {isEquitiesModalVisible && <EquitiesApproval />}
+
+      {isSubmit && <SubmittedModal />}
+
+      {isTradeRequestRestricted && <RequestRestrictedModal />}
+
+      {isViewDetail && <ViewDetailModal />}
+
+      {isViewComments && <ViewComment />}
+
+      {isResubmitted && <ResubmitModal />}
+
+      {resubmitIntimation && <ResubmitIntimationModal />}
+
+      {isConductedTransaction && <ConductTransaction />}
     </>
   );
 };

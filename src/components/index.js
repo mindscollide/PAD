@@ -18,4 +18,6 @@ export { default as ComonDropDown } from "./dropdowns/comonDropdown/comonDropDow
 export { default as CommenSearchInput } from "./dropdowns/commenSearchInput/commenSearchInput";
 export { default as Loader } from "./loader/Loader";
 export { default as GlobalModal } from "./modal/Modal";
+export { default as InstrumentSelect } from "./dropdowns/instrumentDropdown/InstrumentDropdown";
+export { default as ModalImgStates } from "./modalImageStates/modalImgStates";
 export { default as AcordianTable } from "./tables/accordianTable/acordianTable";

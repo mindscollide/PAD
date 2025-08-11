@@ -1,36 +1,45 @@
-import React, { memo } from "react";
+import React from "react";
 import { Modal } from "antd";
 
 const GlobalModal = ({
   visible,
   onCancel,
-  centered,
-  closable,
-  width,
-  className,
-  style,
   modalHeader,
   modalBody,
   modalFooter,
-  bodyClassName,
-  headerClassName,
-  maskClosable,
-  destroyOnClose,
+  width,
+  height,
+  centered,
+  closable,
+  className = "",
+  style = {},
+  bodyClassName = "",
+  headerClassName = "",
+  maskClosable = false,
+  destroyOnHidden = true,
 }) => {
   return (
     <Modal
-      open={visible}
+      open={visible} // ✅ Correct prop for AntD v5+
       onCancel={onCancel}
       footer={modalFooter || null}
       centered={centered}
       closable={closable}
       width={width}
+      height={height}
       className={className}
       style={style}
       maskClosable={maskClosable}
-      destroyOnClose={destroyOnClose}
+      destroyOnHidden={destroyOnHidden}
     >
-      {modalHeader && <div className={headerClassName}>{modalHeader}</div>}
+      {/* Header */}
+      {modalHeader && (
+        <div className={headerClassName} style={{ marginBottom: 16 }}>
+          {modalHeader}
+        </div>
+      )}
+
+      {/* Body */}
       <div className={bodyClassName}>{modalBody}</div>
     </Modal>
   );

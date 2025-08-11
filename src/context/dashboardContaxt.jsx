@@ -39,6 +39,9 @@ export const DashboardProvider = ({ children }) => {
   // this state is used for get list of current user allowed brokers to deal with
   const [employeeBasedBrokersData, setEmployeeBasedBrokersData] = useState([]);
   const [allInstrumentsData, setAllInstrumentsData] = useState([]);
+
+  //This state is for the addApproval Request on Approval listing page
+  const [addApprovalRequestData, setAddApprovalRequestData] = useState([]);
   return (
     <DashboardContext.Provider
       value={{
@@ -48,6 +51,8 @@ export const DashboardProvider = ({ children }) => {
         setEmployeeBasedBrokersData,
         allInstrumentsData,
         setAllInstrumentsData,
+        addApprovalRequestData,
+        setAddApprovalRequestData,
       }}
     >
       {children}
