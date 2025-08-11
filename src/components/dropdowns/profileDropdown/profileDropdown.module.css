@@ -31,7 +31,17 @@
   /* color: inherit; */
   transition: all 0.2s;
 }
+.dropdown-menu-options-title {
+  font-family: Switzer Variable;
+  font-weight: 500;
+  font-style: Medium;
+  font-size: 15px;
+  leading-trim: NONE;
+  line-height: 100%;
+  letter-spacing: 0%;
+  coclor: #424242;
 
+}
 .profile-dropdown-trigger:hover {
   background: var(--White-Hover, #f3f3f3);
   box-shadow: 4px 4px 6px 0px #00000033;
@@ -112,4 +122,3 @@
   transform: rotate(180deg);
 }
 
- 

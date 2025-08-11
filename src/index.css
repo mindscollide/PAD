@@ -316,3 +316,13 @@ li.ant-dropdown-menu-item.ant-dropdown-menu-item-only-child:hover,
 li.ant-dropdown-menu-item.ant-dropdown-menu-item-only-child:focus {
   background-color: transparent !important;
 }
+
+/* menu devider using in propfile dropdown */
+.ant-dropdown-menu-item-divider
+ {
+    height: 1px;
+    margin: 4px 0;
+    overflow: hidden;
+    line-height: 0;
+    background-color: #d4d4d4 !important;
+}
