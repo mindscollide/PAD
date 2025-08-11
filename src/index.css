@@ -284,3 +284,9 @@ body {
   background-color: #30426a;
   border-color: #30426a;
 }
+
+/* Remove hover/focus background on dropdown menu items globally */
+li.ant-dropdown-menu-item.ant-dropdown-menu-item-only-child:hover,
+li.ant-dropdown-menu-item.ant-dropdown-menu-item-only-child:focus {
+  background-color: transparent !important;
+}

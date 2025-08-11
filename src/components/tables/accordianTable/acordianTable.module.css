@@ -1,0 +1,141 @@
+/* =========================================
+   Accordion Table Styles - Blue Theme
+   ========================================= */
+
+/* ===========================
+   1. Base table container
+   =========================== */
+.accordian-table-blue {
+  background-color: transparent !important; /* Transparent container background */
+}
+
+/* ===========================
+   2. Table header (thead)
+   =========================== */
+:global(.ant-table-thead > tr > th) {
+  background-color: transparent !important; /* Transparent header background */
+  border-bottom: none !important; /* Remove bottom border */
+}
+
+/* Hide the small vertical divider between sortable columns */
+:global(
+    .ant-table-wrapper
+      .ant-table-thead
+      > tr
+      > th:not(:last-child):not(.ant-table-selection-column):not(
+        .ant-table-row-expand-icon-cell
+      ):not([colspan])::before
+  ) {
+  display: none !important;
+}
+
+/* ===========================
+   3. Table body (tbody)
+   =========================== */
+
+/* Default background color for rows */
+:global(.ant-table-tbody > tr) {
+  background-color: #edf3ff !important;
+  border-color: transparent !important;
+}
+
+/* Default bottom border for all tbody rows on collapsed */
+:global(.ant-table-tbody > tr > td) {
+  border-bottom: 2px solid #e1e1e1 !important; /* always visible */
+}
+/* Row hover effect  on collapsed */
+:global(.ant-table-tbody > tr:hover > td) {
+  background-color: #edf3ff !important;
+  border-bottom: 2px solid #e1e1e1;
+}
+
+/* Remove bottom border from expanded level-0 row */
+:global(
+    .ant-table-tbody
+      > tr.ant-table-expanded-row.ant-table-expanded-row-level-0
+      > td
+  ) {
+  border-bottom: transparent !important;
+}
+
+/* Apply bottom border to level-1 expanded row (the content container) */
+:global(
+    .ant-table-tbody
+      > tr.ant-table-expanded-row.ant-table-expanded-row-level-1
+      > td
+  ) {
+  border-bottom: 16px solid #fff !important;
+}
+
+.expanded-content {
+  width: 100%;
+}
+
+/* ===========================
+   5. Expanded row background
+   =========================== */
+.expanded-row {
+  background: #edf3ff !important;
+}
+
+/* ===========================
+   6. Expand icon
+   =========================== */
+.expanded-icon {
+  font-size: 14px;
+  cursor: pointer;
+  transition: transform 0.3s ease;
+}
+.trail-step {
+  background: #ffff;
+  border-radius: 6.94px;
+}
+/* ===========================
+   4. Rounded corners for rows
+   =========================== */
+
+/* First cell in a row (excluding expanded content rows) */
+/* :global(.ant-table-tbody > tr:not(.ant-table-expanded-row) > td:first-child) {
+  background-color: #edf3ff !important;
+  border-bottom-left-radius: 6.94px;
+  border-top-left-radius: 6.94px;
+} */
+
+/* Last cell in a row (excluding expanded content rows) */
+/* :global(.ant-table-tbody > tr:not(.ant-table-expanded-row) > td:last-child) {
+  background-color: #edf3ff !important;
+  border-bottom-right-radius: 6.94px;
+  border-top-right-radius: 6.94px;
+} */
+
+/* First cell in expanded row container */
+/* :global(.ant-table-tbody > tr.ant-table-expanded-row > td:first-child) {
+  border-bottom-left-radius: 6.94px;
+} */
+
+/* Last cell in expanded row container */
+/* :global(.ant-table-tbody > tr.ant-table-expanded-row > td:last-child) {
+  border-bottom-right-radius: 6.94px;
+} */
+
+/* Remove corner radius for level-0 expanded rows */
+/* :global(
+    .ant-table-tbody
+      > tr.ant-table-row-level-0[class*="_expanded-row_"]
+      > td:first-child
+  ) {
+  border-bottom-left-radius: 0px;
+} */
+
+/* :global(
+    .ant-table-tbody
+      > tr.ant-table-row-level-0[class*="_expanded-row_"]
+      > td:last-child
+  ) {
+  border-bottom-right-radius: 0px;
+} */
+/* Space between rows */
+/* :global(.ant-table-wrapper table) {
+  border-collapse: separate !important;
+   border-spacing: 0 16px !important;  
+ }  */
