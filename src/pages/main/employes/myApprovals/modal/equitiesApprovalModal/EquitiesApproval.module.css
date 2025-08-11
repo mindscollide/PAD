@@ -27,6 +27,7 @@
   font-size: 18px !important; /* Matches the Type Select */
   font-family: "Switzer Variable";
   font-weight: 500;
+  cursor: pointer !important;
 }
 
 .mt3 {
@@ -90,7 +91,7 @@
 .instrumentLabel {
   font-family: "Switzer Variable" !important;
   color: #30426a !important;
-  font-size: 15px !important;
+  font-size: 14px !important;
   font-weight: 700 !important;
 }
 
@@ -116,5 +117,5 @@
 
 .checkboxSelect :hover {
   
-  background: var(--White-Hover, #f3f3f3) !important;
+  background-color: #f3f3f3 !important;
 }

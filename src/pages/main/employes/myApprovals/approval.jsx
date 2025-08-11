@@ -64,13 +64,15 @@ const Approval = () => {
     resetEmployeeMyApprovalSearch,
   } = useSearchBarContext();
 
-
   const [sortedInfo, setSortedInfo] = useState({});
   const [approvalData, setApprovalData] = useState([]);
-  console.log(employeeMyApprovalSearch, "checkerapprovalaproval");
+  console.log(isEquitiesModalVisible, "isEquitiesModalVisible");
 
   // Confirmed filters displayed as tags
   const [submittedFilters, setSubmittedFilters] = useState([]);
+
+  // Check Equities Approval Modal Is Open or not and send to The isSubmitted Modal
+  const [isEquitiesModalOpen, setIsEquitiesModalOpen] = useState(false);
 
   // Keys used to generate filter tags
   const filterKeys = [
@@ -86,6 +88,7 @@ const Approval = () => {
       label: "Equities",
       onClick: () => {
         // setIsTradeRequestRestricted(false);
+        setIsEquitiesModalOpen(true);
         setIsEquitiesModalVisible(true);
       },
     },
@@ -350,20 +353,28 @@ const Approval = () => {
         </div>
       </PageLayout>
 
+      {/* Ye Modal hai Jab App Add Approval Request Pa Click krta My Approval K page pa */}
       {isEquitiesModalVisible && <EquitiesApproval />}
 
-      {isSubmit && <SubmittedModal />}
+      {/* Ye hai jab ap Apprvoal Entities ka modal kholtay aur submit krta intimation */}
+      {isSubmit && <SubmittedModal isEquitiesModalOpen={isEquitiesModalOpen} />}
 
+      {/* Ye modal hai jab Trade resttrict hoti hai */}
       {isTradeRequestRestricted && <RequestRestrictedModal />}
 
+      {/* ye modal hai view details ka My APproval ka page pa */}
       {isViewDetail && <ViewDetailModal />}
 
+      {/* Ye Sirf Comment Show krwata jab app approved modal ka andar view Comment krta tab khulta */}
       {isViewComments && <ViewComment />}
 
+      {/* Ye modal jab khulta jab Resubmit krtay view Detail on Not Traded ka andar button hai resubmit */}
       {isResubmitted && <ResubmitModal />}
 
+      {/* Ye uska resubmit modal  */}
       {resubmitIntimation && <ResubmitIntimationModal />}
 
+      {/* Ye Conduct transaction Ka modal hai Approved modal ka andar */}
       {isConductedTransaction && <ConductTransaction />}
     </>
   );

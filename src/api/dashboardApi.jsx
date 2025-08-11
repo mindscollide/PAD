@@ -15,6 +15,11 @@ const responseMessages = {
   PAD_Trade_TradeServiceManager_GetAllTradeApprovalTypes_02:
     "No data available",
   PAD_Trade_TradeServiceManager_GetAllTradeApprovalTypes_03: "Exception",
+
+  // for GetALL Predefine Reason Response Message
+  PAD_Trade_TradeServiceManager_GetAllPredefinedReasons_01: "Data Available",
+  PAD_Trade_TradeServiceManager_GetAllPredefinedReasons_02: "No data available",
+  PAD_Trade_TradeServiceManager_GetAllPredefinedReasons_03: "Exception",
 };
 
 // 🔹 Helper: Get user-friendly message by response code
@@ -66,6 +71,7 @@ export const GetUserDashBoardStats = async ({
   setEmployeeBasedBrokersData,
   setAllInstrumentsData,
   setAddApprovalRequestData,
+  setGetAllPredefineReasonData,
   showNotification,
   showLoader,
   navigate,
@@ -112,6 +118,14 @@ export const GetUserDashBoardStats = async ({
           showLoader,
           navigate,
         });
+
+        const getPredefineReason = await GetAllPredefineReassonApi({
+          callApi,
+          showNotification,
+          showLoader,
+          navigate,
+        });
+
         if (brokers) {
           setEmployeeBasedBrokersData(brokers);
         }
@@ -120,6 +134,9 @@ export const GetUserDashBoardStats = async ({
         }
         if (addApprovalRequest) {
           setAddApprovalRequestData(addApprovalRequest);
+        }
+        if (getPredefineReason) {
+          setGetAllPredefineReasonData(getPredefineReason);
         }
 
         return userDashBoardStats;
@@ -279,6 +296,58 @@ export const GetAllTradeApproval = async ({
         "PAD_Trade_TradeServiceManager_GetAllTradeApprovalTypes_01"
       ) {
         return tradeApprovalTypeGrouped;
+      }
+
+      showWarningNotification(showNotification, responseMessage);
+      return null;
+    }
+
+    showErrorNotification(
+      showNotification,
+      "Fetch Failed",
+      getMessage(res.message)
+    );
+    return null;
+  } catch (error) {
+    showErrorNotification(showNotification);
+    return null;
+  }
+};
+
+/**
+ * ✅ Fetches Get All Predefine Reason data
+ */
+
+export const GetAllPredefineReassonApi = async ({
+  callApi,
+  showNotification,
+  showLoader,
+  navigate,
+}) => {
+  try {
+    const res = await callApi({
+      requestMethod: import.meta.env
+        .VITE_GET_ALL_PREDEFINE_REASON_REQUEST_METHOD,
+      endpoint: import.meta.env.VITE_API_TRADE,
+      requestData: {},
+    });
+
+    if (handleExpiredSession(res, navigate, showLoader)) return null;
+
+    if (!res?.result?.isExecuted) {
+      showErrorNotification(showNotification);
+      return null;
+    }
+
+    const { success, result } = res;
+    const { responseMessage, reasons } = result;
+
+    if (success) {
+      if (
+        responseMessage ===
+        "PAD_Trade_TradeServiceManager_GetAllPredefinedReasons_01"
+      ) {
+        return reasons;
       }
 
       showWarningNotification(showNotification, responseMessage);

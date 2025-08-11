@@ -42,6 +42,11 @@ export const DashboardProvider = ({ children }) => {
 
   //This state is for the addApproval Request on Approval listing page
   const [addApprovalRequestData, setAddApprovalRequestData] = useState([]);
+
+  // This state is for the Predefinr Request Reason on Resubmit
+  const [getAllPredefineReasonData, setGetAllPredefineReasonData] = useState(
+    []
+  );
   return (
     <DashboardContext.Provider
       value={{
@@ -53,6 +58,8 @@ export const DashboardProvider = ({ children }) => {
         setAllInstrumentsData,
         addApprovalRequestData,
         setAddApprovalRequestData,
+        getAllPredefineReasonData,
+        setGetAllPredefineReasonData,
       }}
     >
       {children}

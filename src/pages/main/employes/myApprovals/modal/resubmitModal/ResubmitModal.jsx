@@ -4,12 +4,18 @@ import { useGlobalModal } from "../../../../../../context/GlobalModalContext";
 import { GlobalModal } from "../../../../../../components";
 import styles from "./ResubmitModal.module.css";
 import CustomButton from "../../../../../../components/buttons/button";
+import { useDashboardContext } from "../../../../../../context/dashboardContaxt";
 
 const { TextArea } = Input;
 const { Text } = Typography;
 const ResubmitModal = () => {
   const { isResubmitted, setIsResubmitted, setResubmitIntimation } =
     useGlobalModal();
+
+  const { getAllPredefineReasonData, setGetAllPredefineReasonData } =
+    useDashboardContext();
+
+  console.log(getAllPredefineReasonData, "CheckerPredefineDataAvailable");
 
   const [value, setValue] = useState("");
   const [selectedOption, setSelectedOption] = useState(null);
@@ -32,22 +38,18 @@ const ResubmitModal = () => {
 
   const handleOptionSelect = (optionText) => {
     setSelectedOption(optionText);
-    setValue(optionText); // set textArea value to option text
+    setValue(optionText.reason); // set textArea value to option text
   };
 
-  const options = [
-    "Transaction was not conducted after approval",
-    "Incorrect trade details submitted",
-    "Incorrect details were submitted in the  previous request previous request previous request",
-  ];
-
-  const isButtonDisabled = value.trim() === "";
+  const isButtonDisabled = (value ?? "").toString().trim() === "";
 
   const onClickClose = () => {
     setIsResubmitted(false);
   };
 
   const onClickResubmit = () => {
+    console.log("Selected Reason Object:", selectedOption);
+    console.log("TextArea value:", value);
     setIsResubmitted(false);
     setResubmitIntimation(true);
   };
@@ -56,8 +58,8 @@ const ResubmitModal = () => {
     <GlobalModal
       visible={isResubmitted}
       width={"902px"}
-      centered={true}
       height={"620px"}
+      centered={true}
       modalHeader={<></>}
       onCancel={() => setIsResubmitted(false)}
       modalBody={
@@ -88,15 +90,24 @@ const ResubmitModal = () => {
             </Row>
 
             <Row gutter={[0, 0]} style={{ margin: "20px 0" }}>
-              {options.map((option, index) => (
-                <Col span={24} key={index} style={{ margin: "10px 0" }}>
+              {getAllPredefineReasonData.map((option) => (
+                <Col
+                  span={24}
+                  key={option.predefinedReasonsID}
+                  style={{ margin: "10px 0" }}
+                >
                   <div
                     className={`${styles.mainDivClass} ${
-                      selectedOption === option ? styles.selectedOption : ""
+                      selectedOption?.predefinedReasonsID ===
+                      option.predefinedReasonsID
+                        ? styles.selectedOption
+                        : ""
                     }`}
                     onClick={() => handleOptionSelect(option)}
                   >
-                    <div className={styles.optionClass}>{option}</div>
+                    <div className={styles.optionClass} title={option.reason}>
+                      {option.reason}
+                    </div>
                   </div>
                 </Col>
               ))}
