@@ -1,0 +1,50 @@
+.RestrictedText {
+  font-size: 50px !important;
+  font-weight: 700;
+  font-family: "Switzer Variable";
+  color: #30426a;
+}
+
+.RestrictedTextSubHeading {
+  display: flex;
+  justify-content: center;
+  text-align: center !important;
+  font-size: 20px !important;
+  font-weight: 500;
+  font-family: "Switzer Variable";
+  color: #424242 !important;
+}
+
+.RestrictedCenteralized {
+  display: flex;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  text-align: center !important;
+  padding: 30px 20px;
+}
+
+.mainButtonDiv {
+  margin-top: 50px !important;
+}
+
+.tagContainer {
+  margin-top: 30px; /* space from top to tags */
+  display: flex !important;
+  gap: 20px !important; /* horizontal space between tags */
+  flex-wrap: wrap !important; /* wrap to next line if too many tags */
+  justify-content: center !important; /* center them */
+}
+
+.tagClasses {
+  font-size: 14px !important;
+  font-weight: 500 !important;
+  font-family: "Switzer Variable" !important;
+  color: #a50000 !important;
+  border: none !important;
+  background-color: #ffdbdb !important;
+  border-radius: 6.7px !important;
+  padding: 10px 20px !important;
+  display: inline-flex !important;
+  align-items: center;
+}

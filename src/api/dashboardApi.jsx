@@ -11,6 +11,10 @@ const responseMessages = {
   PAD_Trade_TradeServiceManager_GetAllInstruments_01: "Data Available",
   PAD_Trade_TradeServiceManager_GetAllInstruments_02: "No data available",
   PAD_Trade_TradeServiceManager_GetAllInstruments_03: "Exception",
+  PAD_Trade_TradeServiceManager_GetAllTradeApprovalTypes_01: "Data Available",
+  PAD_Trade_TradeServiceManager_GetAllTradeApprovalTypes_02:
+    "No data available",
+  PAD_Trade_TradeServiceManager_GetAllTradeApprovalTypes_03: "Exception",
 };
 
 // 🔹 Helper: Get user-friendly message by response code
@@ -61,12 +65,12 @@ export const GetUserDashBoardStats = async ({
   callApi,
   setEmployeeBasedBrokersData,
   setAllInstrumentsData,
+  setAddApprovalRequestData,
   showNotification,
   showLoader,
   navigate,
 }) => {
   try {
-
     const res = await callApi({
       requestMethod: import.meta.env.VITE_DASHBOARD_DATA_REQUEST_METHOD,
       endpoint: import.meta.env.VITE_API_TRADE,
@@ -102,11 +106,20 @@ export const GetUserDashBoardStats = async ({
           showLoader,
           navigate,
         });
+        const addApprovalRequest = await GetAllTradeApproval({
+          callApi,
+          showNotification,
+          showLoader,
+          navigate,
+        });
         if (brokers) {
           setEmployeeBasedBrokersData(brokers);
         }
         if (instrument) {
           setAllInstrumentsData(instrument);
+        }
+        if (addApprovalRequest) {
+          setAddApprovalRequestData(addApprovalRequest);
         }
 
         return userDashBoardStats;
@@ -214,6 +227,58 @@ export const GetAllInstruments = async ({
         responseMessage === "PAD_Trade_TradeServiceManager_GetAllInstruments_01"
       ) {
         return instruments;
+      }
+
+      showWarningNotification(showNotification, responseMessage);
+      return null;
+    }
+
+    showErrorNotification(
+      showNotification,
+      "Fetch Failed",
+      getMessage(res.message)
+    );
+    return null;
+  } catch (error) {
+    showErrorNotification(showNotification);
+    return null;
+  }
+};
+
+/**
+ * ✅ Fetches Get All Trade Approval data
+ */
+
+export const GetAllTradeApproval = async ({
+  callApi,
+  showNotification,
+  showLoader,
+  navigate,
+}) => {
+  try {
+    const res = await callApi({
+      requestMethod: import.meta.env
+        .VITE_GET_ALL_TRADE_APPROVAL_TYPES_REQUEST_METHOD,
+      endpoint: import.meta.env.VITE_API_TRADE,
+      requestData: {},
+    });
+
+    if (handleExpiredSession(res, navigate, showLoader)) return null;
+
+    if (!res?.result?.isExecuted) {
+      showErrorNotification(showNotification);
+      return null;
+    }
+
+    const { success, result } = res;
+    const { responseMessage, tradeApprovalTypeGrouped } = result;
+
+    if (success) {
+      if (
+        responseMessage ===
+        "PAD_Trade_TradeServiceManager_GetAllTradeApprovalTypes_01"
+      ) {
+        return tradeApprovalTypeGrouped;
       }
 
       showWarningNotification(showNotification, responseMessage);

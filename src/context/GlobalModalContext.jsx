@@ -3,17 +3,57 @@ import React, { createContext, useContext, useState } from "react";
 const ModalContext = createContext();
 
 export const GlobalModalProvider = ({ children }) => {
+  //To Show Add Approval Modal
   const [isEquitiesModalVisible, setIsEquitiesModalVisible] = useState(false);
 
-  const showModal = () => setIsEquitiesModalVisible(true);
-  const hideModal = () => setIsEquitiesModalVisible(false);
+  // To Show Submit Modal on AddApproval Submit Button
+  const [isSubmit, setIsSubmit] = useState(false);
+
+  // To Show Restricted Modal on AddApproval Submit Button
+  const [isTradeRequestRestricted, setIsTradeRequestRestricted] =
+    useState(false);
+
+  // To Show View Modal on ViewDetail Button on add approval listing
+  const [isViewDetail, setIsViewDetail] = useState(false);
+
+  // To show Selected Row Data in View Detail Modal
+  const [selectedViewDetail, setSelectedViewDetail] = useState(null);
+
+  // To Show View Comments Modal while Declined Modal in View Detail on approval
+  const [isViewComments, setIsViewComments] = useState(false);
+
+  // To Show Resubmit Modal while Click on Resubmitted
+  const [isResubmitted, setIsResubmitted] = useState(false);
+
+  // To Show Resubmitted intimation Modal
+  const [resubmitIntimation, setResubmitIntimation] = useState(false);
+
+  // To show Conduct Transaction Modal
+  const [isConductedTransaction, setIsConductedTransaction] = useState(false);
+
+  // Global Submit Modal for all
 
   return (
     <ModalContext.Provider
       value={{
         isEquitiesModalVisible,
-        showModal,
-        hideModal,
+        setIsEquitiesModalVisible,
+        isTradeRequestRestricted,
+        setIsTradeRequestRestricted,
+        isSubmit,
+        setIsSubmit,
+        isViewDetail,
+        setIsViewDetail,
+        selectedViewDetail,
+        setSelectedViewDetail,
+        isViewComments,
+        setIsViewComments,
+        isResubmitted,
+        setIsResubmitted,
+        resubmitIntimation,
+        setResubmitIntimation,
+        isConductedTransaction,
+        setIsConductedTransaction,
       }}
     >
       {children}
