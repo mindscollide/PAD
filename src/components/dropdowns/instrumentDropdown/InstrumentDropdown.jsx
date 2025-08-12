@@ -33,7 +33,7 @@ const InstrumentSelect = ({
         disabled={disabled}
       >
         {data.map((item) => (
-          <Option key={item.name} value={item.name} label={item.name}>
+          <Option key={item.type} value={item.type} label={item.name}>
             <Row align="middle" justify="space-between">
               <Col>
                 <Row align="middle" gutter={8}>

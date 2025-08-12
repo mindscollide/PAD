@@ -10,6 +10,13 @@ const config = {
       "Your transaction conduct request has been submitted successfully",
     image: ApprovalsIcon,
   },
+
+  EquitiesSubmitted: {
+    heading: "Submitted",
+    subheading: "Your approval request has been submitted successfully",
+    image: ApprovalsIcon,
+  },
+
   Resubmitted: {
     heading: "Resubmitted",
     subheading: "Your approval request has been resubmitted successfully",
