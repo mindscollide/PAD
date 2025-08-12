@@ -44,7 +44,13 @@ export const login = async ({
   }
 
   if (res.success) {
-    const { userAssignedRoles, userToken, userProfileData } = res.result;
+    const {
+      mqtt,
+      userAssignedRoles,
+      userToken,
+      userProfileData,
+      lineManagerDetails,
+    } = res.result;
     const message = getMessage(res.result.responseMessage);
     const responseCodeKey = res.result.responseMessage;
     console.log("msg", message);
@@ -60,6 +66,15 @@ export const login = async ({
       sessionStorage.setItem(
         "user_profile_data",
         JSON.stringify(userProfileData)
+      );
+      sessionStorage.setItem(
+        "line_Manager_Details",
+        JSON.stringify(lineManagerDetails)
+      );
+      sessionStorage.setItem("user_mqtt_Port", JSON.stringify(mqtt?.mqttPort));
+      sessionStorage.setItem(
+        "user_mqtt-ip_Address",
+        JSON.stringify(mqtt?.mqttipAddress)
       );
       navigate("/PAD");
 

@@ -22,6 +22,8 @@ const SideBar = () => {
     setAllInstrumentsData,
     addApprovalRequestData,
     setAddApprovalRequestData,
+    getAllPredefineReasonData,
+    setGetAllPredefineReasonData,
   } = useDashboardContext();
   let roles = JSON.parse(sessionStorage.getItem("user_assigned_roles"));
   const allRoleIDs = roles.map((role) => role.roleID);
@@ -48,6 +50,9 @@ const SideBar = () => {
           let getAllAddTradeApprovalData = JSON.parse(
             sessionStorage.getItem("addApprovalRequestData")
           );
+          let getAllPredefineReasonNewData = JSON.parse(
+            sessionStorage.getItem("getAllPredefineReasonData")
+          );
 
           if (lastSelectedKey) {
             setSelectedKey(lastSelectedKey); // Restore key to context
@@ -64,6 +69,10 @@ const SideBar = () => {
           if (getAllAddTradeApprovalData) {
             setAddApprovalRequestData(getAllAddTradeApprovalData); // Restore key to context
             sessionStorage.removeItem("addApprovalRequestData"); // Clear it after usage
+          }
+          if (getAllPredefineReasonNewData) {
+            setGetAllPredefineReasonData(getAllPredefineReasonNewData); // Restore key to context
+            sessionStorage.removeItem("getAllPredefineReasonData"); // Clear it after usage
           }
 
           console.log("🔄 Page was reloaded by browser.");
@@ -98,6 +107,10 @@ const SideBar = () => {
         sessionStorage.setItem(
           "addApprovalRequestData",
           JSON.stringify(addApprovalRequestData)
+        );
+        sessionStorage.setItem(
+          "getAllPredefineReasonData",
+          JSON.stringify(getAllPredefineReasonData)
         );
       }
 

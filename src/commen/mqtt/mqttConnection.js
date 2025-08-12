@@ -1,7 +1,7 @@
 // src/hooks/useMqttClient.js
 import { useRef, useState, useCallback } from "react";
 import Paho from "paho-mqtt";
-import { secureRandomString } from "@/utils/formatters";
+import { secureRandomString } from "./utils";
 
 export const useMqttClient = ({
   onMessageArrivedCallback,
@@ -11,6 +11,8 @@ export const useMqttClient = ({
   const [subscribedTopics, setSubscribedTopics] = useState([]);
   const clientRef = useRef(null);
   const randomString = secureRandomString();
+  const userProfileData = JSON.parse(sessionStorage.getItem("userProfileData"));
+  let user_name = userProfileData?.firstName + " " + userProfileData?.lastName;
 
   const subscribeToTopics = useCallback(
     (topics = []) => {
@@ -80,43 +82,43 @@ export const useMqttClient = ({
 
   const connectToMqtt = useCallback(
     ({ subscribeID, userID }) => {
-      if (!subscribeID || clientRef.current?.isConnected()) {
-        console.warn("Already connected or missing subscribeID");
-        return;
-      }
+      if (!subscribeID || isConnected) return;
 
-      const newClientID = `${randomString}`;
+      const mqttPort = JSON.parse(sessionStorage.getItem("user_mqtt_Port"));
+      const mqttHost = JSON.parse(
+        sessionStorage.getItem("user_mqtt-ip_Address")
+      );
+      const newClientID = secureRandomString();
+
       clientRef.current = new Paho.Client(
-        import.meta.env.VITE_MQTT_HOST,
-        Number(import.meta.env.VITE_MQTT_PORT),
+        mqttHost,
+        Number(mqttPort),
         newClientID
       );
 
       clientRef.current.onConnectionLost = onConnectionLost;
       clientRef.current.onMessageArrived = onMessageArrived;
 
-      clientRef.current.onConnected = () => {
-        console.log("MQTT connected successfully");
-        setIsConnected(true);
-        subscribeToTopics([subscribeID, `BOP_${userID}`]);
-      };
-
       clientRef.current.connect({
-        onSuccess: () => console.log("MQTT connecting..."),
+        onSuccess: () => {
+          console.log("MQTT connected:", newClientID);
+          setIsConnected(true);
+          subscribeToTopics([subscribeID, `BOP_${userID}`]);
+        },
         onFailure: (err) => {
-          console.log("Connection failed:", err.errorMessage);
+          console.error("MQTT connection failed:", err.errorMessage);
           setIsConnected(false);
           setTimeout(() => connectToMqtt({ subscribeID, userID }), 6000);
         },
         keepAliveInterval: 300,
         reconnect: true,
-        userName: import.meta.env.VITE_MQTT_USERNAME,
+        userName: user_name,
         password: import.meta.env.VITE_MQTT_PASSWORD,
         cleanSession: true,
         useSSL: false,
       });
     },
-    [onMessageArrived, onConnectionLost, randomString, subscribeToTopics]
+    [isConnected, onMessageArrived, onConnectionLost, subscribeToTopics]
   );
 
   return {

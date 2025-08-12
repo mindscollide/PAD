@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { Col, Row, Select, Space, Checkbox } from "antd";
 import { useGlobalModal } from "../../../../../../context/GlobalModalContext";
 import {
@@ -10,13 +10,18 @@ import {
 import styles from "./EquitiesApproval.module.css";
 import CustomButton from "../../../../../../components/buttons/button";
 import { useDashboardContext } from "../../../../../../context/dashboardContaxt";
+import { AddTradeApprovalRequest } from "../../../../../../api/myApprovalApi";
+import { useNotification } from "../../../../../../components/NotificationProvider/NotificationProvider";
+import { useGlobalLoader } from "../../../../../../context/LoaderContext";
+import { useApi } from "../../../../../../context/ApiContext";
+import { useNavigate } from "react-router-dom";
+import { formatNumberWithCommas } from "../../../../../../commen/funtions/rejex";
 
 const EquitiesApproval = () => {
-  const {
-    isEquitiesModalVisible,
-    setIsEquitiesModalVisible,
-    setIsTradeRequestRestricted,
-  } = useGlobalModal();
+  const navigate = useNavigate();
+
+  const { isEquitiesModalVisible, setIsEquitiesModalVisible, setIsSubmit } =
+    useGlobalModal();
 
   const {
     employeeBasedBrokersData,
@@ -24,7 +29,11 @@ const EquitiesApproval = () => {
     addApprovalRequestData,
   } = useDashboardContext();
 
-  console.log(addApprovalRequestData, "employeeBasedBrokersData121");
+  const { showNotification } = useNotification();
+
+  const { showLoader } = useGlobalLoader();
+
+  const { callApi } = useApi();
 
   //For Instrument Dropdown show selected Name
   const [selectedInstrument, setSelectedInstrument] = useState(null);
@@ -32,10 +41,25 @@ const EquitiesApproval = () => {
   // for employeeBroker state to show data in dropdown
   const [selectedBrokers, setSelectedBrokers] = useState([]);
 
-  //For Type State to show Data in Type Dropdown
-  const [selectedType, setSelectedType] = useState(null);
+  //For Type and Asset Type States to show Data in Type Dropdown
+  const [selectedTradeApprovalType, setSelectedTradeApprovalType] =
+    useState(null);
+  const [selectedAssetTypeID, setSelectedAssetTypeID] = useState(null);
 
-  console.log(selectedType, "SelectedTypeChecker");
+  //For Quantity Data State
+  const [quantity, setQuantity] = useState("");
+
+  console.log(quantity, "quantityquantity");
+
+  // Refactor sessionStorage read with useMemo for performance & error handling
+  const lineManagerDetails = useMemo(() => {
+    try {
+      return JSON.parse(sessionStorage.getItem("line_Manager_Details") || "{}");
+    } catch (e) {
+      console.error("Invalid JSON in sessionStorage", e);
+      return {};
+    }
+  }, []);
 
   // this is how I extract data fro the AllInstrumentsData which is stored in dashboardContextApi
   const formattedInstruments = (allInstrumentsData || []).map((item) => ({
@@ -61,6 +85,7 @@ const EquitiesApproval = () => {
 
   // Handle when user selects/deselects brokers
   const handleBrokerChange = (selectedIDs) => {
+    console.log(selectedBrokerIDs, "Checkeceececkekc12121");
     const selectedData = brokerOptions
       .filter((item) => selectedIDs.includes(item.value))
       .map((item) => item.raw);
@@ -72,6 +97,7 @@ const EquitiesApproval = () => {
   const typeOptions = (addApprovalRequestData?.Equities || []).map((item) => ({
     label: item.type,
     value: item.tradeApprovalTypeID,
+    assetTypeID: item.assetTypeID,
   }));
 
   //  Prepare selected values for Select's `value` prop
@@ -79,16 +105,92 @@ const EquitiesApproval = () => {
 
   // Handle Select For Instrument Data
   const handleSelect = (value) => {
-    setSelectedInstrument(value);
+    const selectedObj = formattedInstruments.find(
+      (item) => item.type === value
+    );
+    setSelectedInstrument(selectedObj || null);
   };
 
+  // Handler For Type
+  const handleTypeSelect = (value) => {
+    const selected = typeOptions.find((opt) => opt.value === value);
+    setSelectedTradeApprovalType(value);
+    setSelectedAssetTypeID(selected?.assetTypeID || null);
+  };
+
+  // Handler For quantity
+  const handleQuantityChange = (e) => {
+    let { value } = e.target;
+
+    const rawValue = value.replace(/,/g, ""); // remove commas for processing
+
+    if (rawValue === "" || !isNaN(rawValue)) {
+      const formattedValue = rawValue ? formatNumberWithCommas(rawValue) : "";
+      setQuantity(formattedValue);
+    }
+  };
+
+  // Clear state by clicking on Cross Icon in Instrument dropdown
   const handleClearInstrument = () => {
     setSelectedInstrument(null);
   };
 
+  // A Function For Fetch api of AddTradeApproval
+  const fetchAddApprovalsRequest = async () => {
+    console.log("Check APi");
+    showLoader(true);
+
+    const quantityNumber = quantity ? Number(quantity.replace(/,/g, "")) : null;
+
+    const requestdata = {
+      TradeApprovalID: 0,
+      InstrumentID: selectedInstrument?.type || null,
+      AssetTypeID: selectedAssetTypeID,
+      ApprovalTypeID: selectedTradeApprovalType,
+      Quantity: quantityNumber,
+      ApprovalStatusID: 1,
+      Comments: "",
+      BrokerIds: selectedBrokers.map((b) => b.brokerID),
+      ListOfTradeApprovalActionableBundle: [
+        {
+          instrumentID: selectedInstrument?.type || null,
+          instrumentShortName: selectedInstrument?.name || "",
+          Entity: { EntityTypeID: 1 },
+        },
+      ],
+    };
+
+    const data = await AddTradeApprovalRequest({
+      callApi,
+      showNotification,
+      showLoader,
+      requestdata,
+      setIsEquitiesModalVisible,
+      setIsSubmit,
+      navigate,
+    });
+
+    setIsEmployeeMyApproval(data);
+  };
+
+  // Call an API which inside the fetchAddApprovals Request
   const clickOnSubmitButton = () => {
-    setIsEquitiesModalVisible(false); // Close Equities modal
-    setIsTradeRequestRestricted(true);
+    fetchAddApprovalsRequest();
+  };
+
+  // Reset all states
+  const resetStates = () => {
+    setSelectedInstrument(null);
+    setSelectedBrokers([]);
+    setSelectedTradeApprovalType(null);
+    setSelectedAssetTypeID(null);
+    setQuantity("");
+  };
+
+  // Close handler
+  const handleClose = async () => {
+    await resetStates();
+    setIsEquitiesModalVisible(false);
   };
 
   return (
@@ -97,7 +199,7 @@ const EquitiesApproval = () => {
         visible={isEquitiesModalVisible}
         width={"800px"}
         centered={true}
-        onCancel={() => setIsEquitiesModalVisible(false)}
+        onCancel={handleClose}
         modalBody={
           <>
             <div className={styles.MainClassOfApprovals}>
@@ -115,7 +217,7 @@ const EquitiesApproval = () => {
                   <InstrumentSelect
                     data={formattedInstruments}
                     onSelect={handleSelect}
-                    value={selectedInstrument}
+                    value={selectedInstrument?.type || null}
                     onClear={handleClearInstrument}
                     className={styles.selectinstrumentclass}
                     disabled={allInstrumentsData.length === 0}
@@ -132,8 +234,8 @@ const EquitiesApproval = () => {
                     placeholder={"Select"}
                     allowClear
                     options={typeOptions}
-                    value={selectedType}
-                    onChange={setSelectedType}
+                    value={selectedTradeApprovalType}
+                    onChange={handleTypeSelect}
                     disabled={typeOptions.length === 0}
                     className={styles.checkboxSelect}
                   />
@@ -143,6 +245,9 @@ const EquitiesApproval = () => {
                     label="Quantity"
                     placeholder="Quantity"
                     className={styles.TextFieldOfQuantity}
+                    type="text"
+                    value={quantity}
+                    onChange={handleQuantityChange}
                   />
                 </Col>
               </Row>
@@ -174,7 +279,9 @@ const EquitiesApproval = () => {
                         <label className={styles.instruLabelForManager}>
                           Name:
                         </label>
-                        <p className={styles.lineManagername}>Mr. John Doe</p>
+                        <p className={styles.lineManagername}>
+                          {lineManagerDetails?.lineManagerName || "-"}
+                        </p>
                       </Col>
 
                       <Col span={12}>
@@ -182,7 +289,7 @@ const EquitiesApproval = () => {
                           Email:
                         </label>
                         <p className={styles.lineManagername}>
-                          john.doe@example.com
+                          {lineManagerDetails?.lineManagerEmail || "-"}
                         </p>
                       </Col>
                     </Row>
@@ -204,7 +311,7 @@ const EquitiesApproval = () => {
                   <CustomButton
                     text={"Close"}
                     className="big-light-button"
-                    onClick={() => setIsEquitiesModalVisible(false)}
+                    onClick={handleClose}
                   />
                   <CustomButton
                     text={"Submit"}

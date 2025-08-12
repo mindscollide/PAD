@@ -9,3 +9,30 @@ span.heading {
   color: var(--Blue-V1, #30426a);
   margin-top: 26px;
 }
+.table-header-wrapper {
+  display: inline-flex;
+  align-items: center;
+  max-width: 100%;
+}
+
+.table-header-text {
+  font-family: Switzer Variable;
+  font-weight: 700;
+  font-style: Bold;
+  font-size: 14px;
+  leading-trim: NONE;
+  line-height: 100%;
+  letter-spacing: 0%;
+  color: var(--Blue-V1, #30426a);
+
+  white-space: normal;
+  word-break: break-word;
+  display: inline-block;
+  max-width: calc(100% - 20px);
+}
+
+.table-header-icon {
+  flex-shrink: 0;
+  margin-left: 6px;
+  color: var(--Blue-V1, #30426a);
+}

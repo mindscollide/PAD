@@ -132,6 +132,7 @@ body {
 .ant-picker:focus-within,
 .ant-input:blur,
 .ant-picker:blur {
+  cursor: pointer !important;
   border: none !important;
   box-shadow: none !important;
   outline: none !important;
@@ -268,6 +269,14 @@ body {
   overflow-y: auto !important;
 }
 
+.ant-select-show-search:where(
+    .css-dev-only-do-not-override-1rfzxih
+  ).ant-select:not(.ant-select-customize-input)
+  .ant-select-selector
+  input {
+  cursor: pointer;
+}
+
 :where(.css-dev-only-do-not-override-1rfzxih).ant-select-multiple
   .ant-select-selection-overflow {
   display: flex;
@@ -276,6 +285,23 @@ body {
   flex: auto;
   flex-wrap: wrap;
   max-width: 100%;
+}
+
+:where(.css-dev-only-do-not-override-1rfzxih).ant-select-dropdown
+  .ant-select-item {
+  position: relative;
+  display: flex;
+  min-height: 32px;
+  color: rgba(0, 0, 0, 0.88);
+  font-weight: 500;
+  font-size: 17px;
+  padding: 10px;
+  font-family: "Switzer Variable";
+  line-height: 1.5714285714285714;
+  box-sizing: border-box;
+  cursor: pointer;
+  transition: background 0.3s ease;
+  border-radius: 4px;
 }
 
 /* This is the ant design CheckBox Color inside the Add Approval Request Modal on Broker dropdow*/
