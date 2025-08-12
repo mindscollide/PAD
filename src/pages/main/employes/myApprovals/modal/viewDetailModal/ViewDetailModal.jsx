@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { Col, Row, Tag } from "antd";
 import { useGlobalModal } from "../../../../../../context/GlobalModalContext";
 import { GlobalModal } from "../../../../../../components";
@@ -8,7 +8,6 @@ import CustomButton from "../../../../../../components/buttons/button";
 import CheckIcon from "../../../../../../assets/img/Check.png";
 import EllipsesIcon from "../../../../../../assets/img/Ellipses.png";
 import CrossIcon from "../../../../../../assets/img/Cross.png";
-import ViewComment from "../viewComment/ViewComment";
 
 const ViewDetailModal = () => {
   const {
@@ -20,6 +19,7 @@ const ViewDetailModal = () => {
     setIsResubmitted,
   } = useGlobalModal();
 
+  // This is the Status Which is I'm getting from the selectedViewDetail contextApi state
   const getStatusStyle = (status) => {
     switch (status) {
       case "Pending":
@@ -61,6 +61,7 @@ const ViewDetailModal = () => {
     }
   };
 
+  //This is how I can pass the status in statusData Variables
   const statusData = getStatusStyle(selectedViewDetail?.status);
 
   // To Show View Comments Modal and Closed Declined Modal
@@ -69,22 +70,22 @@ const ViewDetailModal = () => {
     setIsViewComments(true);
   };
 
+  // To Show Modal by click on Conduct Transaction in Approved status
   const onClickOfConductTransaction = () => {
     setIsViewDetail(false);
     setIsConductedTransaction(true);
   };
 
+  //To Close View modal on Pending Status
   const onClickPendingClose = () => {
     setIsViewDetail(false);
   };
 
+  //To Open Modal and close viewDetail modal by clicking on resubmit button in Not Traded status
   const onClickResubmitInNotTradedStatus = () => {
     setIsViewDetail(false);
     setIsResubmitted(true);
   };
-
-  console.log(statusData, "selectedViewDetail");
-  console.log(selectedViewDetail, "selectedViewDetail21212");
 
   return (
     <>
@@ -97,6 +98,7 @@ const ViewDetailModal = () => {
         modalBody={
           <>
             <div className={styles.modalBodyWrapper}>
+              {/* Show Heading by Status in View Detail Modal */}
               <Row>
                 <Col span={24}>
                   <div className={statusData.divClassName}>
@@ -107,6 +109,7 @@ const ViewDetailModal = () => {
                 </Col>
               </Row>
 
+              {/* Show Approved Status Scenario in View Details Modal */}
               {statusData.label === "Approved" && (
                 <>
                   <Row style={{ marginTop: "5px" }}>
@@ -128,6 +131,7 @@ const ViewDetailModal = () => {
                 </>
               )}
 
+              {/* Show Resubmit,Pending,Declined and Not Traded status Sceanrios */}
               <Row
                 gutter={[4, 4]}
                 style={{
@@ -228,6 +232,7 @@ const ViewDetailModal = () => {
                 )}
               </Row>
 
+              {/* Show Other Scenario's SUb Heading */}
               <Row gutter={[4, 4]} style={{ marginTop: "3px" }}>
                 <Col span={12}>
                   <div className={styles.backgrounColorOfDetail}>
@@ -360,6 +365,7 @@ const ViewDetailModal = () => {
                 </div>
               </Row>
 
+              {/* All Others button Scenario's for footer button */}
               <Row className={styles.mainButtonDivClose}>
                 <Col>
                   {statusData.label === "Approved" ? (

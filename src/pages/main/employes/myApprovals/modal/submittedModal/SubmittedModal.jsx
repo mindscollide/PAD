@@ -13,7 +13,7 @@ import CustomButton from "../../../../../../components/buttons/button";
 // import ApprovalsIcon from "../../../../../../assets/img/approval-icon.png";
 import EmptyState from "../../../../../../components/emptyStates/empty-states";
 
-const SubmittedModal = () => {
+const SubmittedModal = ({ isEquitiesModalOpen }) => {
   const { isSubmit, setIsSubmit } = useGlobalModal();
 
   const onClickSubmit = () => {
@@ -25,13 +25,16 @@ const SubmittedModal = () => {
       visible={isSubmit}
       width={"935px"}
       height={"495px"}
+      centered={true}
       onCancel={() => setIsSubmit(false)}
       modalBody={
         <>
           <div className={styles.SubmittedCenteralized}>
             <Row>
               <Col>
-                <ModalImgStates type="Submitted" />
+                <ModalImgStates
+                  type={isEquitiesModalOpen ? "EquitiesSubmitted" : "Submitted"}
+                />
               </Col>
             </Row>
 

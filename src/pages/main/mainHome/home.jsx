@@ -31,6 +31,7 @@ const Home = () => {
     allInstrumentsData,
     setAllInstrumentsData,
     setAddApprovalRequestData,
+    setGetAllPredefineReasonData,
   } = useDashboardContext();
   const { callApi } = useApi();
   const { showLoader } = useGlobalLoader();
@@ -55,6 +56,7 @@ const Home = () => {
           setEmployeeBasedBrokersData,
           setAllInstrumentsData,
           setAddApprovalRequestData,
+          setGetAllPredefineReasonData,
           showNotification,
           showLoader,
           navigate,

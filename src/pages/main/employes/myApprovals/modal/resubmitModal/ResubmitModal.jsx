@@ -4,6 +4,7 @@ import { useGlobalModal } from "../../../../../../context/GlobalModalContext";
 import { GlobalModal } from "../../../../../../components";
 import styles from "./ResubmitModal.module.css";
 import CustomButton from "../../../../../../components/buttons/button";
+import { useDashboardContext } from "../../../../../../context/dashboardContaxt";
 
 const { TextArea } = Input;
 const { Text } = Typography;
@@ -11,16 +12,21 @@ const ResubmitModal = () => {
   const { isResubmitted, setIsResubmitted, setResubmitIntimation } =
     useGlobalModal();
 
+  // Context Api For Reasons which is coming from the API and stored in contextApi
+  const { getAllPredefineReasonData } = useDashboardContext();
+
+  // State to get value while selecting any reason
   const [value, setValue] = useState("");
+
+  // State to get option reason while selecting any reason
   const [selectedOption, setSelectedOption] = useState(null);
   const maxChars = 5000;
 
+  //OnChange function which tell that the option isselected on textArea field
   const handleChange = (e) => {
     const newText = e.target.value;
-
     if (newText.length <= maxChars) {
       setValue(newText);
-
       // If user deleted everything, unselect the option
       if (newText.trim() === "") {
         setSelectedOption(null);
@@ -28,25 +34,24 @@ const ResubmitModal = () => {
     }
   };
 
+  //A counter show below the TextArea
   const charCount = value.length;
 
+  //Show the selected option their value and text
   const handleOptionSelect = (optionText) => {
     setSelectedOption(optionText);
-    setValue(optionText); // set textArea value to option text
+    setValue(optionText.reason);
   };
 
-  const options = [
-    "Transaction was not conducted after approval",
-    "Incorrect trade details submitted",
-    "Incorrect details were submitted in the  previous request previous request previous request",
-  ];
+  //when no reasons or option is selected then button resubmit will disabled
+  const isButtonDisabled = (value ?? "").toString().trim() === "";
 
-  const isButtonDisabled = value.trim() === "";
-
+  //onClose button Handler
   const onClickClose = () => {
     setIsResubmitted(false);
   };
 
+  //functionality on click resubmit
   const onClickResubmit = () => {
     setIsResubmitted(false);
     setResubmitIntimation(true);
@@ -56,8 +61,8 @@ const ResubmitModal = () => {
     <GlobalModal
       visible={isResubmitted}
       width={"902px"}
-      centered={true}
       height={"620px"}
+      centered={true}
       modalHeader={<></>}
       onCancel={() => setIsResubmitted(false)}
       modalBody={
@@ -88,15 +93,24 @@ const ResubmitModal = () => {
             </Row>
 
             <Row gutter={[0, 0]} style={{ margin: "20px 0" }}>
-              {options.map((option, index) => (
-                <Col span={24} key={index} style={{ margin: "10px 0" }}>
+              {getAllPredefineReasonData.map((option) => (
+                <Col
+                  span={24}
+                  key={option.predefinedReasonsID}
+                  style={{ margin: "10px 0" }}
+                >
                   <div
                     className={`${styles.mainDivClass} ${
-                      selectedOption === option ? styles.selectedOption : ""
+                      selectedOption?.predefinedReasonsID ===
+                      option.predefinedReasonsID
+                        ? styles.selectedOption
+                        : ""
                     }`}
                     onClick={() => handleOptionSelect(option)}
                   >
-                    <div className={styles.optionClass}>{option}</div>
+                    <div className={styles.optionClass} title={option.reason}>
+                      {option.reason}
+                    </div>
                   </div>
                 </Col>
               ))}
