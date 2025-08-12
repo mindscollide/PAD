@@ -12,21 +12,21 @@ const ResubmitModal = () => {
   const { isResubmitted, setIsResubmitted, setResubmitIntimation } =
     useGlobalModal();
 
-  const { getAllPredefineReasonData, setGetAllPredefineReasonData } =
-    useDashboardContext();
+  // Context Api For Reasons which is coming from the API and stored in contextApi
+  const { getAllPredefineReasonData } = useDashboardContext();
 
-  console.log(getAllPredefineReasonData, "CheckerPredefineDataAvailable");
-
+  // State to get value while selecting any reason
   const [value, setValue] = useState("");
+
+  // State to get option reason while selecting any reason
   const [selectedOption, setSelectedOption] = useState(null);
   const maxChars = 5000;
 
+  //OnChange function which tell that the option isselected on textArea field
   const handleChange = (e) => {
     const newText = e.target.value;
-
     if (newText.length <= maxChars) {
       setValue(newText);
-
       // If user deleted everything, unselect the option
       if (newText.trim() === "") {
         setSelectedOption(null);
@@ -34,22 +34,25 @@ const ResubmitModal = () => {
     }
   };
 
+  //A counter show below the TextArea
   const charCount = value.length;
 
+  //Show the selected option their value and text
   const handleOptionSelect = (optionText) => {
     setSelectedOption(optionText);
-    setValue(optionText.reason); // set textArea value to option text
+    setValue(optionText.reason);
   };
 
+  //when no reasons or option is selected then button resubmit will disabled
   const isButtonDisabled = (value ?? "").toString().trim() === "";
 
+  //onClose button Handler
   const onClickClose = () => {
     setIsResubmitted(false);
   };
 
+  //functionality on click resubmit
   const onClickResubmit = () => {
-    console.log("Selected Reason Object:", selectedOption);
-    console.log("TextArea value:", value);
     setIsResubmitted(false);
     setResubmitIntimation(true);
   };
