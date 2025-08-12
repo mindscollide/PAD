@@ -4,7 +4,9 @@ import ArrowDown from "../../../../assets/img/arrow-down-dark.png";
 import { ArrowsAltOutlined } from "@ant-design/icons";
 import React from "react";
 import TypeColumnTitle from "../../../../components/dropdowns/filters/typeColumnTitle";
-
+import StatusColumnTitle from "../../../../components/dropdowns/filters/statusColumnTitle";
+import { Tag } from "antd";
+import style from "./myHistory.module.css"
 const getSortIcon = (columnKey, sortedInfo) => {
   if (sortedInfo?.columnKey === columnKey) {
     return sortedInfo.order === "ascend" ? (
@@ -18,8 +20,11 @@ const getSortIcon = (columnKey, sortedInfo) => {
 
 // Helper for consistent column titles
 const withSortIcon = (label, columnKey, sortedInfo) => (
-  <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-    {label} {getSortIcon(columnKey, sortedInfo)}
+  <div className={style["table-header-wrapper"]}>
+    <span className={style["table-header-text"]}>{label}</span>
+    <span className={style["table-header-icon"]}>
+      {getSortIcon(columnKey, sortedInfo)}
+    </span>
   </div>
 );
 
@@ -69,7 +74,7 @@ export const getColumns = (
     title: withSortIcon("Date & Time of Approval Request", "date", sortedInfo),
     dataIndex: "date",
     key: "date",
-    width: 220,
+    width: "25%",
     ellipsis: true,
     sorter: (a, b) => new Date(a.date) - new Date(b.date),
     sortDirections: ["ascend", "descend"],
@@ -109,16 +114,34 @@ export const getColumns = (
     render: (type) => <span>{type}</span>,
   },
   {
-    title: withSortIcon("Status", "status", sortedInfo),
+    title: (
+      <StatusColumnTitle
+        state={employeeMyHistorySearch}
+        setState={setEmployeeMyHistorySearch}
+      />
+    ),
     dataIndex: "status",
     key: "status",
-    width: 140,
     ellipsis: true,
-    sorter: (a, b) => a.status.localeCompare(b.status),
-    sortDirections: ["ascend", "descend"],
-    sortOrder: sortedInfo?.columnKey === "status" ? sortedInfo.order : null,
-    showSorterTooltip: false,
-    sortIcon: () => null,
+    width: "10%",
+    filteredValue: employeeMyHistorySearch?.status?.length
+      ? employeeMyHistorySearch?.status
+      : null,
+    onFilter: () => true,
+    render: (status) => {
+      const tag = approvalStatusMap[status] || {};
+      return (
+        <Tag
+          style={{
+            backgroundColor: tag.backgroundColor,
+            color: tag.textColor,
+          }}
+          className="border-less-table-orange-status"
+        >
+          {tag.label}
+        </Tag>
+      );
+    },
   },
   {
     title: withSortIcon("Quantity", "quantity", sortedInfo),

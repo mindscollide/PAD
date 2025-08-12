@@ -55,7 +55,12 @@ const MyHistory = () => {
         employeeMyHistorySearch,
         setEmployeeMyHistorySearch
       ),
-    []
+    [
+      approvalStatusMap,
+      sortedInfo,
+      employeeMyHistorySearch,
+      setEmployeeMyHistorySearch,
+    ]
   );
 
   const filteredData = useMemo(() => {
@@ -98,12 +103,12 @@ const MyHistory = () => {
         {/* Table */}
         {rawData.length > 0 ? (
           <AcordianTable
-            className="accordian-table-blue" // ✅ Matches module CSS
+            className="accordian-table-blue"
             columns={columns}
             dataSource={filteredData}
             onChange={(pagination, filters, sorter) => {
-                setSortedInfo(sorter);
-              }}
+              setSortedInfo(sorter);
+            }}
             rowClassName={(record) =>
               record.status === "Approved" ? "approved-row" : ""
             }
