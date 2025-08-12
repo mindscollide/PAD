@@ -1,19 +1,22 @@
-import React, { useState } from "react";
-import { Col, Row, Tag } from "antd";
+import React from "react";
+import { Col, Row } from "antd";
 import { useGlobalModal } from "../../../../../../context/GlobalModalContext";
 import { GlobalModal } from "../../../../../../components";
 import styles from "./ViewComment.module.css";
 import CustomButton from "../../../../../../components/buttons/button";
 
 const ViewComment = () => {
+  // This is Global State for modal which is create in ContextApi
   const { isViewComments, setIsViewComments, setIsViewDetail } =
     useGlobalModal();
 
+  // This is onClick of Go Back Functionality
   const onClickGoBack = () => {
     setIsViewComments(false);
     setIsViewDetail(true);
   };
 
+  //This is the onCLick of Close Comment
   const onClickCloseComment = () => {
     setIsViewComments(false);
   };

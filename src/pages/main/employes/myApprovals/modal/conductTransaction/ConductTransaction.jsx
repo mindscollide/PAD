@@ -6,8 +6,10 @@ import styles from "./ConductTransaction.module.css";
 import CustomButton from "../../../../../../components/buttons/button";
 import classNames from "classnames";
 import copyIcon from "../../../../../../assets/img/copy-dark.png";
+import { allowOnlyNumbers } from "../../../../../../commen/funtions/rejex";
 
 const ConductTransaction = () => {
+  //This is the ContextApi of Global Modal States
   const {
     isConductedTransaction,
     setIsConductedTransaction,
@@ -15,29 +17,35 @@ const ConductTransaction = () => {
     setIsSubmit,
   } = useGlobalModal();
 
+  //This is the quantity state in which user can enter the quantity for specific limit or Limitation
   const [quantity, setQuantity] = useState("");
+
+  //This is the State when Limitation of quantity states exceed then it show error
   const [error, setError] = useState("");
 
+  //This is the Cancel button functionality
   const onCancelTransaction = () => {
     setIsConductedTransaction(false);
     setIsViewDetail(true);
   };
 
+  //This the Copy Functionality where user can copy email by click on COpyIcon
   const handleCopyEmail = () => {
     navigator.clipboard.writeText("compliance@horizoncapital.com");
     message.success("Email copied to clipboard!");
   };
 
+  //This is the onClick of Submit Button
   const onClickSubmit = () => {
     setIsConductedTransaction(false);
     setIsSubmit(true);
   };
 
+  // This is the onChange of qunatity Field
   const handleQuantityChange = (e) => {
     const value = e.target.value;
-    // Allow only numbers
-    if (!/^\d*$/.test(value)) return;
-
+    // Use your regex function here
+    if (!allowOnlyNumbers(value) && value !== "") return;
     setQuantity(value);
     if (parseInt(value) > 50000) {
       setError(

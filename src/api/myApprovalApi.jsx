@@ -17,6 +17,10 @@ const responseMessages = {
   PAD_Trade_TradeServiceManager_AddTradeApprovalRequest_04:
     "No  User hierarchy Found",
   PAD_Trade_TradeServiceManager_AddTradeApprovalRequest_05: "Work Flow Update",
+  PAD_Trade_TradeServiceManager_AddTradeApprovalRequest_06:
+    "Resubmission Successfull",
+  PAD_Trade_TradeServiceManager_AddTradeApprovalRequest_07:
+    "Resubmission Failed",
 };
 /**
  * 🔹 Handles logout if session is expired
@@ -96,6 +100,7 @@ export const SearchTadeApprovals = async ({
   }
 };
 
+//AddTradeApprovalRequest and This Api is also use for Resubmit Scenario in which we have predefine reasons
 export const AddTradeApprovalRequest = async ({
   callApi,
   showNotification,
@@ -103,6 +108,8 @@ export const AddTradeApprovalRequest = async ({
   requestdata,
   setIsEquitiesModalVisible,
   setIsSubmit,
+  setIsResubmitted,
+  setResubmitIntimation,
   navigate,
 }) => {
   console.log("Check APi");
@@ -140,23 +147,30 @@ export const AddTradeApprovalRequest = async ({
         responseMessage ===
         "PAD_Trade_TradeServiceManager_AddTradeApprovalRequest_01"
       ) {
-        // Success case
         setIsEquitiesModalVisible(false);
         setIsSubmit(true);
+      } else if (
+        responseMessage ===
+        "PAD_Trade_TradeServiceManager_AddTradeApprovalRequest_06"
+      ) {
+        setIsResubmitted(false);
+        setResubmitIntimation(true);
+      } else {
         showNotification({
-          type: "success",
-          title: "Success",
-          description: getMessage(responseMessage),
+          type: "warning",
+          title: getMessage(responseMessage),
         });
-        return true; // indicate success
+        return false;
       }
 
-      // When Any Other Response Message Occur
+      // ✅ Common success notification (sirf success wale cases me chalega)
       showNotification({
-        type: "warning",
-        title: getMessage(responseMessage),
+        type: "success",
+        title: "Success",
+        description: getMessage(responseMessage),
       });
-      return false;
+
+      return true;
     }
 
     // When Response will be Something Went Wrong
