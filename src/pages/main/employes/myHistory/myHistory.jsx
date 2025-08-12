@@ -3,10 +3,20 @@ import { Button, Input, Row, Col } from "antd";
 import { SearchOutlined, DownloadOutlined } from "@ant-design/icons";
 import { AcordianTable, PageLayout } from "../../../../components";
 import style from "./myHistory.module.css";
+import EmptyState from "../../../../components/emptyStates/empty-states";
+import { getColumns } from "./utils";
+import { useSearchBarContext } from "../../../../context/SearchBarContaxt";
+import { approvalStatusMap } from "../../../../components/tables/borderlessTable/utill";
 const MyHistory = () => {
   const [searchText, setSearchText] = useState("");
   const [dateRange, setDateRange] = useState([]);
+  const [sortedInfo, setSortedInfo] = useState({});
 
+  const {
+    employeeMyHistorySearch,
+    setEmployeeMyHistorySearch,
+    resetEmployeeMyHistorySearch,
+  } = useSearchBarContext();
   const rawData = [
     {
       id: "REQ-001",
@@ -22,7 +32,7 @@ const MyHistory = () => {
         { icon: "✅", status: "Approved", date: "2025-08-07" },
       ],
     },
-      {
+    {
       id: "REQ-002",
       instrument: "HUBC-OCT",
       date: "2025-08-07 10:30",
@@ -37,46 +47,14 @@ const MyHistory = () => {
       ],
     },
   ];
-
   const columns = useMemo(
-    () => [
-      {
-        title: "Request / Transaction ID",
-        dataIndex: "id",
-        sorter: (a, b) => a.id.localeCompare(b.id),
-      },
-      {
-        title: "Instrument",
-        dataIndex: "instrument",
-        sorter: (a, b) => a.instrument.localeCompare(b.instrument),
-      },
-      {
-        title: "Date & Time of Approval Request",
-        dataIndex: "date",
-        sorter: (a, b) => new Date(a.date) - new Date(b.date),
-        defaultSortOrder: "descend",
-      },
-      {
-        title: "Nature",
-        dataIndex: "nature",
-        sorter: (a, b) => a.nature.localeCompare(b.nature),
-      },
-      {
-        title: "Type",
-        dataIndex: "type",
-        sorter: (a, b) => a.type.localeCompare(b.type),
-      },
-      {
-        title: "Status",
-        dataIndex: "status",
-        sorter: (a, b) => a.status.localeCompare(b.status),
-      },
-      {
-        title: "Quantity",
-        dataIndex: "quantity",
-        sorter: (a, b) => a.quantity - b.quantity,
-      },
-    ],
+    () =>
+      getColumns(
+        approvalStatusMap,
+        sortedInfo,
+        employeeMyHistorySearch,
+        setEmployeeMyHistorySearch
+      ),
     []
   );
 
@@ -118,17 +96,21 @@ const MyHistory = () => {
           </Col>
         </Row>
         {/* Table */}
-        <AcordianTable
-          className="accordian-table-blue" // ✅ Matches module CSS
-          columns={columns}
-          dataSource={filteredData}
-          onChange={(pagination, filters, sorter) => {
-            console.log("Sorting/Filtering:", sorter);
-          }}
-          rowClassName={(record) =>
-            record.status === "Approved" ? "approved-row" : ""
-          }
-        />
+        {rawData.length > 0 ? (
+          <AcordianTable
+            className="accordian-table-blue" // ✅ Matches module CSS
+            columns={columns}
+            dataSource={filteredData}
+            onChange={(pagination, filters, sorter) => {
+                setSortedInfo(sorter);
+              }}
+            rowClassName={(record) =>
+              record.status === "Approved" ? "approved-row" : ""
+            }
+          />
+        ) : (
+          <EmptyState type="history" />
+        )}
       </div>
     </PageLayout>
   );
