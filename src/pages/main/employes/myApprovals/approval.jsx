@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Col, Row } from "antd";
+import { Col, Row, Spin } from "antd";
 import { ComonDropDown } from "../../../../components";
 import BorderlessTable from "../../../../components/tables/borderlessTable/borderlessTable";
 import { getBorderlessTableColumns, useTableScrollBottom } from "./utill";
@@ -67,7 +67,9 @@ const Approval = () => {
   const [sortedInfo, setSortedInfo] = useState({});
   const [approvalData, setApprovalData] = useState([]);
   const [hasReachedBottom, setHasReachedBottom] = useState(false);
-  const [totalRecords, setTotalRecords] = useState(0);
+  const [row, setRow] = useState(0); // current number of loaded rows
+  const [totalRecords, setTotalRecords] = useState(0); // total from API
+  const [loadingMore, setLoadingMore] = useState(false); // spinner at bottom
   console.log(
     employeeMyApprovalSearch,
     employeeMyApproval,
@@ -287,15 +289,14 @@ const Approval = () => {
 
   useEffect(() => {
     try {
-      if (
-        employeeMyApproval !== null &&
-        Array.isArray(employeeMyApproval?.approvals)
-      ) {
+      if (employeeMyApproval && Array.isArray(employeeMyApproval.approvals)) {
+        console.log(employeeMyApproval, "CheckerChecker");
+
+        // If scrolling to bottom, append data
         if (hasReachedBottom) {
-          // Append new data when scrolling to bottom
           setHasReachedBottom(false);
-          setApprovalData((prevData) => [
-            ...prevData,
+          setApprovalData((prev) => [
+            ...prev,
             ...employeeMyApproval.approvals.map((item) => ({
               key: item.approvalID,
               instrument: `${item.instrument?.instrumentName || ""} - ${
@@ -309,14 +310,13 @@ const Approval = () => {
               status: item.approvalStatus?.approvalStatusName || "",
               quantity: item.quantity || 0,
               timeRemaining: item.timeRemainingToTrade || "",
-              ...item, // Keep raw data for View Details
+              ...item,
             })),
           ]);
           setTotalRecords(employeeMyApproval.totalRecords);
-          setRow((prevRow) => prevRow + employeeMyApproval.approvals.length);
+          setRow((prev) => prev + employeeMyApproval.approvals.length);
         } else {
-          // Replace data on first load or filter change
-          setHasReachedBottom(false);
+          // First load or filter change
           setApprovalData(
             employeeMyApproval.approvals.map((item) => ({
               key: item.approvalID,
@@ -339,48 +339,84 @@ const Approval = () => {
         }
       } else if (employeeMyApproval === null) {
         // Reset if no data
-        if (!hasReachedBottom) {
-          setHasReachedBottom(false);
-          setApprovalData([]);
-          setTotalRecords(0);
-          setRow(0);
-        }
+        setApprovalData([]);
+        setTotalRecords(0);
+        setRow(0);
       }
     } catch (error) {
       console.error(error, "error");
     }
-  }, [employeeMyApproval]);
+  }, [employeeMyApproval, hasReachedBottom]);
 
   //Custom Hook Call for Lazy Loading
   useTableScrollBottom(
-    () => {
-      if (totalRecords !== employeeMyApproval?.approvals.length) {
-        setHasReachedBottom(true);
-        const requestdata = {
-          InstrumentName:
-            employeeMyApprovalSearch.instrumentName ||
-            employeeMyApprovalSearch.mainInstrumentName,
-          StartDate: employeeMyApprovalSearch.date || "",
-          Quantity: employeeMyApprovalSearch.quantity || 0,
-          StatusIds: statusIds || [],
-          TypeIds: TypeIds || [],
-          PageNumber: employeeMyApprovalSearch.pageNumber || 1,
-          Length: employeeMyApprovalSearch.pageSize || 10,
-        };
-        SearchTadeApprovals({
-          callApi,
-          showNotification,
-          showLoader,
-          requestdata,
-          navigate,
-        });
+    async () => {
+      // Check if more rows exist and not already loading
+      if (row < employeeMyApproval?.totalRecords && !loadingMore) {
+        setLoadingMore(true);
+
+        try {
+          const pageSize = employeeMyApprovalSearch.pageSize || 10;
+          const nextPage = Math.floor(row / pageSize) + 1; // calculate next page
+
+          const requestdata = {
+            InstrumentName:
+              employeeMyApprovalSearch.instrumentName ||
+              employeeMyApprovalSearch.mainInstrumentName ||
+              "",
+            StartDate: employeeMyApprovalSearch.date || "",
+            Quantity: employeeMyApprovalSearch.quantity || 0,
+            StatusIds: employeeMyApprovalSearch.status || [],
+            TypeIds: employeeMyApprovalSearch.type || [],
+            PageNumber: nextPage, // next page for lazy load
+            Length: pageSize,
+          };
+
+          const data = await SearchTadeApprovals({
+            callApi,
+            showNotification,
+            showLoader: () => {}, // DO NOT show full-page loader
+            requestdata,
+            navigate,
+          });
+
+          if (data && Array.isArray(data.approvals) && data.approvals.length) {
+            setApprovalData((prev) => [
+              ...prev,
+              ...data.approvals.map((item) => ({
+                key: item.approvalID,
+                instrument: `${item.instrument?.instrumentName || ""} - ${
+                  item.instrument?.instrumentCode || ""
+                }`,
+                type: item.tradeType?.typeName || "",
+                requestDateTime: `${item.requestDate || ""} ${
+                  item.requestTime || ""
+                }`,
+                isEscalated: false,
+                status: item.approvalStatus?.approvalStatusName || "",
+                quantity: item.quantity || 0,
+                timeRemaining: item.timeRemainingToTrade || "",
+                ...item,
+              })),
+            ]);
+
+            setRow((prev) => prev + data.approvals.length);
+            setTotalRecords(data.totalRecords);
+            setIsEmployeeMyApproval(data); // keep context in sync
+          }
+        } catch (error) {
+          console.error("Lazy loading error:", error);
+        } finally {
+          setLoadingMore(false);
+        }
       }
     },
-    0,
+    10,
     "border-less-table-orange"
   );
+
   // Lazy Loading Work Start
-  console.log(employeeMyApproval, "aunnaqvi");
+  console.log(employeeMyApprovalSearch, "employeeMyApprovalSearch");
   console.log(totalRecords, "totalRecordstotalRecords");
 
   return (
@@ -426,18 +462,26 @@ const Approval = () => {
 
           {/* Table or Empty State */}
           {approvalData && approvalData.length > 0 ? (
-            <BorderlessTable
-              rows={approvalData}
-              columns={columns}
-              scroll={{
-                x: "max-content",
-                y: submittedFilters.length > 0 ? 510 : 550,
-              }}
-              classNameTable="border-less-table-orange"
-              onChange={(pagination, filters, sorter) => {
-                setSortedInfo(sorter);
-              }}
-            />
+            <>
+              <BorderlessTable
+                rows={approvalData}
+                columns={columns}
+                scroll={{
+                  x: "max-content",
+                  y: submittedFilters.length > 0 ? 510 : 550,
+                }}
+                classNameTable="border-less-table-orange"
+                onChange={(pagination, filters, sorter) => {
+                  setSortedInfo(sorter);
+                }}
+              />
+
+              {loadingMore && (
+                <div style={{ textAlign: "center", padding: "12px" }}>
+                  <Spin size="small" />
+                </div>
+              )}
+            </>
           ) : (
             <EmptyState type="request" />
           )}
