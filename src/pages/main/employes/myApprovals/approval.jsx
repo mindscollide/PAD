@@ -66,17 +66,7 @@ const Approval = () => {
 
   const [sortedInfo, setSortedInfo] = useState({});
   const [approvalData, setApprovalData] = useState([]);
-  const [hasReachedBottom, setHasReachedBottom] = useState(false);
-  const [row, setRow] = useState(0); // current number of loaded rows
-  const [totalRecords, setTotalRecords] = useState(0); // total from API
   const [loadingMore, setLoadingMore] = useState(false); // spinner at bottom
-
-  console.log({ loadingMore }, "loadingMoreloadingMoreloadingMore");
-  console.log(
-    employeeMyApprovalSearch,
-    employeeMyApproval,
-    "employeeMyApproval"
-  );
 
   // Confirmed filters displayed as tags
   const [submittedFilters, setSubmittedFilters] = useState([]);
@@ -266,7 +256,6 @@ const Approval = () => {
 
     fetchFilteredData();
   }, [employeeMyApprovalSearch.tableFilterTrigger]);
-  console.log("Filter Snapshot:", employeeMyApproval);
 
   /**
    * Resets global search state if user reloads the page
@@ -293,64 +282,63 @@ const Approval = () => {
    */
 
   // Lazy Loading Work Start
-  console.log(employeeMyApproval, "employeeMyApprovalemployeeMyApproval");
-
   useEffect(() => {
     try {
       if (
-        employeeMyApproval !== null &&
+        employeeMyApproval?.approvals &&
         Array.isArray(employeeMyApproval.approvals)
       ) {
-        if (!hasReachedBottom) {
-          // 🔹 Initial load or refresh
-          setApprovalData(
-            employeeMyApproval.approvals.map((item) => ({
-              key: item.approvalID,
-              instrument: `${item.instrument?.instrumentName || ""} - ${
-                item.instrument?.instrumentCode || ""
-              }`,
-              type: item.tradeType?.typeName || "",
-              requestDateTime: `${item.requestDate || ""} ${
-                item.requestTime || ""
-              }`,
-              isEscalated: false,
-              status: item.approvalStatus?.approvalStatusName || "",
-              quantity: item.quantity || 0,
-              timeRemaining: item.timeRemainingToTrade || "",
-              ...item,
-            }))
-          );
-          setTotalRecords(employeeMyApproval.totalRecords || 0);
-          setRow(employeeMyApproval.approvals.length);
-        }
+        // 🔹 Map and normalize data
+        const mappedData = employeeMyApproval.approvals.map((item) => ({
+          key: item.approvalID,
+          instrument: `${item.instrument?.instrumentName || ""} - ${
+            item.instrument?.instrumentCode || ""
+          }`,
+          type: item.tradeType?.typeName || "",
+          requestDateTime: `${item.requestDate || ""} ${
+            item.requestTime || ""
+          }`,
+          isEscalated: false,
+          status: item.approvalStatus?.approvalStatusName || "",
+          quantity: item.quantity || 0,
+          timeRemaining: item.timeRemainingToTrade || "",
+          ...item,
+        }));
+
+        // 🔹 Set approvals data
+        setApprovalData(mappedData);
+
+        // 🔹 Update search state (avoid unnecessary updates)
+        setEmployeeMyApprovalSearch((prev) => ({
+          ...prev,
+          totalRecords:
+            prev.totalRecords !== employeeMyApproval.totalRecords
+              ? employeeMyApproval.totalRecords
+              : prev.totalRecords,
+          pageNumber: prev.pageNumber + 10,
+        }));
       } else if (employeeMyApproval === null) {
+        // No data case
         setApprovalData([]);
-        setTotalRecords(0);
-        setRow(0);
       }
     } catch (error) {
-      console.error(error, "error");
+      console.error("Error processing employee approvals:", error);
+    } finally {
+      // 🔹 Always stop loading state
+      setLoadingMore(false);
     }
-  }, [employeeMyApproval, hasReachedBottom]);
+  }, [employeeMyApproval]);
 
   // Lazy Loading
   // Inside your component
   useTableScrollBottom(
-    () => {
-      if (totalRecords > approvalData.length) {
-        console.log("Checker 23444");
-        // showLoader(false);
-        console.log(showLoader, "checkerLoader");
-        // Prevent duplicate calls
-        if (!loadingMore) {
-          console.log("Checker 23444");
+    async () => {
+      // ✅ Only load more if there are still records left
+      if (employeeMyApproval?.totalRecords !== approvalData?.length) {
+        try {
           setLoadingMore(true);
 
-          // sRow = current loaded rows count
-          const sRow = approvalData.length;
-          const length = employeeMyApprovalSearch.pageSize || 10;
-
-          // Updated request data
+          // Build request payload
           const requestdata = {
             InstrumentName:
               employeeMyApprovalSearch.instrumentName ||
@@ -359,61 +347,45 @@ const Approval = () => {
             Quantity: employeeMyApprovalSearch.quantity || 0,
             StatusIds: employeeMyApprovalSearch.status || [],
             TypeIds: employeeMyApprovalSearch.type || [],
-            PageNumber: sRow, // ✅ acts like sRow for API
-            Length: length,
+            PageNumber: employeeMyApprovalSearch.pageNumber, // Acts as offset for API
+            Length: 10,
           };
 
-          SearchTadeApprovals({
+          console.log("Fetching employee approvals with params:", requestdata);
+
+          // Call API
+          const data = await SearchTadeApprovals({
             callApi,
             showNotification,
-            showLoader: false, // ✅ Don't trigger full loader for lazy load
+            showLoader, // ✅ Don't trigger full loader for lazy load
             requestdata,
             navigate,
-          })
-            .then((res) => {
-              console.log("Checker 23444");
-              if (res?.approvals?.length) {
-                console.log("Checker 23444");
-                setApprovalData((prev) => [
-                  ...prev,
-                  ...res.approvals.map((item) => ({
-                    key: item.approvalID,
-                    instrument: `${item.instrument?.instrumentName || ""} - ${
-                      item.instrument?.instrumentCode || ""
-                    }`,
-                    type: item.tradeType?.typeName || "",
-                    requestDateTime: `${item.requestDate || ""} ${
-                      item.requestTime || ""
-                    }`,
-                    isEscalated: false,
-                    status: item.approvalStatus?.approvalStatusName || "",
-                    quantity: item.quantity || 0,
-                    timeRemaining: item.timeRemainingToTrade || "",
-                    ...item,
-                  })),
-                ]);
+          });
 
-                // Update page number in search state
-                setEmployeeMyApprovalSearch((prev) => ({
-                  ...prev,
-                  pageNumber: nextPage,
-                }));
-              }
-            })
-            .finally(() => {
-              setLoadingMore(false);
-            });
+          // Append new approvals
+          setIsEmployeeMyApproval((prev) => ({
+            ...prev,
+            approvals: [...(prev?.approvals || []), ...(data.approvals || [])],
+            totalRecords:
+              prev?.totalRecords !== data.totalRecords
+                ? data.totalRecords
+                : prev?.totalRecords,
+          }));
+
+          console.log("employeeMyApproval", data);
+        } catch (error) {
+          console.error("Error loading more approvals:", error);
+        } finally {
+          setLoadingMore(false);
         }
       }
     },
     0,
-    "border-less-table-orange" // ✅ container selector
+    "border-less-table-orange" // Container selector
   );
 
   // Lazy Loading Work Start
-  console.log(employeeMyApprovalSearch, "employeeMyApprovalSearch");
-  console.log(totalRecords, "totalRecordstotalRecords");
-  console.log(approvalData, "approvalDataapprovalData");
+  console.log("employeeMyApproval", employeeMyApproval);
 
   return (
     <>

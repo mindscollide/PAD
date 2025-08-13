@@ -65,7 +65,7 @@ export const getBorderlessTableColumns = (
     title: withSortIcon("Approval ID", "approvalID", sortedInfo),
     dataIndex: "approvalID",
     key: "approvalID",
-    width: "10%",
+    width: "15%",
     // width: 200,
     ellipsis: true,
     sorter: (a, b) => a.approvalID - b.approvalID,
