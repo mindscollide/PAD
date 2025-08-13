@@ -55,14 +55,41 @@ export const getBorderlessTableColumns = (
   {
     title: (
       <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+        Approval ID {getSortIcon("approvalID", sortedInfo)}
+      </div>
+    ),
+    dataIndex: "approvalID",
+    key: "approvalID",
+    width: "10%",
+    ellipsis: true,
+    sorter: (a, b) => a.approvalID - b.approvalID,
+    sortDirections: ["ascend", "descend"],
+    sortOrder: sortedInfo?.columnKey === "approvalID" ? sortedInfo.order : null,
+    showSorterTooltip: false,
+    sortIcon: () => null,
+    render: (approvalID) => {
+      return (
+        <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+          <span className="font-medium">{approvalID}</span>
+        </div>
+      );
+    },
+  },
+  {
+    title: (
+      <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
         Instrument {getSortIcon("instrument", sortedInfo)}
       </div>
     ),
     dataIndex: "instrument",
     key: "instrument",
-    width: "20%",
+    width: "15%",
     ellipsis: true,
-    sorter: (a, b) => a.instrument.localeCompare(b.instrument),
+    sorter: (a, b) => {
+      const nameA = a.instrument?.instrumentName || "";
+      const nameB = b.instrument?.instrumentName || "";
+      return nameA.localeCompare(nameB);
+    },
     sortDirections: ["ascend", "descend"],
     sortOrder: sortedInfo?.columnKey === "instrument" ? sortedInfo.order : null,
     showSorterTooltip: false,
@@ -82,18 +109,6 @@ export const getBorderlessTableColumns = (
         </div>
       );
     },
-
-    // render: (text) => (
-    //   <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-    //     <span
-    //       className="border-less-table-orange-instrumentBadge"
-    //       style={{ minWidth: 30 }}
-    //     >
-    //       {text.split("-")[0].substring(0, 2).toUpperCase()}
-    //     </span>
-    //     <span className="font-medium">{text}</span>
-    //   </div>
-    // ),
   },
   {
     title: (
@@ -240,17 +255,6 @@ export const getBorderlessTableColumns = (
         />
       );
     },
-    //   (
-    //   <Button
-    //     className="big-orange-button"
-    //     text="View Details"
-    //     onClick={() => {
-    //       console.log(record, "CHeckerCheckrrecord");
-    //       setSelectedViewDetail(record);
-    //       setIsViewDetail(true);
-    //     }}
-    //   />
-    // ),
   },
 ];
 

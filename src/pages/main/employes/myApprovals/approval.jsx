@@ -382,6 +382,7 @@ const Approval = () => {
   // Lazy Loading Work Start
   console.log(employeeMyApproval, "aunnaqvi");
   console.log(totalRecords, "totalRecordstotalRecords");
+  console.log(approvalData, "approvalDataapprovalData");
 
   return (
     <>
