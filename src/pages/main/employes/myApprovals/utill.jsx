@@ -34,7 +34,15 @@ const getSortIcon = (columnKey, sortedInfo) => {
   }
   return <ArrowsAltOutlined className="custom-sort-icon" />;
 };
-
+// Helper for consistent column titles
+const withSortIcon = (label, columnKey, sortedInfo) => (
+  <div className={style["table-header-wrapper"]}>
+    <span className={style["table-header-text"]}>{label}</span>
+    <span className={style["table-header-icon"]}>
+      {getSortIcon(columnKey, sortedInfo)}
+    </span>
+  </div>
+);
 /**
  * Generates column definitions for the borderless approval table
  *
@@ -44,6 +52,7 @@ const getSortIcon = (columnKey, sortedInfo) => {
  * @param {function} setEmployeeMyApprovalSearch - Setter to update context filter state
  * @returns {Array} Array of column definitions
  */
+
 export const getBorderlessTableColumns = (
   approvalStatusMap,
   sortedInfo,
@@ -53,14 +62,11 @@ export const getBorderlessTableColumns = (
   setIsResubmitted
 ) => [
   {
-    title: (
-      <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-        Approval ID {getSortIcon("approvalID", sortedInfo)}
-      </div>
-    ),
+    title: withSortIcon("Approval ID", "approvalID", sortedInfo),
     dataIndex: "approvalID",
     key: "approvalID",
     width: "10%",
+    // width: 200,
     ellipsis: true,
     sorter: (a, b) => a.approvalID - b.approvalID,
     sortDirections: ["ascend", "descend"],
@@ -76,11 +82,7 @@ export const getBorderlessTableColumns = (
     },
   },
   {
-    title: (
-      <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-        Instrument {getSortIcon("instrument", sortedInfo)}
-      </div>
-    ),
+    title: withSortIcon("Instrument", "appinstrumentrovalID", sortedInfo),
     dataIndex: "instrument",
     key: "instrument",
     width: "15%",
@@ -132,11 +134,7 @@ export const getBorderlessTableColumns = (
     ),
   },
   {
-    title: (
-      <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-        Request Date & Time {getSortIcon("requestDateTime", sortedInfo)}
-      </div>
-    ),
+    title: withSortIcon("Request Date & Time", "requestDateTime", sortedInfo),
     dataIndex: "requestDateTime",
     key: "requestDateTime",
     ellipsis: true,
@@ -200,11 +198,7 @@ export const getBorderlessTableColumns = (
     },
   },
   {
-    title: (
-      <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-        Quantity {getSortIcon("quantity", sortedInfo)}
-      </div>
-    ),
+    title: withSortIcon("Quantity", "quantity", sortedInfo),
     dataIndex: "quantity",
     key: "quantity",
     ellipsis: true,
