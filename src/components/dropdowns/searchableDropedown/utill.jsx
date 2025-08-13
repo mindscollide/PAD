@@ -186,49 +186,62 @@ export const renderFilterContent = (
   }
 };
 
-export const apiCallSeacrch = async ({
+// apiCallSearch.js
+export const apiCallSearch = async ({
   selectedKey,
   employeeMyApprovalSearch,
   callApi,
   showNotification,
   showLoader,
   navigate,
+  setData,
 }) => {
-  switch (selectedKey) {
-    case "1": {
-      console.log("hello state", employeeMyApprovalSearch);
-      const TypeIds = mapBuySellToIds(employeeMyApprovalSearch.type);
-      console.log("hello", TypeIds);
+  showLoader(true);
 
-      const statusIds = mapStatusToIds(employeeMyApprovalSearch.status);
-      const date = toYYMMDD(employeeMyApprovalSearch.startDate);
+  try {
+    switch (selectedKey) {
+      case "1": {
+        const TypeIds = mapBuySellToIds(employeeMyApprovalSearch.type);
+        const statusIds = mapStatusToIds(employeeMyApprovalSearch.status);
+        const date = toYYMMDD(employeeMyApprovalSearch.startDate);
 
-      console.log("hello", statusIds);
-      const requestdata = {
-        InstrumentName:
-          employeeMyApprovalSearch.instrumentName ||
-          employeeMyApprovalSearch.mainInstrumentName,
-        StartDate: date || "",
-        Quantity: employeeMyApprovalSearch.quantity || 0,
-        StatusIds: statusIds || [],
-        TypeIds: TypeIds || [],
-        PageNumber: employeeMyApprovalSearch.pageNumber || 1,
-        Length: employeeMyApprovalSearch.pageSize || 10,
-      };
-      showLoader(true);
-      SearchTadeApprovals({
-        callApi,
-        showNotification,
-        showLoader,
-        requestdata,
-        navigate,
-      });
-      break;
+        const requestdata = {
+          InstrumentName:
+            employeeMyApprovalSearch.instrumentName ||
+            employeeMyApprovalSearch.mainInstrumentName,
+          StartDate: date || "",
+          Quantity: employeeMyApprovalSearch.quantity || 0,
+          StatusIds: statusIds || [],
+          TypeIds: TypeIds || [],
+          PageNumber: employeeMyApprovalSearch.pageNumber || 1,
+          Length: employeeMyApprovalSearch.pageSize || 10, // Fixed page size
+        };
+
+        const data = await SearchTadeApprovals({
+          callApi,
+          showNotification,
+          showLoader,
+          requestdata,
+          navigate,
+        });
+
+        setData(data);
+        break;
+      }
+
+      case "2":
+        // Add case 2 logic here when needed
+        break;
+
+      case "3":
+        // Add case 3 logic here when needed
+        break;
+
+      default:
+        console.warn(`No matching case for selectedKey: ${selectedKey}`);
+        break;
     }
-
-    case "2":
-    case "3":
-    default:
-      break;
+  } finally {
+    showLoader(false);
   }
 };

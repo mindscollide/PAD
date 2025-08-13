@@ -25,7 +25,7 @@ export const ApiProvider = ({ children }) => {
     retryOnExpire = true,
   }) => {
     try {
-      showLoader(true);
+      // showLoader(true);
       let token = "";
       if (withAuth) {
         token = sessionStorage.getItem("auth_token");
@@ -54,7 +54,7 @@ export const ApiProvider = ({ children }) => {
       const res = await axios(config);
       const { responseCode, responseMessage, responseResult } = res.data;
 
-      showLoader(false);
+      // showLoader(false);
 
       if (responseCode === 200) {
         return {
