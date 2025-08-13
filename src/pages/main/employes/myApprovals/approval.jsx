@@ -232,13 +232,17 @@ const Approval = () => {
    * Handles table-specific filter trigger
    */
   useEffect(() => {
+      console.log("selectedKey", employeeMyApprovalSearch);
     if (employeeMyApprovalSearch.tableFilterTrigger) {
+      console.log("selectedKey", selectedKey);
       const snapshot = filterKeys
         .filter(({ key }) => employeeMyApprovalSearch[key])
         .map(({ key }) => ({
           key,
           value: employeeMyApprovalSearch[key],
         }));
+      console.log("selectedKey", employeeMyApprovalSearch);
+      console.log("selectedKey", selectedKey);
 
       apiCallSeacrch({
         selectedKey,

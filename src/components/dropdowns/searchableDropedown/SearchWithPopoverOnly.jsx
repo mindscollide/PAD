@@ -83,6 +83,7 @@ const SearchWithPopoverOnly = () => {
   const handleSearch = () => {
     switch (selectedKey) {
       case "1":
+        console.log("selectedKey",selectedKey)
         setEmployeeMyApprovalSearch((prev) => ({
           ...prev,
           tableFilterTrigger: true,
