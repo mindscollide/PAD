@@ -34,7 +34,15 @@ const getSortIcon = (columnKey, sortedInfo) => {
   }
   return <ArrowsAltOutlined className="custom-sort-icon" />;
 };
-
+// Helper for consistent column titles
+const withSortIcon = (label, columnKey, sortedInfo) => (
+  <div className={style["table-header-wrapper"]}>
+    <span className={style["table-header-text"]}>{label}</span>
+    <span className={style["table-header-icon"]}>
+      {getSortIcon(columnKey, sortedInfo)}
+    </span>
+  </div>
+);
 /**
  * Generates column definitions for the borderless approval table
  *
@@ -44,6 +52,7 @@ const getSortIcon = (columnKey, sortedInfo) => {
  * @param {function} setEmployeeMyApprovalSearch - Setter to update context filter state
  * @returns {Array} Array of column definitions
  */
+
 export const getBorderlessTableColumns = (
   approvalStatusMap,
   sortedInfo,
@@ -53,16 +62,36 @@ export const getBorderlessTableColumns = (
   setIsResubmitted
 ) => [
   {
-    title: (
-      <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-        Instrument {getSortIcon("instrument", sortedInfo)}
-      </div>
-    ),
+    title: withSortIcon("Approval ID", "approvalID", sortedInfo),
+    dataIndex: "approvalID",
+    key: "approvalID",
+    width: "10%",
+    // width: 200,
+    ellipsis: true,
+    sorter: (a, b) => a.approvalID - b.approvalID,
+    sortDirections: ["ascend", "descend"],
+    sortOrder: sortedInfo?.columnKey === "approvalID" ? sortedInfo.order : null,
+    showSorterTooltip: false,
+    sortIcon: () => null,
+    render: (approvalID) => {
+      return (
+        <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+          <span className="font-medium">{approvalID}</span>
+        </div>
+      );
+    },
+  },
+  {
+    title: withSortIcon("Instrument", "appinstrumentrovalID", sortedInfo),
     dataIndex: "instrument",
     key: "instrument",
-    width: "20%",
+    width: "15%",
     ellipsis: true,
-    sorter: (a, b) => a.instrument.localeCompare(b.instrument),
+    sorter: (a, b) => {
+      const nameA = a.instrument?.instrumentName || "";
+      const nameB = b.instrument?.instrumentName || "";
+      return nameA.localeCompare(nameB);
+    },
     sortDirections: ["ascend", "descend"],
     sortOrder: sortedInfo?.columnKey === "instrument" ? sortedInfo.order : null,
     showSorterTooltip: false,
@@ -82,18 +111,6 @@ export const getBorderlessTableColumns = (
         </div>
       );
     },
-
-    // render: (text) => (
-    //   <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-    //     <span
-    //       className="border-less-table-orange-instrumentBadge"
-    //       style={{ minWidth: 30 }}
-    //     >
-    //       {text.split("-")[0].substring(0, 2).toUpperCase()}
-    //     </span>
-    //     <span className="font-medium">{text}</span>
-    //   </div>
-    // ),
   },
   {
     title: (
@@ -117,11 +134,7 @@ export const getBorderlessTableColumns = (
     ),
   },
   {
-    title: (
-      <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-        Request Date & Time {getSortIcon("requestDateTime", sortedInfo)}
-      </div>
-    ),
+    title: withSortIcon("Request Date & Time", "requestDateTime", sortedInfo),
     dataIndex: "requestDateTime",
     key: "requestDateTime",
     ellipsis: true,
@@ -185,11 +198,7 @@ export const getBorderlessTableColumns = (
     },
   },
   {
-    title: (
-      <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-        Quantity {getSortIcon("quantity", sortedInfo)}
-      </div>
-    ),
+    title: withSortIcon("Quantity", "quantity", sortedInfo),
     dataIndex: "quantity",
     key: "quantity",
     ellipsis: true,
@@ -240,17 +249,6 @@ export const getBorderlessTableColumns = (
         />
       );
     },
-    //   (
-    //   <Button
-    //     className="big-orange-button"
-    //     text="View Details"
-    //     onClick={() => {
-    //       console.log(record, "CHeckerCheckrrecord");
-    //       setSelectedViewDetail(record);
-    //       setIsViewDetail(true);
-    //     }}
-    //   />
-    // ),
   },
 ];
 

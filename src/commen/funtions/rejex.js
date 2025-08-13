@@ -62,3 +62,23 @@ export function formatApiDateTime(apiDateTime) {
     .toString()
     .padStart(2, "0")}:${minutes} ${ampm}`;
 }
+
+// this is the formator to convert any type of date to formate into this
+// Universal UTC → YYMMDD Formatter
+export const toYYMMDD = (input) => {
+  // Handle empty, null, undefined
+  if (!input) return "";
+
+  // Create Date object
+  const date = new Date(input);
+
+  // Validate
+  if (isNaN(date)) throw new Error(`Invalid date format: ${input}`);
+
+  // Format in UTC
+  const year = String(date.getUTCFullYear()).slice(-2); // YY
+  const month = String(date.getUTCMonth() + 1).padStart(2, "0"); // MM
+  const day = String(date.getUTCDate()).padStart(2, "0"); // DD
+
+  return `${year}${month}${day}`;
+};
