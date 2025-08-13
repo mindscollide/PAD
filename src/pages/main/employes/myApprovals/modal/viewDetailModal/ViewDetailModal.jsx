@@ -10,6 +10,7 @@ import EllipsesIcon from "../../../../../../assets/img/Ellipses.png";
 import CrossIcon from "../../../../../../assets/img/Cross.png";
 
 const ViewDetailModal = () => {
+  // This is Global State for modal which is create in ContextApi
   const {
     isViewDetail,
     setIsViewDetail,
@@ -18,6 +19,8 @@ const ViewDetailModal = () => {
     setIsConductedTransaction,
     setIsResubmitted,
   } = useGlobalModal();
+
+  console.log(selectedViewDetail, "selectedViewDetailselectedViewDetail");
 
   // This is the Status Which is I'm getting from the selectedViewDetail contextApi state
   const getStatusStyle = (status) => {
@@ -62,7 +65,9 @@ const ViewDetailModal = () => {
   };
 
   //This is how I can pass the status in statusData Variables
-  const statusData = getStatusStyle(selectedViewDetail?.status);
+  const statusData = getStatusStyle(
+    selectedViewDetail?.approvalStatus.approvalStatusName
+  );
 
   // To Show View Comments Modal and Closed Declined Modal
   const onClickViewModal = () => {
@@ -166,7 +171,7 @@ const ViewDetailModal = () => {
                       ) : (
                         <>
                           <span className={styles.customTag}>EQ</span>{" "}
-                          {selectedViewDetail?.instrument}
+                          {selectedViewDetail?.instrument?.instrumentName}
                         </>
                       )}
                     </label>
@@ -232,7 +237,7 @@ const ViewDetailModal = () => {
                 )}
               </Row>
 
-              {/* Show Other Scenario's SUb Heading */}
+              {/* Show Other Scenario's SUb Heading and Field Sceanrio's */}
               <Row gutter={[4, 4]} style={{ marginTop: "3px" }}>
                 <Col span={12}>
                   <div className={styles.backgrounColorOfDetail}>
@@ -253,6 +258,7 @@ const ViewDetailModal = () => {
                   </div>
                 </Col>
               </Row>
+
               <Row gutter={[4, 4]} style={{ marginTop: "3px" }}>
                 <Col span={12}>
                   <div className={styles.backgrounColorOfDetail}>
@@ -275,6 +281,7 @@ const ViewDetailModal = () => {
                   </div>
                 </Col>
               </Row>
+
               <Row style={{ marginTop: "3px" }}>
                 <Col span={24}>
                   <div className={styles.backgrounColorOfBrokerDetail}>
@@ -296,6 +303,7 @@ const ViewDetailModal = () => {
                 </Col>
               </Row>
 
+              {/* This is the Stepper Libarary Section */}
               <Row>
                 <div className={styles.backgrounColorOfStepper}>
                   <Stepper
@@ -425,7 +433,11 @@ const ViewDetailModal = () => {
                       onClick={onClickPendingClose}
                     />
                   ) : (
-                    <CustomButton text={"Close"} className="big-light-button" />
+                    <CustomButton
+                      text={"Close"}
+                      className="big-light-button"
+                      onClick={onClickViewModal}
+                    />
                   )}
                 </Col>
               </Row>

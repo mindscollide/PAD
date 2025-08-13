@@ -5,10 +5,23 @@ import { GlobalModal } from "../../../../../../components";
 import styles from "./ResubmitModal.module.css";
 import CustomButton from "../../../../../../components/buttons/button";
 import { useDashboardContext } from "../../../../../../context/dashboardContaxt";
+import { useNotification } from "../../../../../../components/NotificationProvider/NotificationProvider";
+import { useGlobalLoader } from "../../../../../../context/LoaderContext";
+import { useApi } from "../../../../../../context/ApiContext";
+import { useNavigate } from "react-router-dom";
+import { AddTradeApprovalRequest } from "../../../../../../api/myApprovalApi";
 
 const { TextArea } = Input;
 const { Text } = Typography;
 const ResubmitModal = () => {
+  const navigate = useNavigate();
+
+  const { showNotification } = useNotification();
+
+  const { showLoader } = useGlobalLoader();
+
+  const { callApi } = useApi();
+
   const { isResubmitted, setIsResubmitted, setResubmitIntimation } =
     useGlobalModal();
 
@@ -46,15 +59,48 @@ const ResubmitModal = () => {
   //when no reasons or option is selected then button resubmit will disabled
   const isButtonDisabled = (value ?? "").toString().trim() === "";
 
+  //This is the Api Function I created
+  const fetchResubmitRequest = async () => {
+    showLoader(true);
+
+    const requestdata = {
+      TradeApprovalID: 1,
+      InstrumentID: 0,
+      AssetTypeID: 0,
+      ApprovalTypeID: 0,
+      Quantity: 0,
+      ApprovalStatusID: 0,
+      Comments: value?.trim() || "",
+      BrokerIds: [],
+      ResubmittedCommentID: selectedOption?.predefinedReasonsID || 0,
+      ListOfTradeApprovalActionableBundle: [
+        {
+          instrumentID: 0,
+          instrumentShortName: "",
+          Entity: { EntityID: 0, EntityTypeID: 0 },
+        },
+      ],
+    };
+
+    await AddTradeApprovalRequest({
+      callApi,
+      showNotification,
+      showLoader,
+      requestdata,
+      setIsResubmitted,
+      setResubmitIntimation,
+      navigate,
+    });
+  };
+
+  // Call an API which inside the fetchResubmitRequest Request on Resubmit Button
+  const clickOnReSubmitButton = () => {
+    fetchResubmitRequest();
+  };
+
   //onClose button Handler
   const onClickClose = () => {
     setIsResubmitted(false);
-  };
-
-  //functionality on click resubmit
-  const onClickResubmit = () => {
-    setIsResubmitted(false);
-    setResubmitIntimation(true);
   };
 
   return (
@@ -128,7 +174,7 @@ const ResubmitModal = () => {
                     text={"Resubmit"}
                     className="big-dark-button"
                     disabled={isButtonDisabled}
-                    onClick={onClickResubmit}
+                    onClick={clickOnReSubmitButton}
                   />
                 </div>
               </Col>

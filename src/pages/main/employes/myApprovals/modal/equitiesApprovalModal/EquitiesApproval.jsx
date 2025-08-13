@@ -2,7 +2,6 @@ import React, { useEffect, useMemo, useState } from "react";
 import { Col, Row, Select, Space, Checkbox } from "antd";
 import { useGlobalModal } from "../../../../../../context/GlobalModalContext";
 import {
-  CommenSearchInput,
   GlobalModal,
   InstrumentSelect,
   TextField,
@@ -48,8 +47,6 @@ const EquitiesApproval = () => {
 
   //For Quantity Data State
   const [quantity, setQuantity] = useState("");
-
-  console.log(quantity, "quantityquantity");
 
   // Refactor sessionStorage read with useMemo for performance & error handling
   const lineManagerDetails = useMemo(() => {
@@ -137,7 +134,6 @@ const EquitiesApproval = () => {
 
   // A Function For Fetch api of AddTradeApproval
   const fetchAddApprovalsRequest = async () => {
-    console.log("Check APi");
     showLoader(true);
 
     const quantityNumber = quantity ? Number(quantity.replace(/,/g, "")) : null;
@@ -155,12 +151,12 @@ const EquitiesApproval = () => {
         {
           instrumentID: selectedInstrument?.type || null,
           instrumentShortName: selectedInstrument?.name || "",
-          Entity: { EntityTypeID: 1 },
+          Entity: { EntityID: 1, EntityTypeID: 1 },
         },
       ],
     };
 
-    const data = await AddTradeApprovalRequest({
+    await AddTradeApprovalRequest({
       callApi,
       showNotification,
       showLoader,
@@ -169,8 +165,6 @@ const EquitiesApproval = () => {
       setIsSubmit,
       navigate,
     });
-
-    setIsEmployeeMyApproval(data);
   };
 
   // Call an API which inside the fetchAddApprovals Request

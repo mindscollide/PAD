@@ -12,6 +12,8 @@ import { ArrowsAltOutlined } from "@ant-design/icons";
 import TypeColumnTitle from "../../../../components/dropdowns/filters/typeColumnTitle";
 import StatusColumnTitle from "../../../../components/dropdowns/filters/statusColumnTitle";
 import { useGlobalModal } from "../../../../context/GlobalModalContext";
+import { formatApiDateTime } from "../../../../commen/funtions/rejex";
+
 // import TypeColumnTitle from "./typeFilter";
 
 /**
@@ -65,17 +67,33 @@ export const getBorderlessTableColumns = (
     sortOrder: sortedInfo?.columnKey === "instrument" ? sortedInfo.order : null,
     showSorterTooltip: false,
     sortIcon: () => null,
-    render: (text) => (
-      <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-        <span
-          className="border-less-table-orange-instrumentBadge"
-          style={{ minWidth: 30 }}
-        >
-          {text.split("-")[0].substring(0, 2).toUpperCase()}
-        </span>
-        <span className="font-medium">{text}</span>
-      </div>
-    ),
+    render: (instrument) => {
+      const name = instrument?.instrumentName || "";
+      const code = instrument?.instrumentCode || "";
+      return (
+        <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+          <span
+            className="border-less-table-orange-instrumentBadge"
+            style={{ minWidth: 30 }}
+          >
+            {name.substring(0, 2).toUpperCase()}
+          </span>
+          <span className="font-medium">{`${name} - ${code}`}</span>
+        </div>
+      );
+    },
+
+    // render: (text) => (
+    //   <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+    //     <span
+    //       className="border-less-table-orange-instrumentBadge"
+    //       style={{ minWidth: 30 }}
+    //     >
+    //       {text.split("-")[0].substring(0, 2).toUpperCase()}
+    //     </span>
+    //     <span className="font-medium">{text}</span>
+    //   </div>
+    // ),
   },
   {
     title: (
@@ -108,13 +126,18 @@ export const getBorderlessTableColumns = (
     key: "requestDateTime",
     ellipsis: true,
     width: "15%",
-    sorter: (a, b) => a.requestDateTime.localeCompare(b.requestDateTime),
+    sorter: (a, b) =>
+      formatApiDateTime(a.requestDateTime).localeCompare(
+        formatApiDateTime(b.requestDateTime)
+      ),
     sortDirections: ["ascend", "descend"],
     sortOrder:
       sortedInfo?.columnKey === "requestDateTime" ? sortedInfo.order : null,
     showSorterTooltip: false,
     sortIcon: () => null,
-    render: (date) => <span className="text-gray-600">{date}</span>,
+    render: (date) => (
+      <span className="text-gray-600">{formatApiDateTime(date)}</span>
+    ),
   },
   {
     title: "",
@@ -230,3 +253,54 @@ export const getBorderlessTableColumns = (
     // ),
   },
 ];
+
+export const useTableScrollBottom = (
+  onBottomReach,
+  threshold = 0,
+  prefixCls = "ant-table"
+) => {
+  const [hasReachedBottom, setHasReachedBottom] = useState(false);
+  const containerRef = useRef(null);
+  const previousScrollTopRef = useRef(0); // for detecting vertical scroll only
+
+  useEffect(() => {
+    const selector = `.${prefixCls}-body`;
+    const scrollContainer = document.querySelector(selector);
+
+    if (!scrollContainer) {
+      console.warn(`📛 Scroll container not found for selector: ${selector}`);
+      return;
+    }
+
+    containerRef.current = scrollContainer;
+
+    const handleScroll = () => {
+      const { scrollTop, scrollHeight, clientHeight } = scrollContainer;
+
+      // Check if vertical scroll happened
+      const scrolledVertically = scrollTop !== previousScrollTopRef.current;
+      previousScrollTopRef.current = scrollTop;
+
+      if (!scrolledVertically) return; // ignore horizontal-only scroll
+
+      const isScrollable = scrollHeight > clientHeight;
+      const isBottom = scrollTop + clientHeight >= scrollHeight - threshold;
+
+      if (isScrollable && isBottom && !hasReachedBottom) {
+        setHasReachedBottom(true);
+        onBottomReach?.();
+
+        setTimeout(() => setHasReachedBottom(false), 1000);
+      }
+    };
+
+    scrollContainer.addEventListener("scroll", handleScroll);
+    return () => scrollContainer.removeEventListener("scroll", handleScroll);
+  }, [hasReachedBottom, onBottomReach, threshold, prefixCls]);
+
+  return {
+    hasReachedBottom,
+    containerRef,
+    setHasReachedBottom,
+  };
+};

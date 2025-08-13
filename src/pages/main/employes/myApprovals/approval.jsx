@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { Col, Row } from "antd";
 import { ComonDropDown } from "../../../../components";
 import BorderlessTable from "../../../../components/tables/borderlessTable/borderlessTable";
-import { getBorderlessTableColumns } from "./utill";
+import { getBorderlessTableColumns, useTableScrollBottom } from "./utill";
 import { approvalStatusMap } from "../../../../components/tables/borderlessTable/utill";
 import PageLayout from "../../../../components/pageContainer/pageContainer";
 import EmptyState from "../../../../components/emptyStates/empty-states";
@@ -66,7 +66,13 @@ const Approval = () => {
 
   const [sortedInfo, setSortedInfo] = useState({});
   const [approvalData, setApprovalData] = useState([]);
-  console.log(isEquitiesModalVisible, "isEquitiesModalVisible");
+  const [hasReachedBottom, setHasReachedBottom] = useState(false);
+  const [totalRecords, setTotalRecords] = useState(0);
+  console.log(
+    employeeMyApprovalSearch,
+    employeeMyApproval,
+    "employeeMyApproval"
+  );
 
   // Confirmed filters displayed as tags
   const [submittedFilters, setSubmittedFilters] = useState([]);
@@ -276,21 +282,106 @@ const Approval = () => {
    * Transforms raw API data into table-compatible format
    */
 
-  useEffect(() => {
-    if (employeeMyApproval) {
-      const transformed = employeeMyApproval?.map((item) => ({
-        id: item.approvalID,
-        instrument: item.instrumentName,
-        type: item.tradeType?.typeName || "-",
-        requestDateTime: `${item.requestDate} | ${item.requestTime}`,
-        status: item.approvalStatus?.approvalStatusName || "-",
-        quantity: Number(item.quantity) || 0,
-        timeRemaining: item.timeRemainingToTrade || "-",
-      }));
+  // Lazy Loading Work Start
+  console.log(employeeMyApproval, "employeeMyApprovalemployeeMyApproval");
 
-      setApprovalData(transformed);
+  useEffect(() => {
+    try {
+      if (
+        employeeMyApproval !== null &&
+        Array.isArray(employeeMyApproval?.approvals)
+      ) {
+        if (hasReachedBottom) {
+          // Append new data when scrolling to bottom
+          setHasReachedBottom(false);
+          setApprovalData((prevData) => [
+            ...prevData,
+            ...employeeMyApproval.approvals.map((item) => ({
+              key: item.approvalID,
+              instrument: `${item.instrument?.instrumentName || ""} - ${
+                item.instrument?.instrumentCode || ""
+              }`,
+              type: item.tradeType?.typeName || "",
+              requestDateTime: `${item.requestDate || ""} ${
+                item.requestTime || ""
+              }`,
+              isEscalated: false,
+              status: item.approvalStatus?.approvalStatusName || "",
+              quantity: item.quantity || 0,
+              timeRemaining: item.timeRemainingToTrade || "",
+              ...item, // Keep raw data for View Details
+            })),
+          ]);
+          setTotalRecords(employeeMyApproval.totalRecords);
+          setRow((prevRow) => prevRow + employeeMyApproval.approvals.length);
+        } else {
+          // Replace data on first load or filter change
+          setHasReachedBottom(false);
+          setApprovalData(
+            employeeMyApproval.approvals.map((item) => ({
+              key: item.approvalID,
+              instrument: `${item.instrument?.instrumentName || ""} - ${
+                item.instrument?.instrumentCode || ""
+              }`,
+              type: item.tradeType?.typeName || "",
+              requestDateTime: `${item.requestDate || ""} ${
+                item.requestTime || ""
+              }`,
+              isEscalated: false,
+              status: item.approvalStatus?.approvalStatusName || "",
+              quantity: item.quantity || 0,
+              timeRemaining: item.timeRemainingToTrade || "",
+              ...item,
+            }))
+          );
+          setTotalRecords(employeeMyApproval.totalRecords);
+          setRow(employeeMyApproval.approvals.length);
+        }
+      } else if (employeeMyApproval === null) {
+        // Reset if no data
+        if (!hasReachedBottom) {
+          setHasReachedBottom(false);
+          setApprovalData([]);
+          setTotalRecords(0);
+          setRow(0);
+        }
+      }
+    } catch (error) {
+      console.error(error, "error");
     }
   }, [employeeMyApproval]);
+
+  //Custom Hook Call for Lazy Loading
+  useTableScrollBottom(
+    () => {
+      if (totalRecords !== employeeMyApproval?.approvals.length) {
+        setHasReachedBottom(true);
+        const requestdata = {
+          InstrumentName:
+            employeeMyApprovalSearch.instrumentName ||
+            employeeMyApprovalSearch.mainInstrumentName,
+          StartDate: employeeMyApprovalSearch.date || "",
+          Quantity: employeeMyApprovalSearch.quantity || 0,
+          StatusIds: statusIds || [],
+          TypeIds: TypeIds || [],
+          PageNumber: employeeMyApprovalSearch.pageNumber || 1,
+          Length: employeeMyApprovalSearch.pageSize || 10,
+        };
+        SearchTadeApprovals({
+          callApi,
+          showNotification,
+          showLoader,
+          requestdata,
+          navigate,
+        });
+      }
+    },
+    0,
+    "border-less-table-orange"
+  );
+  // Lazy Loading Work Start
+  console.log(employeeMyApproval, "aunnaqvi");
+  console.log(totalRecords, "totalRecordstotalRecords");
 
   return (
     <>

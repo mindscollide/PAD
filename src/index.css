@@ -304,6 +304,15 @@ body {
   border-radius: 4px;
 }
 
+/* This is for ant design select background on hover class for all */
+
+:where(.css-dev-only-do-not-override-1rfzxih).ant-select-outlined:not(
+    .ant-select-disabled
+  ):not(.ant-select-customize-input):not(.ant-pagination-size-changer):hover
+  .ant-select-selector {
+  background-color: #f3f3f3 !important;
+}
+
 /* This is the ant design CheckBox Color inside the Add Approval Request Modal on Broker dropdow*/
 :where(.css-dev-only-do-not-override-1rfzxih).ant-checkbox-checked
   .ant-checkbox-inner {
@@ -318,11 +327,10 @@ li.ant-dropdown-menu-item.ant-dropdown-menu-item-only-child:focus {
 }
 
 /* menu devider using in propfile dropdown */
-.ant-dropdown-menu-item-divider
- {
-    height: 1px;
-    margin: 4px 0;
-    overflow: hidden;
-    line-height: 0;
-    background-color: #d4d4d4 !important;
+.ant-dropdown-menu-item-divider {
+  height: 1px;
+  margin: 4px 0;
+  overflow: hidden;
+  line-height: 0;
+  background-color: #d4d4d4 !important;
 }
