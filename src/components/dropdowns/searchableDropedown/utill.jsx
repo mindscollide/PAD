@@ -213,7 +213,7 @@ export const apiCallSearch = async ({
           Quantity: employeeMyApprovalSearch.quantity || 0,
           StatusIds: statusIds || [],
           TypeIds: TypeIds || [],
-          PageNumber: employeeMyApprovalSearch.pageNumber || 1,
+          PageNumber: 0,
           Length: employeeMyApprovalSearch.pageSize || 10, // Fixed page size
         };
 

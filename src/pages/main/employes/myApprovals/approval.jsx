@@ -145,51 +145,59 @@ const Approval = () => {
    * Removes a filter tag and re-fetches data
    */
   const handleRemoveFilter = async (key) => {
-    const updatedFilters = {
-      ...employeeMyApprovalSearch,
-      [key]: "",
-    };
+    const normalizedKey = key?.toLowerCase();
 
-    const updatedSubmitted = submittedFilters.filter(
-      (item) => item.key !== key
-    );
+    // 1️⃣ Update UI state for removed filters
+    setSubmittedFilters((prev) => prev.filter((item) => item.key !== key));
 
-    setSubmittedFilters(updatedSubmitted);
-
+    // 2️⃣ Prepare API request parameters
     const TypeIds = mapBuySellToIds(employeeMyApprovalSearch.type);
     const statusIds = mapStatusToIds(employeeMyApprovalSearch.status);
 
     const requestdata = {
       InstrumentName:
         employeeMyApprovalSearch.instrumentName ||
-        employeeMyApprovalSearch.mainInstrumentName,
+        employeeMyApprovalSearch.mainInstrumentName ||
+        "",
       StartDate: employeeMyApprovalSearch.date || "",
       Quantity: employeeMyApprovalSearch.quantity || 0,
       StatusIds: statusIds || [],
       TypeIds: TypeIds || [],
-      PageNumber: employeeMyApprovalSearch.pageNumber || 1,
+      PageNumber: 0,
       Length: employeeMyApprovalSearch.pageSize || 10,
     };
 
-    const normalizedKey = key?.toLowerCase();
-
+    // 3️⃣ Reset API params for the specific filter being removed
     if (normalizedKey === "quantity") {
       requestdata.Quantity = 0;
-    }
-
-    if (
+      // 5️⃣ Update search state — only reset the specific key + page number
+      setEmployeeMyApprovalSearch((prev) => ({
+        ...prev,
+        quantity: 0,
+        pageNumber: 0,
+      }));
+    } else if (
       normalizedKey === "instrumentname" ||
       normalizedKey === "maininstrumentname"
     ) {
+      setEmployeeMyApprovalSearch((prev) => ({
+        ...prev,
+        instrumentName: "",
+        mainInstrumentName: "",
+        pageNumber: 0,
+      }));
       requestdata.InstrumentName = "";
-    }
-
-    if (normalizedKey === "startdate") {
+    } else if (normalizedKey === "startdate") {
       requestdata.StartDate = "";
+      setEmployeeMyApprovalSearch((prev) => ({
+        ...prev,
+        startdate: "",
+        pageNumber: 0,
+      }));
     }
 
+    // 4️⃣ Show loader and call API
     showLoader(true);
-
     const data = await SearchTadeApprovals({
       callApi,
       showNotification,
@@ -197,10 +205,10 @@ const Approval = () => {
       requestdata,
       navigate,
     });
-    console.log("heloo log");
+
     setIsEmployeeMyApproval(data);
   };
-
+console.log("employeeMyApprovalSearch",employeeMyApprovalSearch)
   /**
    * Syncs submittedFilters state when filters are applied
    */

@@ -92,6 +92,7 @@ export const EmployeeMyApprovalFilter = ({ handleSearch }) => {
       ...(dirtyFields.startDate && {
         startDate: localState.startDate,
       }),
+      pageNumber: 0,
     };
 
     // 🔸 Only update touched fields, preserve others in global state
@@ -123,6 +124,7 @@ export const EmployeeMyApprovalFilter = ({ handleSearch }) => {
       instrumentName: "",
       quantity: 0,
       startDate: "",
+      pageNumber: 0,
       tableFilterTrigger: true, // optional: to notify table to refetch/reset
     }));
 
