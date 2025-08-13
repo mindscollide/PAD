@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Col, Row } from "antd";
+import { Col, Row, Spin } from "antd";
 import { ComonDropDown } from "../../../../components";
 import BorderlessTable from "../../../../components/tables/borderlessTable/borderlessTable";
 import { getBorderlessTableColumns, useTableScrollBottom } from "./utill";
@@ -23,7 +23,7 @@ import {
   mapBuySellToIds,
   mapStatusToIds,
 } from "../../../../components/dropdowns/filters/utils";
-import { apiCallSeacrch } from "../../../../components/dropdowns/searchableDropedown/utill";
+import { apiCallSearch } from "../../../../components/dropdowns/searchableDropedown/utill";
 import { SearchTadeApprovals } from "../../../../api/myApprovalApi";
 import ViewComment from "./modal/viewComment/ViewComment";
 import ResubmitModal from "./modal/resubmitModal/ResubmitModal";
@@ -67,7 +67,11 @@ const Approval = () => {
   const [sortedInfo, setSortedInfo] = useState({});
   const [approvalData, setApprovalData] = useState([]);
   const [hasReachedBottom, setHasReachedBottom] = useState(false);
-  const [totalRecords, setTotalRecords] = useState(0);
+  const [row, setRow] = useState(0); // current number of loaded rows
+  const [totalRecords, setTotalRecords] = useState(0); // total from API
+  const [loadingMore, setLoadingMore] = useState(false); // spinner at bottom
+
+  console.log({ loadingMore }, "loadingMoreloadingMoreloadingMore");
   console.log(
     employeeMyApprovalSearch,
     employeeMyApproval,
@@ -113,7 +117,7 @@ const Approval = () => {
    * Fetches approval data from API on component mount
    */
   const fetchApprovals = async () => {
-    showLoader(true);
+    await showLoader(true);
 
     const requestdata = {
       InstrumentName:
@@ -123,7 +127,7 @@ const Approval = () => {
       Quantity: employeeMyApprovalSearch.quantity || 0,
       StatusIds: employeeMyApprovalSearch.status || [],
       TypeIds: employeeMyApprovalSearch.type || [],
-      PageNumber: employeeMyApprovalSearch.pageNumber || 1,
+      PageNumber: employeeMyApprovalSearch.pageNumber || 0,
       Length: employeeMyApprovalSearch.pageSize || 10,
     };
 
@@ -232,25 +236,24 @@ const Approval = () => {
    * Handles table-specific filter trigger
    */
   useEffect(() => {
-      console.log("selectedKey", employeeMyApprovalSearch);
-    if (employeeMyApprovalSearch.tableFilterTrigger) {
-      console.log("selectedKey", selectedKey);
+    const fetchFilteredData = async () => {
+      if (!employeeMyApprovalSearch.tableFilterTrigger) return;
+
       const snapshot = filterKeys
         .filter(({ key }) => employeeMyApprovalSearch[key])
         .map(({ key }) => ({
           key,
           value: employeeMyApprovalSearch[key],
         }));
-      console.log("selectedKey", employeeMyApprovalSearch);
-      console.log("selectedKey", selectedKey);
 
-      apiCallSeacrch({
+      await apiCallSearch({
         selectedKey,
         employeeMyApprovalSearch,
         callApi,
         showNotification,
         showLoader,
         navigate,
+        setData: setIsEmployeeMyApproval,
       });
 
       setSubmittedFilters(snapshot);
@@ -259,8 +262,11 @@ const Approval = () => {
         ...prev,
         tableFilterTrigger: false,
       }));
-    }
+    };
+
+    fetchFilteredData();
   }, [employeeMyApprovalSearch.tableFilterTrigger]);
+  console.log("Filter Snapshot:", employeeMyApproval);
 
   /**
    * Resets global search state if user reloads the page
@@ -293,34 +299,10 @@ const Approval = () => {
     try {
       if (
         employeeMyApproval !== null &&
-        Array.isArray(employeeMyApproval?.approvals)
+        Array.isArray(employeeMyApproval.approvals)
       ) {
-        if (hasReachedBottom) {
-          // Append new data when scrolling to bottom
-          setHasReachedBottom(false);
-          setApprovalData((prevData) => [
-            ...prevData,
-            ...employeeMyApproval.approvals.map((item) => ({
-              key: item.approvalID,
-              instrument: `${item.instrument?.instrumentName || ""} - ${
-                item.instrument?.instrumentCode || ""
-              }`,
-              type: item.tradeType?.typeName || "",
-              requestDateTime: `${item.requestDate || ""} ${
-                item.requestTime || ""
-              }`,
-              isEscalated: false,
-              status: item.approvalStatus?.approvalStatusName || "",
-              quantity: item.quantity || 0,
-              timeRemaining: item.timeRemainingToTrade || "",
-              ...item, // Keep raw data for View Details
-            })),
-          ]);
-          setTotalRecords(employeeMyApproval.totalRecords);
-          setRow((prevRow) => prevRow + employeeMyApproval.approvals.length);
-        } else {
-          // Replace data on first load or filter change
-          setHasReachedBottom(false);
+        if (!hasReachedBottom) {
+          // 🔹 Initial load or refresh
           setApprovalData(
             employeeMyApproval.approvals.map((item) => ({
               key: item.approvalID,
@@ -338,53 +320,98 @@ const Approval = () => {
               ...item,
             }))
           );
-          setTotalRecords(employeeMyApproval.totalRecords);
+          setTotalRecords(employeeMyApproval.totalRecords || 0);
           setRow(employeeMyApproval.approvals.length);
         }
       } else if (employeeMyApproval === null) {
-        // Reset if no data
-        if (!hasReachedBottom) {
-          setHasReachedBottom(false);
-          setApprovalData([]);
-          setTotalRecords(0);
-          setRow(0);
-        }
+        setApprovalData([]);
+        setTotalRecords(0);
+        setRow(0);
       }
     } catch (error) {
       console.error(error, "error");
     }
-  }, [employeeMyApproval]);
+  }, [employeeMyApproval, hasReachedBottom]);
 
-  //Custom Hook Call for Lazy Loading
+  // Lazy Loading
+  // Inside your component
   useTableScrollBottom(
     () => {
-      if (totalRecords !== employeeMyApproval?.approvals.length) {
-        setHasReachedBottom(true);
-        const requestdata = {
-          InstrumentName:
-            employeeMyApprovalSearch.instrumentName ||
-            employeeMyApprovalSearch.mainInstrumentName,
-          StartDate: employeeMyApprovalSearch.date || "",
-          Quantity: employeeMyApprovalSearch.quantity || 0,
-          StatusIds: statusIds || [],
-          TypeIds: TypeIds || [],
-          PageNumber: employeeMyApprovalSearch.pageNumber || 1,
-          Length: employeeMyApprovalSearch.pageSize || 10,
-        };
-        SearchTadeApprovals({
-          callApi,
-          showNotification,
-          showLoader,
-          requestdata,
-          navigate,
-        });
+      if (totalRecords > approvalData.length) {
+        console.log("Checker 23444");
+        // showLoader(false);
+        console.log(showLoader, "checkerLoader");
+        // Prevent duplicate calls
+        if (!loadingMore) {
+          console.log("Checker 23444");
+          setLoadingMore(true);
+
+          // sRow = current loaded rows count
+          const sRow = approvalData.length;
+          const length = employeeMyApprovalSearch.pageSize || 10;
+
+          // Updated request data
+          const requestdata = {
+            InstrumentName:
+              employeeMyApprovalSearch.instrumentName ||
+              employeeMyApprovalSearch.mainInstrumentName,
+            StartDate: employeeMyApprovalSearch.date || "",
+            Quantity: employeeMyApprovalSearch.quantity || 0,
+            StatusIds: employeeMyApprovalSearch.status || [],
+            TypeIds: employeeMyApprovalSearch.type || [],
+            PageNumber: sRow, // ✅ acts like sRow for API
+            Length: length,
+          };
+
+          SearchTadeApprovals({
+            callApi,
+            showNotification,
+            showLoader: false, // ✅ Don't trigger full loader for lazy load
+            requestdata,
+            navigate,
+          })
+            .then((res) => {
+              console.log("Checker 23444");
+              if (res?.approvals?.length) {
+                console.log("Checker 23444");
+                setApprovalData((prev) => [
+                  ...prev,
+                  ...res.approvals.map((item) => ({
+                    key: item.approvalID,
+                    instrument: `${item.instrument?.instrumentName || ""} - ${
+                      item.instrument?.instrumentCode || ""
+                    }`,
+                    type: item.tradeType?.typeName || "",
+                    requestDateTime: `${item.requestDate || ""} ${
+                      item.requestTime || ""
+                    }`,
+                    isEscalated: false,
+                    status: item.approvalStatus?.approvalStatusName || "",
+                    quantity: item.quantity || 0,
+                    timeRemaining: item.timeRemainingToTrade || "",
+                    ...item,
+                  })),
+                ]);
+
+                // Update page number in search state
+                setEmployeeMyApprovalSearch((prev) => ({
+                  ...prev,
+                  pageNumber: nextPage,
+                }));
+              }
+            })
+            .finally(() => {
+              setLoadingMore(false);
+            });
+        }
       }
     },
     0,
-    "border-less-table-orange"
+    "border-less-table-orange" // ✅ container selector
   );
+
   // Lazy Loading Work Start
-  console.log(employeeMyApproval, "aunnaqvi");
+  console.log(employeeMyApprovalSearch, "employeeMyApprovalSearch");
   console.log(totalRecords, "totalRecordstotalRecords");
   console.log(approvalData, "approvalDataapprovalData");
 
@@ -431,18 +458,27 @@ const Approval = () => {
 
           {/* Table or Empty State */}
           {approvalData && approvalData.length > 0 ? (
-            <BorderlessTable
-              rows={approvalData}
-              columns={columns}
-              scroll={{
-                x: "max-content",
-                y: submittedFilters.length > 0 ? 510 : 550,
-              }}
-              classNameTable="border-less-table-orange"
-              onChange={(pagination, filters, sorter) => {
-                setSortedInfo(sorter);
-              }}
-            />
+            <>
+              <BorderlessTable
+                rows={approvalData}
+                columns={columns}
+                scroll={{
+                  x: "max-content",
+                  y: submittedFilters.length > 0 ? 450 : 500,
+                }}
+                classNameTable="border-less-table-orange"
+                onChange={(pagination, filters, sorter) => {
+                  setSortedInfo(sorter);
+                }}
+                loading={loadingMore}
+              />
+
+              {/* {loadingMore && (
+                <div style={{ textAlign: "center", padding: "12px" }}>
+                  <Spin size="small" />
+                </div>
+              )} */}
+            </>
           ) : (
             <EmptyState type="request" />
           )}

@@ -50,7 +50,7 @@ const Home = () => {
       }
 
       try {
-        console.log("res");
+        await showLoader(true);
         const data = await GetUserDashBoardStats({
           callApi,
           setEmployeeBasedBrokersData,
@@ -63,7 +63,7 @@ const Home = () => {
         });
         // Handle session expiration
         console.log("res", data);
-        if (!data) return;
+        if (!data) return showLoader(false);
 
         // Filter data based on user roles
         const filteredData = {
@@ -78,8 +78,10 @@ const Home = () => {
         });
 
         console.log("GetUserDashBoardStats", filteredData);
+        showLoader(false);
         setDashboardData(filteredData);
       } catch (error) {
+        showLoader(false);
         console.error("Failed to fetch home summary", error);
       }
     };
