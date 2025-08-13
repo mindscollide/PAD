@@ -45,6 +45,7 @@ export const login = async ({
 
   if (res.success) {
     const {
+      mqtt,
       userAssignedRoles,
       userToken,
       userProfileData,
@@ -69,6 +70,11 @@ export const login = async ({
       sessionStorage.setItem(
         "line_Manager_Details",
         JSON.stringify(lineManagerDetails)
+      );
+      sessionStorage.setItem("user_mqtt_Port", JSON.stringify(mqtt?.mqttPort));
+      sessionStorage.setItem(
+        "user_mqtt-ip_Address",
+        JSON.stringify(mqtt?.mqttipAddress)
       );
       navigate("/PAD");
 

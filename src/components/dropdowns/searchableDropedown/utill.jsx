@@ -1,4 +1,5 @@
 import { SearchTadeApprovals } from "../../../api/myApprovalApi";
+import { toYYMMDD } from "../../../commen/funtions/rejex";
 import { mapBuySellToIds, mapStatusToIds } from "../filters/utils";
 import { EmployeeMyApprovalFilter } from "./EmployeeMyApprovalFilter";
 import { EmployeePendingApprovalFilter } from "./EmployeePendingApprovalFilter";
@@ -200,17 +201,19 @@ export const apiCallSeacrch = async ({
       console.log("hello", TypeIds);
 
       const statusIds = mapStatusToIds(employeeMyApprovalSearch.status);
+      const date = toYYMMDD(employeeMyApprovalSearch.startDate);
+
       console.log("hello", statusIds);
       const requestdata = {
         InstrumentName:
           employeeMyApprovalSearch.instrumentName ||
           employeeMyApprovalSearch.mainInstrumentName,
-        StartDate: employeeMyApprovalSearch.startDate || "",
+        StartDate: date || "",
         Quantity: employeeMyApprovalSearch.quantity || 0,
         StatusIds: statusIds || [],
         TypeIds: TypeIds || [],
         PageNumber: employeeMyApprovalSearch.pageNumber || 1,
-        Length: state.pageSize || 10,
+        Length: employeeMyApprovalSearch.pageSize || 10,
       };
       showLoader(true);
       SearchTadeApprovals({

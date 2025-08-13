@@ -89,6 +89,26 @@ export const SearchBarProvider = ({ children }) => {
     });
 
   /**
+   * 🔍 Employee My History Filters State
+   * Used for filtering data in the Employee My History table.
+   */
+  const [employeeMyHistorySearch, setEmployeeMyHistorySearch] = useState({
+    transactionid: "",
+    instrumentName: "", // Name of the instrument
+    quantity: 0, // Quantity filter
+    startDate: null, // Start of date range
+    endDate: null, // End of date range
+    mainInstrumentName: "", // Main instrument name for popover or modal
+    type: [], // Type filter: ["Buy", "Sell"]
+    nature: [], // Type filter: ["Buy", "Sell"]
+    status: [], // Status filter: ["Pending", "Approved", etc.]
+    pageSize: "", // Pagination: size of page
+    pageNumber: "", // Pagination: current page number
+    filterTrigger: false,
+    tableFilterTrigger: false,
+  });
+
+  /**
    * 🔁 Helper: Reset all Employee My Approval filters to initial state
    */
   const resetEmployeeMyApprovalSearch = () => {
@@ -142,7 +162,6 @@ export const SearchBarProvider = ({ children }) => {
       pageNumber: "", // Pagination: current page number
       filterTrigger: true,
       tableFilterTrigger: false,
-
     });
   };
 
@@ -163,7 +182,27 @@ export const SearchBarProvider = ({ children }) => {
       pageNumber: "",
       filterTrigger: true,
       tableFilterTrigger: false,
+    });
+  };
 
+  /**
+   * 🔁 Helper: Reset all Employee My History filters to initial state
+   */
+  const resetEmployeeMyHistorySearch = () => {
+    setEmployeeMyHistorySearch({
+      transactionid: "",
+      instrumentName: "", // Name of the instrument
+      quantity: 0, // Quantity filter
+      startDate: null, // Start of date range
+      endDate: null, // End of date range
+      mainInstrumentName: "", // Main instrument name for popover or modal
+      type: [], // Type filter: ["Buy", "Sell"]
+      nature: [], // Type filter: ["Buy", "Sell"]
+      status: [], // Status filter: ["Pending", "Approved", etc.]
+      pageSize: "", // Pagination: size of page
+      pageNumber: "", // Pagination: current page number
+      filterTrigger: true,
+      tableFilterTrigger: false,
     });
   };
 
@@ -192,6 +231,11 @@ export const SearchBarProvider = ({ children }) => {
         employeePendingApprovalSearch,
         setEmployeePendingApprovalSearch,
         resetEmployeePendingApprovalSearch,
+
+        // Employee My History filters and updater
+        employeeMyHistorySearch,
+        setEmployeeMyHistorySearch,
+        resetEmployeeMyHistorySearch,
       }}
     >
       {children}
