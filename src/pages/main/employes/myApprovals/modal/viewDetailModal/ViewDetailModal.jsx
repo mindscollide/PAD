@@ -20,6 +20,8 @@ const ViewDetailModal = () => {
     setIsResubmitted,
   } = useGlobalModal();
 
+  console.log(selectedViewDetail, "selectedViewDetailselectedViewDetail");
+
   // This is the Status Which is I'm getting from the selectedViewDetail contextApi state
   const getStatusStyle = (status) => {
     switch (status) {
@@ -63,7 +65,9 @@ const ViewDetailModal = () => {
   };
 
   //This is how I can pass the status in statusData Variables
-  const statusData = getStatusStyle(selectedViewDetail?.status);
+  const statusData = getStatusStyle(
+    selectedViewDetail?.approvalStatus.approvalStatusName
+  );
 
   // To Show View Comments Modal and Closed Declined Modal
   const onClickViewModal = () => {
@@ -167,7 +171,7 @@ const ViewDetailModal = () => {
                       ) : (
                         <>
                           <span className={styles.customTag}>EQ</span>{" "}
-                          {selectedViewDetail?.instrument}
+                          {selectedViewDetail?.instrument?.instrumentName}
                         </>
                       )}
                     </label>
@@ -429,7 +433,11 @@ const ViewDetailModal = () => {
                       onClick={onClickPendingClose}
                     />
                   ) : (
-                    <CustomButton text={"Close"} className="big-light-button" />
+                    <CustomButton
+                      text={"Close"}
+                      className="big-light-button"
+                      onClick={onClickViewModal}
+                    />
                   )}
                 </Col>
               </Row>

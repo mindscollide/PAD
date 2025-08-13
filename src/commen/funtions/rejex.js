@@ -34,3 +34,31 @@ export const removeFirstSpace = (value) => {
   if (typeof value !== "string") return value;
   return value.charAt(0) === " " ? value.slice(1) : value;
 };
+
+//Global Date Time Formatter
+
+// utils/dateFormatter.js
+export function formatApiDateTime(apiDateTime) {
+  if (!apiDateTime || typeof apiDateTime !== "string") return "";
+
+  // Split into date and time parts
+  const [datePart, timePart] = apiDateTime.trim().split(" ");
+  if (!datePart || !timePart) return apiDateTime; // fallback if unexpected format
+
+  // Extract date components
+  const year = datePart.slice(0, 4);
+  const month = datePart.slice(4, 6);
+  const day = datePart.slice(6, 8);
+
+  // Extract time components
+  let hours = parseInt(timePart.slice(0, 2), 10);
+  const minutes = timePart.slice(2, 4);
+
+  // Determine AM/PM
+  const ampm = hours >= 12 ? "pm" : "am";
+  hours = hours % 12 || 12; // convert 0 -> 12 for 12-hour clock
+
+  return `${year}-${month}-${day} | ${hours
+    .toString()
+    .padStart(2, "0")}:${minutes} ${ampm}`;
+}
