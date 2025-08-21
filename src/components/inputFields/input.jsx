@@ -15,6 +15,7 @@ const TextField = ({
   onBlur, // onBlur handler
   size = "medium", // Size: small | medium | large | extraLarge
   disabled = false, // Disable input field
+  maxLength,
   required = false, // Show required asterisk
   height = 40,
   ...props // Any other passed props
@@ -48,6 +49,7 @@ const TextField = ({
         type={type}
         value={value}
         onChange={onChange}
+        maxLength={maxLength}
         onBlur={onBlur}
         placeholder={placeholder}
         disabled={disabled}

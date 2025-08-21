@@ -62,21 +62,22 @@ export const getBorderlessTableColumns = (
   setIsResubmitted
 ) => [
   {
-    title: withSortIcon("Approval ID", "approvalID", sortedInfo),
-    dataIndex: "approvalID",
-    key: "approvalID",
+    title: withSortIcon("Approval ID", "tradeApprovalID", sortedInfo),
+    dataIndex: "tradeApprovalID",
+    key: "tradeApprovalID",
     width: "15%",
     // width: 200,
     ellipsis: true,
-    sorter: (a, b) => a.approvalID - b.approvalID,
+    sorter: (a, b) => a.tradeApprovalID - b.tradeApprovalID,
     sortDirections: ["ascend", "descend"],
-    sortOrder: sortedInfo?.columnKey === "approvalID" ? sortedInfo.order : null,
+    sortOrder:
+      sortedInfo?.columnKey === "tradeApprovalID" ? sortedInfo.order : null,
     showSorterTooltip: false,
     sortIcon: () => null,
-    render: (approvalID) => {
+    render: (tradeApprovalID) => {
       return (
         <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-          <span className="font-medium">{approvalID}</span>
+          <span className="font-medium">{tradeApprovalID}</span>
         </div>
       );
     },
@@ -96,7 +97,14 @@ export const getBorderlessTableColumns = (
     sortOrder: sortedInfo?.columnKey === "instrument" ? sortedInfo.order : null,
     showSorterTooltip: false,
     sortIcon: () => null,
-    render: (instrument) => {
+    render: (instrument, record) => {
+      console.log(
+        record.assetType.assetTypeShortCode,
+        "checbwechechejhassetType"
+      );
+
+      // To show an assetType Code
+      const assetCode = record?.assetType?.assetTypeShortCode;
       const name = instrument?.instrumentName || "";
       const code = instrument?.instrumentCode || "";
       return (
@@ -105,7 +113,7 @@ export const getBorderlessTableColumns = (
             className="border-less-table-orange-instrumentBadge"
             style={{ minWidth: 30 }}
           >
-            {name.substring(0, 2).toUpperCase()}
+            {assetCode.substring(0, 2).toUpperCase()}
           </span>
           <span className="font-medium">{`${name} - ${code}`}</span>
         </div>
@@ -114,10 +122,14 @@ export const getBorderlessTableColumns = (
   },
   {
     title: (
-      <TypeColumnTitle
-        state={employeeMyApprovalSearch}
-        setState={setEmployeeMyApprovalSearch}
-      />
+      <>
+        <span className={style["table-header-text"]}>
+          <TypeColumnTitle
+            state={employeeMyApprovalSearch}
+            setState={setEmployeeMyApprovalSearch}
+          />
+        </span>
+      </>
     ),
     dataIndex: "type",
     key: "type",
@@ -216,18 +228,28 @@ export const getBorderlessTableColumns = (
     key: "timeRemaining",
     ellipsis: true,
     width: "15%",
-    render: (text, record) =>
-      record.status === "Not Traded" ? (
-        <Button
-          className="large-transparent-button"
-          text="Resubmit for Approval"
-          onClick={() => setIsResubmitted(true)}
-        />
-      ) : text ? (
-        <span className="font-medium text-gray-700">{text}</span>
-      ) : (
-        <span className="text-gray-400">-</span>
-      ),
+    render: (text, record) => {
+      console.log(record, "Checkecnekjcb record");
+      // ✅ Show nothing if pending
+      if (record.status === "Pending")
+        return <span className="text-gray-400">-</span>;
+
+      if (record.status === "Not Traded") {
+        return (
+          <Button
+            className="large-transparent-button"
+            text="Resubmit for Approval"
+            onClick={() => setIsResubmitted(true)}
+          />
+        );
+      }
+
+      if (text) {
+        return <span className="font-medium text-gray-700">{text}</span>;
+      }
+
+      return <span className="text-gray-400">-</span>;
+    },
   },
   {
     title: "",

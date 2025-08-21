@@ -95,15 +95,7 @@
   font-weight: 700 !important;
 }
 
-.checkboxSelect {
-  height: 56px !important;
-  display: flex;
-  align-items: center !important;
-  border-radius: 6.95px !important;
-  margin-top: 3px;
-}
-
-.checkboxSelect :global(.ant-select-selector) {
+/* .checkboxSelect :global(.ant-select-selector) {
   cursor: pointer !important;
   border: 1px solid #717171 !important;
   box-shadow: none !important;
@@ -113,6 +105,127 @@
   font-family: "Switzer Variable";
   font-weight: 400;
   line-height: 56px !important;
+} */
+
+/* Base box */
+.checkboxSelect {
+  height: 56px !important;
+  display: flex;
+  align-items: center;
+  border-radius: 6.95px !important;
+  border: 1px solid #717171 !important;
+  box-shadow: none !important;
+  background-color: white !important;
+  font-size: 17px !important;
+  font-family: "Switzer Variable";
+  font-weight: 400;
+  margin-top: 3px;
+}
+
+/* Hover & focus */
+
+.checkboxSelect:global(.ant-select:hover .ant-select-selector),
+.checkboxSelect:global(.ant-select-focused .ant-select-selector) {
+  border: 1px solid transparent !important;
+  box-shadow: none !important; /* removes glow */
+  outline: none !important; /* removes any outline */
+  background-color: #f3f3f3 !important;
+}
+
+/* Placeholder */
+.checkboxSelect :global(.ant-select-selection-placeholder) {
+  opacity: 1 !important;
+  color: #717171 !important;
+  font-size: 17px !important;
+  font-family: "Switzer Variable";
+  font-weight: 400;
+}
+
+/* Selected value */
+.checkboxSelect :global(.ant-select-selection-item) {
+  font-size: 17px !important;
+  font-family: "Switzer Variable";
+  font-weight: 400;
+}
+
+:global(.ant-select-dropdown.checkboxSelect-dropdown .ant-select-item) {
+  font-size: 17px !important;
+  font-family: "Switzer Variable";
+  font-weight: 400;
+}
+
+.checkboxSelect :global(.ant-select-selection-overflow) {
+  cursor: pointer;
+  align-self: flex-start !important;
+  margin-top: 19px !important;
+}
+
+/* For Broker Select Box */
+
+.checkboxSelectofBroker {
+  height: 56px !important;
+  display: flex;
+  align-items: center;
+  border-radius: 6.95px !important;
+  border: 1px solid #717171 !important;
+  box-shadow: none !important;
+  background-color: white !important;
+  font-size: 17px !important;
+  font-family: "Switzer Variable";
+  font-weight: 400;
+}
+
+/* Hover & focus */
+
+.checkboxSelectofBroker:global(.ant-select:hover .ant-select-selector),
+.checkboxSelectofBroker:global(.ant-select-focused .ant-select-selector) {
+  border: 1px solid transparent !important;
+  box-shadow: none !important; /* removes glow */
+  outline: none !important; /* removes any outline */
+  background-color: #f3f3f3 !important;
+}
+
+/* Placeholder */
+.checkboxSelectofBroker :global(.ant-select-selection-placeholder) {
+  opacity: 1 !important;
+  color: #717171 !important;
+  font-size: 17px !important;
+  font-family: "Switzer Variable";
+  font-weight: 400;
+
+  position: absolute; /* selector ke andar absolute */
+  top: 50%;
+  transform: translateY(-0%); /* perfect vertical centering */
+  margin: 0 !important;
+  line-height: 1; /* safe */
+  pointer-events: none;
+}
+
+/* Selected value */
+.checkboxSelectofBroker :global(.ant-select-selection-item) {
+  font-size: 17px !important;
+  font-family: "Switzer Variable";
+  font-weight: 400;
+}
+
+:global(.ant-select-dropdown.checkboxSelectofBroker-dropdown .ant-select-item) {
+  font-size: 17px !important;
+  font-family: "Switzer Variable";
+  font-weight: 400;
+}
+
+.checkboxSelectofBroker :global(.ant-select-selection-overflow) {
+  cursor: pointer;
+  align-self: flex-start !important;
+  max-height: 50px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  align-items: center !important;
+}
+
+.checkboxSelectofBroker :global(.ant-select-selection-item) {
+  background: rgba(0, 0, 0, 0.06);
+  border: 1px solid transparent;
 }
 
 /* .checkboxSelect :hover {

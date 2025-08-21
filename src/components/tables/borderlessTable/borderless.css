@@ -53,7 +53,7 @@ td.border-less-table-orange-cell:not(:first-child):not(:last-child) {
   min-width: 28px;
   text-align: center;
   font-family: "Switzer Variable";
-  font-weight: 500;
+  font-weight: 500 !important;
   font-size: 13.89px;
 }
 

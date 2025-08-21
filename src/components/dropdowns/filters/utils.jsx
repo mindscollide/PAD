@@ -73,6 +73,7 @@ export const apiCallType = async ({
         Length: state.pageSize || 10,
       };
       showLoader(true);
+      console.log("Checker APi Search");
       const data = await SearchTadeApprovals({
         callApi,
         showNotification,
@@ -110,10 +111,11 @@ export const apiCallStatus = async ({
         Quantity: state.quantity || 0,
         StatusIds: statusIds || [],
         TypeIds: TypeIds || [],
-        PageNumber: state.pageNumber || 1,
+        PageNumber: 0,
         Length: state.pageSize || 10,
       };
       showLoader(true);
+      console.log("Checker APi Search");
       const data = await SearchTadeApprovals({
         callApi,
         showNotification,

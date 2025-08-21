@@ -108,6 +108,7 @@ const Approval = () => {
    */
   const fetchApprovals = async () => {
     await showLoader(true);
+    console.log("Checker APi Search");
 
     const requestdata = {
       InstrumentName:
@@ -117,7 +118,7 @@ const Approval = () => {
       Quantity: employeeMyApprovalSearch.quantity || 0,
       StatusIds: employeeMyApprovalSearch.status || [],
       TypeIds: employeeMyApprovalSearch.type || [],
-      PageNumber: employeeMyApprovalSearch.pageNumber || 0,
+      PageNumber: 0,
       Length: employeeMyApprovalSearch.pageSize || 10,
     };
 
@@ -146,7 +147,7 @@ const Approval = () => {
    */
   const handleRemoveFilter = async (key) => {
     const normalizedKey = key?.toLowerCase();
-
+    console.log("Checker APi Search");
     // 1️⃣ Update UI state for removed filters
     setSubmittedFilters((prev) => prev.filter((item) => item.key !== key));
 
@@ -208,7 +209,7 @@ const Approval = () => {
 
     setIsEmployeeMyApproval(data);
   };
-console.log("employeeMyApprovalSearch",employeeMyApprovalSearch)
+  console.log("employeeMyApprovalSearch", employeeMyApprovalSearch);
   /**
    * Syncs submittedFilters state when filters are applied
    */
@@ -355,11 +356,12 @@ console.log("employeeMyApprovalSearch",employeeMyApprovalSearch)
             Quantity: employeeMyApprovalSearch.quantity || 0,
             StatusIds: employeeMyApprovalSearch.status || [],
             TypeIds: employeeMyApprovalSearch.type || [],
-            PageNumber: employeeMyApprovalSearch.pageNumber, // Acts as offset for API
+            PageNumber: employeeMyApprovalSearch.pageNumber || 10, // Acts as offset for API
             Length: 10,
           };
 
           console.log("Fetching employee approvals with params:", requestdata);
+          console.log("Checker APi Search");
 
           // Call API
           const data = await SearchTadeApprovals({
@@ -431,7 +433,7 @@ console.log("employeeMyApprovalSearch",employeeMyApprovalSearch)
               <ComonDropDown
                 menuItems={menuItems}
                 buttonLabel="Add Approval Request"
-                className="dropedown-dark"
+                className={style.dropedowndark}
               />
             </Col>
           </Row>
