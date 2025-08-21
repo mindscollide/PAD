@@ -196,6 +196,7 @@ export const getBorderlessTableColumns = (
     onFilter: () => true,
     render: (status) => {
       const tag = approvalStatusMap[status] || {};
+      console.log(tag, "TagssTagsTagsTags");
       return (
         <Tag
           style={{
@@ -234,7 +235,7 @@ export const getBorderlessTableColumns = (
       if (record.status === "Pending")
         return <span className="text-gray-400">-</span>;
 
-      if (record.status === "Not Traded") {
+      if (record.status === "Not-Traded") {
         return (
           <Button
             className="large-transparent-button"
