@@ -153,6 +153,20 @@ export const EmployeeMyApprovalFilter = ({ handleSearch }) => {
           />
         </Col>
 
+        <Col xs={24} sm={24} md={12} lg={12} style={{ marginTop: "6px" }}>
+          <CustomDatePicker
+            label="Date"
+            name="startDate"
+            size="medium"
+            value={getFieldValue("startDate")}
+            onChange={handleDateChange}
+            onClear={() => handleDateChange("")}
+          />
+        </Col>
+      </Row>
+
+      {/* 🔸 Second Row: Date Picker */}
+      <Row gutter={[12, 12]}>
         <Col xs={24} sm={24} md={12} lg={12}>
           <TextField
             label="Quantity"
@@ -162,20 +176,6 @@ export const EmployeeMyApprovalFilter = ({ handleSearch }) => {
             placeholder="Quantity"
             size="medium"
             classNames="Search-Field"
-          />
-        </Col>
-      </Row>
-
-      {/* 🔸 Second Row: Date Picker */}
-      <Row gutter={[12, 12]}>
-        <Col xs={24} sm={24} md={12} lg={12}>
-          <CustomDatePicker
-            label="Date"
-            name="startDate"
-            size="medium"
-            value={getFieldValue("startDate")}
-            onChange={handleDateChange}
-            onClear={() => handleDateChange("")}
           />
         </Col>
       </Row>

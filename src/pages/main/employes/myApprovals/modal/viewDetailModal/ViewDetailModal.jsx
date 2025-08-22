@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import { Col, Row, Tag } from "antd";
 import { useGlobalModal } from "../../../../../../context/GlobalModalContext";
 import { GlobalModal } from "../../../../../../components";
@@ -8,8 +8,22 @@ import CustomButton from "../../../../../../components/buttons/button";
 import CheckIcon from "../../../../../../assets/img/Check.png";
 import EllipsesIcon from "../../../../../../assets/img/Ellipses.png";
 import CrossIcon from "../../../../../../assets/img/Cross.png";
+import { useNavigate } from "react-router-dom";
+import { useNotification } from "../../../../../../components/NotificationProvider/NotificationProvider";
+import { useGlobalLoader } from "../../../../../../context/LoaderContext";
+import { useApi } from "../../../../../../context/ApiContext";
+import { GetAllViewDetailsByTradeApprovalID } from "../../../../../../api/myApprovalApi";
 
-const ViewDetailModal = () => {
+const ViewDetailModal = ({ visible, onCancel }) => {
+  const navigate = useNavigate();
+  const hasFetched = useRef(false);
+
+  const { showNotification } = useNotification();
+
+  const { showLoader } = useGlobalLoader();
+
+  const { callApi } = useApi();
+
   // This is Global State for modal which is create in ContextApi
   const {
     isViewDetail,
@@ -21,6 +35,27 @@ const ViewDetailModal = () => {
   } = useGlobalModal();
 
   console.log(selectedViewDetail, "selectedViewDetailselectedViewDetail");
+
+  const fetchGetAllViewData = async () => {
+    await showLoader(true);
+    console.log("Checker APi Search");
+
+    const requestdata = { TradeApprovalID: selectedViewDetail.approvalID };
+
+    await GetAllViewDetailsByTradeApprovalID({
+      callApi,
+      showNotification,
+      showLoader,
+      requestdata,
+      navigate,
+    });
+  };
+
+  useEffect(() => {
+    if (hasFetched.current) return;
+    hasFetched.current = true;
+    fetchGetAllViewData();
+  }, []);
 
   // This is the Status Which is I'm getting from the selectedViewDetail contextApi state
   const getStatusStyle = (status) => {

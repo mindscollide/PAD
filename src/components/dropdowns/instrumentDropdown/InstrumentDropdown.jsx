@@ -33,7 +33,7 @@ const InstrumentSelect = ({
         disabled={disabled}
       >
         {data.map((item) => (
-          <Option key={item.type} value={item.type} label={item.name}>
+          <Option key={item.type} value={item.type} label={item.description}>
             <Row align="middle" justify="space-between">
               <Col>
                 <Row align="middle" gutter={8}>
@@ -46,7 +46,7 @@ const InstrumentSelect = ({
                 </Row>
               </Col>
               <Col flex="none">
-                <div className={styles.rightSection}>
+                <div className={styles.rightSection} title={item.description}>
                   <Text className={styles.ItemsSecondaryName}>
                     {item.description}
                   </Text>

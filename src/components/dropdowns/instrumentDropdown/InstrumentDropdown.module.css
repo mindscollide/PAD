@@ -80,6 +80,9 @@
   transition: none !important;
   background-color: white !important;
   cursor: pointer !important;
+  font-size: 17px !important;
+  font-family: "Switzer Variable";
+  font-weight: 500 !important;
 }
 
 .borderRadiusForselect :global(.ant-select-focused .ant-select-selector),
@@ -93,4 +96,13 @@
 /* Optional: Remove arrow hover highlight */
 .borderRadiusForselect :global(.ant-select-arrow) {
   color: #717171 !important;
+}
+
+.borderRadiusForselect :global(.ant-select-selection-placeholder) {
+  cursor: pointer;
+  opacity: 1 !important;
+  color: #717171 !important;
+  font-size: 17px !important;
+  font-family: "Switzer Variable";
+  font-weight: 400;
 }

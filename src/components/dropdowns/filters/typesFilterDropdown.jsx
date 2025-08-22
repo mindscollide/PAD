@@ -82,7 +82,7 @@ const TypeFilterDropdown = ({
   };
 
   return (
-    <div className={styles.dropdownContainer}>
+    <div className={styles.dropdownContainerForType}>
       <div className={styles.checkboxList}>
         {typeOptions.map((type, index) => (
           <>
@@ -104,14 +104,14 @@ const TypeFilterDropdown = ({
         <Row gutter={10}>
           <Col>
             <Button
-              className="small-light-button"
+              className="small-light-button-For-Types"
               text="Reset"
               onClick={handleReset}
             />
           </Col>
           <Col>
             <Button
-              className="small-dark-button"
+              className="small-dark-button-For-Types"
               text="Ok"
               onClick={handleOk}
             />

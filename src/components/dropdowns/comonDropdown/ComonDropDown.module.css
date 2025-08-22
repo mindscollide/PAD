@@ -41,7 +41,6 @@
 .arrowIcon {
   transition: transform 0.3s ease;
   font-size: 12px;
-  
 }
 
 .open {
@@ -79,4 +78,16 @@
 
 .customMenuItem:hover {
   background-color: #f0f0f0;
+}
+
+/* ComonDropDown.module.css */
+.arrowIcon {
+  margin-left: 15px; /* spacing */
+  font-size: 14px; /* size */
+  transition: transform 0.3s ease;
+  position: relative;
+  top: 2px;
+}
+.open {
+  transform: rotate(180deg);
 }
