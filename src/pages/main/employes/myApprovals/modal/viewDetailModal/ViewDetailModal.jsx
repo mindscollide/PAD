@@ -43,8 +43,6 @@ const ViewDetailModal = () => {
 
   console.log(viewDetailsModalData, "viewDetailsModalData555");
 
-  console.log(allInstrumentsData, "allInstrumentsDataData555");
-
   // GETALLVIEWDETAIL API FUNCTION
   const fetchGetAllViewData = async () => {
     await showLoader(true);
@@ -125,13 +123,13 @@ const ViewDetailModal = () => {
     viewDetailsModalData?.details?.[0]?.approvalStatus
   );
 
+  // Extarct and Instrument from viewDetailsModalData context Api
   const instrumentId = Number(viewDetailsModalData?.details?.[0]?.instrumentID);
 
+  // Match that selected instrument Id in viewDetailsModalData and match them with allinstrumentsData context State
   const selectedInstrument = allInstrumentsData?.find(
     (item) => item.instrumentID === instrumentId
   );
-
-  console.log(selectedInstrument, "selectedInstrument7778");
 
   // To Show View Comments Modal and Closed Declined Modal
   const onClickViewModal = () => {
@@ -244,9 +242,14 @@ const ViewDetailModal = () => {
                         <>{selectedViewDetail?.timeRemaining}</>
                       ) : (
                         <>
-                          <span className={styles.customTag}>EQ</span>{" "}
+                          <span className={styles.customTag}>
+                            {/* Extract an assetTypeID id which is 1 then show Equity(EQ) */}
+                            {viewDetailsModalData?.details?.[0]?.assetTypeID ===
+                              "1" && <span>EQ</span>}
+                          </span>
                           <span
                             className={styles.viewDetailSubLabelsForInstrument}
+                            title={selectedInstrument?.instrumentName}
                           >
                             {selectedInstrument?.instrumentName}
                           </span>

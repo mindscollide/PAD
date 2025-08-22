@@ -144,7 +144,7 @@
 
 .viewDetailSubLabelsForInstrument {
   flex: 1; /* let it shrink inside flex */
-  min-width: 0; /* 👈 critical inside flex */
+  max-width: 250px; /* 👈 critical inside flex */
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -152,6 +152,7 @@
   color: #424242 !important;
   font-weight: 500;
   font-family: "Switzer Variable";
+  cursor: pointer;
 }
 
 .tagContainer {
