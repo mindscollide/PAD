@@ -39,6 +39,7 @@ const EquitiesApproval = () => {
 
   //For Instrument Dropdown show selected Name
   const [selectedInstrument, setSelectedInstrument] = useState(null);
+  console.log(selectedInstrument, "selectedInstrumentselectedInstrument23");
 
   // for employeeBroker state to show data in dropdown
   const [selectedBrokers, setSelectedBrokers] = useState([]);

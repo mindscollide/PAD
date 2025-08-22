@@ -69,7 +69,7 @@ export const apiCallType = async ({
         Quantity: state.quantity || 0,
         StatusIds: statusIds || [],
         TypeIds: TypeIds || [],
-        PageNumber: state.pageNumber || 1,
+        PageNumber: 0,
         Length: state.pageSize || 10,
       };
       showLoader(true);

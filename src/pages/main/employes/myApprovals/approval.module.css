@@ -61,7 +61,7 @@
 
 /* Style for AntD dropdown root if needed */
 .table-filter-dropdown .ant-dropdown-menu {
-  padding: 8px;
+  padding: 0px;
 }
 
 .filter-tags-container {
