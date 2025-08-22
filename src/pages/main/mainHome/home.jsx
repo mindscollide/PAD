@@ -186,6 +186,101 @@ const Home = () => {
           </Row>
         </>
       )}
+       {/* {checkRoleMatch(roles, 2) && (
+        <>
+          <Row gutter={[16, 16]}>
+            <Col xs={24} md={12} lg={16}>
+              <TextCard
+                className="smallCard"
+                title={`Hi ${dashboardData?.title},`}
+                subtitle="Good Morning!"
+              />
+            </Col>
+
+            <Col xs={24} md={12} lg={8}>
+              <BoxCard
+                locationStyle={"down"}
+                title={"Portfolio"}
+                mainClassName={"smallShareHomeCard"}
+                boxes={dashboardData?.employee?.portfolio?.data}
+                buttonTitle={"View Portfolio"}
+                buttonClassName={"big-white-card-button"}
+                userRole={"employee"}
+                route={"portfolio"}
+              />
+            </Col>
+          </Row>
+          <Row gutter={[16, 16]}>
+            <Col xs={24} md={12} lg={12}>
+              <BoxCard
+                locationStyle={"up"}
+                title="My Approvals"
+                mainClassName={"mediumHomeCard"}
+                boxes={dashboardData?.employee?.myApprovals?.data}
+                buttonTitle={"See More"}
+                buttonClassName={"big-white-card-button"}
+                userRole={"employee"}
+                route={"approvals"}
+              />
+            </Col>
+
+            <Col xs={24} md={12} lg={12}>
+              <BoxCard
+                locationStyle={"up"}
+                title="My Transactions"
+                mainClassName={"mediumHomeCard"}
+                boxes={dashboardData?.employee?.myTransactions?.data}
+                buttonTitle={"See More"}
+                buttonClassName={"big-white-card-button"}
+                userRole={"employee"}
+                route={"transactions"}
+              />
+            </Col>
+          </Row>
+          <Row gutter={[16, 16]}>
+            <Col xs={24} md={12} lg={12}>
+              <BoxCard
+                locationStyle={"side"}
+                title="My History"
+                mainClassName={"mediumHomeSideCard"}
+                boxes={dashboardData?.employee?.myHistory?.data}
+                buttonTitle={"See More"}
+                buttonClassName={"big-white-card-button"}
+                userRole={"employee"}
+                route={"history"}
+              />
+            </Col>
+            <Col xs={24} md={12} lg={12}>
+              <ReportCard
+                mainClassName={"home-reprot-card"}
+                title="Reports"
+                buttonTitle={"See More"}
+                buttonClassName={"big-white-card-button"}
+                rowButtonClassName={"small-card-light-button"}
+                data={[
+                  {
+                    icon: <Avatar icon={<FileDoneOutlined />} />,
+                    label: "My Compliance",
+                    action: "View Report",
+                  },
+                  {
+                    icon: <Avatar icon={<BarChartOutlined />} />,
+                    label: "My Transactions",
+                    action: "View Report",
+                  },
+                  {
+                    icon: <Avatar icon={<BarChartOutlined />} />,
+                    label: "My Transactions",
+                    action: "View Report",
+                  },
+                ]}
+                userRole={"employee"}
+                route={"reports"}
+              />
+            </Col>
+          </Row>
+        </>
+      )} */}
     </div>
   );
 };
