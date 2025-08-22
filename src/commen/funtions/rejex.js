@@ -12,10 +12,11 @@ export const allowOnlyNumbers = (value) => {
 
 // Comma Separator for numbers
 export const formatNumberWithCommas = (value) => {
-  // Ensure it's a number or numeric string
-  const num = Number(value);
-  if (isNaN(num)) return value; // return original if not a number
-  return num.toLocaleString("en-US");
+  if (!value) return "";
+  // Convert to string and remove any non-digit chars (like commas)
+  const strValue = String(value).replace(/\D/g, "");
+  // Add commas without converting to Number
+  return strValue.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 };
 
 // Here's a simple function that takes a number or numeric string,

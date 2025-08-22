@@ -213,16 +213,17 @@ export const GetAllViewDetailsByTradeApprovalID = async ({
   navigate,
 }) => {
   try {
+    console.log("Check APi");
     const res = await callApi({
       requestMethod: import.meta.env
         .VITE_GET_ALL_VIEW_DETAIL_TRADEAPPROVAL_ID_REQUEST_METHOD,
       endpoint: import.meta.env.VITE_API_TRADE,
       requestData: requestdata,
     });
-
     if (handleExpiredSession(res, navigate, showLoader)) return null;
 
     if (!res?.result?.isExecuted) {
+      console.log("Check APi");
       showNotification({
         type: "error",
         title: "Error",
@@ -239,6 +240,7 @@ export const GetAllViewDetailsByTradeApprovalID = async ({
         responseMessage ===
         "PAD_Trade_TradeServiceManager_GetAllViewDetailsByTradeApprovalID_01"
       ) {
+        console.log("Check APi");
         return {
           details: details || [],
           hierarchyList: hierarchyList || [],

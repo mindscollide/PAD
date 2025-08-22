@@ -1123,3 +1123,60 @@ span.ant-btn-icon {
   color: var(--Blue-V1, #30426a) !important;
   background-color: transparent !important;
 }
+
+/* ========================================= */
+/* BUTTON For Types Buy and Sell Status */
+/* ========================================= */
+.small-light-button-For-Types {
+  /* width: 120px !important; */
+  padding: 0px 15px !important;
+  height: 34px !important;
+  background: #ffffff !important;
+  border: 1px solid #717171 !important;
+  color: #424242 !important;
+  border-radius: 6.95px !important;
+  font-family: "Switzer Variable" !important;
+  font-weight: 500 !important;
+  font-size: 14px !important;
+  line-height: 100% !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease !important;
+}
+
+.small-light-button-For-Types:not(:disabled):hover {
+  box-shadow: 4px 4px 6px 0px #00000033 !important;
+}
+
+.small-light-button-For-Types:disabled {
+  background: #d9d9d9 !important;
+  border: 1px solid #d9d9d9 !important;
+  color: #ffffff !important;
+  cursor: not-allowed !important;
+}
+
+.small-dark-button-For-Types {
+  /* width: 120px !important; */
+  padding: 0px 25px !important;
+  height: 34px !important;
+  background: var(--Blue-V1, #30426a) !important;
+  border: 1px solid var(--Blue-V1, #30426a) !important;
+  color: #ffffff !important;
+  border-radius: 6.95px !important;
+  font-family: "Switzer Variable" !important;
+  font-weight: 500 !important;
+  font-size: 14px !important;
+  line-height: 100% !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease !important;
+}
+
+.small-dark-button-For-Types:not(:disabled):hover {
+  box-shadow: 4px 4px 6px 0px #00000033 !important;
+}
+
+.small-dark-button-For-Types:disabled {
+  background: #d9d9d9 !important;
+  border: 1px solid #d9d9d9 !important;
+  color: #ffffff !important;
+  cursor: not-allowed !important;
+}
