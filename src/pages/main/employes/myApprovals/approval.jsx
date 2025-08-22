@@ -478,12 +478,7 @@ const Approval = () => {
 
       {/* ye modal hai view details ka My APproval ka page pa */}
       {/* {isViewDetail && <ViewDetailModal />} */}
-      {isViewDetail && (
-        <ViewDetailModal
-          visible={isViewDetail}
-          onCancel={() => setIsViewDetail(false)}
-        />
-      )}
+      {isViewDetail && <ViewDetailModal />}
 
       {/* Ye Sirf Comment Show krwata jab app approved modal ka andar view Comment krta tab khulta */}
       {isViewComments && <ViewComment />}
