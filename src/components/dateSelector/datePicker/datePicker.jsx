@@ -17,23 +17,10 @@ const CustomDatePicker = ({
   error = "",
   required = false,
   onBlur,
+  format,
   ...props
 }) => {
   const sizeClass = styles[size] || "";
-
-  // Convert "YYYY-MM-DD" to moment object
-  const parseToMoment = (val) => (val ? moment(val, "YYYY-MM-DD") : null);
-
-  // Convert moment object to "YYYY-MM-DD"
-  const formatToYYYYMMDD = (date) => date?.format("YYYY-MM-DD");
-
-  const handleChange = (date) => {
-    if (!date) {
-      onClear?.();
-    } else {
-      onChange?.(formatToYYYYMMDD(date));
-    }
-  };
 
   return (
     <div className={classNames(styles["form-group"], sizeClass, className)}>
@@ -46,13 +33,13 @@ const CustomDatePicker = ({
 
       <DatePicker
         name={name}
-        value={parseToMoment(value)}
-        onChange={handleChange}
+        value={value} // keep as moment object
+        onChange={onChange}
         onBlur={onBlur}
         placeholder={placeholder}
         disabled={disabled}
         allowClear
-        format="MMM-DD-YY" // Display format
+        format={format}
         className={classNames(styles["input"], styles[`input-${size}`], {
           [styles["input-error"]]: error,
         })}

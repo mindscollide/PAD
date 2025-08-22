@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import { Row, Col, Space } from "antd";
 import { Button, TextField } from "../..";
 import CustomDatePicker from "../../dateSelector/datePicker/datePicker";
@@ -7,81 +7,46 @@ import {
   allowOnlyNumbers,
   removeFirstSpace,
 } from "../../../commen/funtions/rejex";
+import moment from "moment";
 
-/**
- * EmployeeMyApprovalFilter
- * -------------------------
- * Filters data based on user input: instrument name, quantity, and start date.
- * Syncs input with both local state (for UI) and global state (for logic).
- *
- * @param {Function} handleSearch - Function to call when the "Search" button is clicked.
- */
 export const EmployeeMyApprovalFilter = ({ handleSearch }) => {
-  const {
-    employeeMyApprovalSearch,
-    setEmployeeMyApprovalSearch,
-    resetEmployeeMyApprovalSearch,
-  } = useSearchBarContext();
+  const { employeeMyApprovalSearch, setEmployeeMyApprovalSearch } =
+    useSearchBarContext();
 
-  // 🔹 Local state for form inputs
+  // 🔹 Local form state
   const [localState, setLocalState] = useState({
     instrumentName: "",
     quantity: "",
     startDate: "",
   });
 
-  // 🔹 Track which fields the user has interacted with
-  const [dirtyFields, setDirtyFields] = useState({
-    instrumentName: false,
-    quantity: false,
-    startDate: false,
-  });
+  // 🔹 Track touched fields
+  const [dirtyFields, setDirtyFields] = useState({});
 
-  /**
-   * Return the display value for a given field:
-   * - If dirty: use local input
-   * - If not: fallback to global state
-   */
-  const getFieldValue = (field) => {
-    return dirtyFields[field]
-      ? localState[field]
-      : employeeMyApprovalSearch[field] || "";
+  // 🔹 Helper to update field + mark dirty
+  const setFieldValue = (field, value) => {
+    console.log("handleDateChange", field, value);
+
+    setLocalState((prev) => ({ ...prev, [field]: value }));
+
+    setDirtyFields((prev) => ({ ...prev, [field]: true }));
   };
 
-  /**
-   * Handle text input change (instrument name & quantity)
-   */
+  /** Handle text input (instrumentName, quantity) */
   const handleInputChange = (e) => {
     const { name, value } = e.target;
 
     if (name === "Quantity") {
       if (value === "" || allowOnlyNumbers(value)) {
-        setLocalState((prev) => ({ ...prev, quantity: value }));
-        setDirtyFields((prev) => ({ ...prev, quantity: true }));
+        setFieldValue("quantity", value);
       }
     } else {
-      setLocalState((prev) => ({
-        ...prev,
-        [name]: removeFirstSpace(value),
-      }));
-      setDirtyFields((prev) => ({ ...prev, [name]: true }));
+      setFieldValue(name, removeFirstSpace(value));
     }
   };
 
-  /**
-   * Handle date selection or clearing
-   */
-  const handleDateChange = (date) => {
-    setLocalState((prev) => ({ ...prev, startDate: date }));
-    setDirtyFields((prev) => ({ ...prev, startDate: true }));
-  };
-
-  /**
-   * Handle search click:
-   * - Merge local values (only if dirty) into global state
-   * - If input is cleared, reflect that in global state
-   */
-  const handleSearchClick = () => {
+  /** Handle date selection */
+  const handleSearchClick = async () => {
     const finalSearch = {
       ...(dirtyFields.instrumentName && {
         instrumentName: localState.instrumentName,
@@ -90,34 +55,20 @@ export const EmployeeMyApprovalFilter = ({ handleSearch }) => {
         quantity: localState.quantity !== "" ? Number(localState.quantity) : 0,
       }),
       ...(dirtyFields.startDate && {
-        startDate: localState.startDate,
+        startDate: localState.startDate
+          ? localState.startDate.format("YYYY-MM-DD")
+          : "",
       }),
       pageNumber: 0,
     };
 
-    // 🔸 Only update touched fields, preserve others in global state
-    setEmployeeMyApprovalSearch((prev) => ({
-      ...prev,
-      ...finalSearch,
-    }));
+    await setEmployeeMyApprovalSearch(finalSearch);
+    handleSearch(finalSearch);
 
-    // 🔸 Clear local state and dirty flags after search
-    setLocalState({ instrumentName: "", quantity: "", startDate: "" });
-    setDirtyFields({
-      instrumentName: false,
-      quantity: false,
-      startDate: false,
-    });
-
-    // 🔸 Trigger parent-level search logic
-    handleSearch();
+    // 🚫 don’t reset here, let Reset button handle it
   };
 
-  /**
-   * Handle reset click:
-   * - Clears all local & global filter fields
-   * - Triggers a re-render via tableFilterTrigger if needed
-   */
+  /** Reset filters */
   const handleResetClick = () => {
     setEmployeeMyApprovalSearch((prev) => ({
       ...prev,
@@ -125,27 +76,62 @@ export const EmployeeMyApprovalFilter = ({ handleSearch }) => {
       quantity: 0,
       startDate: "",
       pageNumber: 0,
-      tableFilterTrigger: true, // optional: to notify table to refetch/reset
+      tableFilterTrigger: true,
     }));
-
-    // Reset local state and dirty flags
-    setLocalState({ instrumentName: "", quantity: "", startDate: "" });
-    setDirtyFields({
-      instrumentName: false,
-      quantity: false,
-      startDate: false,
-    });
+    resetLocalState();
   };
+
+  /** Reset local state + dirty flags */
+  const resetLocalState = () => {
+    setLocalState({ instrumentName: "", quantity: "", startDate: "" });
+   setDirtyFields({});
+  };
+  const handleDateChange = (date, fieldName) => {
+    setFieldValue(fieldName, date); // keep moment | null in state
+  };
+  // ✅ Memoized values (only recompute when needed)
+  const instrumentNameValue = useMemo(() => {
+    return dirtyFields.instrumentName
+      ? localState.instrumentName
+      : employeeMyApprovalSearch.instrumentName || "";
+  }, [
+    dirtyFields.instrumentName,
+    localState.instrumentName,
+    employeeMyApprovalSearch.instrumentName,
+  ]);
+
+  const quantityValue = useMemo(() => {
+    return dirtyFields.quantity
+      ? localState.quantity
+      : employeeMyApprovalSearch.quantity?.toString() || "";
+  }, [
+    dirtyFields.quantity,
+    localState.quantity,
+    employeeMyApprovalSearch.quantity,
+  ]);
+
+  const startDateValue = useMemo(() => {
+    if (dirtyFields.startDate) {
+      return localState.startDate; // already a moment | null
+    }
+    return employeeMyApprovalSearch.startDate
+      ? moment(employeeMyApprovalSearch.startDate, "YYYY-MM-DD")
+      : null;
+  }, [
+    dirtyFields.startDate,
+    localState.startDate,
+    employeeMyApprovalSearch.startDate,
+  ]);
 
   return (
     <>
-      {/* 🔸 First Row: Instrument Name & Quantity */}
+      {/* 🔸 First Row: Instrument Name & Date */}
       <Row gutter={[12, 12]}>
         <Col xs={24} sm={24} md={12} lg={12}>
           <TextField
             label="Instrument Name"
             name="instrumentName"
-            value={getFieldValue("instrumentName")}
+            value={instrumentNameValue}
             onChange={handleInputChange}
             placeholder="Instrument Name"
             size="medium"
@@ -158,20 +144,20 @@ export const EmployeeMyApprovalFilter = ({ handleSearch }) => {
             label="Date"
             name="startDate"
             size="medium"
-            value={getFieldValue("startDate")}
-            onChange={handleDateChange}
-            onClear={() => handleDateChange("")}
+            value={startDateValue}
+            onChange={(date) => handleDateChange(date, "startDate")}
+            format="YYYY-MM-DD"
           />
         </Col>
       </Row>
 
-      {/* 🔸 Second Row: Date Picker */}
+      {/* 🔸 Second Row: Quantity */}
       <Row gutter={[12, 12]}>
         <Col xs={24} sm={24} md={12} lg={12}>
           <TextField
             label="Quantity"
             name="Quantity"
-            value={getFieldValue("quantity")}
+            value={quantityValue}
             onChange={handleInputChange}
             placeholder="Quantity"
             size="medium"
@@ -180,7 +166,7 @@ export const EmployeeMyApprovalFilter = ({ handleSearch }) => {
         </Col>
       </Row>
 
-      {/* 🔸 Third Row: Action Buttons */}
+      {/* 🔸 Third Row: Actions */}
       <Row gutter={[12, 12]} justify="end" style={{ marginTop: 16 }}>
         <Col>
           <Space>
