@@ -20,7 +20,7 @@ const Dashboard = () => {
     },
   });
   useEffect(() => {
-    connectToMqtt({ subscribeID, userID });
+    // connectToMqtt({ subscribeID, userID });
   },[]);
   // Get page-specific class based on route
   const getContentClass = () => {
