@@ -103,24 +103,7 @@ const BoxCard = ({
                   className={styles[`${base}statBox`]}
                   style={{ backgroundColor: bgColor, textAlign }}
                 >
-                  {warningFlag && index === 0 ? (
-                    <>
-                      <Text
-                        className={styles[`${base}label`]}
-                        style={{ color: textLableColor }}
-                      >
-                        {box.label}
-                      </Text>
-                      <Text
-                        className={styles[`${base}count`]}
-                        style={{ color: textCountColor }}
-                      >
-                        {convertSingleDigittoDoubble(
-                          formatNumberWithCommas(box.count)
-                        )}
-                      </Text>
-                    </>
-                  ) : locationStyle === "down" ? (
+                  {locationStyle === "down" ? (
                     <>
                       <Text
                         className={styles[`${base}label`]}
