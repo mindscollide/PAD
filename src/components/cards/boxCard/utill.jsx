@@ -50,7 +50,7 @@ export const typeColorMap = {
     textCountColor: "#30426A",
     textAlign: "center",
   },
-  pending_approval_request: {
+  pending_approval_requests: {
     bgColor: "#FFF1E7",
     textLableColor: "#F67F29",
     textCountColor: "#F67F29",

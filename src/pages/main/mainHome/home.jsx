@@ -18,6 +18,7 @@ import { useDashboardContext } from "../../../context/dashboardContaxt";
 import { roleKeyMap, checkRoleMatch } from "./utills";
 import { useGlobalLoader } from "../../../context/LoaderContext";
 import { useNavigate } from "react-router-dom";
+import { useSearchBarContext } from "../../../context/SearchBarContaxt";
 
 const Home = () => {
   const { showNotification } = useNotification();
@@ -27,8 +28,6 @@ const Home = () => {
     dashboardData,
     setDashboardData,
     setEmployeeBasedBrokersData,
-    employeeBasedBrokersData,
-    allInstrumentsData,
     setAllInstrumentsData,
     setAddApprovalRequestData,
     setGetAllPredefineReasonData,
@@ -36,7 +35,7 @@ const Home = () => {
   const { callApi } = useApi();
   const { showLoader } = useGlobalLoader();
   const roles = JSON.parse(sessionStorage.getItem("user_assigned_roles"));
-
+  const {setAllyType} = useSearchBarContext();
   // Prevent multiple fetches on mount
   const hasFetched = useRef(false);
 
@@ -69,15 +68,12 @@ const Home = () => {
         const filteredData = {
           title: data.title, // Include title if needed
         };
-
         roles.forEach(({ roleID }) => {
           const roleKey = roleKeyMap[roleID];
           if (roleKey && data[roleKey]) {
             filteredData[roleKey] = data[roleKey];
           }
         });
-
-        console.log("GetUserDashBoardStats", filteredData);
         showLoader(false);
         setDashboardData(filteredData);
       } catch (error) {
@@ -200,27 +196,27 @@ const Home = () => {
           <Row gutter={[16, 16]}>
             <Col xs={24} md={12} lg={12}>
               <BoxCard
-                warningFlag={true}
+                // warningFlag={true}
                 locationStyle={"up"}
                 title="Approvals Request"
                 mainClassName={"mediumHomeCard"}
                 // boxes={dashboardData?.lineManager?.myApprovals?.data}
                 boxes={[
+                  {
+                    count: 4,
+                    label: "PENDING APPROVAL REQUESTS",
+                    type: "PENDING APPROVAL REQUESTS",
+                  },
                   // {
-                  //   count: 4,
-                  //   label: "Pending Approval Requests",
-                  //   type: "pending_approval_request",
+                  //   count: 12,
+                  //   label: "TOTAL PENDING APPROVALS",
+                  //   type: "TOTAL PENDING APPROVALS",
                   // },
-                  {
-                    count: 12,
-                    label: "TOTAL PENDING APPROVALS",
-                    type: "total_pending_approvals",
-                  },
-                  {
-                    count: 2,
-                    label: "APPROVALS REQUIRE URGENT ACTION",
-                    type: "approvals_require_urgent_action",
-                  },
+                  // {
+                  //   count: 2,
+                  //   label: "APPROVALS REQUIRE URGENT ACTION",
+                  //   type: "APPROVALS REQUIRE URGENT ACTION",
+                  // },
                 ]}
                 buttonTitle={"See More"}
                 buttonClassName={"big-white-card-button"}
