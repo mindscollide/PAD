@@ -12,10 +12,11 @@ export const allowOnlyNumbers = (value) => {
 
 // Comma Separator for numbers
 export const formatNumberWithCommas = (value) => {
-  // Ensure it's a number or numeric string
-  const num = Number(value);
-  if (isNaN(num)) return value; // return original if not a number
-  return num.toLocaleString("en-US");
+  if (!value) return "";
+  // Convert to string and remove any non-digit chars (like commas)
+  const strValue = String(value).replace(/\D/g, "");
+  // Add commas without converting to Number
+  return strValue.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 };
 
 // Here's a simple function that takes a number or numeric string,
@@ -33,4 +34,83 @@ export function convertSingleDigittoDoubble(value) {
 export const removeFirstSpace = (value) => {
   if (typeof value !== "string") return value;
   return value.charAt(0) === " " ? value.slice(1) : value;
+};
+
+//Global Date Time Formatter
+
+// utils/dateFormatter.js
+export function formatApiDateTime(apiDateTime) {
+  if (!apiDateTime || typeof apiDateTime !== "string") return "";
+
+  // Split into date and time parts
+  const [datePart, timePart] = apiDateTime.trim().split(" ");
+  if (!datePart || !timePart) return apiDateTime; // fallback if unexpected format
+
+  // Extract date components
+  const year = datePart.slice(0, 4);
+  const month = datePart.slice(4, 6);
+  const day = datePart.slice(6, 8);
+
+  // Extract time components
+  let hours = parseInt(timePart.slice(0, 2), 10);
+  const minutes = timePart.slice(2, 4);
+
+  // Determine AM/PM
+  const ampm = hours >= 12 ? "pm" : "am";
+  hours = hours % 12 || 12; // convert 0 -> 12 for 12-hour clock
+
+  return `${year}-${month}-${day} | ${hours
+    .toString()
+    .padStart(2, "0")}:${minutes} ${ampm}`;
+}
+
+// this is the formator to convert any type of date to formate into this
+// Universal UTC → YYMMDD Formatter
+export const toYYMMDD = (input) => {
+  // Handle empty, null, undefined
+  if (!input) return "";
+
+  // Create Date object
+  const date = new Date(input);
+
+  // Validate
+  if (isNaN(date)) throw new Error(`Invalid date format: ${input}`);
+
+  // Format in UTC
+  const year = String(date.getUTCFullYear()).slice(-2); // YY
+  const month = String(date.getUTCMonth() + 1).padStart(2, "0"); // MM
+  const day = String(date.getUTCDate()).padStart(2, "0"); // DD
+
+  return `${year}${month}${day}`;
+};
+
+// this regex work as a dash seperator befor REQ009 after regex REQ-009
+export const dashBetweenApprovalAssets = (id) => {
+  if (!id) return "";
+
+  const prefix = id.substring(0, 3);
+  const number = id.substring(3);
+
+  // If you want to always keep it padded to 3 digits (REQ-009)
+  const padded = number.padStart(3, "0");
+
+  return `${prefix}-${padded}`;
+};
+
+// Show only Date not the time
+// Extracts time part (HHmmss) from API datetime string like "20250822 101103"
+export const formatShowOnlyDate = (dateTimeStr) => {
+  if (!dateTimeStr) return "";
+
+  // The API format looks like: YYYYMMDD HHMMSS (e.g., 20250822 101103)
+  const datePart = dateTimeStr.split(" ")[0]; // "20250822"
+
+  if (datePart && datePart.length === 8) {
+    const year = datePart.slice(0, 4);
+    const month = datePart.slice(4, 6);
+    const day = datePart.slice(6, 8);
+    return `${year}-${month}-${day}`;
+  }
+
+  return "";
 };

@@ -10,6 +10,7 @@ const BorderlessTable = ({
   classNameTable,
   rowHoverable = false,
   onChange,
+  loading,
 }) => {
   const CustomEmpty = () => (
     <div style={{ padding: "16px" }}>
@@ -29,6 +30,7 @@ const BorderlessTable = ({
       bordered={false}
       prefixCls={classNameTable}
       onChange={onChange}
+      loading={loading}
     />
   );
 };

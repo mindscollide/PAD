@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Card, Typography, Row, Col } from "antd";
 import styles from "./boxCard.module.css";
 
@@ -16,22 +16,46 @@ import EmptyState from "../../emptyStates/empty-states";
 const { Text } = Typography;
 
 /**
- * BoxCard Component
+ * ==============================
+ *  BoxCard Component
+ * ==============================
  *
- * Renders a card UI displaying statistical data boxes with a button.
- * Box colors and layout change dynamically based on box `type` and `locationStyle`.
+ * A reusable **statistical card UI** that:
+ * - Displays one or more "stat boxes" (label + count).
+ * - Supports multiple layout styles (`up`, `down`, `left`).
+ * - Dynamically colors boxes based on `type` via `typeColorMap`.
+ * - Optionally renders a header button to navigate to other routes.
+ * - Handles empty data by showing an `EmptyState` or default fallback (for "portfolio").
  *
+ * Example usage:
+ * ```jsx
+ * <BoxCard
+ *   title="Approvals"
+ *   boxes={[
+ *     { label: "Pending", count: 12, type: "warning" },
+ *     { label: "Approved", count: 40, type: "success" },
+ *   ]}
+ *   mainClassName="dashboardCard"
+ *   buttonTitle="View All"
+ *   locationStyle="down"
+ *   userRole="admin"
+ *   route="approvals"
+ * />
+ * ```
+ *
+ * @component
  * @param {Object} props - Component props
- * @param {string} props.title - Title displayed at the top of the card
- * @param {Array} props.boxes - Array of data boxes with `label`, `count`, and `type`
- * @param {string} props.mainClassName - Base class name for styling (used for variations)
- * @param {string} props.buttonTitle - Text displayed on the action button (optional)
- * @param {string} props.buttonClassName - Additional styling class for the button
- * @param {"up"|"down"|"left"} props.locationStyle - Determines where the count appears relative to the label
- * @param {string} props.userRole - User role used for route-based navigation logic
- * @param {string} props.route - Route identifier (e.g., 'approvals') used to determine navigation target
+ * @param {string} props.title - Card title (appears in the header).
+ * @param {Array<{label: string, count: number, type: string}>} props.boxes - Data boxes with label, count, and type.
+ * @param {string} [props.mainClassName=""] - Base CSS module class for styling variations.
+ * @param {string} [props.buttonTitle=""] - Optional text for the header button.
+ * @param {string} [props.buttonClassName=""] - CSS class for button styling.
+ * @param {"up"|"down"|"left"} [props.locationStyle="down"] - Layout for placing count relative to label.
+ * @param {string} [props.userRole=""] - User role (passed for route navigation logic).
+ * @param {string} props.route - Route key (used for navigation and empty states).
+ * @param {boolean} [props.warningFlag=false] - If true, applies warning styling and logic to the first box.
  *
- * @returns {JSX.Element} A card displaying statistical boxes with optional action button
+ * @returns {JSX.Element} Rendered BoxCard component.
  */
 const BoxCard = ({
   title,
@@ -42,102 +66,94 @@ const BoxCard = ({
   locationStyle = "down",
   userRole = "",
   route,
+  warningFlag = false,
 }) => {
-  const base = mainClassName || "smallShareHomeCard"; // fallback class name
+  const base = mainClassName || "smallShareHomeCard"; // fallback class name if none provided
   const navigate = useNavigate();
   const { setSelectedKey } = useSidebarContext();
+  const [sortedInfo, setSortedInfo] = useState({});
+
+  // Normalize boxes input (always an array)
   const normalizedBoxes = Array.isArray(boxes) ? boxes : boxes ? [boxes] : [];
-  // Handles button click, navigates based on role and route
+
+  /**
+   * Handles button click → navigates to the correct route
+   * using helper `navigateToPage` (handles role-based logic).
+   */
   const handleClick = () => {
     navigateToPage(userRole, route, setSelectedKey, navigate);
   };
 
   return (
-    <Card className={styles[mainClassName]} style={{ padding: "10px 20px" }}>
-      {/* Header */}
-      <div className={styles[`${base}cardHeader`]}>
-        <span className={styles[`${base}cardTitle`]}>{title}</span>
+    <div className={warningFlag ? styles.warningMain : ""}>
+      <Card
+        className={`${styles[mainClassName]} ${
+          warningFlag ? styles.warning : ""
+        }`}
+        style={{ padding: "10px 20px" }}
+      >
+        {/* ========================
+          Header Section
+      ========================= */}
+        <div className={styles[`${base}cardHeader`]}>
+          <span className={styles[`${base}cardTitle`]}>{title}</span>
 
-        {buttonTitle && (
-          <div className={styles[`${base}buttonContainer`]}>
-            <Button
-              type="primary"
-              text={buttonTitle}
-              className={buttonClassName}
-              onClick={handleClick}
-            />
-          </div>
-        )}
-      </div>
+          {buttonTitle && (
+            <div className={styles[`${base}buttonContainer`]}>
+              <Button
+                type="primary"
+                text={buttonTitle}
+                className={buttonClassName}
+                onClick={handleClick}
+              />
+            </div>
+          )}
+        </div>
 
-      {/* Content boxes */}
-      {normalizedBoxes.length > 0 ? (
-        <Row className={styles[`${base}statBoxMain`]} gutter={[16, 16]}>
-          {normalizedBoxes.map((box, index) => {
-            const { bgColor, textLableColor, textCountColor, textAlign } =
-              typeColorMap[box.type?.toLowerCase()] || {
-                bgColor: "#f0f0f0",
-                textLableColor: "#000",
-                textCountColor: "#000",
-                textAlign: "center",
-              };
+        {/* ========================
+          Content Section
+      ========================= */}
+        {normalizedBoxes.length > 0 ? (
+          <Row className={styles[`${base}statBoxMain`]} gutter={[16, 16]}>
+            {normalizedBoxes.map((box, index) => {
+              // Resolve colors & alignment based on `type`
+              const { bgColor, textLableColor, textCountColor, textAlign } =
+                typeColorMap[box.type?.toLowerCase()] || {
+                  bgColor: "#f0f0f0",
+                  textLableColor: "#000",
+                  textCountColor: "#000",
+                  textAlign: "center",
+                };
 
-            const [firstWord, ...rest] = box.label.split(" ");
-            const secondPart = rest.join(" ");
+              // Split label into first word + remaining text (used in "left" layout)
+              const [firstWord, ...rest] = box.label.split(" ");
+              const secondPart = rest.join(" ");
 
-            const totalCols = 24;
-            const span =
-              normalizedBoxes.length > 0
-                ? Math.floor(totalCols / normalizedBoxes.length)
-                : 24;
+              // Responsive column span per box
+              const totalCols = 24;
+              const span =
+                normalizedBoxes.length > 0
+                  ? Math.floor(totalCols / normalizedBoxes.length)
+                  : 24;
 
-            return (
-              <Col span={span} key={index}>
-                <div
-                  className={styles[`${base}statBox`]}
-                  style={{ backgroundColor: bgColor, textAlign }}
-                >
-                  {locationStyle === "down" ? (
-                    <>
-                      <Text
-                        className={styles[`${base}label`]}
-                        style={{ color: textLableColor }}
-                      >
-                        {box.label}
-                      </Text>
-                      <Text
-                        className={styles[`${base}count`]}
-                        style={{ color: textCountColor }}
-                      >
-                        {convertSingleDigittoDoubble(
-                          formatNumberWithCommas(box.count)
-                        )}
-                      </Text>
-                    </>
-                  ) : locationStyle === "up" ? (
-                    <>
-                      <Text
-                        className={styles[`${base}count`]}
-                        style={{ color: textCountColor }}
-                      >
-                        {convertSingleDigittoDoubble(
-                          formatNumberWithCommas(box.count)
-                        )}
-                      </Text>
-                      <Text
-                        className={styles[`${base}label`]}
-                        style={{ color: textLableColor }}
-                      >
-                        {box.label}
-                      </Text>
-                    </>
-                  ) : (
-                    <Row
-                      gutter={[16, 16]}
-                      align="middle"
-                      justify="space-between"
-                    >
-                      <Col>
+              return (
+                <Col span={span} key={index}>
+                  <div
+                    className={styles[`${base}statBox`]}
+                    style={{ backgroundColor: bgColor, textAlign }}
+                  >
+                    {/* ========================
+                      Conditional Layout Rendering
+                  ========================= */}
+                    {warningFlag && index === 0 ? (
+                      // Special rendering for first warning box
+                      <>
+                        <Text
+                          className={styles[`${base}label`]}
+                          style={{ color: textLableColor }}
+                        >
+                          {box.label}
+                        </Text>
                         <Text
                           className={styles[`${base}count`]}
                           style={{ color: textCountColor }}
@@ -146,67 +162,123 @@ const BoxCard = ({
                             formatNumberWithCommas(box.count)
                           )}
                         </Text>
-                      </Col>
-                      <Col>
-                        <Row>
+                      </>
+                    ) : locationStyle === "down" ? (
+                      // Label on top, count below
+                      <>
+                        <Text
+                          className={styles[`${base}label`]}
+                          style={{ color: textLableColor }}
+                        >
+                          {box.label}
+                        </Text>
+                        <Text
+                          className={styles[`${base}count`]}
+                          style={{ color: textCountColor }}
+                        >
+                          {convertSingleDigittoDoubble(
+                            formatNumberWithCommas(box.count)
+                          )}
+                        </Text>
+                      </>
+                    ) : locationStyle === "up" ? (
+                      // Count on top, label below
+                      <>
+                        <Text
+                          className={styles[`${base}count`]}
+                          style={{ color: textCountColor }}
+                        >
+                          {convertSingleDigittoDoubble(
+                            formatNumberWithCommas(box.count)
+                          )}
+                        </Text>
+                        <Text
+                          className={styles[`${base}label`]}
+                          style={{ color: textLableColor }}
+                        >
+                          {box.label}
+                        </Text>
+                      </>
+                    ) : (
+                      // Left-aligned style: count on left, label split on right
+                      <Row
+                        gutter={[16, 16]}
+                        align="middle"
+                        justify="space-between"
+                      >
+                        <Col>
                           <Text
-                            className={styles[`${base}label`]}
-                            style={{ color: textLableColor }}
+                            className={styles[`${base}count`]}
+                            style={{ color: textCountColor }}
                           >
-                            <span
-                              style={{ fontWeight: "bold", display: "block" }}
+                            {convertSingleDigittoDoubble(
+                              formatNumberWithCommas(box.count)
+                            )}
+                          </Text>
+                        </Col>
+                        <Col>
+                          <Row>
+                            <Text
+                              className={styles[`${base}label`]}
+                              style={{ color: textLableColor }}
                             >
-                              {firstWord}
-                            </span>
-                          </Text>
-                        </Row>
-                        <Row>
-                          <Text
-                            className={styles[`${base}label`]}
-                            style={{ color: textLableColor }}
-                          >
-                            <span style={{ display: "block" }}>
-                              {secondPart}
-                            </span>
-                          </Text>
-                        </Row>
-                      </Col>
-                    </Row>
-                  )}
-                </div>
-              </Col>
-            );
-          })}
-        </Row>
-      ) : route === "portfolio" ? (
-        <Row className={styles[`${base}statBoxMain`]} gutter={[16, 16]}>
-          <Col span={24}>
-            <div
-              className={styles[`${base}statBox`]}
-              style={{
-                backgroundColor: "#C5FFC7",
-                textAlign: "left",
-              }}
-            >
-              <Text
-                className={styles[`${base}label`]}
-                style={{ color: "#30426A" }}
+                              <span
+                                style={{ fontWeight: "bold", display: "block" }}
+                              >
+                                {firstWord}
+                              </span>
+                            </Text>
+                          </Row>
+                          <Row>
+                            <Text
+                              className={styles[`${base}label`]}
+                              style={{ color: textLableColor }}
+                            >
+                              <span style={{ display: "block" }}>
+                                {secondPart}
+                              </span>
+                            </Text>
+                          </Row>
+                        </Col>
+                      </Row>
+                    )}
+                  </div>
+                </Col>
+              );
+            })}
+          </Row>
+        ) : route === "portfolio" ? (
+          // Special fallback for portfolio route
+          <Row className={styles[`${base}statBoxMain`]} gutter={[16, 16]}>
+            <Col span={24}>
+              <div
+                className={styles[`${base}statBox`]}
+                style={{
+                  backgroundColor: "#C5FFC7",
+                  textAlign: "left",
+                }}
               >
-                No. of Shares
-              </Text>
-              <Text
-                className={styles[`${base}count`]}
-                style={{ color: "#00640A" }}
-              >
-                0
-              </Text>
-            </div>
-          </Col>
-        </Row>
-      ) : (
-        <EmptyState style={{ display: "contents" }} type={route} />
-      )}
-    </Card>
+                <Text
+                  className={styles[`${base}label`]}
+                  style={{ color: "#30426A" }}
+                >
+                  No. of Shares
+                </Text>
+                <Text
+                  className={styles[`${base}count`]}
+                  style={{ color: "#00640A" }}
+                >
+                  0
+                </Text>
+              </div>
+            </Col>
+          </Row>
+        ) : (
+          // Generic empty state for other routes
+          <EmptyState style={{ display: "contents" }} type={route} />
+        )}
+      </Card>
+    </div>
   );
 };
 

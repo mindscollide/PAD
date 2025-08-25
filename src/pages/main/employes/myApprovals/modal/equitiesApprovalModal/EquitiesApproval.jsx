@@ -2,7 +2,6 @@ import React, { useEffect, useMemo, useState } from "react";
 import { Col, Row, Select, Space, Checkbox } from "antd";
 import { useGlobalModal } from "../../../../../../context/GlobalModalContext";
 import {
-  CommenSearchInput,
   GlobalModal,
   InstrumentSelect,
   TextField,
@@ -15,7 +14,10 @@ import { useNotification } from "../../../../../../components/NotificationProvid
 import { useGlobalLoader } from "../../../../../../context/LoaderContext";
 import { useApi } from "../../../../../../context/ApiContext";
 import { useNavigate } from "react-router-dom";
-import { formatNumberWithCommas } from "../../../../../../commen/funtions/rejex";
+import {
+  allowOnlyNumbers,
+  formatNumberWithCommas,
+} from "../../../../../../commen/funtions/rejex";
 
 const EquitiesApproval = () => {
   const navigate = useNavigate();
@@ -37,6 +39,7 @@ const EquitiesApproval = () => {
 
   //For Instrument Dropdown show selected Name
   const [selectedInstrument, setSelectedInstrument] = useState(null);
+  console.log(selectedInstrument, "selectedInstrumentselectedInstrument23");
 
   // for employeeBroker state to show data in dropdown
   const [selectedBrokers, setSelectedBrokers] = useState([]);
@@ -48,8 +51,6 @@ const EquitiesApproval = () => {
 
   //For Quantity Data State
   const [quantity, setQuantity] = useState("");
-
-  console.log(quantity, "quantityquantity");
 
   // Refactor sessionStorage read with useMemo for performance & error handling
   const lineManagerDetails = useMemo(() => {
@@ -122,11 +123,16 @@ const EquitiesApproval = () => {
   const handleQuantityChange = (e) => {
     let { value } = e.target;
 
-    const rawValue = value.replace(/,/g, ""); // remove commas for processing
+    // remove commas
+    const rawValue = value.replace(/,/g, "");
 
-    if (rawValue === "" || !isNaN(rawValue)) {
-      const formattedValue = rawValue ? formatNumberWithCommas(rawValue) : "";
-      setQuantity(formattedValue);
+    // sirf numbers allow karo
+    if (rawValue === "" || allowOnlyNumbers(rawValue)) {
+      // max length 20 enforce kar do
+      if (rawValue.length <= 20) {
+        const formattedValue = rawValue ? formatNumberWithCommas(rawValue) : "";
+        setQuantity(formattedValue);
+      }
     }
   };
 
@@ -137,7 +143,6 @@ const EquitiesApproval = () => {
 
   // A Function For Fetch api of AddTradeApproval
   const fetchAddApprovalsRequest = async () => {
-    console.log("Check APi");
     showLoader(true);
 
     const quantityNumber = quantity ? Number(quantity.replace(/,/g, "")) : null;
@@ -155,12 +160,12 @@ const EquitiesApproval = () => {
         {
           instrumentID: selectedInstrument?.type || null,
           instrumentShortName: selectedInstrument?.name || "",
-          Entity: { EntityTypeID: 1 },
+          Entity: { EntityID: 1, EntityTypeID: 1 },
         },
       ],
     };
 
-    const data = await AddTradeApprovalRequest({
+    await AddTradeApprovalRequest({
       callApi,
       showNotification,
       showLoader,
@@ -169,8 +174,6 @@ const EquitiesApproval = () => {
       setIsSubmit,
       navigate,
     });
-
-    setIsEmployeeMyApproval(data);
   };
 
   // Call an API which inside the fetchAddApprovals Request
@@ -238,6 +241,7 @@ const EquitiesApproval = () => {
                     onChange={handleTypeSelect}
                     disabled={typeOptions.length === 0}
                     className={styles.checkboxSelect}
+                    // prefixCls={styles.typeDropdownClass}
                   />
                 </Col>
                 <Col span={12}>
@@ -246,6 +250,7 @@ const EquitiesApproval = () => {
                     placeholder="Quantity"
                     className={styles.TextFieldOfQuantity}
                     type="text"
+                    maxLength={15}
                     value={quantity}
                     onChange={handleQuantityChange}
                   />
@@ -262,7 +267,7 @@ const EquitiesApproval = () => {
                     value={selectedBrokerIDs}
                     onChange={handleBrokerChange}
                     options={brokerOptions}
-                    className={styles.checkboxSelect}
+                    className={styles.checkboxSelectofBroker}
                     disabled={employeeBasedBrokersData.length === 0}
                   />
                 </Col>

@@ -50,7 +50,7 @@ const Home = () => {
       }
 
       try {
-        console.log("res");
+        await showLoader(true);
         const data = await GetUserDashBoardStats({
           callApi,
           setEmployeeBasedBrokersData,
@@ -63,7 +63,7 @@ const Home = () => {
         });
         // Handle session expiration
         console.log("res", data);
-        if (!data) return;
+        if (!data) return showLoader(false);
 
         // Filter data based on user roles
         const filteredData = {
@@ -78,8 +78,10 @@ const Home = () => {
         });
 
         console.log("GetUserDashBoardStats", filteredData);
+        showLoader(false);
         setDashboardData(filteredData);
       } catch (error) {
+        showLoader(false);
         console.error("Failed to fetch home summary", error);
       }
     };
@@ -178,6 +180,94 @@ const Home = () => {
                   },
                 ]}
                 userRole={"employee"}
+                route={"reports"}
+              />
+            </Col>
+          </Row>
+        </>
+      )}
+      {checkRoleMatch(roles, 3) && (
+        <>
+          <Row gutter={[16, 16]}>
+            <Col xs={24} md={24} lg={24}>
+              <TextCard
+                className="smallCard"
+                title={`Hi ${dashboardData?.title},`}
+                subtitle="Good Morning!"
+              />
+            </Col>
+          </Row>
+          <Row gutter={[16, 16]}>
+            <Col xs={24} md={12} lg={12}>
+              <BoxCard
+                warningFlag={true}
+                locationStyle={"up"}
+                title="Approvals Request"
+                mainClassName={"mediumHomeCard"}
+                // boxes={dashboardData?.lineManager?.myApprovals?.data}
+                boxes={[
+                  // {
+                  //   count: 4,
+                  //   label: "Pending Approval Requests",
+                  //   type: "pending_approval_request",
+                  // },
+                  {
+                    count: 12,
+                    label: "TOTAL PENDING APPROVALS",
+                    type: "total_pending_approvals",
+                  },
+                  {
+                    count: 2,
+                    label: "APPROVALS REQUIRE URGENT ACTION",
+                    type: "approvals_require_urgent_action",
+                  },
+                ]}
+                buttonTitle={"See More"}
+                buttonClassName={"big-white-card-button"}
+                userRole={"LM"}
+                route={"approvals"}
+              />
+            </Col>
+
+            <Col xs={24} md={12} lg={12}>
+              <BoxCard
+                locationStyle={"up"}
+                title="My Actions"
+                mainClassName={"mediumHomeCard"}
+                boxes={dashboardData?.lineManager?.myActions?.data}
+                buttonTitle={"See More"}
+                buttonClassName={"big-white-card-button"}
+                userRole={"LM"}
+                route={"actions"}
+              />
+            </Col>
+          </Row>
+          <Row gutter={[16, 16]}>
+            <Col xs={24} md={12} lg={12}>
+              <ReportCard
+                mainClassName={"home-reprot-card"}
+                title="Reports"
+                buttonTitle={"See More"}
+                buttonClassName={"big-white-card-button"}
+                rowButtonClassName={"small-card-light-button"}
+                data={[
+                  {
+                    icon: <Avatar icon={<FileDoneOutlined />} />,
+                    label: "My Compliance",
+                    action: "View Report",
+                  },
+                  {
+                    icon: <Avatar icon={<BarChartOutlined />} />,
+                    label: "My Transactions",
+                    action: "View Report",
+                  },
+                  {
+                    icon: <Avatar icon={<BarChartOutlined />} />,
+                    label: "My Transactions",
+                    action: "View Report",
+                  },
+                ]}
+                userRole={"LM"}
                 route={"reports"}
               />
             </Col>

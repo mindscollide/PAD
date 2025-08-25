@@ -1,24 +1,20 @@
-import React, { useState } from "react";
+import React from "react";
 import { Col, Row, Tag } from "antd";
 import { useGlobalModal } from "../../../../../../context/GlobalModalContext";
 import { GlobalModal, ModalImgStates } from "../../../../../../components";
 import styles from "./RequestRestrictedModal.module.css";
 import CustomButton from "../../../../../../components/buttons/button";
-import RestrictedIcon from "../../../../../../assets/img/Restricted.png";
 import { ExclamationCircleOutlined } from "@ant-design/icons";
 
 const RequestRestrictedModal = () => {
+  // This is the Global States for modal which is made in Context Api
   const {
-    isEquitiesModalVisible,
     setIsEquitiesModalVisible,
     isTradeRequestRestricted,
     setIsTradeRequestRestricted,
-    isSubmit,
-    setIsSubmit,
   } = useGlobalModal();
 
-  console.log(isSubmit, isEquitiesModalVisible, "is Coming SubmittedModal");
-
+  //This is Onclick func of close button
   const onClickClose = () => {
     setIsTradeRequestRestricted(false);
     setIsEquitiesModalVisible(true);

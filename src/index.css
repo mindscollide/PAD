@@ -256,7 +256,7 @@ body {
 }
 
 /* This is For show Broker dropdown Insdie the Add Approval Request Modal */
-.ant-select-show-search:where(
+/* .ant-select-show-search:where(
     .css-dev-only-do-not-override-1rfzxih
   ).ant-select:not(.ant-select-customize-input)
   .ant-select-selector {
@@ -302,14 +302,35 @@ body {
   cursor: pointer;
   transition: background 0.3s ease;
   border-radius: 4px;
-}
+} */
+
+/* This is for ant design select background on hover class for all */
+
+/* :where(.css-dev-only-do-not-override-1rfzxih).ant-select-outlined:not(
+    .ant-select-disabled
+  ):not(.ant-select-customize-input):not(.ant-pagination-size-changer):hover
+  .ant-select-selector {
+  background-color: #f3f3f3 !important;
+} */
 
 /* This is the ant design CheckBox Color inside the Add Approval Request Modal on Broker dropdow*/
-:where(.css-dev-only-do-not-override-1rfzxih).ant-checkbox-checked
+/* :where(.css-dev-only-do-not-override-1rfzxih).ant-checkbox-checked
   .ant-checkbox-inner {
   background-color: #30426a;
   border-color: #30426a;
-}
+} */
+
+/* add approval request dropdown Icon */
+/* :where(.css-dev-only-do-not-override-1rfzxih).ant-dropdown-trigger.ant-btn
+  > .anticon-down,
+:where(.css-dev-only-do-not-override-1rfzxih).ant-dropdown-trigger.ant-btn
+  > .ant-btn-icon
+  > .anticon-down {
+  position: relative;
+  left: 20px;
+  top: 2px;
+  font-size: 12px;
+} */
 
 /* Remove hover/focus background on dropdown menu items globally */
 li.ant-dropdown-menu-item.ant-dropdown-menu-item-only-child:hover,
@@ -318,11 +339,10 @@ li.ant-dropdown-menu-item.ant-dropdown-menu-item-only-child:focus {
 }
 
 /* menu devider using in propfile dropdown */
-.ant-dropdown-menu-item-divider
- {
-    height: 1px;
-    margin: 4px 0;
-    overflow: hidden;
-    line-height: 0;
-    background-color: #d4d4d4 !important;
+.ant-dropdown-menu-item-divider {
+  height: 1px;
+  margin: 4px 0;
+  overflow: hidden;
+  line-height: 0;
+  background-color: #d4d4d4 !important;
 }

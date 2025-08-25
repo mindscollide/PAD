@@ -1,22 +1,18 @@
-import React, { useState } from "react";
-import { Col, Row, Select, Space, Button, Checkbox } from "antd";
+import React from "react";
+import { Col, Row } from "antd";
 import { useGlobalModal } from "../../../../../../context/GlobalModalContext";
-import {
-  CommenSearchInput,
-  GlobalModal,
-  InstrumentSelect,
-  ModalImgStates,
-  TextField,
-} from "../../../../../../components";
+import { GlobalModal, ModalImgStates } from "../../../../../../components";
 import styles from "./SubmittedModal.module.css";
 import CustomButton from "../../../../../../components/buttons/button";
-// import ApprovalsIcon from "../../../../../../assets/img/approval-icon.png";
-import EmptyState from "../../../../../../components/emptyStates/empty-states";
 
 const SubmittedModal = ({ isEquitiesModalOpen }) => {
+  // This is Global State for modal which is create in ContextApi
   const { isSubmit, setIsSubmit } = useGlobalModal();
 
-  const onClickSubmit = () => {
+  //isEquitiesModalOpen is prop which check if isEquities open the show diff type in ModalImgStates Component
+
+  // onClick Function on Close Button
+  const onClickCloseSubmit = () => {
     setIsSubmit(false);
   };
 
@@ -43,7 +39,7 @@ const SubmittedModal = ({ isEquitiesModalOpen }) => {
                 <CustomButton
                   text={"Close"}
                   className="big-light-button"
-                  onClick={onClickSubmit}
+                  onClick={onClickCloseSubmit}
                 />
               </Col>
             </Row>

@@ -37,7 +37,8 @@ const Headers = () => {
         <Col xs={24} sm={24} md={24} lg={20}>
           <Row gutter={[16, 16]}>
             <Col xs={24} sm={24} md={24} lg={16}>
-              {location.pathname !== "/PAD" && <SearchWithFilter />}
+              {location.pathname !== "/PAD" &&
+                location.pathname !== "/PAD/faq" && <SearchWithFilter />}
             </Col>
             <Col xs={24} sm={10} md={2} lg={2}>
               <NotificationDropdown />

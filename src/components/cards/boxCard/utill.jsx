@@ -50,6 +50,24 @@ export const typeColorMap = {
     textCountColor: "#30426A",
     textAlign: "center",
   },
+  pending_approval_request: {
+    bgColor: "#FFF1E7",
+    textLableColor: "#F67F29",
+    textCountColor: "#F67F29",
+    textAlign: "center",
+  },
+  total_pending_approvals: {
+    bgColor: "#C5FFC7",
+    textLableColor: "#00640A",
+    textCountColor: "#00640A",
+    textAlign: "center",
+  },
+  approvals_require_urgent_action: {
+    bgColor: "#FFDBDB",
+    textLableColor: "#A50000",
+    textCountColor: "#A50000",
+    textAlign: "center",
+  },
 };
 
 // ============================
@@ -65,11 +83,9 @@ export const employeRouteMap = {
 };
 
 export const lineManagerRouteMap = {
-  approvals: { path: "approvals", key: "1" },
-  transactions: { path: "transactions", key: "2" },
-  history: { path: "history", key: "3" },
-  portfolio: { path: "portfolios", key: "4" },
-  reports: { path: "reports", key: "5" },
+  approvals: { path: "lm-approval-requests", key: "6" },
+  actions: { path: "lm-my-actions", key: "7" },
+  reports: { path: "lm-reports", key: "8" },
 };
 
 export const complianceOfficerRouteMap = {
@@ -118,7 +134,7 @@ export const navigateToPage = (userRole, route, setSelectedKey, navigate) => {
     case "employee":
       pathInfo = employeRouteMap[route];
       break;
-    case "lineManager":
+    case "LM":
       pathInfo = lineManagerRouteMap[route];
       break;
     case "complianceOfficer":

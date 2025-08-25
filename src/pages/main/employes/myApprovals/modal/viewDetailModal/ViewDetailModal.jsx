@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import { Col, Row, Tag } from "antd";
 import { useGlobalModal } from "../../../../../../context/GlobalModalContext";
 import { GlobalModal } from "../../../../../../components";
@@ -8,8 +8,31 @@ import CustomButton from "../../../../../../components/buttons/button";
 import CheckIcon from "../../../../../../assets/img/Check.png";
 import EllipsesIcon from "../../../../../../assets/img/Ellipses.png";
 import CrossIcon from "../../../../../../assets/img/Cross.png";
+import { useNavigate } from "react-router-dom";
+import { useNotification } from "../../../../../../components/NotificationProvider/NotificationProvider";
+import { useGlobalLoader } from "../../../../../../context/LoaderContext";
+import { useApi } from "../../../../../../context/ApiContext";
+import { GetAllViewDetailsByTradeApprovalID } from "../../../../../../api/myApprovalApi";
+import { useMyApproval } from "../../../../../../context/myApprovalContaxt";
+import { useDashboardContext } from "../../../../../../context/dashboardContaxt";
+import {
+  dashBetweenApprovalAssets,
+  formatApiDateTime,
+  formatNumberWithCommas,
+  formatShowOnlyDate,
+} from "../../../../../../commen/funtions/rejex";
 
 const ViewDetailModal = () => {
+  const navigate = useNavigate();
+  const hasFetched = useRef(false);
+
+  const { showNotification } = useNotification();
+
+  const { showLoader } = useGlobalLoader();
+
+  const { callApi } = useApi();
+
+  // This is Global State for modal which is create in ContextApi
   const {
     isViewDetail,
     setIsViewDetail,
@@ -19,39 +42,82 @@ const ViewDetailModal = () => {
     setIsResubmitted,
   } = useGlobalModal();
 
+  //This is the Global state of Context Api
+  const { setViewDetailsModalData, viewDetailsModalData } = useMyApproval();
+
+  const { allInstrumentsData, employeeBasedBrokersData } =
+    useDashboardContext();
+
+  console.log(viewDetailsModalData, "viewDetailsModalData555");
+
+  console.log(employeeBasedBrokersData, "employeeBasedBrokersDataData555");
+
+  // GETALLVIEWDETAIL API FUNCTION
+  const fetchGetAllViewData = async () => {
+    await showLoader(true);
+    const requestdata = { TradeApprovalID: selectedViewDetail.approvalID };
+
+    const responseData = await GetAllViewDetailsByTradeApprovalID({
+      callApi,
+      showNotification,
+      showLoader,
+      requestdata,
+      navigate,
+    });
+
+    //Extract Data from Api and set in the Context State
+    if (responseData) {
+      setViewDetailsModalData(responseData);
+    }
+  };
+
+  useEffect(() => {
+    if (hasFetched.current) return;
+    hasFetched.current = true;
+    fetchGetAllViewData();
+  }, []);
+
   // This is the Status Which is I'm getting from the selectedViewDetail contextApi state
   const getStatusStyle = (status) => {
+    console.log(status, "checkStatusessss");
     switch (status) {
-      case "Pending":
+      case "1":
         return {
           label: "Pending",
           labelClassName: styles.pendingDetailHeading,
           divClassName: styles.pendingBorderClass,
         };
-      case "Approved":
-        return {
-          label: "Approved",
-          labelClassName: styles.approvedDetailHeading,
-          divClassName: styles.approvedBorderClass,
-        };
-      case "Not Traded":
-        return {
-          label: "Not Traded",
-          labelClassName: styles.notTradedDetailHeading,
-          divClassName: styles.notTradedBorderClass,
-        };
-      case "Resubmitted":
+      case "2":
         return {
           label: "Resubmitted",
           labelClassName: styles.resubmittedDetailHeading,
           divClassName: styles.resubmittedBorderClass,
         };
-      case "Declined":
+      case "3":
+        return {
+          label: "Approved",
+          labelClassName: styles.approvedDetailHeading,
+          divClassName: styles.approvedBorderClass,
+        };
+      case "4":
         return {
           label: "Declined",
           labelClassName: styles.declinedDetailHeading,
           divClassName: styles.declinedBorderClass,
         };
+      case "5":
+        return {
+          label: "Traded",
+          labelClassName: styles.approvedDetailHeading,
+          divClassName: styles.approvedBorderClass,
+        };
+      case "6":
+        return {
+          label: "Not Traded",
+          labelClassName: styles.notTradedDetailHeading,
+          divClassName: styles.notTradedBorderClass,
+        };
+
       default:
         return {
           label: "Detail",
@@ -62,7 +128,30 @@ const ViewDetailModal = () => {
   };
 
   //This is how I can pass the status in statusData Variables
-  const statusData = getStatusStyle(selectedViewDetail?.status);
+  const statusData = getStatusStyle(
+    viewDetailsModalData?.details?.[0]?.approvalStatus
+  );
+
+  console.log(statusData, "statusDatastatusData121");
+
+  // Extarct and Instrument from viewDetailsModalData context Api
+  const instrumentId = Number(viewDetailsModalData?.details?.[0]?.instrumentID);
+
+  // Match that selected instrument Id in viewDetailsModalData and match them with allinstrumentsData context State
+  const selectedInstrument = allInstrumentsData?.find(
+    (item) => item.instrumentID === instrumentId
+  );
+
+  // Extract an brokerName from viewDetailsModalData context Api
+  const details = viewDetailsModalData?.details?.[0];
+  const selectedBrokers = details?.brokers || [];
+
+  // Match that selected broker Id in viewDetailsModalData and match them with employeeBasedBrokersData context State
+  const matchedBrokers = employeeBasedBrokersData.filter(
+    (broker) => selectedBrokers.includes(String(broker.brokerID)) // convert brokerID to string
+  );
+
+  console.log(matchedBrokers, "CheckceeeerrStatusbroker");
 
   // To Show View Comments Modal and Closed Declined Modal
   const onClickViewModal = () => {
@@ -136,9 +225,13 @@ const ViewDetailModal = () => {
                 gutter={[4, 4]}
                 style={{
                   marginTop:
+                    // status 1 is Pending
                     statusData.label === "Pending" ||
+                    // status 2 is Resubmitted
                     statusData.label === "Resubmitted" ||
+                    // status 4 is Declined
                     statusData.label === "Declined" ||
+                    // status 6 is Not Traded
                     statusData.label === "Not Traded"
                       ? "16px"
                       : "3px",
@@ -147,38 +240,56 @@ const ViewDetailModal = () => {
                 <Col span={12}>
                   <div
                     className={
+                      // status 1 is Pending
                       statusData.label === "Pending" ||
+                      // status 2 is Resubmitted
                       statusData.label === "Resubmitted" ||
+                      // status 4 is Declined
                       statusData.label === "Declined" ||
+                      // status 6 is Not Traded
                       statusData.label === "Not Traded"
                         ? styles.backgrounColorOfInstrumentDetail
                         : styles.backgrounColorOfDetail
                     }
                   >
                     <label className={styles.viewDetailMainLabels}>
+                      {/* status 3 is Approved */}
                       {statusData.label === "Approved"
                         ? "Time Remaining to Trade"
                         : "Instrument"}
                     </label>
                     <label className={styles.viewDetailSubLabels}>
+                      {/* status 3 is Approved */}
                       {statusData.label === "Approved" ? (
                         <>{selectedViewDetail?.timeRemaining}</>
                       ) : (
                         <>
-                          <span className={styles.customTag}>EQ</span>{" "}
-                          {selectedViewDetail?.instrument}
+                          <span className={styles.customTag}>
+                            {/* Extract an assetTypeID id which is 1 then show Equity(EQ) */}
+                            {viewDetailsModalData?.details?.[0]?.assetTypeID ===
+                              "1" && <span>EQ</span>}
+                          </span>
+                          <span
+                            className={styles.viewDetailSubLabelsForInstrument}
+                            title={selectedInstrument?.instrumentName}
+                          >
+                            {selectedInstrument?.instrumentName}
+                          </span>
                         </>
                       )}
                     </label>
                   </div>
                 </Col>
 
+                {/* status 2 is Resubmitted */}
                 {statusData.label === "Resubmitted" ? (
                   <>
                     <Col span={6}>
                       <div
                         className={
+                          // status 1 is Pending
                           statusData.label === "Pending" ||
+                          // status 4 is Declined
                           statusData.label === "Declined"
                             ? styles.backgrounColorOfApprovalDetail
                             : styles.backgrounColorOfDetail
@@ -196,8 +307,10 @@ const ViewDetailModal = () => {
                       {/* You can render some other related info here */}
                       <div
                         className={
-                          statusData.label === "Pending" ||
-                          statusData.label === "Resubmitted"
+                          // status 1 is Pending
+                          statusData.label === "1" ||
+                          // status 2 is Resubmitted
+                          statusData.label === "2"
                             ? styles.backgrounColorOfApprovalDetail
                             : styles.backgrounColorOfDetail
                         }
@@ -215,7 +328,9 @@ const ViewDetailModal = () => {
                   <Col span={12}>
                     <div
                       className={
+                        // status 1 is Pending
                         statusData.label === "Pending" ||
+                        // status 6 is Not Traded
                         statusData.label === "Not Traded"
                           ? styles.backgrounColorOfApprovalDetail
                           : styles.backgrounColorOfDetail
@@ -225,20 +340,27 @@ const ViewDetailModal = () => {
                         Approval ID
                       </label>
                       <label className={styles.viewDetailSubLabels}>
-                        REQ-001
+                        {dashBetweenApprovalAssets(
+                          viewDetailsModalData?.details?.[0]?.tradeApprovalID
+                        )}
                       </label>
                     </div>
                   </Col>
                 )}
               </Row>
 
-              {/* Show Other Scenario's SUb Heading */}
+              {/* Show Other Scenario's SUb Heading and Field Sceanrio's */}
               <Row gutter={[4, 4]} style={{ marginTop: "3px" }}>
                 <Col span={12}>
                   <div className={styles.backgrounColorOfDetail}>
                     <label className={styles.viewDetailMainLabels}>Type</label>
                     <label className={styles.viewDetailSubLabels}>
-                      {selectedViewDetail?.type}
+                      {/* {selectedViewDetail?.type} */}
+
+                      {viewDetailsModalData?.details?.[0]?.approvalTypeID ===
+                        "1" && <span>Buy</span>}
+                      {viewDetailsModalData?.details?.[0]?.approvalTypeID ===
+                        "2" && <span>Sell</span>}
                     </label>
                   </div>
                 </Col>
@@ -248,11 +370,15 @@ const ViewDetailModal = () => {
                       Quantity
                     </label>
                     <label className={styles.viewDetailSubLabels}>
-                      {selectedViewDetail?.quantity}
+                      {/* {selectedViewDetail?.quantity} */}
+                      {formatNumberWithCommas(
+                        viewDetailsModalData?.details?.[0]?.quantity
+                      )}
                     </label>
                   </div>
                 </Col>
               </Row>
+
               <Row gutter={[4, 4]} style={{ marginTop: "3px" }}>
                 <Col span={12}>
                   <div className={styles.backgrounColorOfDetail}>
@@ -260,7 +386,7 @@ const ViewDetailModal = () => {
                       Request Date
                     </label>
                     <label className={styles.viewDetailSubLabels}>
-                      {selectedViewDetail?.requestDateTime}
+                      {formatShowOnlyDate(selectedViewDetail?.requestDateTime)}
                     </label>
                   </div>
                 </Col>
@@ -275,7 +401,8 @@ const ViewDetailModal = () => {
                   </div>
                 </Col>
               </Row>
-              <Row style={{ marginTop: "3px" }}>
+
+              {/* <Row style={{ marginTop: "3px" }}>
                 <Col span={24}>
                   <div className={styles.backgrounColorOfBrokerDetail}>
                     <label className={styles.viewDetailMainLabels}>
@@ -294,9 +421,40 @@ const ViewDetailModal = () => {
                     </div>
                   </div>
                 </Col>
+              </Row> */}
+
+              <Row style={{ marginTop: "3px" }}>
+                <Col span={24}>
+                  <div className={styles.backgrounColorOfBrokerDetail}>
+                    <label className={styles.viewDetailMainLabels}>
+                      Brokers
+                    </label>
+                    <div className={styles.tagContainer}>
+                      {viewDetailsModalData?.details?.[0]?.brokers?.map(
+                        (brokerId) => {
+                          const broker = employeeBasedBrokersData?.find(
+                            (b) => String(b.brokerID) === String(brokerId)
+                          );
+                          console.log(broker, "brokerNamerChecker");
+                          return (
+                            broker && (
+                              <Tag
+                                key={broker.brokerID}
+                                className={styles.tagClasses}
+                              >
+                                {broker.brokerName}
+                              </Tag>
+                            )
+                          );
+                        }
+                      )}
+                    </div>
+                  </div>
+                </Col>
               </Row>
 
-              <Row>
+              {/* This is the Stepper Libarary Section */}
+              {/* <Row>
                 <div className={styles.backgrounColorOfStepper}>
                   <Stepper
                     activeStep={2}
@@ -363,6 +521,88 @@ const ViewDetailModal = () => {
                     />
                   </Stepper>
                 </div>
+              </Row> */}
+
+              <Row>
+                <div className={styles.mainStepperContainer}>
+                  <div className={styles.backgrounColorOfStepper}>
+                    <Stepper
+                      activeStep={2}
+                      connectorStyleConfig={{
+                        activeColor: "#00640A",
+                        completedColor: "#00640A",
+                        disabledColor: "#00640A",
+                        size: 1,
+                      }}
+                      styleConfig={{
+                        size: "2em",
+                        circleFontSize: "0px",
+                        labelFontSize: "17px",
+                        borderRadius: "50%",
+                      }}
+                    >
+                      {viewDetailsModalData?.hierarchyList?.map((id, index) => {
+                        // find details from hierarchyDetails
+                        const isEmployee =
+                          id ===
+                          viewDetailsModalData?.hierarchyDetails?.employeeID;
+                        const isManager =
+                          id ===
+                          viewDetailsModalData?.hierarchyDetails?.lineManagerID;
+
+                        const name = isEmployee
+                          ? viewDetailsModalData?.hierarchyDetails?.employee
+                          : isManager
+                          ? viewDetailsModalData?.hierarchyDetails?.lineManger
+                          : "Unknown";
+
+                        const email = isEmployee
+                          ? viewDetailsModalData?.hierarchyDetails
+                              ?.employeeEmail
+                          : isManager
+                          ? viewDetailsModalData?.hierarchyDetails
+                              ?.lineManagerEmail
+                          : null;
+
+                        // set status dynamically
+                        const status =
+                          index ===
+                          viewDetailsModalData?.hierarchyList.length - 1
+                            ? "Pending"
+                            : "Approved";
+
+                        return (
+                          <Step
+                            key={id}
+                            label={
+                              <div className={styles.customlabel}>
+                                <div className={styles.customtitle}>{name}</div>
+                                <div className={styles.customdesc}>
+                                  {status === "Pending"
+                                    ? "Pending"
+                                    : email || "No Email Found"}
+                                </div>
+                              </div>
+                            }
+                            children={
+                              <div className={styles.stepCircle}>
+                                <img
+                                  src={
+                                    status === "Pending"
+                                      ? EllipsesIcon
+                                      : CheckIcon
+                                  }
+                                  alt="status-icon"
+                                  className={styles.circleImg}
+                                />
+                              </div>
+                            }
+                          />
+                        );
+                      })}
+                    </Stepper>
+                  </div>
+                </div>
               </Row>
 
               {/* All Others button Scenario's for footer button */}
@@ -425,7 +665,11 @@ const ViewDetailModal = () => {
                       onClick={onClickPendingClose}
                     />
                   ) : (
-                    <CustomButton text={"Close"} className="big-light-button" />
+                    <CustomButton
+                      text={"Close"}
+                      className="big-light-button"
+                      onClick={onClickViewModal}
+                    />
                   )}
                 </Col>
               </Row>

@@ -1,6 +1,6 @@
 import React from 'react'
 
-const index = () => {
+const myAction = () => {
   return (
     <div>
       
@@ -8,4 +8,4 @@ const index = () => {
   )
 }
 
-export default index
+export default myAction

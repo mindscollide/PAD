@@ -16,7 +16,6 @@ const GlobalModal = ({
   bodyClassName = "",
   headerClassName = "",
   maskClosable = false,
-  destroyOnHidden = true,
 }) => {
   return (
     <Modal
@@ -30,7 +29,6 @@ const GlobalModal = ({
       className={className}
       style={style}
       maskClosable={maskClosable}
-      destroyOnHidden={destroyOnHidden}
     >
       {/* Header */}
       {modalHeader && (

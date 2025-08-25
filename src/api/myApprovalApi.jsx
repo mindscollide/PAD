@@ -17,6 +17,18 @@ const responseMessages = {
   PAD_Trade_TradeServiceManager_AddTradeApprovalRequest_04:
     "No  User hierarchy Found",
   PAD_Trade_TradeServiceManager_AddTradeApprovalRequest_05: "Work Flow Update",
+  PAD_Trade_TradeServiceManager_AddTradeApprovalRequest_06:
+    "Resubmission Successfull",
+  PAD_Trade_TradeServiceManager_AddTradeApprovalRequest_07:
+    "Resubmission Failed",
+
+  // Responses For GetAllViewDetailsByTradeApprovalID Api
+  PAD_Trade_TradeServiceManager_GetAllViewDetailsByTradeApprovalID_01:
+    "Data Available",
+  PAD_Trade_TradeServiceManager_GetAllViewDetailsByTradeApprovalID_02:
+    "No data available",
+  PAD_Trade_TradeServiceManager_GetAllViewDetailsByTradeApprovalID_03:
+    "Exception",
 };
 /**
  * 🔹 Handles logout if session is expired
@@ -61,13 +73,16 @@ export const SearchTadeApprovals = async ({
     }
 
     if (res.success) {
-      const { responseMessage, myTradeApprovals } = res.result;
+      const { responseMessage, myTradeApprovals, totalRecords } = res?.result;
 
       if (
         responseMessage ===
         "PAD_Trade_TradeServiceManager_SearchTradeApprovals_01"
       ) {
-        return myTradeApprovals || [];
+        return {
+          approvals: myTradeApprovals || [],
+          totalRecords: totalRecords ?? 0,
+        };
       }
 
       showNotification({
@@ -96,6 +111,7 @@ export const SearchTadeApprovals = async ({
   }
 };
 
+//AddTradeApprovalRequest and This Api is also use for Resubmit Scenario in which we have predefine reasons
 export const AddTradeApprovalRequest = async ({
   callApi,
   showNotification,
@@ -103,6 +119,8 @@ export const AddTradeApprovalRequest = async ({
   requestdata,
   setIsEquitiesModalVisible,
   setIsSubmit,
+  setIsResubmitted,
+  setResubmitIntimation,
   navigate,
 }) => {
   console.log("Check APi");
@@ -140,23 +158,30 @@ export const AddTradeApprovalRequest = async ({
         responseMessage ===
         "PAD_Trade_TradeServiceManager_AddTradeApprovalRequest_01"
       ) {
-        // Success case
         setIsEquitiesModalVisible(false);
         setIsSubmit(true);
+      } else if (
+        responseMessage ===
+        "PAD_Trade_TradeServiceManager_AddTradeApprovalRequest_06"
+      ) {
+        setIsResubmitted(false);
+        setResubmitIntimation(true);
+      } else {
         showNotification({
-          type: "success",
-          title: "Success",
-          description: getMessage(responseMessage),
+          type: "warning",
+          title: getMessage(responseMessage),
         });
-        return true; // indicate success
+        return false;
       }
 
-      // When Any Other Response Message Occur
+      // ✅ Common success notification (sirf success wale cases me chalega)
       showNotification({
-        type: "warning",
-        title: getMessage(responseMessage),
+        type: "success",
+        title: "Success",
+        description: getMessage(responseMessage),
       });
-      return false;
+
+      return true;
     }
 
     // When Response will be Something Went Wrong
@@ -174,6 +199,76 @@ export const AddTradeApprovalRequest = async ({
       description: "An unexpected error occurred.",
     });
     return false;
+  } finally {
+    showLoader(false);
+  }
+};
+
+//Get All View Details By Trade Approval ID
+export const GetAllViewDetailsByTradeApprovalID = async ({
+  callApi,
+  showNotification,
+  showLoader,
+  requestdata,
+  navigate,
+}) => {
+  try {
+    console.log("Check APi");
+    const res = await callApi({
+      requestMethod: import.meta.env
+        .VITE_GET_ALL_VIEW_DETAIL_TRADEAPPROVAL_ID_REQUEST_METHOD,
+      endpoint: import.meta.env.VITE_API_TRADE,
+      requestData: requestdata,
+    });
+    if (handleExpiredSession(res, navigate, showLoader)) return null;
+
+    if (!res?.result?.isExecuted) {
+      console.log("Check APi");
+      showNotification({
+        type: "error",
+        title: "Error",
+        description: "Something went wrong. Please try again.",
+      });
+      return null;
+    }
+
+    if (res.success) {
+      const { responseMessage, details, hierarchyList, hierarchyDetails } =
+        res.result;
+
+      if (
+        responseMessage ===
+        "PAD_Trade_TradeServiceManager_GetAllViewDetailsByTradeApprovalID_01"
+      ) {
+        console.log("Check APi");
+        return {
+          details: details || [],
+          hierarchyList: hierarchyList || [],
+          hierarchyDetails: hierarchyDetails || {},
+        };
+      }
+
+      showNotification({
+        type: "warning",
+        title: getMessage(responseMessage),
+        description: "No details available for this Trade Approval ID.",
+      });
+      return null;
+    }
+
+    showNotification({
+      type: "error",
+      title: "Fetch Failed",
+      description: getMessage(res.message),
+    });
+    return null;
+  } catch (error) {
+    showNotification({
+      type: "error",
+      title: "Error",
+      description: "An unexpected error occurred.",
+    });
+    return null;
   } finally {
     showLoader(false);
   }

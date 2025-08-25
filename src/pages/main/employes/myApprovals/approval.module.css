@@ -61,7 +61,7 @@
 
 /* Style for AntD dropdown root if needed */
 .table-filter-dropdown .ant-dropdown-menu {
-  padding: 8px;
+  padding: 0px;
 }
 
 .filter-tags-container {
@@ -90,4 +90,48 @@
   font-weight: bold;
   font-size: 16px;
   line-height: 1;
+}
+/* approval.module.css */
+:global(.ant-table-thead > tr > th) {
+  white-space: normal !important;
+  line-height: 1.3; /* Makes double line look cleaner */
+}
+
+:global(.ant-table-thead .custom-sort-icon) {
+  flex-shrink: 0; /* keeps icon from squeezing text */
+}
+
+.table-header-wrapper {
+  display: flex;
+  align-items: flex-start; /* Keep icon aligned to top if text wraps */
+  gap: 6px;
+  flex-wrap: wrap; /* Allow text + icon to move to next line if needed */
+}
+
+.table-header-text {
+  font-family: "Switzer Variable";
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 1.3;
+  color: var(--Blue-V1, #30426a);
+
+  white-space: normal; /* Allow wrapping */
+  word-break: break-word;
+  /* flex: 1 1 auto; */ /* Let text take available space */
+  flex: none;
+  min-width: 0; /* Prevent overflow issues in flex */
+}
+
+.table-header-icon {
+  margin-left: 4px; /* bas halka sa gap */
+  color: var(--Blue-V1, #30426a);
+  display: flex;
+  align-items: center;
+}
+
+.dropedowndark :global(.ant-dropdown-trigger.ant-btn .anticon-down) {
+  margin-left: 15px !important;
+  font-size: 14px !important;
+  position: relative;
+  top: 2px;
 }

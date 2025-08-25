@@ -1,8 +1,8 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Col, Row } from "antd";
+import { Col, Row, Spin } from "antd";
 import { ComonDropDown } from "../../../../components";
 import BorderlessTable from "../../../../components/tables/borderlessTable/borderlessTable";
-import { getBorderlessTableColumns } from "./utill";
+import { getBorderlessTableColumns, useTableScrollBottom } from "./utill";
 import { approvalStatusMap } from "../../../../components/tables/borderlessTable/utill";
 import PageLayout from "../../../../components/pageContainer/pageContainer";
 import EmptyState from "../../../../components/emptyStates/empty-states";
@@ -23,7 +23,7 @@ import {
   mapBuySellToIds,
   mapStatusToIds,
 } from "../../../../components/dropdowns/filters/utils";
-import { apiCallSeacrch } from "../../../../components/dropdowns/searchableDropedown/utill";
+import { apiCallSearch } from "../../../../components/dropdowns/searchableDropedown/utill";
 import { SearchTadeApprovals } from "../../../../api/myApprovalApi";
 import ViewComment from "./modal/viewComment/ViewComment";
 import ResubmitModal from "./modal/resubmitModal/ResubmitModal";
@@ -66,7 +66,7 @@ const Approval = () => {
 
   const [sortedInfo, setSortedInfo] = useState({});
   const [approvalData, setApprovalData] = useState([]);
-  console.log(isEquitiesModalVisible, "isEquitiesModalVisible");
+  const [loadingMore, setLoadingMore] = useState(false); // spinner at bottom
 
   // Confirmed filters displayed as tags
   const [submittedFilters, setSubmittedFilters] = useState([]);
@@ -107,7 +107,8 @@ const Approval = () => {
    * Fetches approval data from API on component mount
    */
   const fetchApprovals = async () => {
-    showLoader(true);
+    await showLoader(true);
+    console.log("Checker APi Search");
 
     const requestdata = {
       InstrumentName:
@@ -117,7 +118,7 @@ const Approval = () => {
       Quantity: employeeMyApprovalSearch.quantity || 0,
       StatusIds: employeeMyApprovalSearch.status || [],
       TypeIds: employeeMyApprovalSearch.type || [],
-      PageNumber: employeeMyApprovalSearch.pageNumber || 1,
+      PageNumber: 0,
       Length: employeeMyApprovalSearch.pageSize || 10,
     };
 
@@ -145,51 +146,59 @@ const Approval = () => {
    * Removes a filter tag and re-fetches data
    */
   const handleRemoveFilter = async (key) => {
-    const updatedFilters = {
-      ...employeeMyApprovalSearch,
-      [key]: "",
-    };
+    const normalizedKey = key?.toLowerCase();
+    console.log("Checker APi Search");
+    // 1️⃣ Update UI state for removed filters
+    setSubmittedFilters((prev) => prev.filter((item) => item.key !== key));
 
-    const updatedSubmitted = submittedFilters.filter(
-      (item) => item.key !== key
-    );
-
-    setSubmittedFilters(updatedSubmitted);
-
+    // 2️⃣ Prepare API request parameters
     const TypeIds = mapBuySellToIds(employeeMyApprovalSearch.type);
     const statusIds = mapStatusToIds(employeeMyApprovalSearch.status);
 
     const requestdata = {
       InstrumentName:
         employeeMyApprovalSearch.instrumentName ||
-        employeeMyApprovalSearch.mainInstrumentName,
+        employeeMyApprovalSearch.mainInstrumentName ||
+        "",
       StartDate: employeeMyApprovalSearch.date || "",
       Quantity: employeeMyApprovalSearch.quantity || 0,
       StatusIds: statusIds || [],
       TypeIds: TypeIds || [],
-      PageNumber: employeeMyApprovalSearch.pageNumber || 1,
+      PageNumber: 0,
       Length: employeeMyApprovalSearch.pageSize || 10,
     };
 
-    const normalizedKey = key?.toLowerCase();
-
+    // 3️⃣ Reset API params for the specific filter being removed
     if (normalizedKey === "quantity") {
       requestdata.Quantity = 0;
-    }
-
-    if (
+      // 5️⃣ Update search state — only reset the specific key + page number
+      setEmployeeMyApprovalSearch((prev) => ({
+        ...prev,
+        quantity: 0,
+        pageNumber: 0,
+      }));
+    } else if (
       normalizedKey === "instrumentname" ||
       normalizedKey === "maininstrumentname"
     ) {
+      setEmployeeMyApprovalSearch((prev) => ({
+        ...prev,
+        instrumentName: "",
+        mainInstrumentName: "",
+        pageNumber: 0,
+      }));
       requestdata.InstrumentName = "";
-    }
-
-    if (normalizedKey === "startdate") {
+    } else if (normalizedKey === "startdate") {
       requestdata.StartDate = "";
+      setEmployeeMyApprovalSearch((prev) => ({
+        ...prev,
+        startdate: "",
+        pageNumber: 0,
+      }));
     }
 
+    // 4️⃣ Show loader and call API
     showLoader(true);
-
     const data = await SearchTadeApprovals({
       callApi,
       showNotification,
@@ -197,10 +206,10 @@ const Approval = () => {
       requestdata,
       navigate,
     });
-    console.log("heloo log");
+
     setIsEmployeeMyApproval(data);
   };
-
+  console.log("employeeMyApprovalSearch", employeeMyApprovalSearch);
   /**
    * Syncs submittedFilters state when filters are applied
    */
@@ -226,7 +235,9 @@ const Approval = () => {
    * Handles table-specific filter trigger
    */
   useEffect(() => {
-    if (employeeMyApprovalSearch.tableFilterTrigger) {
+    const fetchFilteredData = async () => {
+      if (!employeeMyApprovalSearch.tableFilterTrigger) return;
+
       const snapshot = filterKeys
         .filter(({ key }) => employeeMyApprovalSearch[key])
         .map(({ key }) => ({
@@ -234,13 +245,14 @@ const Approval = () => {
           value: employeeMyApprovalSearch[key],
         }));
 
-      apiCallSeacrch({
+      await apiCallSearch({
         selectedKey,
         employeeMyApprovalSearch,
         callApi,
         showNotification,
         showLoader,
         navigate,
+        setData: setIsEmployeeMyApproval,
       });
 
       setSubmittedFilters(snapshot);
@@ -249,7 +261,9 @@ const Approval = () => {
         ...prev,
         tableFilterTrigger: false,
       }));
-    }
+    };
+
+    fetchFilteredData();
   }, [employeeMyApprovalSearch.tableFilterTrigger]);
 
   /**
@@ -276,21 +290,112 @@ const Approval = () => {
    * Transforms raw API data into table-compatible format
    */
 
+  // Lazy Loading Work Start
   useEffect(() => {
-    if (employeeMyApproval) {
-      const transformed = employeeMyApproval?.map((item) => ({
-        id: item.approvalID,
-        instrument: item.instrumentName,
-        type: item.tradeType?.typeName || "-",
-        requestDateTime: `${item.requestDate} | ${item.requestTime}`,
-        status: item.approvalStatus?.approvalStatusName || "-",
-        quantity: Number(item.quantity) || 0,
-        timeRemaining: item.timeRemainingToTrade || "-",
-      }));
+    try {
+      if (
+        employeeMyApproval?.approvals &&
+        Array.isArray(employeeMyApproval.approvals)
+      ) {
+        // 🔹 Map and normalize data
+        const mappedData = employeeMyApproval.approvals.map((item) => ({
+          key: item.approvalID,
+          instrument: `${item.instrument?.instrumentName || ""} - ${
+            item.instrument?.instrumentCode || ""
+          }`,
+          type: item.tradeType?.typeName || "",
+          requestDateTime: `${item.requestDate || ""} ${
+            item.requestTime || ""
+          }`,
+          isEscalated: false,
+          status: item.approvalStatus?.approvalStatusName || "",
+          quantity: item.quantity || 0,
+          timeRemaining: item.timeRemainingToTrade || "",
+          ...item,
+        }));
 
-      setApprovalData(transformed);
+        // 🔹 Set approvals data
+        setApprovalData(mappedData);
+
+        // 🔹 Update search state (avoid unnecessary updates)
+        setEmployeeMyApprovalSearch((prev) => ({
+          ...prev,
+          totalRecords:
+            prev.totalRecords !== employeeMyApproval.totalRecords
+              ? employeeMyApproval.totalRecords
+              : prev.totalRecords,
+          pageNumber: prev.pageNumber + 10,
+        }));
+      } else if (employeeMyApproval === null) {
+        // No data case
+        setApprovalData([]);
+      }
+    } catch (error) {
+      console.error("Error processing employee approvals:", error);
+    } finally {
+      // 🔹 Always stop loading state
+      setLoadingMore(false);
     }
   }, [employeeMyApproval]);
+
+  // Lazy Loading
+  // Inside your component
+  useTableScrollBottom(
+    async () => {
+      // ✅ Only load more if there are still records left
+      if (employeeMyApproval?.totalRecords !== approvalData?.length) {
+        try {
+          setLoadingMore(true);
+
+          // Build request payload
+          const requestdata = {
+            InstrumentName:
+              employeeMyApprovalSearch.instrumentName ||
+              employeeMyApprovalSearch.mainInstrumentName,
+            StartDate: employeeMyApprovalSearch.date || "",
+            Quantity: employeeMyApprovalSearch.quantity || 0,
+            StatusIds: employeeMyApprovalSearch.status || [],
+            TypeIds: employeeMyApprovalSearch.type || [],
+            PageNumber: employeeMyApprovalSearch.pageNumber || 10, // Acts as offset for API
+            Length: 10,
+          };
+
+          console.log("Fetching employee approvals with params:", requestdata);
+          console.log("Checker APi Search");
+
+          // Call API
+          const data = await SearchTadeApprovals({
+            callApi,
+            showNotification,
+            showLoader, // ✅ Don't trigger full loader for lazy load
+            requestdata,
+            navigate,
+          });
+
+          // Append new approvals
+          setIsEmployeeMyApproval((prev) => ({
+            ...prev,
+            approvals: [...(prev?.approvals || []), ...(data.approvals || [])],
+            totalRecords:
+              prev?.totalRecords !== data.totalRecords
+                ? data.totalRecords
+                : prev?.totalRecords,
+          }));
+
+          console.log("employeeMyApproval", data);
+        } catch (error) {
+          console.error("Error loading more approvals:", error);
+        } finally {
+          setLoadingMore(false);
+        }
+      }
+    },
+    0,
+    "border-less-table-orange" // Container selector
+  );
+
+  // Lazy Loading Work Start
+  console.log("employeeMyApproval", employeeMyApproval);
 
   return (
     <>
@@ -328,25 +433,34 @@ const Approval = () => {
               <ComonDropDown
                 menuItems={menuItems}
                 buttonLabel="Add Approval Request"
-                className="dropedown-dark"
+                className={style.dropedowndark}
               />
             </Col>
           </Row>
 
           {/* Table or Empty State */}
           {approvalData && approvalData.length > 0 ? (
-            <BorderlessTable
-              rows={approvalData}
-              columns={columns}
-              scroll={{
-                x: "max-content",
-                y: submittedFilters.length > 0 ? 510 : 550,
-              }}
-              classNameTable="border-less-table-orange"
-              onChange={(pagination, filters, sorter) => {
-                setSortedInfo(sorter);
-              }}
-            />
+            <>
+              <BorderlessTable
+                rows={approvalData}
+                columns={columns}
+                scroll={{
+                  x: "max-content",
+                  y: submittedFilters.length > 0 ? 450 : 500,
+                }}
+                classNameTable="border-less-table-orange"
+                onChange={(pagination, filters, sorter) => {
+                  setSortedInfo(sorter);
+                }}
+                loading={loadingMore}
+              />
+
+              {/* {loadingMore && (
+                <div style={{ textAlign: "center", padding: "12px" }}>
+                  <Spin size="small" />
+                </div>
+              )} */}
+            </>
           ) : (
             <EmptyState type="request" />
           )}
@@ -363,6 +477,7 @@ const Approval = () => {
       {isTradeRequestRestricted && <RequestRestrictedModal />}
 
       {/* ye modal hai view details ka My APproval ka page pa */}
+      {/* {isViewDetail && <ViewDetailModal />} */}
       {isViewDetail && <ViewDetailModal />}
 
       {/* Ye Sirf Comment Show krwata jab app approved modal ka andar view Comment krta tab khulta */}
