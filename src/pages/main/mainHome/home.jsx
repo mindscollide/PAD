@@ -186,27 +186,14 @@ const Home = () => {
           </Row>
         </>
       )}
-       {/* {checkRoleMatch(roles, 2) && (
+      {checkRoleMatch(roles, 3) && (
         <>
           <Row gutter={[16, 16]}>
-            <Col xs={24} md={12} lg={16}>
+            <Col xs={24} md={24} lg={24}>
               <TextCard
                 className="smallCard"
                 title={`Hi ${dashboardData?.title},`}
                 subtitle="Good Morning!"
-              />
-            </Col>
-
-            <Col xs={24} md={12} lg={8}>
-              <BoxCard
-                locationStyle={"down"}
-                title={"Portfolio"}
-                mainClassName={"smallShareHomeCard"}
-                boxes={dashboardData?.employee?.portfolio?.data}
-                buttonTitle={"View Portfolio"}
-                buttonClassName={"big-white-card-button"}
-                userRole={"employee"}
-                route={"portfolio"}
               />
             </Col>
           </Row>
@@ -214,12 +201,12 @@ const Home = () => {
             <Col xs={24} md={12} lg={12}>
               <BoxCard
                 locationStyle={"up"}
-                title="My Approvals"
+                title="Approvals Request"
                 mainClassName={"mediumHomeCard"}
-                boxes={dashboardData?.employee?.myApprovals?.data}
+                boxes={dashboardData?.lineManager?.myApprovals?.data}
                 buttonTitle={"See More"}
                 buttonClassName={"big-white-card-button"}
-                userRole={"employee"}
+                userRole={"LM"}
                 route={"approvals"}
               />
             </Col>
@@ -227,29 +214,17 @@ const Home = () => {
             <Col xs={24} md={12} lg={12}>
               <BoxCard
                 locationStyle={"up"}
-                title="My Transactions"
+                title="My Actions"
                 mainClassName={"mediumHomeCard"}
-                boxes={dashboardData?.employee?.myTransactions?.data}
+                boxes={dashboardData?.lineManager?.myActions?.data}
                 buttonTitle={"See More"}
                 buttonClassName={"big-white-card-button"}
-                userRole={"employee"}
-                route={"transactions"}
+                userRole={"LM"}
+                route={"actions"}
               />
             </Col>
           </Row>
           <Row gutter={[16, 16]}>
-            <Col xs={24} md={12} lg={12}>
-              <BoxCard
-                locationStyle={"side"}
-                title="My History"
-                mainClassName={"mediumHomeSideCard"}
-                boxes={dashboardData?.employee?.myHistory?.data}
-                buttonTitle={"See More"}
-                buttonClassName={"big-white-card-button"}
-                userRole={"employee"}
-                route={"history"}
-              />
-            </Col>
             <Col xs={24} md={12} lg={12}>
               <ReportCard
                 mainClassName={"home-reprot-card"}
@@ -274,13 +249,13 @@ const Home = () => {
                     action: "View Report",
                   },
                 ]}
-                userRole={"employee"}
+                userRole={"LM"}
                 route={"reports"}
               />
             </Col>
           </Row>
         </>
-      )} */}
+      )}
     </div>
   );
 };
