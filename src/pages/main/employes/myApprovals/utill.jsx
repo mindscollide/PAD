@@ -12,7 +12,10 @@ import { ArrowsAltOutlined } from "@ant-design/icons";
 import TypeColumnTitle from "../../../../components/dropdowns/filters/typeColumnTitle";
 import StatusColumnTitle from "../../../../components/dropdowns/filters/statusColumnTitle";
 import { useGlobalModal } from "../../../../context/GlobalModalContext";
-import { formatApiDateTime } from "../../../../commen/funtions/rejex";
+import {
+  dashBetweenApprovalAssets,
+  formatApiDateTime,
+} from "../../../../commen/funtions/rejex";
 
 // import TypeColumnTitle from "./typeFilter";
 
@@ -75,9 +78,14 @@ export const getBorderlessTableColumns = (
     showSorterTooltip: false,
     sortIcon: () => null,
     render: (tradeApprovalID) => {
+      console.log(tradeApprovalID, "jhvjhvajdvadvasjdvj");
+      // Format: insert dash before numbers
+      const formattedID = tradeApprovalID?.replace(/(\D+)(\d+)/, "$1-$2");
       return (
         <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-          <span className="font-medium">{tradeApprovalID}</span>
+          <span className="font-medium">
+            {dashBetweenApprovalAssets(tradeApprovalID)}
+          </span>
         </div>
       );
     },

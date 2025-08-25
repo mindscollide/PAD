@@ -5,11 +5,20 @@ const MyapprovalContext = createContext();
 export const MyApprovalProvider = ({ children }) => {
   const [employeeMyApproval, setIsEmployeeMyApproval] = useState(false);
 
+  // Context STate to extract data from get All View Trade Approval which is show by click on View Detail
+  const [viewDetailsModalData, setViewDetailsModalData] = useState({
+    details: [],
+    hierarchyList: [],
+    hierarchyDetails: {},
+  });
+
   return (
     <MyapprovalContext.Provider
       value={{
         employeeMyApproval,
         setIsEmployeeMyApproval,
+        viewDetailsModalData,
+        setViewDetailsModalData,
       }}
     >
       {children}
