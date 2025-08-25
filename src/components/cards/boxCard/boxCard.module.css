@@ -1,3 +1,22 @@
+.warning {
+  border: 2px solid #A50000 !important;
+  border-radius: 12px;
+  position: relative;
+}
+
+/* Red header strip */
+.warning::before {
+  content: "";
+  display: block;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 20px;
+  background-color: A50000;
+  border-radius: 12px 12px 0 0;
+}
+
 /* Common hover animation */
 .mediumHomeSideCard,
 .smallShareHomeCardstatBox,

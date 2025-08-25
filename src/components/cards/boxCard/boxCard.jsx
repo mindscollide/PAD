@@ -42,6 +42,7 @@ const BoxCard = ({
   locationStyle = "down",
   userRole = "",
   route,
+  warningFlag = false,
 }) => {
   const base = mainClassName || "smallShareHomeCard"; // fallback class name
   const navigate = useNavigate();
@@ -53,7 +54,12 @@ const BoxCard = ({
   };
 
   return (
-    <Card className={styles[mainClassName]} style={{ padding: "10px 20px" }}>
+    <Card
+      className={`${styles[mainClassName]} ${
+        warningFlag ? styles.warning : ""
+      }`}
+      style={{ padding: "10px 20px" }}
+    >
       {/* Header */}
       <div className={styles[`${base}cardHeader`]}>
         <span className={styles[`${base}cardTitle`]}>{title}</span>
@@ -97,7 +103,24 @@ const BoxCard = ({
                   className={styles[`${base}statBox`]}
                   style={{ backgroundColor: bgColor, textAlign }}
                 >
-                  {locationStyle === "down" ? (
+                  {warningFlag && index === 0 ? (
+                    <>
+                      <Text
+                        className={styles[`${base}label`]}
+                        style={{ color: textLableColor }}
+                      >
+                        {box.label}
+                      </Text>
+                      <Text
+                        className={styles[`${base}count`]}
+                        style={{ color: textCountColor }}
+                      >
+                        {convertSingleDigittoDoubble(
+                          formatNumberWithCommas(box.count)
+                        )}
+                      </Text>
+                    </>
+                  ) : locationStyle === "down" ? (
                     <>
                       <Text
                         className={styles[`${base}label`]}
