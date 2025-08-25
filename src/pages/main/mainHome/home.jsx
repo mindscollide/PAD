@@ -200,7 +200,7 @@ const Home = () => {
           <Row gutter={[16, 16]}>
             <Col xs={24} md={12} lg={12}>
               <BoxCard
-                warningFlag={true}
+                // warningFlag={true}
                 locationStyle={"up"}
                 title="Approvals Request"
                 mainClassName={"mediumHomeCard"}
@@ -208,18 +208,18 @@ const Home = () => {
                 boxes={[
                   // {
                   //   count: 4,
-                  //   label: "Pending Approval Requests",
-                  //   type: "pending_approval_request",
+                  //   label: "PENDING APPROVAL REQUESTS",
+                  //   type: "PENDING APPROVAL REQUESTS",
                   // },
                   {
                     count: 12,
                     label: "TOTAL PENDING APPROVALS",
-                    type: "total_pending_approvals",
+                    type: "TOTAL PENDING APPROVALS",
                   },
                   {
                     count: 2,
                     label: "APPROVALS REQUIRE URGENT ACTION",
-                    type: "approvals_require_urgent_action",
+                    type: "APPROVALS REQUIRE URGENT ACTION",
                   },
                 ]}
                 buttonTitle={"See More"}

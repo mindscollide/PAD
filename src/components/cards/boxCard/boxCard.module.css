@@ -1,15 +1,35 @@
-
-.warningMain{
-border: 2px solid #A50000 !important;
-}
-.warning {
-  border: transparent !important;
+/* .warningMain {
+  border: 2px solid #a50000 !important;
+  transform: scale(1.02);
+  box-shadow: 4px 4px 6px 0px #9d6a6a;
   border-radius: 12px;
-  position: relative;
+  z-index: 9 !important;
+} */
+.warning,
+.warning:hover {
+  border: 2px solid #a50000 !important;
+  transform: scale(1.02) !important;
+  box-shadow: 4px 4px 6px 0px #9d6a6a !important;
+  border-radius: 12px !important;
+}
+.warningBox {
+  animation: pulseBox 1.5s infinite ease-in-out;
 }
 
+@keyframes pulseBox {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05); /* slightly bigger */
+  }
+  100% {
+    transform: scale(1);
+  }
+}
 /* Red header strip */
 .warning::before {
+  transform: scale(1.02) !important;
   content: "";
   display: block;
   position: absolute;
@@ -19,6 +39,54 @@ border: 2px solid #A50000 !important;
   height: 20px;
   background-color: transparent;
   border-radius: 12px 12px 0 0;
+}
+.urgentText {
+  font-family: "Switzer Variable", sans-serif;
+  font-weight: 700;
+  font-style: normal; /* instead of Bold, CSS uses normal */
+  font-size: 35.85px;
+  line-height: 100%;
+  letter-spacing: 0;
+  text-transform: uppercase;
+  color: #a50000;
+}
+.urgentDiscription {
+  font-family: Switzer Variable;
+  font-weight: 500;
+  font-style: Medium;
+  font-size: 20px;
+  leading-trim: NONE;
+  line-height: 100%;
+  letter-spacing: 0%;
+  color: #a50000;
+}
+.urgentImg {
+  width: 71.7px;
+  height: 69.9px;
+  object-fit: contain; /* keeps aspect ratio inside box */
+  margin-right: 12px;
+}
+
+.urgentErrorHeader {
+  background-color: #a60000;
+  color: #fff;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
+}
+
+.urgentErrorTitle {
+  font-family: Switzer Variable;
+  font-weight: 500;
+  font-style: Bold;
+  font-size: 26px;
+  leading-trim: NONE;
+  line-height: 100%;
+  letter-spacing: 0%;
+  color: #ffffff;
 }
 
 /* Common hover animation */
@@ -32,9 +100,11 @@ border: 2px solid #A50000 !important;
   transform: scale(1);
   cursor: pointer;
   border-radius: 12px;
+  z-index: 1;
 }
 .ant-card-body {
   padding: 20px 10px !important;
+  z-index: 1;
 }
 /* Hover effect */
 .mediumHomeSideCard:hover,
@@ -295,5 +365,3 @@ border: 2px solid #A50000 !important;
   word-break: break-word;
   white-space: normal;
 }
-
-
