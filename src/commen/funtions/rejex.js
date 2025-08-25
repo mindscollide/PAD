@@ -83,3 +83,34 @@ export const toYYMMDD = (input) => {
 
   return `${year}${month}${day}`;
 };
+
+// this regex work as a dash seperator befor REQ009 after regex REQ-009
+export const dashBetweenApprovalAssets = (id) => {
+  if (!id) return "";
+
+  const prefix = id.substring(0, 3);
+  const number = id.substring(3);
+
+  // If you want to always keep it padded to 3 digits (REQ-009)
+  const padded = number.padStart(3, "0");
+
+  return `${prefix}-${padded}`;
+};
+
+// Show only Date not the time
+// Extracts time part (HHmmss) from API datetime string like "20250822 101103"
+export const formatShowOnlyDate = (dateTimeStr) => {
+  if (!dateTimeStr) return "";
+
+  // The API format looks like: YYYYMMDD HHMMSS (e.g., 20250822 101103)
+  const datePart = dateTimeStr.split(" ")[0]; // "20250822"
+
+  if (datePart && datePart.length === 8) {
+    const year = datePart.slice(0, 4);
+    const month = datePart.slice(4, 6);
+    const day = datePart.slice(6, 8);
+    return `${year}-${month}-${day}`;
+  }
+
+  return "";
+};

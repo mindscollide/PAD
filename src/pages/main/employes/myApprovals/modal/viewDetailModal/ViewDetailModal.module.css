@@ -142,11 +142,29 @@
   font-family: "Switzer Variable";
 }
 
+.viewDetailSubLabelsForInstrument {
+  flex: 1; /* let it shrink inside flex */
+  max-width: 250px; /* 👈 critical inside flex */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 20px !important;
+  color: #424242 !important;
+  font-weight: 500;
+  font-family: "Switzer Variable";
+  cursor: pointer;
+}
+
 .tagContainer {
-  margin-top: 5px;
-  display: flex !important;
-  gap: 10px !important; /* horizontal space between tags */
-  flex-wrap: wrap !important; /* wrap to next line if too many tags */
+  display: flex;
+  gap: 10px;
+  padding-bottom: 10px;
+  cursor: pointer !important;
+  overflow-x: auto;
+  white-space: nowrap;
+  flex-wrap: nowrap; /* keep single line */
+  scrollbar-width: thin; /* Firefox */
+  scrollbar-color: #bfbfbf transparent;
 }
 
 .tagClasses {
@@ -185,10 +203,12 @@
 .backgrounColorOfStepper {
   background-color: #fff1e7 !important;
   padding: 5px 11px;
-  display: flex;
-  flex-direction: column !important;
+  display: inline-flex; /* keep children in a row */
+  flex-direction: row !important; /* force horizontal */
   margin-top: 10px;
   border-radius: 8px !important;
+  gap: 20px; /* space between steps */
+  width: 97%;
 }
 
 .customdesc {
@@ -252,4 +272,11 @@
   justify-content: end;
   align-items: center;
   gap: 20px !important;
+}
+
+.mainStepperContainer {
+  width: 100% !important;
+  overflow-x: auto; /* allow horizontal scroll */
+  overflow-y: hidden; /* no vertical scroll */
+  white-space: nowrap;
 }
