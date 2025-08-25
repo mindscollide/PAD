@@ -142,7 +142,7 @@ export const getBorderlessTableColumns = (
     dataIndex: "type",
     key: "type",
     ellipsis: true,
-    width: "15%",
+    width: "10%",
     filteredValue: employeeMyApprovalSearch.type?.length
       ? employeeMyApprovalSearch.type
       : null,
@@ -223,7 +223,7 @@ export const getBorderlessTableColumns = (
     dataIndex: "quantity",
     key: "quantity",
     ellipsis: true,
-    width: "10%",
+    width: "12%",
     sorter: (a, b) => a.quantity - b.quantity,
     sortDirections: ["ascend", "descend"],
     sortOrder: sortedInfo?.columnKey === "quantity" ? sortedInfo.order : null,
@@ -236,7 +236,8 @@ export const getBorderlessTableColumns = (
     dataIndex: "timeRemaining",
     key: "timeRemaining",
     ellipsis: true,
-    width: "15%",
+    width: "18%",
+    align: "center",
     render: (text, record) => {
       console.log(record, "Checkecnekjcb record");
       // ✅ Show nothing if pending

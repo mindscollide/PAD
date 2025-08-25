@@ -150,6 +150,7 @@ const EquitiesApproval = () => {
     const requestdata = {
       TradeApprovalID: 0,
       InstrumentID: selectedInstrument?.type || null,
+      InstrumentName: selectedInstrument?.description || "",
       AssetTypeID: selectedAssetTypeID,
       ApprovalTypeID: selectedTradeApprovalType,
       Quantity: quantityNumber,
