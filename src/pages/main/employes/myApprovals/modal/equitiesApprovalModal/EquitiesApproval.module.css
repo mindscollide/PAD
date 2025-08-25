@@ -137,6 +137,18 @@
   font-weight: 400;
 }
 
+:global(.ant-select-item-option-content.checkboxSelect .ant-select-dropdown) {
+  font-size: 17px !important;
+  font-family: "Switzer Variable" !important;
+  font-weight: 400 !important;
+}
+
+.checkboxSelect :global(.ant-select-item-option-content .ant-select-dropdown) {
+  font-size: 17px !important;
+  font-family: "Switzer Variable" !important;
+  font-weight: 400 !important;
+}
+
 :global(.ant-select-dropdown.checkboxSelect-dropdown .ant-select-item) {
   font-size: 17px !important;
   font-family: "Switzer Variable";
@@ -148,8 +160,6 @@
   align-self: flex-start !important;
   margin-top: 19px !important;
 }
-
-
 
 /* For Broker Select Box */
 
