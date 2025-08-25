@@ -200,10 +200,28 @@ const Home = () => {
           <Row gutter={[16, 16]}>
             <Col xs={24} md={12} lg={12}>
               <BoxCard
+                warningFlag={true}
                 locationStyle={"up"}
                 title="Approvals Request"
                 mainClassName={"mediumHomeCard"}
-                boxes={dashboardData?.lineManager?.myApprovals?.data}
+                // boxes={dashboardData?.lineManager?.myApprovals?.data}
+                boxes={[
+                  // {
+                  //   count: 4,
+                  //   label: "Pending Approval Requests",
+                  //   type: "pending_approval_request",
+                  // },
+                  {
+                    count: 12,
+                    label: "TOTAL PENDING APPROVALS",
+                    type: "total_pending_approvals",
+                  },
+                  {
+                    count: 2,
+                    label: "APPROVALS REQUIRE URGENT ACTION",
+                    type: "approvals_require_urgent_action",
+                  },
+                ]}
                 buttonTitle={"See More"}
                 buttonClassName={"big-white-card-button"}
                 userRole={"LM"}
