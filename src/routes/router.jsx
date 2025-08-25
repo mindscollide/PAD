@@ -91,6 +91,30 @@ const router = createBrowserRouter(
             </RoleBasedRoute>
           }
         />
+         <Route
+          path="lm-approval-requests"
+          element={ 
+            <RoleBasedRoute allowedRoles={[3]}>
+              <EmployeApproval />
+            </RoleBasedRoute>
+          }
+        />
+        <Route
+          path="lm-my-actions"
+          element={
+            <RoleBasedRoute allowedRoles={[3]}>
+              <EmployeMyTransaction />{" "}
+            </RoleBasedRoute>
+          }
+        />
+        <Route
+          path="lm-reports"
+          element={
+            <RoleBasedRoute allowedRoles={[3]}>
+              <EmpolyesReportsIndex />{" "}
+            </RoleBasedRoute>
+          }
+        />
         <Route path="faq" element={<Faqs />} />
       </Route>
 
