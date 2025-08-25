@@ -12,7 +12,13 @@ export const emaStatusOptions = [
 // these are status options for employee my approval page
 export const emtStatusOptions = ["Pending", "Compliant", "Non-Compliant"];
 
-export const typeOptions = ["Buy", "Sell"];
+export const getTypeOptions = (addApprovalRequestData) => {
+  return (addApprovalRequestData?.Equities || []).map((item) => ({
+    label: item.type,
+    value: item.tradeApprovalTypeID,
+    assetTypeID: item.assetTypeID,
+  }));
+};
 
 export const mapBuySellToIds = (arr) => {
   if (!arr || arr.length === 0) return [];
