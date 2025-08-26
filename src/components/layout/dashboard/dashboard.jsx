@@ -10,17 +10,19 @@ const { Content } = Layout;
 
 const Dashboard = () => {
   const location = useLocation();
-  const subscribeID = "PAD";
-  const userProfileData = JSON.parse(sessionStorage.getItem("userProfileData"));
+  const subscribeID = "TRADE";
+  const userProfileData = JSON.parse(sessionStorage.getItem("user_profile_data"));
   let userID = userProfileData?.userID;
   const { connectToMqtt, isConnected } = useMqttClient({
-    onMessageArrivedCallback: (data) => {},
+    onMessageArrivedCallback: (data) => {
+      console.log("onMessageArrivedCallback mqtt",data)
+    },
     onConnectionLostCallback: () => {
       console.warn("MQTT disconnected inside feature");
     },
   });
   useEffect(() => {
-    // connectToMqtt({ subscribeID, userID });
+    connectToMqtt({ subscribeID, userID });
   },[]);
   // Get page-specific class based on route
   const getContentClass = () => {
