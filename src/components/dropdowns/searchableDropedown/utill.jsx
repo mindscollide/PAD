@@ -190,6 +190,7 @@ export const renderFilterContent = (
 export const apiCallSearch = async ({
   selectedKey,
   employeeMyApprovalSearch,
+  addApprovalRequestData,
   callApi,
   showNotification,
   showLoader,
@@ -201,7 +202,11 @@ export const apiCallSearch = async ({
   try {
     switch (selectedKey) {
       case "1": {
-        const TypeIds = mapBuySellToIds(employeeMyApprovalSearch.type);
+        const TypeIds = mapBuySellToIds(
+          employeeMyApprovalSearch.type,
+          addApprovalRequestData?.Equities
+        );
+
         const statusIds = mapStatusToIds(employeeMyApprovalSearch.status);
         const date = toYYMMDD(employeeMyApprovalSearch.startDate);
 

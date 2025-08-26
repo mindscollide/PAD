@@ -11,6 +11,7 @@ import { useGlobalLoader } from "../../../context/LoaderContext";
 import useNotification from "antd/es/notification/useNotification";
 import { useMyApproval } from "../../../context/myApprovalContaxt";
 import { useNavigate } from "react-router-dom";
+import { useDashboardContext } from "../../../context/dashboardContaxt";
 
 /**
  * Dropdown for selecting status filters with local state management.
@@ -25,6 +26,7 @@ const StatusFilterDropdown = ({
 }) => {
   const navigate = useNavigate();
   const { selectedKey } = useSidebarContext();
+  const { addApprovalRequestData } = useDashboardContext();
   const { callApi } = useApi();
   const { showLoader } = useGlobalLoader();
   const { showNotification } = useNotification();
@@ -61,11 +63,12 @@ const StatusFilterDropdown = ({
       status: tempSelected,
     }));
     let newdata = tempSelected;
-      console.log("hello test", newdata);
+    console.log("hello test", newdata);
     await apiCallStatus({
       selectedKey,
       newdata,
       state,
+      addApprovalRequestData,
       callApi,
       showNotification,
       showLoader,
@@ -81,6 +84,7 @@ const StatusFilterDropdown = ({
       selectedKey,
       newdata,
       state,
+      addApprovalRequestData,
       callApi,
       showNotification,
       showLoader,

@@ -51,6 +51,7 @@ const Approval = () => {
     resubmitIntimation,
     isConductedTransaction,
   } = useGlobalModal();
+  const { addApprovalRequestData } = useDashboardContext();
 
   const { showNotification } = useNotification();
   const { selectedKey } = useSidebarContext();
@@ -152,7 +153,7 @@ const Approval = () => {
     setSubmittedFilters((prev) => prev.filter((item) => item.key !== key));
 
     // 2️⃣ Prepare API request parameters
-    const TypeIds = mapBuySellToIds(employeeMyApprovalSearch.type);
+    const TypeIds = mapBuySellToIds(employeeMyApprovalSearch.type,addApprovalRequestData?.Equities );
     const statusIds = mapStatusToIds(employeeMyApprovalSearch.status);
 
     const requestdata = {

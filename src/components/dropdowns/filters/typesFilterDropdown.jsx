@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import styles from "./filter.module.css";
 import { Button, CheckBox } from "../..";
-import { apiCallType, getTypeOptions, } from "./utils";
+import { apiCallType, getTypeOptions } from "./utils";
 import { Row, Col, Divider } from "antd";
 import { useSidebarContext } from "../../../context/sidebarContaxt";
 import { useNavigate } from "react-router-dom";
@@ -31,7 +31,6 @@ const TypeFilterDropdown = ({
 
   const { callApi } = useApi();
   const typeOptions = getTypeOptions(addApprovalRequestData);
-console.log("typeOptions",typeOptions)
   const toggleSelection = (type) => {
     setTempSelected((prev) =>
       prev.includes(type)
@@ -51,6 +50,7 @@ console.log("typeOptions",typeOptions)
     await apiCallType({
       selectedKey,
       newdata,
+      addApprovalRequestData,
       state,
       callApi,
       showNotification,
@@ -68,6 +68,7 @@ console.log("typeOptions",typeOptions)
     await apiCallType({
       selectedKey,
       newdata,
+      addApprovalRequestData,
       state,
       callApi,
       showNotification,

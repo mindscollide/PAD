@@ -3,7 +3,7 @@ import { Card, Typography, Row, Col } from "antd";
 import styles from "./boxCard.module.css";
 
 // Utility functions and mappings
-import { navigateToPage, typeColorMap } from "./utill";
+import { navigateToPage, typeColorMap } from "./utils";
 import { Button } from "../..";
 import {
   formatNumberWithCommas,
@@ -189,7 +189,7 @@ const BoxCard = ({
                       <Text className={styles.urgentText}>URGENT</Text>
 
                       {/* Subtext (dynamic count) */}
-                      <Text className={styles.urgentDiscription}>
+                      <Text className={styles.urgentDescription}>
                         {convertSingleDigittoDoubble(
                           formatNumberWithCommas(box.count)
                         )}{" "}

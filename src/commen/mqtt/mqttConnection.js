@@ -2,6 +2,7 @@
 import { useRef, useState, useCallback } from "react";
 import Paho from "paho-mqtt";
 import { secureRandomString } from "./utils";
+import { stringify } from "postcss";
 
 export const useMqttClient = ({
   onMessageArrivedCallback,
@@ -11,7 +12,8 @@ export const useMqttClient = ({
   const [subscribedTopics, setSubscribedTopics] = useState([]);
   const clientRef = useRef(null);
   const randomString = secureRandomString();
-  const userProfileData = JSON.parse(sessionStorage.getItem("userProfileData"));
+  const userProfileData = JSON.parse(sessionStorage.getItem("user_profile_data"));
+      console.log("mqtt",userProfileData)
   let user_name = userProfileData?.firstName + " " + userProfileData?.lastName;
 
   const subscribeToTopics = useCallback(
@@ -88,7 +90,11 @@ export const useMqttClient = ({
       const mqttHost = JSON.parse(
         sessionStorage.getItem("user_mqtt-ip_Address")
       );
+      console.log("mqtt",mqttPort)
+      console.log("mqtt",mqttHost)
       const newClientID = secureRandomString();
+      console.log("mqtt",newClientID)
+      console.log("mqtt",user_name)
 
       clientRef.current = new Paho.Client(
         mqttHost,
@@ -103,7 +109,7 @@ export const useMqttClient = ({
         onSuccess: () => {
           console.log("MQTT connected:", newClientID);
           setIsConnected(true);
-          subscribeToTopics([subscribeID, `BOP_${userID}`]);
+          subscribeToTopics([subscribeID]);
         },
         onFailure: (err) => {
           console.error("MQTT connection failed:", err.errorMessage);
@@ -112,7 +118,7 @@ export const useMqttClient = ({
         },
         keepAliveInterval: 300,
         reconnect: true,
-        userName: user_name,
+        userName: import.meta.env.VITE_MQTT_USERNAME,
         password: import.meta.env.VITE_MQTT_PASSWORD,
         cleanSession: true,
         useSSL: false,
