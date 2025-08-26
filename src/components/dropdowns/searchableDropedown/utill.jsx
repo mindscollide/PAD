@@ -5,6 +5,7 @@ import { EmployeeMyApprovalFilter } from "./EmployeeMyApprovalFilter";
 import { EmployeePendingApprovalFilter } from "./EmployeePendingApprovalFilter";
 import { EmployeePortfolioFilter } from "./EmployeePortfolioFilter";
 import { EmployeeTransactionFilter } from "./EmployeeTransactionFilter";
+import { LineManagerApprovalFilter } from "./LineManagerApprovalFilter";
 
 /**
  * Renders filter content based on the selected key.
@@ -21,7 +22,8 @@ export const getMainSearchInputValueByKey = (
   employeeMyApprovalSearch,
   employeeMyTransactionSearch,
   employeePortfolioSearch,
-  employeePendingApprovalSearch
+  employeePendingApprovalSearch,
+  lineManagerApprovalSearch
 ) => {
   switch (selectedKey) {
     case "1":
@@ -37,6 +39,9 @@ export const getMainSearchInputValueByKey = (
         default:
           return "";
       }
+    case "6":
+      return lineManagerApprovalSearch.mainInstrumentName;
+      break;
 
     // Add more cases as needed
     default:
@@ -52,7 +57,8 @@ export const handleMainInstrumentChange = (
   setEmployeeMyApprovalSearch,
   setEmployeeMyTransactionSearch,
   setEmployeePortfolioSearch,
-  setEmployeePendingApprovalSearch
+  setEmployeePendingApprovalSearch,
+  setLineManagerApprovalSearch
 ) => {
   switch (selectedKey) {
     case "1":
@@ -90,6 +96,13 @@ export const handleMainInstrumentChange = (
       }
 
       break;
+
+    case "6":
+      setLineManagerApprovalSearch((prev) => ({
+        ...prev,
+        mainInstrumentName: value,
+      }));
+      break;
     // Add more cases for other selectedKeys if needed
 
     default:
@@ -105,6 +118,7 @@ export const handleSearchMainInputReset = ({
   setEmployeeMyTransactionSearch,
   setEmployeePortfolioSearch,
   setEmployeePendingApprovalSearch,
+  setLineManagerApprovalSearch,
 }) => {
   switch (selectedKey) {
     case "1":
@@ -142,6 +156,12 @@ export const handleSearchMainInputReset = ({
       }
 
       break;
+    case "6":
+      setLineManagerApprovalSearch((prev) => ({
+        ...prev,
+        mainInstrumentName: "",
+      }));
+      break;
 
     default:
       break;
@@ -155,6 +175,8 @@ export const renderFilterContent = (
   handleSearch,
   dropdownOptions
 ) => {
+  console.log(activeTab, "Checker Search Coming");
+  console.log("SearchWithPopoverOnly selectedKey", selectedKey);
   switch (selectedKey) {
     case "1":
       return <EmployeeMyApprovalFilter handleSearch={handleSearch} />;
@@ -175,6 +197,9 @@ export const renderFilterContent = (
         default:
           return null;
       }
+
+    case "6":
+      return <LineManagerApprovalFilter handleSearch={handleSearch} />;
     // 🔧 Add more cases for keys "3" to "17" as needed below
     // case "3":
     //   return <SomeOtherFilterComponent handleSearch={handleSearch} />;
@@ -234,6 +259,10 @@ export const apiCallSearch = async ({
         break;
 
       case "3":
+        // Add case 3 logic here when needed
+        break;
+
+      case "6":
         // Add case 3 logic here when needed
         break;
 

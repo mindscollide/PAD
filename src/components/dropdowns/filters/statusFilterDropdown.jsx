@@ -50,6 +50,9 @@ const StatusFilterDropdown = ({
       case "4":
         setFilterOptions(emtStatusOptions);
         break;
+      case "6":
+        setFilterOptions(emtStatusOptions);
+        break;
       default:
         setFilterOptions([]);
     }
@@ -61,7 +64,7 @@ const StatusFilterDropdown = ({
       status: tempSelected,
     }));
     let newdata = tempSelected;
-      console.log("hello test", newdata);
+    console.log("hello test", newdata);
     await apiCallStatus({
       selectedKey,
       newdata,

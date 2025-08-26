@@ -2,6 +2,8 @@ import React from "react";
 import styles from "./modalImgStates.module.css";
 import ApprovalsIcon from "../../assets/img/approval-icon.png";
 import Restricted from "../../assets/img/Restricted.png";
+import DelcinedImg from "../../assets/img/DelcinedImg.png";
+import ApprovedImg from "../../assets/img/ApprovedImg.png";
 
 const config = {
   Submitted: {
@@ -31,6 +33,17 @@ const config = {
       </>
     ),
     image: Restricted,
+  },
+  Approved: {
+    heading: "Approved",
+    subheading:
+      "You have approved this transaction. The requester will be notified.",
+    image: ApprovedImg,
+  },
+  Declined: {
+    heading: "Declined",
+    subheading: "You have declined this request.",
+    image: DelcinedImg,
   },
 };
 
