@@ -34,15 +34,12 @@ import { useDashboardContext } from "../../../../context/dashboardContaxt";
 const Approval = () => {
   const navigate = useNavigate();
   const hasFetched = useRef(false);
-  const hasFetchedOnTriiger = useRef(false);
 
   const {
     isEquitiesModalVisible,
     setIsEquitiesModalVisible,
     isSubmit,
-    setIsSubmit,
     isTradeRequestRestricted,
-    setIsTradeRequestRestricted,
     isViewDetail,
     setIsViewDetail,
     isViewComments,
@@ -52,7 +49,6 @@ const Approval = () => {
     isConductedTransaction,
   } = useGlobalModal();
   const { addApprovalRequestData } = useDashboardContext();
-
   const { showNotification } = useNotification();
   const { selectedKey } = useSidebarContext();
   const { showLoader } = useGlobalLoader();
@@ -64,7 +60,7 @@ const Approval = () => {
     setEmployeeMyApprovalSearch,
     resetEmployeeMyApprovalSearch,
   } = useSearchBarContext();
-
+console.log("employeeMyApproval",employeeMyApproval)
   const [sortedInfo, setSortedInfo] = useState({});
   const [approvalData, setApprovalData] = useState([]);
   const [loadingMore, setLoadingMore] = useState(false); // spinner at bottom
@@ -109,8 +105,6 @@ const Approval = () => {
    */
   const fetchApprovals = async () => {
     await showLoader(true);
-    console.log("Checker APi Search");
-
     const requestdata = {
       InstrumentName:
         employeeMyApprovalSearch.instrumentName ||
@@ -148,12 +142,14 @@ const Approval = () => {
    */
   const handleRemoveFilter = async (key) => {
     const normalizedKey = key?.toLowerCase();
-    console.log("Checker APi Search");
     // 1️⃣ Update UI state for removed filters
     setSubmittedFilters((prev) => prev.filter((item) => item.key !== key));
 
     // 2️⃣ Prepare API request parameters
-    const TypeIds = mapBuySellToIds(employeeMyApprovalSearch.type,addApprovalRequestData?.Equities );
+    const TypeIds = mapBuySellToIds(
+      employeeMyApprovalSearch.type,
+      addApprovalRequestData?.Equities
+    );
     const statusIds = mapStatusToIds(employeeMyApprovalSearch.status);
 
     const requestdata = {
@@ -210,7 +206,6 @@ const Approval = () => {
 
     setIsEmployeeMyApproval(data);
   };
-  console.log("employeeMyApprovalSearch", employeeMyApprovalSearch);
   /**
    * Syncs submittedFilters state when filters are applied
    */
@@ -360,10 +355,6 @@ const Approval = () => {
             PageNumber: employeeMyApprovalSearch.pageNumber || 10, // Acts as offset for API
             Length: 10,
           };
-
-          console.log("Fetching employee approvals with params:", requestdata);
-          console.log("Checker APi Search");
-
           // Call API
           const data = await SearchTadeApprovals({
             callApi,
@@ -382,8 +373,6 @@ const Approval = () => {
                 ? data.totalRecords
                 : prev?.totalRecords,
           }));
-
-          console.log("employeeMyApproval", data);
         } catch (error) {
           console.error("Error loading more approvals:", error);
         } finally {
@@ -394,9 +383,6 @@ const Approval = () => {
     0,
     "border-less-table-orange" // Container selector
   );
-
-  // Lazy Loading Work Start
-  console.log("employeeMyApproval", employeeMyApproval);
 
   return (
     <>
