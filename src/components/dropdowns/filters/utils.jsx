@@ -12,18 +12,26 @@ export const emaStatusOptions = [
 // these are status options for employee my approval page
 export const emtStatusOptions = ["Pending", "Compliant", "Non-Compliant"];
 
-export const typeOptions = ["Buy", "Sell"];
-
-export const mapBuySellToIds = (arr) => {
-  if (!arr || arr.length === 0) return [];
-  return arr
-    .map((item) => {
-      if (item === "Buy") return 1;
-      if (item === "Sell") return 2;
-      return; // in case something unexpected comes
-    })
-    .filter(Boolean); // removes nulls
+export const getTypeOptions = (addApprovalRequestData) => {
+  return (addApprovalRequestData?.Equities || []).map((item) => ({
+    label: item.type,
+    value: item.tradeApprovalTypeID,
+    assetTypeID: item.assetTypeID,
+  }));
 };
+
+export const mapBuySellToIds = (arr, options) => {
+  console.log("mapBuySellToIds",arr)
+  console.log("mapBuySellToIds",options)
+  if (!arr || arr.length === 0 || !options) return [];
+  return arr
+    .map((label) => {
+      const match = options.find((opt) => opt.type === label);
+      return match ? match.tradeApprovalTypeID : null;
+    })
+    .filter(Boolean); // remove nulls
+};
+
 
 export const mapStatusToIds = (arr) => {
   if (!arr || arr.length === 0) return [];
@@ -52,6 +60,7 @@ export const mapStatusToIds = (arr) => {
 export const apiCallType = async ({
   selectedKey,
   newdata,
+  addApprovalRequestData,
   state,
   callApi,
   showNotification,
@@ -61,7 +70,7 @@ export const apiCallType = async ({
 }) => {
   switch (selectedKey) {
     case "1": {
-      const TypeIds = mapBuySellToIds(newdata);
+      const TypeIds = mapBuySellToIds(newdata,addApprovalRequestData?.Equities);
       const statusIds = mapStatusToIds(state.status);
       const requestdata = {
         InstrumentName: state.instrumentName || state.mainInstrumentName,
@@ -95,6 +104,7 @@ export const apiCallStatus = async ({
   selectedKey,
   newdata,
   state,
+  addApprovalRequestData,
   callApi,
   showNotification,
   showLoader,
@@ -103,7 +113,7 @@ export const apiCallStatus = async ({
 }) => {
   switch (selectedKey) {
     case "1": {
-      const TypeIds = mapBuySellToIds(state.type);
+      const TypeIds = mapBuySellToIds(state.type,addApprovalRequestData?.Equities);
       const statusIds = mapStatusToIds(newdata);
       const requestdata = {
         InstrumentName: state.instrumentName || state.mainInstrumentName,
