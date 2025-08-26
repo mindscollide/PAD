@@ -10,7 +10,7 @@ const { Content } = Layout;
 
 const Dashboard = () => {
   const location = useLocation();
-  const subscribeID = "TRADE";
+  const subscribeID = "PAD_TRADE";
   const userProfileData = JSON.parse(sessionStorage.getItem("user_profile_data"));
   let userID = userProfileData?.userID;
   const { connectToMqtt, isConnected } = useMqttClient({
