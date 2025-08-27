@@ -21,8 +21,8 @@ export const getTypeOptions = (addApprovalRequestData) => {
 };
 
 export const mapBuySellToIds = (arr, options) => {
-  console.log("mapBuySellToIds",arr)
-  console.log("mapBuySellToIds",options)
+  console.log("mapBuySellToIds", arr);
+  console.log("mapBuySellToIds", options);
   if (!arr || arr.length === 0 || !options) return [];
   return arr
     .map((label) => {
@@ -31,7 +31,6 @@ export const mapBuySellToIds = (arr, options) => {
     })
     .filter(Boolean); // remove nulls
 };
-
 
 export const mapStatusToIds = (arr) => {
   if (!arr || arr.length === 0) return [];
@@ -70,7 +69,10 @@ export const apiCallType = async ({
 }) => {
   switch (selectedKey) {
     case "1": {
-      const TypeIds = mapBuySellToIds(newdata,addApprovalRequestData?.Equities);
+      const TypeIds = mapBuySellToIds(
+        newdata,
+        addApprovalRequestData?.Equities
+      );
       const statusIds = mapStatusToIds(state.status);
       const requestdata = {
         InstrumentName: state.instrumentName || state.mainInstrumentName,
@@ -113,7 +115,10 @@ export const apiCallStatus = async ({
 }) => {
   switch (selectedKey) {
     case "1": {
-      const TypeIds = mapBuySellToIds(state.type,addApprovalRequestData?.Equities);
+      const TypeIds = mapBuySellToIds(
+        state.type,
+        addApprovalRequestData?.Equities
+      );
       const statusIds = mapStatusToIds(newdata);
       const requestdata = {
         InstrumentName: state.instrumentName || state.mainInstrumentName,
@@ -133,6 +138,7 @@ export const apiCallStatus = async ({
         requestdata,
         navigate,
       });
+      console.log(data, "Checker APi Search");
       setIsEmployeeMyApproval(data);
       break;
     }

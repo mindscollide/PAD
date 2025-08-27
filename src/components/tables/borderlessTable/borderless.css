@@ -3,6 +3,12 @@
   border-spacing: 0 10px; /* Space between rows */
 }
 
+.border-less-table-orange-body {
+  overflow-x: hidden !important;
+  overflow-y: auto !important;
+  scrollbar-color: #eaeaea transparent !important;
+}
+
 /* Table Row Styling */
 .border-less-table-orange-row {
   height: 53.82px;
@@ -298,19 +304,16 @@ border-  bottom-bottom-right-radius: 6.94px !important;
   z-index: 0 !important;
 }
 
-
 /* For white */
 
 /* Root Table Layout */
 .border-less-table-white-body table {
   border-spacing: 0 10px; /* Space between rows */
-  
 }
 
 /* Table Row Styling */
 .border-less-table-white-row {
   height: 53.82px;
-
 }
 
 /* Target the first and last <td> inside each <tr> */
