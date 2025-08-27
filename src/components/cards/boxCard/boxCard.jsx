@@ -220,6 +220,7 @@ const BoxCard = ({
                           className={styles[`${base}count`]}
                           style={{ color: textCountColor }}
                         >
+                          {console.log("formatNumberWithCommas", box.count)}
                           {convertSingleDigittoDoubble(
                             formatNumberWithCommas(box.count)
                           )}
