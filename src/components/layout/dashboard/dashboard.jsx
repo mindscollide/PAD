@@ -35,7 +35,7 @@ const Dashboard = () => {
         if (Array.isArray(receiverID) && receiverID.includes(currentUserId)) {
           switch (data.message) {
             case "NEW_TRADE_APPROVAL_REQUEST":
-              if (data.payload) {
+              if (data.payload ) {
                 setIsEmployeeMyApproval((prev) => ({
                   ...prev,
                   approvals: [data.payload, ...(prev.approvals || [])], // add new at the start

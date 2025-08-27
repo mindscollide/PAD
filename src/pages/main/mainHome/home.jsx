@@ -202,21 +202,21 @@ const Home = () => {
                 mainClassName={"mediumHomeCard"}
                 // boxes={dashboardData?.lineManager?.myApprovals?.data}
                 boxes={[
-                  // {
-                  //   count: 4,
-                  //   label: "PENDING APPROVAL REQUESTS",
-                  //   type: "PENDING APPROVAL REQUESTS",
-                  // },
                   {
                     count: 4,
-                    label: "TOTAL PENDING APPROVALS",
-                    type: "TOTAL PENDING APPROVALS",
+                    label: "PENDING APPROVAL REQUESTS",
+                    type: "PENDING APPROVAL REQUESTS",
                   },
-                  {
-                    count: 2,
-                    label: "APPROVALS REQUIRE URGENT ACTION",
-                    type: "APPROVALS REQUIRE URGENT ACTION",
-                  },
+                  // {
+                  //   count: 4,
+                  //   label: "TOTAL PENDING APPROVALS",
+                  //   type: "TOTAL PENDING APPROVALS",
+                  // },
+                  // {
+                  //   count: 2,
+                  //   label: "APPROVALS REQUIRE URGENT ACTION",
+                  //   type: "APPROVALS REQUIRE URGENT ACTION",
+                  // },
                 ]}
                 buttonTitle={"See More"}
                 buttonClassName={"big-white-card-button"}
