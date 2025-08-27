@@ -133,10 +133,11 @@ export const getBorderlessTableColumns = (
               overflow: "hidden",
               textOverflow: "ellipsis",
               whiteSpace: "nowrap",
-              maxWidth: "200px", // adjust this width based on your layout
+              maxWidth: "200px",
               display: "inline-block",
+              cursor: "pointer",
             }}
-            title={`${name} - ${code}`} // optional: show full text on hover
+            title={`${name} - ${code}`} // show full text on hover
           >
             {`${name} - ${code}`}
           </span>
@@ -220,7 +221,6 @@ export const getBorderlessTableColumns = (
     onFilter: () => true,
     render: (status) => {
       const tag = approvalStatusMap[status] || {};
-      console.log(tag, "TagssTagsTagsTags");
       return (
         <Tag
           style={{
@@ -255,7 +255,6 @@ export const getBorderlessTableColumns = (
     width: "25%",
     align: "center",
     render: (text, record) => {
-      console.log(record, "Checkecnekjcb record");
       // ✅ Show nothing if pending
       if (record.status === "Pending")
         return <span className="text-gray-400">-</span>;
@@ -284,13 +283,11 @@ export const getBorderlessTableColumns = (
     render: (text, record) => {
       //Global State to selected data to show in ViewDetailModal
       const { setSelectedViewDetail } = useGlobalModal();
-      console.log(record, "Actions render fired:");
       return (
         <Button
           className="big-orange-button"
           text="View Details"
           onClick={() => {
-            console.log(record, "Clicked record");
             setSelectedViewDetail(record);
             setIsViewDetail(true);
           }}

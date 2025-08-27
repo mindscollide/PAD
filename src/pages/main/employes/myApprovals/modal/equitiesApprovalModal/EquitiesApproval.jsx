@@ -262,6 +262,7 @@ const EquitiesApproval = () => {
                     name="Type"
                     placeholder={"Select"}
                     allowClear
+                    // open={true}
                     options={typeOptions}
                     value={selectedTradeApprovalType}
                     onChange={handleTypeSelect}
