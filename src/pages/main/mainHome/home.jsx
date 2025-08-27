@@ -35,7 +35,7 @@ const Home = () => {
   const { callApi } = useApi();
   const { showLoader } = useGlobalLoader();
   const roles = JSON.parse(sessionStorage.getItem("user_assigned_roles"));
-  const {setAllyType} = useSearchBarContext();
+  const { setAllyType } = useSearchBarContext();
   // Prevent multiple fetches on mount
   const hasFetched = useRef(false);
 
@@ -84,7 +84,10 @@ const Home = () => {
 
     fetchData();
   }, []);
-
+  useEffect(() => {
+    console.log("dashboardData", dashboardData);
+  }, [dashboardData]);
+  console.log("dashboardData", dashboardData);
   return (
     <div style={{ padding: " 16px 24px 0px 24px " }}>
       {checkRoleMatch(roles, 2) && (
@@ -200,24 +203,7 @@ const Home = () => {
                 locationStyle={"up"}
                 title="Approvals Request"
                 mainClassName={"mediumHomeCard"}
-                // boxes={dashboardData?.lineManager?.myApprovals?.data}
-                boxes={[
-                  {
-                    count: 4,
-                    label: "PENDING APPROVAL REQUESTS",
-                    type: "PENDING APPROVAL REQUESTS",
-                  },
-                  // {
-                  //   count: 4,
-                  //   label: "TOTAL PENDING APPROVALS",
-                  //   type: "TOTAL PENDING APPROVALS",
-                  // },
-                  // {
-                  //   count: 2,
-                  //   label: "APPROVALS REQUIRE URGENT ACTION",
-                  //   type: "APPROVALS REQUIRE URGENT ACTION",
-                  // },
-                ]}
+                boxes={dashboardData?.lineManager?.myApprovals?.data}
                 buttonTitle={"See More"}
                 buttonClassName={"big-white-card-button"}
                 userRole={"LM"}
