@@ -1180,3 +1180,56 @@ span.ant-btn-icon {
   color: #ffffff !important;
   cursor: not-allowed !important;
 }
+
+.Decline-dark-button {
+  /* padding: 0px 100px !important; */
+  width: 381px !important;
+  height: 46px !important;
+  background: var(--Blue-V1, #ffdbdb) !important;
+  border: 1px solid var(--Blue-V1, #ffdbdb) !important;
+  color: #a50000 !important;
+  border-radius: 6.95px !important;
+  font-family: "Switzer Variable" !important;
+  font-weight: 500 !important;
+  font-size: 20px !important;
+  line-height: 100% !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease !important;
+}
+
+.Decline-dark-button:not(:disabled):hover {
+  box-shadow: 4px 4px 6px 0px #00000033 !important;
+}
+
+.Decline-dark-button:disabled {
+  background: #d9d9d9 !important;
+  border: 1px solid #d9d9d9 !important;
+  color: #ffffff !important;
+  cursor: not-allowed !important;
+}
+
+.Approved-dark-button {
+  width: 381px !important;
+  height: 46px !important;
+  background: var(--Blue-V1, #c5ffc7) !important;
+  border: 1px solid var(--Blue-V1, #c5ffc7) !important;
+  color: #00640a !important;
+  border-radius: 6.95px !important;
+  font-family: "Switzer Variable" !important;
+  font-weight: 500 !important;
+  font-size: 20px !important;
+  line-height: 100% !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease !important;
+}
+
+.Approved-dark-button:not(:disabled):hover {
+  box-shadow: 4px 4px 6px 0px #00000033 !important;
+}
+
+.Approved-dark-button:disabled {
+  background: #d9d9d9 !important;
+  border: 1px solid #d9d9d9 !important;
+  color: #ffffff !important;
+  cursor: not-allowed !important;
+}

@@ -1,0 +1,34 @@
+.mainDivComment {
+  padding: 30px 40px 40px !important;
+}
+
+.mainHeadingResubmit {
+  font-size: 26px;
+  font-weight: 700;
+  font-family: "Switzer Variable";
+  color: #30426a;
+}
+
+.resubmitButtonClass {
+  display: flex;
+  justify-content: end;
+  align-items: center;
+  gap: 20px !important;
+  margin-top: 20px;
+}
+
+.textAreaStyle {
+  border: 1px solid #717171 !important;
+  border-radius: 8px !important;
+  margin-top: 15px;
+  /* padding: 12px !important; */
+}
+
+.maxCharacterClass {
+  text-align: right !important;
+  margin-top: 5px;
+  font-size: 14px !important;
+  font-weight: 500;
+  font-family: "Switzer Variable";
+  color: #424242 !important;
+}

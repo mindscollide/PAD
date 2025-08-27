@@ -22,6 +22,9 @@ import {
   EmployeMyTransaction,
   EmployeMyhistory,
   EmpolyesReportsIndex,
+
+  //For Line Manager
+  ApprovalRequest,
 } from "../pages";
 import RoleBasedRoute from "./RoleBasedRoute";
 
@@ -91,11 +94,12 @@ const router = createBrowserRouter(
             </RoleBasedRoute>
           }
         />
-         <Route
+        <Route
           path="lm-approval-requests"
-          element={ 
+          element={
             <RoleBasedRoute allowedRoles={[3]}>
-              <EmployeApproval />
+              {/* <EmployeApproval /> */}
+              {<ApprovalRequest />}
             </RoleBasedRoute>
           }
         />

@@ -39,6 +39,7 @@ const SearchWithPopoverOnly = () => {
 
   // Local state to control popover visibility
   const [visible, setVisible] = useState(false);
+  console.log("SearchWithPopoverOnly selectedKey", selectedKey);
 
   /**
    * SearchBarContext its state handler for this function.
@@ -69,6 +70,10 @@ const SearchWithPopoverOnly = () => {
     employeePendingApprovalSearch,
     setEmployeePendingApprovalSearch,
     resetEmployeePendingApprovalSearch,
+
+    // for Line Manager Approval Request
+    lineManagerApprovalSearch,
+    setLineManagerApprovalSearch,
   } = useSearchBarContext();
   const { activeTab } = usePortfolioContext();
 
@@ -116,6 +121,13 @@ const SearchWithPopoverOnly = () => {
             }));
         }
 
+        break;
+
+      case "5":
+        setLineManagerApprovalSearch((prev) => ({
+          ...prev,
+          filterTrigger: true,
+        }));
         break;
       default:
         setEmployeeMyApprovalSearch((prev) => ({
@@ -168,6 +180,13 @@ const SearchWithPopoverOnly = () => {
         }
 
         break;
+
+      case "5":
+        setLineManagerApprovalSearch((prev) => ({
+          ...prev,
+          filterTrigger: true,
+        }));
+        break;
       default:
         setEmployeeMyApprovalSearch((prev) => ({
           ...prev,
@@ -191,7 +210,10 @@ const SearchWithPopoverOnly = () => {
           employeeMyApprovalSearch,
           employeeMyTransactionSearch,
           employeePortfolioSearch,
-          employeePendingApprovalSearch
+          employeePendingApprovalSearch,
+
+          //For Line Manager
+          lineManagerApprovalSearch
         )}
         onChange={(e) =>
           handleMainInstrumentChange(
@@ -201,7 +223,8 @@ const SearchWithPopoverOnly = () => {
             setEmployeeMyApprovalSearch,
             setEmployeeMyTransactionSearch,
             setEmployeePortfolioSearch,
-            setEmployeePendingApprovalSearch
+            setEmployeePendingApprovalSearch,
+            setLineManagerApprovalSearch
           )
         }
         style={{
@@ -240,6 +263,7 @@ const SearchWithPopoverOnly = () => {
               setEmployeeMyTransactionSearch,
               setEmployeePortfolioSearch,
               setEmployeePendingApprovalSearch,
+              setLineManagerApprovalSearch,
             });
           }
         }}
