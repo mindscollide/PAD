@@ -6,16 +6,20 @@ import { Outlet, useLocation } from "react-router-dom";
 import { useEffect } from "react";
 import { useMqttClient } from "../../../commen/mqtt/mqttConnection";
 import { useMyApproval } from "../../../context/myApprovalContaxt";
+import { useDashboardContext } from "../../../context/dashboardContaxt";
 
 const { Content } = Layout;
 
 const Dashboard = () => {
   const location = useLocation();
   const { setIsEmployeeMyApproval } = useMyApproval();
-
+  const { setDashboardData } = useDashboardContext();
   const subscribeID = "PAD_TRADE";
   const userProfileData = JSON.parse(
     sessionStorage.getItem("user_profile_data")
+  );
+  const userAssignedRolesData = JSON.parse(
+    sessionStorage.getItem("user_assigned_roles")
   );
   let userID = userProfileData?.userID;
   const { connectToMqtt, isConnected } = useMqttClient({
@@ -28,43 +32,133 @@ const Dashboard = () => {
       console.log("MQTT: Message arrived →", data.message, data);
 
       try {
-        const { receiverID } = data;
-        const currentUserId = userID; // 👈 replace with your actual user ID source
+        const { receiverID, message, payload, roleIDs } = data;
+        const currentUserId = userID; // 👈 replace with actual source
 
-        // ✅ Only process if currentUserId is in receiverID array
-        if (Array.isArray(receiverID) && receiverID.includes(currentUserId)) {
-          switch (data.message) {
-            case "NEW_TRADE_APPROVAL_REQUEST":
-              if (data.payload ) {
-                setIsEmployeeMyApproval((prev) => ({
-                  ...prev,
-                  approvals: [data.payload, ...(prev.approvals || [])], // add new at the start
-                  totalRecords: (prev.totalRecords || 0) + 1, // increment safely
-                }));
-                console.log(
-                  "MQTT: NEW_TRADE_APPROVAL_REQUEST → payload",
-                  data.payload
-                );
-              } else {
-                console.warn(
-                  "MQTT: Missing payload in NEW_TRADE_APPROVAL_REQUEST"
-                );
-              }
-              break;
+        // ✅ Only process if receiverID is an array and includes current user
+        // if (!Array.isArray(receiverID) || !receiverID.includes(currentUserId)) {
+        //   console.log("MQTT: Message not intended for this user", data);
+        //   return;
+        // }
 
-            // Example: you can easily add more message types here
-            case "TRADE_UPDATED":
-              console.log("MQTT: TRADE_UPDATED", data.payload);
-              // do state updates here
-              break;
+        switch (message) {
+          case "NEW_TRADE_APPROVAL_REQUEST": {
+            if (payload) {
+              setIsEmployeeMyApproval((prev) => ({
+                ...prev,
+                approvals: [payload, ...(prev.approvals || [])], // prepend
+                totalRecords: (prev.totalRecords || 0) + 1, // increment safely
+              }));
 
-            default:
-              console.warn(
-                "MQTT: No specific handler for message →",
-                data.message
+              console.log(
+                "MQTT: NEW_TRADE_APPROVAL_REQUEST → payload",
+                payload
               );
-              break;
+            } else {
+              console.warn(
+                "MQTT: Missing payload in NEW_TRADE_APPROVAL_REQUEST"
+              );
+            }
+            break;
           }
+
+          case "USER_DASHBOARD_DATA": {
+            console.log("MQTT: USER_DASHBOARD_DATA", data);
+            console.log(
+              "MQTT: USER_DASHBOARD_DATA userAssignedRolesData",
+              userAssignedRolesData
+            );
+
+            // Ensure roleIDs is valid and check against assigned roles
+            const hasRole =
+              !!data?.roleIDs &&
+              Array.isArray(userAssignedRolesData) &&
+              userAssignedRolesData.some(
+                (role) => role.roleID === Number(data.roleIDs)
+              );
+            console.log(
+              "MQTT: Authorized USER_DASHBOARD_DATA → hasRole",
+              hasRole
+            );
+            if (hasRole) {
+              console.log(
+                "MQTT: Authorized USER_DASHBOARD_DATA → roleID",
+                roleIDs
+              );
+              switch (roleIDs) {
+                case "1": // Example: Admin
+                  console.log("MQTT: Handling Admin dashboard update");
+                  // do state updates for Admin
+                  break;
+
+                case "2": // Example: Employee
+                  console.log("MQTT: Handling Employee dashboard update");
+                  setDashboardData((prev) => {
+                    if (!prev?.employee) return prev; // safeguard
+
+                    const updatedEmployee = { ...prev.employee };
+
+                    // loop through mqtt keys
+                    Object.keys(payload).forEach((key) => {
+                      if (payload[key] !== null) {
+                        updatedEmployee[key] = payload[key]; // replace only non-null values
+                      }
+                    });
+
+                    return {
+                      ...prev,
+                      employee: updatedEmployee,
+                    };
+                  });
+
+                  // do state updates for Employee
+                  break;
+
+                case "3": // Example: Line Manager
+                  console.log("MQTT: Handling Line Manager dashboard update");
+                  setDashboardData((prev) => {
+                    if (!prev?.lineManager) return prev; // safeguard
+
+                    const updatedLineManager = { ...prev.lineManager };
+                    console.log(
+                      "MQTT : updatedLineManager",
+                      updatedLineManager
+                    );
+                    // loop through mqtt keys
+                    Object.keys(payload).forEach((key) => {
+                      if (payload[key] !== null) {
+                        updatedLineManager[key] = payload[key]; // replace only non-null values
+                      }
+                    });
+
+                    return {
+                      ...prev,
+                      lineManager: updatedLineManager,
+                    };
+                  });
+                  // do state updates for Manager
+                  break;
+
+                default:
+                  console.warn(
+                    "MQTT: Authorized roleID but no handler defined →",
+                    roleIDs
+                  );
+                  break;
+              }
+              // ✅ do state updates here
+            } else {
+              console.warn(
+                "MQTT: Missing or unauthorized roleID in USER_DASHBOARD_DATA",
+                roleIDs
+              );
+            }
+            break;
+          }
+
+          default:
+            console.warn("MQTT: No handler for message →", message);
+            break;
         }
       } catch (error) {
         console.error("MQTT: Error handling message", error, data);

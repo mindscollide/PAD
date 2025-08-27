@@ -4,7 +4,6 @@ import styles from "./boxCard.module.css";
 
 // Utility functions and mappings
 import { navigateToPage, typeColorMap } from "./utils";
-import { Button } from "../..";
 import {
   formatNumberWithCommas,
   convertSingleDigittoDoubble,
@@ -13,7 +12,8 @@ import { useNavigate } from "react-router-dom";
 import { useSidebarContext } from "../../../context/sidebarContaxt";
 import EmptyState from "../../emptyStates/empty-states";
 import urgent from "../../../assets/img/urgent-red.png";
-import { ClockCircleOutlined } from "@ant-design/icons";
+import AnimatedCount from "./animatedCount";
+import { Button } from "../..";
 const { Text } = Typography;
 
 /**
@@ -218,27 +218,27 @@ const BoxCard = ({
                         >
                           {box.label}
                         </Text>
-                        <Text
+                        <AnimatedCount
                           className={styles[`${base}count`]}
                           style={{ color: textCountColor }}
-                        >
-                          {console.log("formatNumberWithCommas", box.count)}
-                          {convertSingleDigittoDoubble(
+                          value={convertSingleDigittoDoubble(
                             formatNumberWithCommas(box.count)
                           )}
-                        </Text>
+                        />
                       </>
                     ) : locationStyle === "up" ? (
                       // Count on top, label below
                       <>
-                        <Text
-                          className={styles[`${base}count`]}
-                          style={{ color: textCountColor }}
-                        >
-                          {convertSingleDigittoDoubble(
-                            formatNumberWithCommas(box.count)
-                          )}
-                        </Text>
+                        <div className={styles.countWrapper}>
+                          <AnimatedCount
+                            className={styles[`${base}count`]}
+                            style={{ color: textCountColor }}
+                            value={convertSingleDigittoDoubble(
+                              formatNumberWithCommas(box.count)
+                            )}
+                          />
+                        </div>
+
                         <Text
                           className={styles[`${base}label`]}
                           style={{ color: textLableColor }}
@@ -254,14 +254,13 @@ const BoxCard = ({
                         justify="space-between"
                       >
                         <Col>
-                          <Text
+                          <AnimatedCount
                             className={styles[`${base}count`]}
                             style={{ color: textCountColor }}
-                          >
-                            {convertSingleDigittoDoubble(
+                            value={convertSingleDigittoDoubble(
                               formatNumberWithCommas(box.count)
                             )}
-                          </Text>
+                          />
                         </Col>
                         <Col>
                           <Row>
@@ -312,12 +311,11 @@ const BoxCard = ({
               >
                 No. of Shares
               </Text>
-              <Text
+              <AnimatedCount
                 className={styles[`${base}count`]}
                 style={{ color: "#00640A" }}
-              >
-                0
-              </Text>
+                value={convertSingleDigittoDoubble(formatNumberWithCommas(0))}
+              />
             </div>
           </Col>
         </Row>
