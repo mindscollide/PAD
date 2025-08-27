@@ -36,10 +36,10 @@ const Dashboard = () => {
         const currentUserId = userID; // 👈 replace with actual source
 
         // ✅ Only process if receiverID is an array and includes current user
-        if (!Array.isArray(receiverID) || !receiverID.includes(currentUserId)) {
-          console.warn("MQTT: Message not intended for this user", data);
-          return;
-        }
+        // if (!Array.isArray(receiverID) || !receiverID.includes(currentUserId)) {
+        //   console.log("MQTT: Message not intended for this user", data);
+        //   return;
+        // }
 
         switch (message) {
           case "NEW_TRADE_APPROVAL_REQUEST": {
@@ -64,14 +64,22 @@ const Dashboard = () => {
 
           case "USER_DASHBOARD_DATA": {
             console.log("MQTT: USER_DASHBOARD_DATA", data);
+            console.log(
+              "MQTT: USER_DASHBOARD_DATA userAssignedRolesData",
+              userAssignedRolesData
+            );
 
             // Ensure roleIDs is valid and check against assigned roles
             const hasRole =
               !!data?.roleIDs &&
+              Array.isArray(userAssignedRolesData) &&
               userAssignedRolesData.some(
                 (role) => role.roleID === Number(data.roleIDs)
               );
-
+            console.log(
+              "MQTT: Authorized USER_DASHBOARD_DATA → hasRole",
+              hasRole
+            );
             if (hasRole) {
               console.log(
                 "MQTT: Authorized USER_DASHBOARD_DATA → roleID",
@@ -108,6 +116,26 @@ const Dashboard = () => {
 
                 case "3": // Example: Line Manager
                   console.log("MQTT: Handling Line Manager dashboard update");
+                  setDashboardData((prev) => {
+                    if (!prev?.lineManager) return prev; // safeguard
+
+                    const updatedLineManager = { ...prev.lineManager };
+                    console.log(
+                      "MQTT : updatedLineManager",
+                      updatedLineManager
+                    );
+                    // loop through mqtt keys
+                    Object.keys(payload).forEach((key) => {
+                      if (payload[key] !== null) {
+                        updatedLineManager[key] = payload[key]; // replace only non-null values
+                      }
+                    });
+
+                    return {
+                      ...prev,
+                      lineManager: updatedLineManager,
+                    };
+                  });
                   // do state updates for Manager
                   break;
 

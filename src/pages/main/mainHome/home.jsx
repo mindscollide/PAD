@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useMemo } from "react";
 import { Avatar, Col, Row } from "antd";
 import { BarChartOutlined, FileDoneOutlined } from "@ant-design/icons";
 
@@ -19,7 +19,9 @@ import { roleKeyMap, checkRoleMatch } from "./utills";
 import { useGlobalLoader } from "../../../context/LoaderContext";
 import { useNavigate } from "react-router-dom";
 import { useSearchBarContext } from "../../../context/SearchBarContaxt";
-
+// ✅ Memoized versions so they only re-render if props actually change
+const MemoizedBoxCard = React.memo(BoxCard);
+const MemoizedReportCard = React.memo(ReportCard);
 const Home = () => {
   const { showNotification } = useNotification();
   const navigate = useNavigate();
@@ -38,6 +40,27 @@ const Home = () => {
   const { setAllyType } = useSearchBarContext();
   // Prevent multiple fetches on mount
   const hasFetched = useRef(false);
+  const employeeApprovals = useMemo(
+    () => dashboardData?.employee?.myApprovals?.data || [],
+    [dashboardData?.employee?.myApprovals?.data]
+  );
+  const employeePortfolio = useMemo(
+    () => dashboardData?.employee?.portfolio?.data || [],
+    [dashboardData?.employee?.portfolio?.data]
+  );
+  const employeeTransactions = useMemo(
+    () => dashboardData?.employee?.myTransactions?.data || [],
+    [dashboardData?.employee?.myTransactions?.data]
+  );
+
+  const lineManagerApprovals = useMemo(
+    () => dashboardData?.lineManager?.myApprovals?.data || [],
+    [dashboardData?.lineManager?.myApprovals?.data]
+  );
+  const lineManagerAction = useMemo(
+    () => dashboardData?.lineManager?.myActions?.data || [],
+    [dashboardData?.lineManager?.myActions?.data]
+  );
 
   useEffect(() => {
     if (hasFetched.current) return;
@@ -102,11 +125,11 @@ const Home = () => {
             </Col>
 
             <Col xs={24} md={12} lg={8}>
-              <BoxCard
+              <MemoizedBoxCard
                 locationStyle={"down"}
                 title={"Portfolio"}
                 mainClassName={"smallShareHomeCard"}
-                boxes={dashboardData?.employee?.portfolio?.data}
+                boxes={employeePortfolio}
                 buttonTitle={"View Portfolio"}
                 buttonClassName={"big-white-card-button"}
                 userRole={"employee"}
@@ -116,11 +139,11 @@ const Home = () => {
           </Row>
           <Row gutter={[16, 16]}>
             <Col xs={24} md={12} lg={12}>
-              <BoxCard
+              <MemoizedBoxCard
                 locationStyle={"up"}
                 title="My Approvals"
                 mainClassName={"mediumHomeCard"}
-                boxes={dashboardData?.employee?.myApprovals?.data}
+                boxes={employeeApprovals}
                 buttonTitle={"See More"}
                 buttonClassName={"big-white-card-button"}
                 userRole={"employee"}
@@ -129,11 +152,11 @@ const Home = () => {
             </Col>
 
             <Col xs={24} md={12} lg={12}>
-              <BoxCard
+              <MemoizedBoxCard
                 locationStyle={"up"}
                 title="My Transactions"
                 mainClassName={"mediumHomeCard"}
-                boxes={dashboardData?.employee?.myTransactions?.data}
+                boxes={employeeTransactions}
                 buttonTitle={"See More"}
                 buttonClassName={"big-white-card-button"}
                 userRole={"employee"}
@@ -198,12 +221,12 @@ const Home = () => {
           </Row>
           <Row gutter={[16, 16]}>
             <Col xs={24} md={12} lg={12}>
-              <BoxCard
+              <MemoizedBoxCard
                 // warningFlag={true}
                 locationStyle={"up"}
                 title="Approvals Request"
                 mainClassName={"mediumHomeCard"}
-                boxes={dashboardData?.lineManager?.myApprovals?.data}
+                boxes={lineManagerApprovals}
                 buttonTitle={"See More"}
                 buttonClassName={"big-white-card-button"}
                 userRole={"LM"}
@@ -212,11 +235,11 @@ const Home = () => {
             </Col>
 
             <Col xs={24} md={12} lg={12}>
-              <BoxCard
+              <MemoizedBoxCard
                 locationStyle={"up"}
                 title="My Actions"
                 mainClassName={"mediumHomeCard"}
-                boxes={dashboardData?.lineManager?.myActions?.data}
+                boxes={lineManagerAction}
                 buttonTitle={"See More"}
                 buttonClassName={"big-white-card-button"}
                 userRole={"LM"}
