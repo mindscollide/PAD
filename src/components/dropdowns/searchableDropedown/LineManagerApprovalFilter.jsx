@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo, useState } from "react";
 import { Row, Col, Space } from "antd";
 import { useSidebarContext } from "../../../context/sidebarContaxt";
 import { Button, DateRangePicker, TextField } from "../..";
@@ -7,8 +7,10 @@ import {
   allowOnlyNumbers,
   removeFirstSpace,
 } from "../../../commen/funtions/rejex";
+import moment from "moment";
+import CustomDatePicker from "../../dateSelector/datePicker/datePicker";
 
-export const EmployeeTransactionFilter = ({ handleSearch }) => {
+export const LineManagerApprovalFilter = ({ handleSearch }) => {
   console.log("Checker Search Coming");
   /**
    * useSidebarContext its state handler for this sidebar.
@@ -17,6 +19,16 @@ export const EmployeeTransactionFilter = ({ handleSearch }) => {
    */
   const { collapsed, selectedKey } = useSidebarContext();
 
+  // 🔹 Local form state
+  const [localState, setLocalState] = useState({
+    instrumentName: "",
+    quantity: "",
+    startDate: "",
+  });
+
+  // 🔹 Track touched fields
+  const [dirtyFields, setDirtyFields] = useState({});
+
   /**
    * SearchBarContext its state handler for this function.
    * - instrumentName for instruments of dropdown menu
@@ -24,28 +36,48 @@ export const EmployeeTransactionFilter = ({ handleSearch }) => {
    * - date for date of dropdown menu
    * - mainInstrumentName for main search bar input
    * - instrumentName and this mainInstrumentName contain same data but issue is we have to handel both diferently
-   * - resetEmployeeMyTransactionSearch is to reset all their state to its initial
+   * - resetLineManagerApprovalSearch is to reset all their state to its initial
    */
 
   const {
-    employeeMyTransactionSearch,
-    setEmployeeMyTransactionSearch,
-    resetEmployeeMyTransactionSearch,
+    lineManagerApprovalSearch,
+    setLineManagerApprovalSearch,
+    resetLineManagerApprovalSearch,
   } = useSearchBarContext();
   /**
    * Handles input change for approval filters.
    * - Allows only numeric input for "Quantity"
    * - Removes leading space for text fields
    */
-  const handleEmployeeApprovalInputChange = (e, setState) => {
-    const { name, value } = e.target;
-    // Handle numeric validation for Quantity
-    if (name === "Quantity") {
-      if (value === "" || allowOnlyNumbers(value)) {
-        setState((prev) => ({ ...prev, quantity: value }));
-      }
-      return;
+
+  // 🔹 Helper to update field + mark dirty
+  const setFieldValue = (field, value) => {
+    console.log("handleDateChange", field, value);
+
+    setLocalState((prev) => ({ ...prev, [field]: value }));
+
+    setDirtyFields((prev) => ({ ...prev, [field]: true }));
+  };
+
+  const handleDateChange = (date, fieldName) => {
+    setFieldValue(fieldName, date); // keep moment | null in state
+  };
+
+  const startDateValue = useMemo(() => {
+    if (dirtyFields.startDate) {
+      return localState.startDate; // already a moment | null
     }
+    return lineManagerApprovalSearch.startDate
+      ? moment(lineManagerApprovalSearch.startDate, "YYYY-MM-DD")
+      : null;
+  }, [
+    dirtyFields.startDate,
+    localState.startDate,
+    lineManagerApprovalSearch.startDate,
+  ]);
+
+  const handleLManagerApprovalInputChange = (e, setState) => {
+    const { name, value } = e.target;
 
     // General handler
     setState((prev) => ({
@@ -61,12 +93,9 @@ export const EmployeeTransactionFilter = ({ handleSearch }) => {
           <TextField
             label="Instrument Name"
             name="instrumentName"
-            value={employeeMyTransactionSearch.instrumentName}
+            value={lineManagerApprovalSearch.instrumentName}
             onChange={(e) =>
-              handleEmployeeApprovalInputChange(
-                e,
-                setEmployeeMyTransactionSearch
-              )
+              handleLManagerApprovalInputChange(e, setLineManagerApprovalSearch)
             }
             placeholder="Instrument Name"
             size="medium"
@@ -75,16 +104,13 @@ export const EmployeeTransactionFilter = ({ handleSearch }) => {
         </Col>
         <Col xs={24} sm={24} md={12} lg={12}>
           <TextField
-            label="Quantity"
-            name="Quantity"
-            value={employeeMyTransactionSearch.quantity}
+            label="Requester Name"
+            name="quantity"
+            value={lineManagerApprovalSearch.quantity}
             onChange={(e) =>
-              handleEmployeeApprovalInputChange(
-                e,
-                setEmployeeMyTransactionSearch
-              )
+              handleLManagerApprovalInputChange(e, setLineManagerApprovalSearch)
             }
-            placeholder="Quantity"
+            placeholder="Requester Name"
             size="medium"
             classNames="Search-Field"
           />
@@ -92,32 +118,13 @@ export const EmployeeTransactionFilter = ({ handleSearch }) => {
       </Row>
       <Row gutter={[12, 12]}>
         <Col xs={24} sm={24} md={12} lg={12}>
-          <DateRangePicker
-            label="Date Range"
+          <CustomDatePicker
+            label="Date"
+            name="startDate"
             size="medium"
-            value={
-              employeeMyTransactionSearch.startDate &&
-              employeeMyTransactionSearch.endDate
-                ? [
-                    employeeMyTransactionSearch.startDate,
-                    employeeMyTransactionSearch.endDate,
-                  ]
-                : null
-            }
-            onChange={(dates) =>
-              setEmployeeMyTransactionSearch((prev) => ({
-                ...prev,
-                startDate: dates?.[0] || null,
-                endDate: dates?.[1] || null,
-              }))
-            }
-            onClear={() =>
-              setEmployeeMyTransactionSearch((prev) => ({
-                ...prev,
-                startDate: null,
-                endDate: null,
-              }))
-            }
+            value={startDateValue}
+            onChange={(date) => handleDateChange(date, "startDate")}
+            format="YYYY-MM-DD"
           />
         </Col>
       </Row>
@@ -125,7 +132,7 @@ export const EmployeeTransactionFilter = ({ handleSearch }) => {
         <Col>
           <Space>
             <Button
-              onClick={resetEmployeeMyTransactionSearch}
+              onClick={resetLineManagerApprovalSearch}
               text={"Reset"}
               className="big-light-button"
             />

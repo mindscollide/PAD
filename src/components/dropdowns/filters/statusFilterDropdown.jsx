@@ -52,6 +52,9 @@ const StatusFilterDropdown = ({
       case "4":
         setFilterOptions(emtStatusOptions);
         break;
+      case "6":
+        setFilterOptions(emtStatusOptions);
+        break;
       default:
         setFilterOptions([]);
     }
