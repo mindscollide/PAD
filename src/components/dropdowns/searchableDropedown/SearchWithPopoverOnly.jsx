@@ -83,7 +83,7 @@ const SearchWithPopoverOnly = () => {
   const handleSearch = () => {
     switch (selectedKey) {
       case "1":
-        console.log("selectedKey",selectedKey)
+        console.log("selectedKey", selectedKey);
         setEmployeeMyApprovalSearch((prev) => ({
           ...prev,
           tableFilterTrigger: true,
@@ -180,7 +180,7 @@ const SearchWithPopoverOnly = () => {
     <Space.Compact className={styles.searchWrapper}>
       {/* Main Search Input */}
       <Input
-        placeholder="Search on Instrument"
+        placeholder={selectedKey === 1 ? "Instrument Name" : "Instrument Name"}
         allowClear
         className={
           collapsed ? styles["inputWrapperCollapsed"] : styles["inputWrapper"]
