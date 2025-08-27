@@ -280,3 +280,11 @@
   overflow-y: hidden; /* no vertical scroll */
   white-space: nowrap;
 }
+
+.centerAlignStepper {
+  justify-content: center !important;
+}
+
+.leftAlignStepper {
+  justify-content: flex-start;
+}

@@ -60,7 +60,7 @@ const Approval = () => {
     setEmployeeMyApprovalSearch,
     resetEmployeeMyApprovalSearch,
   } = useSearchBarContext();
-console.log("employeeMyApproval",employeeMyApproval)
+  console.log("employeeMyApproval", employeeMyApproval);
   const [sortedInfo, setSortedInfo] = useState({});
   const [approvalData, setApprovalData] = useState([]);
   const [loadingMore, setLoadingMore] = useState(false); // spinner at bottom
@@ -365,14 +365,16 @@ console.log("employeeMyApproval",employeeMyApproval)
           });
 
           // Append new approvals
-          setIsEmployeeMyApproval((prev) => ({
-            ...prev,
-            approvals: [...(prev?.approvals || []), ...(data.approvals || [])],
-            totalRecords:
-              prev?.totalRecords !== data.totalRecords
-                ? data.totalRecords
-                : prev?.totalRecords,
-          }));
+          setIsEmployeeMyApproval(
+            (prev = { approvals: [], totalRecords: 0 }) => ({
+              ...prev,
+              approvals: [...prev?.approvals, ...(data?.approvals || [])],
+              totalRecords:
+                prev?.totalRecords !== data?.totalRecords
+                  ? data?.totalRecords
+                  : prev?.totalRecords,
+            })
+          );
         } catch (error) {
           console.error("Error loading more approvals:", error);
         } finally {

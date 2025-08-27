@@ -70,8 +70,7 @@ export const getBorderlessTableColumns = (
     title: withSortIcon("Approval ID", "tradeApprovalID", sortedInfo),
     dataIndex: "tradeApprovalID",
     key: "tradeApprovalID",
-    width: "15%",
-    // width: 200,
+    width: "10%",
     ellipsis: true,
     sorter: (a, b) => a.tradeApprovalID - b.tradeApprovalID,
     sortDirections: ["ascend", "descend"],
@@ -81,8 +80,6 @@ export const getBorderlessTableColumns = (
     sortIcon: () => null,
     render: (tradeApprovalID) => {
       console.log(tradeApprovalID, "jhvjhvajdvadvasjdvj");
-      // Format: insert dash before numbers
-      const formattedID = tradeApprovalID?.replace(/(\D+)(\d+)/, "$1-$2");
       return (
         <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
           <span className="font-medium">
@@ -96,7 +93,7 @@ export const getBorderlessTableColumns = (
     title: withSortIcon("Instrument", "appinstrumentrovalID", sortedInfo),
     dataIndex: "instrument",
     key: "instrument",
-    width: "15%",
+    width: "18%",
     ellipsis: true,
     sorter: (a, b) => {
       const nameA = a.instrument?.instrumentName || "";
@@ -118,14 +115,34 @@ export const getBorderlessTableColumns = (
       const name = instrument?.instrumentName || "";
       const code = instrument?.instrumentCode || "";
       return (
-        <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: "12px",
+            paddingRight: "25px",
+          }}
+        >
           <span
             className="border-less-table-orange-instrumentBadge"
             style={{ minWidth: 30 }}
           >
             {assetCode.substring(0, 2).toUpperCase()}
           </span>
-          <span className="font-medium">{`${name} - ${code}`}</span>
+          <span
+            className="font-medium"
+            style={{
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+              whiteSpace: "nowrap",
+              maxWidth: "200px",
+              display: "inline-block",
+              cursor: "pointer",
+            }}
+            title={`${name} - ${code}`} // show full text on hover
+          >
+            {`${name} - ${code}`}
+          </span>
         </div>
       );
     },
@@ -144,7 +161,7 @@ export const getBorderlessTableColumns = (
     dataIndex: "type",
     key: "type",
     ellipsis: true,
-    width: "15%",
+    width: "8%",
     filteredValue: employeeMyApprovalSearch.type?.length
       ? employeeMyApprovalSearch.type
       : null,
@@ -160,7 +177,7 @@ export const getBorderlessTableColumns = (
     dataIndex: "requestDateTime",
     key: "requestDateTime",
     ellipsis: true,
-    width: "15%",
+    width: "8%",
     sorter: (a, b) =>
       formatApiDateTime(a.requestDateTime).localeCompare(
         formatApiDateTime(b.requestDateTime)
@@ -206,7 +223,6 @@ export const getBorderlessTableColumns = (
     onFilter: () => true,
     render: (status) => {
       const tag = approvalStatusMap[status] || {};
-      console.log(tag, "TagssTagsTagsTags");
       return (
         <Tag
           style={{
@@ -238,9 +254,9 @@ export const getBorderlessTableColumns = (
     dataIndex: "timeRemaining",
     key: "timeRemaining",
     ellipsis: true,
-    width: "15%",
+    width: "25%",
+    align: "center",
     render: (text, record) => {
-      console.log(record, "Checkecnekjcb record");
       // ✅ Show nothing if pending
       if (record.status === "Pending")
         return <span className="text-gray-400">-</span>;
@@ -269,13 +285,11 @@ export const getBorderlessTableColumns = (
     render: (text, record) => {
       //Global State to selected data to show in ViewDetailModal
       const { setSelectedViewDetail } = useGlobalModal();
-      console.log(record, "Actions render fired:");
       return (
         <Button
           className="big-orange-button"
           text="View Details"
           onClick={() => {
-            console.log(record, "Clicked record");
             setSelectedViewDetail(record);
             setIsViewDetail(true);
           }}

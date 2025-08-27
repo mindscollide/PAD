@@ -52,6 +52,9 @@ const ViewDetailModal = () => {
 
   console.log(employeeBasedBrokersData, "employeeBasedBrokersDataData555");
 
+  console.log("hierarchyDetails:", viewDetailsModalData?.hierarchyDetails);
+  console.log("Type:", typeof viewDetailsModalData?.hierarchyDetails);
+
   // GETALLVIEWDETAIL API FUNCTION
   const fetchGetAllViewData = async () => {
     await showLoader(true);
@@ -525,9 +528,17 @@ const ViewDetailModal = () => {
 
               <Row>
                 <div className={styles.mainStepperContainer}>
-                  <div className={styles.backgrounColorOfStepper}>
+                  <div
+                    className={`${styles.backgrounColorOfStepper} ${
+                      (viewDetailsModalData?.hierarchyDetails?.length || 0) <= 3
+                        ? styles.centerAlignStepper
+                        : styles.leftAlignStepper
+                    }`}
+                  >
                     <Stepper
-                      activeStep={2}
+                      activeStep={
+                        viewDetailsModalData?.hierarchyDetails?.length - 1
+                      }
                       connectorStyleConfig={{
                         activeColor: "#00640A",
                         completedColor: "#00640A",
@@ -541,65 +552,71 @@ const ViewDetailModal = () => {
                         borderRadius: "50%",
                       }}
                     >
-                      {viewDetailsModalData?.hierarchyList?.map((id, index) => {
-                        // find details from hierarchyDetails
-                        const isEmployee =
-                          id ===
-                          viewDetailsModalData?.hierarchyDetails?.employeeID;
-                        const isManager =
-                          id ===
-                          viewDetailsModalData?.hierarchyDetails?.lineManagerID;
+                      {Array.isArray(viewDetailsModalData?.hierarchyDetails) &&
+                        viewDetailsModalData.hierarchyDetails.map(
+                          (person, index) => {
+                            const {
+                              fullName,
+                              bundleStatusID,
+                              requestDate,
+                              requestTime,
+                            } = person;
+                            console.log(person, "CheckPersonData");
 
-                        const name = isEmployee
-                          ? viewDetailsModalData?.hierarchyDetails?.employee
-                          : isManager
-                          ? viewDetailsModalData?.hierarchyDetails?.lineManger
-                          : "Unknown";
+                            const formattedDateTime = formatApiDateTime(
+                              `${requestDate} ${requestTime}`
+                            );
 
-                        const email = isEmployee
-                          ? viewDetailsModalData?.hierarchyDetails
-                              ?.employeeEmail
-                          : isManager
-                          ? viewDetailsModalData?.hierarchyDetails
-                              ?.lineManagerEmail
-                          : null;
-
-                        // set status dynamically
-                        const status =
-                          index ===
-                          viewDetailsModalData?.hierarchyList.length - 1
-                            ? "Pending"
-                            : "Approved";
-
-                        return (
-                          <Step
-                            key={id}
-                            label={
-                              <div className={styles.customlabel}>
-                                <div className={styles.customtitle}>{name}</div>
-                                <div className={styles.customdesc}>
-                                  {status === "Pending"
-                                    ? "Pending"
-                                    : email || "No Email Found"}
-                                </div>
-                              </div>
+                            let iconSrc;
+                            switch (bundleStatusID) {
+                              case 1:
+                                iconSrc = EllipsesIcon;
+                                break;
+                              case 2:
+                                // iconSrc = ResubmittedIcon;
+                                break;
+                              case 3:
+                                iconSrc = CheckIcon;
+                                break;
+                              case 4:
+                                // iconSrc = CrossIcon;
+                                break;
+                              case 5:
+                                // iconSrc = TradedIcon;
+                                break;
+                              case 6:
+                                // iconSrc = NotTradedIcon;
+                                break;
+                              default:
+                                iconSrc = EllipsesIcon;
                             }
-                            children={
-                              <div className={styles.stepCircle}>
-                                <img
-                                  src={
-                                    status === "Pending"
-                                      ? EllipsesIcon
-                                      : CheckIcon
-                                  }
-                                  alt="status-icon"
-                                  className={styles.circleImg}
-                                />
-                              </div>
-                            }
-                          />
-                        );
-                      })}
+
+                            return (
+                              <Step
+                                key={index}
+                                label={
+                                  <div className={styles.customlabel}>
+                                    <div className={styles.customtitle}>
+                                      {fullName}
+                                    </div>
+                                    <div className={styles.customdesc}>
+                                      {formattedDateTime}
+                                    </div>
+                                  </div>
+                                }
+                                children={
+                                  <div className={styles.stepCircle}>
+                                    <img
+                                      src={iconSrc}
+                                      alt="status-icon"
+                                      className={styles.circleImg}
+                                    />
+                                  </div>
+                                }
+                              />
+                            );
+                          }
+                        )}
                     </Stepper>
                   </div>
                 </div>
