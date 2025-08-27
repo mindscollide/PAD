@@ -1,12 +1,12 @@
 // columns.js
 import ArrowUP from "../../../../assets/img/arrow-up-dark.png";
 import ArrowDown from "../../../../assets/img/arrow-down-dark.png";
-import { ArrowsAltOutlined } from "@ant-design/icons";
+import DefaultColumArrow from "../../../../assets/img/default-colum-arrow.png";
 import React from "react";
 import TypeColumnTitle from "../../../../components/dropdowns/filters/typeColumnTitle";
 import StatusColumnTitle from "../../../../components/dropdowns/filters/statusColumnTitle";
 import { Tag } from "antd";
-import style from "./myHistory.module.css"
+import style from "./myHistory.module.css";
 const getSortIcon = (columnKey, sortedInfo) => {
   if (sortedInfo?.columnKey === columnKey) {
     return sortedInfo.order === "ascend" ? (
@@ -15,7 +15,9 @@ const getSortIcon = (columnKey, sortedInfo) => {
       <img src={ArrowUP} alt="Desc" className="custom-sort-icon" />
     );
   }
-  return <ArrowsAltOutlined className="custom-sort-icon" />;
+  return (
+    <img src={DefaultColumArrow} alt="Default" className="custom-sort-icon" />
+  );
 };
 
 // Helper for consistent column titles
