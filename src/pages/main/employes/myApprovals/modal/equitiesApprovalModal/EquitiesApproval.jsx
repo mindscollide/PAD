@@ -39,7 +39,6 @@ const EquitiesApproval = () => {
 
   //For Instrument Dropdown show selected Name
   const [selectedInstrument, setSelectedInstrument] = useState(null);
-  console.log(selectedInstrument, "selectedInstrumentselectedInstrument23");
 
   // for employeeBroker state to show data in dropdown
   const [selectedBrokers, setSelectedBrokers] = useState([]);
@@ -47,7 +46,12 @@ const EquitiesApproval = () => {
   //For Type and Asset Type States to show Data in Type Dropdown
   const [selectedTradeApprovalType, setSelectedTradeApprovalType] =
     useState(null);
+
+  //To Show Asset type Id
   const [selectedAssetTypeID, setSelectedAssetTypeID] = useState(null);
+
+  //To Show Asset type Name
+  const [selectedAssetTypeName, setSelectedAssetTypeName] = useState("");
 
   //For Quantity Data State
   const [quantity, setQuantity] = useState("");
@@ -86,7 +90,6 @@ const EquitiesApproval = () => {
 
   // Handle when user selects/deselects brokers
   const handleBrokerChange = (selectedIDs) => {
-    console.log(selectedBrokerIDs, "Checkeceececkekc12121");
     const selectedData = brokerOptions
       .filter((item) => selectedIDs.includes(item.value))
       .map((item) => item.raw);
@@ -117,6 +120,7 @@ const EquitiesApproval = () => {
     const selected = typeOptions.find((opt) => opt.value === value);
     setSelectedTradeApprovalType(value);
     setSelectedAssetTypeID(selected?.assetTypeID || null);
+    setSelectedAssetTypeName(selected?.label || "");
   };
 
   // Handler For quantity
@@ -154,6 +158,8 @@ const EquitiesApproval = () => {
       AssetTypeID: selectedAssetTypeID,
       ApprovalTypeID: selectedTradeApprovalType,
       Quantity: quantityNumber,
+      InstrumentShortCode: selectedInstrument?.name || "",
+      ApprovalType: selectedAssetTypeName,
       ApprovalStatusID: 1,
       Comments: "",
       BrokerIds: selectedBrokers.map((b) => b.brokerID),
@@ -188,6 +194,7 @@ const EquitiesApproval = () => {
     setSelectedBrokers([]);
     setSelectedTradeApprovalType(null);
     setSelectedAssetTypeID(null);
+    setSelectedAssetTypeID("");
     setQuantity("");
   };
 
@@ -196,6 +203,20 @@ const EquitiesApproval = () => {
     await resetStates();
     setIsEquitiesModalVisible(false);
   };
+
+  const isFormFilled = useMemo(() => {
+    return (
+      selectedInstrument !== null &&
+      selectedTradeApprovalType !== null &&
+      quantity.trim() !== "" &&
+      selectedBrokers.length > 0
+    );
+  }, [
+    selectedInstrument,
+    selectedTradeApprovalType,
+    quantity,
+    selectedBrokers,
+  ]);
 
   return (
     <>
@@ -217,7 +238,9 @@ const EquitiesApproval = () => {
               </Row>
               <Row>
                 <Col span={24}>
-                  <label className={styles.instrumentLabel}>Instrument</label>
+                  <label className={styles.instrumentLabel}>
+                    Instrument <span className={styles.aesterickClass}>*</span>
+                  </label>
                   <InstrumentSelect
                     data={formattedInstruments}
                     onSelect={handleSelect}
@@ -231,7 +254,9 @@ const EquitiesApproval = () => {
 
               <Row className={styles.mt1} gutter={[20, 20]}>
                 <Col span={12}>
-                  <label className={styles.instrumentLabel}>Type</label>
+                  <label className={styles.instrumentLabel}>
+                    Type <span className={styles.aesterickClass}>*</span>
+                  </label>
                   <Select
                     label="Type"
                     name="Type"
@@ -241,13 +266,17 @@ const EquitiesApproval = () => {
                     value={selectedTradeApprovalType}
                     onChange={handleTypeSelect}
                     disabled={typeOptions.length === 0}
-                    className={styles.checkboxSelect}
-                    // prefixCls={styles.typeDropdownClass}
+                    prefixCls="EquitiesApprovalSelectPrefix"
                   />
                 </Col>
                 <Col span={12}>
                   <TextField
-                    label="Quantity"
+                    label={
+                      <>
+                        Quantity
+                        <span className={styles.aesterickClass}> *</span>
+                      </>
+                    }
                     placeholder="Quantity"
                     className={styles.TextFieldOfQuantity}
                     type="text"
@@ -260,7 +289,9 @@ const EquitiesApproval = () => {
 
               <Row className={styles.mt1} gutter={[20, 20]}>
                 <Col span={12}>
-                  <label className={styles.instrumentLabel}>Brokers</label>
+                  <label className={styles.instrumentLabel}>
+                    Brokers <span className={styles.aesterickClass}>*</span>
+                  </label>
                   <Select
                     name="broker"
                     placeholder={"Select"}
@@ -323,6 +354,7 @@ const EquitiesApproval = () => {
                     text={"Submit"}
                     className="big-dark-button"
                     onClick={clickOnSubmitButton}
+                    disabled={!isFormFilled}
                   />
                 </Space>
               </Col>
