@@ -38,6 +38,7 @@ const StatusColumnTitle = ({
             }));
             setVisible(false);
           }}
+          setOpenState={setVisible}
           state={state}
           setState={setState}
           tempSelected={tempSelected}

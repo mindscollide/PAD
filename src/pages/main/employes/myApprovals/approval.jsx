@@ -458,7 +458,7 @@ const Approval = () => {
               )} */}
             </>
           ) : (
-            <EmptyState type="request" />
+            <EmptyState type="approvals" />
           )}
         </div>
       </PageLayout>
