@@ -177,7 +177,7 @@ export const getBorderlessTableColumns = (
     dataIndex: "requestDateTime",
     key: "requestDateTime",
     ellipsis: true,
-    width: "8%",
+    width: "14%",
     sorter: (a, b) =>
       formatApiDateTime(a.requestDateTime).localeCompare(
         formatApiDateTime(b.requestDateTime)
