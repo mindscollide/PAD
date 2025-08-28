@@ -40,6 +40,7 @@ const Home = () => {
   const { setAllyType } = useSearchBarContext();
   // Prevent multiple fetches on mount
   const hasFetched = useRef(false);
+  console.log(dashboardData, "dashboardDatadashboardData");
   const employeeApprovals = useMemo(
     () => dashboardData?.employee?.myApprovals?.data || [],
     [dashboardData?.employee?.myApprovals?.data]
@@ -119,7 +120,12 @@ const Home = () => {
             <Col xs={24} md={12} lg={16}>
               <TextCard
                 className="smallCard"
-                title={`Hi ${dashboardData?.title},`}
+                title={
+                  <>
+                    <span id="greeting-text">Hi</span>{" "}
+                    <span id="user-name">{dashboardData?.title}</span>,
+                  </>
+                }
                 subtitle="Good Morning!"
               />
             </Col>
@@ -131,6 +137,7 @@ const Home = () => {
                 mainClassName={"smallShareHomeCard"}
                 boxes={employeePortfolio}
                 buttonTitle={"View Portfolio"}
+                buttonId={"portfolio-view-btn"}
                 buttonClassName={"big-white-card-button"}
                 userRole={"employee"}
                 route={"portfolio"}
@@ -145,6 +152,7 @@ const Home = () => {
                 mainClassName={"mediumHomeCard"}
                 boxes={employeeApprovals}
                 buttonTitle={"See More"}
+                buttonId={"Approvals-view-btn"}
                 buttonClassName={"big-white-card-button"}
                 userRole={"employee"}
                 route={"approvals"}
@@ -158,6 +166,7 @@ const Home = () => {
                 mainClassName={"mediumHomeCard"}
                 boxes={employeeTransactions}
                 buttonTitle={"See More"}
+                buttonId={"Transactions-view-btn"}
                 buttonClassName={"big-white-card-button"}
                 userRole={"employee"}
                 route={"transactions"}
@@ -172,6 +181,7 @@ const Home = () => {
                 mainClassName={"mediumHomeSideCard"}
                 boxes={dashboardData?.employee?.myHistory?.data}
                 buttonTitle={"See More"}
+                buttonId={"History-view-btn"}
                 buttonClassName={"big-white-card-button"}
                 userRole={"employee"}
                 route={"history"}
@@ -182,6 +192,7 @@ const Home = () => {
                 mainClassName={"home-reprot-card"}
                 title="Reports"
                 buttonTitle={"See More"}
+                buttonId={"Reports-view-btn"}
                 buttonClassName={"big-white-card-button"}
                 rowButtonClassName={"small-card-light-button"}
                 data={[
@@ -214,7 +225,12 @@ const Home = () => {
             <Col xs={24} md={24} lg={24}>
               <TextCard
                 className="smallCard"
-                title={`Hi ${dashboardData?.title},`}
+                title={
+                  <>
+                    <span id="greeting-text-LM">Hi</span>{" "}
+                    <span id="user-name-LM">{dashboardData?.title}</span>,
+                  </>
+                }
                 subtitle="Good Morning!"
               />
             </Col>
@@ -225,6 +241,7 @@ const Home = () => {
                 // warningFlag={true}
                 locationStyle={"up"}
                 title="Approvals Request"
+                buttonId={"Approvals-view-btn-LM"}
                 mainClassName={"mediumHomeCard"}
                 boxes={lineManagerApprovals}
                 buttonTitle={"See More"}
@@ -241,6 +258,7 @@ const Home = () => {
                 mainClassName={"mediumHomeCard"}
                 boxes={lineManagerAction}
                 buttonTitle={"See More"}
+                buttonId={"mediumHomeCard-view-btn-LM"}
                 buttonClassName={"big-white-card-button"}
                 userRole={"LM"}
                 route={"actions"}
@@ -253,6 +271,7 @@ const Home = () => {
                 mainClassName={"home-reprot-card"}
                 title="Reports"
                 buttonTitle={"See More"}
+                buttonId={"Reports-view-btn-LM"}
                 buttonClassName={"big-white-card-button"}
                 rowButtonClassName={"small-card-light-button"}
                 data={[

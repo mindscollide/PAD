@@ -60,7 +60,7 @@ export const GlobalModalProvider = ({ children }) => {
   const [declinedGlobalModal, setDeclinedGlobalModal] = useState(false);
 
   //To show Global State of View Comment Modal in LM
-  const[viewCommentGlobalModal, setViewCommentGlobalModal] = useState(false);
+  const [viewCommentGlobalModal, setViewCommentGlobalModal] = useState(false);
 
   /**
    * Global States For Line Manager Modals End here
@@ -87,8 +87,6 @@ export const GlobalModalProvider = ({ children }) => {
         setResubmitIntimation,
         isConductedTransaction,
         setIsConductedTransaction,
-        viewDetailLineManagerModal,
-        setViewDetailLineManagerModal,
 
         /**
          * Global States For Line Manager Modals

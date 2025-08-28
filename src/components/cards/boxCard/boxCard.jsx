@@ -63,6 +63,7 @@ const BoxCard = ({
   boxes = [],
   mainClassName = "",
   buttonTitle = "",
+  buttonId = "",
   buttonClassName = "",
   locationStyle = "down",
   userRole = "",
@@ -102,6 +103,7 @@ const BoxCard = ({
           <div className={styles[`${base}buttonContainer`]}>
             <Button
               type="primary"
+              id={buttonId}
               text={buttonTitle}
               className={buttonClassName}
               onClick={handleClick}

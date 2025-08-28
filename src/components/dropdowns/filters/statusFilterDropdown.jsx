@@ -83,6 +83,7 @@ const StatusFilterDropdown = ({
 
   const handleReset = async () => {
     let newdata = [];
+    console.log("hello test", newdata);
     await apiCallStatus({
       selectedKey,
       newdata,

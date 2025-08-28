@@ -60,10 +60,17 @@ const Approval = () => {
     setEmployeeMyApprovalSearch,
     resetEmployeeMyApprovalSearch,
   } = useSearchBarContext();
-  console.log("employeeMyApproval", employeeMyApproval);
+
   const [sortedInfo, setSortedInfo] = useState({});
   const [approvalData, setApprovalData] = useState([]);
   const [loadingMore, setLoadingMore] = useState(false); // spinner at bottom
+
+  console.log(
+    "employeeMyApproval4555",
+    employeeMyApproval,
+    employeeMyApprovalSearch,
+    approvalData
+  );
 
   // Confirmed filters displayed as tags
   const [submittedFilters, setSubmittedFilters] = useState([]);
