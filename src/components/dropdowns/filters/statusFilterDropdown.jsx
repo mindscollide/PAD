@@ -8,7 +8,7 @@ import { apiCallStatus, emaStatusOptions, emtStatusOptions } from "./utils";
 import { useSidebarContext } from "../../../context/sidebarContaxt";
 import { useApi } from "../../../context/ApiContext";
 import { useGlobalLoader } from "../../../context/LoaderContext";
-import useNotification from "antd/es/notification/useNotification";
+import { useNotification } from "../../../components/NotificationProvider/NotificationProvider";
 import { useMyApproval } from "../../../context/myApprovalContaxt";
 import { useNavigate } from "react-router-dom";
 import { useDashboardContext } from "../../../context/dashboardContaxt";
