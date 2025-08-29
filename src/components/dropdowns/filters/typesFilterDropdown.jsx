@@ -30,8 +30,12 @@ const TypeFilterDropdown = ({
   const { showNotification } = useNotification();
   const { setIsEmployeeMyApproval } = useMyApproval();
 
+  console.log(addApprovalRequestData, "CheckerDataCheckerData");
+
   const { callApi } = useApi();
   const typeOptions = getTypeOptions(addApprovalRequestData);
+  console.log(typeOptions, "typeOptions");
+
   const toggleSelection = (type) => {
     setTempSelected((prev) =>
       prev.includes(type)

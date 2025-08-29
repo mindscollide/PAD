@@ -13,23 +13,35 @@ export const emaStatusOptions = [
 export const emtStatusOptions = ["Pending", "Compliant", "Non-Compliant"];
 
 export const getTypeOptions = (addApprovalRequestData) => {
-  return (addApprovalRequestData?.Equities || []).map((item) => ({
+  if (!addApprovalRequestData || typeof addApprovalRequestData !== "object")
+    return [];
+
+  const assetKey = Object.keys(addApprovalRequestData)[0]; // e.g., "Equities"
+  const assetData = addApprovalRequestData[assetKey];
+
+  if (!Array.isArray(assetData?.items)) return [];
+
+  return assetData.items.map((item) => ({
     label: item.type,
     value: item.tradeApprovalTypeID,
     assetTypeID: item.assetTypeID,
   }));
 };
 
-export const mapBuySellToIds = (arr, options) => {
-  console.log("mapBuySellToIds", arr);
-  console.log("mapBuySellToIds", options);
-  if (!arr || arr.length === 0 || !options) return [];
-  return arr
+export const mapBuySellToIds = (selectedLabels = [], options = {}) => {
+  console.log("mapBuySellToIds - selectedLabels:", selectedLabels);
+  console.log("mapBuySellToIds - options:", options);
+
+  const items = Array.isArray(options.items) ? options.items : [];
+
+  if (selectedLabels.length === 0 || items.length === 0) return [];
+
+  return selectedLabels
     .map((label) => {
-      const match = options.find((opt) => opt.type === label);
+      const match = items.find((item) => item.type === label);
       return match ? match.tradeApprovalTypeID : null;
     })
-    .filter(Boolean); // remove nulls
+    .filter((id) => id !== null);
 };
 
 export const mapStatusToIds = (arr) => {

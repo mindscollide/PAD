@@ -152,11 +152,11 @@ const Approval = () => {
     // 1️⃣ Update UI state for removed filters
     setSubmittedFilters((prev) => prev.filter((item) => item.key !== key));
 
+    //To show dynamically AssetType like EQ equities ETC
+    const assetData = addApprovalRequestData?.[assetKey];
+
     // 2️⃣ Prepare API request parameters
-    const TypeIds = mapBuySellToIds(
-      employeeMyApprovalSearch.type,
-      addApprovalRequestData?.Equities
-    );
+    const TypeIds = mapBuySellToIds(employeeMyApprovalSearch.type, assetData);
     const statusIds = mapStatusToIds(employeeMyApprovalSearch.status);
 
     const requestdata = {
@@ -300,6 +300,7 @@ const Approval = () => {
         employeeMyApproval?.approvals &&
         Array.isArray(employeeMyApproval.approvals)
       ) {
+        console.log(employeeMyApproval, "CheckDatayagjvashvajhs");
         // 🔹 Map and normalize data
         const mappedData = employeeMyApproval.approvals.map((item) => ({
           key: item.approvalID,

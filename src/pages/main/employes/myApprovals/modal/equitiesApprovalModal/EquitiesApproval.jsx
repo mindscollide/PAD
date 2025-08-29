@@ -40,6 +40,8 @@ const EquitiesApproval = () => {
   //For Instrument Dropdown show selected Name
   const [selectedInstrument, setSelectedInstrument] = useState(null);
 
+  console.log(selectedInstrument, "CheckInstrumentId");
+
   // for employeeBroker state to show data in dropdown
   const [selectedBrokers, setSelectedBrokers] = useState([]);
 
@@ -78,9 +80,14 @@ const EquitiesApproval = () => {
     }
   }, []);
 
+  //the types should come dynamicallyy like it should be Equities, FixedIncome
+  const assetTypeKey = Object.keys(addApprovalRequestData || {})[0]; // e.g., "Equities"
+  const assetTypeData = addApprovalRequestData?.[assetTypeKey];
+
   // this is how I extract data fro the AllInstrumentsData which is stored in dashboardContextApi
   const formattedInstruments = (allInstrumentsData || []).map((item) => ({
-    type: item?.instrumentID,
+    id: item?.instrumentID,
+    shortCode: assetTypeData?.shortCode,
     name: item?.instrumentCode,
     description: item?.instrumentName,
   }));
@@ -110,20 +117,25 @@ const EquitiesApproval = () => {
   };
 
   // Format type options from addApprovalRequestData show data in type Select
-  const typeOptions = (addApprovalRequestData?.Equities || []).map((item) => ({
-    label: item.type,
-    value: item.tradeApprovalTypeID,
-    assetTypeID: item.assetTypeID,
-  }));
+  const typeOptions = Array.isArray(assetTypeData?.items)
+    ? assetTypeData?.items.map((item) => ({
+        label: item.type,
+        value: item.tradeApprovalTypeID,
+        assetTypeID: item.assetTypeID,
+      }))
+    : [];
+
+  console.log(
+    addApprovalRequestData,
+    "addApprovalRequestDataaddApprovalRequestData"
+  );
 
   //  Prepare selected values for Select's `value` prop
   const selectedBrokerIDs = selectedBrokers.map((b) => b.brokerID);
 
   // Handle Select For Instrument Data
-  const handleSelect = (value) => {
-    const selectedObj = formattedInstruments.find(
-      (item) => item.type === value
-    );
+  const handleSelect = (id) => {
+    const selectedObj = formattedInstruments.find((item) => item.id === id);
     setSelectedInstrument(selectedObj || null);
   };
 
@@ -165,7 +177,7 @@ const EquitiesApproval = () => {
 
     const requestdata = {
       TradeApprovalID: 0,
-      InstrumentID: selectedInstrument?.type || null,
+      InstrumentID: selectedInstrument?.id || null,
       InstrumentName: selectedInstrument?.description || "",
       AssetTypeID: selectedAssetTypeID,
       ApprovalTypeID: selectedTradeApprovalType,
@@ -177,7 +189,7 @@ const EquitiesApproval = () => {
       BrokerIds: selectedBrokers.map((b) => b.brokerID),
       ListOfTradeApprovalActionableBundle: [
         {
-          instrumentID: selectedInstrument?.type || null,
+          instrumentID: selectedInstrument?.id || null,
           instrumentShortName: selectedInstrument?.name || "",
           Entity: { EntityID: 1, EntityTypeID: 1 },
         },
@@ -256,7 +268,7 @@ const EquitiesApproval = () => {
                   <InstrumentSelect
                     data={formattedInstruments}
                     onSelect={handleSelect}
-                    value={selectedInstrument?.type || null}
+                    value={selectedInstrument?.id || null}
                     onClear={handleClearInstrument}
                     className={styles.selectinstrumentclass}
                     disabled={allInstrumentsData.length === 0}
@@ -278,7 +290,7 @@ const EquitiesApproval = () => {
                     options={typeOptions}
                     value={selectedTradeApprovalType}
                     onChange={handleTypeSelect}
-                    disabled={typeOptions.length === 0}
+                    // disabled={typeOptions.length === 0}
                     prefixCls="EquitiesApprovalSelectPrefix"
                   />
                 </Col>

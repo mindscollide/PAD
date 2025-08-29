@@ -33,12 +33,12 @@ const InstrumentSelect = ({
         disabled={disabled}
       >
         {data.map((item) => (
-          <Option key={item.type} value={item.type} label={item.description}>
+          <Option key={item.id} value={item.id} label={item.description}>
             <Row align="middle" justify="space-between">
               <Col>
                 <Row align="middle" gutter={8}>
                   <Col>
-                    <Tag className={styles.customTag}>{item.type}</Tag>
+                    <Tag className={styles.customTag}>{item.shortCode}</Tag>
                   </Col>
                   <Col>
                     <Text className={styles.ItemsFirstName}>{item.name}</Text>
