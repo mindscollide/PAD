@@ -173,16 +173,17 @@ export const renderFilterContent = (
   selectedKey,
   activeTab,
   handleSearch,
+  setVisible,
   dropdownOptions
 ) => {
   console.log(activeTab, "Checker Search Coming");
   console.log("SearchWithPopoverOnly selectedKey", selectedKey);
   switch (selectedKey) {
     case "1":
-      return <EmployeeMyApprovalFilter handleSearch={handleSearch} />;
+      return <EmployeeMyApprovalFilter handleSearch={handleSearch} setVisible={setVisible} />;
 
     case "2":
-      return <EmployeeTransactionFilter handleSearch={handleSearch} />;
+      return <EmployeeTransactionFilter handleSearch={handleSearch} setVisible={setVisible} />;
     case "4":
       switch (activeTab) {
         case "portfolio":
@@ -190,6 +191,7 @@ export const renderFilterContent = (
             <EmployeePortfolioFilter
               handleSearch={handleSearch}
               dropdownOptions={dropdownOptions}
+              setVisible={setVisible} 
             />
           );
         case "pending":

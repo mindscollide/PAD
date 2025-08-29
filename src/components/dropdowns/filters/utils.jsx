@@ -51,16 +51,16 @@ export const mapStatusToIds = (arr) => {
       switch (status) {
         case "Pending":
           return 1;
-        case "Approved":
-          return 2;
-        case "Not Traded":
-          return 3;
         case "Resubmitted":
-          return 4;
+          return 2;
+        case "Approved":
+          return 3;
         case "Declined":
-          return 5;
-        case "Traded":
+          return 4;
+        case "Not Traded":
           return 6;
+        case "Traded":
+          return 5;
         default:
           return null; // ignore unknown statuses
       }

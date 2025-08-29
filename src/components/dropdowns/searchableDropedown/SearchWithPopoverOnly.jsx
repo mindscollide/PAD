@@ -248,6 +248,7 @@ const SearchWithPopoverOnly = () => {
           selectedKey,
           activeTab,
           handleSearch,
+          setVisible,
           dropdownOptions
         )}
         trigger="click"

@@ -61,14 +61,19 @@ const EquitiesApproval = () => {
   // Refactor sessionStorage read with useMemo for performance & error handling
   const lineManagerDetails = useMemo(() => {
     try {
-      const item = sessionStorage.getItem("line_Manager_Details");
+      const storedData = JSON.parse(
+        sessionStorage.getItem("user_Hierarchy_Details") || "[]"
+      );
 
-      // Explicitly handle invalid values like "undefined", "null", or empty string
-      if (!item || item === "undefined" || item === "null") {
-        return {};
-      }
+      if (!Array.isArray(storedData)) return {};
 
-      return JSON.parse(item);
+      const found = storedData.find(
+        (item) => item.roleName === "Line Manager (LM)" && item.levelNo === 1
+      );
+
+      return found
+        ? { managerName: found.managerName, managerEmail: found.managerEmail }
+        : {};
     } catch (e) {
       console.error("Invalid JSON in sessionStorage", e);
       return {};
@@ -337,7 +342,7 @@ const EquitiesApproval = () => {
                           Name:
                         </label>
                         <p className={styles.lineManagername}>
-                          {lineManagerDetails?.lineManagerName || "-"}
+                          {lineManagerDetails?.managerName || "-"}
                         </p>
                       </Col>
 
@@ -346,7 +351,7 @@ const EquitiesApproval = () => {
                           Email:
                         </label>
                         <p className={styles.lineManagername}>
-                          {lineManagerDetails?.lineManagerEmail || "-"}
+                          {lineManagerDetails?.managerEmail || "-"}
                         </p>
                       </Col>
                     </Row>

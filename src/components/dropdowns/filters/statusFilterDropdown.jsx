@@ -19,6 +19,7 @@ import { useDashboardContext } from "../../../context/dashboardContaxt";
 const StatusFilterDropdown = ({
   confirm,
   clearFilters,
+  setOpenState,
   state,
   setState,
   tempSelected,
@@ -78,6 +79,8 @@ const StatusFilterDropdown = ({
       navigate,
       setIsEmployeeMyApproval,
     });
+    setOpenState(false);
+
     confirm(); // close dropdown
   };
 
@@ -101,6 +104,7 @@ const StatusFilterDropdown = ({
       status: [],
     }));
     clearFilters?.();
+    setOpenState(false);
     confirm(); // close dropdown
   };
 

@@ -54,6 +54,7 @@ const TypeColumnTitle = ({
             }));
             setVisible(false);
           }}
+          setOpenState={setVisible}
           state={state}
           setState={setState}
           onDropdownOpen={visible}
