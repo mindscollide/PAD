@@ -74,6 +74,7 @@ export const SearchTadeApprovals = async ({
 
     if (res.success) {
       const { responseMessage, myTradeApprovals, totalRecords } = res?.result;
+      console.log("heloo log", res);
 
       if (
         responseMessage ===

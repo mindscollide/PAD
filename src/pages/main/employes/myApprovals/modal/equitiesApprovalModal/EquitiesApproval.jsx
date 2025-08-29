@@ -59,7 +59,9 @@ const EquitiesApproval = () => {
   // Refactor sessionStorage read with useMemo for performance & error handling
   const lineManagerDetails = useMemo(() => {
     try {
-      return JSON.parse(sessionStorage.getItem("line_Manager_Details") || "{}");
+      const item = sessionStorage.getItem("line_Manager_Details");
+      if (!item) return {}; // Handles null, undefined, or empty string
+      return JSON.parse(item);
     } catch (e) {
       console.error("Invalid JSON in sessionStorage", e);
       return {};

@@ -56,7 +56,6 @@ const InstrumentSelect = ({
                     className={styles.PlusIconChanges}
                     type="text"
                     onClick={(e) => {
-                      e.stopPropagation();
                       onAdd?.(item);
                     }}
                   />
