@@ -81,14 +81,15 @@ export const apiCallType = async ({
 }) => {
   switch (selectedKey) {
     case "1": {
+      const assetType = state.assetType || "Equities"; // fallback
       const TypeIds = mapBuySellToIds(
         newdata,
-        addApprovalRequestData?.Equities
+        addApprovalRequestData?.[assetType]
       );
       const statusIds = mapStatusToIds(state.status);
       const requestdata = {
         InstrumentName: state.instrumentName || state.mainInstrumentName,
-        StartDate: state.startDate || "",
+        Date: state.startDate || "",
         Quantity: state.quantity || 0,
         StatusIds: statusIds || [],
         TypeIds: TypeIds || [],
@@ -134,7 +135,7 @@ export const apiCallStatus = async ({
       const statusIds = mapStatusToIds(newdata);
       const requestdata = {
         InstrumentName: state.instrumentName || state.mainInstrumentName,
-        StartDate: state.startDate || "",
+        Date: state.startDate || "",
         Quantity: state.quantity || 0,
         StatusIds: statusIds || [],
         TypeIds: TypeIds || [],

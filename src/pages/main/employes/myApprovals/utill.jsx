@@ -70,16 +70,18 @@ export const getBorderlessTableColumns = (
     title: withSortIcon("Approval ID", "tradeApprovalID", sortedInfo),
     dataIndex: "tradeApprovalID",
     key: "tradeApprovalID",
-    width: "10%",
+    width: "12%",
     ellipsis: true,
-    sorter: (a, b) => a.tradeApprovalID - b.tradeApprovalID,
+    sorter: (a, b) =>
+      parseInt(a.tradeApprovalID.replace(/[^\d]/g, ""), 10) -
+      parseInt(b.tradeApprovalID.replace(/[^\d]/g, ""), 10),
     sortDirections: ["ascend", "descend"],
     sortOrder:
       sortedInfo?.columnKey === "tradeApprovalID" ? sortedInfo.order : null,
     showSorterTooltip: false,
     sortIcon: () => null,
     render: (tradeApprovalID) => {
-      console.log(tradeApprovalID, "jhvjhvajdvadvasjdvj");
+      console.log(typeof tradeApprovalID, "jhvjhvajdvadvasjdvj");
       return (
         <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
           <span className="font-medium">
@@ -90,9 +92,9 @@ export const getBorderlessTableColumns = (
     },
   },
   {
-    title: withSortIcon("Instrument", "appinstrumentrovalID", sortedInfo),
+    title: withSortIcon("Instrument", "instrumentName", sortedInfo),
     dataIndex: "instrument",
-    key: "instrument",
+    key: "instrumentName",
     width: "18%",
     ellipsis: true,
     sorter: (a, b) => {
@@ -101,7 +103,8 @@ export const getBorderlessTableColumns = (
       return nameA.localeCompare(nameB);
     },
     sortDirections: ["ascend", "descend"],
-    sortOrder: sortedInfo?.columnKey === "instrument" ? sortedInfo.order : null,
+    sortOrder:
+      sortedInfo?.columnKey === "instrumentName" ? sortedInfo.order : null,
     showSorterTooltip: false,
     sortIcon: () => null,
     render: (instrument, record) => {
@@ -123,10 +126,7 @@ export const getBorderlessTableColumns = (
             paddingRight: "25px",
           }}
         >
-          <span
-            className="border-less-table-orange-instrumentBadge"
-            style={{ minWidth: 30 }}
-          >
+          <span className="custom-shortCode-asset" style={{ minWidth: 30 }}>
             {assetCode.substring(0, 2).toUpperCase()}
           </span>
           <span

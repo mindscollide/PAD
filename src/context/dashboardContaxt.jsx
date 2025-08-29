@@ -47,6 +47,32 @@ export const DashboardProvider = ({ children }) => {
   const [getAllPredefineReasonData, setGetAllPredefineReasonData] = useState(
     []
   );
+
+  // Main resetDashboardContext State
+  // ✅ This will reset all states to initial (inline - no separate function)
+  const resetDashboardContextState = () => {
+    setDashboardData({
+      title: "",
+      subTitle: "",
+      employee: {
+        Portfolio: { title: "Portfolio", data: [] },
+        MyApprovals: { title: "My Approvals", data: [] },
+        MyTransactions: { title: "My Transactions", data: [] },
+        MyHistory: { title: "My History", data: [] },
+        Reports: { title: "Reports", data: [] },
+      },
+      LineManager: {},
+      ComplianceOfficer: {},
+      HeadofTradeApproval: {},
+      HeadofComplianceOfficer: {},
+    });
+
+    setEmployeeBasedBrokersData([]);
+    setAllInstrumentsData([]);
+    setAddApprovalRequestData([]);
+    setGetAllPredefineReasonData([]);
+  };
+
   return (
     <DashboardContext.Provider
       value={{
@@ -60,6 +86,7 @@ export const DashboardProvider = ({ children }) => {
         setAddApprovalRequestData,
         getAllPredefineReasonData,
         setGetAllPredefineReasonData,
+        resetDashboardContextState,
       }}
     >
       {children}

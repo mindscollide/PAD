@@ -180,10 +180,20 @@ export const renderFilterContent = (
   console.log("SearchWithPopoverOnly selectedKey", selectedKey);
   switch (selectedKey) {
     case "1":
-      return <EmployeeMyApprovalFilter handleSearch={handleSearch} setVisible={setVisible} />;
+      return (
+        <EmployeeMyApprovalFilter
+          handleSearch={handleSearch}
+          setVisible={setVisible}
+        />
+      );
 
     case "2":
-      return <EmployeeTransactionFilter handleSearch={handleSearch} setVisible={setVisible} />;
+      return (
+        <EmployeeTransactionFilter
+          handleSearch={handleSearch}
+          setVisible={setVisible}
+        />
+      );
     case "4":
       switch (activeTab) {
         case "portfolio":
@@ -191,7 +201,7 @@ export const renderFilterContent = (
             <EmployeePortfolioFilter
               handleSearch={handleSearch}
               dropdownOptions={dropdownOptions}
-              setVisible={setVisible} 
+              setVisible={setVisible}
             />
           );
         case "pending":
@@ -236,19 +246,21 @@ export const apiCallSearch = async ({
 
         const statusIds = mapStatusToIds(employeeMyApprovalSearch.status);
         const date = toYYMMDD(employeeMyApprovalSearch.startDate);
+        console.log(typeof date, "Chdhjvahvajvdas");
 
         const requestdata = {
           InstrumentName:
             employeeMyApprovalSearch.instrumentName ||
-            employeeMyApprovalSearch.mainInstrumentName,
-          StartDate: date || "",
+            employeeMyApprovalSearch.mainInstrumentName ||
+            "",
+          Date: date || "",
           Quantity: employeeMyApprovalSearch.quantity || 0,
           StatusIds: statusIds || [],
           TypeIds: TypeIds || [],
           PageNumber: 0,
           Length: employeeMyApprovalSearch.pageSize || 10, // Fixed page size
         };
-        console.log("Checker APi Search");
+        console.log(requestdata, "Checker APi Search");
         const data = await SearchTadeApprovals({
           callApi,
           showNotification,

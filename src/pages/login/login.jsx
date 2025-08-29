@@ -11,6 +11,11 @@ import { useApi } from "../../context/ApiContext";
 import { login } from "../../api/loginApi";
 import { useGlobalLoader } from "../../context/LoaderContext";
 import { useSidebarContext } from "../../context/sidebarContaxt";
+import { useDashboardContext } from "../../context/dashboardContaxt";
+import { useSearchBarContext } from "../../context/SearchBarContaxt";
+import { useGlobalModal } from "../../context/GlobalModalContext";
+import { useMyApproval } from "../../context/myApprovalContaxt";
+import { usePortfolioContext } from "../../context/portfolioContax";
 
 const { Text } = Typography;
 
@@ -20,6 +25,15 @@ const Login = () => {
   const [form] = Form.useForm();
   const { showNotification } = useNotification();
   const { callApi } = useApi();
+
+  // Reset State when Component Mount
+  const { resetDashboardContextState } = useDashboardContext();
+  const { resetModalContextState } = useGlobalModal();
+  const { resetMyApprovalContextState } = useMyApproval();
+  const { resetPortfolioTab } = usePortfolioContext();
+  const { resetSearchBarContextState } = useSearchBarContext();
+  const { resetSidebarState } = useSidebarContext();
+
   //LoaderContext ka showLoader ko globally access krrahay hain
   const { showLoader } = useGlobalLoader();
   const [formValues, setFormValues] = useState({
@@ -38,7 +52,15 @@ const Login = () => {
   useEffect(() => {
     localStorage.clear();
     sessionStorage.clear();
-    setSelectedKey("0")
+    setSelectedKey("0");
+
+    // These are the mainState
+    resetDashboardContextState();
+    resetModalContextState();
+    resetMyApprovalContextState();
+    resetPortfolioTab();
+    resetSearchBarContextState();
+    resetSidebarState();
   }, []);
 
   const handleChange = (name, value) => {

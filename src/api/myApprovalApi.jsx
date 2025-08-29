@@ -64,11 +64,11 @@ export const SearchTadeApprovals = async ({
     console.log("heloo log", res);
 
     if (!res?.result?.isExecuted) {
-      showNotification({
-        type: "error",
-        title: "Error",
-        description: "Something went wrong. Please try again.",
-      });
+      // showNotification({
+      //   type: "error",
+      //   title: "Error",
+      //   description: "Something went wrong. Please try again.",
+      // });
       return null;
     }
 
@@ -85,27 +85,25 @@ export const SearchTadeApprovals = async ({
           totalRecords: totalRecords ?? 0,
         };
       }
-
-      showNotification({
-        type: "warning",
-        title: getMessage(responseMessage),
-        description: "No data was returned from the server.",
-      });
+      // showNotification({
+      //   type: "warning",
+      //   title: getMessage(responseMessage),
+      //   description: "No data was returned from the server.",
+      // });
       return null;
     }
-
-    showNotification({
-      type: "error",
-      title: "Fetch Failed",
-      description: getMessage(res.message),
-    });
+    // showNotification({
+    //   type: "error",
+    //   title: "Fetch Failed",
+    //   description: getMessage(res.message),
+    // });
     return null;
   } catch (error) {
-    showNotification({
-      type: "error",
-      title: "Error",
-      description: "An unexpected error occurred.",
-    });
+    // showNotification({
+    //   type: "error",
+    //   title: "Error",
+    //   description: "An unexpected error occurred.",
+    // });
     return null;
   } finally {
     showLoader(false);
@@ -161,12 +159,16 @@ export const AddTradeApprovalRequest = async ({
       ) {
         setIsEquitiesModalVisible(false);
         setIsSubmit(true);
+
+        return true;
       } else if (
         responseMessage ===
         "PAD_Trade_TradeServiceManager_AddTradeApprovalRequest_06"
       ) {
         setIsResubmitted(false);
         setResubmitIntimation(true);
+
+        return true;
       } else {
         showNotification({
           type: "warning",
@@ -176,11 +178,11 @@ export const AddTradeApprovalRequest = async ({
       }
 
       // ✅ Common success notification (sirf success wale cases me chalega)
-      showNotification({
-        type: "success",
-        title: "Success",
-        description: getMessage(responseMessage),
-      });
+      // showNotification({
+      //   type: "success",
+      //   title: "Success",
+      //   description: getMessage(responseMessage),
+      // });
 
       return true;
     }

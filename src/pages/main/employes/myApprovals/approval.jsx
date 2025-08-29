@@ -65,12 +65,7 @@ const Approval = () => {
   const [approvalData, setApprovalData] = useState([]);
   const [loadingMore, setLoadingMore] = useState(false); // spinner at bottom
 
-  console.log(
-    "employeeMyApproval4555",
-    employeeMyApproval,
-    employeeMyApprovalSearch,
-    approvalData
-  );
+  console.log("employeeMyApproval4555", approvalData);
 
   // Confirmed filters displayed as tags
   const [submittedFilters, setSubmittedFilters] = useState([]);
@@ -116,7 +111,7 @@ const Approval = () => {
       InstrumentName:
         employeeMyApprovalSearch.instrumentName ||
         employeeMyApprovalSearch.mainInstrumentName,
-      StartDate: employeeMyApprovalSearch.date || "",
+      Date: employeeMyApprovalSearch.date || "",
       Quantity: employeeMyApprovalSearch.quantity || 0,
       StatusIds: employeeMyApprovalSearch.status || [],
       TypeIds: employeeMyApprovalSearch.type || [],
@@ -153,6 +148,7 @@ const Approval = () => {
     setSubmittedFilters((prev) => prev.filter((item) => item.key !== key));
 
     //To show dynamically AssetType like EQ equities ETC
+    const assetKey = employeeMyApprovalSearch.assetType;
     const assetData = addApprovalRequestData?.[assetKey];
 
     // 2️⃣ Prepare API request parameters
@@ -164,7 +160,7 @@ const Approval = () => {
         employeeMyApprovalSearch.instrumentName ||
         employeeMyApprovalSearch.mainInstrumentName ||
         "",
-      StartDate: employeeMyApprovalSearch.date || "",
+      Date: employeeMyApprovalSearch.date || "",
       Quantity: employeeMyApprovalSearch.quantity || 0,
       StatusIds: statusIds || [],
       TypeIds: TypeIds || [],
@@ -203,6 +199,7 @@ const Approval = () => {
 
     // 4️⃣ Show loader and call API
     showLoader(true);
+
     const data = await SearchTadeApprovals({
       callApi,
       showNotification,
@@ -351,15 +348,19 @@ const Approval = () => {
         try {
           setLoadingMore(true);
 
+          const assetKey = employeeMyApprovalSearch.assetType;
+          const assetData = addApprovalRequestData?.[assetKey];
+
           // Build request payload
           const requestdata = {
             InstrumentName:
               employeeMyApprovalSearch.instrumentName ||
               employeeMyApprovalSearch.mainInstrumentName,
-            StartDate: employeeMyApprovalSearch.date || "",
+            Date: employeeMyApprovalSearch.date || "",
             Quantity: employeeMyApprovalSearch.quantity || 0,
-            StatusIds: employeeMyApprovalSearch.status || [],
-            TypeIds: employeeMyApprovalSearch.type || [],
+            StatusIds: mapStatusToIds(employeeMyApprovalSearch.status) || [],
+            TypeIds:
+              mapBuySellToIds(employeeMyApprovalSearch.type, assetData) || [],
             PageNumber: employeeMyApprovalSearch.pageNumber || 10, // Acts as offset for API
             Length: 10,
           };
@@ -372,17 +373,24 @@ const Approval = () => {
             navigate,
           });
 
-          // Append new approvals
-          setIsEmployeeMyApproval(
-            (prev = { approvals: [], totalRecords: 0 }) => ({
-              ...prev,
-              approvals: [...prev?.approvals, ...(data?.approvals || [])],
-              totalRecords:
-                prev?.totalRecords !== data?.totalRecords
-                  ? data?.totalRecords
-                  : prev?.totalRecords,
-            })
-          );
+          if (!data) return;
+
+          setIsEmployeeMyApproval((prevState) => {
+            const safePrev =
+              prevState && typeof prevState === "object"
+                ? prevState
+                : { approvals: [], totalRecords: 0 };
+
+            return {
+              approvals: [
+                ...(Array.isArray(safePrev.approvals)
+                  ? safePrev.approvals
+                  : []),
+                ...(Array.isArray(data?.approvals) ? data.approvals : []),
+              ],
+              totalRecords: data?.totalRecords ?? safePrev.totalRecords,
+            };
+          });
         } catch (error) {
           console.error("Error loading more approvals:", error);
         } finally {

@@ -241,6 +241,16 @@ export const SearchBarProvider = ({ children }) => {
     });
   };
 
+  // 🔁 New helper: Reset ALL filters at once
+  const resetSearchBarContextState = () => {
+    resetEmployeeMyApprovalSearch();
+    resetEmployeeMyTransactionSearch();
+    resetEmployeePortfolioSearch();
+    resetEmployeePendingApprovalSearch();
+    resetEmployeeMyHistorySearch();
+    resetLineManagerApprovalSearch();
+  };
+
   /**
    * Provide state and actions to the component tree
    */
@@ -276,6 +286,8 @@ export const SearchBarProvider = ({ children }) => {
         lineManagerApprovalSearch,
         setLineManagerApprovalSearch,
         resetLineManagerApprovalSearch,
+
+        resetSearchBarContextState,
       }}
     >
       {children}
