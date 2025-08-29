@@ -31,7 +31,7 @@
 }
 
 .ItemsSecondaryName {
-  max-width: 240px; /* space for text only */
+  max-width: 320px; /* space for text only */
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -64,7 +64,7 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  max-width: 320px;
+  max-width: 350px;
 }
 
 .borderRadiusForselect {
