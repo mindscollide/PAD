@@ -11,6 +11,7 @@ import SuccessIcon from "../../../assets/img/sucess-dark.png";
 import ErrorIcon from "../../../assets/img/error-dark.png";
 import InfoIcon from "../../../assets/img/message-dark.png";
 import WarningIcon from "../../../assets/img/error-dark.png";
+import NotificationItem from "./Utils";
 
 /**
  * NotificationDropdown Component
@@ -271,37 +272,11 @@ const NotificationDropdown = () => {
             {/* Notification List */}
             <div className={styles["notification-list"]}>
               {notifications.map((notification) => (
-                <div
+                <NotificationItem
                   key={notification.id}
-                  className={styles["notification-item"]}
-                >
-                  {/* Notification Icon */}
-                  <div className={styles["notification-icon-div"]}>
-                    <img
-                      src={getNotificationIcon(notification.type)}
-                      alt={`${notification.type} notification`}
-                      className={styles["notification-icon"]}
-                    />
-                  </div>
-
-                  {/* Notification Content */}
-                  <div className={styles["notification-content"]}>
-                    <div className={styles["notification-header"]}>
-                      <div className={styles["notification-title"]}>
-                        {notification.title}
-                        {!notification.read && (
-                          <span className={styles["unread-indicator"]} />
-                        )}
-                      </div>
-                    </div>
-                    <div className={styles["notification-message"]}>
-                      {notification.description}
-                    </div>
-                    <div className={styles["notification-time"]}>
-                      {notification.time}
-                    </div>
-                  </div>
-                </div>
+                  notification={notification}
+                  getNotificationIcon={getNotificationIcon}
+                />
               ))}
             </div>
           </div>
