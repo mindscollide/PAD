@@ -415,7 +415,6 @@
 
 .digitWrapper {
   position: relative;
-  width: 28px; /* adjust width for digit */
   height: 7vh; /* adjust height */
   overflow: hidden;
 }
@@ -436,4 +435,12 @@
   justify-content: center; /* centers horizontally */
   align-items: center;     /* centers vertically if height > content */
   width: 100%;
+}
+.digitWrapper {
+  display: inline-block; /* already makes numbers inline */
+}
+
+.nonDigit {
+  display: inline-block; /* override for commas, dots */
+  width: auto;           /* don't take full width */
 }

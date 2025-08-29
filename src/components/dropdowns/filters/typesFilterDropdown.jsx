@@ -17,6 +17,7 @@ import { useDashboardContext } from "../../../context/dashboardContaxt";
 const TypeFilterDropdown = ({
   confirm,
   clearFilters,
+  setOpenState,
   state,
   setState,
   tempSelected,
@@ -44,9 +45,7 @@ const TypeFilterDropdown = ({
       ...prev,
       type: tempSelected,
     }));
-    console.log("hello test", tempSelected);
     let newdata = tempSelected;
-    console.log("hello test", newdata);
     await apiCallType({
       selectedKey,
       newdata,
@@ -59,12 +58,12 @@ const TypeFilterDropdown = ({
       setIsEmployeeMyApproval,
     });
 
+    setOpenState(false)
     confirm(); // close dropdown
   };
 
   const handleReset = async () => {
     let newdata = [];
-    console.log("hello test", newdata);
     await apiCallType({
       selectedKey,
       newdata,
@@ -82,6 +81,7 @@ const TypeFilterDropdown = ({
       type: [],
     }));
     clearFilters?.();
+    setOpenState(false)
     confirm(); // close dropdown
   };
 

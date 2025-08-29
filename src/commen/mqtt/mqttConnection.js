@@ -88,7 +88,7 @@ export const useMqttClient = ({
 
       const mqttPort = JSON.parse(sessionStorage.getItem("user_mqtt_Port"));
       const mqttHost = JSON.parse(
-        sessionStorage.getItem("user_mqtt-ip_Address")
+        sessionStorage.getItem("user_mqtt_ip_Address")
       );
       console.log("mqtt",mqttPort)
       console.log("mqtt",mqttHost)

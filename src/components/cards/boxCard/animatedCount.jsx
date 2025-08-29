@@ -22,20 +22,20 @@ const AnimatedCount = ({ value, className = "", style = {} }) => {
               {Array.from({ length: 10 }, (_, n) => {
                 console.log("Rendering digit:", n);
                 return (
-                  <div
-                    key={n}
-                    className={className}
-                    style={style}
-                  >
+                  <div key={n} className={className} style={style}>
                     {n}
                   </div>
                 );
               })}
             </div>
           ) : (
-            <div className={className} style={style}>
+            <span
+              key={i}
+              className={`${styles.nonDigit} ${className}`}
+              style={style}
+            >
               {String(digit)}
-            </div>
+            </span>
           )}
         </div>
       ))}

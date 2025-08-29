@@ -435,31 +435,19 @@ const Approval = () => {
           </Row>
 
           {/* Table or Empty State */}
-          {approvalData && approvalData.length > 0 ? (
-            <>
-              <BorderlessTable
-                rows={approvalData}
-                columns={columns}
-                scroll={{
-                  x: "max-content",
-                  y: submittedFilters.length > 0 ? 450 : 500,
-                }}
-                classNameTable="border-less-table-orange"
-                onChange={(pagination, filters, sorter) => {
-                  setSortedInfo(sorter);
-                }}
-                loading={loadingMore}
-              />
-
-              {/* {loadingMore && (
-                <div style={{ textAlign: "center", padding: "12px" }}>
-                  <Spin size="small" />
-                </div>
-              )} */}
-            </>
-          ) : (
-            <EmptyState type="request" />
-          )}
+          <BorderlessTable
+            rows={approvalData}
+            columns={columns}
+            scroll={{
+              x: "max-content",
+              y: submittedFilters.length > 0 ? 450 : 500,
+            }}
+            classNameTable="border-less-table-orange"
+            onChange={(pagination, filters, sorter) => {
+              setSortedInfo(sorter);
+            }}
+            loading={loadingMore}
+          />
         </div>
       </PageLayout>
 

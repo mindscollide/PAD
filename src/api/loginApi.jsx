@@ -49,7 +49,7 @@ export const login = async ({
       userAssignedRoles,
       userToken,
       userProfileData,
-      lineManagerDetails,
+      userHierarchy,
     } = res.result;
     const message = getMessage(res.result.responseMessage);
     const responseCodeKey = res.result.responseMessage;
@@ -68,12 +68,12 @@ export const login = async ({
         JSON.stringify(userProfileData)
       );
       sessionStorage.setItem(
-        "line_Manager_Details",
-        JSON.stringify(lineManagerDetails)
+        "user_Hierarchy_Details",
+        JSON.stringify(userHierarchy)
       );
       sessionStorage.setItem("user_mqtt_Port", JSON.stringify(mqtt?.mqttPort));
       sessionStorage.setItem(
-        "user_mqtt-ip_Address",
+        "user_mqtt_ip_Address",
         JSON.stringify(mqtt?.mqttipAddress)
       );
       navigate("/PAD");
