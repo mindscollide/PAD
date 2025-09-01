@@ -21,3 +21,4 @@ export { default as GlobalModal } from "./modal/Modal";
 export { default as InstrumentSelect } from "./dropdowns/instrumentDropdown/InstrumentDropdown";
 export { default as ModalImgStates } from "./modalImageStates/modalImgStates";
 export { default as AcordianTable } from "./tables/accordianTable/acordianTable";
+export { default as ViewCommentModal } from "./modal/viewCommentModal/ViewCommentModal";

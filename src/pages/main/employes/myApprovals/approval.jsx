@@ -65,7 +65,7 @@ const Approval = () => {
   const [approvalData, setApprovalData] = useState([]);
   const [loadingMore, setLoadingMore] = useState(false); // spinner at bottom
 
-  console.log("employeeMyApproval4555", approvalData);
+  console.log("employeeMyApproval4555", addApprovalRequestData);
 
   // Confirmed filters displayed as tags
   const [submittedFilters, setSubmittedFilters] = useState([]);

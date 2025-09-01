@@ -16,7 +16,7 @@ export const refreshToken = async (
       requestData: {
         RefreshToken: refreshToken,
         Token: token,
-        LastLoginDateTime: "",
+        LastLoginDateTime: new Date().toISOString(),
       },
       withAuth: false,
       retryOnExpire: false, // Prevent infinite refresh loops

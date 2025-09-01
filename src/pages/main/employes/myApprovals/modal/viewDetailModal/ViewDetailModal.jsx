@@ -145,6 +145,8 @@ const ViewDetailModal = () => {
     (item) => item.instrumentID === instrumentId
   );
 
+  console.log(selectedInstrument, "selectedInstrument");
+
   // Extract an brokerName from viewDetailsModalData context Api
   const details = viewDetailsModalData?.details?.[0];
   const selectedBrokers = details?.brokers || [];
@@ -276,7 +278,7 @@ const ViewDetailModal = () => {
                             className={styles.viewDetailSubLabelsForInstrument}
                             title={selectedInstrument?.instrumentName}
                           >
-                            {selectedInstrument?.instrumentName}
+                            {selectedInstrument?.instrumentCode}
                           </span>
                         </>
                       )}

@@ -95,11 +95,11 @@ export const getBorderlessTableColumns = (
     title: withSortIcon("Instrument", "instrumentName", sortedInfo),
     dataIndex: "instrument",
     key: "instrumentName",
-    width: "18%",
+    width: "14%",
     ellipsis: true,
     sorter: (a, b) => {
-      const nameA = a.instrument?.instrumentName || "";
-      const nameB = b.instrument?.instrumentName || "";
+      const nameA = a.instrument?.instrumentCode || "";
+      const nameB = b.instrument?.instrumentCode || "";
       return nameA.localeCompare(nameB);
     },
     sortDirections: ["ascend", "descend"],
@@ -139,9 +139,9 @@ export const getBorderlessTableColumns = (
               display: "inline-block",
               cursor: "pointer",
             }}
-            title={`${name} - ${code}`} // show full text on hover
+            title={`${code}`} // show full text on hover
           >
-            {`${name} - ${code}`}
+            {`${code}`}
           </span>
         </div>
       );
@@ -177,7 +177,7 @@ export const getBorderlessTableColumns = (
     dataIndex: "requestDateTime",
     key: "requestDateTime",
     ellipsis: true,
-    width: "14%",
+    width: "17%",
     sorter: (a, b) =>
       formatApiDateTime(a.requestDateTime).localeCompare(
         formatApiDateTime(b.requestDateTime)
@@ -254,7 +254,7 @@ export const getBorderlessTableColumns = (
     dataIndex: "timeRemaining",
     key: "timeRemaining",
     ellipsis: true,
-    width: "25%",
+    width: "20%",
     align: "center",
     render: (text, record) => {
       // ✅ Show nothing if pending
@@ -281,7 +281,8 @@ export const getBorderlessTableColumns = (
   {
     title: "",
     key: "actions",
-    width: "10%",
+    width: "15%",
+    align: "center",
     render: (text, record) => {
       //Global State to selected data to show in ViewDetailModal
       const { setSelectedViewDetail } = useGlobalModal();
