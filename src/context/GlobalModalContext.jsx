@@ -66,6 +66,27 @@ export const GlobalModalProvider = ({ children }) => {
    * Global States For Line Manager Modals End here
    */
 
+  //  Main resetDashboardContext  reset State to call in dashboard
+  // The reset function — inline resetting all states
+  const resetModalContextState = () => {
+    setIsEquitiesModalVisible(false);
+    setIsSubmit(false);
+    setIsTradeRequestRestricted(false);
+    setIsViewDetail(false);
+    setSelectedViewDetail(null);
+    setIsViewComments(false);
+    setIsResubmitted(false);
+    setResubmitIntimation(false);
+    setIsConductedTransaction(false);
+
+    setViewDetailLineManagerModal(false);
+    setRoughStateOfViewDetail(false);
+    setNoteGlobalModal(false);
+    setApprovedGlobalModal(false);
+    setDeclinedGlobalModal(false);
+    setViewCommentGlobalModal(false);
+  };
+
   return (
     <ModalContext.Provider
       value={{
@@ -104,6 +125,8 @@ export const GlobalModalProvider = ({ children }) => {
         setDeclinedGlobalModal,
         viewCommentGlobalModal,
         setViewCommentGlobalModal,
+
+        resetModalContextState,
       }}
     >
       {children}
