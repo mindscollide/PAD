@@ -139,7 +139,7 @@ export const getBorderlessTableColumns = (
     onHeaderCell: () => ({
       style: {
         minWidth: "40px", // ✅ minimum width
-        maxWidth: "130px", // 👈 custom max width
+        maxWidth: "150px", // 👈 custom max width
         whiteSpace: "nowrap",
         overflow: "hidden",
         textOverflow: "ellipsis",
@@ -148,7 +148,7 @@ export const getBorderlessTableColumns = (
     onCell: () => ({
       style: {
         minWidth: "40px", // ✅ minimum width
-        maxWidth: "130px", // 👈 custom max width
+        maxWidth: "150px", // 👈 custom max width
         whiteSpace: "nowrap",
         overflow: "hidden",
         textOverflow: "ellipsis",
