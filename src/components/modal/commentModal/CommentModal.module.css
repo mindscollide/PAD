@@ -1,0 +1,76 @@
+/* CommentModal.module.css */
+
+/* Shared modal container */
+
+.mainDivComment {
+  padding: 10px 40px 40px !important;
+}
+
+.mainHeadingResubmit {
+  font-size: 26px;
+  font-weight: 700;
+  font-family: "Switzer Variable";
+  color: #30426a;
+}
+
+.textAreaStyle {
+  border: 1px solid #717171 !important;
+  border-radius: 8px !important;
+  margin-top: 15px;
+  /* padding: 12px !important; */
+}
+
+.maxCharacterClass {
+  text-align: right !important;
+  margin-top: 5px;
+  font-size: 14px !important;
+  font-weight: 500;
+  font-family: "Switzer Variable";
+  color: #424242 !important;
+}
+
+.buttonGroup {
+  display: flex;
+  justify-content: end;
+  align-items: center;
+  gap: 20px !important;
+  margin-top: 20px;
+}
+
+.mainDivClass {
+  background-color: #edf3ff;
+  border-radius: 8px;
+  display: inline-block; /* allow content-based width */
+  max-width: 500px;
+  padding: 7px 20px;
+  cursor: pointer;
+  transition: 0.3s ease-in-out;
+  white-space: nowrap; /* keep in one line */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  vertical-align: middle;
+}
+
+.selectedOption {
+  background-color: #30426a !important;
+  color: #ffffff !important;
+}
+
+.selectedOption .optionClass {
+  color: #ffffff !important;
+}
+
+.optionClass {
+  width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 18px;
+  font-family: "Switzer Variable";
+  font-weight: 500;
+  color: #30426a;
+}
+
+.predefineOptionText {
+  font-size: 18px;
+}

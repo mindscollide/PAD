@@ -1,9 +1,6 @@
 import React from "react";
-import { Col, Row } from "antd";
 import { useGlobalModal } from "../../../../../../context/GlobalModalContext";
-import { GlobalModal, ViewCommentModal } from "../../../../../../components";
-import styles from "./ViewComment.module.css";
-import CustomButton from "../../../../../../components/buttons/button";
+import { ViewCommentModal } from "../../../../../../components";
 
 const ViewComment = () => {
   // This is Global State for modal which is create in ContextApi
