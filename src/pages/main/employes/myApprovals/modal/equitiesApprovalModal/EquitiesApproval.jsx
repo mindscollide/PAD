@@ -313,19 +313,34 @@ const EquitiesApproval = () => {
               </Row>
 
               <Row className={styles.mt1} gutter={[20, 20]}>
-                <Col span={12}>
+                <Col span={24}>
                   <label className={styles.instrumentLabel}>
                     Brokers <span className={styles.aesterickClass}>*</span>
                   </label>
                   <Select
                     name="broker"
-                    placeholder={"Select"}
+                    placeholder="Select"
                     mode="multiple"
                     value={selectedBrokerIDs}
                     onChange={handleBrokerChange}
                     options={brokerOptions}
-                    className={styles.checkboxSelectofBroker}
+                    maxTagCount={0}
+                    maxTagPlaceholder={(omittedValues) =>
+                      `${omittedValues.length} selected`
+                    }
+                    prefixCls="EquitiesBrokerSelectPrefix"
                     disabled={employeeBasedBrokersData.length === 0}
+                    optionLabelProp="label" // Avoids default tags
+                    optionRender={(option) => (
+                      <div style={{ display: "flex", alignItems: "center" }}>
+                        <Checkbox
+                          className="custom-broker-option"
+                          checked={selectedBrokerIDs.includes(option.value)}
+                          style={{ marginRight: 8 }}
+                        />
+                        {option.data.raw.brokerName}
+                      </div>
+                    )}
                   />
                 </Col>
               </Row>

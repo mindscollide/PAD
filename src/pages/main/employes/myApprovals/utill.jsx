@@ -318,6 +318,7 @@ export const getBorderlessTableColumns = (
     ellipsis: true,
     align: "center",
     render: (text, record) => {
+      console.log(record, "CheckStatusID");
       // ✅ Show nothing if pending
       if (record.status === "Pending")
         return <span className="text-gray-400">-</span>;
