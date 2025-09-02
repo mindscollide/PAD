@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useMemo } from "react";
 import { Avatar, Col, Row } from "antd";
 import { BarChartOutlined, FileDoneOutlined } from "@ant-design/icons";
 
@@ -18,7 +18,10 @@ import { useDashboardContext } from "../../../context/dashboardContaxt";
 import { roleKeyMap, checkRoleMatch } from "./utills";
 import { useGlobalLoader } from "../../../context/LoaderContext";
 import { useNavigate } from "react-router-dom";
-
+import { useSearchBarContext } from "../../../context/SearchBarContaxt";
+// ✅ Memoized versions so they only re-render if props actually change
+const MemoizedBoxCard = React.memo(BoxCard);
+const MemoizedReportCard = React.memo(ReportCard);
 const Home = () => {
   const { showNotification } = useNotification();
   const navigate = useNavigate();
@@ -27,8 +30,6 @@ const Home = () => {
     dashboardData,
     setDashboardData,
     setEmployeeBasedBrokersData,
-    employeeBasedBrokersData,
-    allInstrumentsData,
     setAllInstrumentsData,
     setAddApprovalRequestData,
     setGetAllPredefineReasonData,
@@ -36,9 +37,31 @@ const Home = () => {
   const { callApi } = useApi();
   const { showLoader } = useGlobalLoader();
   const roles = JSON.parse(sessionStorage.getItem("user_assigned_roles"));
-
+  const { setAllyType } = useSearchBarContext();
   // Prevent multiple fetches on mount
   const hasFetched = useRef(false);
+  console.log(dashboardData, "dashboardDatadashboardData");
+  const employeeApprovals = useMemo(
+    () => dashboardData?.employee?.myApprovals?.data || [],
+    [dashboardData?.employee?.myApprovals?.data]
+  );
+  const employeePortfolio = useMemo(
+    () => dashboardData?.employee?.portfolio?.data || [],
+    [dashboardData?.employee?.portfolio?.data]
+  );
+  const employeeTransactions = useMemo(
+    () => dashboardData?.employee?.myTransactions?.data || [],
+    [dashboardData?.employee?.myTransactions?.data]
+  );
+
+  const lineManagerApprovals = useMemo(
+    () => dashboardData?.lineManager?.myApprovals?.data || [],
+    [dashboardData?.lineManager?.myApprovals?.data]
+  );
+  const lineManagerAction = useMemo(
+    () => dashboardData?.lineManager?.myActions?.data || [],
+    [dashboardData?.lineManager?.myActions?.data]
+  );
 
   useEffect(() => {
     if (hasFetched.current) return;
@@ -69,15 +92,12 @@ const Home = () => {
         const filteredData = {
           title: data.title, // Include title if needed
         };
-
         roles.forEach(({ roleID }) => {
           const roleKey = roleKeyMap[roleID];
           if (roleKey && data[roleKey]) {
             filteredData[roleKey] = data[roleKey];
           }
         });
-
-        console.log("GetUserDashBoardStats", filteredData);
         showLoader(false);
         setDashboardData(filteredData);
       } catch (error) {
@@ -88,7 +108,10 @@ const Home = () => {
 
     fetchData();
   }, []);
-
+  useEffect(() => {
+    console.log("dashboardData", dashboardData);
+  }, [dashboardData]);
+  console.log("dashboardData", dashboardData);
   return (
     <div style={{ padding: " 16px 24px 0px 24px " }}>
       {checkRoleMatch(roles, 2) && (
@@ -97,18 +120,24 @@ const Home = () => {
             <Col xs={24} md={12} lg={16}>
               <TextCard
                 className="smallCard"
-                title={`Hi ${dashboardData?.title},`}
+                title={
+                  <>
+                    <span id="greeting-text">Hi</span>{" "}
+                    <span id="user-name">{dashboardData?.title}</span>,
+                  </>
+                }
                 subtitle="Good Morning!"
               />
             </Col>
 
             <Col xs={24} md={12} lg={8}>
-              <BoxCard
+              <MemoizedBoxCard
                 locationStyle={"down"}
                 title={"Portfolio"}
                 mainClassName={"smallShareHomeCard"}
-                boxes={dashboardData?.employee?.portfolio?.data}
+                boxes={employeePortfolio}
                 buttonTitle={"View Portfolio"}
+                buttonId={"portfolio-view-btn"}
                 buttonClassName={"big-white-card-button"}
                 userRole={"employee"}
                 route={"portfolio"}
@@ -117,12 +146,13 @@ const Home = () => {
           </Row>
           <Row gutter={[16, 16]}>
             <Col xs={24} md={12} lg={12}>
-              <BoxCard
+              <MemoizedBoxCard
                 locationStyle={"up"}
                 title="My Approvals"
                 mainClassName={"mediumHomeCard"}
-                boxes={dashboardData?.employee?.myApprovals?.data}
+                boxes={employeeApprovals}
                 buttonTitle={"See More"}
+                buttonId={"Approvals-view-btn"}
                 buttonClassName={"big-white-card-button"}
                 userRole={"employee"}
                 route={"approvals"}
@@ -130,12 +160,13 @@ const Home = () => {
             </Col>
 
             <Col xs={24} md={12} lg={12}>
-              <BoxCard
+              <MemoizedBoxCard
                 locationStyle={"up"}
                 title="My Transactions"
                 mainClassName={"mediumHomeCard"}
-                boxes={dashboardData?.employee?.myTransactions?.data}
+                boxes={employeeTransactions}
                 buttonTitle={"See More"}
+                buttonId={"Transactions-view-btn"}
                 buttonClassName={"big-white-card-button"}
                 userRole={"employee"}
                 route={"transactions"}
@@ -150,6 +181,7 @@ const Home = () => {
                 mainClassName={"mediumHomeSideCard"}
                 boxes={dashboardData?.employee?.myHistory?.data}
                 buttonTitle={"See More"}
+                buttonId={"History-view-btn"}
                 buttonClassName={"big-white-card-button"}
                 userRole={"employee"}
                 route={"history"}
@@ -160,6 +192,7 @@ const Home = () => {
                 mainClassName={"home-reprot-card"}
                 title="Reports"
                 buttonTitle={"See More"}
+                buttonId={"Reports-view-btn"}
                 buttonClassName={"big-white-card-button"}
                 rowButtonClassName={"small-card-light-button"}
                 data={[
@@ -192,36 +225,25 @@ const Home = () => {
             <Col xs={24} md={24} lg={24}>
               <TextCard
                 className="smallCard"
-                title={`Hi ${dashboardData?.title},`}
+                title={
+                  <>
+                    <span id="greeting-text-LM">Hi</span>{" "}
+                    <span id="user-name-LM">{dashboardData?.title}</span>,
+                  </>
+                }
                 subtitle="Good Morning!"
               />
             </Col>
           </Row>
           <Row gutter={[16, 16]}>
             <Col xs={24} md={12} lg={12}>
-              <BoxCard
-                warningFlag={true}
+              <MemoizedBoxCard
+                // warningFlag={true}
                 locationStyle={"up"}
                 title="Approvals Request"
+                buttonId={"Approvals-view-btn-LM"}
                 mainClassName={"mediumHomeCard"}
-                // boxes={dashboardData?.lineManager?.myApprovals?.data}
-                boxes={[
-                  // {
-                  //   count: 4,
-                  //   label: "Pending Approval Requests",
-                  //   type: "pending_approval_request",
-                  // },
-                  {
-                    count: 12,
-                    label: "TOTAL PENDING APPROVALS",
-                    type: "total_pending_approvals",
-                  },
-                  {
-                    count: 2,
-                    label: "APPROVALS REQUIRE URGENT ACTION",
-                    type: "approvals_require_urgent_action",
-                  },
-                ]}
+                boxes={lineManagerApprovals}
                 buttonTitle={"See More"}
                 buttonClassName={"big-white-card-button"}
                 userRole={"LM"}
@@ -230,12 +252,13 @@ const Home = () => {
             </Col>
 
             <Col xs={24} md={12} lg={12}>
-              <BoxCard
+              <MemoizedBoxCard
                 locationStyle={"up"}
                 title="My Actions"
                 mainClassName={"mediumHomeCard"}
-                boxes={dashboardData?.lineManager?.myActions?.data}
+                boxes={lineManagerAction}
                 buttonTitle={"See More"}
+                buttonId={"mediumHomeCard-view-btn-LM"}
                 buttonClassName={"big-white-card-button"}
                 userRole={"LM"}
                 route={"actions"}
@@ -248,6 +271,7 @@ const Home = () => {
                 mainClassName={"home-reprot-card"}
                 title="Reports"
                 buttonTitle={"See More"}
+                buttonId={"Reports-view-btn-LM"}
                 buttonClassName={"big-white-card-button"}
                 rowButtonClassName={"small-card-light-button"}
                 data={[

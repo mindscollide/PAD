@@ -9,7 +9,7 @@ import {
 } from "../../../commen/funtions/rejex";
 import moment from "moment";
 
-export const EmployeeMyApprovalFilter = ({ handleSearch }) => {
+export const EmployeeMyApprovalFilter = ({ handleSearch, setVisible }) => {
   const { employeeMyApprovalSearch, setEmployeeMyApprovalSearch } =
     useSearchBarContext();
 
@@ -19,6 +19,8 @@ export const EmployeeMyApprovalFilter = ({ handleSearch }) => {
     quantity: "",
     startDate: "",
   });
+
+  console.log(localState.startDate, "chekcejcehevhjvadatdad");
 
   // 🔹 Track touched fields
   const [dirtyFields, setDirtyFields] = useState({});
@@ -79,12 +81,13 @@ export const EmployeeMyApprovalFilter = ({ handleSearch }) => {
       tableFilterTrigger: true,
     }));
     resetLocalState();
+    setVisible(false);
   };
 
   /** Reset local state + dirty flags */
   const resetLocalState = () => {
     setLocalState({ instrumentName: "", quantity: "", startDate: "" });
-   setDirtyFields({});
+    setDirtyFields({});
   };
   const handleDateChange = (date, fieldName) => {
     setFieldValue(fieldName, date); // keep moment | null in state
@@ -122,7 +125,7 @@ export const EmployeeMyApprovalFilter = ({ handleSearch }) => {
     localState.startDate,
     employeeMyApprovalSearch.startDate,
   ]);
-
+  console.log("quantityValue", quantityValue);
   return (
     <>
       {/* 🔸 First Row: Instrument Name & Date */}
@@ -157,7 +160,9 @@ export const EmployeeMyApprovalFilter = ({ handleSearch }) => {
           <TextField
             label="Quantity"
             name="Quantity"
-            value={quantityValue}
+            value={
+              quantityValue === 0 || quantityValue === "0" ? "" : quantityValue
+            }
             onChange={handleInputChange}
             placeholder="Quantity"
             size="medium"

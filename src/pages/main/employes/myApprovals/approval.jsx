@@ -34,15 +34,12 @@ import { useDashboardContext } from "../../../../context/dashboardContaxt";
 const Approval = () => {
   const navigate = useNavigate();
   const hasFetched = useRef(false);
-  const hasFetchedOnTriiger = useRef(false);
 
   const {
     isEquitiesModalVisible,
     setIsEquitiesModalVisible,
     isSubmit,
-    setIsSubmit,
     isTradeRequestRestricted,
-    setIsTradeRequestRestricted,
     isViewDetail,
     setIsViewDetail,
     isViewComments,
@@ -51,7 +48,7 @@ const Approval = () => {
     resubmitIntimation,
     isConductedTransaction,
   } = useGlobalModal();
-
+  const { addApprovalRequestData } = useDashboardContext();
   const { showNotification } = useNotification();
   const { selectedKey } = useSidebarContext();
   const { showLoader } = useGlobalLoader();
@@ -67,6 +64,8 @@ const Approval = () => {
   const [sortedInfo, setSortedInfo] = useState({});
   const [approvalData, setApprovalData] = useState([]);
   const [loadingMore, setLoadingMore] = useState(false); // spinner at bottom
+
+  console.log("employeeMyApproval4555", addApprovalRequestData);
 
   // Confirmed filters displayed as tags
   const [submittedFilters, setSubmittedFilters] = useState([]);
@@ -108,13 +107,11 @@ const Approval = () => {
    */
   const fetchApprovals = async () => {
     await showLoader(true);
-    console.log("Checker APi Search");
-
     const requestdata = {
       InstrumentName:
         employeeMyApprovalSearch.instrumentName ||
         employeeMyApprovalSearch.mainInstrumentName,
-      StartDate: employeeMyApprovalSearch.date || "",
+      Date: employeeMyApprovalSearch.date || "",
       Quantity: employeeMyApprovalSearch.quantity || 0,
       StatusIds: employeeMyApprovalSearch.status || [],
       TypeIds: employeeMyApprovalSearch.type || [],
@@ -147,12 +144,15 @@ const Approval = () => {
    */
   const handleRemoveFilter = async (key) => {
     const normalizedKey = key?.toLowerCase();
-    console.log("Checker APi Search");
     // 1️⃣ Update UI state for removed filters
     setSubmittedFilters((prev) => prev.filter((item) => item.key !== key));
 
+    //To show dynamically AssetType like EQ equities ETC
+    const assetKey = employeeMyApprovalSearch.assetType;
+    const assetData = addApprovalRequestData?.[assetKey];
+
     // 2️⃣ Prepare API request parameters
-    const TypeIds = mapBuySellToIds(employeeMyApprovalSearch.type);
+    const TypeIds = mapBuySellToIds(employeeMyApprovalSearch.type, assetData);
     const statusIds = mapStatusToIds(employeeMyApprovalSearch.status);
 
     const requestdata = {
@@ -160,7 +160,7 @@ const Approval = () => {
         employeeMyApprovalSearch.instrumentName ||
         employeeMyApprovalSearch.mainInstrumentName ||
         "",
-      StartDate: employeeMyApprovalSearch.date || "",
+      Date: employeeMyApprovalSearch.date || "",
       Quantity: employeeMyApprovalSearch.quantity || 0,
       StatusIds: statusIds || [],
       TypeIds: TypeIds || [],
@@ -199,6 +199,7 @@ const Approval = () => {
 
     // 4️⃣ Show loader and call API
     showLoader(true);
+
     const data = await SearchTadeApprovals({
       callApi,
       showNotification,
@@ -209,7 +210,6 @@ const Approval = () => {
 
     setIsEmployeeMyApproval(data);
   };
-  console.log("employeeMyApprovalSearch", employeeMyApprovalSearch);
   /**
    * Syncs submittedFilters state when filters are applied
    */
@@ -297,6 +297,7 @@ const Approval = () => {
         employeeMyApproval?.approvals &&
         Array.isArray(employeeMyApproval.approvals)
       ) {
+        console.log(employeeMyApproval, "CheckDatayagjvashvajhs");
         // 🔹 Map and normalize data
         const mappedData = employeeMyApproval.approvals.map((item) => ({
           key: item.approvalID,
@@ -347,22 +348,22 @@ const Approval = () => {
         try {
           setLoadingMore(true);
 
+          const assetKey = employeeMyApprovalSearch.assetType;
+          const assetData = addApprovalRequestData?.[assetKey];
+
           // Build request payload
           const requestdata = {
             InstrumentName:
               employeeMyApprovalSearch.instrumentName ||
               employeeMyApprovalSearch.mainInstrumentName,
-            StartDate: employeeMyApprovalSearch.date || "",
+            Date: employeeMyApprovalSearch.date || "",
             Quantity: employeeMyApprovalSearch.quantity || 0,
-            StatusIds: employeeMyApprovalSearch.status || [],
-            TypeIds: employeeMyApprovalSearch.type || [],
+            StatusIds: mapStatusToIds(employeeMyApprovalSearch.status) || [],
+            TypeIds:
+              mapBuySellToIds(employeeMyApprovalSearch.type, assetData) || [],
             PageNumber: employeeMyApprovalSearch.pageNumber || 10, // Acts as offset for API
             Length: 10,
           };
-
-          console.log("Fetching employee approvals with params:", requestdata);
-          console.log("Checker APi Search");
-
           // Call API
           const data = await SearchTadeApprovals({
             callApi,
@@ -372,17 +373,24 @@ const Approval = () => {
             navigate,
           });
 
-          // Append new approvals
-          setIsEmployeeMyApproval((prev) => ({
-            ...prev,
-            approvals: [...(prev?.approvals || []), ...(data.approvals || [])],
-            totalRecords:
-              prev?.totalRecords !== data.totalRecords
-                ? data.totalRecords
-                : prev?.totalRecords,
-          }));
+          if (!data) return;
 
-          console.log("employeeMyApproval", data);
+          setIsEmployeeMyApproval((prevState) => {
+            const safePrev =
+              prevState && typeof prevState === "object"
+                ? prevState
+                : { approvals: [], totalRecords: 0 };
+
+            return {
+              approvals: [
+                ...(Array.isArray(safePrev.approvals)
+                  ? safePrev.approvals
+                  : []),
+                ...(Array.isArray(data?.approvals) ? data.approvals : []),
+              ],
+              totalRecords: data?.totalRecords ?? safePrev.totalRecords,
+            };
+          });
         } catch (error) {
           console.error("Error loading more approvals:", error);
         } finally {
@@ -393,9 +401,6 @@ const Approval = () => {
     0,
     "border-less-table-orange" // Container selector
   );
-
-  // Lazy Loading Work Start
-  console.log("employeeMyApproval", employeeMyApproval);
 
   return (
     <>
@@ -439,31 +444,19 @@ const Approval = () => {
           </Row>
 
           {/* Table or Empty State */}
-          {approvalData && approvalData.length > 0 ? (
-            <>
-              <BorderlessTable
-                rows={approvalData}
-                columns={columns}
-                scroll={{
-                  x: "max-content",
-                  y: submittedFilters.length > 0 ? 450 : 500,
-                }}
-                classNameTable="border-less-table-orange"
-                onChange={(pagination, filters, sorter) => {
-                  setSortedInfo(sorter);
-                }}
-                loading={loadingMore}
-              />
-
-              {/* {loadingMore && (
-                <div style={{ textAlign: "center", padding: "12px" }}>
-                  <Spin size="small" />
-                </div>
-              )} */}
-            </>
-          ) : (
-            <EmptyState type="request" />
-          )}
+          <BorderlessTable
+            rows={approvalData}
+            columns={columns}
+            scroll={{
+              x: "max-content",
+              y: submittedFilters.length > 0 ? 450 : 500,
+            }}
+            classNameTable="border-less-table-orange"
+            onChange={(pagination, filters, sorter) => {
+              setSortedInfo(sorter);
+            }}
+            loading={loadingMore}
+          />
         </div>
       </PageLayout>
 

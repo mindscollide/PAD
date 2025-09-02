@@ -5,10 +5,16 @@ export const SidebarContext = createContext();
 
 // 2. Create a Provider component
 export const SidebarProvider = ({ children }) => {
-  // this state is used for sider bar open and closed 
-  const [collapsed, setCollapsed] = useState(false);
+  // this state is used for sider bar open and closed
+  const [collapsed, setCollapsed] = useState(true);
   // this state is used for side bar menu item selected
   const [selectedKey, setSelectedKey] = useState("0");
+
+  // Reset function without any extra variables
+  const resetSidebarState = () => {
+    setCollapsed(true);
+    setSelectedKey("0");
+  };
 
   return (
     <SidebarContext.Provider
@@ -17,6 +23,7 @@ export const SidebarProvider = ({ children }) => {
         setCollapsed,
         selectedKey,
         setSelectedKey,
+        resetSidebarState,
       }}
     >
       {children}

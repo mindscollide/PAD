@@ -8,9 +8,10 @@ import { apiCallStatus, emaStatusOptions, emtStatusOptions } from "./utils";
 import { useSidebarContext } from "../../../context/sidebarContaxt";
 import { useApi } from "../../../context/ApiContext";
 import { useGlobalLoader } from "../../../context/LoaderContext";
-import useNotification from "antd/es/notification/useNotification";
+import { useNotification } from "../../../components/NotificationProvider/NotificationProvider";
 import { useMyApproval } from "../../../context/myApprovalContaxt";
 import { useNavigate } from "react-router-dom";
+import { useDashboardContext } from "../../../context/dashboardContaxt";
 
 /**
  * Dropdown for selecting status filters with local state management.
@@ -18,6 +19,7 @@ import { useNavigate } from "react-router-dom";
 const StatusFilterDropdown = ({
   confirm,
   clearFilters,
+  setOpenState,
   state,
   setState,
   tempSelected,
@@ -25,6 +27,7 @@ const StatusFilterDropdown = ({
 }) => {
   const navigate = useNavigate();
   const { selectedKey } = useSidebarContext();
+  const { addApprovalRequestData } = useDashboardContext();
   const { callApi } = useApi();
   const { showLoader } = useGlobalLoader();
   const { showNotification } = useNotification();
@@ -50,6 +53,9 @@ const StatusFilterDropdown = ({
       case "4":
         setFilterOptions(emtStatusOptions);
         break;
+      case "6":
+        setFilterOptions(emtStatusOptions);
+        break;
       default:
         setFilterOptions([]);
     }
@@ -61,26 +67,31 @@ const StatusFilterDropdown = ({
       status: tempSelected,
     }));
     let newdata = tempSelected;
-      console.log("hello test", newdata);
+    console.log("hello test", newdata);
     await apiCallStatus({
       selectedKey,
       newdata,
       state,
+      addApprovalRequestData,
       callApi,
       showNotification,
       showLoader,
       navigate,
       setIsEmployeeMyApproval,
     });
+    setOpenState(false);
+
     confirm(); // close dropdown
   };
 
   const handleReset = async () => {
     let newdata = [];
+    console.log("hello test", newdata);
     await apiCallStatus({
       selectedKey,
       newdata,
       state,
+      addApprovalRequestData,
       callApi,
       showNotification,
       showLoader,
@@ -93,6 +104,7 @@ const StatusFilterDropdown = ({
       status: [],
     }));
     clearFilters?.();
+    setOpenState(false);
     confirm(); // close dropdown
   };
 

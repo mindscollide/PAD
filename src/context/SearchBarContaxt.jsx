@@ -209,6 +209,49 @@ export const SearchBarProvider = ({ children }) => {
   };
 
   /**
+   * 🔍 Line-Manager Approval Request Filters State
+   * Used for filtering data in the Line-Manager Approval Request table.
+   */
+  const [lineManagerApprovalSearch, setLineManagerApprovalSearch] = useState({
+    instrumentName: "", // Name of the instrument
+    quantity: "", // Quantity filter
+    date: null, // Single date (could be Date object or string)
+    mainInstrumentName: "", // Main instrument name for popover or modal
+    type: [], // Type filter: ["Buy", "Sell"]
+    status: [], // Status filter: ["Pending", "Approved", etc.]
+    pageSize: "", // Pagination: size of page
+    pageNumber: "", // Pagination: current page number
+    filterTrigger: false,
+  });
+
+  /**
+   * 🔁 Helper: Reset all Employee My Approval filters to initial state
+   */
+  const resetLineManagerApprovalSearch = () => {
+    setLineManagerApprovalSearch({
+      instrumentName: "",
+      quantity: "",
+      date: null,
+      mainInstrumentName: "",
+      type: [],
+      status: [],
+      pageSize: "",
+      pageNumber: "",
+      filterTrigger: true,
+    });
+  };
+
+  // 🔁 New helper: Reset ALL filters at once
+  const resetSearchBarContextState = () => {
+    resetEmployeeMyApprovalSearch();
+    resetEmployeeMyTransactionSearch();
+    resetEmployeePortfolioSearch();
+    resetEmployeePendingApprovalSearch();
+    resetEmployeeMyHistorySearch();
+    resetLineManagerApprovalSearch();
+  };
+
+  /**
    * Provide state and actions to the component tree
    */
   return (
@@ -238,6 +281,13 @@ export const SearchBarProvider = ({ children }) => {
         employeeMyHistorySearch,
         setEmployeeMyHistorySearch,
         resetEmployeeMyHistorySearch,
+
+        // This is For LineManager Approval
+        lineManagerApprovalSearch,
+        setLineManagerApprovalSearch,
+        resetLineManagerApprovalSearch,
+
+        resetSearchBarContextState,
       }}
     >
       {children}

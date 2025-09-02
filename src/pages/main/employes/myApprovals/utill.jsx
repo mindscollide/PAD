@@ -1,14 +1,13 @@
 // components/pages/employee/approval/tableColumns.js
 
 import React, { useEffect, useRef, useState } from "react";
-import { debounce } from "lodash";
 import { Tag } from "antd";
 import { Button, StatusFilterDropdown } from "../../../../components";
 import style from "./approval.module.css";
 import EscalatedIcon from "../../../../assets/img/escalated.png";
 import ArrowUP from "../../../../assets/img/arrow-up-dark.png";
 import ArrowDown from "../../../../assets/img/arrow-down-dark.png";
-import { ArrowsAltOutlined } from "@ant-design/icons";
+import DefaultColumArrow from "../../../../assets/img/default-colum-arrow.png";
 import TypeColumnTitle from "../../../../components/dropdowns/filters/typeColumnTitle";
 import StatusColumnTitle from "../../../../components/dropdowns/filters/statusColumnTitle";
 import { useGlobalModal } from "../../../../context/GlobalModalContext";
@@ -35,7 +34,10 @@ const getSortIcon = (columnKey, sortedInfo) => {
       <img src={ArrowUP} alt="Desc" className="custom-sort-icon" />
     );
   }
-  return <ArrowsAltOutlined className="custom-sort-icon" />;
+
+  return (
+    <img src={DefaultColumArrow} alt="Default" className="custom-sort-icon" />
+  );
 };
 // Helper for consistent column titles
 const withSortIcon = (label, columnKey, sortedInfo) => (
@@ -68,19 +70,18 @@ export const getBorderlessTableColumns = (
     title: withSortIcon("Approval ID", "tradeApprovalID", sortedInfo),
     dataIndex: "tradeApprovalID",
     key: "tradeApprovalID",
-    width: "15%",
-    // width: 200,
+    width: "12%",
     ellipsis: true,
-    sorter: (a, b) => a.tradeApprovalID - b.tradeApprovalID,
+    sorter: (a, b) =>
+      parseInt(a.tradeApprovalID.replace(/[^\d]/g, ""), 10) -
+      parseInt(b.tradeApprovalID.replace(/[^\d]/g, ""), 10),
     sortDirections: ["ascend", "descend"],
     sortOrder:
       sortedInfo?.columnKey === "tradeApprovalID" ? sortedInfo.order : null,
     showSorterTooltip: false,
     sortIcon: () => null,
     render: (tradeApprovalID) => {
-      console.log(tradeApprovalID, "jhvjhvajdvadvasjdvj");
-      // Format: insert dash before numbers
-      const formattedID = tradeApprovalID?.replace(/(\D+)(\d+)/, "$1-$2");
+      console.log(typeof tradeApprovalID, "jhvjhvajdvadvasjdvj");
       return (
         <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
           <span className="font-medium">
@@ -91,18 +92,19 @@ export const getBorderlessTableColumns = (
     },
   },
   {
-    title: withSortIcon("Instrument", "appinstrumentrovalID", sortedInfo),
+    title: withSortIcon("Instrument", "instrumentName", sortedInfo),
     dataIndex: "instrument",
-    key: "instrument",
-    width: "15%",
+    key: "instrumentName",
+    width: "14%",
     ellipsis: true,
     sorter: (a, b) => {
-      const nameA = a.instrument?.instrumentName || "";
-      const nameB = b.instrument?.instrumentName || "";
+      const nameA = a.instrument?.instrumentCode || "";
+      const nameB = b.instrument?.instrumentCode || "";
       return nameA.localeCompare(nameB);
     },
     sortDirections: ["ascend", "descend"],
-    sortOrder: sortedInfo?.columnKey === "instrument" ? sortedInfo.order : null,
+    sortOrder:
+      sortedInfo?.columnKey === "instrumentName" ? sortedInfo.order : null,
     showSorterTooltip: false,
     sortIcon: () => null,
     render: (instrument, record) => {
@@ -116,14 +118,31 @@ export const getBorderlessTableColumns = (
       const name = instrument?.instrumentName || "";
       const code = instrument?.instrumentCode || "";
       return (
-        <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-          <span
-            className="border-less-table-orange-instrumentBadge"
-            style={{ minWidth: 30 }}
-          >
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: "12px",
+            paddingRight: "25px",
+          }}
+        >
+          <span className="custom-shortCode-asset" style={{ minWidth: 30 }}>
             {assetCode.substring(0, 2).toUpperCase()}
           </span>
-          <span className="font-medium">{`${name} - ${code}`}</span>
+          <span
+            className="font-medium"
+            style={{
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+              whiteSpace: "nowrap",
+              maxWidth: "200px",
+              display: "inline-block",
+              cursor: "pointer",
+            }}
+            title={`${code}`} // show full text on hover
+          >
+            {`${code}`}
+          </span>
         </div>
       );
     },
@@ -142,7 +161,7 @@ export const getBorderlessTableColumns = (
     dataIndex: "type",
     key: "type",
     ellipsis: true,
-    width: "15%",
+    width: "8%",
     filteredValue: employeeMyApprovalSearch.type?.length
       ? employeeMyApprovalSearch.type
       : null,
@@ -158,7 +177,7 @@ export const getBorderlessTableColumns = (
     dataIndex: "requestDateTime",
     key: "requestDateTime",
     ellipsis: true,
-    width: "15%",
+    width: "17%",
     sorter: (a, b) =>
       formatApiDateTime(a.requestDateTime).localeCompare(
         formatApiDateTime(b.requestDateTime)
@@ -204,7 +223,6 @@ export const getBorderlessTableColumns = (
     onFilter: () => true,
     render: (status) => {
       const tag = approvalStatusMap[status] || {};
-      console.log(tag, "TagssTagsTagsTags");
       return (
         <Tag
           style={{
@@ -236,9 +254,9 @@ export const getBorderlessTableColumns = (
     dataIndex: "timeRemaining",
     key: "timeRemaining",
     ellipsis: true,
-    width: "15%",
+    width: "20%",
+    align: "center",
     render: (text, record) => {
-      console.log(record, "Checkecnekjcb record");
       // ✅ Show nothing if pending
       if (record.status === "Pending")
         return <span className="text-gray-400">-</span>;
@@ -263,17 +281,16 @@ export const getBorderlessTableColumns = (
   {
     title: "",
     key: "actions",
-    width: "10%",
+    width: "15%",
+    align: "center",
     render: (text, record) => {
       //Global State to selected data to show in ViewDetailModal
       const { setSelectedViewDetail } = useGlobalModal();
-      console.log(record, "Actions render fired:");
       return (
         <Button
           className="big-orange-button"
           text="View Details"
           onClick={() => {
-            console.log(record, "Clicked record");
             setSelectedViewDetail(record);
             setIsViewDetail(true);
           }}

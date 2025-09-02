@@ -39,7 +39,8 @@ const EquitiesApproval = () => {
 
   //For Instrument Dropdown show selected Name
   const [selectedInstrument, setSelectedInstrument] = useState(null);
-  console.log(selectedInstrument, "selectedInstrumentselectedInstrument23");
+
+  console.log(selectedInstrument, "CheckInstrumentId");
 
   // for employeeBroker state to show data in dropdown
   const [selectedBrokers, setSelectedBrokers] = useState([]);
@@ -47,7 +48,12 @@ const EquitiesApproval = () => {
   //For Type and Asset Type States to show Data in Type Dropdown
   const [selectedTradeApprovalType, setSelectedTradeApprovalType] =
     useState(null);
+
+  //To Show Asset type Id
   const [selectedAssetTypeID, setSelectedAssetTypeID] = useState(null);
+
+  //To Show Asset type Name
+  const [selectedAssetTypeName, setSelectedAssetTypeName] = useState("");
 
   //For Quantity Data State
   const [quantity, setQuantity] = useState("");
@@ -55,16 +61,33 @@ const EquitiesApproval = () => {
   // Refactor sessionStorage read with useMemo for performance & error handling
   const lineManagerDetails = useMemo(() => {
     try {
-      return JSON.parse(sessionStorage.getItem("line_Manager_Details") || "{}");
+      const storedData = JSON.parse(
+        sessionStorage.getItem("user_Hierarchy_Details") || "[]"
+      );
+
+      if (!Array.isArray(storedData)) return {};
+
+      const found = storedData.find(
+        (item) => item.roleName === "Line Manager (LM)" && item.levelNo === 1
+      );
+
+      return found
+        ? { managerName: found.managerName, managerEmail: found.managerEmail }
+        : {};
     } catch (e) {
       console.error("Invalid JSON in sessionStorage", e);
       return {};
     }
   }, []);
 
+  //the types should come dynamicallyy like it should be Equities, FixedIncome
+  const assetTypeKey = Object.keys(addApprovalRequestData || {})[0]; // e.g., "Equities"
+  const assetTypeData = addApprovalRequestData?.[assetTypeKey];
+
   // this is how I extract data fro the AllInstrumentsData which is stored in dashboardContextApi
   const formattedInstruments = (allInstrumentsData || []).map((item) => ({
-    type: item?.instrumentID,
+    id: item?.instrumentID,
+    shortCode: assetTypeData?.shortCode,
     name: item?.instrumentCode,
     description: item?.instrumentName,
   }));
@@ -86,7 +109,6 @@ const EquitiesApproval = () => {
 
   // Handle when user selects/deselects brokers
   const handleBrokerChange = (selectedIDs) => {
-    console.log(selectedBrokerIDs, "Checkeceececkekc12121");
     const selectedData = brokerOptions
       .filter((item) => selectedIDs.includes(item.value))
       .map((item) => item.raw);
@@ -95,20 +117,25 @@ const EquitiesApproval = () => {
   };
 
   // Format type options from addApprovalRequestData show data in type Select
-  const typeOptions = (addApprovalRequestData?.Equities || []).map((item) => ({
-    label: item.type,
-    value: item.tradeApprovalTypeID,
-    assetTypeID: item.assetTypeID,
-  }));
+  const typeOptions = Array.isArray(assetTypeData?.items)
+    ? assetTypeData?.items.map((item) => ({
+        label: item.type,
+        value: item.tradeApprovalTypeID,
+        assetTypeID: item.assetTypeID,
+      }))
+    : [];
+
+  console.log(
+    addApprovalRequestData,
+    "addApprovalRequestDataaddApprovalRequestData"
+  );
 
   //  Prepare selected values for Select's `value` prop
   const selectedBrokerIDs = selectedBrokers.map((b) => b.brokerID);
 
   // Handle Select For Instrument Data
-  const handleSelect = (value) => {
-    const selectedObj = formattedInstruments.find(
-      (item) => item.type === value
-    );
+  const handleSelect = (id) => {
+    const selectedObj = formattedInstruments.find((item) => item.id === id);
     setSelectedInstrument(selectedObj || null);
   };
 
@@ -117,6 +144,7 @@ const EquitiesApproval = () => {
     const selected = typeOptions.find((opt) => opt.value === value);
     setSelectedTradeApprovalType(value);
     setSelectedAssetTypeID(selected?.assetTypeID || null);
+    setSelectedAssetTypeName(selected?.label || "");
   };
 
   // Handler For quantity
@@ -149,16 +177,19 @@ const EquitiesApproval = () => {
 
     const requestdata = {
       TradeApprovalID: 0,
-      InstrumentID: selectedInstrument?.type || null,
+      InstrumentID: selectedInstrument?.id || null,
+      InstrumentName: selectedInstrument?.description || "",
       AssetTypeID: selectedAssetTypeID,
       ApprovalTypeID: selectedTradeApprovalType,
       Quantity: quantityNumber,
+      InstrumentShortCode: selectedInstrument?.name || "",
+      ApprovalType: selectedAssetTypeName,
       ApprovalStatusID: 1,
       Comments: "",
       BrokerIds: selectedBrokers.map((b) => b.brokerID),
       ListOfTradeApprovalActionableBundle: [
         {
-          instrumentID: selectedInstrument?.type || null,
+          instrumentID: selectedInstrument?.id || null,
           instrumentShortName: selectedInstrument?.name || "",
           Entity: { EntityID: 1, EntityTypeID: 1 },
         },
@@ -187,6 +218,7 @@ const EquitiesApproval = () => {
     setSelectedBrokers([]);
     setSelectedTradeApprovalType(null);
     setSelectedAssetTypeID(null);
+    setSelectedAssetTypeID("");
     setQuantity("");
   };
 
@@ -195,6 +227,20 @@ const EquitiesApproval = () => {
     await resetStates();
     setIsEquitiesModalVisible(false);
   };
+
+  const isFormFilled = useMemo(() => {
+    return (
+      selectedInstrument !== null &&
+      selectedTradeApprovalType !== null &&
+      quantity.trim() !== "" &&
+      selectedBrokers.length > 0
+    );
+  }, [
+    selectedInstrument,
+    selectedTradeApprovalType,
+    quantity,
+    selectedBrokers,
+  ]);
 
   return (
     <>
@@ -216,11 +262,13 @@ const EquitiesApproval = () => {
               </Row>
               <Row>
                 <Col span={24}>
-                  <label className={styles.instrumentLabel}>Instrument</label>
+                  <label className={styles.instrumentLabel}>
+                    Instrument <span className={styles.aesterickClass}>*</span>
+                  </label>
                   <InstrumentSelect
                     data={formattedInstruments}
                     onSelect={handleSelect}
-                    value={selectedInstrument?.type || null}
+                    value={selectedInstrument?.id || null}
                     onClear={handleClearInstrument}
                     className={styles.selectinstrumentclass}
                     disabled={allInstrumentsData.length === 0}
@@ -230,23 +278,30 @@ const EquitiesApproval = () => {
 
               <Row className={styles.mt1} gutter={[20, 20]}>
                 <Col span={12}>
-                  <label className={styles.instrumentLabel}>Type</label>
+                  <label className={styles.instrumentLabel}>
+                    Type <span className={styles.aesterickClass}>*</span>
+                  </label>
                   <Select
                     label="Type"
                     name="Type"
                     placeholder={"Select"}
                     allowClear
+                    // open={true}
                     options={typeOptions}
                     value={selectedTradeApprovalType}
                     onChange={handleTypeSelect}
-                    disabled={typeOptions.length === 0}
-                    className={styles.checkboxSelect}
-                    // prefixCls={styles.typeDropdownClass}
+                    // disabled={typeOptions.length === 0}
+                    prefixCls="EquitiesApprovalSelectPrefix"
                   />
                 </Col>
                 <Col span={12}>
                   <TextField
-                    label="Quantity"
+                    label={
+                      <>
+                        Quantity
+                        <span className={styles.aesterickClass}> *</span>
+                      </>
+                    }
                     placeholder="Quantity"
                     className={styles.TextFieldOfQuantity}
                     type="text"
@@ -259,7 +314,9 @@ const EquitiesApproval = () => {
 
               <Row className={styles.mt1} gutter={[20, 20]}>
                 <Col span={12}>
-                  <label className={styles.instrumentLabel}>Brokers</label>
+                  <label className={styles.instrumentLabel}>
+                    Brokers <span className={styles.aesterickClass}>*</span>
+                  </label>
                   <Select
                     name="broker"
                     placeholder={"Select"}
@@ -285,7 +342,7 @@ const EquitiesApproval = () => {
                           Name:
                         </label>
                         <p className={styles.lineManagername}>
-                          {lineManagerDetails?.lineManagerName || "-"}
+                          {lineManagerDetails?.managerName || "-"}
                         </p>
                       </Col>
 
@@ -294,7 +351,7 @@ const EquitiesApproval = () => {
                           Email:
                         </label>
                         <p className={styles.lineManagername}>
-                          {lineManagerDetails?.lineManagerEmail || "-"}
+                          {lineManagerDetails?.managerEmail || "-"}
                         </p>
                       </Col>
                     </Row>
@@ -322,6 +379,7 @@ const EquitiesApproval = () => {
                     text={"Submit"}
                     className="big-dark-button"
                     onClick={clickOnSubmitButton}
+                    disabled={!isFormFilled}
                   />
                 </Space>
               </Col>

@@ -39,6 +39,7 @@ const SearchWithPopoverOnly = () => {
 
   // Local state to control popover visibility
   const [visible, setVisible] = useState(false);
+  console.log("SearchWithPopoverOnly selectedKey", selectedKey);
 
   /**
    * SearchBarContext its state handler for this function.
@@ -69,6 +70,10 @@ const SearchWithPopoverOnly = () => {
     employeePendingApprovalSearch,
     setEmployeePendingApprovalSearch,
     resetEmployeePendingApprovalSearch,
+
+    // for Line Manager Approval Request
+    lineManagerApprovalSearch,
+    setLineManagerApprovalSearch,
   } = useSearchBarContext();
   const { activeTab } = usePortfolioContext();
 
@@ -83,7 +88,7 @@ const SearchWithPopoverOnly = () => {
   const handleSearch = () => {
     switch (selectedKey) {
       case "1":
-        console.log("selectedKey",selectedKey)
+        console.log("selectedKey", selectedKey);
         setEmployeeMyApprovalSearch((prev) => ({
           ...prev,
           tableFilterTrigger: true,
@@ -116,6 +121,13 @@ const SearchWithPopoverOnly = () => {
             }));
         }
 
+        break;
+
+      case "5":
+        setLineManagerApprovalSearch((prev) => ({
+          ...prev,
+          filterTrigger: true,
+        }));
         break;
       default:
         setEmployeeMyApprovalSearch((prev) => ({
@@ -168,6 +180,13 @@ const SearchWithPopoverOnly = () => {
         }
 
         break;
+
+      case "5":
+        setLineManagerApprovalSearch((prev) => ({
+          ...prev,
+          filterTrigger: true,
+        }));
+        break;
       default:
         setEmployeeMyApprovalSearch((prev) => ({
           ...prev,
@@ -180,7 +199,11 @@ const SearchWithPopoverOnly = () => {
     <Space.Compact className={styles.searchWrapper}>
       {/* Main Search Input */}
       <Input
-        placeholder="Search on Instrument"
+        placeholder={
+          selectedKey === 1
+            ? "Instrument name. Click to view more options "
+            : "Instrument name. Click to view more options "
+        }
         allowClear
         className={
           collapsed ? styles["inputWrapperCollapsed"] : styles["inputWrapper"]
@@ -191,7 +214,10 @@ const SearchWithPopoverOnly = () => {
           employeeMyApprovalSearch,
           employeeMyTransactionSearch,
           employeePortfolioSearch,
-          employeePendingApprovalSearch
+          employeePendingApprovalSearch,
+
+          //For Line Manager
+          lineManagerApprovalSearch
         )}
         onChange={(e) =>
           handleMainInstrumentChange(
@@ -201,7 +227,8 @@ const SearchWithPopoverOnly = () => {
             setEmployeeMyApprovalSearch,
             setEmployeeMyTransactionSearch,
             setEmployeePortfolioSearch,
-            setEmployeePendingApprovalSearch
+            setEmployeePendingApprovalSearch,
+            setLineManagerApprovalSearch
           )
         }
         style={{
@@ -225,6 +252,7 @@ const SearchWithPopoverOnly = () => {
           selectedKey,
           activeTab,
           handleSearch,
+          setVisible,
           dropdownOptions
         )}
         trigger="click"
@@ -240,6 +268,7 @@ const SearchWithPopoverOnly = () => {
               setEmployeeMyTransactionSearch,
               setEmployeePortfolioSearch,
               setEmployeePendingApprovalSearch,
+              setLineManagerApprovalSearch,
             });
           }
         }}

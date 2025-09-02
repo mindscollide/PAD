@@ -3,6 +3,14 @@
   border-spacing: 0 10px; /* Space between rows */
 }
 
+.border-less-table-orange-body {
+  margin-top: 10px !important;
+  overflow-x: hidden !important;
+  overflow-y: auto !important;
+  scrollbar-color: #eaeaea transparent !important;
+  
+}
+
 /* Table Row Styling */
 .border-less-table-orange-row {
   height: 53.82px;
@@ -55,6 +63,31 @@ td.border-less-table-orange-cell:not(:first-child):not(:last-child) {
   font-family: "Switzer Variable";
   font-weight: 500 !important;
   font-size: 13.89px;
+}
+
+.custom-shortCode-asset {
+  display: inline-block;
+  width: 38px;
+  align-items: center !important;
+  height: 22px;
+  line-height: 22px;
+  padding: 0 4px !important;
+  text-align: center;
+  margin: 0 !important;
+  /* Typography */
+  font-family: "Switzer Variable";
+  font-size: 14px !important;
+  font-weight: 500;
+  color: white;
+
+  /* Styling */
+  background-color: #30426a; /* Single color for all */
+  border-radius: 4px;
+
+  /* Text handling */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 /* Tag Styling */
@@ -298,19 +331,16 @@ border-  bottom-bottom-right-radius: 6.94px !important;
   z-index: 0 !important;
 }
 
-
 /* For white */
 
 /* Root Table Layout */
 .border-less-table-white-body table {
   border-spacing: 0 10px; /* Space between rows */
-  
 }
 
 /* Table Row Styling */
 .border-less-table-white-row {
   height: 53.82px;
-
 }
 
 /* Target the first and last <td> inside each <tr> */

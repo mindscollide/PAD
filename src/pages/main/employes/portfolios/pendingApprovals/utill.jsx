@@ -3,8 +3,7 @@
 import React from "react";
 import { Tag, Typography } from "antd";
 import { Button } from "../../../../../components";
-import moment from "moment";
-import { ArrowsAltOutlined } from "@ant-design/icons";
+import DefaultColumArrow from "../../../../../assets/img/default-colum-arrow.png";
 import ArrowUP from "../../../../../assets/img/arrow-up-dark.png";
 import ArrowDown from "../../../../../assets/img/arrow-down-dark.png";
 import TypeColumnTitle from "../../../../../components/dropdowns/filters/typeColumnTitle";
@@ -17,7 +16,9 @@ const getSortIcon = (columnKey, sortedInfo) => {
       <img src={ArrowUP} alt="Desc" className="custom-sort-icon" />
     );
   }
-  return <ArrowsAltOutlined className="custom-sort-icon" />;
+  return (
+    <img src={DefaultColumArrow} alt="Default" className="custom-sort-icon" />
+  );
 };
 const { Text } = Typography;
 
@@ -30,7 +31,7 @@ export const getBorderlessTableColumns = (
   approvalStatusMap,
   sortedInfo,
   employeePendingApprovalSearch,
-  setEmployeePendingApprovalSearch,
+  setEmployeePendingApprovalSearch
 ) => [
   {
     title: (

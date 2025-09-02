@@ -3,8 +3,7 @@ import { Card, Typography, Row, Col } from "antd";
 import styles from "./boxCard.module.css";
 
 // Utility functions and mappings
-import { navigateToPage, typeColorMap } from "./utill";
-import { Button } from "../..";
+import { navigateToPage, typeColorMap } from "./utils";
 import {
   formatNumberWithCommas,
   convertSingleDigittoDoubble,
@@ -12,7 +11,9 @@ import {
 import { useNavigate } from "react-router-dom";
 import { useSidebarContext } from "../../../context/sidebarContaxt";
 import EmptyState from "../../emptyStates/empty-states";
-
+import urgent from "../../../assets/img/urgent-red.png";
+import AnimatedCount from "./animatedCount";
+import { Button } from "../..";
 const { Text } = Typography;
 
 /**
@@ -62,6 +63,7 @@ const BoxCard = ({
   boxes = [],
   mainClassName = "",
   buttonTitle = "",
+  buttonId = "",
   buttonClassName = "",
   locationStyle = "down",
   userRole = "",
@@ -85,85 +87,129 @@ const BoxCard = ({
   };
 
   return (
-    <div className={warningFlag ? styles.warningMain : ""}>
-      <Card
-        className={`${styles[mainClassName]} ${
-          warningFlag ? styles.warning : ""
-        }`}
-        style={{ padding: "10px 20px" }}
-      >
-        {/* ========================
+    <Card
+      className={`${styles[mainClassName]} ${
+        warningFlag ? styles.warning : ""
+      }`}
+      style={{ padding: "10px 20px" }}
+    >
+      {/* ========================
           Header Section
       ========================= */}
-        <div className={styles[`${base}cardHeader`]}>
-          <span className={styles[`${base}cardTitle`]}>{title}</span>
+      <div className={styles[`${base}cardHeader`]}>
+        <span className={styles[`${base}cardTitle`]}>{title}</span>
 
-          {buttonTitle && (
-            <div className={styles[`${base}buttonContainer`]}>
-              <Button
-                type="primary"
-                text={buttonTitle}
-                className={buttonClassName}
-                onClick={handleClick}
-              />
-            </div>
-          )}
-        </div>
+        {buttonTitle && (
+          <div className={styles[`${base}buttonContainer`]}>
+            <Button
+              type="primary"
+              id={buttonId}
+              text={buttonTitle}
+              className={buttonClassName}
+              onClick={handleClick}
+            />
+          </div>
+        )}
+      </div>
 
-        {/* ========================
+      {/* ========================
           Content Section
       ========================= */}
-        {normalizedBoxes.length > 0 ? (
-          <Row className={styles[`${base}statBoxMain`]} gutter={[16, 16]}>
-            {normalizedBoxes.map((box, index) => {
-              // Resolve colors & alignment based on `type`
-              const { bgColor, textLableColor, textCountColor, textAlign } =
-                typeColorMap[box.type?.toLowerCase()] || {
-                  bgColor: "#f0f0f0",
-                  textLableColor: "#000",
-                  textCountColor: "#000",
-                  textAlign: "center",
-                };
+      {normalizedBoxes.length > 0 ? (
+        <Row className={styles[`${base}statBoxMain`]} gutter={[16, 16]}>
+          {normalizedBoxes.map((box, index) => {
+            // Resolve colors & alignment based on `type`
+            const { bgColor, textLableColor, textCountColor, textAlign } =
+              typeColorMap[box.type?.toLowerCase().replace(/\s+/g, "_")] || {
+                bgColor: "#f0f0f0",
+                textLableColor: "#000",
+                textCountColor: "#000",
+                textAlign: "center",
+              };
 
-              // Split label into first word + remaining text (used in "left" layout)
-              const [firstWord, ...rest] = box.label.split(" ");
-              const secondPart = rest.join(" ");
+            // Split label into first word + remaining text (used in "left" layout)
+            const [firstWord, ...rest] = box.label.split(" ");
+            const secondPart = rest.join(" ");
 
-              // Responsive column span per box
-              const totalCols = 24;
-              const span =
-                normalizedBoxes.length > 0
-                  ? Math.floor(totalCols / normalizedBoxes.length)
-                  : 24;
+            // Responsive column span per box
+            const totalCols = 24;
+            const span =
+              normalizedBoxes.length > 0
+                ? Math.floor(totalCols / normalizedBoxes.length)
+                : 24;
 
-              return (
+            return warningFlag && index === 1 ? (
+              // 🔴 Case 1: warning + first box
+              <Col span={24} key={index}>
+                <div className={styles.warningBox}>
+                  <div className={styles.urgentErrorHeader}>
+                    {/* Left Heading */}
+                    <Text className={styles.urgentErrorTitle}>
+                      {" "}
+                      Action Required!
+                    </Text>
+
+                    {/* Right Close Icon */}
+                    <span
+                      style={{
+                        fontSize: "20px",
+                        fontWeight: "bold",
+                        cursor: "pointer",
+                      }}
+                      onClick={() => console.log("Close clicked")} // replace with close action
+                    >
+                      ✕
+                    </span>
+                  </div>
+
+                  {/* Bottom Section */}
+                  <div
+                    style={{
+                      backgroundColor: "#FFF1E7",
+                      display: "flex",
+                      alignItems: "center",
+                      padding: "16px",
+                      borderBottomLeftRadius: "8px",
+                      borderBottomRightRadius: "8px",
+                    }}
+                  >
+                    {/* Clock Icon */}
+                    <img
+                      src={urgent}
+                      alt="urgent"
+                      className={styles.urgentImg}
+                    />
+
+                    <div
+                      style={{
+                        display: "flex",
+                        flexDirection: "column",
+                        lineHeight: "1.2",
+                      }}
+                    >
+                      {/* Bold Title */}
+                      <Text className={styles.urgentText}>URGENT</Text>
+
+                      {/* Subtext (dynamic count) */}
+                      <Text className={styles.urgentDescription}>
+                        {convertSingleDigittoDoubble(
+                          formatNumberWithCommas(box.count)
+                        )}{" "}
+                        Approvals Required Before Deadline
+                      </Text>
+                    </div>
+                  </div>
+                </div>
+              </Col>
+            ) : (
+              !warningFlag && (
+                // 🟢 Case 2: all other boxes
                 <Col span={span} key={index}>
                   <div
                     className={styles[`${base}statBox`]}
                     style={{ backgroundColor: bgColor, textAlign }}
                   >
-                    {/* ========================
-                      Conditional Layout Rendering
-                  ========================= */}
-                    {warningFlag && index === 0 ? (
-                      // Special rendering for first warning box
-                      <>
-                        <Text
-                          className={styles[`${base}label`]}
-                          style={{ color: textLableColor }}
-                        >
-                          {box.label}
-                        </Text>
-                        <Text
-                          className={styles[`${base}count`]}
-                          style={{ color: textCountColor }}
-                        >
-                          {convertSingleDigittoDoubble(
-                            formatNumberWithCommas(box.count)
-                          )}
-                        </Text>
-                      </>
-                    ) : locationStyle === "down" ? (
+                    {locationStyle === "down" ? (
                       // Label on top, count below
                       <>
                         <Text
@@ -172,26 +218,27 @@ const BoxCard = ({
                         >
                           {box.label}
                         </Text>
-                        <Text
+                        <AnimatedCount
                           className={styles[`${base}count`]}
                           style={{ color: textCountColor }}
-                        >
-                          {convertSingleDigittoDoubble(
+                          value={convertSingleDigittoDoubble(
                             formatNumberWithCommas(box.count)
                           )}
-                        </Text>
+                        />
                       </>
                     ) : locationStyle === "up" ? (
                       // Count on top, label below
                       <>
-                        <Text
-                          className={styles[`${base}count`]}
-                          style={{ color: textCountColor }}
-                        >
-                          {convertSingleDigittoDoubble(
-                            formatNumberWithCommas(box.count)
-                          )}
-                        </Text>
+                        <div className={styles.countWrapper}>
+                          <AnimatedCount
+                            className={styles[`${base}count`]}
+                            style={{ color: textCountColor }}
+                            value={convertSingleDigittoDoubble(
+                              formatNumberWithCommas(box.count)
+                            )}
+                          />
+                        </div>
+
                         <Text
                           className={styles[`${base}label`]}
                           style={{ color: textLableColor }}
@@ -207,14 +254,13 @@ const BoxCard = ({
                         justify="space-between"
                       >
                         <Col>
-                          <Text
+                          <AnimatedCount
                             className={styles[`${base}count`]}
                             style={{ color: textCountColor }}
-                          >
-                            {convertSingleDigittoDoubble(
+                            value={convertSingleDigittoDoubble(
                               formatNumberWithCommas(box.count)
                             )}
-                          </Text>
+                          />
                         </Col>
                         <Col>
                           <Row>
@@ -244,41 +290,40 @@ const BoxCard = ({
                     )}
                   </div>
                 </Col>
-              );
-            })}
-          </Row>
-        ) : route === "portfolio" ? (
-          // Special fallback for portfolio route
-          <Row className={styles[`${base}statBoxMain`]} gutter={[16, 16]}>
-            <Col span={24}>
-              <div
-                className={styles[`${base}statBox`]}
-                style={{
-                  backgroundColor: "#C5FFC7",
-                  textAlign: "left",
-                }}
+              )
+            );
+          })}
+        </Row>
+      ) : route === "portfolio" ? (
+        // Special fallback for portfolio route
+        <Row className={styles[`${base}statBoxMain`]} gutter={[16, 16]}>
+          <Col span={24}>
+            <div
+              className={styles[`${base}statBox`]}
+              style={{
+                backgroundColor: "#C5FFC7",
+                textAlign: "left",
+              }}
+            >
+              <Text
+                className={styles[`${base}label`]}
+                style={{ color: "#30426A" }}
               >
-                <Text
-                  className={styles[`${base}label`]}
-                  style={{ color: "#30426A" }}
-                >
-                  No. of Shares
-                </Text>
-                <Text
-                  className={styles[`${base}count`]}
-                  style={{ color: "#00640A" }}
-                >
-                  0
-                </Text>
-              </div>
-            </Col>
-          </Row>
-        ) : (
-          // Generic empty state for other routes
-          <EmptyState style={{ display: "contents" }} type={route} />
-        )}
-      </Card>
-    </div>
+                No. of Shares
+              </Text>
+              <AnimatedCount
+                className={styles[`${base}count`]}
+                style={{ color: "#00640A" }}
+                value={convertSingleDigittoDoubble(formatNumberWithCommas(0))}
+              />
+            </div>
+          </Col>
+        </Row>
+      ) : (
+        // Generic empty state for other routes
+        <EmptyState style={{ display: "contents" }} type={route} />
+      )}
+    </Card>
   );
 };
 
