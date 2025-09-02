@@ -27,7 +27,7 @@ const Headers = () => {
           <img
             onClick={() => {
               navigate("/PAD");
-              setSelectedKey("");
+              setSelectedKey("0");
             }}
             src={Logo}
             alt="logo"

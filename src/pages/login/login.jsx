@@ -42,7 +42,7 @@ const Login = () => {
   });
   const [disableClick, setDisableClick] = useState(false);
   const [errors, setErrors] = useState({});
-  const { setSelectedKey } = useSidebarContext();
+  const { setSelectedKey, setCollapsed } = useSidebarContext();
   /**
    * Handles input changes and updates form state
    * @param {string} name - Field name ('username' or 'password')
@@ -53,7 +53,7 @@ const Login = () => {
     localStorage.clear();
     sessionStorage.clear();
     setSelectedKey("0");
-
+    setCollapsed(true);
     // These are the mainState
     resetDashboardContextState();
     resetModalContextState();

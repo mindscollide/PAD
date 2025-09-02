@@ -8,23 +8,27 @@ import {
   LoginOutlined,
 } from "@ant-design/icons";
 
-export const getMenuItems = (hasAdmin, style) => {
+export const getMenuItems = (hasAdmin, hasEmployee, style) => {
   const baseItems = [
     {
       key: "1",
       label: (
         <Link to="/profile" className={style["dropdown-menu-item"]}>
           <UserOutlined className={style["dropdown-menu-icon"]} />
-          <span className={style["dropdown-menu-options-title"]}>My Profile</span>
+          <span className={style["dropdown-menu-options-title"]}>
+            My Profile
+          </span>
         </Link>
       ),
     },
-    {
+    hasEmployee && {
       key: "2",
       label: (
         <Link to="/brokers" className={style["dropdown-menu-item"]}>
           <TeamOutlined className={style["dropdown-menu-icon"]} />
-          <span className={style["dropdown-menu-options-title"]}>Manage Brokers</span>
+          <span className={style["dropdown-menu-options-title"]}>
+            Manage Brokers
+          </span>
         </Link>
       ),
     },
@@ -33,7 +37,9 @@ export const getMenuItems = (hasAdmin, style) => {
       label: (
         <Link to="/notifications" className={style["dropdown-menu-item"]}>
           <SettingOutlined className={style["dropdown-menu-icon"]} />
-          <span className={style["dropdown-menu-options-title"]}>Notification Settings</span>
+          <span className={style["dropdown-menu-options-title"]}>
+            Notification Settings
+          </span>
         </Link>
       ),
     },
@@ -46,7 +52,7 @@ export const getMenuItems = (hasAdmin, style) => {
         </Link>
       ),
     },
-  ];
+  ].filter(Boolean); // remove false values when hasEmployee is false
 
   if (hasAdmin) {
     baseItems.push({
@@ -54,13 +60,15 @@ export const getMenuItems = (hasAdmin, style) => {
       label: (
         <Link to="/Admin" className={style["dropdown-menu-item"]}>
           <SwapOutlined className={style["dropdown-menu-icon"]} />
-          <span className={style["dropdown-menu-options-title"]} >Switch to Admin</span>
+          <span className={style["dropdown-menu-options-title"]}>
+            Switch to Admin
+          </span>
         </Link>
       ),
     });
   }
 
-  // Insert divider items between each item except after the last one
+  // Insert dividers between items
   const itemsWithDividers = [];
   baseItems.forEach((item, index) => {
     itemsWithDividers.push(item);
