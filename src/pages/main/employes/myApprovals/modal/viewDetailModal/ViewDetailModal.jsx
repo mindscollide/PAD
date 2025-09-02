@@ -582,6 +582,10 @@ const ViewDetailModal = () => {
                             );
 
                             let iconSrc;
+                            console.log(
+                              bundleStatusID,
+                              "CheckerrrrrbundleStatusID"
+                            );
                             switch (bundleStatusID) {
                               case 1:
                                 iconSrc = EllipsesIcon;
