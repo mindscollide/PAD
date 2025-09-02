@@ -56,6 +56,9 @@ const SideBar = () => {
 
           if (lastSelectedKey) {
             setSelectedKey(lastSelectedKey); // Restore key to context
+            if (lastSelectedKey !== "0") {
+              setCollapsed(true);
+            }
             sessionStorage.removeItem("selectedKey"); // Clear it after usage
           }
           if (getEmployeeBasedBrokersData) {
@@ -94,7 +97,8 @@ const SideBar = () => {
    */
   useEffect(() => {
     const handleBeforeUnload = () => {
-      if (selectedKey !== "") {
+      if (selectedKey !== "0") {
+        setCollapsed(true);
         sessionStorage.setItem("selectedKey", selectedKey);
         sessionStorage.setItem(
           "employeeBasedBrokersData",
@@ -125,6 +129,8 @@ const SideBar = () => {
       window.removeEventListener("beforeunload", handleBeforeUnload);
     };
   }, [selectedKey]);
+  console.log("selectedKey", selectedKey);
+  console.log("selectedKey", collapsed);
 
   return (
     <Sider
@@ -143,6 +149,7 @@ const SideBar = () => {
       >
         <Button
           type="text"
+          disabled={selectedKey !== "0"}
           onClick={() => setCollapsed(!collapsed)}
           className={"toggle-button"}
           icon={
@@ -164,6 +171,11 @@ const SideBar = () => {
           selectedKeys={[selectedKey]}
           onSelect={({ key }) => {
             setSelectedKey(key);
+
+            // collapse automatically if key is not "0"
+            if (key !== "0") {
+              setCollapsed(true);
+            }
             const path = routeMap[key]; // ✅ Correct usage
             if (path) navigate(path); // ✅ Navigation
           }}
