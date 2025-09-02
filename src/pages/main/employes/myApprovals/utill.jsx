@@ -70,7 +70,6 @@ export const getBorderlessTableColumns = (
     title: withSortIcon("Approval ID", "tradeApprovalID", sortedInfo),
     dataIndex: "tradeApprovalID",
     key: "tradeApprovalID",
-    width: "12%",
     ellipsis: true,
     sorter: (a, b) =>
       parseInt(a.tradeApprovalID.replace(/[^\d]/g, ""), 10) -
@@ -85,7 +84,8 @@ export const getBorderlessTableColumns = (
       return (
         <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
           <span className="font-medium">
-            {dashBetweenApprovalAssets(tradeApprovalID)}
+            {/* {dashBetweenApprovalAssets(tradeApprovalID)} */}
+            {"REQ-888888"}
           </span>
         </div>
       );
@@ -95,7 +95,6 @@ export const getBorderlessTableColumns = (
     title: withSortIcon("Instrument", "instrumentName", sortedInfo),
     dataIndex: "instrument",
     key: "instrumentName",
-    width: "14%",
     ellipsis: true,
     sorter: (a, b) => {
       const nameA = a.instrument?.instrumentCode || "";
@@ -150,18 +149,17 @@ export const getBorderlessTableColumns = (
   {
     title: (
       <>
-        <span className={style["table-header-text"]}>
+        {/* <span className={style["table-header-text"]}> */}
           <TypeColumnTitle
             state={employeeMyApprovalSearch}
             setState={setEmployeeMyApprovalSearch}
           />
-        </span>
+        {/* </span> */}
       </>
     ),
     dataIndex: "type",
     key: "type",
     ellipsis: true,
-    width: "8%",
     filteredValue: employeeMyApprovalSearch.type?.length
       ? employeeMyApprovalSearch.type
       : null,
@@ -177,7 +175,6 @@ export const getBorderlessTableColumns = (
     dataIndex: "requestDateTime",
     key: "requestDateTime",
     ellipsis: true,
-    width: "17%",
     sorter: (a, b) =>
       formatApiDateTime(a.requestDateTime).localeCompare(
         formatApiDateTime(b.requestDateTime)
@@ -193,10 +190,9 @@ export const getBorderlessTableColumns = (
   },
   {
     title: "",
-    dataIndex: "isEscalated",
+    // dataIndex: "isEscalated",
     key: "isEscalated",
     ellipsis: true,
-    width: "5%",
     render: (date) =>
       date && (
         <img
@@ -216,7 +212,6 @@ export const getBorderlessTableColumns = (
     dataIndex: "status",
     key: "status",
     ellipsis: true,
-    width: "10%",
     filteredValue: employeeMyApprovalSearch.status?.length
       ? employeeMyApprovalSearch.status
       : null,
@@ -241,7 +236,6 @@ export const getBorderlessTableColumns = (
     dataIndex: "quantity",
     key: "quantity",
     ellipsis: true,
-    width: "10%",
     sorter: (a, b) => a.quantity - b.quantity,
     sortDirections: ["ascend", "descend"],
     sortOrder: sortedInfo?.columnKey === "quantity" ? sortedInfo.order : null,
@@ -254,14 +248,13 @@ export const getBorderlessTableColumns = (
     dataIndex: "timeRemaining",
     key: "timeRemaining",
     ellipsis: true,
-    width: "20%",
     align: "center",
     render: (text, record) => {
       // ✅ Show nothing if pending
-      if (record.status === "Pending")
-        return <span className="text-gray-400">-</span>;
+      // if (record.status === "Pending")
+      //   return <span className="text-gray-400">-</span>;
 
-      if (record.status === "Not-Traded") {
+      // if (record.status === "Not-Traded") {
         return (
           <Button
             className="large-transparent-button"
@@ -269,19 +262,18 @@ export const getBorderlessTableColumns = (
             onClick={() => setIsResubmitted(true)}
           />
         );
-      }
+      // }
 
-      if (text) {
-        return <span className="font-medium text-gray-700">{text}</span>;
-      }
+      // if (text) {
+      //   return <span className="font-medium text-gray-700">{text}</span>;
+      // }
 
-      return <span className="text-gray-400">-</span>;
+      // return <span className="text-gray-400">-</span>;
     },
   },
   {
     title: "",
     key: "actions",
-    width: "15%",
     align: "center",
     render: (text, record) => {
       //Global State to selected data to show in ViewDetailModal
