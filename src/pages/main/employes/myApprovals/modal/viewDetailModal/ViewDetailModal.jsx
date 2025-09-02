@@ -42,6 +42,12 @@ const ViewDetailModal = () => {
     setIsResubmitted,
   } = useGlobalModal();
 
+  // get data from sessionStorage
+  const userProfileData = JSON.parse(
+    sessionStorage.getItem("user_profile_data") || "{}"
+  );
+  const loggedInUserID = userProfileData?.userID;
+
   //This is the Global state of Context Api
   const { setViewDetailsModalData, viewDetailsModalData } = useMyApproval();
 
@@ -391,7 +397,7 @@ const ViewDetailModal = () => {
                       Request Date
                     </label>
                     <label className={styles.viewDetailSubLabels}>
-                      {formatShowOnlyDate(selectedViewDetail?.requestDateTime)}
+                      {formatApiDateTime(selectedViewDetail?.requestDateTime)}
                     </label>
                   </div>
                 </Col>
@@ -537,10 +543,16 @@ const ViewDetailModal = () => {
                         : styles.leftAlignStepper
                     }`}
                   >
+                    {/* Agar loginUserID match krti hai hierarchyDetails ki userID sy to wo wala stepper show nahi hoga */}
                     <Stepper
-                      activeStep={
-                        viewDetailsModalData?.hierarchyDetails?.length - 1
-                      }
+                      activeStep={Math.max(
+                        0,
+                        Array.isArray(viewDetailsModalData?.hierarchyDetails)
+                          ? viewDetailsModalData.hierarchyDetails.filter(
+                              (person) => person.userID !== loggedInUserID
+                            ).length - 1
+                          : 0
+                      )}
                       connectorStyleConfig={{
                         activeColor: "#00640A",
                         completedColor: "#00640A",
@@ -555,15 +567,15 @@ const ViewDetailModal = () => {
                       }}
                     >
                       {Array.isArray(viewDetailsModalData?.hierarchyDetails) &&
-                        viewDetailsModalData.hierarchyDetails.map(
-                          (person, index) => {
+                        viewDetailsModalData.hierarchyDetails
+                          .filter((person) => person.userID !== loggedInUserID)
+                          .map((person, index) => {
                             const {
                               fullName,
                               bundleStatusID,
                               requestDate,
                               requestTime,
                             } = person;
-                            console.log(person, "CheckPersonData");
 
                             const formattedDateTime = formatApiDateTime(
                               `${requestDate} ${requestTime}`
@@ -574,20 +586,8 @@ const ViewDetailModal = () => {
                               case 1:
                                 iconSrc = EllipsesIcon;
                                 break;
-                              case 2:
-                                // iconSrc = ResubmittedIcon;
-                                break;
                               case 3:
                                 iconSrc = CheckIcon;
-                                break;
-                              case 4:
-                                // iconSrc = CrossIcon;
-                                break;
-                              case 5:
-                                // iconSrc = TradedIcon;
-                                break;
-                              case 6:
-                                // iconSrc = NotTradedIcon;
                                 break;
                               default:
                                 iconSrc = EllipsesIcon;
@@ -617,9 +617,69 @@ const ViewDetailModal = () => {
                                 }
                               />
                             );
-                          }
-                        )}
+                          })}
                     </Stepper>
+
+                    {/* <Stepper
+                      activeStep={2}
+                      connectorStyleConfig={{
+                        activeColor: "#00640A", // green line between steps
+                        completedColor: "#00640A",
+                        disabledColor: "#00640A",
+                        size: 1,
+                      }}
+                      styleConfig={{
+                        size: "2em",
+                        circleFontSize: "0px", // hide default number
+                        labelFontSize: "17px",
+                        borderRadius: "50%",
+                      }}
+                    >
+                      {[0, 1, 2, 3].map((step, index) => (
+                        <Step
+                          key={index}
+                          label={
+                            <div className={styles.customlabel}>
+                              <div className={styles.customtitle}>
+                                Emily Johnson
+                              </div>
+                              <div className={styles.customdesc}>
+                                2024-10-01 | 05:30pm
+                              </div>
+                            </div>
+                          }
+                          children={
+                            <div className={styles.stepCircle}>
+                              <img
+                                src={CheckIcon}
+                                alt="check"
+                                className={styles.circleImg}
+                              />
+                            </div>
+                          }
+                        />
+                      ))}
+
+                      <Step
+                        label={
+                          <div className={styles.customlabel}>
+                            <div className={styles.customtitle}>
+                              Emily Johnson
+                            </div>
+                            <div className={styles.customdesc}>Pending</div>
+                          </div>
+                        }
+                        children={
+                          <div className={styles.stepCircle}>
+                            <img
+                              src={EllipsesIcon}
+                              className={styles.circleImg}
+                              alt="ellipsis"
+                            />
+                          </div>
+                        }
+                      />
+                    </Stepper> */}
                   </div>
                 </div>
               </Row>
