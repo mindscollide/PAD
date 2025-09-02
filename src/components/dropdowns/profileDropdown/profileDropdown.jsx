@@ -13,6 +13,7 @@ const ProfileDropdown = () => {
   // Get user roles from sessionStorage
   let roles = JSON.parse(sessionStorage.getItem("user_assigned_roles"));
   const hasAdmin = roles?.length > 0 && roles.some(role => role.roleID === 1);
+  const hasEmployee = roles?.length > 0 && roles.some(role => role.roleID === 2);
 
   // Get user profile data safely
   const profile = useMemo(() => {
@@ -34,7 +35,7 @@ const ProfileDropdown = () => {
   const [isOpen, setIsOpen] = useState(false);
 
   // Get menu items passing correct styles object
-  const menuItems = getMenuItems(hasAdmin, style);
+  const menuItems = getMenuItems(hasAdmin,hasEmployee, style);
 
   return (
     <Dropdown
