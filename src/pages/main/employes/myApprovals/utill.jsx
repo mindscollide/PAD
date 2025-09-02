@@ -80,12 +80,11 @@ export const getBorderlessTableColumns = (
     showSorterTooltip: false,
     sortIcon: () => null,
     render: (tradeApprovalID) => {
-      console.log(typeof tradeApprovalID, "jhvjhvajdvadvasjdvj");
       return (
         <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
           <span className="font-medium">
             {/* {dashBetweenApprovalAssets(tradeApprovalID)} */}
-            {"REQ-888888"}
+            {dashBetweenApprovalAssets("REQ888888")}
           </span>
         </div>
       );
@@ -107,14 +106,7 @@ export const getBorderlessTableColumns = (
     showSorterTooltip: false,
     sortIcon: () => null,
     render: (instrument, record) => {
-      console.log(
-        record.assetType.assetTypeShortCode,
-        "checbwechechejhassetType"
-      );
-
-      // To show an assetType Code
       const assetCode = record?.assetType?.assetTypeShortCode;
-      const name = instrument?.instrumentName || "";
       const code = instrument?.instrumentCode || "";
       return (
         <div
@@ -122,11 +114,10 @@ export const getBorderlessTableColumns = (
             display: "flex",
             alignItems: "center",
             gap: "12px",
-            paddingRight: "25px",
           }}
         >
           <span className="custom-shortCode-asset" style={{ minWidth: 30 }}>
-            {assetCode.substring(0, 2).toUpperCase()}
+            {assetCode?.substring(0, 2).toUpperCase()}
           </span>
           <span
             className="font-medium"
@@ -138,22 +129,40 @@ export const getBorderlessTableColumns = (
               display: "inline-block",
               cursor: "pointer",
             }}
-            title={`${code}`} // show full text on hover
+            title={code}
           >
-            {`${code}`}
+            {code}
           </span>
         </div>
       );
     },
+    onHeaderCell: () => ({
+      style: {
+        minWidth: "40px", // ✅ minimum width
+        maxWidth: "130px", // 👈 custom max width
+        whiteSpace: "nowrap",
+        overflow: "hidden",
+        textOverflow: "ellipsis",
+      },
+    }),
+    onCell: () => ({
+      style: {
+        minWidth: "40px", // ✅ minimum width
+        maxWidth: "130px", // 👈 custom max width
+        whiteSpace: "nowrap",
+        overflow: "hidden",
+        textOverflow: "ellipsis",
+      },
+    }),
   },
   {
     title: (
       <>
         {/* <span className={style["table-header-text"]}> */}
-          <TypeColumnTitle
-            state={employeeMyApprovalSearch}
-            setState={setEmployeeMyApprovalSearch}
-          />
+        <TypeColumnTitle
+          state={employeeMyApprovalSearch}
+          setState={setEmployeeMyApprovalSearch}
+        />
         {/* </span> */}
       </>
     ),
@@ -169,6 +178,24 @@ export const getBorderlessTableColumns = (
         {type}
       </span>
     ),
+    onHeaderCell: () => ({
+      style: {
+        minWidth: "80px", // 👈 custom min width
+        maxWidth: "100px", // 👈 custom max width
+        whiteSpace: "nowrap",
+        overflow: "hidden",
+        textOverflow: "ellipsis",
+      },
+    }),
+    onCell: () => ({
+      style: {
+        minWidth: "80px",
+        maxWidth: "100px",
+        whiteSpace: "nowrap",
+        overflow: "hidden",
+        textOverflow: "ellipsis",
+      },
+    }),
   },
   {
     title: withSortIcon("Request Date & Time", "requestDateTime", sortedInfo),
@@ -187,20 +214,6 @@ export const getBorderlessTableColumns = (
     render: (date) => (
       <span className="text-gray-600">{formatApiDateTime(date)}</span>
     ),
-  },
-  {
-    title: "",
-    // dataIndex: "isEscalated",
-    key: "isEscalated",
-    ellipsis: true,
-    render: (date) =>
-      date && (
-        <img
-          src={EscalatedIcon}
-          alt="escalated"
-          className={style["escalated-icon"]}
-        />
-      ),
   },
   {
     title: (
@@ -223,6 +236,11 @@ export const getBorderlessTableColumns = (
           style={{
             backgroundColor: tag.backgroundColor,
             color: tag.textColor,
+            whiteSpace: "nowrap", // prevent wrapping
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+            display: "inline-block",
+            // maxWidth: "100%", // tag respects parent cell width
           }}
           className="border-less-table-orange-status"
         >
@@ -230,6 +248,38 @@ export const getBorderlessTableColumns = (
         </Tag>
       );
     },
+    onHeaderCell: () => ({
+      style: {
+        minWidth: "110px", // 👈 adjust as needed
+        maxWidth: "240px",
+        whiteSpace: "nowrap",
+        overflow: "hidden",
+        textOverflow: "ellipsis",
+      },
+    }),
+    onCell: () => ({
+      style: {
+        minWidth: "110px",
+        maxWidth: "240px",
+        whiteSpace: "nowrap",
+        overflow: "hidden",
+        textOverflow: "ellipsis",
+      },
+    }),
+  },
+  {
+    title: "",
+    dataIndex: "isEscalated",
+    key: "isEscalated",
+    ellipsis: true,
+    render: (date) =>
+      date && (
+        <img
+          src={EscalatedIcon}
+          alt="escalated"
+          className={style["escalated-icon"]}
+        />
+      ),
   },
   {
     title: withSortIcon("Quantity", "quantity", sortedInfo),
@@ -242,6 +292,24 @@ export const getBorderlessTableColumns = (
     showSorterTooltip: false,
     sortIcon: () => null,
     render: (q) => <span className="font-medium">{q.toLocaleString()}</span>,
+      onHeaderCell: () => ({
+      style: {
+        minWidth: "100px", // 👈 adjust as needed
+        maxWidth:"150px",
+        whiteSpace: "nowrap",
+        overflow: "hidden",
+        textOverflow: "ellipsis",
+      },
+    }),
+    onCell: () => ({
+      style: {
+        minWidth: "100px",
+        maxWidth:"150px",
+        whiteSpace: "nowrap",
+        overflow: "hidden",
+        textOverflow: "ellipsis",
+      },
+    }),
   },
   {
     title: "Time Remaining to Trade",
@@ -251,10 +319,10 @@ export const getBorderlessTableColumns = (
     align: "center",
     render: (text, record) => {
       // ✅ Show nothing if pending
-      // if (record.status === "Pending")
-      //   return <span className="text-gray-400">-</span>;
+      if (record.status === "Pending")
+        return <span className="text-gray-400">-</span>;
 
-      // if (record.status === "Not-Traded") {
+      if (record.status === "Not-Traded") {
         return (
           <Button
             className="large-transparent-button"
@@ -262,14 +330,30 @@ export const getBorderlessTableColumns = (
             onClick={() => setIsResubmitted(true)}
           />
         );
-      // }
+      }
 
-      // if (text) {
-      //   return <span className="font-medium text-gray-700">{text}</span>;
-      // }
+      if (text) {
+        return <span className="font-medium text-gray-700">{text}</span>;
+      }
 
-      // return <span className="text-gray-400">-</span>;
+      return <span className="text-gray-400">-</span>;
     },
+    onHeaderCell: () => ({
+      style: {
+        minWidth: "120px", // 👈 adjust as needed
+        whiteSpace: "nowrap",
+        overflow: "hidden",
+        textOverflow: "ellipsis",
+      },
+    }),
+    onCell: () => ({
+      style: {
+        minWidth: "120px",
+        whiteSpace: "nowrap",
+        overflow: "hidden",
+        textOverflow: "ellipsis",
+      },
+    }),
   },
   {
     title: "",

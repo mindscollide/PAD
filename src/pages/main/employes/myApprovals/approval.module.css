@@ -50,18 +50,18 @@
 .icon {
   font-size: 12px;
   transition: transform 0.3s ease-in-out;
-  padding-left: 4px auto;
+  /* padding-left: 4px auto; */
 }
 
 /* Rotate icon when filter is active */
 .rotated {
-  padding-left: 4px auto;
+  /* padding-left: 4px auto; */
   transform: rotate(180deg);
 }
 
 /* Style for AntD dropdown root if needed */
 .table-filter-dropdown .ant-dropdown-menu {
-  padding: 0px;
+  padding: 0px I !important;
 }
 
 .filter-tags-container {
@@ -123,7 +123,7 @@
 }
 
 .table-header-icon {
-  margin-left: 4px; /* bas halka sa gap */
+  /* margin-left: 4px; bas halka sa gap */
   color: var(--Blue-V1, #30426a);
   display: flex;
   align-items: center;
