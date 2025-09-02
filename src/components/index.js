@@ -22,3 +22,4 @@ export { default as InstrumentSelect } from "./dropdowns/instrumentDropdown/Inst
 export { default as ModalImgStates } from "./modalImageStates/modalImgStates";
 export { default as AcordianTable } from "./tables/accordianTable/acordianTable";
 export { default as ViewCommentModal } from "./modal/viewCommentModal/ViewCommentModal";
+export { default as CommentModal } from "./modal/commentModal/CommentModal";
