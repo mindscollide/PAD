@@ -25,6 +25,19 @@ export const MyApprovalProvider = ({ children }) => {
     });
   };
 
+  /* **
+   Context Api States For Line Manager Start Here
+   ** */
+
+  const [lineManagerApproval, setLineManagerApproval] = useState({
+    lineApprovals: [],
+    totalRecords: 0,
+  });
+
+  /* **
+   Context Api States For Line Manager End Here
+   ** */
+
   return (
     <MyapprovalContext.Provider
       value={{
@@ -33,6 +46,10 @@ export const MyApprovalProvider = ({ children }) => {
         viewDetailsModalData,
         setViewDetailsModalData,
         resetMyApprovalContextState,
+
+        //Context Api States For Line Manager Start Here
+        lineManagerApproval,
+        setLineManagerApproval,
       }}
     >
       {children}

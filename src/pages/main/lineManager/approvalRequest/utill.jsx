@@ -31,7 +31,7 @@ const getSortIcon = (columnKey, sortedInfo) => {
   return <ArrowsAltOutlined className="custom-sort-icon" />;
 };
 
-export const getBorderlessTableColumns = (
+export const getBorderlessLineManagerTableColumns = (
   approvalStatusMap,
   sortedInfo,
   lineManagerApprovalSearch,

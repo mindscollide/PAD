@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Col, Row } from "antd";
 import { Button } from "../../../../components";
 import BorderlessTable from "../../../../components/tables/borderlessTable/borderlessTable";
-import { getBorderlessTableColumns } from "./utill";
+import { getBorderlessLineManagerTableColumns } from "./utill";
 import { approvalStatusMap } from "../../../../components/tables/borderlessTable/utill";
 import PageLayout from "../../../../components/pageContainer/pageContainer";
 import EmptyState from "../../../../components/emptyStates/empty-states";
@@ -14,8 +14,18 @@ import NoteLineManagerModal from "./modal/noteLineManagerModal/NoteLineManagerMo
 import ApprovedLineManagerModal from "./modal/approvedLineManagerModal/approvedLineManagerModal";
 import DeclinedLineManagerModal from "./modal/declinedLineManagerModal/DeclinedLineManagerModal";
 import ViewCommentLineManagerModal from "./modal/viewCommentLineManagerModal/ViewCommentLineManagerModal";
+import { useNotification } from "../../../../components/NotificationProvider/NotificationProvider";
+import { useSidebarContext } from "../../../../context/sidebarContaxt";
+import { useGlobalLoader } from "../../../../context/LoaderContext";
+import { useApi } from "../../../../context/ApiContext";
+import { useMyApproval } from "../../../../context/myApprovalContaxt";
+import { SearchTadeApprovals } from "../../../../api/myApprovalApi";
+import { useNavigate } from "react-router-dom";
 
 const ApprovalRequest = () => {
+  const navigate = useNavigate();
+  const hasFetched = useRef(false);
+
   const {
     viewDetailLineManagerModal,
     setViewDetailLineManagerModal,
@@ -24,11 +34,68 @@ const ApprovalRequest = () => {
     declinedGlobalModal,
     viewCommentGlobalModal,
   } = useGlobalModal();
+
+  const { showNotification } = useNotification();
+  const { selectedKey } = useSidebarContext();
+  const { showLoader } = useGlobalLoader();
+  const { callApi } = useApi();
+
+  // state of context which I'm getting from the myApproval for Line Manager
+  const { lineManagerApproval, setLineManagerApproval } = useMyApproval();
+
+  console.log(lineManagerApproval, "lineManagerApprovalChecker123");
+
+  // state of Search context which I'm getting from the SearchBar for Line Manager
+  // Global state for filter/search values
+  const {
+    lineManagerApprovalSearch,
+    setLineManagerApprovalSearch,
+    resetLineManagerApprovalSearch,
+  } = useSearchBarContext();
+
   // Sort state for AntD Table
   const [sortedInfo, setSortedInfo] = useState({});
 
   // Confirmed filters displayed as tags
   const [submittedFilters, setSubmittedFilters] = useState([]);
+
+  /**
+   * Fetches approval data from API on component mount
+   */
+  const fetchApprovals = async () => {
+    await showLoader(true);
+    const requestdata = {
+      InstrumentName:
+        lineManagerApprovalSearch.instrumentName ||
+        lineManagerApprovalSearch.mainInstrumentName,
+      Date: lineManagerApprovalSearch.date || "",
+      Quantity: lineManagerApprovalSearch.quantity || 0,
+      StatusIds: lineManagerApprovalSearch.status || [],
+      TypeIds: lineManagerApprovalSearch.type || [],
+      PageNumber: 0,
+      Length: lineManagerApprovalSearch.pageSize || 10,
+    };
+
+    const data = await SearchTadeApprovals({
+      callApi,
+      showNotification,
+      showLoader,
+      requestdata,
+      navigate,
+    });
+
+    setLineManagerApproval(data);
+  };
+
+  /**
+   * Runs only once to fetch approvals on initial render
+   */
+  useEffect(() => {
+    if (hasFetched.current) return;
+    hasFetched.current = true;
+    fetchApprovals();
+  }, []);
+
   // Sample static approval request data
   let data = [
     {
@@ -123,13 +190,6 @@ const ApprovalRequest = () => {
     },
   ];
 
-  // Global state for filter/search values
-  const {
-    lineManagerApprovalSearch,
-    setLineManagerApprovalSearch,
-    resetLineManagerApprovalSearch,
-  } = useSearchBarContext();
-
   // Keys to track which filters to sync/display
   const filterKeys = [
     { key: "instrumentName", label: "Instrument" },
@@ -139,7 +199,7 @@ const ApprovalRequest = () => {
   ];
 
   // Table columns with integrated filters
-  const columns = getBorderlessTableColumns(
+  const columns = getBorderlessLineManagerTableColumns(
     approvalStatusMap,
     sortedInfo,
     lineManagerApprovalSearch,

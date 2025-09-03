@@ -214,14 +214,16 @@ export const SearchBarProvider = ({ children }) => {
    */
   const [lineManagerApprovalSearch, setLineManagerApprovalSearch] = useState({
     instrumentName: "", // Name of the instrument
-    quantity: "", // Quantity filter
+    quantity: 0, // Quantity filter
     date: null, // Single date (could be Date object or string)
     mainInstrumentName: "", // Main instrument name for popover or modal
     type: [], // Type filter: ["Buy", "Sell"]
     status: [], // Status filter: ["Pending", "Approved", etc.]
-    pageSize: "", // Pagination: size of page
-    pageNumber: "", // Pagination: current page number
+    pageSize: 0, // Pagination: size of page
+    pageNumber: 0, // Pagination: current page number
+    totalRecords: 0,
     filterTrigger: false,
+    tableFilterTrigger: false,
   });
 
   /**
@@ -230,14 +232,16 @@ export const SearchBarProvider = ({ children }) => {
   const resetLineManagerApprovalSearch = () => {
     setLineManagerApprovalSearch({
       instrumentName: "",
-      quantity: "",
+      quantity: 0,
       date: null,
       mainInstrumentName: "",
       type: [],
       status: [],
-      pageSize: "",
-      pageNumber: "",
+      pageSize: 0,
+      pageNumber: 0,
+      totalRecords: 0,
       filterTrigger: true,
+      tableFilterTrigger: false,
     });
   };
 
