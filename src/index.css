@@ -414,3 +414,8 @@ li.ant-dropdown-menu-item.ant-dropdown-menu-item-only-child:focus {
   border-color: #e1e1e1 !important;
   padding: 9px 9px !important;
 }
+
+
+#toolbar {
+    display: none;
+}
