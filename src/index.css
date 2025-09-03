@@ -255,82 +255,6 @@ body {
   padding: 0px !important;
 }
 
-/* This is For show Broker dropdown Insdie the Add Approval Request Modal */
-/* .ant-select-show-search:where(
-    .css-dev-only-do-not-override-1rfzxih
-  ).ant-select:not(.ant-select-customize-input)
-  .ant-select-selector {
-  cursor: text;
-  overflow: hidden;
-  max-height: 56px !important;
-  font-size: 17px !important;
-  font-family: "Switzer Variable";
-  font-weight: 400;
-  overflow-y: auto !important;
-}
-
-.ant-select-show-search:where(
-    .css-dev-only-do-not-override-1rfzxih
-  ).ant-select:not(.ant-select-customize-input)
-  .ant-select-selector
-  input {
-  cursor: pointer;
-}
-
-:where(.css-dev-only-do-not-override-1rfzxih).ant-select-multiple
-  .ant-select-selection-overflow {
-  display: flex;
-  height: 50px !important;
-  align-items: center !important;
-  flex: auto;
-  flex-wrap: wrap;
-  max-width: 100%;
-}
-
-:where(.css-dev-only-do-not-override-1rfzxih).ant-select-dropdown
-  .ant-select-item {
-  position: relative;
-  display: flex;
-  min-height: 32px;
-  color: rgba(0, 0, 0, 0.88);
-  font-weight: 500;
-  font-size: 17px;
-  padding: 10px;
-  font-family: "Switzer Variable";
-  line-height: 1.5714285714285714;
-  box-sizing: border-box;
-  cursor: pointer;
-  transition: background 0.3s ease;
-  border-radius: 4px;
-} */
-
-/* This is for ant design select background on hover class for all */
-
-/* :where(.css-dev-only-do-not-override-1rfzxih).ant-select-outlined:not(
-    .ant-select-disabled
-  ):not(.ant-select-customize-input):not(.ant-pagination-size-changer):hover
-  .ant-select-selector {
-  background-color: #f3f3f3 !important;
-} */
-
-/* This is the ant design CheckBox Color inside the Add Approval Request Modal on Broker dropdow*/
-/* :where(.css-dev-only-do-not-override-1rfzxih).ant-checkbox-checked
-  .ant-checkbox-inner {
-  background-color: #30426a;
-  border-color: #30426a;
-} */
-
-/* add approval request dropdown Icon */
-/* :where(.css-dev-only-do-not-override-1rfzxih).ant-dropdown-trigger.ant-btn
-  > .anticon-down,
-:where(.css-dev-only-do-not-override-1rfzxih).ant-dropdown-trigger.ant-btn
-  > .ant-btn-icon
-  > .anticon-down {
-  position: relative;
-  left: 20px;
-  top: 2px;
-  font-size: 12px;
-} */
 
 /* Remove hover/focus background on dropdown menu items globally */
 li.ant-dropdown-menu-item.ant-dropdown-menu-item-only-child:hover,
@@ -402,4 +326,91 @@ li.ant-dropdown-menu-item.ant-dropdown-menu-item-only-child:focus {
   border-bottom: 1px solid #d4d4d4 !important;
   border-radius: 0px !important;
   padding: 8px 8px !important;
+}
+
+/* For broker Dropdown Select */
+/* Root container */
+.EquitiesBrokerSelectPrefix {
+  border-radius: 6.95px !important;
+  border: 1px solid #717171 !important;
+  background-color: white !important;
+  height: 56px !important;
+  font-size: 17px !important;
+  font-family: "Switzer Variable" !important;
+  font-weight: 400 !important;
+  display: flex;
+  align-items: center;
+  margin-top: 4px;
+}
+
+/* Hover and focus states */
+.EquitiesBrokerSelectPrefix:hover .EquitiesBrokerSelectPrefix-selector,
+.EquitiesBrokerSelectPrefix-focused .EquitiesBrokerSelectPrefix-selector {
+  border: 1px solid transparent !important;
+  background-color: #f3f3f3 !important;
+  box-shadow: none !important;
+  outline: none !important;
+}
+
+/* Placeholder text */
+.EquitiesBrokerSelectPrefix-selection-placeholder {
+  color: #717171 !important;
+  opacity: 1 !important;
+  font-size: 17px !important;
+  font-family: "Switzer Variable" !important;
+  font-weight: 400 !important;
+}
+
+/* Selected value */
+.EquitiesBrokerSelectPrefix-selection-item {
+  font-size: 17px !important;
+  font-family: "Switzer Variable" !important;
+  font-weight: 400 !important;
+  margin-top: -15px !important;
+}
+
+/* Dropdown menu */
+.EquitiesBrokerSelectPrefix-dropdown {
+  font-size: 17px !important;
+  font-family: "Switzer Variable" !important;
+  font-weight: 400 !important;
+  padding: 0px 4px;
+}
+
+/* Dropdown options */
+.EquitiesBrokerSelectPrefix-item {
+  font-size: 17px !important;
+  font-family: "Switzer Variable" !important;
+  font-weight: 400 !important;
+  border-bottom: 1px solid #d4d4d4 !important;
+  border-radius: 0px !important;
+  padding: 8px 8px !important;
+}
+
+.EquitiesBrokerSelectPrefix-selection-overflow {
+  position: relative;
+  flex: auto;
+  margin-top: 20px !important;
+  flex-wrap: wrap;
+  max-width: 100%;
+}
+
+
+
+.EquitiesBrokerSelectPrefix-item-option-state {
+  display: none !important;
+}
+
+/* Customizing checkbox in broker select dropdown */
+.custom-broker-option .ant-checkbox-checked .ant-checkbox-inner {
+  background-color: #30426a !important;
+  border-color: #30426a !important;
+  padding: 9px 9px !important;
+}
+
+/* When the checkbox is NOT checked */
+.custom-broker-option .ant-checkbox-inner {
+  background-color: #fff !important;
+  border-color: #e1e1e1 !important;
+  padding: 9px 9px !important;
 }

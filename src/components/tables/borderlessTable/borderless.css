@@ -43,7 +43,7 @@ td.border-less-table-orange-cell:not(:first-child):not(:last-child) {
 }
 /* Cell Styling */
 .border-less-table-orange-wrapper .border-less-table-orange-tbody > tr > td {
-  padding: 0px 6px;
+  padding: 0px 0px 0px 6px;
   color: #424242;
   font-family: "Switzer Variable";
   font-weight: 500;
