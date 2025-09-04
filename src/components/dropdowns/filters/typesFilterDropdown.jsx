@@ -27,7 +27,7 @@ const TypeFilterDropdown = ({
   const { addApprovalRequestData } = useDashboardContext();
   const { showLoader } = useGlobalLoader();
   const { showNotification } = useNotification();
-  const { setIsEmployeeMyApproval } = useMyApproval();
+  const { setIsEmployeeMyApproval, setLineManagerApproval } = useMyApproval();
 
   const { callApi } = useApi();
   const typeOptions = getTypeOptions(addApprovalRequestData);
@@ -57,6 +57,7 @@ const TypeFilterDropdown = ({
       showLoader,
       navigate,
       setIsEmployeeMyApproval,
+      setLineManagerApproval,
     });
 
     confirm(); // close dropdown
@@ -75,6 +76,7 @@ const TypeFilterDropdown = ({
       showLoader,
       navigate,
       setIsEmployeeMyApproval,
+      setLineManagerApproval,
     });
     setTempSelected([]);
     setState((prev) => ({

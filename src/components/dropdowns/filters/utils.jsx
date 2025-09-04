@@ -101,6 +101,7 @@ export const apiCallType = async ({
   showLoader,
   navigate,
   setIsEmployeeMyApproval,
+  setLineManagerApproval,
 }) => {
   switch (selectedKey) {
     case "1": {
@@ -134,6 +135,36 @@ export const apiCallType = async ({
 
     case "2":
     case "3":
+
+    case "6": {
+      const assetType = state.assetType || "Equities"; // fallback
+      const TypeIds = mapBuySellToIds(
+        newdata,
+        addApprovalRequestData?.[assetType]
+      );
+      const statusIds = mapStatusToIds(state.status);
+      const requestdata = {
+        InstrumentName: state.instrumentName || state.mainInstrumentName,
+        Date: state.startDate || "",
+        Quantity: state.quantity || 0,
+        StatusIds: statusIds || [],
+        TypeIds: TypeIds || [],
+        PageNumber: 0,
+        Length: state.pageSize || 10,
+        RequesterName: state.requesterName,
+      };
+      showLoader(true);
+      console.log("Checker APi Search");
+      const data = await SearchApprovalRequestLineManager({
+        callApi,
+        showNotification,
+        showLoader,
+        requestdata,
+        navigate,
+      });
+      setLineManagerApproval(data);
+      break;
+    }
     default:
       break;
   }

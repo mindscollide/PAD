@@ -144,7 +144,9 @@ const ApprovalRequest = () => {
 
     // 2️⃣ Prepare API request parameters
     const TypeIds = mapBuySellToIds(lineManagerApprovalSearch.type, assetData);
-    const statusIds = mapStatusToIdsForLineManager(lineManagerApprovalSearch.status);
+    const statusIds = mapStatusToIdsForLineManager(
+      lineManagerApprovalSearch.status
+    );
 
     const requestdata = {
       InstrumentName:
@@ -360,7 +362,9 @@ const ApprovalRequest = () => {
               lineManagerApprovalSearch.mainInstrumentName,
             Date: lineManagerApprovalSearch.date || "",
             Quantity: lineManagerApprovalSearch.quantity || 0,
-            StatusIds: mapStatusToIdsForLineManager(lineManagerApprovalSearch.status) || [],
+            StatusIds:
+              mapStatusToIdsForLineManager(lineManagerApprovalSearch.status) ||
+              [],
             TypeIds:
               mapBuySellToIds(lineManagerApprovalSearch.type, assetData) || [],
             PageNumber: lineManagerApprovalSearch.pageNumber || 10, // Acts as offset for API

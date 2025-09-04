@@ -11,7 +11,10 @@ import { ArrowsAltOutlined } from "@ant-design/icons";
 import TypeColumnTitle from "../../../../components/dropdowns/filters/typeColumnTitle";
 import StatusColumnTitle from "../../../../components/dropdowns/filters/statusColumnTitle";
 import { useGlobalModal } from "../../../../context/GlobalModalContext";
-import { formatApiDateTime } from "../../../../commen/funtions/rejex";
+import {
+  dashBetweenApprovalAssets,
+  formatApiDateTime,
+} from "../../../../commen/funtions/rejex";
 // import TypeColumnTitle from "./typeFilter";
 
 /**
@@ -49,21 +52,36 @@ export const getBorderlessLineManagerTableColumns = (
   setViewDetailLineManagerModal
 ) => [
   {
-    title: (
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          gap: "8px",
-          marginLeft: "15px",
-        }}
-      >
-        Requester Name {getSortIcon("requesterName", sortedInfo)}
-      </div>
-    ),
+    title: withSortIcon("Approval ID", "tradeApprovalID", sortedInfo),
+    dataIndex: "tradeApprovalID",
+    key: "tradeApprovalID",
+    width: "10%",
+    ellipsis: true,
+    sorter: (a, b) =>
+      parseInt(a.tradeApprovalID.replace(/[^\d]/g, ""), 10) -
+      parseInt(b.tradeApprovalID.replace(/[^\d]/g, ""), 10),
+    sortDirections: ["ascend", "descend"],
+    sortOrder:
+      sortedInfo?.columnKey === "tradeApprovalID" ? sortedInfo.order : null,
+    showSorterTooltip: false,
+    sortIcon: () => null,
+    render: (tradeApprovalID) => {
+      return (
+        <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+          <span className="font-medium">
+            {dashBetweenApprovalAssets(tradeApprovalID)}
+            {/* {dashBetweenApprovalAssets("REQ888888")} */}
+          </span>
+        </div>
+      );
+    },
+  },
+  {
+    title: <div>Requester Name {getSortIcon("requesterName", sortedInfo)}</div>,
     dataIndex: "requesterName",
     key: "requesterName",
     ellipsis: true,
+    width: "14%",
     sorter: (a, b) => a.requesterName.localeCompare(b.requesterName),
     sortDirections: ["ascend", "descend"],
     sortOrder:
@@ -71,14 +89,7 @@ export const getBorderlessLineManagerTableColumns = (
     showSorterTooltip: false,
     sortIcon: () => null,
     render: (text) => (
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          gap: "12px",
-          marginLeft: "15px",
-        }}
-      >
+      <div>
         <span className="font-medium">{text}</span>
       </div>
     ),
@@ -135,6 +146,7 @@ export const getBorderlessLineManagerTableColumns = (
     title: withSortIcon("Date & Time", "requestDateTime", sortedInfo),
     dataIndex: "requestDateTime",
     key: "requestDateTime",
+
     ellipsis: true,
     sorter: (a, b) =>
       formatApiDateTime(a.requestDateTime).localeCompare(
@@ -158,7 +170,7 @@ export const getBorderlessLineManagerTableColumns = (
     ),
     dataIndex: "type",
     key: "type",
-    width: "10%",
+    width: "5%",
     ellipsis: true,
     filteredValue: lineManagerApprovalSearch.type?.length
       ? lineManagerApprovalSearch.type
@@ -184,7 +196,6 @@ export const getBorderlessLineManagerTableColumns = (
     filteredValue: lineManagerApprovalSearch.status?.length
       ? lineManagerApprovalSearch.status
       : null,
-    width: "10%",
     onFilter: () => true,
     render: (status) => {
       console.log(status, "checkerStateus");
@@ -208,19 +219,29 @@ export const getBorderlessLineManagerTableColumns = (
     },
   },
   {
+    title: withSortIcon("Quantity", "quantity", sortedInfo),
+    dataIndex: "quantity",
+    key: "quantity",
+    ellipsis: true,
+    sorter: (a, b) => a.quantity - b.quantity,
+    sortDirections: ["ascend", "descend"],
+    sortOrder: sortedInfo?.columnKey === "quantity" ? sortedInfo.order : null,
+    showSorterTooltip: false,
+    sortIcon: () => null,
+    render: (q) => <span className="font-medium">{q.toLocaleString()}</span>,
+  },
+  {
     title: "",
     dataIndex: "isEscalated",
     key: "isEscalated",
     width: "7%",
     ellipsis: true,
-    render: (date) =>
-      date && (
-        <img
-          src={EscalatedIcon}
-          alt="escalated"
-          className={style["escalated-icon"]}
-        />
-      ),
+    render: (isEscalated, record) => {
+      console.log(record, "CheckIsEsclated");
+      return isEscalated ? (
+        <img src={EscalatedIcon} alt="Escalated" title="Escalated" />
+      ) : null;
+    },
   },
 
   {
