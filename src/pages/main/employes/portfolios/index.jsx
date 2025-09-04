@@ -9,10 +9,16 @@ import { usePortfolioContext } from "../../../../context/portfolioContax";
 import { useSearchBarContext } from "../../../../context/SearchBarContaxt";
 import moment from "moment";
 import UploadPortfolioModal from "./modal/uploadPortfolioModal/UploadPortfolioModal";
+import { SearchEmployeePendingUploadedPortFolio } from "../../../../api/protFolioApi";
+import { useApi } from "../../../../context/ApiContext";
+import { useNotification } from "../../../../components/NotificationProvider/NotificationProvider";
+import { useGlobalLoader } from "../../../../context/LoaderContext";
+import { useNavigate } from "react-router-dom";
 
 const { Title } = Typography;
 
 const PortfolioIndex = () => {
+  const navigate = useNavigate();
   // Contexts for tab state and search filters
   const {
     activeTab,
@@ -28,6 +34,9 @@ const PortfolioIndex = () => {
     setEmployeePendingApprovalSearch,
     resetEmployeePendingApprovalSearch,
   } = useSearchBarContext();
+  const { callApi } = useApi();
+  const { showNotification } = useNotification();
+  const { showLoader } = useGlobalLoader();
 
   const isPortfolio = activeTab === "portfolio";
 
@@ -184,6 +193,27 @@ const PortfolioIndex = () => {
     }
   }, [employeePendingApprovalSearch.filterTrigger]);
 
+  // 🔹 Click handler for Portfolio tab
+  const handlePortfolioClick = async () => {
+    setActiveTab("portfolio");
+    resetEmployeePendingApprovalSearch();
+
+    // Example API call for Portfolio
+    await SearchEmployeePendingUploadedPortFolio({
+      callApi,
+      showNotification,
+      showLoader,
+      requestdata: { type: "portfolio" }, // customize request body
+      navigate,
+    });
+  };
+
+  // 🔹 Click handler for Pending Approvals tab
+  const handlePendingClick = async () => {
+    resetEmployeePortfolioSearch();
+    setActiveTab("pending");
+  };
+
   return (
     <>
       {/* Display active filters as removable tags */}
@@ -215,7 +245,7 @@ const PortfolioIndex = () => {
               <div className={styles.tabButtons}>
                 <div
                   className={styles.tabButton}
-                  onClick={() => setActiveTab("portfolio")}
+                  onClick={handlePortfolioClick}
                 >
                   <Button
                     type="text"
@@ -227,10 +257,7 @@ const PortfolioIndex = () => {
                     text="Portfolio"
                   />
                 </div>
-                <div
-                  className={styles.tabButton}
-                  onClick={() => setActiveTab("pending")}
-                >
+                <div className={styles.tabButton} onClick={handlePendingClick}>
                   <Button
                     type="text"
                     className={
