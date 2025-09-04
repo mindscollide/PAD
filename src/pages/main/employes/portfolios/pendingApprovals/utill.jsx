@@ -2,7 +2,7 @@
 
 import React from "react";
 import { Tag, Typography } from "antd";
-import { Button } from "../../../../../components";
+import { BrokerColumnTitle, Button } from "../../../../../components";
 import DefaultColumArrow from "../../../../../assets/img/default-colum-arrow.png";
 import ArrowUP from "../../../../../assets/img/arrow-up-dark.png";
 import ArrowDown from "../../../../../assets/img/arrow-down-dark.png";
@@ -136,20 +136,70 @@ export const getBorderlessTableColumns = (
     onFilter: () => true,
     render: (type) => <span>{type}</span>,
   },
+  // this is for broker dont change this 
+  // {
+  //   title: (
+  //     <BrokerColumnTitle
+  //       state={employeePendingApprovalSearch}
+  //       setState={setEmployeePendingApprovalSearch}
+  //     />
+  //   ),
+  //   dataIndex: "Broker",
+  //   key: "Broker",
+  //   ellipsis: true,
+  //   filteredValue: employeePendingApprovalSearch.Broker?.length
+  //     ? employeePendingApprovalSearch.Broker
+  //     : null,
+  //   onFilter: () => true,
+  //   render: (Broker) => {
+  //     const tag = approvalStatusMap[Broker] || {};
+  //     return (
+  //       <Tag
+  //         style={{
+  //           backgroundColor: tag.backgroundColor,
+  //           color: tag.textColor,
+  //           whiteSpace: "nowrap", // prevent wrapping
+  //           overflow: "hidden",
+  //           textOverflow: "ellipsis",
+  //           display: "inline-block",
+  //           // maxWidth: "100%", // tag respects parent cell width
+  //         }}
+  //         className="border-less-table-orange-status"
+  //       >
+  //         {tag.label}
+  //       </Tag>
+  //     );
+  //   },
+  //   onHeaderCell: () => ({
+  //     style: {
+  //       minWidth: "110px", // 👈 adjust as needed
+  //       maxWidth: "240px",
+  //       whiteSpace: "nowrap",
+  //       overflow: "hidden",
+  //       textOverflow: "ellipsis",
+  //     },
+  //   }),
+  //   onCell: () => ({
+  //     style: {
+  //       minWidth: "110px",
+  //       maxWidth: "240px",
+  //       whiteSpace: "nowrap",
+  //       overflow: "hidden",
+  //       textOverflow: "ellipsis",
+  //     },
+  //   }),
+  // },
   {
     title: "Broker",
     dataIndex: "Broker",
     key: "Broker",
-    width: "10%",
+    width: "12%",
     ellipsis: true,
-    filters: [
-      { text: "JS Global", value: "JS Global" },
-      { text: "AKD Securities", value: "AKD Securities" },
-      { text: "Arif Habib", value: "Arif Habib" },
-      { text: "BMA Capital", value: "BMA Capital" },
-    ],
-    onFilter: (value, record) => record.Broker === value,
-    render: (broker) => <span>{broker}</span>,
+    render: (text) => (
+      <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+        <span className="font-medium">{text}</span>
+      </div>
+    ),
   },
   {
     title: (
@@ -161,7 +211,6 @@ export const getBorderlessTableColumns = (
     dataIndex: "status",
     key: "status",
     ellipsis: true,
-    width: "10%",
     filteredValue: employeePendingApprovalSearch.status?.length
       ? employeePendingApprovalSearch.status
       : null,
@@ -173,6 +222,11 @@ export const getBorderlessTableColumns = (
           style={{
             backgroundColor: tag.backgroundColor,
             color: tag.textColor,
+            whiteSpace: "nowrap", // prevent wrapping
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+            display: "inline-block",
+            // maxWidth: "100%", // tag respects parent cell width
           }}
           className="border-less-table-orange-status"
         >
@@ -180,6 +234,24 @@ export const getBorderlessTableColumns = (
         </Tag>
       );
     },
+    onHeaderCell: () => ({
+      style: {
+        minWidth: "110px", // 👈 adjust as needed
+        maxWidth: "240px",
+        whiteSpace: "nowrap",
+        overflow: "hidden",
+        textOverflow: "ellipsis",
+      },
+    }),
+    onCell: () => ({
+      style: {
+        minWidth: "110px",
+        maxWidth: "240px",
+        whiteSpace: "nowrap",
+        overflow: "hidden",
+        textOverflow: "ellipsis",
+      },
+    }),
   },
   {
     title: "",

@@ -23,3 +23,5 @@ export { default as ModalImgStates } from "./modalImageStates/modalImgStates";
 export { default as AcordianTable } from "./tables/accordianTable/acordianTable";
 export { default as ViewCommentModal } from "./modal/viewCommentModal/ViewCommentModal";
 export { default as CommentModal } from "./modal/commentModal/CommentModal";
+export { default as BrokerFilterDropdown } from "./dropdowns/filters/BrokerFilterDropdown";
+export { default as BrokerColumnTitle } from "./dropdowns/filters/BrokerColumnTitle";
