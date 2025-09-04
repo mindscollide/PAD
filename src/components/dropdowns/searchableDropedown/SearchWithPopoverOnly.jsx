@@ -77,11 +77,7 @@ const SearchWithPopoverOnly = () => {
   } = useSearchBarContext();
   const { activeTab } = usePortfolioContext();
 
-  const dropdownOptions = [
-    { value: "1", label: "Jack" },
-    { value: "2", label: "Lucy" },
-    { value: "3", label: "Tom" },
-  ];
+
   /**
    * Handles execution of the search logic when filters are applied.
    */
@@ -253,7 +249,6 @@ const SearchWithPopoverOnly = () => {
           activeTab,
           handleSearch,
           setVisible,
-          dropdownOptions
         )}
         trigger="click"
         open={visible}

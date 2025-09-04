@@ -1,13 +1,19 @@
 // utils.jsx
-
 import React from "react";
 import { Tag, Typography } from "antd";
-import { Button } from "../../../../../components";
+import { BrokerColumnTitle, Button } from "../../../../../components";
 import DefaultColumArrow from "../../../../../assets/img/default-colum-arrow.png";
 import ArrowUP from "../../../../../assets/img/arrow-up-dark.png";
 import ArrowDown from "../../../../../assets/img/arrow-down-dark.png";
 import TypeColumnTitle from "../../../../../components/dropdowns/filters/typeColumnTitle";
 import StatusColumnTitle from "../../../../../components/dropdowns/filters/statusColumnTitle";
+import { formatApiDateTime } from "../../../../../commen/funtions/rejex";
+
+const { Text } = Typography;
+
+/**
+ * Get sorting icon for column
+ */
 const getSortIcon = (columnKey, sortedInfo) => {
   if (sortedInfo?.columnKey === columnKey) {
     return sortedInfo.order === "ascend" ? (
@@ -20,12 +26,13 @@ const getSortIcon = (columnKey, sortedInfo) => {
     <img src={DefaultColumArrow} alt="Default" className="custom-sort-icon" />
   );
 };
-const { Text } = Typography;
 
 /**
  * Returns column definitions for the borderless table
- * @param {Object} pendingApprovalstatusMap - Status tag color & label config
- * @returns {Array} Ant Design column config
+ * @param {Object} approvalStatusMap - Map of status configs for tags
+ * @param {Object} sortedInfo - Current sorting state from table
+ * @param {Object} employeePendingApprovalSearch - Search/filter state
+ * @param {Function} setEmployeePendingApprovalSearch - Setter for search state
  */
 export const getBorderlessTableColumns = (
   approvalStatusMap,
@@ -36,45 +43,40 @@ export const getBorderlessTableColumns = (
   {
     title: (
       <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-        Instrument {getSortIcon("instrument", sortedInfo)}
+        Instrument {getSortIcon("instrumentShortCode", sortedInfo)}
       </div>
     ),
-    dataIndex: "instrument",
-    key: "instrument",
+    dataIndex: "instrumentShortCode",
+    key: "instrumentShortCode",
     width: "12%",
     ellipsis: true,
-    sorter: (a, b) => a.instrument.localeCompare(b.instrument),
+    sorter: (a, b) =>
+      (a.instrumentShortCode || "").localeCompare(b.instrumentShortCode || ""),
     sortDirections: ["ascend", "descend"],
-    sortOrder: sortedInfo?.columnKey === "instrument" ? sortedInfo.order : null,
+    sortOrder:
+      sortedInfo?.columnKey === "instrumentShortCode" ? sortedInfo.order : null,
     showSorterTooltip: false,
     sortIcon: () => null,
-    render: (text) => (
-      <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-        <span className="font-medium">{text}</span>
-      </div>
-    ),
+    render: (text) => <span className="font-medium">{text}</span>,
   },
   {
     title: (
       <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-        Transaction ID {getSortIcon("transactionid", sortedInfo)}
+        Transaction ID {getSortIcon("tradeApprovalID", sortedInfo)}
       </div>
     ),
-    dataIndex: "transactionid",
-    key: "transactionid",
+    dataIndex: "tradeApprovalID",
+    key: "tradeApprovalID",
     width: "12%",
     ellipsis: true,
-    sorter: (a, b) => a.transactionid.localeCompare(b.transactionid),
+    sorter: (a, b) =>
+      (a.tradeApprovalID || "").localeCompare(b.tradeApprovalID || ""),
     sortDirections: ["ascend", "descend"],
     sortOrder:
-      sortedInfo?.columnKey === "transactionid" ? sortedInfo.order : null,
+      sortedInfo?.columnKey === "tradeApprovalID" ? sortedInfo.order : null,
     showSorterTooltip: false,
     sortIcon: () => null,
-    render: (text) => (
-      <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-        <span className="font-medium">{text}</span>
-      </div>
-    ),
+    render: (text) => <span className="font-medium">{text}</span>,
   },
   {
     title: (
@@ -85,10 +87,12 @@ export const getBorderlessTableColumns = (
     ),
     dataIndex: "approvalRequestDateime",
     key: "approvalRequestDateime",
-    ellipsis: true,
     width: "20%",
+    ellipsis: true,
     sorter: (a, b) =>
-      a.approvalRequestDateime.localeCompare(b.approvalRequestDateime),
+      (a.approvalRequestDateime || "").localeCompare(
+        b.approvalRequestDateime || ""
+      ),
     sortDirections: ["ascend", "descend"],
     sortOrder:
       sortedInfo?.columnKey === "approvalRequestDateime"
@@ -96,7 +100,9 @@ export const getBorderlessTableColumns = (
         : null,
     showSorterTooltip: false,
     sortIcon: () => null,
-    render: (date) => <span className="text-gray-600">{date}</span>,
+    render: (date) => (
+      <span className="text-gray-600">{formatApiDateTime(date)}</span>
+    ),
   },
   {
     title: (
@@ -106,16 +112,18 @@ export const getBorderlessTableColumns = (
     ),
     dataIndex: "quantity",
     key: "quantity",
-    ellipsis: true,
     width: "10%",
-    sorter: (a, b) => a.quantity - b.quantity,
+    ellipsis: true,
+    sorter: (a, b) => (a.quantity || 0) - (b.quantity || 0),
     sortDirections: ["ascend", "descend"],
     sortOrder: sortedInfo?.columnKey === "quantity" ? sortedInfo.order : null,
     showSorterTooltip: false,
     sortIcon: () => null,
     render: (value, record) => (
-      <Text style={{ color: record.type === "Buy" ? "#00640A" : "#A50000" }}>
-        <span className="font-medium">{value.toLocaleString()}</span>,
+      <Text
+        style={{ color: record.tradeType === "Buy" ? "#00640A" : "#A50000" }}
+      >
+        <span className="font-medium">{value?.toLocaleString()}</span>
       </Text>
     ),
   },
@@ -126,8 +134,8 @@ export const getBorderlessTableColumns = (
         setState={setEmployeePendingApprovalSearch}
       />
     ),
-    dataIndex: "type",
-    key: "type",
+    dataIndex: "tradeType",
+    key: "tradeType",
     ellipsis: true,
     width: "10%",
     filteredValue: employeePendingApprovalSearch?.type?.length
@@ -137,19 +145,21 @@ export const getBorderlessTableColumns = (
     render: (type) => <span>{type}</span>,
   },
   {
-    title: "Broker",
-    dataIndex: "Broker",
-    key: "Broker",
-    width: "10%",
+    title: (
+      <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+        Broker {getSortIcon("broker", sortedInfo)}
+      </div>
+    ),
+    dataIndex: "broker",
+    key: "broker",
+    width: "12%",
     ellipsis: true,
-    filters: [
-      { text: "JS Global", value: "JS Global" },
-      { text: "AKD Securities", value: "AKD Securities" },
-      { text: "Arif Habib", value: "Arif Habib" },
-      { text: "BMA Capital", value: "BMA Capital" },
-    ],
-    onFilter: (value, record) => record.Broker === value,
-    render: (broker) => <span>{broker}</span>,
+    sorter: (a, b) => (a.broker || "").localeCompare(b.broker || ""),
+    sortDirections: ["ascend", "descend"],
+    sortOrder: sortedInfo?.columnKey === "broker" ? sortedInfo.order : null,
+    showSorterTooltip: false,
+    sortIcon: () => null,
+    render: (text) => <span className="font-medium">{text}</span>,
   },
   {
     title: (
@@ -161,7 +171,6 @@ export const getBorderlessTableColumns = (
     dataIndex: "status",
     key: "status",
     ellipsis: true,
-    width: "10%",
     filteredValue: employeePendingApprovalSearch.status?.length
       ? employeePendingApprovalSearch.status
       : null,
@@ -173,6 +182,11 @@ export const getBorderlessTableColumns = (
           style={{
             backgroundColor: tag.backgroundColor,
             color: tag.textColor,
+            whiteSpace: "nowrap", // prevent wrapping
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+            display: "inline-block",
+            // maxWidth: "100%", // tag respects parent cell width
           }}
           className="border-less-table-orange-status"
         >
@@ -180,16 +194,32 @@ export const getBorderlessTableColumns = (
         </Tag>
       );
     },
+    onHeaderCell: () => ({
+      style: {
+        minWidth: "110px", // 👈 adjust as needed
+        maxWidth: "240px",
+        whiteSpace: "nowrap",
+        overflow: "hidden",
+        textOverflow: "ellipsis",
+      },
+    }),
+    onCell: () => ({
+      style: {
+        minWidth: "110px",
+        maxWidth: "240px",
+        whiteSpace: "nowrap",
+        overflow: "hidden",
+        textOverflow: "ellipsis",
+      },
+    }),
   },
   {
     title: "",
     key: "actions",
     width: "15%",
-    render: (record) => {
-      if (record.status === "Non Compliant") {
-        return <Button className="big-white-button" text="Comments" />;
-      }
-      return null;
-    },
+    render: (record) =>
+      record.status === "Non Compliant" ? (
+        <Button className="big-white-button" text="Comments" />
+      ) : null,
   },
 ];

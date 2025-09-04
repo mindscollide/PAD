@@ -1,15 +1,46 @@
-import React, { useEffect, useState } from "react";
-import { Col, Row } from "antd";
+// src/pages/employee/approval/PendingApprovals.jsx
+
+import React, { useEffect, useState, useCallback, useRef } from "react";
+import { useNavigate } from "react-router-dom";
+
+// Components
 import EmptyState from "../../../../../components/emptyStates/empty-states";
 import BorderlessTable from "../../../../../components/tables/borderlessTable/borderlessTable";
+
+// Utils
 import { getBorderlessTableColumns } from "./utill";
 import { approvalStatusMap } from "../../../../../components/tables/borderlessTable/utill";
-import style from "../styles.module.css";
+
+// Contexts
 import { useSearchBarContext } from "../../../../../context/SearchBarContaxt";
+import { useApi } from "../../../../../context/ApiContext";
+import { useGlobalLoader } from "../../../../../context/LoaderContext";
 
+// Hooks
+import { useNotification } from "../../../../../components/NotificationProvider/NotificationProvider";
+
+// API
+import { SearchEmployeePendingUploadedPortFolio } from "../../../../../api/protFolioApi";
+
+/**
+ * PendingApprovals Component
+ *
+ * - Fetches employee pending approvals from API
+ * - Displays data in a borderless table
+ * - Uses global search bar context for filtering
+ * - Resets search state on page reload
+ */
 const PendingApprovals = () => {
-  const [sortedInfo, setSortedInfo] = useState({});
+  const navigate = useNavigate();
 
+  // Context hooks
+  const { callApi } = useApi();
+  const { showNotification } = useNotification();
+  const { showLoader } = useGlobalLoader();
+
+  // Local state
+  const [sortedInfo, setSortedInfo] = useState({});
+  const [tableData, setTableData] = useState([]);
   const data = [
     {
       id: 1,
@@ -112,13 +143,15 @@ const PendingApprovals = () => {
       status: "Non Compliant",
     },
   ];
-  // Global state for filter/search values
+
+  // Global search state (specific to employee pending approvals)
   const {
     employeePendingApprovalSearch,
     setEmployeePendingApprovalSearch,
     resetEmployeePendingApprovalSearch,
   } = useSearchBarContext();
 
+  // Table column definitions
   const columns = getBorderlessTableColumns(
     approvalStatusMap,
     sortedInfo,
@@ -126,6 +159,64 @@ const PendingApprovals = () => {
     setEmployeePendingApprovalSearch,
     resetEmployeePendingApprovalSearch
   );
+
+  // Guard to prevent duplicate API calls (React 18 StrictMode)
+  const didFetchRef = useRef(false);
+
+  // API Fetcher (memoized)
+  const fetchPendingApprovals = useCallback(async () => {
+    showLoader(true);
+
+    const requestData = {
+      InstrumentName: "",
+      Quantity: 0,
+      StartDate: "",
+      EndDate: "",
+      BrokerName: "",
+      PageNumber: 0,
+      Length: 10,
+    };
+
+    const res = await SearchEmployeePendingUploadedPortFolio({
+      callApi,
+      showNotification,
+      showLoader,
+      requestdata: requestData,
+      navigate,
+    });
+
+    setTableData(
+      (res?.pendingPortfolios || []).map((item) => ({
+        ...item,
+        approvalRequestDateime: `${item.transactionConductedDate || ""} ${
+          item.transactionConductedTime || ""
+        }`,
+      }))
+    );
+    showLoader(false);
+  }, [callApi, showNotification, showLoader, navigate]);
+  console.log("requestdata tableData",tableData)
+
+  // Run only once on mount
+  useEffect(() => {
+    if (didFetchRef.current) return; // 🚨 Prevent double-call
+    didFetchRef.current = true;
+
+    fetchPendingApprovals();
+
+    // Reset search state only if page reloaded
+    try {
+      const navigationEntries = performance.getEntriesByType("navigation");
+      if (
+        navigationEntries.length > 0 &&
+        navigationEntries[0].type === "reload"
+      ) {
+        resetEmployeePendingApprovalSearch();
+      }
+    } catch (error) {
+      console.error("❌ Error detecting page reload:", error);
+    }
+  }, [fetchPendingApprovals, resetEmployeePendingApprovalSearch]);
 
   useEffect(() => {
     try {
@@ -146,22 +237,17 @@ const PendingApprovals = () => {
     }
   }, []);
 
-
   return (
     <>
-      {data?.length ? (
-        <BorderlessTable
-          rows={data}
-          columns={columns}
-          classNameTable="border-less-table-blue"
-          scroll={{ x: "max-content", y: 550 }}
-          onChange={(pagination, filters, sorter) => {
-            setSortedInfo(sorter);
-          }}
-        />
-      ) : (
-        <EmptyState type="request" />
-      )}
+      <BorderlessTable
+        rows={tableData}
+        columns={columns}
+        classNameTable="border-less-table-blue"
+        scroll={{ x: "max-content", y: 550 }}
+        onChange={(pagination, filters, sorter) => {
+          setSortedInfo(sorter);
+        }}
+      />
     </>
   );
 };

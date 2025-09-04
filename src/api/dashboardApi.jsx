@@ -1,41 +1,4 @@
-import { logout } from "./loginApi";
-
-// 🔹 Centralized response code messages
-const responseMessages = {
-  PAD_Trade_TradeServiceManager_GetUserDashBoardStats_01: "Data Available",
-  PAD_Trade_TradeServiceManager_GetUserDashBoardStats_02: "No data available",
-  PAD_Trade_TradeServiceManager_GetUserDashBoardStats_03: "Exception",
-  PAD_Trade_TradeServiceManager_GetAllEmployeeBrokers_01: "Data Available",
-  PAD_Trade_TradeServiceManager_GetAllEmployeeBrokers_02: "No data available",
-  PAD_Trade_TradeServiceManager_GetAllEmployeeBrokers_03: "Exception",
-  PAD_Trade_TradeServiceManager_GetAllInstruments_01: "Data Available",
-  PAD_Trade_TradeServiceManager_GetAllInstruments_02: "No data available",
-  PAD_Trade_TradeServiceManager_GetAllInstruments_03: "Exception",
-  PAD_Trade_TradeServiceManager_GetAllTradeApprovalTypes_01: "Data Available",
-  PAD_Trade_TradeServiceManager_GetAllTradeApprovalTypes_02:
-    "No data available",
-  PAD_Trade_TradeServiceManager_GetAllTradeApprovalTypes_03: "Exception",
-
-  // for GetALL Predefine Reason Response Message
-  PAD_Trade_TradeServiceManager_GetAllPredefinedReasons_01: "Data Available",
-  PAD_Trade_TradeServiceManager_GetAllPredefinedReasons_02: "No data available",
-  PAD_Trade_TradeServiceManager_GetAllPredefinedReasons_03: "Exception",
-};
-
-// 🔹 Helper: Get user-friendly message by response code
-const getMessage = (code) =>
-  responseMessages[code] || "Something went wrong. Please try again.";
-
-/**
- * 🔹 Handles logout if session is expired
- */
-const handleExpiredSession = (res, navigate, showLoader) => {
-  if (res?.expired) {
-    logout({ navigate, showLoader });
-    return true;
-  }
-  return false;
-};
+import { getMessage, handleExpiredSession } from "./utils";
 
 /**
  * 🔹 Unified error display

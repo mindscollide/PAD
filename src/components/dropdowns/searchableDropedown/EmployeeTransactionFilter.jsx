@@ -8,7 +8,11 @@ import {
   removeFirstSpace,
 } from "../../../commen/funtions/rejex";
 
-export const EmployeeTransactionFilter = ({ handleSearch ,setVisible}) => {
+export const EmployeeTransactionFilter = ({
+  handleSearch,
+  setVisible,
+  activeTab,
+}) => {
   console.log("Checker Search Coming");
   /**
    * useSidebarContext its state handler for this sidebar.
