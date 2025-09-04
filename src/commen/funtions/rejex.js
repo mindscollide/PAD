@@ -120,3 +120,8 @@ export const formatShowOnlyDate = (dateTimeStr) => {
 
   return "";
 };
+
+
+export const formatCode = (code = "") => {
+  return code.replace(/^([A-Za-z]+)(\d+)$/, "$1-$2");
+};

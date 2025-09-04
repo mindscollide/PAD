@@ -83,8 +83,8 @@ export const getBorderlessTableColumns = (
       return (
         <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
           <span className="font-medium">
-            {/* {dashBetweenApprovalAssets(tradeApprovalID)} */}
-            {dashBetweenApprovalAssets("REQ888888")}
+            {dashBetweenApprovalAssets(tradeApprovalID)}
+            {/* {dashBetweenApprovalAssets("REQ888888")} */}
           </span>
         </div>
       );
