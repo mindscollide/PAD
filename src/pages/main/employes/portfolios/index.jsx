@@ -8,12 +8,18 @@ import Portfolio from "./portfolio/Portfolio";
 import { usePortfolioContext } from "../../../../context/portfolioContax";
 import { useSearchBarContext } from "../../../../context/SearchBarContaxt";
 import moment from "moment";
+import UploadPortfolioModal from "./modal/uploadPortfolioModal/UploadPortfolioModal";
 
 const { Title } = Typography;
 
 const PortfolioIndex = () => {
   // Contexts for tab state and search filters
-  const { activeTab, setActiveTab } = usePortfolioContext();
+  const {
+    activeTab,
+    setActiveTab,
+    uploadPortfolioModal,
+    setUploadPortfolioModal,
+  } = usePortfolioContext();
   const {
     employeePortfolioSearch,
     setEmployeePortfolioSearch,
@@ -267,6 +273,7 @@ const PortfolioIndex = () => {
               <Button
                 className={"large-dark-button"}
                 text={" + Upload Portfolio"}
+                onClick={() => setUploadPortfolioModal(true)}
               />
             </div>
           </Col>
@@ -281,6 +288,10 @@ const PortfolioIndex = () => {
           )}
         </div>
       </PageLayout>
+
+      {/* To Call the uplaod Portfolio Modal Here */}
+
+      {uploadPortfolioModal && <UploadPortfolioModal />}
     </>
   );
 };
