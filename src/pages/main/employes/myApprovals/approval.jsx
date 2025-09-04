@@ -299,7 +299,6 @@ const Approval = () => {
         employeeMyApproval?.approvals &&
         Array.isArray(employeeMyApproval.approvals)
       ) {
-        console.log(employeeMyApproval, "CheckDatayagjvashvajhs");
         // 🔹 Map and normalize data
         const mappedData = employeeMyApproval.approvals.map((item) => ({
           key: item.approvalID,
