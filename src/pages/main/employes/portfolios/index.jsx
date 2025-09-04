@@ -106,11 +106,11 @@ const PortfolioIndex = () => {
     }
   };
 
+
   // Update submittedFilters when the filter trigger is set
   useEffect(() => {
     if (isPortfolio && employeePortfolioSearch.filterTrigger) {
       const snapshot = [];
-
       // Handle all basic filters
       filterKeysPortfolio.forEach(({ key, label }) => {
         const value = employeePortfolioSearch[key];

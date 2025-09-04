@@ -77,63 +77,63 @@ const SearchWithPopoverOnly = () => {
   } = useSearchBarContext();
   const { activeTab } = usePortfolioContext();
 
-
+  const dropdownOptions = [
+    { value: "1", label: "Jack" },
+    { value: "2", label: "Lucy" },
+    { value: "3", label: "Tom" },
+  ];
   /**
    * Handles execution of the search logic when filters are applied.
    */
   const handleSearch = () => {
     switch (selectedKey) {
-      case "1":
-        console.log("selectedKey", selectedKey);
+      case "1": // Employee My Approval
         setEmployeeMyApprovalSearch((prev) => ({
           ...prev,
+          pageNumber: 0,
           tableFilterTrigger: true,
         }));
         break;
-      case "2":
+
+      case "2": // Employee My Transaction
         setEmployeeMyTransactionSearch((prev) => ({
           ...prev,
           filterTrigger: true,
         }));
         break;
-      case "4":
-        switch (activeTab) {
-          case "portfolio":
-            setEmployeePortfolioSearch((prev) => ({
-              ...prev,
-              filterTrigger: true,
-            }));
-            break;
-          case "pending":
-            setEmployeePendingApprovalSearch((prev) => ({
-              ...prev,
-              filterTrigger: true,
-            }));
-            break;
-          default:
-            setEmployeePortfolioSearch((prev) => ({
-              ...prev,
-              filterTrigger: true,
-            }));
-        }
 
+      case "4": // Portfolio / Pending Approval
+        if (activeTab === "portfolio") {
+          setEmployeePortfolioSearch((prev) => ({
+            ...prev,
+            pageNumber: 0,
+            filterTrigger: true,
+          }));
+        } else if (activeTab === "pending") {
+          setEmployeePendingApprovalSearch((prev) => ({
+            ...prev,
+            pageNumber: 0,
+            filterTrigger: true,
+          }));
+        }
         break;
 
-      case "5":
+      case "5": // Line Manager Approval
         setLineManagerApprovalSearch((prev) => ({
           ...prev,
           filterTrigger: true,
         }));
         break;
-      default:
+
+      default: // Fallback → Employee My Approval
         setEmployeeMyApprovalSearch((prev) => ({
           ...prev,
           filterTrigger: true,
         }));
+        break;
     }
 
-    setVisible(false);
-    // Trigger fetch or filter logic here
+    setVisible(false); // Close popover after search
   };
 
   const handleSearchMain = () => {
@@ -153,28 +153,20 @@ const SearchWithPopoverOnly = () => {
           filterTrigger: true,
         }));
         break;
-      case "4":
-        switch (activeTab) {
-          case "portfolio":
-            setEmployeePortfolioSearch((prev) => ({
-              ...prev,
-              filterTrigger: true,
-            }));
-            break;
-          case "pending":
-            setEmployeePendingApprovalSearch((prev) => ({
-              ...prev,
-              filterTrigger: true,
-            }));
-
-            break;
-          default:
-            setEmployeePortfolioSearch((prev) => ({
-              ...prev,
-              filterTrigger: true,
-            }));
+      case "4": // Portfolio / Pending Approval
+        if (activeTab === "portfolio") {
+          setEmployeePortfolioSearch((prev) => ({
+            ...prev,
+            pageNumber: 0,
+            filterTrigger: true,
+          }));
+        } else if (activeTab === "pending") {
+          setEmployeePendingApprovalSearch((prev) => ({
+            ...prev,
+            pageNumber: 0,
+            filterTrigger: true,
+          }));
         }
-
         break;
 
       case "5":
@@ -249,6 +241,7 @@ const SearchWithPopoverOnly = () => {
           activeTab,
           handleSearch,
           setVisible,
+          dropdownOptions
         )}
         trigger="click"
         open={visible}
