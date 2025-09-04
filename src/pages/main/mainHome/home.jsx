@@ -298,6 +298,85 @@ const Home = () => {
           </Row>
         </>
       )}
+      {checkRoleMatch(roles, 5) && (
+        <>
+          <Row gutter={[16, 16]}>
+            <Col xs={24} md={24} lg={24}>
+              <TextCard
+                className="smallCard"
+                title={
+                  <>
+                    <span id="greeting-text-LM">Hi</span>{" "}
+                    <span id="user-name-LM">{dashboardData?.title}</span>,
+                  </>
+                }
+                subtitle="Good Morning!"
+              />
+            </Col>
+          </Row>
+          <Row gutter={[16, 16]}>
+            <Col xs={24} md={12} lg={12}>
+              <MemoizedBoxCard
+                // warningFlag={true}
+                locationStyle={"up"}
+                title="Reconcile Transactions"
+                buttonId={"Reconcile-transactions-view-btn-co"}
+                mainClassName={"mediumHomeCard"}
+                boxes={lineManagerApprovals}
+                buttonTitle={"See More"}
+                buttonClassName={"big-white-card-button"}
+                userRole={"CO"}
+                route={"reconcile"}
+              />
+            </Col>
+
+            <Col xs={24} md={12} lg={12}>
+              <MemoizedBoxCard
+                buttonId={"my-action-view-btn-co"}
+                locationStyle={"up"}
+                title="My Actions"
+                mainClassName={"mediumHomeCard"}
+                boxes={lineManagerAction}
+                buttonTitle={"See More"}
+                buttonClassName={"big-white-card-button"}
+                userRole={"CO"}
+                route={"actions"}
+              />
+            </Col>
+          </Row>
+          <Row gutter={[16, 16]}>
+            <Col xs={24} md={12} lg={12}>
+              <ReportCard
+                mainClassName={"home-reprot-card"}
+                title="Reports"
+                buttonTitle={"See More"}
+                buttonId={"Reports-view-btn-LM"}
+                buttonClassName={"big-white-card-button"}
+                rowButtonClassName={"small-card-light-button"}
+                data={[
+                  {
+                    icon: <Avatar icon={<FileDoneOutlined />} />,
+                    label: "My Compliance",
+                    action: "View Report",
+                  },
+                  {
+                    icon: <Avatar icon={<BarChartOutlined />} />,
+                    label: "My Transactions",
+                    action: "View Report",
+                  },
+                  {
+                    icon: <Avatar icon={<BarChartOutlined />} />,
+                    label: "My Transactions",
+                    action: "View Report",
+                  },
+                ]}
+                userRole={"LM"}
+                route={"reports"}
+              />
+            </Col>
+          </Row>
+        </>
+      )}
     </div>
   );
 };
