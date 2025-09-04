@@ -1,10 +1,17 @@
 // components/dropdowns/filters/statusFilterDropdown.jsx
+
 import React, { useEffect, useState } from "react";
 import styles from "./filter.module.css";
 import { Button, CheckBox } from "../..";
-// import { statusOptions } from "./utills"; // your predefined status list
 import { Row, Col, Divider } from "antd";
-import { apiCallStatus, emaStatusOptions, emtStatusOptions } from "./utils";
+import {
+  apiCallStatus,
+  emaStatusOptions,
+  emtStatusOptions,
+  emtStatusOptionsForPendingApproval,
+} from "./utils";
+
+// Context imports
 import { useSidebarContext } from "../../../context/sidebarContaxt";
 import { useApi } from "../../../context/ApiContext";
 import { useGlobalLoader } from "../../../context/LoaderContext";
@@ -14,7 +21,23 @@ import { useNavigate } from "react-router-dom";
 import { useDashboardContext } from "../../../context/dashboardContaxt";
 
 /**
- * Dropdown for selecting status filters with local state management.
+ * StatusFilterDropdown Component
+ *
+ * A dropdown component that allows users to filter approvals based on status.
+ * Options are dynamically chosen depending on the `selectedKey` from the sidebar.
+ * It integrates with global contexts for API calls, loader, notifications, and approvals state.
+ *
+ * @component
+ * @param {Object} props - Component props
+ * @param {Function} props.confirm - Function to confirm selection (closes dropdown).
+ * @param {Function} props.clearFilters - Function to clear selected filters.
+ * @param {Function} props.setOpenState - State setter to control dropdown visibility.
+ * @param {Object} props.state - Parent filter state object.
+ * @param {Function} props.setState - State setter for parent filter state.
+ * @param {Array} props.tempSelected - Temporary list of selected statuses.
+ * @param {Function} props.setTempSelected - Setter for temporary selected statuses.
+ *
+ * @returns {JSX.Element} Rendered Status Filter Dropdown
  */
 const StatusFilterDropdown = ({
   confirm,
@@ -34,14 +57,22 @@ const StatusFilterDropdown = ({
   const { setIsEmployeeMyApproval, setLineManagerApproval } = useMyApproval();
   const [filterOption, setFilterOptions] = useState([]);
 
+  /**
+   * Toggles the selection state of a status option.
+   * @param {string} status - The status being toggled.
+   */
   const toggleSelection = (status) => {
-    setTempSelected((prev) =>
-      prev.includes(status)
-        ? prev.filter((item) => item !== status)
-        : [...prev, status]
+    setTempSelected(
+      (prev) =>
+        prev.includes(status)
+          ? prev.filter((item) => item !== status) // Remove if already selected
+          : [...prev, status] // Add if not selected
     );
   };
 
+  /**
+   * Updates available filter options based on sidebar selection.
+   */
   useEffect(() => {
     switch (selectedKey) {
       case "1":
@@ -51,7 +82,7 @@ const StatusFilterDropdown = ({
         setFilterOptions(emtStatusOptions);
         break;
       case "4":
-        setFilterOptions(emtStatusOptions);
+        setFilterOptions(emtStatusOptionsForPendingApproval);
         break;
       case "6":
         setFilterOptions(emtStatusOptions);
@@ -61,18 +92,20 @@ const StatusFilterDropdown = ({
     }
   }, [selectedKey]);
 
+  /**
+   * Handles confirmation of selected statuses.
+   * Updates parent state and triggers API call.
+   */
   const handleOk = async () => {
     console.log("hello test", typeof selectedKey);
     setState((prev) => ({
       ...prev,
       status: tempSelected,
     }));
-    let newdata = tempSelected;
-    console.log("hello test", newdata);
 
     await apiCallStatus({
       selectedKey,
-      newdata,
+      newdata: tempSelected,
       state,
       addApprovalRequestData,
       callApi,
@@ -82,19 +115,19 @@ const StatusFilterDropdown = ({
       setIsEmployeeMyApproval,
       setLineManagerApproval,
     });
-    setOpenState(false);
 
-    confirm(); // close dropdown
+    setOpenState(false);
+    confirm(); // Close dropdown
   };
 
+  /**
+   * Resets filter selections and clears parent state.
+   * Also triggers API call with empty filter.
+   */
   const handleReset = async () => {
-    let newdata = [];
-    console.log("hello test", newdata);
-    if (selectedKey === "6") {
-    }
     await apiCallStatus({
       selectedKey,
-      newdata,
+      newdata: [],
       state,
       addApprovalRequestData,
       callApi,
@@ -104,35 +137,38 @@ const StatusFilterDropdown = ({
       setIsEmployeeMyApproval,
       setLineManagerApproval,
     });
+
     setTempSelected([]);
     setState((prev) => ({
       ...prev,
       status: [],
     }));
+
     clearFilters?.();
     setOpenState(false);
-    confirm(); // close dropdown
+    confirm(); // Close dropdown
   };
 
   return (
     <div className={styles.dropdownContainer}>
+      {/* Checkbox List */}
       <div className={styles.checkboxList}>
         {filterOption?.map((status, index) => (
-          <>
+          <React.Fragment key={status}>
             <CheckBox
-              key={status}
               value={status}
               label={status}
               checked={tempSelected.includes(status)}
               onChange={() => toggleSelection(status)}
             />
-            {filterOption?.length - 1 !== index && (
+            {filterOption.length - 1 !== index && (
               <Divider className={styles.divider} />
             )}
-          </>
+          </React.Fragment>
         ))}
       </div>
 
+      {/* Action Buttons */}
       <div className={styles.buttonGroup}>
         <Row gutter={10}>
           <Col>

@@ -14,6 +14,7 @@ export const emaStatusOptions = [
 ];
 // these are status options for employee my approval page
 export const emtStatusOptions = ["Pending", "Compliant", "Non-Compliant"];
+export const emtStatusOptionsForPendingApproval = ["Pending", "Non-Compliant"];
 
 export const getTypeOptions = (addApprovalRequestData) => {
   if (!addApprovalRequestData || typeof addApprovalRequestData !== "object")

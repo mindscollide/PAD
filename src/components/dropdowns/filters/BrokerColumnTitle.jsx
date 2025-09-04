@@ -1,40 +1,39 @@
-// components/tables/columns/StatusColumnTitle.jsx
+// components/tables/columns/BrokerColumnTitle.jsx
 
 import React, { useEffect, useState } from "react";
 import { Col, Dropdown, Row } from "antd";
 import { DownOutlined } from "@ant-design/icons";
-import StatusFilterDropdown from "./statusFilterDropdown";
+import BrokerFilterDropdown from "./BrokerFilterDropdown";
 import style from "../../../pages/main/employes/myApprovals/approval.module.css";
+import { useDashboardContext } from "../../../context/dashboardContaxt";
 
 /**
- * StatusColumnTitle Component
+ * BrokerColumnTitle Component
  *
- * Renders a column title with a filter dropdown for selecting approval statuses.
- * Displays the currently selected status (or "Multiple" if more than one is chosen).
- * Integrates with `StatusFilterDropdown` to provide filter selection UI.
+ * Renders a column title with a filter dropdown for selecting brokers.
+ * - Displays broker names in the header (or "Multiple" if more than one is selected).
+ * - Stores only brokerIDs in parent state.
  *
  * @component
  * @param {Object} props - Component props
  * @param {Object} props.state - The parent filter state object.
  * @param {Function} props.setState - Setter function for updating the parent filter state.
  *
- * @returns {JSX.Element} Rendered status column title with filter dropdown.
+ * @returns {JSX.Element} Rendered broker column title with filter dropdown.
  */
-const StatusColumnTitle = ({ state, setState }) => {
+const BrokerColumnTitle = ({ state, setState }) => {
+      const { employeeBasedBrokersData } = useDashboardContext();
+    console.log("employeeBasedBrokersData",employeeBasedBrokersData)
   /** Controls dropdown visibility */
   const [visible, setVisible] = useState(false);
 
-  /** Temporary list of selected statuses while dropdown is open */
+  /** Temporary selection of broker IDs */
   const [tempSelected, setTempSelected] = useState([]);
 
-  /** The confirmed selected statuses from parent state */
-  const selected = state?.status || [];
+  /** Final confirmed broker IDs from state */
+  const selected = state?.broker || [];
 
-  /**
-   * Syncs temporary selection with parent state when dropdown opens/closes.
-   * - When opened → copy current selected values into temp state.
-   * - When closed → reset temp state.
-   */
+  /** Sync temp state with parent state on dropdown open/close */
   useEffect(() => {
     if (visible) {
       setTempSelected(selected);
@@ -43,20 +42,24 @@ const StatusColumnTitle = ({ state, setState }) => {
     }
   }, [visible]);
 
+  /** Resolve broker IDs → broker names for display */
+  const selectedNames = employeeBasedBrokersData
+    .filter((broker) => selected.includes(broker.brokerID))
+    .map((b) => b.brokerName);
+
   return (
     <Dropdown
       open={visible}
       onOpenChange={setVisible}
       trigger={["click"]}
       className={style["table-filter-dropdown"]}
-      /** Custom dropdown content */
       popupRender={() => (
-        <StatusFilterDropdown
-          confirm={() => setVisible(false)} // close dropdown on confirm
+        <BrokerFilterDropdown
+          confirm={() => setVisible(false)}
           clearFilters={() => {
             setState((prev) => ({
               ...prev,
-              status: [],
+              broker: [],
             }));
             setVisible(false);
           }}
@@ -65,6 +68,7 @@ const StatusColumnTitle = ({ state, setState }) => {
           setState={setState}
           tempSelected={tempSelected}
           setTempSelected={setTempSelected}
+          brokerOptions={employeeBasedBrokersData}
         />
       )}
     >
@@ -73,21 +77,19 @@ const StatusColumnTitle = ({ state, setState }) => {
         className={`${style["custom-column-header"]} ${
           selected.length ? style["filtered-header"] : ""
         }`}
-        onClick={(e) => e.stopPropagation()} // prevent table sort click
+        onClick={(e) => e.stopPropagation()}
       >
         <Row gutter={[10, 10]}>
-          {/* Status Label */}
+          {/* Broker label */}
           <Col>
-            {
-              selected.length === 1
-                ? selected[0] // Single selection → show the status
-                : selected.length > 1
-                ? "Multiple" // Multiple selections
-                : "Status" // Default label
-            }
+            {selectedNames.length === 1
+              ? selectedNames[0] // one broker selected → show its name
+              : selectedNames.length > 1
+              ? "Multiple"
+              : "Broker"}
           </Col>
 
-          {/* Dropdown Icon (rotates when open) */}
+          {/* Dropdown Icon */}
           <Col>
             <DownOutlined
               className={`${style.icon} ${visible ? style.rotated : ""}`}
@@ -99,4 +101,4 @@ const StatusColumnTitle = ({ state, setState }) => {
   );
 };
 
-export default StatusColumnTitle;
+export default BrokerColumnTitle;

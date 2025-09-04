@@ -1,21 +1,15 @@
 import React from "react";
 import { Row, Col, Space } from "antd";
-import { useSidebarContext } from "../../../context/sidebarContaxt";
 import { Button, CommenSearchInput, DateRangePicker, TextField } from "../..";
 import { useSearchBarContext } from "../../../context/SearchBarContaxt";
 import {
   allowOnlyNumbers,
   removeFirstSpace,
 } from "../../../commen/funtions/rejex";
+import { useDashboardContext } from "../../../context/dashboardContaxt";
 
-export const EmployeePortfolioFilter = ({ handleSearch, dropdownOptions }) => {
-  /**
-   * useSidebarContext its state handler for this sidebar.
-   * - collapsed for check if its open and closed side abr
-   * - selectedKey is for which tab or route is open
-   */
-  const { collapsed, selectedKey } = useSidebarContext();
-
+export const EmployeePortfolioFilter = ({ handleSearch, activeTab }) => {
+  const { employeeBasedBrokersData } = useDashboardContext();
   /**
    * SearchBarContext its state handler for this function.
    * - instrumentShortName for instruments of dropdown menu
@@ -30,6 +24,9 @@ export const EmployeePortfolioFilter = ({ handleSearch, dropdownOptions }) => {
     employeePortfolioSearch,
     setEmployeePortfolioSearch,
     resetEmployeePortfolioSearch,
+    employeePendingApprovalSearch,
+    setEmployeePendingApprovalSearch,
+    resetEmployeePendingApprovalSearch,
   } = useSearchBarContext();
   /**
    * Handles input change for approval filters.
@@ -53,6 +50,13 @@ export const EmployeePortfolioFilter = ({ handleSearch, dropdownOptions }) => {
     }));
   };
 
+  const brokerOptions = employeeBasedBrokersData?.map((broker) => ({
+    value: broker.brokerID, // store ID
+    label: broker.brokerName, // show name
+    brokerID: broker.brokerID, // keep full info if you need it later
+    brokerName: broker.brokerName,
+  }));
+  console.log("employeeBasedBrokersData", employeeBasedBrokersData);
   return (
     <>
       <Row gutter={[12, 12]}>
@@ -60,9 +64,18 @@ export const EmployeePortfolioFilter = ({ handleSearch, dropdownOptions }) => {
           <TextField
             label="Instrument Name"
             name="instrumentShortName"
-            value={employeePortfolioSearch.instrumentShortName}
+            value={
+              activeTab === "pending"
+                ? employeePendingApprovalSearch.mainInstrumentName
+                : employeePortfolioSearch.instrumentShortName
+            }
             onChange={(e) =>
-              handleEmployeeApprovalInputChange(e, setEmployeePortfolioSearch)
+              handleEmployeeApprovalInputChange(
+                e,
+                activeTab === "pending"
+                  ? setEmployeePendingApprovalSearch
+                  : setEmployeePortfolioSearch
+              )
             }
             placeholder="Instrument Name"
             size="medium"
@@ -73,9 +86,18 @@ export const EmployeePortfolioFilter = ({ handleSearch, dropdownOptions }) => {
           <TextField
             label="Quantity"
             name="Quantity"
-            value={employeePortfolioSearch.quantity}
+            value={
+              activeTab === "pending"
+                ? employeePendingApprovalSearch.quantity
+                : employeePortfolioSearch.quantity
+            }
             onChange={(e) =>
-              handleEmployeeApprovalInputChange(e, setEmployeePortfolioSearch)
+              handleEmployeeApprovalInputChange(
+                e,
+                activeTab === "pending"
+                  ? setEmployeePendingApprovalSearch
+                  : setEmployeePortfolioSearch
+              )
             }
             placeholder="Quantity"
             size="medium"
@@ -88,10 +110,19 @@ export const EmployeePortfolioFilter = ({ handleSearch, dropdownOptions }) => {
           <CommenSearchInput
             label="Broker"
             name="broker"
-            value={employeePortfolioSearch.broker}
-            options={dropdownOptions}
+            value={
+              activeTab === "pending"
+                ? employeePendingApprovalSearch.broker
+                : employeePortfolioSearch.broker
+            }
+            options={brokerOptions}
             onChange={(e) =>
-              handleEmployeeApprovalInputChange(e, setEmployeePortfolioSearch)
+              handleEmployeeApprovalInputChange(
+                e,
+                activeTab === "pending"
+                  ? setEmployeePendingApprovalSearch
+                  : setEmployeePortfolioSearch
+              )
             }
             placeholder="Select a Broker"
             className={"input-dropdown-search"} // or just "custom-dropdown" for global CSS
@@ -102,8 +133,16 @@ export const EmployeePortfolioFilter = ({ handleSearch, dropdownOptions }) => {
             label="Date Range"
             size="medium"
             value={
-              employeePortfolioSearch.startDate &&
-              employeePortfolioSearch.endDate
+              activeTab === "pending"
+                ? employeePendingApprovalSearch.startDate &&
+                  employeePendingApprovalSearch.endDate
+                  ? [
+                      employeePendingApprovalSearch.startDate,
+                      employeePendingApprovalSearch.endDate,
+                    ]
+                  : null
+                : employeePortfolioSearch.startDate &&
+                  employeePortfolioSearch.endDate
                 ? [
                     employeePortfolioSearch.startDate,
                     employeePortfolioSearch.endDate,
@@ -111,18 +150,30 @@ export const EmployeePortfolioFilter = ({ handleSearch, dropdownOptions }) => {
                 : null
             }
             onChange={(dates) =>
-              setEmployeePortfolioSearch((prev) => ({
-                ...prev,
-                startDate: dates?.[0] || null,
-                endDate: dates?.[1] || null,
-              }))
+              activeTab === "pending"
+                ? setEmployeePendingApprovalSearch((prev) => ({
+                    ...prev,
+                    startDate: dates?.[0] || null,
+                    endDate: dates?.[1] || null,
+                  }))
+                : setEmployeePortfolioSearch((prev) => ({
+                    ...prev,
+                    startDate: dates?.[0] || null,
+                    endDate: dates?.[1] || null,
+                  }))
             }
             onClear={() =>
-              setEmployeePortfolioSearch((prev) => ({
-                ...prev,
-                startDate: null,
-                endDate: null,
-              }))
+              activeTab === "pending"
+                ? setEmployeePendingApprovalSearch((prev) => ({
+                    ...prev,
+                    startDate: null,
+                    endDate: null,
+                  }))
+                : setEmployeePortfolioSearch((prev) => ({
+                    ...prev,
+                    startDate: null,
+                    endDate: null,
+                  }))
             }
           />
         </Col>
@@ -131,7 +182,11 @@ export const EmployeePortfolioFilter = ({ handleSearch, dropdownOptions }) => {
         <Col>
           <Space>
             <Button
-              onClick={resetEmployeePortfolioSearch}
+              onClick={
+                activeTab === "pending"
+                  ? resetEmployeePendingApprovalSearch
+                  : resetEmployeePortfolioSearch
+              }
               text={"Reset"}
               className="big-light-button"
             />

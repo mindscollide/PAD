@@ -178,8 +178,7 @@ export const renderFilterContent = (
   selectedKey,
   activeTab,
   handleSearch,
-  setVisible,
-  dropdownOptions
+  setVisible
 ) => {
   console.log(activeTab, "Checker Search Coming");
   console.log("SearchWithPopoverOnly selectedKey", selectedKey);
@@ -199,21 +198,28 @@ export const renderFilterContent = (
           setVisible={setVisible}
         />
       );
+    // just cominting for for sprint 6
+    // case "4":
+    //   switch (activeTab) {
+    //     case "portfolio":
+    //       return (
+    //         <EmployeePortfolioFilter
+    //           handleSearch={handleSearch}
+    //           setVisible={setVisible}
+    //         />
+    //       );
+    //     case "pending":
+    //       return <EmployeePendingApprovalFilter handleSearch={handleSearch} />;
+    //     default:
+    //       return null;
+    //   }
     case "4":
-      switch (activeTab) {
-        case "portfolio":
-          return (
-            <EmployeePortfolioFilter
-              handleSearch={handleSearch}
-              dropdownOptions={dropdownOptions}
-              setVisible={setVisible}
-            />
-          );
-        case "pending":
-          return <EmployeePendingApprovalFilter handleSearch={handleSearch} />;
-        default:
-          return null;
-      }
+      return (
+        <EmployeePortfolioFilter
+          handleSearch={handleSearch}
+          activeTab={activeTab}
+        />
+      );
 
     case "6":
       return (
