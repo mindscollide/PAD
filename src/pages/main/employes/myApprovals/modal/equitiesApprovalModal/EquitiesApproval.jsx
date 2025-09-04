@@ -5,6 +5,7 @@ import {
   GlobalModal,
   InstrumentSelect,
   TextField,
+  TradeAndPortfolioModal,
 } from "../../../../../../components";
 import styles from "./EquitiesApproval.module.css";
 import CustomButton from "../../../../../../components/buttons/button";
@@ -107,15 +108,6 @@ const EquitiesApproval = () => {
     raw: broker, // keep full broker data for later use
   }));
 
-  // Handle when user selects/deselects brokers
-  const handleBrokerChange = (selectedIDs) => {
-    const selectedData = brokerOptions
-      .filter((item) => selectedIDs.includes(item.value))
-      .map((item) => item.raw);
-
-    setSelectedBrokers(selectedData);
-  };
-
   // Format type options from addApprovalRequestData show data in type Select
   const typeOptions = Array.isArray(assetTypeData?.items)
     ? assetTypeData?.items.map((item) => ({
@@ -125,72 +117,30 @@ const EquitiesApproval = () => {
       }))
     : [];
 
-  console.log(
-    addApprovalRequestData,
-    "addApprovalRequestDataaddApprovalRequestData"
-  );
-
-  //  Prepare selected values for Select's `value` prop
-  const selectedBrokerIDs = selectedBrokers.map((b) => b.brokerID);
-
-  // Handle Select For Instrument Data
-  const handleSelect = (id) => {
-    const selectedObj = formattedInstruments.find((item) => item.id === id);
-    setSelectedInstrument(selectedObj || null);
-  };
-
-  // Handler For Type
-  const handleTypeSelect = (value) => {
-    const selected = typeOptions.find((opt) => opt.value === value);
-    setSelectedTradeApprovalType(value);
-    setSelectedAssetTypeID(selected?.assetTypeID || null);
-    setSelectedAssetTypeName(selected?.label || "");
-  };
-
-  // Handler For quantity
-  const handleQuantityChange = (e) => {
-    let { value } = e.target;
-
-    // remove commas
-    const rawValue = value.replace(/,/g, "");
-
-    // sirf numbers allow karo
-    if (rawValue === "" || allowOnlyNumbers(rawValue)) {
-      // max length 20 enforce kar do
-      if (rawValue.length <= 20) {
-        const formattedValue = rawValue ? formatNumberWithCommas(rawValue) : "";
-        setQuantity(formattedValue);
-      }
-    }
-  };
-
-  // Clear state by clicking on Cross Icon in Instrument dropdown
-  const handleClearInstrument = () => {
-    setSelectedInstrument(null);
-  };
-
   // A Function For Fetch api of AddTradeApproval
-  const fetchAddApprovalsRequest = async () => {
+  const fetchAddApprovalsRequest = async (formData) => {
     showLoader(true);
 
-    const quantityNumber = quantity ? Number(quantity.replace(/,/g, "")) : null;
+    const quantityNumber = formData.quantity
+      ? Number(formData.quantity.replace(/,/g, ""))
+      : null;
 
     const requestdata = {
       TradeApprovalID: 0,
-      InstrumentID: selectedInstrument?.id || null,
-      InstrumentName: selectedInstrument?.description || "",
-      AssetTypeID: selectedAssetTypeID,
-      ApprovalTypeID: selectedTradeApprovalType,
+      InstrumentID: formData.selectedInstrument?.id || null,
+      InstrumentName: formData.selectedInstrument?.description || "",
+      AssetTypeID: formData.electedAssetTypeID,
+      ApprovalTypeID: formData.selectedTradeApprovalType,
       Quantity: quantityNumber,
-      InstrumentShortCode: selectedInstrument?.name || "",
-      ApprovalType: selectedAssetTypeName,
+      InstrumentShortCode: formData.selectedInstrument?.name || "",
+      ApprovalType: formData.selectedAssetTypeName,
       ApprovalStatusID: 1,
       Comments: "",
-      BrokerIds: selectedBrokers.map((b) => b.brokerID),
+      BrokerIds: formData.selectedBrokers.map((b) => b.brokerID),
       ListOfTradeApprovalActionableBundle: [
         {
-          instrumentID: selectedInstrument?.id || null,
-          instrumentShortName: selectedInstrument?.name || "",
+          instrumentID: formData.selectedInstrument?.id || null,
+          instrumentShortName: formData.selectedInstrument?.name || "",
           Entity: { EntityID: 1, EntityTypeID: 1 },
         },
       ],
@@ -208,18 +158,8 @@ const EquitiesApproval = () => {
   };
 
   // Call an API which inside the fetchAddApprovals Request
-  const clickOnSubmitButton = () => {
-    fetchAddApprovalsRequest();
-  };
-
-  // Reset all states
-  const resetStates = () => {
-    setSelectedInstrument(null);
-    setSelectedBrokers([]);
-    setSelectedTradeApprovalType(null);
-    setSelectedAssetTypeID(null);
-    setSelectedAssetTypeID("");
-    setQuantity("");
+  const clickOnSubmitButton = (formData) => {
+    fetchAddApprovalsRequest(formData);
   };
 
   // Close handler
@@ -228,179 +168,23 @@ const EquitiesApproval = () => {
     setIsEquitiesModalVisible(false);
   };
 
-  const isFormFilled = useMemo(() => {
-    return (
-      selectedInstrument !== null &&
-      selectedTradeApprovalType !== null &&
-      quantity.trim() !== "" &&
-      selectedBrokers.length > 0
-    );
-  }, [
-    selectedInstrument,
-    selectedTradeApprovalType,
-    quantity,
-    selectedBrokers,
-  ]);
-
   return (
     <>
-      <GlobalModal
+      <TradeAndPortfolioModal
         visible={isEquitiesModalVisible}
-        width={"800px"}
-        centered={true}
-        onCancel={handleClose}
-        modalBody={
-          <>
-            <div className={styles.MainClassOfApprovals}>
-              <Row>
-                <Col>
-                  <h3 className={styles.approvalHeading}>
-                    Add Approval Request:{" "}
-                    <span className={styles.approvalEquities}>Equities</span>
-                  </h3>
-                </Col>
-              </Row>
-              <Row>
-                <Col span={24}>
-                  <label className={styles.instrumentLabel}>
-                    Instrument <span className={styles.aesterickClass}>*</span>
-                  </label>
-                  <InstrumentSelect
-                    data={formattedInstruments}
-                    onSelect={handleSelect}
-                    value={selectedInstrument?.id || null}
-                    onClear={handleClearInstrument}
-                    className={styles.selectinstrumentclass}
-                    disabled={allInstrumentsData.length === 0}
-                  />
-                </Col>
-              </Row>
-
-              <Row className={styles.mt1} gutter={[20, 20]}>
-                <Col span={12}>
-                  <label className={styles.instrumentLabel}>
-                    Type <span className={styles.aesterickClass}>*</span>
-                  </label>
-                  <Select
-                    label="Type"
-                    name="Type"
-                    placeholder={"Select"}
-                    allowClear
-                    // open={true}
-                    options={typeOptions}
-                    value={selectedTradeApprovalType}
-                    onChange={handleTypeSelect}
-                    // disabled={typeOptions.length === 0}
-                    prefixCls="EquitiesApprovalSelectPrefix"
-                  />
-                </Col>
-                <Col span={12}>
-                  <TextField
-                    label={
-                      <>
-                        Quantity
-                        <span className={styles.aesterickClass}> *</span>
-                      </>
-                    }
-                    placeholder="Quantity"
-                    className={styles.TextFieldOfQuantity}
-                    type="text"
-                    maxLength={15}
-                    value={quantity}
-                    onChange={handleQuantityChange}
-                  />
-                </Col>
-              </Row>
-
-              <Row className={styles.mt1} gutter={[20, 20]}>
-                <Col span={24}>
-                  <label className={styles.instrumentLabel}>
-                    Brokers <span className={styles.aesterickClass}>*</span>
-                  </label>
-                  <Select
-                    name="broker"
-                    placeholder="Select"
-                    mode="multiple"
-                    value={selectedBrokerIDs}
-                    onChange={handleBrokerChange}
-                    options={brokerOptions}
-                    maxTagCount={0}
-                    maxTagPlaceholder={(omittedValues) =>
-                      `${omittedValues.length} selected`
-                    }
-                    prefixCls="EquitiesBrokerSelectPrefix"
-                    disabled={employeeBasedBrokersData.length === 0}
-                    optionLabelProp="label" // Avoids default tags
-                    optionRender={(option) => (
-                      <div style={{ display: "flex", alignItems: "center" }}>
-                        <Checkbox
-                          className="custom-broker-option"
-                          checked={selectedBrokerIDs.includes(option.value)}
-                          style={{ marginRight: 8 }}
-                        />
-                        {option.data.raw.brokerName}
-                      </div>
-                    )}
-                  />
-                </Col>
-              </Row>
-
-              <Row className={styles.mt1}>
-                <Col span={12}>
-                  <label className={styles.instruLabel}>Line Manager</label>
-                </Col>
-                <Col>
-                  <div className={styles.linemanagerBackground}>
-                    <Row>
-                      <Col span={12}>
-                        <label className={styles.instruLabelForManager}>
-                          Name:
-                        </label>
-                        <p className={styles.lineManagername}>
-                          {lineManagerDetails?.managerName || "-"}
-                        </p>
-                      </Col>
-
-                      <Col span={12}>
-                        <label className={styles.instruLabelForManager}>
-                          Email:
-                        </label>
-                        <p className={styles.lineManagername}>
-                          {lineManagerDetails?.managerEmail || "-"}
-                        </p>
-                      </Col>
-                    </Row>
-                  </div>
-                </Col>
-              </Row>
-            </div>
-          </>
-        }
-        modalFooter={
-          <>
-            <Row
-              gutter={[12, 30]}
-              justify="end"
-              className={styles.mainButtonDiv}
-            >
-              <Col>
-                <Space>
-                  <CustomButton
-                    text={"Close"}
-                    className="big-light-button"
-                    onClick={handleClose}
-                  />
-                  <CustomButton
-                    text={"Submit"}
-                    className="big-dark-button"
-                    onClick={clickOnSubmitButton}
-                    disabled={!isFormFilled}
-                  />
-                </Space>
-              </Col>
-            </Row>
-          </>
-        }
+        onClose={() => setIsEquitiesModalVisible(false)}
+        onSubmit={clickOnSubmitButton}
+        instruments={formattedInstruments}
+        brokerOptions={brokerOptions}
+        typeOptions={typeOptions}
+        mainHeading="Add Approval Request:"
+        heading="Equities"
+        ManagerHeading="Line Manager"
+        showLineManager={lineManagerDetails}
+        submitButtonText="Submit"
+        closeButtonText="Close"
+        lineManagerBackgroundClass={styles.linemanagerBackground}
+        isUploadPortfolioTrue={false}
       />
     </>
   );

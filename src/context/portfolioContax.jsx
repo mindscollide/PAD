@@ -15,6 +15,8 @@ export const PortfolioContext = createContext();
 export const PortfolioProvider = ({ children }) => {
   const [activeTab, setActiveTab] = useState("portfolio");
 
+  const [uploadPortfolioModal, setUploadPortfolioModal] = useState(false);
+
   /**
    * Reset active tab back to default "portfolio"
    */
@@ -28,6 +30,8 @@ export const PortfolioProvider = ({ children }) => {
         activeTab,
         setActiveTab,
         resetPortfolioTab,
+        uploadPortfolioModal,
+        setUploadPortfolioModal,
       }}
     >
       {children}
