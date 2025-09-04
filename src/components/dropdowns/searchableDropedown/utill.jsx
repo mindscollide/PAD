@@ -1,6 +1,9 @@
-import { SearchTadeApprovals } from "../../../api/myApprovalApi";
+import {
+  SearchApprovalRequestLineManager,
+  SearchTadeApprovals,
+} from "../../../api/myApprovalApi";
 import { toYYMMDD } from "../../../commen/funtions/rejex";
-import { mapBuySellToIds, mapStatusToIds } from "../filters/utils";
+import { mapBuySellToIds, mapStatusToIds, mapStatusToIdsForLineManager } from "../filters/utils";
 import { EmployeeMyApprovalFilter } from "./EmployeeMyApprovalFilter";
 import { EmployeePendingApprovalFilter } from "./EmployeePendingApprovalFilter";
 import { EmployeePortfolioFilter } from "./EmployeePortfolioFilter";
@@ -60,6 +63,7 @@ export const handleMainInstrumentChange = (
   setEmployeePendingApprovalSearch,
   setLineManagerApprovalSearch
 ) => {
+  console.log(selectedKey, "cchechechechehc");
   switch (selectedKey) {
     case "1":
       setEmployeeMyApprovalSearch((prev) => ({
@@ -120,6 +124,7 @@ export const handleSearchMainInputReset = ({
   setEmployeePendingApprovalSearch,
   setLineManagerApprovalSearch,
 }) => {
+  console.log(selectedKey, "cchechechechehc");
   switch (selectedKey) {
     case "1":
       setEmployeeMyApprovalSearch((prev) => ({
@@ -211,7 +216,12 @@ export const renderFilterContent = (
       }
 
     case "6":
-      return <LineManagerApprovalFilter handleSearch={handleSearch} />;
+      return (
+        <LineManagerApprovalFilter
+          handleSearch={handleSearch}
+          setVisible={setVisible}
+        />
+      );
     // 🔧 Add more cases for keys "3" to "17" as needed below
     // case "3":
     //   return <SomeOtherFilterComponent handleSearch={handleSearch} />;
@@ -283,6 +293,78 @@ export const apiCallSearch = async ({
 
       case "6":
         // Add case 3 logic here when needed
+        break;
+
+      default:
+        console.warn(`No matching case for selectedKey: ${selectedKey}`);
+        break;
+    }
+  } finally {
+    showLoader(false);
+  }
+};
+
+export const apiCallSearchForLineManager = async ({
+  selectedKey,
+  lineManagerApprovalSearch,
+  addApprovalRequestData,
+  callApi,
+  showNotification,
+  showLoader,
+  navigate,
+  setData,
+}) => {
+  showLoader(true);
+
+  try {
+    console.log(selectedKey, "CheckSelctedKey");
+    switch (selectedKey) {
+      case "1": {
+        break;
+      }
+
+      case "2":
+        // Add case 2 logic here when needed
+        break;
+
+      case "3":
+        // Add case 3 logic here when needed
+        break;
+
+      case "6":
+        // Add case 3 logic here when needed
+        const TypeIds = mapBuySellToIds(
+          lineManagerApprovalSearch.type,
+          addApprovalRequestData?.Equities
+        );
+
+        const statusIds = mapStatusToIdsForLineManager(lineManagerApprovalSearch.status);
+        const date = toYYMMDD(lineManagerApprovalSearch.startDate);
+        console.log(typeof date, "Chdhjvahvajvdas");
+
+        const requestdata = {
+          InstrumentName:
+            lineManagerApprovalSearch.instrumentName ||
+            lineManagerApprovalSearch.mainInstrumentName ||
+            "",
+          Date: date || "",
+          Quantity: lineManagerApprovalSearch.quantity || 0,
+          StatusIds: statusIds || [],
+          TypeIds: TypeIds || [],
+          PageNumber: 0,
+          Length: lineManagerApprovalSearch.pageSize || 10, // Fixed page size
+          RequesterName: lineManagerApprovalSearch.requesterName || "",
+        };
+        console.log(requestdata, "Checker APi Search");
+        const data = await SearchApprovalRequestLineManager({
+          callApi,
+          showNotification,
+          showLoader,
+          requestdata,
+          navigate,
+        });
+
+        setData(data);
         break;
 
       default:

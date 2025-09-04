@@ -106,6 +106,7 @@ export const getBorderlessTableColumns = (
     showSorterTooltip: false,
     sortIcon: () => null,
     render: (instrument, record) => {
+      console.log(record, "Checkerrrrr");
       const assetCode = record?.assetType?.assetTypeShortCode;
       const code = instrument?.instrumentCode || "";
       return (
@@ -292,10 +293,10 @@ export const getBorderlessTableColumns = (
     showSorterTooltip: false,
     sortIcon: () => null,
     render: (q) => <span className="font-medium">{q.toLocaleString()}</span>,
-      onHeaderCell: () => ({
+    onHeaderCell: () => ({
       style: {
         minWidth: "100px", // 👈 adjust as needed
-        maxWidth:"150px",
+        maxWidth: "150px",
         whiteSpace: "nowrap",
         overflow: "hidden",
         textOverflow: "ellipsis",
@@ -304,7 +305,7 @@ export const getBorderlessTableColumns = (
     onCell: () => ({
       style: {
         minWidth: "100px",
-        maxWidth:"150px",
+        maxWidth: "150px",
         whiteSpace: "nowrap",
         overflow: "hidden",
         textOverflow: "ellipsis",

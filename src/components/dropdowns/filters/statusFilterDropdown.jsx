@@ -31,7 +31,7 @@ const StatusFilterDropdown = ({
   const { callApi } = useApi();
   const { showLoader } = useGlobalLoader();
   const { showNotification } = useNotification();
-  const { setIsEmployeeMyApproval } = useMyApproval();
+  const { setIsEmployeeMyApproval, setLineManagerApproval } = useMyApproval();
   const [filterOption, setFilterOptions] = useState([]);
 
   const toggleSelection = (status) => {
@@ -62,12 +62,14 @@ const StatusFilterDropdown = ({
   }, [selectedKey]);
 
   const handleOk = async () => {
+    console.log("hello test", typeof selectedKey);
     setState((prev) => ({
       ...prev,
       status: tempSelected,
     }));
     let newdata = tempSelected;
     console.log("hello test", newdata);
+
     await apiCallStatus({
       selectedKey,
       newdata,
@@ -78,6 +80,7 @@ const StatusFilterDropdown = ({
       showLoader,
       navigate,
       setIsEmployeeMyApproval,
+      setLineManagerApproval,
     });
     setOpenState(false);
 
@@ -87,6 +90,8 @@ const StatusFilterDropdown = ({
   const handleReset = async () => {
     let newdata = [];
     console.log("hello test", newdata);
+    if (selectedKey === "6") {
+    }
     await apiCallStatus({
       selectedKey,
       newdata,
@@ -97,6 +102,7 @@ const StatusFilterDropdown = ({
       showLoader,
       navigate,
       setIsEmployeeMyApproval,
+      setLineManagerApproval,
     });
     setTempSelected([]);
     setState((prev) => ({

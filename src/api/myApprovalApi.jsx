@@ -29,6 +29,23 @@ const responseMessages = {
     "No data available",
   PAD_Trade_TradeServiceManager_GetAllViewDetailsByTradeApprovalID_03:
     "Exception",
+
+  /* ** 
+LINE MANAGER API'S TEXT RESPONSES START FROM HERE
+** */
+
+  //SEARCH LINE MANAGER FOR APPROVALS REQUEST API TEXT RESPONSE
+
+  PAD_Trade_TradeServiceManager_SearchLineManagerApprovalsRequest_01:
+    "Data Available",
+  PAD_Trade_TradeServiceManager_SearchLineManagerApprovalsRequest_02:
+    "No data available",
+  PAD_Trade_TradeServiceManager_SearchLineManagerApprovalsRequest_03:
+    "Exception",
+
+  /* ** 
+LINE MANAGER API'S TEXT RESPONSES END FROM HERE
+** */
 };
 /**
  * 🔹 Handles logout if session is expired
@@ -276,3 +293,71 @@ export const GetAllViewDetailsByTradeApprovalID = async ({
     showLoader(false);
   }
 };
+
+/* ** 
+LINE MANAGER API'S START FROM HERE
+** */
+
+//SEARCH LINE MANAGER FOR APPROVALS REQUEST API START HERE
+
+export const SearchApprovalRequestLineManager = async ({
+  callApi,
+  showLoader,
+  requestdata,
+  navigate,
+}) => {
+  try {
+    const res = await callApi({
+      requestMethod: import.meta.env
+        .VITE_GET_SEARCH_LINE_MANAGER_APPROVAL_REQUEST_METHOD,
+      endpoint: import.meta.env.VITE_API_TRADE,
+      requestData: requestdata,
+    });
+
+    if (handleExpiredSession(res, navigate, showLoader)) {
+      return {
+        lineApprovals: [],
+        totalRecords: 0,
+      };
+    }
+
+    if (!res?.result?.isExecuted) {
+      return {
+        lineApprovals: [],
+        totalRecords: 0,
+      };
+    }
+
+    if (res.success) {
+      const { responseMessage, lineManagerApprovals, totalRecords } =
+        res.result;
+
+      if (
+        responseMessage ===
+        "PAD_Trade_TradeServiceManager_SearchLineManagerApprovalsRequest_01"
+      ) {
+        return {
+          lineApprovals: lineManagerApprovals || [],
+          totalRecords: totalRecords ?? 0,
+        };
+      }
+    }
+
+    return {
+      lineApprovals: [],
+      totalRecords: 0,
+    };
+  } catch (error) {
+    console.error("Error Occurred:", error);
+    return {
+      lineApprovals: [],
+      totalRecords: 0,
+    };
+  } finally {
+    showLoader(false);
+  }
+};
+
+/* ** 
+LINE MANAGER API'S END FROM HERE
+** */

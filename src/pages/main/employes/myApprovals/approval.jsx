@@ -214,6 +214,7 @@ const Approval = () => {
    * Syncs submittedFilters state when filters are applied
    */
   useEffect(() => {
+    console.log("Filter Checker align");
     if (employeeMyApprovalSearch.filterTrigger) {
       const snapshot = filterKeys
         .filter(({ key }) => employeeMyApprovalSearch[key])
@@ -235,6 +236,7 @@ const Approval = () => {
    * Handles table-specific filter trigger
    */
   useEffect(() => {
+    console.log("Filter Checker align");
     const fetchFilteredData = async () => {
       if (!employeeMyApprovalSearch.tableFilterTrigger) return;
 
