@@ -4,7 +4,6 @@ import EmptyState from "../../../../../components/emptyStates/empty-states";
 import BorderlessTable from "../../../../../components/tables/borderlessTable/borderlessTable";
 import { getBorderlessTableColumns } from "./utill";
 import { approvalStatusMap } from "../../../../../components/tables/borderlessTable/utill";
-import style from "../styles.module.css";
 import { useSearchBarContext } from "../../../../../context/SearchBarContaxt";
 
 const PendingApprovals = () => {

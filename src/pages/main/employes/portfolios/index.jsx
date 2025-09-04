@@ -187,7 +187,7 @@ const PortfolioIndex = () => {
   return (
     <>
       {/* Display active filters as removable tags */}
-      {submittedFilters.length > 0 && (
+      {/* {submittedFilters.length > 0 && (
         <Row gutter={[12, 12]} className={styles["filter-tags-container"]}>
           {submittedFilters.map(({ key, label, value }) => (
             <Col key={key}>
@@ -203,7 +203,7 @@ const PortfolioIndex = () => {
             </Col>
           ))}
         </Row>
-      )}
+      )} */}
 
       {/* Page content */}
       <PageLayout background="white">
