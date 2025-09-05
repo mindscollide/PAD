@@ -135,6 +135,8 @@ export const UploadPortFolioRequest = async ({
   showNotification,
   showLoader,
   requestdata,
+  setUploadPortfolioModal,
+  setIsSubmit,
   navigate,
 }) => {
   try {
@@ -167,9 +169,13 @@ export const UploadPortFolioRequest = async ({
 
       // Case 1 → Success
       if (
-        responseMessage === "PAD_Trade_ServiceManager_UploadPortFolioRequest_01"
+        responseMessage ===
+        "PAD_Trade_TradeServiceManager_UploadPortFolioRequest_01"
       ) {
-      return { success: true, message: message || "Portfolio uploaded." };
+        console.log("Its coming here ");
+        setUploadPortfolioModal(false);
+        setIsSubmit(true);
+        return { success: true, message: message || "Portfolio uploaded." };
       }
 
       // Case 2 → Failure with custom server message
