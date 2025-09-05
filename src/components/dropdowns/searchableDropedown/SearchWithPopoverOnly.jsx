@@ -1,16 +1,19 @@
+// components/SearchWithPopoverOnly.jsx
 import React, { useState } from "react";
 import { Input, Popover, Space } from "antd";
 
 // Assets
 import SearchFilterIcon from "../../../assets/img/search-filter-icon.png";
 
-// Components and Utilities
+// Utilities
 import {
   getMainSearchInputValueByKey,
   handleMainInstrumentChange,
   handleSearchMainInputReset,
   renderFilterContent,
 } from "./utill";
+
+// Styles
 import styles from "./SearchWithPopoverOnly.module.css";
 
 // Contexts
@@ -21,64 +24,49 @@ import { usePortfolioContext } from "../../../context/portfolioContax";
 /**
  * SearchWithPopoverOnly
  * ----------------------
- * A search input component with a popover filter for refining results.
+ * A search input with an attached popover filter for refining search results.
  *
  * Features:
- * - Search input tied to `employeeMyApprovalSearch.mainInstrumentName`
- * - Dynamic styling based on sidebar collapse state
- * - Filter icon triggers popover containing additional filter options
- * - Controlled via `useSearchBarContext` and `useSidebarContext`
+ * - Main search input bound to different context states (depends on `selectedKey`).
+ * - Popover filter with extra options (date, quantity, etc.).
+ * - Automatically adapts styling when sidebar is collapsed.
+ * - Triggers search handlers on Enter key or filter submission.
  */
 const SearchWithPopoverOnly = () => {
-  /**
-   * useSidebarContext its state handler for this sidebar.
-   * - collapsed for check if its open and closed side abr
-   * - selectedKey is for which tab or route is open
-   */
+  /** Sidebar context → provides collapse state and active tab key */
   const { collapsed, selectedKey } = useSidebarContext();
 
-  // Local state to control popover visibility
+  /** Local state → controls filter popover visibility */
   const [visible, setVisible] = useState(false);
-  console.log("SearchWithPopoverOnly selectedKey", selectedKey);
 
-  /**
-   * SearchBarContext its state handler for this function.
-   * - instrumentName for instruments of dropdown menu
-   * - quantity for quantity of dropdown menu
-   * - date for date of dropdown menu
-   * - mainInstrumentName for main search bar input
-   * - instrumentName and this mainInstrumentName contain same data but issue is we have to handel both diferently
-   * - resetEmployeeMyApprovalSearch is to reset all their state to its initial
-   */
+  /** Portfolio context → tells if we're in portfolio or pending approval tab */
+  const { activeTab } = usePortfolioContext();
+
+  /** Search context → provides search state + setters for different modules */
   const {
-    // for employee my approval
     employeeMyApprovalSearch,
     setEmployeeMyApprovalSearch,
     resetEmployeeMyApprovalSearch,
 
-    // for employee my transaction
     employeeMyTransactionSearch,
     setEmployeeMyTransactionSearch,
     resetEmployeeMyTransactionSearch,
 
-    // for employee portfolio
     employeePortfolioSearch,
     setEmployeePortfolioSearch,
     resetEmployeePortfolioSearch,
 
-    // for employee portfolio
     employeePendingApprovalSearch,
     setEmployeePendingApprovalSearch,
     resetEmployeePendingApprovalSearch,
 
-    // for Line Manager Approval Request
     lineManagerApprovalSearch,
     setLineManagerApprovalSearch,
   } = useSearchBarContext();
-  const { activeTab } = usePortfolioContext();
 
   /**
-   * Handles execution of the search logic when filters are applied.
+   * Runs when filter options inside popover are applied.
+   * Resets pagination and triggers table filter refresh.
    */
   const handleSearch = () => {
     switch (selectedKey) {
@@ -98,7 +86,7 @@ const SearchWithPopoverOnly = () => {
         }));
         break;
 
-      case "4": // Portfolio / Pending Approval
+      case "4": // Employee Portfolio / Pending Approval
         if (activeTab === "portfolio") {
           setEmployeePortfolioSearch((prev) => ({
             ...prev,
@@ -115,15 +103,15 @@ const SearchWithPopoverOnly = () => {
         }
         break;
 
-      case "6":
-      case "5": // Line Manager Approval
+      case "5":
+      case "6": // Line Manager Approval
         setLineManagerApprovalSearch((prev) => ({
           ...prev,
           tableFilterTrigger: true,
         }));
         break;
 
-      default: // Fallback → Employee My Approval
+      default: // fallback → Employee My Approval
         setEmployeeMyApprovalSearch((prev) => ({
           ...prev,
           filterTrigger: true,
@@ -131,12 +119,16 @@ const SearchWithPopoverOnly = () => {
         break;
     }
 
-    setVisible(false); // Close popover after search
+    setVisible(false); // Close popover after applying filters
   };
 
+  /**
+   * Runs when user presses Enter in the main search input.
+   * Triggers search based only on input (ignores popover filters).
+   */
   const handleSearchMain = () => {
     switch (selectedKey) {
-      case "1":
+      case "1": // Employee My Approval
         setEmployeeMyApprovalSearch((prev) => ({
           ...prev,
           instrumentName: "",
@@ -146,13 +138,15 @@ const SearchWithPopoverOnly = () => {
           tableFilterTrigger: true,
         }));
         break;
-      case "2":
+
+      case "2": // Employee My Transaction
         setEmployeeMyTransactionSearch((prev) => ({
           ...prev,
           filterTrigger: true,
         }));
         break;
-      case "4": // Portfolio / Pending Approval
+
+      case "4": // Employee Portfolio / Pending Approval
         if (activeTab === "portfolio") {
           setEmployeePortfolioSearch((prev) => ({
             ...prev,
@@ -176,7 +170,7 @@ const SearchWithPopoverOnly = () => {
         }
         break;
 
-      case "6":
+      case "6": // Line Manager Approval
         setLineManagerApprovalSearch((prev) => ({
           ...prev,
           instrumentName: "",
@@ -185,7 +179,8 @@ const SearchWithPopoverOnly = () => {
           tableFilterTrigger: true,
         }));
         break;
-      default:
+
+      default: // fallback
         setEmployeeMyApprovalSearch((prev) => ({
           ...prev,
           filterTrigger: true,
@@ -195,13 +190,9 @@ const SearchWithPopoverOnly = () => {
 
   return (
     <Space.Compact className={styles.searchWrapper}>
-      {/* Main Search Input */}
+      {/* 🔎 Main Search Input */}
       <Input
-        placeholder={
-          selectedKey === 1
-            ? "Instrument name. Click to view more options "
-            : "Instrument name. Click to view more options "
-        }
+        placeholder="Instrument name. Click to view more options"
         allowClear
         className={
           collapsed ? styles["inputWrapperCollapsed"] : styles["inputWrapper"]
@@ -213,8 +204,6 @@ const SearchWithPopoverOnly = () => {
           employeeMyTransactionSearch,
           employeePortfolioSearch,
           employeePendingApprovalSearch,
-
-          //For Line Manager
           lineManagerApprovalSearch
         )}
         onChange={(e) =>
@@ -232,16 +221,16 @@ const SearchWithPopoverOnly = () => {
         style={{
           borderStartEndRadius: 0,
           borderEndEndRadius: 0,
-          borderRight: "none", // Removes right border to blend with icon
+          borderRight: "none", // merges visually with filter icon
         }}
         onKeyDown={(e) => {
           if (e.key === "Enter" && !visible) {
-            handleSearchMain(); // only triggers when popover is NOT open
+            handleSearchMain(); // only trigger if popover is closed
           }
         }}
       />
 
-      {/* Popover Filter Trigger */}
+      {/* 🎛️ Popover Filter */}
       <Popover
         overlayClassName={
           collapsed ? styles.popoverContenCollapsed : styles.popoverContent
@@ -258,6 +247,7 @@ const SearchWithPopoverOnly = () => {
           setVisible(newVisible);
 
           if (newVisible) {
+            // Reset filters when opening popover
             handleSearchMainInputReset({
               selectedKey,
               activeTab,

@@ -10,11 +10,13 @@ import {
 import styles from "./UploadPortfolioModal.module.css";
 import { useDashboardContext } from "../../../../../../context/dashboardContaxt";
 import { usePortfolioContext } from "../../../../../../context/portfolioContax";
+import { useSidebarContext } from "../../../../../../context/sidebarContaxt";
 
 const UploadPortfolioModal = () => {
   const { uploadPortfolioModal, setUploadPortfolioModal } =
     usePortfolioContext();
-
+  const {  selectedKey } = useSidebarContext();
+console.log("selectedKey",selectedKey)
   const {
     employeeBasedBrokersData,
     allInstrumentsData,
