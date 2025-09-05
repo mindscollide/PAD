@@ -13,7 +13,7 @@ const config = {
     image: ApprovalsIcon,
   },
 
-  Portfolio_submitted: {
+  PortfolioSubmitted: {
     heading: "Portfolio submitted",
     subheading: "Your portfolio has been added and sent for verification",
     image: ApprovalsIcon,

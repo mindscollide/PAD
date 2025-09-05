@@ -10,10 +10,27 @@ import {
 import styles from "./UploadPortfolioModal.module.css";
 import { useDashboardContext } from "../../../../../../context/dashboardContaxt";
 import { usePortfolioContext } from "../../../../../../context/portfolioContax";
+import { UploadPortFolioRequest } from "../../../../../../api/protFolioApi";
+import { useNotification } from "../../../../../../components/NotificationProvider/NotificationProvider";
+import { useGlobalLoader } from "../../../../../../context/LoaderContext";
+import { useApi } from "../../../../../../context/ApiContext";
+import { useNavigate } from "react-router-dom";
+import { useSidebarContext } from "../../../../../../context/sidebarContaxt";
 
 const UploadPortfolioModal = () => {
+  const navigate = useNavigate();
   const { uploadPortfolioModal, setUploadPortfolioModal } =
     usePortfolioContext();
+  const { selectedKey } = useSidebarContext();
+  console.log(selectedKey, "selectedKeyselectedKey");
+
+  const { showNotification } = useNotification();
+
+  const { showLoader } = useGlobalLoader();
+
+  const { callApi } = useApi();
+
+  const { setIsSubmit } = useGlobalModal();
   const {
     employeeBasedBrokersData,
     allInstrumentsData,
@@ -74,59 +91,72 @@ const UploadPortfolioModal = () => {
         assetTypeID: item.assetTypeID,
       }))
     : [];
-    // Utility function to transform modal form values → API payload
-const transformRequestData = (formValues) => {
-  const {
-    selectedInstrument,
-    selectedBrokers,
-    selectedTradeApprovalType,
-    selectedAssetTypeID,
-    selectedAssetTypeName,
-    quantity,
-  } = formValues;
+  // Utility function to transform modal form values → API payload
+  const transformRequestData = (formValues) => {
+    const {
+      selectedInstrument,
+      selectedBrokers,
+      selectedTradeApprovalType,
+      selectedAssetTypeID,
+      selectedAssetTypeName,
+      quantity,
+    } = formValues;
 
-  return {
-    TradeApprovalID: 0, // default
-    InstrumentID: selectedInstrument?.id ?? 0,
-    InstrumentName: selectedInstrument?.description ?? "",
-    AssetTypeID: 1, // always 1 by default
-    ApprovalTypeID: selectedAssetTypeID ?? 1, // default to 1 if missing
-    Quantity: Number((quantity || "0").replace(/,/g, "")), // clean commas
-    InstrumentShortCode: selectedInstrument?.name ?? "",
-    ApprovalType: selectedAssetTypeName ?? "",
-    ApprovalStatusID: 1, // always 1 by default
-    Comments: "",
-    BrokerIds: (selectedBrokers || []).map((broker) => broker.brokerID),
-    ListOfTradeApprovalActionableBundle: [
-      {
-        instrumentID: selectedInstrument?.id ?? 0,
-        instrumentShortName: selectedInstrument?.name ?? "",
-        Entity: {
-          EntityID: selectedInstrument?.id ?? 0,
-          EntityTypeID: 3, // portfolio workflow
+    return {
+      TradeApprovalID: 0, // default
+      InstrumentID: selectedInstrument?.id ?? 0,
+      InstrumentName: selectedInstrument?.description ?? "",
+      AssetTypeID: 1, // always 1 by default
+      ApprovalTypeID: selectedAssetTypeID ?? 1, // default to 1 if missing
+      Quantity: Number((quantity || "0").replace(/,/g, "")), // clean commas
+      InstrumentShortCode: selectedInstrument?.name ?? "",
+      ApprovalType: selectedAssetTypeName ?? "",
+      ApprovalStatusID: 1, // always 1 by default
+      Comments: "",
+      BrokerIds: (selectedBrokers || []).map((broker) => broker.brokerID),
+      ListOfTradeApprovalActionableBundle: [
+        {
+          instrumentID: selectedInstrument?.id ?? 0,
+          instrumentShortName: selectedInstrument?.name ?? "",
+          Entity: {
+            EntityID: selectedInstrument?.id ?? 0,
+            EntityTypeID: 3, // portfolio workflow
+          },
         },
-      },
-    ],
+      ],
+    };
   };
-};
 
   const handleSubmit = (formValues) => {
     // formValues will come from TradeAndPortfolioModal
-    
-    console.log("🚀 Upload Portfolio Submitted",transformRequestData(formValues),);
+
+    showLoader(true);
+
+    const requestdata = transformRequestData(formValues);
+
+    UploadPortFolioRequest({
+      callApi,
+      showNotification,
+      showLoader,
+      requestdata,
+      setUploadPortfolioModal,
+      setIsSubmit,
+      navigate,
+    });
 
     // Example payload
-    const payload = {
-      ...formValues,
-      selectedKey,
-      managerDetails: lineManagerDetails,
-    };
+    // const payload = {
+    //   ...formValues,
+    //   selectedKey,
+    //   managerDetails: lineManagerDetails,
+    // };
+
+    // console.log(payload, "CheckDataDatat4444");
 
     // 👉 Call your API here
-    // await api.uploadPortfolio(payload);
+    // UploadPortFolioRequest(payload);
 
     // Close modal after submit
-    setUploadPortfolioModal(false);
   };
   return (
     <>
