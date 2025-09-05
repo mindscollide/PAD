@@ -34,9 +34,17 @@ const InstrumentSelect = ({
       >
         {data.map((item) => (
           <Option key={item.id} value={item.id} label={item.description}>
-            <Row align="middle" justify="space-between">
+            <Row
+              align="middle"
+              justify="space-between"
+              className={styles.inlineRow}
+            >
               <Col>
-                <Row align="middle" gutter={8}>
+                <Row
+                  align="middle"
+                  gutter={8}
+                  className={styles.inlineRowContent}
+                >
                   <Col>
                     <Tag className={styles.customTag}>{item.shortCode}</Tag>
                   </Col>
@@ -45,21 +53,21 @@ const InstrumentSelect = ({
                   </Col>
                 </Row>
               </Col>
-              <Col flex="none">
+              <Col flex="none" className={styles.rightSectionContainer}>
                 <div className={styles.rightSection} title={item.description}>
                   <Text className={styles.ItemsSecondaryName}>
                     {item.description}
                   </Text>
-                  <Button
-                    icon={<PlusOutlined style={{ color: "#fff" }} />}
-                    size="large"
-                    className={styles.PlusIconChanges}
-                    type="text"
-                    onClick={(e) => {
-                      onAdd?.(item);
-                    }}
-                  />
                 </div>
+                <Button
+                  icon={<PlusOutlined style={{ color: "#fff" }} />}
+                  size="large"
+                  className={styles.PlusIconChanges}
+                  type="text"
+                  onClick={(e) => {
+                    onAdd?.(item);
+                  }}
+                />
               </Col>
             </Row>
           </Option>
