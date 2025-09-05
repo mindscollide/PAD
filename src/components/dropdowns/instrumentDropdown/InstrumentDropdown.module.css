@@ -1,7 +1,7 @@
 /* styles/tagStyle.module.css */
 .customTag {
   display: inline-block;
-  width: 41px;
+  width: auto;
   height: 24px;
   line-height: 22px;
   padding: 0 4px;
@@ -28,10 +28,13 @@
   font-size: 18px;
   font-weight: 500;
   color: #424242 !important;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .ItemsSecondaryName {
-  max-width: 320px; /* space for text only */
+  max-width: 320px; /* Adjust space for text only */
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -40,18 +43,21 @@
   font-family: "Switzer Variable";
   font-size: 18px;
   font-weight: 500;
+  flex-grow: 1;
 }
 
 .PlusIconChanges {
   background-color: #30426a !important;
-  width: 34px;
-  height: 34px;
+  width: 34px; /* Fixed width */
+  height: 34px; /* Fixed height */
   border-radius: 4px;
   border: none !important;
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 0;
+  flex-shrink: 0; /* Prevent shrinking */
+  flex-grow: 0;
 }
 
 /* This part ensures the icon is white */
@@ -64,7 +70,7 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  max-width: 350px;
+  overflow: hidden;
 }
 
 .borderRadiusForselect {
@@ -105,4 +111,27 @@
   font-size: 17px !important;
   font-family: "Switzer Variable";
   font-weight: 400;
+}
+
+.inlineRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%; /* Ensure it takes full width */
+  flex-wrap: wrap; /* Ensure it takes full width */
+}
+
+.inlineRowContent {
+  display: flex;
+  align-items: center; /* Ensure content aligns vertically */
+  gap: 8px; /* Ensure content aligns vertically */
+}
+
+.rightSectionContainer {
+  display: flex;
+  align-items: center;
+  max-width: 350px; /* Optional: adjust based on your design */
+  justify-content: flex-end; /* Align button to the right */
+  gap: 8px; /* Space between button and text */
+  flex-shrink: 0;
 }
