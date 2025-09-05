@@ -89,6 +89,24 @@ export const getBorderlessTableColumns = (
         </div>
       );
     },
+    onHeaderCell: () => ({
+      style: {
+        minWidth: "100px", // ✅ minimum width
+        maxWidth: "150px", // 👈 custom max width
+        whiteSpace: "nowrap",
+        overflow: "hidden",
+        textOverflow: "ellipsis",
+      },
+    }),
+    onCell: () => ({
+      style: {
+        minWidth: "100px", // ✅ minimum width
+        maxWidth: "150px", // 👈 custom max width
+        whiteSpace: "nowrap",
+        overflow: "hidden",
+        textOverflow: "ellipsis",
+      },
+    }),
   },
   {
     title: withSortIcon("Instrument", "instrumentName", sortedInfo),
@@ -202,6 +220,7 @@ export const getBorderlessTableColumns = (
     title: withSortIcon("Request Date & Time", "requestDateTime", sortedInfo),
     dataIndex: "requestDateTime",
     key: "requestDateTime",
+    width:"13%",
     ellipsis: true,
     sorter: (a, b) =>
       formatApiDateTime(a.requestDateTime).localeCompare(
@@ -215,6 +234,7 @@ export const getBorderlessTableColumns = (
     render: (date) => (
       <span className="text-gray-600">{formatApiDateTime(date)}</span>
     ),
+     
   },
   {
     title: (

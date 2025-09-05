@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Typography, Row, Col } from "antd";
 import styles from "./styles.module.css";
-import { Button } from "../../../../components";
+import { Button, SubmittedModal } from "../../../../components";
 import PageLayout from "../../../../components/pageContainer/pageContainer";
 import PendingApprovals from "./pendingApprovals/PendingApprovals";
 import Portfolio from "./portfolio/Portfolio";
@@ -105,7 +105,6 @@ const PortfolioIndex = () => {
       setSubmittedFilters((prev) => prev.filter((item) => item.key !== key));
     }
   };
-
 
   // Update submittedFilters when the filter trigger is set
   useEffect(() => {
@@ -314,6 +313,7 @@ const PortfolioIndex = () => {
             <PendingApprovals />
           )}
         </div>
+        <SubmittedModal />
       </PageLayout>
 
       {/* To Call the uplaod Portfolio Modal Here */}

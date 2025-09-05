@@ -14,7 +14,6 @@ import { usePortfolioContext } from "../../../../../../context/portfolioContax";
 const UploadPortfolioModal = () => {
   const { uploadPortfolioModal, setUploadPortfolioModal } =
     usePortfolioContext();
-
   const {
     employeeBasedBrokersData,
     allInstrumentsData,
@@ -75,10 +74,64 @@ const UploadPortfolioModal = () => {
         assetTypeID: item.assetTypeID,
       }))
     : [];
+    // Utility function to transform modal form values → API payload
+const transformRequestData = (formValues) => {
+  const {
+    selectedInstrument,
+    selectedBrokers,
+    selectedTradeApprovalType,
+    selectedAssetTypeID,
+    selectedAssetTypeName,
+    quantity,
+  } = formValues;
 
+  return {
+    TradeApprovalID: 0, // default
+    InstrumentID: selectedInstrument?.id ?? 0,
+    InstrumentName: selectedInstrument?.description ?? "",
+    AssetTypeID: 1, // always 1 by default
+    ApprovalTypeID: selectedAssetTypeID ?? 1, // default to 1 if missing
+    Quantity: Number((quantity || "0").replace(/,/g, "")), // clean commas
+    InstrumentShortCode: selectedInstrument?.name ?? "",
+    ApprovalType: selectedAssetTypeName ?? "",
+    ApprovalStatusID: 1, // always 1 by default
+    Comments: "",
+    BrokerIds: (selectedBrokers || []).map((broker) => broker.brokerID),
+    ListOfTradeApprovalActionableBundle: [
+      {
+        instrumentID: selectedInstrument?.id ?? 0,
+        instrumentShortName: selectedInstrument?.name ?? "",
+        Entity: {
+          EntityID: selectedInstrument?.id ?? 0,
+          EntityTypeID: 3, // portfolio workflow
+        },
+      },
+    ],
+  };
+};
+
+  const handleSubmit = (formValues) => {
+    // formValues will come from TradeAndPortfolioModal
+    
+    console.log("🚀 Upload Portfolio Submitted",transformRequestData(formValues),);
+
+    // Example payload
+    const payload = {
+      ...formValues,
+      selectedKey,
+      managerDetails: lineManagerDetails,
+    };
+
+    // 👉 Call your API here
+    // await api.uploadPortfolio(payload);
+
+    // Close modal after submit
+    setUploadPortfolioModal(false);
+  };
   return (
     <>
       <TradeAndPortfolioModal
+        onSubmit={handleSubmit}
         visible={uploadPortfolioModal}
         onClose={() => setUploadPortfolioModal(false)}
         instruments={formattedInstruments}
