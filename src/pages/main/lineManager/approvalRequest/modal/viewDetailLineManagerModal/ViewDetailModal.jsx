@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import { Col, Row, Tag } from "antd";
 import { useGlobalModal } from "../../../../../../context/GlobalModalContext";
 import { GlobalModal } from "../../../../../../components";
@@ -14,21 +14,68 @@ import DeclinedResubmit from "../../../../../../assets/img/DeclinedResubmite.png
 
 import {
   dashBetweenApprovalAssets,
+  formatApiDateTime,
   formatNumberWithCommas,
 } from "../../../../../../commen/funtions/rejex";
+import {
+  GetAllLineManagerViewDetailRequest,
+  UpdateApprovalRequestStatusLineManager,
+} from "../../../../../../api/myApprovalApi";
+import { useGlobalLoader } from "../../../../../../context/LoaderContext";
+import { useApi } from "../../../../../../context/ApiContext";
+import { useNotification } from "../../../../../../components/NotificationProvider/NotificationProvider";
+import { useNavigate } from "react-router-dom";
+import { useMyApproval } from "../../../../../../context/myApprovalContaxt";
+import { useDashboardContext } from "../../../../../../context/dashboardContaxt";
 
 const ViewDetailModal = () => {
+  const navigate = useNavigate();
+  const hasFetched = useRef(false);
+  const { showNotification } = useNotification();
+  const { showLoader } = useGlobalLoader();
+  const { callApi } = useApi();
+
   // This is Global State for modal which is create in ContextApi
   const {
     viewDetailLineManagerModal,
     setViewDetailLineManagerModal,
-    roughStateOfViewDetail,
+    isSelectedViewDetailLineManager,
     setNoteGlobalModal,
     setApprovedGlobalModal,
     setViewCommentGlobalModal,
   } = useGlobalModal();
 
-  console.log(roughStateOfViewDetail, "roughStateOfViewDetail");
+  console.log(
+    isSelectedViewDetailLineManager,
+    "isSelectedViewDetailLineManager"
+  );
+
+  //This is the Global state of Context Api
+  const { viewDetailsLineManagerData, setViewDetailsLineManagerData } =
+    useMyApproval();
+
+  const { allInstrumentsData, employeeBasedBrokersData } =
+    useDashboardContext();
+
+  console.log(viewDetailsLineManagerData, "viewDetailsLineManagerData");
+
+  // get data from sessionStorage
+  const userProfileData = JSON.parse(
+    sessionStorage.getItem("user_profile_data") || "{}"
+  );
+  const loggedInUserID = userProfileData?.userID;
+
+  // Extarct and Instrument from viewDetailsModalData context Api
+  const instrumentId = Number(
+    viewDetailsLineManagerData?.details?.[0]?.instrumentID
+  );
+
+  // Match that selected instrument Id in viewDetailsModalData and match them with allinstrumentsData context State
+  const selectedInstrument = allInstrumentsData?.find(
+    (item) => item.instrumentID === instrumentId
+  );
+
+  console.log(selectedInstrument, "selectedInstrument");
 
   // To show Note Modal when Click on Declined in ViewDetailLineManager Modal
   const onClickToOpenNoteModal = () => {
@@ -36,10 +83,56 @@ const ViewDetailModal = () => {
     setNoteGlobalModal(true);
   };
 
+  // GETALLVIEWDETAIL OF LINEMANAGER API FUNCTION
+  const fetchGetAllViewDataofLineManager = async () => {
+    await showLoader(true);
+    const requestdata = {
+      TradeApprovalID: isSelectedViewDetailLineManager?.approvalID,
+    };
+
+    const responseData = await GetAllLineManagerViewDetailRequest({
+      callApi,
+      showNotification,
+      showLoader,
+      requestdata,
+      navigate,
+    });
+
+    //Extract Data from Api and set in the Context State
+    if (responseData) {
+      setViewDetailsLineManagerData(responseData);
+    }
+  };
+
+  useEffect(() => {
+    if (hasFetched.current) return;
+    hasFetched.current = true;
+    fetchGetAllViewDataofLineManager();
+  }, []);
+
+  // A Function For Fetch api of update Approval Request Status
+  const fetchUpdateApprovalsRequest = async () => {
+    showLoader(true);
+
+    const requestdata = {
+      TradeApprovalID: String(isSelectedViewDetailLineManager?.approvalID),
+      StatusID: 2, //Approved Status
+    };
+
+    await UpdateApprovalRequestStatusLineManager({
+      callApi,
+      showNotification,
+      showLoader,
+      requestdata,
+      setViewDetailLineManagerModal,
+      setApprovedGlobalModal,
+      navigate,
+    });
+  };
+
   // To open Approved Modal when Click on Approved Button in ViewDetailLineManager Modal
   const onClickToOpenApprovedModal = () => {
-    setViewDetailLineManagerModal(false);
-    setApprovedGlobalModal(true);
+    fetchUpdateApprovalsRequest();
   };
 
   // To open View Comment Line Maneger Modal by click on View COmment button
@@ -64,15 +157,15 @@ const ViewDetailModal = () => {
                 <Col span={24}>
                   <div
                     className={
-                      roughStateOfViewDetail.status === "Approved"
+                      isSelectedViewDetailLineManager.status === "Approved"
                         ? styles.approvedBorderClass
-                        : roughStateOfViewDetail.status === "Declined"
+                        : isSelectedViewDetailLineManager.status === "Declined"
                         ? styles.declinedBorderClass
                         : styles.pendingBorderClass
                     }
                   >
                     {/* This will show when Pending will be Resubmit */}
-                    {roughStateOfViewDetail.status === "Resubmit" && (
+                    {isSelectedViewDetailLineManager.status === "Resubmit" && (
                       <>
                         <div>
                           <img src={repeat} className={styles.pendingIcon} />
@@ -81,7 +174,7 @@ const ViewDetailModal = () => {
                     )}
 
                     {/* This will show when Approved will be Resubmit */}
-                    {/* {roughStateOfViewDetail.status === "Approved" && (
+                    {/* {isSelectedViewDetailLineManager.status === "Approved" && (
                       <>
                         <div>
                           <img
@@ -93,7 +186,7 @@ const ViewDetailModal = () => {
                     )} */}
 
                     {/* This will show when Declined will be Resubmit */}
-                    {/* {roughStateOfViewDetail.status === "Declined" && (
+                    {/* {isSelectedViewDetailLineManager.status === "Declined" && (
                       <>
                         <div>
                           <img
@@ -106,16 +199,17 @@ const ViewDetailModal = () => {
 
                     <label
                       className={
-                        roughStateOfViewDetail.status === "Approved"
+                        isSelectedViewDetailLineManager.status === "Approved"
                           ? styles.approvedDetailHeading
-                          : roughStateOfViewDetail.status === "Declined"
+                          : isSelectedViewDetailLineManager.status ===
+                            "Declined"
                           ? styles.declinedDetailHeading
                           : styles.pendingDetailHeading
                       }
                     >
-                      {roughStateOfViewDetail.status === "Approved"
+                      {isSelectedViewDetailLineManager.status === "Approved"
                         ? "Approved"
-                        : roughStateOfViewDetail.status === "Declined"
+                        : isSelectedViewDetailLineManager.status === "Declined"
                         ? "Declined"
                         : "Pending"}
                     </label>
@@ -164,12 +258,14 @@ const ViewDetailModal = () => {
                       <>
                         <span className={styles.customTag}>
                           {/* Extract an assetTypeID id which is 1 then show Equity(EQ) */}
-                          <span>EQ</span>
+                          {viewDetailsLineManagerData?.details?.[0]
+                            ?.assetTypeID === "1" && <span>EQ</span>}
                         </span>
                         <span
                           className={styles.viewDetailSubLabelsForInstrument}
+                          title={selectedInstrument?.instrumentCode}
                         >
-                          PSO-OCT
+                          {selectedInstrument?.instrumentCode}
                         </span>
                       </>
                     </label>
@@ -189,15 +285,21 @@ const ViewDetailModal = () => {
                       Requester Name
                     </label>
                     <label className={styles.viewDetailSubLabels}>
-                      James Miller
+                      {viewDetailsLineManagerData?.requesterName}
+                      {/* {typeof viewDetailsLineManagerData?.requesterName ===
+                      "string" ? (
+                        <label className={styles.viewDetailSubLabels}>
+                          {viewDetailsLineManagerData?.requesterName}
+                        </label>
+                      ) : null} */}
                     </label>
                   </div>
                 </Col>
 
-                {roughStateOfViewDetail.status === "Resubmit" ? (
+                {isSelectedViewDetailLineManager.status === "Resubmit" ? (
                   // When status is Approved and Declined Resubmitted
-                  // roughStateOfViewDetail.status === "Approved"
-                  // roughStateOfViewDetail.status === "Declined"
+                  // isSelectedViewDetailLineManager.status === "Approved"
+                  // isSelectedViewDetailLineManager.status === "Declined"
                   <>
                     <Col span={6}>
                       <div className={styles.backgrounColorOfDetail}>
@@ -230,7 +332,10 @@ const ViewDetailModal = () => {
                         Approval ID
                       </label>
                       <label className={styles.viewDetailSubLabels}>
-                        {dashBetweenApprovalAssets("REQ709")}
+                        {dashBetweenApprovalAssets(
+                          viewDetailsLineManagerData?.details?.[0]
+                            ?.tradeApprovalID
+                        )}
                       </label>
                     </div>
                   </Col>
@@ -244,7 +349,10 @@ const ViewDetailModal = () => {
                     <label className={styles.viewDetailMainLabels}>Type</label>
                     <label className={styles.viewDetailSubLabels}>
                       {/* {selectedViewDetail?.type} */}
-                      Buy
+                      {viewDetailsLineManagerData?.details?.[0]
+                        ?.approvalTypeID === "1" && <span>Buy</span>}
+                      {viewDetailsLineManagerData?.details?.[0]
+                        ?.approvalTypeID === "2" && <span>Sell</span>}
                     </label>
                   </div>
                 </Col>
@@ -255,7 +363,9 @@ const ViewDetailModal = () => {
                     </label>
                     <label className={styles.viewDetailSubLabels}>
                       {/* {selectedViewDetail?.quantity} */}
-                      {formatNumberWithCommas("40000")}
+                      {formatNumberWithCommas(
+                        viewDetailsLineManagerData?.details?.[0]?.quantity
+                      )}
                     </label>
                   </div>
                 </Col>
@@ -278,7 +388,7 @@ const ViewDetailModal = () => {
                       Asset Class
                     </label>
                     <label className={styles.viewDetailSubLabels}>
-                      Asset Class{" "}
+                      {viewDetailsLineManagerData?.assetTypes?.[0]?.title}
                     </label>
                   </div>
                 </Col>
@@ -291,15 +401,24 @@ const ViewDetailModal = () => {
                       Brokers
                     </label>
                     <div className={styles.tagContainer}>
-                      <Tag className={styles.tagClasses}>
-                        AKD Securities Limited
-                      </Tag>
-                      <Tag className={styles.tagClasses}>
-                        K-Trade Securities Ltd
-                      </Tag>{" "}
-                      <Tag className={styles.tagClasses}>
-                        Approval Routing Rules
-                      </Tag>
+                      {viewDetailsLineManagerData?.details?.[0]?.brokers?.map(
+                        (brokerId) => {
+                          const broker = employeeBasedBrokersData?.find(
+                            (b) => String(b.brokerID) === String(brokerId)
+                          );
+                          console.log(broker, "brokerNamerChecker");
+                          return (
+                            broker && (
+                              <Tag
+                                key={broker.brokerID}
+                                className={styles.tagClasses}
+                              >
+                                {broker.brokerName}
+                              </Tag>
+                            )
+                          );
+                        }
+                      )}
                     </div>
                   </div>
                 </Col>
@@ -307,74 +426,107 @@ const ViewDetailModal = () => {
 
               {/* This is the Stepper Libarary Section */}
               <Row>
-                <div className={styles.backgrounColorOfStepper}>
-                  <Stepper
-                    activeStep={2}
-                    connectorStyleConfig={{
-                      activeColor: "#00640A", // green line between steps
-                      completedColor: "#00640A",
-                      disabledColor: "#00640A",
-                      size: 1,
-                    }}
-                    styleConfig={{
-                      size: "2em",
-                      circleFontSize: "0px", // hide default number
-                      labelFontSize: "17px",
-                      borderRadius: "50%",
-                    }}
+                <div className={styles.mainStepperContainer}>
+                  <div
+                    className={`${styles.backgrounColorOfStepper} ${
+                      (viewDetailsLineManagerData?.hierarchyDetails?.length ||
+                        0) <= 3
+                        ? styles.centerAlignStepper
+                        : styles.leftAlignStepper
+                    }`}
                   >
-                    {[0, 1, 2].map((step, index) => (
-                      <Step
-                        key={index}
-                        label={
-                          <div className={styles.customlabel}>
-                            <div className={styles.customtitle}>
-                              Emily Johnson
-                            </div>
-                            <div className={styles.customdesc}>
-                              2024-10-01 | 05:30pm
-                            </div>
-                          </div>
-                        }
-                        children={
-                          <div className={styles.stepCircle}>
-                            <img
-                              src={CheckIcon}
-                              alt="check"
-                              className={styles.circleImg}
-                            />
-                          </div>
-                        }
-                      />
-                    ))}
+                    {/* Agar loginUserID match krti hai hierarchyDetails ki userID sy to wo wala stepper show nahi hoga */}
+                    <Stepper
+                      activeStep={Math.max(
+                        0,
+                        Array.isArray(
+                          viewDetailsLineManagerData?.hierarchyDetails
+                        )
+                          ? viewDetailsLineManagerData.hierarchyDetails.filter(
+                              (person) => person.userID !== loggedInUserID
+                            ).length - 1
+                          : 0
+                      )}
+                      connectorStyleConfig={{
+                        activeColor: "#00640A",
+                        completedColor: "#00640A",
+                        disabledColor: "#00640A",
+                        size: 1,
+                      }}
+                      styleConfig={{
+                        size: "2em",
+                        circleFontSize: "0px",
+                        labelFontSize: "17px",
+                        borderRadius: "50%",
+                      }}
+                    >
+                      {Array.isArray(
+                        viewDetailsLineManagerData?.hierarchyDetails
+                      ) &&
+                        viewDetailsLineManagerData.hierarchyDetails
+                          .filter((person) => person.userID !== loggedInUserID)
+                          .map((person, index) => {
+                            const {
+                              fullName,
+                              bundleStatusID,
+                              requestDate,
+                              requestTime,
+                            } = person;
 
-                    <Step
-                      label={
-                        <div className={styles.customlabel}>
-                          <div className={styles.customtitle}>
-                            Emily Johnson
-                          </div>
-                          <div className={styles.customdesc}>Pending</div>
-                        </div>
-                      }
-                      children={
-                        <div className={styles.stepCircle}>
-                          <img
-                            src={EllipsesIcon}
-                            className={styles.circleImg}
-                            alt="ellipsis"
-                          />
-                        </div>
-                      }
-                    />
-                  </Stepper>
+                            const formattedDateTime = formatApiDateTime(
+                              `${requestDate} ${requestTime}`
+                            );
+
+                            let iconSrc;
+                            console.log(
+                              bundleStatusID,
+                              "CheckerrrrrbundleStatusID"
+                            );
+                            switch (bundleStatusID) {
+                              case 1:
+                                iconSrc = EllipsesIcon;
+                                break;
+                              case 3:
+                                iconSrc = CheckIcon;
+                                break;
+                              default:
+                                iconSrc = EllipsesIcon;
+                            }
+
+                            return (
+                              <Step
+                                key={index}
+                                label={
+                                  <div className={styles.customlabel}>
+                                    <div className={styles.customtitle}>
+                                      {fullName}
+                                    </div>
+                                    <div className={styles.customdesc}>
+                                      {formattedDateTime}
+                                    </div>
+                                  </div>
+                                }
+                                children={
+                                  <div className={styles.stepCircle}>
+                                    <img
+                                      src={iconSrc}
+                                      alt="status-icon"
+                                      className={styles.circleImg}
+                                    />
+                                  </div>
+                                }
+                              />
+                            );
+                          })}
+                    </Stepper>
+                  </div>
                 </div>
               </Row>
 
               {/* All Others button Scenario's for footer button */}
               <Row>
-                {roughStateOfViewDetail.status === "Approved" ||
-                roughStateOfViewDetail.status === "Declined" ? (
+                {isSelectedViewDetailLineManager.status === "Approved" ||
+                isSelectedViewDetailLineManager.status === "Declined" ? (
                   <>
                     <Col span={[24]}>
                       <div className={styles.approvedButtonClassViewComment}>

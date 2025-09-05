@@ -34,6 +34,14 @@ export const MyApprovalProvider = ({ children }) => {
     totalRecords: 0,
   });
 
+  // Context STate to extract data from get All View Trade Approval which is show by click on View Detail
+  const [viewDetailsLineManagerData, setViewDetailsLineManagerData] = useState({
+    assetTypes: [],
+    details: [],
+    hierarchyDetails: {},
+    requesterName: "",
+  });
+
   /* **
    Context Api States For Line Manager End Here
    ** */
@@ -50,6 +58,8 @@ export const MyApprovalProvider = ({ children }) => {
         //Context Api States For Line Manager Start Here
         lineManagerApproval,
         setLineManagerApproval,
+        viewDetailsLineManagerData,
+        setViewDetailsLineManagerData,
       }}
     >
       {children}

@@ -48,7 +48,7 @@ export const GlobalModalProvider = ({ children }) => {
     useState(false);
 
   // To show Selected Status which is coming static just a rough state to show or test modals
-  const [roughStateOfViewDetail, setRoughStateOfViewDetail] = useState(false);
+  const [isSelectedViewDetailLineManager, setIsSelectedViewDetailLineManager] = useState(null);
 
   // To Show Global States of Notes modals in LM
   const [noteGlobalModal, setNoteGlobalModal] = useState(false);
@@ -80,7 +80,7 @@ export const GlobalModalProvider = ({ children }) => {
     setIsConductedTransaction(false);
 
     setViewDetailLineManagerModal(false);
-    setRoughStateOfViewDetail(false);
+    setIsSelectedViewDetailLineManager(false);
     setNoteGlobalModal(false);
     setApprovedGlobalModal(false);
     setDeclinedGlobalModal(false);
@@ -115,8 +115,8 @@ export const GlobalModalProvider = ({ children }) => {
 
         viewDetailLineManagerModal,
         setViewDetailLineManagerModal,
-        roughStateOfViewDetail,
-        setRoughStateOfViewDetail,
+        isSelectedViewDetailLineManager,
+        setIsSelectedViewDetailLineManager,
         noteGlobalModal,
         setNoteGlobalModal,
         approvedGlobalModal,

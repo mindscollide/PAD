@@ -12,7 +12,7 @@ const { Content } = Layout;
 
 const Dashboard = () => {
   const location = useLocation();
-  const { setIsEmployeeMyApproval } = useMyApproval();
+  const { setIsEmployeeMyApproval, setLineManagerApproval } = useMyApproval();
   const { setDashboardData } = useDashboardContext();
   const subscribeID = "PAD_TRADE";
   const userProfileData = JSON.parse(

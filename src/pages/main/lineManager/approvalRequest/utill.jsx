@@ -251,7 +251,7 @@ export const getBorderlessLineManagerTableColumns = (
     render: (record) => {
       console.log(record.status, "checkerStateus");
       //Global State to selected data to show in ViewDetailLineManagerModal Statuses
-      const { setRoughStateOfViewDetail } = useGlobalModal();
+      const { setIsSelectedViewDetailLineManager } = useGlobalModal();
       return (
         <>
           <div
@@ -266,7 +266,7 @@ export const getBorderlessLineManagerTableColumns = (
               className="big-orange-button"
               text="View Details"
               onClick={() => {
-                setRoughStateOfViewDetail(record);
+                setIsSelectedViewDetailLineManager(record);
                 setViewDetailLineManagerModal(true);
               }}
             />

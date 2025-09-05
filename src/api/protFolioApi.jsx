@@ -48,7 +48,7 @@ export const SearchEmployeePendingUploadedPortFolio = async ({
     // 🔹 API Call
     const res = await callApi({
       requestMethod: import.meta.env
-        .VITE_GET_ALL_VIEW_DETAIL_TRADEAPPROVAL_ID_REQUEST_METHOD,
+        .VITE_SEARCH_EMPLOYEE_PENDING_UPLOADED_PORTFOLIO_REQUEST_METHOD,
       endpoint: import.meta.env.VITE_API_TRADE,
       requestData: requestdata,
     });
