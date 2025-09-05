@@ -448,10 +448,14 @@ const Approval = () => {
           <BorderlessTable
             rows={approvalData}
             columns={columns}
-            scroll={{
-              x: "max-content",
-              y: submittedFilters.length > 0 ? 450 : 500,
-            }}
+            scroll={
+              approvalData?.length
+                ? {
+                    x: "max-content",
+                    y: submittedFilters.length > 0 ? 450 : 500,
+                  }
+                : undefined
+            }
             classNameTable="border-less-table-orange"
             onChange={(pagination, filters, sorter) => {
               setSortedInfo(sorter);

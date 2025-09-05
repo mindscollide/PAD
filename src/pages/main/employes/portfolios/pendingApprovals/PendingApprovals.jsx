@@ -239,7 +239,9 @@ const PendingApprovals = () => {
       rows={tableData.rows}
       columns={columns}
       classNameTable="border-less-table-blue"
-      scroll={{ x: "max-content", y: 550 }}
+      scroll={
+        tableData?.rows?.length ? { x: "max-content", y: 550 } : undefined
+      }
       onChange={(pagination, filters, sorter) => {
         setSortedInfo(sorter || {});
       }}

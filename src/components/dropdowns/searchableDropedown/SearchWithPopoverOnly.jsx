@@ -77,22 +77,15 @@ const SearchWithPopoverOnly = () => {
   } = useSearchBarContext();
   const { activeTab } = usePortfolioContext();
 
-  const dropdownOptions = [
-    { value: "1", label: "Jack" },
-    { value: "2", label: "Lucy" },
-    { value: "3", label: "Tom" },
-  ];
   /**
    * Handles execution of the search logic when filters are applied.
    */
   const handleSearch = () => {
-    console.log("Checker 77788");
-    console.log(selectedKey, "Checker 77788");
-
     switch (selectedKey) {
       case "1": // Employee My Approval
         setEmployeeMyApprovalSearch((prev) => ({
           ...prev,
+          mainInstrumentName: "",
           pageNumber: 0,
           tableFilterTrigger: true,
         }));
@@ -109,6 +102,7 @@ const SearchWithPopoverOnly = () => {
         if (activeTab === "portfolio") {
           setEmployeePortfolioSearch((prev) => ({
             ...prev,
+            mainInstrumentName: "",
             pageNumber: 0,
             filterTrigger: true,
           }));
@@ -148,6 +142,7 @@ const SearchWithPopoverOnly = () => {
           instrumentName: "",
           quantity: 0,
           startDate: null,
+          pageNumber: 0,
           tableFilterTrigger: true,
         }));
         break;
@@ -161,12 +156,20 @@ const SearchWithPopoverOnly = () => {
         if (activeTab === "portfolio") {
           setEmployeePortfolioSearch((prev) => ({
             ...prev,
+            instrumentName: "",
+            quantity: 0,
+            startDate: null,
+            endDate: null,
             pageNumber: 0,
             filterTrigger: true,
           }));
         } else if (activeTab === "pending") {
           setEmployeePendingApprovalSearch((prev) => ({
             ...prev,
+            instrumentName: "",
+            quantity: 0,
+            startDate: null,
+            endDate: null,
             pageNumber: 0,
             filterTrigger: true,
           }));
@@ -247,8 +250,7 @@ const SearchWithPopoverOnly = () => {
           selectedKey,
           activeTab,
           handleSearch,
-          setVisible,
-          dropdownOptions
+          setVisible
         )}
         trigger="click"
         open={visible}
