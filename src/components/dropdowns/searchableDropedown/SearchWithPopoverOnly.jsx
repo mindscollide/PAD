@@ -86,6 +86,9 @@ const SearchWithPopoverOnly = () => {
    * Handles execution of the search logic when filters are applied.
    */
   const handleSearch = () => {
+    console.log("Checker 77788");
+    console.log(selectedKey, "Checker 77788");
+
     switch (selectedKey) {
       case "1": // Employee My Approval
         setEmployeeMyApprovalSearch((prev) => ({
@@ -118,10 +121,11 @@ const SearchWithPopoverOnly = () => {
         }
         break;
 
+      case "6":
       case "5": // Line Manager Approval
         setLineManagerApprovalSearch((prev) => ({
           ...prev,
-          filterTrigger: true,
+          tableFilterTrigger: true,
         }));
         break;
 
@@ -169,10 +173,13 @@ const SearchWithPopoverOnly = () => {
         }
         break;
 
-      case "5":
+      case "6":
         setLineManagerApprovalSearch((prev) => ({
           ...prev,
-          filterTrigger: true,
+          instrumentName: "",
+          requesterName: "",
+          startDate: null,
+          tableFilterTrigger: true,
         }));
         break;
       default:

@@ -100,6 +100,38 @@ export const responseMessages = {
   PAD_Trade_TradeServiceManager_GetAllViewDetailsByTradeApprovalID_03:
     "Exception",
 
+  // =============================
+  // LINE MANAGER API'S RESPONSES FROM START HERE
+
+  PAD_Trade_TradeServiceManager_SearchLineManagerApprovalsRequest_01:
+    "Data Available",
+  PAD_Trade_TradeServiceManager_SearchLineManagerApprovalsRequest_02:
+    "No data available",
+  PAD_Trade_TradeServiceManager_SearchLineManagerApprovalsRequest_03:
+    "Exception",
+
+  //Update Line Manager API
+  PAD_Trade_TradeServiceManager_UpdateApprovalRequestStatus_01:
+    "Successfully updated",
+  PAD_Trade_TradeServiceManager_UpdateApprovalRequestStatus_02:
+    "No update performed",
+  PAD_Trade_TradeServiceManager_UpdateApprovalRequestStatus_03: "Exception",
+  PAD_Trade_TradeServiceManager_UpdateApprovalRequestStatus_04:
+    "User role not found",
+  PAD_Trade_TradeServiceManager_UpdateApprovalRequestStatus_05:
+    "Not authorized (Not Line Manager)",
+
+  // GET ALL VIEW DETAILS LINE MANAGER API
+  PAD_Trade_TradeServiceManager_GetLineManagerViewDetailsByTradeApprovalID_01:
+    "Data Available",
+  PAD_Trade_TradeServiceManager_GetLineManagerViewDetailsByTradeApprovalID_02:
+    "No data available",
+  PAD_Trade_TradeServiceManager_GetLineManagerViewDetailsByTradeApprovalID_03:
+    "Exception",
+
+  // LINE MANAGER API'S RESPONSES FROM END HERE
+  // =============================
+
   // ==============================
   // 📂 Portfolio API (portFolioApi.jsx)
   // ==============================

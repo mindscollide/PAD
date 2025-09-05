@@ -54,8 +54,7 @@ const StatusFilterDropdown = ({
   const { callApi } = useApi();
   const { showLoader } = useGlobalLoader();
   const { showNotification } = useNotification();
-  const { setIsEmployeeMyApproval } = useMyApproval();
-
+  const { setIsEmployeeMyApproval, setLineManagerApproval } = useMyApproval();
   const [filterOption, setFilterOptions] = useState([]);
 
   /**
@@ -98,6 +97,7 @@ const StatusFilterDropdown = ({
    * Updates parent state and triggers API call.
    */
   const handleOk = async () => {
+    console.log("hello test", typeof selectedKey);
     setState((prev) => ({
       ...prev,
       status: tempSelected,
@@ -113,6 +113,7 @@ const StatusFilterDropdown = ({
       showLoader,
       navigate,
       setIsEmployeeMyApproval,
+      setLineManagerApproval,
     });
 
     setOpenState(false);
@@ -134,6 +135,7 @@ const StatusFilterDropdown = ({
       showLoader,
       navigate,
       setIsEmployeeMyApproval,
+      setLineManagerApproval,
     });
 
     setTempSelected([]);

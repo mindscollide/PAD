@@ -590,7 +590,7 @@ const ViewDetailModal = () => {
                               case 1:
                                 iconSrc = EllipsesIcon;
                                 break;
-                              case 3:
+                              case 2:
                                 iconSrc = CheckIcon;
                                 break;
                               default:

@@ -1,4 +1,7 @@
-import { SearchTadeApprovals } from "../../../api/myApprovalApi";
+import {
+  SearchApprovalRequestLineManager,
+  SearchTadeApprovals,
+} from "../../../api/myApprovalApi";
 
 // these are status options for employee my approval page
 export const emaStatusOptions = [
@@ -69,6 +72,25 @@ export const mapStatusToIds = (arr) => {
     .filter(Boolean); // filters out nulls
 };
 
+// For Line Manager Statuses which is Compliant, Non-Compliant and Pending
+export const mapStatusToIdsForLineManager = (arr) => {
+  if (!arr || arr.length === 0) return [];
+  return arr
+    .map((status) => {
+      switch (status) {
+        case "Pending":
+          return 1;
+        case "Compliant":
+          return 2;
+        case "Non-Compliant":
+          return 3;
+        default:
+          return null; // ignore unknown statuses
+      }
+    })
+    .filter(Boolean); // filters out nulls
+};
+
 export const apiCallType = async ({
   selectedKey,
   newdata,
@@ -79,6 +101,7 @@ export const apiCallType = async ({
   showLoader,
   navigate,
   setIsEmployeeMyApproval,
+  setLineManagerApproval,
 }) => {
   switch (selectedKey) {
     case "1": {
@@ -112,6 +135,36 @@ export const apiCallType = async ({
 
     case "2":
     case "3":
+
+    case "6": {
+      const assetType = state.assetType || "Equities"; // fallback
+      const TypeIds = mapBuySellToIds(
+        newdata,
+        addApprovalRequestData?.[assetType]
+      );
+      const statusIds = mapStatusToIds(state.status);
+      const requestdata = {
+        InstrumentName: state.instrumentName || state.mainInstrumentName,
+        Date: state.startDate || "",
+        Quantity: state.quantity || 0,
+        StatusIds: statusIds || [],
+        TypeIds: TypeIds || [],
+        PageNumber: 0,
+        Length: state.pageSize || 10,
+        RequesterName: state.requesterName,
+      };
+      showLoader(true);
+      console.log("Checker APi Search");
+      const data = await SearchApprovalRequestLineManager({
+        callApi,
+        showNotification,
+        showLoader,
+        requestdata,
+        navigate,
+      });
+      setLineManagerApproval(data);
+      break;
+    }
     default:
       break;
   }
@@ -126,6 +179,7 @@ export const apiCallStatus = async ({
   showLoader,
   navigate,
   setIsEmployeeMyApproval,
+  setLineManagerApproval,
 }) => {
   switch (selectedKey) {
     case "1": {
@@ -159,6 +213,37 @@ export const apiCallStatus = async ({
 
     case "2":
     case "3":
+
+    case "6": {
+      const TypeIds = mapBuySellToIds(
+        state.type,
+        addApprovalRequestData?.Equities
+      );
+      const statusIds = mapStatusToIdsForLineManager(newdata);
+      const requestdata = {
+        InstrumentName: state.instrumentName || state.mainInstrumentName,
+        Date: state.startDate || "",
+        Quantity: state.quantity || 0,
+        StatusIds: statusIds || [],
+        TypeIds: TypeIds || [],
+        PageNumber: 0,
+        Length: state.pageSize || 10,
+        RequesterName: state.requesterName,
+      };
+      showLoader(true);
+      console.log("Checker APi Search");
+      const data = await SearchApprovalRequestLineManager({
+        callApi,
+        showNotification,
+        showLoader,
+        requestdata,
+        navigate,
+      });
+      console.log(data, "Checker APi Search");
+      setLineManagerApproval(data);
+      break;
+    }
+
     default:
       break;
   }

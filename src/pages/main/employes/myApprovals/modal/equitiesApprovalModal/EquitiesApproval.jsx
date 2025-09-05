@@ -129,7 +129,7 @@ const EquitiesApproval = () => {
       TradeApprovalID: 0,
       InstrumentID: formData.selectedInstrument?.id || null,
       InstrumentName: formData.selectedInstrument?.description || "",
-      AssetTypeID: formData.electedAssetTypeID,
+      AssetTypeID: formData.selectedAssetTypeID,
       ApprovalTypeID: formData.selectedTradeApprovalType,
       Quantity: quantityNumber,
       InstrumentShortCode: formData.selectedInstrument?.name || "",

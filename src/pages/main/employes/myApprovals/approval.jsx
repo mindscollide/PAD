@@ -65,7 +65,7 @@ const Approval = () => {
   const [approvalData, setApprovalData] = useState([]);
   const [loadingMore, setLoadingMore] = useState(false); // spinner at bottom
 
-  console.log("employeeMyApproval4555", addApprovalRequestData);
+  console.log("employeeMyApproval4555", employeeMyApproval);
 
   // Confirmed filters displayed as tags
   const [submittedFilters, setSubmittedFilters] = useState([]);
@@ -214,6 +214,7 @@ const Approval = () => {
    * Syncs submittedFilters state when filters are applied
    */
   useEffect(() => {
+    console.log("Filter Checker align");
     if (employeeMyApprovalSearch.filterTrigger) {
       const snapshot = filterKeys
         .filter(({ key }) => employeeMyApprovalSearch[key])
@@ -235,6 +236,7 @@ const Approval = () => {
    * Handles table-specific filter trigger
    */
   useEffect(() => {
+    console.log("Filter Checker align");
     const fetchFilteredData = async () => {
       if (!employeeMyApprovalSearch.tableFilterTrigger) return;
 
