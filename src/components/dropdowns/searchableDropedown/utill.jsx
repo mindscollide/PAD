@@ -36,7 +36,7 @@ export const getMainSearchInputValueByKey = (
     case "4":
       switch (activeTab) {
         case "portfolio":
-          return employeePortfolioSearch.mainInstrumentShortName;
+          return employeePortfolioSearch.mainInstrumentName;
         case "pending":
           return employeePendingApprovalSearch.mainInstrumentName;
         default:
@@ -83,7 +83,7 @@ export const handleMainInstrumentChange = (
         case "portfolio":
           setEmployeePortfolioSearch((prev) => ({
             ...prev,
-            mainInstrumentShortName: value,
+            mainInstrumentName: value,
           }));
           break;
         case "pending":
@@ -144,7 +144,7 @@ export const handleSearchMainInputReset = ({
         case "portfolio":
           setEmployeePortfolioSearch((prev) => ({
             ...prev,
-            mainInstrumentShortName: "",
+            mainInstrumentName: "",
           }));
           break;
         case "pending":

@@ -43,6 +43,7 @@ export const EmployeeTransactionFilter = ({
    */
   const handleEmployeeApprovalInputChange = (e, setState) => {
     const { name, value } = e.target;
+    
     // Handle numeric validation for Quantity
     if (name === "Quantity") {
       if (value === "" || allowOnlyNumbers(value)) {

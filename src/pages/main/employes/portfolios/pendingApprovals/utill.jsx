@@ -7,7 +7,7 @@ import ArrowUP from "../../../../../assets/img/arrow-up-dark.png";
 import ArrowDown from "../../../../../assets/img/arrow-down-dark.png";
 import TypeColumnTitle from "../../../../../components/dropdowns/filters/typeColumnTitle";
 import StatusColumnTitle from "../../../../../components/dropdowns/filters/statusColumnTitle";
-import { formatApiDateTime } from "../../../../../commen/funtions/rejex";
+import { formatApiDateTime, formatCode } from "../../../../../commen/funtions/rejex";
 
 const { Text } = Typography;
 
@@ -48,7 +48,6 @@ export const getBorderlessTableColumns = (
     ),
     dataIndex: "instrumentShortCode",
     key: "instrumentShortCode",
-    width: "12%",
     ellipsis: true,
     sorter: (a, b) =>
       (a.instrumentShortCode || "").localeCompare(b.instrumentShortCode || ""),
@@ -67,7 +66,7 @@ export const getBorderlessTableColumns = (
     ),
     dataIndex: "tradeApprovalID",
     key: "tradeApprovalID",
-    width: "12%",
+    width:"10%",
     ellipsis: true,
     sorter: (a, b) =>
       (a.tradeApprovalID || "").localeCompare(b.tradeApprovalID || ""),
@@ -76,7 +75,8 @@ export const getBorderlessTableColumns = (
       sortedInfo?.columnKey === "tradeApprovalID" ? sortedInfo.order : null,
     showSorterTooltip: false,
     sortIcon: () => null,
-    render: (text) => <span className="font-medium">{text}</span>,
+    render: (text) => <span className="font-medium">{formatCode(text)}</span>,
+
   },
   {
     title: (
@@ -87,7 +87,7 @@ export const getBorderlessTableColumns = (
     ),
     dataIndex: "approvalRequestDateime",
     key: "approvalRequestDateime",
-    width: "20%",
+    width:"20%",
     ellipsis: true,
     sorter: (a, b) =>
       (a.approvalRequestDateime || "").localeCompare(
@@ -112,7 +112,6 @@ export const getBorderlessTableColumns = (
     ),
     dataIndex: "quantity",
     key: "quantity",
-    width: "10%",
     ellipsis: true,
     sorter: (a, b) => (a.quantity || 0) - (b.quantity || 0),
     sortDirections: ["ascend", "descend"],
@@ -137,12 +136,29 @@ export const getBorderlessTableColumns = (
     dataIndex: "tradeType",
     key: "tradeType",
     ellipsis: true,
-    width: "10%",
     filteredValue: employeePendingApprovalSearch?.type?.length
       ? employeePendingApprovalSearch?.type
       : null,
     onFilter: () => true,
     render: (type) => <span>{type}</span>,
+    onHeaderCell: () => ({
+      style: {
+        minWidth: "80px", // 👈 custom min width
+        maxWidth: "100px", // 👈 custom max width
+        whiteSpace: "nowrap",
+        overflow: "hidden",
+        textOverflow: "ellipsis",
+      },
+    }),
+    onCell: () => ({
+      style: {
+        minWidth: "80px",
+        maxWidth: "100px",
+        whiteSpace: "nowrap",
+        overflow: "hidden",
+        textOverflow: "ellipsis",
+      },
+    }),
   },
   {
     title: (

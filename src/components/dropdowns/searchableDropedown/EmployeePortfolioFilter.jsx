@@ -35,6 +35,7 @@ export const EmployeePortfolioFilter = ({ handleSearch, activeTab }) => {
    */
   const handleEmployeeApprovalInputChange = (e, setState) => {
     const { name, value } = e.target;
+    console.log("handleEmployeeApprovalInputChange", name);
     // Handle numeric validation for Quantity
     if (name === "Quantity") {
       if (value === "" || allowOnlyNumbers(value)) {
@@ -63,11 +64,11 @@ export const EmployeePortfolioFilter = ({ handleSearch, activeTab }) => {
         <Col xs={24} sm={24} md={12} lg={12}>
           <TextField
             label="Instrument Name"
-            name="instrumentShortName"
+            name="instrumentName"
             value={
               activeTab === "pending"
-                ? employeePendingApprovalSearch.mainInstrumentName
-                : employeePortfolioSearch.instrumentShortName
+                ? employeePendingApprovalSearch.instrumentName
+                : employeePortfolioSearch.instrumentName
             }
             onChange={(e) =>
               handleEmployeeApprovalInputChange(
