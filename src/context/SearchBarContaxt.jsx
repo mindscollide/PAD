@@ -29,8 +29,9 @@ export const SearchBarProvider = ({ children }) => {
     totalRecords: 0,
     filterTrigger: false,
     tableFilterTrigger: false,
-  });
+  })
 
+  console.log(employeeMyApprovalSearch, "employeeMyApprovalSearch")
   /**
    * 🔍 Employee My Transaction Filters State
    * Used for filtering data in the Employee My Transaction table.

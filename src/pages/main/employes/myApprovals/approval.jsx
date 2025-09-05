@@ -65,7 +65,10 @@ const Approval = () => {
   const [approvalData, setApprovalData] = useState([]);
   const [loadingMore, setLoadingMore] = useState(false); // spinner at bottom
 
-  console.log("employeeMyApproval4555", employeeMyApproval);
+  console.log(
+    { employeeMyApproval, employeeMyApprovalSearch },
+    "employeeMyApproval4555"
+  );
 
   // Confirmed filters displayed as tags
   const [submittedFilters, setSubmittedFilters] = useState([]);
@@ -137,6 +140,24 @@ const Approval = () => {
     if (hasFetched.current) return;
     hasFetched.current = true;
     fetchApprovals();
+
+    // to resetALlState WHen its unmount
+    return () => {
+      resetEmployeeMyApprovalSearch();
+      setEmployeeMyApprovalSearch({
+        instrumentName: "", // Name of the instrument
+        quantity: "", // Quantity filter
+        startDate: null, // Single date (could be Date object or string)
+        mainInstrumentName: "", // Main instrument name for popover or modal
+        type: [], // Type filter: ["Buy", "Sell"]
+        status: [], // Status filter: ["Pending", "Approved", etc.]
+        pageSize: 0, // Pagination: size of page
+        pageNumber: 0, // Pagination: current page number
+        totalRecords: 0,
+        filterTrigger: false,
+        tableFilterTrigger: false,
+      });
+    };
   }, []);
 
   /**
@@ -326,7 +347,7 @@ const Approval = () => {
             prev.totalRecords !== employeeMyApproval.totalRecords
               ? employeeMyApproval.totalRecords
               : prev.totalRecords,
-          pageNumber: prev.pageNumber + 10,
+          pageNumber: mappedData.length,
         }));
       } else if (employeeMyApproval === null) {
         // No data case
@@ -362,7 +383,7 @@ const Approval = () => {
             StatusIds: mapStatusToIds(employeeMyApprovalSearch.status) || [],
             TypeIds:
               mapBuySellToIds(employeeMyApprovalSearch.type, assetData) || [],
-            PageNumber: employeeMyApprovalSearch.pageNumber || 10, // Acts as offset for API
+            PageNumber: employeeMyApprovalSearch.pageNumber || 0, // Acts as offset for API
             Length: 10,
           };
           // Call API
