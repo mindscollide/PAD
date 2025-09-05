@@ -143,20 +143,6 @@ const UploadPortfolioModal = () => {
       setIsSubmit,
       navigate,
     });
-
-    // Example payload
-    // const payload = {
-    //   ...formValues,
-    //   selectedKey,
-    //   managerDetails: lineManagerDetails,
-    // };
-
-    // console.log(payload, "CheckDataDatat4444");
-
-    // 👉 Call your API here
-    // UploadPortFolioRequest(payload);
-
-    // Close modal after submit
   };
   return (
     <>
