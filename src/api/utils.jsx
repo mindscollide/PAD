@@ -141,6 +141,17 @@ export const responseMessages = {
     "No data available",
   PAD_Trade_TradeServiceManager_SearchEmployeePendingUploadedPortFolio_03:
     "Exception",
+
+  // Upload Portfolio start Here
+  PAD_Trade_TradeServiceManager_UploadPortFolioRequest_01:
+    "Upload Portfolio Request Submitted",
+  PAD_Trade_TradeServiceManager_UploadPortFolioRequest_02:
+    "Failed to save Upload PortFolio Request",
+  PAD_Trade_TradeServiceManager_UploadPortFolioRequest_03:
+    "No User hierarchy Found",
+  PAD_Trade_TradeServiceManager_UploadPortFolioRequest_04: "Exception",
+  PAD_Trade_TradeServiceManager_UploadPortFolioRequest_05:
+    "Failed to generate ApprovalID",
 };
 
 /**

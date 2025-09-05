@@ -14,6 +14,7 @@ import { useApi } from "../../../../context/ApiContext";
 import { useNotification } from "../../../../components/NotificationProvider/NotificationProvider";
 import { useGlobalLoader } from "../../../../context/LoaderContext";
 import { useNavigate } from "react-router-dom";
+import { useGlobalModal } from "../../../../context/GlobalModalContext";
 
 const { Title } = Typography;
 
@@ -34,9 +35,19 @@ const PortfolioIndex = () => {
     setEmployeePendingApprovalSearch,
     resetEmployeePendingApprovalSearch,
   } = useSearchBarContext();
+
+  const { isSubmit } = useGlobalModal();
+
   const { callApi } = useApi();
   const { showNotification } = useNotification();
   const { showLoader } = useGlobalLoader();
+
+  console.log(
+    uploadPortfolioModal,
+    isSubmit,
+    activeTab,
+    "uploadPortfolioModalChecker"
+  );
 
   const isPortfolio = activeTab === "portfolio";
 
@@ -313,7 +324,8 @@ const PortfolioIndex = () => {
             <PendingApprovals />
           )}
         </div>
-        <SubmittedModal />
+
+        {isSubmit && <SubmittedModal />}
       </PageLayout>
 
       {/* To Call the uplaod Portfolio Modal Here */}
