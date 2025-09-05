@@ -129,3 +129,88 @@ export const SearchEmployeePendingUploadedPortFolio = async ({
     showLoader(false);
   }
 };
+
+export const UploadPortFolioRequest = async ({
+  callApi,
+  showNotification,
+  showLoader,
+  requestdata,
+  navigate,
+}) => {
+  try {
+    console.log("UploadPortfolio requestdata", requestdata);
+
+    // 🔹 API Call
+    const res = await callApi({
+      requestMethod: import.meta.env.VITE_UPLOAD_PORTFOLIO_REQUEST_METHOD,
+      endpoint: import.meta.env.VITE_API_TRADE,
+      requestData: requestdata,
+    });
+
+    // 🔹 Handle session expiry
+    if (handleExpiredSession(res, navigate, showLoader)) return null;
+
+    // 🔹 Validate API execution
+    if (!res?.result?.isExecuted) {
+      showNotification({
+        type: "error",
+        title: "Error",
+        description: "Something went wrong while uploading the portfolio.",
+      });
+      return null;
+    }
+
+    // 🔹 Handle successful execution
+    if (res.success) {
+      const { responseMessage } = res.result;
+      const message = getMessage(responseMessage);
+
+      // Case 1 → Success
+      if (
+        responseMessage === "PAD_Trade_ServiceManager_UploadPortFolioRequest_01"
+      ) {
+      return { success: true, message: message || "Portfolio uploaded." };
+      }
+
+      // Case 2 → Failure with custom server message
+      if (message) {
+        showNotification({
+          type: "error",
+          title: "Upload Failed",
+          description: message,
+        });
+
+        return { success: false, message };
+      }
+
+      // Default → No specific message
+      showNotification({
+        type: "warning",
+        title: "Upload Status Unknown",
+        description: "The server did not return a recognizable response.",
+      });
+
+      return { success: false, message: "" };
+    }
+
+    // 🔹 Handle failure (res.success === false)
+    showNotification({
+      type: "error",
+      title: "Upload Failed",
+      description: getMessage(res.message),
+    });
+
+    return { success: false, message: getMessage(res.message) };
+  } catch (error) {
+    // 🔹 Unexpected exception
+    showNotification({
+      type: "error",
+      title: "Error",
+      description: "An unexpected error occurred while uploading portfolio.",
+    });
+    return null;
+  } finally {
+    // 🔹 Always stop loader
+    showLoader(false);
+  }
+};

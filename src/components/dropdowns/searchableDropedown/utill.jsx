@@ -63,7 +63,6 @@ export const handleMainInstrumentChange = (
   setEmployeePendingApprovalSearch,
   setLineManagerApprovalSearch
 ) => {
-  console.log(selectedKey, "cchechechechehc");
   switch (selectedKey) {
     case "1":
       setEmployeeMyApprovalSearch((prev) => ({

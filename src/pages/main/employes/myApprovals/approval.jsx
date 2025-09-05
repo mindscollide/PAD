@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Col, Row, Spin } from "antd";
-import { ComonDropDown } from "../../../../components";
+import { ComonDropDown, SubmittedModal } from "../../../../components";
 import BorderlessTable from "../../../../components/tables/borderlessTable/borderlessTable";
 import { getBorderlessTableColumns, useTableScrollBottom } from "./utill";
 import { approvalStatusMap } from "../../../../components/tables/borderlessTable/utill";
@@ -15,7 +15,7 @@ import { useApi } from "../../../../context/ApiContext";
 import { useNavigate } from "react-router-dom";
 import { useMyApproval } from "../../../../context/myApprovalContaxt";
 import { useGlobalModal } from "../../../../context/GlobalModalContext";
-import SubmittedModal from "./modal/submittedModal/SubmittedModal";
+// import SubmittedModal from "./modal/submittedModal/SubmittedModal";
 import RequestRestrictedModal from "./modal/requestRestrictedModal/RequestRestrictedModal";
 import ViewDetailModal from "./modal/viewDetailModal/ViewDetailModal";
 import { useSidebarContext } from "../../../../context/sidebarContaxt";
