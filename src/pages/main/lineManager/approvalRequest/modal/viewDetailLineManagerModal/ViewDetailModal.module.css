@@ -243,14 +243,6 @@
   align-items: center;
 }
 
-.stepCircle {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 50px;
-  width: 50px;
-}
-
 .circleImg {
   width: 100%;
   height: 100%;
@@ -311,9 +303,46 @@
 }
 
 .centerAlignStepper {
+  height: 110px;
+  display: flex;
+  align-items: center;
   justify-content: center !important;
 }
 
 .leftAlignStepper {
   justify-content: flex-start;
+}
+
+.waitingApprovalText {
+  font-size: 14px;
+  color: #30426a;
+  margin-top: 10px;
+  background: none !important;
+  font-family: "Switzer Variable";
+  font-weight: 700;
+}
+
+.stepCircle {
+  display: flex;
+  flex-direction: column; /* Stack items vertically */
+  justify-content: center;
+  align-items: center;
+  height: 50px;
+  width: 50px;
+}
+
+.waitingApprovalText {
+  font-size: 14px;
+  color: #30426a;
+  margin-top: 10px;
+  background: none !important;
+  font-family: "Switzer Variable";
+  font-weight: 700;
+  text-align: center; /* Optional: Center the text */
+}
+
+/* Stepper.module.css */
+.stepButtonActive {
+  background: none !important; /* Remove background for active state */
+  /* You can add any other styles you need */
 }

@@ -50,6 +50,11 @@ const Dashboard = () => {
                 totalRecords: (prev.totalRecords || 0) + 1, // increment safely
               }));
 
+              setLineManagerApproval((prev) => ({
+                ...prev,
+                lineApprovals: [payload, ...(prev.lineApprovals || [])], // prepend
+                totalRecords: (prev.totalRecords || 0) + 1, // increment safely
+              }));
               console.log(
                 "MQTT: NEW_TRADE_APPROVAL_REQUEST → payload",
                 payload

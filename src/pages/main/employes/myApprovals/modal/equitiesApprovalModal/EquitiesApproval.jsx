@@ -135,6 +135,7 @@ const EquitiesApproval = () => {
       InstrumentShortCode: formData.selectedInstrument?.name || "",
       ApprovalType: formData.selectedAssetTypeName,
       ApprovalStatusID: 1,
+      ResubmittedCommentID: 0,
       Comments: "",
       BrokerIds: formData.selectedBrokers.map((b) => b.brokerID),
       ListOfTradeApprovalActionableBundle: [
