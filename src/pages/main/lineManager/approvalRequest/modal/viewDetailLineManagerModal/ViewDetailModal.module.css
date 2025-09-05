@@ -32,7 +32,6 @@
   padding: 0px 20px !important;
   gap: 10px !important;
 
-  
   /* Flexbox settings */
   display: flex;
   align-items: center; /* This vertically centers items */
@@ -309,4 +308,12 @@
   width: 33px; /* adjust as needed */
   height: 33px;
   margin-top: 5px;
+}
+
+.centerAlignStepper {
+  justify-content: center !important;
+}
+
+.leftAlignStepper {
+  justify-content: flex-start;
 }

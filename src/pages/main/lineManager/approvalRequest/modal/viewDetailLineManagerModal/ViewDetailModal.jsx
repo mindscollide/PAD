@@ -442,9 +442,8 @@ const ViewDetailModal = () => {
                         Array.isArray(
                           viewDetailsLineManagerData?.hierarchyDetails
                         )
-                          ? viewDetailsLineManagerData.hierarchyDetails.filter(
-                              (person) => person.userID !== loggedInUserID
-                            ).length - 1
+                          ? viewDetailsLineManagerData.hierarchyDetails.length -
+                              1
                           : 0
                       )}
                       connectorStyleConfig={{
@@ -463,9 +462,8 @@ const ViewDetailModal = () => {
                       {Array.isArray(
                         viewDetailsLineManagerData?.hierarchyDetails
                       ) &&
-                        viewDetailsLineManagerData.hierarchyDetails
-                          .filter((person) => person.userID !== loggedInUserID)
-                          .map((person, index) => {
+                        viewDetailsLineManagerData.hierarchyDetails.map(
+                          (person, index) => {
                             const {
                               fullName,
                               bundleStatusID,
@@ -486,7 +484,7 @@ const ViewDetailModal = () => {
                               case 1:
                                 iconSrc = EllipsesIcon;
                                 break;
-                              case 3:
+                              case 2:
                                 iconSrc = CheckIcon;
                                 break;
                               default:
@@ -517,7 +515,8 @@ const ViewDetailModal = () => {
                                 }
                               />
                             );
-                          })}
+                          }
+                        )}
                     </Stepper>
                   </div>
                 </div>
