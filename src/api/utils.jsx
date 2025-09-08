@@ -152,6 +152,14 @@ export const responseMessages = {
   PAD_Trade_TradeServiceManager_UploadPortFolioRequest_04: "Exception",
   PAD_Trade_TradeServiceManager_UploadPortFolioRequest_05:
     "Failed to generate ApprovalID",
+
+  // ==============================
+  // 📂 My Transaction API (myTransactionsApi.jsx)
+  // ==============================
+  PAD_Trade_TradeServiceManager_SearchEmployeeTransactio_01: "Data Available",
+  PAD_Trade_TradeServiceManager_SearchEmployeeTransactio_02:
+    "No data available",
+  PAD_Trade_TradeServiceManager_SearchEmployeeTransactio_03: "Exception",
 };
 
 /**
