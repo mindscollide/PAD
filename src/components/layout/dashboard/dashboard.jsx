@@ -7,12 +7,14 @@ import { useEffect } from "react";
 import { useMqttClient } from "../../../commen/mqtt/mqttConnection";
 import { useMyApproval } from "../../../context/myApprovalContaxt";
 import { useDashboardContext } from "../../../context/dashboardContaxt";
+import { usePortfolioContext } from "../../../context/portfolioContax";
 
 const { Content } = Layout;
 
 const Dashboard = () => {
   const location = useLocation();
-  const { setIsEmployeeMyApproval, setLineManagerApproval } = useMyApproval();
+  const { setIsEmployeeMyApproval } = useMyApproval();
+  const { setEmployeePendingApprovalsDataMqtt } = usePortfolioContext();
   const { setDashboardData } = useDashboardContext();
   const subscribeID = "PAD_TRADE";
   const userProfileData = JSON.parse(
@@ -21,6 +23,7 @@ const Dashboard = () => {
   const userAssignedRolesData = JSON.parse(
     sessionStorage.getItem("user_assigned_roles")
   );
+  console.log("location")
   let userID = userProfileData?.userID;
   const { connectToMqtt, isConnected } = useMqttClient({
     onMessageArrivedCallback: (data) => {
@@ -61,7 +64,24 @@ const Dashboard = () => {
             }
             break;
           }
+          case "NEW_UPLOAD_PORTFOLIO_REQUEST": {
+            if (payload) {
+              setEmployeePendingApprovalsDataMqtt({
+                mqttRecivedData: payload, // prepend new item
+                mqttRecived: true,
+              });
 
+              console.log(
+                "MQTT: NEW_TRADE_APPROVAL_REQUEST → payload",
+                payload
+              );
+            } else {
+              console.warn(
+                "MQTT: Missing payload in NEW_TRADE_APPROVAL_REQUEST"
+              );
+            }
+            break;
+          }
           case "USER_DASHBOARD_DATA": {
             console.log("MQTT: USER_DASHBOARD_DATA", data);
             console.log(
