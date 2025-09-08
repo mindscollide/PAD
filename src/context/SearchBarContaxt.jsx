@@ -182,7 +182,7 @@ export const SearchBarProvider = ({ children }) => {
       broker: [],
       pageSize: "",
       pageNumber: 0,
-      filterTrigger: true,
+      filterTrigger: false,
       tableFilterTrigger: false,
     });
   };

@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState, useCallback, useRef } from "react";
 import { useNavigate } from "react-router-dom";
+import moment from "moment";
 
 // Components
 import BorderlessTable from "../../../../../components/tables/borderlessTable/borderlessTable";
@@ -14,24 +15,24 @@ import { approvalStatusMap } from "../../../../../components/tables/borderlessTa
 import { useSearchBarContext } from "../../../../../context/SearchBarContaxt";
 import { useApi } from "../../../../../context/ApiContext";
 import { useGlobalLoader } from "../../../../../context/LoaderContext";
+import { usePortfolioContext } from "../../../../../context/portfolioContax";
 
 // Hooks
 import { useNotification } from "../../../../../components/NotificationProvider/NotificationProvider";
+import { useTableScrollBottom } from "../../myApprovals/utill";
 
 // API
 import { SearchEmployeePendingUploadedPortFolio } from "../../../../../api/protFolioApi";
-import { useTableScrollBottom } from "../../myApprovals/utill";
-import moment from "moment";
 
 const PendingApprovals = () => {
   const navigate = useNavigate();
 
-  // Context hooks
+  // ✅ Context hooks
   const { callApi } = useApi();
   const { showNotification } = useNotification();
   const { showLoader } = useGlobalLoader();
 
-  // Local state
+  // ✅ Local state for table
   const [sortedInfo, setSortedInfo] = useState({});
   const [tableData, setTableData] = useState({
     rows: [],
@@ -39,14 +40,21 @@ const PendingApprovals = () => {
   });
   const [loadingMore, setLoadingMore] = useState(false);
 
-  // Global search state (specific to employee pending approvals)
+  // ✅ Global context states
   const {
     employeePendingApprovalSearch,
     setEmployeePendingApprovalSearch,
     resetEmployeePendingApprovalSearch,
   } = useSearchBarContext();
 
-  // Table column definitions
+  const {
+    employeePendingApprovalsData,
+    setEmployeePendingApprovalsData,
+    employeePendingApprovalsDataMqtt,
+    setEmployeePendingApprovalsDataMqtt,
+  } = usePortfolioContext();
+
+  // ✅ Build column definitions
   const columns = getBorderlessTableColumns(
     approvalStatusMap,
     sortedInfo,
@@ -55,11 +63,11 @@ const PendingApprovals = () => {
     resetEmployeePendingApprovalSearch
   );
 
-  // Guard to prevent duplicate API calls (React 18 StrictMode)
+  // ✅ Guard against duplicate API calls (React StrictMode mounts twice)
   const didFetchRef = useRef(false);
 
   /**
-   * Transform API response → Table rows
+   * 🔹 Transform raw API data → Table rows
    */
   const mapToTableRows = (list = []) =>
     list.map((item) => ({
@@ -77,7 +85,8 @@ const PendingApprovals = () => {
     }));
 
   /**
-   * Initial fetch (first page)
+   * 🔹 Fetch pending approvals from API
+   * Handles initial load and filter/search triggers.
    */
   const fetchPendingApprovals = useCallback(
     async (requestData) => {
@@ -94,17 +103,26 @@ const PendingApprovals = () => {
 
         const mapped = mapToTableRows(res?.pendingPortfolios || []);
 
-        setTableData({
-          rows: mapped,
-          totalRecords: res?.totalRecords || 0,
-        });
+        setEmployeePendingApprovalsData((prev) => {
+          if (!res?.pendingPortfolios || res.pendingPortfolios.length === 0) {
+            // 🔹 Reset when no records
+            return {
+              data: [],
+              totalRecords: 0,
+              mqttRecived: false,
+              Apicall: true,
+            };
+          }
 
-        // Track total & next page
-        setEmployeePendingApprovalSearch((prev) => ({
-          ...prev,
-          totalRecords: res?.totalRecords ?? mapped.length,
-          pageNumber: 10,
-        }));
+          // 🔹 Append new rows
+          return {
+            ...prev,
+            data: [...(prev.data || []), ...mapped],
+            totalRecords: res?.totalRecords ?? (prev.totalRecords || 0),
+            mqttRecived: false,
+            Apicall: true,
+          };
+        });
       } catch (error) {
         console.error("❌ Error fetching pending approvals:", error);
       } finally {
@@ -116,47 +134,114 @@ const PendingApprovals = () => {
       showNotification,
       showLoader,
       navigate,
-      setEmployeePendingApprovalSearch,
+      setEmployeePendingApprovalsData,
     ]
   );
-  const buildPortfolioRequest = (searchState) => {
-    return {
-      InstrumentName:
-        searchState.mainInstrumentName || searchState.instrumentName || "",
-      Quantity: searchState.quantity ? Number(searchState.quantity) : 0,
-      StartDate: searchState.startDate
-        ? moment(searchState.startDate).format("YYYYMMDD")
+
+  /**
+   * 🔄 Sync `employeePendingApprovalsData` → `tableData`
+   * Runs whenever API updates context state.
+   */
+  useEffect(() => {
+    if (employeePendingApprovalsData.Apicall) {
+      setTableData((prev) => {
+        if (employeePendingApprovalsData.data.length === 0) {
+          return { rows: [], totalRecords: 0 };
+        }
+
+        return {
+          rows: [...(prev.rows || []), ...employeePendingApprovalsData.data],
+          totalRecords: employeePendingApprovalsData.totalRecords,
+        };
+      });
+
+      // Update global search state (pagination info)
+      setEmployeePendingApprovalSearch((prev) => ({
+        ...prev,
+        totalRecords:
+          employeePendingApprovalsData.totalRecords ??
+          employeePendingApprovalsData.data.length,
+        pageNumber: 10,
+      }));
+
+      // Reset Apicall flag
+      setEmployeePendingApprovalsData((prev) => ({
+        ...prev,
+        Apicall: false,
+      }));
+    }
+  }, [employeePendingApprovalsData.Apicall]);
+
+  /**
+   * 🔄 Handle new MQTT data (prepend new record to top of list)
+   */
+  useEffect(() => {
+    if (employeePendingApprovalsDataMqtt.mqttRecived) {
+      const mapped = mapToTableRows(
+        Array.isArray(employeePendingApprovalsDataMqtt?.mqttRecivedData)
+          ? employeePendingApprovalsDataMqtt.mqttRecivedData
+          : [employeePendingApprovalsDataMqtt.mqttRecivedData]
+      );
+
+      // Prepend new row(s) at index 0
+      setEmployeePendingApprovalsData((prev) => ({
+        ...prev,
+        data: [...mapped, ...(prev.data || [])],
+        totalRecords: (prev.totalRecords || 0) + mapped.length, // increment count
+        Apicall: true, // trigger table sync effect
+      }));
+    }
+
+    // Reset mqtt state after handling
+    setEmployeePendingApprovalsDataMqtt({
+      mqttRecivedData: [],
+      mqttRecived: false,
+    });
+  }, [employeePendingApprovalsDataMqtt.mqttRecived]);
+
+  /**
+   * 🔹 Build request payload from search state
+   */
+  const buildPortfolioRequest = (searchState) => ({
+    InstrumentName:
+      searchState.mainInstrumentName || searchState.instrumentName || "",
+    Quantity: searchState.quantity ? Number(searchState.quantity) : 0,
+    StartDate: searchState.startDate
+      ? moment(searchState.startDate).format("YYYYMMDD")
+      : "",
+    EndDate: searchState.endDate
+      ? moment(searchState.endDate).format("YYYYMMDD")
+      : "",
+    BrokerName:
+      Array.isArray(searchState.broker) && searchState.broker.length > 0
+        ? searchState.broker.join(",")
         : "",
-      EndDate: searchState.endDate
-        ? moment(searchState.endDate).format("YYYYMMDD")
-        : "",
-      BrokerName:
-        Array.isArray(searchState.broker) && searchState.broker.length > 0
-          ? searchState.broker.join(",")
-          : "",
-      PageNumber: searchState.pageNumber ? Number(searchState.pageNumber) : 0,
-      Length: searchState.pageSize ? Number(searchState.pageSize) : 10,
-    };
-  };
+    PageNumber: searchState.pageNumber ? Number(searchState.pageNumber) : 0,
+    Length: searchState.pageSize ? Number(searchState.pageSize) : 10,
+  });
+
+  /**
+   * 🔄 React to search/filter trigger
+   */
   useEffect(() => {
     if (employeePendingApprovalSearch.filterTrigger) {
       console.log(
         "employeePendingApprovalSearch",
-        buildPortfolioRequest(employeePendingApprovalSearch)
+        employeePendingApprovalSearch
       );
-      let data = buildPortfolioRequest(employeePendingApprovalSearch);
-
+      const data = buildPortfolioRequest(employeePendingApprovalSearch);
       fetchPendingApprovals(data);
 
-      // Reset trigger after processing
+      // Reset filter trigger
       setEmployeePendingApprovalSearch((prev) => ({
         ...prev,
         filterTrigger: false,
       }));
     }
-  }, [employeePendingApprovalSearch.filterTrigger]);
+  }, [employeePendingApprovalSearch.filterTrigger, fetchPendingApprovals]);
+
   /**
-   * Lazy load more when reaching bottom
+   * 🔄 Infinite scroll → load more data when reaching bottom
    */
   useTableScrollBottom(
     async () => {
@@ -179,13 +264,12 @@ const PendingApprovals = () => {
         const res = await SearchEmployeePendingUploadedPortFolio({
           callApi,
           showNotification,
-          showLoader, // don’t trigger full loader for lazy load
+          showLoader, // don't trigger full loader for lazy load
           requestdata: requestData,
           navigate,
         });
 
         const mapped = mapToTableRows(res?.pendingPortfolios || []);
-
         setTableData((prev) => [...prev, ...mapped]);
 
         setEmployeePendingApprovalSearch((prev) => ({
@@ -204,12 +288,13 @@ const PendingApprovals = () => {
   );
 
   /**
-   * Run once on mount
+   * 🔄 Initial load on mount
    */
   useEffect(() => {
     if (didFetchRef.current) return;
     didFetchRef.current = true;
-    let requestData = {
+
+    const requestData = {
       InstrumentName: "",
       Quantity: 0,
       StartDate: "",
@@ -233,6 +318,34 @@ const PendingApprovals = () => {
       console.error("❌ Error detecting page reload:", error);
     }
   }, [fetchPendingApprovals, resetEmployeePendingApprovalSearch]);
+  
+  /**
+   * 🔄 Cleanup → reset states on unmount
+   */
+  useEffect(() => {
+    return () => {
+      // ✅ Reset local states
+      setSortedInfo({});
+      setTableData({ rows: [], totalRecords: 0 });
+      setLoadingMore(false);
+
+      // ✅ Reset search state (from SearchBarContext)
+      resetEmployeePendingApprovalSearch();
+
+      // ✅ Reset portfolio context states
+      setEmployeePendingApprovalsData({
+        data: [],
+        totalRecords: 0,
+        Apicall: false,
+      });
+      setEmployeePendingApprovalsDataMqtt({
+        mqttRecivedData: [],
+        mqttRecived: false,
+      });
+
+      console.log("🧹 PendingApprovals cleanup → all states reset");
+    };
+  }, []);
 
   return (
     <BorderlessTable
