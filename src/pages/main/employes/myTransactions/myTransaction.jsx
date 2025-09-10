@@ -8,19 +8,26 @@ import BorderlessTable from "../../../../components/tables/borderlessTable/borde
 import { getBorderlessTableColumns } from "./utill";
 import { approvalStatusMap } from "../../../../components/tables/borderlessTable/utill";
 import PageLayout from "../../../../components/pageContainer/pageContainer";
-import EmptyState from "../../../../components/emptyStates/empty-states";
 
-// Context
+// Contexts
 import { useSearchBarContext } from "../../../../context/SearchBarContaxt";
+import { useApi } from "../../../../context/ApiContext";
+import { useNotification } from "../../../../components/NotificationProvider/NotificationProvider";
+import { useGlobalLoader } from "../../../../context/LoaderContext";
+
+// API
+import { SearchEmployeeTransactionsDetails } from "../../../../api/myTransactionsApi";
 
 // Styles
 import style from "./myTransaction.module.css";
 
 /**
- * MyTransaction Component
+ * 📄 MyTransaction Component
  *
- * Displays a table of employee transactions with filtering, sorting, and
- * filter tag display. Integrates with `SearchBarContext` for filter state.
+ * Displays a table of employee transactions with filters, sorting, and pagination.
+ * Integrates with:
+ * - `SearchBarContext` for filter/search state.
+ * - `useApi`, `useNotification`, and `useGlobalLoader` for API handling, UI feedback, and loading states.
  *
  * @component
  * @returns {JSX.Element}
@@ -28,11 +35,10 @@ import style from "./myTransaction.module.css";
 const MyTransaction = () => {
   const navigate = useNavigate();
 
-  // ✅ Context hooks
+  // -------------------- Context Hooks --------------------
   const { callApi } = useApi();
   const { showNotification } = useNotification();
   const { showLoader } = useGlobalLoader();
-  // -------------------- Context --------------------
   const {
     employeeMyTransactionSearch,
     setEmployeeMyTransactionSearch,
@@ -42,10 +48,11 @@ const MyTransaction = () => {
   // -------------------- Local State --------------------
   const [sortedInfo, setSortedInfo] = useState({});
   const [submittedFilters, setSubmittedFilters] = useState([]);
-  // ✅ Guard against duplicate API calls (React StrictMode mounts twice)
+
+  // ✅ Guard against duplicate API calls (React.StrictMode mounts twice)
   const didFetchRef = useRef(false);
-  // -------------------- Dummy Table Data --------------------
-  // In production, replace this with API data or context data
+
+  // -------------------- Dummy Data (Replace with API in Production) --------------------
   const data = [
     {
       key: "1",
@@ -67,81 +74,36 @@ const MyTransaction = () => {
       quantity: 15000,
       broker: "Multiple Brokers",
     },
-    {
-      key: "3",
-      transactionId: "TRX-003",
-      instrument: "AIRLINK-NOV",
-      type: "Buy",
-      transactionDate: "2024-10-04T10:00:00",
-      status: "Pending",
-      quantity: 6000000,
-      broker: "AKD Securities",
-    },
-    {
-      key: "4",
-      transactionId: "TRX-004",
-      instrument: "PQQ-OCT",
-      type: "Buy",
-      transactionDate: "2024-10-11T10:00:00",
-      status: "Compliant",
-      quantity: 5000000,
-      broker: "Multiple Brokers",
-    },
-    {
-      key: "5",
-      transactionId: "TRX-005",
-      instrument: "PRI-OCT",
-      type: "Sell",
-      transactionDate: "2024-10-11T12:00:00",
-      status: "Compliant",
-      quantity: 2000,
-      broker: "AKD Securities",
-    },
-    {
-      key: "6",
-      transactionId: "TRX-006",
-      instrument: "PRL-NOV",
-      type: "Buy",
-      transactionDate: "2024-10-10T11:00:00",
-      status: "Compliant",
-      quantity: 5000000,
-      broker: "AKD Securities",
-    },
-    {
-      key: "7",
-      transactionId: "TRX-007",
-      instrument: "PPL-NOV",
-      type: "Buy",
-      transactionDate: "2024-10-09T10:00:00",
-      status: "Compliant",
-      quantity: 5000000,
-      broker: "AKD Securities",
-    },
-    {
-      key: "8",
-      transactionId: "TRX-008",
-      instrument: "HUBC-NOV",
-      type: "Buy",
-      transactionDate: "2024-10-15T10:00:00",
-      status: "Non Compliant",
-      quantity: 2000,
-      broker: "MRA Securities",
-    },
-    {
-      key: "9",
-      transactionId: "TRX-009",
-      instrument: "HUBC-OCT",
-      type: "Sell",
-      transactionDate: "2024-10-11T10:00:00",
-      status: "Non Compliant",
-      quantity: 20000,
-      broker: "Multiple Brokers",
-    },
+    // ... (rest of dummy transactions)
   ];
 
+  // -------------------- Utility Functions --------------------
+
   /**
-   * 🔹 Fetch pending approvals from API
-   * Handles initial load and filter/search triggers.
+   * 🔹 Map raw API response data → Table rows
+   *
+   * @param {Array<Object>} list - List of transactions from API
+   * @returns {Array<Object>} - Transformed rows for the table
+   */
+  const mapToTableRows = (list = []) =>
+    list.map((item) => ({
+      key: item.approvalID || item.id,
+      instrument: item.instrument?.instrumentName || item.instrumentName || "",
+      transactionid: item.transactionId || item.transactionid || "",
+      approvalRequestDateime: `${item.transactionConductedDate || ""} ${
+        item.transactionConductedTime || ""
+      }`,
+      quantity: item.quantity || 0,
+      type: item.tradeType?.typeName || item.type || "",
+      broker: item.broker?.brokerName || item.broker || "",
+      status: item?.workFlowStatus?.approvalStatusName || item.status || "",
+      ...item,
+    }));
+
+  /**
+   * 🔹 Fetch employee transactions from API
+   *
+   * @param {Object} requestData - Request payload for API
    */
   const fetchPendingApprovals = useCallback(
     async (requestData) => {
@@ -158,13 +120,12 @@ const MyTransaction = () => {
 
         const mapped = mapToTableRows(res?.pendingPortfolios || []);
 
-        setEmployeePendingApprovalsData((prev) => {
+        setEmployeeMyTransactionSearch((prev) => {
           if (!res?.pendingPortfolios || res.pendingPortfolios.length === 0) {
             // 🔹 Reset when no records
             return {
               data: [],
               totalRecords: 0,
-              mqttRecived: false,
               Apicall: true,
             };
           }
@@ -174,7 +135,6 @@ const MyTransaction = () => {
             ...prev,
             data: [...(prev.data || []), ...mapped],
             totalRecords: res?.totalRecords ?? (prev.totalRecords || 0),
-            mqttRecived: false,
             Apicall: true,
           };
         });
@@ -184,17 +144,13 @@ const MyTransaction = () => {
         showLoader(false);
       }
     },
-    [
-      callApi,
-      showNotification,
-      showLoader,
-      navigate,
-      setEmployeePendingApprovalsData,
-    ]
+    [callApi, showNotification, showLoader, navigate, setEmployeeMyTransactionSearch]
   );
 
+  // -------------------- Effects --------------------
+
   /**
-   * 🔄 Initial load on mount
+   * 🔄 Initial API call on mount (avoids duplicate calls on React.StrictMode)
    */
   useEffect(() => {
     if (didFetchRef.current) return;
@@ -206,12 +162,15 @@ const MyTransaction = () => {
       StartDate: "",
       EndDate: "",
       BrokerIDs: [],
+      TypeIDs: [],
+      StatusIDs: [],
       PageNumber: 0,
       Length: 10,
     };
+
     fetchPendingApprovals(requestData);
 
-    // Reset search state only if page reloaded
+    // Reset search state if page reloaded
     try {
       const navigationEntries = performance.getEntriesByType("navigation");
       if (
@@ -224,82 +183,41 @@ const MyTransaction = () => {
       console.error("❌ Error detecting page reload:", error);
     }
   }, [fetchPendingApprovals, resetEmployeeMyTransactionSearch]);
-  // -------------------- Table Columns --------------------
-  const columns = getBorderlessTableColumns(
-    approvalStatusMap,
-    sortedInfo,
-    employeeMyTransactionSearch,
-    setEmployeeMyTransactionSearch
-  );
-
-  // -------------------- Filter Config --------------------
-  const filterKeys = [
-    { key: "instrumentName", label: "Instrument" },
-    { key: "mainInstrumentName", label: "Main Instrument" },
-    { key: "quantity", label: "Quantity" },
-  ];
 
   /**
-   * Removes a filter from both context state and local `submittedFilters`.
-   *
-   * @param {string} key - The filter key to remove (e.g., "instrumentName")
-   */
-  const handleRemoveFilter = (key) => {
-    if (key === "dateRange") {
-      // Reset both start and end date
-      setEmployeeMyTransactionSearch((prev) => ({
-        ...prev,
-        startDate: "",
-        endDate: "",
-      }));
-    } else {
-      setEmployeeMyTransactionSearch((prev) => ({
-        ...prev,
-        [key]: "",
-      }));
-    }
-
-    // Remove from submitted filters
-    setSubmittedFilters((prev) => prev.filter((item) => item.key !== key));
-  };
-
-  // -------------------- Effects --------------------
-
-  /**
-   * On `filterTrigger`, sync context filters into `submittedFilters`
+   * 🔄 On `filterTrigger`, update submittedFilters for display
    */
   useEffect(() => {
     if (employeeMyTransactionSearch.filterTrigger) {
       const snapshot = [];
 
-      // Add non-date filters
+      // Collect active filters
+      const filterKeys = [
+        { key: "instrumentName", label: "Instrument" },
+        { key: "mainInstrumentName", label: "Main Instrument" },
+        { key: "quantity", label: "Quantity" },
+      ];
+
       filterKeys.forEach(({ key, label }) => {
         const value = employeeMyTransactionSearch[key];
-        if (value) {
-          snapshot.push({ key, label, value });
-        }
+        if (value) snapshot.push({ key, label, value });
       });
 
-      // Add combined date range
+      // Add date range filter
       const { startDate, endDate } = employeeMyTransactionSearch;
       if (startDate || endDate) {
-        const formattedStart = startDate
-          ? moment(startDate).format("YYYY-MM-DD")
-          : "N/A";
-        const formattedEnd = endDate
-          ? moment(endDate).format("YYYY-MM-DD")
-          : "N/A";
-
         snapshot.push({
           key: "dateRange",
           label: "Date Range",
-          value: `${formattedStart} - ${formattedEnd}`,
+          value: `${startDate ? moment(startDate).format("YYYY-MM-DD") : "N/A"} - ${
+            endDate ? moment(endDate).format("YYYY-MM-DD") : "N/A"
+          }`,
         });
       }
 
       setSubmittedFilters(snapshot);
 
-      // Reset filter trigger flag
+      // Reset trigger
       setEmployeeMyTransactionSearch((prev) => ({
         ...prev,
         filterTrigger: false,
@@ -308,7 +226,7 @@ const MyTransaction = () => {
   }, [employeeMyTransactionSearch.filterTrigger]);
 
   /**
-   * On page reload, reset search state from context
+   * 🔄 Reset search state on hard page reload
    */
   useEffect(() => {
     try {
@@ -324,10 +242,42 @@ const MyTransaction = () => {
     }
   }, []);
 
+  // -------------------- Handlers --------------------
+
+  /**
+   * Remove a filter from submitted filters & context
+   *
+   * @param {string} key - The filter key (e.g., "instrumentName", "dateRange")
+   */
+  const handleRemoveFilter = (key) => {
+    if (key === "dateRange") {
+      setEmployeeMyTransactionSearch((prev) => ({
+        ...prev,
+        startDate: "",
+        endDate: "",
+      }));
+    } else {
+      setEmployeeMyTransactionSearch((prev) => ({
+        ...prev,
+        [key]: "",
+      }));
+    }
+
+    setSubmittedFilters((prev) => prev.filter((item) => item.key !== key));
+  };
+
+  // -------------------- Table Columns --------------------
+  const columns = getBorderlessTableColumns(
+    approvalStatusMap,
+    sortedInfo,
+    employeeMyTransactionSearch,
+    setEmployeeMyTransactionSearch
+  );
+
   // -------------------- Render --------------------
   return (
     <>
-      {/* Filter Tags */}
+      {/* 🔹 Active Filter Tags */}
       {submittedFilters.length > 0 && (
         <Row gutter={[12, 12]} className={style["filter-tags-container"]}>
           {submittedFilters.map(({ key, value }) => (
@@ -346,7 +296,7 @@ const MyTransaction = () => {
         </Row>
       )}
 
-      {/* Page Layout with Table */}
+      {/* 🔹 Transactions Table */}
       <PageLayout background="white">
         <div className="px-4 md:px-6 lg:px-8">
           <Row>
@@ -356,7 +306,7 @@ const MyTransaction = () => {
           </Row>
 
           <BorderlessTable
-            rows={data}
+            rows={data} // Replace with API data when ready
             classNameTable="border-less-table-blue"
             scroll={{ x: "max-content", y: 550 }}
             columns={columns}
