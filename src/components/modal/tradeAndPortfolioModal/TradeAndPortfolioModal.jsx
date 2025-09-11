@@ -65,7 +65,7 @@ const TradeAndPortfolioModal = ({
   const handleTypeSelect = (value) => {
     const selected = typeOptions.find((opt) => opt.value === value);
     setSelectedTradeApprovalType(value);
-    setSelectedAssetTypeID(selected?.assetTypeID || null);
+    setSelectedAssetTypeID(selected?.value || null);
     setSelectedAssetTypeName(selected?.label || "");
   };
 
