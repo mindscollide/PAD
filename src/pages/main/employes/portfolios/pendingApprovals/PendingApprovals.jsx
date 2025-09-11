@@ -20,6 +20,7 @@ import { useSearchBarContext } from "../../../../../context/SearchBarContaxt";
 import { useApi } from "../../../../../context/ApiContext";
 import { useGlobalLoader } from "../../../../../context/LoaderContext";
 import { usePortfolioContext } from "../../../../../context/portfolioContax";
+import { useDashboardContext } from "../../../../../context/dashboardContaxt";
 
 // Hooks
 import { useNotification } from "../../../../../components/NotificationProvider/NotificationProvider";
@@ -27,7 +28,6 @@ import { useTableScrollBottom } from "../../myApprovals/utill";
 
 // API
 import { SearchEmployeePendingUploadedPortFolio } from "../../../../../api/protFolioApi";
-import { useDashboardContext } from "../../../../../context/dashboardContaxt";
 
 const PendingApprovals = () => {
   const navigate = useNavigate();
@@ -36,17 +36,12 @@ const PendingApprovals = () => {
   const { callApi } = useApi();
   const { showNotification } = useNotification();
   const { showLoader } = useGlobalLoader();
+  const { employeeBasedBrokersData } = useDashboardContext();
 
   // ✅ Local state for table
   const [sortedInfo, setSortedInfo] = useState({});
-  const [tableData, setTableData] = useState({
-    rows: [],
-    totalRecords: 0,
-  });
+  const [tableData, setTableData] = useState({ rows: [], totalRecords: 0 });
   const [loadingMore, setLoadingMore] = useState(false);
-  const { employeeBasedBrokersData } = useDashboardContext();
-  const brokerOptions = formatBrokerOptions(employeeBasedBrokersData);
-  console.log("employeeBasedBrokersData", employeeBasedBrokersData);
 
   // ✅ Global context states
   const {
@@ -62,6 +57,9 @@ const PendingApprovals = () => {
     setEmployeePendingApprovalsDataMqtt,
   } = usePortfolioContext();
 
+  // ✅ Format brokers safely
+  const brokerOptions = formatBrokerOptions(employeeBasedBrokersData || []);
+
   // ✅ Build column definitions
   const columns = getBorderlessTableColumns(
     approvalStatusMap,
@@ -76,11 +74,20 @@ const PendingApprovals = () => {
   /**
    * 🔹 Fetch pending approvals from API
    * Handles initial load and filter/search triggers.
+   *
+   * @param {Object} requestData - Payload for API request
    */
   const fetchPendingApprovals = useCallback(
     async (requestData) => {
-      showLoader(true);
+      if (!requestData || typeof requestData !== "object") {
+        console.warn(
+          "⚠️ Invalid requestData passed to fetchPendingApprovals:",
+          requestData
+        );
+        return;
+      }
 
+      showLoader(true);
       try {
         const res = await SearchEmployeePendingUploadedPortFolio({
           callApi,
@@ -90,31 +97,30 @@ const PendingApprovals = () => {
           navigate,
         });
 
-        const mapped = mapToTableRows(
-          res?.pendingPortfolios || [],
-          brokerOptions
-        );
+        const portfolios = Array.isArray(res?.pendingPortfolios)
+          ? res.pendingPortfolios
+          : [];
+
+        const mapped = mapToTableRows(portfolios, brokerOptions);
 
         setEmployeePendingApprovalsData((prev) => {
-          if (!res?.pendingPortfolios || res.pendingPortfolios.length === 0) {
+          if (portfolios.length === 0) {
             // 🔹 Reset when no records
-            return {
-              data: [],
-              totalRecords: 0,
-              Apicall: true,
-            };
+            return { data: [], totalRecords: 0, Apicall: true };
           }
-
-          // 🔹 Append new rows
           return {
             ...prev,
             data: [...(prev.data || []), ...mapped],
-            totalRecords: res?.totalRecords ?? (prev.totalRecords || 0),
+            totalRecords: res?.totalRecords ?? prev.totalRecords ?? 0,
             Apicall: true,
           };
         });
       } catch (error) {
         console.error("❌ Error fetching pending approvals:", error);
+        showNotification(
+          "error",
+          "Failed to fetch pending approvals. Please try again."
+        );
       } finally {
         showLoader(false);
       }
@@ -125,27 +131,26 @@ const PendingApprovals = () => {
       showLoader,
       navigate,
       setEmployeePendingApprovalsData,
+      brokerOptions,
     ]
   );
 
   /**
-   * 🔄 Sync `employeePendingApprovalsData` → `tableData`
-   * Runs whenever API updates context state.
+   * 🔄 Sync global portfolio context → local table data
    */
   useEffect(() => {
-    if (employeePendingApprovalsData.Apicall) {
+    if (employeePendingApprovalsData?.Apicall) {
       setTableData((prev) => {
-        if (employeePendingApprovalsData.data.length === 0) {
+        if (!employeePendingApprovalsData?.data?.length) {
           return { rows: [], totalRecords: 0 };
         }
-
         return {
           rows: [...(prev.rows || []), ...employeePendingApprovalsData.data],
-          totalRecords: employeePendingApprovalsData.totalRecords,
+          totalRecords: employeePendingApprovalsData.totalRecords || 0,
         };
       });
 
-      // Update global search state (pagination info)
+      // update search state (pagination info)
       setEmployeePendingApprovalSearch((prev) => ({
         ...prev,
         totalRecords:
@@ -154,46 +159,54 @@ const PendingApprovals = () => {
         pageNumber: 10,
       }));
 
-      // Reset Apicall flag
-      setEmployeePendingApprovalsData((prev) => ({
-        ...prev,
-        Apicall: false,
-      }));
+      setEmployeePendingApprovalsData((prev) => ({ ...prev, Apicall: false }));
     }
-  }, [employeePendingApprovalsData.Apicall]);
+  }, [employeePendingApprovalsData?.Apicall]);
 
   /**
-   * 🔄 Handle new MQTT data (prepend new record to top of list)
+   * 🔄 Handle new MQTT data
    */
   useEffect(() => {
-    if (employeePendingApprovalsDataMqtt.mqttRecived) {
-      const mapped = mapToTableRows(
+    if (employeePendingApprovalsDataMqtt?.mqttRecived) {
+      const newRows = mapToTableRows(
         Array.isArray(employeePendingApprovalsDataMqtt?.mqttRecivedData)
           ? employeePendingApprovalsDataMqtt.mqttRecivedData
           : [employeePendingApprovalsDataMqtt.mqttRecivedData],
         brokerOptions
       );
 
-      // Prepend new row(s) at index 0
-      setEmployeePendingApprovalsData((prev) => ({
-        ...prev,
-        data: [...mapped, ...(prev.data || [])],
-        totalRecords: (prev.totalRecords || 0) + mapped.length, // increment count
-        Apicall: true, // trigger table sync effect
-      }));
-    }
+      console.log("🔄 MQTT incoming:", newRows);
 
-    // Reset mqtt state after handling
-    setEmployeePendingApprovalsDataMqtt({
-      mqttRecivedData: [],
-      mqttRecived: false,
-    });
-  }, [employeePendingApprovalsDataMqtt.mqttRecived]);
+      if (newRows.length) {
+        setEmployeePendingApprovalsData((prev) => {
+          // ✅ Ensure prev is a valid object
+          const safePrev = prev || {
+            data: [],
+            totalRecords: 0,
+            Apicall: false,
+          };
+
+          return {
+            ...safePrev,
+            data: [...newRows, ...(safePrev.data || [])], // prepend
+            totalRecords: (safePrev.totalRecords || 0) + newRows.length, // update count
+            Apicall: true, // trigger table sync
+          };
+        });
+      }
+
+      // ✅ Reset mqtt state after processing
+      setEmployeePendingApprovalsDataMqtt({
+        mqttRecivedData: [],
+        mqttRecived: false,
+      });
+    }
+  }, [employeePendingApprovalsDataMqtt?.mqttRecived]);
 
   /**
-   * 🔹 Build request payload from search state
+   * 🔹 Build request payload from search state safely
    */
-  const buildPortfolioRequest = (searchState) => ({
+  const buildPortfolioRequest = (searchState = {}) => ({
     InstrumentName:
       searchState.mainInstrumentName || searchState.instrumentName || "",
     Quantity: searchState.quantity ? Number(searchState.quantity) : 0,
@@ -203,40 +216,36 @@ const PendingApprovals = () => {
     EndDate: searchState.endDate
       ? moment(searchState.endDate).format("YYYYMMDD")
       : "",
-    BrokerName:
-      Array.isArray(searchState.broker) && searchState.broker.length > 0
-        ? searchState.broker.join(",")
-        : "",
-    PageNumber: searchState.pageNumber ? Number(searchState.pageNumber) : 0,
-    Length: searchState.pageSize ? Number(searchState.pageSize) : 10,
+    BrokerName: Array.isArray(searchState.broker)
+      ? searchState.broker.join(",")
+      : "",
+    PageNumber: Number(searchState.pageNumber) || 0,
+    Length: Number(searchState.pageSize) || 10,
   });
 
   /**
    * 🔄 React to search/filter trigger
    */
   useEffect(() => {
-    if (employeePendingApprovalSearch.filterTrigger) {
-      console.log(
-        "employeePendingApprovalSearch",
-        employeePendingApprovalSearch
-      );
+    if (employeePendingApprovalSearch?.filterTrigger) {
       const data = buildPortfolioRequest(employeePendingApprovalSearch);
       fetchPendingApprovals(data);
 
-      // Reset filter trigger
       setEmployeePendingApprovalSearch((prev) => ({
         ...prev,
         filterTrigger: false,
       }));
     }
-  }, [employeePendingApprovalSearch.filterTrigger, fetchPendingApprovals]);
+  }, [employeePendingApprovalSearch?.filterTrigger, fetchPendingApprovals]);
 
   /**
-   * 🔄 Infinite scroll → load more data when reaching bottom
+   * 🔄 Infinite scroll
    */
   useTableScrollBottom(
     async () => {
-      if (employeePendingApprovalSearch?.totalRecords <= tableData?.rows.length)
+      if (
+        employeePendingApprovalSearch?.totalRecords <= tableData?.rows?.length
+      )
         return;
 
       try {
@@ -255,7 +264,7 @@ const PendingApprovals = () => {
         const res = await SearchEmployeePendingUploadedPortFolio({
           callApi,
           showNotification,
-          showLoader, // don't trigger full loader for lazy load
+          showLoader,
           requestdata: requestData,
           navigate,
         });
@@ -264,7 +273,11 @@ const PendingApprovals = () => {
           res?.pendingPortfolios || [],
           brokerOptions
         );
-        setTableData((prev) => [...prev, ...mapped]);
+
+        setTableData((prev) => ({
+          rows: [...(prev.rows || []), ...mapped],
+          totalRecords: res?.totalRecords ?? prev.totalRecords ?? 0,
+        }));
 
         setEmployeePendingApprovalSearch((prev) => ({
           ...prev,
@@ -273,12 +286,13 @@ const PendingApprovals = () => {
         }));
       } catch (error) {
         console.error("❌ Error loading more approvals:", error);
+        showNotification("error", "Unable to load more approvals.");
       } finally {
         setLoadingMore(false);
       }
     },
     0,
-    "border-less-table-blue" // table container class
+    "border-less-table-blue"
   );
 
   /**
@@ -299,13 +313,9 @@ const PendingApprovals = () => {
     };
     fetchPendingApprovals(requestData);
 
-    // Reset search state only if page reloaded
     try {
       const navigationEntries = performance.getEntriesByType("navigation");
-      if (
-        navigationEntries.length > 0 &&
-        navigationEntries[0].type === "reload"
-      ) {
+      if (navigationEntries?.[0]?.type === "reload") {
         resetEmployeePendingApprovalSearch();
       }
     } catch (error) {
@@ -314,19 +324,14 @@ const PendingApprovals = () => {
   }, [fetchPendingApprovals, resetEmployeePendingApprovalSearch]);
 
   /**
-   * 🔄 Cleanup → reset states on unmount
+   * 🔄 Cleanup on unmount
    */
   useEffect(() => {
     return () => {
-      // ✅ Reset local states
       setSortedInfo({});
       setTableData({ rows: [], totalRecords: 0 });
       setLoadingMore(false);
-
-      // ✅ Reset search state (from SearchBarContext)
       resetEmployeePendingApprovalSearch();
-
-      // ✅ Reset portfolio context states
       setEmployeePendingApprovalsData({
         data: [],
         totalRecords: 0,
@@ -336,22 +341,18 @@ const PendingApprovals = () => {
         mqttRecivedData: [],
         mqttRecived: false,
       });
-
-      console.log("🧹 PendingApprovals cleanup → all states reset");
     };
   }, []);
 
   return (
     <BorderlessTable
-      rows={tableData.rows}
+      rows={tableData?.rows || []}
       columns={columns}
       classNameTable="border-less-table-blue"
       scroll={
         tableData?.rows?.length ? { x: "max-content", y: 550 } : undefined
       }
-      onChange={(pagination, filters, sorter) => {
-        setSortedInfo(sorter || {});
-      }}
+      onChange={(_, __, sorter) => setSortedInfo(sorter || {})}
       loading={loadingMore}
     />
   );
