@@ -29,22 +29,40 @@ import { useTableScrollBottom } from "../../myApprovals/utill";
 // API
 import { SearchEmployeePendingUploadedPortFolio } from "../../../../../api/protFolioApi";
 
+/**
+ * 📄 PendingApprovals Component
+ *
+ * Displays a list of pending trade/portfolio approvals for employees.
+ * Integrates:
+ * - API fetching with infinite scroll
+ * - MQTT real-time updates
+ * - Global context synchronization
+ * - Search and filter support
+ *
+ * @component
+ */
 const PendingApprovals = () => {
   const navigate = useNavigate();
 
+  // -------------------------
   // ✅ Context hooks
+  // -------------------------
   const { callApi } = useApi();
   const { showNotification } = useNotification();
   const { showLoader } = useGlobalLoader();
   const { employeeBasedBrokersData, addApprovalRequestData } =
     useDashboardContext();
 
-  // ✅ Local state for table
+  // -------------------------
+  // ✅ Local state
+  // -------------------------
   const [sortedInfo, setSortedInfo] = useState({});
   const [tableData, setTableData] = useState({ rows: [], totalRecords: 0 });
   const [loadingMore, setLoadingMore] = useState(false);
 
+  // -------------------------
   // ✅ Global context states
+  // -------------------------
   const {
     employeePendingApprovalSearch,
     setEmployeePendingApprovalSearch,
@@ -58,10 +76,10 @@ const PendingApprovals = () => {
     setEmployeePendingApprovalsDataMqtt,
   } = usePortfolioContext();
 
-  // ✅ Format brokers safely
+  // -------------------------
+  // ✅ Derived values
+  // -------------------------
   const brokerOptions = formatBrokerOptions(employeeBasedBrokersData || []);
-
-  // ✅ Build column definitions
   const columns = getBorderlessTableColumns(
     approvalStatusMap,
     sortedInfo,
@@ -69,22 +87,16 @@ const PendingApprovals = () => {
     setEmployeePendingApprovalSearch
   );
 
-  // ✅ Guard against duplicate API calls (React StrictMode mounts twice)
+  // ✅ Prevent duplicate API calls (StrictMode double-render safeguard)
   const didFetchRef = useRef(false);
 
-  /**
-   * 🔹 Fetch pending approvals from API
-   * Handles initial load and filter/search triggers.
-   *
-   * @param {Object} requestData - Payload for API request
-   */
+  // ----------------------------------------------------------------
+  // 🔹 API CALL: Fetch pending approvals (initial + filters)
+  // ----------------------------------------------------------------
   const fetchPendingApprovals = useCallback(
     async (requestData) => {
       if (!requestData || typeof requestData !== "object") {
-        console.warn(
-          "⚠️ Invalid requestData passed to fetchPendingApprovals:",
-          requestData
-        );
+        console.warn("⚠️ Invalid requestData:", requestData);
         return;
       }
 
@@ -110,7 +122,7 @@ const PendingApprovals = () => {
 
         setEmployeePendingApprovalsData((prev) => {
           if (portfolios.length === 0) {
-            // 🔹 Reset when no records
+            // 🔹 Reset when no records are found
             return { data: [], totalRecords: 0, Apicall: true };
           }
           return {
@@ -140,9 +152,9 @@ const PendingApprovals = () => {
     ]
   );
 
-  /**
-   * 🔄 Sync global portfolio context → local table data
-   */
+  // ----------------------------------------------------------------
+  // 🔄 SYNC: Global → Local table data
+  // ----------------------------------------------------------------
   useEffect(() => {
     if (employeePendingApprovalsData?.Apicall) {
       setTableData((prev) => {
@@ -155,7 +167,7 @@ const PendingApprovals = () => {
         };
       });
 
-      // update search state (pagination info)
+      // 🔹 Sync pagination info in search state
       setEmployeePendingApprovalSearch((prev) => ({
         ...prev,
         totalRecords:
@@ -164,13 +176,14 @@ const PendingApprovals = () => {
         pageNumber: 10,
       }));
 
+      // 🔹 Reset API trigger flag
       setEmployeePendingApprovalsData((prev) => ({ ...prev, Apicall: false }));
     }
   }, [employeePendingApprovalsData?.Apicall]);
 
-  /**
-   * 🔄 Handle new MQTT data
-   */
+  // ----------------------------------------------------------------
+  // 🔄 REAL-TIME: Handle new MQTT rows
+  // ----------------------------------------------------------------
   useEffect(() => {
     if (employeePendingApprovalsDataMqtt?.mqttRecived) {
       const newRows = mapToTableRows(
@@ -180,17 +193,15 @@ const PendingApprovals = () => {
           : [employeePendingApprovalsDataMqtt.mqttRecivedData],
         brokerOptions
       );
-      console.log("🔄 MQTT incoming:", employeePendingApprovalsData);
-      console.log("🔄 MQTT incoming:", tableData.rows);
-      console.log("🔄 MQTT incoming:", newRows);
 
       if (newRows.length) {
-        setTableData((prevTable) => {
-          return {
-            rows: [newRows[0], ...(prevTable.rows || [])], // keep in sync
-            totalRecords: (prevTable.totalRecords || 0) + 1,
-          };
-        });
+        // Update table rows
+        setTableData((prevTable) => ({
+          rows: [newRows[0], ...(prevTable.rows || [])],
+          totalRecords: (prevTable.totalRecords || 0) + 1,
+        }));
+
+        // Update global approvals context
         setEmployeePendingApprovalsData((prev) => {
           const safePrev = prev || {
             data: [],
@@ -200,25 +211,24 @@ const PendingApprovals = () => {
 
           return {
             ...safePrev,
-            data: [newRows[0], ...safePrev.data], // ⬅️ only add the new row at the top
-            totalRecords: employeePendingApprovalsData.totalRecords + 1,
+            data: [newRows[0], ...safePrev.data],
+            totalRecords: (safePrev.totalRecords || 0) + 1,
+            Apicall: true,
           };
         });
       }
 
-      // ✅ Reset mqtt state after processing
+      // ✅ Reset MQTT state after processing
       setEmployeePendingApprovalsDataMqtt({
         mqttRecivedData: [],
         mqttRecived: false,
       });
     }
   }, [employeePendingApprovalsDataMqtt?.mqttRecived]);
-  console.log("🔄 MQTT incoming:", employeePendingApprovalsData);
-  console.log("🔄 MQTT incoming:", tableData.rows);
 
-  /**
-   * 🔹 Build request payload from search state safely
-   */
+  // ----------------------------------------------------------------
+  // 🔧 HELPERS: Build API request payload
+  // ----------------------------------------------------------------
   const buildPortfolioRequest = (searchState = {}) => ({
     InstrumentName:
       searchState.mainInstrumentName || searchState.instrumentName || "",
@@ -236,9 +246,9 @@ const PendingApprovals = () => {
     Length: Number(searchState.pageSize) || 10,
   });
 
-  /**
-   * 🔄 React to search/filter trigger
-   */
+  // ----------------------------------------------------------------
+  // 🔄 REACT: On search/filter trigger
+  // ----------------------------------------------------------------
   useEffect(() => {
     if (employeePendingApprovalSearch?.filterTrigger) {
       const data = buildPortfolioRequest(employeePendingApprovalSearch);
@@ -251,9 +261,9 @@ const PendingApprovals = () => {
     }
   }, [employeePendingApprovalSearch?.filterTrigger, fetchPendingApprovals]);
 
-  /**
-   * 🔄 Infinite scroll
-   */
+  // ----------------------------------------------------------------
+  // 🔄 INFINITE SCROLL
+  // ----------------------------------------------------------------
   useTableScrollBottom(
     async () => {
       if (
@@ -309,9 +319,9 @@ const PendingApprovals = () => {
     "border-less-table-blue"
   );
 
-  /**
-   * 🔄 Initial load on mount
-   */
+  // ----------------------------------------------------------------
+  // 🔄 INITIAL LOAD (on mount)
+  // ----------------------------------------------------------------
   useEffect(() => {
     if (didFetchRef.current) return;
     didFetchRef.current = true;
@@ -327,6 +337,7 @@ const PendingApprovals = () => {
     };
     fetchPendingApprovals(requestData);
 
+    // Reset search state on page reload
     try {
       const navigationEntries = performance.getEntriesByType("navigation");
       if (navigationEntries?.[0]?.type === "reload") {
@@ -337,9 +348,9 @@ const PendingApprovals = () => {
     }
   }, [fetchPendingApprovals, resetEmployeePendingApprovalSearch]);
 
-  /**
-   * 🔄 Cleanup on unmount
-   */
+  // ----------------------------------------------------------------
+  // 🔄 CLEANUP (on unmount)
+  // ----------------------------------------------------------------
   useEffect(() => {
     return () => {
       setSortedInfo({});
@@ -358,6 +369,9 @@ const PendingApprovals = () => {
     };
   }, []);
 
+  // ----------------------------------------------------------------
+  // 🎨 RENDER
+  // ----------------------------------------------------------------
   return (
     <BorderlessTable
       rows={tableData?.rows || []}
