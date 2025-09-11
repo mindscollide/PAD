@@ -36,7 +36,8 @@ const PendingApprovals = () => {
   const { callApi } = useApi();
   const { showNotification } = useNotification();
   const { showLoader } = useGlobalLoader();
-  const { employeeBasedBrokersData } = useDashboardContext();
+  const { employeeBasedBrokersData, addApprovalRequestData } =
+    useDashboardContext();
 
   // ✅ Local state for table
   const [sortedInfo, setSortedInfo] = useState({});
@@ -101,7 +102,11 @@ const PendingApprovals = () => {
           ? res.pendingPortfolios
           : [];
 
-        const mapped = mapToTableRows(portfolios, brokerOptions);
+        const mapped = mapToTableRows(
+          addApprovalRequestData?.Equities,
+          portfolios,
+          brokerOptions
+        );
 
         setEmployeePendingApprovalsData((prev) => {
           if (portfolios.length === 0) {
@@ -169,17 +174,24 @@ const PendingApprovals = () => {
   useEffect(() => {
     if (employeePendingApprovalsDataMqtt?.mqttRecived) {
       const newRows = mapToTableRows(
+        addApprovalRequestData?.Equities,
         Array.isArray(employeePendingApprovalsDataMqtt?.mqttRecivedData)
           ? employeePendingApprovalsDataMqtt.mqttRecivedData
           : [employeePendingApprovalsDataMqtt.mqttRecivedData],
         brokerOptions
       );
-
+      console.log("🔄 MQTT incoming:", employeePendingApprovalsData);
+      console.log("🔄 MQTT incoming:", tableData.rows);
       console.log("🔄 MQTT incoming:", newRows);
 
       if (newRows.length) {
+        setTableData((prevTable) => {
+          return {
+            rows: [newRows[0], ...(prevTable.rows || [])], // keep in sync
+            totalRecords: (prevTable.totalRecords || 0) + 1,
+          };
+        });
         setEmployeePendingApprovalsData((prev) => {
-          // ✅ Ensure prev is a valid object
           const safePrev = prev || {
             data: [],
             totalRecords: 0,
@@ -188,9 +200,8 @@ const PendingApprovals = () => {
 
           return {
             ...safePrev,
-            data: [...newRows, ...(safePrev.data || [])], // prepend
-            totalRecords: (safePrev.totalRecords || 0) + newRows.length, // update count
-            Apicall: true, // trigger table sync
+            data: [newRows[0], ...safePrev.data], // ⬅️ only add the new row at the top
+            totalRecords: employeePendingApprovalsData.totalRecords + 1,
           };
         });
       }
@@ -202,6 +213,8 @@ const PendingApprovals = () => {
       });
     }
   }, [employeePendingApprovalsDataMqtt?.mqttRecived]);
+  console.log("🔄 MQTT incoming:", employeePendingApprovalsData);
+  console.log("🔄 MQTT incoming:", tableData.rows);
 
   /**
    * 🔹 Build request payload from search state safely
@@ -270,6 +283,7 @@ const PendingApprovals = () => {
         });
 
         const mapped = mapToTableRows(
+          addApprovalRequestData?.Equities,
           res?.pendingPortfolios || [],
           brokerOptions
         );

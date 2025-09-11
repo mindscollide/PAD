@@ -313,7 +313,20 @@ export const formatBrokerOptions = (brokers = []) => {
  * @param {Array<Object>} brokerOptions - Preformatted broker options (from `formatBrokerOptions`).
  * @returns {Array<Object>} Table row objects ready for rendering.
  */
-export const mapToTableRows = (list = [], brokerOptions = []) =>
+export const getTradeTypeById = (assetTypeData, tradeTypeID) => {
+  console.log("assetTypeData",assetTypeData)
+  if (!assetTypeData?.items || !Array.isArray(assetTypeData.items)) {
+    return "";
+  }
+
+  const match = assetTypeData.items.find(
+    (item) => item.tradeApprovalTypeID === tradeTypeID
+  );
+
+  return match?.type || "";
+};
+
+export const mapToTableRows = (assetTypeData, list = [], brokerOptions = []) =>
   (Array.isArray(list) ? list : []).map((item = {}) => {
     let brokerLabel = "";
 
@@ -336,7 +349,7 @@ export const mapToTableRows = (list = [], brokerOptions = []) =>
           item?.transactionConductedTime || ""
         }`.trim() || "—",
       quantity: item?.quantity ?? 0,
-      type: item?.tradeType || "—",
+      type: getTradeTypeById(assetTypeData, item?.tradeType) || "—",
       broker: brokerLabel || "—",
       status: item?.workFlowStatus?.workFlowStatus || "—",
     };
