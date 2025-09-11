@@ -74,7 +74,10 @@ const Dashboard = () => {
         console.log("MQTT: Admin portfolio update", roleIDs);
         console.log("MQTT: Admin portfolio update", userAssignedRolesData);
         console.log("MQTT: Admin portfolio update", currentUserId);
-        console.log("MQTT: Admin portfolio update", hasUserRole(Number(roleIDs)));
+        console.log(
+          "MQTT: Admin portfolio update",
+          hasUserRole(Number(roleIDs))
+        );
         console.log("MQTT: Admin portfolio update", isUserReceiver(receiverID));
 
         switch (message) {
@@ -86,6 +89,16 @@ const Dashboard = () => {
                 approvals: [payload, ...(prev.approvals || [])],
                 totalRecords: (prev.totalRecords || 0) + 1,
               }));
+
+              setLineManagerApproval((prev) => ({
+                ...prev,
+                lineApprovals: [payload, ...(prev.lineApprovals || [])], // prepend
+                totalRecords: (prev.totalRecords || 0) + 1, // increment safely
+              }));
+              console.log(
+                "MQTT: NEW_TRADE_APPROVAL_REQUEST → payload",
+                payload
+              );
             } else {
               console.warn(
                 "MQTT: Missing payload in NEW_TRADE_APPROVAL_REQUEST"
@@ -95,7 +108,11 @@ const Dashboard = () => {
           }
 
           case "NEW_UPLOAD_PORTFOLIO_REQUEST": {
-            if (payload && hasUserRole(Number(roleIDs)) && isUserReceiver(receiverID)) {
+            if (
+              payload &&
+              hasUserRole(Number(roleIDs)) &&
+              isUserReceiver(receiverID)
+            ) {
               switch (String(roleIDs)) {
                 case "1": // Admin
                   console.log("MQTT: Admin portfolio update");

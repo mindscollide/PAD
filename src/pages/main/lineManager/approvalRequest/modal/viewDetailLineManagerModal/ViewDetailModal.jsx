@@ -507,6 +507,29 @@ const ViewDetailModal = () => {
                                 break;
                               case 2:
                                 iconSrc = CheckIcon;
+                                if (loggedInUserID === userID) {
+                                  labelContent = (
+                                    <div className={styles.customlabel}>
+                                      <div className={styles.customtitle}>
+                                        Approved by You
+                                      </div>
+                                      <div className={styles.customdesc}>
+                                        {formattedDateTime}
+                                      </div>
+                                    </div>
+                                  );
+                                } else {
+                                  labelContent = (
+                                    <div className={styles.customlabel}>
+                                      <div className={styles.customtitle}>
+                                        {fullName}
+                                      </div>
+                                      <div className={styles.customdesc}>
+                                        {formattedDateTime}
+                                      </div>
+                                    </div>
+                                  );
+                                }
                                 break;
                               default:
                                 iconSrc = EllipsesIcon; // Default icon for other cases
