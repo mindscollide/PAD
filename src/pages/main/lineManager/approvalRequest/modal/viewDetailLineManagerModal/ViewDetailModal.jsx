@@ -153,19 +153,32 @@ const ViewDetailModal = () => {
           <>
             <div className={styles.modalBodyWrapper}>
               {/* Show Heading by Status in View Detail Modal */}
+
               <Row>
                 <Col span={24}>
                   <div
                     className={
-                      isSelectedViewDetailLineManager.status === "Approved"
+                      viewDetailsLineManagerData?.details[0]?.approvalStatus ===
+                      "1"
+                        ? styles.pendingBorderClass
+                        : viewDetailsLineManagerData?.details[0]
+                            ?.approvalStatus === "2"
+                        ? styles.resubmittedBorderClass
+                        : viewDetailsLineManagerData?.details[0]
+                            ?.approvalStatus === "3"
                         ? styles.approvedBorderClass
-                        : isSelectedViewDetailLineManager.status === "Declined"
+                        : viewDetailsLineManagerData?.details[0]
+                            ?.approvalStatus === "4"
                         ? styles.declinedBorderClass
-                        : styles.pendingBorderClass
+                        : viewDetailsLineManagerData?.details[0]
+                            ?.approvalStatus === "6"
+                        ? styles.notTradedBorderClass
+                        : ""
                     }
                   >
                     {/* This will show when Pending will be Resubmit */}
-                    {isSelectedViewDetailLineManager.status === "Resubmit" && (
+                    {viewDetailsLineManagerData?.details[0]?.approvalStatus ===
+                      "2" && (
                       <>
                         <div>
                           <img src={repeat} className={styles.pendingIcon} />
@@ -199,18 +212,42 @@ const ViewDetailModal = () => {
 
                     <label
                       className={
-                        isSelectedViewDetailLineManager.status === "Approved"
+                        viewDetailsLineManagerData?.details[0]
+                          ?.approvalStatus === "1"
+                          ? styles.pendingDetailHeading
+                          : viewDetailsLineManagerData?.details[0]
+                              ?.approvalStatus === "2"
+                          ? styles.resubmittedDetailHeading
+                          : viewDetailsLineManagerData?.details[0]
+                              ?.approvalStatus === "3"
                           ? styles.approvedDetailHeading
-                          : isSelectedViewDetailLineManager.status ===
-                            "Declined"
+                          : viewDetailsLineManagerData?.details[0]
+                              ?.approvalStatus === "4"
                           ? styles.declinedDetailHeading
+                          : viewDetailsLineManagerData?.details[0]
+                              ?.approvalStatus === "5"
+                          ? styles.pendingDetailHeading
+                          : viewDetailsLineManagerData?.details[0]
+                              ?.approvalStatus === "6"
+                          ? styles.notTradedDetailHeading
                           : styles.pendingDetailHeading
                       }
                     >
-                      {isSelectedViewDetailLineManager.status === "Approved"
+                      {viewDetailsLineManagerData?.details[0]
+                        ?.approvalStatus === "1"
+                        ? "Pending"
+                        : viewDetailsLineManagerData?.details[0]
+                            ?.approvalStatus === "2"
+                        ? "Resubmitted"
+                        : viewDetailsLineManagerData?.details[0]
+                            ?.approvalStatus === "3"
                         ? "Approved"
-                        : isSelectedViewDetailLineManager.status === "Declined"
+                        : viewDetailsLineManagerData?.details[0]
+                            ?.approvalStatus === "4"
                         ? "Declined"
+                        : viewDetailsLineManagerData?.details[0]
+                            ?.approvalStatus === "5"
+                        ? "Traded"
                         : "Pending"}
                     </label>
                   </div>
