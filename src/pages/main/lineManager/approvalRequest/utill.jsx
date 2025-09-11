@@ -170,7 +170,7 @@ export const getBorderlessLineManagerTableColumns = (
     ),
     dataIndex: "type",
     key: "type",
-    width: "5%",
+    width: "8%",
     ellipsis: true,
     filteredValue: lineManagerApprovalSearch.type?.length
       ? lineManagerApprovalSearch.type

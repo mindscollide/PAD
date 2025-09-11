@@ -378,7 +378,9 @@ const ViewDetailModal = () => {
                       Request Date
                     </label>
                     <label className={styles.viewDetailSubLabels}>
-                      2024-10-01
+                      {formatApiDateTime(
+                        isSelectedViewDetailLineManager?.requestDateTime
+                      )}
                     </label>
                   </div>
                 </Col>
@@ -442,9 +444,8 @@ const ViewDetailModal = () => {
                         Array.isArray(
                           viewDetailsLineManagerData?.hierarchyDetails
                         )
-                          ? viewDetailsLineManagerData.hierarchyDetails.filter(
-                              (person) => person.userID !== loggedInUserID
-                            ).length - 1
+                          ? viewDetailsLineManagerData.hierarchyDetails.length -
+                              1
                           : 0
                       )}
                       connectorStyleConfig={{
@@ -463,14 +464,14 @@ const ViewDetailModal = () => {
                       {Array.isArray(
                         viewDetailsLineManagerData?.hierarchyDetails
                       ) &&
-                        viewDetailsLineManagerData.hierarchyDetails
-                          .filter((person) => person.userID !== loggedInUserID)
-                          .map((person, index) => {
+                        viewDetailsLineManagerData.hierarchyDetails.map(
+                          (person, index) => {
                             const {
                               fullName,
                               bundleStatusID,
                               requestDate,
                               requestTime,
+                              userID,
                             } = person;
 
                             const formattedDateTime = formatApiDateTime(
@@ -478,25 +479,61 @@ const ViewDetailModal = () => {
                             );
 
                             let iconSrc;
-                            console.log(
-                              bundleStatusID,
-                              "CheckerrrrrbundleStatusID"
-                            );
+                            let statusText = ""; // Initialize variable for status text
+                            let labelContent = null; // Define a variable for label content
+
                             switch (bundleStatusID) {
                               case 1:
-                                iconSrc = EllipsesIcon;
+                                // Check if the logged-in user is the same as this person
+                                if (loggedInUserID === userID) {
+                                  console.log("Check is waiting fro approval");
+                                  iconSrc = EllipsesIcon; // Set the ellipses icon for waiting
+                                  statusText = "Waiting for Approval"; // Add the status text
+                                  labelContent = null; // Don't show name and date when loggedInUserID matches
+                                } else {
+                                  console.log("Check is waiting fro approval");
+                                  iconSrc = EllipsesIcon; // Default icon for case 1
+                                  labelContent = (
+                                    <div className={styles.customlabel}>
+                                      <div className={styles.customtitle}>
+                                        {fullName}
+                                      </div>
+                                      <div className={styles.customdesc}>
+                                        {formattedDateTime}
+                                      </div>
+                                    </div>
+                                  );
+                                }
                                 break;
-                              case 3:
+                              case 2:
                                 iconSrc = CheckIcon;
+                                if (loggedInUserID === userID) {
+                                  labelContent = (
+                                    <div className={styles.customlabel}>
+                                      <div className={styles.customtitle}>
+                                        Approved by You
+                                      </div>
+                                      <div className={styles.customdesc}>
+                                        {formattedDateTime}
+                                      </div>
+                                    </div>
+                                  );
+                                } else {
+                                  labelContent = (
+                                    <div className={styles.customlabel}>
+                                      <div className={styles.customtitle}>
+                                        {fullName}
+                                      </div>
+                                      <div className={styles.customdesc}>
+                                        {formattedDateTime}
+                                      </div>
+                                    </div>
+                                  );
+                                }
                                 break;
                               default:
-                                iconSrc = EllipsesIcon;
-                            }
-
-                            return (
-                              <Step
-                                key={index}
-                                label={
+                                iconSrc = EllipsesIcon; // Default icon for other cases
+                                labelContent = (
                                   <div className={styles.customlabel}>
                                     <div className={styles.customtitle}>
                                       {fullName}
@@ -505,7 +542,14 @@ const ViewDetailModal = () => {
                                       {formattedDateTime}
                                     </div>
                                   </div>
-                                }
+                                );
+                            }
+
+                            return (
+                              <Step
+                                key={index}
+                                className={styles.stepButtonActive}
+                                label={labelContent}
                                 children={
                                   <div className={styles.stepCircle}>
                                     <img
@@ -513,11 +557,19 @@ const ViewDetailModal = () => {
                                       alt="status-icon"
                                       className={styles.circleImg}
                                     />
+                                    {statusText && (
+                                      <div
+                                        className={styles.waitingApprovalText}
+                                      >
+                                        {statusText}
+                                      </div>
+                                    )}
                                   </div>
                                 }
                               />
                             );
-                          })}
+                          }
+                        )}
                     </Stepper>
                   </div>
                 </div>

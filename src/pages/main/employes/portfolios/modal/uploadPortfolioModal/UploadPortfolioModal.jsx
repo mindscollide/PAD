@@ -15,14 +15,11 @@ import { useNotification } from "../../../../../../components/NotificationProvid
 import { useGlobalLoader } from "../../../../../../context/LoaderContext";
 import { useApi } from "../../../../../../context/ApiContext";
 import { useNavigate } from "react-router-dom";
-import { useSidebarContext } from "../../../../../../context/sidebarContaxt";
 
 const UploadPortfolioModal = () => {
   const navigate = useNavigate();
   const { uploadPortfolioModal, setUploadPortfolioModal } =
     usePortfolioContext();
-  const { selectedKey } = useSidebarContext();
-  console.log(selectedKey, "selectedKeyselectedKey");
 
   const { showNotification } = useNotification();
 

@@ -56,8 +56,6 @@ const ApprovalRequest = () => {
 
   const [loadingMore, setLoadingMore] = useState(false);
 
-  console.log(lineManagerApproval, "lineManagerApprovalChecker123");
-
   // state of Search context which I'm getting from the SearchBar for Line Manager
   // Global state for filter/search values
   const {
@@ -65,6 +63,12 @@ const ApprovalRequest = () => {
     setLineManagerApprovalSearch,
     resetLineManagerApprovalSearch,
   } = useSearchBarContext();
+
+  console.log(
+    lineManagerApprovalSearch,
+    lineManagerApproval,
+    "lineManagerApprovalChecker123"
+  );
 
   // Sort state for AntD Table
   const [sortedInfo, setSortedInfo] = useState({});
@@ -108,6 +112,21 @@ const ApprovalRequest = () => {
     if (hasFetched.current) return;
     hasFetched.current = true;
     fetchApprovals();
+
+    resetLineManagerApprovalSearch();
+    setLineManagerApprovalSearch({
+      instrumentName: "",
+      requesterName: "",
+      date: null,
+      mainInstrumentName: "",
+      type: [],
+      status: [],
+      pageSize: 0,
+      pageNumber: 0,
+      totalRecords: 0,
+      filterTrigger: true,
+      tableFilterTrigger: false,
+    });
   }, []);
 
   // Keys to track which filters to sync/display
@@ -326,7 +345,7 @@ const ApprovalRequest = () => {
             prev.totalRecords !== lineManagerApproval.totalRecords
               ? lineManagerApproval.totalRecords
               : prev.totalRecords,
-          pageNumber: prev.pageNumber + 10,
+          pageNumber: mappedData.length,
         }));
       } else if (lineManagerApproval === null) {
         // No data case
@@ -367,7 +386,7 @@ const ApprovalRequest = () => {
               [],
             TypeIds:
               mapBuySellToIds(lineManagerApprovalSearch.type, assetData) || [],
-            PageNumber: lineManagerApprovalSearch.pageNumber || 10, // Acts as offset for API
+            PageNumber: lineManagerApprovalSearch.pageNumber || 0, // Acts as offset for API
             Length: 10,
             RequesterName: lineManagerApprovalSearch.requesterName || "",
           };
