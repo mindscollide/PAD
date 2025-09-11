@@ -1,5 +1,5 @@
-import React from "react";
-import { Row, Col, Space } from "antd";
+import React, { useState } from "react";
+import { Row, Col, Space, Checkbox, Select } from "antd";
 import { Button, CommenSearchInput, DateRangePicker, TextField } from "../..";
 import { useSearchBarContext } from "../../../context/SearchBarContaxt";
 import {
@@ -7,9 +7,14 @@ import {
   removeFirstSpace,
 } from "../../../commen/funtions/rejex";
 import { useDashboardContext } from "../../../context/dashboardContaxt";
+import styles from "./SearchWithPopoverOnly.module.css";
 
 export const EmployeePortfolioFilter = ({ handleSearch, activeTab }) => {
   const { employeeBasedBrokersData } = useDashboardContext();
+
+  // for employeeBroker state to show data in dropdown
+  const [selectedBrokers, setSelectedBrokers] = useState([]);
+
   /**
    * SearchBarContext its state handler for this function.
    * - instrumentShortName for instruments of dropdown menu
@@ -28,6 +33,33 @@ export const EmployeePortfolioFilter = ({ handleSearch, activeTab }) => {
     setEmployeePendingApprovalSearch,
     resetEmployeePendingApprovalSearch,
   } = useSearchBarContext();
+
+  // Format broker options
+  const brokerOptions = (employeeBasedBrokersData || []).map((broker) => ({
+    label: (
+      <div style={{ display: "flex", alignItems: "center" }}>
+        <Checkbox
+          checked={selectedBrokers.some((b) => b.brokerID === broker.brokerID)}
+          style={{ marginRight: 8 }}
+        />
+        {broker.brokerName}
+      </div>
+    ),
+    value: broker.brokerID,
+    raw: broker, // keep full broker data for later use
+  }));
+
+  //  Prepare and Show Brokers selected values for Select's `value` prop
+  const selectedBrokerIDs = selectedBrokers.map((b) => b.brokerID);
+
+  // OnChange Handle when user selects/deselects brokers
+  const handleBrokerChange = (selectedIDs) => {
+    const selectedData = brokerOptions
+      .filter((item) => selectedIDs.includes(item.value))
+      .map((item) => item.raw);
+    setSelectedBrokers(selectedData);
+  };
+
   /**
    * Handles input change for approval filters.
    * - Allows only numeric input for "Quantity"
@@ -51,13 +83,16 @@ export const EmployeePortfolioFilter = ({ handleSearch, activeTab }) => {
     }));
   };
 
-  const brokerOptions = employeeBasedBrokersData?.map((broker) => ({
-    value: broker.brokerID, // store ID
-    label: broker.brokerName, // show name
-    brokerID: broker.brokerID, // keep full info if you need it later
-    brokerName: broker.brokerName,
-  }));
-  console.log("employeeBasedBrokersData", employeeBasedBrokersData);
+  // const brokerOptions = employeeBasedBrokersData?.map((broker) => ({
+  //   value: broker.brokerID, // store ID
+  //   label: broker.brokerName, // show name
+  //   brokerID: broker.brokerID, // keep full info if you need it later
+  //   brokerName: broker.brokerName,
+  // }));
+  console.log("employeeBasedBrokersData", {
+    employeeBasedBrokersData,
+    selectedBrokerIDs,
+  });
   return (
     <>
       <Row gutter={[12, 12]}>
@@ -107,26 +142,30 @@ export const EmployeePortfolioFilter = ({ handleSearch, activeTab }) => {
         </Col>
       </Row>
       <Row gutter={[12, 12]}>
-        <Col xs={24} sm={24} md={12} lg={12}>
-          <CommenSearchInput
-            label="Broker"
-            name="broker"
-            value={
-              activeTab === "pending"
-                ? employeePendingApprovalSearch.broker
-                : employeePortfolioSearch.broker
-            }
+        <Col span={12} className={styles.brokersOptionData}>
+          <label className={styles.instrumentLabel}>Brokers</label>
+          <Select
+            mode="multiple"
+            placeholder="Select"
+            value={selectedBrokerIDs}
+            onChange={handleBrokerChange}
             options={brokerOptions}
-            onChange={(e) =>
-              handleEmployeeApprovalInputChange(
-                e,
-                activeTab === "pending"
-                  ? setEmployeePendingApprovalSearch
-                  : setEmployeePortfolioSearch
-              )
+            maxTagCount={0}
+            maxTagPlaceholder={(omittedValues) =>
+              `${omittedValues.length} selected`
             }
-            placeholder="Select a Broker"
-            className={"input-dropdown-search"} // or just "custom-dropdown" for global CSS
+            prefixCls="EquitiesBrokerSelectPrefix"
+            optionLabelProp="label"
+            optionRender={(option) => (
+              <div style={{ display: "flex", alignItems: "center" }}>
+                <Checkbox
+                  className="custom-broker-option"
+                  checked={selectedBrokerIDs.includes(option.value)}
+                  style={{ marginRight: 8 }}
+                />
+                {option.data.raw.brokerName}
+              </div>
+            )}
           />
         </Col>
         <Col xs={24} sm={24} md={12} lg={12}>
@@ -179,6 +218,35 @@ export const EmployeePortfolioFilter = ({ handleSearch, activeTab }) => {
           />
         </Col>
       </Row>
+      {/* <Row className={styles.mt1} gutter={[20, 20]}>
+        <Col span={12}>
+          <label className={styles.instrumentLabel}>Brokers</label>
+          <Select
+            mode="multiple"
+            placeholder="Select"
+            value={selectedBrokerIDs}
+            onChange={handleBrokerChange}
+            options={brokerOptions}
+            maxTagCount={0}
+            maxTagPlaceholder={(omittedValues) =>
+              `${omittedValues.length} selected`
+            }
+            prefixCls="EquitiesBrokerSelectPrefix"
+            optionLabelProp="label"
+            optionRender={(option) => (
+              <div style={{ display: "flex", alignItems: "center" }}>
+                <Checkbox
+                  className="custom-broker-option"
+                  checked={selectedBrokerIDs.includes(option.value)}
+                  style={{ marginRight: 8 }}
+                />
+                {option.data.raw.brokerName}
+              </div>
+            )}
+          />
+        </Col>
+        
+      </Row> */}
       <Row gutter={[12, 12]} justify="end" style={{ marginTop: 16 }}>
         <Col>
           <Space>
