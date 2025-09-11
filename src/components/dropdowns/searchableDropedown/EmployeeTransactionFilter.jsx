@@ -1,5 +1,5 @@
 import React from "react";
-import { Row, Col, Space } from "antd";
+import { Row, Col, Space, Select, Checkbox } from "antd";
 import { useSidebarContext } from "../../../context/sidebarContaxt";
 import { Button, DateRangePicker, TextField } from "../..";
 import { useSearchBarContext } from "../../../context/SearchBarContaxt";
@@ -58,7 +58,13 @@ export const EmployeeTransactionFilter = ({
       [name]: removeFirstSpace(value),
     }));
   };
-
+  // OnChange Handle when user selects/deselects brokers
+  const handleBrokerChange = (selectedIDs) => {
+    const selectedData = brokerOptions
+      .filter((item) => selectedIDs.includes(item.value))
+      .map((item) => item.raw);
+    setSelectedBrokers(selectedData);
+  };
   return (
     <>
       <Row gutter={[12, 12]}>
@@ -96,6 +102,34 @@ export const EmployeeTransactionFilter = ({
         </Col>
       </Row>
       <Row gutter={[12, 12]}>
+       <Col xs={24} sm={24} md={12} lg={12}>
+              <label >
+                Brokers 
+              </label>
+              <Select
+                mode="multiple"
+                placeholder="Select"
+                value={selectedBrokerIDs}
+                onChange={handleBrokerChange}
+                options={brokerOptions}
+                maxTagCount={0}
+                maxTagPlaceholder={(omittedValues) =>
+                  `${omittedValues.length} selected`
+                }
+                prefixCls="EquitiesBrokerSelectPrefix"
+                optionLabelProp="label"
+                optionRender={(option) => (
+                  <div style={{ display: "flex", alignItems: "center" }}>
+                    <Checkbox
+                      className="custom-broker-option"
+                      // checked={selectedBrokerIDs.includes(option.value)}
+                      style={{ marginRight: 8 }}
+                    />
+                    {option.data.raw.brokerName}
+                  </div>
+                )}
+              />
+            </Col>
         <Col xs={24} sm={24} md={12} lg={12}>
           <DateRangePicker
             label="Date Range"
