@@ -8,7 +8,11 @@ import moment from "moment";
 import BorderlessTable from "../../../../../components/tables/borderlessTable/borderlessTable";
 
 // Utils
-import { getBorderlessTableColumns } from "./utill";
+import {
+  formatBrokerOptions,
+  getBorderlessTableColumns,
+  mapToTableRows,
+} from "./utill";
 import { approvalStatusMap } from "../../../../../components/tables/borderlessTable/utill";
 
 // Contexts
@@ -23,6 +27,7 @@ import { useTableScrollBottom } from "../../myApprovals/utill";
 
 // API
 import { SearchEmployeePendingUploadedPortFolio } from "../../../../../api/protFolioApi";
+import { useDashboardContext } from "../../../../../context/dashboardContaxt";
 
 const PendingApprovals = () => {
   const navigate = useNavigate();
@@ -39,6 +44,9 @@ const PendingApprovals = () => {
     totalRecords: 0,
   });
   const [loadingMore, setLoadingMore] = useState(false);
+  const { employeeBasedBrokersData } = useDashboardContext();
+  const brokerOptions = formatBrokerOptions(employeeBasedBrokersData);
+  console.log("employeeBasedBrokersData", employeeBasedBrokersData);
 
   // ✅ Global context states
   const {
@@ -59,30 +67,11 @@ const PendingApprovals = () => {
     approvalStatusMap,
     sortedInfo,
     employeePendingApprovalSearch,
-    setEmployeePendingApprovalSearch,
-    resetEmployeePendingApprovalSearch
+    setEmployeePendingApprovalSearch
   );
 
   // ✅ Guard against duplicate API calls (React StrictMode mounts twice)
   const didFetchRef = useRef(false);
-
-  /**
-   * 🔹 Transform raw API data → Table rows
-   */
-  const mapToTableRows = (list = []) =>
-    list.map((item) => ({
-      key: item.approvalID || item.id,
-      instrument: item.instrument?.instrumentName || item.instrumentName || "",
-      transactionid: item.transactionId || item.transactionid || "",
-      approvalRequestDateime: `${item.transactionConductedDate || ""} ${
-        item.transactionConductedTime || ""
-      }`,
-      quantity: item.quantity || 0,
-      type: item.tradeType?.typeName || item.type || "",
-      broker: item.broker?.brokerName || item.broker || "",
-      status: item?.workFlowStatus?.approvalStatusName || item.status || "",
-      ...item,
-    }));
 
   /**
    * 🔹 Fetch pending approvals from API
@@ -101,7 +90,10 @@ const PendingApprovals = () => {
           navigate,
         });
 
-        const mapped = mapToTableRows(res?.pendingPortfolios || []);
+        const mapped = mapToTableRows(
+          res?.pendingPortfolios || [],
+          brokerOptions
+        );
 
         setEmployeePendingApprovalsData((prev) => {
           if (!res?.pendingPortfolios || res.pendingPortfolios.length === 0) {
@@ -109,7 +101,6 @@ const PendingApprovals = () => {
             return {
               data: [],
               totalRecords: 0,
-              mqttRecived: false,
               Apicall: true,
             };
           }
@@ -119,7 +110,6 @@ const PendingApprovals = () => {
             ...prev,
             data: [...(prev.data || []), ...mapped],
             totalRecords: res?.totalRecords ?? (prev.totalRecords || 0),
-            mqttRecived: false,
             Apicall: true,
           };
         });
@@ -180,7 +170,8 @@ const PendingApprovals = () => {
       const mapped = mapToTableRows(
         Array.isArray(employeePendingApprovalsDataMqtt?.mqttRecivedData)
           ? employeePendingApprovalsDataMqtt.mqttRecivedData
-          : [employeePendingApprovalsDataMqtt.mqttRecivedData]
+          : [employeePendingApprovalsDataMqtt.mqttRecivedData],
+        brokerOptions
       );
 
       // Prepend new row(s) at index 0
@@ -269,7 +260,10 @@ const PendingApprovals = () => {
           navigate,
         });
 
-        const mapped = mapToTableRows(res?.pendingPortfolios || []);
+        const mapped = mapToTableRows(
+          res?.pendingPortfolios || [],
+          brokerOptions
+        );
         setTableData((prev) => [...prev, ...mapped]);
 
         setEmployeePendingApprovalSearch((prev) => ({
@@ -318,7 +312,7 @@ const PendingApprovals = () => {
       console.error("❌ Error detecting page reload:", error);
     }
   }, [fetchPendingApprovals, resetEmployeePendingApprovalSearch]);
-  
+
   /**
    * 🔄 Cleanup → reset states on unmount
    */
