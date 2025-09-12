@@ -5,6 +5,7 @@ import {
   SearchApprovalRequestLineManager,
   SearchTadeApprovals,
 } from "../../../api/myApprovalApi";
+import { SearchEmployeeTransactionsDetails } from "../../../api/myTransactionsApi";
 
 // -----------------------------------------------------------------------------
 // 📌 Status Options
@@ -175,6 +176,7 @@ export const apiCallType = async ({
   navigate,
   setIsEmployeeMyApproval,
   setLineManagerApproval,
+  setEmployeeTransactionsData,
 }) => {
   const assetType = state.assetType || "Equities";
   const typeIds = mapBuySellToIds(newdata, addApprovalRequestData?.[assetType]);
@@ -197,6 +199,34 @@ export const apiCallType = async ({
       break;
 
     case "2":
+      const assetType = state.assetType || "Equities"; // fallback
+      const TypeIds = mapBuySellToIds(
+        newdata,
+        addApprovalRequestData?.[assetType]
+      );
+      const statusIds = mapStatusToIds(state.status);
+      const requestdata = {
+        InstrumentName: state.instrumentName || state.mainInstrumentName,
+        Quantity: state.quantity || 0,
+        StartDate: state.startDate || null,
+        EndDate: state.startDate || null,
+        BrokerIDs: [],
+        StatusIds: statusIds || [],
+        TypeIds: TypeIds || [],
+        PageNumber: 0,
+        Length: state.pageSize || 10,
+      };
+      showLoader(true);
+      console.log("Checker APi Search");
+      const data = await SearchEmployeeTransactionsDetails({
+        callApi,
+        showNotification,
+        showLoader,
+        requestdata,
+        navigate,
+      });
+      setEmployeeTransactionsData(data);
+      break;
     case "3":
     case "6": // Line Manager Approvals
       requestdata = buildRequestData({
@@ -246,6 +276,7 @@ export const apiCallStatus = async ({
   showLoader,
   navigate,
   setIsEmployeeMyApproval,
+  setEmployeeTransactionsData,
   setLineManagerApproval,
 }) => {
   const typeIds = mapBuySellToIds(state.type, addApprovalRequestData?.Equities);
@@ -268,6 +299,36 @@ export const apiCallStatus = async ({
       break;
 
     case "2":
+      const TypeIds = mapBuySellToIds(
+        state.type,
+        addApprovalRequestData?.Equities
+      );
+      const statusIds = mapStatusToIds(newdata);
+      console.log(newdata, "statestatusCheck");
+      console.log(statusIds, "statestatusCheck");
+
+      const requestdata = {
+        InstrumentName: state.instrumentName || state.mainInstrumentName,
+        Quantity: state.quantity || 0,
+        StartDate: state.startDate || null,
+        EndDate: state.startDate || null,
+        BrokerIDs: [],
+        StatusIds: statusIds || [],
+        TypeIds: TypeIds || [],
+        PageNumber: 0,
+        Length: state.pageSize || 10,
+      };
+      showLoader(true);
+      console.log("Checker APi Search");
+      const data = await SearchEmployeeTransactionsDetails({
+        callApi,
+        showNotification,
+        showLoader,
+        requestdata,
+        navigate,
+      });
+      setEmployeeTransactionsData(data);
+      break;
     case "3":
     case "6": // Line Manager Approvals
       statusIds = mapStatusToIdsForLineManager(newdata);

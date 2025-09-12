@@ -215,13 +215,19 @@
 }
 .backgrounColorOfStepper {
   background-color: #fff1e7 !important;
-  padding: 5px 11px;
+  padding: 5px 0px;
   display: inline-flex; /* keep children in a row */
   flex-direction: row !important; /* force horizontal */
   margin-top: 10px;
   border-radius: 8px !important;
   gap: 20px; /* space between steps */
-  width: 97%;
+  width: 100%;
+  overflow: hidden !important;
+  overflow-x: auto !important; /* allow horizontal scroll */
+  overflow-y: hidden !important; /* no vertical scroll */
+  white-space: nowrap !important;
+  scrollbar-width: thin; /* Firefox */
+  scrollbar-color: #bfbfbf transparent;
 }
 
 .customdesc {
@@ -282,9 +288,6 @@
 
 .mainStepperContainer {
   width: 100% !important;
-  overflow-x: auto; /* allow horizontal scroll */
-  overflow-y: hidden; /* no vertical scroll */
-  white-space: nowrap;
 }
 
 .approvedButtonClassViewComment {
@@ -303,9 +306,6 @@
 }
 
 .centerAlignStepper {
-  height: 110px;
-  display: flex;
-  align-items: center;
   justify-content: center !important;
 }
 
@@ -324,9 +324,8 @@
 
 .stepCircle {
   display: flex;
-  flex-direction: column; /* Stack items vertically */
-  justify-content: center;
   align-items: center;
+  flex-direction: column !important;
   height: 50px;
   width: 50px;
 }

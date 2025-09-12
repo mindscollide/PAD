@@ -8,8 +8,7 @@
   font-size: 26px;
   line-height: 100%;
   letter-spacing: 0%;
-  color: var(--Blue-V1, #30426A);
-
+  color: var(--Blue-V1, #30426a);
 }
 
 .filter-tags-container {
@@ -22,6 +21,7 @@
 }
 
 .filter-tag {
+  position: absolute !important;
   display: flex;
   align-items: center;
   height: 35px;
@@ -38,4 +38,32 @@
   font-weight: bold;
   font-size: 16px;
   line-height: 1;
+}
+
+.table-header-wrapper {
+  display: flex;
+  align-items: flex-start; /* Keep icon aligned to top if text wraps */
+  gap: 6px;
+  flex-wrap: wrap; /* Allow text + icon to move to next line if needed */
+}
+
+.table-header-text {
+  font-family: "Switzer Variable";
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 1.3;
+  color: var(--Blue-V1, #30426a);
+
+  white-space: normal; /* Allow wrapping */
+  word-break: break-word;
+  /* flex: 1 1 auto; */ /* Let text take available space */
+  flex: none;
+  min-width: 0; /* Prevent overflow issues in flex */
+}
+
+.table-header-icon {
+  /* margin-left: 4px; bas halka sa gap */
+  color: var(--Blue-V1, #30426a);
+  display: flex;
+  align-items: center;
 }

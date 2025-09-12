@@ -20,6 +20,15 @@ import { SearchEmployeeTransactionsDetails } from "../../../../api/myTransaction
 
 // Styles
 import style from "./myTransaction.module.css";
+import { useTransaction } from "../../../../context/myTransaction";
+import EmptyState from "../../../../components/emptyStates/empty-states";
+import {
+  mapBuySellToIds,
+  mapStatusToIds,
+} from "../../../../components/dropdowns/filters/utils";
+import { apiCallSearch } from "../../../../components/dropdowns/searchableDropedown/utill";
+import { useDashboardContext } from "../../../../context/dashboardContaxt";
+import { useSidebarContext } from "../../../../context/sidebarContaxt";
 
 /**
  * 📄 MyTransaction Component
@@ -34,237 +43,98 @@ import style from "./myTransaction.module.css";
  */
 const MyTransaction = () => {
   const navigate = useNavigate();
+  const hasFetched = useRef(false);
 
   // -------------------- Context Hooks --------------------
   const { callApi } = useApi();
   const { showNotification } = useNotification();
   const { showLoader } = useGlobalLoader();
+  const { selectedKey } = useSidebarContext();
+  const { addApprovalRequestData } = useDashboardContext();
   const {
     employeeMyTransactionSearch,
     setEmployeeMyTransactionSearch,
     resetEmployeeMyTransactionSearch,
   } = useSearchBarContext();
 
-  // -------------------- Local State --------------------
-  const [sortedInfo, setSortedInfo] = useState({});
-  const [submittedFilters, setSubmittedFilters] = useState([]);
+  const { employeeTransactionsData, setEmployeeTransactionsData } =
+    useTransaction();
 
-  // ✅ Guard against duplicate API calls (React.StrictMode mounts twice)
-  const didFetchRef = useRef(false);
-
-  // -------------------- Dummy Data (Replace with API in Production) --------------------
-  const data = [
-    {
-      key: "1",
-      transactionId: "TRX-001",
-      instrument: "GDSC-OCT",
-      type: "Buy",
-      transactionDate: "2024-10-11T10:00:00",
-      status: "Pending",
-      quantity: "10,000",
-      broker: "MRA Securities Ltd.",
-    },
-    {
-      key: "2",
-      transactionId: "TRX-002",
-      instrument: "GDSC-NOV",
-      type: "Sell",
-      transactionDate: "2024-10-11T10:00:00",
-      status: "Pending",
-      quantity: 15000,
-      broker: "Multiple Brokers",
-    },
-    // ... (rest of dummy transactions)
-  ];
-
-  // -------------------- Utility Functions --------------------
-
-  /**
-   * 🔹 Map raw API response data → Table rows
-   *
-   * @param {Array<Object>} list - List of transactions from API
-   * @returns {Array<Object>} - Transformed rows for the table
-   */
-  const mapToTableRows = (list = []) =>
-    list.map((item) => ({
-      key: item.approvalID || item.id,
-      instrument: item.instrument?.instrumentName || item.instrumentName || "",
-      transactionid: item.transactionId || item.transactionid || "",
-      approvalRequestDateime: `${item.transactionConductedDate || ""} ${
-        item.transactionConductedTime || ""
-      }`,
-      quantity: item.quantity || 0,
-      type: item.tradeType?.typeName || item.type || "",
-      broker: item.broker?.brokerName || item.broker || "",
-      status: item?.workFlowStatus?.approvalStatusName || item.status || "",
-      ...item,
-    }));
-
-  /**
-   * 🔹 Fetch employee transactions from API
-   *
-   * @param {Object} requestData - Request payload for API
-   */
-  const fetchPendingApprovals = useCallback(
-    async (requestData) => {
-      showLoader(true);
-
-      try {
-        const res = await SearchEmployeeTransactionsDetails({
-          callApi,
-          showNotification,
-          showLoader,
-          requestdata: requestData,
-          navigate,
-        });
-
-        const mapped = mapToTableRows(res?.pendingPortfolios || []);
-
-        setEmployeeMyTransactionSearch((prev) => {
-          if (!res?.pendingPortfolios || res.pendingPortfolios.length === 0) {
-            // 🔹 Reset when no records
-            return {
-              data: [],
-              totalRecords: 0,
-              Apicall: true,
-            };
-          }
-
-          // 🔹 Append new rows
-          return {
-            ...prev,
-            data: [...(prev.data || []), ...mapped],
-            totalRecords: res?.totalRecords ?? (prev.totalRecords || 0),
-            Apicall: true,
-          };
-        });
-      } catch (error) {
-        console.error("❌ Error fetching pending approvals:", error);
-      } finally {
-        showLoader(false);
-      }
-    },
-    [callApi, showNotification, showLoader, navigate, setEmployeeMyTransactionSearch]
+  console.log(
+    employeeTransactionsData,
+    "employeeTransactionsDataemployeeTransactionsData"
   );
 
-  // -------------------- Effects --------------------
+  // -------------------- Local State --------------------
+  const [sortedInfo, setSortedInfo] = useState({});
+  const [loadingMore, setLoadingMore] = useState(false); // spinner at bottom
+  const [submittedFilters, setSubmittedFilters] = useState([]);
 
   /**
-   * 🔄 Initial API call on mount (avoids duplicate calls on React.StrictMode)
+   * Fetches approval data from API on component mount
    */
-  useEffect(() => {
-    if (didFetchRef.current) return;
-    didFetchRef.current = true;
-
-    const requestData = {
-      InstrumentName: "",
-      Quantity: 0,
-      StartDate: "",
-      EndDate: "",
-      BrokerIDs: [],
-      TypeIDs: [],
-      StatusIDs: [],
+  const fetchApprovals = async () => {
+    await showLoader(true);
+    const requestdata = {
+      InstrumentName:
+        employeeMyTransactionSearch.instrumentName ||
+        employeeMyTransactionSearch.mainInstrumentName,
+      Quantity: employeeMyTransactionSearch.quantity || 0,
+      StartDate: employeeMyTransactionSearch.date || null,
+      EndDate: employeeMyTransactionSearch.date || null,
+      BrokerIDs: employeeMyTransactionSearch.brokerIDs || [],
+      StatusIds: employeeMyTransactionSearch.status || [],
+      TypeIds: employeeMyTransactionSearch.type || [],
       PageNumber: 0,
-      Length: 10,
+      Length: employeeMyTransactionSearch.pageSize || 10,
     };
 
-    fetchPendingApprovals(requestData);
+    const data = await SearchEmployeeTransactionsDetails({
+      callApi,
+      showNotification,
+      showLoader,
+      requestdata,
+      navigate,
+    });
 
-    // Reset search state if page reloaded
-    try {
-      const navigationEntries = performance.getEntriesByType("navigation");
-      if (
-        navigationEntries.length > 0 &&
-        navigationEntries[0].type === "reload"
-      ) {
-        resetEmployeeMyTransactionSearch();
-      }
-    } catch (error) {
-      console.error("❌ Error detecting page reload:", error);
-    }
-  }, [fetchPendingApprovals, resetEmployeeMyTransactionSearch]);
+    setEmployeeTransactionsData(data);
+  };
 
   /**
-   * 🔄 On `filterTrigger`, update submittedFilters for display
+   * Runs only once to fetch approvals on initial render
    */
   useEffect(() => {
-    if (employeeMyTransactionSearch.filterTrigger) {
-      const snapshot = [];
+    if (hasFetched.current) return;
+    hasFetched.current = true;
+    fetchApprovals();
 
-      // Collect active filters
-      const filterKeys = [
-        { key: "instrumentName", label: "Instrument" },
-        { key: "mainInstrumentName", label: "Main Instrument" },
-        { key: "quantity", label: "Quantity" },
-      ];
-
-      filterKeys.forEach(({ key, label }) => {
-        const value = employeeMyTransactionSearch[key];
-        if (value) snapshot.push({ key, label, value });
-      });
-
-      // Add date range filter
-      const { startDate, endDate } = employeeMyTransactionSearch;
-      if (startDate || endDate) {
-        snapshot.push({
-          key: "dateRange",
-          label: "Date Range",
-          value: `${startDate ? moment(startDate).format("YYYY-MM-DD") : "N/A"} - ${
-            endDate ? moment(endDate).format("YYYY-MM-DD") : "N/A"
-          }`,
-        });
-      }
-
-      setSubmittedFilters(snapshot);
-
-      // Reset trigger
-      setEmployeeMyTransactionSearch((prev) => ({
-        ...prev,
-        filterTrigger: false,
-      }));
-    }
-  }, [employeeMyTransactionSearch.filterTrigger]);
-
-  /**
-   * 🔄 Reset search state on hard page reload
-   */
-  useEffect(() => {
-    try {
-      const navigationEntries = performance.getEntriesByType("navigation");
-      if (navigationEntries.length > 0) {
-        const navigationType = navigationEntries[0].type;
-        if (navigationType === "reload") {
-          resetEmployeeMyTransactionSearch();
-        }
-      }
-    } catch (error) {
-      console.error("❌ Error detecting reload:", error);
-    }
+    resetEmployeeMyTransactionSearch();
+    setEmployeeMyTransactionSearch({
+      instrumentName: "",
+      quantity: 0,
+      startDate: null,
+      endDate: null,
+      mainInstrumentName: "",
+      type: [],
+      status: [],
+      brokerIDs: [],
+      pageSize: "",
+      pageNumber: 0,
+      filterTrigger: false,
+      tableFilterTrigger: false,
+    });
   }, []);
 
-  // -------------------- Handlers --------------------
+  // Keys to track which filters to sync/display
+  const filterKeys = [
+    { key: "instrumentName", label: "Instrument" },
+    { key: "mainInstrumentName", label: "Main Instrument" },
+    { key: "startDate", label: "Date" },
+    { key: "endDate", label: "Date" },
+    { key: "quantity", label: "Quantity" },
+  ];
 
-  /**
-   * Remove a filter from submitted filters & context
-   *
-   * @param {string} key - The filter key (e.g., "instrumentName", "dateRange")
-   */
-  const handleRemoveFilter = (key) => {
-    if (key === "dateRange") {
-      setEmployeeMyTransactionSearch((prev) => ({
-        ...prev,
-        startDate: "",
-        endDate: "",
-      }));
-    } else {
-      setEmployeeMyTransactionSearch((prev) => ({
-        ...prev,
-        [key]: "",
-      }));
-    }
-
-    setSubmittedFilters((prev) => prev.filter((item) => item.key !== key));
-  };
+  console.log(approvalStatusMap, "approvalStatusMapapprovalStatusMap");
 
   // -------------------- Table Columns --------------------
   const columns = getBorderlessTableColumns(
@@ -273,6 +143,226 @@ const MyTransaction = () => {
     employeeMyTransactionSearch,
     setEmployeeMyTransactionSearch
   );
+
+  /**
+   * Removes a filter tag and re-fetches data
+   */
+  const handleRemoveFilter = async (key) => {
+    console.log("Check Data");
+    const normalizedKey = key?.toLowerCase();
+    // 1️⃣ Update UI state for removed filters
+    setSubmittedFilters((prev) => prev.filter((item) => item.key !== key));
+
+    //To show dynamically AssetType like EQ equities ETC
+    const assetKey = employeeMyTransactionSearch.assetType;
+    const assetData = addApprovalRequestData?.[assetKey];
+
+    // 2️⃣ Prepare API request parameters
+    const TypeIds = mapBuySellToIds(
+      employeeMyTransactionSearch.type,
+      assetData
+    );
+    const statusIds = mapStatusToIds(employeeMyTransactionSearch.status);
+
+    const requestdata = {
+      InstrumentName:
+        employeeMyTransactionSearch.instrumentName ||
+        employeeMyTransactionSearch.mainInstrumentName,
+      Quantity: employeeMyTransactionSearch.quantity || 0,
+      StartDate: employeeMyTransactionSearch.date || null,
+      EndDate: employeeMyTransactionSearch.date || null,
+      BrokerIDs: employeeMyTransactionSearch.brokerIDs || [],
+      StatusIds: statusIds || [],
+      TypeIds: TypeIds || [],
+      PageNumber: 0,
+      Length: employeeMyTransactionSearch.pageSize || 10,
+    };
+    console.log(normalizedKey, "checkRequqestData");
+
+    // 3️⃣ Reset API params for the specific filter being removed
+    if (normalizedKey === "quantity") {
+      console.log(requestdata, "checkRequqestData");
+      requestdata.Quantity = 0;
+      // 5️⃣ Update search state — only reset the specific key + page number
+      setEmployeeMyTransactionSearch((prev) => ({
+        ...prev,
+        quantity: 0,
+        pageNumber: 0,
+      }));
+    } else if (
+      normalizedKey === "instrumentname" ||
+      normalizedKey === "maininstrumentname"
+    ) {
+      console.log("Check Data");
+      setEmployeeMyTransactionSearch((prev) => ({
+        ...prev,
+        instrumentName: "",
+        mainInstrumentName: "",
+        pageNumber: 0,
+      }));
+      requestdata.InstrumentName = "";
+    } else if (normalizedKey === "startdate") {
+      requestdata.StartDate = "";
+      setEmployeeMyTransactionSearch((prev) => ({
+        ...prev,
+        startdate: "",
+        pageNumber: 0,
+      }));
+    }
+
+    // 4️⃣ Show loader and call API
+    showLoader(true);
+    console.log("Check Data");
+
+    const data = await SearchEmployeeTransactionsDetails({
+      callApi,
+      showNotification,
+      showLoader,
+      requestdata,
+      navigate,
+    });
+
+    setEmployeeTransactionsData(data);
+  };
+
+  /**
+   * Syncs filters on `filterTrigger` from context
+   */
+  useEffect(() => {
+    console.log("Filter Checker align");
+    console.log(selectedKey, "Filter Checker align");
+    if (employeeMyTransactionSearch.filterTrigger) {
+      const snapshot = filterKeys
+        .filter(({ key }) => employeeMyTransactionSearch[key])
+        .map(({ key }) => ({
+          key,
+          value: employeeMyTransactionSearch[key],
+        }));
+
+      setSubmittedFilters(snapshot);
+
+      setEmployeeMyTransactionSearch((prev) => ({
+        ...prev,
+        filterTrigger: false,
+      }));
+    }
+  }, [employeeMyTransactionSearch.filterTrigger]);
+
+  /**
+   * Handles table-specific filter trigger
+   */
+  useEffect(() => {
+    console.log(
+      employeeMyTransactionSearch.tableFilterTrigger,
+      "Filter Checker align"
+    );
+    const fetchFilteredData = async () => {
+      if (!employeeMyTransactionSearch.tableFilterTrigger) return;
+
+      const snapshot = filterKeys
+        .filter(({ key }) => employeeMyTransactionSearch[key])
+        .map(({ key }) => ({
+          key,
+          value: employeeMyTransactionSearch[key],
+        }));
+
+      console.log(selectedKey, "Filter Checker align");
+      await apiCallSearch({
+        selectedKey,
+        employeeMyTransactionSearch,
+        callApi,
+        showNotification,
+        showLoader,
+        navigate,
+        setData: setEmployeeTransactionsData,
+      });
+
+      setSubmittedFilters(snapshot);
+
+      setEmployeeMyTransactionSearch((prev) => ({
+        ...prev,
+        tableFilterTrigger: false,
+      }));
+    };
+
+    fetchFilteredData();
+  }, [employeeMyTransactionSearch.tableFilterTrigger]);
+
+  useEffect(() => {
+    try {
+      // Get browser navigation entries (used to detect reload)
+      const navigationEntries = performance.getEntriesByType("navigation");
+      if (
+        navigationEntries.length > 0 &&
+        navigationEntries[0].type === "reload"
+      ) {
+        // Check localStorage for previously saved selectedKey
+        resetEmployeeMyTransactionSearch();
+      }
+    } catch (error) {
+      console.error(
+        "❌ Error detecting page reload or restoring state:",
+        error
+      );
+    }
+  }, []);
+
+  // Lazy Loading Work Start
+  useEffect(() => {
+    try {
+      if (
+        employeeTransactionsData?.transactions &&
+        Array.isArray(employeeTransactionsData?.transactions)
+      ) {
+        // 🔹 Map and normalize data
+        const mappedData = employeeTransactionsData?.transactions.map((item) => ({
+          key: item.workFlowID, // required for AntD table
+          workFlowID: item.workFlowID || null,
+          title: `ConductTransactionRequest-${item.workFlowID || ""}-${
+            item.requestDate || ""
+          } ${item.requestTime || ""}`,
+          description: item.description || "",
+          instrumentShortCode: item.instrumentShortCode || "",
+          instrumentName: item.instrumentName || "",
+          quantity: item.quantity || 0,
+          tradeApprovalID: item.tradeApprovalID || "",
+          tradeApprovalTypeID: item.tradeApprovalTypeID || null,
+          tradeType: item.tradeType || "",
+          workFlowStatusID: item.workFlowStatusID || null,
+          workFlowStatus: item.workFlowStatus || "",
+          assetTypeID: item.assetTypeID || null,
+          assetType: item.assetType || "",
+          assetShortCode: item.assetShortCode || "",
+          transactionConductedDate: item.transactionConductedDate || "",
+          transactionConductedTime: item.transactionConductedTime || "",
+          deadlineDate: item.deadlineDate || "",
+          deadlineTime: item.deadlineTime || "",
+          broker: item.broker || "Multiple Brokers",
+        }));
+
+        // 🔹 Set approvals data
+        setEmployeeTransactionsData(mappedData);
+
+        // 🔹 Update search state (avoid unnecessary updates)
+        setEmployeeMyTransactionSearch((prev) => ({
+          ...prev,
+          totalRecords:
+            prev.totalRecords !== employeeTransactionsData.totalRecords
+              ? employeeTransactionsData.totalRecords
+              : prev.totalRecords,
+          pageNumber: mappedData.length,
+        }));
+      } else if (employeeTransactionsData === null) {
+        // No data case
+        setEmployeeTransactionsData([]);
+      }
+    } catch (error) {
+      console.error("Error processing employee approvals:", error);
+    } finally {
+      // 🔹 Always stop loading state
+      setLoadingMore(false);
+    }
+  }, [employeeTransactionsData]);
 
   // -------------------- Render --------------------
   return (
@@ -304,14 +394,23 @@ const MyTransaction = () => {
               <h2 className={style["heading"]}>My Transactions</h2>
             </Col>
           </Row>
-
-          <BorderlessTable
-            rows={data} // Replace with API data when ready
-            classNameTable="border-less-table-blue"
-            scroll={{ x: "max-content", y: 550 }}
-            columns={columns}
-            onChange={(_, __, sorter) => setSortedInfo(sorter)}
-          />
+          {employeeTransactionsData && employeeTransactionsData.length > 0 ? (
+            <BorderlessTable
+              rows={employeeTransactionsData} // Replace with API data when ready
+              classNameTable="border-less-table-blue"
+              scroll={{
+                x: "max-content",
+                y: submittedFilters.length > 0 ? 450 : 500,
+              }}
+              columns={columns}
+              onChange={(pagination, filters, sorter) => {
+                setSortedInfo(sorter);
+              }}
+              loading={loadingMore}
+            />
+          ) : (
+            <EmptyState type="request" />
+          )}
         </div>
       </PageLayout>
     </>
