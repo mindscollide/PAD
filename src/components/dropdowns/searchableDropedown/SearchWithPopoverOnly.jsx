@@ -82,7 +82,9 @@ const SearchWithPopoverOnly = () => {
       case "2": // Employee My Transaction
         setEmployeeMyTransactionSearch((prev) => ({
           ...prev,
-          filterTrigger: true,
+          mainInstrumentName: "",
+          pageNumber: 0,
+          tableFilterTrigger: true,
         }));
         break;
 
@@ -142,7 +144,12 @@ const SearchWithPopoverOnly = () => {
       case "2": // Employee My Transaction
         setEmployeeMyTransactionSearch((prev) => ({
           ...prev,
-          filterTrigger: true,
+          instrumentName: "",
+          quantity: 0,
+          startDate: null,
+          endDate: null,
+          pageNumber: 0,
+          tableFilterTrigger: true,
         }));
         break;
 

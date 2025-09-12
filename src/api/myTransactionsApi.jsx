@@ -48,8 +48,8 @@ export const SearchEmployeeTransactionsDetails = async ({
 
     // 🔹 API Call
     const res = await callApi({
-      requestMethod:
-        import.meta.env.VITE_SEARCH_EMPLOYEE_TRANSACTIONS_DETAILS_REQUEST_METHOD, // 🔑 must be defined in .env
+      requestMethod: import.meta.env
+        .VITE_SEARCH_EMPLOYEE_TRANSACTIONS_DETAILS_REQUEST_METHOD, // 🔑 must be defined in .env
       endpoint: import.meta.env.VITE_API_TRADE,
       requestData: requestdata,
     });
@@ -70,7 +70,7 @@ export const SearchEmployeeTransactionsDetails = async ({
 
     // 🔹 Handle success
     if (res.success) {
-      const { responseMessage, employeeTransactions, totalRecords } = res.result;
+      const { responseMessage, transactions, totalRecords } = res.result;
       const message = getMessage(responseMessage);
 
       // Case 1 → Data available
@@ -79,7 +79,7 @@ export const SearchEmployeeTransactionsDetails = async ({
         "PAD_Trade_TradeServiceManager_SearchEmployeeTransactions_01"
       ) {
         return {
-          transactions: employeeTransactions || [],
+          transactions: transactions || [],
           totalRecords: totalRecords || 0,
         };
       }
