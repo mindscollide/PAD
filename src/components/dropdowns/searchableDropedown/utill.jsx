@@ -2,8 +2,13 @@ import {
   SearchApprovalRequestLineManager,
   SearchTadeApprovals,
 } from "../../../api/myApprovalApi";
+import { SearchEmployeeTransactionsDetails } from "../../../api/myTransactionsApi";
 import { toYYMMDD } from "../../../commen/funtions/rejex";
-import { mapBuySellToIds, mapStatusToIds, mapStatusToIdsForLineManager } from "../filters/utils";
+import {
+  mapBuySellToIds,
+  mapStatusToIds,
+  mapStatusToIdsForLineManager,
+} from "../filters/utils";
 import { EmployeeMyApprovalFilter } from "./EmployeeMyApprovalFilter";
 import { EmployeePendingApprovalFilter } from "./EmployeePendingApprovalFilter";
 import { EmployeePortfolioFilter } from "./EmployeePortfolioFilter";
@@ -242,6 +247,7 @@ export const renderFilterContent = (
 export const apiCallSearch = async ({
   selectedKey,
   employeeMyApprovalSearch,
+  employeeMyTransactionSearch,
   addApprovalRequestData,
   callApi,
   showNotification,
@@ -290,6 +296,39 @@ export const apiCallSearch = async ({
 
       case "2":
         // Add case 2 logic here when needed
+        const TypeIds = mapBuySellToIds(
+          employeeMyTransactionSearch.type,
+          addApprovalRequestData?.Equities
+        );
+
+        const statusIds = mapStatusToIds(employeeMyTransactionSearch.status);
+        const date = toYYMMDD(employeeMyTransactionSearch.startDate);
+        console.log(typeof date, "Chdhjvahvajvdas");
+
+        const requestdata = {
+          InstrumentName:
+            employeeMyTransactionSearch.instrumentName ||
+            employeeMyTransactionSearch.mainInstrumentName ||
+            "",
+          Quantity: employeeMyTransactionSearch.quantity || 0,
+          StartDate: date || "",
+          EndDate: date || "",
+          BrokerIDs: employeeMyTransactionSearch.brokerIDs || [],
+          StatusIds: statusIds || [],
+          TypeIds: TypeIds || [],
+          PageNumber: 0,
+          Length: employeeMyTransactionSearch.pageSize || 10, // Fixed page size
+        };
+        console.log(requestdata, "Checker APi Search");
+        const data = await SearchEmployeeTransactionsDetails({
+          callApi,
+          showNotification,
+          showLoader,
+          requestdata,
+          navigate,
+        });
+
+        setData(data);
         break;
 
       case "3":
@@ -343,7 +382,9 @@ export const apiCallSearchForLineManager = async ({
           addApprovalRequestData?.Equities
         );
 
-        const statusIds = mapStatusToIdsForLineManager(lineManagerApprovalSearch.status);
+        const statusIds = mapStatusToIdsForLineManager(
+          lineManagerApprovalSearch.status
+        );
         const date = toYYMMDD(lineManagerApprovalSearch.startDate);
         console.log(typeof date, "Chdhjvahvajvdas");
 

@@ -476,6 +476,7 @@ const ViewDetailModal = () => {
                   >
                     {/* Agar loginUserID match krti hai hierarchyDetails ki userID sy to wo wala stepper show nahi hoga */}
                     <Stepper
+                      className="stepperStyles"
                       activeStep={Math.max(
                         0,
                         Array.isArray(

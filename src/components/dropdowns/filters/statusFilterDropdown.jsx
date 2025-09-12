@@ -19,6 +19,7 @@ import { useNotification } from "../../../components/NotificationProvider/Notifi
 import { useMyApproval } from "../../../context/myApprovalContaxt";
 import { useNavigate } from "react-router-dom";
 import { useDashboardContext } from "../../../context/dashboardContaxt";
+import { useTransaction } from "../../../context/myTransaction";
 
 /**
  * StatusFilterDropdown Component
@@ -55,6 +56,8 @@ const StatusFilterDropdown = ({
   const { showLoader } = useGlobalLoader();
   const { showNotification } = useNotification();
   const { setIsEmployeeMyApproval, setLineManagerApproval } = useMyApproval();
+
+  const { setEmployeeTransactionsData } = useTransaction();
   const [filterOption, setFilterOptions] = useState([]);
 
   /**
@@ -79,7 +82,8 @@ const StatusFilterDropdown = ({
         setFilterOptions(emaStatusOptions);
         break;
       case "2":
-        setFilterOptions(emtStatusOptions);
+        setFilterOptions(emaStatusOptions);
+        // setFilterOptions(emtStatusOptions);
         break;
       case "4":
         setFilterOptions(emtStatusOptionsForPendingApproval);
@@ -113,6 +117,7 @@ const StatusFilterDropdown = ({
       showLoader,
       navigate,
       setIsEmployeeMyApproval,
+      setEmployeeTransactionsData,
       setLineManagerApproval,
     });
 
@@ -135,6 +140,7 @@ const StatusFilterDropdown = ({
       showLoader,
       navigate,
       setIsEmployeeMyApproval,
+      setEmployeeTransactionsData,
       setLineManagerApproval,
     });
 

@@ -10,6 +10,7 @@ import { useApi } from "../../../context/ApiContext";
 import { useNotification } from "../../NotificationProvider/NotificationProvider";
 import { useMyApproval } from "../../../context/myApprovalContaxt";
 import { useDashboardContext } from "../../../context/dashboardContaxt";
+import { useTransaction } from "../../../context/myTransaction";
 
 /**
  * Dropdown for selecting types with local state management.
@@ -28,6 +29,8 @@ const TypeFilterDropdown = ({
   const { showLoader } = useGlobalLoader();
   const { showNotification } = useNotification();
   const { setIsEmployeeMyApproval, setLineManagerApproval } = useMyApproval();
+
+  const { setEmployeeTransactionsData } = useTransaction();
 
   const { callApi } = useApi();
   const typeOptions = getTypeOptions(addApprovalRequestData);
@@ -56,6 +59,7 @@ const TypeFilterDropdown = ({
       showNotification,
       showLoader,
       navigate,
+      setEmployeeTransactionsData,
       setIsEmployeeMyApproval,
       setLineManagerApproval,
     });
@@ -75,6 +79,7 @@ const TypeFilterDropdown = ({
       showNotification,
       showLoader,
       navigate,
+      setEmployeeTransactionsData,
       setIsEmployeeMyApproval,
       setLineManagerApproval,
     });
