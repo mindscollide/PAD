@@ -3,38 +3,43 @@ import React, { createContext, useContext, useState } from "react";
 /**
  * PortfolioContext
  *
- * Provides state and actions for managing portfolio-related UI and data:
- * - Active tab state
- * - Upload portfolio modal visibility
+ * Provides global state for managing the Portfolio module:
+ * - Active tab control
+ * - Upload portfolio modal state
  * - Employee pending approvals (API + MQTT)
+ * - Employee portfolio data (API + MQTT)
+ * - Aggregate totals
  */
 export const PortfolioContext = createContext();
 
 /**
  * PortfolioProvider
  *
- * Wraps child components and provides portfolio-related state and methods
- * through React Context.
+ * Wraps the app (or subtree) with portfolio-related state and methods.
  *
+ * @component
  * @param {object} props
  * @param {React.ReactNode} props.children - Components that consume the context.
- * @returns {JSX.Element} Context provider with portfolio states and actions.
+ * @returns {JSX.Element} Portfolio context provider.
  */
 export const PortfolioProvider = ({ children }) => {
   /**
-   * Active tab for Portfolio module.
+   * Currently active tab inside the portfolio module.
+   *
    * @type {[string, function]}
    */
   const [activeTab, setActiveTab] = useState("portfolio");
 
   /**
-   * Controls visibility of upload portfolio modal.
+   * Controls visibility of the "Upload Portfolio" modal.
+   *
    * @type {[boolean, function]}
    */
   const [uploadPortfolioModal, setUploadPortfolioModal] = useState(false);
 
   /**
    * Employee pending approvals fetched via API.
+   *
    * @type {[{ data: Array, totalRecords: number, apiCall: boolean }, function]}
    */
   const [employeePendingApprovalsData, setEmployeePendingApprovalsData] =
@@ -46,6 +51,7 @@ export const PortfolioProvider = ({ children }) => {
 
   /**
    * Employee pending approvals received via MQTT.
+   *
    * @type {[{ data: Array, mqtt: boolean }, function]}
    */
   const [
@@ -57,19 +63,52 @@ export const PortfolioProvider = ({ children }) => {
   });
 
   /**
-   * Reset only the portfolio tab to its default state.
+   * Employee portfolio data fetched via API.
+   *
+   * @type {[{ data: Array, totalRecords: number, apiCall: boolean }, function]}
+   */
+  const [employeePortfolioData, setEmployeePortfolioData] = useState({
+    data: [],
+    totalRecords: 0,
+    apiCall: false,
+  });
+
+  /**
+   * Employee portfolio data received via MQTT.
+   *
+   * @type {[{ data: Array, mqtt: boolean }, function]}
+   */
+  const [employeePortfolioDataMqtt, setEmployeePortfolioDataMqtt] = useState({
+    data: [],
+    mqtt: false,
+  });
+
+  /**
+   * Aggregate total quantity of all portfolio holdings.
+   *
+   * @type {[number, function]}
+   */
+  const [aggregateTotalQuantity, setAggregateTotalQuantity] = useState(0);
+
+  /**
+   * Reset only the portfolio tab state.
    */
   const resetPortfolioTab = () => {
     setActiveTab("portfolio");
-    setEmployeePendingApprovalsData({
+    setEmployeePortfolioData({
       data: [],
       totalRecords: 0,
       apiCall: false,
     });
+    setEmployeePortfolioDataMqtt({
+      data: [],
+      mqtt: false,
+    });
+    setAggregateTotalQuantity(0);
   };
 
   /**
-   * Reset portfolio tab and pending approvals (API + MQTT) to initial state.
+   * Reset the pending approvals tab state (API + MQTT).
    */
   const resetPendingApprovalTab = () => {
     setActiveTab("portfolio");
@@ -89,13 +128,19 @@ export const PortfolioProvider = ({ children }) => {
       value={{
         activeTab,
         setActiveTab,
-        resetPortfolioTab,
         uploadPortfolioModal,
         setUploadPortfolioModal,
         employeePendingApprovalsData,
         setEmployeePendingApprovalsData,
         employeePendingApprovalsDataMqtt,
         setEmployeePendingApprovalsDataMqtt,
+        employeePortfolioData,
+        setEmployeePortfolioData,
+        employeePortfolioDataMqtt,
+        setEmployeePortfolioDataMqtt,
+        aggregateTotalQuantity,
+        setAggregateTotalQuantity,
+        resetPortfolioTab,
         resetPendingApprovalTab,
       }}
     >
@@ -107,21 +152,28 @@ export const PortfolioProvider = ({ children }) => {
 /**
  * usePortfolioContext
  *
- * Custom hook to access the PortfolioContext.
+ * Custom hook to access PortfolioContext values.
  *
  * @returns {{
  *  activeTab: string,
  *  setActiveTab: function,
- *  resetPortfolioTab: function,
  *  uploadPortfolioModal: boolean,
  *  setUploadPortfolioModal: function,
- *  employeePendingApprovalsData: object,
+ *  employeePendingApprovalsData: { data: Array, totalRecords: number, apiCall: boolean },
  *  setEmployeePendingApprovalsData: function,
- *  employeePendingApprovalsDataMqtt: object,
+ *  employeePendingApprovalsDataMqtt: { data: Array, mqtt: boolean },
  *  setEmployeePendingApprovalsDataMqtt: function,
+ *  employeePortfolioData: { data: Array, totalRecords: number, apiCall: boolean },
+ *  setEmployeePortfolioData: function,
+ *  employeePortfolioDataMqtt: { data: Array, mqtt: boolean },
+ *  setEmployeePortfolioDataMqtt: function,
+ *  aggregateTotalQuantity: number,
+ *  setAggregateTotalQuantity: function,
+ *  resetPortfolioTab: function,
  *  resetPendingApprovalTab: function
  * }}
- * @throws {Error} If used outside of PortfolioProvider
+ *
+ * @throws {Error} If used outside of PortfolioProvider.
  */
 export const usePortfolioContext = () => {
   const context = useContext(PortfolioContext);

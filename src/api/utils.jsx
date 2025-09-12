@@ -135,6 +135,8 @@ export const responseMessages = {
   // ==============================
   // 📂 Portfolio API (portFolioApi.jsx)
   // ==============================
+
+  // SearchEmployeePendingUploadedPortFolio
   PAD_Trade_TradeServiceManager_SearchEmployeePendingUploadedPortFolio_01:
     "Data Available",
   PAD_Trade_TradeServiceManager_SearchEmployeePendingUploadedPortFolio_02:
@@ -153,6 +155,13 @@ export const responseMessages = {
   PAD_Trade_TradeServiceManager_UploadPortFolioRequest_05:
     "Failed to generate ApprovalID",
 
+  // SearchEmployeeApprovedUploadedPortFolio
+  PAD_Trade_TradeServiceManager_SearchEmployeeApprovedUploadedPortFolio_01:
+    "Data Available",
+  PAD_Trade_TradeServiceManager_SearchEmployeeApprovedUploadedPortFolio_02:
+    "No data available",
+  PAD_Trade_TradeServiceManager_SSearchEmployeeApprovedUploadedPortFolio_03:
+    "Exception",
   // ==============================
   // 📂 My Transaction API (myTransactionsApi.jsx)
   // ==============================
