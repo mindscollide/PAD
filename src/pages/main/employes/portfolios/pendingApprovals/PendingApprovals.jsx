@@ -28,6 +28,10 @@ import { useTableScrollBottom } from "../../myApprovals/utill";
 
 // API
 import { SearchEmployeePendingUploadedPortFolio } from "../../../../../api/protFolioApi";
+import {
+  mapBuySellToIds,
+  mapStatusToIds,
+} from "../../../../../components/dropdowns/filters/utils";
 
 const PendingApprovals = () => {
   const navigate = useNavigate();
@@ -74,7 +78,8 @@ const PendingApprovals = () => {
 
   // ✅ Prevent duplicate API calls (StrictMode safeguard)
   const didFetchRef = useRef(false);
-
+  const assetType = "Equities";
+  // const statusIds = mapStatusToIds(state.status);
   // ----------------------------------------------------------------
   // 🔧 HELPERS
   // ----------------------------------------------------------------
@@ -85,8 +90,11 @@ const PendingApprovals = () => {
     StartDate: searchState.startDate
       ? moment(searchState.startDate).format("YYYYMMDD")
       : "",
-    StatusIds: searchState.status || [],
-    TypeIds: searchState.type || [],
+    StatusIds: mapStatusToIds(searchState.status),
+    TypeIds: mapBuySellToIds(
+      searchState.type,
+      addApprovalRequestData?.[assetType]
+    ),
     EndDate: searchState.endDate
       ? moment(searchState.endDate).format("YYYYMMDD")
       : "",
@@ -105,10 +113,11 @@ const PendingApprovals = () => {
   // 🔹 API CALL: Fetch pending approvals
   // ----------------------------------------------------------------
   const fetchPendingApprovals = useCallback(
-    async (requestData, replace = false) => {
+    async (requestData, replace = false, loader = false) => {
       if (!requestData || typeof requestData !== "object") return;
       console.log("fetchPendingApprovals");
-      showLoader(true);
+      if (!loader) showLoader(true);
+
       try {
         const res = await SearchEmployeePendingUploadedPortFolio({
           callApi,
@@ -141,7 +150,7 @@ const PendingApprovals = () => {
           "Failed to fetch pending approvals. Please try again."
         );
       } finally {
-        showLoader(false);
+        if (!loader) showLoader(false);
       }
     },
     [
@@ -257,7 +266,7 @@ const PendingApprovals = () => {
         };
 
         console.log("fetchPendingApprovals");
-        await fetchPendingApprovals(requestData, false); // append mode
+        await fetchPendingApprovals(requestData, false, true); // append mode
         setEmployeePendingApprovalSearch((prev) => ({
           ...prev,
           pageNumber: (prev.pageNumber || 0) + 10,
