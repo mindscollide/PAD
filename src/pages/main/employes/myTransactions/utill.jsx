@@ -186,7 +186,7 @@ export const getBorderlessTableColumns = (
     dataIndex: "workFlowStatus",
     key: "workFlowStatus",
     ellipsis: true,
-    width: "10%",
+    width: "12%",
     filteredValue: employeeMyTransactionSearch.status?.length
       ? employeeMyTransactionSearch.status
       : null,
@@ -212,7 +212,7 @@ export const getBorderlessTableColumns = (
     dataIndex: "quantity",
     key: "quantity",
     ellipsis: true,
-    width: "10%",
+    width: "8%",
     sorter: (a, b) => a.quantity - b.quantity,
     sortDirections: ["ascend", "descend"],
     sortOrder: sortedInfo?.columnKey === "quantity" ? sortedInfo.order : null,
@@ -223,7 +223,7 @@ export const getBorderlessTableColumns = (
   {
     title: "Broker",
     dataIndex: "broker",
-    width: "15%",
+    width: "17%",
     key: "broker",
   },
   {

@@ -67,6 +67,7 @@ const MyTransaction = () => {
 
   // -------------------- Local State --------------------
   const [sortedInfo, setSortedInfo] = useState({});
+  const [myTransactionData, setMyTransactionData] = useState([]);
   const [loadingMore, setLoadingMore] = useState(false); // spinner at bottom
   const [submittedFilters, setSubmittedFilters] = useState([]);
 
@@ -315,33 +316,35 @@ const MyTransaction = () => {
         Array.isArray(employeeTransactionsData?.transactions)
       ) {
         // 🔹 Map and normalize data
-        const mappedData = employeeTransactionsData?.transactions.map((item) => ({
-          key: item.workFlowID, // required for AntD table
-          workFlowID: item.workFlowID || null,
-          title: `ConductTransactionRequest-${item.workFlowID || ""}-${
-            item.requestDate || ""
-          } ${item.requestTime || ""}`,
-          description: item.description || "",
-          instrumentShortCode: item.instrumentShortCode || "",
-          instrumentName: item.instrumentName || "",
-          quantity: item.quantity || 0,
-          tradeApprovalID: item.tradeApprovalID || "",
-          tradeApprovalTypeID: item.tradeApprovalTypeID || null,
-          tradeType: item.tradeType || "",
-          workFlowStatusID: item.workFlowStatusID || null,
-          workFlowStatus: item.workFlowStatus || "",
-          assetTypeID: item.assetTypeID || null,
-          assetType: item.assetType || "",
-          assetShortCode: item.assetShortCode || "",
-          transactionConductedDate: item.transactionConductedDate || "",
-          transactionConductedTime: item.transactionConductedTime || "",
-          deadlineDate: item.deadlineDate || "",
-          deadlineTime: item.deadlineTime || "",
-          broker: item.broker || "Multiple Brokers",
-        }));
+        const mappedData = employeeTransactionsData?.transactions.map(
+          (item) => ({
+            key: item.workFlowID, // required for AntD table
+            workFlowID: item.workFlowID || null,
+            title: `ConductTransactionRequest-${item.workFlowID || ""}-${
+              item.requestDate || ""
+            } ${item.requestTime || ""}`,
+            description: item.description || "",
+            instrumentShortCode: item.instrumentShortCode || "",
+            instrumentName: item.instrumentName || "",
+            quantity: item.quantity || 0,
+            tradeApprovalID: item.tradeApprovalID || "",
+            tradeApprovalTypeID: item.tradeApprovalTypeID || null,
+            tradeType: item.tradeType || "",
+            workFlowStatusID: item.workFlowStatusID || null,
+            workFlowStatus: item.workFlowStatus || "",
+            assetTypeID: item.assetTypeID || null,
+            assetType: item.assetType || "",
+            assetShortCode: item.assetShortCode || "",
+            transactionConductedDate: item.transactionConductedDate || "",
+            transactionConductedTime: item.transactionConductedTime || "",
+            deadlineDate: item.deadlineDate || "",
+            deadlineTime: item.deadlineTime || "",
+            broker: item.broker || "Multiple Brokers",
+          })
+        );
 
         // 🔹 Set approvals data
-        setEmployeeTransactionsData(mappedData);
+        setMyTransactionData(mappedData);
 
         // 🔹 Update search state (avoid unnecessary updates)
         setEmployeeMyTransactionSearch((prev) => ({
@@ -354,7 +357,7 @@ const MyTransaction = () => {
         }));
       } else if (employeeTransactionsData === null) {
         // No data case
-        setEmployeeTransactionsData([]);
+        setMyTransactionData([]);
       }
     } catch (error) {
       console.error("Error processing employee approvals:", error);
@@ -394,23 +397,23 @@ const MyTransaction = () => {
               <h2 className={style["heading"]}>My Transactions</h2>
             </Col>
           </Row>
-          {employeeTransactionsData && employeeTransactionsData.length > 0 ? (
-            <BorderlessTable
-              rows={employeeTransactionsData} // Replace with API data when ready
-              classNameTable="border-less-table-blue"
-              scroll={{
-                x: "max-content",
-                y: submittedFilters.length > 0 ? 450 : 500,
-              }}
-              columns={columns}
-              onChange={(pagination, filters, sorter) => {
-                setSortedInfo(sorter);
-              }}
-              loading={loadingMore}
-            />
-          ) : (
-            <EmptyState type="request" />
-          )}
+          <BorderlessTable
+            rows={myTransactionData} // Replace with API data when ready
+            columns={columns}
+            classNameTable="border-less-table-blue"
+            scroll={
+              myTransactionData?.length
+                ? {
+                    x: "max-content",
+                    y: submittedFilters.length > 0 ? 450 : 500,
+                  }
+                : undefined
+            }
+            onChange={(pagination, filters, sorter) => {
+              setSortedInfo(sorter);
+            }}
+            loading={loadingMore}
+          />
         </div>
       </PageLayout>
     </>
