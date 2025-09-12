@@ -220,3 +220,107 @@ export const UploadPortFolioRequest = async ({
     showLoader(false);
   }
 };
+
+export const SearchEmployeeApprovedUploadedPortFolio = async ({
+  callApi,
+  showNotification,
+  showLoader,
+  requestdata,
+  navigate,
+}) => {
+  try {
+    console.log("🔹 Approved Portfolio requestdata:", requestdata);
+
+    // 🔹 API Call
+    const res = await callApi({
+      requestMethod: import.meta.env
+        .VITE_SEARCH_EMPLOYEE_APPROVED_UPLOADED_PORTFOLIO_REQUEST_METHOD, // ✅ update env var
+      endpoint: import.meta.env.VITE_API_TRADE,
+      requestData: requestdata,
+    });
+
+    // 🔹 Handle session expiry
+    if (handleExpiredSession(res, navigate, showLoader)) return null;
+
+    // 🔹 Validate API execution
+    if (!res?.result?.isExecuted) {
+      showNotification({
+        type: "error",
+        title: "Error",
+        description: "Something went wrong. Please try again.",
+      });
+      return null;
+    }
+
+    // 🔹 Handle successful execution
+    if (res.success) {
+      console.log("🔹 Approved Portfolio response:", res);
+      const {
+        responseMessage,
+        instruments,
+        aggregateTotalQuantity,
+        totalRecords,
+      } = res.result;
+      const message = getMessage(responseMessage);
+
+      // ✅ Case 1 → Data Available
+      if (
+        responseMessage ===
+        "PAD_Trade_TradeServiceManager_SearchEmployeeApprovedUploadedPortFolio_01" // TODO: confirm exact code
+      ) {
+        console.log("🔹 Approved portfolios found:", aggregateTotalQuantity);
+
+        return {
+          aggregateTotalQuantity: aggregateTotalQuantity,
+          instruments: instruments || [],
+          totalRecords: totalRecords || 0,
+        };
+      }
+
+      // ✅ Case 2 → No Data Available
+      if (
+        responseMessage ===
+        "PAD_Trade_TradeServiceManager_SearchEmployeeApprovedUploadedPortFolio_02" // TODO: confirm exact code
+      ) {
+        return {
+          instruments: [],
+          totalRecords: 0,
+        };
+      }
+
+      // ✅ Case 3 → Other server messages
+      if (message) {
+        showNotification({
+          type: "warning",
+          title: message,
+          description: "No approved uploaded portfolios found.",
+        });
+      }
+
+      return null;
+    }
+
+    // 🔹 Handle failure (res.success === false)
+    showNotification({
+      type: "error",
+      title: "Fetch Failed",
+      description: getMessage(res.message),
+    });
+    return null;
+  } catch (error) {
+    // 🔹 Unexpected exception handler
+    console.error(
+      "❌ Error in SearchEmployeeApprovedUploadedPortFolio:",
+      error
+    );
+    showNotification({
+      type: "error",
+      title: "Error",
+      description: "An unexpected error occurred.",
+    });
+    return null;
+  } finally {
+    // 🔹 Always stop loader
+    showLoader(false);
+  }
+};

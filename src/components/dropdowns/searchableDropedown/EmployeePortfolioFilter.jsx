@@ -16,8 +16,7 @@ export const EmployeePortfolioFilter = ({
 }) => {
   const { employeeBasedBrokersData } = useDashboardContext();
 
-  // for employeeBroker state to show data in dropdown
-  const [selectedBrokers, setSelectedBrokers] = useState([]);
+  // Local state
   const [localState, setLocalState] = useState({
     instrumentName: "",
     quantity: "",
@@ -26,16 +25,6 @@ export const EmployeePortfolioFilter = ({
     broker: [],
   });
   const [dirtyFields, setDirtyFields] = useState({});
-
-  /**
-   * SearchBarContext its state handler for this function.
-   * - instrumentShortName for instruments of dropdown menu
-   * - quantity for quantity of dropdown menu
-   * - date for date of dropdown menu
-   * - mainInstrumentShortName for main search bar input
-   * - instrumentName and this mainInstrumentName contain same data but issue is we have to handel both diferently
-   * - resetEmployeePortfolioSearch is to reset all their state to its initial
-   */
 
   const {
     employeePortfolioSearch,
@@ -51,20 +40,24 @@ export const EmployeePortfolioFilter = ({
     label: (
       <div style={{ display: "flex", alignItems: "center" }}>
         <Checkbox
-          checked={selectedBrokers.some((b) => b.brokerID === broker.brokerID)}
+          checked={(activeTab === "pending"
+            ? employeePendingApprovalSearch?.broker
+            : employeePortfolioSearch?.broker
+          )?.includes(broker.brokerID)}
           style={{ marginRight: 8 }}
         />
         {broker.brokerName}
       </div>
     ),
     value: broker.brokerID,
-    raw: broker, // keep full broker data for later use
+    raw: broker,
   }));
 
   const resetLocalState = () => {
     setLocalState({ instrumentName: "", quantity: "", startDate: "" });
     setDirtyFields({});
   };
+
   const handleResetClick = () => {
     if (activeTab === "pending") {
       setEmployeePendingApprovalSearch((prev) => ({
@@ -77,6 +70,7 @@ export const EmployeePortfolioFilter = ({
         pageNumber: 0,
         filterTrigger: true,
       }));
+      // resetEmployeePendingApprovalSearch();
     } else {
       setEmployeePortfolioSearch((prev) => ({
         ...prev,
@@ -88,42 +82,32 @@ export const EmployeePortfolioFilter = ({
         pageNumber: 0,
         filterTrigger: true,
       }));
+      // resetEmployeePortfolioSearch();
     }
 
     resetLocalState();
     setVisible(false);
   };
-  // OnChange Handle when user selects/deselects brokers
+
+  // Handle broker selection
   const handleBrokerChange = (selectedIDs) => {
-    const selectedData = brokerOptions
-      .filter((item) => selectedIDs.includes(item.value))
-      .map((item) => item.raw);
-    const brokerIDs = selectedData.map((b) => b.brokerID);
     if (activeTab === "pending") {
       setEmployeePendingApprovalSearch((prev) => ({
         ...prev,
-        broker: brokerIDs, // <-- saves array of IDs
+        broker: selectedIDs,
       }));
     } else {
       setEmployeePortfolioSearch((prev) => ({
         ...prev,
-        broker: brokerIDs, // <-- saves array of IDs
+        broker: selectedIDs,
       }));
     }
-    // ✅ Save into state
-
-    // setSelectedBrokers(selectedData);
   };
 
-  /**
-   * Handles input change for approval filters.
-   * - Allows only numeric input for "Quantity"
-   * - Removes leading space for text fields
-   */
+  // Handle input changes
   const handleEmployeeApprovalInputChange = (e, setState) => {
     const { name, value } = e.target;
-    console.log("handleEmployeeApprovalInputChange", name);
-    // Handle numeric validation for Quantity
+
     if (name === "Quantity") {
       if (value === "" || allowOnlyNumbers(value)) {
         setState((prev) => ({ ...prev, quantity: value }));
@@ -131,22 +115,15 @@ export const EmployeePortfolioFilter = ({
       return;
     }
 
-    // General handler
     setState((prev) => ({
       ...prev,
       [name]: removeFirstSpace(value),
     }));
   };
 
-  // const brokerOptions = employeeBasedBrokersData?.map((broker) => ({
-  //   value: broker.brokerID, // store ID
-  //   label: broker.brokerName, // show name
-  //   brokerID: broker.brokerID, // keep full info if you need it later
-  //   brokerName: broker.brokerName,
-  // }));
-
   return (
     <>
+      {/* Instrument Name + Quantity */}
       <Row gutter={[12, 12]}>
         <Col xs={24} sm={24} md={12} lg={12}>
           <TextField
@@ -193,6 +170,8 @@ export const EmployeePortfolioFilter = ({
           />
         </Col>
       </Row>
+
+      {/* Brokers + Date Range */}
       <Row gutter={[12, 12]}>
         <Col span={12} className={styles.brokersOptionData}>
           <label className={styles.instrumentLabel}>Brokers</label>
@@ -202,7 +181,7 @@ export const EmployeePortfolioFilter = ({
             value={
               activeTab === "pending"
                 ? employeePendingApprovalSearch?.broker
-                : employeePortfolioSearch
+                : employeePortfolioSearch?.broker
             }
             onChange={handleBrokerChange}
             options={brokerOptions}
@@ -216,13 +195,10 @@ export const EmployeePortfolioFilter = ({
               <div style={{ display: "flex", alignItems: "center" }}>
                 <Checkbox
                   className="custom-broker-option"
-                  checked={
-                    activeTab === "pending"
-                      ? employeePendingApprovalSearch?.broker?.includes(
-                          option.value
-                        )
-                      : employeePortfolioSearch?.broker?.includes(option.value)
-                  }
+                  checked={(activeTab === "pending"
+                    ? employeePendingApprovalSearch?.broker
+                    : employeePortfolioSearch?.broker
+                  )?.includes(option.value)}
                   style={{ marginRight: 8 }}
                 />
                 {option.data.raw.brokerName}
@@ -230,6 +206,7 @@ export const EmployeePortfolioFilter = ({
             )}
           />
         </Col>
+
         <Col xs={24} sm={24} md={12} lg={12}>
           <DateRangePicker
             label="Date Range"
@@ -280,6 +257,8 @@ export const EmployeePortfolioFilter = ({
           />
         </Col>
       </Row>
+
+      {/* Buttons */}
       <Row gutter={[12, 12]} justify="end" style={{ marginTop: 16 }}>
         <Col>
           <Space>

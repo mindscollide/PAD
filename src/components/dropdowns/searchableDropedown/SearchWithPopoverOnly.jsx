@@ -20,6 +20,7 @@ import styles from "./SearchWithPopoverOnly.module.css";
 import { useSidebarContext } from "../../../context/sidebarContaxt";
 import { useSearchBarContext } from "../../../context/SearchBarContaxt";
 import { usePortfolioContext } from "../../../context/portfolioContax";
+import { removeFirstSpace } from "../../../commen/funtions/rejex";
 
 /**
  * SearchWithPopoverOnly
@@ -213,18 +214,19 @@ const SearchWithPopoverOnly = () => {
           employeePendingApprovalSearch,
           lineManagerApprovalSearch
         )}
-        onChange={(e) =>
+        onChange={(e) => {
+          const value = removeFirstSpace(e.target.value); // ✅ strip leading space
           handleMainInstrumentChange(
             selectedKey,
             activeTab,
-            e.target.value,
+            value,
             setEmployeeMyApprovalSearch,
             setEmployeeMyTransactionSearch,
             setEmployeePortfolioSearch,
             setEmployeePendingApprovalSearch,
             setLineManagerApprovalSearch
-          )
-        }
+          );
+        }}
         style={{
           borderStartEndRadius: 0,
           borderEndEndRadius: 0,

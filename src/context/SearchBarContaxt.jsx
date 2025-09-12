@@ -163,7 +163,7 @@ export const SearchBarProvider = ({ children }) => {
       broker: [], // broker filter:
       pageSize: "", // Pagination: size of page
       pageNumber: 0, // Pagination: current page number
-      filterTrigger: true,
+      filterTrigger: false,
       tableFilterTrigger: false,
     });
   };
