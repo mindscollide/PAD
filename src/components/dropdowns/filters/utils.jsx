@@ -8,8 +8,10 @@ import {
 import { SearchEmployeeTransactionsDetails } from "../../../api/myTransactionsApi";
 
 // -----------------------------------------------------------------------------
-// 📌 Status Options
+// 📌 Constants
 // -----------------------------------------------------------------------------
+
+const DEBUG = false; // toggle debug logs
 
 /**
  * Status options for Employee My Approval (Trade Approvals).
@@ -101,6 +103,8 @@ export const mapStatusToIds = (arr) => {
     Declined: 4,
     Traded: 5,
     "Not Traded": 6,
+    Compliant: 8,
+    "Not Compliant": 9,
   };
   return arr.map((s) => statusMap[s] || null).filter(Boolean);
 };
@@ -126,7 +130,7 @@ export const mapStatusToIdsForLineManager = (arr) => {
 // -----------------------------------------------------------------------------
 
 /**
- * Builds a request object for trade/line manager approvals.
+ * Builds a request object for trade or line manager approvals.
  *
  * @param {Object} params - Input parameters.
  * @param {Object} params.state - UI state (filters, pagination, etc.).
@@ -135,7 +139,12 @@ export const mapStatusToIdsForLineManager = (arr) => {
  * @param {boolean} [params.includeRequester=false] - Include RequesterName if true.
  * @returns {Object} API request payload.
  */
-const buildRequestData = ({ state, statusIds, typeIds, includeRequester }) => ({
+const buildApprovalRequestData = ({
+  state,
+  statusIds,
+  typeIds,
+  includeRequester,
+}) => ({
   InstrumentName: state.instrumentName || state.mainInstrumentName,
   Date: state.startDate || "",
   Quantity: state.quantity || 0,
@@ -146,24 +155,46 @@ const buildRequestData = ({ state, statusIds, typeIds, includeRequester }) => ({
   ...(includeRequester && { RequesterName: state.requesterName }),
 });
 
+/**
+ * Builds a request object for Employee Transaction details.
+ *
+ * @param {Object} params - Input parameters.
+ * @param {Object} params.state - UI state (filters, pagination, etc.).
+ * @param {number[]} params.statusIds - Status IDs.
+ * @param {number[]} params.typeIds - Type IDs.
+ * @returns {Object} API request payload.
+ */
+const buildTransactionRequestData = ({ state, statusIds, typeIds }) => ({
+  InstrumentName: state.instrumentName || state.mainInstrumentName,
+  Quantity: state.quantity || 0,
+  StartDate: state.startDate || null,
+  EndDate: state.startDate || null, // ⚠️ check if this should be state.endDate
+  BrokerIDs: [],
+  StatusIds: statusIds || [],
+  TypeIds: typeIds || [],
+  PageNumber: 0,
+  Length: state.pageSize || 10,
+});
+
 // -----------------------------------------------------------------------------
 // 📌 API Call Handlers
 // -----------------------------------------------------------------------------
 
 /**
- * Executes an API call based on selected tab (key).
+ * Executes an API call based on selected tab (key) and type filter.
  *
  * @param {Object} params - Parameters.
  * @param {string} params.selectedKey - Selected tab key ("1", "2", "3", "6").
- * @param {string[]} params.newdata - Selected type/status values.
+ * @param {string[]} params.newdata - Selected type values.
  * @param {Object} params.addApprovalRequestData - Asset type data.
  * @param {Object} params.state - Current state (filters, pagination, etc.).
  * @param {Function} params.callApi - API caller.
  * @param {Function} params.showNotification - Notification handler.
  * @param {Function} params.showLoader - Loader toggle function.
  * @param {Function} params.navigate - Navigation function.
- * @param {Function} params.setIsEmployeeMyApproval - State setter for Employee approvals.
- * @param {Function} params.setLineManagerApproval - State setter for Line Manager approvals.
+ * @param {Function} params.setIsEmployeeMyApproval - Setter for Employee approvals.
+ * @param {Function} params.setLineManagerApproval - Setter for Line Manager approvals.
+ * @param {Function} params.setEmployeeTransactionsData - Setter for Employee transactions.
  */
 export const apiCallType = async ({
   selectedKey,
@@ -186,7 +217,7 @@ export const apiCallType = async ({
 
   switch (selectedKey) {
     case "1": // Employee My Approvals
-      requestdata = buildRequestData({ state, statusIds, typeIds });
+      requestdata = buildApprovalRequestData({ state, statusIds, typeIds });
       showLoader(true);
       data = await SearchTadeApprovals({
         callApi,
@@ -198,27 +229,10 @@ export const apiCallType = async ({
       setIsEmployeeMyApproval(data);
       break;
 
-    case "2":
-      const assetType = state.assetType || "Equities"; // fallback
-      const TypeIds = mapBuySellToIds(
-        newdata,
-        addApprovalRequestData?.[assetType]
-      );
-      const statusIds = mapStatusToIds(state.status);
-      const requestdata = {
-        InstrumentName: state.instrumentName || state.mainInstrumentName,
-        Quantity: state.quantity || 0,
-        StartDate: state.startDate || null,
-        EndDate: state.startDate || null,
-        BrokerIDs: [],
-        StatusIds: statusIds || [],
-        TypeIds: TypeIds || [],
-        PageNumber: 0,
-        Length: state.pageSize || 10,
-      };
+    case "2": // Employee Transactions
+      requestdata = buildTransactionRequestData({ state, statusIds, typeIds });
       showLoader(true);
-      console.log("Checker APi Search");
-      const data = await SearchEmployeeTransactionsDetails({
+      data = await SearchEmployeeTransactionsDetails({
         callApi,
         showNotification,
         showLoader,
@@ -227,9 +241,10 @@ export const apiCallType = async ({
       });
       setEmployeeTransactionsData(data);
       break;
+
     case "3":
     case "6": // Line Manager Approvals
-      requestdata = buildRequestData({
+      requestdata = buildApprovalRequestData({
         state,
         statusIds,
         typeIds,
@@ -249,22 +264,25 @@ export const apiCallType = async ({
     default:
       break;
   }
+
+  if (DEBUG) console.log({ selectedKey, requestdata, data });
 };
 
 /**
- * Executes an API call based on status selection.
+ * Executes an API call based on selected tab (key) and status filter.
  *
  * @param {Object} params - Parameters.
  * @param {string} params.selectedKey - Selected tab key ("1", "2", "3", "6").
- * @param {string[]} params.newdata - Status values selected by the user.
+ * @param {string[]} params.newdata - Selected status values.
  * @param {Object} params.state - Current state (filters, pagination, etc.).
  * @param {Object} params.addApprovalRequestData - Asset type data.
  * @param {Function} params.callApi - API caller.
  * @param {Function} params.showNotification - Notification handler.
  * @param {Function} params.showLoader - Loader toggle function.
  * @param {Function} params.navigate - Navigation function.
- * @param {Function} params.setIsEmployeeMyApproval - State setter for Employee approvals.
- * @param {Function} params.setLineManagerApproval - State setter for Line Manager approvals.
+ * @param {Function} params.setIsEmployeeMyApproval - Setter for Employee approvals.
+ * @param {Function} params.setLineManagerApproval - Setter for Line Manager approvals.
+ * @param {Function} params.setEmployeeTransactionsData - Setter for Employee transactions.
  */
 export const apiCallStatus = async ({
   selectedKey,
@@ -286,7 +304,7 @@ export const apiCallStatus = async ({
   switch (selectedKey) {
     case "1": // Employee My Approvals
       statusIds = mapStatusToIds(newdata);
-      requestdata = buildRequestData({ state, statusIds, typeIds });
+      requestdata = buildApprovalRequestData({ state, statusIds, typeIds });
       showLoader(true);
       data = await SearchTadeApprovals({
         callApi,
@@ -298,29 +316,11 @@ export const apiCallStatus = async ({
       setIsEmployeeMyApproval(data);
       break;
 
-    case "2":
-      const TypeIds = mapBuySellToIds(
-        state.type,
-        addApprovalRequestData?.Equities
-      );
-      const statusIds = mapStatusToIds(newdata);
-      console.log(newdata, "statestatusCheck");
-      console.log(statusIds, "statestatusCheck");
-
-      const requestdata = {
-        InstrumentName: state.instrumentName || state.mainInstrumentName,
-        Quantity: state.quantity || 0,
-        StartDate: state.startDate || null,
-        EndDate: state.startDate || null,
-        BrokerIDs: [],
-        StatusIds: statusIds || [],
-        TypeIds: TypeIds || [],
-        PageNumber: 0,
-        Length: state.pageSize || 10,
-      };
+    case "2": // Employee Transactions
+      statusIds = mapStatusToIds(newdata);
+      requestdata = buildTransactionRequestData({ state, statusIds, typeIds });
       showLoader(true);
-      console.log("Checker APi Search");
-      const data = await SearchEmployeeTransactionsDetails({
+      data = await SearchEmployeeTransactionsDetails({
         callApi,
         showNotification,
         showLoader,
@@ -329,10 +329,11 @@ export const apiCallStatus = async ({
       });
       setEmployeeTransactionsData(data);
       break;
+
     case "3":
     case "6": // Line Manager Approvals
       statusIds = mapStatusToIdsForLineManager(newdata);
-      requestdata = buildRequestData({
+      requestdata = buildApprovalRequestData({
         state,
         statusIds,
         typeIds,
@@ -352,4 +353,6 @@ export const apiCallStatus = async ({
     default:
       break;
   }
+
+  if (DEBUG) console.log({ selectedKey, requestdata, data });
 };
