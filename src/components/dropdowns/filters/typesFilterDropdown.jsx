@@ -47,7 +47,8 @@ const TypeFilterDropdown = ({
       ...prev,
       type: tempSelected,
     }));
-    console.log("hello test", tempSelected);
+    
+    console.log("hello test", selectedKey);
     let newdata = tempSelected;
     console.log("hello test", newdata);
     await apiCallType({
