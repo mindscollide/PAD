@@ -334,7 +334,7 @@ export const mapToTableRows = (assetTypeData, list = [], brokerOptions = []) =>
       brokerLabel = "Multiple Brokers";
     } else if (item?.broker) {
       const broker = brokerOptions.find(
-        (b) => String(b.value) === String(item.broker)
+        (b) => String(b.brokerID) === String(item.broker)
       );
       brokerLabel =
         broker?.label || item?.broker?.brokerName || String(item.broker);

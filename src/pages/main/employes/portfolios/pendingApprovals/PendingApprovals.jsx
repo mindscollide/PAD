@@ -145,10 +145,6 @@ const PendingApprovals = () => {
         });
       } catch (error) {
         console.error("❌ Error fetching pending approvals:", error);
-        showNotification(
-          "error",
-          "Failed to fetch pending approvals. Please try again."
-        );
       } finally {
         if (!loader) showLoader(false);
       }
@@ -237,7 +233,6 @@ const PendingApprovals = () => {
   useEffect(() => {
     if (employeePendingApprovalSearch?.filterTrigger) {
       const data = buildPortfolioRequest(employeePendingApprovalSearch);
-      console.log("fetchPendingApprovals");
       fetchPendingApprovals(data, true); // replace mode
       setEmployeePendingApprovalSearch((prev) => ({
         ...prev,
@@ -258,14 +253,11 @@ const PendingApprovals = () => {
 
       try {
         setLoadingMore(true);
-
         const requestData = {
           ...buildPortfolioRequest(employeePendingApprovalSearch),
           PageNumber: employeePendingApprovalSearch.pageNumber || 0,
           Length: 10,
         };
-
-        console.log("fetchPendingApprovals");
         await fetchPendingApprovals(requestData, false, true); // append mode
         setEmployeePendingApprovalSearch((prev) => ({
           ...prev,
@@ -273,7 +265,6 @@ const PendingApprovals = () => {
         }));
       } catch (error) {
         console.error("❌ Error loading more approvals:", error);
-        showNotification("error", "Unable to load more approvals.");
       } finally {
         setLoadingMore(false);
       }
@@ -293,7 +284,6 @@ const PendingApprovals = () => {
       PageNumber: 0,
       Length: 10,
     });
-    console.log("fetchPendingApprovals");
     fetchPendingApprovals(requestData, true);
 
     try {
