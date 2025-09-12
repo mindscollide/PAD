@@ -101,26 +101,34 @@ const StatusFilterDropdown = ({
    * Updates parent state and triggers API call.
    */
   const handleOk = async () => {
-    console.log("hello test", typeof selectedKey);
-    setState((prev) => ({
-      ...prev,
-      status: tempSelected,
-    }));
+    // we handle employe profolio from here
+    if (selectedKey === "4") {
+      setState((prev) => ({
+        ...prev,
+        status: tempSelected,
+        pageNumber: 0,
+        filterTrigger: true,
+      }));
+    } else {
+      setState((prev) => ({
+        ...prev,
+        status: tempSelected,
+      }));
 
-    await apiCallStatus({
-      selectedKey,
-      newdata: tempSelected,
-      state,
-      addApprovalRequestData,
-      callApi,
-      showNotification,
-      showLoader,
-      navigate,
-      setIsEmployeeMyApproval,
-      setEmployeeTransactionsData,
-      setLineManagerApproval,
-    });
-
+      await apiCallStatus({
+        selectedKey,
+        newdata: tempSelected,
+        state,
+        addApprovalRequestData,
+        callApi,
+        showNotification,
+        showLoader,
+        navigate,
+        setIsEmployeeMyApproval,
+        setEmployeeTransactionsData,
+        setLineManagerApproval,
+      });
+    }
     setOpenState(false);
     confirm(); // Close dropdown
   };
@@ -130,26 +138,35 @@ const StatusFilterDropdown = ({
    * Also triggers API call with empty filter.
    */
   const handleReset = async () => {
-    await apiCallStatus({
-      selectedKey,
-      newdata: [],
-      state,
-      addApprovalRequestData,
-      callApi,
-      showNotification,
-      showLoader,
-      navigate,
-      setIsEmployeeMyApproval,
-      setEmployeeTransactionsData,
-      setLineManagerApproval,
-    });
+    // we handle employe profolio from here
+    if (selectedKey === "4") {
+      setState((prev) => ({
+        ...prev,
+        status: [],
+        pageNumber: 0,
+        filterTrigger: true,
+      }));
+    } else {
+      await apiCallStatus({
+        selectedKey,
+        newdata: [],
+        state,
+        addApprovalRequestData,
+        callApi,
+        showNotification,
+        showLoader,
+        navigate,
+        setIsEmployeeMyApproval,
+        setEmployeeTransactionsData,
+        setLineManagerApproval,
+      });
 
+      setState((prev) => ({
+        ...prev,
+        status: [],
+      }));
+    }
     setTempSelected([]);
-    setState((prev) => ({
-      ...prev,
-      status: [],
-    }));
-
     clearFilters?.();
     setOpenState(false);
     confirm(); // Close dropdown

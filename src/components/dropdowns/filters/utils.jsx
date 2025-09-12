@@ -104,7 +104,7 @@ export const mapStatusToIds = (arr) => {
     Traded: 5,
     "Not Traded": 6,
     Compliant: 8,
-    "Not Compliant": 9,
+    "Non-Compliant": 9,
   };
   return arr.map((s) => statusMap[s] || null).filter(Boolean);
 };

@@ -43,52 +43,68 @@ const TypeFilterDropdown = ({
   };
 
   const handleOk = async () => {
-    setState((prev) => ({
-      ...prev,
-      type: tempSelected,
-    }));
-    
-    console.log("hello test", selectedKey);
     let newdata = tempSelected;
-    console.log("hello test", newdata);
-    await apiCallType({
-      selectedKey,
-      newdata,
-      addApprovalRequestData,
-      state,
-      callApi,
-      showNotification,
-      showLoader,
-      navigate,
-      setEmployeeTransactionsData,
-      setIsEmployeeMyApproval,
-      setLineManagerApproval,
-    });
+    // we handle employe profolio from here
+    if (selectedKey === "4") {
+      setState((prev) => ({
+        ...prev,
+        type: tempSelected,
+        pageNumber: 0,
+        filterTrigger: true,
+      }));
+    } else {
+      setState((prev) => ({
+        ...prev,
+        type: tempSelected,
+      }));
+      await apiCallType({
+        selectedKey,
+        newdata,
+        addApprovalRequestData,
+        state,
+        callApi,
+        showNotification,
+        showLoader,
+        navigate,
+        setEmployeeTransactionsData,
+        setIsEmployeeMyApproval,
+        setLineManagerApproval,
+      });
+    }
 
     confirm(); // close dropdown
   };
 
   const handleReset = async () => {
     let newdata = [];
-    console.log("hello test", newdata);
-    await apiCallType({
-      selectedKey,
-      newdata,
-      addApprovalRequestData,
-      state,
-      callApi,
-      showNotification,
-      showLoader,
-      navigate,
-      setEmployeeTransactionsData,
-      setIsEmployeeMyApproval,
-      setLineManagerApproval,
-    });
+    // we handle employe profolio from here
+    if (selectedKey === "4") {
+      setState((prev) => ({
+        ...prev,
+        type: [],
+        pageNumber: 0,
+        filterTrigger: true,
+      }));
+    } else {
+      await apiCallType({
+        selectedKey,
+        newdata,
+        addApprovalRequestData,
+        state,
+        callApi,
+        showNotification,
+        showLoader,
+        navigate,
+        setEmployeeTransactionsData,
+        setIsEmployeeMyApproval,
+        setLineManagerApproval,
+      });
+      setState((prev) => ({
+        ...prev,
+        type: [],
+      }));
+    }
     setTempSelected([]);
-    setState((prev) => ({
-      ...prev,
-      type: [],
-    }));
     clearFilters?.();
     confirm(); // close dropdown
   };
