@@ -209,13 +209,13 @@ const PortfolioIndex = () => {
     resetEmployeePendingApprovalSearch();
 
     // Example API call for Portfolio
-    await SearchEmployeePendingUploadedPortFolio({
-      callApi,
-      showNotification,
-      showLoader,
-      requestdata: { type: "portfolio" }, // customize request body
-      navigate,
-    });
+    // await SearchEmployeePendingUploadedPortFolio({
+    //   callApi,
+    //   showNotification,
+    //   showLoader,
+    //   requestdata: { type: "portfolio" }, // customize request body
+    //   navigate,
+    // });
   };
 
   // 🔹 Click handler for Pending Approvals tab
