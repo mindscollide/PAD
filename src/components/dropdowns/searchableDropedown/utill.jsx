@@ -217,6 +217,7 @@ export const renderFilterContent = (
         <EmployeePortfolioFilter
           handleSearch={handleSearch}
           activeTab={activeTab}
+          setVisible={setVisible}
         />
       );
 

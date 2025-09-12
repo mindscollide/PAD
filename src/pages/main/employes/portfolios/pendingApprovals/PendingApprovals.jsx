@@ -29,18 +29,6 @@ import { useTableScrollBottom } from "../../myApprovals/utill";
 // API
 import { SearchEmployeePendingUploadedPortFolio } from "../../../../../api/protFolioApi";
 
-/**
- * 📄 PendingApprovals Component
- *
- * Displays a list of pending trade/portfolio approvals for employees.
- * Integrates:
- * - API fetching with infinite scroll
- * - MQTT real-time updates
- * - Global context synchronization
- * - Search and filter support
- *
- * @component
- */
 const PendingApprovals = () => {
   const navigate = useNavigate();
 
@@ -53,16 +41,6 @@ const PendingApprovals = () => {
   const { employeeBasedBrokersData, addApprovalRequestData } =
     useDashboardContext();
 
-  // -------------------------
-  // ✅ Local state
-  // -------------------------
-  const [sortedInfo, setSortedInfo] = useState({});
-  const [tableData, setTableData] = useState({ rows: [], totalRecords: 0 });
-  const [loadingMore, setLoadingMore] = useState(false);
-
-  // -------------------------
-  // ✅ Global context states
-  // -------------------------
   const {
     employeePendingApprovalSearch,
     setEmployeePendingApprovalSearch,
@@ -77,6 +55,13 @@ const PendingApprovals = () => {
   } = usePortfolioContext();
 
   // -------------------------
+  // ✅ Local state
+  // -------------------------
+  const [sortedInfo, setSortedInfo] = useState({});
+  const [tableData, setTableData] = useState({ rows: [], totalRecords: 0 });
+  const [loadingMore, setLoadingMore] = useState(false);
+
+  // -------------------------
   // ✅ Derived values
   // -------------------------
   const brokerOptions = formatBrokerOptions(employeeBasedBrokersData || []);
@@ -87,19 +72,42 @@ const PendingApprovals = () => {
     setEmployeePendingApprovalSearch
   );
 
-  // ✅ Prevent duplicate API calls (StrictMode double-render safeguard)
+  // ✅ Prevent duplicate API calls (StrictMode safeguard)
   const didFetchRef = useRef(false);
 
   // ----------------------------------------------------------------
-  // 🔹 API CALL: Fetch pending approvals (initial + filters)
+  // 🔧 HELPERS
+  // ----------------------------------------------------------------
+  const buildPortfolioRequest = (searchState = {}) => ({
+    InstrumentName:
+      searchState.mainInstrumentName || searchState.instrumentName || "",
+    Quantity: searchState.quantity ? Number(searchState.quantity) : 0,
+    StartDate: searchState.startDate
+      ? moment(searchState.startDate).format("YYYYMMDD")
+      : "",
+    StatusIds: searchState.status || [],
+    TypeIds: searchState.type || [],
+    EndDate: searchState.endDate
+      ? moment(searchState.endDate).format("YYYYMMDD")
+      : "",
+    BrokerIds: Array.isArray(searchState.broker) ? searchState.broker : [],
+    PageNumber: Number(searchState.pageNumber) || 0,
+    Length: Number(searchState.pageSize) || 10,
+  });
+
+  const mergeRows = (prevRows, newRows, replace = false) => {
+    if (replace) return newRows;
+    const ids = new Set(prevRows.map((r) => r.key));
+    return [...prevRows, ...newRows.filter((r) => !ids.has(r.key))];
+  };
+
+  // ----------------------------------------------------------------
+  // 🔹 API CALL: Fetch pending approvals
   // ----------------------------------------------------------------
   const fetchPendingApprovals = useCallback(
-    async (requestData) => {
-      if (!requestData || typeof requestData !== "object") {
-        console.warn("⚠️ Invalid requestData:", requestData);
-        return;
-      }
-
+    async (requestData, replace = false) => {
+      if (!requestData || typeof requestData !== "object") return;
+      console.log("fetchPendingApprovals");
       showLoader(true);
       try {
         const res = await SearchEmployeePendingUploadedPortFolio({
@@ -120,17 +128,11 @@ const PendingApprovals = () => {
           brokerOptions
         );
 
-        setEmployeePendingApprovalsData((prev) => {
-          if (portfolios.length === 0) {
-            // 🔹 Reset when no records are found
-            return { data: [], totalRecords: 0, Apicall: true };
-          }
-          return {
-            ...prev,
-            data: [...(prev.data || []), ...mapped],
-            totalRecords: res?.totalRecords ?? prev.totalRecords ?? 0,
-            Apicall: true,
-          };
+        setEmployeePendingApprovalsData({
+          data: mapped,
+          totalRecords: res?.totalRecords ?? mapped.length,
+          Apicall: true,
+          replace,
         });
       } catch (error) {
         console.error("❌ Error fetching pending approvals:", error);
@@ -147,8 +149,8 @@ const PendingApprovals = () => {
       showNotification,
       showLoader,
       navigate,
-      setEmployeePendingApprovalsData,
       brokerOptions,
+      addApprovalRequestData,
     ]
   );
 
@@ -156,104 +158,78 @@ const PendingApprovals = () => {
   // 🔄 SYNC: Global → Local table data
   // ----------------------------------------------------------------
   useEffect(() => {
-    if (employeePendingApprovalsData?.Apicall) {
-      setTableData((prev) => {
-        if (!employeePendingApprovalsData?.data?.length) {
-          return { rows: [], totalRecords: 0 };
-        }
-        return {
-          rows: [...(prev.rows || []), ...employeePendingApprovalsData.data],
-          totalRecords: employeePendingApprovalsData.totalRecords || 0,
-        };
-      });
+    if (!employeePendingApprovalsData?.Apicall) return;
 
-      // 🔹 Sync pagination info in search state
-      setEmployeePendingApprovalSearch((prev) => ({
-        ...prev,
-        totalRecords:
-          employeePendingApprovalsData.totalRecords ??
-          employeePendingApprovalsData.data.length,
-        pageNumber: 10,
-      }));
+    setTableData((prev) => {
+      if (!employeePendingApprovalsData.data?.length) {
+        return { rows: [], totalRecords: 0 };
+      }
 
-      // 🔹 Reset API trigger flag
-      setEmployeePendingApprovalsData((prev) => ({ ...prev, Apicall: false }));
-    }
+      return {
+        rows: mergeRows(
+          prev.rows || [],
+          employeePendingApprovalsData.data,
+          employeePendingApprovalsData.replace
+        ),
+        totalRecords: employeePendingApprovalsData.totalRecords || 0,
+      };
+    });
+
+    // Sync pagination info
+    setEmployeePendingApprovalSearch((prev) => ({
+      ...prev,
+      totalRecords:
+        employeePendingApprovalsData.totalRecords ??
+        employeePendingApprovalsData.data.length,
+      pageNumber: employeePendingApprovalsData.replace ? 10 : prev.pageNumber,
+    }));
+
+    // Reset API trigger flag
+    setEmployeePendingApprovalsData((prev) => ({ ...prev, Apicall: false }));
   }, [employeePendingApprovalsData?.Apicall]);
 
   // ----------------------------------------------------------------
   // 🔄 REAL-TIME: Handle new MQTT rows
   // ----------------------------------------------------------------
   useEffect(() => {
-    if (employeePendingApprovalsDataMqtt?.mqttRecived) {
-      const newRows = mapToTableRows(
-        addApprovalRequestData?.Equities,
-        Array.isArray(employeePendingApprovalsDataMqtt?.mqttRecivedData)
-          ? employeePendingApprovalsDataMqtt.mqttRecivedData
-          : [employeePendingApprovalsDataMqtt.mqttRecivedData],
-        brokerOptions
-      );
+    if (!employeePendingApprovalsDataMqtt?.mqttRecived) return;
 
-      if (newRows.length) {
-        // Update table rows
-        setTableData((prevTable) => ({
-          rows: [newRows[0], ...(prevTable.rows || [])],
-          totalRecords: (prevTable.totalRecords || 0) + 1,
-        }));
+    const newRows = mapToTableRows(
+      addApprovalRequestData?.Equities,
+      Array.isArray(employeePendingApprovalsDataMqtt?.mqttRecivedData)
+        ? employeePendingApprovalsDataMqtt.mqttRecivedData
+        : [employeePendingApprovalsDataMqtt.mqttRecivedData],
+      brokerOptions
+    );
 
-        // Update global approvals context
-        setEmployeePendingApprovalsData((prev) => {
-          const safePrev = prev || {
-            data: [],
-            totalRecords: 0,
-            Apicall: false,
-          };
+    if (newRows.length) {
+      setTableData((prev) => ({
+        rows: [newRows[0], ...(prev.rows || [])],
+        totalRecords: (prev.totalRecords || 0) + 1,
+      }));
 
-          return {
-            ...safePrev,
-            data: [newRows[0], ...safePrev.data],
-            totalRecords: (safePrev.totalRecords || 0) + 1,
-            Apicall: true,
-          };
-        });
-      }
-
-      // ✅ Reset MQTT state after processing
-      setEmployeePendingApprovalsDataMqtt({
-        mqttRecivedData: [],
-        mqttRecived: false,
-      });
+      setEmployeePendingApprovalsData((prev) => ({
+        ...prev,
+        data: [newRows[0], ...(prev.data || [])],
+        totalRecords: (prev.totalRecords || 0) + 1,
+        Apicall: false,
+      }));
     }
+
+    setEmployeePendingApprovalsDataMqtt({
+      mqttRecivedData: [],
+      mqttRecived: false,
+    });
   }, [employeePendingApprovalsDataMqtt?.mqttRecived]);
 
   // ----------------------------------------------------------------
-  // 🔧 HELPERS: Build API request payload
-  // ----------------------------------------------------------------
-  const buildPortfolioRequest = (searchState = {}) => ({
-    InstrumentName:
-      searchState.mainInstrumentName || searchState.instrumentName || "",
-    Quantity: searchState.quantity ? Number(searchState.quantity) : 0,
-    StartDate: searchState.startDate
-      ? moment(searchState.startDate).format("YYYYMMDD")
-      : "",
-    EndDate: searchState.endDate
-      ? moment(searchState.endDate).format("YYYYMMDD")
-      : "",
-    BrokerName: Array.isArray(searchState.broker)
-      ? searchState.broker.join(",")
-      : "",
-    PageNumber: Number(searchState.pageNumber) || 0,
-    Length: Number(searchState.pageSize) || 10,
-  });
-
-  // ----------------------------------------------------------------
-  // 🔄 REACT: On search/filter trigger
+  // 🔄 On search/filter trigger
   // ----------------------------------------------------------------
   useEffect(() => {
     if (employeePendingApprovalSearch?.filterTrigger) {
       const data = buildPortfolioRequest(employeePendingApprovalSearch);
-      fetchPendingApprovals(data);
-
+      console.log("fetchPendingApprovals");
+      fetchPendingApprovals(data, true); // replace mode
       setEmployeePendingApprovalSearch((prev) => ({
         ...prev,
         filterTrigger: false,
@@ -275,37 +251,15 @@ const PendingApprovals = () => {
         setLoadingMore(true);
 
         const requestData = {
-          InstrumentName: "",
-          Quantity: 0,
-          StartDate: "",
-          EndDate: "",
-          BrokerName: "",
+          ...buildPortfolioRequest(employeePendingApprovalSearch),
           PageNumber: employeePendingApprovalSearch.pageNumber || 0,
           Length: 10,
         };
 
-        const res = await SearchEmployeePendingUploadedPortFolio({
-          callApi,
-          showNotification,
-          showLoader,
-          requestdata: requestData,
-          navigate,
-        });
-
-        const mapped = mapToTableRows(
-          addApprovalRequestData?.Equities,
-          res?.pendingPortfolios || [],
-          brokerOptions
-        );
-
-        setTableData((prev) => ({
-          rows: [...(prev.rows || []), ...mapped],
-          totalRecords: res?.totalRecords ?? prev.totalRecords ?? 0,
-        }));
-
+        console.log("fetchPendingApprovals");
+        await fetchPendingApprovals(requestData, false); // append mode
         setEmployeePendingApprovalSearch((prev) => ({
           ...prev,
-          totalRecords: res?.totalRecords ?? prev.totalRecords,
           pageNumber: (prev.pageNumber || 0) + 10,
         }));
       } catch (error) {
@@ -326,18 +280,13 @@ const PendingApprovals = () => {
     if (didFetchRef.current) return;
     didFetchRef.current = true;
 
-    const requestData = {
-      InstrumentName: "",
-      Quantity: 0,
-      StartDate: "",
-      EndDate: "",
-      BrokerName: "",
+    const requestData = buildPortfolioRequest({
       PageNumber: 0,
       Length: 10,
-    };
-    fetchPendingApprovals(requestData);
+    });
+    console.log("fetchPendingApprovals");
+    fetchPendingApprovals(requestData, true);
 
-    // Reset search state on page reload
     try {
       const navigationEntries = performance.getEntriesByType("navigation");
       if (navigationEntries?.[0]?.type === "reload") {
@@ -369,9 +318,6 @@ const PendingApprovals = () => {
     };
   }, []);
 
-  // ----------------------------------------------------------------
-  // 🎨 RENDER
-  // ----------------------------------------------------------------
   return (
     <BorderlessTable
       rows={tableData?.rows || []}

@@ -9,11 +9,23 @@ import {
 import { useDashboardContext } from "../../../context/dashboardContaxt";
 import styles from "./SearchWithPopoverOnly.module.css";
 
-export const EmployeePortfolioFilter = ({ handleSearch, activeTab }) => {
+export const EmployeePortfolioFilter = ({
+  handleSearch,
+  activeTab,
+  setVisible,
+}) => {
   const { employeeBasedBrokersData } = useDashboardContext();
 
   // for employeeBroker state to show data in dropdown
   const [selectedBrokers, setSelectedBrokers] = useState([]);
+  const [localState, setLocalState] = useState({
+    instrumentName: "",
+    quantity: "",
+    startDate: "",
+    endDate: "",
+    broker: [],
+  });
+  const [dirtyFields, setDirtyFields] = useState({});
 
   /**
    * SearchBarContext its state handler for this function.
@@ -49,15 +61,58 @@ export const EmployeePortfolioFilter = ({ handleSearch, activeTab }) => {
     raw: broker, // keep full broker data for later use
   }));
 
-  //  Prepare and Show Brokers selected values for Select's `value` prop
-  const selectedBrokerIDs = selectedBrokers.map((b) => b.brokerID);
+  const resetLocalState = () => {
+    setLocalState({ instrumentName: "", quantity: "", startDate: "" });
+    setDirtyFields({});
+  };
+  const handleResetClick = () => {
+    if (activeTab === "pending") {
+      setEmployeePendingApprovalSearch((prev) => ({
+        ...prev,
+        instrumentName: "",
+        quantity: 0,
+        startDate: "",
+        endDate: "",
+        broker: [],
+        pageNumber: 0,
+        filterTrigger: true,
+      }));
+    } else {
+      setEmployeePortfolioSearch((prev) => ({
+        ...prev,
+        instrumentName: "",
+        quantity: 0,
+        startDate: "",
+        endDate: "",
+        broker: [],
+        pageNumber: 0,
+        filterTrigger: true,
+      }));
+    }
 
+    resetLocalState();
+    setVisible(false);
+  };
   // OnChange Handle when user selects/deselects brokers
   const handleBrokerChange = (selectedIDs) => {
     const selectedData = brokerOptions
       .filter((item) => selectedIDs.includes(item.value))
       .map((item) => item.raw);
-    setSelectedBrokers(selectedData);
+    const brokerIDs = selectedData.map((b) => b.brokerID);
+    if (activeTab === "pending") {
+      setEmployeePendingApprovalSearch((prev) => ({
+        ...prev,
+        broker: brokerIDs, // <-- saves array of IDs
+      }));
+    } else {
+      setEmployeePortfolioSearch((prev) => ({
+        ...prev,
+        broker: brokerIDs, // <-- saves array of IDs
+      }));
+    }
+    // ✅ Save into state
+
+    // setSelectedBrokers(selectedData);
   };
 
   /**
@@ -89,10 +144,7 @@ export const EmployeePortfolioFilter = ({ handleSearch, activeTab }) => {
   //   brokerID: broker.brokerID, // keep full info if you need it later
   //   brokerName: broker.brokerName,
   // }));
-  console.log("employeeBasedBrokersData", {
-    employeeBasedBrokersData,
-    selectedBrokerIDs,
-  });
+
   return (
     <>
       <Row gutter={[12, 12]}>
@@ -147,7 +199,11 @@ export const EmployeePortfolioFilter = ({ handleSearch, activeTab }) => {
           <Select
             mode="multiple"
             placeholder="Select"
-            value={selectedBrokerIDs}
+            value={
+              activeTab === "pending"
+                ? employeePendingApprovalSearch?.broker
+                : employeePortfolioSearch
+            }
             onChange={handleBrokerChange}
             options={brokerOptions}
             maxTagCount={0}
@@ -160,7 +216,13 @@ export const EmployeePortfolioFilter = ({ handleSearch, activeTab }) => {
               <div style={{ display: "flex", alignItems: "center" }}>
                 <Checkbox
                   className="custom-broker-option"
-                  checked={selectedBrokerIDs.includes(option.value)}
+                  checked={
+                    activeTab === "pending"
+                      ? employeePendingApprovalSearch?.broker?.includes(
+                          option.value
+                        )
+                      : employeePortfolioSearch?.broker?.includes(option.value)
+                  }
                   style={{ marginRight: 8 }}
                 />
                 {option.data.raw.brokerName}
@@ -218,46 +280,13 @@ export const EmployeePortfolioFilter = ({ handleSearch, activeTab }) => {
           />
         </Col>
       </Row>
-      {/* <Row className={styles.mt1} gutter={[20, 20]}>
-        <Col span={12}>
-          <label className={styles.instrumentLabel}>Brokers</label>
-          <Select
-            mode="multiple"
-            placeholder="Select"
-            value={selectedBrokerIDs}
-            onChange={handleBrokerChange}
-            options={brokerOptions}
-            maxTagCount={0}
-            maxTagPlaceholder={(omittedValues) =>
-              `${omittedValues.length} selected`
-            }
-            prefixCls="EquitiesBrokerSelectPrefix"
-            optionLabelProp="label"
-            optionRender={(option) => (
-              <div style={{ display: "flex", alignItems: "center" }}>
-                <Checkbox
-                  className="custom-broker-option"
-                  checked={selectedBrokerIDs.includes(option.value)}
-                  style={{ marginRight: 8 }}
-                />
-                {option.data.raw.brokerName}
-              </div>
-            )}
-          />
-        </Col>
-        
-      </Row> */}
       <Row gutter={[12, 12]} justify="end" style={{ marginTop: 16 }}>
         <Col>
           <Space>
             <Button
-              onClick={
-                activeTab === "pending"
-                  ? resetEmployeePendingApprovalSearch
-                  : resetEmployeePortfolioSearch
-              }
               text={"Reset"}
               className="big-light-button"
+              onClick={handleResetClick}
             />
             <Button
               onClick={handleSearch}
