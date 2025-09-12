@@ -51,6 +51,7 @@ export const EmployeeTransactionFilter = ({
     quantity: "",
     startDate: null,
     endDate: null,
+    brokerIDs: [],
   });
 
   // 🔹 Track touched fields
@@ -70,7 +71,7 @@ export const EmployeeTransactionFilter = ({
     label: (
       <div style={{ display: "flex", alignItems: "center" }}>
         <Checkbox
-          checked={selectedBrokers.some((b) => b.brokerID === broker.brokerID)}
+          checked={localState.brokerIDs.includes(broker.brokerID)}
           style={{ marginRight: 8 }}
         />
         {broker.brokerName}
@@ -82,10 +83,8 @@ export const EmployeeTransactionFilter = ({
 
   // OnChange Handle when user selects/deselects brokers
   const handleBrokerChange = (selectedIDs) => {
-    const selectedData = brokerOptions
-      .filter((item) => selectedIDs.includes(item.value))
-      .map((item) => item.raw);
-    setSelectedBrokers(selectedData);
+    setLocalState((prev) => ({ ...prev, brokerIDs: selectedIDs }));
+    setDirtyFields((prev) => ({ ...prev, brokerIDs: true }));
   };
 
   /**
@@ -154,6 +153,16 @@ export const EmployeeTransactionFilter = ({
     employeeMyTransactionSearch.endDate,
   ]);
 
+  const brokerIDsValue = useMemo(() => {
+    return dirtyFields.brokerIDs
+      ? localState.brokerIDs
+      : employeeMyTransactionSearch.brokerIDs || [];
+  }, [
+    dirtyFields.brokerIDs,
+    localState.brokerIDs,
+    employeeMyTransactionSearch.brokerIDs,
+  ]);
+
   // 🔹 Handle search button click
   // 🔹 Search
   const handleSearchClick = async () => {
@@ -174,6 +183,8 @@ export const EmployeeTransactionFilter = ({
           ? localState.endDate.format("YYYY-MM-DD")
           : null,
       }),
+
+      ...(dirtyFields.brokerIDs && { brokerIDs: localState.brokerIDs }),
       pageNumber: 0,
     };
 
@@ -189,6 +200,7 @@ export const EmployeeTransactionFilter = ({
       quantity: 0,
       startDate: null,
       endDate: null,
+      brokerIDs: [],
       tableFilterTrigger: true,
     }));
 
@@ -203,6 +215,7 @@ export const EmployeeTransactionFilter = ({
       quantity: 0,
       startDate: null,
       endDate: null,
+      brokerIDs: [],
     });
     setDirtyFields({});
   };
@@ -241,7 +254,7 @@ export const EmployeeTransactionFilter = ({
           <Select
             mode="multiple"
             placeholder="Select"
-            value={selectedBrokerIDs}
+            value={brokerIDsValue}
             onChange={handleBrokerChange}
             options={brokerOptions}
             maxTagCount={0}
@@ -254,7 +267,7 @@ export const EmployeeTransactionFilter = ({
               <div style={{ display: "flex", alignItems: "center" }}>
                 <Checkbox
                   className="custom-broker-option"
-                  checked={selectedBrokerIDs.includes(option.value)}
+                  checked={brokerIDsValue.includes(option.value)}
                   style={{ marginRight: 8 }}
                 />
                 {option.data.raw.brokerName}

@@ -29,6 +29,8 @@ import {
 import { apiCallSearch } from "../../../../components/dropdowns/searchableDropedown/utill";
 import { useDashboardContext } from "../../../../context/dashboardContaxt";
 import { useSidebarContext } from "../../../../context/sidebarContaxt";
+import { useGlobalModal } from "../../../../context/GlobalModalContext";
+import ViewDetailsTransactionModal from "./modals/viewDetailsTransactionModal/ViewDetailsTransactionModal";
 
 /**
  * 📄 MyTransaction Component
@@ -46,11 +48,15 @@ const MyTransaction = () => {
   const hasFetched = useRef(false);
 
   // -------------------- Context Hooks --------------------
+
   const { callApi } = useApi();
   const { showNotification } = useNotification();
   const { showLoader } = useGlobalLoader();
   const { selectedKey } = useSidebarContext();
-  const { addApprovalRequestData } = useDashboardContext();
+  const { viewDetailTransactionModal, setViewDetailTransactionModal } =
+    useGlobalModal();
+  const { addApprovalRequestData, employeeBasedBrokersData } =
+    useDashboardContext();
   const {
     employeeMyTransactionSearch,
     setEmployeeMyTransactionSearch,
@@ -70,6 +76,8 @@ const MyTransaction = () => {
   const [myTransactionData, setMyTransactionData] = useState([]);
   const [loadingMore, setLoadingMore] = useState(false); // spinner at bottom
   const [submittedFilters, setSubmittedFilters] = useState([]);
+
+  console.log(submittedFilters, "checkSubmittedFilterALign");
 
   /**
    * Fetches approval data from API on component mount
@@ -126,6 +134,12 @@ const MyTransaction = () => {
     });
   }, []);
 
+  // helper to map brokerId → brokerName
+  const brokerIdToName = (id) => {
+    const broker = employeeBasedBrokersData?.find((b) => b.brokerID === id);
+    return broker ? broker.brokerName : id;
+  };
+
   // Keys to track which filters to sync/display
   const filterKeys = [
     { key: "instrumentName", label: "Instrument" },
@@ -133,6 +147,7 @@ const MyTransaction = () => {
     { key: "startDate", label: "Date" },
     { key: "endDate", label: "Date" },
     { key: "quantity", label: "Quantity" },
+    { key: "brokerIDs", label: "Brokers" }, // 🔹 NEW
   ];
 
   console.log(approvalStatusMap, "approvalStatusMapapprovalStatusMap");
@@ -142,17 +157,26 @@ const MyTransaction = () => {
     approvalStatusMap,
     sortedInfo,
     employeeMyTransactionSearch,
+    setViewDetailTransactionModal,
     setEmployeeMyTransactionSearch
   );
 
   /**
    * Removes a filter tag and re-fetches data
    */
-  const handleRemoveFilter = async (key) => {
+  const handleRemoveFilter = async (key, valueToRemove) => {
     console.log("Check Data");
     const normalizedKey = key?.toLowerCase();
     // 1️⃣ Update UI state for removed filters
-    setSubmittedFilters((prev) => prev.filter((item) => item.key !== key));
+    setSubmittedFilters((prev) =>
+      prev.filter(
+        (item) =>
+          !(
+            item.key === key &&
+            (valueToRemove ? item.value === valueToRemove : true)
+          )
+      )
+    );
 
     //To show dynamically AssetType like EQ equities ETC
     const assetKey = employeeMyTransactionSearch.assetType;
@@ -172,7 +196,7 @@ const MyTransaction = () => {
       Quantity: employeeMyTransactionSearch.quantity || 0,
       StartDate: employeeMyTransactionSearch.date || null,
       EndDate: employeeMyTransactionSearch.date || null,
-      BrokerIDs: employeeMyTransactionSearch.brokerIDs || [],
+      BrokerIDs: [...(employeeMyTransactionSearch.brokerIDs || [])],
       StatusIds: statusIds || [],
       TypeIds: TypeIds || [],
       PageNumber: 0,
@@ -209,6 +233,26 @@ const MyTransaction = () => {
         startdate: "",
         pageNumber: 0,
       }));
+    } else if (key === "brokerIDs") {
+      let updatedBrokers = [];
+
+      if (valueToRemove) {
+        // remove just one broker ID
+        updatedBrokers = (employeeMyTransactionSearch.brokerIDs || []).filter(
+          (id) => id !== valueToRemove
+        );
+      } else {
+        // ❗ clear all brokers if no specific value given
+        updatedBrokers = [];
+      }
+
+      requestdata.BrokerIDs = updatedBrokers;
+
+      setEmployeeMyTransactionSearch((prev) => ({
+        ...prev,
+        brokerIDs: updatedBrokers,
+        pageNumber: 0,
+      }));
     }
 
     // 4️⃣ Show loader and call API
@@ -230,15 +274,31 @@ const MyTransaction = () => {
    * Syncs filters on `filterTrigger` from context
    */
   useEffect(() => {
-    console.log("Filter Checker align");
-    console.log(selectedKey, "Filter Checker align");
     if (employeeMyTransactionSearch.filterTrigger) {
+      const filterKeys = [
+        { key: "instrumentName" },
+        { key: "quantity" },
+        { key: "startDate" },
+        { key: "endDate" },
+        { key: "brokerIDs" },
+      ];
+
       const snapshot = filterKeys
         .filter(({ key }) => employeeMyTransactionSearch[key])
-        .map(({ key }) => ({
-          key,
-          value: employeeMyTransactionSearch[key],
-        }));
+        .flatMap(({ key }) => {
+          const val = employeeMyTransactionSearch[key];
+          if (!val) return [];
+
+          if (key === "brokerIDs" && Array.isArray(val)) {
+            return val.map((id) => ({
+              key,
+              value: id,
+              label: brokerIdToName(id),
+            }));
+          }
+
+          return [{ key, value: val, label: val }];
+        });
 
       setSubmittedFilters(snapshot);
 
@@ -247,7 +307,7 @@ const MyTransaction = () => {
         filterTrigger: false,
       }));
     }
-  }, [employeeMyTransactionSearch.filterTrigger]);
+  }, [employeeMyTransactionSearch.filterTrigger, brokerIdToName]);
 
   /**
    * Handles table-specific filter trigger
@@ -262,10 +322,20 @@ const MyTransaction = () => {
 
       const snapshot = filterKeys
         .filter(({ key }) => employeeMyTransactionSearch[key])
-        .map(({ key }) => ({
-          key,
-          value: employeeMyTransactionSearch[key],
-        }));
+        .flatMap(({ key }) => {
+          const val = employeeMyTransactionSearch[key];
+          if (!val) return [];
+
+          if (key === "brokerIDs" && Array.isArray(val)) {
+            return val.map((id) => ({
+              key,
+              value: id,
+              label: brokerIdToName(id), // ✅ fix: add label
+            }));
+          }
+
+          return [{ key, value: val, label: val }];
+        });
 
       console.log(selectedKey, "Filter Checker align");
       await apiCallSearch({
@@ -371,51 +441,92 @@ const MyTransaction = () => {
   return (
     <>
       {/* 🔹 Active Filter Tags */}
-      {submittedFilters.length > 0 && (
-        <Row gutter={[12, 12]} className={style["filter-tags-container"]}>
-          {submittedFilters.map(({ key, value }) => (
-            <Col key={key}>
+      {submittedFilters.map(({ key, value, label }) => {
+        if (key === "brokerIDs") {
+          const brokerCount =
+            employeeMyTransactionSearch.brokerIDs?.length || 0;
+
+          // If multiple → show "X Selected"
+          if (brokerCount > 1) {
+            return (
+              <Col>
+                <div className={style["filter-tag"]}>
+                  <span>{"Multiple Brokers"}</span>
+                  <span
+                    className={style["filter-tag-close"]}
+                    onClick={() => handleRemoveFilter("brokerIDs")}
+                  >
+                    &times;
+                  </span>
+                </div>
+              </Col>
+            );
+          }
+
+          // If only 1 broker → show the single broker’s name
+          return (
+            <Col key={`${key}-${value}`} style={{ marginTop: "10px" }}>
               <div className={style["filter-tag"]}>
-                <span>{value}</span>
+                <span className={style["filter-tag-text"]}>{label}</span>
                 <span
                   className={style["filter-tag-close"]}
-                  onClick={() => handleRemoveFilter(key)}
+                  onClick={() => handleRemoveFilter(key, value)}
                 >
                   &times;
                 </span>
               </div>
             </Col>
-          ))}
-        </Row>
-      )}
+          );
+        }
 
+        // Default case for all other filters
+        return (
+          <Col key={`${key}-${value}`}>
+            <div className={style["filter-tag"]}>
+              <span className={style["filter-tag-text"]}>{value}</span>
+              <span
+                className={style["filter-tag-close"]}
+                onClick={() => handleRemoveFilter(key, value)}
+              >
+                &times;
+              </span>
+            </div>
+          </Col>
+        );
+      })}
       {/* 🔹 Transactions Table */}
-      <PageLayout background="white">
-        <div className="px-4 md:px-6 lg:px-8">
-          <Row>
-            <Col>
-              <h2 className={style["heading"]}>My Transactions</h2>
-            </Col>
-          </Row>
-          <BorderlessTable
-            rows={myTransactionData} // Replace with API data when ready
-            columns={columns}
-            classNameTable="border-less-table-blue"
-            scroll={
-              myTransactionData?.length
-                ? {
-                    x: "max-content",
-                    y: submittedFilters.length > 0 ? 450 : 500,
-                  }
-                : undefined
-            }
-            onChange={(pagination, filters, sorter) => {
-              setSortedInfo(sorter);
-            }}
-            loading={loadingMore}
-          />
-        </div>
-      </PageLayout>
+      <Row style={{ marginTop: "15px" }}>
+        <Col>
+          <PageLayout background="white" style={{ marginTop: "10px" }}>
+            <div className="px-4 md:px-6 lg:px-8 ">
+              <Row>
+                <Col>
+                  <h2 className={style["heading"]}>My Transactions</h2>
+                </Col>
+              </Row>
+              <BorderlessTable
+                rows={myTransactionData} // Replace with API data when ready
+                columns={columns}
+                classNameTable="border-less-table-blue"
+                scroll={
+                  myTransactionData?.length
+                    ? {
+                        x: "max-content",
+                        y: submittedFilters.length > 0 ? 450 : 500,
+                      }
+                    : undefined
+                }
+                onChange={(pagination, filters, sorter) => {
+                  setSortedInfo(sorter);
+                }}
+                loading={loadingMore}
+              />
+            </div>
+          </PageLayout>
+        </Col>
+      </Row>
+
+      {viewDetailTransactionModal && <ViewDetailsTransactionModal />}
     </>
   );
 };

@@ -12,6 +12,7 @@ import {
   dashBetweenApprovalAssets,
   formatApiDateTime,
 } from "../../../../commen/funtions/rejex";
+import { useGlobalModal } from "../../../../context/GlobalModalContext";
 
 // import TypeColumnTitle from "./typeFilter";
 
@@ -49,6 +50,7 @@ export const getBorderlessTableColumns = (
   approvalStatusMap,
   sortedInfo,
   employeeMyTransactionSearch,
+  setViewDetailTransactionModal,
   setEmployeeMyTransactionSearch
 ) => [
   {
@@ -57,7 +59,7 @@ export const getBorderlessTableColumns = (
     key: "tradeApprovalID",
     width: "12%",
     ellipsis: true,
-    sosorter: (a, b) =>
+    sorter: (a, b) =>
       parseInt(a.tradeApprovalID.replace(/[^\d]/g, ""), 10) -
       parseInt(b.tradeApprovalID.replace(/[^\d]/g, ""), 10),
     sortDirections: ["ascend", "descend"],
@@ -148,21 +150,22 @@ export const getBorderlessTableColumns = (
   {
     title: withSortIcon(
       "Transaction Date & Time",
-      "requestDateTime",
+      "transactionDateTime",
       sortedInfo
     ),
     dataIndex: "transactionDateTime",
     key: "transactionDateTime",
     ellipsis: true,
-    width: "20%",
-    sorter: (a, b) =>
-      formatApiDateTime(
+    width: "17%",
+    sorter: (a, b) => {
+      const dateA = new Date(
         `${a.transactionConductedDate} ${a.transactionConductedTime}`
-      ).localeCompare(
-        formatApiDateTime(
-          `${b.transactionConductedDate} ${b.transactionConductedTime}`
-        )
-      ),
+      ).getTime();
+      const dateB = new Date(
+        `${b.transactionConductedDate} ${b.transactionConductedTime}`
+      ).getTime();
+      return dateA - dateB;
+    },
     sortDirections: ["ascend", "descend"],
     sortOrder:
       sortedInfo?.columnKey === "transactionDateTime" ? sortedInfo.order : null,
@@ -221,16 +224,32 @@ export const getBorderlessTableColumns = (
     render: (q) => <span className="font-medium">{q.toLocaleString()}</span>,
   },
   {
-    title: "Broker",
+    title: withSortIcon("Broker", "broker", sortedInfo),
     dataIndex: "broker",
     width: "17%",
     key: "broker",
+    sorter: (a, b) => a.broker - b.broker,
+    sortDirections: ["ascend", "descend"],
+    sortOrder: sortedInfo?.columnKey === "broker" ? sortedInfo.order : null,
+    showSorterTooltip: false,
+    sortIcon: () => null,
   },
   {
     title: "",
     key: "action",
-    render: (_, record) => (
-      <Button className="small-dark-button" text={"View Details"} />
-    ),
+    render: (_, record) => {
+      //Global State to selected data to show in ViewDetailModal
+      const { setSelectedViewDetailOfTransaction } = useGlobalModal();
+      return (
+        <Button
+          className="small-dark-button"
+          text={"View Details"}
+          onClick={() => {
+            setSelectedViewDetailOfTransaction(record);
+            setViewDetailTransactionModal(true);
+          }}
+        />
+      );
+    },
   },
 ];
