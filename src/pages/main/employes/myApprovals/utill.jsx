@@ -83,12 +83,30 @@ export const getBorderlessTableColumns = (
       return (
         <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
           <span className="font-medium">
-            {/* {dashBetweenApprovalAssets(tradeApprovalID)} */}
-            {dashBetweenApprovalAssets("REQ888888")}
+            {dashBetweenApprovalAssets(tradeApprovalID)}
+            {/* {dashBetweenApprovalAssets("REQ888888")} */}
           </span>
         </div>
       );
     },
+    onHeaderCell: () => ({
+      style: {
+        minWidth: "100px", // ✅ minimum width
+        maxWidth: "150px", // 👈 custom max width
+        whiteSpace: "nowrap",
+        overflow: "hidden",
+        textOverflow: "ellipsis",
+      },
+    }),
+    onCell: () => ({
+      style: {
+        minWidth: "100px", // ✅ minimum width
+        maxWidth: "150px", // 👈 custom max width
+        whiteSpace: "nowrap",
+        overflow: "hidden",
+        textOverflow: "ellipsis",
+      },
+    }),
   },
   {
     title: withSortIcon("Instrument", "instrumentName", sortedInfo),
@@ -106,6 +124,7 @@ export const getBorderlessTableColumns = (
     showSorterTooltip: false,
     sortIcon: () => null,
     render: (instrument, record) => {
+      console.log(record, "Checkerrrrr");
       const assetCode = record?.assetType?.assetTypeShortCode;
       const code = instrument?.instrumentCode || "";
       return (
@@ -201,6 +220,7 @@ export const getBorderlessTableColumns = (
     title: withSortIcon("Request Date & Time", "requestDateTime", sortedInfo),
     dataIndex: "requestDateTime",
     key: "requestDateTime",
+    width:"13%",
     ellipsis: true,
     sorter: (a, b) =>
       formatApiDateTime(a.requestDateTime).localeCompare(
@@ -214,6 +234,7 @@ export const getBorderlessTableColumns = (
     render: (date) => (
       <span className="text-gray-600">{formatApiDateTime(date)}</span>
     ),
+     
   },
   {
     title: (
@@ -292,10 +313,10 @@ export const getBorderlessTableColumns = (
     showSorterTooltip: false,
     sortIcon: () => null,
     render: (q) => <span className="font-medium">{q.toLocaleString()}</span>,
-      onHeaderCell: () => ({
+    onHeaderCell: () => ({
       style: {
         minWidth: "100px", // 👈 adjust as needed
-        maxWidth:"150px",
+        maxWidth: "150px",
         whiteSpace: "nowrap",
         overflow: "hidden",
         textOverflow: "ellipsis",
@@ -304,7 +325,7 @@ export const getBorderlessTableColumns = (
     onCell: () => ({
       style: {
         minWidth: "100px",
-        maxWidth:"150px",
+        maxWidth: "150px",
         whiteSpace: "nowrap",
         overflow: "hidden",
         textOverflow: "ellipsis",

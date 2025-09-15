@@ -1,4 +1,5 @@
 // components/tables/columns/StatusColumnTitle.jsx
+
 import React, { useEffect, useState } from "react";
 import { Col, Dropdown, Row } from "antd";
 import { DownOutlined } from "@ant-design/icons";
@@ -6,16 +7,34 @@ import StatusFilterDropdown from "./statusFilterDropdown";
 import style from "../../../pages/main/employes/myApprovals/approval.module.css";
 
 /**
- * Column title dropdown for Status filter
+ * StatusColumnTitle Component
+ *
+ * Renders a column title with a filter dropdown for selecting approval statuses.
+ * Displays the currently selected status (or "Multiple" if more than one is chosen).
+ * Integrates with `StatusFilterDropdown` to provide filter selection UI.
+ *
+ * @component
+ * @param {Object} props - Component props
+ * @param {Object} props.state - The parent filter state object.
+ * @param {Function} props.setState - Setter function for updating the parent filter state.
+ *
+ * @returns {JSX.Element} Rendered status column title with filter dropdown.
  */
-const StatusColumnTitle = ({
-  state,
-  setState,
-}) => {
+const StatusColumnTitle = ({ state, setState }) => {
+  /** Controls dropdown visibility */
   const [visible, setVisible] = useState(false);
+
+  /** Temporary list of selected statuses while dropdown is open */
   const [tempSelected, setTempSelected] = useState([]);
 
+  /** The confirmed selected statuses from parent state */
   const selected = state?.status || [];
+
+  /**
+   * Syncs temporary selection with parent state when dropdown opens/closes.
+   * - When opened → copy current selected values into temp state.
+   * - When closed → reset temp state.
+   */
   useEffect(() => {
     if (visible) {
       setTempSelected(selected);
@@ -28,9 +47,12 @@ const StatusColumnTitle = ({
     <Dropdown
       open={visible}
       onOpenChange={setVisible}
+      trigger={["click"]}
+      className={style["table-filter-dropdown"]}
+      /** Custom dropdown content */
       popupRender={() => (
         <StatusFilterDropdown
-          confirm={() => setVisible(false)}
+          confirm={() => setVisible(false)} // close dropdown on confirm
           clearFilters={() => {
             setState((prev) => ({
               ...prev,
@@ -45,23 +67,27 @@ const StatusColumnTitle = ({
           setTempSelected={setTempSelected}
         />
       )}
-      trigger={["click"]}
-      className={style["table-filter-dropdown"]}
     >
+      {/* Column Header Display */}
       <div
         className={`${style["custom-column-header"]} ${
           selected.length ? style["filtered-header"] : ""
         }`}
-        onClick={(e) => e.stopPropagation()}
+        onClick={(e) => e.stopPropagation()} // prevent table sort click
       >
         <Row gutter={[10, 10]}>
+          {/* Status Label */}
           <Col>
-            {selected.length === 1
-              ? selected[0]
-              : selected.length > 1
-              ? "Multiple"
-              : "Status"}
+            {
+              selected.length === 1
+                ? selected[0] // Single selection → show the status
+                : selected.length > 1
+                ? "Multiple" // Multiple selections
+                : "Status" // Default label
+            }
           </Col>
+
+          {/* Dropdown Icon (rotates when open) */}
           <Col>
             <DownOutlined
               className={`${style.icon} ${visible ? style.rotated : ""}`}

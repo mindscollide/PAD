@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Col, Row, Spin } from "antd";
-import { ComonDropDown } from "../../../../components";
+import { ComonDropDown, SubmittedModal } from "../../../../components";
 import BorderlessTable from "../../../../components/tables/borderlessTable/borderlessTable";
 import { getBorderlessTableColumns, useTableScrollBottom } from "./utill";
 import { approvalStatusMap } from "../../../../components/tables/borderlessTable/utill";
@@ -15,7 +15,7 @@ import { useApi } from "../../../../context/ApiContext";
 import { useNavigate } from "react-router-dom";
 import { useMyApproval } from "../../../../context/myApprovalContaxt";
 import { useGlobalModal } from "../../../../context/GlobalModalContext";
-import SubmittedModal from "./modal/submittedModal/SubmittedModal";
+// import SubmittedModal from "./modal/submittedModal/SubmittedModal";
 import RequestRestrictedModal from "./modal/requestRestrictedModal/RequestRestrictedModal";
 import ViewDetailModal from "./modal/viewDetailModal/ViewDetailModal";
 import { useSidebarContext } from "../../../../context/sidebarContaxt";
@@ -65,7 +65,7 @@ const Approval = () => {
   const [approvalData, setApprovalData] = useState([]);
   const [loadingMore, setLoadingMore] = useState(false); // spinner at bottom
 
-  console.log("employeeMyApproval4555", addApprovalRequestData);
+  console.log({ employeeMyApproval }, "employeeMyApproval4555");
 
   // Confirmed filters displayed as tags
   const [submittedFilters, setSubmittedFilters] = useState([]);
@@ -137,6 +137,24 @@ const Approval = () => {
     if (hasFetched.current) return;
     hasFetched.current = true;
     fetchApprovals();
+
+    // to resetALlState WHen its unmount
+    return () => {
+      resetEmployeeMyApprovalSearch();
+      setEmployeeMyApprovalSearch({
+        instrumentName: "", // Name of the instrument
+        quantity: "", // Quantity filter
+        startDate: null, // Single date (could be Date object or string)
+        mainInstrumentName: "", // Main instrument name for popover or modal
+        type: [], // Type filter: ["Buy", "Sell"]
+        status: [], // Status filter: ["Pending", "Approved", etc.]
+        pageSize: 0, // Pagination: size of page
+        pageNumber: 0, // Pagination: current page number
+        totalRecords: 0,
+        filterTrigger: false,
+        tableFilterTrigger: false,
+      });
+    };
   }, []);
 
   /**
@@ -214,6 +232,7 @@ const Approval = () => {
    * Syncs submittedFilters state when filters are applied
    */
   useEffect(() => {
+    console.log("Filter Checker align");
     if (employeeMyApprovalSearch.filterTrigger) {
       const snapshot = filterKeys
         .filter(({ key }) => employeeMyApprovalSearch[key])
@@ -235,6 +254,7 @@ const Approval = () => {
    * Handles table-specific filter trigger
    */
   useEffect(() => {
+    console.log("Filter Checker align");
     const fetchFilteredData = async () => {
       if (!employeeMyApprovalSearch.tableFilterTrigger) return;
 
@@ -297,7 +317,6 @@ const Approval = () => {
         employeeMyApproval?.approvals &&
         Array.isArray(employeeMyApproval.approvals)
       ) {
-        console.log(employeeMyApproval, "CheckDatayagjvashvajhs");
         // 🔹 Map and normalize data
         const mappedData = employeeMyApproval.approvals.map((item) => ({
           key: item.approvalID,
@@ -325,7 +344,7 @@ const Approval = () => {
             prev.totalRecords !== employeeMyApproval.totalRecords
               ? employeeMyApproval.totalRecords
               : prev.totalRecords,
-          pageNumber: prev.pageNumber + 10,
+          pageNumber: mappedData.length,
         }));
       } else if (employeeMyApproval === null) {
         // No data case
@@ -361,7 +380,7 @@ const Approval = () => {
             StatusIds: mapStatusToIds(employeeMyApprovalSearch.status) || [],
             TypeIds:
               mapBuySellToIds(employeeMyApprovalSearch.type, assetData) || [],
-            PageNumber: employeeMyApprovalSearch.pageNumber || 10, // Acts as offset for API
+            PageNumber: employeeMyApprovalSearch.pageNumber || 0, // Acts as offset for API
             Length: 10,
           };
           // Call API
@@ -447,10 +466,14 @@ const Approval = () => {
           <BorderlessTable
             rows={approvalData}
             columns={columns}
-            scroll={{
-              x: "max-content",
-              y: submittedFilters.length > 0 ? 450 : 500,
-            }}
+            scroll={
+              approvalData?.length
+                ? {
+                    x: "max-content",
+                    y: submittedFilters.length > 0 ? 450 : 500,
+                  }
+                : undefined
+            }
             classNameTable="border-less-table-orange"
             onChange={(pagination, filters, sorter) => {
               setSortedInfo(sorter);

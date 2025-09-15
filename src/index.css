@@ -25,6 +25,7 @@ body {
   font-synthesis: none;
 }
 
+
 #root {
   font-family: inherit;
 }
@@ -255,7 +256,6 @@ body {
   padding: 0px !important;
 }
 
-
 /* Remove hover/focus background on dropdown menu items globally */
 li.ant-dropdown-menu-item.ant-dropdown-menu-item-only-child:hover,
 li.ant-dropdown-menu-item.ant-dropdown-menu-item-only-child:focus {
@@ -395,8 +395,6 @@ li.ant-dropdown-menu-item.ant-dropdown-menu-item-only-child:focus {
   max-width: 100%;
 }
 
-
-
 .EquitiesBrokerSelectPrefix-item-option-state {
   display: none !important;
 }
@@ -413,4 +411,8 @@ li.ant-dropdown-menu-item.ant-dropdown-menu-item-only-child:focus {
   background-color: #fff !important;
   border-color: #e1e1e1 !important;
   padding: 9px 9px !important;
+}
+
+.stepperStyles {
+  /* gap: 50px !important; */
 }

@@ -1,11 +1,15 @@
 import React from "react";
 import { Col, Row } from "antd";
-import { useGlobalModal } from "../../../../../../context/GlobalModalContext";
-import { GlobalModal, ModalImgStates } from "../../../../../../components";
 import styles from "./SubmittedModal.module.css";
-import CustomButton from "../../../../../../components/buttons/button";
+import CustomButton from "../../buttons/button";
+import GlobalModal from "../Modal";
+import ModalImgStates from "../../modalImageStates/modalImgStates";
+import { useGlobalModal } from "../../../context/GlobalModalContext";
+import { useSidebarContext } from "../../../context/sidebarContaxt";
 
 const SubmittedModal = ({ isEquitiesModalOpen }) => {
+  const { selectedKey } = useSidebarContext();
+  console.log(selectedKey, "selectedKeyselectedKey");
   // This is Global State for modal which is create in ContextApi
   const { isSubmit, setIsSubmit } = useGlobalModal();
 
@@ -29,7 +33,13 @@ const SubmittedModal = ({ isEquitiesModalOpen }) => {
             <Row>
               <Col>
                 <ModalImgStates
-                  type={isEquitiesModalOpen ? "EquitiesSubmitted" : "Submitted"}
+                  type={
+                    selectedKey === "4"
+                      ? "PortfolioSubmitted"
+                      : isEquitiesModalOpen
+                      ? "EquitiesSubmitted"
+                      : "Submitted"
+                  }
                 />
               </Col>
             </Row>

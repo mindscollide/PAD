@@ -1,0 +1,182 @@
+.selectinstrumentclass :global(.ant-select-selector) {
+  height: 56px !important;
+  cursor: pointer !important;
+  width: 100% !important;
+  border-radius: 6.95px !important;
+  border: 0.87px solid #717171 !important;
+  display: flex;
+  align-items: center;
+}
+
+.selectinstrumentclass :hover {
+  background: var(--White-Hover, #f3f3f3) !important;
+}
+
+.MainClassOfApprovals {
+  padding: 10px 30px !important;
+}
+
+.instruLabel {
+  font-family: "Switzer Variable" !important;
+  color: #30426a;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.TextFieldOfQuantity {
+  margin: 0% !important;
+  font-size: 18px !important; /* Matches the Type Select */
+  font-family: "Switzer Variable";
+  font-weight: 500;
+  cursor: pointer !important;
+}
+
+.mt3 {
+  margin-top: 3rem;
+}
+
+.mt1 {
+  margin-top: 1rem;
+}
+
+.linemanagerBackground {
+  background-color: #fff1e7 !important;
+  height: 79px !important;
+  width: 700.83px !important;
+  border-radius: 7px !important;
+  display: grid !important;
+  align-items: center !important;
+}
+
+.lineManagername {
+  margin: 0 !important;
+  font-size: 17.7287px;
+  font-family: "Switzer Variable";
+  font-weight: 500 !important;
+  color: #424242 !important;
+  padding: 0px 20px !important;
+}
+
+.instruLabelForManager {
+  font-family: "Switzer Variable" !important;
+  color: #30426a;
+  font-size: 14px;
+  font-weight: 700;
+  padding: 0px 20px !important;
+  margin-top: 15px !important;
+}
+
+.approvalHeading {
+  font-family: "Switzer Variable" !important;
+  font-size: 26px;
+  font-weight: 500;
+  color: #30426a;
+}
+
+.approvalEquities {
+  font-family: "Switzer Variable" !important;
+  font-size: 26px;
+  font-weight: 700;
+  color: #30426a;
+}
+
+.mainButtonDiv {
+  display: flex !important;
+  justify-content: flex-end;
+  margin-bottom: 10px;
+  padding: 0px 20px !important;
+  gap: 35px !important;
+}
+
+.mtopPx {
+  margin-top: 8px !important;
+}
+
+.instrumentLabel {
+  font-family: "Switzer Variable" !important;
+  color: #30426a !important;
+  font-size: 14px !important;
+  font-weight: 700 !important;
+}
+
+/* Base box */
+
+/* For Broker Select Box */
+
+.checkboxSelectofBroker {
+  height: 56px !important;
+  display: flex;
+  align-items: center;
+  border-radius: 6.95px !important;
+  border: 1px solid #717171 !important;
+  box-shadow: none !important;
+  background-color: white !important;
+  font-size: 17px !important;
+  font-family: "Switzer Variable";
+  font-weight: 400;
+}
+
+/* Hover & focus */
+
+.checkboxSelectofBroker:global(.ant-select:hover .ant-select-selector),
+.checkboxSelectofBroker:global(.ant-select-focused .ant-select-selector) {
+  border: 1px solid transparent !important;
+  box-shadow: none !important; /* removes glow */
+  outline: none !important; /* removes any outline */
+  background-color: #f3f3f3 !important;
+}
+
+/* Placeholder */
+.checkboxSelectofBroker :global(.ant-select-selection-placeholder) {
+  opacity: 1 !important;
+  color: #717171 !important;
+  font-size: 17px !important;
+  font-family: "Switzer Variable";
+  font-weight: 400;
+
+  position: absolute; /* selector ke andar absolute */
+  top: 50%;
+  transform: translateY(-0%); /* perfect vertical centering */
+  margin: 0 !important;
+  line-height: 1; /* safe */
+  pointer-events: none;
+}
+
+/* Selected value */
+.checkboxSelectofBroker :global(.ant-select-selection-item) {
+  font-size: 17px !important;
+  font-family: "Switzer Variable";
+  font-weight: 400;
+}
+
+:global(.ant-select-dropdown.checkboxSelectofBroker-dropdown .ant-select-item) {
+  font-size: 17px !important;
+  font-family: "Switzer Variable";
+  font-weight: 400;
+}
+
+.checkboxSelectofBroker :global(.ant-select-selection-overflow) {
+  cursor: pointer;
+  align-self: flex-start !important;
+  max-height: 50px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  align-items: center !important;
+}
+
+.checkboxSelectofBroker :global(.ant-select-selection-item) {
+  background: rgba(0, 0, 0, 0.06);
+  border: 1px solid transparent;
+}
+
+.aesterickClass {
+  color: #a50000;
+}
+
+.copyEmailConductMainClass {
+  position: absolute;
+  left: auto !important;
+  right: 40px !important;
+  top: 5px !important;
+  cursor: pointer;
+}

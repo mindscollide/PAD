@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Col, Row } from "antd";
 import { Button } from "../../../../components";
 import BorderlessTable from "../../../../components/tables/borderlessTable/borderlessTable";
-import { getBorderlessTableColumns } from "./utill";
+import { getBorderlessLineManagerTableColumns } from "./utill";
 import { approvalStatusMap } from "../../../../components/tables/borderlessTable/utill";
 import PageLayout from "../../../../components/pageContainer/pageContainer";
 import EmptyState from "../../../../components/emptyStates/empty-states";
@@ -14,8 +14,25 @@ import NoteLineManagerModal from "./modal/noteLineManagerModal/NoteLineManagerMo
 import ApprovedLineManagerModal from "./modal/approvedLineManagerModal/approvedLineManagerModal";
 import DeclinedLineManagerModal from "./modal/declinedLineManagerModal/DeclinedLineManagerModal";
 import ViewCommentLineManagerModal from "./modal/viewCommentLineManagerModal/ViewCommentLineManagerModal";
+import { useNotification } from "../../../../components/NotificationProvider/NotificationProvider";
+import { useSidebarContext } from "../../../../context/sidebarContaxt";
+import { useGlobalLoader } from "../../../../context/LoaderContext";
+import { useApi } from "../../../../context/ApiContext";
+import { useMyApproval } from "../../../../context/myApprovalContaxt";
+import { SearchApprovalRequestLineManager } from "../../../../api/myApprovalApi";
+import { useNavigate } from "react-router-dom";
+import { apiCallSearchForLineManager } from "../../../../components/dropdowns/searchableDropedown/utill";
+import { useTableScrollBottom } from "../../employes/myApprovals/utill";
+import {
+  mapBuySellToIds,
+  mapStatusToIdsForLineManager,
+} from "../../../../components/dropdowns/filters/utils";
+import { useDashboardContext } from "../../../../context/dashboardContaxt";
 
 const ApprovalRequest = () => {
+  const navigate = useNavigate();
+  const hasFetched = useRef(false);
+
   const {
     viewDetailLineManagerModal,
     setViewDetailLineManagerModal,
@@ -24,105 +41,22 @@ const ApprovalRequest = () => {
     declinedGlobalModal,
     viewCommentGlobalModal,
   } = useGlobalModal();
-  // Sort state for AntD Table
-  const [sortedInfo, setSortedInfo] = useState({});
 
-  // Confirmed filters displayed as tags
-  const [submittedFilters, setSubmittedFilters] = useState([]);
-  // Sample static approval request data
-  let data = [
-    {
-      id: 1,
-      requesterName: "James Miller",
-      instrument: "PSO-NOV",
-      type: "Buy",
-      requestDateTime: "2024-10-11 | 10:00 pm",
-      status: "Pending",
-      isEscalated: false,
-    },
-    {
-      id: 2,
-      requesterName: "Emily Johnson",
-      instrument: "PSO-OCT",
-      type: "Sell",
-      requestDateTime: "2024-10-11 | 10:00 pm",
-      status: "Approved",
-      isEscalated: false,
-    },
-    {
-      id: 3,
-      requesterName: "Michael Thompson",
-      instrument: "PRL-OCT",
-      type: "Buy",
-      requestDateTime: "2024-10-11 | 10:00 pm",
-      status: "Not-Traded",
-      isEscalated: true,
-    },
-    {
-      id: 4,
-      requesterName: "Sarah Wilson",
-      instrument: "PRL-OCT",
-      type: "Buy",
-      requestDateTime: "2024-10-11 | 10:00 pm",
-      status: "Resubmit",
-      isEscalated: true,
-    },
-    {
-      id: 5,
-      requesterName: "James Miller",
-      instrument: "PSO-OCT",
-      type: "Sell",
-      requestDateTime: "2024-10-11 | 10:00 pm",
-      status: "Declined",
-      timeRemaining: "02 days 20 hours left",
-    },
-    {
-      id: 6,
-      requesterName: "Emily Johnson",
-      instrument: "PRL-OCT",
-      type: "Buy",
-      requestDateTime: "2024-10-11 | 10:00 pm",
-      status: "Not-Traded",
-      isEscalated: true,
-    },
-    {
-      id: 7,
-      requesterName: "Michael Thompson",
-      instrument: "PRL-OCT",
-      type: "Buy",
-      requestDateTime: "2024-10-11 | 10:00 pm",
-      status: "Resubmit",
-      isEscalated: true,
-    },
-    {
-      id: 8,
-      requesterName: "Sarah Wilson",
-      instrument: "PSO-OCT",
-      type: "Sell",
-      requestDateTime: "2024-10-11 | 10:00 pm",
-      status: "Approved",
-      isEscalated: true,
-    },
-    {
-      id: 9,
-      requesterName: "James Miller",
-      instrument: "PRL-OCT",
-      type: "Buy",
-      requestDateTime: "2024-10-11 | 10:00 pm",
-      status: "Not-Traded",
-      isEscalated: true,
-    },
-    {
-      id: 10,
-      requesterName: "James Miller",
-      instrument: "PRL-OAACT",
-      type: "Buy",
-      requestDateTime: "2024-10-11 | 10:00 pm",
-      status: "Resubmit",
-      isEscalated: false,
-    },
-  ];
+  const { showNotification } = useNotification();
+  const { addApprovalRequestData } = useDashboardContext();
+  const { selectedKey } = useSidebarContext();
+  const { showLoader } = useGlobalLoader();
+  const { callApi } = useApi();
 
+  //local state to set data i table
+  const [approvalRequestLMData, setApprovalRequestLMData] = useState([]);
+
+  // state of context which I'm getting from the myApproval for Line Manager
+  const { lineManagerApproval, setLineManagerApproval } = useMyApproval();
+
+  const [loadingMore, setLoadingMore] = useState(false);
+
+  // state of Search context which I'm getting from the SearchBar for Line Manager
   // Global state for filter/search values
   const {
     lineManagerApprovalSearch,
@@ -130,16 +64,81 @@ const ApprovalRequest = () => {
     resetLineManagerApprovalSearch,
   } = useSearchBarContext();
 
+  console.log(
+    lineManagerApprovalSearch,
+    lineManagerApproval,
+    "lineManagerApprovalChecker123"
+  );
+
+  // Sort state for AntD Table
+  const [sortedInfo, setSortedInfo] = useState({});
+
+  // Confirmed filters displayed as tags
+  const [submittedFilters, setSubmittedFilters] = useState([]);
+
+  /**
+   * Fetches approval data from API on component mount
+   */
+  const fetchApprovals = async () => {
+    await showLoader(true);
+    const requestdata = {
+      InstrumentName:
+        lineManagerApprovalSearch.instrumentName ||
+        lineManagerApprovalSearch.mainInstrumentName,
+      Date: lineManagerApprovalSearch.date || "",
+      Quantity: lineManagerApprovalSearch.quantity || 0,
+      PageNumber: 0,
+      Length: lineManagerApprovalSearch.pageSize || 10,
+      StatusIds: lineManagerApprovalSearch.status || [],
+      TypeIds: lineManagerApprovalSearch.type || [],
+      RequesterName: lineManagerApprovalSearch.requesterName || "",
+    };
+
+    const data = await SearchApprovalRequestLineManager({
+      callApi,
+      showNotification,
+      showLoader,
+      requestdata,
+      navigate,
+    });
+
+    setLineManagerApproval(data);
+  };
+
+  /**
+   * Runs only once to fetch approvals on initial render
+   */
+  useEffect(() => {
+    if (hasFetched.current) return;
+    hasFetched.current = true;
+    fetchApprovals();
+
+    resetLineManagerApprovalSearch();
+    setLineManagerApprovalSearch({
+      instrumentName: "",
+      requesterName: "",
+      date: null,
+      mainInstrumentName: "",
+      type: [],
+      status: [],
+      pageSize: 0,
+      pageNumber: 0,
+      totalRecords: 0,
+      filterTrigger: true,
+      tableFilterTrigger: false,
+    });
+  }, []);
+
   // Keys to track which filters to sync/display
   const filterKeys = [
     { key: "instrumentName", label: "Instrument" },
     { key: "mainInstrumentName", label: "Main Instrument" },
-    { key: "date", label: "Date" },
-    { key: "quantity", label: "Quantity" },
+    { key: "startDate", label: "Date" },
+    { key: "requesterName", label: "Requester Name" },
   ];
 
   // Table columns with integrated filters
-  const columns = getBorderlessTableColumns(
+  const columns = getBorderlessLineManagerTableColumns(
     approvalStatusMap,
     sortedInfo,
     lineManagerApprovalSearch,
@@ -150,21 +149,91 @@ const ApprovalRequest = () => {
   console.log(approvalStatusMap, "approvalStatusMapapprovalStatusMap");
 
   /**
-   * Removes a filter from both context and UI tags
+   * Removes a filter tag and re-fetches data
    */
-  const handleRemoveFilter = (key) => {
-    setLineManagerApprovalSearch((prev) => ({
-      ...prev,
-      [key]: "",
-    }));
-
+  const handleRemoveFilter = async (key) => {
+    console.log("Check Data");
+    const normalizedKey = key?.toLowerCase();
+    // 1️⃣ Update UI state for removed filters
     setSubmittedFilters((prev) => prev.filter((item) => item.key !== key));
+
+    //To show dynamically AssetType like EQ equities ETC
+    const assetKey = lineManagerApprovalSearch.assetType;
+    const assetData = addApprovalRequestData?.[assetKey];
+
+    // 2️⃣ Prepare API request parameters
+    const TypeIds = mapBuySellToIds(lineManagerApprovalSearch.type, assetData);
+    const statusIds = mapStatusToIdsForLineManager(
+      lineManagerApprovalSearch.status
+    );
+
+    const requestdata = {
+      InstrumentName:
+        lineManagerApprovalSearch.instrumentName ||
+        lineManagerApprovalSearch.mainInstrumentName ||
+        "",
+      Date: lineManagerApprovalSearch.date || "",
+      Quantity: lineManagerApprovalSearch.quantity || 0,
+      StatusIds: statusIds || [],
+      TypeIds: TypeIds || [],
+      PageNumber: 0,
+      Length: lineManagerApprovalSearch.pageSize || 10,
+      RequesterName: lineManagerApprovalSearch.requesterName || "",
+    };
+    console.log(normalizedKey, "checkRequqestData");
+
+    // 3️⃣ Reset API params for the specific filter being removed
+    if (normalizedKey === "requestername") {
+      console.log(requestdata, "checkRequqestData");
+      requestdata.RequesterName = "";
+      // 5️⃣ Update search state — only reset the specific key + page number
+      setLineManagerApprovalSearch((prev) => ({
+        ...prev,
+        requesterName: "",
+        pageNumber: 0,
+      }));
+    } else if (
+      normalizedKey === "instrumentname" ||
+      normalizedKey === "maininstrumentname"
+    ) {
+      console.log("Check Data");
+      setLineManagerApprovalSearch((prev) => ({
+        ...prev,
+        instrumentName: "",
+        mainInstrumentName: "",
+        pageNumber: 0,
+      }));
+      requestdata.InstrumentName = "";
+    } else if (normalizedKey === "startdate") {
+      requestdata.StartDate = "";
+      setLineManagerApprovalSearch((prev) => ({
+        ...prev,
+        startdate: "",
+        pageNumber: 0,
+      }));
+    }
+
+    // 4️⃣ Show loader and call API
+    showLoader(true);
+    console.log("Check Data");
+
+    const data = await SearchApprovalRequestLineManager({
+      callApi,
+      showNotification,
+      showLoader,
+      requestdata,
+      navigate,
+    });
+
+    setLineManagerApproval(data);
   };
 
   /**
    * Syncs filters on `filterTrigger` from context
    */
   useEffect(() => {
+    console.log("Filter Checker align");
+    console.log(selectedKey, "Filter Checker align");
     if (lineManagerApprovalSearch.filterTrigger) {
       const snapshot = filterKeys
         .filter(({ key }) => lineManagerApprovalSearch[key])
@@ -175,7 +244,6 @@ const ApprovalRequest = () => {
 
       setSubmittedFilters(snapshot);
 
-      // Reset filter trigger to avoid infinite loop
       setLineManagerApprovalSearch((prev) => ({
         ...prev,
         filterTrigger: false,
@@ -183,16 +251,56 @@ const ApprovalRequest = () => {
     }
   }, [lineManagerApprovalSearch.filterTrigger]);
 
+  /**
+   * Handles table-specific filter trigger
+   */
+  useEffect(() => {
+    console.log(
+      lineManagerApprovalSearch.tableFilterTrigger,
+      "Filter Checker align"
+    );
+    const fetchFilteredData = async () => {
+      if (!lineManagerApprovalSearch.tableFilterTrigger) return;
+
+      const snapshot = filterKeys
+        .filter(({ key }) => lineManagerApprovalSearch[key])
+        .map(({ key }) => ({
+          key,
+          value: lineManagerApprovalSearch[key],
+        }));
+
+      console.log(selectedKey, "Filter Checker align");
+      await apiCallSearchForLineManager({
+        selectedKey,
+        lineManagerApprovalSearch,
+        callApi,
+        showNotification,
+        showLoader,
+        navigate,
+        setData: setLineManagerApproval,
+      });
+
+      setSubmittedFilters(snapshot);
+
+      setLineManagerApprovalSearch((prev) => ({
+        ...prev,
+        tableFilterTrigger: false,
+      }));
+    };
+
+    fetchFilteredData();
+  }, [lineManagerApprovalSearch.tableFilterTrigger]);
+
   useEffect(() => {
     try {
       // Get browser navigation entries (used to detect reload)
       const navigationEntries = performance.getEntriesByType("navigation");
-      if (navigationEntries.length > 0) {
-        const navigationType = navigationEntries[0].type;
-        if (navigationType === "reload") {
-          // Check localStorage for previously saved selectedKey
-          resetLineManagerApprovalSearch();
-        }
+      if (
+        navigationEntries.length > 0 &&
+        navigationEntries[0].type === "reload"
+      ) {
+        // Check localStorage for previously saved selectedKey
+        resetLineManagerApprovalSearch();
       }
     } catch (error) {
       console.error(
@@ -201,6 +309,126 @@ const ApprovalRequest = () => {
       );
     }
   }, []);
+
+  // Lazy Loading Work Start
+  useEffect(() => {
+    try {
+      if (
+        lineManagerApproval?.lineApprovals &&
+        Array.isArray(lineManagerApproval?.lineApprovals)
+      ) {
+        console.log(lineManagerApproval, "CheckDatayagjvashvajhs");
+        // 🔹 Map and normalize data
+        const mappedData = lineManagerApproval?.lineApprovals?.map((item) => ({
+          key: item.approvalID,
+          instrument: `${item.instrument?.instrumentName || ""} - ${
+            item.instrument?.instrumentCode || ""
+          }`,
+          type: item.tradeType?.typeName || "",
+          requestDateTime: `${item.requestDate || ""} ${
+            item.requestTime || ""
+          }`,
+          isEscalated: false,
+          status: item.approvalStatus?.approvalStatusName || "",
+          quantity: item.quantity || 0,
+          timeRemaining: item.timeRemainingToTrade || "",
+          ...item,
+        }));
+
+        // 🔹 Set approvals data
+        setApprovalRequestLMData(mappedData);
+
+        // 🔹 Update search state (avoid unnecessary updates)
+        setLineManagerApprovalSearch((prev) => ({
+          ...prev,
+          totalRecords:
+            prev.totalRecords !== lineManagerApproval.totalRecords
+              ? lineManagerApproval.totalRecords
+              : prev.totalRecords,
+          pageNumber: mappedData.length,
+        }));
+      } else if (lineManagerApproval === null) {
+        // No data case
+        setApprovalRequestLMData([]);
+      }
+    } catch (error) {
+      console.error("Error processing employee approvals:", error);
+    } finally {
+      // 🔹 Always stop loading state
+      setLoadingMore(false);
+    }
+  }, [lineManagerApproval]);
+
+  // Lazy Loading
+  // Inside your component
+  useTableScrollBottom(
+    async () => {
+      // ✅ Only load more if there are still records left
+      if (
+        lineManagerApproval?.lineApprovals?.totalRecords !==
+        approvalRequestLMData?.length
+      ) {
+        try {
+          setLoadingMore(true);
+
+          const assetKey = lineManagerApprovalSearch.assetType;
+          const assetData = addApprovalRequestData?.[assetKey];
+
+          // Build request payload
+          const requestdata = {
+            InstrumentName:
+              lineManagerApprovalSearch.instrumentName ||
+              lineManagerApprovalSearch.mainInstrumentName,
+            Date: lineManagerApprovalSearch.date || "",
+            Quantity: lineManagerApprovalSearch.quantity || 0,
+            StatusIds:
+              mapStatusToIdsForLineManager(lineManagerApprovalSearch.status) ||
+              [],
+            TypeIds:
+              mapBuySellToIds(lineManagerApprovalSearch.type, assetData) || [],
+            PageNumber: lineManagerApprovalSearch.pageNumber || 0, // Acts as offset for API
+            Length: 10,
+            RequesterName: lineManagerApprovalSearch.requesterName || "",
+          };
+          // Call API
+          const data = await SearchApprovalRequestLineManager({
+            callApi,
+            showNotification,
+            showLoader, // ✅ Don't trigger full loader for lazy load
+            requestdata,
+            navigate,
+          });
+
+          if (!data) return;
+
+          setLineManagerApproval((prevState) => {
+            const safePrev =
+              prevState && typeof prevState === "object"
+                ? prevState
+                : { lineApprovals: [], totalRecords: 0 };
+
+            return {
+              lineApprovals: [
+                ...(Array.isArray(safePrev.lineApprovals)
+                  ? safePrev.lineApprovals
+                  : []),
+                ...(Array.isArray(data?.lineApprovals)
+                  ? data.lineApprovals
+                  : []),
+              ],
+              totalRecords: data?.totalRecords ?? safePrev.totalRecords,
+            };
+          });
+        } catch (error) {
+          console.error("Error loading more approvals:", error);
+        } finally {
+          setLoadingMore(false);
+        }
+      }
+    },
+    0,
+    "border-less-table-orange" // Container selector
+  );
 
   return (
     <>
@@ -224,7 +452,10 @@ const ApprovalRequest = () => {
       )}
 
       {/* Page Content */}
-      <PageLayout background="white">
+      <PageLayout
+        background="white"
+        className={submittedFilters.length > 0 && "changeHeight"}
+      >
         <div className="px-4 md:px-6 lg:px-8">
           {/* Page Header */}
           <Row justify="space-between" align="middle" className="mb-4">
@@ -234,15 +465,19 @@ const ApprovalRequest = () => {
           </Row>
 
           {/* Table or Empty State */}
-          {data && data.length > 0 ? (
+          {approvalRequestLMData && approvalRequestLMData.length > 0 ? (
             <BorderlessTable
-              rows={data}
+              rows={approvalRequestLMData}
               columns={columns}
-              scroll={{ x: "max-content", y: 550 }}
+              scroll={{
+                x: "max-content",
+                y: submittedFilters.length > 0 ? 450 : 500,
+              }}
               classNameTable="border-less-table-orange"
               onChange={(pagination, filters, sorter) => {
                 setSortedInfo(sorter);
               }}
+              loading={loadingMore}
             />
           ) : (
             <EmptyState type="request" />
