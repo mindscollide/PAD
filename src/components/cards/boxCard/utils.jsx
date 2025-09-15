@@ -38,6 +38,12 @@ export const typeColorMap = {
     textCountColor: "#A50000",
     textAlign: "center",
   },
+  non_compliant: {
+    bgColor: "#FFDBDB",
+    textLableColor: "#A50000",
+    textCountColor: "#A50000",
+    textAlign: "center",
+  },
   approval: {
     bgColor: "#FFF1E7",
     textLableColor: "#F67F29",
@@ -68,6 +74,12 @@ export const typeColorMap = {
     textCountColor: "#A50000",
     textAlign: "center",
   },
+  pending_verification_requests: {
+    bgColor: "#EDF3FF",
+    textLableColor: "#30426A", // Using var(--Blue-V1)
+    textCountColor: "#30426A",
+    textAlign: "center",
+  },
 };
 
 // ============================
@@ -89,11 +101,9 @@ export const lineManagerRouteMap = {
 };
 
 export const complianceOfficerRouteMap = {
-  approvals: { path: "approvals", key: "1" },
-  transactions: { path: "transactions", key: "2" },
-  history: { path: "history", key: "3" },
-  portfolio: { path: "portfolios", key: "4" },
-  reports: { path: "reports", key: "5" },
+  approvals: { path: "co-reconcile-transactions", key: "9" },
+  transactions: { path: "co-my-actions", key: "10" },
+  reports: { path: "co-reports", key: "11" },
 };
 
 export const headOfTradeRouteMap = {
