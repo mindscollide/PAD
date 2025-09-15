@@ -1,3 +1,5 @@
+// src/components/EmptyState/EmptyState.jsx
+
 import React from "react";
 import { Empty, Typography, Button } from "antd";
 import { FileSearchOutlined } from "@ant-design/icons";
@@ -19,6 +21,9 @@ import TransactionsIcon from "../../assets/img/transactions-icon.png";
 
 const { Text } = Typography;
 
+/**
+ * Mapping between empty state types and their corresponding icons.
+ */
 const iconComponents = {
   approvals: ApprovalsIcon,
   transactions: TransactionsIcon,
@@ -32,9 +37,53 @@ const iconComponents = {
   breaches: PolicyIcon,
   audit: AuditIcon,
   users: UsersIcon,
-  Underdevelopment:HistoryRecordIcon,
+  underdevelopment: HistoryRecordIcon,
 };
 
+/**
+ * Default display messages for each empty state type.
+ */
+const defaultMessages = {
+  approvals: "No Approvals Yet",
+  transactions: "No Transactions Found",
+  portfolio: "Portfolio is Empty",
+  pending: "No Pending Approvals",
+  action: "No Actions Taken",
+  history: "No History Recorded",
+  request: "No Requests Pending",
+  reconcile: "Nothing to Reconcile",
+  reports: "No Reports Available",
+  breaches: "No Policy Breaches",
+  audit: "No Audit Records",
+  users: "No Users Found",
+  underdevelopment: "Currently under development",
+};
+
+/**
+ * 🔹 EmptyState Component
+ *
+ * A reusable component that displays an empty state with an icon, a message,
+ * an optional description, and an optional action button.
+ *
+ * @component
+ *
+ * @param {Object} props - Component props
+ * @param {string} [props.type="default"] - Type of empty state (used to determine icon & message)
+ * @param {string} [props.message] - Custom message (overrides default)
+ * @param {string} [props.description] - Optional secondary description text
+ * @param {string} [props.actionText] - Text for the action button
+ * @param {Function} [props.onAction] - Click handler for the action button
+ * @param {Object} [props.style] - Custom inline styles for the container
+ *
+ * @example
+ * <EmptyState type="portfolio" />
+ * <EmptyState type="users" description="Invite users to get started" />
+ * <EmptyState
+ *   type="reports"
+ *   actionText="Generate Report"
+ *   onAction={() => console.log("Generate clicked")}
+ * />
+ */
 const EmptyState = ({
   type = "default",
   message,
@@ -43,25 +92,15 @@ const EmptyState = ({
   onAction,
   style,
 }) => {
-  const defaultMessages = {
-    approvals: "No Approvals Yet",
-    transactions: "No Transactions Found",
-    portfolio: "Portfolio is Empty",
-    pending: "No Pending Approvals",
-    action: "No Actions Taken",
-    history: "No History Recorded",
-    request: "No Requests Pending",
-    reconcile: "Nothing to Reconcile",
-    reports: "No Reports Available",
-    breaches: "No Policy Breaches",
-    audit: "No Audit Records",
-    users: "No Users Found",
-    Underdevelopment:"currently under development",
-  };
+  // Normalize type to match keys in the maps
+  const normalizedType = type?.toLowerCase();
 
+  // Pick default or provided message
   const displayMessage =
-    message || defaultMessages[type] || "No data available";
-  const IconSrc = iconComponents[type];
+    message || defaultMessages[normalizedType] || "No data available";
+
+  // Pick icon based on type
+  const IconSrc = iconComponents[normalizedType];
   const isImage = typeof IconSrc === "string" || IconSrc instanceof String;
 
   return (
@@ -72,7 +111,6 @@ const EmptyState = ({
             src={IconSrc}
             alt={displayMessage}
             className={styles.emptyIcon}
-            // style={style}
           />
         ) : (
           <FileSearchOutlined className={styles.emptyIcon} />
