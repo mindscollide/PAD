@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import { Col, Row, Tag } from "antd";
 import { useGlobalModal } from "../../../../../../context/GlobalModalContext";
 import { GlobalModal, TextField } from "../../../../../../components";
@@ -6,7 +6,14 @@ import styles from "./ConductTransaction.module.css";
 import CustomButton from "../../../../../../components/buttons/button";
 import classNames from "classnames";
 import copyIcon from "../../../../../../assets/img/copy-dark.png";
-import { allowOnlyNumbers } from "../../../../../../commen/funtions/rejex";
+import {
+  allowOnlyNumbers,
+  dashBetweenApprovalAssets,
+  formatApiDateTime,
+  formatNumberWithCommas,
+} from "../../../../../../commen/funtions/rejex";
+import { useMyApproval } from "../../../../../../context/myApprovalContaxt";
+import { useDashboardContext } from "../../../../../../context/dashboardContaxt";
 
 const ConductTransaction = () => {
   //This is the ContextApi of Global Modal States
@@ -15,7 +22,45 @@ const ConductTransaction = () => {
     setIsConductedTransaction,
     setIsViewDetail,
     setIsSubmit,
+    selectedViewDetail,
   } = useGlobalModal();
+
+  //This is the Global state of Context Api
+  const { viewDetailsModalData } = useMyApproval();
+
+  const { allInstrumentsData, employeeBasedBrokersData } =
+    useDashboardContext();
+
+  // Refactor sessionStorage read with useMemo for performance & error handling
+  const complianceOfficerDetails = useMemo(() => {
+    try {
+      const storedData = JSON.parse(
+        sessionStorage.getItem("user_Hierarchy_Details") || "[]"
+      );
+
+      if (!Array.isArray(storedData)) return {};
+
+      const found = storedData.find(
+        (item) =>
+          item.roleName === "Compliance Officer (CO)" && item.levelNo === 1
+      );
+
+      return found
+        ? { managerName: found.managerName, managerEmail: found.managerEmail }
+        : {};
+    } catch (e) {
+      console.error("Invalid JSON in sessionStorage", e);
+      return {};
+    }
+  }, []);
+
+  // Extarct and Instrument from viewDetailsModalData context Api
+  const instrumentId = Number(viewDetailsModalData?.details?.[0]?.instrumentID);
+
+  // Match that selected instrument Id in viewDetailsModalData and match them with allinstrumentsData context State
+  const selectedInstrument = allInstrumentsData?.find(
+    (item) => item.instrumentID === instrumentId
+  );
 
   //This is the quantity state in which user can enter the quantity for specific limit or Limitation
   const [quantity, setQuantity] = useState("");
@@ -44,12 +89,23 @@ const ConductTransaction = () => {
   // This is the onChange of qunatity Field
   const handleQuantityChange = (e) => {
     const value = e.target.value;
-    // Use your regex function here
+
+    // Only allow numeric values
     if (!allowOnlyNumbers(value) && value !== "") return;
+
     setQuantity(value);
-    if (parseInt(value) > 50000) {
+
+    // Store approved quantity in a variable
+    const approvedQuantity =
+      Number(viewDetailsModalData?.details?.[0]?.quantity) || 0;
+
+    // Convert entered value to a number
+    const enteredQuantity = Number(value);
+
+    // Validate: entered quantity must be <= approvedQuantity
+    if (enteredQuantity > approvedQuantity) {
       setError(
-        "Please enter a quantity less than or equal to the approved quantity"
+        `Quantity must be less than or equal to the approved quantity (${approvedQuantity}).`
       );
     } else {
       setError("");
@@ -89,7 +145,11 @@ const ConductTransaction = () => {
                       Instrument
                     </label>
                     <label className={styles.viewDetailSubLabels}>
-                      <span className={styles.customTag}>EQ</span> PSO-OCT
+                      <span className={styles.customTag}>
+                        {viewDetailsModalData?.details?.[0]?.assetTypeID ===
+                          "1" && <span>EQ</span>}
+                      </span>
+                      {selectedInstrument?.instrumentCode}
                     </label>
                   </div>
                 </Col>
@@ -100,7 +160,9 @@ const ConductTransaction = () => {
                       Approval ID
                     </label>
                     <label className={styles.viewDetailSubLabels}>
-                      REQ-001
+                      {dashBetweenApprovalAssets(
+                        viewDetailsModalData?.details?.[0]?.tradeApprovalID
+                      )}
                     </label>
                   </div>
                 </Col>
@@ -110,7 +172,13 @@ const ConductTransaction = () => {
                 <Col span={12}>
                   <div className={styles.backgrounColorOfDetail}>
                     <label className={styles.viewDetailMainLabels}>Type</label>
-                    <label className={styles.viewDetailSubLabels}>Buy</label>
+                    <label className={styles.viewDetailSubLabels}>
+                      {" "}
+                      {viewDetailsModalData?.details?.[0]?.approvalTypeID ===
+                        "1" && <span>Buy</span>}
+                      {viewDetailsModalData?.details?.[0]?.approvalTypeID ===
+                        "2" && <span>Sell</span>}
+                    </label>
                   </div>
                 </Col>
                 <Col span={12}>
@@ -118,7 +186,12 @@ const ConductTransaction = () => {
                     <label className={styles.viewDetailMainLabels}>
                       Approved Quantity
                     </label>
-                    <label className={styles.viewDetailSubLabels}>40,000</label>
+                    <label className={styles.viewDetailSubLabels}>
+                      {" "}
+                      {formatNumberWithCommas(
+                        viewDetailsModalData?.details?.[0]?.quantity
+                      )}
+                    </label>
                   </div>
                 </Col>
               </Row>
@@ -129,7 +202,7 @@ const ConductTransaction = () => {
                       Request Date
                     </label>
                     <label className={styles.viewDetailSubLabels}>
-                      2024-10-01
+                      {formatApiDateTime(selectedViewDetail?.requestDateTime)}
                     </label>
                   </div>
                 </Col>
@@ -139,7 +212,8 @@ const ConductTransaction = () => {
                       Asset Class
                     </label>
                     <label className={styles.viewDetailSubLabels}>
-                      Asset Class{" "}
+                      {viewDetailsModalData?.details?.[0]?.assetTypeID ===
+                        "1" && <span>Equity</span>}
                     </label>
                   </div>
                 </Col>
@@ -151,15 +225,24 @@ const ConductTransaction = () => {
                       Brokers
                     </label>
                     <div className={styles.tagContainer}>
-                      <Tag className={styles.tagClasses}>
-                        AKD Securities Limited
-                      </Tag>
-                      <Tag className={styles.tagClasses}>
-                        K-Trade Securities Ltd
-                      </Tag>{" "}
-                      <Tag className={styles.tagClasses}>
-                        Approval Routing Rules
-                      </Tag>
+                      {viewDetailsModalData?.details?.[0]?.brokers?.map(
+                        (brokerId) => {
+                          const broker = employeeBasedBrokersData?.find(
+                            (b) => String(b.brokerID) === String(brokerId)
+                          );
+                          console.log(broker, "brokerNamerChecker");
+                          return (
+                            broker && (
+                              <Tag
+                                key={broker.brokerID}
+                                className={styles.tagClasses}
+                              >
+                                {broker.brokerName}
+                              </Tag>
+                            )
+                          );
+                        }
+                      )}
                     </div>
                   </div>
                 </Col>
@@ -202,13 +285,13 @@ const ConductTransaction = () => {
                     <label className={styles.complianceHeading}>
                       Name:
                       <span className={styles.complianceSubHeading}>
-                        Ms. Jessica Carter
+                        {complianceOfficerDetails?.managerName || "-"}
                       </span>
                     </label>
                     <label className={styles.complianceHeading}>
                       Email:
                       <div className={styles.complianceSubHeading}>
-                        compliance@horizoncapital.com
+                        {complianceOfficerDetails?.managerEmail || "-"}
                       </div>
                     </label>
                     <div className={styles.copyEmailConductMainClass}>

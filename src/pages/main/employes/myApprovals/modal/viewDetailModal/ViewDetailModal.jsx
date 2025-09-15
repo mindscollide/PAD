@@ -225,7 +225,11 @@ const ViewDetailModal = () => {
                           Instrument
                         </label>
                         <label className={styles.viewDetailSubLabels}>
-                          <span className={styles.customTag}>EQ</span> PSO-OCT
+                          <span className={styles.customTag}>
+                            {viewDetailsModalData?.details?.[0]?.assetTypeID ===
+                              "1" && <span>EQ</span>}
+                          </span>{" "}
+                          {selectedInstrument?.instrumentCode}
                         </label>
                       </div>
                     </Col>
