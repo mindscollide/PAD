@@ -13,6 +13,12 @@ const config = {
     image: ApprovalsIcon,
   },
 
+  PortfolioSubmitted: {
+    heading: "Portfolio submitted",
+    subheading: "Your portfolio has been added and sent for verification",
+    image: ApprovalsIcon,
+  },
+
   EquitiesSubmitted: {
     heading: "Submitted",
     subheading: "Your approval request has been submitted successfully",

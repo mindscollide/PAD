@@ -19,6 +19,7 @@ import { useNotification } from "../../../components/NotificationProvider/Notifi
 import { useMyApproval } from "../../../context/myApprovalContaxt";
 import { useNavigate } from "react-router-dom";
 import { useDashboardContext } from "../../../context/dashboardContaxt";
+import { useTransaction } from "../../../context/myTransaction";
 
 /**
  * StatusFilterDropdown Component
@@ -54,8 +55,9 @@ const StatusFilterDropdown = ({
   const { callApi } = useApi();
   const { showLoader } = useGlobalLoader();
   const { showNotification } = useNotification();
-  const { setIsEmployeeMyApproval } = useMyApproval();
+  const { setIsEmployeeMyApproval, setLineManagerApproval } = useMyApproval();
 
+  const { setEmployeeTransactionsData } = useTransaction();
   const [filterOption, setFilterOptions] = useState([]);
 
   /**
@@ -80,6 +82,7 @@ const StatusFilterDropdown = ({
         setFilterOptions(emaStatusOptions);
         break;
       case "2":
+        // setFilterOptions(emaStatusOptions);
         setFilterOptions(emtStatusOptions);
         break;
       case "4":
@@ -98,23 +101,34 @@ const StatusFilterDropdown = ({
    * Updates parent state and triggers API call.
    */
   const handleOk = async () => {
-    setState((prev) => ({
-      ...prev,
-      status: tempSelected,
-    }));
+    // we handle employe profolio from here
+    if (selectedKey === "4") {
+      setState((prev) => ({
+        ...prev,
+        status: tempSelected,
+        pageNumber: 0,
+        filterTrigger: true,
+      }));
+    } else {
+      setState((prev) => ({
+        ...prev,
+        status: tempSelected,
+      }));
 
-    await apiCallStatus({
-      selectedKey,
-      newdata: tempSelected,
-      state,
-      addApprovalRequestData,
-      callApi,
-      showNotification,
-      showLoader,
-      navigate,
-      setIsEmployeeMyApproval,
-    });
-
+      await apiCallStatus({
+        selectedKey,
+        newdata: tempSelected,
+        state,
+        addApprovalRequestData,
+        callApi,
+        showNotification,
+        showLoader,
+        navigate,
+        setIsEmployeeMyApproval,
+        setEmployeeTransactionsData,
+        setLineManagerApproval,
+      });
+    }
     setOpenState(false);
     confirm(); // Close dropdown
   };
@@ -124,24 +138,35 @@ const StatusFilterDropdown = ({
    * Also triggers API call with empty filter.
    */
   const handleReset = async () => {
-    await apiCallStatus({
-      selectedKey,
-      newdata: [],
-      state,
-      addApprovalRequestData,
-      callApi,
-      showNotification,
-      showLoader,
-      navigate,
-      setIsEmployeeMyApproval,
-    });
+    // we handle employe profolio from here
+    if (selectedKey === "4") {
+      setState((prev) => ({
+        ...prev,
+        status: [],
+        pageNumber: 0,
+        filterTrigger: true,
+      }));
+    } else {
+      await apiCallStatus({
+        selectedKey,
+        newdata: [],
+        state,
+        addApprovalRequestData,
+        callApi,
+        showNotification,
+        showLoader,
+        navigate,
+        setIsEmployeeMyApproval,
+        setEmployeeTransactionsData,
+        setLineManagerApproval,
+      });
 
+      setState((prev) => ({
+        ...prev,
+        status: [],
+      }));
+    }
     setTempSelected([]);
-    setState((prev) => ({
-      ...prev,
-      status: [],
-    }));
-
     clearFilters?.();
     setOpenState(false);
     confirm(); // Close dropdown

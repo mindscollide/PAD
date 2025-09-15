@@ -26,3 +26,4 @@ export { default as CommentModal } from "./modal/commentModal/CommentModal";
 export { default as BrokerFilterDropdown } from "./dropdowns/filters/BrokerFilterDropdown";
 export { default as BrokerColumnTitle } from "./dropdowns/filters/BrokerColumnTitle";
 export { default as TradeAndPortfolioModal } from "./modal/tradeAndPortfolioModal/TradeAndPortfolioModal";
+export { default as SubmittedModal } from "./modal/submittedModal/SubmittedModal";

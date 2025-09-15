@@ -100,14 +100,84 @@ export const responseMessages = {
   PAD_Trade_TradeServiceManager_GetAllViewDetailsByTradeApprovalID_03:
     "Exception",
 
+  // =============================
+  // LINE MANAGER API'S RESPONSES FROM START HERE
+
+  PAD_Trade_TradeServiceManager_SearchLineManagerApprovalsRequest_01:
+    "Data Available",
+  PAD_Trade_TradeServiceManager_SearchLineManagerApprovalsRequest_02:
+    "No data available",
+  PAD_Trade_TradeServiceManager_SearchLineManagerApprovalsRequest_03:
+    "Exception",
+
+  //Update Line Manager API
+  PAD_Trade_TradeServiceManager_UpdateApprovalRequestStatus_01:
+    "Successfully updated",
+  PAD_Trade_TradeServiceManager_UpdateApprovalRequestStatus_02:
+    "No update performed",
+  PAD_Trade_TradeServiceManager_UpdateApprovalRequestStatus_03: "Exception",
+  PAD_Trade_TradeServiceManager_UpdateApprovalRequestStatus_04:
+    "User role not found",
+  PAD_Trade_TradeServiceManager_UpdateApprovalRequestStatus_05:
+    "Not authorized (Not Line Manager)",
+
+  // GET ALL VIEW DETAILS LINE MANAGER API
+  PAD_Trade_TradeServiceManager_GetLineManagerViewDetailsByTradeApprovalID_01:
+    "Data Available",
+  PAD_Trade_TradeServiceManager_GetLineManagerViewDetailsByTradeApprovalID_02:
+    "No data available",
+  PAD_Trade_TradeServiceManager_GetLineManagerViewDetailsByTradeApprovalID_03:
+    "Exception",
+
+  // LINE MANAGER API'S RESPONSES FROM END HERE
+  // =============================
+
   // ==============================
   // 📂 Portfolio API (portFolioApi.jsx)
   // ==============================
+
+  // SearchEmployeePendingUploadedPortFolio
   PAD_Trade_TradeServiceManager_SearchEmployeePendingUploadedPortFolio_01:
     "Data Available",
   PAD_Trade_TradeServiceManager_SearchEmployeePendingUploadedPortFolio_02:
     "No data available",
   PAD_Trade_TradeServiceManager_SearchEmployeePendingUploadedPortFolio_03:
+    "Exception",
+
+  // Upload Portfolio start Here
+  PAD_Trade_TradeServiceManager_UploadPortFolioRequest_01:
+    "Upload Portfolio Request Submitted",
+  PAD_Trade_TradeServiceManager_UploadPortFolioRequest_02:
+    "Failed to save Upload PortFolio Request",
+  PAD_Trade_TradeServiceManager_UploadPortFolioRequest_03:
+    "No User hierarchy Found",
+  PAD_Trade_TradeServiceManager_UploadPortFolioRequest_04: "Exception",
+  PAD_Trade_TradeServiceManager_UploadPortFolioRequest_05:
+    "Failed to generate ApprovalID",
+
+  // SearchEmployeeApprovedUploadedPortFolio
+  PAD_Trade_TradeServiceManager_SearchEmployeeApprovedUploadedPortFolio_01:
+    "Data Available",
+  PAD_Trade_TradeServiceManager_SearchEmployeeApprovedUploadedPortFolio_02:
+    "No data available",
+  PAD_Trade_TradeServiceManager_SSearchEmployeeApprovedUploadedPortFolio_03:
+    "Exception",
+  // ==============================
+  // 📂 My Transaction API (myTransactionsApi.jsx)
+  // ==============================
+  PAD_Trade_TradeServiceManager_SearchEmployeeTransactio_01: "Data Available",
+  PAD_Trade_TradeServiceManager_SearchEmployeeTransactio_02:
+    "No data available",
+  PAD_Trade_TradeServiceManager_SearchEmployeeTransactio_03: "Exception",
+
+  // ==============================
+  // 📂 GET ALL TRANSACTION VIEW DETAIL (myTransactionsApi.jsx)
+  // ==============================
+  PAD_Trade_TradeServiceManager_GetAllViewDetailsTransactionsByTradeApprovalID_01:
+    "Data Available",
+  PAD_Trade_TradeServiceManager_GetAllViewDetailsTransactionsByTradeApprovalID_02:
+    "No data available",
+  PAD_Trade_TradeServiceManager_GetAllViewDetailsTransactionsByTradeApprovalID_03:
     "Exception",
 };
 

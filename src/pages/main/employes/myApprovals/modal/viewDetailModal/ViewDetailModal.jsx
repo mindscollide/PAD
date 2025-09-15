@@ -56,6 +56,8 @@ const ViewDetailModal = () => {
 
   console.log(viewDetailsModalData, "viewDetailsModalData555");
 
+  console.log(setViewDetailsModalData, "setViewDetailsModalData");
+
   console.log(employeeBasedBrokersData, "employeeBasedBrokersDataData555");
 
   console.log("hierarchyDetails:", viewDetailsModalData?.hierarchyDetails);
@@ -138,7 +140,7 @@ const ViewDetailModal = () => {
 
   //This is how I can pass the status in statusData Variables
   const statusData = getStatusStyle(
-    viewDetailsModalData?.details?.[0]?.approvalStatus
+    String(viewDetailsModalData?.workFlowStatus?.workFlowStatusID)
   );
 
   console.log(statusData, "statusDatastatusData121");
@@ -407,7 +409,8 @@ const ViewDetailModal = () => {
                       Asset Class
                     </label>
                     <label className={styles.viewDetailSubLabels}>
-                      Asset Class{" "}
+                      {viewDetailsModalData?.details?.[0]?.assetTypeID ===
+                        "1" && <span>Equity</span>}
                     </label>
                   </div>
                 </Col>
@@ -590,7 +593,7 @@ const ViewDetailModal = () => {
                               case 1:
                                 iconSrc = EllipsesIcon;
                                 break;
-                              case 3:
+                              case 2:
                                 iconSrc = CheckIcon;
                                 break;
                               default:

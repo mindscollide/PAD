@@ -6,6 +6,14 @@ import DefaultColumArrow from "../../../../assets/img/default-colum-arrow.png";
 import TypeColumnTitle from "../../../../components/dropdowns/filters/typeColumnTitle";
 import StatusColumnTitle from "../../../../components/dropdowns/filters/statusColumnTitle";
 import { Tag } from "antd";
+import style from "./myTransaction.module.css";
+
+import {
+  dashBetweenApprovalAssets,
+  formatApiDateTime,
+} from "../../../../commen/funtions/rejex";
+import { useGlobalModal } from "../../../../context/GlobalModalContext";
+import { useEffect, useRef, useState } from "react";
 
 // import TypeColumnTitle from "./typeFilter";
 
@@ -28,60 +36,97 @@ const getSortIcon = (columnKey, sortedInfo) => {
     <img src={DefaultColumArrow} alt="Default" className="custom-sort-icon" />
   );
 };
+
+// Helper for consistent column titles
+const withSortIcon = (label, columnKey, sortedInfo) => (
+  <div className={style["table-header-wrapper"]}>
+    <span className={style["table-header-text"]}>{label}</span>
+    <span className={style["table-header-icon"]}>
+      {getSortIcon(columnKey, sortedInfo)}
+    </span>
+  </div>
+);
+
 export const getBorderlessTableColumns = (
   approvalStatusMap,
   sortedInfo,
   employeeMyTransactionSearch,
+  setViewDetailTransactionModal,
   setEmployeeMyTransactionSearch
 ) => [
   {
-    title: (
-      <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-        Transaction ID {getSortIcon("transactionId", sortedInfo)}
-      </div>
-    ),
-    dataIndex: "transactionId",
-    key: "transactionId",
+    title: withSortIcon("Transaction ID", "tradeApprovalID", sortedInfo),
+    dataIndex: "tradeApprovalID",
+    key: "tradeApprovalID",
     width: "12%",
     ellipsis: true,
-    sorter: (a, b) => a.transactionId.localeCompare(b.transactionId),
+    sorter: (a, b) =>
+      parseInt(a.tradeApprovalID.replace(/[^\d]/g, ""), 10) -
+      parseInt(b.tradeApprovalID.replace(/[^\d]/g, ""), 10),
     sortDirections: ["ascend", "descend"],
     sortOrder:
-      sortedInfo?.columnKey === "transactionId" ? sortedInfo.order : null,
+      sortedInfo?.columnKey === "tradeApprovalID" ? sortedInfo.order : null,
     showSorterTooltip: false,
     sortIcon: () => null,
-    render: (text) => (
-      <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-        <span className="font-medium">{text}</span>
-      </div>
-    ),
+    render: (tradeApprovalID) => {
+      return (
+        <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+          <span className="font-medium">
+            {dashBetweenApprovalAssets(tradeApprovalID)}
+            {/* {dashBetweenApprovalAssets("REQ888888")} */}
+          </span>
+        </div>
+      );
+    },
   },
   {
-    title: (
-      <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-        Instrument {getSortIcon("instrument", sortedInfo)}
-      </div>
-    ),
-    dataIndex: "instrument",
-    key: "instrument",
-    width: "12%",
+    title: withSortIcon("Instrument", "instrumentName", sortedInfo),
+    dataIndex: "Instrument",
+    key: "instrumentName",
+    width: "15%",
     ellipsis: true,
-    sorter: (a, b) => a.instrument.localeCompare(b.instrument),
+    sorter: (a, b) => {
+      const nameA = a?.instrumentShortCode || "";
+      const nameB = b?.instrumentShortCode || "";
+      return nameA.localeCompare(nameB);
+    },
     sortDirections: ["ascend", "descend"],
-    sortOrder: sortedInfo?.columnKey === "instrument" ? sortedInfo.order : null,
+    sortOrder:
+      sortedInfo?.columnKey === "instrumentName" ? sortedInfo.order : null,
     showSorterTooltip: false,
     sortIcon: () => null,
-    render: (text) => (
-      <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-        <span
-          className="border-less-table-orange-instrumentBadge"
-          style={{ minWidth: 30 }}
+    render: (instrument, record) => {
+      console.log(record, "Checkerrrrr");
+      const assetCode = record?.assetShortCode;
+      const code = record?.instrumentShortCode || "";
+      return (
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: "12px",
+          }}
         >
-          {text.split("-")[0].substring(0, 2).toUpperCase()}
-        </span>
-        <span className="font-medium">{text}</span>
-      </div>
-    ),
+          <span className="custom-shortCode-asset" style={{ minWidth: 30 }}>
+            {assetCode?.substring(0, 2).toUpperCase()}
+          </span>
+          <span
+            className="font-medium"
+            style={{
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+              whiteSpace: "nowrap",
+              maxWidth: "200px",
+              display: "inline-block",
+              cursor: "pointer",
+            }}
+            title={code}
+          >
+            {code}
+          </span>
+        </div>
+      );
+    },
   },
   {
     title: (
@@ -90,37 +135,50 @@ export const getBorderlessTableColumns = (
         setState={setEmployeeMyTransactionSearch}
       />
     ),
-    dataIndex: "type",
-    key: "type",
+    dataIndex: "tradeType",
+    key: "tradeType",
     ellipsis: true,
     width: "10%",
-    filteredValue: employeeMyTransactionSearch?.type?.length
+    filteredValue: employeeMyTransactionSearch.type?.length
       ? employeeMyTransactionSearch?.type
       : null,
     onFilter: () => true,
-    render: (type) => (
-      <span className={type === "Buy" ? "text-green-600" : "text-red-600"}>
-        {type}
-      </span>
-    ),
+    render: (value, record) => {
+      console.log("check what type", value, record);
+      return value || "-";
+    },
   },
   {
-    title: (
-      <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-        Transaction Date & Time {getSortIcon("transactionDate", sortedInfo)}
-      </div>
+    title: withSortIcon(
+      "Transaction Date & Time",
+      "transactionDateTime",
+      sortedInfo
     ),
-    dataIndex: "transactionDate",
-    key: "transactionDate",
+    dataIndex: "transactionDateTime",
+    key: "transactionDateTime",
     ellipsis: true,
-    width: "20%",
-    sorter: (a, b) => a.transactionDate.localeCompare(b.transactionDate),
+    width: "17%",
+    sorter: (a, b) => {
+      const dateA = new Date(
+        `${a.transactionConductedDate} ${a.transactionConductedTime}`
+      ).getTime();
+      const dateB = new Date(
+        `${b.transactionConductedDate} ${b.transactionConductedTime}`
+      ).getTime();
+      return dateA - dateB;
+    },
     sortDirections: ["ascend", "descend"],
     sortOrder:
-      sortedInfo?.columnKey === "transactionDate" ? sortedInfo.order : null,
+      sortedInfo?.columnKey === "transactionDateTime" ? sortedInfo.order : null,
     showSorterTooltip: false,
     sortIcon: () => null,
-    render: (date) => <span className="text-gray-600">{date}</span>,
+    render: (_, record) => (
+      <span className="text-gray-600">
+        {formatApiDateTime(
+          `${record.transactionConductedDate} ${record.transactionConductedTime}`
+        )}
+      </span>
+    ),
   },
   {
     title: (
@@ -129,15 +187,16 @@ export const getBorderlessTableColumns = (
         setState={setEmployeeMyTransactionSearch}
       />
     ),
-    dataIndex: "status",
-    key: "status",
+    dataIndex: "workFlowStatus",
+    key: "workFlowStatus",
     ellipsis: true,
-    width: "10%",
+    width: "12%",
     filteredValue: employeeMyTransactionSearch.status?.length
       ? employeeMyTransactionSearch.status
       : null,
     onFilter: () => true,
     render: (status) => {
+      console.log(status, "statusstatusstatus");
       const tag = approvalStatusMap[status] || {};
       return (
         <Tag
@@ -153,15 +212,11 @@ export const getBorderlessTableColumns = (
     },
   },
   {
-    title: (
-      <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-        Quantity {getSortIcon("quantity", sortedInfo)}
-      </div>
-    ),
+    title: withSortIcon("Quantity", "quantity", sortedInfo),
     dataIndex: "quantity",
     key: "quantity",
     ellipsis: true,
-    width: "10%",
+    width: "8%",
     sorter: (a, b) => a.quantity - b.quantity,
     sortDirections: ["ascend", "descend"],
     sortOrder: sortedInfo?.columnKey === "quantity" ? sortedInfo.order : null,
@@ -170,16 +225,83 @@ export const getBorderlessTableColumns = (
     render: (q) => <span className="font-medium">{q.toLocaleString()}</span>,
   },
   {
-    title: "Broker",
+    title: withSortIcon("Broker", "broker", sortedInfo),
     dataIndex: "broker",
-    width: "15%",
+    width: "17%",
     key: "broker",
+    sorter: (a, b) => a.broker - b.broker,
+    sortDirections: ["ascend", "descend"],
+    sortOrder: sortedInfo?.columnKey === "broker" ? sortedInfo.order : null,
+    showSorterTooltip: false,
+    sortIcon: () => null,
   },
   {
     title: "",
     key: "action",
-    render: (_, record) => (
-      <Button className="small-dark-button" text={"View Details"} />
-    ),
+    render: (_, record) => {
+      //Global State to selected data to show in ViewDetailModal
+      const { setSelectedViewDetailOfTransaction } = useGlobalModal();
+      return (
+        <Button
+          className="small-dark-button"
+          text={"View Details"}
+          onClick={() => {
+            setSelectedViewDetailOfTransaction(record);
+            setViewDetailTransactionModal(true);
+          }}
+        />
+      );
+    },
   },
 ];
+
+export const useTableScrollBottom = (
+  onBottomReach,
+  threshold = 0,
+  prefixCls = "ant-table"
+) => {
+  const [hasReachedBottom, setHasReachedBottom] = useState(false);
+  const containerRef = useRef(null);
+  const previousScrollTopRef = useRef(0); // for detecting vertical scroll only
+
+  useEffect(() => {
+    const selector = `.${prefixCls}-body`;
+    const scrollContainer = document.querySelector(selector);
+
+    if (!scrollContainer) {
+      console.warn(`📛 Scroll container not found for selector: ${selector}`);
+      return;
+    }
+
+    containerRef.current = scrollContainer;
+
+    const handleScroll = () => {
+      const { scrollTop, scrollHeight, clientHeight } = scrollContainer;
+
+      // Check if vertical scroll happened
+      const scrolledVertically = scrollTop !== previousScrollTopRef.current;
+      previousScrollTopRef.current = scrollTop;
+
+      if (!scrolledVertically) return; // ignore horizontal-only scroll
+
+      const isScrollable = scrollHeight > clientHeight;
+      const isBottom = scrollTop + clientHeight >= scrollHeight - threshold;
+
+      if (isScrollable && isBottom && !hasReachedBottom) {
+        setHasReachedBottom(true);
+        onBottomReach?.();
+
+        setTimeout(() => setHasReachedBottom(false), 1000);
+      }
+    };
+
+    scrollContainer.addEventListener("scroll", handleScroll);
+    return () => scrollContainer.removeEventListener("scroll", handleScroll);
+  }, [hasReachedBottom, onBottomReach, threshold, prefixCls]);
+
+  return {
+    hasReachedBottom,
+    containerRef,
+    setHasReachedBottom,
+  };
+};

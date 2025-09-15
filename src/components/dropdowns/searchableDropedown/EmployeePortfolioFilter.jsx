@@ -1,5 +1,5 @@
-import React from "react";
-import { Row, Col, Space } from "antd";
+import React, { useState } from "react";
+import { Row, Col, Space, Checkbox, Select } from "antd";
 import { Button, CommenSearchInput, DateRangePicker, TextField } from "../..";
 import { useSearchBarContext } from "../../../context/SearchBarContaxt";
 import {
@@ -7,18 +7,24 @@ import {
   removeFirstSpace,
 } from "../../../commen/funtions/rejex";
 import { useDashboardContext } from "../../../context/dashboardContaxt";
+import styles from "./SearchWithPopoverOnly.module.css";
 
-export const EmployeePortfolioFilter = ({ handleSearch, activeTab }) => {
+export const EmployeePortfolioFilter = ({
+  handleSearch,
+  activeTab,
+  setVisible,
+}) => {
   const { employeeBasedBrokersData } = useDashboardContext();
-  /**
-   * SearchBarContext its state handler for this function.
-   * - instrumentShortName for instruments of dropdown menu
-   * - quantity for quantity of dropdown menu
-   * - date for date of dropdown menu
-   * - mainInstrumentShortName for main search bar input
-   * - instrumentName and this mainInstrumentName contain same data but issue is we have to handel both diferently
-   * - resetEmployeePortfolioSearch is to reset all their state to its initial
-   */
+
+  // Local state
+  const [localState, setLocalState] = useState({
+    instrumentName: "",
+    quantity: "",
+    startDate: "",
+    endDate: "",
+    broker: [],
+  });
+  const [dirtyFields, setDirtyFields] = useState({});
 
   const {
     employeePortfolioSearch,
@@ -28,14 +34,80 @@ export const EmployeePortfolioFilter = ({ handleSearch, activeTab }) => {
     setEmployeePendingApprovalSearch,
     resetEmployeePendingApprovalSearch,
   } = useSearchBarContext();
-  /**
-   * Handles input change for approval filters.
-   * - Allows only numeric input for "Quantity"
-   * - Removes leading space for text fields
-   */
+
+  // Format broker options
+  const brokerOptions = (employeeBasedBrokersData || []).map((broker) => ({
+    label: (
+      <div style={{ display: "flex", alignItems: "center" }}>
+        <Checkbox
+          checked={(activeTab === "pending"
+            ? employeePendingApprovalSearch?.broker
+            : employeePortfolioSearch?.broker
+          )?.includes(broker.brokerID)}
+          style={{ marginRight: 8 }}
+        />
+        {broker.brokerName}
+      </div>
+    ),
+    value: broker.brokerID,
+    raw: broker,
+  }));
+
+  const resetLocalState = () => {
+    setLocalState({ instrumentName: "", quantity: "", startDate: "" });
+    setDirtyFields({});
+  };
+
+  const handleResetClick = () => {
+    if (activeTab === "pending") {
+      setEmployeePendingApprovalSearch((prev) => ({
+        ...prev,
+        instrumentName: "",
+        quantity: 0,
+        startDate: "",
+        endDate: "",
+        broker: [],
+        pageNumber: 0,
+        filterTrigger: true,
+      }));
+      // resetEmployeePendingApprovalSearch();
+    } else {
+      setEmployeePortfolioSearch((prev) => ({
+        ...prev,
+        instrumentName: "",
+        quantity: 0,
+        startDate: "",
+        endDate: "",
+        broker: [],
+        pageNumber: 0,
+        filterTrigger: true,
+      }));
+      // resetEmployeePortfolioSearch();
+    }
+
+    resetLocalState();
+    setVisible(false);
+  };
+
+  // Handle broker selection
+  const handleBrokerChange = (selectedIDs) => {
+    if (activeTab === "pending") {
+      setEmployeePendingApprovalSearch((prev) => ({
+        ...prev,
+        broker: selectedIDs,
+      }));
+    } else {
+      setEmployeePortfolioSearch((prev) => ({
+        ...prev,
+        broker: selectedIDs,
+      }));
+    }
+  };
+
+  // Handle input changes
   const handleEmployeeApprovalInputChange = (e, setState) => {
     const { name, value } = e.target;
-    // Handle numeric validation for Quantity
+
     if (name === "Quantity") {
       if (value === "" || allowOnlyNumbers(value)) {
         setState((prev) => ({ ...prev, quantity: value }));
@@ -43,31 +115,24 @@ export const EmployeePortfolioFilter = ({ handleSearch, activeTab }) => {
       return;
     }
 
-    // General handler
     setState((prev) => ({
       ...prev,
       [name]: removeFirstSpace(value),
     }));
   };
 
-  const brokerOptions = employeeBasedBrokersData?.map((broker) => ({
-    value: broker.brokerID, // store ID
-    label: broker.brokerName, // show name
-    brokerID: broker.brokerID, // keep full info if you need it later
-    brokerName: broker.brokerName,
-  }));
-  console.log("employeeBasedBrokersData", employeeBasedBrokersData);
   return (
     <>
+      {/* Instrument Name + Quantity */}
       <Row gutter={[12, 12]}>
         <Col xs={24} sm={24} md={12} lg={12}>
           <TextField
             label="Instrument Name"
-            name="instrumentShortName"
+            name="instrumentName"
             value={
               activeTab === "pending"
-                ? employeePendingApprovalSearch.mainInstrumentName
-                : employeePortfolioSearch.instrumentShortName
+                ? employeePendingApprovalSearch.instrumentName
+                : employeePortfolioSearch.instrumentName
             }
             onChange={(e) =>
               handleEmployeeApprovalInputChange(
@@ -105,29 +170,43 @@ export const EmployeePortfolioFilter = ({ handleSearch, activeTab }) => {
           />
         </Col>
       </Row>
+
+      {/* Brokers + Date Range */}
       <Row gutter={[12, 12]}>
-        <Col xs={24} sm={24} md={12} lg={12}>
-          <CommenSearchInput
-            label="Broker"
-            name="broker"
+        <Col span={12} className={styles.brokersOptionData}>
+          <label className={styles.instrumentLabel}>Brokers</label>
+          <Select
+            mode="multiple"
+            placeholder="Select"
             value={
               activeTab === "pending"
-                ? employeePendingApprovalSearch.broker
-                : employeePortfolioSearch.broker
+                ? employeePendingApprovalSearch?.broker
+                : employeePortfolioSearch?.broker
             }
+            onChange={handleBrokerChange}
             options={brokerOptions}
-            onChange={(e) =>
-              handleEmployeeApprovalInputChange(
-                e,
-                activeTab === "pending"
-                  ? setEmployeePendingApprovalSearch
-                  : setEmployeePortfolioSearch
-              )
+            maxTagCount={0}
+            maxTagPlaceholder={(omittedValues) =>
+              `${omittedValues.length} selected`
             }
-            placeholder="Select a Broker"
-            className={"input-dropdown-search"} // or just "custom-dropdown" for global CSS
+            prefixCls="EquitiesBrokerSelectPrefix"
+            optionLabelProp="label"
+            optionRender={(option) => (
+              <div style={{ display: "flex", alignItems: "center" }}>
+                <Checkbox
+                  className="custom-broker-option"
+                  checked={(activeTab === "pending"
+                    ? employeePendingApprovalSearch?.broker
+                    : employeePortfolioSearch?.broker
+                  )?.includes(option.value)}
+                  style={{ marginRight: 8 }}
+                />
+                {option.data.raw.brokerName}
+              </div>
+            )}
           />
         </Col>
+
         <Col xs={24} sm={24} md={12} lg={12}>
           <DateRangePicker
             label="Date Range"
@@ -178,17 +257,15 @@ export const EmployeePortfolioFilter = ({ handleSearch, activeTab }) => {
           />
         </Col>
       </Row>
+
+      {/* Buttons */}
       <Row gutter={[12, 12]} justify="end" style={{ marginTop: 16 }}>
         <Col>
           <Space>
             <Button
-              onClick={
-                activeTab === "pending"
-                  ? resetEmployeePendingApprovalSearch
-                  : resetEmployeePortfolioSearch
-              }
               text={"Reset"}
               className="big-light-button"
+              onClick={handleResetClick}
             />
             <Button
               onClick={handleSearch}

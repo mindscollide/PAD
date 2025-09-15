@@ -192,8 +192,13 @@ export const GetAllViewDetailsByTradeApprovalID = async ({
     }
 
     if (res.success) {
-      const { responseMessage, details, hierarchyList, hierarchyDetails } =
-        res.result;
+      const {
+        responseMessage,
+        details,
+        hierarchyList,
+        hierarchyDetails,
+        workFlowStatus,
+      } = res.result;
 
       if (
         responseMessage ===
@@ -203,7 +208,8 @@ export const GetAllViewDetailsByTradeApprovalID = async ({
         return {
           details: details || [],
           hierarchyList: hierarchyList || [],
-          hierarchyDetails: hierarchyDetails || {},
+          hierarchyDetails: hierarchyDetails || [],
+          workFlowStatus: workFlowStatus || {},
         };
       }
 
@@ -212,7 +218,12 @@ export const GetAllViewDetailsByTradeApprovalID = async ({
         title: getMessage(responseMessage),
         description: "No details available for this Trade Approval ID.",
       });
-      return null;
+      return {
+        details: [],
+        hierarchyList: [],
+        hierarchyDetails: [],
+        workFlowStatus: {},
+      };
     }
 
     showNotification({
@@ -232,3 +243,229 @@ export const GetAllViewDetailsByTradeApprovalID = async ({
     showLoader(false);
   }
 };
+
+/* ** 
+LINE MANAGER API'S START FROM HERE
+** */
+
+//SEARCH LINE MANAGER FOR APPROVALS REQUEST API START HERE
+
+export const SearchApprovalRequestLineManager = async ({
+  callApi,
+  showLoader,
+  requestdata,
+  navigate,
+}) => {
+  try {
+    const res = await callApi({
+      requestMethod: import.meta.env
+        .VITE_GET_SEARCH_LINE_MANAGER_APPROVAL_REQUEST_METHOD,
+      endpoint: import.meta.env.VITE_API_TRADE,
+      requestData: requestdata,
+    });
+
+    if (handleExpiredSession(res, navigate, showLoader)) {
+      return {
+        lineApprovals: [],
+        totalRecords: 0,
+      };
+    }
+
+    if (!res?.result?.isExecuted) {
+      return {
+        lineApprovals: [],
+        totalRecords: 0,
+      };
+    }
+
+    if (res.success) {
+      const { responseMessage, lineManagerApprovals, totalRecords } =
+        res.result;
+
+      if (
+        responseMessage ===
+        "PAD_Trade_TradeServiceManager_SearchLineManagerApprovalsRequest_01"
+      ) {
+        return {
+          lineApprovals: lineManagerApprovals || [],
+          totalRecords: totalRecords ?? 0,
+        };
+      }
+    }
+
+    return {
+      lineApprovals: [],
+      totalRecords: 0,
+    };
+  } catch (error) {
+    console.error("Error Occurred:", error);
+    return {
+      lineApprovals: [],
+      totalRecords: 0,
+    };
+  } finally {
+    showLoader(false);
+  }
+};
+
+//UPDATE APPROVALS REQUEST STATUS API START HERE
+export const UpdateApprovalRequestStatusLineManager = async ({
+  callApi,
+  showNotification,
+  showLoader,
+  requestdata,
+  setViewDetailLineManagerModal,
+  setApprovedGlobalModal,
+  navigate,
+}) => {
+  try {
+    // 🔹 Call the API
+    const res = await callApi({
+      requestMethod: import.meta.env
+        .VITE_UPDATE_APPROVAL_REQUEST_STATUS_REQUEST_METHOD,
+      endpoint: import.meta.env.VITE_API_TRADE,
+      requestData: requestdata,
+    });
+
+    //  Check if session has expired
+    if (handleExpiredSession(res, navigate, showLoader)) return false;
+
+    // If execution failed
+    if (!res?.result?.isExecuted) {
+      showNotification({
+        type: "error",
+        title: "Error",
+        description: "Something went wrong. Please try again.",
+      });
+      return false;
+    }
+
+    // If API response is successful
+    if (res.success) {
+      const { responseMessage } = res.result;
+
+      if (
+        responseMessage ===
+        "PAD_Trade_TradeServiceManager_UpdateApprovalRequestStatus_01"
+      ) {
+        setViewDetailLineManagerModal(false);
+        setApprovedGlobalModal(true);
+        return true;
+      }
+
+      //  Other known warnings
+      showNotification({
+        type: "warning",
+        title: getMessage(responseMessage),
+      });
+      return false;
+    }
+
+    //  Fallback error for unknown failures
+    showNotification({
+      type: "error",
+      title: "Request Failed",
+      description: getMessage(res.message),
+    });
+    return false;
+  } catch (error) {
+    // ❌ Unexpected exception
+    showNotification({
+      type: "error",
+      title: "Error",
+      description: "An unexpected error occurred.",
+    });
+    return false;
+  } finally {
+    // 🔽 Always hide loader after API completes
+    showLoader(false);
+  }
+};
+
+//HET APPROVALS REQUEST VIEW DATA LINE MANAGER API START HERE
+export const GetAllLineManagerViewDetailRequest = async ({
+  callApi,
+  showNotification,
+  showLoader,
+  requestdata,
+  navigate,
+}) => {
+  try {
+    console.log("Check APi");
+    const res = await callApi({
+      requestMethod: import.meta.env
+        .VITE_GET_LINE_MANAGER_VIEW_DETAIL_REQUEST_METHOD,
+      endpoint: import.meta.env.VITE_API_TRADE,
+      requestData: requestdata,
+    });
+    if (handleExpiredSession(res, navigate, showLoader)) return null;
+
+    if (!res?.result?.isExecuted) {
+      console.log("Check APi");
+      showNotification({
+        type: "error",
+        title: "Error",
+        description: "Something went wrong. Please try again.",
+      });
+      return null;
+    }
+
+    if (res.success) {
+      const {
+        responseMessage,
+        assetTypes,
+        details,
+        hierarchyDetails,
+        requesterName,
+        workFlowStatus,
+      } = res.result;
+
+      if (
+        responseMessage ===
+        "PAD_Trade_TradeServiceManager_GetLineManagerViewDetailsByTradeApprovalID_01"
+      ) {
+        console.log("Check APi");
+        return {
+          assetTypes: assetTypes || [],
+          details: details || [],
+          hierarchyDetails: hierarchyDetails || [],
+          requesterName: requesterName || "",
+          workFlowStatus: workFlowStatus || {},
+        };
+      }
+
+      showNotification({
+        type: "warning",
+        title: getMessage(responseMessage),
+        description: "No details available for this Trade Approval ID.",
+      });
+      return {
+        assetTypes: [],
+        details: [],
+        hierarchyDetails: [],
+        requesterName: "",
+        workFlowStatus: {},
+      };
+    }
+
+    showNotification({
+      type: "error",
+      title: "Fetch Failed",
+      description: getMessage(res.message),
+    });
+    return null;
+  } catch (error) {
+    showNotification({
+      type: "error",
+      title: "Error",
+      description: "An unexpected error occurred.",
+    });
+    return null;
+  } finally {
+    showLoader(false);
+  }
+};
+
+/* ** 
+LINE MANAGER API'S END FROM HERE
+** */

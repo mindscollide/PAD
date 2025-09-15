@@ -11,6 +11,10 @@ import { ArrowsAltOutlined } from "@ant-design/icons";
 import TypeColumnTitle from "../../../../components/dropdowns/filters/typeColumnTitle";
 import StatusColumnTitle from "../../../../components/dropdowns/filters/statusColumnTitle";
 import { useGlobalModal } from "../../../../context/GlobalModalContext";
+import {
+  dashBetweenApprovalAssets,
+  formatApiDateTime,
+} from "../../../../commen/funtions/rejex";
 // import TypeColumnTitle from "./typeFilter";
 
 /**
@@ -31,7 +35,16 @@ const getSortIcon = (columnKey, sortedInfo) => {
   return <ArrowsAltOutlined className="custom-sort-icon" />;
 };
 
-export const getBorderlessTableColumns = (
+const withSortIcon = (label, columnKey, sortedInfo) => (
+  <div className={style["table-header-wrapper"]}>
+    <span className={style["table-header-text"]}>{label}</span>
+    <span className={style["table-header-icon"]}>
+      {getSortIcon(columnKey, sortedInfo)}
+    </span>
+  </div>
+);
+
+export const getBorderlessLineManagerTableColumns = (
   approvalStatusMap,
   sortedInfo,
   lineManagerApprovalSearch,
@@ -39,22 +52,36 @@ export const getBorderlessTableColumns = (
   setViewDetailLineManagerModal
 ) => [
   {
-    title: (
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          gap: "8px",
-          marginLeft: "15px",
-        }}
-      >
-        Requester Name {getSortIcon("requesterName", sortedInfo)}
-      </div>
-    ),
+    title: withSortIcon("Approval ID", "tradeApprovalID", sortedInfo),
+    dataIndex: "tradeApprovalID",
+    key: "tradeApprovalID",
+    width: "10%",
+    ellipsis: true,
+    sorter: (a, b) =>
+      parseInt(a.tradeApprovalID.replace(/[^\d]/g, ""), 10) -
+      parseInt(b.tradeApprovalID.replace(/[^\d]/g, ""), 10),
+    sortDirections: ["ascend", "descend"],
+    sortOrder:
+      sortedInfo?.columnKey === "tradeApprovalID" ? sortedInfo.order : null,
+    showSorterTooltip: false,
+    sortIcon: () => null,
+    render: (tradeApprovalID) => {
+      return (
+        <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+          <span className="font-medium">
+            {dashBetweenApprovalAssets(tradeApprovalID)}
+            {/* {dashBetweenApprovalAssets("REQ888888")} */}
+          </span>
+        </div>
+      );
+    },
+  },
+  {
+    title: <div>Requester Name {getSortIcon("requesterName", sortedInfo)}</div>,
     dataIndex: "requesterName",
     key: "requesterName",
-    width: "20%",
     ellipsis: true,
+    width: "14%",
     sorter: (a, b) => a.requesterName.localeCompare(b.requesterName),
     sortDirections: ["ascend", "descend"],
     sortOrder:
@@ -62,62 +89,77 @@ export const getBorderlessTableColumns = (
     showSorterTooltip: false,
     sortIcon: () => null,
     render: (text) => (
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          gap: "12px",
-          marginLeft: "15px",
-        }}
-      >
+      <div>
         <span className="font-medium">{text}</span>
       </div>
     ),
   },
   {
-    title: (
-      <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-        Instrument {getSortIcon("instrument", sortedInfo)}
-      </div>
-    ),
+    title: withSortIcon("Instrument", "instrumentName", sortedInfo),
     dataIndex: "instrument",
-    key: "instrument",
-    width: "20%",
+    key: "instrumentName",
     ellipsis: true,
-    sorter: (a, b) => a.instrument.localeCompare(b.instrument),
+    sorter: (a, b) => {
+      const nameA = a.instrument?.instrumentCode || "";
+      const nameB = b.instrument?.instrumentCode || "";
+      return nameA.localeCompare(nameB);
+    },
     sortDirections: ["ascend", "descend"],
-    sortOrder: sortedInfo?.columnKey === "instrument" ? sortedInfo.order : null,
+    sortOrder:
+      sortedInfo?.columnKey === "instrumentName" ? sortedInfo.order : null,
     showSorterTooltip: false,
     sortIcon: () => null,
-    render: (text) => (
-      <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-        <span
-          className="border-less-table-orange-instrumentBadge"
-          style={{ minWidth: 30 }}
+    render: (instrument, record) => {
+      console.log(record, "Checkerrrrr");
+      const assetCode = record?.assetType?.assetTypeShortCode;
+      const code = instrument?.instrumentCode || "";
+      return (
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: "12px",
+          }}
         >
-          {text.split("-")[0].substring(0, 2).toUpperCase()}
-        </span>
-        <span className="font-medium">{text}</span>
-      </div>
-    ),
+          <span className="custom-shortCode-asset" style={{ minWidth: 30 }}>
+            {assetCode?.substring(0, 2).toUpperCase()}
+          </span>
+          <span
+            className="font-medium"
+            style={{
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+              whiteSpace: "nowrap",
+              maxWidth: "200px",
+              display: "inline-block",
+              cursor: "pointer",
+            }}
+            title={code}
+          >
+            {code}
+          </span>
+        </div>
+      );
+    },
   },
   {
-    title: (
-      <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-        Date & Time {getSortIcon("requestDateTime", sortedInfo)}
-      </div>
-    ),
+    title: withSortIcon("Date & Time", "requestDateTime", sortedInfo),
     dataIndex: "requestDateTime",
     key: "requestDateTime",
+
     ellipsis: true,
-    width: "20%",
-    sorter: (a, b) => a.requestDateTime.localeCompare(b.requestDateTime),
+    sorter: (a, b) =>
+      formatApiDateTime(a.requestDateTime).localeCompare(
+        formatApiDateTime(b.requestDateTime)
+      ),
     sortDirections: ["ascend", "descend"],
     sortOrder:
       sortedInfo?.columnKey === "requestDateTime" ? sortedInfo.order : null,
     showSorterTooltip: false,
     sortIcon: () => null,
-    render: (date) => <span className="text-gray-600">{date}</span>,
+    render: (date) => (
+      <span className="text-gray-600">{formatApiDateTime(date)}</span>
+    ),
   },
   {
     title: (
@@ -128,8 +170,8 @@ export const getBorderlessTableColumns = (
     ),
     dataIndex: "type",
     key: "type",
+    width: "8%",
     ellipsis: true,
-    width: "15%",
     filteredValue: lineManagerApprovalSearch.type?.length
       ? lineManagerApprovalSearch.type
       : null,
@@ -150,7 +192,7 @@ export const getBorderlessTableColumns = (
     dataIndex: "status",
     key: "status",
     ellipsis: true,
-    width: "15%",
+    align: "center",
     filteredValue: lineManagerApprovalSearch.status?.length
       ? lineManagerApprovalSearch.status
       : null,
@@ -163,6 +205,11 @@ export const getBorderlessTableColumns = (
           style={{
             backgroundColor: tag.backgroundColor,
             color: tag.textColor,
+            whiteSpace: "nowrap", // prevent wrapping
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+            display: "inline-block",
+            // maxWidth: "100%", // tag respects parent cell width
           }}
           className="border-less-table-orange-status"
         >
@@ -172,30 +219,39 @@ export const getBorderlessTableColumns = (
     },
   },
   {
+    title: withSortIcon("Quantity", "quantity", sortedInfo),
+    dataIndex: "quantity",
+    key: "quantity",
+    ellipsis: true,
+    sorter: (a, b) => a.quantity - b.quantity,
+    sortDirections: ["ascend", "descend"],
+    sortOrder: sortedInfo?.columnKey === "quantity" ? sortedInfo.order : null,
+    showSorterTooltip: false,
+    sortIcon: () => null,
+    render: (q) => <span className="font-medium">{q.toLocaleString()}</span>,
+  },
+  {
     title: "",
     dataIndex: "isEscalated",
     key: "isEscalated",
+    width: "7%",
     ellipsis: true,
-    width: "8%",
-    align: "left",
-    render: (date) =>
-      date && (
-        <img
-          src={EscalatedIcon}
-          alt="escalated"
-          className={style["escalated-icon"]}
-        />
-      ),
+    render: (isEscalated, record) => {
+      console.log(record, "CheckIsEsclated");
+      return isEscalated ? (
+        <img src={EscalatedIcon} alt="Escalated" title="Escalated" />
+      ) : null;
+    },
   },
 
   {
     title: "",
     key: "actions",
-    width: "15%",
+    align: "right",
     render: (record) => {
       console.log(record.status, "checkerStateus");
       //Global State to selected data to show in ViewDetailLineManagerModal Statuses
-      const { setRoughStateOfViewDetail } = useGlobalModal();
+      const { setIsSelectedViewDetailLineManager } = useGlobalModal();
       return (
         <>
           <div
@@ -210,7 +266,7 @@ export const getBorderlessTableColumns = (
               className="big-orange-button"
               text="View Details"
               onClick={() => {
-                setRoughStateOfViewDetail(record);
+                setIsSelectedViewDetailLineManager(record);
                 setViewDetailLineManagerModal(true);
               }}
             />
