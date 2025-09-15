@@ -124,7 +124,7 @@ const router = createBrowserRouter(
         <Route
           path="co-reconcile-transactions"
           element={
-            <RoleBasedRoute allowedRoles={[5]}>
+            <RoleBasedRoute allowedRoles={[4]}>
               {<ApprovalRequest />}
             </RoleBasedRoute>
           }
@@ -132,7 +132,7 @@ const router = createBrowserRouter(
         <Route
           path="co-my-actions"
           element={
-            <RoleBasedRoute allowedRoles={[5]}>
+            <RoleBasedRoute allowedRoles={[4]}>
               <EmployeMyTransaction />{" "}
             </RoleBasedRoute>
           }
@@ -140,7 +140,7 @@ const router = createBrowserRouter(
         <Route
           path="co-reports"
           element={
-            <RoleBasedRoute allowedRoles={[5]}>
+            <RoleBasedRoute allowedRoles={[4]}>
               <EmpolyesReportsIndex />{" "}
             </RoleBasedRoute>
           }

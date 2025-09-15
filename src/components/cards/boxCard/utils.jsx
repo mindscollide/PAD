@@ -101,8 +101,8 @@ export const lineManagerRouteMap = {
 };
 
 export const complianceOfficerRouteMap = {
-  approvals: { path: "co-reconcile-transactions", key: "9" },
-  transactions: { path: "co-my-actions", key: "10" },
+  reconcile: { path: "co-reconcile-transactions", key: "9" },
+  action: { path: "co-my-actions", key: "10" },
   reports: { path: "co-reports", key: "11" },
 };
 
@@ -147,7 +147,7 @@ export const navigateToPage = (userRole, route, setSelectedKey, navigate) => {
     case "LM":
       pathInfo = lineManagerRouteMap[route];
       break;
-    case "complianceOfficer":
+    case "CO":
       pathInfo = complianceOfficerRouteMap[route];
       break;
     case "headOfTrade":
