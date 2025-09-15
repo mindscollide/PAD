@@ -63,6 +63,14 @@ const Home = () => {
     [dashboardData?.lineManager?.myActions?.data]
   );
 
+    const complianceOfficerYyActions = useMemo(
+    () => dashboardData?.complianceOfficer?.myActions?.data || [],
+    [dashboardData?.complianceOfficer?.myActions?.data]
+  );
+  const complianceOfficerReconsileTransactions = useMemo(
+    () => dashboardData?.complianceOfficer?.myApprovals?.data || [],
+    [dashboardData?.complianceOfficer?.myApprovals?.data]
+  );
   useEffect(() => {
     if (hasFetched.current) return;
     hasFetched.current = true;
@@ -108,10 +116,12 @@ const Home = () => {
 
     fetchData();
   }, []);
+
   useEffect(() => {
     console.log("dashboardData", dashboardData);
   }, [dashboardData]);
-  console.log("dashboardData", dashboardData);
+
+
   return (
     <div style={{ padding: " 16px 24px 0px 24px " }}>
       {checkRoleMatch(roles, 2) && (
@@ -322,7 +332,7 @@ const Home = () => {
                 title="Reconcile Transactions"
                 buttonId={"Reconcile-transactions-view-btn-co"}
                 mainClassName={"mediumHomeCard"}
-                boxes={lineManagerApprovals}
+                boxes={complianceOfficerReconsileTransactions}
                 buttonTitle={"See More"}
                 buttonClassName={"big-white-card-button"}
                 userRole={"CO"}
@@ -336,11 +346,11 @@ const Home = () => {
                 locationStyle={"up"}
                 title="My Actions"
                 mainClassName={"mediumHomeCard"}
-                boxes={lineManagerAction}
+                boxes={complianceOfficerYyActions}
                 buttonTitle={"See More"}
                 buttonClassName={"big-white-card-button"}
                 userRole={"CO"}
-                route={"actions"}
+                route={"action"}
               />
             </Col>
           </Row>

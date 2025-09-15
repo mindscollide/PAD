@@ -38,6 +38,12 @@ export const typeColorMap = {
     textCountColor: "#A50000",
     textAlign: "center",
   },
+  non_compliant: {
+    bgColor: "#FFDBDB",
+    textLableColor: "#A50000",
+    textCountColor: "#A50000",
+    textAlign: "center",
+  },
   approval: {
     bgColor: "#FFF1E7",
     textLableColor: "#F67F29",
@@ -68,8 +74,8 @@ export const typeColorMap = {
     textCountColor: "#A50000",
     textAlign: "center",
   },
-  reconcile_transactions: {
-    bgColor: "#FFF1E7",
+  pending_verification_requests: {
+    bgColor: "#EDF3FF",
     textLableColor: "#30426A", // Using var(--Blue-V1)
     textCountColor: "#30426A",
     textAlign: "center",
