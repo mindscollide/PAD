@@ -466,6 +466,92 @@ export const GetAllLineManagerViewDetailRequest = async ({
   }
 };
 
+// Conduct Transaction API While Click on View Approved Modal hit conduct Transaction button
+export const ConductTransactionUpdateApi = async ({
+  callApi,
+  showNotification,
+  showLoader,
+  requestdata,
+  navigate,
+}) => {
+  console.log("Check APi");
+
+  try {
+    // 🔹 API Call
+    console.log("Check APi");
+
+    const res = await callApi({
+      requestMethod: import.meta.env
+        .VITE_CONDUCT_TRANSACTION_API_REQUEST_METHOD, // <-- Add Trade Approval method
+      endpoint: import.meta.env.VITE_API_TRADE,
+      requestData: requestdata,
+    });
+
+    //  Check Session Expiry
+    if (handleExpiredSession(res, navigate, showLoader)) return false;
+
+    console.log("Add Trade Approval API Response", res);
+
+    // when Api send isExecuted false
+    if (!res?.result?.isExecuted) {
+      showNotification({
+        type: "error",
+        title: "Error",
+        description: "Something went wrong. Please try again.",
+      });
+      return false;
+    }
+
+    // When Api Send Success Response
+    if (res.success) {
+      const { responseMessage } = res.result;
+
+      if (
+        responseMessage ===
+        "PAD_Trade_TradeServiceManager_CondcutTransactionRequest_01"
+      ) {
+        // setIsEquitiesModalVisible(false);
+        // setIsSubmit(true);
+
+        return true;
+      } else {
+        showNotification({
+          type: "warning",
+          title: getMessage(responseMessage),
+        });
+        return false;
+      }
+
+      // ✅ Common success notification (sirf success wale cases me chalega)
+      // showNotification({
+      //   type: "success",
+      //   title: "Success",
+      //   description: getMessage(responseMessage),
+      // });
+
+      return true;
+    }
+
+    // When Response will be Something Went Wrong
+    showNotification({
+      type: "error",
+      title: "Request Failed",
+      description: getMessage(res.message),
+    });
+    return false;
+  } catch (error) {
+    // ❌ Exception handling
+    showNotification({
+      type: "error",
+      title: "Error",
+      description: "An unexpected error occurred.",
+    });
+    return false;
+  } finally {
+    showLoader(false);
+  }
+};
+
 /* ** 
 LINE MANAGER API'S END FROM HERE
 ** */

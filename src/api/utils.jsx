@@ -162,6 +162,20 @@ export const responseMessages = {
     "No data available",
   PAD_Trade_TradeServiceManager_SSearchEmployeeApprovedUploadedPortFolio_03:
     "Exception",
+
+  // Conduct Transaction Api Response Data
+  PAD_Trade_TradeServiceManager_CondcutTransactionRequest_01:
+    "Transaction Conducted",
+  PAD_Trade_TradeServiceManager_CondcutTransactionRequest_02:
+    "Transaction Not Conducted",
+  PAD_Trade_TradeServiceManager_CondcutTransactionRequest_03: "Exception",
+  PAD_Trade_TradeServiceManager_CondcutTransactionRequest_04:
+    "User Hierarchy Not Found",
+  PAD_Trade_TradeServiceManager_CondcutTransactionRequest_05:
+    "TradeApprovalID Missing on which Transaction has to be performed",
+  PAD_Trade_TradeServiceManager_CondcutTransactionRequest_07:
+    "Quantity cannot be more then Approved Quantity",
+
   // ==============================
   // 📂 My Transaction API (myTransactionsApi.jsx)
   // ==============================

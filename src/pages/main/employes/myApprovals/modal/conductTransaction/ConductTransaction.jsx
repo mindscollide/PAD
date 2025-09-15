@@ -80,6 +80,47 @@ const ConductTransaction = () => {
     message.success("Email copied to clipboard!");
   };
 
+  // A Function For Fetch api of Conduct Transaction Api
+    // const fetchAddApprovalsRequest = async (formData) => {
+    //   showLoader(true);
+  
+    //   const quantityNumber = formData.quantity
+    //     ? Number(formData.quantity.replace(/,/g, ""))
+    //     : null;
+  
+    //   const requestdata = {
+    //     TradeApprovalID: 0,
+    //     InstrumentID: formData.selectedInstrument?.id || null,
+    //     InstrumentName: formData.selectedInstrument?.description || "",
+    //     AssetTypeID: formData.selectedAssetTypeID,
+    //     ApprovalTypeID: formData.selectedTradeApprovalType,
+    //     Quantity: quantityNumber,
+    //     InstrumentShortCode: formData.selectedInstrument?.name || "",
+    //     ApprovalType: formData.selectedAssetTypeName,
+    //     ApprovalStatusID: 1,
+    //     ResubmittedCommentID: 0,
+    //     Comments: "",
+    //     BrokerIds: formData.selectedBrokers.map((b) => b.brokerID),
+    //     ListOfTradeApprovalActionableBundle: [
+    //       {
+    //         instrumentID: formData.selectedInstrument?.id || null,
+    //         instrumentShortName: formData.selectedInstrument?.name || "",
+    //         Entity: { EntityID: 1, EntityTypeID: 1 },
+    //       },
+    //     ],
+    //   };
+  
+    //   await AddTradeApprovalRequest({
+    //     callApi,
+    //     showNotification,
+    //     showLoader,
+    //     requestdata,
+    //     setIsEquitiesModalVisible,
+    //     setIsSubmit,
+    //     navigate,
+    //   });
+    // };
+
   //This is the onClick of Submit Button
   const onClickSubmit = () => {
     setIsConductedTransaction(false);
