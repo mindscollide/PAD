@@ -203,7 +203,8 @@ export const GetAllViewDetailsByTradeApprovalID = async ({
         return {
           details: details || [],
           hierarchyList: hierarchyList || [],
-          hierarchyDetails: hierarchyDetails || {},
+          hierarchyDetails: hierarchyDetails || [],
+          workFlowStatus: workFlowStatus || {},
         };
       }
 
@@ -212,7 +213,12 @@ export const GetAllViewDetailsByTradeApprovalID = async ({
         title: getMessage(responseMessage),
         description: "No details available for this Trade Approval ID.",
       });
-      return null;
+      return {
+        details: [],
+        hierarchyList: [],
+        hierarchyDetails: [],
+        workFlowStatus: {},
+      };
     }
 
     showNotification({
@@ -406,6 +412,7 @@ export const GetAllLineManagerViewDetailRequest = async ({
         details,
         hierarchyDetails,
         requesterName,
+        workFlowStatus,
       } = res.result;
 
       if (
@@ -416,8 +423,9 @@ export const GetAllLineManagerViewDetailRequest = async ({
         return {
           assetTypes: assetTypes || [],
           details: details || [],
-          hierarchyDetails: hierarchyDetails || {},
+          hierarchyDetails: hierarchyDetails || [],
           requesterName: requesterName || "",
+          workFlowStatus: workFlowStatus || {},
         };
       }
 
@@ -426,7 +434,13 @@ export const GetAllLineManagerViewDetailRequest = async ({
         title: getMessage(responseMessage),
         description: "No details available for this Trade Approval ID.",
       });
-      return null;
+      return {
+        assetTypes: [],
+        details: [],
+        hierarchyDetails: [],
+        requesterName: "",
+        workFlowStatus: {},
+      };
     }
 
     showNotification({

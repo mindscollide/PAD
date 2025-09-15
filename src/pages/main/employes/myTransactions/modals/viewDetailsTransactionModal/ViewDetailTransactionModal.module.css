@@ -1,13 +1,31 @@
+.resubmittedBorderClass {
+  border: 2.65px dashed #717171 !important;
+  border-radius: 8px !important;
+  padding: 0px 20px !important;
+  gap: 10px !important;
+}
+
 .pendingBorderClass {
   border: 2.65px dashed #717171 !important;
   border-radius: 8px !important;
   padding: 0px 20px !important;
   gap: 10px !important;
+}
 
-  /* Flexbox settings */
-  display: flex;
-  align-items: center; /* This vertically centers items */
-  justify-content: center !important;
+.notTradedBorderClass {
+  border: 2.65px dashed #717171 !important;
+  background-color: #d9d9d9 !important;
+  border-radius: 8px !important;
+  padding: 0px 20px !important;
+  gap: 10px !important;
+}
+
+.declinedBorderClass {
+  border: 2.65px dashed #a50000 !important;
+  background-color: #ffdbdb !important;
+  border-radius: 8px !important;
+  padding: 0px 20px !important;
+  gap: 10px !important;
 }
 
 .approvedBorderClass {
@@ -16,10 +34,45 @@
   border-radius: 8px !important;
   padding: 0px 20px !important;
   gap: 10px !important;
+}
 
-  /* Flexbox settings */
+.declinedDetailHeading {
+  font-size: 36px !important;
+  color: #a50000 !important;
+  font-weight: 600;
+  font-family: "Switzer Variable";
+  text-transform: uppercase;
   display: flex;
-  align-items: center; /* This vertically centers items */
+  justify-content: center !important;
+}
+
+.pendingDetailHeading {
+  font-size: 36px !important;
+  color: #424242 !important;
+  font-weight: 600;
+  font-family: "Switzer Variable";
+  text-transform: uppercase;
+  display: flex;
+  justify-content: center !important;
+}
+
+.resubmittedDetailHeading {
+  font-size: 36px !important;
+  color: #424242 !important;
+  font-weight: 600;
+  font-family: "Switzer Variable";
+  text-transform: uppercase;
+  display: flex;
+  justify-content: center !important;
+}
+
+.notTradedDetailHeading {
+  font-size: 36px !important;
+  color: #424242 !important;
+  font-weight: 600;
+  font-family: "Switzer Variable";
+  text-transform: uppercase;
+  display: flex;
   justify-content: center !important;
 }
 

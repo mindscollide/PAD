@@ -43,6 +43,10 @@ export const GlobalModalProvider = ({ children }) => {
   const [selectedViewDetailOfTransaction, setSelectedViewDetailOfTransaction] =
     useState(null);
 
+  // To  show view Comment Modal on Transaction
+  const [viewCommentTransactionModal, setViewCommentTransactionModal] =
+    useState(false);
+
   /**
    * Global States For Employee Modals End here
    */
@@ -121,6 +125,8 @@ export const GlobalModalProvider = ({ children }) => {
         setViewDetailTransactionModal,
         selectedViewDetailOfTransaction,
         setSelectedViewDetailOfTransaction,
+        viewCommentTransactionModal,
+        setViewCommentTransactionModal,
 
         /**
          * Global States For Line Manager Modals

@@ -31,6 +31,8 @@ import { useDashboardContext } from "../../../../context/dashboardContaxt";
 import { useSidebarContext } from "../../../../context/sidebarContaxt";
 import { useGlobalModal } from "../../../../context/GlobalModalContext";
 import ViewDetailsTransactionModal from "./modals/viewDetailsTransactionModal/ViewDetailsTransactionModal";
+import { useTableScrollBottom } from "../myApprovals/utill";
+import ViewTransactionCommentModal from "./modals/viewTransactionCommentModal/ViewTransactionCommentModal";
 
 /**
  * 📄 MyTransaction Component
@@ -53,8 +55,11 @@ const MyTransaction = () => {
   const { showNotification } = useNotification();
   const { showLoader } = useGlobalLoader();
   const { selectedKey } = useSidebarContext();
-  const { viewDetailTransactionModal, setViewDetailTransactionModal } =
-    useGlobalModal();
+  const {
+    viewDetailTransactionModal,
+    setViewDetailTransactionModal,
+    viewCommentTransactionModal,
+  } = useGlobalModal();
   const { addApprovalRequestData, employeeBasedBrokersData } =
     useDashboardContext();
   const {
@@ -437,52 +442,81 @@ const MyTransaction = () => {
     }
   }, [employeeTransactionsData]);
 
+  // Inside your component
+  useTableScrollBottom(
+    async () => {
+      // ✅ Only load more if there are still records left
+      if (
+        employeeTransactionsData?.totalRecords !== myTransactionData?.length
+      ) {
+        try {
+          setLoadingMore(true);
+
+          const assetKey = employeeMyTransactionSearch.assetType;
+          const assetData = addApprovalRequestData?.[assetKey];
+
+          // Build request payload
+          const requestdata = {
+            InstrumentName:
+              employeeMyTransactionSearch.instrumentName ||
+              employeeMyTransactionSearch.mainInstrumentName,
+            Quantity: employeeMyTransactionSearch.quantity || 0,
+            StartDate: employeeMyTransactionSearch.date || null,
+            EndDate: employeeMyTransactionSearch.date || null,
+            BrokerIDs: employeeMyTransactionSearch.brokerIDs || [],
+            StatusIds: mapStatusToIds(employeeMyTransactionSearch.status) || [],
+            TypeIds: mapBuySellToIds(employeeMyTransactionSearch.type) || [],
+            PageNumber: employeeMyTransactionSearch.pageNumber || 0,
+            Length: employeeMyTransactionSearch.pageSize || 10,
+          };
+
+          const data = await SearchEmployeeTransactionsDetails({
+            callApi,
+            showNotification,
+            showLoader,
+            requestdata,
+            navigate,
+          });
+
+          if (!data) return;
+
+          setEmployeeTransactionsData((prevState) => {
+            const safePrev =
+              prevState && typeof prevState === "object"
+                ? prevState
+                : { transactions: [], totalRecords: 0 };
+
+            return {
+              transactions: [
+                ...(Array.isArray(safePrev.transactions)
+                  ? safePrev.transactions
+                  : []),
+                ...(Array.isArray(data?.transactions) ? data.transactions : []),
+              ],
+              totalRecords: data?.totalRecords ?? safePrev.totalRecords,
+            };
+          });
+        } catch (error) {
+          console.error("Error loading more approvals:", error);
+        } finally {
+          setLoadingMore(false);
+        }
+      }
+    },
+    0,
+    "border-less-table-blue" // Container selector
+  );
+
   // -------------------- Render --------------------
   return (
     <>
       {/* 🔹 Active Filter Tags */}
-      {submittedFilters.map(({ key, value, label }) => {
-        if (key === "brokerIDs") {
-          const brokerCount =
-            employeeMyTransactionSearch.brokerIDs?.length || 0;
-
-          // If multiple → show "X Selected"
-          if (brokerCount > 1) {
-            return (
-              <Col>
-                <div className={style["filter-tag"]}>
-                  <span>{"Multiple Brokers"}</span>
-                  <span
-                    className={style["filter-tag-close"]}
-                    onClick={() => handleRemoveFilter("brokerIDs")}
-                  >
-                    &times;
-                  </span>
-                </div>
-              </Col>
-            );
-          }
-
-          // If only 1 broker → show the single broker’s name
-          return (
-            <Col key={`${key}-${value}`} style={{ marginTop: "10px" }}>
-              <div className={style["filter-tag"]}>
-                <span className={style["filter-tag-text"]}>{label}</span>
-                <span
-                  className={style["filter-tag-close"]}
-                  onClick={() => handleRemoveFilter(key, value)}
-                >
-                  &times;
-                </span>
-              </div>
-            </Col>
-          );
-        }
-
-        // Default case for all other filters
-        return (
-          <Col key={`${key}-${value}`}>
-            <div className={style["filter-tag"]}>
+      <div className={style["filter-tags-container"]}>
+        {submittedFilters
+          // Brokers ke case me handle alag se karenge
+          .filter(({ key }) => key !== "brokerIDs")
+          .map(({ key, value }) => (
+            <div key={`${key}-${value}`} className={style["filter-tag"]}>
               <span className={style["filter-tag-text"]}>{value}</span>
               <span
                 className={style["filter-tag-close"]}
@@ -491,11 +525,38 @@ const MyTransaction = () => {
                 &times;
               </span>
             </div>
-          </Col>
-        );
-      })}
+          ))}
+
+        {/* 🔹 BrokerIDs ka special case */}
+        {employeeMyTransactionSearch?.brokerIDs?.length === 1 &&
+          submittedFilters
+            .filter(({ key }) => key === "brokerIDs")
+            .map(({ key, value, label }) => (
+              <div key={`${key}-${value}`} className={style["filter-tag"]}>
+                <span className={style["filter-tag-text"]}>{label}</span>
+                <span
+                  className={style["filter-tag-close"]}
+                  onClick={() => handleRemoveFilter(key, value)}
+                >
+                  &times;
+                </span>
+              </div>
+            ))}
+
+        {employeeMyTransactionSearch?.brokerIDs?.length > 1 && (
+          <div className={style["filter-tag"]}>
+            <span>{"Multiple Brokers"}</span>
+            <span
+              className={style["filter-tag-close"]}
+              onClick={() => handleRemoveFilter("brokerIDs")}
+            >
+              &times;
+            </span>
+          </div>
+        )}
+      </div>
       {/* 🔹 Transactions Table */}
-      <Row style={{ marginTop: "15px" }}>
+      <Row>
         <Col>
           <PageLayout background="white" style={{ marginTop: "10px" }}>
             <div className="px-4 md:px-6 lg:px-8 ">
@@ -525,8 +586,10 @@ const MyTransaction = () => {
           </PageLayout>
         </Col>
       </Row>
-
       {viewDetailTransactionModal && <ViewDetailsTransactionModal />}
+
+      {/* To Show view Comment Modal */}
+      {viewCommentTransactionModal && <ViewTransactionCommentModal />}
     </>
   );
 };

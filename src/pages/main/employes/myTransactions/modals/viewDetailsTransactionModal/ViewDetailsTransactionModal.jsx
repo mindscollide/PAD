@@ -30,6 +30,7 @@ const ViewDetailsTransactionModal = () => {
     viewDetailTransactionModal,
     setViewDetailTransactionModal,
     selectedViewDetailOfTransaction,
+    setViewCommentTransactionModal,
   } = useGlobalModal();
 
   const { employeeBasedBrokersData } = useDashboardContext();
@@ -79,6 +80,62 @@ const ViewDetailsTransactionModal = () => {
     fetchGetAllViewDataofTransaction();
   }, []);
 
+  // Extract workFlowStatusID from API response
+  const statusId =
+    employeeTransactionViewDetailData?.workFlowStatus?.workFlowStatusID;
+
+  // Mapping for each status → label text + label style + border style
+  const statusConfig = {
+    1: {
+      label: "Pending",
+      labelClass: styles.pendingDetailHeading,
+      borderClass: styles.pendingBorderClass,
+    },
+    2: {
+      label: "Resubmit",
+      labelClass: styles.resubmittedDetailHeading,
+      borderClass: styles.resubmittedBorderClass,
+    },
+    3: {
+      label: "Approved",
+      labelClass: styles.approvedDetailHeading,
+      borderClass: styles.approvedBorderClass,
+    },
+    4: {
+      label: "Declined",
+      labelClass: styles.declinedDetailHeading,
+      borderClass: styles.declinedBorderClass,
+    },
+    5: {
+      label: "Traded",
+      labelClass: styles.pendingDetailHeading,
+      borderClass: styles.pendingBorderClass,
+    },
+    6: {
+      label: "Not-Traded",
+      labelClass: styles.notTradedDetailHeading,
+      borderClass: styles.notTradedBorderClass,
+    },
+    8: {
+      label: "Compliant",
+      labelClass: styles.approvedDetailHeading,
+      borderClass: styles.approvedBorderClass,
+    },
+    9: {
+      label: "Non-Compliant",
+      labelClass: styles.declinedDetailHeading,
+      borderClass: styles.declinedBorderClass,
+    },
+  };
+
+  // Pick values from mapping using statusId
+  // If statusId not found → show fallback "Unknown"
+  const { label, labelClass, borderClass } = statusConfig[statusId] || {
+    label: "Unknown",
+    labelClass: styles.approvedDetailHeading,
+    borderClass: styles.approvedBorderClass,
+  };
+
   // safely extract data from the assetType
   // outside return
   const variableOfAssetType =
@@ -109,10 +166,9 @@ const ViewDetailsTransactionModal = () => {
 
               <Row>
                 <Col span={24}>
-                  <div className={styles.approvedBorderClass}>
-                    <label className={styles.approvedDetailHeading}>
-                      {"Compliant"}
-                    </label>
+                  {/* borderClass and labelClass come from mapping */}
+                  <div className={borderClass}>
+                    <label className={labelClass}>{label}</label>
                   </div>
                 </Col>
               </Row>
@@ -365,6 +421,10 @@ const ViewDetailsTransactionModal = () => {
                     <div className={styles.approvedButtonClassViewComment}>
                       <CustomButton
                         text={"View Comment"}
+                        onClick={() => {
+                          setViewCommentTransactionModal(true);
+                          setViewDetailTransactionModal(false);
+                        }}
                         className="big-light-button"
                       />
                       <CustomButton
@@ -373,6 +433,9 @@ const ViewDetailsTransactionModal = () => {
                       />
                       <CustomButton
                         text={"Close"}
+                        onClick={() => {
+                          setViewDetailTransactionModal(false);
+                        }}
                         className="big-light-button"
                       />
                     </div>

@@ -140,7 +140,7 @@ const ViewDetailModal = () => {
 
   //This is how I can pass the status in statusData Variables
   const statusData = getStatusStyle(
-    viewDetailsModalData?.details?.[0]?.approvalStatus
+    String(viewDetailsModalData?.workFlowStatus?.workFlowStatusID)
   );
 
   console.log(statusData, "statusDatastatusData121");
