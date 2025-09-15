@@ -366,9 +366,9 @@ export const routeMap = {
   6: "/PAD/lm-approval-requests",
   7: "/PAD/lm-my-actions",
   8: "/PAD/lm-reports", // Reuse or change path if needed
-  9: "/PAD/reconcile-transactions",
-  10: "/PAD/my-actions",
-  11: "/PAD/reports",
+  9: "/PAD/co-reconcile-transactions",
+  10: "/PAD/co-my-actions",
+  11: "/PAD/co-reports",
   12: "/PAD/escalated-requests",
   13: "/PAD/my-actions",
   14: "/PAD/reports",
