@@ -51,6 +51,7 @@ export const MyTransactionsProvider = ({ children }) => {
     hierarchyList: [],
     hierarchyDetails: [],
     workFlowStatus: {},
+    tradedWorkFlowReqeust: [],
   });
 
   /**

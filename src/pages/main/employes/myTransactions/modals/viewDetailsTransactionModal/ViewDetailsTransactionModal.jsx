@@ -151,6 +151,14 @@ const ViewDetailsTransactionModal = () => {
 
   console.log(variableOfAssetType, "variableOfAssetType");
 
+  // Extract the trade Apprvoal Request ID data and their quantity
+  const tradedWorkFlowDataVariable =
+    employeeTransactionViewDetailData.tradedWorkFlowReqeust.map((item) => ({
+      tradeApprovalID: item.tradeApprovalID,
+      quantity: item.quantity,
+      tradeWorkFlowID: item.tradeWorkFlowID,
+    }));
+
   return (
     <>
       <GlobalModal
@@ -208,10 +216,9 @@ const ViewDetailsTransactionModal = () => {
                       Approval ID
                     </label>
                     <label className={styles.viewDetailSubLabels}>
-                      {/* {dashBetweenApprovalAssets(
-                        variableOfDeatilData?.approvalrequestID
-                      )} */}
-                      REQ-100
+                      {dashBetweenApprovalAssets(
+                        tradedWorkFlowDataVariable?.[0]?.tradeApprovalID
+                      )}
                     </label>
                   </div>
                 </Col>
@@ -268,7 +275,7 @@ const ViewDetailsTransactionModal = () => {
                       Shared Traded
                     </label>
                     <label className={styles.viewDetailSubLabels}>
-                      {"100,0000"}
+                      {tradedWorkFlowDataVariable?.[0]?.quantity}
                     </label>
                   </div>
                 </Col>

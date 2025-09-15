@@ -192,8 +192,13 @@ export const GetAllViewDetailsByTradeApprovalID = async ({
     }
 
     if (res.success) {
-      const { responseMessage, details, hierarchyList, hierarchyDetails } =
-        res.result;
+      const {
+        responseMessage,
+        details,
+        hierarchyList,
+        hierarchyDetails,
+        workFlowStatus,
+      } = res.result;
 
       if (
         responseMessage ===

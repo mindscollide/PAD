@@ -163,6 +163,7 @@ export const GetAllTransactionViewDetails = async ({
         assetTypes,
         hierarchyDetails,
         workFlowStatus,
+        tradedWorkFlowReqeust,
       } = res.result;
 
       if (
@@ -175,6 +176,7 @@ export const GetAllTransactionViewDetails = async ({
           assetTypes: assetTypes || [],
           hierarchyDetails: hierarchyDetails || [],
           workFlowStatus: workFlowStatus || {},
+          tradedWorkFlowReqeust: tradedWorkFlowReqeust || [],
         };
       }
 
@@ -188,6 +190,7 @@ export const GetAllTransactionViewDetails = async ({
         assetTypes: [],
         hierarchyDetails: [],
         workFlowStatus: {},
+        tradedWorkFlowReqeust: [],
       };
     }
 
