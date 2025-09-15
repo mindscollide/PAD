@@ -10,18 +10,20 @@ export const MyApprovalProvider = ({ children }) => {
 
   // Context STate to extract data from get All View Trade Approval which is show by click on View Detail
   const [viewDetailsModalData, setViewDetailsModalData] = useState({
+    assetTypes: [],
     details: [],
-    hierarchyList: [],
-    hierarchyDetails: {},
+    hierarchyDetails: [],
+    workFlowStatus: {},
   });
 
   // Reset function to set all states back to initial values
   const resetMyApprovalContextState = () => {
     setIsEmployeeMyApproval([]);
     setViewDetailsModalData({
+      assetTypes: [],
       details: [],
-      hierarchyList: [],
-      hierarchyDetails: {},
+      hierarchyDetails: [],
+      workFlowStatus: {},
     });
   };
 
@@ -38,8 +40,9 @@ export const MyApprovalProvider = ({ children }) => {
   const [viewDetailsLineManagerData, setViewDetailsLineManagerData] = useState({
     assetTypes: [],
     details: [],
-    hierarchyDetails: {},
+    hierarchyDetails: [],
     requesterName: "",
+    workFlowStatus: {},
   });
 
   /* **

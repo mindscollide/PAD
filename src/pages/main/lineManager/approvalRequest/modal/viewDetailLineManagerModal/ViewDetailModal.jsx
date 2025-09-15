@@ -158,27 +158,27 @@ const ViewDetailModal = () => {
                 <Col span={24}>
                   <div
                     className={
-                      viewDetailsLineManagerData?.details[0]?.approvalStatus ===
-                      "1"
+                      viewDetailsLineManagerData?.workFlowStatus
+                        ?.workFlowStatusID === 1
                         ? styles.pendingBorderClass
-                        : viewDetailsLineManagerData?.details[0]
-                            ?.approvalStatus === "2"
+                        : viewDetailsLineManagerData?.workFlowStatus
+                            ?.workFlowStatusID === 2
                         ? styles.resubmittedBorderClass
-                        : viewDetailsLineManagerData?.details[0]
-                            ?.approvalStatus === "3"
+                        : viewDetailsLineManagerData?.workFlowStatus
+                            ?.workFlowStatusID === 3
                         ? styles.approvedBorderClass
-                        : viewDetailsLineManagerData?.details[0]
-                            ?.approvalStatus === "4"
+                        : viewDetailsLineManagerData?.workFlowStatus
+                            ?.workFlowStatusID === 4
                         ? styles.declinedBorderClass
-                        : viewDetailsLineManagerData?.details[0]
-                            ?.approvalStatus === "6"
+                        : viewDetailsLineManagerData?.workFlowStatus
+                            ?.workFlowStatusID === 6
                         ? styles.notTradedBorderClass
                         : ""
                     }
                   >
                     {/* This will show when Pending will be Resubmit */}
-                    {viewDetailsLineManagerData?.details[0]?.approvalStatus ===
-                      "2" && (
+                    {viewDetailsLineManagerData?.workFlowStatus
+                      ?.workFlowStatusID === 2 && (
                       <>
                         <div>
                           <img src={repeat} className={styles.pendingIcon} />
@@ -212,41 +212,41 @@ const ViewDetailModal = () => {
 
                     <label
                       className={
-                        viewDetailsLineManagerData?.details[0]
-                          ?.approvalStatus === "1"
+                        viewDetailsLineManagerData?.workFlowStatus
+                          ?.workFlowStatusID === 1
                           ? styles.pendingDetailHeading
-                          : viewDetailsLineManagerData?.details[0]
-                              ?.approvalStatus === "2"
+                          : viewDetailsLineManagerData?.workFlowStatus
+                              ?.workFlowStatusID === 2
                           ? styles.resubmittedDetailHeading
-                          : viewDetailsLineManagerData?.details[0]
-                              ?.approvalStatus === "3"
+                          : viewDetailsLineManagerData?.workFlowStatus
+                              ?.workFlowStatusID === 3
                           ? styles.approvedDetailHeading
-                          : viewDetailsLineManagerData?.details[0]
-                              ?.approvalStatus === "4"
+                          : viewDetailsLineManagerData?.workFlowStatus
+                              ?.workFlowStatusID === 4
                           ? styles.declinedDetailHeading
-                          : viewDetailsLineManagerData?.details[0]
-                              ?.approvalStatus === "5"
+                          : viewDetailsLineManagerData?.workFlowStatus
+                              ?.workFlowStatusID === 5
                           ? styles.pendingDetailHeading
-                          : viewDetailsLineManagerData?.details[0]
-                              ?.approvalStatus === "6"
+                          : viewDetailsLineManagerData?.workFlowStatus
+                              ?.workFlowStatusID === 6
                           ? styles.notTradedDetailHeading
                           : styles.pendingDetailHeading
                       }
                     >
-                      {viewDetailsLineManagerData?.details[0]
-                        ?.approvalStatus === "1"
+                      {viewDetailsLineManagerData?.workFlowStatus
+                        ?.workFlowStatusID === 1
                         ? "Pending"
-                        : viewDetailsLineManagerData?.details[0]
-                            ?.approvalStatus === "2"
+                        : viewDetailsLineManagerData?.workFlowStatus
+                            ?.workFlowStatusID === 2
                         ? "Resubmitted"
-                        : viewDetailsLineManagerData?.details[0]
-                            ?.approvalStatus === "3"
+                        : viewDetailsLineManagerData?.workFlowStatus
+                            ?.workFlowStatusID === 3
                         ? "Approved"
-                        : viewDetailsLineManagerData?.details[0]
-                            ?.approvalStatus === "4"
+                        : viewDetailsLineManagerData?.workFlowStatus
+                            ?.workFlowStatusID === 4
                         ? "Declined"
-                        : viewDetailsLineManagerData?.details[0]
-                            ?.approvalStatus === "5"
+                        : viewDetailsLineManagerData?.workFlowStatus
+                            ?.workFlowStatusID === 5
                         ? "Traded"
                         : "Pending"}
                     </label>

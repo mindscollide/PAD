@@ -42,6 +42,18 @@ export const MyTransactionsProvider = ({ children }) => {
     apiCall: false,
   });
 
+  // Context STate to extract data from get All View Trade Approval which is show by click on View Detail
+  const [
+    employeeTransactionViewDetailData,
+    setEmployeeTransactionViewDetailData,
+  ] = useState({
+    details: [],
+    hierarchyList: [],
+    hierarchyDetails: [],
+    workFlowStatus: {},
+    tradedWorkFlowReqeust: [],
+  });
+
   /**
    * 🔹 State: MQTT Updates (for Table)
    *
@@ -119,6 +131,10 @@ export const MyTransactionsProvider = ({ children }) => {
         // Reset functions
         resetMyTransactionsContextState,
         resetMyTransactionsModalDataContextState,
+
+        // View Detail
+        employeeTransactionViewDetailData,
+        setEmployeeTransactionViewDetailData,
       }}
     >
       {children}

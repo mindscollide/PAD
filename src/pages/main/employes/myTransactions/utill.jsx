@@ -12,6 +12,8 @@ import {
   dashBetweenApprovalAssets,
   formatApiDateTime,
 } from "../../../../commen/funtions/rejex";
+import { useGlobalModal } from "../../../../context/GlobalModalContext";
+import { useEffect, useRef, useState } from "react";
 
 // import TypeColumnTitle from "./typeFilter";
 
@@ -49,6 +51,7 @@ export const getBorderlessTableColumns = (
   approvalStatusMap,
   sortedInfo,
   employeeMyTransactionSearch,
+  setViewDetailTransactionModal,
   setEmployeeMyTransactionSearch
 ) => [
   {
@@ -57,7 +60,7 @@ export const getBorderlessTableColumns = (
     key: "tradeApprovalID",
     width: "12%",
     ellipsis: true,
-    sosorter: (a, b) =>
+    sorter: (a, b) =>
       parseInt(a.tradeApprovalID.replace(/[^\d]/g, ""), 10) -
       parseInt(b.tradeApprovalID.replace(/[^\d]/g, ""), 10),
     sortDirections: ["ascend", "descend"],
@@ -148,21 +151,22 @@ export const getBorderlessTableColumns = (
   {
     title: withSortIcon(
       "Transaction Date & Time",
-      "requestDateTime",
+      "transactionDateTime",
       sortedInfo
     ),
     dataIndex: "transactionDateTime",
     key: "transactionDateTime",
     ellipsis: true,
-    width: "20%",
-    sorter: (a, b) =>
-      formatApiDateTime(
+    width: "17%",
+    sorter: (a, b) => {
+      const dateA = new Date(
         `${a.transactionConductedDate} ${a.transactionConductedTime}`
-      ).localeCompare(
-        formatApiDateTime(
-          `${b.transactionConductedDate} ${b.transactionConductedTime}`
-        )
-      ),
+      ).getTime();
+      const dateB = new Date(
+        `${b.transactionConductedDate} ${b.transactionConductedTime}`
+      ).getTime();
+      return dateA - dateB;
+    },
     sortDirections: ["ascend", "descend"],
     sortOrder:
       sortedInfo?.columnKey === "transactionDateTime" ? sortedInfo.order : null,
@@ -186,7 +190,7 @@ export const getBorderlessTableColumns = (
     dataIndex: "workFlowStatus",
     key: "workFlowStatus",
     ellipsis: true,
-    width: "10%",
+    width: "12%",
     filteredValue: employeeMyTransactionSearch.status?.length
       ? employeeMyTransactionSearch.status
       : null,
@@ -212,7 +216,7 @@ export const getBorderlessTableColumns = (
     dataIndex: "quantity",
     key: "quantity",
     ellipsis: true,
-    width: "10%",
+    width: "8%",
     sorter: (a, b) => a.quantity - b.quantity,
     sortDirections: ["ascend", "descend"],
     sortOrder: sortedInfo?.columnKey === "quantity" ? sortedInfo.order : null,
@@ -221,16 +225,83 @@ export const getBorderlessTableColumns = (
     render: (q) => <span className="font-medium">{q.toLocaleString()}</span>,
   },
   {
-    title: "Broker",
+    title: withSortIcon("Broker", "broker", sortedInfo),
     dataIndex: "broker",
-    width: "15%",
+    width: "17%",
     key: "broker",
+    sorter: (a, b) => a.broker - b.broker,
+    sortDirections: ["ascend", "descend"],
+    sortOrder: sortedInfo?.columnKey === "broker" ? sortedInfo.order : null,
+    showSorterTooltip: false,
+    sortIcon: () => null,
   },
   {
     title: "",
     key: "action",
-    render: (_, record) => (
-      <Button className="small-dark-button" text={"View Details"} />
-    ),
+    render: (_, record) => {
+      //Global State to selected data to show in ViewDetailModal
+      const { setSelectedViewDetailOfTransaction } = useGlobalModal();
+      return (
+        <Button
+          className="small-dark-button"
+          text={"View Details"}
+          onClick={() => {
+            setSelectedViewDetailOfTransaction(record);
+            setViewDetailTransactionModal(true);
+          }}
+        />
+      );
+    },
   },
 ];
+
+export const useTableScrollBottom = (
+  onBottomReach,
+  threshold = 0,
+  prefixCls = "ant-table"
+) => {
+  const [hasReachedBottom, setHasReachedBottom] = useState(false);
+  const containerRef = useRef(null);
+  const previousScrollTopRef = useRef(0); // for detecting vertical scroll only
+
+  useEffect(() => {
+    const selector = `.${prefixCls}-body`;
+    const scrollContainer = document.querySelector(selector);
+
+    if (!scrollContainer) {
+      console.warn(`📛 Scroll container not found for selector: ${selector}`);
+      return;
+    }
+
+    containerRef.current = scrollContainer;
+
+    const handleScroll = () => {
+      const { scrollTop, scrollHeight, clientHeight } = scrollContainer;
+
+      // Check if vertical scroll happened
+      const scrolledVertically = scrollTop !== previousScrollTopRef.current;
+      previousScrollTopRef.current = scrollTop;
+
+      if (!scrolledVertically) return; // ignore horizontal-only scroll
+
+      const isScrollable = scrollHeight > clientHeight;
+      const isBottom = scrollTop + clientHeight >= scrollHeight - threshold;
+
+      if (isScrollable && isBottom && !hasReachedBottom) {
+        setHasReachedBottom(true);
+        onBottomReach?.();
+
+        setTimeout(() => setHasReachedBottom(false), 1000);
+      }
+    };
+
+    scrollContainer.addEventListener("scroll", handleScroll);
+    return () => scrollContainer.removeEventListener("scroll", handleScroll);
+  }, [hasReachedBottom, onBottomReach, threshold, prefixCls]);
+
+  return {
+    hasReachedBottom,
+    containerRef,
+    setHasReachedBottom,
+  };
+};

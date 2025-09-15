@@ -35,6 +35,18 @@ export const GlobalModalProvider = ({ children }) => {
   // To show Conduct Transaction Modal
   const [isConductedTransaction, setIsConductedTransaction] = useState(false);
 
+  // To show view Detail Modal on Transaction
+  const [viewDetailTransactionModal, setViewDetailTransactionModal] =
+    useState(false);
+
+  // To show Selected Row Data in View Detail Modal
+  const [selectedViewDetailOfTransaction, setSelectedViewDetailOfTransaction] =
+    useState(null);
+
+  // To  show view Comment Modal on Transaction
+  const [viewCommentTransactionModal, setViewCommentTransactionModal] =
+    useState(false);
+
   /**
    * Global States For Employee Modals End here
    */
@@ -48,7 +60,8 @@ export const GlobalModalProvider = ({ children }) => {
     useState(false);
 
   // To show Selected Status which is coming static just a rough state to show or test modals
-  const [isSelectedViewDetailLineManager, setIsSelectedViewDetailLineManager] = useState(null);
+  const [isSelectedViewDetailLineManager, setIsSelectedViewDetailLineManager] =
+    useState(null);
 
   // To Show Global States of Notes modals in LM
   const [noteGlobalModal, setNoteGlobalModal] = useState(false);
@@ -108,6 +121,12 @@ export const GlobalModalProvider = ({ children }) => {
         setResubmitIntimation,
         isConductedTransaction,
         setIsConductedTransaction,
+        viewDetailTransactionModal,
+        setViewDetailTransactionModal,
+        selectedViewDetailOfTransaction,
+        setSelectedViewDetailOfTransaction,
+        viewCommentTransactionModal,
+        setViewCommentTransactionModal,
 
         /**
          * Global States For Line Manager Modals

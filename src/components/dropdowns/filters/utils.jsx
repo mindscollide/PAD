@@ -317,7 +317,18 @@ export const apiCallStatus = async ({
       break;
 
     case "2": // Employee Transactions
-      statusIds = mapStatusToIds(newdata);
+      // ✅ Only allow specific statuses for case "2"
+      const allowedStatusesForTransactions = [
+        "Pending",
+        "Compliant",
+        "Non-Compliant",
+      ];
+      const filteredStatuses = newdata.filter((s) =>
+        allowedStatusesForTransactions.includes(s)
+      );
+      statusIds = mapStatusToIds(filteredStatuses);
+      console.log(statusIds, "NotCompliantNotCompliant");
+
       requestdata = buildTransactionRequestData({ state, statusIds, typeIds });
       showLoader(true);
       data = await SearchEmployeeTransactionsDetails({

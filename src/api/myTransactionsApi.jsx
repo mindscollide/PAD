@@ -127,3 +127,87 @@ export const SearchEmployeeTransactionsDetails = async ({
     showLoader(false);
   }
 };
+
+//Get All View Details By Trade Approval ID
+export const GetAllTransactionViewDetails = async ({
+  callApi,
+  showNotification,
+  showLoader,
+  requestdata,
+  navigate,
+}) => {
+  try {
+    console.log("Check APi");
+    const res = await callApi({
+      requestMethod: import.meta.env
+        .VITE_Get_All_ViewDetails_Transactions_REQUEST_METHOD,
+      endpoint: import.meta.env.VITE_API_TRADE,
+      requestData: requestdata,
+    });
+    if (handleExpiredSession(res, navigate, showLoader)) return null;
+
+    if (!res?.result?.isExecuted) {
+      console.log("Check APi");
+      showNotification({
+        type: "error",
+        title: "Error",
+        description: "Something went wrong. Please try again.",
+      });
+      return null;
+    }
+
+    if (res.success) {
+      const {
+        responseMessage,
+        details,
+        assetTypes,
+        hierarchyDetails,
+        workFlowStatus,
+        tradedWorkFlowReqeust,
+      } = res.result;
+
+      if (
+        responseMessage ===
+        "PAD_Trade_TradeServiceManager_GetAllViewDetailsTransactionsByTradeApprovalID_01"
+      ) {
+        console.log("Check APi");
+        return {
+          details: details || [],
+          assetTypes: assetTypes || [],
+          hierarchyDetails: hierarchyDetails || [],
+          workFlowStatus: workFlowStatus || {},
+          tradedWorkFlowReqeust: tradedWorkFlowReqeust || [],
+        };
+      }
+
+      showNotification({
+        type: "warning",
+        title: getMessage(responseMessage),
+        description: "No details available for this Trade Approval ID.",
+      });
+      return {
+        details: [],
+        assetTypes: [],
+        hierarchyDetails: [],
+        workFlowStatus: {},
+        tradedWorkFlowReqeust: [],
+      };
+    }
+
+    showNotification({
+      type: "error",
+      title: "Fetch Failed",
+      description: getMessage(res.message),
+    });
+    return null;
+  } catch (error) {
+    showNotification({
+      type: "error",
+      title: "Error",
+      description: "An unexpected error occurred.",
+    });
+    return null;
+  } finally {
+    showLoader(false);
+  }
+};

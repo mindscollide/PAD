@@ -7,6 +7,8 @@ import {
   allowOnlyNumbers,
   removeFirstSpace,
 } from "../../../commen/funtions/rejex";
+import styles from "./SearchWithPopoverOnly.module.css";
+import { useDashboardContext } from "../../../context/dashboardContaxt";
 
 export const EmployeeTransactionFilter = ({
   handleSearch,
@@ -21,6 +23,8 @@ export const EmployeeTransactionFilter = ({
    */
   const { collapsed, selectedKey } = useSidebarContext();
   console.log(selectedKey, "selectedKeyselectedKey6677");
+
+  const { employeeBasedBrokersData } = useDashboardContext();
 
   /**
    * SearchBarContext its state handler for this function.
@@ -38,12 +42,16 @@ export const EmployeeTransactionFilter = ({
     resetEmployeeMyTransactionSearch,
   } = useSearchBarContext();
 
+  // for employeeBroker state to show data in dropdown
+  const [selectedBrokers, setSelectedBrokers] = useState([]);
+
   // 🔹 Local form state
   const [localState, setLocalState] = useState({
     instrumentName: "",
     quantity: "",
     startDate: null,
     endDate: null,
+    brokerIDs: [],
   });
 
   // 🔹 Track touched fields
@@ -53,6 +61,30 @@ export const EmployeeTransactionFilter = ({
   const setFieldValue = (field, value) => {
     setLocalState((prev) => ({ ...prev, [field]: value }));
     setDirtyFields((prev) => ({ ...prev, [field]: true }));
+  };
+
+  //  Prepare and Show Brokers selected values for Select's `value` prop
+  const selectedBrokerIDs = selectedBrokers.map((b) => b.brokerID);
+
+  // Format broker options
+  const brokerOptions = (employeeBasedBrokersData || []).map((broker) => ({
+    label: (
+      <div style={{ display: "flex", alignItems: "center" }}>
+        <Checkbox
+          checked={localState.brokerIDs.includes(broker.brokerID)}
+          style={{ marginRight: 8 }}
+        />
+        {broker.brokerName}
+      </div>
+    ),
+    value: broker.brokerID,
+    raw: broker, // keep full broker data for later use
+  }));
+
+  // OnChange Handle when user selects/deselects brokers
+  const handleBrokerChange = (selectedIDs) => {
+    setLocalState((prev) => ({ ...prev, brokerIDs: selectedIDs }));
+    setDirtyFields((prev) => ({ ...prev, brokerIDs: true }));
   };
 
   /**
@@ -121,6 +153,16 @@ export const EmployeeTransactionFilter = ({
     employeeMyTransactionSearch.endDate,
   ]);
 
+  const brokerIDsValue = useMemo(() => {
+    return dirtyFields.brokerIDs
+      ? localState.brokerIDs
+      : employeeMyTransactionSearch.brokerIDs || [];
+  }, [
+    dirtyFields.brokerIDs,
+    localState.brokerIDs,
+    employeeMyTransactionSearch.brokerIDs,
+  ]);
+
   // 🔹 Handle search button click
   // 🔹 Search
   const handleSearchClick = async () => {
@@ -141,6 +183,8 @@ export const EmployeeTransactionFilter = ({
           ? localState.endDate.format("YYYY-MM-DD")
           : null,
       }),
+
+      ...(dirtyFields.brokerIDs && { brokerIDs: localState.brokerIDs }),
       pageNumber: 0,
     };
 
@@ -156,6 +200,7 @@ export const EmployeeTransactionFilter = ({
       quantity: 0,
       startDate: null,
       endDate: null,
+      brokerIDs: [],
       tableFilterTrigger: true,
     }));
 
@@ -170,6 +215,7 @@ export const EmployeeTransactionFilter = ({
       quantity: 0,
       startDate: null,
       endDate: null,
+      brokerIDs: [],
     });
     setDirtyFields({});
   };
@@ -203,6 +249,32 @@ export const EmployeeTransactionFilter = ({
         </Col>
       </Row>
       <Row gutter={[12, 12]}>
+        <Col span={12} className={styles.brokersOptionData}>
+          <label className={styles.instrumentLabel}>Brokers</label>
+          <Select
+            mode="multiple"
+            placeholder="Select"
+            value={brokerIDsValue}
+            onChange={handleBrokerChange}
+            options={brokerOptions}
+            maxTagCount={0}
+            maxTagPlaceholder={(omittedValues) =>
+              `${omittedValues.length} selected`
+            }
+            prefixCls="EquitiesBrokerSelectPrefix"
+            optionLabelProp="label"
+            optionRender={(option) => (
+              <div style={{ display: "flex", alignItems: "center" }}>
+                <Checkbox
+                  className="custom-broker-option"
+                  checked={brokerIDsValue.includes(option.value)}
+                  style={{ marginRight: 8 }}
+                />
+                {option.data.raw.brokerName}
+              </div>
+            )}
+          />
+        </Col>
         <Col xs={24} sm={24} md={12} lg={12}>
           <DateRangePicker
             label="Date Range"

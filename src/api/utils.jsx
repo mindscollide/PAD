@@ -169,6 +169,16 @@ export const responseMessages = {
   PAD_Trade_TradeServiceManager_SearchEmployeeTransactio_02:
     "No data available",
   PAD_Trade_TradeServiceManager_SearchEmployeeTransactio_03: "Exception",
+
+  // ==============================
+  // 📂 GET ALL TRANSACTION VIEW DETAIL (myTransactionsApi.jsx)
+  // ==============================
+  PAD_Trade_TradeServiceManager_GetAllViewDetailsTransactionsByTradeApprovalID_01:
+    "Data Available",
+  PAD_Trade_TradeServiceManager_GetAllViewDetailsTransactionsByTradeApprovalID_02:
+    "No data available",
+  PAD_Trade_TradeServiceManager_GetAllViewDetailsTransactionsByTradeApprovalID_03:
+    "Exception",
 };
 
 /**
