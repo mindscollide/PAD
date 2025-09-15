@@ -14,8 +14,21 @@ import {
 } from "../../../../../../commen/funtions/rejex";
 import { useMyApproval } from "../../../../../../context/myApprovalContaxt";
 import { useDashboardContext } from "../../../../../../context/dashboardContaxt";
+import { useNotification } from "../../../../../../components/NotificationProvider/NotificationProvider";
+import { useGlobalLoader } from "../../../../../../context/LoaderContext";
+import { useApi } from "../../../../../../context/ApiContext";
+import { useNavigate } from "react-router-dom";
+import { ConductTransactionUpdateApi } from "../../../../../../api/myApprovalApi";
 
 const ConductTransaction = () => {
+  const navigate = useNavigate();
+
+  const { showNotification } = useNotification();
+
+  const { showLoader } = useGlobalLoader();
+
+  const { callApi } = useApi();
+
   //This is the ContextApi of Global Modal States
   const {
     isConductedTransaction,
@@ -27,6 +40,8 @@ const ConductTransaction = () => {
 
   //This is the Global state of Context Api
   const { viewDetailsModalData } = useMyApproval();
+
+  console.log(viewDetailsModalData, "CheckDataCheckViewData");
 
   const { allInstrumentsData, employeeBasedBrokersData } =
     useDashboardContext();
@@ -62,11 +77,16 @@ const ConductTransaction = () => {
     (item) => item.instrumentID === instrumentId
   );
 
+  console.log(selectedInstrument, "heckeckecnekcnenc");
+
   //This is the quantity state in which user can enter the quantity for specific limit or Limitation
   const [quantity, setQuantity] = useState("");
 
   //This is the State when Limitation of quantity states exceed then it show error
   const [error, setError] = useState("");
+
+  //Local state to track is approved quantity is greater than current quantity
+  const [approvedQuantity, setApprovedQuantity] = useState(0);
 
   //This is the Cancel button functionality
   const onCancelTransaction = () => {
@@ -76,81 +96,80 @@ const ConductTransaction = () => {
 
   //This the Copy Functionality where user can copy email by click on COpyIcon
   const handleCopyEmail = () => {
-    navigator.clipboard.writeText("compliance@horizoncapital.com");
+    const emailToCopy =
+      complianceOfficerDetails?.managerEmail || "compliance@horizoncapital.com";
+    navigator.clipboard.writeText(emailToCopy);
     message.success("Email copied to clipboard!");
-  };
-
-  // A Function For Fetch api of Conduct Transaction Api
-    // const fetchAddApprovalsRequest = async (formData) => {
-    //   showLoader(true);
-  
-    //   const quantityNumber = formData.quantity
-    //     ? Number(formData.quantity.replace(/,/g, ""))
-    //     : null;
-  
-    //   const requestdata = {
-    //     TradeApprovalID: 0,
-    //     InstrumentID: formData.selectedInstrument?.id || null,
-    //     InstrumentName: formData.selectedInstrument?.description || "",
-    //     AssetTypeID: formData.selectedAssetTypeID,
-    //     ApprovalTypeID: formData.selectedTradeApprovalType,
-    //     Quantity: quantityNumber,
-    //     InstrumentShortCode: formData.selectedInstrument?.name || "",
-    //     ApprovalType: formData.selectedAssetTypeName,
-    //     ApprovalStatusID: 1,
-    //     ResubmittedCommentID: 0,
-    //     Comments: "",
-    //     BrokerIds: formData.selectedBrokers.map((b) => b.brokerID),
-    //     ListOfTradeApprovalActionableBundle: [
-    //       {
-    //         instrumentID: formData.selectedInstrument?.id || null,
-    //         instrumentShortName: formData.selectedInstrument?.name || "",
-    //         Entity: { EntityID: 1, EntityTypeID: 1 },
-    //       },
-    //     ],
-    //   };
-  
-    //   await AddTradeApprovalRequest({
-    //     callApi,
-    //     showNotification,
-    //     showLoader,
-    //     requestdata,
-    //     setIsEquitiesModalVisible,
-    //     setIsSubmit,
-    //     navigate,
-    //   });
-    // };
-
-  //This is the onClick of Submit Button
-  const onClickSubmit = () => {
-    setIsConductedTransaction(false);
-    setIsSubmit(true);
   };
 
   // This is the onChange of qunatity Field
   const handleQuantityChange = (e) => {
     const value = e.target.value;
 
-    // Only allow numeric values
     if (!allowOnlyNumbers(value) && value !== "") return;
 
     setQuantity(value);
 
-    // Store approved quantity in a variable
-    const approvedQuantity =
+    const approvedQty =
       Number(viewDetailsModalData?.details?.[0]?.quantity) || 0;
+    setApprovedQuantity(approvedQty);
 
-    // Convert entered value to a number
-    const enteredQuantity = Number(value);
+    const enteredQty = Number(value);
 
-    // Validate: entered quantity must be <= approvedQuantity
-    if (enteredQuantity > approvedQuantity) {
+    if (enteredQty > approvedQty) {
       setError(
-        `Quantity must be less than or equal to the approved quantity (${approvedQuantity}).`
+        `Quantity must be less than or equal to the approved quantity (${approvedQty}).`
       );
     } else {
       setError("");
     }
+  };
+
+  // A Function For Fetch api of Conduct Transaction Api
+  const fetchConductTransactionRequest = async () => {
+    showLoader(true);
+
+    const detail = viewDetailsModalData?.details?.[0]; // 🔥 Extract the first item
+
+    const requestdata = {
+      TradeApprovalID: selectedViewDetail?.approvalID,
+      InstrumentID: Number(selectedInstrument?.instrumentID) || 0,
+      AssetTypeID: Number(detail?.assetTypeID) || 0,
+      ApprovalTypeID: Number(detail?.approvalTypeID) || 0,
+      Quantity: Number(detail?.quantity) || 0,
+      ApprovalStatusID: Number(detail?.approvalStatus) || 0,
+      Comments: "",
+      BrokerIds: detail?.brokers?.map((brokerID) => Number(brokerID)) || [],
+      ResubmittedCommentID: 0,
+      ListOfTradeApprovalActionableBundle: [
+        {
+          instrumentID: Number(selectedInstrument?.instrumentID) || 0,
+          instrumentShortName: selectedInstrument?.instrumentCode || "",
+          Entity: {
+            EntityID: Number(selectedInstrument?.instrumentID) || 0,
+            EntityTypeID: 2,
+          },
+        },
+      ],
+    };
+
+    console.log(requestdata, "CheckeWHatMyRequestData");
+
+    await ConductTransactionUpdateApi({
+      callApi,
+      showNotification,
+      showLoader,
+      requestdata,
+      setIsConductedTransaction,
+      setIsSubmit,
+      navigate,
+    });
+  };
+
+  //This is the onClick of Submit Button
+  const onClickSubmit = () => {
+    //Conduct Api Func Call here
+    fetchConductTransactionRequest();
   };
 
   return (
@@ -358,6 +377,7 @@ const ConductTransaction = () => {
                         text={"Submit"}
                         className="big-dark-button"
                         onClick={onClickSubmit}
+                        disabled={Number(quantity) > approvedQuantity}
                       />
                     </div>
                   </>

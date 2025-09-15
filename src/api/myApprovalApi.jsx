@@ -472,6 +472,8 @@ export const ConductTransactionUpdateApi = async ({
   showNotification,
   showLoader,
   requestdata,
+  setIsConductedTransaction,
+  setIsSubmit,
   navigate,
 }) => {
   console.log("Check APi");
@@ -510,8 +512,8 @@ export const ConductTransactionUpdateApi = async ({
         responseMessage ===
         "PAD_Trade_TradeServiceManager_CondcutTransactionRequest_01"
       ) {
-        // setIsEquitiesModalVisible(false);
-        // setIsSubmit(true);
+        setIsConductedTransaction(false);
+        setIsSubmit(true);
 
         return true;
       } else {

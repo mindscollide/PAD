@@ -66,7 +66,7 @@ const ViewDetailModal = () => {
   // GETALLVIEWDETAIL API FUNCTION
   const fetchGetAllViewData = async () => {
     await showLoader(true);
-    const requestdata = { TradeApprovalID: selectedViewDetail.approvalID };
+    const requestdata = { TradeApprovalID: selectedViewDetail?.approvalID };
 
     const responseData = await GetAllViewDetailsByTradeApprovalID({
       callApi,
