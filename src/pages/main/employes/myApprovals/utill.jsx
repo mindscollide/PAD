@@ -1,7 +1,7 @@
 // components/pages/employee/approval/tableColumns.js
 
 import React, { useEffect, useRef, useState } from "react";
-import { Tag } from "antd";
+import { Tag, Tooltip } from "antd";
 import { Button, StatusFilterDropdown } from "../../../../components";
 import style from "./approval.module.css";
 import EscalatedIcon from "../../../../assets/img/escalated.png";
@@ -127,6 +127,7 @@ export const getBorderlessTableColumns = (
       console.log(record, "Checkerrrrr");
       const assetCode = record?.assetType?.assetTypeShortCode;
       const code = instrument?.instrumentCode || "";
+      const instrumentName = instrument?.instrumentName || "";
       return (
         <div
           style={{
@@ -138,20 +139,22 @@ export const getBorderlessTableColumns = (
           <span className="custom-shortCode-asset" style={{ minWidth: 30 }}>
             {assetCode?.substring(0, 2).toUpperCase()}
           </span>
-          <span
-            className="font-medium"
-            style={{
-              overflow: "hidden",
-              textOverflow: "ellipsis",
-              whiteSpace: "nowrap",
-              maxWidth: "200px",
-              display: "inline-block",
-              cursor: "pointer",
-            }}
-            title={code}
-          >
-            {code}
-          </span>
+          <Tooltip title={instrumentName} placement="topLeft">
+            <span
+              className="font-medium"
+              style={{
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+                whiteSpace: "nowrap",
+                maxWidth: "200px",
+                display: "inline-block",
+                cursor: "pointer",
+              }}
+              title={code}
+            >
+              {code}
+            </span>
+          </Tooltip>
         </div>
       );
     },
@@ -220,7 +223,7 @@ export const getBorderlessTableColumns = (
     title: withSortIcon("Request Date & Time", "requestDateTime", sortedInfo),
     dataIndex: "requestDateTime",
     key: "requestDateTime",
-    width:"13%",
+    width: "13%",
     ellipsis: true,
     sorter: (a, b) =>
       formatApiDateTime(a.requestDateTime).localeCompare(
@@ -234,7 +237,6 @@ export const getBorderlessTableColumns = (
     render: (date) => (
       <span className="text-gray-600">{formatApiDateTime(date)}</span>
     ),
-     
   },
   {
     title: (
