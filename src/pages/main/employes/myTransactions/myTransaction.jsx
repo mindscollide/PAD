@@ -31,8 +31,8 @@ import { useDashboardContext } from "../../../../context/dashboardContaxt";
 import { useSidebarContext } from "../../../../context/sidebarContaxt";
 import { useGlobalModal } from "../../../../context/GlobalModalContext";
 import ViewDetailsTransactionModal from "./modals/viewDetailsTransactionModal/ViewDetailsTransactionModal";
-import { useTableScrollBottom } from "../myApprovals/utill";
 import ViewTransactionCommentModal from "./modals/viewTransactionCommentModal/ViewTransactionCommentModal";
+import { useTableScrollBottom } from "../myApprovals/utill";
 
 /**
  * 📄 MyTransaction Component
@@ -89,13 +89,14 @@ const MyTransaction = () => {
    */
   const fetchApprovals = async () => {
     await showLoader(true);
+
     const requestdata = {
       InstrumentName:
         employeeMyTransactionSearch.instrumentName ||
         employeeMyTransactionSearch.mainInstrumentName,
       Quantity: employeeMyTransactionSearch.quantity || 0,
-      StartDate: employeeMyTransactionSearch.date || null,
-      EndDate: employeeMyTransactionSearch.date || null,
+      StartDate: employeeMyTransactionSearch.startDate || null,
+      EndDate: employeeMyTransactionSearch.endDate || null,
       BrokerIDs: employeeMyTransactionSearch.brokerIDs || [],
       StatusIds: employeeMyTransactionSearch.status || [],
       TypeIds: employeeMyTransactionSearch.type || [],
@@ -103,6 +104,7 @@ const MyTransaction = () => {
       Length: employeeMyTransactionSearch.pageSize || 10,
     };
 
+    console.log("Check Data");
     const data = await SearchEmployeeTransactionsDetails({
       callApi,
       showNotification,
@@ -149,8 +151,8 @@ const MyTransaction = () => {
   const filterKeys = [
     { key: "instrumentName", label: "Instrument" },
     { key: "mainInstrumentName", label: "Main Instrument" },
-    { key: "startDate", label: "Date" },
-    { key: "endDate", label: "Date" },
+    { key: "startDate", label: "Start Date" },
+    { key: "endDate", label: "End Date" },
     { key: "quantity", label: "Quantity" },
     { key: "brokerIDs", label: "Brokers" }, // 🔹 NEW
   ];
@@ -199,8 +201,8 @@ const MyTransaction = () => {
         employeeMyTransactionSearch.instrumentName ||
         employeeMyTransactionSearch.mainInstrumentName,
       Quantity: employeeMyTransactionSearch.quantity || 0,
-      StartDate: employeeMyTransactionSearch.date || null,
-      EndDate: employeeMyTransactionSearch.date || null,
+      StartDate: employeeMyTransactionSearch.startDate || null,
+      EndDate: employeeMyTransactionSearch.endDate || null,
       BrokerIDs: [...(employeeMyTransactionSearch.brokerIDs || [])],
       StatusIds: statusIds || [],
       TypeIds: TypeIds || [],
@@ -235,7 +237,14 @@ const MyTransaction = () => {
       requestdata.StartDate = "";
       setEmployeeMyTransactionSearch((prev) => ({
         ...prev,
-        startdate: "",
+        startDate: "",
+        pageNumber: 0,
+      }));
+    } else if (normalizedKey === "enddate") {
+      requestdata.EndDate = "";
+      setEmployeeMyTransactionSearch((prev) => ({
+        ...prev,
+        endDate: "",
         pageNumber: 0,
       }));
     } else if (key === "brokerIDs") {
@@ -452,8 +461,21 @@ const MyTransaction = () => {
         try {
           setLoadingMore(true);
 
-          const assetKey = employeeMyTransactionSearch.assetType;
-          const assetData = addApprovalRequestData?.[assetKey];
+          // ✅ Consistent assetKey fallback
+          const assetKey =
+            employeeMyTransactionSearch.assetType ||
+            (addApprovalRequestData &&
+            Object.keys(addApprovalRequestData).length > 0
+              ? Object.keys(addApprovalRequestData)[0]
+              : "Equities");
+
+          const assetData = addApprovalRequestData?.[assetKey] || { items: [] };
+
+          // ✅ Pass assetData to mapBuySellToIds
+          const TypeIds = mapBuySellToIds(
+            employeeMyTransactionSearch.type || [],
+            assetData
+          );
 
           // Build request payload
           const requestdata = {
@@ -461,15 +483,16 @@ const MyTransaction = () => {
               employeeMyTransactionSearch.instrumentName ||
               employeeMyTransactionSearch.mainInstrumentName,
             Quantity: employeeMyTransactionSearch.quantity || 0,
-            StartDate: employeeMyTransactionSearch.date || null,
-            EndDate: employeeMyTransactionSearch.date || null,
+            StartDate: employeeMyTransactionSearch.startDate || null,
+            EndDate: employeeMyTransactionSearch.endDate || null,
             BrokerIDs: employeeMyTransactionSearch.brokerIDs || [],
-            StatusIds: mapStatusToIds(employeeMyTransactionSearch.status) || [],
-            TypeIds: mapBuySellToIds(employeeMyTransactionSearch.type) || [],
+            StatusIds: mapStatusToIds(employeeMyTransactionSearch.status),
+            TypeIds: TypeIds || [],
             PageNumber: employeeMyTransactionSearch.pageNumber || 0,
             Length: employeeMyTransactionSearch.pageSize || 10,
           };
 
+          console.log("Lazy load requestdata", requestdata);
           const data = await SearchEmployeeTransactionsDetails({
             callApi,
             showNotification,

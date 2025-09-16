@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { Col, Row, Tag } from "antd";
 import { useGlobalModal } from "../../../../../../context/GlobalModalContext";
 import { GlobalModal, TextField } from "../../../../../../components";
@@ -88,11 +88,13 @@ const ConductTransaction = () => {
   //Local state to track is approved quantity is greater than current quantity
   const [approvedQuantity, setApprovedQuantity] = useState(0);
 
-  //This is the Cancel button functionality
-  const onCancelTransaction = () => {
-    setIsConductedTransaction(false);
-    setIsViewDetail(true);
-  };
+  // Initialize Approved Quantity when modal data changes
+  useEffect(() => {
+    const approvedQty =
+      Number(viewDetailsModalData?.details?.[0]?.quantity) || 0;
+    setApprovedQuantity(approvedQty);
+    setQuantity(String(approvedQty)); // ✅ prefill TextField with approved qty
+  }, [viewDetailsModalData]);
 
   //This the Copy Functionality where user can copy email by click on COpyIcon
   const handleCopyEmail = () => {
@@ -104,21 +106,28 @@ const ConductTransaction = () => {
 
   // This is the onChange of qunatity Field
   const handleQuantityChange = (e) => {
-    const value = e.target.value;
+    let rawValue = e.target.value.replace(/,/g, ""); // remove commas
+    if (!allowOnlyNumbers(rawValue) && rawValue !== "") return;
 
-    if (!allowOnlyNumbers(value) && value !== "") return;
+    // Trim leading zeros
+    if (rawValue.length > 1) {
+      rawValue = rawValue.replace(/^0+/, "");
+    }
 
-    setQuantity(value);
+    setQuantity(rawValue);
 
     const approvedQty =
       Number(viewDetailsModalData?.details?.[0]?.quantity) || 0;
-    setApprovedQuantity(approvedQty);
+    const enteredQty = Number(rawValue);
 
-    const enteredQty = Number(value);
-
-    if (enteredQty > approvedQty) {
+    // Validation
+    if (enteredQty === 0) {
+      setError("Quantity cannot be zero.");
+    } else if (enteredQty > approvedQty) {
       setError(
-        `Quantity must be less than or equal to the approved quantity (${approvedQty}).`
+        `Quantity must be less than or equal to the approved quantity (${formatNumberWithCommas(
+          approvedQty
+        )}).`
       );
     } else {
       setError("");
@@ -170,6 +179,12 @@ const ConductTransaction = () => {
   const onClickSubmit = () => {
     //Conduct Api Func Call here
     fetchConductTransactionRequest();
+  };
+
+  //This is the Cancel button functionality
+  const onCancelTransaction = () => {
+    setIsConductedTransaction(false);
+    setIsViewDetail(true);
   };
 
   return (
@@ -332,7 +347,7 @@ const ConductTransaction = () => {
                     <TextField
                       placeholder={0}
                       size="medium"
-                      value={quantity}
+                      value={formatNumberWithCommas(quantity)}
                       onChange={handleQuantityChange}
                       className={classNames({
                         [styles["input-error"]]: error,
@@ -377,7 +392,10 @@ const ConductTransaction = () => {
                         text={"Submit"}
                         className="big-dark-button"
                         onClick={onClickSubmit}
-                        disabled={Number(quantity) > approvedQuantity}
+                        disabled={
+                          Number(quantity) > approvedQuantity ||
+                          Number(quantity) === 0
+                        }
                       />
                     </div>
                   </>

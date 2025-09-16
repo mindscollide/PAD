@@ -45,7 +45,7 @@ export const removeFirstSpace = (value) => {
 
 // utils/dateFormatter.js
 export function formatApiDateTime(apiDateTime) {
-  console.log("requestdata",apiDateTime)
+  console.log("requestdata", apiDateTime);
   if (!apiDateTime || typeof apiDateTime !== "string") return "";
 
   // Split into date and time parts
@@ -121,6 +121,16 @@ export const formatShowOnlyDate = (dateTimeStr) => {
   return "";
 };
 
+export const formatShowOnlyDateForDateRange = (date) => {
+  if (!date) return "";
+
+  const d = new Date(date);
+  const year = d.getFullYear();
+  const month = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+
+  return `${year}-${month}-${day}`;
+};
 
 export const formatCode = (code = "") => {
   return code.replace(/^([A-Za-z]+)(\d+)$/, "$1-$2");

@@ -168,7 +168,7 @@ const buildTransactionRequestData = ({ state, statusIds, typeIds }) => ({
   InstrumentName: state.instrumentName || state.mainInstrumentName,
   Quantity: state.quantity || 0,
   StartDate: state.startDate || null,
-  EndDate: state.startDate || null, // ⚠️ check if this should be state.endDate
+  EndDate: state.endDate || null, // ⚠️ check if this should be state.endDate
   BrokerIDs: [],
   StatusIds: statusIds || [],
   TypeIds: typeIds || [],
@@ -343,7 +343,7 @@ export const apiCallStatus = async ({
 
     case "3":
     case "6": // Line Manager Approvals
-      statusIds = mapStatusToIdsForLineManager(newdata);
+      statusIds = mapStatusToIds(newdata);
       requestdata = buildApprovalRequestData({
         state,
         statusIds,

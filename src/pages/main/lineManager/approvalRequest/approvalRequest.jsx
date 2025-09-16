@@ -25,6 +25,7 @@ import { apiCallSearchForLineManager } from "../../../../components/dropdowns/se
 import { useTableScrollBottom } from "../../employes/myApprovals/utill";
 import {
   mapBuySellToIds,
+  mapStatusToIds,
   mapStatusToIdsForLineManager,
 } from "../../../../components/dropdowns/filters/utils";
 import { useDashboardContext } from "../../../../context/dashboardContaxt";
@@ -124,6 +125,7 @@ const ApprovalRequest = () => {
       pageSize: 0,
       pageNumber: 0,
       totalRecords: 0,
+      quantity: 0,
       filterTrigger: true,
       tableFilterTrigger: false,
     });
@@ -135,6 +137,7 @@ const ApprovalRequest = () => {
     { key: "mainInstrumentName", label: "Main Instrument" },
     { key: "startDate", label: "Date" },
     { key: "requesterName", label: "Requester Name" },
+    { key: "quantity", label: "Quantity" },
   ];
 
   // Table columns with integrated filters
@@ -204,6 +207,13 @@ const ApprovalRequest = () => {
         pageNumber: 0,
       }));
       requestdata.InstrumentName = "";
+    } else if (normalizedKey === "quantity") {
+      requestdata.Quantity = 0;
+      setLineManagerApprovalSearch((prev) => ({
+        ...prev,
+        quantity: 0,
+        pageNumber: 0,
+      }));
     } else if (normalizedKey === "startdate") {
       requestdata.StartDate = "";
       setLineManagerApprovalSearch((prev) => ({
@@ -371,9 +381,23 @@ const ApprovalRequest = () => {
         try {
           setLoadingMore(true);
 
-          const assetKey = lineManagerApprovalSearch.assetType;
-          const assetData = addApprovalRequestData?.[assetKey];
+          // ✅ Consistent assetKey fallback
+          const assetKey =
+            lineManagerApprovalSearch.assetType ||
+            (addApprovalRequestData &&
+            Object.keys(addApprovalRequestData).length > 0
+              ? Object.keys(addApprovalRequestData)[0]
+              : "Equities");
 
+          const assetData = addApprovalRequestData?.[assetKey] || { items: [] };
+
+          // ✅ Pass assetData to mapBuySellToIds
+          const TypeIds = mapBuySellToIds(
+            lineManagerApprovalSearch.type || [],
+            assetData
+          );
+
+          console.log("CHeck STausu APi here");
           // Build request payload
           const requestdata = {
             InstrumentName:
@@ -381,11 +405,8 @@ const ApprovalRequest = () => {
               lineManagerApprovalSearch.mainInstrumentName,
             Date: lineManagerApprovalSearch.date || "",
             Quantity: lineManagerApprovalSearch.quantity || 0,
-            StatusIds:
-              mapStatusToIdsForLineManager(lineManagerApprovalSearch.status) ||
-              [],
-            TypeIds:
-              mapBuySellToIds(lineManagerApprovalSearch.type, assetData) || [],
+            StatusIds: mapStatusToIds(lineManagerApprovalSearch.status),
+            TypeIds: TypeIds || [],
             PageNumber: lineManagerApprovalSearch.pageNumber || 0, // Acts as offset for API
             Length: 10,
             RequesterName: lineManagerApprovalSearch.requesterName || "",
@@ -465,23 +486,23 @@ const ApprovalRequest = () => {
           </Row>
 
           {/* Table or Empty State */}
-          {approvalRequestLMData && approvalRequestLMData.length > 0 ? (
-            <BorderlessTable
-              rows={approvalRequestLMData}
-              columns={columns}
-              scroll={{
-                x: "max-content",
-                y: submittedFilters.length > 0 ? 450 : 500,
-              }}
-              classNameTable="border-less-table-orange"
-              onChange={(pagination, filters, sorter) => {
-                setSortedInfo(sorter);
-              }}
-              loading={loadingMore}
-            />
-          ) : (
-            <EmptyState type="request" />
-          )}
+          <BorderlessTable
+            rows={approvalRequestLMData}
+            columns={columns}
+            scroll={
+              approvalRequestLMData?.length
+                ? {
+                    x: "max-content",
+                    y: submittedFilters.length > 0 ? 450 : 500,
+                  }
+                : undefined
+            }
+            classNameTable="border-less-table-orange"
+            onChange={(pagination, filters, sorter) => {
+              setSortedInfo(sorter);
+            }}
+            loading={loadingMore}
+          />
         </div>
       </PageLayout>
 

@@ -89,7 +89,7 @@ const StatusFilterDropdown = ({
         setFilterOptions(emtStatusOptionsForPendingApproval);
         break;
       case "6":
-        setFilterOptions(emtStatusOptions);
+        setFilterOptions(emaStatusOptions);
         break;
       default:
         setFilterOptions([]);
