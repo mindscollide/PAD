@@ -17,7 +17,7 @@ import { useApi } from "../../../context/ApiContext";
 import { useGlobalLoader } from "../../../context/LoaderContext";
 import { useNotification } from "../../../components/NotificationProvider/NotificationProvider";
 import { useMyApproval } from "../../../context/myApprovalContaxt";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useDashboardContext } from "../../../context/dashboardContaxt";
 import { useTransaction } from "../../../context/myTransaction";
 
@@ -50,6 +50,7 @@ const StatusFilterDropdown = ({
   setTempSelected,
 }) => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { selectedKey } = useSidebarContext();
   const { addApprovalRequestData } = useDashboardContext();
   const { callApi } = useApi();
@@ -59,7 +60,11 @@ const StatusFilterDropdown = ({
 
   const { setEmployeeTransactionsData } = useTransaction();
   const [filterOption, setFilterOptions] = useState([]);
-
+  // Reset local state on route change
+  useEffect(() => {
+    setTempSelected([]);
+    setFilterOptions([]);
+  }, [location.pathname]);
   /**
    * Toggles the selection state of a status option.
    * @param {string} status - The status being toggled.
