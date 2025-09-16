@@ -222,7 +222,6 @@
   border-radius: 8px !important;
   gap: 20px; /* space between steps */
   width: 100%;
-  height: 120px;
   overflow: hidden !important;
   overflow-x: auto !important; /* allow horizontal scroll */
   overflow-y: hidden !important; /* no vertical scroll */
@@ -314,19 +313,18 @@
   justify-content: flex-start;
 }
 
-.waitingApprovalText {
-  font-size: 14px;
-  color: #30426a;
-  margin-top: 10px;
-  background: none !important;
-  font-family: "Switzer Variable";
-  font-weight: 700;
+.stepLabelWrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  margin-top: 8px;
 }
 
 .stepCircle {
   display: flex;
   align-items: center;
-  flex-direction: column !important;
+  justify-content: center;
   height: 50px;
   width: 50px;
 }
@@ -334,11 +332,10 @@
 .waitingApprovalText {
   font-size: 14px;
   color: #30426a;
-  margin-top: 10px;
-  background: none !important;
   font-family: "Switzer Variable";
   font-weight: 700;
-  text-align: center; /* Optional: Center the text */
+  margin-bottom: 6px;
+  margin-bottom: 4px;
 }
 
 /* Stepper.module.css */
