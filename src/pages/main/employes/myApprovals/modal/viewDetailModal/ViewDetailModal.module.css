@@ -28,6 +28,14 @@
   gap: 10px !important;
 }
 
+.tradedBorderClass {
+  border: 2.65px dashed #30426a !important;
+  background-color: #f8fcff !important;
+  border-radius: 8px !important;
+  padding: 0px 20px !important;
+  gap: 10px !important;
+}
+
 .approvedBorderClass {
   border: 2.65px dashed #81d885 !important;
   background-color: #c5ffc7 !important;
@@ -59,6 +67,16 @@
 .resubmittedDetailHeading {
   font-size: 36px !important;
   color: #424242 !important;
+  font-weight: 600;
+  font-family: "Switzer Variable";
+  text-transform: uppercase;
+  display: flex;
+  justify-content: center !important;
+}
+
+.tradedDetailHeading {
+  font-size: 36px !important;
+  color: #30426a !important;
   font-weight: 600;
   font-family: "Switzer Variable";
   text-transform: uppercase;
@@ -100,6 +118,29 @@
   flex-direction: column !important;
   border-bottom-right-radius: 8px;
   border-bottom-left-radius: 8px;
+}
+
+.backgroundColorOfInstrumentDetailTraded {
+  background-color: #edf3ff !important;
+  padding: 10px 20px;
+  display: flex;
+  flex-direction: column !important;
+  border-top-left-radius: 8px !important;
+}
+
+.backgroundColorOfInstrumentDetailTradedRight {
+  background-color: #edf3ff !important;
+  padding: 10px 20px;
+  display: flex;
+  flex-direction: column !important;
+  border-top-right-radius: 8px !important;
+}
+
+.backgroundColorOfInstrumentDetailTradednoradius {
+  background-color: #edf3ff !important;
+  padding: 10px 20px;
+  display: flex;
+  flex-direction: column !important;
 }
 
 .backgroundColorOfInstrumentDetailApproved {
@@ -290,4 +331,42 @@
 
 .leftAlignStepper {
   justify-content: flex-start;
+}
+
+.complianceOfficerText {
+  font-size: 18px;
+  color: #30426a;
+  font-weight: 700;
+  font-family: "Switzer Variable";
+}
+
+.backgrounColorOfConduct {
+  position: relative;
+  background-color: #edf3ff !important;
+  padding: 10px 20px;
+  border-radius: 8px;
+}
+
+.complianceHeading {
+  font-size: 14px !important;
+  color: #30426a !important;
+  font-weight: 700;
+  font-family: "Switzer Variable";
+  margin-bottom: 4px; /* space between label and value */
+  display: block;
+}
+
+.copyEmailConductMainClass {
+  position: absolute;
+  left: auto !important;
+  right: 20px;
+  top: 16px;
+  cursor: pointer;
+}
+
+.complianceSubHeading {
+  font-size: 18px !important;
+  color: #424242 !important;
+  font-weight: 500;
+  font-family: "Switzer Variable";
 }

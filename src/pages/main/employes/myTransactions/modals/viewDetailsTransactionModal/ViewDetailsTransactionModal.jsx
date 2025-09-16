@@ -16,6 +16,7 @@ import { useTransaction } from "../../../../../../context/myTransaction";
 import {
   dashBetweenApprovalAssets,
   formatApiDateTime,
+  formatNumberWithCommas,
 } from "../../../../../../commen/funtions/rejex";
 import { useDashboardContext } from "../../../../../../context/dashboardContaxt";
 
@@ -265,7 +266,7 @@ const ViewDetailsTransactionModal = () => {
                       Approved Quantity
                     </label>
                     <label className={styles.viewDetailSubLabels}>
-                      {variableOfDeatilData?.quantity}
+                      {formatNumberWithCommas(variableOfDeatilData?.quantity)}
                     </label>
                   </div>
                 </Col>
@@ -275,7 +276,9 @@ const ViewDetailsTransactionModal = () => {
                       Shared Traded
                     </label>
                     <label className={styles.viewDetailSubLabels}>
-                      {tradedWorkFlowDataVariable?.[0]?.quantity}
+                      {formatNumberWithCommas(
+                        tradedWorkFlowDataVariable?.[0]?.quantity
+                      )}
                     </label>
                   </div>
                 </Col>

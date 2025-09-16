@@ -29,9 +29,9 @@ export const SearchBarProvider = ({ children }) => {
     totalRecords: 0,
     filterTrigger: false,
     tableFilterTrigger: false,
-  })
+  });
 
-  console.log(employeeMyApprovalSearch, "employeeMyApprovalSearch")
+  console.log(employeeMyApprovalSearch, "employeeMyApprovalSearch");
   /**
    * 🔍 Employee My Transaction Filters State
    * Used for filtering data in the Employee My Transaction table.
@@ -216,6 +216,7 @@ export const SearchBarProvider = ({ children }) => {
   const [lineManagerApprovalSearch, setLineManagerApprovalSearch] = useState({
     instrumentName: "", // Name of the instrument
     requesterName: "", // requester Name filter
+    quantity: 0,
     date: null, // Single date (could be Date object or string)
     mainInstrumentName: "", // Main instrument name for popover or modal
     type: [], // Type filter: ["Buy", "Sell"]
@@ -240,6 +241,7 @@ export const SearchBarProvider = ({ children }) => {
       status: [],
       pageSize: 0,
       pageNumber: 0,
+      quantity: 0,
       totalRecords: 0,
       filterTrigger: true,
       tableFilterTrigger: false,

@@ -46,19 +46,6 @@ const EquitiesApproval = () => {
   // for employeeBroker state to show data in dropdown
   const [selectedBrokers, setSelectedBrokers] = useState([]);
 
-  //For Type and Asset Type States to show Data in Type Dropdown
-  const [selectedTradeApprovalType, setSelectedTradeApprovalType] =
-    useState(null);
-
-  //To Show Asset type Id
-  const [selectedAssetTypeID, setSelectedAssetTypeID] = useState(null);
-
-  //To Show Asset type Name
-  const [selectedAssetTypeName, setSelectedAssetTypeName] = useState("");
-
-  //For Quantity Data State
-  const [quantity, setQuantity] = useState("");
-
   // Refactor sessionStorage read with useMemo for performance & error handling
   const lineManagerDetails = useMemo(() => {
     try {

@@ -303,8 +303,6 @@ export const apiCallSearch = async ({
         );
 
         const statusIds = mapStatusToIds(employeeMyTransactionSearch.status);
-        const date = toYYMMDD(employeeMyTransactionSearch.startDate);
-        console.log(typeof date, "Chdhjvahvajvdas");
 
         const requestdata = {
           InstrumentName:
@@ -312,8 +310,8 @@ export const apiCallSearch = async ({
             employeeMyTransactionSearch.mainInstrumentName ||
             "",
           Quantity: employeeMyTransactionSearch.quantity || 0,
-          StartDate: date || "",
-          EndDate: date || "",
+          StartDate: employeeMyTransactionSearch.startDate || "",
+          EndDate: employeeMyTransactionSearch.endDate || "",
           BrokerIDs: employeeMyTransactionSearch.brokerIDs || [],
           StatusIds: statusIds || [],
           TypeIds: TypeIds || [],

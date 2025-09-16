@@ -367,8 +367,21 @@ const Approval = () => {
         try {
           setLoadingMore(true);
 
-          const assetKey = employeeMyApprovalSearch.assetType;
-          const assetData = addApprovalRequestData?.[assetKey];
+          // ✅ Consistent assetKey fallback
+          const assetKey =
+            employeeMyApprovalSearch.assetType ||
+            (addApprovalRequestData &&
+            Object.keys(addApprovalRequestData).length > 0
+              ? Object.keys(addApprovalRequestData)[0]
+              : "Equities");
+
+          const assetData = addApprovalRequestData?.[assetKey] || { items: [] };
+
+          // ✅ Pass assetData to mapBuySellToIds
+          const TypeIds = mapBuySellToIds(
+            employeeMyApprovalSearch.type || [],
+            assetData
+          );
 
           // Build request payload
           const requestdata = {
@@ -378,8 +391,7 @@ const Approval = () => {
             Date: employeeMyApprovalSearch.date || "",
             Quantity: employeeMyApprovalSearch.quantity || 0,
             StatusIds: mapStatusToIds(employeeMyApprovalSearch.status) || [],
-            TypeIds:
-              mapBuySellToIds(employeeMyApprovalSearch.type, assetData) || [],
+            TypeIds: TypeIds || [],
             PageNumber: employeeMyApprovalSearch.pageNumber || 0, // Acts as offset for API
             Length: 10,
           };
@@ -493,7 +505,6 @@ const Approval = () => {
       {isTradeRequestRestricted && <RequestRestrictedModal />}
 
       {/* ye modal hai view details ka My APproval ka page pa */}
-      {/* {isViewDetail && <ViewDetailModal />} */}
       {isViewDetail && <ViewDetailModal />}
 
       {/* Ye Sirf Comment Show krwata jab app approved modal ka andar view Comment krta tab khulta */}
