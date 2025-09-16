@@ -223,6 +223,13 @@ const Portfolio = ({ className }) => {
           bordered={false}
           className={className || ""}
           style={{ background: "#fff", border: "none" }}
+          expandIcon={({ isActive }) => (
+            <CaretDownOutlined
+              style={{ fontSize: "14px", transition: "transform 0.3s" }}
+              rotate={isActive ? 180 : 0} // 🔄 rotate when active
+            />
+          )}
+          expandIconPosition="end"  
         >
           {instrumentData.map((instrument, idx) => {
             const panelKey = instrument.instrumentId || idx.toString();
@@ -249,11 +256,11 @@ const Portfolio = ({ className }) => {
                     >
                       {instrument.totalQuantity?.toLocaleString()}
                     </span>
-                    <span className={styles.icon}>{toggleIcon(panelKey)}</span>
+                    {/* <span className={styles.icon}>{toggleIcon(panelKey)}</span> */}
                   </div>
                 }
                 key={panelKey}
-                showArrow={false}
+                // showArrow={false}
               >
                 <BorderlessTable
                   rows={instrument.transactions || []}

@@ -136,9 +136,13 @@
   letter-spacing: 0%;
   vertical-align: middle;
 }
-.icon{
-  width: 3%;
-  
+.icon {
+  display: inline-flex;
+  transition: transform 0.3s ease; /* smooth rotation */
+}
+
+.iconOpen {
+  transform: rotate(180deg); /* flipped when open */
 }
 .Panel {
   min-height: 53.8px;
