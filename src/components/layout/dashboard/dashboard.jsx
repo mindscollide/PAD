@@ -190,44 +190,47 @@ const Dashboard = () => {
             break;
           }
 
-          case "Transaction_Conducted": {
-            try {
-              console.log("MQTT ignored: role check failed");
-              // 🔹 Get assigned roles from sessionStorage
-              const storedRoles =
-                JSON.parse(sessionStorage.getItem("user_assigned_roles")) || [];
-              const hasEmployeeRole = storedRoles.some(
-                (role) => role.roleID === 2
-              );
+          // case "Transaction_Conducted": {
+          //   try {
+          //     console.log("MQTT ignored: role check failed");
+          //     // 🔹 Get assigned roles from sessionStorage
+          //     const storedRoles =
+          //       JSON.parse(sessionStorage.getItem("user_assigned_roles")) || [];
+          //     const hasEmployeeRole = storedRoles.some(
+          //       (role) => role.roleID === 2
+          //     );
 
-              // 🔹 Allow only if both conditions are true
-              if (!(hasEmployeeRole && roleIDs === "2")) {
-                console.log("MQTT ignored: role check failed", {
-                  hasEmployeeRole,
-                  mqttRoleId,
-                });
-                break;
-              }
+          //     // 🔹 Allow only if both conditions are true
+          //     if (!(hasEmployeeRole && roleIDs === "2")) {
+          //       console.log("MQTT ignored: role check failed", {
+          //         hasEmployeeRole,
+          //         mqttRoleId,
+          //       });
+          //       break;
+          //     }
 
-              if (payload) {
-                console.log("MQTT ignored: role check failed");
+          //     if (payload) {
+          //       console.log("MQTT ignored: role check failed");
 
-                // Prepend new trade approval
-                setEmployeeTransactionsData((prev) => ({
-                  ...prev,
-                  data: [payload, ...(prev.data || [])],
-                  totalRecords: (prev.totalRecords || 0) + 1,
-                }));
+          //       const flattened = (
+          //         Array.isArray(payload) ? payload : [payload]
+          //       ).flatMap((item) => item);
+          //       console.log(flattened, "MQTT ignored: role check failed");
 
-                console.log("MQTT: Transaction Conducted → payload", payload);
-              } else {
-                console.warn("MQTT: Missing payload in Transaction Conducted");
-              }
-            } catch (err) {
-              console.error("MQTT role check failed:", err);
-            }
-            break;
-          }
+          //       setEmployeeTransactionsData((prev) => ({
+          //         ...prev,
+          //         data: [...flattened, ...(prev.data || [])],
+          //         totalRecords: (prev.totalRecords || 0) + flattened.length,
+          //       }));
+          //       console.log("MQTT: Transaction Conducted → payload", payload);
+          //     } else {
+          //       console.warn("MQTT: Missing payload in Transaction Conducted");
+          //     }
+          //   } catch (err) {
+          //     console.error("MQTT role check failed:", err);
+          //   }
+          //   break;
+          // }
 
           default:
             console.warn("MQTT: No handler for message →", message);
