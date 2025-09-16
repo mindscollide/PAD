@@ -476,7 +476,6 @@ const ViewDetailModal = () => {
                   >
                     {/* Agar loginUserID match krti hai hierarchyDetails ki userID sy to wo wala stepper show nahi hoga */}
                     <Stepper
-                      className="stepperStyles"
                       activeStep={Math.max(
                         0,
                         Array.isArray(
@@ -587,14 +586,8 @@ const ViewDetailModal = () => {
                               <Step
                                 key={index}
                                 className={styles.stepButtonActive}
-                                label={labelContent}
-                                children={
-                                  <div className={styles.stepCircle}>
-                                    <img
-                                      src={iconSrc}
-                                      alt="status-icon"
-                                      className={styles.circleImg}
-                                    />
+                                label={
+                                  <div className={styles.stepLabelWrapper}>
                                     {statusText && (
                                       <div
                                         className={styles.waitingApprovalText}
@@ -602,9 +595,18 @@ const ViewDetailModal = () => {
                                         {statusText}
                                       </div>
                                     )}
+                                    {labelContent}
                                   </div>
                                 }
-                              />
+                              >
+                                <div className={styles.stepCircle}>
+                                  <img
+                                    src={iconSrc}
+                                    alt="status-icon"
+                                    className={styles.circleImg}
+                                  />
+                                </div>
+                              </Step>
                             );
                           }
                         )}

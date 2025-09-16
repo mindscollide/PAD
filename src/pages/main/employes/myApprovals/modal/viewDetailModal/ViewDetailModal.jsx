@@ -677,67 +677,6 @@ const ViewDetailModal = () => {
                                 );
                               })}
                         </Stepper>
-
-                        {/* <Stepper
-                      activeStep={2}
-                      connectorStyleConfig={{
-                        activeColor: "#00640A", // green line between steps
-                        completedColor: "#00640A",
-                        disabledColor: "#00640A",
-                        size: 1,
-                      }}
-                      styleConfig={{
-                        size: "2em",
-                        circleFontSize: "0px", // hide default number
-                        labelFontSize: "17px",
-                        borderRadius: "50%",
-                      }}
-                    >
-                      {[0, 1, 2, 3].map((step, index) => (
-                        <Step
-                          key={index}
-                          label={
-                            <div className={styles.customlabel}>
-                              <div className={styles.customtitle}>
-                                Emily Johnson
-                              </div>
-                              <div className={styles.customdesc}>
-                                2024-10-01 | 05:30pm
-                              </div>
-                            </div>
-                          }
-                          children={
-                            <div className={styles.stepCircle}>
-                              <img
-                                src={CheckIcon}
-                                alt="check"
-                                className={styles.circleImg}
-                              />
-                            </div>
-                          }
-                        />
-                      ))}
-
-                      <Step
-                        label={
-                          <div className={styles.customlabel}>
-                            <div className={styles.customtitle}>
-                              Emily Johnson
-                            </div>
-                            <div className={styles.customdesc}>Pending</div>
-                          </div>
-                        }
-                        children={
-                          <div className={styles.stepCircle}>
-                            <img
-                              src={EllipsesIcon}
-                              className={styles.circleImg}
-                              alt="ellipsis"
-                            />
-                          </div>
-                        }
-                      />
-                    </Stepper> */}
                       </div>
                     </div>
                   </Row>

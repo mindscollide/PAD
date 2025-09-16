@@ -11,6 +11,7 @@ import { useMqttClient } from "../../../commen/mqtt/mqttConnection";
 import { useMyApproval } from "../../../context/myApprovalContaxt";
 import { useDashboardContext } from "../../../context/dashboardContaxt";
 import { usePortfolioContext } from "../../../context/portfolioContax";
+import { useTransaction } from "../../../context/myTransaction";
 
 const { Content } = Layout;
 
@@ -21,6 +22,7 @@ const Dashboard = () => {
   const { setIsEmployeeMyApproval } = useMyApproval();
   const { setEmployeePendingApprovalsDataMqtt } = usePortfolioContext();
   const { setDashboardData } = useDashboardContext();
+  const { setEmployeeTransactionsData } = useTransaction();
 
   // Subscription channel
   const subscribeID = "PAD_TRADE";
