@@ -78,10 +78,15 @@
 }
 
 .tagContainer {
-  margin-top: 5px;
-  display: flex !important;
-  gap: 10px !important; /* horizontal space between tags */
-  flex-wrap: wrap !important; /* wrap to next line if too many tags */
+  display: flex;
+  gap: 10px;
+  padding-bottom: 10px;
+  cursor: pointer !important;
+  overflow-x: auto;
+  white-space: nowrap;
+  flex-wrap: nowrap; /* keep single line */
+  scrollbar-width: thin; /* Firefox */
+  scrollbar-color: #bfbfbf transparent;
 }
 
 .tagClasses {
