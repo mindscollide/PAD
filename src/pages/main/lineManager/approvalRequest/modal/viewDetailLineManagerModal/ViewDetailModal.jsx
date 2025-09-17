@@ -501,8 +501,21 @@ const ViewDetailModal = () => {
                       {Array.isArray(
                         viewDetailsLineManagerData?.hierarchyDetails
                       ) &&
-                        viewDetailsLineManagerData.hierarchyDetails.map(
-                          (person, index) => {
+                        [...viewDetailsLineManagerData.hierarchyDetails]
+                          .sort((a, b) => {
+                            if (
+                              a.bundleStatusID === 1 &&
+                              b.bundleStatusID !== 1
+                            )
+                              return 1;
+                            if (
+                              a.bundleStatusID !== 1 &&
+                              b.bundleStatusID === 1
+                            )
+                              return -1;
+                            return 0;
+                          })
+                          .map((person, index) => {
                             const {
                               fullName,
                               bundleStatusID,
@@ -608,8 +621,7 @@ const ViewDetailModal = () => {
                                 </div>
                               </Step>
                             );
-                          }
-                        )}
+                          })}
                     </Stepper>
                   </div>
                 </div>
