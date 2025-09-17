@@ -153,7 +153,13 @@ export const EmployeePortfolioFilter = ({
             name="Quantity"
             value={
               activeTab === "pending"
-                ? employeePendingApprovalSearch.quantity
+                ? employeePendingApprovalSearch.quantity === 0 ||
+                  employeePendingApprovalSearch.quantity === "0"
+                  ? ""
+                  : employeePendingApprovalSearch.quantity
+                : employeePortfolioSearch.quantity === 0 ||
+                  employeePortfolioSearch.quantity === "0"
+                ? ""
                 : employeePortfolioSearch.quantity
             }
             onChange={(e) =>
