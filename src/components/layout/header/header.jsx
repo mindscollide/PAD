@@ -28,6 +28,7 @@ const Headers = () => {
         {/* Left: Logo */}
         <Col xs={24} sm={24} md={24} lg={4} style={{ marginTop: 19.82 }}>
           <img
+            draggable={false}
             onClick={() => {
               navigate("/PAD");
               setSelectedKey("0");

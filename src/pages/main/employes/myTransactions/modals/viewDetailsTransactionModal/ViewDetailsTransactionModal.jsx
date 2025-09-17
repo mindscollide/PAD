@@ -410,6 +410,7 @@ const ViewDetailsTransactionModal = () => {
                                 children={
                                   <div className={styles.stepCircle}>
                                     <img
+                                      draggable={false}
                                       src={iconSrc}
                                       alt="status-icon"
                                       className={styles.circleImg}

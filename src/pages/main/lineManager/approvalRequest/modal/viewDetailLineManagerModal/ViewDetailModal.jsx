@@ -181,7 +181,11 @@ const ViewDetailModal = () => {
                       ?.workFlowStatusID === 2 && (
                       <>
                         <div>
-                          <img src={repeat} className={styles.pendingIcon} />
+                          <img
+                            draggable={false}
+                            src={repeat}
+                            className={styles.pendingIcon}
+                          />
                         </div>
                       </>
                     )}
@@ -190,7 +194,7 @@ const ViewDetailModal = () => {
                     {/* {isSelectedViewDetailLineManager.status === "Approved" && (
                       <>
                         <div>
-                          <img
+                          <img draggable={false} 
                             src={ApprovedResubmit}
                             className={styles.pendingIcon}
                           />
@@ -202,7 +206,7 @@ const ViewDetailModal = () => {
                     {/* {isSelectedViewDetailLineManager.status === "Declined" && (
                       <>
                         <div>
-                          <img
+                          <img draggable={false} 
                             src={DeclinedResubmit}
                             className={styles.pendingIcon}
                           />
@@ -614,6 +618,7 @@ const ViewDetailModal = () => {
                               >
                                 <div className={styles.stepCircle}>
                                   <img
+                                    draggable={false}
                                     src={iconSrc}
                                     alt="status-icon"
                                     className={styles.circleImg}

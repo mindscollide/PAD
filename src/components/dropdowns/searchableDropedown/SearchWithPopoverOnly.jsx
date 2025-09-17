@@ -275,6 +275,7 @@ const SearchWithPopoverOnly = () => {
         }
       >
         <img
+          draggable={false}
           src={SearchFilterIcon}
           alt="filter"
           className={styles.filterIcon}

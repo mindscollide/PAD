@@ -17,10 +17,15 @@ const Loader = () => {
       <div className={style["body-loader-inner"]}>
         <div className={style["logo-loader-wrapper"]}>
           {/* Loader GIF show karega (animation) */}
-          <img src={PADLoader} className={style["PAD_Loader"]} />
+          <img
+            draggable={false}
+            src={PADLoader}
+            className={style["PAD_Loader"]}
+          />
 
           {/* Heading image ya branding logo show karega */}
           <img
+            draggable={false}
             src={LoaderImage}
             className={style["img-fluid"]}
             alt="Loading..."

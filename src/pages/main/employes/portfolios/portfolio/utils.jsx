@@ -89,6 +89,7 @@ export function getEmployeePortfolioColumns({
           {formatCode?.(text) || "—"}
           {record?.uploadPortFolioTranaction && (
             <img
+              draggable={false}
               src={UploadIcon}
               alt="Uploaded Portfolio"
               style={{ width: 16, height: 16, marginLeft: "2px" }}
