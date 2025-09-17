@@ -300,6 +300,7 @@ const NotificationDropdown = () => {
           role="button"
         >
           <img
+            draggable={false}
             src={getIcon()}
             alt="Notification Bell"
             className={styles["dropdown-icon"]}

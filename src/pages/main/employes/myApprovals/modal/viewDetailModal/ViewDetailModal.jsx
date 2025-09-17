@@ -571,7 +571,11 @@ const ViewDetailModal = () => {
                               {complianceOfficerDetails?.managerEmail || "-"}
                             </div>
                             <div className={styles.copyEmailConductMainClass}>
-                              <img src={copyIcon} onClick={handleCopyEmail} />
+                              <img
+                                draggable={false}
+                                src={copyIcon}
+                                onClick={handleCopyEmail}
+                              />
                             </div>
                           </Col>
                         </Row>
@@ -667,6 +671,7 @@ const ViewDetailModal = () => {
                                     children={
                                       <div className={styles.stepCircle}>
                                         <img
+                                          draggable={false}
                                           src={iconSrc}
                                           alt="status-icon"
                                           className={styles.circleImg}

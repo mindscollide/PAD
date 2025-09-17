@@ -27,9 +27,19 @@ import {
 const getSortIcon = (columnKey, sortedInfo) => {
   if (sortedInfo?.columnKey === columnKey) {
     return sortedInfo.order === "ascend" ? (
-      <img src={ArrowDown} alt="Asc" className="custom-sort-icon" />
+      <img
+        draggable={false}
+        src={ArrowDown}
+        alt="Asc"
+        className="custom-sort-icon"
+      />
     ) : (
-      <img src={ArrowUP} alt="Desc" className="custom-sort-icon" />
+      <img
+        draggable={false}
+        src={ArrowUP}
+        alt="Desc"
+        className="custom-sort-icon"
+      />
     );
   }
   return <ArrowsAltOutlined className="custom-sort-icon" />;
@@ -240,7 +250,12 @@ export const getBorderlessLineManagerTableColumns = (
     render: (isEscalated, record) => {
       console.log(record, "CheckIsEsclated");
       return isEscalated ? (
-        <img src={EscalatedIcon} alt="Escalated" title="Escalated" />
+        <img
+          draggable={false}
+          src={EscalatedIcon}
+          alt="Escalated"
+          title="Escalated"
+        />
       ) : null;
     },
   },

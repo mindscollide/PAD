@@ -128,6 +128,7 @@ const Login = () => {
               {/* 🌟 Logo */}
               <div className={style["logo-container"]}>
                 <img
+                  draggable={false}
                   src={logo}
                   alt="Company Logo"
                   className={style["logo-image"]}
@@ -201,6 +202,7 @@ const Login = () => {
         <Col xs={0} md={8} lg={12}>
           <div className={style["login-image-container"]}>
             <img
+              draggable={false}
               src={loginImage}
               alt="Login visual"
               className={style["login-image"]}

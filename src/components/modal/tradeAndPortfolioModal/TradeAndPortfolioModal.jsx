@@ -261,7 +261,11 @@ const TradeAndPortfolioModal = ({
                         </Col>
                         <Col span={3}>
                           <div className={styles.copyEmailConductMainClass}>
-                            <img src={copyIcon} onClick={handleCopyEmail} />
+                            <img
+                              draggable={false}
+                              src={copyIcon}
+                              onClick={handleCopyEmail}
+                            />
                           </div>
                         </Col>
                       </>

@@ -68,7 +68,7 @@ const ModalImgStates = ({
 
   return (
     <div className={`${styles.container} ${containerClassName}`} style={style}>
-      <img src={image} alt={type} />
+      <img draggable={false} src={image} alt={type} />
       <div className={`${styles.heading} ${headingClassName}`}>{heading}</div>
       <div className={`${styles.subheading} ${subheadingClassName}`}>
         {subheading}

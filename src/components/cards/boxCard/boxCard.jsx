@@ -175,6 +175,7 @@ const BoxCard = ({
                   >
                     {/* Clock Icon */}
                     <img
+                      draggable={false}
                       src={urgent}
                       alt="urgent"
                       className={styles.urgentImg}

@@ -172,6 +172,7 @@ const SideBar = () => {
           className="toggle-button"
           icon={
             <img
+              draggable={false}
               src={collapsed ? MenuIcon : BackArrowIcon}
               alt={collapsed ? "Open Menu" : "Collapse Menu"}
               className="toggle-icon"

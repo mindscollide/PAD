@@ -30,13 +30,28 @@ const { Text } = Typography;
 const getSortIcon = (columnKey, sortedInfo) => {
   if (sortedInfo?.columnKey === columnKey) {
     return sortedInfo.order === "ascend" ? (
-      <img src={ArrowDown} alt="Asc" className="custom-sort-icon" />
+      <img
+        draggable={false}
+        src={ArrowDown}
+        alt="Asc"
+        className="custom-sort-icon"
+      />
     ) : (
-      <img src={ArrowUp} alt="Desc" className="custom-sort-icon" />
+      <img
+        draggable={false}
+        src={ArrowUp}
+        alt="Desc"
+        className="custom-sort-icon"
+      />
     );
   }
   return (
-    <img src={DefaultColumnArrow} alt="Default" className="custom-sort-icon" />
+    <img
+      draggable={false}
+      src={DefaultColumnArrow}
+      alt="Default"
+      className="custom-sort-icon"
+    />
   );
 };
 
@@ -314,7 +329,7 @@ export const formatBrokerOptions = (brokers = []) => {
  * @returns {Array<Object>} Table row objects ready for rendering.
  */
 export const getTradeTypeById = (assetTypeData, tradeTypeID) => {
-  console.log("assetTypeData",assetTypeData)
+  console.log("assetTypeData", assetTypeData);
   if (!assetTypeData?.items || !Array.isArray(assetTypeData.items)) {
     return "";
   }

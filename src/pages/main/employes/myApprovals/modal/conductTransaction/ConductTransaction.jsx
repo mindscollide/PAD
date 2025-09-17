@@ -370,7 +370,11 @@ const ConductTransaction = () => {
                       </div>
                     </label>
                     <div className={styles.copyEmailConductMainClass}>
-                      <img src={copyIcon} onClick={handleCopyEmail} />
+                      <img
+                        draggable={false}
+                        src={copyIcon}
+                        onClick={handleCopyEmail}
+                      />
                     </div>
                   </div>
                 </Col>

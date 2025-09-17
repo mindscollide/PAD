@@ -16,7 +16,7 @@ const CustomButton = ({
   position,
 }) => {
   // please make shoure when ever disable function use on dark please apply light icon img their
-  // icon={<img src={disabled?pdflightIcon:pdfDarkIcon} alt="PDF Icon" />}
+  // icon={<img draggable={false}  src={disabled?pdflightIcon:pdfDarkIcon} alt="PDF Icon" />}
   // we have make basic that white icon is light icon becasue its apply on dark and dark icon is black or other icon excpt white becaus its apply on white button or light button
   // and on dis able alway apply light icon
   return (
