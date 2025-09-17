@@ -108,13 +108,12 @@ const Approval = () => {
    */
   const fetchApprovals = async () => {
     await showLoader(true);
-    const date = toYYMMDD(employeeMyApprovalSearch.startDate);
 
     const requestdata = {
       InstrumentName:
         employeeMyApprovalSearch.instrumentName ||
         employeeMyApprovalSearch.mainInstrumentName,
-      Date: date || "",
+      Date: toYYMMDD(employeeMyApprovalSearch.startDate) || "",
       Quantity: employeeMyApprovalSearch.quantity || 0,
       StatusIds: employeeMyApprovalSearch.status || [],
       TypeIds: employeeMyApprovalSearch.type || [],
@@ -184,7 +183,7 @@ const Approval = () => {
         employeeMyApprovalSearch.instrumentName ||
         employeeMyApprovalSearch.mainInstrumentName ||
         "",
-      Date: employeeMyApprovalSearch.date || "",
+      Date: toYYMMDD(employeeMyApprovalSearch.startDate)|| "",
       Quantity: employeeMyApprovalSearch.quantity || 0,
       StatusIds: statusIds || [],
       TypeIds: TypeIds || [],
@@ -392,7 +391,7 @@ const Approval = () => {
             InstrumentName:
               employeeMyApprovalSearch.instrumentName ||
               employeeMyApprovalSearch.mainInstrumentName,
-            Date: employeeMyApprovalSearch.date || "",
+            Date: toYYMMDD(employeeMyApprovalSearch.startDate) || "",
             Quantity: employeeMyApprovalSearch.quantity || 0,
             StatusIds: mapStatusToIds(employeeMyApprovalSearch.status) || [],
             TypeIds: TypeIds || [],
