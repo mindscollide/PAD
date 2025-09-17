@@ -128,7 +128,6 @@ export const handleSearchMainInputReset = ({
   setEmployeePendingApprovalSearch,
   setLineManagerApprovalSearch,
 }) => {
-  console.log(selectedKey, "cchechechechehc");
   switch (selectedKey) {
     case "1":
       setEmployeeMyApprovalSearch((prev) => ({
@@ -184,8 +183,6 @@ export const renderFilterContent = (
   handleSearch,
   setVisible
 ) => {
-  console.log(activeTab, "Checker Search Coming");
-  console.log("SearchWithPopoverOnly selectedKey", selectedKey);
   switch (selectedKey) {
     case "1":
       return (
@@ -268,7 +265,6 @@ export const apiCallSearch = async ({
 
         const statusIds = mapStatusToIds(employeeMyApprovalSearch.status);
         const date = toYYMMDD(employeeMyApprovalSearch.startDate);
-        console.log(typeof date, "Chdhjvahvajvdas");
 
         const requestdata = {
           InstrumentName:
@@ -282,7 +278,6 @@ export const apiCallSearch = async ({
           PageNumber: 0,
           Length: employeeMyApprovalSearch.pageSize || 10, // Fixed page size
         };
-        console.log(requestdata, "Checker APi Search");
         const data = await SearchTadeApprovals({
           callApi,
           showNotification,
@@ -296,38 +291,39 @@ export const apiCallSearch = async ({
       }
 
       case "2":
-        // Add case 2 logic here when needed
-        const TypeIds = mapBuySellToIds(
-          employeeMyTransactionSearch.type,
-          addApprovalRequestData?.Equities
-        );
+        {
+          // Add case 2 logic here when needed
+          const TypeIds = mapBuySellToIds(
+            employeeMyTransactionSearch.type,
+            addApprovalRequestData?.Equities
+          );
 
-        const statusIds = mapStatusToIds(employeeMyTransactionSearch.status);
+          const statusIds = mapStatusToIds(employeeMyTransactionSearch.status);
 
-        const requestdata = {
-          InstrumentName:
-            employeeMyTransactionSearch.instrumentName ||
-            employeeMyTransactionSearch.mainInstrumentName ||
-            "",
-          Quantity: employeeMyTransactionSearch.quantity || 0,
-          StartDate: employeeMyTransactionSearch.startDate || "",
-          EndDate: employeeMyTransactionSearch.endDate || "",
-          BrokerIDs: employeeMyTransactionSearch.brokerIDs || [],
-          StatusIds: statusIds || [],
-          TypeIds: TypeIds || [],
-          PageNumber: 0,
-          Length: employeeMyTransactionSearch.pageSize || 10, // Fixed page size
-        };
-        console.log(requestdata, "Checker APi Search");
-        const data = await SearchEmployeeTransactionsDetails({
-          callApi,
-          showNotification,
-          showLoader,
-          requestdata,
-          navigate,
-        });
+          const requestdata = {
+            InstrumentName:
+              employeeMyTransactionSearch.instrumentName ||
+              employeeMyTransactionSearch.mainInstrumentName ||
+              "",
+            Quantity: employeeMyTransactionSearch.quantity || 0,
+            StartDate: employeeMyTransactionSearch.startDate || "",
+            EndDate: employeeMyTransactionSearch.endDate || "",
+            BrokerIDs: employeeMyTransactionSearch.brokerIDs || [],
+            StatusIds: statusIds || [],
+            TypeIds: TypeIds || [],
+            PageNumber: 0,
+            Length: employeeMyTransactionSearch.pageSize || 10, // Fixed page size
+          };
+          const data = await SearchEmployeeTransactionsDetails({
+            callApi,
+            showNotification,
+            showLoader,
+            requestdata,
+            navigate,
+          });
 
-        setData(data);
+          setData(data);
+        }
         break;
 
       case "3":
@@ -360,7 +356,6 @@ export const apiCallSearchForLineManager = async ({
   showLoader(true);
 
   try {
-    console.log(selectedKey, "CheckSelctedKey");
     switch (selectedKey) {
       case "1": {
         break;
@@ -374,33 +369,30 @@ export const apiCallSearchForLineManager = async ({
         // Add case 3 logic here when needed
         break;
 
-      case "6":
-        // Add case 3 logic here when needed
-        const TypeIds = mapBuySellToIds(
-          lineManagerApprovalSearch.type,
-          addApprovalRequestData?.Equities
-        );
-
-        const statusIds = mapStatusToIdsForLineManager(
-          lineManagerApprovalSearch.status
-        );
-        const date = toYYMMDD(lineManagerApprovalSearch.startDate);
-        console.log(typeof date, "Chdhjvahvajvdas");
+      case "6": {
+        const {
+          type,
+          status,
+          startDate,
+          instrumentName = "",
+          mainInstrumentName = "",
+          quantity = 0,
+          pageSize = 10,
+          requesterName = "",
+        } = lineManagerApprovalSearch;
 
         const requestdata = {
-          InstrumentName:
-            lineManagerApprovalSearch.instrumentName ||
-            lineManagerApprovalSearch.mainInstrumentName ||
-            "",
-          Date: date || "",
-          Quantity: lineManagerApprovalSearch.quantity || 0,
-          StatusIds: statusIds || [],
-          TypeIds: TypeIds || [],
+          InstrumentName: instrumentName || mainInstrumentName,
+          Date: toYYMMDD(startDate) || "",
+          Quantity: quantity,
+          StatusIds: mapStatusToIdsForLineManager(status) || [],
+          TypeIds:
+            mapBuySellToIds(type, addApprovalRequestData?.Equities) || [],
           PageNumber: 0,
-          Length: lineManagerApprovalSearch.pageSize || 10, // Fixed page size
-          RequesterName: lineManagerApprovalSearch.requesterName || "",
+          Length: pageSize,
+          RequesterName: requesterName,
         };
-        console.log(requestdata, "Checker APi Search");
+
         const data = await SearchApprovalRequestLineManager({
           callApi,
           showNotification,
@@ -411,6 +403,7 @@ export const apiCallSearchForLineManager = async ({
 
         setData(data);
         break;
+      }
 
       default:
         console.warn(`No matching case for selectedKey: ${selectedKey}`);

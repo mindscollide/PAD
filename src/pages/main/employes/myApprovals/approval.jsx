@@ -30,6 +30,7 @@ import ResubmitModal from "./modal/resubmitModal/ResubmitModal";
 import ResubmitIntimationModal from "./modal/resubmitIntimationModal/ResubmitIntimationModal";
 import ConductTransaction from "./modal/conductTransaction/ConductTransaction";
 import { useDashboardContext } from "../../../../context/dashboardContaxt";
+import { toYYMMDD } from "../../../../commen/funtions/rejex";
 
 const Approval = () => {
   const navigate = useNavigate();
@@ -107,11 +108,13 @@ const Approval = () => {
    */
   const fetchApprovals = async () => {
     await showLoader(true);
+    const date = toYYMMDD(employeeMyApprovalSearch.startDate);
+
     const requestdata = {
       InstrumentName:
         employeeMyApprovalSearch.instrumentName ||
         employeeMyApprovalSearch.mainInstrumentName,
-      Date: employeeMyApprovalSearch.date || "",
+      Date: date || "",
       Quantity: employeeMyApprovalSearch.quantity || 0,
       StatusIds: employeeMyApprovalSearch.status || [],
       TypeIds: employeeMyApprovalSearch.type || [],
