@@ -15,11 +15,6 @@ export const formatNumberWithCommas = (value) => {
   if (value === null || value === undefined || value === "") return 0;
   // Convert to string and remove any non-digit chars (like commas)
   const strValue = String(value).replace(/\D/g, "");
-  console.log("formatNumberWithCommas", strValue);
-  console.log(
-    "formatNumberWithCommas",
-    strValue.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
-  );
   // Add commas without converting to Number
   return strValue.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 };
@@ -44,30 +39,45 @@ export const removeFirstSpace = (value) => {
 //Global Date Time Formatter
 
 // utils/dateFormatter.js
+/**
+ * Convert API UTC datetime string (YYYYMMDD HHmm) to local formatted datetime.
+ *
+ * @param {string} apiDateTime - API datetime string in UTC (e.g. "20250917 1530")
+ * @returns {string} Localized formatted datetime string
+ */
 export function formatApiDateTime(apiDateTime) {
-  console.log("requestdata", apiDateTime);
   if (!apiDateTime || typeof apiDateTime !== "string") return "";
 
-  // Split into date and time parts
   const [datePart, timePart] = apiDateTime.trim().split(" ");
-  if (!datePart || !timePart) return apiDateTime; // fallback if unexpected format
+  if (!datePart || !timePart) return apiDateTime;
 
-  // Extract date components
-  const year = datePart.slice(0, 4);
-  const month = datePart.slice(4, 6);
-  const day = datePart.slice(6, 8);
+  // Parse UTC parts
+  const year = parseInt(datePart.slice(0, 4), 10);
+  const month = parseInt(datePart.slice(4, 6), 10) - 1;
+  const day = parseInt(datePart.slice(6, 8), 10);
 
-  // Extract time components
-  let hours = parseInt(timePart.slice(0, 2), 10);
-  const minutes = timePart.slice(2, 4);
+  const hours = parseInt(timePart.slice(0, 2), 10);
+  const minutes = parseInt(timePart.slice(2, 4), 10);
 
-  // Determine AM/PM
-  const ampm = hours >= 12 ? "pm" : "am";
-  hours = hours % 12 || 12; // convert 0 -> 12 for 12-hour clock
+  // Build UTC date
+  const utcDate = new Date(Date.UTC(year, month, day, hours, minutes));
 
-  return `${year}-${month}-${day} | ${hours
-    .toString()
-    .padStart(2, "0")}:${minutes} ${ampm}`;
+  // Convert to local date
+  const localDate = new Date(utcDate);
+
+  // Extract local components
+  const localYear = localDate.getFullYear();
+  const localMonth = String(localDate.getMonth() + 1).padStart(2, "0");
+  const localDay = String(localDate.getDate()).padStart(2, "0");
+
+  let localHours = localDate.getHours();
+  const localMinutes = String(localDate.getMinutes()).padStart(2, "0");
+  const ampm = localHours >= 12 ? "pm" : "am";
+
+  localHours = localHours % 12 || 12; // 0 -> 12 for 12-hour clock
+  const formattedTime = `${String(localHours).padStart(2, "0")}:${localMinutes} ${ampm}`;
+
+  return `${localYear}-${localMonth}-${localDay} | ${formattedTime}`;
 }
 
 // this is the formator to convert any type of date to formate into this

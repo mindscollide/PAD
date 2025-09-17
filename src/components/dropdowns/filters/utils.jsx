@@ -6,6 +6,7 @@ import {
   SearchTadeApprovals,
 } from "../../../api/myApprovalApi";
 import { SearchEmployeeTransactionsDetails } from "../../../api/myTransactionsApi";
+import { toYYMMDD } from "../../../commen/funtions/rejex";
 
 // -----------------------------------------------------------------------------
 // 📌 Constants
@@ -139,21 +140,32 @@ export const mapStatusToIdsForLineManager = (arr) => {
  * @param {boolean} [params.includeRequester=false] - Include RequesterName if true.
  * @returns {Object} API request payload.
  */
-const buildApprovalRequestData = ({
+export const buildApprovalRequestData = ({
   state,
-  statusIds,
-  typeIds,
-  includeRequester,
-}) => ({
-  InstrumentName: state.instrumentName || state.mainInstrumentName,
-  Date: state.startDate || "",
-  Quantity: state.quantity || 0,
-  StatusIds: statusIds || [],
-  TypeIds: typeIds || [],
-  PageNumber: 0,
-  Length: state.pageSize || 10,
-  ...(includeRequester && { RequesterName: state.requesterName }),
-});
+  statusIds = [],
+  typeIds = [],
+  includeRequester = false,
+}) => {
+  const {
+    instrumentName = "",
+    mainInstrumentName = "",
+    startDate,
+    quantity = 0,
+    pageSize = 10,
+    requesterName = "",
+  } = state;
+
+  return {
+    InstrumentName: instrumentName || mainInstrumentName || "",
+    Date: toYYMMDD(startDate) || "",
+    Quantity: quantity,
+    StatusIds: statusIds,
+    TypeIds: typeIds,
+    PageNumber: 0,
+    Length: pageSize,
+    ...(includeRequester && { RequesterName: requesterName }),
+  };
+};
 
 /**
  * Builds a request object for Employee Transaction details.
