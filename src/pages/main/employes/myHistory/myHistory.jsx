@@ -109,22 +109,20 @@ const MyHistory = () => {
   }, [searchText, dateRange]);
 
   const getIcon = (type) => {
-    let icon;
+    console.log("getIcon called with:", type);
     switch (type) {
-      case "check":
-        icon = CheckIcon;
-        break;
-      case "cross":
-        icon = CrossIcon;
-        break;
-      case "ellipsis":
-        icon = EllipsesIcon;
-        break;
+      case "completed":
+        return <img src={CheckIcon} alt="Completed" />;
+      case "inProgress":
+        return <img src={EllipsesIcon} alt="In Progress" />;
       default:
-        icon = EllipsesIcon;
+        return null;
     }
-    console.log("Resolved icon for", type, "=", icon);
-    return icon;
+  };
+
+  const MyStep = ({ type }) => {
+    console.log("Step rendering with type:", type);
+    return <div>{getIcon(type)}</div>;
   };
 
   // 🔹 Render Stepper inside accordion row

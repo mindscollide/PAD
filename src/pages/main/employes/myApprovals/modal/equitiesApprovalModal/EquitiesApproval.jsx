@@ -150,6 +150,12 @@ const EquitiesApproval = () => {
     fetchAddApprovalsRequest(formData);
   };
 
+  const handleCopyEmailOfLineManager = () => {
+    const emailToCopy =
+      lineManagerDetails?.managerEmail || "LineManager@horizoncapital.com";
+    navigator.clipboard.writeText(emailToCopy);
+  };
+
   // Close handler
   const handleClose = async () => {
     await resetStates();
@@ -173,6 +179,7 @@ const EquitiesApproval = () => {
         closeButtonText="Close"
         lineManagerBackgroundClass={styles.linemanagerBackground}
         isUploadPortfolioTrue={false}
+        copyEmail={handleCopyEmailOfLineManager}
       />
     </>
   );
