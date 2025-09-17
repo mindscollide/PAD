@@ -26,6 +26,7 @@ const TradeAndPortfolioModal = ({
   closeButtonText,
   lineManagerBackgroundClass = "",
   isUploadPortfolioTrue,
+  copyEmail,
 }) => {
   //For Instrument Dropdown show selected Name
   const [selectedInstrument, setSelectedInstrument] = useState(null);
@@ -116,12 +117,6 @@ const TradeAndPortfolioModal = ({
     quantity,
     selectedBrokers,
   ]);
-
-  //This the Copy Functionality where user can copy email by click on COpyIcon
-  const handleCopyEmail = () => {
-    navigator.clipboard.writeText("compliance@horizoncapital.com");
-    message.success("Email copied to clipboard!");
-  };
 
   const handleSubmit = () => {
     onSubmit({
@@ -264,7 +259,7 @@ const TradeAndPortfolioModal = ({
                             <img
                               draggable={false}
                               src={copyIcon}
-                              onClick={handleCopyEmail}
+                              onClick={copyEmail}
                             />
                           </div>
                         </Col>
