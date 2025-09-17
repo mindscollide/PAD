@@ -162,6 +162,8 @@ const MyHistory = () => {
                   <img
                     src={getIcon(step.iconType)}
                     alt={step.status}
+                    width={24}
+                    height={24}
                     className={style.circleImg}
                   />
                 </div>
