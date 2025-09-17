@@ -265,7 +265,6 @@ export const getBorderlessLineManagerTableColumns = (
     key: "actions",
     align: "right",
     render: (record) => {
-      console.log(record.status, "checkerStateus");
       //Global State to selected data to show in ViewDetailLineManagerModal Statuses
       const { setIsSelectedViewDetailLineManager } = useGlobalModal();
       return (
