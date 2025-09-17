@@ -19,7 +19,7 @@ const Dashboard = () => {
   const location = useLocation();
 
   // Context hooks
-  const { setIsEmployeeMyApproval } = useMyApproval();
+  const { setIsEmployeeMyApproval, setLineManagerApproval } = useMyApproval();
   const { setEmployeePendingApprovalsDataMqtt } = usePortfolioContext();
   const { setDashboardData } = useDashboardContext();
   const { setEmployeeTransactionsData } = useTransaction();
