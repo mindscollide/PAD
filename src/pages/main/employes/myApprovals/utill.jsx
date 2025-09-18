@@ -352,8 +352,8 @@ export const getBorderlessTableColumns = (
   },
   {
     title: "Time Remaining to Trade",
-    dataIndex: "timeRemaining",
-    key: "timeRemaining",
+    dataIndex: "timeRemainingToTrade",
+    key: "timeRemainingToTrade",
     ellipsis: true,
     align: "center",
     render: (text, record) => {

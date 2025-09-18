@@ -333,7 +333,7 @@ const Approval = () => {
           isEscalated: false,
           status: item.approvalStatus?.approvalStatusName || "",
           quantity: item.quantity || 0,
-          timeRemaining: item.timeRemainingToTrade || "",
+          timeRemainingToTrade: item.timeRemainingToTrade || "",
           ...item,
         }));
 

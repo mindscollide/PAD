@@ -151,7 +151,6 @@ export const buildApprovalRequestData = ({
     mainInstrumentName = "",
     startDate,
     quantity = 0,
-    pageSize = 10,
     requesterName = "",
   } = state;
 
@@ -162,7 +161,7 @@ export const buildApprovalRequestData = ({
     StatusIds: statusIds,
     TypeIds: typeIds,
     PageNumber: 0,
-    Length: pageSize,
+    Length: 10,
     ...(includeRequester && { RequesterName: requesterName }),
   };
 };
