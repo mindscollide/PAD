@@ -90,7 +90,7 @@
 
 .panelHeader {
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-start;
   align-items: center;
   font-weight: 500;
   font-size: 16px;
@@ -98,6 +98,7 @@
 }
 
 .shortName {
+  width: 15%;
   font-family: Switzer Variable;
   font-weight: 700;
   font-style: Bold;
@@ -111,6 +112,7 @@
 }
 
 .longName {
+  width: 60%;
   font-family: Switzer Variable;
   font-weight: 700;
   font-style: Bold;
@@ -123,6 +125,8 @@
 }
 
 .quantity {
+  width: 22%;
+
   font-family: Switzer Variable;
   font-weight: 700;
   font-style: Bold;
@@ -132,7 +136,14 @@
   letter-spacing: 0%;
   vertical-align: middle;
 }
+.icon {
+  display: inline-flex;
+  transition: transform 0.3s ease; /* smooth rotation */
+}
 
+.iconOpen {
+  transform: rotate(180deg); /* flipped when open */
+}
 .Panel {
   min-height: 53.8px;
   opacity: 1;

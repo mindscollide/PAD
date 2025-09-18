@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useMemo, useRef } from "react";
 import { Col, Row, Tag } from "antd";
 import { useGlobalModal } from "../../../../../../context/GlobalModalContext";
 import { GlobalModal } from "../../../../../../components";
@@ -8,6 +8,7 @@ import CustomButton from "../../../../../../components/buttons/button";
 import CheckIcon from "../../../../../../assets/img/Check.png";
 import EllipsesIcon from "../../../../../../assets/img/Ellipses.png";
 import CrossIcon from "../../../../../../assets/img/Cross.png";
+import copyIcon from "../../../../../../assets/img/copy-dark.png";
 import { useNavigate } from "react-router-dom";
 import { useNotification } from "../../../../../../components/NotificationProvider/NotificationProvider";
 import { useGlobalLoader } from "../../../../../../context/LoaderContext";
@@ -56,15 +57,40 @@ const ViewDetailModal = () => {
 
   console.log(viewDetailsModalData, "viewDetailsModalData555");
 
+  console.log(setViewDetailsModalData, "setViewDetailsModalData");
+
   console.log(employeeBasedBrokersData, "employeeBasedBrokersDataData555");
 
   console.log("hierarchyDetails:", viewDetailsModalData?.hierarchyDetails);
   console.log("Type:", typeof viewDetailsModalData?.hierarchyDetails);
 
+  // Refactor sessionStorage read with useMemo for performance & error handling
+  const complianceOfficerDetails = useMemo(() => {
+    try {
+      const storedData = JSON.parse(
+        sessionStorage.getItem("user_Hierarchy_Details") || "[]"
+      );
+
+      if (!Array.isArray(storedData)) return {};
+
+      const found = storedData.find(
+        (item) =>
+          item.roleName === "Compliance Officer (CO)" && item.levelNo === 1
+      );
+
+      return found
+        ? { managerName: found.managerName, managerEmail: found.managerEmail }
+        : {};
+    } catch (e) {
+      console.error("Invalid JSON in sessionStorage", e);
+      return {};
+    }
+  }, []);
+
   // GETALLVIEWDETAIL API FUNCTION
   const fetchGetAllViewData = async () => {
     await showLoader(true);
-    const requestdata = { TradeApprovalID: selectedViewDetail.approvalID };
+    const requestdata = { TradeApprovalID: selectedViewDetail?.approvalID };
 
     const responseData = await GetAllViewDetailsByTradeApprovalID({
       callApi,
@@ -117,8 +143,8 @@ const ViewDetailModal = () => {
       case "5":
         return {
           label: "Traded",
-          labelClassName: styles.approvedDetailHeading,
-          divClassName: styles.approvedBorderClass,
+          labelClassName: styles.tradedDetailHeading,
+          divClassName: styles.tradedBorderClass,
         };
       case "6":
         return {
@@ -138,7 +164,7 @@ const ViewDetailModal = () => {
 
   //This is how I can pass the status in statusData Variables
   const statusData = getStatusStyle(
-    viewDetailsModalData?.details?.[0]?.approvalStatus
+    String(viewDetailsModalData?.workFlowStatus?.workFlowStatusID)
   );
 
   console.log(statusData, "statusDatastatusData121");
@@ -187,6 +213,14 @@ const ViewDetailModal = () => {
     setIsResubmitted(true);
   };
 
+  //This the Copy Functionality where user can copy email by click on COpyIcon
+  const handleCopyEmail = () => {
+    const emailToCopy =
+      complianceOfficerDetails?.managerEmail || "compliance@horizoncapital.com";
+    navigator.clipboard.writeText(emailToCopy);
+    message.success("Email copied to clipboard!");
+  };
+
   return (
     <>
       <GlobalModal
@@ -223,7 +257,11 @@ const ViewDetailModal = () => {
                           Instrument
                         </label>
                         <label className={styles.viewDetailSubLabels}>
-                          <span className={styles.customTag}>EQ</span> PSO-OCT
+                          <span className={styles.customTag}>
+                            {viewDetailsModalData?.details?.[0]?.assetTypeID ===
+                              "1" && <span>EQ</span>}
+                          </span>{" "}
+                          {selectedInstrument?.instrumentCode}
                         </label>
                       </div>
                     </Col>
@@ -243,7 +281,8 @@ const ViewDetailModal = () => {
                     // status 4 is Declined
                     statusData.label === "Declined" ||
                     // status 6 is Not Traded
-                    statusData.label === "Not Traded"
+                    statusData.label === "Not Traded" ||
+                    statusData.label === "Traded"
                       ? "16px"
                       : "3px",
                 }}
@@ -251,14 +290,17 @@ const ViewDetailModal = () => {
                 <Col span={12}>
                   <div
                     className={
-                      // status 1 is Pending
-                      statusData.label === "Pending" ||
-                      // status 2 is Resubmitted
-                      statusData.label === "Resubmitted" ||
-                      // status 4 is Declined
-                      statusData.label === "Declined" ||
-                      // status 6 is Not Traded
-                      statusData.label === "Not Traded"
+                      // status 5 is Traded
+                      statusData.label === "Traded"
+                        ? styles.backgroundColorOfInstrumentDetailTraded
+                        : // status 1 is Pending
+                        statusData.label === "Pending" ||
+                          // status 2 is Resubmitted
+                          statusData.label === "Resubmitted" ||
+                          // status 4 is Declined
+                          statusData.label === "Declined" ||
+                          // status 6 is Not Traded
+                          statusData.label === "Not Traded"
                         ? styles.backgrounColorOfInstrumentDetail
                         : styles.backgrounColorOfDetail
                     }
@@ -339,10 +381,13 @@ const ViewDetailModal = () => {
                   <Col span={12}>
                     <div
                       className={
-                        // status 1 is Pending
-                        statusData.label === "Pending" ||
-                        // status 6 is Not Traded
-                        statusData.label === "Not Traded"
+                        // status 5 is Traded
+                        statusData.label === "Traded"
+                          ? styles.backgroundColorOfInstrumentDetailTradedRight
+                          : // status 1 is Pending
+                          statusData.label === "Pending" ||
+                            // status 6 is Not Traded
+                            statusData.label === "Not Traded"
                           ? styles.backgrounColorOfApprovalDetail
                           : styles.backgrounColorOfDetail
                       }
@@ -363,7 +408,13 @@ const ViewDetailModal = () => {
               {/* Show Other Scenario's SUb Heading and Field Sceanrio's */}
               <Row gutter={[4, 4]} style={{ marginTop: "3px" }}>
                 <Col span={12}>
-                  <div className={styles.backgrounColorOfDetail}>
+                  <div
+                    className={
+                      statusData.label === "Traded"
+                        ? styles.backgroundColorOfInstrumentDetailTradednoradius
+                        : styles.backgrounColorOfDetail
+                    }
+                  >
                     <label className={styles.viewDetailMainLabels}>Type</label>
                     <label className={styles.viewDetailSubLabels}>
                       {/* {selectedViewDetail?.type} */}
@@ -376,7 +427,13 @@ const ViewDetailModal = () => {
                   </div>
                 </Col>
                 <Col span={12}>
-                  <div className={styles.backgrounColorOfDetail}>
+                  <div
+                    className={
+                      statusData.label === "Traded"
+                        ? styles.backgroundColorOfInstrumentDetailTradednoradius
+                        : styles.backgrounColorOfDetail
+                    }
+                  >
                     <label className={styles.viewDetailMainLabels}>
                       Quantity
                     </label>
@@ -392,7 +449,13 @@ const ViewDetailModal = () => {
 
               <Row gutter={[4, 4]} style={{ marginTop: "3px" }}>
                 <Col span={12}>
-                  <div className={styles.backgrounColorOfDetail}>
+                  <div
+                    className={
+                      statusData.label === "Traded"
+                        ? styles.backgroundColorOfInstrumentDetailTradednoradius
+                        : styles.backgrounColorOfDetail
+                    }
+                  >
                     <label className={styles.viewDetailMainLabels}>
                       Request Date
                     </label>
@@ -402,12 +465,19 @@ const ViewDetailModal = () => {
                   </div>
                 </Col>
                 <Col span={12}>
-                  <div className={styles.backgrounColorOfDetail}>
+                  <div
+                    className={
+                      statusData.label === "Traded"
+                        ? styles.backgroundColorOfInstrumentDetailTradednoradius
+                        : styles.backgrounColorOfDetail
+                    }
+                  >
                     <label className={styles.viewDetailMainLabels}>
                       Asset Class
                     </label>
                     <label className={styles.viewDetailSubLabels}>
-                      Asset Class{" "}
+                      {viewDetailsModalData?.details?.[0]?.assetTypeID ===
+                        "1" && <span>Equity</span>}
                     </label>
                   </div>
                 </Col>
@@ -436,7 +506,13 @@ const ViewDetailModal = () => {
 
               <Row style={{ marginTop: "3px" }}>
                 <Col span={24}>
-                  <div className={styles.backgrounColorOfBrokerDetail}>
+                  <div
+                    className={
+                      statusData.label === "Traded"
+                        ? styles.backgroundColorOfInstrumentDetailTradednoradius
+                        : styles.backgrounColorOfBrokerDetail
+                    }
+                  >
                     <label className={styles.viewDetailMainLabels}>
                       Brokers
                     </label>
@@ -464,229 +540,153 @@ const ViewDetailModal = () => {
                 </Col>
               </Row>
 
-              {/* This is the Stepper Libarary Section */}
-              {/* <Row>
-                <div className={styles.backgrounColorOfStepper}>
-                  <Stepper
-                    activeStep={2}
-                    connectorStyleConfig={{
-                      activeColor: "#00640A", // green line between steps
-                      completedColor: "#00640A",
-                      disabledColor: "#00640A",
-                      size: 1,
-                    }}
-                    styleConfig={{
-                      size: "2em",
-                      circleFontSize: "0px", // hide default number
-                      labelFontSize: "17px",
-                      borderRadius: "50%",
-                    }}
-                  >
-                    {[0, 1, 2].map((step, index) => (
-                      <Step
-                        key={index}
-                        label={
-                          <div className={styles.customlabel}>
-                            <div className={styles.customtitle}>
-                              Emily Johnson
+              {statusData.label === "Traded" ? (
+                <>
+                  <Row style={{ marginTop: "16px" }}>
+                    <Col span={24}>
+                      <label className={styles.complianceOfficerText}>
+                        Compliance Officer
+                      </label>
+                    </Col>
+                  </Row>
+
+                  <Row style={{ marginTop: "3px" }}>
+                    <Col span={24}>
+                      <div className={styles.backgrounColorOfConduct}>
+                        <Row gutter={16}>
+                          <Col span={12}>
+                            <label className={styles.complianceHeading}>
+                              Name:
+                            </label>
+                            <div className={styles.complianceSubHeading}>
+                              {complianceOfficerDetails?.managerName || "-"}
                             </div>
-                            <div className={styles.customdesc}>
-                              2024-10-01 | 05:30pm
+                          </Col>
+
+                          <Col span={12} style={{ position: "relative" }}>
+                            <label className={styles.complianceHeading}>
+                              Email:
+                            </label>
+                            <div className={styles.complianceSubHeading}>
+                              {complianceOfficerDetails?.managerEmail || "-"}
                             </div>
-                          </div>
-                        }
-                        children={
-                          <div className={styles.stepCircle}>
-                            <img
-                              src={CheckIcon}
-                              alt="check"
-                              className={styles.circleImg}
-                            />
-                          </div>
-                        }
-                      />
-                    ))}
-
-                    <Step
-                      label={
-                        <div className={styles.customlabel}>
-                          <div className={styles.customtitle}>
-                            Emily Johnson
-                          </div>
-                          <div className={styles.customdesc}>Pending</div>
-                        </div>
-                      }
-                      children={
-                        <div className={styles.stepCircle}>
-                          <img
-                            src={
-                              statusData.label === "Declined"
-                                ? CrossIcon
-                                : EllipsesIcon
-                            }
-                            className={styles.circleImg}
-                            alt="ellipsis"
-                          />
-                        </div>
-                      }
-                    />
-                  </Stepper>
-                </div>
-              </Row> */}
-
-              <Row>
-                <div className={styles.mainStepperContainer}>
-                  <div
-                    className={`${styles.backgrounColorOfStepper} ${
-                      (viewDetailsModalData?.hierarchyDetails?.length || 0) <= 3
-                        ? styles.centerAlignStepper
-                        : styles.leftAlignStepper
-                    }`}
-                  >
-                    {/* Agar loginUserID match krti hai hierarchyDetails ki userID sy to wo wala stepper show nahi hoga */}
-                    <Stepper
-                      activeStep={Math.max(
-                        0,
-                        Array.isArray(viewDetailsModalData?.hierarchyDetails)
-                          ? viewDetailsModalData.hierarchyDetails.filter(
-                              (person) => person.userID !== loggedInUserID
-                            ).length - 1
-                          : 0
-                      )}
-                      connectorStyleConfig={{
-                        activeColor: "#00640A",
-                        completedColor: "#00640A",
-                        disabledColor: "#00640A",
-                        size: 1,
-                      }}
-                      styleConfig={{
-                        size: "2em",
-                        circleFontSize: "0px",
-                        labelFontSize: "17px",
-                        borderRadius: "50%",
-                      }}
-                    >
-                      {Array.isArray(viewDetailsModalData?.hierarchyDetails) &&
-                        viewDetailsModalData.hierarchyDetails
-                          .filter((person) => person.userID !== loggedInUserID)
-                          .map((person, index) => {
-                            const {
-                              fullName,
-                              bundleStatusID,
-                              requestDate,
-                              requestTime,
-                            } = person;
-
-                            const formattedDateTime = formatApiDateTime(
-                              `${requestDate} ${requestTime}`
-                            );
-
-                            let iconSrc;
-                            console.log(
-                              bundleStatusID,
-                              "CheckerrrrrbundleStatusID"
-                            );
-                            switch (bundleStatusID) {
-                              case 1:
-                                iconSrc = EllipsesIcon;
-                                break;
-                              case 3:
-                                iconSrc = CheckIcon;
-                                break;
-                              default:
-                                iconSrc = EllipsesIcon;
-                            }
-
-                            return (
-                              <Step
-                                key={index}
-                                label={
-                                  <div className={styles.customlabel}>
-                                    <div className={styles.customtitle}>
-                                      {fullName}
-                                    </div>
-                                    <div className={styles.customdesc}>
-                                      {formattedDateTime}
-                                    </div>
-                                  </div>
-                                }
-                                children={
-                                  <div className={styles.stepCircle}>
-                                    <img
-                                      src={iconSrc}
-                                      alt="status-icon"
-                                      className={styles.circleImg}
-                                    />
-                                  </div>
-                                }
-                              />
-                            );
-                          })}
-                    </Stepper>
-
-                    {/* <Stepper
-                      activeStep={2}
-                      connectorStyleConfig={{
-                        activeColor: "#00640A", // green line between steps
-                        completedColor: "#00640A",
-                        disabledColor: "#00640A",
-                        size: 1,
-                      }}
-                      styleConfig={{
-                        size: "2em",
-                        circleFontSize: "0px", // hide default number
-                        labelFontSize: "17px",
-                        borderRadius: "50%",
-                      }}
-                    >
-                      {[0, 1, 2, 3].map((step, index) => (
-                        <Step
-                          key={index}
-                          label={
-                            <div className={styles.customlabel}>
-                              <div className={styles.customtitle}>
-                                Emily Johnson
-                              </div>
-                              <div className={styles.customdesc}>
-                                2024-10-01 | 05:30pm
-                              </div>
-                            </div>
-                          }
-                          children={
-                            <div className={styles.stepCircle}>
+                            <div className={styles.copyEmailConductMainClass}>
                               <img
-                                src={CheckIcon}
-                                alt="check"
-                                className={styles.circleImg}
+                                draggable={false}
+                                src={copyIcon}
+                                onClick={handleCopyEmail}
                               />
                             </div>
-                          }
-                        />
-                      ))}
+                          </Col>
+                        </Row>
+                      </div>
+                    </Col>
+                  </Row>
+                </>
+              ) : (
+                <>
+                  <Row>
+                    <div className={styles.mainStepperContainer}>
+                      <div
+                        className={`${styles.backgrounColorOfStepper} ${
+                          (viewDetailsModalData?.hierarchyDetails?.length ||
+                            0) <= 3
+                            ? styles.centerAlignStepper
+                            : styles.leftAlignStepper
+                        }`}
+                      >
+                        {/* Agar loginUserID match krti hai hierarchyDetails ki userID sy to wo wala stepper show nahi hoga */}
+                        <Stepper
+                          activeStep={Math.max(
+                            0,
+                            Array.isArray(
+                              viewDetailsModalData?.hierarchyDetails
+                            )
+                              ? viewDetailsModalData.hierarchyDetails.filter(
+                                  (person) => person.userID !== loggedInUserID
+                                ).length - 1
+                              : 0
+                          )}
+                          connectorStyleConfig={{
+                            activeColor: "#00640A",
+                            completedColor: "#00640A",
+                            disabledColor: "#00640A",
+                            size: 1,
+                          }}
+                          styleConfig={{
+                            size: "2em",
+                            circleFontSize: "0px",
+                            labelFontSize: "17px",
+                            borderRadius: "50%",
+                          }}
+                        >
+                          {Array.isArray(
+                            viewDetailsModalData?.hierarchyDetails
+                          ) &&
+                            viewDetailsModalData.hierarchyDetails
+                              .filter(
+                                (person) => person.userID !== loggedInUserID
+                              )
+                              .map((person, index) => {
+                                const {
+                                  fullName,
+                                  bundleStatusID,
+                                  requestDate,
+                                  requestTime,
+                                } = person;
 
-                      <Step
-                        label={
-                          <div className={styles.customlabel}>
-                            <div className={styles.customtitle}>
-                              Emily Johnson
-                            </div>
-                            <div className={styles.customdesc}>Pending</div>
-                          </div>
-                        }
-                        children={
-                          <div className={styles.stepCircle}>
-                            <img
-                              src={EllipsesIcon}
-                              className={styles.circleImg}
-                              alt="ellipsis"
-                            />
-                          </div>
-                        }
-                      />
-                    </Stepper> */}
-                  </div>
-                </div>
-              </Row>
+                                const formattedDateTime = formatApiDateTime(
+                                  `${requestDate} ${requestTime}`
+                                );
+
+                                let iconSrc;
+                                console.log(
+                                  bundleStatusID,
+                                  "CheckerrrrrbundleStatusID"
+                                );
+                                switch (bundleStatusID) {
+                                  case 1:
+                                    iconSrc = EllipsesIcon;
+                                    break;
+                                  case 2:
+                                    iconSrc = CheckIcon;
+                                    break;
+                                  default:
+                                    iconSrc = EllipsesIcon;
+                                }
+
+                                return (
+                                  <Step
+                                    key={index}
+                                    label={
+                                      <div className={styles.customlabel}>
+                                        <div className={styles.customtitle}>
+                                          {fullName}
+                                        </div>
+                                        <div className={styles.customdesc}>
+                                          {formattedDateTime}
+                                        </div>
+                                      </div>
+                                    }
+                                    children={
+                                      <div className={styles.stepCircle}>
+                                        <img
+                                          draggable={false}
+                                          src={iconSrc}
+                                          alt="status-icon"
+                                          className={styles.circleImg}
+                                        />
+                                      </div>
+                                    }
+                                  />
+                                );
+                              })}
+                        </Stepper>
+                      </div>
+                    </div>
+                  </Row>
+                </>
+              )}
 
               {/* All Others button Scenario's for footer button */}
               <Row className={styles.mainButtonDivClose}>

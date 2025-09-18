@@ -49,6 +49,7 @@ export const EmployeeMyApprovalFilter = ({ handleSearch, setVisible }) => {
 
   /** Handle date selection */
   const handleSearchClick = async () => {
+    console.log("Checke Seletc");
     const finalSearch = {
       ...(dirtyFields.instrumentName && {
         instrumentName: localState.instrumentName,
@@ -65,6 +66,7 @@ export const EmployeeMyApprovalFilter = ({ handleSearch, setVisible }) => {
     };
 
     await setEmployeeMyApprovalSearch(finalSearch);
+    console.log("Checke Seletc", finalSearch);
     handleSearch(finalSearch);
 
     // 🚫 don’t reset here, let Reset button handle it
@@ -72,6 +74,7 @@ export const EmployeeMyApprovalFilter = ({ handleSearch, setVisible }) => {
 
   /** Reset filters */
   const handleResetClick = () => {
+    console.log("Checke Seletc");
     setEmployeeMyApprovalSearch((prev) => ({
       ...prev,
       instrumentName: "",

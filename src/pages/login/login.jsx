@@ -1,12 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { Form, Input, Typography, Row, Col } from "antd";
+import { Form, Typography, Row, Col } from "antd";
 import style from "./Login.module.css";
 import loginImage from "../../assets/img/login-icon.png";
 import logo from "../../assets/img/pad-logo-text.png";
 import { useNavigate } from "react-router-dom";
-import { Button, Loader, TextField } from "../../components";
+import { Button, TextField } from "../../components";
 import { useNotification } from "../../components/NotificationProvider/NotificationProvider";
-import { CheckCircleOutlined } from "@ant-design/icons";
 import { useApi } from "../../context/ApiContext";
 import { login } from "../../api/loginApi";
 import { useGlobalLoader } from "../../context/LoaderContext";
@@ -19,42 +18,66 @@ import { usePortfolioContext } from "../../context/portfolioContax";
 
 const { Text } = Typography;
 
+/**
+ * 🔐 Login Page
+ *
+ * Handles user authentication and resets global states when mounted.
+ * Provides:
+ * - Username & Password fields
+ * - Autofocus and keyboard navigation
+ * - Context reset on mount (to ensure a clean state)
+ * - Submission handling via API
+ */
 const Login = () => {
-  // Hooks and State Management
+  // 🚀 React Router navigation
   const navigate = useNavigate();
+
+  // 🎯 Ant Design form instance
   const [form] = Form.useForm();
+
+  // 📢 Global notification system
   const { showNotification } = useNotification();
+
+  // 🌐 API caller (wrapped with context)
   const { callApi } = useApi();
 
-  // Reset State when Component Mount
+  // 🔄 Context state resetters (to clear app state on login page mount)
   const { resetDashboardContextState } = useDashboardContext();
   const { resetModalContextState } = useGlobalModal();
   const { resetMyApprovalContextState } = useMyApproval();
   const { resetPortfolioTab } = usePortfolioContext();
   const { resetSearchBarContextState } = useSearchBarContext();
-  const { resetSidebarState } = useSidebarContext();
+  const { resetSidebarState, setSelectedKey, setCollapsed } =
+    useSidebarContext();
 
-  //LoaderContext ka showLoader ko globally access krrahay hain
+  // ⏳ Global loader
   const { showLoader } = useGlobalLoader();
+
+  // 📝 Local state for form values
   const [formValues, setFormValues] = useState({
     username: "",
     password: "",
   });
-  const [disableClick, setDisableClick] = useState(false);
-  const [errors, setErrors] = useState({});
-  const { setSelectedKey, setCollapsed } = useSidebarContext();
-  /**
-   * Handles input changes and updates form state
-   * @param {string} name - Field name ('username' or 'password')
-   * @param {string} value - New input value
-   */
 
+  // 🚫 Prevent multiple clicks during login
+  const [disableClick, setDisableClick] = useState(false);
+
+  // ❌ Error state for validation
+  const [errors, setErrors] = useState({});
+
+  /**
+   * 🧹 useEffect → Resets localStorage, sessionStorage,
+   * and all global context states whenever login page mounts.
+   */
   useEffect(() => {
     localStorage.clear();
     sessionStorage.clear();
+
+    // Reset sidebar
     setSelectedKey("0");
     setCollapsed(true);
-    // These are the mainState
+
+    // Reset all contexts
     resetDashboardContextState();
     resetModalContextState();
     resetMyApprovalContextState();
@@ -63,13 +86,21 @@ const Login = () => {
     resetSidebarState();
   }, []);
 
+  /**
+   * Handles controlled input changes
+   *
+   * @param {string} name - Field name (username/password)
+   * @param {string} value - Updated field value
+   */
   const handleChange = (name, value) => {
     setFormValues({ ...formValues, [name]: value });
   };
 
   /**
-   * Handles form submission
-   * @param {Object} values - Form values {username, password}
+   * Handles login form submission
+   *
+   * @async
+   * @param {Object} values - Form values { username, password }
    */
   const handleLogin = async (values) => {
     setDisableClick(true);
@@ -86,30 +117,32 @@ const Login = () => {
       setDisableClick(false);
     }
   };
+
   return (
     <>
       <Row gutter={[16, 16]} className={style["login-container"]}>
-        {/* Form Column - Visible on all screens */}
+        {/* ==================== Left Column (Form Section) ==================== */}
         <Col xs={24} md={16} lg={12}>
           <div className={style["login-form-container"]}>
             <div className={style["login-content"]}>
-              {/* Application Logo */}
+              {/* 🌟 Logo */}
               <div className={style["logo-container"]}>
                 <img
+                  draggable={false}
                   src={logo}
                   alt="Company Logo"
                   className={style["logo-image"]}
                 />
               </div>
 
-              {/* Login Form */}
+              {/* ==================== Login Form ==================== */}
               <Form
                 form={form}
                 name="login-form"
                 onFinish={handleLogin}
                 className={style["login-form"]}
               >
-                {/* Username Field */}
+                {/* 🔑 Username Field */}
                 <Form.Item
                   name="username"
                   rules={[{ required: true, message: "Please enter username" }]}
@@ -123,10 +156,14 @@ const Login = () => {
                     error={errors.username}
                     size="extraLarge"
                     classNames="login-form"
+                    autoFocus // 👈 auto-focus on mount
+                    onPressEnter={
+                      () => form.getFieldInstance("password")?.focus() // 👈 focus password on Enter
+                    }
                   />
                 </Form.Item>
 
-                {/* Password Field */}
+                {/* 🔒 Password Field */}
                 <Form.Item
                   name="password"
                   rules={[
@@ -136,17 +173,18 @@ const Login = () => {
                   <TextField
                     type="password"
                     label="Password"
-                    name="password" // Fixed: Changed from "username" to "password"
+                    name="password"
                     value={formValues.password}
-                    onChange={(value) => handleChange("password", value)} // Fixed: Changed from "username" to "password"
+                    onChange={(value) => handleChange("password", value)}
                     placeholder="Password"
-                    error={errors.password} // Fixed: Changed from errors.username to errors.password
+                    error={errors.password}
                     size="extraLarge"
                     classNames="login-form"
+                    onPressEnter={() => form.submit()} // 👈 submit on Enter
                   />
                 </Form.Item>
 
-                {/* Submit Button */}
+                {/* 🚀 Submit Button */}
                 <Form.Item>
                   <Button
                     text="Sign In"
@@ -160,10 +198,11 @@ const Login = () => {
           </div>
         </Col>
 
-        {/* Image Column - Hidden on mobile */}
+        {/* ==================== Right Column (Image Section) ==================== */}
         <Col xs={0} md={8} lg={12}>
           <div className={style["login-image-container"]}>
             <img
+              draggable={false}
               src={loginImage}
               alt="Login visual"
               className={style["login-image"]}

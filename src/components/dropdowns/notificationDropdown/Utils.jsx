@@ -7,6 +7,7 @@ const NotificationItem = ({ notification, getNotificationIcon }) => {
       {/* Notification Icon */}
       <div className={styles["notification-icon-div"]}>
         <img
+          draggable={false}
           src={getNotificationIcon(notification.type)}
           alt={`${notification.type} notification`}
           className={styles["notification-icon"]}

@@ -1,7 +1,7 @@
 // components/pages/employee/approval/tableColumns.js
 
 import React, { useEffect, useRef, useState } from "react";
-import { Tag } from "antd";
+import { Tag, Tooltip } from "antd";
 import { Button, StatusFilterDropdown } from "../../../../components";
 import style from "./approval.module.css";
 import EscalatedIcon from "../../../../assets/img/escalated.png";
@@ -29,14 +29,29 @@ import {
 const getSortIcon = (columnKey, sortedInfo) => {
   if (sortedInfo?.columnKey === columnKey) {
     return sortedInfo.order === "ascend" ? (
-      <img src={ArrowDown} alt="Asc" className="custom-sort-icon" />
+      <img
+        draggable={false}
+        src={ArrowDown}
+        alt="Asc"
+        className="custom-sort-icon"
+      />
     ) : (
-      <img src={ArrowUP} alt="Desc" className="custom-sort-icon" />
+      <img
+        draggable={false}
+        src={ArrowUP}
+        alt="Desc"
+        className="custom-sort-icon"
+      />
     );
   }
 
   return (
-    <img src={DefaultColumArrow} alt="Default" className="custom-sort-icon" />
+    <img
+      draggable={false}
+      src={DefaultColumArrow}
+      alt="Default"
+      className="custom-sort-icon"
+    />
   );
 };
 // Helper for consistent column titles
@@ -83,12 +98,30 @@ export const getBorderlessTableColumns = (
       return (
         <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
           <span className="font-medium">
-            {/* {dashBetweenApprovalAssets(tradeApprovalID)} */}
-            {dashBetweenApprovalAssets("REQ888888")}
+            {dashBetweenApprovalAssets(tradeApprovalID)}
+            {/* {dashBetweenApprovalAssets("REQ888888")} */}
           </span>
         </div>
       );
     },
+    onHeaderCell: () => ({
+      style: {
+        minWidth: "100px", // ✅ minimum width
+        maxWidth: "150px", // 👈 custom max width
+        whiteSpace: "nowrap",
+        overflow: "hidden",
+        textOverflow: "ellipsis",
+      },
+    }),
+    onCell: () => ({
+      style: {
+        minWidth: "100px", // ✅ minimum width
+        maxWidth: "150px", // 👈 custom max width
+        whiteSpace: "nowrap",
+        overflow: "hidden",
+        textOverflow: "ellipsis",
+      },
+    }),
   },
   {
     title: withSortIcon("Instrument", "instrumentName", sortedInfo),
@@ -106,8 +139,10 @@ export const getBorderlessTableColumns = (
     showSorterTooltip: false,
     sortIcon: () => null,
     render: (instrument, record) => {
+      console.log(record, "Checkerrrrr");
       const assetCode = record?.assetType?.assetTypeShortCode;
       const code = instrument?.instrumentCode || "";
+      const instrumentName = instrument?.instrumentName || "";
       return (
         <div
           style={{
@@ -119,20 +154,22 @@ export const getBorderlessTableColumns = (
           <span className="custom-shortCode-asset" style={{ minWidth: 30 }}>
             {assetCode?.substring(0, 2).toUpperCase()}
           </span>
-          <span
-            className="font-medium"
-            style={{
-              overflow: "hidden",
-              textOverflow: "ellipsis",
-              whiteSpace: "nowrap",
-              maxWidth: "200px",
-              display: "inline-block",
-              cursor: "pointer",
-            }}
-            title={code}
-          >
-            {code}
-          </span>
+          <Tooltip title={instrumentName} placement="topLeft">
+            <span
+              className="font-medium"
+              style={{
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+                whiteSpace: "nowrap",
+                maxWidth: "200px",
+                display: "inline-block",
+                cursor: "pointer",
+              }}
+              title={code}
+            >
+              {code}
+            </span>
+          </Tooltip>
         </div>
       );
     },
@@ -201,6 +238,7 @@ export const getBorderlessTableColumns = (
     title: withSortIcon("Request Date & Time", "requestDateTime", sortedInfo),
     dataIndex: "requestDateTime",
     key: "requestDateTime",
+    width: "13%",
     ellipsis: true,
     sorter: (a, b) =>
       formatApiDateTime(a.requestDateTime).localeCompare(
@@ -275,6 +313,7 @@ export const getBorderlessTableColumns = (
     render: (date) =>
       date && (
         <img
+          draggable={false}
           src={EscalatedIcon}
           alt="escalated"
           className={style["escalated-icon"]}
@@ -292,10 +331,10 @@ export const getBorderlessTableColumns = (
     showSorterTooltip: false,
     sortIcon: () => null,
     render: (q) => <span className="font-medium">{q.toLocaleString()}</span>,
-      onHeaderCell: () => ({
+    onHeaderCell: () => ({
       style: {
         minWidth: "100px", // 👈 adjust as needed
-        maxWidth:"150px",
+        maxWidth: "150px",
         whiteSpace: "nowrap",
         overflow: "hidden",
         textOverflow: "ellipsis",
@@ -304,7 +343,7 @@ export const getBorderlessTableColumns = (
     onCell: () => ({
       style: {
         minWidth: "100px",
-        maxWidth:"150px",
+        maxWidth: "150px",
         whiteSpace: "nowrap",
         overflow: "hidden",
         textOverflow: "ellipsis",

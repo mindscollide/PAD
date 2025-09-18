@@ -94,6 +94,7 @@ const router = createBrowserRouter(
             </RoleBasedRoute>
           }
         />
+        {/* Line Manager */}
         <Route
           path="lm-approval-requests"
           element={
@@ -115,6 +116,31 @@ const router = createBrowserRouter(
           path="lm-reports"
           element={
             <RoleBasedRoute allowedRoles={[3]}>
+              <EmpolyesReportsIndex />{" "}
+            </RoleBasedRoute>
+          }
+        />
+        {/* Compliance Officer */}
+        <Route
+          path="co-reconcile-transactions"
+          element={
+            <RoleBasedRoute allowedRoles={[4]}>
+              {<ApprovalRequest />}
+            </RoleBasedRoute>
+          }
+        />
+        <Route
+          path="co-my-actions"
+          element={
+            <RoleBasedRoute allowedRoles={[4]}>
+              <EmployeMyTransaction />{" "}
+            </RoleBasedRoute>
+          }
+        />
+        <Route
+          path="co-reports"
+          element={
+            <RoleBasedRoute allowedRoles={[4]}>
               <EmpolyesReportsIndex />{" "}
             </RoleBasedRoute>
           }

@@ -32,7 +32,6 @@
   padding: 0px 20px !important;
   gap: 10px !important;
 
-  
   /* Flexbox settings */
   display: flex;
   align-items: center; /* This vertically centers items */
@@ -216,13 +215,19 @@
 }
 .backgrounColorOfStepper {
   background-color: #fff1e7 !important;
-  padding: 5px 11px;
+  padding: 5px 0px;
   display: inline-flex; /* keep children in a row */
   flex-direction: row !important; /* force horizontal */
   margin-top: 10px;
   border-radius: 8px !important;
   gap: 20px; /* space between steps */
-  width: 97%;
+  width: 100%;
+  overflow: hidden !important;
+  overflow-x: auto !important; /* allow horizontal scroll */
+  overflow-y: hidden !important; /* no vertical scroll */
+  white-space: nowrap !important;
+  scrollbar-width: thin; /* Firefox */
+  scrollbar-color: #bfbfbf transparent;
 }
 
 .customdesc {
@@ -242,14 +247,6 @@
   display: flex;
   justify-content: center;
   align-items: center;
-}
-
-.stepCircle {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 50px;
-  width: 50px;
 }
 
 .circleImg {
@@ -291,9 +288,6 @@
 
 .mainStepperContainer {
   width: 100% !important;
-  overflow-x: auto; /* allow horizontal scroll */
-  overflow-y: hidden; /* no vertical scroll */
-  white-space: nowrap;
 }
 
 .approvedButtonClassViewComment {
@@ -309,4 +303,42 @@
   width: 33px; /* adjust as needed */
   height: 33px;
   margin-top: 5px;
+}
+
+.centerAlignStepper {
+  justify-content: center !important;
+}
+
+.leftAlignStepper {
+  justify-content: flex-start;
+}
+
+.stepLabelWrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  margin-top: 8px;
+}
+
+.stepCircle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 50px;
+  width: 50px;
+}
+
+.waitingApprovalText {
+  font-size: 14px;
+  color: #30426a;
+  font-family: "Switzer Variable";
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+/* Stepper.module.css */
+.stepButtonActive {
+  background: none !important; /* Remove background for active state */
+  /* You can add any other styles you need */
 }

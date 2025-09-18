@@ -1,0 +1,283 @@
+.resubmittedBorderClass {
+  border: 2.65px dashed #717171 !important;
+  border-radius: 8px !important;
+  padding: 0px 20px !important;
+  gap: 10px !important;
+}
+
+.pendingBorderClass {
+  border: 2.65px dashed #717171 !important;
+  border-radius: 8px !important;
+  padding: 0px 20px !important;
+  gap: 10px !important;
+}
+
+.notTradedBorderClass {
+  border: 2.65px dashed #717171 !important;
+  background-color: #d9d9d9 !important;
+  border-radius: 8px !important;
+  padding: 0px 20px !important;
+  gap: 10px !important;
+}
+
+.declinedBorderClass {
+  border: 2.65px dashed #a50000 !important;
+  background-color: #ffdbdb !important;
+  border-radius: 8px !important;
+  padding: 0px 20px !important;
+  gap: 10px !important;
+}
+
+.approvedBorderClass {
+  border: 2.65px dashed #81d885 !important;
+  background-color: #c5ffc7 !important;
+  border-radius: 8px !important;
+  padding: 0px 20px !important;
+  gap: 10px !important;
+}
+
+.declinedDetailHeading {
+  font-size: 36px !important;
+  color: #a50000 !important;
+  font-weight: 600;
+  font-family: "Switzer Variable";
+  text-transform: uppercase;
+  display: flex;
+  justify-content: center !important;
+}
+
+.pendingDetailHeading {
+  font-size: 36px !important;
+  color: #424242 !important;
+  font-weight: 600;
+  font-family: "Switzer Variable";
+  text-transform: uppercase;
+  display: flex;
+  justify-content: center !important;
+}
+
+.resubmittedDetailHeading {
+  font-size: 36px !important;
+  color: #424242 !important;
+  font-weight: 600;
+  font-family: "Switzer Variable";
+  text-transform: uppercase;
+  display: flex;
+  justify-content: center !important;
+}
+
+.notTradedDetailHeading {
+  font-size: 36px !important;
+  color: #424242 !important;
+  font-weight: 600;
+  font-family: "Switzer Variable";
+  text-transform: uppercase;
+  display: flex;
+  justify-content: center !important;
+}
+
+.approvedDetailHeading {
+  font-size: 36px !important;
+  color: #00640a !important;
+  font-weight: 600;
+  font-family: "Switzer Variable";
+  text-transform: uppercase;
+  display: flex;
+  justify-content: center !important;
+}
+
+.backgrounColorOfDetail {
+  background-color: #edf3ff !important;
+  padding: 10px 20px;
+  display: flex;
+  flex-direction: column !important;
+}
+
+.backgrounColorOfApprovedDetail {
+  background-color: #edf3ff !important;
+  padding: 10px 20px;
+  display: flex;
+  flex-direction: column !important;
+  border-top-right-radius: 8px;
+}
+
+.backgrounColorOfBrokerDetail {
+  background-color: #edf3ff !important;
+  padding: 10px 20px;
+  display: flex;
+  flex-direction: column !important;
+  border-bottom-right-radius: 8px;
+  border-bottom-left-radius: 8px;
+}
+
+.backgroundColorOfInstrumentDetailApproved {
+  background-color: #edf3ff !important;
+  padding: 10px 20px;
+  display: flex;
+  flex-direction: column !important;
+  border-top-left-radius: 8px !important;
+}
+
+.viewDetailMainLabels {
+  font-size: 14px !important;
+  color: #30426a !important;
+  font-weight: 700;
+  font-family: "Switzer Variable";
+}
+
+.viewDetailSubLabels {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 20px !important;
+  color: #424242 !important;
+  font-weight: 500;
+  font-family: "Switzer Variable";
+}
+
+.viewDetailSubLabelsForInstrument {
+  flex: 1; /* let it shrink inside flex */
+  max-width: 250px; /* 👈 critical inside flex */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 20px !important;
+  color: #424242 !important;
+  font-weight: 500;
+  font-family: "Switzer Variable";
+  cursor: pointer;
+}
+
+.tagContainer {
+  display: flex;
+  gap: 10px;
+  padding-bottom: 10px;
+  cursor: pointer !important;
+  overflow-x: auto;
+  white-space: nowrap;
+  flex-wrap: nowrap; /* keep single line */
+  scrollbar-width: thin; /* Firefox */
+  scrollbar-color: #bfbfbf transparent;
+}
+
+.tagClasses {
+  font-size: 16px !important;
+  font-weight: 400 !important;
+  font-family: "Switzer Variable" !important;
+  color: #30426a !important;
+  border: none !important;
+  background-color: #ffffff !important;
+  border-radius: 7px !important;
+  padding: 5px 10px !important;
+  display: inline-flex !important;
+  align-items: center;
+}
+
+.modalBodyWrapper {
+  padding: 0px 50px; /* or any padding you want */
+}
+
+.customlabel {
+  text-align: center;
+}
+
+.customtitle {
+  font-family: "Switzer Variable";
+  color: #30426a;
+  font-weight: 700;
+  font-size: 14px;
+}
+.backgrounColorOfStepper {
+  background-color: #edf3ff !important;
+  padding: 5px 0px;
+  display: inline-flex; /* keep children in a row */
+  flex-direction: row !important; /* force horizontal */
+  margin-top: 10px;
+  border-radius: 8px !important;
+  gap: 20px; /* space between steps */
+  width: 100%;
+  overflow: hidden !important;
+  overflow-x: auto !important; /* allow horizontal scroll */
+  overflow-y: hidden !important; /* no vertical scroll */
+  white-space: nowrap !important;
+  scrollbar-width: thin; /* Firefox */
+  scrollbar-color: #bfbfbf transparent;
+}
+
+.customdesc {
+  font-size: 14px;
+  font-family: "Switzer Variable";
+  color: #30426a;
+  font-weight: 500;
+  width: 165px !important;
+}
+
+.circleImg {
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+}
+
+.customTag {
+  display: inline-block;
+  width: 41px;
+  height: 24px;
+  padding: 0 4px;
+  text-align: center;
+
+  /* Typography */
+  font-family: "Switzer Variable";
+  font-size: 14px;
+  font-weight: 500;
+  color: white;
+
+  /* Styling */
+  background-color: #30426a; /* Single color for all */
+  border-radius: 4px;
+
+  /* Text handling */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.mainStepperContainer {
+  width: 100% !important;
+}
+
+.approvedButtonClassViewComment {
+  display: flex !important;
+  justify-content: flex-end !important;
+  align-items: center;
+  margin-top: 15px;
+  gap: 30px !important;
+}
+
+/* Optional: style the image */
+.pendingIcon {
+  width: 33px; /* adjust as needed */
+  height: 33px;
+  margin-top: 5px;
+}
+
+.stepCircle {
+  display: flex;
+  align-items: center;
+  flex-direction: column !important;
+  height: 50px;
+  width: 50px;
+}
+
+/* Stepper.module.css */
+.stepButtonActive {
+  background: none !important; /* Remove background for active state */
+  /* You can add any other styles you need */
+}
+
+.centerAlignStepper {
+  justify-content: center !important;
+}
+
+.leftAlignStepper {
+  justify-content: flex-start;
+}

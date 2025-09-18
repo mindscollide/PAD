@@ -415,7 +415,7 @@
 
 .digitWrapper {
   position: relative;
-  height: 7vh; /* adjust height */
+  height: 58px; /* adjust height */
   overflow: hidden;
 }
 

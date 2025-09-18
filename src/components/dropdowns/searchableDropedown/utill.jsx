@@ -1,6 +1,14 @@
-import { SearchTadeApprovals } from "../../../api/myApprovalApi";
+import {
+  SearchApprovalRequestLineManager,
+  SearchTadeApprovals,
+} from "../../../api/myApprovalApi";
+import { SearchEmployeeTransactionsDetails } from "../../../api/myTransactionsApi";
 import { toYYMMDD } from "../../../commen/funtions/rejex";
-import { mapBuySellToIds, mapStatusToIds } from "../filters/utils";
+import {
+  mapBuySellToIds,
+  mapStatusToIds,
+  mapStatusToIdsForLineManager,
+} from "../filters/utils";
 import { EmployeeMyApprovalFilter } from "./EmployeeMyApprovalFilter";
 import { EmployeePendingApprovalFilter } from "./EmployeePendingApprovalFilter";
 import { EmployeePortfolioFilter } from "./EmployeePortfolioFilter";
@@ -33,7 +41,7 @@ export const getMainSearchInputValueByKey = (
     case "4":
       switch (activeTab) {
         case "portfolio":
-          return employeePortfolioSearch.mainInstrumentShortName;
+          return employeePortfolioSearch.mainInstrumentName;
         case "pending":
           return employeePendingApprovalSearch.mainInstrumentName;
         default:
@@ -79,7 +87,7 @@ export const handleMainInstrumentChange = (
         case "portfolio":
           setEmployeePortfolioSearch((prev) => ({
             ...prev,
-            mainInstrumentShortName: value,
+            mainInstrumentName: value,
           }));
           break;
         case "pending":
@@ -139,7 +147,7 @@ export const handleSearchMainInputReset = ({
         case "portfolio":
           setEmployeePortfolioSearch((prev) => ({
             ...prev,
-            mainInstrumentShortName: "",
+            mainInstrumentName: "",
           }));
           break;
         case "pending":
@@ -173,11 +181,8 @@ export const renderFilterContent = (
   selectedKey,
   activeTab,
   handleSearch,
-  setVisible,
-  dropdownOptions
+  setVisible
 ) => {
-  console.log(activeTab, "Checker Search Coming");
-  console.log("SearchWithPopoverOnly selectedKey", selectedKey);
   switch (selectedKey) {
     case "1":
       return (
@@ -194,24 +199,37 @@ export const renderFilterContent = (
           setVisible={setVisible}
         />
       );
+    // just cominting for for sprint 6
+    // case "4":
+    //   switch (activeTab) {
+    //     case "portfolio":
+    //       return (
+    //         <EmployeePortfolioFilter
+    //           handleSearch={handleSearch}
+    //           setVisible={setVisible}
+    //         />
+    //       );
+    //     case "pending":
+    //       return <EmployeePendingApprovalFilter handleSearch={handleSearch} />;
+    //     default:
+    //       return null;
+    //   }
     case "4":
-      switch (activeTab) {
-        case "portfolio":
-          return (
-            <EmployeePortfolioFilter
-              handleSearch={handleSearch}
-              dropdownOptions={dropdownOptions}
-              setVisible={setVisible}
-            />
-          );
-        case "pending":
-          return <EmployeePendingApprovalFilter handleSearch={handleSearch} />;
-        default:
-          return null;
-      }
+      return (
+        <EmployeePortfolioFilter
+          handleSearch={handleSearch}
+          activeTab={activeTab}
+          setVisible={setVisible}
+        />
+      );
 
     case "6":
-      return <LineManagerApprovalFilter handleSearch={handleSearch} />;
+      return (
+        <LineManagerApprovalFilter
+          handleSearch={handleSearch}
+          setVisible={setVisible}
+        />
+      );
     // 🔧 Add more cases for keys "3" to "17" as needed below
     // case "3":
     //   return <SomeOtherFilterComponent handleSearch={handleSearch} />;
@@ -227,6 +245,7 @@ export const renderFilterContent = (
 export const apiCallSearch = async ({
   selectedKey,
   employeeMyApprovalSearch,
+  employeeMyTransactionSearch,
   addApprovalRequestData,
   callApi,
   showNotification,
@@ -246,7 +265,6 @@ export const apiCallSearch = async ({
 
         const statusIds = mapStatusToIds(employeeMyApprovalSearch.status);
         const date = toYYMMDD(employeeMyApprovalSearch.startDate);
-        console.log(typeof date, "Chdhjvahvajvdas");
 
         const requestdata = {
           InstrumentName:
@@ -260,7 +278,6 @@ export const apiCallSearch = async ({
           PageNumber: 0,
           Length: employeeMyApprovalSearch.pageSize || 10, // Fixed page size
         };
-        console.log(requestdata, "Checker APi Search");
         const data = await SearchTadeApprovals({
           callApi,
           showNotification,
@@ -274,7 +291,39 @@ export const apiCallSearch = async ({
       }
 
       case "2":
-        // Add case 2 logic here when needed
+        {
+          // Add case 2 logic here when needed
+          const TypeIds = mapBuySellToIds(
+            employeeMyTransactionSearch.type,
+            addApprovalRequestData?.Equities
+          );
+
+          const statusIds = mapStatusToIds(employeeMyTransactionSearch.status);
+
+          const requestdata = {
+            InstrumentName:
+              employeeMyTransactionSearch.instrumentName ||
+              employeeMyTransactionSearch.mainInstrumentName ||
+              "",
+            Quantity: employeeMyTransactionSearch.quantity || 0,
+            StartDate: employeeMyTransactionSearch.startDate || "",
+            EndDate: employeeMyTransactionSearch.endDate || "",
+            BrokerIDs: employeeMyTransactionSearch.brokerIDs || [],
+            StatusIds: statusIds || [],
+            TypeIds: TypeIds || [],
+            PageNumber: 0,
+            Length: employeeMyTransactionSearch.pageSize || 10, // Fixed page size
+          };
+          const data = await SearchEmployeeTransactionsDetails({
+            callApi,
+            showNotification,
+            showLoader,
+            requestdata,
+            navigate,
+          });
+
+          setData(data);
+        }
         break;
 
       case "3":
@@ -284,6 +333,77 @@ export const apiCallSearch = async ({
       case "6":
         // Add case 3 logic here when needed
         break;
+
+      default:
+        console.warn(`No matching case for selectedKey: ${selectedKey}`);
+        break;
+    }
+  } finally {
+    showLoader(false);
+  }
+};
+
+export const apiCallSearchForLineManager = async ({
+  selectedKey,
+  lineManagerApprovalSearch,
+  addApprovalRequestData,
+  callApi,
+  showNotification,
+  showLoader,
+  navigate,
+  setData,
+}) => {
+  showLoader(true);
+
+  try {
+    switch (selectedKey) {
+      case "1": {
+        break;
+      }
+
+      case "2":
+        // Add case 2 logic here when needed
+        break;
+
+      case "3":
+        // Add case 3 logic here when needed
+        break;
+
+      case "6": {
+        const {
+          type,
+          status,
+          startDate,
+          instrumentName = "",
+          mainInstrumentName = "",
+          quantity = 0,
+          pageSize = 10,
+          requesterName = "",
+        } = lineManagerApprovalSearch;
+
+        const requestdata = {
+          InstrumentName: instrumentName || mainInstrumentName,
+          Date: toYYMMDD(startDate) || "",
+          Quantity: quantity,
+          StatusIds: mapStatusToIdsForLineManager(status) || [],
+          TypeIds:
+            mapBuySellToIds(type, addApprovalRequestData?.Equities) || [],
+          PageNumber: 0,
+          Length: pageSize,
+          RequesterName: requesterName,
+        };
+
+        const data = await SearchApprovalRequestLineManager({
+          callApi,
+          showNotification,
+          showLoader,
+          requestdata,
+          navigate,
+        });
+
+        setData(data);
+        break;
+      }
 
       default:
         console.warn(`No matching case for selectedKey: ${selectedKey}`);

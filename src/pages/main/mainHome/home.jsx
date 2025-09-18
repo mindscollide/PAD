@@ -70,6 +70,14 @@ const Home = () => {
 //     }
 //   ];
 
+    const complianceOfficerYyActions = useMemo(
+    () => dashboardData?.complianceOfficer?.myActions?.data || [],
+    [dashboardData?.complianceOfficer?.myActions?.data]
+  );
+  const complianceOfficerReconsileTransactions = useMemo(
+    () => dashboardData?.complianceOfficer?.myApprovals?.data || [],
+    [dashboardData?.complianceOfficer?.myApprovals?.data]
+  );
   useEffect(() => {
     if (hasFetched.current) return;
     hasFetched.current = true;
@@ -115,10 +123,12 @@ const Home = () => {
 
     fetchData();
   }, []);
+
   useEffect(() => {
     console.log("dashboardData", dashboardData);
   }, [dashboardData]);
-  console.log("dashboardData", dashboardData);
+
+
   return (
     <div style={{ padding: " 16px 24px 0px 24px " }}>
       {checkRoleMatch(roles, 2) && (
@@ -281,6 +291,85 @@ const Home = () => {
                 buttonClassName={"big-white-card-button"}
                 userRole={"LM"}
                 route={"actions"}
+              />
+            </Col>
+          </Row>
+          <Row gutter={[16, 16]}>
+            <Col xs={24} md={12} lg={12}>
+              <ReportCard
+                mainClassName={"home-reprot-card"}
+                title="Reports"
+                buttonTitle={"See More"}
+                buttonId={"Reports-view-btn-LM"}
+                buttonClassName={"big-white-card-button"}
+                rowButtonClassName={"small-card-light-button"}
+                data={[
+                  {
+                    icon: <Avatar icon={<FileDoneOutlined />} />,
+                    label: "My Compliance",
+                    action: "View Report",
+                  },
+                  {
+                    icon: <Avatar icon={<BarChartOutlined />} />,
+                    label: "My Transactions",
+                    action: "View Report",
+                  },
+                  {
+                    icon: <Avatar icon={<BarChartOutlined />} />,
+                    label: "My Transactions",
+                    action: "View Report",
+                  },
+                ]}
+                userRole={"LM"}
+                route={"reports"}
+              />
+            </Col>
+          </Row>
+        </>
+      )}
+      {checkRoleMatch(roles, 4) && (
+        <>
+          <Row gutter={[16, 16]}>
+            <Col xs={24} md={24} lg={24}>
+              <TextCard
+                className="smallCard"
+                title={
+                  <>
+                    <span id="greeting-text-LM">Hi</span>{" "}
+                    <span id="user-name-LM">{dashboardData?.title}</span>,
+                  </>
+                }
+                subtitle="Good Morning!"
+              />
+            </Col>
+          </Row>
+          <Row gutter={[16, 16]}>
+            <Col xs={24} md={12} lg={12}>
+              <MemoizedBoxCard
+                // warningFlag={true}
+                locationStyle={"up"}
+                title="Reconcile Transactions"
+                buttonId={"Reconcile-transactions-view-btn-co"}
+                mainClassName={"mediumHomeCard"}
+                boxes={complianceOfficerReconsileTransactions}
+                buttonTitle={"See More"}
+                buttonClassName={"big-white-card-button"}
+                userRole={"CO"}
+                route={"reconcile"}
+              />
+            </Col>
+
+            <Col xs={24} md={12} lg={12}>
+              <MemoizedBoxCard
+                buttonId={"my-action-view-btn-co"}
+                locationStyle={"up"}
+                title="My Actions"
+                mainClassName={"mediumHomeCard"}
+                boxes={complianceOfficerYyActions}
+                buttonTitle={"See More"}
+                buttonClassName={"big-white-card-button"}
+                userRole={"CO"}
+                route={"action"}
               />
             </Col>
           </Row>

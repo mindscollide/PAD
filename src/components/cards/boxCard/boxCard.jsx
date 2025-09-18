@@ -120,7 +120,7 @@ const BoxCard = ({
           {normalizedBoxes.map((box, index) => {
             // Resolve colors & alignment based on `type`
             const { bgColor, textLableColor, textCountColor, textAlign } =
-              typeColorMap[box.type?.toLowerCase().replace(/\s+/g, "_")] || {
+              typeColorMap[box.type?.toLowerCase().replace(/[\s-]+/g, "_")] || {
                 bgColor: "#f0f0f0",
                 textLableColor: "#000",
                 textCountColor: "#000",
@@ -175,6 +175,7 @@ const BoxCard = ({
                   >
                     {/* Clock Icon */}
                     <img
+                      draggable={false}
                       src={urgent}
                       alt="urgent"
                       className={styles.urgentImg}

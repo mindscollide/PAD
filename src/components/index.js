@@ -24,3 +24,7 @@ export { default as AcordianTable } from "./tables/accordianTable/acordianTable"
 export { default as ViewCommentModal } from "./modal/viewCommentModal/ViewCommentModal";
 export { default as CommentModal } from "./modal/commentModal/CommentModal";
 export { default as DocumentViewer } from "./documentViewer/documentViewer";
+export { default as BrokerFilterDropdown } from "./dropdowns/filters/BrokerFilterDropdown";
+export { default as BrokerColumnTitle } from "./dropdowns/filters/BrokerColumnTitle";
+export { default as TradeAndPortfolioModal } from "./modal/tradeAndPortfolioModal/TradeAndPortfolioModal";
+export { default as SubmittedModal } from "./modal/submittedModal/SubmittedModal";

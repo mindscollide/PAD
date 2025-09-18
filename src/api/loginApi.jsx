@@ -1,18 +1,6 @@
 // src/api/loginApi.js
-const responseMessages = {
-  ERM_Auth_AuthServiceManager_Login_01: "Login Successful",
-  ERM_Auth_AuthServiceManager_Login_02: "Login Failed",
-  ERM_Auth_AuthServiceManager_Login_03:
-    "User is temporarily disabled and cannot login",
-  ERM_Auth_AuthServiceManager_Login_04: "Account permanently closed",
-  ERM_Auth_AuthServiceManager_Login_05:
-    "Account inactive; requires reactivation",
-  ERM_Auth_AuthServiceManager_Login_06: "An error occurred. Please try again.",
-  ERM_Auth_AuthServiceManager_Login_07: "Please fill both fields",
-};
 
-const getMessage = (code) =>
-  responseMessages[code] || "Something went wrong. Please try again.";
+import { getMessage } from "./utils";
 
 export const login = async ({
   username,

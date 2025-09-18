@@ -38,6 +38,7 @@ export const EmployeePendingApprovalFilter = ({ handleSearch }) => {
    */
   const handleEmployeeApprovalInputChange = (e, setState) => {
     const { name, value } = e.target;
+    console.log("handleEmployeeApprovalInputChange",name)
     // Handle numeric validation for Quantity
     if (name === "Quantity") {
       if (value === "" || allowOnlyNumbers(value)) {

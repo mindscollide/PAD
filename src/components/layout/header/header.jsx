@@ -6,6 +6,7 @@ import style from "./header.module.css";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useSidebarContext } from "../../../context/sidebarContaxt";
 import SearchWithFilter from "../../dropdowns/searchableDropedown/SearchWithPopoverOnly";
+import { useSearchBarContext } from "../../../context/SearchBarContaxt";
 
 const { Header } = Layout;
 
@@ -14,6 +15,8 @@ const Headers = () => {
   const { collapsed, setCollapsed, selectedKey, setSelectedKey } =
     useSidebarContext();
   const location = useLocation();
+  const { resetEmployeeMyApprovalSearch, resetLineManagerApprovalSearch } =
+    useSearchBarContext();
 
   return (
     <Header className={style["custom-header"]}>
@@ -25,9 +28,12 @@ const Headers = () => {
         {/* Left: Logo */}
         <Col xs={24} sm={24} md={24} lg={4} style={{ marginTop: 19.82 }}>
           <img
+            draggable={false}
             onClick={() => {
               navigate("/PAD");
               setSelectedKey("0");
+              resetEmployeeMyApprovalSearch();
+              resetLineManagerApprovalSearch();
             }}
             src={Logo}
             alt="logo"

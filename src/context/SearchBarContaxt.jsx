@@ -31,6 +31,7 @@ export const SearchBarProvider = ({ children }) => {
     tableFilterTrigger: false,
   });
 
+  console.log(employeeMyApprovalSearch, "employeeMyApprovalSearch");
   /**
    * 🔍 Employee My Transaction Filters State
    * Used for filtering data in the Employee My Transaction table.
@@ -44,9 +45,9 @@ export const SearchBarProvider = ({ children }) => {
       mainInstrumentName: "", // Main instrument name for popover or modal
       type: [], // Type filter: ["Buy", "Sell"]
       status: [], // Status filter: ["Pending", "Approved", etc.]
-      broker: [],
+      brokerIDs: [],
       pageSize: "", // Pagination: size of page
-      pageNumber: "", // Pagination: current page number
+      pageNumber: 0, // Pagination: current page number
       filterTrigger: false,
       tableFilterTrigger: false,
     });
@@ -56,15 +57,15 @@ export const SearchBarProvider = ({ children }) => {
    * Used for filtering data in the Employee Portfolio table.
    */
   const [employeePortfolioSearch, setEmployeePortfolioSearch] = useState({
-    instrumentShortName: "", // Name of the instrument short
+    instrumentName: "", // Name of the instrument short
     quantity: "", // Quantity filter
     startDate: null, // Start of date range
     endDate: null, // End of date range
-    mainInstrumentShortName: "", // Main instrument short name for popover or modal
+    mainInstrumentName: "", // Main instrument short name for popover or modal
     type: [], // Type filter: ["Buy", "Sell"]
     broker: [], // broker filter:
     pageSize: "", // Pagination: size of page
-    pageNumber: "", // Pagination: current page number
+    pageNumber: 0, // Pagination: current page number
     filterTrigger: false,
     tableFilterTrigger: false,
   });
@@ -84,7 +85,7 @@ export const SearchBarProvider = ({ children }) => {
       status: [], // Status filter: ["Pending", "Approved", etc.]
       broker: [], // Status filter: ["Pending", "Approved", etc.]
       pageSize: "", // Pagination: size of page
-      pageNumber: "", // Pagination: current page number
+      pageNumber: 0, // Pagination: current page number
       filterTrigger: false,
       tableFilterTrigger: false,
     });
@@ -140,9 +141,9 @@ export const SearchBarProvider = ({ children }) => {
       mainInstrumentName: "",
       type: [],
       status: [],
-      broker: [],
+      brokerIDs: [],
       pageSize: "",
-      pageNumber: "",
+      pageNumber: 0,
       filterTrigger: true,
       tableFilterTrigger: false,
     });
@@ -153,16 +154,16 @@ export const SearchBarProvider = ({ children }) => {
    */
   const resetEmployeePortfolioSearch = () => {
     setEmployeePortfolioSearch({
-      instrumentShortName: "", // Name of the instrument short
+      instrumentName: "", // Name of the instrument short
       quantity: "", // Quantity filter
       startDate: null, // Start of date range
       endDate: null, // End of date range
-      mainInstrumentShortName: "", // Main instrument short name for popover or modal
+      mainInstrumentName: "", // Main instrument short name for popover or modal
       type: [], // Type filter: ["Buy", "Sell"]
       broker: [], // broker filter:
       pageSize: "", // Pagination: size of page
-      pageNumber: "", // Pagination: current page number
-      filterTrigger: true,
+      pageNumber: 0, // Pagination: current page number
+      filterTrigger: false,
       tableFilterTrigger: false,
     });
   };
@@ -181,8 +182,8 @@ export const SearchBarProvider = ({ children }) => {
       status: [],
       broker: [],
       pageSize: "",
-      pageNumber: "",
-      filterTrigger: true,
+      pageNumber: 0,
+      filterTrigger: false,
       tableFilterTrigger: false,
     });
   };
@@ -202,7 +203,7 @@ export const SearchBarProvider = ({ children }) => {
       nature: [], // Type filter: ["Buy", "Sell"]
       status: [], // Status filter: ["Pending", "Approved", etc.]
       pageSize: "", // Pagination: size of page
-      pageNumber: "", // Pagination: current page number
+      pageNumber: 0, // Pagination: current page number
       filterTrigger: true,
       tableFilterTrigger: false,
     });
@@ -214,14 +215,17 @@ export const SearchBarProvider = ({ children }) => {
    */
   const [lineManagerApprovalSearch, setLineManagerApprovalSearch] = useState({
     instrumentName: "", // Name of the instrument
-    quantity: "", // Quantity filter
+    requesterName: "", // requester Name filter
+    quantity: 0,
     date: null, // Single date (could be Date object or string)
     mainInstrumentName: "", // Main instrument name for popover or modal
     type: [], // Type filter: ["Buy", "Sell"]
     status: [], // Status filter: ["Pending", "Approved", etc.]
-    pageSize: "", // Pagination: size of page
-    pageNumber: "", // Pagination: current page number
+    pageSize: 0, // Pagination: size of page
+    pageNumber: 0, // Pagination: current page number
+    totalRecords: 0,
     filterTrigger: false,
+    tableFilterTrigger: false,
   });
 
   /**
@@ -230,14 +234,17 @@ export const SearchBarProvider = ({ children }) => {
   const resetLineManagerApprovalSearch = () => {
     setLineManagerApprovalSearch({
       instrumentName: "",
-      quantity: "",
+      requesterName: "",
       date: null,
       mainInstrumentName: "",
       type: [],
       status: [],
-      pageSize: "",
-      pageNumber: "",
+      pageSize: 0,
+      pageNumber: 0,
+      quantity: 0,
+      totalRecords: 0,
       filterTrigger: true,
+      tableFilterTrigger: false,
     });
   };
 

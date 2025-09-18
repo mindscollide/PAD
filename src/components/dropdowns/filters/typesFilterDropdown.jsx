@@ -10,6 +10,7 @@ import { useApi } from "../../../context/ApiContext";
 import { useNotification } from "../../NotificationProvider/NotificationProvider";
 import { useMyApproval } from "../../../context/myApprovalContaxt";
 import { useDashboardContext } from "../../../context/dashboardContaxt";
+import { useTransaction } from "../../../context/myTransaction";
 
 /**
  * Dropdown for selecting types with local state management.
@@ -27,7 +28,9 @@ const TypeFilterDropdown = ({
   const { addApprovalRequestData } = useDashboardContext();
   const { showLoader } = useGlobalLoader();
   const { showNotification } = useNotification();
-  const { setIsEmployeeMyApproval } = useMyApproval();
+  const { setIsEmployeeMyApproval, setLineManagerApproval } = useMyApproval();
+
+  const { setEmployeeTransactionsData } = useTransaction();
 
   const { callApi } = useApi();
   const typeOptions = getTypeOptions(addApprovalRequestData);
@@ -40,47 +43,68 @@ const TypeFilterDropdown = ({
   };
 
   const handleOk = async () => {
-    setState((prev) => ({
-      ...prev,
-      type: tempSelected,
-    }));
-    console.log("hello test", tempSelected);
     let newdata = tempSelected;
-    console.log("hello test", newdata);
-    await apiCallType({
-      selectedKey,
-      newdata,
-      addApprovalRequestData,
-      state,
-      callApi,
-      showNotification,
-      showLoader,
-      navigate,
-      setIsEmployeeMyApproval,
-    });
+    // we handle employe profolio from here
+    if (selectedKey === "4") {
+      setState((prev) => ({
+        ...prev,
+        type: tempSelected,
+        pageNumber: 0,
+        filterTrigger: true,
+      }));
+    } else {
+      setState((prev) => ({
+        ...prev,
+        type: tempSelected,
+      }));
+      await apiCallType({
+        selectedKey,
+        newdata,
+        addApprovalRequestData,
+        state,
+        callApi,
+        showNotification,
+        showLoader,
+        navigate,
+        setEmployeeTransactionsData,
+        setIsEmployeeMyApproval,
+        setLineManagerApproval,
+      });
+    }
 
     confirm(); // close dropdown
   };
 
   const handleReset = async () => {
     let newdata = [];
-    console.log("hello test", newdata);
-    await apiCallType({
-      selectedKey,
-      newdata,
-      addApprovalRequestData,
-      state,
-      callApi,
-      showNotification,
-      showLoader,
-      navigate,
-      setIsEmployeeMyApproval,
-    });
+    // we handle employe profolio from here
+    if (selectedKey === "4") {
+      setState((prev) => ({
+        ...prev,
+        type: [],
+        pageNumber: 0,
+        filterTrigger: true,
+      }));
+    } else {
+      await apiCallType({
+        selectedKey,
+        newdata,
+        addApprovalRequestData,
+        state,
+        callApi,
+        showNotification,
+        showLoader,
+        navigate,
+        setEmployeeTransactionsData,
+        setIsEmployeeMyApproval,
+        setLineManagerApproval,
+      });
+      setState((prev) => ({
+        ...prev,
+        type: [],
+      }));
+    }
     setTempSelected([]);
-    setState((prev) => ({
-      ...prev,
-      type: [],
-    }));
     clearFilters?.();
     confirm(); // close dropdown
   };
