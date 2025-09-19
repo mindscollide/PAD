@@ -56,6 +56,7 @@ const TypeFilterDropdown = ({
       setState((prev) => ({
         ...prev,
         type: tempSelected,
+        pageNumber: 0,
       }));
       await apiCallType({
         selectedKey,
@@ -102,6 +103,7 @@ const TypeFilterDropdown = ({
       setState((prev) => ({
         ...prev,
         type: [],
+        pageNumber: 0,
       }));
     }
     setTempSelected([]);

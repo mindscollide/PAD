@@ -29,6 +29,7 @@ import {
   mapStatusToIdsForLineManager,
 } from "../../../../components/dropdowns/filters/utils";
 import { useDashboardContext } from "../../../../context/dashboardContaxt";
+import { toYYMMDD } from "../../../../commen/funtions/rejex";
 
 const ApprovalRequest = () => {
   const navigate = useNavigate();
@@ -86,7 +87,7 @@ const ApprovalRequest = () => {
       InstrumentName:
         lineManagerApprovalSearch.instrumentName ||
         lineManagerApprovalSearch.mainInstrumentName,
-      Date: lineManagerApprovalSearch.date || "",
+      Date: toYYMMDD(lineManagerApprovalSearch.date) || "",
       Quantity: lineManagerApprovalSearch.quantity || 0,
       PageNumber: 0,
       Length: lineManagerApprovalSearch.pageSize || 10,
@@ -175,7 +176,7 @@ const ApprovalRequest = () => {
         lineManagerApprovalSearch.instrumentName ||
         lineManagerApprovalSearch.mainInstrumentName ||
         "",
-      Date: lineManagerApprovalSearch.date || "",
+      Date: toYYMMDD(lineManagerApprovalSearch.date) || "",
       Quantity: lineManagerApprovalSearch.quantity || 0,
       StatusIds: statusIds || [],
       TypeIds: TypeIds || [],
@@ -183,11 +184,9 @@ const ApprovalRequest = () => {
       Length: lineManagerApprovalSearch.pageSize || 10,
       RequesterName: lineManagerApprovalSearch.requesterName || "",
     };
-    console.log(normalizedKey, "checkRequqestData");
 
     // 3️⃣ Reset API params for the specific filter being removed
     if (normalizedKey === "requestername") {
-      console.log(requestdata, "checkRequqestData");
       requestdata.RequesterName = "";
       // 5️⃣ Update search state — only reset the specific key + page number
       setLineManagerApprovalSearch((prev) => ({
@@ -199,7 +198,6 @@ const ApprovalRequest = () => {
       normalizedKey === "instrumentname" ||
       normalizedKey === "maininstrumentname"
     ) {
-      console.log("Check Data");
       setLineManagerApprovalSearch((prev) => ({
         ...prev,
         instrumentName: "",
@@ -225,7 +223,6 @@ const ApprovalRequest = () => {
 
     // 4️⃣ Show loader and call API
     showLoader(true);
-    console.log("Check Data");
 
     const data = await SearchApprovalRequestLineManager({
       callApi,
@@ -403,7 +400,7 @@ const ApprovalRequest = () => {
             InstrumentName:
               lineManagerApprovalSearch.instrumentName ||
               lineManagerApprovalSearch.mainInstrumentName,
-            Date: lineManagerApprovalSearch.date || "",
+            Date: toYYMMDD(lineManagerApprovalSearch.date) || "",
             Quantity: lineManagerApprovalSearch.quantity || 0,
             StatusIds: mapStatusToIds(lineManagerApprovalSearch.status),
             TypeIds: TypeIds || [],

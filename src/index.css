@@ -25,7 +25,6 @@ body {
   font-synthesis: none;
 }
 
-
 #root {
   font-family: inherit;
 }
@@ -419,4 +418,15 @@ li.ant-dropdown-menu-item.ant-dropdown-menu-item-only-child:focus {
 }
 .stepperStyles {
   /* gap: 50px !important; */
+}
+
+.accordian-Table-Cell-class .ant-table-tbody .ant-table-row .ant-table-cell {
+  padding: 0px 6px;
+  height: 73px;
+  color: #424242;
+  font-family: "Switzer Variable";
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 100%;
+  vertical-align: middle;
 }

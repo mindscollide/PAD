@@ -25,6 +25,7 @@ import { SearchEmployeeApprovedUploadedPortFolio } from "../../../../../api/prot
 import {
   formatApiDateTime,
   formatCode,
+  toYYMMDD,
 } from "../../../../../commen/funtions/rejex";
 import UploadIcon from "../../../../../assets/img/upload-icon.png";
 import { getEmployeePortfolioColumns } from "./utils";
@@ -83,20 +84,23 @@ const Portfolio = ({ className }) => {
    * @param {Object} [searchState={}] - Current search/filter state
    * @returns {Object} API request payload
    */
-  const buildPortfolioRequest = (searchState = {}) => ({
-    InstrumentName:
-      searchState.mainInstrumentName || searchState.instrumentName || "",
-    Quantity: searchState.quantity ? Number(searchState.quantity) : 0,
-    StartDate: searchState.startDate
-      ? moment(searchState.startDate).format("YYYYMMDD")
-      : "",
-    EndDate: searchState.endDate
-      ? moment(searchState.endDate).format("YYYYMMDD")
-      : "",
-    BrokerIds: Array.isArray(searchState.broker) ? searchState.broker : [],
-    PageNumber: Number(searchState.pageNumber) || 0,
-    Length: Number(searchState.pageSize) || 10,
-  });
+  const buildPortfolioRequest = (searchState = {}) => {
+    const startDate = searchState.startDate
+      ? toYYMMDD(searchState.startDate)
+      : "";
+    const endDate = searchState.endDate ? toYYMMDD(searchState.endDate) : "";
+
+    return {
+      InstrumentName:
+        searchState.mainInstrumentName || searchState.instrumentName || "",
+      Quantity: searchState.quantity ? Number(searchState.quantity) : 0,
+      StartDate: startDate,
+      EndDate: endDate,
+      BrokerIds: Array.isArray(searchState.broker) ? searchState.broker : [],
+      PageNumber: Number(searchState.pageNumber) || 0,
+      Length: Number(searchState.pageSize) || 10,
+    };
+  };
 
   /** Broker dropdown options */
   const brokerOptions = formatBrokerOptions(employeeBasedBrokersData || []);
@@ -229,7 +233,7 @@ const Portfolio = ({ className }) => {
               rotate={isActive ? 180 : 0} // 🔄 rotate when active
             />
           )}
-          expandIconPosition="end"  
+          expandIconPosition="end"
         >
           {instrumentData.map((instrument, idx) => {
             const panelKey = instrument.instrumentId || idx.toString();
