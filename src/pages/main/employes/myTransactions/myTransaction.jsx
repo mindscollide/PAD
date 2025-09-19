@@ -33,6 +33,7 @@ import { useGlobalModal } from "../../../../context/GlobalModalContext";
 import ViewDetailsTransactionModal from "./modals/viewDetailsTransactionModal/ViewDetailsTransactionModal";
 import ViewTransactionCommentModal from "./modals/viewTransactionCommentModal/ViewTransactionCommentModal";
 import { useTableScrollBottom } from "../myApprovals/utill";
+import { toYYMMDD } from "../../../../commen/funtions/rejex";
 
 /**
  * 📄 MyTransaction Component
@@ -95,8 +96,12 @@ const MyTransaction = () => {
         employeeMyTransactionSearch.instrumentName ||
         employeeMyTransactionSearch.mainInstrumentName,
       Quantity: employeeMyTransactionSearch.quantity || 0,
-      StartDate: employeeMyTransactionSearch.startDate || null,
-      EndDate: employeeMyTransactionSearch.endDate || null,
+      StartDate: employeeMyTransactionSearch.startDate
+        ? toYYMMDD(employeeMyTransactionSearch.startDate)
+        : "",
+      EndDate: employeeMyTransactionSearch.endDate
+        ? toYYMMDD(employeeMyTransactionSearch.endDate)
+        : "",
       BrokerIDs: employeeMyTransactionSearch.brokerIDs || [],
       StatusIds: employeeMyTransactionSearch.status || [],
       TypeIds: employeeMyTransactionSearch.type || [],
@@ -201,8 +206,12 @@ const MyTransaction = () => {
         employeeMyTransactionSearch.instrumentName ||
         employeeMyTransactionSearch.mainInstrumentName,
       Quantity: employeeMyTransactionSearch.quantity || 0,
-      StartDate: employeeMyTransactionSearch.startDate || null,
-      EndDate: employeeMyTransactionSearch.endDate || null,
+      StartDate: employeeMyTransactionSearch.startDate
+        ? toYYMMDD(employeeMyTransactionSearch.startDate)
+        : "",
+      EndDate: employeeMyTransactionSearch.endDate
+        ? toYYMMDD(employeeMyTransactionSearch.endDate)
+        : "",
       BrokerIDs: [...(employeeMyTransactionSearch.brokerIDs || [])],
       StatusIds: statusIds || [],
       TypeIds: TypeIds || [],
@@ -483,8 +492,12 @@ const MyTransaction = () => {
               employeeMyTransactionSearch.instrumentName ||
               employeeMyTransactionSearch.mainInstrumentName,
             Quantity: employeeMyTransactionSearch.quantity || 0,
-            StartDate: employeeMyTransactionSearch.startDate || null,
-            EndDate: employeeMyTransactionSearch.endDate || null,
+            StartDate: employeeMyTransactionSearch.startDate
+              ? toYYMMDD(employeeMyTransactionSearch.startDate)
+              : "",
+            EndDate: employeeMyTransactionSearch.endDate
+              ? toYYMMDD(employeeMyTransactionSearch.endDate)
+              : "",
             BrokerIDs: employeeMyTransactionSearch.brokerIDs || [],
             StatusIds: mapStatusToIds(employeeMyTransactionSearch.status),
             TypeIds: TypeIds || [],

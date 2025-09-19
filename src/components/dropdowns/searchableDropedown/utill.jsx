@@ -264,14 +264,13 @@ export const apiCallSearch = async ({
         );
 
         const statusIds = mapStatusToIds(employeeMyApprovalSearch.status);
-        const date = toYYMMDD(employeeMyApprovalSearch.startDate);
 
         const requestdata = {
           InstrumentName:
             employeeMyApprovalSearch.instrumentName ||
             employeeMyApprovalSearch.mainInstrumentName ||
             "",
-          Date: date || "",
+          Date: toYYMMDD(employeeMyApprovalSearch.startDate) || "",
           Quantity: employeeMyApprovalSearch.quantity || 0,
           StatusIds: statusIds || [],
           TypeIds: TypeIds || [],
@@ -306,8 +305,12 @@ export const apiCallSearch = async ({
               employeeMyTransactionSearch.mainInstrumentName ||
               "",
             Quantity: employeeMyTransactionSearch.quantity || 0,
-            StartDate: employeeMyTransactionSearch.startDate || "",
-            EndDate: employeeMyTransactionSearch.endDate || "",
+            StartDate: employeeMyTransactionSearch.startDate
+              ? toYYMMDD(employeeMyTransactionSearch.startDate)
+              : "",
+            EndDate: employeeMyTransactionSearch.endDate
+              ? toYYMMDD(employeeMyTransactionSearch.endDate)
+              : "",
             BrokerIDs: employeeMyTransactionSearch.brokerIDs || [],
             StatusIds: statusIds || [],
             TypeIds: TypeIds || [],
