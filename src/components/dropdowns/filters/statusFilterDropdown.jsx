@@ -61,10 +61,10 @@ const StatusFilterDropdown = ({
   const { setEmployeeTransactionsData } = useTransaction();
   const [filterOption, setFilterOptions] = useState([]);
   // Reset local state on route change
-  useEffect(() => {
-    setTempSelected([]);
-    setFilterOptions([]);
-  }, [location.pathname]);
+  // useEffect(() => {
+  //   setTempSelected([]);
+  //   setFilterOptions([]);
+  // }, [location.pathname]);
   /**
    * Toggles the selection state of a status option.
    * @param {string} status - The status being toggled.
@@ -118,6 +118,8 @@ const StatusFilterDropdown = ({
       setState((prev) => ({
         ...prev,
         status: tempSelected,
+        pageSize:10, // Pagination: size of page
+        pageNumber: 0,
       }));
 
       await apiCallStatus({
@@ -148,7 +150,8 @@ const StatusFilterDropdown = ({
       setState((prev) => ({
         ...prev,
         status: [],
-        pageNumber: 0,
+        pageSize: 0,
+        pageNumber: 10,
         filterTrigger: true,
       }));
     } else {
@@ -169,6 +172,8 @@ const StatusFilterDropdown = ({
       setState((prev) => ({
         ...prev,
         status: [],
+        pageSize: 0,
+        pageNumber: 10,
       }));
     }
     setTempSelected([]);
@@ -176,6 +181,7 @@ const StatusFilterDropdown = ({
     setOpenState(false);
     confirm(); // Close dropdown
   };
+  console.log("selected tempSelected",tempSelected)
 
   return (
     <div className={styles.dropdownContainer}>

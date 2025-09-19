@@ -139,7 +139,6 @@ export const getBorderlessTableColumns = (
     showSorterTooltip: false,
     sortIcon: () => null,
     render: (instrument, record) => {
-      console.log(record, "Checkerrrrr");
       const assetCode = record?.assetType?.assetTypeShortCode;
       const code = instrument?.instrumentCode || "";
       const instrumentName = instrument?.instrumentName || "";
@@ -165,7 +164,6 @@ export const getBorderlessTableColumns = (
                 display: "inline-block",
                 cursor: "pointer",
               }}
-              title={code}
             >
               {code}
             </span>
@@ -352,8 +350,8 @@ export const getBorderlessTableColumns = (
   },
   {
     title: "Time Remaining to Trade",
-    dataIndex: "timeRemaining",
-    key: "timeRemaining",
+    dataIndex: "timeRemainingToTrade",
+    key: "timeRemainingToTrade",
     ellipsis: true,
     align: "center",
     render: (text, record) => {

@@ -32,6 +32,7 @@ import {
   mapBuySellToIds,
   mapStatusToIds,
 } from "../../../../../components/dropdowns/filters/utils";
+import { toYYMMDD } from "../../../../../commen/funtions/rejex";
 
 const PendingApprovals = () => {
   const navigate = useNavigate();
@@ -83,25 +84,28 @@ const PendingApprovals = () => {
   // ----------------------------------------------------------------
   // 🔧 HELPERS
   // ----------------------------------------------------------------
-  const buildPortfolioRequest = (searchState = {}) => ({
-    InstrumentName:
-      searchState.mainInstrumentName || searchState.instrumentName || "",
-    Quantity: searchState.quantity ? Number(searchState.quantity) : 0,
-    StartDate: searchState.startDate
-      ? moment(searchState.startDate).format("YYYYMMDD")
-      : "",
-    StatusIds: mapStatusToIds(searchState.status),
-    TypeIds: mapBuySellToIds(
-      searchState.type,
-      addApprovalRequestData?.[assetType]
-    ),
-    EndDate: searchState.endDate
-      ? moment(searchState.endDate).format("YYYYMMDD")
-      : "",
-    BrokerIds: Array.isArray(searchState.broker) ? searchState.broker : [],
-    PageNumber: Number(searchState.pageNumber) || 0,
-    Length: Number(searchState.pageSize) || 10,
-  });
+  const buildPortfolioRequest = (searchState = {}) => {
+    const startDate = searchState.startDate
+      ? toYYMMDD(searchState.startDate)
+      : "";
+    const endDate = searchState.endDate ? toYYMMDD(searchState.endDate) : "";
+
+    return {
+      InstrumentName:
+        searchState.mainInstrumentName || searchState.instrumentName || "",
+      Quantity: searchState.quantity ? Number(searchState.quantity) : 0,
+      StartDate: startDate,
+      StatusIds: mapStatusToIds(searchState.status),
+      TypeIds: mapBuySellToIds(
+        searchState.type,
+        addApprovalRequestData?.[assetType]
+      ),
+      EndDate: endDate,
+      BrokerIds: Array.isArray(searchState.broker) ? searchState.broker : [],
+      PageNumber: Number(searchState.pageNumber) || 0,
+      Length: Number(searchState.pageSize) || 10,
+    };
+  };
 
   const mergeRows = (prevRows, newRows, replace = false) => {
     if (replace) return newRows;
@@ -115,7 +119,6 @@ const PendingApprovals = () => {
   const fetchPendingApprovals = useCallback(
     async (requestData, replace = false, loader = false) => {
       if (!requestData || typeof requestData !== "object") return;
-      console.log("fetchPendingApprovals");
       if (!loader) showLoader(true);
 
       try {

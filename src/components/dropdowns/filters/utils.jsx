@@ -151,7 +151,6 @@ export const buildApprovalRequestData = ({
     mainInstrumentName = "",
     startDate,
     quantity = 0,
-    pageSize = 10,
     requesterName = "",
   } = state;
 
@@ -162,7 +161,7 @@ export const buildApprovalRequestData = ({
     StatusIds: statusIds,
     TypeIds: typeIds,
     PageNumber: 0,
-    Length: pageSize,
+    Length: 10,
     ...(includeRequester && { RequesterName: requesterName }),
   };
 };
@@ -176,17 +175,22 @@ export const buildApprovalRequestData = ({
  * @param {number[]} params.typeIds - Type IDs.
  * @returns {Object} API request payload.
  */
-const buildTransactionRequestData = ({ state, statusIds, typeIds }) => ({
-  InstrumentName: state.instrumentName || state.mainInstrumentName,
-  Quantity: state.quantity || 0,
-  StartDate: state.startDate || null,
-  EndDate: state.endDate || null, // ⚠️ check if this should be state.endDate
-  BrokerIDs: [],
-  StatusIds: statusIds || [],
-  TypeIds: typeIds || [],
-  PageNumber: 0,
-  Length: state.pageSize || 10,
-});
+const buildTransactionRequestData = ({ state, statusIds, typeIds }) => {
+  const startDate = state.startDate ? toYYMMDD(state.startDate) : "";
+  const endDate = state.endDate ? toYYMMDD(state.endDate) : "";
+
+  return {
+    InstrumentName: state.instrumentName || state.mainInstrumentName || "",
+    Quantity: state.quantity || 0,
+    StartDate: startDate,
+    EndDate: endDate,
+    BrokerIDs: state.brokerIds || [], // ✅ added dynamic support
+    StatusIds: statusIds || [],
+    TypeIds: typeIds || [],
+    PageNumber: 0,
+    Length: state.pageSize || 10,
+  };
+};
 
 // -----------------------------------------------------------------------------
 // 📌 API Call Handlers
@@ -328,29 +332,35 @@ export const apiCallStatus = async ({
       setIsEmployeeMyApproval(data);
       break;
 
-    case "2": // Employee Transactions
-      // ✅ Only allow specific statuses for case "2"
-      const allowedStatusesForTransactions = [
-        "Pending",
-        "Compliant",
-        "Non-Compliant",
-      ];
-      const filteredStatuses = newdata.filter((s) =>
-        allowedStatusesForTransactions.includes(s)
-      );
-      statusIds = mapStatusToIds(filteredStatuses);
-      console.log(statusIds, "NotCompliantNotCompliant");
+    case "2":
+      {
+        // Employee Transactions
+        // ✅ Only allow specific statuses for case "2"
+        const allowedStatusesForTransactions = [
+          "Pending",
+          "Compliant",
+          "Non-Compliant",
+        ];
+        const filteredStatuses = newdata.filter((s) =>
+          allowedStatusesForTransactions.includes(s)
+        );
+        statusIds = mapStatusToIds(filteredStatuses);
 
-      requestdata = buildTransactionRequestData({ state, statusIds, typeIds });
-      showLoader(true);
-      data = await SearchEmployeeTransactionsDetails({
-        callApi,
-        showNotification,
-        showLoader,
-        requestdata,
-        navigate,
-      });
-      setEmployeeTransactionsData(data);
+        requestdata = buildTransactionRequestData({
+          state,
+          statusIds,
+          typeIds,
+        });
+        showLoader(true);
+        data = await SearchEmployeeTransactionsDetails({
+          callApi,
+          showNotification,
+          showLoader,
+          requestdata,
+          navigate,
+        });
+        setEmployeeTransactionsData(data);
+      }
       break;
 
     case "3":
