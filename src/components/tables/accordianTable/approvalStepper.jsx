@@ -1,55 +1,79 @@
-import React from 'react';
-import { Steps } from 'antd';
-import styles from './ApprovalStepper.module.css';
-
-const { Step } = Steps;
+import React from "react";
+import styles from "./ApprovalStepper.module.css";
+import CheckIcon from "../../../assets/img/Check.png";
+import EllipsesIcon from "../../../assets/img/Ellipses.png";
+import CrossIcon from "../../../assets/img/Cross.png";
+import Dollar from "../../../assets/img/Dollar.png";
+import SendForApproval from "../../../assets/img/SendForApproval.png";
+import Resubmitted from "../../../assets/img/Resubmitted.png";
+import NotTraded from "../../../assets/img/NotTraded.png";
+import EscaltedOn from "../../../assets/img/EscaltedOn.png";
+import Decline from "../../../assets/img/Cross.png";
+import { Stepper, Step } from "react-form-stepper";
 
 const ApprovalStepper = ({ trail }) => {
-  // Transform your trail data to match the image structure
-  const formattedSteps = trail.map((step, index) => {
-    let status, title, subTitle;
-    
-    if (step.status.includes('by')) {
-      const [action, person] = step.status.split(' by ');
-      title = `${action} by`;
-      subTitle = person;
-    } else {
-      title = step.status;
+  // map type to actual <img>
+  const getIcon = (type, altText) => {
+    switch (type) {
+      case "check":
+        return <img src={CheckIcon} alt={altText} width={50} height={50} />;
+      case "ellipsis":
+        return <img src={EllipsesIcon} alt={altText} width={50} height={50} />;
+      case "cross":
+        return <img src={CrossIcon} alt={altText} width={50} height={50} />;
+      case "Dollar":
+        return <img src={Dollar} alt={altText} width={50} height={50} />;
+      case "Approval":
+        return (
+          <img src={SendForApproval} alt={altText} width={50} height={50} />
+        );
+      case "Resubmitted":
+        return <img src={Resubmitted} alt={altText} width={50} height={50} />;
+      case "NotTraded":
+        return <img src={NotTraded} alt={altText} width={50} height={50} />;
+      case "EscaltedOn":
+        return <img src={EscaltedOn} alt={altText} width={50} height={50} />;
+      case "Decline":
+        return <img src={Decline} alt={altText} width={50} height={50} />;
+      default:
+        return null;
     }
-    
-    return {
-      key: index,
-      status: step.status.includes('Declined') ? 'error' : 
-              step.status.includes('Approved') ? 'finish' : 'process',
-      icon: step.icon,
-      title,
-      subTitle,
-      date: step.date,
-    };
-  });
+  };
 
   return (
     <div className={styles.stepperContainer}>
-      <Steps direction="horizontal" current={trail.length - 1}>
-        {formattedSteps.map((step) => (
+      <Stepper
+        activeStep={trail.length - 1} // highlight the last step as active
+        connectorStyleConfig={{
+          activeColor: "#00640A", // green line for completed steps
+          completedColor: "#00640A",
+          disabledColor: "#424242", // gray line for upcoming steps
+          size: 1,
+        }}
+        styleConfig={{
+          size: "2em", // step circle size
+          circleFontSize: "0px", // hide default numbers
+          labelFontSize: "14px",
+          borderRadius: "50%",
+        }}
+      >
+        {trail.map((step, index) => (
           <Step
-            key={step.key}
-            status={step.status}
-            icon={<span className={styles.stepIcon}>{step.icon}</span>}
-            title={
-              <div className={styles.stepTitle}>
-                <span className={styles.actionType}>{step.title}</span>
-                {step.subTitle && (
-                  <span className={styles.approverName}> {step.subTitle}</span>
-                )}
+            key={index}
+            label={
+              <div className={styles.customLabel}>
+                <div className={styles.stepCircle}>
+                  {getIcon(step.iconType, step.status)}
+                </div>
+                <div className={styles.stepTitle}>{step.user}</div>
+                <div className={styles.stepDesc}>
+                  {step.date} | {step.status}
+                </div>
               </div>
-            }
-            description={
-              <div className={styles.stepDate}>{step.date}</div>
             }
           />
         ))}
-      </Steps>
+      </Stepper>
     </div>
   );
 };
