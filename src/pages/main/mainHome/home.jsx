@@ -250,7 +250,7 @@ const Home = () => {
               <MemoizedBoxCard
                 // warningFlag={true}
                 locationStyle={"up"}
-                title="Approvals Request"
+                title="Approval Requests"
                 buttonId={"Approvals-view-btn-LM"}
                 mainClassName={"mediumHomeCard"}
                 boxes={lineManagerApprovals}
