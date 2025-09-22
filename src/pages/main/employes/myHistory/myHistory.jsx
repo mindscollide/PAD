@@ -1,12 +1,19 @@
 import React, { useMemo, useState } from "react";
-import { Button, Input, Row, Col } from "antd";
+import { Button, Input, Row, Col, Menu } from "antd";
 import { SearchOutlined, DownloadOutlined } from "@ant-design/icons";
-import { AcordianTable, PageLayout } from "../../../../components";
+import {
+  AcordianTable,
+  ComonDropDown,
+  PageLayout,
+} from "../../../../components";
+import CustomButton from "../../../../components/buttons/button";
 import style from "./myHistory.module.css";
 import EmptyState from "../../../../components/emptyStates/empty-states";
 import CheckIcon from "../../../../assets/img/Check.png";
 import EllipsesIcon from "../../../../assets/img/Ellipses.png";
 import CrossIcon from "../../../../assets/img/Cross.png";
+import PDF from "../../../../assets/img/pdf.png";
+import Excel from "../../../../assets/img/xls.png";
 import { Stepper, Step } from "react-form-stepper";
 import { getColumns } from "./utils";
 import { useSearchBarContext } from "../../../../context/SearchBarContaxt";
@@ -15,6 +22,8 @@ const MyHistory = () => {
   const [searchText, setSearchText] = useState("");
   const [dateRange, setDateRange] = useState([]);
   const [sortedInfo, setSortedInfo] = useState({});
+
+  const [open, setOpen] = useState(false);
 
   const {
     employeeMyHistorySearch,
@@ -31,24 +40,43 @@ const MyHistory = () => {
       type: "Buy",
       status: "Approved",
       quantity: 1000,
+
       trail: [
         {
           status: "Requested",
           user: "Ali Khan",
           date: "2025-08-06",
+          iconType: "Approval",
+        },
+        {
+          status: "In Review",
+          user: "Muhammad Saif ul Islam Yousuf Zai",
+          date: "2025-08-07",
           iconType: "check",
+        },
+        {
+          status: "In Review",
+          user: "Syed Muhammad Aun Raza Naqvi",
+          date: "2025-08-07",
+          iconType: "check",
+        },
+        {
+          status: "In Review",
+          user: "Muhammad Saroush Yahya Chisti",
+          date: "2025-08-07",
+          iconType: "NotTraded",
         },
         {
           status: "In Review",
           user: "Sara Ahmed",
           date: "2025-08-07",
-          iconType: "check",
+          iconType: "Resubmitted",
         },
         {
-          status: "Approved",
-          user: "Emily Johnson",
+          status: "In Review",
+          user: "Sara Ahmed",
           date: "2025-08-07",
-          iconType: "check",
+          iconType: "Decline",
         },
       ],
     },
@@ -65,13 +93,38 @@ const MyHistory = () => {
           status: "Requested",
           user: "Ali Khan",
           date: "2025-08-06",
-          iconType: "check",
+          iconType: "Approval",
         },
         {
           status: "In Review",
           user: "Sara Ahmed",
           date: "2025-08-07",
-          iconType: "ellipsis",
+          iconType: "check",
+        },
+        {
+          status: "Approved",
+          user: "Emily Johnson",
+          date: "2025-08-07",
+          iconType: "check",
+        },
+        {
+          status: "Approved",
+          user: "Emily Johnson",
+          date: "2025-08-07",
+          iconType: "check",
+        },
+        {
+          status: "Approved",
+          user: "Emily Johnson",
+          date: "2025-08-07",
+          iconType: "Dollar",
+        },
+        ,
+        {
+          status: "In Review",
+          user: "Sara Ahmed",
+          date: "2025-08-07",
+          iconType: "EscaltedOn",
         },
       ],
     },
@@ -108,70 +161,18 @@ const MyHistory = () => {
     });
   }, [searchText, dateRange]);
 
-  const getIcon = (type) => {
-    console.log("getIcon called with:", type);
+  const getIcon = (type, altText) => {
     switch (type) {
-      case "completed":
-        return <img src={CheckIcon} alt="Completed" />;
-      case "inProgress":
-        return <img src={EllipsesIcon} alt="In Progress" />;
+      case "check":
+        return <img src={CheckIcon} alt={altText} width={24} height={24} />;
+      case "ellipsis":
+        return <img src={EllipsesIcon} alt={altText} width={24} height={24} />;
+      case "cross":
+        return <img src={CrossIcon} alt={altText} width={24} height={24} />;
       default:
         return null;
     }
   };
-
-  const MyStep = ({ type }) => {
-    console.log("Step rendering with type:", type);
-    return <div>{getIcon(type)}</div>;
-  };
-
-  // 🔹 Render Stepper inside accordion row
-  const renderTrailStepper = (trail) => (
-    <Row>
-      <div className={style.backgrounColorOfStepper}>
-        <Stepper
-          activeStep={trail.length - 1}
-          connectorStyleConfig={{
-            activeColor: "#00640A",
-            completedColor: "#00640A",
-            disabledColor: "#d9d9d9",
-            size: 1,
-          }}
-          styleConfig={{
-            size: "2em",
-            circleFontSize: "0px",
-            labelFontSize: "15px",
-            borderRadius: "50%",
-          }}
-        >
-          {trail.map((step, index) => (
-            <Step
-              key={index}
-              label={
-                <div className={style.customlabel}>
-                  <div className={style.customtitle}>{step.user}</div>
-                  <div className={style.customdesc}>
-                    {step.date} | {step.status}
-                  </div>
-                </div>
-              }
-              children={
-                <div className={style.stepCircle}>
-                  <img
-                    src={getIcon(step.iconType)}
-                    alt={step.status}
-                    width={24}
-                    height={24}
-                    className={style.circleImg}
-                  />
-                </div>
-              }
-            />
-          ))}
-        </Stepper>
-      </div>
-    </Row>
-  );
 
   return (
     <PageLayout>
@@ -185,25 +186,39 @@ const MyHistory = () => {
           <Col>
             <span className={style["heading"]}>My History</span>
           </Col>
-          <Col>
-            <Button
-              type="primary"
+          <Col style={{ position: "relative" }}>
+            <CustomButton
+              text={"Export"}
+              className="big-light-button"
               icon={<DownloadOutlined />}
-              style={{ marginRight: 8 }}
-            >
-              Export
-            </Button>
+              iconPosition="end"
+              onClick={() => setOpen((prev) => !prev)}
+            />
+
+            {open && (
+              <div className={style.dropdownExport}>
+                <div className={style.dropdownItem}>
+                  <img src={PDF} alt="PDF" draggable={false} />
+                  <span>Export PDF</span>
+                </div>
+                <div className={style.dropdownItem}>
+                  <img src={Excel} alt="Excel" draggable={false} />
+                  <span>Export Excel</span>
+                </div>
+                <div className={style.dropdownItem}>
+                  <img src={PDF} alt="PDF" draggable={false} />
+                  <span>Export CSV</span>
+                </div>
+              </div>
+            )}
           </Col>
         </Row>
         {/* Table */}
         {rawData.length > 0 ? (
           <AcordianTable
-            className="accordian-table-blue"
+            className={style["accordian-table-blue"]}
             columns={columns}
             dataSource={filteredData}
-            expandable={{
-              expandedRowRender: (record) => renderTrailStepper(record.trail),
-            }}
             onChange={(pagination, filters, sorter) => {
               setSortedInfo(sorter);
             }}
