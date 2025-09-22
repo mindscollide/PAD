@@ -203,6 +203,7 @@ const TradeAndPortfolioModal = ({
               <Select
                 mode="multiple"
                 placeholder="Select"
+                showSearch
                 value={selectedBrokerIDs}
                 onChange={handleBrokerChange}
                 options={brokerOptions}
@@ -220,8 +221,14 @@ const TradeAndPortfolioModal = ({
                       style={{ marginRight: 8 }}
                     />
                     {option.data.raw.brokerName}
+                    {/* 👈 label is plain text now */}
                   </div>
                 )}
+                filterOption={(input, option) =>
+                  option?.searchText
+                    ?.toLowerCase()
+                    .includes(input.toLowerCase())
+                }
               />
             </Col>
           </Row>
