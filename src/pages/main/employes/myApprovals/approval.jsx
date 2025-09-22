@@ -183,7 +183,7 @@ const Approval = () => {
         employeeMyApprovalSearch.instrumentName ||
         employeeMyApprovalSearch.mainInstrumentName ||
         "",
-      Date: toYYMMDD(employeeMyApprovalSearch.startDate)|| "",
+      Date: toYYMMDD(employeeMyApprovalSearch.startDate) || "",
       Quantity: employeeMyApprovalSearch.quantity || 0,
       StatusIds: statusIds || [],
       TypeIds: TypeIds || [],
@@ -212,7 +212,8 @@ const Approval = () => {
       }));
       requestdata.InstrumentName = "";
     } else if (normalizedKey === "startdate") {
-      requestdata.StartDate = "";
+      console.log("normalizedKey", normalizedKey);
+      requestdata.Date = "";
       setEmployeeMyApprovalSearch((prev) => ({
         ...prev,
         startdate: "",
@@ -222,6 +223,7 @@ const Approval = () => {
 
     // 4️⃣ Show loader and call API
     showLoader(true);
+    console.log("normalizedKey", requestdata);
 
     const data = await SearchTadeApprovals({
       callApi,
