@@ -54,6 +54,7 @@ const ViewDetailModal = () => {
 
   const { allInstrumentsData, employeeBasedBrokersData } =
     useDashboardContext();
+  console.log(selectedViewDetail, "selectedViewDetail");
 
   console.log(viewDetailsModalData, "viewDetailsModalData555");
 
@@ -314,7 +315,7 @@ const ViewDetailModal = () => {
                     <label className={styles.viewDetailSubLabels}>
                       {/* status 3 is Approved */}
                       {statusData.label === "Approved" ? (
-                        <>{selectedViewDetail?.timeRemaining}</>
+                        <>{selectedViewDetail?.timeRemainingToTrade}</>
                       ) : (
                         <>
                           <span className={styles.customTag}>
