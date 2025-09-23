@@ -351,7 +351,7 @@ export const SearchBarProvider = ({ children }) => {
       pageSize: 0,
       pageNumber: 0,
       totalRecords: 0,
-      filterTrigger: true,
+      filterTrigger: false,
       tableFilterTrigger: false,
     }));
 

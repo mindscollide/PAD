@@ -32,7 +32,7 @@ export const ReconcileProvider = ({ children }) => {
    *
    * @type {[string, function]}
    */
-  const [activeTab, setActiveTab] = useState("Transactions");
+  const [activeTab, setActiveTab] = useState("transactions");
 
   /**
    * Controls visibility of the "Compliance Officer Reconcile Transaction" modal.

@@ -33,6 +33,7 @@ import {
   mapStatusToIds,
 } from "../../../../../components/dropdowns/filters/utils";
 import { toYYMMDD } from "../../../../../commen/funtions/rejex";
+import { SearchComplianceOfficerReconcileTransactionRequest } from "../../../../../api/reconsile";
 
 /**
  * 📌 ReconcileTransaction
@@ -140,9 +141,9 @@ const ReconcileTransaction = () => {
     async (requestData, replace = false, loader = false) => {
       if (!requestData || typeof requestData !== "object") return;
       if (!loader) showLoader(true);
-
+      console.log("requestData", requestData);
       try {
-        const res = await SearchEmployeePendingUploadedPortFolio({
+        const res = await SearchComplianceOfficerReconcileTransactionRequest({
           callApi,
           showNotification,
           showLoader,

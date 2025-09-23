@@ -23,11 +23,9 @@ import { useReconcileContext } from "../../../../../context/reconsileContax";
 import { useNotification } from "../../../../../components/NotificationProvider/NotificationProvider";
 import { useTableScrollBottom } from "../../../employes/myApprovals/utill";
 
-// 🔹 API
-// import { SearchReconcilePortfolio } from "../../../../../api/portfolioApi";
-
 // 🔹 Helpers
 import { toYYMMDD } from "../../../../../commen/funtions/rejex";
+import { SearchComplianceOfficerReconcilePortfolioRequest } from "../../../../../api/reconsile";
 
 /**
  * 📌 ReconcilePortfolio
@@ -95,12 +93,13 @@ const ReconcilePortfolio = () => {
     const endDate = searchState.endDate ? toYYMMDD(searchState.endDate) : "";
 
     return {
-      PortfolioName: searchState.portfolioName || "",
+      RequesterName: searchState.requesterName || "",
       InstrumentName: searchState.instrumentName || "",
       Quantity: searchState.quantity ? Number(searchState.quantity) : 0,
       StartDate: startDate,
       EndDate: endDate,
       StatusIds: searchState.status || [],
+      TypeIds: searchState.type || [],
       PageNumber: Number(searchState.pageNumber) || 0,
       Length: Number(searchState.pageSize) || 10,
     };
@@ -125,14 +124,13 @@ const ReconcilePortfolio = () => {
       if (!loader) showLoader(true);
 
       try {
-        const res = [];
-        // const res = await SearchReconcilePortfolio({
-        //   callApi,
-        //   showNotification,
-        //   showLoader,
-        //   requestdata: requestData,
-        //   navigate,
-        // });
+        const res = await SearchComplianceOfficerReconcilePortfolioRequest({
+          callApi,
+          showNotification,
+          showLoader,
+          requestdata: requestData,
+          navigate,
+        });
 
         const portfolios = Array.isArray(res?.portfolios) ? res.portfolios : [];
         const mapped = mapToTableRows(portfolios);
@@ -225,6 +223,7 @@ const ReconcilePortfolio = () => {
       const data = buildPortfolioRequest(
         complianceOfficerReconcilePortfolioSearch
       );
+      console.log("resetComplianceOfficerReconcilePortfoliosSearch");
       fetchPortfolios(data, true);
       setComplianceOfficerReconcilePortfolioSearch((prev) => ({
         ...prev,
@@ -239,6 +238,7 @@ const ReconcilePortfolio = () => {
   // ----------------------------------------------------------------
   // 🔄 INFINITE SCROLL
   // ----------------------------------------------------------------
+
   useTableScrollBottom(
     async () => {
       if (
@@ -254,13 +254,14 @@ const ReconcilePortfolio = () => {
           PageNumber: complianceOfficerReconcilePortfolioSearch.pageNumber || 0,
           Length: 10,
         };
-        await fetchPortfolios(requestData, false, true);
+    console.log("resetComplianceOfficerReconcilePortfoliosSearch");
+        await fetchPortfolios(requestData, false, true); // append mode
         setComplianceOfficerReconcilePortfolioSearch((prev) => ({
           ...prev,
           pageNumber: (prev.pageNumber || 0) + 10,
         }));
       } catch (error) {
-        console.error("❌ Error loading more portfolios:", error);
+        console.error("❌ Error loading more approvals:", error);
       } finally {
         setLoadingMore(false);
       }
@@ -268,7 +269,6 @@ const ReconcilePortfolio = () => {
     0,
     "border-less-table-blue"
   );
-
   // ----------------------------------------------------------------
   // 🔄 INITIAL LOAD (on mount)
   // ----------------------------------------------------------------
@@ -277,6 +277,7 @@ const ReconcilePortfolio = () => {
     didFetchRef.current = true;
 
     const requestData = buildPortfolioRequest({ PageNumber: 0, Length: 10 });
+    console.log("resetComplianceOfficerReconcilePortfoliosSearch");
     fetchPortfolios(requestData, true);
 
     try {
