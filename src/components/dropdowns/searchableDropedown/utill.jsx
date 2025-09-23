@@ -9,6 +9,7 @@ import {
   mapStatusToIds,
   mapStatusToIdsForLineManager,
 } from "../filters/utils";
+import { ComplianceReconcileFilter } from "./ComplianceReconsile";
 import { EmployeeMyApprovalFilter } from "./EmployeeMyApprovalFilter";
 import { EmployeePendingApprovalFilter } from "./EmployeePendingApprovalFilter";
 import { EmployeePortfolioFilter } from "./EmployeePortfolioFilter";
@@ -27,11 +28,14 @@ import { LineManagerApprovalFilter } from "./LineManagerApprovalFilter";
 export const getMainSearchInputValueByKey = (
   selectedKey,
   activeTab,
+  reconcileActiveTab,
   employeeMyApprovalSearch,
   employeeMyTransactionSearch,
   employeePortfolioSearch,
   employeePendingApprovalSearch,
-  lineManagerApprovalSearch
+  lineManagerApprovalSearch,
+  complianceOfficerReconcilePortfolioSearch,
+  complianceOfficerReconcileTransactionsSearch
 ) => {
   switch (selectedKey) {
     case "1":
@@ -44,6 +48,15 @@ export const getMainSearchInputValueByKey = (
           return employeePortfolioSearch.mainInstrumentName;
         case "pending":
           return employeePendingApprovalSearch.mainInstrumentName;
+        default:
+          return "";
+      }
+    case "9":
+      switch (reconcileActiveTab) {
+        case "transactions":
+          return complianceOfficerReconcileTransactionsSearch.mainInstrumentName;
+        case "portfolio":
+          return complianceOfficerReconcilePortfolioSearch.mainInstrumentName;
         default:
           return "";
       }
@@ -61,12 +74,15 @@ export const getMainSearchInputValueByKey = (
 export const handleMainInstrumentChange = (
   selectedKey,
   activeTab,
+  reconcileActiveTab,
   value,
   setEmployeeMyApprovalSearch,
   setEmployeeMyTransactionSearch,
   setEmployeePortfolioSearch,
   setEmployeePendingApprovalSearch,
-  setLineManagerApprovalSearch
+  setLineManagerApprovalSearch,
+  setComplianceOfficerReconcilePortfolioSearch,
+  setComplianceOfficerReconcileTransactionsSearch
 ) => {
   switch (selectedKey) {
     case "1":
@@ -111,6 +127,29 @@ export const handleMainInstrumentChange = (
         mainInstrumentName: value,
       }));
       break;
+    case "9":
+      switch (reconcileActiveTab) {
+        case "transactions":
+          setComplianceOfficerReconcileTransactionsSearch((prev) => ({
+            ...prev,
+            mainInstrumentName: value,
+          }));
+          break;
+        case "portfolio":
+          setComplianceOfficerReconcilePortfolioSearch((prev) => ({
+            ...prev,
+            mainInstrumentName: value,
+          }));
+          break;
+        default:
+          setComplianceOfficerReconcileTransactionsSearch((prev) => ({
+            ...prev,
+            mainInstrumentShortName: value,
+          }));
+      }
+
+      break;
+
     // Add more cases for other selectedKeys if needed
 
     default:
@@ -122,11 +161,14 @@ export const handleMainInstrumentChange = (
 export const handleSearchMainInputReset = ({
   selectedKey,
   activeTab,
+  reconcileActiveTab,
   setEmployeeMyApprovalSearch,
   setEmployeeMyTransactionSearch,
   setEmployeePortfolioSearch,
   setEmployeePendingApprovalSearch,
   setLineManagerApprovalSearch,
+  setComplianceOfficerReconcilePortfolioSearch,
+  setComplianceOfficerReconcileTransactionsSearch,
 }) => {
   switch (selectedKey) {
     case "1":
@@ -145,12 +187,40 @@ export const handleSearchMainInputReset = ({
     case "4":
       switch (activeTab) {
         case "portfolio":
-          setEmployeePortfolioSearch((prev) => ({
+          setComplianceOfficerReconcileTransactionsSearch((prev) => ({
             ...prev,
             mainInstrumentName: "",
           }));
           break;
         case "pending":
+          setComplianceOfficerReconcilePortfolioSearch((prev) => ({
+            ...prev,
+            mainInstrumentName: "",
+          }));
+          break;
+        default:
+          setComplianceOfficerReconcileTransactionsSearch((prev) => ({
+            ...prev,
+            mainInstrumentShortName: "",
+          }));
+      }
+
+      break;
+    case "6":
+      setLineManagerApprovalSearch((prev) => ({
+        ...prev,
+        mainInstrumentName: "",
+      }));
+      break;
+       case "9":
+      switch (reconcileActiveTab) {
+        case "transactions":
+          setEmployeePortfolioSearch((prev) => ({
+            ...prev,
+            mainInstrumentName: "",
+          }));
+          break;
+        case "portfolio":
           setEmployeePendingApprovalSearch((prev) => ({
             ...prev,
             mainInstrumentName: "",
@@ -164,12 +234,6 @@ export const handleSearchMainInputReset = ({
       }
 
       break;
-    case "6":
-      setLineManagerApprovalSearch((prev) => ({
-        ...prev,
-        mainInstrumentName: "",
-      }));
-      break;
 
     default:
       break;
@@ -180,6 +244,7 @@ export const handleSearchMainInputReset = ({
 export const renderFilterContent = (
   selectedKey,
   activeTab,
+  reconcileActiveTab,
   handleSearch,
   setVisible
 ) => {
@@ -227,6 +292,14 @@ export const renderFilterContent = (
       return (
         <LineManagerApprovalFilter
           handleSearch={handleSearch}
+          setVisible={setVisible}
+        />
+      );
+    case "9":
+      return (
+        <ComplianceReconcileFilter
+          handleSearch={handleSearch}
+          activeTab={reconcileActiveTab}
           setVisible={setVisible}
         />
       );

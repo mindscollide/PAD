@@ -20,58 +20,60 @@ import styles from "./SearchWithPopoverOnly.module.css";
 import { useSidebarContext } from "../../../context/sidebarContaxt";
 import { useSearchBarContext } from "../../../context/SearchBarContaxt";
 import { usePortfolioContext } from "../../../context/portfolioContax";
+import { useReconcileContext } from "../../../context/reconsileContax";
 import { removeFirstSpace } from "../../../commen/funtions/rejex";
 
 /**
- * SearchWithPopoverOnly
- * ----------------------
- * A search input with an attached popover filter for refining search results.
+ * 🔎 SearchWithPopoverOnly
  *
- * Features:
- * - Main search input bound to different context states (depends on `selectedKey`).
- * - Popover filter with extra options (date, quantity, etc.).
- * - Automatically adapts styling when sidebar is collapsed.
- * - Triggers search handlers on Enter key or filter submission.
+ * A reusable search input with:
+ * - Popover filter panel
+ * - Integration with multiple search contexts (Employee, Line Manager, Compliance Officer, etc.)
+ * - Automatic handling of portfolio/pending approval tabs
+ *
+ * Props: none (relies on global contexts)
  */
 const SearchWithPopoverOnly = () => {
-  /** Sidebar context → provides collapse state and active tab key */
+  // -------------------------
+  // ✅ Context hooks
+  // -------------------------
   const { collapsed, selectedKey } = useSidebarContext();
+  const { activeTab } = usePortfolioContext(); // Portfolio / Pending
+  const { activeTab: reconcileActiveTab } = useReconcileContext(); // Transactions / Portfolio
 
-  /** Local state → controls filter popover visibility */
-  const [visible, setVisible] = useState(false);
-
-  /** Portfolio context → tells if we're in portfolio or pending approval tab */
-  const { activeTab } = usePortfolioContext();
-
-  /** Search context → provides search state + setters for different modules */
   const {
     employeeMyApprovalSearch,
     setEmployeeMyApprovalSearch,
-    resetEmployeeMyApprovalSearch,
-
     employeeMyTransactionSearch,
     setEmployeeMyTransactionSearch,
-    resetEmployeeMyTransactionSearch,
-
     employeePortfolioSearch,
     setEmployeePortfolioSearch,
-    resetEmployeePortfolioSearch,
-
     employeePendingApprovalSearch,
     setEmployeePendingApprovalSearch,
-    resetEmployeePendingApprovalSearch,
-
     lineManagerApprovalSearch,
     setLineManagerApprovalSearch,
+    complianceOfficerReconcileTransactionsSearch,
+    setComplianceOfficerReconcileTransactionsSearch,
+    complianceOfficerReconcilePortfolioSearch,
+    setComplianceOfficerReconcilePortfolioSearch,
   } = useSearchBarContext();
 
+  // -------------------------
+  // ✅ Local state
+  // -------------------------
+  const [visible, setVisible] = useState(false);
+
+  // ----------------------------------------------------------------
+  // 🔧 HELPERS
+  // ----------------------------------------------------------------
+
   /**
-   * Runs when filter options inside popover are applied.
-   * Resets pagination and triggers table filter refresh.
+   * Apply popover filters (e.g., date, quantity).
+   * Triggers a context-specific search.
    */
   const handleSearch = () => {
     switch (selectedKey) {
-      case "1": // Employee My Approval
+      case "1": // Employee → My Approval
         setEmployeeMyApprovalSearch((prev) => ({
           ...prev,
           mainInstrumentName: "",
@@ -80,7 +82,7 @@ const SearchWithPopoverOnly = () => {
         }));
         break;
 
-      case "2": // Employee My Transaction
+      case "2": // Employee → My Transaction
         setEmployeeMyTransactionSearch((prev) => ({
           ...prev,
           mainInstrumentName: "",
@@ -89,7 +91,7 @@ const SearchWithPopoverOnly = () => {
         }));
         break;
 
-      case "4": // Employee Portfolio / Pending Approval
+      case "4": // Employee → Portfolio / Pending
         if (activeTab === "portfolio") {
           setEmployeePortfolioSearch((prev) => ({
             ...prev,
@@ -100,6 +102,7 @@ const SearchWithPopoverOnly = () => {
         } else if (activeTab === "pending") {
           setEmployeePendingApprovalSearch((prev) => ({
             ...prev,
+            mainInstrumentName: "",
             pageNumber: 0,
             filterTrigger: true,
           }));
@@ -114,24 +117,40 @@ const SearchWithPopoverOnly = () => {
         }));
         break;
 
-      default: // fallback → Employee My Approval
+      case "9": // Compliance Officer → Reconcile
+        if (reconcileActiveTab === "transactions") {
+          setComplianceOfficerReconcileTransactionsSearch((prev) => ({
+            ...prev,
+            mainInstrumentName: "",
+            pageNumber: 0,
+            filterTrigger: true,
+          }));
+        } else if (reconcileActiveTab === "portfolio") {
+          setComplianceOfficerReconcilePortfolioSearch((prev) => ({
+            ...prev,
+            mainInstrumentName: "",
+            pageNumber: 0,
+            filterTrigger: true,
+          }));
+        }
+        break;
+
+      default: // fallback
         setEmployeeMyApprovalSearch((prev) => ({
           ...prev,
           filterTrigger: true,
         }));
         break;
     }
-
-    setVisible(false); // Close popover after applying filters
+    setVisible(false); // ✅ Close popover
   };
 
   /**
-   * Runs when user presses Enter in the main search input.
-   * Triggers search based only on input (ignores popover filters).
+   * Handle Enter key search (direct main input only).
    */
   const handleSearchMain = () => {
     switch (selectedKey) {
-      case "1": // Employee My Approval
+      case "1": // Employee → My Approval
         setEmployeeMyApprovalSearch((prev) => ({
           ...prev,
           instrumentName: "",
@@ -142,7 +161,7 @@ const SearchWithPopoverOnly = () => {
         }));
         break;
 
-      case "2": // Employee My Transaction
+      case "2": // Employee → My Transaction
         setEmployeeMyTransactionSearch((prev) => ({
           ...prev,
           instrumentName: "",
@@ -154,7 +173,7 @@ const SearchWithPopoverOnly = () => {
         }));
         break;
 
-      case "4": // Employee Portfolio / Pending Approval
+      case "4": // Employee → Portfolio / Pending
         if (activeTab === "portfolio") {
           setEmployeePortfolioSearch((prev) => ({
             ...prev,
@@ -189,14 +208,44 @@ const SearchWithPopoverOnly = () => {
         }));
         break;
 
-      default: // fallback
+      case "9": // Compliance Officer → Reconcile
+        if (reconcileActiveTab === "transactions") {
+          setComplianceOfficerReconcileTransactionsSearch((prev) => ({
+            ...prev,
+            instrumentName: "",
+            requesterName: "",
+            startDate: null,
+            endDate: null,
+            quantity: 0,
+            pageNumber: 0,
+            filterTrigger: true,
+          }));
+        } else if (reconcileActiveTab === "portfolio") {
+          setComplianceOfficerReconcilePortfolioSearch((prev) => ({
+            ...prev,
+            instrumentName: "",
+            requesterName: "",
+            startDate: null,
+            endDate: null,
+            quantity: 0,
+            pageNumber: 0,
+            filterTrigger: true,
+          }));
+        }
+        break;
+
+      default:
         setEmployeeMyApprovalSearch((prev) => ({
           ...prev,
           filterTrigger: true,
         }));
+        break;
     }
   };
 
+  // ----------------------------------------------------------------
+  // ✅ RENDER
+  // ----------------------------------------------------------------
   return (
     <Space.Compact className={styles.searchWrapper}>
       {/* 🔎 Main Search Input */}
@@ -209,33 +258,39 @@ const SearchWithPopoverOnly = () => {
         value={getMainSearchInputValueByKey(
           selectedKey,
           activeTab,
+          reconcileActiveTab,
           employeeMyApprovalSearch,
           employeeMyTransactionSearch,
           employeePortfolioSearch,
           employeePendingApprovalSearch,
-          lineManagerApprovalSearch
+          lineManagerApprovalSearch,
+          complianceOfficerReconcilePortfolioSearch,
+          complianceOfficerReconcileTransactionsSearch
         )}
         onChange={(e) => {
-          const value = removeFirstSpace(e.target.value); // ✅ strip leading space
+          const value = removeFirstSpace(e.target.value); // ✅ Prevent leading space
           handleMainInstrumentChange(
             selectedKey,
             activeTab,
+            reconcileActiveTab,
             value,
             setEmployeeMyApprovalSearch,
             setEmployeeMyTransactionSearch,
             setEmployeePortfolioSearch,
             setEmployeePendingApprovalSearch,
-            setLineManagerApprovalSearch
+            setLineManagerApprovalSearch,
+            setComplianceOfficerReconcilePortfolioSearch,
+            setComplianceOfficerReconcileTransactionsSearch
           );
         }}
         style={{
           borderStartEndRadius: 0,
           borderEndEndRadius: 0,
-          borderRight: "none", // merges visually with filter icon
+          borderRight: "none", // merge visually with filter icon
         }}
         onKeyDown={(e) => {
           if (e.key === "Enter" && !visible) {
-            handleSearchMain(); // only trigger if popover is closed
+            handleSearchMain();
           }
         }}
       />
@@ -248,6 +303,7 @@ const SearchWithPopoverOnly = () => {
         content={renderFilterContent(
           selectedKey,
           activeTab,
+          reconcileActiveTab,
           handleSearch,
           setVisible
         )}
@@ -255,17 +311,19 @@ const SearchWithPopoverOnly = () => {
         open={visible}
         onOpenChange={(newVisible) => {
           setVisible(newVisible);
-
           if (newVisible) {
-            // Reset filters when opening popover
+            // ✅ Reset filters when opening popover
             handleSearchMainInputReset({
               selectedKey,
               activeTab,
+              reconcileActiveTab,
               setEmployeeMyApprovalSearch,
               setEmployeeMyTransactionSearch,
               setEmployeePortfolioSearch,
               setEmployeePendingApprovalSearch,
               setLineManagerApprovalSearch,
+              setComplianceOfficerReconcilePortfolioSearch,
+              setComplianceOfficerReconcileTransactionsSearch,
             });
           }
         }}

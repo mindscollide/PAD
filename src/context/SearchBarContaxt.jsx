@@ -1,141 +1,63 @@
 import React, { createContext, useContext, useState } from "react";
 
 /**
- * 1. Create the SearchBarContext
- * This context is used to manage and share search filter state
- * across Employee My Approval and My Transaction components.
+ * 🔎 SearchBarContext
+ *
+ * Centralized state management for all **search & filter bars** used across:
+ * - Employee (My Approval, My Transactions, Portfolio, Pending Approval, My History)
+ * - Line Manager Approvals
+ * - Compliance Officer Reconciliation (Transactions & Portfolio)
+ *
+ * Provides state + helper functions to update or reset filters.
  */
 export const SearchBarContext = createContext();
 
 /**
- * 2. Provider Component
- * Wrap your components with <SearchBarProvider> to give them access
- * to the global search/filter state.
+ * 🚀 SearchBarProvider
+ *
+ * Wrap your components inside `<SearchBarProvider>` to give them access
+ * to global search/filter states and reset functions.
+ *
+ * @component
+ * @param {object} props
+ * @param {React.ReactNode} props.children - React children that consume the context.
+ * @returns {JSX.Element} Context provider wrapping child components.
  */
 export const SearchBarProvider = ({ children }) => {
   /**
+   * ===============================
+   * Employee Context States
+   * ===============================
+   */
+
+  /**
    * 🔍 Employee My Approval Filters State
+   *
    * Used for filtering data in the Employee My Approval table.
    */
   const [employeeMyApprovalSearch, setEmployeeMyApprovalSearch] = useState({
-    instrumentName: "", // Name of the instrument
-    quantity: "", // Quantity filter
-    startDate: null, // Single date (could be Date object or string)
-    mainInstrumentName: "", // Main instrument name for popover or modal
-    type: [], // Type filter: ["Buy", "Sell"]
-    status: [], // Status filter: ["Pending", "Approved", etc.]
-    pageSize: 0, // Pagination: size of page
-    pageNumber: 0, // Pagination: current page number
+    instrumentName: "",
+    quantity: "",
+    startDate: null,
+    mainInstrumentName: "",
+    type: [], // e.g. ["Buy", "Sell"]
+    status: [], // e.g. ["Pending", "Approved"]
+    pageSize: 0,
+    pageNumber: 0,
     totalRecords: 0,
     filterTrigger: false,
     tableFilterTrigger: false,
   });
 
-  console.log(employeeMyApprovalSearch, "employeeMyApprovalSearch");
   /**
    * 🔍 Employee My Transaction Filters State
+   *
    * Used for filtering data in the Employee My Transaction table.
    */
   const [employeeMyTransactionSearch, setEmployeeMyTransactionSearch] =
     useState({
-      instrumentName: "", // Name of the instrument
-      quantity: 0, // Quantity filter
-      startDate: null, // Start of date range
-      endDate: null, // End of date range
-      mainInstrumentName: "", // Main instrument name for popover or modal
-      type: [], // Type filter: ["Buy", "Sell"]
-      status: [], // Status filter: ["Pending", "Approved", etc.]
-      brokerIDs: [],
-      pageSize: "", // Pagination: size of page
-      pageNumber: 0, // Pagination: current page number
-      filterTrigger: false,
-      tableFilterTrigger: false,
-    });
-
-  /**
-   * 🔍 Employee Portfolio Filters State
-   * Used for filtering data in the Employee Portfolio table.
-   */
-  const [employeePortfolioSearch, setEmployeePortfolioSearch] = useState({
-    instrumentName: "", // Name of the instrument short
-    quantity: "", // Quantity filter
-    startDate: null, // Start of date range
-    endDate: null, // End of date range
-    mainInstrumentName: "", // Main instrument short name for popover or modal
-    type: [], // Type filter: ["Buy", "Sell"]
-    broker: [], // broker filter:
-    pageSize: "", // Pagination: size of page
-    pageNumber: 0, // Pagination: current page number
-    filterTrigger: false,
-    tableFilterTrigger: false,
-  });
-
-  /**
-   * 🔍 Employee Pending Approval Filters State
-   * Used for filtering data in the Employee Pending Approval table.
-   */
-  const [employeePendingApprovalSearch, setEmployeePendingApprovalSearch] =
-    useState({
-      instrumentName: "", // Name of the instrument
-      quantity: "", // Quantity filter
-      startDate: null, // Start of date range
-      endDate: null, // End of date range
-      mainInstrumentName: "", // Main instrument name for popover or modal
-      type: [], // Type filter: ["Buy", "Sell"]
-      status: [], // Status filter: ["Pending", "Approved", etc.]
-      broker: [], // Status filter: ["Pending", "Approved", etc.]
-      pageSize: "", // Pagination: size of page
-      pageNumber: 0, // Pagination: current page number
-      filterTrigger: false,
-      tableFilterTrigger: false,
-    });
-
-  /**
-   * 🔍 Employee My History Filters State
-   * Used for filtering data in the Employee My History table.
-   */
-  const [employeeMyHistorySearch, setEmployeeMyHistorySearch] = useState({
-    transactionid: "",
-    instrumentName: "", // Name of the instrument
-    quantity: 0, // Quantity filter
-    startDate: null, // Start of date range
-    endDate: null, // End of date range
-    mainInstrumentName: "", // Main instrument name for popover or modal
-    type: [], // Type filter: ["Buy", "Sell"]
-    nature: [], // Type filter: ["Buy", "Sell"]
-    status: [], // Status filter: ["Pending", "Approved", etc.]
-    pageSize: 0, // Pagination: size of page
-    pageNumber: 0, // Pagination: current page number
-    filterTrigger: false,
-    tableFilterTrigger: false,
-  });
-
-  /**
-   * 🔁 Helper: Reset all Employee My Approval filters to initial state
-   */
-  const resetEmployeeMyApprovalSearch = () => {
-    setEmployeeMyApprovalSearch({
       instrumentName: "",
       quantity: 0,
-      startDate: null,
-      mainInstrumentName: "",
-      type: [],
-      status: [],
-      pageSize: 0,
-      pageNumber: 0,
-      totalRecords: 0,
-      filterTrigger: true,
-      tableFilterTrigger: false,
-    });
-  };
-
-  /**
-   * 🔁 Helper: Reset all Employee My Transaction filters to initial state
-   */
-  const resetEmployeeMyTransactionSearch = () => {
-    setEmployeeMyTransactionSearch({
-      instrumentName: "",
-      quantity: "",
       startDate: null,
       endDate: null,
       mainInstrumentName: "",
@@ -144,35 +66,36 @@ export const SearchBarProvider = ({ children }) => {
       brokerIDs: [],
       pageSize: "",
       pageNumber: 0,
-      filterTrigger: true,
-      tableFilterTrigger: false,
-    });
-  };
-
-  /**
-   * 🔁 Helper: Reset all Employee portfolio filters to initial state
-   */
-  const resetEmployeePortfolioSearch = () => {
-    setEmployeePortfolioSearch({
-      instrumentName: "", // Name of the instrument short
-      quantity: "", // Quantity filter
-      startDate: null, // Start of date range
-      endDate: null, // End of date range
-      mainInstrumentName: "", // Main instrument short name for popover or modal
-      type: [], // Type filter: ["Buy", "Sell"]
-      broker: [], // broker filter:
-      pageSize: "", // Pagination: size of page
-      pageNumber: 0, // Pagination: current page number
       filterTrigger: false,
       tableFilterTrigger: false,
     });
-  };
 
   /**
-   * 🔁 Helper: Reset all Employee My Transaction filters to initial state
+   * 🔍 Employee Portfolio Filters State
+   *
+   * Used for filtering data in the Employee Portfolio table.
    */
-  const resetEmployeePendingApprovalSearch = () => {
-    setEmployeePendingApprovalSearch({
+  const [employeePortfolioSearch, setEmployeePortfolioSearch] = useState({
+    instrumentName: "",
+    quantity: "",
+    startDate: null,
+    endDate: null,
+    mainInstrumentName: "",
+    type: [],
+    broker: [],
+    pageSize: "",
+    pageNumber: 0,
+    filterTrigger: false,
+    tableFilterTrigger: false,
+  });
+
+  /**
+   * 🔍 Employee Pending Approval Filters State
+   *
+   * Used for filtering data in the Employee Pending Approval table.
+   */
+  const [employeePendingApprovalSearch, setEmployeePendingApprovalSearch] =
+    useState({
       instrumentName: "",
       quantity: "",
       startDate: null,
@@ -186,53 +109,202 @@ export const SearchBarProvider = ({ children }) => {
       filterTrigger: false,
       tableFilterTrigger: false,
     });
-  };
 
   /**
-   * 🔁 Helper: Reset all Employee My History filters to initial state
+   * 🔍 Employee My History Filters State
+   *
+   * Used for filtering data in the Employee My History table.
    */
-  const resetEmployeeMyHistorySearch = () => {
-    setEmployeeMyHistorySearch({
-      transactionid: "",
-      instrumentName: "", // Name of the instrument
-      quantity: 0, // Quantity filter
-      startDate: null, // Start of date range
-      endDate: null, // End of date range
-      mainInstrumentName: "", // Main instrument name for popover or modal
-      type: [], // Type filter: ["Buy", "Sell"]
-      nature: [], // Type filter: ["Buy", "Sell"]
-      status: [], // Status filter: ["Pending", "Approved", etc.]
-      pageSize: "", // Pagination: size of page
-      pageNumber: 0, // Pagination: current page number
-      filterTrigger: true,
-      tableFilterTrigger: false,
-    });
-  };
+  const [employeeMyHistorySearch, setEmployeeMyHistorySearch] = useState({
+    transactionid: "",
+    instrumentName: "",
+    quantity: 0,
+    startDate: null,
+    endDate: null,
+    mainInstrumentName: "",
+    type: [],
+    nature: [],
+    status: [],
+    pageSize: 0,
+    pageNumber: 0,
+    filterTrigger: false,
+    tableFilterTrigger: false,
+  });
 
   /**
-   * 🔍 Line-Manager Approval Request Filters State
+   * ===============================
+   * Line Manager Context State
+   * ===============================
+   */
+
+  /**
+   * 🔍 Line Manager Approval Request Filters State
+   *
    * Used for filtering data in the Line-Manager Approval Request table.
    */
   const [lineManagerApprovalSearch, setLineManagerApprovalSearch] = useState({
-    instrumentName: "", // Name of the instrument
-    requesterName: "", // requester Name filter
+    instrumentName: "",
+    requesterName: "",
     quantity: 0,
-    date: null, // Single date (could be Date object or string)
-    mainInstrumentName: "", // Main instrument name for popover or modal
-    type: [], // Type filter: ["Buy", "Sell"]
-    status: [], // Status filter: ["Pending", "Approved", etc.]
-    pageSize: 0, // Pagination: size of page
-    pageNumber: 0, // Pagination: current page number
+    date: null,
+    mainInstrumentName: "",
+    type: [],
+    status: [],
+    pageSize: 0,
+    pageNumber: 0,
     totalRecords: 0,
     filterTrigger: false,
     tableFilterTrigger: false,
   });
 
   /**
-   * 🔁 Helper: Reset all Employee My Approval filters to initial state
+   * ===============================
+   * Compliance Officer Context States
+   * ===============================
    */
-  const resetLineManagerApprovalSearch = () => {
-    setLineManagerApprovalSearch({
+
+  /**
+   * 🔍 Compliance Officer Reconcile Transactions Filters State
+   *
+   * Used for filtering data in the Compliance Officer’s Reconcile Transactions table.
+   */
+  const [
+    complianceOfficerReconcileTransactionsSearch,
+    setComplianceOfficerReconcileTransactionsSearch,
+  ] = useState({
+    instrumentName: "",
+    requesterName: "",
+    quantity: 0,
+    startDate: null,
+    endDate: null,
+    mainInstrumentName: "",
+    type: [],
+    status: [],
+    pageSize: 0,
+    pageNumber: 0,
+    totalRecords: 0,
+    filterTrigger: false,
+    tableFilterTrigger: false,
+  });
+
+  /**
+   * 🔍 Compliance Officer Reconcile Portfolio Filters State
+   *
+   * Used for filtering data in the Compliance Officer’s Reconcile Portfolio table.
+   */
+  const [
+    complianceOfficerReconcilePortfolioSearch,
+    setComplianceOfficerReconcilePortfolioSearch,
+  ] = useState({
+    instrumentName: "",
+    requesterName: "",
+    quantity: 0,
+    startDate: null,
+    endDate: null,
+    mainInstrumentName: "",
+    type: [],
+    status: [],
+    pageSize: 0,
+    pageNumber: 0,
+    totalRecords: 0,
+    filterTrigger: false,
+    tableFilterTrigger: false,
+  });
+
+  /**
+   * ===============================
+   * Reset Helpers
+   * ===============================
+   */
+
+  // Each helper resets a filter state to its initial defaults
+  const resetEmployeeMyApprovalSearch = () =>
+    setEmployeeMyApprovalSearch((prev) => ({
+      ...prev,
+      instrumentName: "",
+      quantity: 0,
+      startDate: null,
+      mainInstrumentName: "",
+      type: [],
+      status: [],
+      pageSize: 0,
+      pageNumber: 0,
+      totalRecords: 0,
+      filterTrigger: true,
+      tableFilterTrigger: false,
+    }));
+
+  const resetEmployeeMyTransactionSearch = () =>
+    setEmployeeMyTransactionSearch((prev) => ({
+      ...prev,
+      instrumentName: "",
+      quantity: "",
+      startDate: null,
+      endDate: null,
+      mainInstrumentName: "",
+      type: [],
+      status: [],
+      brokerIDs: [],
+      pageSize: "",
+      pageNumber: 0,
+      filterTrigger: true,
+      tableFilterTrigger: false,
+    }));
+
+  const resetEmployeePortfolioSearch = () =>
+    setEmployeePortfolioSearch((prev) => ({
+      ...prev,
+      instrumentName: "",
+      quantity: "",
+      startDate: null,
+      endDate: null,
+      mainInstrumentName: "",
+      type: [],
+      broker: [],
+      pageSize: "",
+      pageNumber: 0,
+      filterTrigger: false,
+      tableFilterTrigger: false,
+    }));
+
+  const resetEmployeePendingApprovalSearch = () =>
+    setEmployeePendingApprovalSearch((prev) => ({
+      ...prev,
+      instrumentName: "",
+      quantity: "",
+      startDate: null,
+      endDate: null,
+      mainInstrumentName: "",
+      type: [],
+      status: [],
+      broker: [],
+      pageSize: "",
+      pageNumber: 0,
+      filterTrigger: false,
+      tableFilterTrigger: false,
+    }));
+
+  const resetEmployeeMyHistorySearch = () =>
+    setEmployeeMyHistorySearch((prev) => ({
+      ...prev,
+      transactionid: "",
+      instrumentName: "",
+      quantity: 0,
+      startDate: null,
+      endDate: null,
+      mainInstrumentName: "",
+      type: [],
+      nature: [],
+      status: [],
+      pageSize: "",
+      pageNumber: 0,
+      filterTrigger: true,
+      tableFilterTrigger: false,
+    }));
+
+  const resetLineManagerApprovalSearch = () =>
+    setLineManagerApprovalSearch((prev) => ({
+      ...prev,
       instrumentName: "",
       requesterName: "",
       date: null,
@@ -245,10 +317,47 @@ export const SearchBarProvider = ({ children }) => {
       totalRecords: 0,
       filterTrigger: true,
       tableFilterTrigger: false,
-    });
-  };
+    }));
 
-  // 🔁 New helper: Reset ALL filters at once
+  const resetComplianceOfficerReconcileTransactionsSearch = () =>
+    setComplianceOfficerReconcileTransactionsSearch((prev) => ({
+      ...prev,
+      instrumentName: "",
+      requesterName: "",
+      quantity: 0,
+      startDate: null,
+      endDate: null,
+      mainInstrumentName: "",
+      type: [],
+      status: [],
+      pageSize: 0,
+      pageNumber: 0,
+      totalRecords: 0,
+      filterTrigger: false,
+      tableFilterTrigger: false,
+    }));
+
+  const resetComplianceOfficerReconcilePortfoliosSearch = () =>
+    setComplianceOfficerReconcilePortfolioSearch((prev) => ({
+      ...prev,
+      instrumentName: "",
+      requesterName: "",
+      startDate: null,
+      endDate: null,
+      quantity: 0,
+      mainInstrumentName: "",
+      type: [],
+      status: [],
+      pageSize: 0,
+      pageNumber: 0,
+      totalRecords: 0,
+      filterTrigger: true,
+      tableFilterTrigger: false,
+    }));
+
+  /**
+   * 🔄 Reset ALL search filters across modules
+   */
   const resetSearchBarContextState = () => {
     resetEmployeeMyApprovalSearch();
     resetEmployeeMyTransactionSearch();
@@ -256,44 +365,52 @@ export const SearchBarProvider = ({ children }) => {
     resetEmployeePendingApprovalSearch();
     resetEmployeeMyHistorySearch();
     resetLineManagerApprovalSearch();
+    resetComplianceOfficerReconcileTransactionsSearch();
+    resetComplianceOfficerReconcilePortfoliosSearch();
   };
 
   /**
-   * Provide state and actions to the component tree
+   * 🌍 Provide context values
    */
   return (
     <SearchBarContext.Provider
       value={{
-        // Employee My Approval filters and updater
+        // Employee states
         employeeMyApprovalSearch,
         setEmployeeMyApprovalSearch,
         resetEmployeeMyApprovalSearch,
 
-        // Employee My Transaction filters and updater
         employeeMyTransactionSearch,
         setEmployeeMyTransactionSearch,
         resetEmployeeMyTransactionSearch,
 
-        // Employee My portfolio filters and updater
         employeePortfolioSearch,
         setEmployeePortfolioSearch,
         resetEmployeePortfolioSearch,
 
-        // Employee Pending Approval filters and updater
         employeePendingApprovalSearch,
         setEmployeePendingApprovalSearch,
         resetEmployeePendingApprovalSearch,
 
-        // Employee My History filters and updater
         employeeMyHistorySearch,
         setEmployeeMyHistorySearch,
         resetEmployeeMyHistorySearch,
 
-        // This is For LineManager Approval
+        // Line Manager state
         lineManagerApprovalSearch,
         setLineManagerApprovalSearch,
         resetLineManagerApprovalSearch,
 
+        // Compliance Officer states
+        complianceOfficerReconcileTransactionsSearch,
+        setComplianceOfficerReconcileTransactionsSearch,
+        resetComplianceOfficerReconcileTransactionsSearch,
+
+        complianceOfficerReconcilePortfolioSearch,
+        setComplianceOfficerReconcilePortfolioSearch,
+        resetComplianceOfficerReconcilePortfoliosSearch,
+
+        // Global reset
         resetSearchBarContextState,
       }}
     >
@@ -303,9 +420,12 @@ export const SearchBarProvider = ({ children }) => {
 };
 
 /**
- * 3. Custom Hook: useSearchBarContext
- * This allows consuming components to access and update search state.
- * Must be used inside a <SearchBarProvider>.
+ * 🪝 useSearchBarContext
+ *
+ * Custom hook for accessing `SearchBarContext`.
+ *
+ * @returns {object} Context values: all filter states, setters, and reset helpers.
+ * @throws {Error} If used outside of a `<SearchBarProvider>`.
  */
 export const useSearchBarContext = () => {
   const context = useContext(SearchBarContext);
