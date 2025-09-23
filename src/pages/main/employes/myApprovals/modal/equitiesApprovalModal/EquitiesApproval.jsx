@@ -92,6 +92,7 @@ const EquitiesApproval = () => {
       </div>
     ),
     value: broker.brokerID,
+    searchText: broker.brokerName,
     raw: broker, // keep full broker data for later use
   }));
 

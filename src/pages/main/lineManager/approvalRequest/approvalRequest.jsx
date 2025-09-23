@@ -478,7 +478,7 @@ const ApprovalRequest = () => {
           {/* Page Header */}
           <Row justify="space-between" align="middle" className="mb-4">
             <Col span={[24]}>
-              <h2 className={style["heading"]}>Approvals Request</h2>
+              <h2 className={style["heading"]}>Approval Request</h2>
             </Col>
           </Row>
 

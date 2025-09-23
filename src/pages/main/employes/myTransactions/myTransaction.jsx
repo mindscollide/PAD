@@ -34,6 +34,7 @@ import ViewDetailsTransactionModal from "./modals/viewDetailsTransactionModal/Vi
 import ViewTransactionCommentModal from "./modals/viewTransactionCommentModal/ViewTransactionCommentModal";
 import { useTableScrollBottom } from "../myApprovals/utill";
 import { toYYMMDD } from "../../../../commen/funtions/rejex";
+import ViewTicketTransactionModal from "./modals/viewTicketTransactionModal/ViewTicketTransactionModal";
 
 /**
  * 📄 MyTransaction Component
@@ -60,6 +61,7 @@ const MyTransaction = () => {
     viewDetailTransactionModal,
     setViewDetailTransactionModal,
     viewCommentTransactionModal,
+    isViewTicketTransactionModal,
   } = useGlobalModal();
   const { addApprovalRequestData, employeeBasedBrokersData } =
     useDashboardContext();
@@ -626,6 +628,9 @@ const MyTransaction = () => {
 
       {/* To Show view Comment Modal */}
       {viewCommentTransactionModal && <ViewTransactionCommentModal />}
+
+      {/* To show View Ticket Modal */}
+      {isViewTicketTransactionModal && <ViewTicketTransactionModal />}
     </>
   );
 };

@@ -412,6 +412,10 @@ li.ant-dropdown-menu-item.ant-dropdown-menu-item-only-child:focus {
   padding: 9px 9px !important;
 }
 
+
+#toolbar {
+    display: none;
+}
 .stepperStyles {
   /* gap: 50px !important; */
 }

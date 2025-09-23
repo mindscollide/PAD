@@ -32,6 +32,7 @@ const ViewDetailsTransactionModal = () => {
     setViewDetailTransactionModal,
     selectedViewDetailOfTransaction,
     setViewCommentTransactionModal,
+    setIsViewTicketTransactionModal,
   } = useGlobalModal();
 
   const { employeeBasedBrokersData } = useDashboardContext();
@@ -441,6 +442,10 @@ const ViewDetailsTransactionModal = () => {
                       <CustomButton
                         text={"View Ticket"}
                         className="big-light-button"
+                        onClick={() => {
+                          setIsViewTicketTransactionModal(true);
+                          setViewDetailTransactionModal(false);
+                        }}
                       />
                       <CustomButton
                         text={"Close"}
