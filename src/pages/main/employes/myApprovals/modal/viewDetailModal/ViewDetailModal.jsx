@@ -54,6 +54,7 @@ const ViewDetailModal = () => {
 
   const { allInstrumentsData, employeeBasedBrokersData } =
     useDashboardContext();
+  console.log(selectedViewDetail, "selectedViewDetail");
 
   console.log(viewDetailsModalData, "viewDetailsModalData555");
 
@@ -314,7 +315,7 @@ const ViewDetailModal = () => {
                     <label className={styles.viewDetailSubLabels}>
                       {/* status 3 is Approved */}
                       {statusData.label === "Approved" ? (
-                        <>{selectedViewDetail?.timeRemaining}</>
+                        <>{selectedViewDetail?.timeRemainingToTrade}</>
                       ) : (
                         <>
                           <span className={styles.customTag}>
@@ -483,27 +484,6 @@ const ViewDetailModal = () => {
                 </Col>
               </Row>
 
-              {/* <Row style={{ marginTop: "3px" }}>
-                <Col span={24}>
-                  <div className={styles.backgrounColorOfBrokerDetail}>
-                    <label className={styles.viewDetailMainLabels}>
-                      Brokers
-                    </label>
-                    <div className={styles.tagContainer}>
-                      <Tag className={styles.tagClasses}>
-                        AKD Securities Limited
-                      </Tag>
-                      <Tag className={styles.tagClasses}>
-                        K-Trade Securities Ltd
-                      </Tag>{" "}
-                      <Tag className={styles.tagClasses}>
-                        Approval Routing Rules
-                      </Tag>
-                    </div>
-                  </div>
-                </Col>
-              </Row> */}
-
               <Row style={{ marginTop: "3px" }}>
                 <Col span={24}>
                   <div
@@ -664,7 +644,9 @@ const ViewDetailModal = () => {
                                           {fullName}
                                         </div>
                                         <div className={styles.customdesc}>
-                                          {formattedDateTime}
+                                          {!bundleStatusID === 1 && {
+                                            formattedDateTime
+                                          }}
                                         </div>
                                       </div>
                                     }

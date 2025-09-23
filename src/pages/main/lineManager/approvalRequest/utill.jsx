@@ -1,7 +1,7 @@
 // components/pages/employee/approval/tableColumns.js
 
 import React from "react";
-import { Tag } from "antd";
+import { Tag, Tooltip } from "antd";
 import { Button, StatusFilterDropdown } from "../../../../components";
 import style from "./approvalRequest.module.css";
 import EscalatedIcon from "../../../../assets/img/escalated.png";
@@ -123,6 +123,8 @@ export const getBorderlessLineManagerTableColumns = (
       console.log(record, "Checkerrrrr");
       const assetCode = record?.assetType?.assetTypeShortCode;
       const code = instrument?.instrumentCode || "";
+      const instrumentName = instrument?.instrumentName || "";
+
       return (
         <div
           style={{
@@ -134,20 +136,22 @@ export const getBorderlessLineManagerTableColumns = (
           <span className="custom-shortCode-asset" style={{ minWidth: 30 }}>
             {assetCode?.substring(0, 2).toUpperCase()}
           </span>
-          <span
-            className="font-medium"
-            style={{
-              overflow: "hidden",
-              textOverflow: "ellipsis",
-              whiteSpace: "nowrap",
-              maxWidth: "200px",
-              display: "inline-block",
-              cursor: "pointer",
-            }}
-            title={code}
-          >
-            {code}
-          </span>
+          <Tooltip title={instrumentName} placement="topLeft">
+            <span
+              className="font-medium"
+              style={{
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+                whiteSpace: "nowrap",
+                maxWidth: "200px",
+                display: "inline-block",
+                cursor: "pointer",
+              }}
+              title={code}
+            >
+              {code}
+            </span>
+          </Tooltip>
         </div>
       );
     },

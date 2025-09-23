@@ -1,0 +1,71 @@
+.ViewCommentHeading {
+  font-size: 26px !important;
+  font-weight: 700;
+  font-family: "Switzer Variable";
+  color: #30426a !important;
+}
+
+.documentContainer {
+  overflow: hidden !important;
+  border: 3px solid #30426a !important;
+  width: 75% !important;
+  margin-top: 15px;
+}
+
+.CommentsButtonClass {
+  display: flex;
+  justify-content: end;
+  align-items: center;
+  gap: 20px !important;
+}
+
+.dropdownExport {
+  height: 44px;
+  width: 330px;
+  border-radius: 8px;
+  border: 1px solid #b4b4b4;
+  background: #fff;
+  /* box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12); */
+  z-index: 1000; /* keep above table */
+  margin-bottom: 8px;
+}
+
+.dropdownItem {
+  padding: 5px 12px;
+  display: flex;
+  align-items: center;
+  margin-right: 20px;
+  justify-content: space-between; /* push first group left, last item right */
+  font-size: 16px;
+  font-family: "Switzer Variable";
+  font-weight: 500;
+  color: #424242;
+  cursor: pointer;
+}
+
+.fileInfo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.attachemntContainer {
+  margin-top: 15px;
+  height: 68vh;
+  max-height: 68vh;
+  overflow: hidden;
+  overflow-y: auto;
+  padding-right: 70px !important;
+  scrollbar-width: thin;
+  scrollbar-color: #b9c1d1 transparent;
+}
+
+.selected {
+  background: #30426a !important; /* dark blue */
+  color: #fff !important; /* text turns white */
+  border: 1px solid #30426a !important;
+}
+
+.selected span {
+  color: #fff !important; /* force nested span text white */
+}

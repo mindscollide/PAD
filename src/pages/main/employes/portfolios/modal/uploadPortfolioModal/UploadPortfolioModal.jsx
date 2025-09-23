@@ -112,6 +112,7 @@ const UploadPortfolioModal = () => {
       </div>
     ),
     value: broker.brokerID,
+    searchText: broker.brokerName,
     raw: broker, // keep full broker object for future use
   }));
 
