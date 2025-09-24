@@ -94,7 +94,8 @@ const ReconcilePortfolio = () => {
 
     return {
       RequesterName: searchState.requesterName || "",
-      InstrumentName: searchState.instrumentName || "",
+      InstrumentName:
+        searchState.mainInstrumentName || searchState.instrumentName || "",
       Quantity: searchState.quantity ? Number(searchState.quantity) : 0,
       StartDate: startDate,
       EndDate: endDate,
@@ -223,7 +224,7 @@ const ReconcilePortfolio = () => {
       const data = buildPortfolioRequest(
         complianceOfficerReconcilePortfolioSearch
       );
-      console.log("resetComplianceOfficerReconcilePortfoliosSearch");
+
       fetchPortfolios(data, true);
       setComplianceOfficerReconcilePortfolioSearch((prev) => ({
         ...prev,
@@ -254,7 +255,7 @@ const ReconcilePortfolio = () => {
           PageNumber: complianceOfficerReconcilePortfolioSearch.pageNumber || 0,
           Length: 10,
         };
-    console.log("resetComplianceOfficerReconcilePortfoliosSearch");
+        console.log("resetComplianceOfficerReconcilePortfoliosSearch");
         await fetchPortfolios(requestData, false, true); // append mode
         setComplianceOfficerReconcilePortfolioSearch((prev) => ({
           ...prev,

@@ -109,7 +109,6 @@ const SearchWithPopoverOnly = () => {
         }
         break;
 
-      case "5":
       case "6": // Line Manager Approval
         setLineManagerApprovalSearch((prev) => ({
           ...prev,

@@ -108,6 +108,7 @@ const ReconcileTransaction = () => {
     const endDate = searchState.endDate ? toYYMMDD(searchState.endDate) : "";
 
     return {
+      RequesterName: searchState.requesterName || "",
       InstrumentName:
         searchState.mainInstrumentName || searchState.instrumentName || "",
       Quantity: searchState.quantity ? Number(searchState.quantity) : 0,
@@ -118,7 +119,6 @@ const ReconcileTransaction = () => {
         searchState.type,
         addApprovalRequestData?.[assetType]
       ),
-      RequesterName: searchState.requesterName || "",
       PageNumber: Number(searchState.pageNumber) || 0,
       Length: Number(searchState.pageSize) || 10,
     };
@@ -251,6 +251,7 @@ const ReconcileTransaction = () => {
       const data = buildPortfolioRequest(
         complianceOfficerReconcileTransactionsSearch
       );
+
       fetchPendingApprovals(data, true); // replace mode
       setComplianceOfficerReconcileTransactionsSearch((prev) => ({
         ...prev,
