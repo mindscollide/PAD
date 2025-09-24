@@ -141,7 +141,6 @@ const ReconcileTransaction = () => {
     async (requestData, replace = false, loader = false) => {
       if (!requestData || typeof requestData !== "object") return;
       if (!loader) showLoader(true);
-      console.log("requestData", requestData);
       try {
         const res = await SearchComplianceOfficerReconcileTransactionRequest({
           callApi,
@@ -150,15 +149,17 @@ const ReconcileTransaction = () => {
           requestdata: requestData,
           navigate,
         });
+        console.log("fetchPendingApprovals", res);
 
-        const portfolios = Array.isArray(res?.pendingPortfolios)
-          ? res.pendingPortfolios
+        const transactions = Array.isArray(res?.transactions)
+          ? res.transactions
           : [];
 
         const mapped = mapToTableRows(
           addApprovalRequestData?.Equities,
-          portfolios
+          transactions
         );
+        console.log("fetchPendingApprovals", mapped);
 
         setComplianceOfficerReconcileTransactionData({
           data: mapped,

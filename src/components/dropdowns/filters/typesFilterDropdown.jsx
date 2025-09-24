@@ -52,6 +52,13 @@ const TypeFilterDropdown = ({
         pageNumber: 0,
         filterTrigger: true,
       }));
+    } else if (selectedKey === "9") {
+      setState((prev) => ({
+        ...prev,
+        type: tempSelected,
+        pageNumber: 0,
+        filterTrigger: true,
+      }));
     } else {
       setState((prev) => ({
         ...prev,
@@ -80,6 +87,13 @@ const TypeFilterDropdown = ({
     let newdata = [];
     // we handle employe profolio from here
     if (selectedKey === "4") {
+      setState((prev) => ({
+        ...prev,
+        type: [],
+        pageNumber: 0,
+        filterTrigger: true,
+      }));
+    } else if (selectedKey === "9") {
       setState((prev) => ({
         ...prev,
         type: [],
