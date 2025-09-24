@@ -26,6 +26,7 @@ import { useTableScrollBottom } from "../../../employes/myApprovals/utill";
 // 🔹 Helpers
 import { toYYMMDD } from "../../../../../commen/funtions/rejex";
 import { SearchComplianceOfficerReconcilePortfolioRequest } from "../../../../../api/reconsile";
+import { useDashboardContext } from "../../../../../context/dashboardContaxt";
 
 /**
  * 📌 ReconcilePortfolio
@@ -63,7 +64,7 @@ const ReconcilePortfolio = () => {
     setComplianceOfficerReconcilePortfolioDataMqtt,
     complianceOfficerReconcilePortfolioDataMqtt,
   } = useReconcileContext();
-
+  const { addApprovalRequestData } = useDashboardContext();
   // -------------------------
   // ✅ Local state
   // -------------------------
@@ -74,7 +75,12 @@ const ReconcilePortfolio = () => {
   // -------------------------
   // ✅ Derived values
   // -------------------------
-  const columns = getBorderlessTableColumns(approvalStatusMap, sortedInfo);
+  const columns = getBorderlessTableColumns(
+    approvalStatusMap,
+    sortedInfo,
+    complianceOfficerReconcilePortfolioSearch,
+    setComplianceOfficerReconcilePortfolioSearch
+  );
 
   // Prevent duplicate API calls (StrictMode safeguard)
   const didFetchRef = useRef(false);
@@ -132,9 +138,16 @@ const ReconcilePortfolio = () => {
           requestdata: requestData,
           navigate,
         });
+        console.log("fetchPendingApprovals", res);
 
         const portfolios = Array.isArray(res?.portfolios) ? res.portfolios : [];
-        const mapped = mapToTableRows(portfolios);
+        console.log("fetchPendingApprovals", res);
+        console.log("fetchPendingApprovals", addApprovalRequestData.Equities);
+        const mapped = mapToTableRows(
+          addApprovalRequestData?.Equities,
+          portfolios
+        );
+        console.log("fetchPendingApprovals", mapped);
 
         setComplianceOfficerReconcilePortfolioData({
           data: mapped,
@@ -219,6 +232,10 @@ const ReconcilePortfolio = () => {
   // ----------------------------------------------------------------
   // 🔄 On search/filter trigger
   // ----------------------------------------------------------------
+  console.log(
+    "fetchPendingApprovals",
+    complianceOfficerReconcilePortfolioSearch
+  );
   useEffect(() => {
     if (complianceOfficerReconcilePortfolioSearch?.filterTrigger) {
       const data = buildPortfolioRequest(
