@@ -76,17 +76,17 @@ export const getTradeTypeById = (assetTypeData, tradeType) => {
  */
 export const mapToTableRows = (assetTypeData, list = []) =>
   (Array.isArray(list) ? list : []).map((item = {}) => ({
-    approvalID: item?.approvalID,
-    requesterName: item?.requesterName || "—",
-    assetTypeShortCode: item?.assetType?.assetTypeShortCode || "—",
-    instrument: item?.instrument?.instrumentCode || "—",
-    instrumentName: item?.instrument?.instrumentName || "—",
-    tradeApprovalID: item?.tradeApprovalID || "—",
+    approvalID: item?.approvalID ?? "—",
+    requesterName: item?.requesterName ?? "—",
+    assetTypeShortCode: item?.assetType?.assetTypeShortCode ?? "—",
+    instrument: item?.instrument?.instrumentCode ?? "—",
+    instrumentName: item?.instrument?.instrumentName ?? "—",
+    tradeApprovalID: item?.tradeApprovalID ?? "—",
     transactionRequestDateime:
       [item?.requestDate, item?.requestTime].filter(Boolean).join(" ") || "—",
-    quantity: item?.quantity,
-    type: getTradeTypeById(assetTypeData, item?.tradeType),
-    status: item?.approvalStatus?.approvalStatusName || "—",
+    quantity: item?.quantity ?? "—",
+    type: getTradeTypeById(assetTypeData, item?.tradeType) ?? "—",
+    status: item?.approvalStatus?.approvalStatusName ?? "—",
   }));
 
 /* ------------------------------------------------------------------ */

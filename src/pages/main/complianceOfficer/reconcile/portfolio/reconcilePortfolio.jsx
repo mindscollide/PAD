@@ -199,16 +199,23 @@ const ReconcilePortfolio = () => {
   // 🔄 REAL-TIME: Handle new MQTT rows
   // ----------------------------------------------------------------
   useEffect(() => {
-    if (!complianceOfficerReconcilePortfolioDataMqtt?.mqttRecived) return;
-
-    const newRows = mapToTableRows(
-      Array.isArray(
-        complianceOfficerReconcilePortfolioDataMqtt?.mqttRecivedData
-      )
-        ? complianceOfficerReconcilePortfolioDataMqtt.mqttRecivedData
-        : [complianceOfficerReconcilePortfolioDataMqtt.mqttRecivedData]
+    if (!complianceOfficerReconcilePortfolioDataMqtt?.mqtt) return;
+    console.log(
+      "complianceOfficerReconcilePortfolioDataMqtt",
+      complianceOfficerReconcilePortfolioDataMqtt
     );
-
+    const newRows = mapToTableRows(
+      addApprovalRequestData?.Equities,
+      Array.isArray(complianceOfficerReconcilePortfolioDataMqtt?.data)
+        ? complianceOfficerReconcilePortfolioDataMqtt.data
+        : [complianceOfficerReconcilePortfolioDataMqtt.data]
+    );
+    console.log("complianceOfficerReconcilePortfolioDataMqtt", newRows);
+    console.log("complianceOfficerReconcilePortfolioDataMqtt", tableData);
+    console.log(
+      "complianceOfficerReconcilePortfolioDataMqtt",
+      complianceOfficerReconcilePortfolioData
+    );
     if (newRows.length) {
       setTableData((prev) => ({
         rows: [newRows[0], ...(prev.rows || [])],
@@ -224,10 +231,10 @@ const ReconcilePortfolio = () => {
     }
 
     setComplianceOfficerReconcilePortfolioDataMqtt({
-      mqttRecivedData: [],
-      mqttRecived: false,
+      data: [],
+      mqtt: false,
     });
-  }, [complianceOfficerReconcilePortfolioDataMqtt?.mqttRecived]);
+  }, [complianceOfficerReconcilePortfolioDataMqtt?.mqtt]);
 
   // ----------------------------------------------------------------
   // 🔄 On search/filter trigger
