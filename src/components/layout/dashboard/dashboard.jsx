@@ -12,6 +12,7 @@ import { useMyApproval } from "../../../context/myApprovalContaxt";
 import { useDashboardContext } from "../../../context/dashboardContaxt";
 import { usePortfolioContext } from "../../../context/portfolioContax";
 import { useTransaction } from "../../../context/myTransaction";
+import { useReconcileContext } from "../../../context/reconsileContax";
 
 const { Content } = Layout;
 
@@ -21,6 +22,10 @@ const Dashboard = () => {
   // Context hooks
   const { setIsEmployeeMyApproval, setLineManagerApproval } = useMyApproval();
   const { setEmployeePendingApprovalsDataMqtt } = usePortfolioContext();
+  const {
+    setComplianceOfficerReconcileTransactionDataMqtt,
+    setComplianceOfficerReconcilePortfolioDataMqtt,
+  } = useReconcileContext();
   const { setDashboardData } = useDashboardContext();
   const { setEmployeeTransactionsData } = useTransaction();
 
@@ -69,34 +74,120 @@ const Dashboard = () => {
 
       try {
         const { receiverID, message, payload, roleIDs } = data;
-        console.log("MQTT: Admin portfolio update", data);
-        console.log("MQTT: Admin portfolio update", receiverID);
-        console.log("MQTT: Admin portfolio update", message);
         console.log("MQTT: Admin portfolio update", payload);
-        console.log("MQTT: Admin portfolio update", roleIDs);
-        console.log("MQTT: Admin portfolio update", userAssignedRolesData);
-        console.log("MQTT: Admin portfolio update", currentUserId);
-        console.log(
-          "MQTT: Admin portfolio update",
-          hasUserRole(Number(roleIDs))
-        );
-        console.log("MQTT: Admin portfolio update", isUserReceiver(receiverID));
+
+        if (!payload) return;
+        if (hasUserRole(Number(roleIDs))) {
+          switch (roleIDs) {
+            case "2": {
+              switch (message) {
+                case "EMPLOYEE_NEW_TRADE_APPROVAL_REQUEST": {
+                  setIsEmployeeMyApproval((prev) => ({
+                    ...prev,
+                    approvals: [payload, ...(prev.approvals || [])],
+                    totalRecords: (prev.totalRecords || 0) + 1,
+                  }));
+                  break;
+                }
+                case "EMPLOYEE_USER_DASHBOARD_DATA": {
+                  console.log("MQTT: EMPLOYEE_USER_DASHBOARD_DATA", payload);
+
+                  setDashboardData((prev) => {
+                    if (!prev?.employee) return prev;
+                    const updatedEmployee = { ...prev.employee };
+                    Object.keys(payload).forEach((key) => {
+                      if (payload[key] !== null)
+                        updatedEmployee[key] = payload[key];
+                    });
+                    return { ...prev, employee: updatedEmployee };
+                  });
+                  break;
+                }
+                case "EMMPLOYEE_NEW_UPLOAD_PORTFOLIO_REQUEST": {
+                  setEmployeePendingApprovalsDataMqtt({
+                    mqttRecivedData: payload,
+                    mqttRecived: true,
+                  });
+                  break;
+                }
+                case "EMPLOYEE_TRADE_APPROVAL_REQUEST_APPROVED": {
+                  break;
+                }
+                case "EMPLOYEE_CONDUCTED_TRANSACTION": {
+                  break;
+                }
+                default:
+                  console.warn("MQTT: No handler for message →", message);
+              }
+              break;
+            }
+            case "3": {
+              switch (message) {
+                case "LINE_MANAGER_NEW_TRADE_APPROVAL_REQUEST": {
+                  setLineManagerApproval((prev) => ({
+                    ...prev,
+                    lineApprovals: [payload, ...(prev.lineApprovals || [])], // prepend
+                    totalRecords: (prev.totalRecords || 0) + 1, // increment safely
+                  }));
+                  break;
+                }
+                case "LINE_MANAGER_DASHBOARD_DATA": {
+                  setDashboardData((prev) => {
+                    if (!prev?.lineManager) return prev;
+                    const updatedLineManager = { ...prev.lineManager };
+                    Object.keys(payload).forEach((key) => {
+                      if (payload[key] !== null)
+                        updatedLineManager[key] = payload[key];
+                    });
+                    return { ...prev, lineManager: updatedLineManager };
+                  });
+                  break;
+                }
+                case "LINE_MANAGER_TRADE_APPROVAL_REQUEST_APPROVED": {
+                  break;
+                }
+                default:
+                  console.warn("MQTT: No handler for message →", message);
+              }
+              break;
+            }
+            case "4": {
+              switch (message) {
+                case "COMPLIANCE_OFFICER_NEW_UPLOAD_PORTFOLIO_REQUEST": {
+                  setComplianceOfficerReconcilePortfolioDataMqtt({
+                    data: payload,
+                    mqtt: true,
+                  });
+                  break;
+                }
+                case "COMPLIANCE_OFFICER_CONDUCTED_TRANSACTION": {
+                  break;
+                }
+                default:
+                  console.warn("MQTT: No handler for message →", message);
+              }
+              break;
+            }
+            default:
+              console.warn("MQTT: No handler for message →", message);
+          }
+        }
 
         switch (message) {
           case "NEW_TRADE_APPROVAL_REQUEST": {
             if (payload) {
               // Prepend new trade approval
-              setIsEmployeeMyApproval((prev) => ({
-                ...prev,
-                approvals: [payload, ...(prev.approvals || [])],
-                totalRecords: (prev.totalRecords || 0) + 1,
-              }));
+              // setIsEmployeeMyApproval((prev) => ({
+              //   ...prev,
+              //   approvals: [payload, ...(prev.approvals || [])],
+              //   totalRecords: (prev.totalRecords || 0) + 1,
+              // }));
 
-              setLineManagerApproval((prev) => ({
-                ...prev,
-                lineApprovals: [payload, ...(prev.lineApprovals || [])], // prepend
-                totalRecords: (prev.totalRecords || 0) + 1, // increment safely
-              }));
+              // setLineManagerApproval((prev) => ({
+              //   ...prev,
+              //   lineApprovals: [payload, ...(prev.lineApprovals || [])], // prepend
+              //   totalRecords: (prev.totalRecords || 0) + 1, // increment safely
+              // }));
               console.log(
                 "MQTT: NEW_TRADE_APPROVAL_REQUEST → payload",
                 payload

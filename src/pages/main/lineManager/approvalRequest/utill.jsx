@@ -59,7 +59,8 @@ export const getBorderlessLineManagerTableColumns = (
   sortedInfo,
   lineManagerApprovalSearch,
   setLineManagerApprovalSearch,
-  setViewDetailLineManagerModal
+  setViewDetailLineManagerModal,
+  setIsSelectedViewDetailLineManager
 ) => [
   {
     title: withSortIcon("Approval ID", "tradeApprovalID", sortedInfo),
@@ -270,7 +271,6 @@ export const getBorderlessLineManagerTableColumns = (
     align: "right",
     render: (record) => {
       //Global State to selected data to show in ViewDetailLineManagerModal Statuses
-      const { setIsSelectedViewDetailLineManager } = useGlobalModal();
       return (
         <>
           <div
