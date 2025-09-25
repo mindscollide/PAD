@@ -204,7 +204,7 @@ const ViewDetailModal = () => {
               </Row>
 
               {/* Show Approved Status Scenario in View Details Modal */}
-              {/* {statusDataLM.label === "Approved" && (
+              {statusDataLM.label === "Approved" && (
                 <>
                   <Row style={{ marginTop: "5px" }}>
                     <Col span={24}>
@@ -223,7 +223,7 @@ const ViewDetailModal = () => {
                     </Col>
                   </Row>
                 </>
-              )} */}
+              )}
 
               {/* Show Resubmit,Pending,Declined and Not Traded status Sceanrios */}
 
@@ -272,12 +272,6 @@ const ViewDetailModal = () => {
                     </label>
                     <label className={styles.viewDetailSubLabels}>
                       {viewDetailsLineManagerData?.requesterName}
-                      {/* {typeof viewDetailsLineManagerData?.requesterName ===
-                      "string" ? (
-                        <label className={styles.viewDetailSubLabels}>
-                          {viewDetailsLineManagerData?.requesterName}
-                        </label>
-                      ) : null} */}
                     </label>
                   </div>
                 </Col>
@@ -334,7 +328,6 @@ const ViewDetailModal = () => {
                   <div className={styles.backgrounColorOfDetail}>
                     <label className={styles.viewDetailMainLabels}>Type</label>
                     <label className={styles.viewDetailSubLabels}>
-                      {/* {selectedViewDetail?.type} */}
                       {viewDetailsLineManagerData?.details?.[0]
                         ?.approvalTypeID === "1" && <span>Buy</span>}
                       {viewDetailsLineManagerData?.details?.[0]
@@ -348,7 +341,6 @@ const ViewDetailModal = () => {
                       Quantity
                     </label>
                     <label className={styles.viewDetailSubLabels}>
-                      {/* {selectedViewDetail?.quantity} */}
                       {formatNumberWithCommas(
                         viewDetailsLineManagerData?.details?.[0]?.quantity
                       )}
@@ -384,31 +376,6 @@ const ViewDetailModal = () => {
 
               <Row style={{ marginTop: "3px" }}>
                 <Col span={24}>
-                  {/* <div className={styles.backgrounColorOfBrokerDetail}>
-                    <label className={styles.viewDetailMainLabels}>
-                      Brokers
-                    </label>
-                    <div className={styles.tagContainer}>
-                      {viewDetailsLineManagerData?.details?.[0]?.brokers?.map(
-                        (brokerId) => {
-                          const broker = employeeBasedBrokersData?.find(
-                            (b) => String(b.brokerID) === String(brokerId)
-                          );
-                          console.log(broker, "brokerNamerChecker");
-                          return (
-                            broker && (
-                              <Tag
-                                key={broker.brokerID}
-                                className={styles.tagClasses}
-                              >
-                                {broker.brokerName}
-                              </Tag>
-                            )
-                          );
-                        }
-                      )}
-                    </div>
-                  </div> */}
                   <BrokerList
                     statusData={statusDataLM}
                     viewDetailsData={viewDetailsLineManagerData}
