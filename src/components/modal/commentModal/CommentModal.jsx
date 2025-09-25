@@ -3,6 +3,12 @@ import { Col, Row, Input, Typography } from "antd";
 import { GlobalModal } from "../../../components";
 import CustomButton from "../../../components/buttons/button";
 import styles from "./CommentModal.module.css";
+import { useGlobalModal } from "../../../context/GlobalModalContext";
+import { UpdateApprovalRequestStatusLineManager } from "../../../api/myApprovalApi";
+import { useNavigate } from "react-router-dom";
+import { useNotification } from "../../NotificationProvider/NotificationProvider";
+import { useGlobalLoader } from "../../../context/LoaderContext";
+import { useApi } from "../../../context/ApiContext";
 
 const { TextArea } = Input;
 const { Text } = Typography;
@@ -14,12 +20,23 @@ const CommentModal = ({
   predefinedReasons = [], // optional array of reasons
   centered,
   title,
-  submitText = "Submit",
+  submitText,
   maxChars = 5000,
   initialValue = "",
 }) => {
+  const navigate = useNavigate();
+  const { showNotification } = useNotification();
+  const { showLoader } = useGlobalLoader();
+  const { callApi } = useApi();
   // State to get value while selecting any reason
   const [value, setValue] = useState(initialValue);
+  const {
+    setNoteGlobalModal,
+    isSelectedViewDetailLineManager,
+    setApprovedGlobalModal,
+  } = useGlobalModal();
+  console.log("Check COmment", value);
+  console.log("Check COmment submitText", submitText);
 
   // State to get option reason while selecting any reason
   const [selectedOption, setSelectedOption] = useState(null);
@@ -47,6 +64,27 @@ const CommentModal = ({
   const handleOptionSelect = (optionText) => {
     setSelectedOption(optionText);
     setValue(optionText.reason);
+  };
+
+  //When User Click on Approve then note Modal will open then this Api need to Hit
+  const fetchUpdateApprovalsRequest = async () => {
+    showLoader(true);
+
+    const requestdata = {
+      TradeApprovalID: String(isSelectedViewDetailLineManager?.approvalID),
+      StatusID: 2, //Approved Status
+      Comment: value,
+    };
+
+    await UpdateApprovalRequestStatusLineManager({
+      callApi,
+      showNotification,
+      showLoader,
+      requestdata,
+      setNoteGlobalModal,
+      setApprovedGlobalModal,
+      navigate,
+    });
   };
 
   return (
@@ -118,10 +156,18 @@ const CommentModal = ({
                   onClick={onClose}
                 />
                 <CustomButton
-                  text={submitText}
+                  text={"Submit"}
                   className="big-dark-button"
                   disabled={isButtonDisabled}
-                  onClick={() => onSubmit({ value, selectedOption })}
+                  onClick={() => {
+                    if (submitText === "Approve") {
+                      fetchUpdateApprovalsRequest();
+                    } else if (submitText === "Decline") {
+                      fetchUpdateDeclineRequest({ value, selectedOption });
+                    } else {
+                      onSubmit({ value, selectedOption });
+                    }
+                  }}
                 />
               </div>
             </Col>

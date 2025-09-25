@@ -314,7 +314,7 @@ export const UpdateApprovalRequestStatusLineManager = async ({
   showNotification,
   showLoader,
   requestdata,
-  setViewDetailLineManagerModal,
+  setNoteGlobalModal,
   setApprovedGlobalModal,
   navigate,
 }) => {
@@ -348,7 +348,7 @@ export const UpdateApprovalRequestStatusLineManager = async ({
         responseMessage ===
         "PAD_Trade_TradeServiceManager_UpdateApprovalRequestStatus_01"
       ) {
-        setViewDetailLineManagerModal(false);
+        setNoteGlobalModal({ visible: false, action: null });
         setApprovedGlobalModal(true);
         return true;
       }
