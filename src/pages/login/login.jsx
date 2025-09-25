@@ -43,7 +43,7 @@ const Login = () => {
 
   // 🔄 Context state resetters (to clear app state on login page mount)
   const { resetDashboardContextState } = useDashboardContext();
-  const { resetModalContextState } = useGlobalModal();
+  const { resetModalContextState, resetForLineManagerModal } = useGlobalModal();
   const { resetMyApprovalContextState } = useMyApproval();
   const { resetPortfolioTab } = usePortfolioContext();
   const { resetSearchBarContextState } = useSearchBarContext();
@@ -84,6 +84,9 @@ const Login = () => {
     resetPortfolioTab();
     resetSearchBarContextState();
     resetSidebarState();
+
+    //Reset LM states
+    resetForLineManagerModal();
   }, []);
 
   /**

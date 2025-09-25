@@ -68,7 +68,10 @@ export const GlobalModalProvider = ({ children }) => {
     useState(null);
 
   // To Show Global States of Notes modals in LM
-  const [noteGlobalModal, setNoteGlobalModal] = useState(false);
+  const [noteGlobalModal, setNoteGlobalModal] = useState({
+    visible: false,
+    action: null,
+  });
 
   //To Show Global State of Approved Modal in LM
   const [approvedGlobalModal, setApprovedGlobalModal] = useState(false);
@@ -81,6 +84,16 @@ export const GlobalModalProvider = ({ children }) => {
 
   /**
    * Global States For Line Manager Modals End here
+   */
+
+  /**
+   * Global States For Compliance Officer Modals Start here
+   */
+  //This is For Head Of COmpliance Modal for upload
+  const [uploadComplianceModal, setUploadComplianceModal] = useState(false);
+
+  /**
+   * Global States For Compliance Officer Modals End here
    */
 
   //  Main resetDashboardContext  reset State to call in dashboard
@@ -98,10 +111,16 @@ export const GlobalModalProvider = ({ children }) => {
 
     setViewDetailLineManagerModal(false);
     setIsSelectedViewDetailLineManager(false);
-    setNoteGlobalModal(false);
+    setNoteGlobalModal({ visible: false, action: null });
     setApprovedGlobalModal(false);
     setDeclinedGlobalModal(false);
     setViewCommentGlobalModal(false);
+  };
+
+  const resetForLineManagerModal = () => {
+    setViewDetailLineManagerModal(false);
+    setNoteGlobalModal({ visible: false, action: null });
+    setApprovedGlobalModal(false);
   };
 
   return (
@@ -150,6 +169,22 @@ export const GlobalModalProvider = ({ children }) => {
         setDeclinedGlobalModal,
         viewCommentGlobalModal,
         setViewCommentGlobalModal,
+        resetForLineManagerModal,
+
+        /**
+         * Global States For Line Manager Modals End Here
+         */
+
+        /**
+         * Global States For Compliance Officer Modals Start here
+         */
+
+        uploadComplianceModal,
+        setUploadComplianceModal,
+
+        /**
+         * Global States For Compliance Officer Modals End here
+         */
 
         resetModalContextState,
       }}

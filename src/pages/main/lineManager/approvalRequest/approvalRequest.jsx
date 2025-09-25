@@ -11,7 +11,7 @@ import { useSearchBarContext } from "../../../../context/SearchBarContaxt";
 import { useGlobalModal } from "../../../../context/GlobalModalContext";
 import ViewDetailModal from "./modal/viewDetailLineManagerModal/ViewDetailModal";
 import NoteLineManagerModal from "./modal/noteLineManagerModal/NoteLineManagerModal";
-import ApprovedLineManagerModal from "./modal/approvedLineManagerModal/approvedLineManagerModal";
+import ApprovedLineManagerModal from "./modal/approvedLineManagerModal/ApprovedLineManagerModal";
 import DeclinedLineManagerModal from "./modal/declinedLineManagerModal/DeclinedLineManagerModal";
 import ViewCommentLineManagerModal from "./modal/viewCommentLineManagerModal/ViewCommentLineManagerModal";
 import { useNotification } from "../../../../components/NotificationProvider/NotificationProvider";
@@ -42,7 +42,7 @@ const ApprovalRequest = () => {
     approvedGlobalModal,
     declinedGlobalModal,
     viewCommentGlobalModal,
-    setIsSelectedViewDetailLineManager
+    setNoteGlobalModal,
   } = useGlobalModal();
 
   const { showNotification } = useNotification();
@@ -115,6 +115,7 @@ const ApprovalRequest = () => {
     if (hasFetched.current) return;
     hasFetched.current = true;
     fetchApprovals();
+    setNoteGlobalModal({ visible: false, action: null });
 
     resetLineManagerApprovalSearch();
     setLineManagerApprovalSearch({
