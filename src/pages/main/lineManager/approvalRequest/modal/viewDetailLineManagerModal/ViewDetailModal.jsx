@@ -160,6 +160,13 @@ const ViewDetailModal = () => {
   const statusDataLM = getStatusStyle(
     String(viewDetailsLineManagerData?.workFlowStatus?.workFlowStatusID)
   );
+  // When its already approve or ddecline by you then button should be disabled
+  const hasAlreadyApprovedOrDeclined =
+    viewDetailsLineManagerData?.hierarchyDetails?.some(
+      (item) => item.userID === loggedInUserID && item.bundleStatusID === 2 // 2 is approved
+    );
+
+  console.log("Check Apprvoed or declined", hasAlreadyApprovedOrDeclined);
 
   // To open Approved Modal when Click on Approved Button in ViewDetailLineManager Modal
   const onClickToOpenApprovedModal = () => {
@@ -466,13 +473,13 @@ const ViewDetailModal = () => {
                             const {
                               fullName,
                               bundleStatusID,
-                              requestDate,
-                              requestTime,
+                              modifiedDate,
+                              modifiedTime,
                               userID,
                             } = person;
 
                             const formattedDateTime = formatApiDateTime(
-                              `${requestDate} ${requestTime}`
+                              `${modifiedDate} ${modifiedTime}`
                             );
 
                             let iconSrc;
@@ -496,7 +503,8 @@ const ViewDetailModal = () => {
                                         {fullName}
                                       </div>
                                       <div className={styles.customdesc}>
-                                        {formattedDateTime}
+                                        {bundleStatusID !== 1 &&
+                                          formattedDateTime}
                                       </div>
                                     </div>
                                   );
@@ -597,20 +605,24 @@ const ViewDetailModal = () => {
                   </>
                 ) : (
                   <>
-                    <Col>
-                      <div className={styles.approvedButtonClass}>
-                        <CustomButton
-                          text={"Decline"}
-                          onClick={onClickToOpenNoteModal}
-                          className="Decline-dark-button"
-                        />
-                        <CustomButton
-                          text={"Approve"}
-                          onClick={onClickToOpenApprovedModal}
-                          className="Approved-dark-button"
-                        />
-                      </div>
-                    </Col>
+                    {!hasAlreadyApprovedOrDeclined && (
+                      <>
+                        <Col>
+                          <div className={styles.approvedButtonClass}>
+                            <CustomButton
+                              text={"Decline"}
+                              onClick={onClickToOpenNoteModal}
+                              className="Decline-dark-button"
+                            />
+                            <CustomButton
+                              text={"Approve"}
+                              onClick={onClickToOpenApprovedModal}
+                              className="Approved-dark-button"
+                            />
+                          </div>
+                        </Col>
+                      </>
+                    )}
                   </>
                 )}
               </Row>

@@ -1,4 +1,10 @@
-import React, { createContext, useContext, useState } from "react";
+import React, {
+  createContext,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 
 // 1. Create the Context
 export const SidebarContext = createContext();
@@ -9,19 +15,22 @@ export const SidebarProvider = ({ children }) => {
   const [collapsed, setCollapsed] = useState(true);
   // this state is used for side bar menu item selected
   const [selectedKey, setSelectedKey] = useState("0");
-
+  const selectedKeyRef = useRef(selectedKey);
   // Reset function without any extra variables
   const resetSidebarState = () => {
     setCollapsed(true);
     setSelectedKey("0");
   };
-
+  useEffect(() => {
+    selectedKeyRef.current = selectedKey; // always latest
+  }, [selectedKey]);
   return (
     <SidebarContext.Provider
       value={{
         collapsed,
         setCollapsed,
         selectedKey,
+        selectedKeyRef,
         setSelectedKey,
         resetSidebarState,
       }}
