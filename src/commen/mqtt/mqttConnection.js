@@ -12,8 +12,10 @@ export const useMqttClient = ({
   const [subscribedTopics, setSubscribedTopics] = useState([]);
   const clientRef = useRef(null);
   const randomString = secureRandomString();
-  const userProfileData = JSON.parse(sessionStorage.getItem("user_profile_data"));
-      console.log("mqtt",userProfileData)
+  const userProfileData = JSON.parse(
+    sessionStorage.getItem("user_profile_data")
+  );
+
   let user_name = userProfileData?.firstName + " " + userProfileData?.lastName;
 
   const subscribeToTopics = useCallback(
@@ -85,16 +87,16 @@ export const useMqttClient = ({
   const connectToMqtt = useCallback(
     ({ subscribeID, userID }) => {
       if (!subscribeID || isConnected) return;
-
+      const topic = `PAD_${userID}`;
       const mqttPort = JSON.parse(sessionStorage.getItem("user_mqtt_Port"));
       const mqttHost = JSON.parse(
         sessionStorage.getItem("user_mqtt_ip_Address")
       );
-      console.log("mqtt",mqttPort)
-      console.log("mqtt",mqttHost)
+      console.log("mqtt", mqttPort);
+      console.log("mqtt", mqttHost);
       const newClientID = secureRandomString();
-      console.log("mqtt",newClientID)
-      console.log("mqtt",user_name)
+      console.log("mqtt", newClientID);
+      console.log("mqtt", user_name);
 
       clientRef.current = new Paho.Client(
         mqttHost,
@@ -109,7 +111,7 @@ export const useMqttClient = ({
         onSuccess: () => {
           console.log("MQTT connected:", newClientID);
           setIsConnected(true);
-          subscribeToTopics([subscribeID]);
+          subscribeToTopics([topic]);
         },
         onFailure: (err) => {
           console.error("MQTT connection failed:", err.errorMessage);

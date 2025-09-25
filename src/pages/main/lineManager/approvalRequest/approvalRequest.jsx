@@ -42,6 +42,7 @@ const ApprovalRequest = () => {
     approvedGlobalModal,
     declinedGlobalModal,
     viewCommentGlobalModal,
+    setIsSelectedViewDetailLineManager
   } = useGlobalModal();
 
   const { showNotification } = useNotification();
@@ -147,7 +148,8 @@ const ApprovalRequest = () => {
     sortedInfo,
     lineManagerApprovalSearch,
     setLineManagerApprovalSearch,
-    setViewDetailLineManagerModal
+    setViewDetailLineManagerModal,
+    setIsSelectedViewDetailLineManager
   );
 
   console.log(approvalStatusMap, "approvalStatusMapapprovalStatusMap");
