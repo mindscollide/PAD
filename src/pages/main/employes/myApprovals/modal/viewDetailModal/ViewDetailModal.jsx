@@ -611,12 +611,12 @@ const ViewDetailModal = () => {
                                 const {
                                   fullName,
                                   bundleStatusID,
-                                  requestDate,
-                                  requestTime,
+                                  modifiedDate,
+                                  modifiedTime,
                                 } = person;
 
                                 const formattedDateTime = formatApiDateTime(
-                                  `${requestDate} ${requestTime}`
+                                  `${modifiedDate} ${modifiedTime}`
                                 );
 
                                 let iconSrc;
@@ -644,9 +644,8 @@ const ViewDetailModal = () => {
                                           {fullName}
                                         </div>
                                         <div className={styles.customdesc}>
-                                          {!bundleStatusID === 1 && {
-                                            formattedDateTime
-                                          }}
+                                          {bundleStatusID !== 1 &&
+                                            formattedDateTime}
                                         </div>
                                       </div>
                                     }
