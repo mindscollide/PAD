@@ -193,6 +193,23 @@ export const responseMessages = {
     "No data available",
   PAD_Trade_TradeServiceManager_GetAllViewDetailsTransactionsByTradeApprovalID_03:
     "Exception",
+
+  // ==============================
+  // 📂Reconsile  (reconsile.jsx)
+  // ==============================
+  PAD_Trade_TradeServiceManager_SearchComplianceOfficerReconcileTransactionRequest_01:
+    "Data Available",
+  PAD_Trade_TradeServiceManager_SearchComplianceOfficerReconcileTransactionRequest_02:
+    "No data available",
+  PAD_Trade_TradeServiceManager_SearchComplianceOfficerReconcileTransactionRequest_03:
+    "Exception",
+
+  PAD_Trade_TradeServiceManager_SearchComplianceOfficerReconcilePortfolioRequest_01:
+    "Data Available",
+  PAD_Trade_TradeServiceManager_SearchComplianceOfficerReconcilePortfolioRequest_02:
+    "No data available",
+  PAD_Trade_TradeServiceManager_SearchComplianceOfficerReconcilePortfolioRequest_03:
+    "Exception",
 };
 
 /**

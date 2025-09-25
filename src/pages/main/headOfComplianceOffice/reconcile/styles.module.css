@@ -1,0 +1,193 @@
+/* Wrapper for the full page content */
+.wrapper {
+  padding: 24px;
+  background-color: #f9fbff;
+  min-height: 100vh;
+}
+
+/* Header row spacing */
+.header {
+  margin-bottom: 12px;
+}
+
+/* Tab buttons container */
+.tabWrapper {
+  position: relative;
+  width: fit-content;
+}
+
+.tabButtons {
+  display: flex;
+  position: relative;
+  background: transparent;
+  gap: 32px;
+}
+
+/* Individual tab */
+.tabButton {
+  position: relative;
+  cursor: pointer;
+  text-align: center;
+}
+
+/* Animated underline for Portfolio tab */
+.underlineTransactions {
+  position: absolute;
+  bottom: -2px;
+  left: 10px;
+  width: 300px; /* match text width */
+  height: 2px;
+  background-color: #001848;
+  border-radius: 4.34px;
+  transition: transform 0.3s ease;
+  pointer-events: none;
+}
+
+/* Animated underline for Pending tab */
+.underlinePorfolio {
+  position: absolute;
+  bottom: -2px;
+  left: 100px;
+  width: 245px;
+  height: 2px;
+  background-color: #001848;
+  border-radius: 4.34px;
+  transition: transform 0.3s ease;
+  pointer-events: none;
+}
+
+/* Actions on the right */
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+/* Total label wrapper */
+.totalWrapper {
+  display: flex;
+  align-items: center;
+  height: 100%;
+}
+
+/* Total text styling */
+.total {
+  margin: 0;
+  font-weight: 500;
+  color: #001848;
+  line-height: 1;
+  font-size: 16px;
+}
+.totaltext {
+  font-family: Switzer Variable;
+  font-weight: 700;
+  font-style: Bold;
+  font-size: 22px;
+  leading-trim: NONE;
+  line-height: 100%;
+  letter-spacing: 0%;
+  color: #30426a;
+}
+/* Highlighted amount next to "Total:" */
+.totalAmount {
+  font-family: Switzer Variable;
+  font-weight: 700;
+  font-style: Bold;
+  font-size: 22px;
+  leading-trim: NONE;
+  line-height: 100%;
+  letter-spacing: 0%;
+}
+
+.panelHeader {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  font-weight: 500;
+  font-size: 16px;
+  gap: 16px;
+}
+
+.shortName {
+  width: 15%;
+  font-family: Switzer Variable;
+  font-weight: 700;
+  font-style: Bold;
+  font-size: 22px;
+  leading-trim: NONE;
+  line-height: 100%;
+  letter-spacing: 0%;
+  vertical-align: middle;
+  color: #424242;
+}
+
+.longName {
+  width: 60%;
+  font-family: Switzer Variable;
+  font-weight: 700;
+  font-style: Bold;
+  font-size: 22px;
+  leading-trim: NONE;
+  line-height: 100%;
+  letter-spacing: 0%;
+  vertical-align: middle;
+  color: #424242;
+}
+
+.quantity {
+  width: 22%;
+
+  font-family: Switzer Variable;
+  font-weight: 700;
+  font-style: Bold;
+  font-size: 22px;
+  leading-trim: NONE;
+  line-height: 100%;
+  letter-spacing: 0%;
+  vertical-align: middle;
+}
+.icon {
+  display: inline-flex;
+  transition: transform 0.3s ease; /* smooth rotation */
+}
+
+.iconOpen {
+  transform: rotate(180deg); /* flipped when open */
+}
+.Panel {
+  min-height: 53.8px;
+  opacity: 1;
+  border-radius: 6.94px;
+  background: #edf3ff;
+  margin-bottom: 17px;
+}
+
+.filter-tags-container {
+  padding: 0 32px;
+  margin-bottom: 12px;
+  margin-top: 10px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.filter-tag {
+  display: flex;
+  align-items: center;
+  height: 35px;
+  padding: 8px 12px;
+  background: #30426a;
+  color: white;
+  border-radius: 7.09px;
+  font-size: 14px;
+  gap: 10px;
+}
+
+.filter-tag-close {
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 16px;
+  line-height: 1;
+}

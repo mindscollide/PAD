@@ -96,6 +96,9 @@ const StatusFilterDropdown = ({
       case "6":
         setFilterOptions(emaStatusOptions);
         break;
+      case "9":
+        setFilterOptions(emtStatusOptions);
+        break;
       default:
         setFilterOptions([]);
     }
@@ -114,11 +117,18 @@ const StatusFilterDropdown = ({
         pageNumber: 0,
         filterTrigger: true,
       }));
+    } else if (selectedKey === "9") {
+      setState((prev) => ({
+        ...prev,
+        status: tempSelected,
+        pageNumber: 0,
+        filterTrigger: true,
+      }));
     } else {
       setState((prev) => ({
         ...prev,
         status: tempSelected,
-        pageSize:10, // Pagination: size of page
+        pageSize: 10, // Pagination: size of page
         pageNumber: 0,
       }));
 
@@ -145,13 +155,20 @@ const StatusFilterDropdown = ({
    * Also triggers API call with empty filter.
    */
   const handleReset = async () => {
+    console.log("fetchPendingApprovals", selectedKey);
     // we handle employe profolio from here
     if (selectedKey === "4") {
       setState((prev) => ({
         ...prev,
         status: [],
-        pageSize: 0,
-        pageNumber: 10,
+        pageNumber: 0,
+        filterTrigger: true,
+      }));
+    } else if (selectedKey === "9") {
+      setState((prev) => ({
+        ...prev,
+        status: [],
+        pageNumber: 0,
         filterTrigger: true,
       }));
     } else {
@@ -172,8 +189,8 @@ const StatusFilterDropdown = ({
       setState((prev) => ({
         ...prev,
         status: [],
-        pageSize: 0,
-        pageNumber: 10,
+        pageSize: 10,
+        pageNumber: 0,
       }));
     }
     setTempSelected([]);
@@ -181,7 +198,7 @@ const StatusFilterDropdown = ({
     setOpenState(false);
     confirm(); // Close dropdown
   };
-  console.log("selected tempSelected",tempSelected)
+  console.log("selected tempSelected", tempSelected);
 
   return (
     <div className={styles.dropdownContainer}>

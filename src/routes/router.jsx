@@ -25,6 +25,7 @@ import {
 
   //For Line Manager
   ApprovalRequest,
+  ReconcileIndex,
 } from "../pages";
 import RoleBasedRoute from "./RoleBasedRoute";
 
@@ -125,7 +126,7 @@ const router = createBrowserRouter(
           path="co-reconcile-transactions"
           element={
             <RoleBasedRoute allowedRoles={[4]}>
-              {<ApprovalRequest />}
+              {<ReconcileIndex />}
             </RoleBasedRoute>
           }
         />
