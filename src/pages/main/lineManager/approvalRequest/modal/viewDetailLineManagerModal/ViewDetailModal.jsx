@@ -80,7 +80,7 @@ const ViewDetailModal = () => {
   // To show Note Modal when Click on Declined in ViewDetailLineManager Modal
   const onClickToOpenNoteModal = () => {
     setViewDetailLineManagerModal(false);
-    setNoteGlobalModal(true);
+    setNoteGlobalModal({ visible: true, action: "Decline" });
   };
 
   // GETALLVIEWDETAIL OF LINEMANAGER API FUNCTION
@@ -110,29 +110,10 @@ const ViewDetailModal = () => {
     fetchGetAllViewDataofLineManager();
   }, []);
 
-  // A Function For Fetch api of update Approval Request Status
-  const fetchUpdateApprovalsRequest = async () => {
-    showLoader(true);
-
-    const requestdata = {
-      TradeApprovalID: String(isSelectedViewDetailLineManager?.approvalID),
-      StatusID: 2, //Approved Status
-    };
-
-    await UpdateApprovalRequestStatusLineManager({
-      callApi,
-      showNotification,
-      showLoader,
-      requestdata,
-      setViewDetailLineManagerModal,
-      setApprovedGlobalModal,
-      navigate,
-    });
-  };
-
   // To open Approved Modal when Click on Approved Button in ViewDetailLineManager Modal
   const onClickToOpenApprovedModal = () => {
-    fetchUpdateApprovalsRequest();
+    setViewDetailLineManagerModal(false);
+    setNoteGlobalModal({ visible: true, action: "Approve" });
   };
 
   // To open View Comment Line Maneger Modal by click on View COmment button
@@ -337,7 +318,7 @@ const ViewDetailModal = () => {
                   </div>
                 </Col>
 
-                {isSelectedViewDetailLineManager.status === "Resubmit" ? (
+                {isSelectedViewDetailLineManager?.status === "Resubmit" ? (
                   // When status is Approved and Declined Resubmitted
                   // isSelectedViewDetailLineManager.status === "Approved"
                   // isSelectedViewDetailLineManager.status === "Declined"
@@ -634,8 +615,8 @@ const ViewDetailModal = () => {
 
               {/* All Others button Scenario's for footer button */}
               <Row>
-                {isSelectedViewDetailLineManager.status === "Approved" ||
-                isSelectedViewDetailLineManager.status === "Declined" ? (
+                {isSelectedViewDetailLineManager?.status === "Approved" ||
+                isSelectedViewDetailLineManager?.status === "Declined" ? (
                   <>
                     <Col span={[24]}>
                       <div className={styles.approvedButtonClassViewComment}>

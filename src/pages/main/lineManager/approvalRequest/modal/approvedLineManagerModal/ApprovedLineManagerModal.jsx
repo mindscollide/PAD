@@ -7,11 +7,18 @@ import CustomButton from "../../../../../../components/buttons/button";
 
 const ApprovedLineManagerModal = () => {
   // This is Global State for modal which is create in ContextApi
-  const { approvedGlobalModal, setApprovedGlobalModal } = useGlobalModal();
+  const {
+    approvedGlobalModal,
+    setApprovedGlobalModal,
+    setNoteGlobalModal,
+    setViewDetailLineManagerModal,
+  } = useGlobalModal();
 
   // onClick Function on Close Button
   const onClickCloseSubmit = () => {
     setApprovedGlobalModal(false);
+    setNoteGlobalModal({ visible: false, action: null });
+    setViewDetailLineManagerModal(false);
   };
 
   return (

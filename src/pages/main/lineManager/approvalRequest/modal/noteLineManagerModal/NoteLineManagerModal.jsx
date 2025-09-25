@@ -10,27 +10,30 @@ const NoteLineManagerModal = () => {
     setDeclinedGlobalModal,
   } = useGlobalModal();
 
+  console.log(noteGlobalModal, "CheckCHeckNoteModal");
+
   //onClose button Handler
   const onClickClose = () => {
-    setNoteGlobalModal(false);
+    setNoteGlobalModal({ visible: false, action: null });
     setViewDetailLineManagerModal(true);
   };
 
   //submit click to open Declined Modal
   const onClickOpenDeclinedModal = () => {
-    setNoteGlobalModal(false);
+    setNoteGlobalModal({ visible: false, action: null });
     setDeclinedGlobalModal(true);
   };
 
   return (
     // This is the global modal of Comment in which text Area defines
     <CommentModal
-      visible={noteGlobalModal}
+      visible={noteGlobalModal.visible}
       onClose={onClickClose}
       width={"902px"}
       height={"620px"}
       centered={false}
-      onCancel={() => setNoteGlobalModal(false)}
+      submitText={noteGlobalModal.action === "Approve" ? "Approve" : "Decline"}
+      onCancel={() => setNoteGlobalModal({ visible: false, action: null })}
       title={"Write a Notes"}
       onSubmit={onClickOpenDeclinedModal}
     />
