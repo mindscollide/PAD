@@ -110,6 +110,12 @@ const ViewDetailModal = () => {
     fetchGetAllViewDataofLineManager();
   }, []);
 
+  // When its already approve or ddecline by you then button should be disabled
+  const hasAlreadyApprovedOrDeclined =
+    viewDetailsLineManagerData?.hierarchyDetails?.some(
+      (item) => item.userID === loggedInUserID && item.bundleStatusID === 2 // 2 is approved
+    );
+
   // To open Approved Modal when Click on Approved Button in ViewDetailLineManager Modal
   const onClickToOpenApprovedModal = () => {
     setViewDetailLineManagerModal(false);
@@ -646,6 +652,7 @@ const ViewDetailModal = () => {
                           text={"Approve"}
                           onClick={onClickToOpenApprovedModal}
                           className="Approved-dark-button"
+                          disabled={hasAlreadyApprovedOrDeclined} // 👈 disable if condition true
                         />
                       </div>
                     </Col>
