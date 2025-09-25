@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from "react";
 import { Col, Row, Tag } from "antd";
 import { useGlobalModal } from "../../../../../../context/GlobalModalContext";
-import { GlobalModal } from "../../../../../../components";
+import { BrokerList, GlobalModal } from "../../../../../../components";
 import styles from "./ViewDetailTransactionModal.module.css";
 import { Stepper, Step } from "react-form-stepper";
 import CustomButton from "../../../../../../components/buttons/button";
@@ -137,6 +137,8 @@ const ViewDetailsTransactionModal = () => {
     labelClass: styles.approvedDetailHeading,
     borderClass: styles.approvedBorderClass,
   };
+
+  console.log(typeof label, "checkecehlabelHere");
 
   // safely extract data from the assetType
   // outside return
@@ -312,7 +314,7 @@ const ViewDetailsTransactionModal = () => {
 
               <Row style={{ marginTop: "3px" }}>
                 <Col span={24}>
-                  <div className={styles.backgrounColorOfBrokerDetail}>
+                  {/* <div className={styles.backgrounColorOfBrokerDetail}>
                     <label className={styles.viewDetailMainLabels}>
                       Brokers
                     </label>
@@ -334,7 +336,12 @@ const ViewDetailsTransactionModal = () => {
                         );
                       })}
                     </div>
-                  </div>
+                  </div> */}
+                  <BrokerList
+                    statusData={label}
+                    viewDetailsData={employeeTransactionViewDetailData}
+                    variant={"Blue"}
+                  />
                 </Col>
               </Row>
 

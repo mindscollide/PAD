@@ -1,0 +1,47 @@
+.tagContainer {
+  display: flex;
+  gap: 10px;
+  padding-bottom: 10px;
+  cursor: pointer !important;
+  overflow-x: auto;
+  white-space: nowrap;
+  flex-wrap: nowrap; /* keep single line */
+  scrollbar-width: thin; /* Firefox */
+  scrollbar-color: #bfbfbf transparent;
+}
+
+.tagClasses {
+  font-size: 16px !important;
+  font-weight: 400 !important;
+  font-family: "Switzer Variable" !important;
+  color: #30426a !important;
+  border: none !important;
+  background-color: #ffffff !important;
+  border-radius: 7px !important;
+  padding: 5px 10px !important;
+  display: inline-flex !important;
+  align-items: center;
+}
+
+.viewDetailMainLabels {
+  font-size: 14px !important;
+  color: #30426a !important;
+  font-weight: 700;
+  font-family: "Switzer Variable";
+}
+
+.backgroundColorOfInstrumentDetailTradednoradius {
+  background-color: #edf3ff !important;
+  padding: 10px 20px;
+  display: flex;
+  flex-direction: column !important;
+}
+
+.backgrounColorOfBrokerDetail {
+  background-color: #fff1e7 !important;
+  padding: 10px 20px;
+  display: flex;
+  flex-direction: column !important;
+  border-bottom-right-radius: 8px;
+  border-bottom-left-radius: 8px;
+}

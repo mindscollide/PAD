@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useRef } from "react";
 import { Col, Row, Tag } from "antd";
 import { useGlobalModal } from "../../../../../../context/GlobalModalContext";
-import { GlobalModal } from "../../../../../../components";
+import { BrokerList, GlobalModal } from "../../../../../../components";
 import styles from "./ViewDetailModal.module.css";
 import { Stepper, Step } from "react-form-stepper";
 import CustomButton from "../../../../../../components/buttons/button";
@@ -486,37 +486,11 @@ const ViewDetailModal = () => {
 
               <Row style={{ marginTop: "3px" }}>
                 <Col span={24}>
-                  <div
-                    className={
-                      statusData.label === "Traded"
-                        ? styles.backgroundColorOfInstrumentDetailTradednoradius
-                        : styles.backgrounColorOfBrokerDetail
-                    }
-                  >
-                    <label className={styles.viewDetailMainLabels}>
-                      Brokers
-                    </label>
-                    <div className={styles.tagContainer}>
-                      {viewDetailsModalData?.details?.[0]?.brokers?.map(
-                        (brokerId) => {
-                          const broker = employeeBasedBrokersData?.find(
-                            (b) => String(b.brokerID) === String(brokerId)
-                          );
-                          console.log(broker, "brokerNamerChecker");
-                          return (
-                            broker && (
-                              <Tag
-                                key={broker.brokerID}
-                                className={styles.tagClasses}
-                              >
-                                {broker.brokerName}
-                              </Tag>
-                            )
-                          );
-                        }
-                      )}
-                    </div>
-                  </div>
+                  <BrokerList
+                    statusData={statusData}
+                    viewDetailsData={viewDetailsModalData}
+                    variant={"Orange"}
+                  />
                 </Col>
               </Row>
 
@@ -645,7 +619,7 @@ const ViewDetailModal = () => {
                                         </div>
                                         <div className={styles.customdesc}>
                                           {!bundleStatusID === 1 && {
-                                            formattedDateTime
+                                            formattedDateTime,
                                           }}
                                         </div>
                                       </div>

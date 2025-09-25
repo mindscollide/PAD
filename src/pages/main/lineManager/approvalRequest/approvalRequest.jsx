@@ -43,6 +43,7 @@ const ApprovalRequest = () => {
     declinedGlobalModal,
     viewCommentGlobalModal,
     setNoteGlobalModal,
+    setIsSelectedViewDetailLineManager,
   } = useGlobalModal();
 
   const { showNotification } = useNotification();
