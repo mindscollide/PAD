@@ -28,3 +28,4 @@ export { default as BrokerFilterDropdown } from "./dropdowns/filters/BrokerFilte
 export { default as BrokerColumnTitle } from "./dropdowns/filters/BrokerColumnTitle";
 export { default as TradeAndPortfolioModal } from "./modal/tradeAndPortfolioModal/TradeAndPortfolioModal";
 export { default as SubmittedModal } from "./modal/submittedModal/SubmittedModal";
+export { default as Uploads } from "./uploads/Uploads";

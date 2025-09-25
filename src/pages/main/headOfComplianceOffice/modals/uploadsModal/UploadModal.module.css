@@ -1,0 +1,64 @@
+.mainContainer {
+  padding: 20px 40px !important;
+}
+
+.uploadTicketHeading {
+  font-size: 25px;
+  font-family: "Switzer Variable";
+  font-weight: 600;
+  color: #30426a;
+}
+
+.uploadtext {
+  font-size: 26px;
+  font-family: "Switzer Variable";
+  font-weight: 700;
+  color: #717171;
+}
+
+.uploadImg {
+  width: 50px;
+  height: 50px;
+}
+
+.uploadSubText {
+  font-size: 14px;
+  font-family: "Switzer Variable";
+  font-weight: 500;
+  color: #717171;
+}
+
+.fileListMainDiv {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  border: 1px solid #d9d9d9 !important;
+  border-radius: 8px !important;
+  padding: 8px 12px !important;
+  background-color: #fff !important;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05) !important;
+}
+
+.fileListSubDiv {
+  display: flex;
+  align-items: center !important;
+}
+
+.fileImagesclass {
+  width: 25px !important;
+  height: 31px !important;
+  margin-right: 8px !important;
+}
+
+.fileNameText {
+  font-size: 16px;
+  font-family: "Switzer Variable";
+  font-weight: 500;
+  color: #424242;
+}
+
+.crossImageClass {
+  width: 30px !important;
+  height: 30px !important;
+  cursor: pointer;
+}

@@ -83,6 +83,16 @@ export const GlobalModalProvider = ({ children }) => {
    * Global States For Line Manager Modals End here
    */
 
+  /**
+   * Global States For Compliance Officer Modals Start here
+   */
+  //This is For Head Of COmpliance Modal for upload
+  const [uploadComplianceModal, setUploadComplianceModal] = useState(false);
+
+  /**
+   * Global States For Compliance Officer Modals End here
+   */
+
   //  Main resetDashboardContext  reset State to call in dashboard
   // The reset function — inline resetting all states
   const resetModalContextState = () => {
@@ -150,6 +160,21 @@ export const GlobalModalProvider = ({ children }) => {
         setDeclinedGlobalModal,
         viewCommentGlobalModal,
         setViewCommentGlobalModal,
+
+        /**
+         * Global States For Line Manager Modals End Here
+         */
+
+        /**
+         * Global States For Compliance Officer Modals Start here
+         */
+
+        uploadComplianceModal,
+        setUploadComplianceModal,
+
+        /**
+         * Global States For Compliance Officer Modals End here
+         */
 
         resetModalContextState,
       }}
