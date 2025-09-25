@@ -43,6 +43,7 @@ const ApprovalRequest = () => {
     declinedGlobalModal,
     viewCommentGlobalModal,
     setNoteGlobalModal,
+    setIsSelectedViewDetailLineManager,
   } = useGlobalModal();
 
   const { showNotification } = useNotification();
@@ -66,12 +67,6 @@ const ApprovalRequest = () => {
     setLineManagerApprovalSearch,
     resetLineManagerApprovalSearch,
   } = useSearchBarContext();
-
-  console.log(
-    lineManagerApprovalSearch,
-    lineManagerApproval,
-    "lineManagerApprovalChecker123"
-  );
 
   // Sort state for AntD Table
   const [sortedInfo, setSortedInfo] = useState({});

@@ -27,10 +27,11 @@ const Dashboard = () => {
   const {
     setComplianceOfficerReconcileTransactionDataMqtt,
     setComplianceOfficerReconcilePortfolioDataMqtt,
+    activeTab: reconcileActiveTab,
   } = useReconcileContext();
   const { setDashboardData } = useDashboardContext();
   const { setEmployeeTransactionsData } = useTransaction();
-  const { selectedKey } = useSidebarContext();
+  const { selectedKeyRef } = useSidebarContext();
 
   // Subscription channel
   const subscribeID = "PAD_TRADE";
@@ -72,12 +73,9 @@ const Dashboard = () => {
         console.warn("MQTT: Received invalid message", data);
         return;
       }
-
-      console.log("MQTT: Message arrived →", data.message, data);
-
       try {
+        const currentKey = selectedKeyRef.current; // ✅ always latest
         const { receiverID, message, payload, roleIDs } = data;
-        console.log("MQTT: Admin portfolio update", payload);
 
         if (!payload) return;
         if (hasUserRole(Number(roleIDs))) {
@@ -87,7 +85,7 @@ const Dashboard = () => {
               switch (message) {
                 // for dashboard data only
                 case "EMPLOYEE_USER_DASHBOARD_DATA": {
-                  if (selectedKey === "0") {
+                  if (currentKey === "0") {
                     setDashboardData((prev) => {
                       if (!prev?.employee) return prev;
                       const updatedEmployee = { ...prev.employee };
@@ -103,7 +101,7 @@ const Dashboard = () => {
                 }
                 // for adding trade approval request
                 case "EMPLOYEE_NEW_TRADE_APPROVAL_REQUEST": {
-                  if (selectedKey === "1") {
+                  if (currentKey === "1") {
                     setIsEmployeeMyApproval((prev) => ({
                       ...prev,
                       approvals: [payload, ...(prev.approvals || [])],
@@ -115,7 +113,7 @@ const Dashboard = () => {
                 }
                 // for update status for trade approval request
                 case "EMPLOYEE_TRADE_APPROVAL_REQUEST_APPROVED": {
-                  if (selectedKey === "1") {
+                  if (currentKey === "1") {
                     setIsEmployeeMyApproval((prev) => {
                       const approvals = prev.approvals || [];
                       const existingIndex = approvals.findIndex(
@@ -139,10 +137,35 @@ const Dashboard = () => {
                   }
                   break;
                 }
+                // for update status for trade approval request
+                case "EMPLOYEE_TRADE_APPROVAL_REQUEST_STATUS_CHANGE_TRADED": {
+                  if (currentKey === "1") {
+                    setIsEmployeeMyApproval((prev) => {
+                      const approvals = prev.approvals || [];
+                      const existingIndex = approvals.findIndex(
+                        (item) => item.approvalID === payload.approvalID
+                      );
 
+                      if (existingIndex === -1) {
+                        // 🚫 If approvalID not found, just return prev (ignore new one)
+                        return prev;
+                      }
+
+                      // 🔄 Replace existing approval
+                      const updatedApprovals = [...approvals];
+                      updatedApprovals[existingIndex] = payload;
+
+                      return {
+                        ...prev,
+                        approvals: updatedApprovals,
+                      };
+                    });
+                  }
+                  break;
+                }
                 // for pending portfolio
                 case "EMMPLOYEE_NEW_UPLOAD_PORTFOLIO_REQUEST": {
-                  if (selectedKey === "4" && activeTab === "pending") {
+                  if (currentKey === "4" && activeTab === "pending") {
                     setEmployeePendingApprovalsDataMqtt({
                       mqttRecivedData: payload,
                       mqttRecived: true,
@@ -150,8 +173,15 @@ const Dashboard = () => {
                   }
                   break;
                 }
-
+                // for my transactions
                 case "EMPLOYEE_CONDUCTED_TRANSACTION": {
+                  if (currentKey === "2") {
+                    setEmployeeTransactionsData((prev) => ({
+                      ...prev,
+                      data: [payload, ...(prev.data || [])],
+                      totalRecords: (prev.totalRecords || 0) + 1,
+                    }));
+                  }
                   break;
                 }
                 default:
@@ -159,20 +189,12 @@ const Dashboard = () => {
               }
               break;
             }
+            // Line manager  mqtt
             case "3": {
               switch (message) {
-                case "LINE_MANAGER_NEW_TRADE_APPROVAL_REQUEST": {
-                  if (selectedKey === "6") {
-                    setLineManagerApproval((prev) => ({
-                      ...prev,
-                      lineApprovals: [payload, ...(prev.lineApprovals || [])], // prepend
-                      totalRecords: (prev.totalRecords || 0) + 1, // increment safely
-                    }));
-                  }
-                  break;
-                }
+                // for dashboard data only
                 case "LINE_MANAGER_DASHBOARD_DATA": {
-                  if (selectedKey === "0") {
+                  if (currentKey === "0") {
                     setDashboardData((prev) => {
                       if (!prev?.lineManager) return prev;
                       const updatedLineManager = { ...prev.lineManager };
@@ -185,8 +207,9 @@ const Dashboard = () => {
                   }
                   break;
                 }
-                case "LINE_MANAGER_TRADE_APPROVAL_REQUEST_APPROVED": {
-                  if (selectedKey === "6") {
+                // for adding new trade approval
+                case "LINE_MANAGER_NEW_TRADE_APPROVAL_REQUEST": {
+                  if (currentKey === "6") {
                     setLineManagerApproval((prev) => ({
                       ...prev,
                       lineApprovals: [payload, ...(prev.lineApprovals || [])], // prepend
@@ -195,21 +218,64 @@ const Dashboard = () => {
                   }
                   break;
                 }
+                // for update status for trade approval request
+                case "LINE_MANAGER_TRADE_APPROVAL_REQUEST_APPROVED": {
+                  if (currentKey === "6") {
+                    setLineManagerApproval((prev) => {
+                      const lineApprovals = prev.lineApprovals || [];
+                      const existingIndex = lineApprovals.findIndex(
+                        (item) => item.approvalID === payload.approvalID
+                      );
+
+                      if (existingIndex === -1) {
+                        // 🚫 If approvalID not found, just return prev (ignore new one)
+                        return prev;
+                      }
+
+                      // 🔄 Replace existing approval
+                      const updatedApprovals = [...lineApprovals];
+                      updatedApprovals[existingIndex] = payload;
+
+                      return {
+                        ...prev,
+                        lineApprovals: updatedApprovals,
+                      };
+                    });
+                  }
+                  break;
+                }
                 default:
                   console.warn("MQTT: No handler for message →", message);
               }
               break;
             }
+            // Compliance officer  mqtt
             case "4": {
               switch (message) {
+                // for adding new portfolio  request
                 case "COMPLIANCE_OFFICER_NEW_UPLOAD_PORTFOLIO_REQUEST": {
-                  setComplianceOfficerReconcilePortfolioDataMqtt({
-                    data: payload,
-                    mqtt: true,
-                  });
+                  if (
+                    currentKey === "9" &&
+                    reconcileActiveTab === "portfolio"
+                  ) {
+                    setComplianceOfficerReconcilePortfolioDataMqtt({
+                      data: payload,
+                      mqtt: true,
+                    });
+                  }
                   break;
                 }
+                // for adding new counduct transaction
                 case "COMPLIANCE_OFFICER_CONDUCTED_TRANSACTION": {
+                  if (
+                    currentKey === "9" &&
+                    reconcileActiveTab === "transactions"
+                  ) {
+                    setComplianceOfficerReconcileTransactionDataMqtt({
+                      data: payload,
+                      mqtt: true,
+                    });
+                  }
                   break;
                 }
                 default:
@@ -222,159 +288,159 @@ const Dashboard = () => {
           }
         }
 
-        switch (message) {
-          case "NEW_TRADE_APPROVAL_REQUEST": {
-            if (payload) {
-              // Prepend new trade approval
-              // setIsEmployeeMyApproval((prev) => ({
-              //   ...prev,
-              //   approvals: [payload, ...(prev.approvals || [])],
-              //   totalRecords: (prev.totalRecords || 0) + 1,
-              // }));
+        // switch (message) {
+        //   case "NEW_TRADE_APPROVAL_REQUEST": {
+        //     if (payload) {
+        //       // Prepend new trade approval
+        //       // setIsEmployeeMyApproval((prev) => ({
+        //       //   ...prev,
+        //       //   approvals: [payload, ...(prev.approvals || [])],
+        //       //   totalRecords: (prev.totalRecords || 0) + 1,
+        //       // }));
 
-              // setLineManagerApproval((prev) => ({
-              //   ...prev,
-              //   lineApprovals: [payload, ...(prev.lineApprovals || [])], // prepend
-              //   totalRecords: (prev.totalRecords || 0) + 1, // increment safely
-              // }));
-              console.log(
-                "MQTT: NEW_TRADE_APPROVAL_REQUEST → payload",
-                payload
-              );
-            } else {
-              console.warn(
-                "MQTT: Missing payload in NEW_TRADE_APPROVAL_REQUEST"
-              );
-            }
-            break;
-          }
+        //       // setLineManagerApproval((prev) => ({
+        //       //   ...prev,
+        //       //   lineApprovals: [payload, ...(prev.lineApprovals || [])], // prepend
+        //       //   totalRecords: (prev.totalRecords || 0) + 1, // increment safely
+        //       // }));
+        //       console.log(
+        //         "MQTT: NEW_TRADE_APPROVAL_REQUEST → payload",
+        //         payload
+        //       );
+        //     } else {
+        //       console.warn(
+        //         "MQTT: Missing payload in NEW_TRADE_APPROVAL_REQUEST"
+        //       );
+        //     }
+        //     break;
+        //   }
 
-          case "NEW_UPLOAD_PORTFOLIO_REQUEST": {
-            if (
-              payload &&
-              hasUserRole(Number(roleIDs)) &&
-              isUserReceiver(receiverID)
-            ) {
-              switch (String(roleIDs)) {
-                case "1": // Admin
-                  console.log("MQTT: Admin portfolio update");
-                  break;
+        //   case "NEW_UPLOAD_PORTFOLIO_REQUEST": {
+        //     if (
+        //       payload &&
+        //       hasUserRole(Number(roleIDs)) &&
+        //       isUserReceiver(receiverID)
+        //     ) {
+        //       switch (String(roleIDs)) {
+        //         case "1": // Admin
+        //           console.log("MQTT: Admin portfolio update");
+        //           break;
 
-                case "2": // Employee
-                  console.log("MQTT: Employee portfolio update");
-                  setEmployeePendingApprovalsDataMqtt({
-                    mqttRecivedData: payload,
-                    mqttRecived: true,
-                  });
-                  break;
+        //         case "2": // Employee
+        //           console.log("MQTT: Employee portfolio update");
+        //           setEmployeePendingApprovalsDataMqtt({
+        //             mqttRecivedData: payload,
+        //             mqttRecived: true,
+        //           });
+        //           break;
 
-                case "3": // Line Manager
-                  console.log("MQTT: Line Manager portfolio update");
-                  break;
+        //         case "3": // Line Manager
+        //           console.log("MQTT: Line Manager portfolio update");
+        //           break;
 
-                default:
-                  console.warn(
-                    "MQTT: No handler defined for roleID →",
-                    roleIDs
-                  );
-              }
-            }
-            break;
-          }
+        //         default:
+        //           console.warn(
+        //             "MQTT: No handler defined for roleID →",
+        //             roleIDs
+        //           );
+        //       }
+        //     }
+        //     break;
+        //   }
 
-          case "USER_DASHBOARD_DATA": {
-            if (hasUserRole(roleIDs)) {
-              switch (String(roleIDs)) {
-                case "1": // Admin
-                  console.log("MQTT: Admin dashboard update");
-                  break;
+        //   case "USER_DASHBOARD_DATA": {
+        //     if (hasUserRole(roleIDs)) {
+        //       switch (String(roleIDs)) {
+        //         case "1": // Admin
+        //           console.log("MQTT: Admin dashboard update");
+        //           break;
 
-                case "2": // Employee
-                  console.log("MQTT: Employee dashboard update");
-                  setDashboardData((prev) => {
-                    if (!prev?.employee) return prev;
-                    const updatedEmployee = { ...prev.employee };
-                    Object.keys(payload).forEach((key) => {
-                      if (payload[key] !== null)
-                        updatedEmployee[key] = payload[key];
-                    });
-                    return { ...prev, employee: updatedEmployee };
-                  });
-                  break;
+        //         case "2": // Employee
+        //           console.log("MQTT: Employee dashboard update");
+        //           setDashboardData((prev) => {
+        //             if (!prev?.employee) return prev;
+        //             const updatedEmployee = { ...prev.employee };
+        //             Object.keys(payload).forEach((key) => {
+        //               if (payload[key] !== null)
+        //                 updatedEmployee[key] = payload[key];
+        //             });
+        //             return { ...prev, employee: updatedEmployee };
+        //           });
+        //           break;
 
-                case "3": // Line Manager
-                  console.log("MQTT: Line Manager dashboard update");
-                  setDashboardData((prev) => {
-                    if (!prev?.lineManager) return prev;
-                    const updatedLineManager = { ...prev.lineManager };
-                    Object.keys(payload).forEach((key) => {
-                      if (payload[key] !== null)
-                        updatedLineManager[key] = payload[key];
-                    });
-                    return { ...prev, lineManager: updatedLineManager };
-                  });
-                  break;
+        //         case "3": // Line Manager
+        //           console.log("MQTT: Line Manager dashboard update");
+        //           setDashboardData((prev) => {
+        //             if (!prev?.lineManager) return prev;
+        //             const updatedLineManager = { ...prev.lineManager };
+        //             Object.keys(payload).forEach((key) => {
+        //               if (payload[key] !== null)
+        //                 updatedLineManager[key] = payload[key];
+        //             });
+        //             return { ...prev, lineManager: updatedLineManager };
+        //           });
+        //           break;
 
-                default:
-                  console.warn(
-                    "MQTT: No handler defined for roleID →",
-                    roleIDs
-                  );
-              }
-            } else {
-              console.warn(
-                "MQTT: Unauthorized or missing roleID in USER_DASHBOARD_DATA",
-                roleIDs
-              );
-            }
-            break;
-          }
+        //         default:
+        //           console.warn(
+        //             "MQTT: No handler defined for roleID →",
+        //             roleIDs
+        //           );
+        //       }
+        //     } else {
+        //       console.warn(
+        //         "MQTT: Unauthorized or missing roleID in USER_DASHBOARD_DATA",
+        //         roleIDs
+        //       );
+        //     }
+        //     break;
+        //   }
 
-          // case "Transaction_Conducted": {
-          //   try {
-          //     console.log("MQTT ignored: role check failed");
-          //     // 🔹 Get assigned roles from sessionStorage
-          //     const storedRoles =
-          //       JSON.parse(sessionStorage.getItem("user_assigned_roles")) || [];
-          //     const hasEmployeeRole = storedRoles.some(
-          //       (role) => role.roleID === 2
-          //     );
+        //   // case "Transaction_Conducted": {
+        //   //   try {
+        //   //     console.log("MQTT ignored: role check failed");
+        //   //     // 🔹 Get assigned roles from sessionStorage
+        //   //     const storedRoles =
+        //   //       JSON.parse(sessionStorage.getItem("user_assigned_roles")) || [];
+        //   //     const hasEmployeeRole = storedRoles.some(
+        //   //       (role) => role.roleID === 2
+        //   //     );
 
-          //     // 🔹 Allow only if both conditions are true
-          //     if (!(hasEmployeeRole && roleIDs === "2")) {
-          //       console.log("MQTT ignored: role check failed", {
-          //         hasEmployeeRole,
-          //         mqttRoleId,
-          //       });
-          //       break;
-          //     }
+        //   //     // 🔹 Allow only if both conditions are true
+        //   //     if (!(hasEmployeeRole && roleIDs === "2")) {
+        //   //       console.log("MQTT ignored: role check failed", {
+        //   //         hasEmployeeRole,
+        //   //         mqttRoleId,
+        //   //       });
+        //   //       break;
+        //   //     }
 
-          //     if (payload) {
-          //       console.log("MQTT ignored: role check failed");
+        //   //     if (payload) {
+        //   //       console.log("MQTT ignored: role check failed");
 
-          //       const flattened = (
-          //         Array.isArray(payload) ? payload : [payload]
-          //       ).flatMap((item) => item);
-          //       console.log(flattened, "MQTT ignored: role check failed");
+        //   //       const flattened = (
+        //   //         Array.isArray(payload) ? payload : [payload]
+        //   //       ).flatMap((item) => item);
+        //   //       console.log(flattened, "MQTT ignored: role check failed");
 
-          //       setEmployeeTransactionsData((prev) => ({
-          //         ...prev,
-          //         data: [...flattened, ...(prev.data || [])],
-          //         totalRecords: (prev.totalRecords || 0) + flattened.length,
-          //       }));
-          //       console.log("MQTT: Transaction Conducted → payload", payload);
-          //     } else {
-          //       console.warn("MQTT: Missing payload in Transaction Conducted");
-          //     }
-          //   } catch (err) {
-          //     console.error("MQTT role check failed:", err);
-          //   }
-          //   break;
-          // }
+        //   //       setEmployeeTransactionsData((prev) => ({
+        //   //         ...prev,
+        //   //         data: [...flattened, ...(prev.data || [])],
+        //   //         totalRecords: (prev.totalRecords || 0) + flattened.length,
+        //   //       }));
+        //   //       console.log("MQTT: Transaction Conducted → payload", payload);
+        //   //     } else {
+        //   //       console.warn("MQTT: Missing payload in Transaction Conducted");
+        //   //     }
+        //   //   } catch (err) {
+        //   //     console.error("MQTT role check failed:", err);
+        //   //   }
+        //   //   break;
+        //   // }
 
-          default:
-            console.warn("MQTT: No handler for message →", message);
-        }
+        //   default:
+        //     console.warn("MQTT: No handler for message →", message);
+        // }
       } catch (error) {
         console.error("MQTT: Error handling message", error, data);
       }
