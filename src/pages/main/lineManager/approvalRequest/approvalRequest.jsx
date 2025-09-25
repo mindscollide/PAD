@@ -68,12 +68,6 @@ const ApprovalRequest = () => {
     resetLineManagerApprovalSearch,
   } = useSearchBarContext();
 
-  console.log(
-    lineManagerApprovalSearch,
-    lineManagerApproval,
-    "lineManagerApprovalChecker123"
-  );
-
   // Sort state for AntD Table
   const [sortedInfo, setSortedInfo] = useState({});
 
