@@ -13,6 +13,7 @@ import { useDashboardContext } from "../../../context/dashboardContaxt";
 import { usePortfolioContext } from "../../../context/portfolioContax";
 import { useTransaction } from "../../../context/myTransaction";
 import { useReconcileContext } from "../../../context/reconsileContax";
+import { useSidebarContext } from "../../../context/sidebarContaxt";
 
 const { Content } = Layout;
 
@@ -21,13 +22,15 @@ const Dashboard = () => {
 
   // Context hooks
   const { setIsEmployeeMyApproval, setLineManagerApproval } = useMyApproval();
-  const { setEmployeePendingApprovalsDataMqtt } = usePortfolioContext();
+  const { setEmployeePendingApprovalsDataMqtt, activeTab } =
+    usePortfolioContext();
   const {
     setComplianceOfficerReconcileTransactionDataMqtt,
     setComplianceOfficerReconcilePortfolioDataMqtt,
   } = useReconcileContext();
   const { setDashboardData } = useDashboardContext();
   const { setEmployeeTransactionsData } = useTransaction();
+  const { selectedKey } = useSidebarContext();
 
   // Subscription channel
   const subscribeID = "PAD_TRADE";
@@ -79,40 +82,75 @@ const Dashboard = () => {
         if (!payload) return;
         if (hasUserRole(Number(roleIDs))) {
           switch (roleIDs) {
+            // Employess mqtt
             case "2": {
               switch (message) {
-                case "EMPLOYEE_NEW_TRADE_APPROVAL_REQUEST": {
-                  setIsEmployeeMyApproval((prev) => ({
-                    ...prev,
-                    approvals: [payload, ...(prev.approvals || [])],
-                    totalRecords: (prev.totalRecords || 0) + 1,
-                  }));
-                  break;
-                }
+                // for dashboard data only
                 case "EMPLOYEE_USER_DASHBOARD_DATA": {
-                  console.log("MQTT: EMPLOYEE_USER_DASHBOARD_DATA", payload);
-
-                  setDashboardData((prev) => {
-                    if (!prev?.employee) return prev;
-                    const updatedEmployee = { ...prev.employee };
-                    Object.keys(payload).forEach((key) => {
-                      if (payload[key] !== null)
-                        updatedEmployee[key] = payload[key];
+                  if (selectedKey === "0") {
+                    setDashboardData((prev) => {
+                      if (!prev?.employee) return prev;
+                      const updatedEmployee = { ...prev.employee };
+                      Object.keys(payload).forEach((key) => {
+                        if (payload[key] !== null)
+                          updatedEmployee[key] = payload[key];
+                      });
+                      return { ...prev, employee: updatedEmployee };
                     });
-                    return { ...prev, employee: updatedEmployee };
-                  });
+                  }
+
                   break;
                 }
-                case "EMMPLOYEE_NEW_UPLOAD_PORTFOLIO_REQUEST": {
-                  setEmployeePendingApprovalsDataMqtt({
-                    mqttRecivedData: payload,
-                    mqttRecived: true,
-                  });
+                // for adding trade approval request
+                case "EMPLOYEE_NEW_TRADE_APPROVAL_REQUEST": {
+                  if (selectedKey === "1") {
+                    setIsEmployeeMyApproval((prev) => ({
+                      ...prev,
+                      approvals: [payload, ...(prev.approvals || [])],
+                      totalRecords: (prev.totalRecords || 0) + 1,
+                    }));
+                  }
+
                   break;
                 }
+                // for update status for trade approval request
                 case "EMPLOYEE_TRADE_APPROVAL_REQUEST_APPROVED": {
+                  if (selectedKey === "1") {
+                    setIsEmployeeMyApproval((prev) => {
+                      const approvals = prev.approvals || [];
+                      const existingIndex = approvals.findIndex(
+                        (item) => item.approvalID === payload.approvalID
+                      );
+
+                      if (existingIndex === -1) {
+                        // 🚫 If approvalID not found, just return prev (ignore new one)
+                        return prev;
+                      }
+
+                      // 🔄 Replace existing approval
+                      const updatedApprovals = [...approvals];
+                      updatedApprovals[existingIndex] = payload;
+
+                      return {
+                        ...prev,
+                        approvals: updatedApprovals,
+                      };
+                    });
+                  }
                   break;
                 }
+
+                // for pending portfolio
+                case "EMMPLOYEE_NEW_UPLOAD_PORTFOLIO_REQUEST": {
+                  if (selectedKey === "4" && activeTab === "pending") {
+                    setEmployeePendingApprovalsDataMqtt({
+                      mqttRecivedData: payload,
+                      mqttRecived: true,
+                    });
+                  }
+                  break;
+                }
+
                 case "EMPLOYEE_CONDUCTED_TRANSACTION": {
                   break;
                 }
@@ -124,26 +162,37 @@ const Dashboard = () => {
             case "3": {
               switch (message) {
                 case "LINE_MANAGER_NEW_TRADE_APPROVAL_REQUEST": {
-                  setLineManagerApproval((prev) => ({
-                    ...prev,
-                    lineApprovals: [payload, ...(prev.lineApprovals || [])], // prepend
-                    totalRecords: (prev.totalRecords || 0) + 1, // increment safely
-                  }));
+                  if (selectedKey === "6") {
+                    setLineManagerApproval((prev) => ({
+                      ...prev,
+                      lineApprovals: [payload, ...(prev.lineApprovals || [])], // prepend
+                      totalRecords: (prev.totalRecords || 0) + 1, // increment safely
+                    }));
+                  }
                   break;
                 }
                 case "LINE_MANAGER_DASHBOARD_DATA": {
-                  setDashboardData((prev) => {
-                    if (!prev?.lineManager) return prev;
-                    const updatedLineManager = { ...prev.lineManager };
-                    Object.keys(payload).forEach((key) => {
-                      if (payload[key] !== null)
-                        updatedLineManager[key] = payload[key];
+                  if (selectedKey === "0") {
+                    setDashboardData((prev) => {
+                      if (!prev?.lineManager) return prev;
+                      const updatedLineManager = { ...prev.lineManager };
+                      Object.keys(payload).forEach((key) => {
+                        if (payload[key] !== null)
+                          updatedLineManager[key] = payload[key];
+                      });
+                      return { ...prev, lineManager: updatedLineManager };
                     });
-                    return { ...prev, lineManager: updatedLineManager };
-                  });
+                  }
                   break;
                 }
                 case "LINE_MANAGER_TRADE_APPROVAL_REQUEST_APPROVED": {
+                  if (selectedKey === "6") {
+                    setLineManagerApproval((prev) => ({
+                      ...prev,
+                      lineApprovals: [payload, ...(prev.lineApprovals || [])], // prepend
+                      totalRecords: (prev.totalRecords || 0) + 1, // increment safely
+                    }));
+                  }
                   break;
                 }
                 default:
