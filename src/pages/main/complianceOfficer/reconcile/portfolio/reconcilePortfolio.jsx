@@ -170,16 +170,11 @@ const ReconcilePortfolio = () => {
           requestdata: requestData,
           navigate,
         });
-        console.log("fetchPendingApprovals", res);
-
         const portfolios = Array.isArray(res?.portfolios) ? res.portfolios : [];
-        console.log("fetchPendingApprovals", res);
-        console.log("fetchPendingApprovals", addApprovalRequestData.Equities);
         const mapped = mapToTableRows(
           addApprovalRequestData?.Equities,
           portfolios
         );
-        console.log("fetchPendingApprovals", mapped);
 
         setComplianceOfficerReconcilePortfolioData({
           data: mapped,
@@ -230,44 +225,50 @@ const ReconcilePortfolio = () => {
   // ----------------------------------------------------------------
   // 🔄 REAL-TIME: Handle new MQTT rows
   // ----------------------------------------------------------------
+  // useEffect(() => {
+  //   if (!complianceOfficerReconcilePortfolioDataMqtt?.mqtt) return;
+
+  //   const newRows = mapToTableRows(
+  //     addApprovalRequestData?.Equities,
+  //     Array.isArray(complianceOfficerReconcilePortfolioDataMqtt?.data)
+  //       ? complianceOfficerReconcilePortfolioDataMqtt.data
+  //       : [complianceOfficerReconcilePortfolioDataMqtt.data]
+  //   );
+
+  //   if (newRows.length) {
+  //     setTableData((prev) => ({
+  //       rows: [newRows[0], ...(prev.rows || [])],
+  //       totalRecords: (prev.totalRecords || 0) + 1,
+  //     }));
+
+  //     setComplianceOfficerReconcilePortfolioData((prev) => ({
+  //       ...prev,
+  //       data: [newRows[0], ...(prev.data || [])],
+  //       totalRecords: (prev.totalRecords || 0) + 1,
+  //       Apicall: false,
+  //     }));
+  //   }
+
+  //   setComplianceOfficerReconcilePortfolioDataMqtt({
+  //     data: [],
+  //     mqtt: false,
+  //   });
+  // }, [complianceOfficerReconcilePortfolioDataMqtt?.mqtt]);
   useEffect(() => {
-    if (!complianceOfficerReconcilePortfolioDataMqtt?.mqtt) return;
-    console.log(
-      "complianceOfficerReconcilePortfolioDataMqtt",
-      complianceOfficerReconcilePortfolioDataMqtt
-    );
-    const newRows = mapToTableRows(
-      addApprovalRequestData?.Equities,
-      Array.isArray(complianceOfficerReconcilePortfolioDataMqtt?.data)
-        ? complianceOfficerReconcilePortfolioDataMqtt.data
-        : [complianceOfficerReconcilePortfolioDataMqtt.data]
-    );
-    console.log("complianceOfficerReconcilePortfolioDataMqtt", newRows);
-    console.log("complianceOfficerReconcilePortfolioDataMqtt", tableData);
-    console.log(
-      "complianceOfficerReconcilePortfolioDataMqtt",
-      complianceOfficerReconcilePortfolioData
-    );
-    if (newRows.length) {
-      setTableData((prev) => ({
-        rows: [newRows[0], ...(prev.rows || [])],
-        totalRecords: (prev.totalRecords || 0) + 1,
-      }));
+    if (!complianceOfficerReconcilePortfolioDataMqtt) return;
+    const requestData = {
+      ...buildPortfolioRequest(complianceOfficerReconcilePortfolioSearch),
+      PageNumber: 0,
+    };
 
-      setComplianceOfficerReconcilePortfolioData((prev) => ({
-        ...prev,
-        data: [newRows[0], ...(prev.data || [])],
-        totalRecords: (prev.totalRecords || 0) + 1,
-        Apicall: false,
-      }));
-    }
+    fetchPortfolios(requestData, true);
+    setComplianceOfficerReconcilePortfolioSearch((prev) => ({
+      ...prev,
+      PageNumber: 0,
+    }));
 
-    setComplianceOfficerReconcilePortfolioDataMqtt({
-      data: [],
-      mqtt: false,
-    });
-  }, [complianceOfficerReconcilePortfolioDataMqtt?.mqtt]);
-
+    setComplianceOfficerReconcilePortfolioDataMqtt(false);
+  }, [complianceOfficerReconcilePortfolioDataMqtt]);
   // ----------------------------------------------------------------
   // 🔄 On search/filter trigger
   // ----------------------------------------------------------------
@@ -311,7 +312,6 @@ const ReconcilePortfolio = () => {
           PageNumber: complianceOfficerReconcilePortfolioSearch.pageNumber || 0,
           Length: 10,
         };
-        console.log("resetComplianceOfficerReconcilePortfoliosSearch");
         await fetchPortfolios(requestData, false, true); // append mode
         setComplianceOfficerReconcilePortfolioSearch((prev) => ({
           ...prev,
@@ -360,10 +360,6 @@ const ReconcilePortfolio = () => {
         data: [],
         totalRecords: 0,
         Apicall: false,
-      });
-      setComplianceOfficerReconcilePortfolioDataMqtt({
-        mqttRecivedData: [],
-        mqttRecived: false,
       });
     };
   }, []);

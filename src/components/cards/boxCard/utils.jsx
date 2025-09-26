@@ -80,6 +80,12 @@ export const typeColorMap = {
     textCountColor: "#30426A",
     textAlign: "center",
   },
+    pending_verification_request: {
+    bgColor: "#EDF3FF",
+    textLableColor: "#30426A", // Using var(--Blue-V1)
+    textCountColor: "#30426A",
+    textAlign: "center",
+  },
 };
 
 // ============================
@@ -114,12 +120,10 @@ export const headOfTradeRouteMap = {
   reports: { path: "reports", key: "5" },
 };
 
-export const headOfComplianceRouteMap = {
-  approvals: { path: "approvals", key: "1" },
-  transactions: { path: "transactions", key: "2" },
-  history: { path: "history", key: "3" },
-  portfolio: { path: "portfolios", key: "4" },
-  reports: { path: "reports", key: "5" },
+export const headOfComplianceOfficerRouteMap = {
+  verification: { path: "hca-escalated-transactions-verifications", key: "15" },
+  action: { path: "hca-my-actions", key: "16" },
+  reports: { path: "hca-reports", key: "17" },
 };
 
 // ===================================
@@ -153,8 +157,8 @@ export const navigateToPage = (userRole, route, setSelectedKey, navigate) => {
     case "headOfTrade":
       pathInfo = headOfTradeRouteMap[route];
       break;
-    case "headOfCompliance":
-      pathInfo = headOfComplianceRouteMap[route];
+    case "HCA":
+      pathInfo = headOfComplianceOfficerRouteMap[route];
       break;
     default:
       console.warn("Unknown userRole:", userRole);

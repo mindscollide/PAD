@@ -1,4 +1,4 @@
-// src/pages/complianceOfficer/reconcile/ReconcileIndex.jsx
+// src/pages/complianceOfficer/reconcile/EscalatedTransactionsIndex.jsx
 
 import React, { useEffect, useState } from "react";
 import { Typography, Row, Col } from "antd";
@@ -13,13 +13,13 @@ import { Button, SubmittedModal } from "../../../../components";
 import { useSearchBarContext } from "../../../../context/SearchBarContaxt";
 import { useGlobalModal } from "../../../../context/GlobalModalContext";
 import { useReconcileContext } from "../../../../context/reconsileContax";
-import ReconcileTransaction from "./transaction/reconcileTransaction";
-import ReconcilePortfolio from "./portfolio/reconcilePortfolio";
+import ReconcileTransaction from "./escalatedVerification/reconcileTransaction";
+import ReconcilePortfolio from "./reconcilePortfolio/reconcilePortfolio";
 
 const { Title } = Typography;
 
 /**
- * 📌 ReconcileIndex
+ * 📌 EscalatedTransactionsIndex
  *
  * Main landing page for the **Compliance Officer → Reconcile Module**.
  *
@@ -32,9 +32,9 @@ const { Title } = Typography;
  * - Integrates with global modals (e.g., submission success).
  * - Prepares hooks for future **Upload Portfolio modal** integration.
  *
- * @returns {JSX.Element} ReconcileIndex page component
+ * @returns {JSX.Element} EscalatedTransactionsIndex page component
  */
-const ReconcileIndex = () => {
+const EscalatedTransactionsIndex = () => {
   const navigate = useNavigate();
 
   // ─── Context Hooks ─────────────────────────────────────────────
@@ -185,4 +185,4 @@ const ReconcileIndex = () => {
   );
 };
 
-export default ReconcileIndex;
+export default EscalatedTransactionsIndex;

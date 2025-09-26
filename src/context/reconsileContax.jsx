@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState } from "react";
+import React, { createContext, useContext, useEffect, useRef, useState } from "react";
 
 /**
  * ReconcileContext
@@ -33,7 +33,11 @@ export const ReconcileProvider = ({ children }) => {
    * @type {[string, function]}
    */
   const [activeTab, setActiveTab] = useState("transactions");
+  const activeTabRef = useRef(activeTab);
 
+  useEffect(() => {
+    activeTabRef.current = activeTab; // always latest
+  }, [activeTab]);
   /**
    * Controls visibility of the "Compliance Officer Reconcile Transaction" modal.
    *
@@ -73,14 +77,17 @@ export const ReconcileProvider = ({ children }) => {
    *
    * @type {[{ data: Array, mqtt: boolean }, function]}
    */
+  // const [
+  //   complianceOfficerReconcileTransactionDataMqtt,
+  //   setComplianceOfficerReconcileTransactionDataMqtt,
+  // ] = useState({
+  //   data: [],
+  //   mqtt: false,
+  // });
   const [
     complianceOfficerReconcileTransactionDataMqtt,
     setComplianceOfficerReconcileTransactionDataMqtt,
-  ] = useState({
-    data: [],
-    mqtt: false,
-  });
-
+  ] = useState(false);
   /**
    * Compliance Officer reconcile portfolio fetched via API.
    *
@@ -137,10 +144,11 @@ export const ReconcileProvider = ({ children }) => {
       totalRecords: 0,
       apiCall: false,
     });
-    setComplianceOfficerReconcilePortfolioDataMqtt({
-      data: [],
-      mqtt: false,
-    });
+    // setComplianceOfficerReconcilePortfolioDataMqtt({
+    //   data: [],
+    //   mqtt: false,
+    // });
+       setComplianceOfficerReconcilePortfolioDataMqtt(false);
     setAggregateTotalQuantity(0);
   };
 
@@ -154,16 +162,14 @@ export const ReconcileProvider = ({ children }) => {
       totalRecords: 0,
       apiCall: false,
     });
-    setComplianceOfficerReconcileTransactionDataMqtt({
-      data: [],
-      mqtt: false,
-    });
+    setComplianceOfficerReconcileTransactionDataMqtt(false);
   };
 
   return (
     <ReconcileContext.Provider
       value={{
         activeTab,
+        activeTabRef,
         setActiveTab,
 
         complianceOfficerReconcileTransactionModal,

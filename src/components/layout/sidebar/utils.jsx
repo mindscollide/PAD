@@ -287,7 +287,7 @@ const sidebarItems = (collapsed, userRoles = [], selectedKey) => {
       ],
     },
     6: {
-      title: "Head of Compliance",
+      title: "Head of Compliance Approval",
       items: [
         {
           key: "15",
@@ -390,8 +390,8 @@ export const routeMap = {
   12: "/PAD/escalated-requests",
   13: "/PAD/my-actions",
   14: "/PAD/reports",
-  15: "/PAD/escalated-verifications",
-  16: "/PAD/my-actions",
-  17: "/PAD/reports",
+  15: "/PAD/hca-escalated-transactions-verifications",
+  16: "/PAD/hca-my-actions",
+  17: "/PAD/hca-reports",
   faq: "/PAD/faq",
 };

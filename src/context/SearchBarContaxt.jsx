@@ -376,7 +376,7 @@ export const SearchBarProvider = ({ children }) => {
       mainInstrumentName: "",
       type: [],
       status: [],
-      pageSize: 0,
+      pageSize: 10,
       pageNumber: 0,
       quantity: 0,
       totalRecords: 0,

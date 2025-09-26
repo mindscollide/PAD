@@ -33,6 +33,10 @@ import {
   mapStatusToIds,
 } from "../../../../../components/dropdowns/filters/utils";
 import { toYYMMDD } from "../../../../../commen/funtions/rejex";
+import { SearchComplianceOfficerReconcileTransactionRequest } from "../../../../../api/reconsile";
+import { useGlobalModal } from "../../../../../context/GlobalModalContext";
+import { GetAllTransactionViewDetails } from "../../../../../api/myTransactionsApi";
+import ViewDetailReconcileTransaction from "./modals/viewDetailReconcileTransaction.jsx/ViewDetailReconcileTransaction";
 
 /**
  * 📌 ReconcileTransaction
@@ -57,6 +61,7 @@ const ReconcileTransaction = () => {
   const { callApi } = useApi();
   const { showNotification } = useNotification();
   const { showLoader } = useGlobalLoader();
+  const { viewDetailReconcileTransaction } = useGlobalModal();
   const { addApprovalRequestData } = useDashboardContext();
 
   const {
@@ -70,7 +75,13 @@ const ReconcileTransaction = () => {
     complianceOfficerReconcileTransactionData,
     setComplianceOfficerReconcileTransactionDataMqtt,
     complianceOfficerReconcileTransactionDataMqtt,
+    setReconcileTransactionViewDetailData,
   } = useReconcileContext();
+
+  console.log(
+    complianceOfficerReconcileTransactionData,
+    "complianceOfficerReconcileTransactionData"
+  );
 
   // -------------------------
   // ✅ Local state
@@ -79,15 +90,35 @@ const ReconcileTransaction = () => {
   const [tableData, setTableData] = useState({ rows: [], totalRecords: 0 });
   const [loadingMore, setLoadingMore] = useState(false);
 
+  // This Api is for the getAllViewDetailModal For myTransaction in Emp role
+  // GETALLVIEWDETAIL OF Transaction API FUNCTION
+  const handleViewDetailsForReconcileTransaction = async (workFlowID) => {
+    await showLoader(true);
+    const requestdata = { TradeApprovalID: workFlowID };
+
+    const responseData = await GetAllTransactionViewDetails({
+      callApi,
+      showNotification,
+      showLoader,
+      requestdata,
+      navigate,
+    });
+
+    if (responseData) {
+      setReconcileTransactionViewDetailData(responseData);
+    }
+  };
+
   // -------------------------
   // ✅ Derived values
   // -------------------------
-  const columns = getBorderlessTableColumns(
+  const columns = getBorderlessTableColumns({
     approvalStatusMap,
     sortedInfo,
     complianceOfficerReconcileTransactionsSearch,
-    setComplianceOfficerReconcileTransactionsSearch
-  );
+    setComplianceOfficerReconcileTransactionsSearch,
+    handleViewDetailsForReconcileTransaction,
+  });
 
   // Prevent duplicate API calls (StrictMode safeguard)
   const didFetchRef = useRef(false);
@@ -107,6 +138,7 @@ const ReconcileTransaction = () => {
     const endDate = searchState.endDate ? toYYMMDD(searchState.endDate) : "";
 
     return {
+      RequesterName: searchState.requesterName || "",
       InstrumentName:
         searchState.mainInstrumentName || searchState.instrumentName || "",
       Quantity: searchState.quantity ? Number(searchState.quantity) : 0,
@@ -117,7 +149,6 @@ const ReconcileTransaction = () => {
         searchState.type,
         addApprovalRequestData?.[assetType]
       ),
-      RequesterName: searchState.requesterName || "",
       PageNumber: Number(searchState.pageNumber) || 0,
       Length: Number(searchState.pageSize) || 10,
     };
@@ -140,24 +171,25 @@ const ReconcileTransaction = () => {
     async (requestData, replace = false, loader = false) => {
       if (!requestData || typeof requestData !== "object") return;
       if (!loader) showLoader(true);
-
       try {
-        const res = await SearchEmployeePendingUploadedPortFolio({
+        const res = await SearchComplianceOfficerReconcileTransactionRequest({
           callApi,
           showNotification,
           showLoader,
           requestdata: requestData,
           navigate,
         });
+        console.log("fetchPendingApprovals", res);
 
-        const portfolios = Array.isArray(res?.pendingPortfolios)
-          ? res.pendingPortfolios
+        const transactions = Array.isArray(res?.transactions)
+          ? res.transactions
           : [];
 
         const mapped = mapToTableRows(
           addApprovalRequestData?.Equities,
-          portfolios
+          transactions
         );
+        console.log("fetchPendingApprovals", mapped);
 
         setComplianceOfficerReconcileTransactionData({
           data: mapped,
@@ -211,36 +243,19 @@ const ReconcileTransaction = () => {
   // 🔄 REAL-TIME: Handle new MQTT rows
   // ----------------------------------------------------------------
   useEffect(() => {
-    if (!complianceOfficerReconcileTransactionDataMqtt?.mqttRecived) return;
+    if (!complianceOfficerReconcileTransactionDataMqtt) return;
 
-    const newRows = mapToTableRows(
-      addApprovalRequestData?.Equities,
-      Array.isArray(
-        complianceOfficerReconcileTransactionDataMqtt?.mqttRecivedData
-      )
-        ? complianceOfficerReconcileTransactionDataMqtt.mqttRecivedData
-        : [complianceOfficerReconcileTransactionDataMqtt.mqttRecivedData]
-    );
+    const requestData = {
+      ...buildPortfolioRequest(complianceOfficerReconcileTransactionsSearch),
+      PageNumber: 0,
+    };
 
-    if (newRows.length) {
-      setTableData((prev) => ({
-        rows: [newRows[0], ...(prev.rows || [])],
-        totalRecords: (prev.totalRecords || 0) + 1,
-      }));
-
-      setComplianceOfficerReconcileTransactionData((prev) => ({
-        ...prev,
-        data: [newRows[0], ...(prev.data || [])],
-        totalRecords: (prev.totalRecords || 0) + 1,
-        Apicall: false,
-      }));
-    }
-
-    setComplianceOfficerReconcileTransactionDataMqtt({
-      mqttRecivedData: [],
-      mqttRecived: false,
-    });
-  }, [complianceOfficerReconcileTransactionDataMqtt?.mqttRecived]);
+    fetchPendingApprovals(requestData, true);
+    setComplianceOfficerReconcileTransactionsSearch((prev) => ({
+      ...prev,
+      PageNumber: 0,
+    }));
+  }, [complianceOfficerReconcileTransactionDataMqtt]);
 
   // ----------------------------------------------------------------
   // 🔄 On search/filter trigger
@@ -250,6 +265,7 @@ const ReconcileTransaction = () => {
       const data = buildPortfolioRequest(
         complianceOfficerReconcileTransactionsSearch
       );
+
       fetchPendingApprovals(data, true); // replace mode
       setComplianceOfficerReconcileTransactionsSearch((prev) => ({
         ...prev,
@@ -348,16 +364,20 @@ const ReconcileTransaction = () => {
   // ✅ RENDER
   // ----------------------------------------------------------------
   return (
-    <BorderlessTable
-      rows={tableData?.rows || []}
-      columns={columns}
-      classNameTable="border-less-table-blue"
-      scroll={
-        tableData?.rows?.length ? { x: "max-content", y: 550 } : undefined
-      }
-      onChange={(_, __, sorter) => setSortedInfo(sorter || {})}
-      loading={loadingMore}
-    />
+    <>
+      <BorderlessTable
+        rows={tableData?.rows || []}
+        columns={columns}
+        classNameTable="border-less-table-blue"
+        scroll={
+          tableData?.rows?.length ? { x: "max-content", y: 550 } : undefined
+        }
+        onChange={(_, __, sorter) => setSortedInfo(sorter || {})}
+        loading={loadingMore}
+      />
+
+      {viewDetailReconcileTransaction && <ViewDetailReconcileTransaction />}
+    </>
   );
 };
 
