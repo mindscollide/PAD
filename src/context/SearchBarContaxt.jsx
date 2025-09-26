@@ -1,4 +1,10 @@
-import React, { createContext, useContext, useState } from "react";
+import React, {
+  createContext,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 
 /**
  * 🔎 SearchBarContext
@@ -210,6 +216,65 @@ export const SearchBarProvider = ({ children }) => {
     filterTrigger: false,
     tableFilterTrigger: false,
   });
+  // ===============================
+  // 🔄 Sync Refs for Always-Latest Values
+  // ===============================
+  const employeeMyApprovalSearchRef = useRef(employeeMyApprovalSearch);
+  const employeeMyTransactionSearchRef = useRef(employeeMyTransactionSearch);
+  const employeePortfolioSearchRef = useRef(employeePortfolioSearch);
+  const employeePendingApprovalSearchRef = useRef(
+    employeePendingApprovalSearch
+  );
+  const employeeMyHistorySearchRef = useRef(employeeMyHistorySearch);
+  const lineManagerApprovalSearchRef = useRef(lineManagerApprovalSearch);
+  const complianceOfficerReconcileTransactionsSearchRef = useRef(
+    complianceOfficerReconcileTransactionsSearch
+  );
+  const complianceOfficerReconcilePortfolioSearchRef = useRef(
+    complianceOfficerReconcilePortfolioSearch
+  );
+
+  useEffect(
+    () => void (employeeMyApprovalSearchRef.current = employeeMyApprovalSearch),
+    [employeeMyApprovalSearch]
+  );
+  useEffect(
+    () =>
+      void (employeeMyTransactionSearchRef.current =
+        employeeMyTransactionSearch),
+    [employeeMyTransactionSearch]
+  );
+  useEffect(
+    () => void (employeePortfolioSearchRef.current = employeePortfolioSearch),
+    [employeePortfolioSearch]
+  );
+  useEffect(
+    () =>
+      void (employeePendingApprovalSearchRef.current =
+        employeePendingApprovalSearch),
+    [employeePendingApprovalSearch]
+  );
+  useEffect(
+    () => void (employeeMyHistorySearchRef.current = employeeMyHistorySearch),
+    [employeeMyHistorySearch]
+  );
+  useEffect(
+    () =>
+      void (lineManagerApprovalSearchRef.current = lineManagerApprovalSearch),
+    [lineManagerApprovalSearch]
+  );
+  useEffect(
+    () =>
+      void (complianceOfficerReconcileTransactionsSearchRef.current =
+        complianceOfficerReconcileTransactionsSearch),
+    [complianceOfficerReconcileTransactionsSearch]
+  );
+  useEffect(
+    () =>
+      void (complianceOfficerReconcilePortfolioSearchRef.current =
+        complianceOfficerReconcilePortfolioSearch),
+    [complianceOfficerReconcilePortfolioSearch]
+  );
 
   /**
    * ===============================
@@ -410,6 +475,15 @@ export const SearchBarProvider = ({ children }) => {
         setComplianceOfficerReconcilePortfolioSearch,
         resetComplianceOfficerReconcilePortfoliosSearch,
 
+        // ✅ Always-latest Refs
+        employeeMyApprovalSearchRef,
+        employeeMyTransactionSearchRef,
+        employeePortfolioSearchRef,
+        employeePendingApprovalSearchRef,
+        employeeMyHistorySearchRef,
+        lineManagerApprovalSearchRef,
+        complianceOfficerReconcileTransactionsSearchRef,
+        complianceOfficerReconcilePortfolioSearchRef,
         // Global reset
         resetSearchBarContextState,
       }}
