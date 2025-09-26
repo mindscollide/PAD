@@ -652,8 +652,8 @@ span.ant-btn-icon {
 
   cursor: pointer !important;
   transition: all 0.2s ease !important;
-  background: var(--Blue-V1, #30426A) !important;
-  border: 1px solid var(--Blue-V1, #30426A) !important;
+  background: var(--Blue-V1, #30426a) !important;
+  border: 1px solid var(--Blue-V1, #30426a) !important;
 }
 
 .big-blue-button:disabled {
@@ -1259,6 +1259,60 @@ span.ant-btn-icon {
 .Approved-dark-button:disabled {
   background: #d9d9d9 !important;
   border: 1px solid #d9d9d9 !important;
+  color: #ffffff !important;
+  cursor: not-allowed !important;
+}
+
+.big-ViewTicket-light-button {
+  padding: 0px 40px !important;
+  width: 300px !important;
+  height: 38px !important;
+  background: transparent !important;
+  border: 1px solid #b4b4b4 !important;
+  color: #424242 !important;
+  border-radius: 6.95px !important;
+  font-family: "Switzer Variable" !important;
+  font-weight: 500 !important;
+  font-size: 14px !important;
+  line-height: 100% !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease !important;
+}
+
+.big-ViewTicket-light-button:not(:disabled):hover {
+  box-shadow: 4px 4px 6px 0px #00000033 !important;
+}
+
+.big-ViewTicket-light-button:disabled {
+  background: #d9d9d9 !important;
+  border: 1px solid #b4b4b4 !important;
+  color: #ffffff !important;
+  cursor: not-allowed !important;
+}
+
+.big-ViewTicket-dark-button {
+  padding: 0px 40px !important;
+  width: 300px !important;
+  height: 38px !important;
+  background: var(--Blue-V1, #30426a) !important;
+  border: 1px solid #b4b4b4 !important;
+  color: #ffffff !important;
+  border-radius: 6.95px !important;
+  font-family: "Switzer Variable" !important;
+  font-weight: 500 !important;
+  font-size: 14px !important;
+  line-height: 100% !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease !important;
+}
+
+.big-ViewTicket-dark-button:not(:disabled):hover {
+  box-shadow: 4px 4px 6px 0px #00000033 !important;
+}
+
+.big-ViewTicket-dark-button:disabled {
+  background: #d9d9d9 !important;
+  border: 1px solid #B4B4B4 !important;
   color: #ffffff !important;
   cursor: not-allowed !important;
 }

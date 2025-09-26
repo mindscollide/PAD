@@ -47,11 +47,14 @@ export const MyTransactionsProvider = ({ children }) => {
     employeeTransactionViewDetailData,
     setEmployeeTransactionViewDetailData,
   ] = useState({
+    assetTypes: [],
     details: [],
     hierarchyList: [],
     hierarchyDetails: [],
     workFlowStatus: {},
     tradedWorkFlowReqeust: [],
+    reqeusterName: "",
+    ticketUploaded: false,
   });
 
   /**

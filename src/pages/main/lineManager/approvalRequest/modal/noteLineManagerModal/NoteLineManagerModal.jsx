@@ -10,7 +10,8 @@ const NoteLineManagerModal = () => {
     setDeclinedGlobalModal,
   } = useGlobalModal();
 
-  console.log(noteGlobalModal, "CheckCHeckNoteModal");
+  // 🔹 Local state upar uthao
+  const [commentValue, setCommentValue] = useState("");
 
   //onClose button Handler
   const onClickClose = () => {
@@ -22,6 +23,7 @@ const NoteLineManagerModal = () => {
   const onClickOpenDeclinedModal = () => {
     setNoteGlobalModal({ visible: false, action: null });
     setDeclinedGlobalModal(true);
+    setCommentValue("");
   };
 
   return (
@@ -29,6 +31,8 @@ const NoteLineManagerModal = () => {
     <CommentModal
       visible={noteGlobalModal.visible}
       onClose={onClickClose}
+      value={commentValue} // pass controlled value
+      setValue={setCommentValue}
       width={"902px"}
       height={"620px"}
       centered={false}

@@ -118,7 +118,15 @@ export const ReconcileProvider = ({ children }) => {
     hierarchyDetails: [],
     workFlowStatus: {},
     tradedWorkFlowReqeust: [],
+    ticketUploaded: false,
+    reqeusterName: "",
   });
+
+  //To get the selected data by clicking on View Detail of reconcile Transaction
+  const [
+    selectedReconcileTransactionData,
+    setSelectedReconcileTransactionData,
+  ] = useState(null);
 
   /**
    * Aggregate total quantity across all reconcile portfolio holdings.
@@ -187,6 +195,9 @@ export const ReconcileProvider = ({ children }) => {
 
         reconcileTransactionViewDetailData,
         setReconcileTransactionViewDetailData,
+
+        selectedReconcileTransactionData,
+        setSelectedReconcileTransactionData,
       }}
     >
       {children}

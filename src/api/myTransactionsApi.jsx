@@ -164,6 +164,8 @@ export const GetAllTransactionViewDetails = async ({
         hierarchyDetails,
         workFlowStatus,
         tradedWorkFlowReqeust,
+        ticketUploaded,
+        reqeusterName,
       } = res.result;
 
       if (
@@ -177,6 +179,8 @@ export const GetAllTransactionViewDetails = async ({
           hierarchyDetails: hierarchyDetails || [],
           workFlowStatus: workFlowStatus || {},
           tradedWorkFlowReqeust: tradedWorkFlowReqeust || [],
+          ticketUploaded: ticketUploaded ?? false, // <-- Add this line
+          reqeusterName: reqeusterName || "",
         };
       }
 
@@ -191,6 +195,8 @@ export const GetAllTransactionViewDetails = async ({
         hierarchyDetails: [],
         workFlowStatus: {},
         tradedWorkFlowReqeust: [],
+        ticketUploaded: false,
+        reqeusterName: "",
       };
     }
 

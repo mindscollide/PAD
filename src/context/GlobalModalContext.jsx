@@ -100,6 +100,17 @@ export const GlobalModalProvider = ({ children }) => {
   const [viewDetailPortfolioTransaction, setViewDetailPortfolioTransaction] =
     useState(false);
 
+  //This is For the Compliant Approved Modal Open After NOte Modal on Api succes
+  const [compliantApproveModal, setCompliantApproveModal] = useState(false);
+
+  //This is For the NONCompliant Declined Modal Open After NOte Modal on Api succes
+  const [nonCompliantDeclineModal, setNonCompliantDeclineModal] =
+    useState(false);
+
+  // This is for View Comment When Compliant and NonCompliant modal will be open
+  const [viewCommentReconcileModal, setViewCommentReconcileModal] =
+    useState(false);
+
   /**
    * Global States For Compliance Officer Modals End here
    */
@@ -192,6 +203,12 @@ export const GlobalModalProvider = ({ children }) => {
         setUploadComplianceModal,
         viewDetailPortfolioTransaction,
         setViewDetailPortfolioTransaction,
+        compliantApproveModal,
+        setCompliantApproveModal,
+        nonCompliantDeclineModal,
+        setNonCompliantDeclineModal,
+        viewCommentReconcileModal,
+        setViewCommentReconcileModal,
 
         /**
          * Global States For Compliance Officer Modals End here
