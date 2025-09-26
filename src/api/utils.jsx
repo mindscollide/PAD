@@ -210,6 +210,13 @@ export const responseMessages = {
     "No data available",
   PAD_Trade_TradeServiceManager_SearchComplianceOfficerReconcilePortfolioRequest_03:
     "Exception",
+
+  PAD_Trade_TradeServiceManager_GetComplianceOfficerViewDetailsByTradeApprovalID_01:
+    "Data Available",
+  PAD_Trade_TradeServiceManager_GetComplianceOfficerViewDetailsByTradeApprovalID_02:
+    "No data available",
+  PAD_Trade_TradeServiceManager_GetComplianceOfficerViewDetailsByTradeApprovalID_03:
+    "Exception",
 };
 
 /**

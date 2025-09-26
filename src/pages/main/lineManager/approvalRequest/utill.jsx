@@ -54,14 +54,15 @@ const withSortIcon = (label, columnKey, sortedInfo) => (
   </div>
 );
 
-export const getBorderlessLineManagerTableColumns = (
+export const getBorderlessLineManagerTableColumns = ({
   approvalStatusMap,
   sortedInfo,
   lineManagerApprovalSearch,
   setLineManagerApprovalSearch,
   setViewDetailLineManagerModal,
-  setIsSelectedViewDetailLineManager
-) => [
+  setIsSelectedViewDetailLineManager,
+  handleViewDetailsForLineManager,
+}) => [
   {
     title: withSortIcon("Approval ID", "tradeApprovalID", sortedInfo),
     dataIndex: "tradeApprovalID",
@@ -285,6 +286,7 @@ export const getBorderlessLineManagerTableColumns = (
               className="big-orange-button"
               text="View Details"
               onClick={() => {
+                handleViewDetailsForLineManager(record?.approvalID);
                 setIsSelectedViewDetailLineManager(record);
                 setViewDetailLineManagerModal(true);
               }}

@@ -16,7 +16,10 @@ import { useNotification } from "../../../../components/NotificationProvider/Not
 import { useGlobalLoader } from "../../../../context/LoaderContext";
 
 // API
-import { SearchEmployeeTransactionsDetails } from "../../../../api/myTransactionsApi";
+import {
+  GetAllTransactionViewDetails,
+  SearchEmployeeTransactionsDetails,
+} from "../../../../api/myTransactionsApi";
 
 // Styles
 import style from "./myTransaction.module.css";
@@ -174,14 +177,35 @@ const MyTransaction = () => {
 
   console.log(approvalStatusMap, "approvalStatusMapapprovalStatusMap");
 
+  // This Api is for the getAllViewDetailModal For myTransaction in Emp role
+  // GETALLVIEWDETAIL OF Transaction API FUNCTION
+  const handleViewDetailsForTransaction = async (workFlowID) => {
+    await showLoader(true);
+    const requestdata = { TradeApprovalID: workFlowID };
+
+    const responseData = await GetAllTransactionViewDetails({
+      callApi,
+      showNotification,
+      showLoader,
+      requestdata,
+      navigate,
+    });
+
+    if (responseData) {
+      setEmployeeTransactionViewDetailData(responseData);
+      setViewDetailTransactionModal(true);
+    }
+  };
+
   // -------------------- Table Columns --------------------
-  const columns = getBorderlessTableColumns(
+  const columns = getBorderlessTableColumns({
     approvalStatusMap,
     sortedInfo,
     employeeMyTransactionSearch,
     setViewDetailTransactionModal,
-    setEmployeeMyTransactionSearch
-  );
+    setEmployeeMyTransactionSearch,
+    handleViewDetailsForTransaction,
+  });
 
   /**
    * Removes a filter tag and re-fetches data

@@ -19,7 +19,10 @@ import { useSidebarContext } from "../../../../context/sidebarContaxt";
 import { useGlobalLoader } from "../../../../context/LoaderContext";
 import { useApi } from "../../../../context/ApiContext";
 import { useMyApproval } from "../../../../context/myApprovalContaxt";
-import { SearchApprovalRequestLineManager } from "../../../../api/myApprovalApi";
+import {
+  GetAllLineManagerViewDetailRequest,
+  SearchApprovalRequestLineManager,
+} from "../../../../api/myApprovalApi";
 import { useNavigate } from "react-router-dom";
 import { apiCallSearchForLineManager } from "../../../../components/dropdowns/searchableDropedown/utill";
 import { useTableScrollBottom } from "../../employes/myApprovals/utill";
@@ -56,7 +59,11 @@ const ApprovalRequest = () => {
   const [approvalRequestLMData, setApprovalRequestLMData] = useState([]);
 
   // state of context which I'm getting from the myApproval for Line Manager
-  const { lineManagerApproval, setLineManagerApproval } = useMyApproval();
+  const {
+    lineManagerApproval,
+    setLineManagerApproval,
+    setViewDetailsLineManagerData,
+  } = useMyApproval();
 
   const [loadingMore, setLoadingMore] = useState(false);
 
@@ -138,15 +145,35 @@ const ApprovalRequest = () => {
     { key: "quantity", label: "Quantity" },
   ];
 
+  // This Api is for the getAllViewDetailModal For LineManager
+  const handleViewDetailsForLineManager = async (approvalID) => {
+    await showLoader(true);
+    const requestdata = { TradeApprovalID: approvalID };
+
+    const responseData = await GetAllLineManagerViewDetailRequest({
+      callApi,
+      showNotification,
+      showLoader,
+      requestdata,
+      navigate,
+    });
+
+    if (responseData) {
+      setViewDetailsLineManagerData(responseData);
+      setViewDetailLineManagerModal(true);
+    }
+  };
+
   // Table columns with integrated filters
-  const columns = getBorderlessLineManagerTableColumns(
+  const columns = getBorderlessLineManagerTableColumns({
     approvalStatusMap,
     sortedInfo,
     lineManagerApprovalSearch,
     setLineManagerApprovalSearch,
     setViewDetailLineManagerModal,
-    setIsSelectedViewDetailLineManager
-  );
+    setIsSelectedViewDetailLineManager,
+    handleViewDetailsForLineManager,
+  });
 
   console.log(approvalStatusMap, "approvalStatusMapapprovalStatusMap");
 

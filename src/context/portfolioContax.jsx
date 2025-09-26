@@ -103,6 +103,17 @@ export const PortfolioProvider = ({ children }) => {
    */
   const [aggregateTotalQuantity, setAggregateTotalQuantity] = useState(0);
 
+  // Context STate to extract data from GetComplianceOfficerViewDetailsByTradeApprovalID which is show by click on Viewdetail of Portfolio reconcile transaction
+  const [
+    reconcilePortfolioViewDetailData,
+    setReconcilePortfolioViewDetailData,
+  ] = useState({
+    details: [],
+    requesterName: "",
+    assetTypes: [],
+    hierarchyDetails: [],
+  });
+
   /**
    * Reset only the portfolio tab state.
    */
@@ -156,6 +167,8 @@ export const PortfolioProvider = ({ children }) => {
         setAggregateTotalQuantity,
         resetPortfolioTab,
         resetPendingApprovalTab,
+        reconcilePortfolioViewDetailData,
+        setReconcilePortfolioViewDetailData,
       }}
     >
       {children}

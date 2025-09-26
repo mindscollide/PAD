@@ -92,6 +92,14 @@ export const GlobalModalProvider = ({ children }) => {
   //This is For Head Of COmpliance Modal for upload
   const [uploadComplianceModal, setUploadComplianceModal] = useState(false);
 
+  //This is For Compliance Officer View Detail for reconcile transaction modal
+  const [viewDetailReconcileTransaction, setViewDetailReconcileTransaction] =
+    useState(false);
+
+  //This is For Compliance Officer View Detail for Portfolio transaction modal
+  const [viewDetailPortfolioTransaction, setViewDetailPortfolioTransaction] =
+    useState(false);
+
   /**
    * Global States For Compliance Officer Modals End here
    */
@@ -178,9 +186,12 @@ export const GlobalModalProvider = ({ children }) => {
         /**
          * Global States For Compliance Officer Modals Start here
          */
-
+        viewDetailReconcileTransaction,
+        setViewDetailReconcileTransaction,
         uploadComplianceModal,
         setUploadComplianceModal,
+        viewDetailPortfolioTransaction,
+        setViewDetailPortfolioTransaction,
 
         /**
          * Global States For Compliance Officer Modals End here
