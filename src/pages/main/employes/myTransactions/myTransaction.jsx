@@ -77,13 +77,9 @@ const MyTransaction = () => {
   const {
     employeeTransactionsData,
     setEmployeeTransactionsData,
-    setEmployeeTransactionViewDetailData,
+    employeeTransactionsTableDataMqtt,
+    setEmployeeTransactionsTableDataMqtt,
   } = useTransaction();
-
-  console.log(
-    employeeTransactionsData,
-    "employeeTransactionsDataemployeeTransactionsData"
-  );
 
   // -------------------- Local State --------------------
   const [sortedInfo, setSortedInfo] = useState({});
@@ -96,8 +92,10 @@ const MyTransaction = () => {
   /**
    * Fetches approval data from API on component mount
    */
-  const fetchApprovals = async () => {
-    await showLoader(true);
+  const fetchApprovals = async (flag) => {
+    if (flag) {
+      await showLoader(true);
+    }
 
     const requestdata = {
       InstrumentName:
@@ -135,7 +133,7 @@ const MyTransaction = () => {
   useEffect(() => {
     if (hasFetched.current) return;
     hasFetched.current = true;
-    fetchApprovals();
+    fetchApprovals(true);
 
     resetEmployeeMyTransactionSearch();
     setEmployeeMyTransactionSearch({
@@ -153,6 +151,13 @@ const MyTransaction = () => {
       tableFilterTrigger: false,
     });
   }, []);
+
+  useEffect(() => {
+    if (employeeTransactionsTableDataMqtt) {
+      fetchApprovals(false);
+      setEmployeeTransactionsTableDataMqtt(false);
+    }
+  }, [employeeTransactionsTableDataMqtt]);
 
   // helper to map brokerId → brokerName
   const brokerIdToName = (id) => {

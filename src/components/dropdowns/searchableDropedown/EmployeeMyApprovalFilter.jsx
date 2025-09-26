@@ -50,26 +50,32 @@ export const EmployeeMyApprovalFilter = ({ handleSearch, setVisible }) => {
   /** Handle date selection */
   const handleSearchClick = async () => {
     console.log("Checke Seletc");
-    const finalSearch = {
-      ...(dirtyFields.instrumentName && {
-        instrumentName: localState.instrumentName,
-      }),
-      ...(dirtyFields.quantity && {
-        quantity: localState.quantity !== "" ? Number(localState.quantity) : 0,
-      }),
-      ...(dirtyFields.startDate && {
-        startDate: localState.startDate
-          ? localState.startDate.format("YYYY-MM-DD")
-          : "",
-      }),
-      pageNumber: 0,
-    };
 
-    await setEmployeeMyApprovalSearch(finalSearch);
-    console.log("Checke Seletc", finalSearch);
-    handleSearch(finalSearch);
+    setEmployeeMyApprovalSearch((prev) => {
+      const finalSearch = {
+        ...prev, // ✅ keep all previous state values
+        ...(dirtyFields.instrumentName && {
+          instrumentName: localState.instrumentName,
+        }),
+        ...(dirtyFields.quantity && {
+          quantity:
+            localState.quantity !== "" ? Number(localState.quantity) : 0,
+        }),
+        ...(dirtyFields.startDate && {
+          startDate: localState.startDate
+            ? localState.startDate.format("YYYY-MM-DD")
+            : null,
+        }),
+        pageNumber: 0, // ✅ overwrite pageNumber only
+      };
 
-    // 🚫 don’t reset here, let Reset button handle it
+      console.log("Checke Seletc", finalSearch);
+
+      // trigger your search callback
+      handleSearch(finalSearch);
+
+      return finalSearch;
+    });
   };
 
   /** Reset filters */

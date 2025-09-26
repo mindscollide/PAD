@@ -1,4 +1,10 @@
-import React, { createContext, useContext, useState } from "react";
+import React, {
+  createContext,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 
 /**
  * PortfolioContext
@@ -29,7 +35,11 @@ export const PortfolioProvider = ({ children }) => {
    * @type {[string, function]}
    */
   const [activeTab, setActiveTab] = useState("portfolio");
+  const activeTabRef = useRef(activeTab);
 
+  useEffect(() => {
+    activeTabRef.current = activeTab; // always latest
+  }, [activeTab]);
   /**
    * Controls visibility of the "Upload Portfolio" modal.
    *
@@ -54,14 +64,17 @@ export const PortfolioProvider = ({ children }) => {
    *
    * @type {[{ data: Array, mqtt: boolean }, function]}
    */
+  // const [
+  //   employeePendingApprovalsDataMqtt,
+  //   setEmployeePendingApprovalsDataMqtt,
+  // ] = useState({
+  //   data: [],
+  //   mqtt: false,
+  // });
   const [
     employeePendingApprovalsDataMqtt,
     setEmployeePendingApprovalsDataMqtt,
-  ] = useState({
-    data: [],
-    mqtt: false,
-  });
-
+  ] = useState(false);
   /**
    * Employee portfolio data fetched via API.
    *
@@ -138,6 +151,7 @@ export const PortfolioProvider = ({ children }) => {
     <PortfolioContext.Provider
       value={{
         activeTab,
+        activeTabRef,
         setActiveTab,
         uploadPortfolioModal,
         setUploadPortfolioModal,

@@ -200,35 +200,45 @@ const PendingApprovals = () => {
   // 🔄 REAL-TIME: Handle new MQTT rows
   // ----------------------------------------------------------------
   useEffect(() => {
-    if (!employeePendingApprovalsDataMqtt?.mqttRecived) return;
+    if (!employeePendingApprovalsDataMqtt) return;
 
-    const newRows = mapToTableRows(
-      addApprovalRequestData?.Equities,
-      Array.isArray(employeePendingApprovalsDataMqtt?.mqttRecivedData)
-        ? employeePendingApprovalsDataMqtt.mqttRecivedData
-        : [employeePendingApprovalsDataMqtt.mqttRecivedData],
-      brokerOptions
-    );
+    const requestData = {
+      ...buildPortfolioRequest(employeePendingApprovalSearch),
+      PageNumber: 0,
+    };
+    setEmployeePendingApprovalSearch((prev) => ({
+      ...prev,
+      pageNumber: 10,
+    }));
+    fetchPendingApprovals(requestData, true,false); // replace mode
 
-    if (newRows.length) {
-      setTableData((prev) => ({
-        rows: [newRows[0], ...(prev.rows || [])],
-        totalRecords: (prev.totalRecords || 0) + 1,
-      }));
+    // const newRows = mapToTableRows(
+    //   addApprovalRequestData?.Equities,
+    //   Array.isArray(employeePendingApprovalsDataMqtt?.mqttRecivedData)
+    //     ? employeePendingApprovalsDataMqtt.mqttRecivedData
+    //     : [employeePendingApprovalsDataMqtt.mqttRecivedData],
+    //   brokerOptions
+    // );
 
-      setEmployeePendingApprovalsData((prev) => ({
-        ...prev,
-        data: [newRows[0], ...(prev.data || [])],
-        totalRecords: (prev.totalRecords || 0) + 1,
-        Apicall: false,
-      }));
-    }
+    // if (newRows.length) {
+    //   setTableData((prev) => ({
+    //     rows: [newRows[0], ...(prev.rows || [])],
+    //     totalRecords: (prev.totalRecords || 0) + 1,
+    //   }));
 
-    setEmployeePendingApprovalsDataMqtt({
-      mqttRecivedData: [],
-      mqttRecived: false,
-    });
-  }, [employeePendingApprovalsDataMqtt?.mqttRecived]);
+    //   setEmployeePendingApprovalsData((prev) => ({
+    //     ...prev,
+    //     data: [newRows[0], ...(prev.data || [])],
+    //     totalRecords: (prev.totalRecords || 0) + 1,
+    //     Apicall: false,
+    //   }));
+    // }
+
+    // setEmployeePendingApprovalsDataMqtt({
+    //   mqttRecivedData: [],
+    //   mqttRecived: false,
+    // });
+  }, [employeePendingApprovalsDataMqtt]);
 
   // ----------------------------------------------------------------
   // 🔄 On search/filter trigger
