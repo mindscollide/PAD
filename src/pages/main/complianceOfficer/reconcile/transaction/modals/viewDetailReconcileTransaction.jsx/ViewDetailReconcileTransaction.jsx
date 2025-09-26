@@ -23,6 +23,7 @@ const ViewDetailReconcileTransaction = () => {
     setViewDetailReconcileTransaction,
     setNoteGlobalModal,
     setViewCommentReconcileModal,
+    setIsViewTicketTransactionModal,
   } = useGlobalModal();
   console.log(viewDetailReconcileTransaction, "viewDetailReconcileTransaction");
 
@@ -503,6 +504,10 @@ const ViewDetailReconcileTransaction = () => {
                         <CustomButton
                           text="View Ticket"
                           className="big-light-button"
+                          onClick={() => {
+                            setIsViewTicketTransactionModal(true);
+                            setViewDetailReconcileTransaction(false);
+                          }}
                         />{" "}
                         <CustomButton
                           text="View Comment"
@@ -525,6 +530,10 @@ const ViewDetailReconcileTransaction = () => {
                         <CustomButton
                           text="View Ticket"
                           className="big-light-button"
+                          onClick={() => {
+                            setIsViewTicketTransactionModal(true);
+                            setViewDetailReconcileTransaction(false);
+                          }}
                         />{" "}
                         <CustomButton
                           text="View Comment"

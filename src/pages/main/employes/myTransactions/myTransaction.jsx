@@ -79,6 +79,7 @@ const MyTransaction = () => {
     setEmployeeTransactionsData,
     employeeTransactionsTableDataMqtt,
     setEmployeeTransactionsTableDataMqtt,
+    setEmployeeTransactionViewDetailData,
   } = useTransaction();
 
   // -------------------- Local State --------------------
