@@ -69,30 +69,34 @@ export const LineManagerApprovalFilter = ({ handleSearch, setVisible }) => {
 
   /** Handle date selection */
   const handleSearchClick = async () => {
-    console.log("Checke Seletc");
-    const finalSearch = {
-      ...(dirtyFields.instrumentName && {
-        instrumentName: localState.instrumentName,
-      }),
-      ...(dirtyFields.quantity && {
-        quantity: localState.quantity !== "" ? Number(localState.quantity) : 0,
-      }),
-      ...(dirtyFields.requesterName && {
-        requesterName: localState.requesterName,
-      }),
-      ...(dirtyFields.startDate && {
-        startDate: localState.startDate
-          ? localState.startDate.format("YYYY-MM-DD")
-          : "",
-      }),
-      pageNumber: 0,
-    };
+    console.log("Checke Select");
 
-    await setLineManagerApprovalSearch(finalSearch);
-    console.log("Checke Seletc", finalSearch);
-    handleSearch(finalSearch);
+    setLineManagerApprovalSearch((prev) => {
+      const finalSearch = {
+        ...prev, // keep previous values as-is
+        ...(dirtyFields.instrumentName && {
+          instrumentName: localState.instrumentName,
+        }),
+        ...(dirtyFields.quantity && {
+          quantity:
+            localState.quantity !== "" ? Number(localState.quantity) : 0,
+        }),
+        ...(dirtyFields.requesterName && {
+          requesterName: localState.requesterName,
+        }),
+        ...(dirtyFields.startDate && {
+          date: localState.startDate
+            ? localState.startDate.format("YYYY-MM-DD")
+            : "",
+        }),
+        pageNumber: 0, // always reset page when searching
+        filterTrigger: true, // optional: let table know filters changed
+      };
 
-    // 🚫 don’t reset here, let Reset button handle it
+      console.log("Checke Select", finalSearch);
+      handleSearch(finalSearch);
+      return finalSearch;
+    });
   };
 
   /** Reset filters */

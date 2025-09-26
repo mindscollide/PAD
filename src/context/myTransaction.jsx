@@ -63,10 +63,7 @@ export const MyTransactionsProvider = ({ children }) => {
   const [
     employeeTransactionsTableDataMqtt,
     setEmployeeTransactionsTableDataMqtt,
-  ] = useState({
-    mqttRecivedData: [],
-    mqttRecived: false,
-  });
+  ] = useState(false);
 
   /**
    * 🔹 State: MQTT Updates (for Modal)

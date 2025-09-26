@@ -54,7 +54,12 @@ const Approval = () => {
   const { selectedKey } = useSidebarContext();
   const { showLoader } = useGlobalLoader();
   const { callApi } = useApi();
-  const { employeeMyApproval, setIsEmployeeMyApproval } = useMyApproval();
+  const {
+    employeeMyApproval,
+    setIsEmployeeMyApproval,
+    employeeMyApprovalMqtt,
+    setIsEmployeeMyApprovalMqtt,
+  } = useMyApproval();
 
   const {
     employeeMyApprovalSearch,
@@ -65,9 +70,6 @@ const Approval = () => {
   const [sortedInfo, setSortedInfo] = useState({});
   const [approvalData, setApprovalData] = useState([]);
   const [loadingMore, setLoadingMore] = useState(false); // spinner at bottom
-
-  console.log({ employeeMyApproval }, "employeeMyApproval4555");
-
   // Confirmed filters displayed as tags
   const [submittedFilters, setSubmittedFilters] = useState([]);
 
@@ -106,8 +108,10 @@ const Approval = () => {
   /**
    * Fetches approval data from API on component mount
    */
-  const fetchApprovals = async () => {
-    await showLoader(true);
+  const fetchApprovals = async (loader = false) => {
+    if (loader) {
+      await showLoader(true);
+    }
 
     const requestdata = {
       InstrumentName:
@@ -138,7 +142,7 @@ const Approval = () => {
   useEffect(() => {
     if (hasFetched.current) return;
     hasFetched.current = true;
-    fetchApprovals();
+    fetchApprovals(true);
   }, []);
 
   useEffect(() => {
@@ -362,6 +366,17 @@ const Approval = () => {
       setLoadingMore(false);
     }
   }, [employeeMyApproval]);
+  useEffect(() => {
+    try {
+      if (employeeMyApprovalMqtt) {
+      console.log("Error setIsEmployeeMyApprovalMqtt employee approvals:",employeeMyApprovalMqtt);
+        setIsEmployeeMyApprovalMqtt(false);
+        fetchApprovals(false);
+      }
+    } catch (error) {
+      console.error("Error processing employee approvals:", error);
+    }
+  }, [employeeMyApprovalMqtt]);
 
   // Lazy Loading
   // Inside your component
@@ -437,7 +452,7 @@ const Approval = () => {
     0,
     "border-less-table-orange" // Container selector
   );
-
+  console.log("MQTT: employeeMyApprovalSearch", employeeMyApprovalSearch);
   return (
     <>
       {/* Filter Tags */}
