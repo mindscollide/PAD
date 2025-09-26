@@ -124,12 +124,13 @@ const nowrapCell = (minWidth, maxWidth) => ({
  * @param {Function} setComplianceOfficerReconcileTransactionsSearch - Setter to update filter state.
  * @returns {Array<Object>} Column configurations for AntD Table.
  */
-export const getBorderlessTableColumns = (
+export const getBorderlessTableColumns = ({
   approvalStatusMap = {},
   sortedInfo = {},
   complianceOfficerReconcileTransactionsSearch = {},
-  setComplianceOfficerReconcileTransactionsSearch = () => {}
-) => [
+  setComplianceOfficerReconcileTransactionsSearch = () => {},
+  handleViewDetailsForReconcileTransaction,
+}) => [
   /* --------------------- Requester Name --------------------- */
   {
     title: (
@@ -323,12 +324,16 @@ export const getBorderlessTableColumns = (
     key: "actions",
     align: "center",
     render: (text, record) => {
-      const { setSelectedViewDetail } = useGlobalModal();
+      console.log(record, "Checekcneceucyv");
+      const { setViewDetailReconcileTransaction } = useGlobalModal();
       return (
         <Button
           className="big-blue-button"
           text="View Details"
-          onClick={() => setSelectedViewDetail(record)}
+          onClick={() => {
+            handleViewDetailsForReconcileTransaction(record?.approvalID);
+            setViewDetailReconcileTransaction(true);
+          }}
         />
       );
     },

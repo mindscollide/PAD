@@ -25,8 +25,14 @@ import { useTableScrollBottom } from "../../../employes/myApprovals/utill";
 
 // 🔹 Helpers
 import { toYYMMDD } from "../../../../../commen/funtions/rejex";
-import { SearchComplianceOfficerReconcilePortfolioRequest } from "../../../../../api/reconsile";
+import {
+  GetAllReconcilePortfolioTransactionRequest,
+  SearchComplianceOfficerReconcilePortfolioRequest,
+} from "../../../../../api/reconsile";
 import { useDashboardContext } from "../../../../../context/dashboardContaxt";
+import { useGlobalModal } from "../../../../../context/GlobalModalContext";
+import { usePortfolioContext } from "../../../../../context/portfolioContax";
+import ViewDetailPortfolioTransaction from "./modals/viewDetailReconcileTransaction.jsx/ViewDetailPortfolioTransaction";
 
 /**
  * 📌 ReconcilePortfolio
@@ -51,12 +57,18 @@ const ReconcilePortfolio = () => {
   const { callApi } = useApi();
   const { showNotification } = useNotification();
   const { showLoader } = useGlobalLoader();
+  const { viewDetailPortfolioTransaction } = useGlobalModal();
 
   const {
     complianceOfficerReconcilePortfolioSearch,
     setComplianceOfficerReconcilePortfolioSearch,
     resetComplianceOfficerReconcilePortfoliosSearch,
   } = useSearchBarContext();
+
+  const {
+    reconcilePortfolioViewDetailData,
+    setReconcilePortfolioViewDetailData,
+  } = usePortfolioContext();
 
   const {
     setComplianceOfficerReconcilePortfolioData,
@@ -72,15 +84,35 @@ const ReconcilePortfolio = () => {
   const [tableData, setTableData] = useState({ rows: [], totalRecords: 0 });
   const [loadingMore, setLoadingMore] = useState(false);
 
+  // This Api is for the getAllViewDetailModal For myTransaction in Emp role
+  // GETALLVIEWDETAIL OF Transaction API FUNCTION
+  const handleViewDetailsForReconcileTransaction = async (workFlowID) => {
+    await showLoader(true);
+    const requestdata = { TradeApprovalID: workFlowID };
+
+    const responseData = await GetAllReconcilePortfolioTransactionRequest({
+      callApi,
+      showNotification,
+      showLoader,
+      requestdata,
+      navigate,
+    });
+
+    if (responseData) {
+      setReconcilePortfolioViewDetailData(responseData);
+    }
+  };
+
   // -------------------------
   // ✅ Derived values
   // -------------------------
-  const columns = getBorderlessTableColumns(
+  const columns = getBorderlessTableColumns({
     approvalStatusMap,
     sortedInfo,
     complianceOfficerReconcilePortfolioSearch,
-    setComplianceOfficerReconcilePortfolioSearch
-  );
+    setComplianceOfficerReconcilePortfolioSearch,
+    handleViewDetailsForReconcileTransaction,
+  });
 
   // Prevent duplicate API calls (StrictMode safeguard)
   const didFetchRef = useRef(false);
@@ -340,16 +372,19 @@ const ReconcilePortfolio = () => {
   // ✅ RENDER
   // ----------------------------------------------------------------
   return (
-    <BorderlessTable
-      rows={tableData?.rows || []}
-      columns={columns}
-      classNameTable="border-less-table-blue"
-      scroll={
-        tableData?.rows?.length ? { x: "max-content", y: 550 } : undefined
-      }
-      onChange={(_, __, sorter) => setSortedInfo(sorter || {})}
-      loading={loadingMore}
-    />
+    <>
+      <BorderlessTable
+        rows={tableData?.rows || []}
+        columns={columns}
+        classNameTable="border-less-table-blue"
+        scroll={
+          tableData?.rows?.length ? { x: "max-content", y: 550 } : undefined
+        }
+        onChange={(_, __, sorter) => setSortedInfo(sorter || {})}
+        loading={loadingMore}
+      />
+      {viewDetailPortfolioTransaction && <ViewDetailPortfolioTransaction />}
+    </>
   );
 };
 

@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from "react";
 import { Col, Row, Tag } from "antd";
 import { useGlobalModal } from "../../../../../../context/GlobalModalContext";
-import { GlobalModal } from "../../../../../../components";
+import { BrokerList, GlobalModal } from "../../../../../../components";
 import styles from "./ViewDetailTransactionModal.module.css";
 import { Stepper, Step } from "react-form-stepper";
 import CustomButton from "../../../../../../components/buttons/button";
@@ -53,34 +53,6 @@ const ViewDetailsTransactionModal = () => {
     "selectedViewDetailOfTransaction",
     employeeTransactionViewDetailData
   );
-
-  // GETALLVIEWDETAIL OF Transaction API FUNCTION
-  const fetchGetAllViewDataofTransaction = async () => {
-    await showLoader(true);
-
-    //WorkFlow Id treat as approvalID
-    const requestdata = {
-      TradeApprovalID: selectedViewDetailOfTransaction?.workFlowID,
-    };
-    const responseData = await GetAllTransactionViewDetails({
-      callApi,
-      showNotification,
-      showLoader,
-      requestdata,
-      navigate,
-    });
-
-    //Extract Data from Api and set in the Context State
-    if (responseData) {
-      setEmployeeTransactionViewDetailData(responseData);
-    }
-  };
-
-  useEffect(() => {
-    if (hasFetched.current) return;
-    hasFetched.current = true;
-    fetchGetAllViewDataofTransaction();
-  }, []);
 
   // Extract workFlowStatusID from API response
   const statusId =
@@ -137,6 +109,8 @@ const ViewDetailsTransactionModal = () => {
     labelClass: styles.approvedDetailHeading,
     borderClass: styles.approvedBorderClass,
   };
+
+  console.log(typeof label, "checkecehlabelHere");
 
   // safely extract data from the assetType
   // outside return
@@ -312,7 +286,7 @@ const ViewDetailsTransactionModal = () => {
 
               <Row style={{ marginTop: "3px" }}>
                 <Col span={24}>
-                  <div className={styles.backgrounColorOfBrokerDetail}>
+                  {/* <div className={styles.backgrounColorOfBrokerDetail}>
                     <label className={styles.viewDetailMainLabels}>
                       Brokers
                     </label>
@@ -334,7 +308,12 @@ const ViewDetailsTransactionModal = () => {
                         );
                       })}
                     </div>
-                  </div>
+                  </div> */}
+                  <BrokerList
+                    statusData={label}
+                    viewDetailsData={employeeTransactionViewDetailData}
+                    variant={"Blue"}
+                  />
                 </Col>
               </Row>
 
@@ -371,12 +350,12 @@ const ViewDetailsTransactionModal = () => {
                             const {
                               fullName,
                               bundleStatusID,
-                              requestDate,
-                              requestTime,
+                              modifiedDate,
+                              modifiedTime,
                             } = person;
 
                             const formattedDateTime = formatApiDateTime(
-                              `${requestDate} ${requestTime}`
+                              `${modifiedDate} ${modifiedTime}`
                             );
 
                             let iconSrc;

@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from "react";
 import { Col, Row, Tag } from "antd";
 import { useGlobalModal } from "../../../../../../context/GlobalModalContext";
-import { GlobalModal } from "../../../../../../components";
+import { BrokerList, GlobalModal } from "../../../../../../components";
 import styles from "./ViewDetailModal.module.css";
 import { Stepper, Step } from "react-form-stepper";
 import CustomButton from "../../../../../../components/buttons/button";
@@ -83,33 +83,56 @@ const ViewDetailModal = () => {
     setNoteGlobalModal({ visible: true, action: "Decline" });
   };
 
-  // GETALLVIEWDETAIL OF LINEMANAGER API FUNCTION
-  const fetchGetAllViewDataofLineManager = async () => {
-    await showLoader(true);
-    const requestdata = {
-      TradeApprovalID: isSelectedViewDetailLineManager?.approvalID,
-    };
-
-    const responseData = await GetAllLineManagerViewDetailRequest({
-      callApi,
-      showNotification,
-      showLoader,
-      requestdata,
-      navigate,
-    });
-
-    //Extract Data from Api and set in the Context State
-    if (responseData) {
-      setViewDetailsLineManagerData(responseData);
+  const getStatusStyle = (status) => {
+    switch (status) {
+      case "1":
+        return {
+          label: "Pending",
+          labelClassName: styles.pendingDetailHeading,
+          divClassName: styles.pendingBorderClass,
+        };
+      case "2":
+        return {
+          label: "Resubmitted",
+          labelClassName: styles.resubmittedDetailHeading,
+          divClassName: styles.resubmittedBorderClass,
+        };
+      case "3":
+        return {
+          label: "Approved",
+          labelClassName: styles.approvedDetailHeading,
+          divClassName: styles.approvedBorderClass,
+        };
+      case "4":
+        return {
+          label: "Declined",
+          labelClassName: styles.declinedDetailHeading,
+          divClassName: styles.declinedBorderClass,
+        };
+      case "5":
+        return {
+          label: "Traded",
+          labelClassName: styles.tradedDetailHeading,
+          divClassName: styles.tradedBorderClass,
+        };
+      case "6":
+        return {
+          label: "Not Traded",
+          labelClassName: styles.notTradedDetailHeading,
+          divClassName: styles.notTradedBorderClass,
+        };
+      default:
+        return {
+          label: "Detail",
+          labelClassName: styles.defaultDetailHeading,
+          divClassName: styles.defaultBorderClass,
+        };
     }
   };
 
-  useEffect(() => {
-    if (hasFetched.current) return;
-    hasFetched.current = true;
-    fetchGetAllViewDataofLineManager();
-  }, []);
-
+  const statusDataLM = getStatusStyle(
+    String(viewDetailsLineManagerData?.workFlowStatus?.workFlowStatusID)
+  );
   // When its already approve or ddecline by you then button should be disabled
   const hasAlreadyApprovedOrDeclined =
     viewDetailsLineManagerData?.hierarchyDetails?.some(
@@ -145,110 +168,16 @@ const ViewDetailModal = () => {
 
               <Row>
                 <Col span={24}>
-                  <div
-                    className={
-                      viewDetailsLineManagerData?.workFlowStatus
-                        ?.workFlowStatusID === 1
-                        ? styles.pendingBorderClass
-                        : viewDetailsLineManagerData?.workFlowStatus
-                            ?.workFlowStatusID === 2
-                        ? styles.resubmittedBorderClass
-                        : viewDetailsLineManagerData?.workFlowStatus
-                            ?.workFlowStatusID === 3
-                        ? styles.approvedBorderClass
-                        : viewDetailsLineManagerData?.workFlowStatus
-                            ?.workFlowStatusID === 4
-                        ? styles.declinedBorderClass
-                        : viewDetailsLineManagerData?.workFlowStatus
-                            ?.workFlowStatusID === 6
-                        ? styles.notTradedBorderClass
-                        : ""
-                    }
-                  >
-                    {/* This will show when Pending will be Resubmit */}
-                    {viewDetailsLineManagerData?.workFlowStatus
-                      ?.workFlowStatusID === 2 && (
-                      <>
-                        <div>
-                          <img
-                            draggable={false}
-                            src={repeat}
-                            className={styles.pendingIcon}
-                          />
-                        </div>
-                      </>
-                    )}
-
-                    {/* This will show when Approved will be Resubmit */}
-                    {/* {isSelectedViewDetailLineManager.status === "Approved" && (
-                      <>
-                        <div>
-                          <img draggable={false} 
-                            src={ApprovedResubmit}
-                            className={styles.pendingIcon}
-                          />
-                        </div>
-                      </>
-                    )} */}
-
-                    {/* This will show when Declined will be Resubmit */}
-                    {/* {isSelectedViewDetailLineManager.status === "Declined" && (
-                      <>
-                        <div>
-                          <img draggable={false} 
-                            src={DeclinedResubmit}
-                            className={styles.pendingIcon}
-                          />
-                        </div>
-                      </>
-                    )} */}
-
-                    <label
-                      className={
-                        viewDetailsLineManagerData?.workFlowStatus
-                          ?.workFlowStatusID === 1
-                          ? styles.pendingDetailHeading
-                          : viewDetailsLineManagerData?.workFlowStatus
-                              ?.workFlowStatusID === 2
-                          ? styles.resubmittedDetailHeading
-                          : viewDetailsLineManagerData?.workFlowStatus
-                              ?.workFlowStatusID === 3
-                          ? styles.approvedDetailHeading
-                          : viewDetailsLineManagerData?.workFlowStatus
-                              ?.workFlowStatusID === 4
-                          ? styles.declinedDetailHeading
-                          : viewDetailsLineManagerData?.workFlowStatus
-                              ?.workFlowStatusID === 5
-                          ? styles.pendingDetailHeading
-                          : viewDetailsLineManagerData?.workFlowStatus
-                              ?.workFlowStatusID === 6
-                          ? styles.notTradedDetailHeading
-                          : styles.pendingDetailHeading
-                      }
-                    >
-                      {viewDetailsLineManagerData?.workFlowStatus
-                        ?.workFlowStatusID === 1
-                        ? "Pending"
-                        : viewDetailsLineManagerData?.workFlowStatus
-                            ?.workFlowStatusID === 2
-                        ? "Resubmitted"
-                        : viewDetailsLineManagerData?.workFlowStatus
-                            ?.workFlowStatusID === 3
-                        ? "Approved"
-                        : viewDetailsLineManagerData?.workFlowStatus
-                            ?.workFlowStatusID === 4
-                        ? "Declined"
-                        : viewDetailsLineManagerData?.workFlowStatus
-                            ?.workFlowStatusID === 5
-                        ? "Traded"
-                        : "Pending"}
+                  <div className={statusDataLM.divClassName}>
+                    <label className={statusDataLM.labelClassName}>
+                      {statusDataLM.label}
                     </label>
                   </div>
                 </Col>
               </Row>
 
               {/* Show Approved Status Scenario in View Details Modal */}
-              {/* {statusData.label === "Approved" && (
+              {statusDataLM.label === "Approved" && (
                 <>
                   <Row style={{ marginTop: "5px" }}>
                     <Col span={24}>
@@ -267,7 +196,7 @@ const ViewDetailModal = () => {
                     </Col>
                   </Row>
                 </>
-              )} */}
+              )}
 
               {/* Show Resubmit,Pending,Declined and Not Traded status Sceanrios */}
 
@@ -316,12 +245,6 @@ const ViewDetailModal = () => {
                     </label>
                     <label className={styles.viewDetailSubLabels}>
                       {viewDetailsLineManagerData?.requesterName}
-                      {/* {typeof viewDetailsLineManagerData?.requesterName ===
-                      "string" ? (
-                        <label className={styles.viewDetailSubLabels}>
-                          {viewDetailsLineManagerData?.requesterName}
-                        </label>
-                      ) : null} */}
                     </label>
                   </div>
                 </Col>
@@ -378,7 +301,6 @@ const ViewDetailModal = () => {
                   <div className={styles.backgrounColorOfDetail}>
                     <label className={styles.viewDetailMainLabels}>Type</label>
                     <label className={styles.viewDetailSubLabels}>
-                      {/* {selectedViewDetail?.type} */}
                       {viewDetailsLineManagerData?.details?.[0]
                         ?.approvalTypeID === "1" && <span>Buy</span>}
                       {viewDetailsLineManagerData?.details?.[0]
@@ -392,7 +314,6 @@ const ViewDetailModal = () => {
                       Quantity
                     </label>
                     <label className={styles.viewDetailSubLabels}>
-                      {/* {selectedViewDetail?.quantity} */}
                       {formatNumberWithCommas(
                         viewDetailsLineManagerData?.details?.[0]?.quantity
                       )}
@@ -428,31 +349,11 @@ const ViewDetailModal = () => {
 
               <Row style={{ marginTop: "3px" }}>
                 <Col span={24}>
-                  <div className={styles.backgrounColorOfBrokerDetail}>
-                    <label className={styles.viewDetailMainLabels}>
-                      Brokers
-                    </label>
-                    <div className={styles.tagContainer}>
-                      {viewDetailsLineManagerData?.details?.[0]?.brokers?.map(
-                        (brokerId) => {
-                          const broker = employeeBasedBrokersData?.find(
-                            (b) => String(b.brokerID) === String(brokerId)
-                          );
-                          console.log(broker, "brokerNamerChecker");
-                          return (
-                            broker && (
-                              <Tag
-                                key={broker.brokerID}
-                                className={styles.tagClasses}
-                              >
-                                {broker.brokerName}
-                              </Tag>
-                            )
-                          );
-                        }
-                      )}
-                    </div>
-                  </div>
+                  <BrokerList
+                    statusData={statusDataLM}
+                    viewDetailsData={viewDetailsLineManagerData}
+                    variant={"Orange"}
+                  />
                 </Col>
               </Row>
 

@@ -62,13 +62,14 @@ const withSortIcon = (label, columnKey, sortedInfo) => (
   </div>
 );
 
-export const getBorderlessTableColumns = (
+export const getBorderlessTableColumns = ({
   approvalStatusMap,
   sortedInfo,
   employeeMyTransactionSearch,
   setViewDetailTransactionModal,
-  setEmployeeMyTransactionSearch
-) => [
+  setEmployeeMyTransactionSearch,
+  handleViewDetailsForTransaction,
+}) => [
   {
     title: withSortIcon("Transaction ID", "tradeApprovalID", sortedInfo),
     dataIndex: "tradeApprovalID",
@@ -261,6 +262,7 @@ export const getBorderlessTableColumns = (
           className="small-dark-button"
           text={"View Details"}
           onClick={() => {
+            handleViewDetailsForTransaction(record?.workFlowID);
             setSelectedViewDetailOfTransaction(record);
             setViewDetailTransactionModal(true);
           }}

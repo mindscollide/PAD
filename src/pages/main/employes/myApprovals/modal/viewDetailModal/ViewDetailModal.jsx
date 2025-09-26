@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useRef } from "react";
 import { Col, Row, Tag } from "antd";
 import { useGlobalModal } from "../../../../../../context/GlobalModalContext";
-import { GlobalModal } from "../../../../../../components";
+import { BrokerList, GlobalModal } from "../../../../../../components";
 import styles from "./ViewDetailModal.module.css";
 import { Stepper, Step } from "react-form-stepper";
 import CustomButton from "../../../../../../components/buttons/button";
@@ -54,7 +54,7 @@ const ViewDetailModal = () => {
 
   const { allInstrumentsData, employeeBasedBrokersData } =
     useDashboardContext();
-  console.log(selectedViewDetail, "selectedViewDetail");
+  console.log(isViewDetail, "isViewDetail");
 
   console.log(viewDetailsModalData, "viewDetailsModalData555");
 
@@ -86,31 +86,6 @@ const ViewDetailModal = () => {
       console.error("Invalid JSON in sessionStorage", e);
       return {};
     }
-  }, []);
-
-  // GETALLVIEWDETAIL API FUNCTION
-  const fetchGetAllViewData = async () => {
-    await showLoader(true);
-    const requestdata = { TradeApprovalID: selectedViewDetail?.approvalID };
-
-    const responseData = await GetAllViewDetailsByTradeApprovalID({
-      callApi,
-      showNotification,
-      showLoader,
-      requestdata,
-      navigate,
-    });
-
-    //Extract Data from Api and set in the Context State
-    if (responseData) {
-      setViewDetailsModalData(responseData);
-    }
-  };
-
-  useEffect(() => {
-    if (hasFetched.current) return;
-    hasFetched.current = true;
-    fetchGetAllViewData();
   }, []);
 
   // This is the Status Which is I'm getting from the selectedViewDetail contextApi state
@@ -486,37 +461,11 @@ const ViewDetailModal = () => {
 
               <Row style={{ marginTop: "3px" }}>
                 <Col span={24}>
-                  <div
-                    className={
-                      statusData.label === "Traded"
-                        ? styles.backgroundColorOfInstrumentDetailTradednoradius
-                        : styles.backgrounColorOfBrokerDetail
-                    }
-                  >
-                    <label className={styles.viewDetailMainLabels}>
-                      Brokers
-                    </label>
-                    <div className={styles.tagContainer}>
-                      {viewDetailsModalData?.details?.[0]?.brokers?.map(
-                        (brokerId) => {
-                          const broker = employeeBasedBrokersData?.find(
-                            (b) => String(b.brokerID) === String(brokerId)
-                          );
-                          console.log(broker, "brokerNamerChecker");
-                          return (
-                            broker && (
-                              <Tag
-                                key={broker.brokerID}
-                                className={styles.tagClasses}
-                              >
-                                {broker.brokerName}
-                              </Tag>
-                            )
-                          );
-                        }
-                      )}
-                    </div>
-                  </div>
+                  <BrokerList
+                    statusData={statusData}
+                    viewDetailsData={viewDetailsModalData}
+                    variant={"Orange"}
+                  />
                 </Col>
               </Row>
 
@@ -582,7 +531,7 @@ const ViewDetailModal = () => {
                             Array.isArray(
                               viewDetailsModalData?.hierarchyDetails
                             )
-                              ? viewDetailsModalData.hierarchyDetails.filter(
+                              ? viewDetailsModalData?.hierarchyDetails.filter(
                                   (person) => person.userID !== loggedInUserID
                                 ).length - 1
                               : 0
@@ -603,7 +552,7 @@ const ViewDetailModal = () => {
                           {Array.isArray(
                             viewDetailsModalData?.hierarchyDetails
                           ) &&
-                            viewDetailsModalData.hierarchyDetails
+                            viewDetailsModalData?.hierarchyDetails
                               .filter(
                                 (person) => person.userID !== loggedInUserID
                               )

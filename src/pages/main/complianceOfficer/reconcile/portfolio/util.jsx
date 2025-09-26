@@ -122,13 +122,14 @@ const nowrapCell = (minWidth, maxWidth) => ({
  * @param {Function} setComplianceOfficerReconcilePortfolioSearch - Setter to update filter/search state.
  * @returns {Array<Object>} AntD `Table` column configs.
  */
-export const getBorderlessTableColumns = (
+export const getBorderlessTableColumns = ({
   approvalStatusMap = {},
   sortedInfo = {},
   complianceOfficerReconcilePortfolioSearch = {},
   setComplianceOfficerReconcilePortfolioSearch = () => {},
-  setIsViewDetail
-) => [
+  setIsViewDetail,
+  handleViewDetailsForReconcileTransaction,
+}) => [
   // 🔹 Requester Name
   {
     title: (
@@ -313,7 +314,6 @@ export const getBorderlessTableColumns = (
     onCell: () => nowrapCell(150, 240),
   },
 
-
   // 🔹 Actions
   {
     title: "",
@@ -321,14 +321,14 @@ export const getBorderlessTableColumns = (
     align: "center",
     render: (text, record) => {
       //Global State to selected data to show in ViewDetailModal
-      const { setSelectedViewDetail } = useGlobalModal();
+      const { setViewDetailPortfolioTransaction } = useGlobalModal();
       return (
         <Button
           className="big-blue-button"
           text="View Details"
           onClick={() => {
-            setSelectedViewDetail(record);
-            setIsViewDetail(true);
+            handleViewDetailsForReconcileTransaction(record?.approvalID);
+            setViewDetailPortfolioTransaction(true);
           }}
         />
       );
