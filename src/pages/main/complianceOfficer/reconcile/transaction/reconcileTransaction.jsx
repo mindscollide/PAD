@@ -37,6 +37,12 @@ import { SearchComplianceOfficerReconcileTransactionRequest } from "../../../../
 import { useGlobalModal } from "../../../../../context/GlobalModalContext";
 import { GetAllTransactionViewDetails } from "../../../../../api/myTransactionsApi";
 import ViewDetailReconcileTransaction from "./modals/viewDetailReconcileTransaction.jsx/ViewDetailReconcileTransaction";
+import NoteLineManagerModal from "../../../lineManager/approvalRequest/modal/noteLineManagerModal/NoteLineManagerModal";
+import { useSidebarContext } from "../../../../../context/sidebarContaxt";
+import NoteModalComplianceOfficer from "./modals/noteModalComplianceOfficer/NoteModalComplianceOfficer";
+import CompliantApproveModal from "./modals/compliantApproveModal/CompliantApproveModal";
+import NonCompliantDeclineModal from "./modals/nonCompliantDeclineModal/nonCompliantDeclineModal";
+import ViewReconcileTransactionComment from "./modals/viewReconcileTransactionComment/ViewReconcileTransactionComment";
 
 /**
  * 📌 ReconcileTransaction
@@ -54,6 +60,7 @@ import ViewDetailReconcileTransaction from "./modals/viewDetailReconcileTransact
  */
 const ReconcileTransaction = () => {
   const navigate = useNavigate();
+  const { selectedKey } = useSidebarContext();
 
   // -------------------------
   // ✅ Context hooks
@@ -61,7 +68,13 @@ const ReconcileTransaction = () => {
   const { callApi } = useApi();
   const { showNotification } = useNotification();
   const { showLoader } = useGlobalLoader();
-  const { viewDetailReconcileTransaction } = useGlobalModal();
+  const {
+    viewDetailReconcileTransaction,
+    noteGlobalModal,
+    compliantApproveModal,
+    nonCompliantDeclineModal,
+    viewCommentReconcileModal,
+  } = useGlobalModal();
   const { addApprovalRequestData } = useDashboardContext();
 
   const {
@@ -82,6 +95,8 @@ const ReconcileTransaction = () => {
     complianceOfficerReconcileTransactionData,
     "complianceOfficerReconcileTransactionData"
   );
+
+  console.log(selectedKey, "selectedKeyselectedKey2123");
 
   // -------------------------
   // ✅ Local state
@@ -393,7 +408,20 @@ const ReconcileTransaction = () => {
         loading={loadingMore}
       />
 
+      {/* To show View Detail Reconcile Transaction on View Click */}
       {viewDetailReconcileTransaction && <ViewDetailReconcileTransaction />}
+
+      {/* To show Note Modal When click on Compliant or Non Compliant */}
+      {noteGlobalModal && <NoteModalComplianceOfficer />}
+
+      {/* To Show Compliant Approve modal when I click submit */}
+      {compliantApproveModal && <CompliantApproveModal />}
+
+      {/* To Show Non COmpliant Modal by click on submit */}
+      {nonCompliantDeclineModal && <NonCompliantDeclineModal />}
+
+      {/* To show View Comment Modal when CLick on View Comment Button */}
+      {viewCommentReconcileModal && <ViewReconcileTransactionComment />}
     </>
   );
 };

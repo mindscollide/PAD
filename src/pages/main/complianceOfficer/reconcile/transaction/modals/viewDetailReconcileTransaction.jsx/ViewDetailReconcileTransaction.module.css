@@ -247,7 +247,8 @@
   display: inline-flex; /* keep children in a row */
   flex-direction: row !important; /* force horizontal */
   margin-top: 10px;
-  border-radius: 8px !important;
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
   gap: 20px; /* space between steps */
   width: 100%;
   overflow: hidden !important;
@@ -321,12 +322,19 @@
   gap: 20px !important;
 }
 
+.noncompliantButtonClass {
+  display: flex;
+  justify-content: end;
+  align-items: center;
+  gap: 20px !important;
+}
+
 .addticketBuuton {
   background-color: #edf3ff !important;
   display: flex;
   justify-content: space-around;
   align-items: center;
-  padding-bottom: 10px;
+  padding-bottom: 30px;
 }
 
 .buttonWrapper {
@@ -398,4 +406,15 @@
   scrollbar-width: thin;
   padding-right: 10px !important;
   scrollbar-color: #b9c1d1 !important;
+}
+
+.centerAlignLabel {
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* sab text center ho jaye */
+}
+
+.centerAlignText {
+  text-align: center;
+  margin-top: 4px; /* thoda gap title aur date ke beech */
 }

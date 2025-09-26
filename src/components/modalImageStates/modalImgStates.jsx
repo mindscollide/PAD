@@ -46,6 +46,18 @@ const config = {
       "You have approved this transaction. The requester will be notified.",
     image: ApprovedImg,
   },
+  Compliant: {
+    heading: "Compliant",
+    subheading:
+      "You have marked this transaction as Compliant. The requester will be notified.",
+    image: ApprovedImg,
+  },
+
+  NonCompliant: {
+    heading: "Non-Compliant",
+    subheading: "You have marked this transaction as Non-Compliant.",
+    image: DelcinedImg,
+  },
   Declined: {
     heading: "Declined",
     subheading: "You have declined this request.",

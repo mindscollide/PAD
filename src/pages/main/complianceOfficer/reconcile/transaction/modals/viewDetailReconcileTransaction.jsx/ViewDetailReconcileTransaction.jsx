@@ -7,7 +7,7 @@ import { Stepper, Step } from "react-form-stepper";
 import CustomButton from "../../../../../../../components/buttons/button";
 import CheckIcon from "../../../../../../../assets/img/Check.png";
 import EllipsesIcon from "../../../../../../../assets/img/Ellipses.png";
-import copyIcon from "../../../../../../../assets/img/copy-dark.png";
+import CrossIcon from "../../../../../../../assets/img/Cross.png";
 import { useDashboardContext } from "../../../../../../../context/dashboardContaxt";
 import {
   dashBetweenApprovalAssets,
@@ -18,8 +18,13 @@ import { useReconcileContext } from "../../../../../../../context/reconsileConta
 
 const ViewDetailReconcileTransaction = () => {
   // This is Global State for modal which is create in ContextApi
-  const { viewDetailReconcileTransaction, setViewDetailReconcileTransaction } =
-    useGlobalModal();
+  const {
+    viewDetailReconcileTransaction,
+    setViewDetailReconcileTransaction,
+    setNoteGlobalModal,
+    setViewCommentReconcileModal,
+  } = useGlobalModal();
+  console.log(viewDetailReconcileTransaction, "viewDetailReconcileTransaction");
 
   // get data from sessionStorage
   const userProfileData = JSON.parse(
@@ -30,8 +35,7 @@ const ViewDetailReconcileTransaction = () => {
   //This is the Global state of Context Api
   const {
     reconcileTransactionViewDetailData,
-    complianceOfficerReconcileTransactionData,
-    setReconcileTransactionViewDetailData,
+    selectedReconcileTransactionData,
   } = useReconcileContext();
 
   const { allInstrumentsData } = useDashboardContext();
@@ -41,10 +45,7 @@ const ViewDetailReconcileTransaction = () => {
     "reconcileTransactionViewDetailData"
   );
 
-  console.log(
-    complianceOfficerReconcileTransactionData,
-    "complianceOfficerReconcileTransactionData"
-  );
+  console.log(selectedReconcileTransactionData, "selectedReconcileData");
 
   // This is the Status Which is I'm getting from the selectedViewDetail contextApi state
   const getStatusStyle = (status) => {
@@ -86,6 +87,18 @@ const ViewDetailReconcileTransaction = () => {
           labelClassName: styles.notTradedDetailHeading,
           divClassName: styles.notTradedBorderClass,
         };
+      case "8":
+        return {
+          label: "Compliant",
+          labelClassName: styles.approvedDetailHeading,
+          divClassName: styles.approvedBorderClass,
+        };
+      case "9":
+        return {
+          label: "Non Compliant",
+          labelClassName: styles.declinedDetailHeading,
+          divClassName: styles.declinedBorderClass,
+        };
 
       default:
         return {
@@ -111,12 +124,20 @@ const ViewDetailReconcileTransaction = () => {
     (item) => item.instrumentID === instrumentId
   );
 
-  //This the Copy Functionality where user can copy email by click on COpyIcon
-  const handleCopyEmail = () => {
-    const emailToCopy =
-      complianceOfficerDetails?.managerEmail || "compliance@horizoncapital.com";
-    navigator.clipboard.writeText(emailToCopy);
-    message.success("Email copied to clipboard!");
+  //Button condition on Compliant, Non-Compliant and View Ticket it will be false when ticketUploaded is false
+  const isTicketUploaded =
+    reconcileTransactionViewDetailData?.ticketUploaded === false;
+
+  // To Show Note Modal When Click on Compliant Click
+  const openNoteModalOnCompliantClick = () => {
+    setNoteGlobalModal({ visible: true, action: "Compliant" });
+    setViewDetailReconcileTransaction(false);
+  };
+
+  // To Show Note Modal When Click on Non-Compliant Click
+  const openNoteModalOnNonCompliantClick = () => {
+    setNoteGlobalModal({ visible: true, action: "Non-Compliant" });
+    setViewDetailReconcileTransaction(false);
   };
 
   return (
@@ -125,7 +146,10 @@ const ViewDetailReconcileTransaction = () => {
         visible={viewDetailReconcileTransaction}
         width={"942px"}
         centered={true}
-        onCancel={() => setViewDetailReconcileTransaction(false)}
+        onCancel={() => {
+          setViewDetailReconcileTransaction(false);
+          setNoteGlobalModal({ visible: false, action: null });
+        }}
         modalHeader={<></>}
         modalBody={
           <>
@@ -178,7 +202,7 @@ const ViewDetailReconcileTransaction = () => {
                         Requester Name
                       </label>
                       <label className={styles.viewDetailSubLabels}>
-                        {"Saif"}
+                        {reconcileTransactionViewDetailData?.reqeusterName}
                       </label>
                     </div>
                   </Col>
@@ -275,8 +299,7 @@ const ViewDetailReconcileTransaction = () => {
                       </label>
                       <label className={styles.viewDetailSubLabels}>
                         {formatApiDateTime(
-                          complianceOfficerReconcileTransactionData?.data[0]
-                            ?.transactionDate
+                          selectedReconcileTransactionData?.transactionDate
                         )}
                       </label>
                     </div>
@@ -320,7 +343,6 @@ const ViewDetailReconcileTransaction = () => {
                           : styles.leftAlignStepper
                       }`}
                     >
-                      {/* Agar loginUserID match krti hai hierarchyDetails ki userID sy to wo wala stepper show nahi hoga */}
                       <Stepper
                         activeStep={Math.max(
                           0,
@@ -333,7 +355,7 @@ const ViewDetailReconcileTransaction = () => {
                                     (person) => person.userID !== loggedInUserID
                                   )
                                 : reconcileTransactionViewDetailData?.hierarchyDetails
-                              ).length - 1 // 🔥 fix here
+                              ).length - 1
                             : 0
                         )}
                         connectorStyleConfig={{
@@ -358,94 +380,169 @@ const ViewDetailReconcileTransaction = () => {
                                 (person) => person.userID !== loggedInUserID
                               )
                             : reconcileTransactionViewDetailData?.hierarchyDetails
-                          ) // 🔥 fix here
-                            .map((person, index) => {
-                              const {
-                                fullName,
-                                bundleStatusID,
-                                modifiedDate,
-                                modifiedTime,
-                              } = person;
+                          ).map((person, index) => {
+                            const {
+                              fullName,
+                              bundleStatusID,
+                              modifiedDate,
+                              modifiedTime,
+                            } = person;
 
-                              const formattedDateTime = formatApiDateTime(
-                                `${modifiedDate} ${modifiedTime}`
-                              );
+                            const formattedDateTime = formatApiDateTime(
+                              `${modifiedDate} ${modifiedTime}`
+                            );
 
-                              let iconSrc;
-                              console.log(
-                                bundleStatusID,
-                                "CheckerrrrrbundleStatusID"
-                              );
-                              switch (bundleStatusID) {
-                                case 1:
-                                  iconSrc = EllipsesIcon;
-                                  break;
-                                case 2:
-                                  iconSrc = CheckIcon;
-                                  break;
-                                default:
-                                  iconSrc = EllipsesIcon;
-                              }
+                            // Decide icon and text based on status
+                            let iconSrc;
+                            let displayText;
 
-                              return (
-                                <Step
-                                  key={index}
-                                  label={
-                                    <div className={styles.customlabel}>
-                                      <div className={styles.customtitle}>
-                                        {fullName}
-                                      </div>
-                                      <div className={styles.customdesc}>
-                                        {bundleStatusID !== 1 &&
-                                          formattedDateTime}
-                                      </div>
+                            switch (bundleStatusID) {
+                              case 2: // ✅ Compliant
+                                iconSrc = CheckIcon;
+                                displayText = "You marked this as compliant";
+                                break;
+                              case 3: // ❌ Non-Compliant
+                                iconSrc = CrossIcon;
+                                displayText =
+                                  "You marked this as non-compliant";
+                                break;
+                              case 1: // ⏳ Pending
+                              default:
+                                iconSrc = EllipsesIcon;
+                                displayText = fullName;
+                            }
+
+                            return (
+                              <Step
+                                key={index}
+                                label={
+                                  <div
+                                    className={`${styles.customlabel} ${
+                                      bundleStatusID === 2 || 3
+                                        ? styles.centerAlignLabel
+                                        : ""
+                                    }`}
+                                  >
+                                    <div className={styles.customtitle}>
+                                      {displayText}
                                     </div>
-                                  }
-                                  children={
-                                    <div className={styles.stepCircle}>
-                                      <img
-                                        draggable={false}
-                                        src={iconSrc}
-                                        alt="status-icon"
-                                        className={styles.circleImg}
-                                      />
+                                    <div
+                                      className={`${styles.customdesc} ${
+                                        bundleStatusID === 2 || 3
+                                          ? styles.centerAlignText
+                                          : ""
+                                      }`}
+                                    >
+                                      {bundleStatusID !== 1 &&
+                                        formattedDateTime}
                                     </div>
-                                  }
-                                />
-                              );
-                            })}
+                                  </div>
+                                }
+                                children={
+                                  <div className={styles.stepCircle}>
+                                    <img
+                                      draggable={false}
+                                      src={iconSrc}
+                                      alt="status-icon"
+                                      className={styles.circleImg}
+                                    />
+                                  </div>
+                                }
+                              />
+                            );
+                          })}
                       </Stepper>
                     </div>
                   </div>
-                  <Col span={[24]}>
-                    <div className={styles.addticketBuuton}>
-                      <CustomButton
-                        text={"View Ticket"}
-                        className={"big-light-button"}
-                      />
-                      <CustomButton
-                        text={"Add Ticket"}
-                        className="big-dark-button"
-                      />
-                    </div>
-                  </Col>
                 </Row>
+
+                {statusData.label === "Pending" && (
+                  <>
+                    <Row>
+                      <Col span={[24]}>
+                        <div className={styles.addticketBuuton}>
+                          <CustomButton
+                            text={"View Ticket"}
+                            className={"big-ViewTicket-light-button"}
+                            disabled={isTicketUploaded}
+                          />
+                          <CustomButton
+                            text={"Add Ticket"}
+                            className="big-ViewTicket-dark-button"
+                          />
+                        </div>
+                      </Col>
+                    </Row>
+                  </>
+                )}
               </div>
 
               {/* All Others button Scenario's for footer button */}
               <Row className={styles.mainButtonDivClose}>
                 <Col span={[24]}>
                   <>
-                    <div className={styles.approvedButtonClass}>
-                      <CustomButton
-                        text={"Non Compliant"}
-                        className="Decline-dark-button"
-                      />
-                      <CustomButton
-                        text={"Compliant"}
-                        className="Approved-dark-button"
-                      />
-                    </div>
+                    {statusData?.label === "Pending" ? (
+                      <>
+                        <div className={styles.approvedButtonClass}>
+                          <CustomButton
+                            text="Non Compliant"
+                            className="Decline-dark-button"
+                            disabled={isTicketUploaded}
+                            onClick={openNoteModalOnNonCompliantClick}
+                          />
+                          <CustomButton
+                            text="Compliant"
+                            className="Approved-dark-button"
+                            disabled={isTicketUploaded}
+                            onClick={openNoteModalOnCompliantClick}
+                          />
+                        </div>
+                      </>
+                    ) : statusData?.label === "Non Compliant" ? (
+                      <div className={styles.noncompliantButtonClass}>
+                        <CustomButton
+                          text="View Ticket"
+                          className="big-light-button"
+                        />{" "}
+                        <CustomButton
+                          text="View Comment"
+                          className="big-light-button"
+                          onClick={() => {
+                            setViewCommentReconcileModal(true);
+                            setViewDetailReconcileTransaction(false);
+                          }}
+                        />{" "}
+                        <CustomButton
+                          text="Close"
+                          onClick={() => {
+                            setViewDetailReconcileTransaction(false);
+                          }}
+                          className="big-light-button"
+                        />
+                      </div>
+                    ) : statusData?.label === "Compliant" ? (
+                      <div className={styles.noncompliantButtonClass}>
+                        <CustomButton
+                          text="View Ticket"
+                          className="big-light-button"
+                        />{" "}
+                        <CustomButton
+                          text="View Comment"
+                          className="big-light-button"
+                          onClick={() => {
+                            setViewCommentReconcileModal(true);
+                            setViewDetailReconcileTransaction(false);
+                          }}
+                        />{" "}
+                        <CustomButton
+                          text="Close"
+                          onClick={() => {
+                            setViewDetailReconcileTransaction(false);
+                          }}
+                          className="big-light-button"
+                        />
+                      </div>
+                    ) : null}
                   </>
                 </Col>
               </Row>

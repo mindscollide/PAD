@@ -265,3 +265,87 @@ export const GetAllReconcilePortfolioTransactionRequest = async ({
     showLoader(false);
   }
 };
+
+//UPDATE Compliance REQUEST STATUS API START HERE
+export const UpdatedComplianceOfficerTransactionRequest = async ({
+  callApi,
+  showNotification,
+  showLoader,
+  requestdata,
+  setNoteGlobalModal,
+  setCompliantApproveModal,
+  setNonCompliantDeclineModal,
+  submitText,
+  setValue,
+  navigate,
+}) => {
+  try {
+    // 🔹 Call the API
+    const res = await callApi({
+      requestMethod: import.meta.env
+        .VITE_UPDATE_COMPLIANCE_OFFICER_TRANSACTION_REQUEST_METHOD,
+      endpoint: import.meta.env.VITE_API_TRADE,
+      requestData: requestdata,
+    });
+
+    //  Check if session has expired
+    if (handleExpiredSession(res, navigate, showLoader)) return false;
+
+    // If execution failed
+    if (!res?.result?.isExecuted) {
+      showNotification({
+        type: "error",
+        title: "Error",
+        description: "Something went wrong. Please try again.",
+      });
+      return false;
+    }
+
+    // If API response is successful
+    if (res.success) {
+      const { responseMessage } = res.result;
+
+      if (
+        responseMessage ===
+        "PAD_Trade_TradeServiceManager_UpdateTransactionRequestStatus_01"
+      ) {
+        setNoteGlobalModal({ visible: false, action: null });
+        if (submitText === "Compliant") {
+          setCompliantApproveModal(true);
+          setValue("");
+        } else {
+          setNonCompliantDeclineModal(true);
+          setValue("");
+        }
+
+        return true;
+      }
+
+      //  Other known warnings
+      showNotification({
+        type: "warning",
+        title: getMessage(responseMessage),
+      });
+      return false;
+    }
+
+    //  Fallback error for unknown failures
+    showNotification({
+      type: "error",
+      title: "Request Failed",
+      description: getMessage(res.message),
+    });
+    return false;
+  } catch (error) {
+    // ❌ Unexpected exception
+    showNotification({
+      type: "error",
+      title: "Error",
+      description: "An unexpected error occurred.",
+    });
+    return false;
+  } finally {
+    // 🔽 Always hide loader after API completes
+    showLoader(false);
+  }
+};

@@ -9,6 +9,9 @@ import { useNavigate } from "react-router-dom";
 import { useNotification } from "../../NotificationProvider/NotificationProvider";
 import { useGlobalLoader } from "../../../context/LoaderContext";
 import { useApi } from "../../../context/ApiContext";
+import { useReconcileContext } from "../../../context/reconsileContax";
+import { useSidebarContext } from "../../../context/sidebarContaxt";
+import { UpdatedComplianceOfficerTransactionRequest } from "../../../api/reconsile";
 
 const { TextArea } = Input;
 const { Text } = Typography;
@@ -22,21 +25,24 @@ const CommentModal = ({
   title,
   submitText,
   maxChars = 5000,
-  initialValue = "",
+  value, // 🔹 ab parent se aayega
+  setValue, // 🔹 parent se setter aayega
 }) => {
   const navigate = useNavigate();
   const { showNotification } = useNotification();
   const { showLoader } = useGlobalLoader();
   const { callApi } = useApi();
-  // State to get value while selecting any reason
-  const [value, setValue] = useState(initialValue);
+
   const {
     setNoteGlobalModal,
     isSelectedViewDetailLineManager,
     setApprovedGlobalModal,
+    setCompliantApproveModal,
+    setNonCompliantDeclineModal,
   } = useGlobalModal();
-  console.log("Check COmment", value);
-  console.log("Check COmment submitText", submitText);
+
+  //This is the Global state of Context Api
+  const { selectedReconcileTransactionData } = useReconcileContext();
 
   // State to get option reason while selecting any reason
   const [selectedOption, setSelectedOption] = useState(null);
@@ -72,7 +78,7 @@ const CommentModal = ({
 
     const requestdata = {
       TradeApprovalID: String(isSelectedViewDetailLineManager?.approvalID),
-      StatusID: 2, //Approved Status
+      StatusID: submitText === "Decline" ? 3 : 2, //Approved or Declined Status
       Comment: value,
     };
 
@@ -83,6 +89,31 @@ const CommentModal = ({
       requestdata,
       setNoteGlobalModal,
       setApprovedGlobalModal,
+      submitText,
+      setValue,
+      navigate,
+    });
+  };
+
+  // When User Click on COmpliant then this nOte Modal will open and this Api will hit
+  const updateCompliantRequestData = async () => {
+    showLoader(true);
+
+    const requestdata = {
+      TradeApprovalID: String(selectedReconcileTransactionData?.approvalID),
+      StatusID: submitText === "Non-Compliant" ? 3 : 2, //Approved Status
+      Comment: value,
+    };
+    await UpdatedComplianceOfficerTransactionRequest({
+      callApi,
+      showNotification,
+      showLoader,
+      requestdata,
+      setNoteGlobalModal,
+      setCompliantApproveModal,
+      setNonCompliantDeclineModal,
+      submitText,
+      setValue,
       navigate,
     });
   };
@@ -164,6 +195,10 @@ const CommentModal = ({
                       fetchUpdateApprovalsRequest();
                     } else if (submitText === "Decline") {
                       fetchUpdateDeclineRequest({ value, selectedOption });
+                    } else if (submitText === "Compliant") {
+                      updateCompliantRequestData();
+                    } else if (submitText === "Non-Compliant") {
+                      updateCompliantRequestData();
                     } else {
                       onSubmit({ value, selectedOption });
                     }
