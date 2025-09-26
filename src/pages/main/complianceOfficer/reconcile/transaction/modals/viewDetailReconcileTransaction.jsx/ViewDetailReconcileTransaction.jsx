@@ -24,6 +24,7 @@ const ViewDetailReconcileTransaction = () => {
     setNoteGlobalModal,
     setViewCommentReconcileModal,
     setIsViewTicketTransactionModal,
+    setUploadComplianceModal,
   } = useGlobalModal();
   console.log(viewDetailReconcileTransaction, "viewDetailReconcileTransaction");
 
@@ -469,6 +470,10 @@ const ViewDetailReconcileTransaction = () => {
                           />
                           <CustomButton
                             text={"Add Ticket"}
+                            onClick={() => {
+                              setUploadComplianceModal(true);
+                              setViewDetailReconcileTransaction(false);
+                            }}
                             className="big-ViewTicket-dark-button"
                           />
                         </div>

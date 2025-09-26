@@ -44,6 +44,7 @@ import CompliantApproveModal from "./modals/compliantApproveModal/CompliantAppro
 import NonCompliantDeclineModal from "./modals/nonCompliantDeclineModal/nonCompliantDeclineModal";
 import ViewReconcileTransactionComment from "./modals/viewReconcileTransactionComment/ViewReconcileTransactionComment";
 import ViewTicketReconcileModal from "./modals/viewTicketReconcileModal/viewTicketReconcileModal";
+import UploadReconcileTicketModal from "./modals/uploadReconcileTicketModal/UploadReconcileTicketModal";
 
 /**
  * 📌 ReconcileTransaction
@@ -76,6 +77,7 @@ const ReconcileTransaction = () => {
     nonCompliantDeclineModal,
     viewCommentReconcileModal,
     isViewTicketTransactionModal,
+    uploadComplianceModal,
   } = useGlobalModal();
   const { addApprovalRequestData } = useDashboardContext();
 
@@ -425,7 +427,11 @@ const ReconcileTransaction = () => {
       {/* To show View Comment Modal when CLick on View Comment Button */}
       {viewCommentReconcileModal && <ViewReconcileTransactionComment />}
 
+      {/* To show view Ticket Modal on click of View Ticket */}
       {isViewTicketTransactionModal && <ViewTicketReconcileModal />}
+
+      {/* To Show upload Ticket Modal On Add Ticket Click */}
+      {uploadComplianceModal && <UploadReconcileTicketModal />}
     </>
   );
 };
