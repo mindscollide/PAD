@@ -184,3 +184,84 @@ export const SearchComplianceOfficerReconcilePortfolioRequest = async ({
     showLoader(false);
   }
 };
+
+//Get All View Details By rECONCILE pORTFOLIO tRANSACTION Trade Approval ID
+export const GetAllReconcilePortfolioTransactionRequest = async ({
+  callApi,
+  showNotification,
+  showLoader,
+  requestdata,
+  navigate,
+}) => {
+  try {
+    console.log("Check APi");
+    const res = await callApi({
+      requestMethod: import.meta.env
+        .VITE_GET_COMPLIANCE_OFFICER_RECONCILE_PORTFOLIO_REQUEST_METHOD,
+      endpoint: import.meta.env.VITE_API_TRADE,
+      requestData: requestdata,
+    });
+    if (handleExpiredSession(res, navigate, showLoader)) return null;
+
+    if (!res?.result?.isExecuted) {
+      console.log("Check APi");
+      showNotification({
+        type: "error",
+        title: "Error",
+        description: "Something went wrong. Please try again.",
+      });
+      return null;
+    }
+
+    if (res.success) {
+      const {
+        responseMessage,
+        details,
+        assetTypes,
+        requesterName,
+        hierarchyDetails,
+      } = res.result;
+
+      if (
+        responseMessage ===
+        "PAD_Trade_TradeServiceManager_GetComplianceOfficerViewDetailsByTradeApprovalID_01"
+      ) {
+        console.log("Check APi");
+        return {
+          details: details || [],
+          requesterName: requesterName || "",
+          assetTypes: assetTypes || [],
+          hierarchyDetails: hierarchyDetails || [],
+        };
+      }
+
+      showNotification({
+        type: "warning",
+        title: getMessage(responseMessage),
+        description: "No details available for this Trade Approval ID.",
+      });
+      return {
+        details: [],
+        requesterName: "",
+        assetTypes: [],
+        hierarchyDetails: [],
+      };
+    }
+
+    showNotification({
+      type: "error",
+      title: "Fetch Failed",
+      description: getMessage(res.message),
+    });
+    return null;
+  } catch (error) {
+    showNotification({
+      type: "error",
+      title: "Error",
+      description: "An unexpected error occurred.",
+    });
+    return null;
+  } finally {
+    showLoader(false);
+  }
+};

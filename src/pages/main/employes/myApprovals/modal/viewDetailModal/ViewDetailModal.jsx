@@ -54,7 +54,7 @@ const ViewDetailModal = () => {
 
   const { allInstrumentsData, employeeBasedBrokersData } =
     useDashboardContext();
-  console.log(selectedViewDetail, "selectedViewDetail");
+  console.log(isViewDetail, "isViewDetail");
 
   console.log(viewDetailsModalData, "viewDetailsModalData555");
 
@@ -86,31 +86,6 @@ const ViewDetailModal = () => {
       console.error("Invalid JSON in sessionStorage", e);
       return {};
     }
-  }, []);
-
-  // GETALLVIEWDETAIL API FUNCTION
-  const fetchGetAllViewData = async () => {
-    await showLoader(true);
-    const requestdata = { TradeApprovalID: selectedViewDetail?.approvalID };
-
-    const responseData = await GetAllViewDetailsByTradeApprovalID({
-      callApi,
-      showNotification,
-      showLoader,
-      requestdata,
-      navigate,
-    });
-
-    //Extract Data from Api and set in the Context State
-    if (responseData) {
-      setViewDetailsModalData(responseData);
-    }
-  };
-
-  useEffect(() => {
-    if (hasFetched.current) return;
-    hasFetched.current = true;
-    fetchGetAllViewData();
   }, []);
 
   // This is the Status Which is I'm getting from the selectedViewDetail contextApi state
@@ -556,7 +531,7 @@ const ViewDetailModal = () => {
                             Array.isArray(
                               viewDetailsModalData?.hierarchyDetails
                             )
-                              ? viewDetailsModalData.hierarchyDetails.filter(
+                              ? viewDetailsModalData?.hierarchyDetails.filter(
                                   (person) => person.userID !== loggedInUserID
                                 ).length - 1
                               : 0
@@ -577,7 +552,7 @@ const ViewDetailModal = () => {
                           {Array.isArray(
                             viewDetailsModalData?.hierarchyDetails
                           ) &&
-                            viewDetailsModalData.hierarchyDetails
+                            viewDetailsModalData?.hierarchyDetails
                               .filter(
                                 (person) => person.userID !== loggedInUserID
                               )

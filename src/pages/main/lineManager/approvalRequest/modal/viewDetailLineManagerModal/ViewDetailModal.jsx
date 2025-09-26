@@ -83,33 +83,6 @@ const ViewDetailModal = () => {
     setNoteGlobalModal({ visible: true, action: "Decline" });
   };
 
-  // GETALLVIEWDETAIL OF LINEMANAGER API FUNCTION
-  const fetchGetAllViewDataofLineManager = async () => {
-    await showLoader(true);
-    const requestdata = {
-      TradeApprovalID: isSelectedViewDetailLineManager?.approvalID,
-    };
-
-    const responseData = await GetAllLineManagerViewDetailRequest({
-      callApi,
-      showNotification,
-      showLoader,
-      requestdata,
-      navigate,
-    });
-
-    //Extract Data from Api and set in the Context State
-    if (responseData) {
-      setViewDetailsLineManagerData(responseData);
-    }
-  };
-
-  useEffect(() => {
-    if (hasFetched.current) return;
-    hasFetched.current = true;
-    fetchGetAllViewDataofLineManager();
-  }, []);
-
   const getStatusStyle = (status) => {
     switch (status) {
       case "1":

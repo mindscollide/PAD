@@ -54,34 +54,6 @@ const ViewDetailsTransactionModal = () => {
     employeeTransactionViewDetailData
   );
 
-  // GETALLVIEWDETAIL OF Transaction API FUNCTION
-  const fetchGetAllViewDataofTransaction = async () => {
-    await showLoader(true);
-
-    //WorkFlow Id treat as approvalID
-    const requestdata = {
-      TradeApprovalID: selectedViewDetailOfTransaction?.workFlowID,
-    };
-    const responseData = await GetAllTransactionViewDetails({
-      callApi,
-      showNotification,
-      showLoader,
-      requestdata,
-      navigate,
-    });
-
-    //Extract Data from Api and set in the Context State
-    if (responseData) {
-      setEmployeeTransactionViewDetailData(responseData);
-    }
-  };
-
-  useEffect(() => {
-    if (hasFetched.current) return;
-    hasFetched.current = true;
-    fetchGetAllViewDataofTransaction();
-  }, []);
-
   // Extract workFlowStatusID from API response
   const statusId =
     employeeTransactionViewDetailData?.workFlowStatus?.workFlowStatusID;
@@ -378,12 +350,12 @@ const ViewDetailsTransactionModal = () => {
                             const {
                               fullName,
                               bundleStatusID,
-                              requestDate,
-                              requestTime,
+                              modifiedDate,
+                              modifiedTime,
                             } = person;
 
                             const formattedDateTime = formatApiDateTime(
-                              `${requestDate} ${requestTime}`
+                              `${modifiedDate} ${modifiedTime}`
                             );
 
                             let iconSrc;

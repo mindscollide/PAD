@@ -80,7 +80,7 @@ export const ReconcileProvider = ({ children }) => {
     data: [],
     mqtt: false,
   });
- 
+
   /**
    * Compliance Officer reconcile portfolio fetched via API.
    *
@@ -106,6 +106,18 @@ export const ReconcileProvider = ({ children }) => {
   ] = useState({
     data: [],
     mqtt: false,
+  });
+
+  // Context STate to extract data from get All View Transaction Trade Approval which is show by click on View Detail of reconcile transaction
+  const [
+    reconcileTransactionViewDetailData,
+    setReconcileTransactionViewDetailData,
+  ] = useState({
+    details: [],
+    assetTypes: [],
+    hierarchyDetails: [],
+    workFlowStatus: {},
+    tradedWorkFlowReqeust: [],
   });
 
   /**
@@ -172,6 +184,9 @@ export const ReconcileProvider = ({ children }) => {
 
         aggregateTotalQuantity,
         setAggregateTotalQuantity,
+
+        reconcileTransactionViewDetailData,
+        setReconcileTransactionViewDetailData,
       }}
     >
       {children}

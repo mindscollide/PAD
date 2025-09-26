@@ -24,7 +24,10 @@ import {
   mapStatusToIds,
 } from "../../../../components/dropdowns/filters/utils";
 import { apiCallSearch } from "../../../../components/dropdowns/searchableDropedown/utill";
-import { SearchTadeApprovals } from "../../../../api/myApprovalApi";
+import {
+  GetAllViewDetailsByTradeApprovalID,
+  SearchTadeApprovals,
+} from "../../../../api/myApprovalApi";
 import ViewComment from "./modal/viewComment/ViewComment";
 import ResubmitModal from "./modal/resubmitModal/ResubmitModal";
 import ResubmitIntimationModal from "./modal/resubmitIntimationModal/ResubmitIntimationModal";
@@ -54,7 +57,11 @@ const Approval = () => {
   const { selectedKey } = useSidebarContext();
   const { showLoader } = useGlobalLoader();
   const { callApi } = useApi();
-  const { employeeMyApproval, setIsEmployeeMyApproval } = useMyApproval();
+  const {
+    employeeMyApproval,
+    setIsEmployeeMyApproval,
+    setViewDetailsModalData,
+  } = useMyApproval();
 
   const {
     employeeMyApprovalSearch,
@@ -66,7 +73,8 @@ const Approval = () => {
   const [approvalData, setApprovalData] = useState([]);
   const [loadingMore, setLoadingMore] = useState(false); // spinner at bottom
 
-  console.log({ employeeMyApproval }, "employeeMyApproval4555");
+  console.log(setIsViewDetail, "employeeMyApproval4555");
+  console.log(isViewDetail, "isViewDetail");
 
   // Confirmed filters displayed as tags
   const [submittedFilters, setSubmittedFilters] = useState([]);
@@ -94,14 +102,34 @@ const Approval = () => {
     },
   ];
 
-  const columns = getBorderlessTableColumns(
+  // This Api is for the getAllViewDetailModal For myApproval in Emp
+  const handleViewDetails = async (approvalID) => {
+    await showLoader(true);
+    const requestdata = { TradeApprovalID: approvalID };
+
+    const responseData = await GetAllViewDetailsByTradeApprovalID({
+      callApi,
+      showNotification,
+      showLoader,
+      requestdata,
+      navigate,
+    });
+
+    if (responseData) {
+      setViewDetailsModalData(responseData);
+      setIsViewDetail(true);
+    }
+  };
+
+  const columns = getBorderlessTableColumns({
     approvalStatusMap,
     sortedInfo,
     employeeMyApprovalSearch,
     setEmployeeMyApprovalSearch,
     setIsViewDetail,
-    setIsResubmitted
-  );
+    onViewDetail: handleViewDetails, // ✅ pass directly
+    setIsResubmitted,
+  });
 
   /**
    * Fetches approval data from API on component mount

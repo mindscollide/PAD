@@ -34,6 +34,9 @@ import {
 } from "../../../../../components/dropdowns/filters/utils";
 import { toYYMMDD } from "../../../../../commen/funtions/rejex";
 import { SearchComplianceOfficerReconcileTransactionRequest } from "../../../../../api/reconsile";
+import { useGlobalModal } from "../../../../../context/GlobalModalContext";
+import { GetAllTransactionViewDetails } from "../../../../../api/myTransactionsApi";
+import ViewDetailReconcileTransaction from "./modals/viewDetailReconcileTransaction.jsx/ViewDetailReconcileTransaction";
 
 /**
  * 📌 ReconcileTransaction
@@ -58,6 +61,7 @@ const ReconcileTransaction = () => {
   const { callApi } = useApi();
   const { showNotification } = useNotification();
   const { showLoader } = useGlobalLoader();
+  const { viewDetailReconcileTransaction } = useGlobalModal();
   const { addApprovalRequestData } = useDashboardContext();
 
   const {
@@ -71,7 +75,13 @@ const ReconcileTransaction = () => {
     complianceOfficerReconcileTransactionData,
     setComplianceOfficerReconcileTransactionDataMqtt,
     complianceOfficerReconcileTransactionDataMqtt,
+    setReconcileTransactionViewDetailData,
   } = useReconcileContext();
+
+  console.log(
+    complianceOfficerReconcileTransactionData,
+    "complianceOfficerReconcileTransactionData"
+  );
 
   // -------------------------
   // ✅ Local state
@@ -80,15 +90,35 @@ const ReconcileTransaction = () => {
   const [tableData, setTableData] = useState({ rows: [], totalRecords: 0 });
   const [loadingMore, setLoadingMore] = useState(false);
 
+  // This Api is for the getAllViewDetailModal For myTransaction in Emp role
+  // GETALLVIEWDETAIL OF Transaction API FUNCTION
+  const handleViewDetailsForReconcileTransaction = async (workFlowID) => {
+    await showLoader(true);
+    const requestdata = { TradeApprovalID: workFlowID };
+
+    const responseData = await GetAllTransactionViewDetails({
+      callApi,
+      showNotification,
+      showLoader,
+      requestdata,
+      navigate,
+    });
+
+    if (responseData) {
+      setReconcileTransactionViewDetailData(responseData);
+    }
+  };
+
   // -------------------------
   // ✅ Derived values
   // -------------------------
-  const columns = getBorderlessTableColumns(
+  const columns = getBorderlessTableColumns({
     approvalStatusMap,
     sortedInfo,
     complianceOfficerReconcileTransactionsSearch,
-    setComplianceOfficerReconcileTransactionsSearch
-  );
+    setComplianceOfficerReconcileTransactionsSearch,
+    handleViewDetailsForReconcileTransaction,
+  });
 
   // Prevent duplicate API calls (StrictMode safeguard)
   const didFetchRef = useRef(false);
@@ -351,16 +381,20 @@ const ReconcileTransaction = () => {
   // ✅ RENDER
   // ----------------------------------------------------------------
   return (
-    <BorderlessTable
-      rows={tableData?.rows || []}
-      columns={columns}
-      classNameTable="border-less-table-blue"
-      scroll={
-        tableData?.rows?.length ? { x: "max-content", y: 550 } : undefined
-      }
-      onChange={(_, __, sorter) => setSortedInfo(sorter || {})}
-      loading={loadingMore}
-    />
+    <>
+      <BorderlessTable
+        rows={tableData?.rows || []}
+        columns={columns}
+        classNameTable="border-less-table-blue"
+        scroll={
+          tableData?.rows?.length ? { x: "max-content", y: 550 } : undefined
+        }
+        onChange={(_, __, sorter) => setSortedInfo(sorter || {})}
+        loading={loadingMore}
+      />
+
+      {viewDetailReconcileTransaction && <ViewDetailReconcileTransaction />}
+    </>
   );
 };
 

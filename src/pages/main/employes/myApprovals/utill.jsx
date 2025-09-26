@@ -73,14 +73,15 @@ const withSortIcon = (label, columnKey, sortedInfo) => (
  * @returns {Array} Array of column definitions
  */
 
-export const getBorderlessTableColumns = (
+export const getBorderlessTableColumns = ({
   approvalStatusMap,
   sortedInfo,
   employeeMyApprovalSearch,
   setEmployeeMyApprovalSearch,
   setIsViewDetail,
-  setIsResubmitted
-) => [
+  onViewDetail,
+  setIsResubmitted,
+}) => [
   {
     title: withSortIcon("Approval ID", "tradeApprovalID", sortedInfo),
     dataIndex: "tradeApprovalID",
@@ -404,6 +405,8 @@ export const getBorderlessTableColumns = (
           className="big-orange-button"
           text="View Details"
           onClick={() => {
+            console.log(record, "CheckRecordData");
+            onViewDetail(record?.approvalID);
             setSelectedViewDetail(record);
             setIsViewDetail(true);
           }}
