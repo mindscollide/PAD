@@ -14,6 +14,7 @@ import { EmployeeMyApprovalFilter } from "./EmployeeMyApprovalFilter";
 import { EmployeePendingApprovalFilter } from "./EmployeePendingApprovalFilter";
 import { EmployeePortfolioFilter } from "./EmployeePortfolioFilter";
 import { EmployeeTransactionFilter } from "./EmployeeTransactionFilter";
+import { HcaReconcileFilter } from "./HcaReconcileFilter";
 import { LineManagerApprovalFilter } from "./LineManagerApprovalFilter";
 
 /**
@@ -298,6 +299,14 @@ export const renderFilterContent = (
     case "9":
       return (
         <ComplianceReconcileFilter
+          handleSearch={handleSearch}
+          activeTab={reconcileActiveTab}
+          setVisible={setVisible}
+        />
+      );
+       case "15":
+      return (
+        <HcaReconcileFilter
           handleSearch={handleSearch}
           activeTab={reconcileActiveTab}
           setVisible={setVisible}
