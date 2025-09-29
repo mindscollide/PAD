@@ -91,6 +91,7 @@ export const GlobalModalProvider = ({ children }) => {
    */
   //This is For Head Of COmpliance Modal for upload
   const [uploadComplianceModal, setUploadComplianceModal] = useState(false);
+  const [uploadattAchmentsFiles, setUploadattAchmentsFiles] = useState([]);
 
   //This is For Compliance Officer View Detail for reconcile transaction modal
   const [viewDetailReconcileTransaction, setViewDetailReconcileTransaction] =
@@ -134,6 +135,7 @@ export const GlobalModalProvider = ({ children }) => {
     setApprovedGlobalModal(false);
     setDeclinedGlobalModal(false);
     setViewCommentGlobalModal(false);
+    setUploadattAchmentsFiles([]);
   };
 
   const resetForLineManagerModal = () => {
@@ -209,7 +211,9 @@ export const GlobalModalProvider = ({ children }) => {
         setNonCompliantDeclineModal,
         viewCommentReconcileModal,
         setViewCommentReconcileModal,
-
+        // uploaded files array for view
+        uploadattAchmentsFiles,
+        setUploadattAchmentsFiles,
         /**
          * Global States For Compliance Officer Modals End here
          */

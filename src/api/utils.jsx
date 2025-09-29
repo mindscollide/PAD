@@ -233,6 +233,18 @@ export const responseMessages = {
     "Document Uploaded Successfull",
   Settings_SettingsServiceManager_UploadDocuments_02: "No Document Uploaded",
   Settings_SettingsServiceManager_UploadDocuments_03: "Exception",
+
+  // SaveFiles
+  Settings_SettingsServiceManager_SaveFiles_01: "Files saved successfully",
+  Settings_SettingsServiceManager_SaveFiles_02: "Failed to save any file",
+  Settings_SettingsServiceManager_SaveFiles_03: "Exception",
+  Settings_SettingsServiceManager_SaveFiles_04: "Delete failed",
+
+    // GetWorkFlowFiles
+  Settings_SettingsServiceManager_GetWorkFlowFiles_01: "Data found",
+  Settings_SettingsServiceManager_GetWorkFlowFiles_02: "No data",
+  Settings_SettingsServiceManager_GetWorkFlowFiles_03: "Exception",
+  Settings_SettingsServiceManager_GetWorkFlowFiles_04: "Invalid request",
 };
 
 /**

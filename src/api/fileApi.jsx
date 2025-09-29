@@ -1,7 +1,7 @@
-import { handleExpiredSession } from "./utils";
+import { getMessage, handleExpiredSession } from "./utils";
 
 // 🔹 UploadDocumentsRequest
-export const UploadDocumentsRequest = async ({
+export const UploadDocumentsAPI = async ({
   callApi,
   showNotification,
   showLoader,
@@ -14,6 +14,7 @@ export const UploadDocumentsRequest = async ({
   try {
     for (const file of fileList) {
       try {
+        console.log("fileList", file);
         // 🔹 API Call for each file
         const res = await callApi({
           requestMethod: import.meta.env.VITE_UPLOAD_DOCUMENT_REQUEST_METHOD,
@@ -44,6 +45,8 @@ export const UploadDocumentsRequest = async ({
           const {
             responseMessage,
             displayFileName,
+            fileSize,
+            fileSizeOnDisk,
             padFileName,
             shareAbleLink,
           } = res.result;
@@ -53,7 +56,9 @@ export const UploadDocumentsRequest = async ({
             "Settings_SettingsServiceManager_UploadDocuments_01"
           ) {
             uploadedFiles.push({
-              fileName: displayFileName,
+              displayFileName,
+              fileSize,
+              fileSizeOnDisk,
               padFileName,
               shareAbleLink,
             });
@@ -82,8 +87,155 @@ export const UploadDocumentsRequest = async ({
       uploadedFiles,
       failedFiles,
     };
+  } catch (err) {
+    console.error("UploadDocumentsRequest error:", err);
+    return {
+      uploadedFiles,
+      failedFiles,
+    };
+  }
+};
+
+export const SaveDocumentsAPI = async ({
+  callApi,
+  showNotification,
+  showLoader,
+  requestData, // 👈 you will build this before calling
+  navigate,
+}) => {
+  try {
+    console.log("📂 Request Data (Save Documents):", requestData);
+
+    // 🔹 API Call
+    const res = await callApi({
+      requestMethod: import.meta.env.VITE_SAVE_FILES_REQUEST_METHOD, // must exist in .env
+      endpoint: import.meta.env.VITE_API_SETTINGS, // change if your endpoint is different
+      requestData,
+      isFileUpload: false, // 👈 if your callApi supports multipart/form-data
+    });
+
+    // 🔹 Handle session expiry
+    if (handleExpiredSession(res, navigate, showLoader)) return null;
+
+    // 🔹 Validate execution
+    if (!res?.result?.isExecuted) {
+      showNotification({
+        type: "error",
+        title: "Upload Failed",
+        description: "Something went wrong while saving documents.",
+      });
+      return null;
+    }
+
+    // 🔹 Handle success
+    if (res.success) {
+      const { responseMessage, savedFiles } = res.result;
+      const message = getMessage(responseMessage);
+
+      // Case 1 → Successfully uploaded
+      if (responseMessage === "Settings_SettingsServiceManager_SaveFiles_01") {
+        return true;
+      }
+
+      // Case 2 → No files saved
+      if (responseMessage === "Settings_SettingsServiceManager_SaveFiles_02") {
+        return false;
+      }
+
+      // Case 3 → Custom messages
+      if (message) {
+        showNotification({
+          type: "warning",
+          title: message,
+          description: "No files were saved.",
+        });
+      }
+
+      return null;
+    }
+
+    // 🔹 Handle failure
+    showNotification({
+      type: "error",
+      title: "Upload Failed",
+      description: getMessage(res.message),
+    });
+    return null;
+  } catch (error) {
+    // 🔹 Exception handling
+    console.error("SaveDocumentsRequest error:", error);
+    showNotification({
+      type: "error",
+      title: "Error",
+      description: "An unexpected error occurred while saving documents.",
+    });
+    return null;
   } finally {
-    // 🔹 Always stop loader at the end
+    // 🔹 Always hide loader
+    showLoader(false);
+  }
+};
+
+
+export const GetWorkFlowFilesAPI = async ({
+  callApi,
+  showNotification,
+  showLoader,
+  requestData, // { WorkFlowID: 97 }
+  navigate,
+}) => {
+  try {
+    console.log("📂 Request Data (Get WorkFlowFiles):", requestData);
+
+    // 🔹 API Call
+    const res = await callApi({
+      requestMethod: import.meta.env.VITE_GET_WORKFLOW_FILES_REQUEST_METHOD, // "ServiceManager.GetWorkFlowFiles"
+      endpoint: import.meta.env.VITE_API_SETTINGS, // "http://192.168.18.241:14004/Settings"
+      requestData,
+    });
+
+    // 🔹 Handle session expiry
+    if (handleExpiredSession(res, navigate, showLoader)) return null;
+
+    // 🔹 Validate execution
+    if (!res?.result?.isExecuted) {
+      showNotification({
+        type: "error",
+        title: "Get Files Failed",
+        description: "Something went wrong while fetching workflow files.",
+      });
+      return null;
+    }
+
+    // 🔹 Extract response
+    const { responseMessage, files } = res.result;
+
+    // Case 1 → Successfully fetched files
+    if (responseMessage === "Settings_SettingsServiceManager_GetWorkFlowFiles_01") {
+      return files || [];
+    }
+
+    // Case 2 → No files exist
+    if (responseMessage === "Settings_SettingsServiceManager_GetWorkFlowFiles_02") {
+      return [];
+    }
+
+    // Case 3 → Unknown but valid
+    showNotification({
+      type: "warning",
+      title: "No Files Found",
+      description: "No workflow files available.",
+    });
+    return [];
+  } catch (error) {
+    console.error("GetWorkFlowFilesAPI error:", error);
+    showNotification({
+      type: "error",
+      title: "Error",
+      description: "An unexpected error occurred while fetching workflow files.",
+    });
+    return null;
+  } finally {
     showLoader(false);
   }
 };
