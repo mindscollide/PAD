@@ -15,8 +15,18 @@ import {
   formatNumberWithCommas,
 } from "../../../../../../../commen/funtions/rejex";
 import { useReconcileContext } from "../../../../../../../context/reconsileContax";
+import { GetWorkFlowFilesAPI } from "../../../../../../../api/fileApi";
+import { useApi } from "../../../../../../../context/ApiContext";
+import { useNotification } from "../../../../../../../components/NotificationProvider/NotificationProvider";
+import { useGlobalLoader } from "../../../../../../../context/LoaderContext";
+import { useNavigate } from "react-router-dom";
 
 const ViewDetailReconcileTransaction = () => {
+  const { callApi } = useApi();
+  const { showNotification } = useNotification();
+  const { showLoader } = useGlobalLoader();
+  const navigate = useNavigate();
+
   // This is Global State for modal which is create in ContextApi
   const {
     viewDetailReconcileTransaction,
@@ -25,6 +35,7 @@ const ViewDetailReconcileTransaction = () => {
     setViewCommentReconcileModal,
     setIsViewTicketTransactionModal,
     setUploadComplianceModal,
+    setUploadattAchmentsFiles,
   } = useGlobalModal();
   console.log(viewDetailReconcileTransaction, "viewDetailReconcileTransaction");
 
@@ -41,14 +52,6 @@ const ViewDetailReconcileTransaction = () => {
   } = useReconcileContext();
 
   const { allInstrumentsData } = useDashboardContext();
-
-  console.log(
-    reconcileTransactionViewDetailData,
-    "reconcileTransactionViewDetailData"
-  );
-
-  console.log(selectedReconcileTransactionData, "selectedReconcileData");
-
   // This is the Status Which is I'm getting from the selectedViewDetail contextApi state
   const getStatusStyle = (status) => {
     console.log(status, "checkStatusessss");
@@ -140,6 +143,21 @@ const ViewDetailReconcileTransaction = () => {
   const openNoteModalOnNonCompliantClick = () => {
     setNoteGlobalModal({ visible: true, action: "Non-Compliant" });
     setViewDetailReconcileTransaction(false);
+  };
+  const handleViewTicket = async () => {
+    showLoader(true);
+    const res = await GetWorkFlowFilesAPI({
+      callApi,
+      showNotification,
+      showLoader,
+      requestData: {
+        WorkFlowID: selectedReconcileTransactionData.approvalID,
+      },
+      navigate,
+    });
+    await setUploadattAchmentsFiles(res);
+    setViewDetailReconcileTransaction(false);
+    setIsViewTicketTransactionModal(true);
   };
 
   return (
@@ -466,6 +484,7 @@ const ViewDetailReconcileTransaction = () => {
                           <CustomButton
                             text={"View Ticket"}
                             className={"big-ViewTicket-light-button"}
+                            onClick={() => handleViewTicket()}
                             disabled={isTicketUploaded}
                           />
                           <CustomButton

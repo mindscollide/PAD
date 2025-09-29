@@ -74,13 +74,6 @@ const ReconcileIndex = () => {
     };
   }, []);
 
-  // ─── Derived UI Values ─────────────────────────────────────────
-  const formattedTotal = new Intl.NumberFormat("en-US").format(
-    aggregateTotalQuantity || 0
-  );
-
-  const totalColor = Number(aggregateTotalQuantity) < 0 ? "#A50000" : "#00640A";
-
   // ─── Handlers ──────────────────────────────────────────────────
   /**
    * Switch to Reconcile Transactions tab
