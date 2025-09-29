@@ -6,7 +6,10 @@ import { useNotification } from "../../../../../../components/NotificationProvid
 import { useGlobalLoader } from "../../../../../../context/LoaderContext";
 import { useApi } from "../../../../../../context/ApiContext";
 import { useNavigate } from "react-router-dom";
-import { AddTradeApprovalRequest } from "../../../../../../api/myApprovalApi";
+import {
+  AddTradeApprovalRequest,
+  ResubmitApprovalRequestApi,
+} from "../../../../../../api/myApprovalApi";
 
 const ResubmitModal = () => {
   const navigate = useNavigate();
@@ -17,54 +20,56 @@ const ResubmitModal = () => {
 
   const { callApi } = useApi();
 
-  const { isResubmitted, setIsResubmitted, setResubmitIntimation } =
-    useGlobalModal();
+  const {
+    isResubmitted,
+    setIsResubmitted,
+    setResubmitIntimation,
+    selectedViewDetail,
+  } = useGlobalModal();
+
+  console.log(
+    selectedViewDetail,
+    "selectedViewDetailselectedViewDetailselectedViewDetail"
+  );
 
   // Context Api For Reasons which is coming from the API and stored in contextApi
   const { getAllPredefineReasonData } = useDashboardContext();
 
+  // ✅ Add this state
+  const [commentValue, setCommentValue] = useState("");
+
   //This is the Api Function I created
-  const fetchResubmitRequest = async (value, selectedOption) => {
+  const fetchResubmitRequest = async (selectedOption) => {
     showLoader(true);
 
-    const requestdata = {
-      TradeApprovalID: 1,
-      InstrumentID: 0,
-      AssetTypeID: 0,
-      ApprovalTypeID: 0,
-      Quantity: 0,
-      ApprovalStatusID: 0,
-      Comments: value?.trim() || "",
-      BrokerIds: [],
+    const requestData = {
       ResubmittedCommentID: selectedOption?.predefinedReasonsID || 0,
-      ListOfTradeApprovalActionableBundle: [
-        {
-          instrumentID: 0,
-          instrumentShortName: "",
-          Entity: { EntityID: 0, EntityTypeID: 0 },
-        },
-      ],
+      TradeApprovalID: selectedViewDetail?.approvalID,
     };
 
-    await AddTradeApprovalRequest({
+    await ResubmitApprovalRequestApi({
       callApi,
       showNotification,
       showLoader,
-      requestdata,
+      requestData,
       setIsResubmitted,
+      setCommentValue,
       setResubmitIntimation,
       navigate,
     });
+
+    console.log(requestData, "CheckRequestDatahere");
   };
 
   // Call an API which inside the fetchResubmitRequest Request on Resubmit Button
-  const clickOnReSubmitButton = ({ value, selectedOption }) => {
-    fetchResubmitRequest(value, selectedOption);
+  const clickOnReSubmitButton = ({ selectedOption }) => {
+    fetchResubmitRequest(selectedOption);
   };
 
   //onClose button Handler
   const onClickClose = () => {
     setIsResubmitted(false);
+    setCommentValue(""); // ✅ Clear text on close
   };
 
   return (
@@ -75,10 +80,11 @@ const ResubmitModal = () => {
       title={"Why do you want to resubmit trade request REQ-001?"}
       predefinedReasons={getAllPredefineReasonData}
       onSubmit={clickOnReSubmitButton}
-      onCancel={() => setIsResubmitted(false)}
       centered={true}
       width={"902px"}
       height={"620px"}
+      value={commentValue} // ✅ Pass value
+      setValue={setCommentValue}
     />
   );
 };

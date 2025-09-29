@@ -129,6 +129,17 @@ export const responseMessages = {
   PAD_Trade_TradeServiceManager_GetLineManagerViewDetailsByTradeApprovalID_03:
     "Exception",
 
+  // UPDATE DATA ON HIT OF RESUBMIT BY SELECTING PREDEFINE REASON
+  PAD_Trade_TradeServiceManager_ResubmitApprovalRequest_01:
+    "Resubmission Successful",
+  PAD_Trade_TradeServiceManager_ResubmitApprovalRequest_02:
+    "Resubmission Failed",
+  PAD_Trade_TradeServiceManager_ResubmitApprovalRequest_03: "Exception",
+  PAD_Trade_TradeServiceManager_ResubmitApprovalRequest_04:
+    "please Select a reason for resubmitting",
+  PAD_Trade_TradeServiceManager_ResubmitApprovalRequest_5:
+    "Failed to generate ApprovalID",
+
   // LINE MANAGER API'S RESPONSES FROM END HERE
   // =============================
 

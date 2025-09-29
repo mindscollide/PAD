@@ -48,10 +48,10 @@ const CommentModal = ({
   const [selectedOption, setSelectedOption] = useState(null);
 
   //A counter show below the TextArea
-  const charCount = value.length;
+  const charCount = value?.length;
 
   //when no reasons or option is selected then button resubmit will disabled
-  const isButtonDisabled = value.trim() === "";
+  const isButtonDisabled = value?.trim() === "";
 
   //OnChange function which tell that the option isselected on textArea field
   const handleChange = (e) => {
