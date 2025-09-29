@@ -227,6 +227,12 @@ export const responseMessages = {
     "User role not found",
   PAD_Trade_TradeServiceManager_UpdateTransactionRequestStatus_05:
     "Not authorized (Not Compliance)",
+
+  // upload document
+  Settings_SettingsServiceManager_UploadDocuments_01:
+    "Document Uploaded Successfull",
+  Settings_SettingsServiceManager_UploadDocuments_02: "No Document Uploaded",
+  Settings_SettingsServiceManager_UploadDocuments_03: "Exception",
 };
 
 /**
