@@ -216,10 +216,11 @@ export const GetAllReconcilePortfolioTransactionRequest = async ({
     if (res.success) {
       const {
         responseMessage,
-        details,
         assetTypes,
-        requesterName,
+        details,
         hierarchyDetails,
+        requesterName,
+        workFlowStatus,
       } = res.result;
 
       if (
@@ -228,10 +229,11 @@ export const GetAllReconcilePortfolioTransactionRequest = async ({
       ) {
         console.log("Check APi");
         return {
-          details: details || [],
-          requesterName: requesterName || "",
           assetTypes: assetTypes || [],
+          details: details || [],
           hierarchyDetails: hierarchyDetails || [],
+          requesterName: requesterName || "",
+          workFlowStatus: workFlowStatus || {},
         };
       }
 
@@ -241,10 +243,11 @@ export const GetAllReconcilePortfolioTransactionRequest = async ({
         description: "No details available for this Trade Approval ID.",
       });
       return {
-        details: [],
-        requesterName: "",
         assetTypes: [],
+        details: [],
         hierarchyDetails: [],
+        requesterName: "",
+        workFlowStatus: {},
       };
     }
 
@@ -275,6 +278,8 @@ export const UpdatedComplianceOfficerTransactionRequest = async ({
   setNoteGlobalModal,
   setCompliantApproveModal,
   setNonCompliantDeclineModal,
+  setCompliantPortfolioApproveModal,
+  setNonCompliantPortfolioDeclineModal,
   submitText,
   setValue,
   navigate,
@@ -312,6 +317,12 @@ export const UpdatedComplianceOfficerTransactionRequest = async ({
         setNoteGlobalModal({ visible: false, action: null });
         if (submitText === "Compliant") {
           setCompliantApproveModal(true);
+          setValue("");
+        } else if (submitText === "Portfolio-Compliant") {
+          setCompliantPortfolioApproveModal(true);
+          setValue("");
+        } else if (submitText === "Portfolio-Non-Compliant") {
+          setNonCompliantPortfolioDeclineModal(true);
           setValue("");
         } else {
           setNonCompliantDeclineModal(true);
