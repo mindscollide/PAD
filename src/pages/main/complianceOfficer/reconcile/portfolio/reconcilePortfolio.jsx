@@ -32,7 +32,11 @@ import {
 import { useDashboardContext } from "../../../../../context/dashboardContaxt";
 import { useGlobalModal } from "../../../../../context/GlobalModalContext";
 import { usePortfolioContext } from "../../../../../context/portfolioContax";
-import ViewDetailPortfolioTransaction from "./modals/viewDetailReconcileTransaction.jsx/ViewDetailPortfolioTransaction";
+import ViewDetailPortfolioTransaction from "./modals/viewDetailPortfolioReconcileTransaction/ViewDetailPortfolioTransaction";
+import NotePortfolioComplianceOfficerModal from "./modals/notePortfolioComplianceOfficerModal/NotePortfolioComplianceOfficerModal";
+import ViewReconcilePortfolioComment from "./modals/viewReconcilePortfolioComment/ViewReconcilePortfolioComment";
+import CompliantPortfolioApproveModal from "./modals/compliantPortfolioApproveModal/CompliantPortfolioApproveModal";
+import NonCompliantPortdolioDeclineModal from "./modals/nonCompliantPortdolioDeclineModal/nonCompliantPortdolioDeclineModal";
 
 /**
  * 📌 ReconcilePortfolio
@@ -57,7 +61,13 @@ const ReconcilePortfolio = () => {
   const { callApi } = useApi();
   const { showNotification } = useNotification();
   const { showLoader } = useGlobalLoader();
-  const { viewDetailPortfolioTransaction } = useGlobalModal();
+  const {
+    viewDetailPortfolioTransaction,
+    noteGlobalModal,
+    viewCommentPortfolioModal,
+    compliantPortfolioApproveModal,
+    nonCompliantPortfolioDeclineModal,
+  } = useGlobalModal();
 
   const {
     complianceOfficerReconcilePortfolioSearch,
@@ -379,7 +389,23 @@ const ReconcilePortfolio = () => {
         onChange={(_, __, sorter) => setSortedInfo(sorter || {})}
         loading={loadingMore}
       />
+
+      {/* To show view Detail Modal while click on View Detail Btn */}
       {viewDetailPortfolioTransaction && <ViewDetailPortfolioTransaction />}
+
+      {/* Open Note Modal By clickimg on compliant Btn on reconcile Portfolio */}
+      {noteGlobalModal && <NotePortfolioComplianceOfficerModal />}
+
+      {/* To show open only View Modal which is coming in Compliant and Non Compliant on Reconcile Portfolio */}
+      {viewCommentPortfolioModal && <ViewReconcilePortfolioComment />}
+
+      {/* To show COmpliant Modal when Note Modal is SUccess on portfolio Reconcile */}
+      {compliantPortfolioApproveModal && <CompliantPortfolioApproveModal />}
+
+      {/* To show Non Portfolio COmpliant Modal when Note Modal is SUccess on portfolio Reconcile */}
+      {nonCompliantPortfolioDeclineModal && (
+        <NonCompliantPortdolioDeclineModal />
+      )}
     </>
   );
 };

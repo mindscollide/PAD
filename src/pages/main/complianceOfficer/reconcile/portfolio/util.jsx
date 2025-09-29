@@ -15,6 +15,7 @@ import StatusColumnTitle from "../../../../../components/dropdowns/filters/statu
 // Helpers
 import { formatApiDateTime } from "../../../../../commen/funtions/rejex";
 import { useGlobalModal } from "../../../../../context/GlobalModalContext";
+import { usePortfolioContext } from "../../../../../context/portfolioContax";
 
 const { Text } = Typography;
 
@@ -322,11 +323,14 @@ export const getBorderlessTableColumns = ({
     render: (text, record) => {
       //Global State to selected data to show in ViewDetailModal
       const { setViewDetailPortfolioTransaction } = useGlobalModal();
+      const { setSelectedPortfolioTransactionData } = usePortfolioContext();
+
       return (
         <Button
           className="big-blue-button"
           text="View Details"
           onClick={() => {
+            setSelectedPortfolioTransactionData(record);
             handleViewDetailsForReconcileTransaction(record?.approvalID);
             setViewDetailPortfolioTransaction(true);
           }}

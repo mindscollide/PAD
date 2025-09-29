@@ -356,6 +356,8 @@ export const getBorderlessTableColumns = ({
     ellipsis: true,
     align: "center",
     render: (text, record) => {
+      //Global State to selected data to show in ViewDetailModal
+      const { setSelectedViewDetail } = useGlobalModal();
       // ✅ Show nothing if pending
       if (record.status === "Pending")
         return <span className="text-gray-400">-</span>;
@@ -365,7 +367,10 @@ export const getBorderlessTableColumns = ({
           <Button
             className="large-transparent-button"
             text="Resubmit for Approval"
-            onClick={() => setIsResubmitted(true)}
+            onClick={() => {
+              setIsResubmitted(true);
+              setSelectedViewDetail(record);
+            }}
           />
         );
       }
