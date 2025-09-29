@@ -1,6 +1,5 @@
 import React, { useState } from "react";
-import { Upload, Row, Col, Button } from "antd";
-import { UploadOutlined, CloseCircleFilled } from "@ant-design/icons";
+import { Upload, Row, Col } from "antd";
 import UploadImg from "../../../../../../../assets/img/Upload.png";
 import PDF from "../../../../../../../assets/img/pdf.png";
 import Excel from "../../../../../../../assets/img/xls.png";
@@ -8,6 +7,7 @@ import Zip from "../../../../../../../assets/img/Zip.png";
 import Word from "../../../../../../../assets/img/word.png";
 import PNGImg from "../../../../../../../assets/img/PNGImg.png";
 import CrossImg from "../../../../../../../assets/img/CrossImg.png";
+import NoDealTicket from "../../../../../../../assets/img/NoDealTicket.png";
 import { GlobalModal } from "../../../../../../../components";
 import { useGlobalModal } from "../../../../../../../context/GlobalModalContext";
 import CustomButton from "../../../../../../../components/buttons/button";
@@ -17,38 +17,44 @@ const UploadReconcileTicketModal = () => {
   const { uploadComplianceModal, setUploadComplianceModal } = useGlobalModal();
   const [fileList, setFileList] = useState([]);
 
-  const props = {
-    beforeUpload: (file) => {
-      setFileList((prev) => [...prev, file]);
-      return false;
-    },
-    fileList: [],
-    multiple: true,
-    showUploadList: false,
+  const handleBeforeUpload = (file) => {
+    setFileList((prev) => [...prev, file]);
+    return false; // Prevent automatic upload
   };
 
   const removeFile = (name) => {
     setFileList((prev) => prev.filter((f) => f.name !== name));
   };
 
-  // Get file icon based on extension
+  // ✅ Always return image paths
   const getFileIcon = (name) => {
     const ext = name.split(".").pop().toLowerCase();
     switch (ext) {
       case "pdf":
         return PDF;
       case "xlsx":
+      case "xls":
         return Excel;
       case "png":
+      case "jpg":
+      case "jpeg":
         return PNGImg;
       case "zip":
+      case "rar":
         return Zip;
-      case "word":
+      case "doc":
+      case "docx":
         return Word;
-
       default:
-        return UploadOutlined;
+        return UploadImg; // fallback image for unknown types
     }
+  };
+
+  const uploadProps = {
+    beforeUpload: handleBeforeUpload,
+    fileList: [],
+    multiple: true,
+    showUploadList: false,
   };
 
   return (
@@ -59,65 +65,72 @@ const UploadReconcileTicketModal = () => {
       onCancel={() => setUploadComplianceModal(false)}
       modalBody={
         <div className={styles.mainContainer}>
-          {/* Upload Section */}
+          {/* Title */}
           <Row>
             <Col>
               <h1 className={styles.uploadTicketHeading}>Upload Ticket</h1>
             </Col>
           </Row>
-          <Row>
-            <Col span={24}>
-              <Upload.Dragger {...props}>
-                <div>
-                  <img
-                    src={UploadImg}
-                    alt="upload"
-                    className={styles.uploadImg}
-                  />
-                </div>
-                <span className={styles.uploadtext}>Upload Deal Ticket</span>
-                <p className={styles.uploadSubText}>
-                  Drag & drop files here to upload
-                </p>
-              </Upload.Dragger>
-            </Col>
-          </Row>
 
-          {/* Files Grid */}
-          <Row gutter={[16, 16]} style={{ marginTop: 24 }}>
-            {fileList.map((file) => (
-              <Col span={12} key={file.uid || file.name}>
-                <div className={styles.fileListMainDiv}>
-                  {/* Left: Icon + Name */}
-                  <div className={styles.fileListSubDiv}>
-                    {typeof getFileIcon(file.name) === "string" ? (
-                      <img
-                        src={getFileIcon(file.name)}
-                        alt="file-icon"
-                        className={styles.fileImagesclass}
-                        // style={{ width: 20, marginRight: 8 }}
-                      />
-                    ) : (
-                      React.createElement(getFileIcon(file.name), {
-                        style: { marginRight: 8, fontSize: 18 },
-                      })
-                    )}
-                    <span className={styles.fileNameText}>{file.name}</span>
+          {/* Upload Dragger */}
+          <div className={styles.fileScrollerDiv}>
+            <Row>
+              <Col span={24}>
+                <Upload.Dragger {...uploadProps}>
+                  <div>
+                    <img
+                      src={UploadImg}
+                      alt="upload"
+                      className={styles.uploadImg}
+                    />
                   </div>
-
-                  {/* Right: Delete */}
-                  <img
-                    src={CrossImg}
-                    className={styles.crossImageClass}
-                    onClick={() => removeFile(file.name)}
-                  />
-                </div>
+                  <span className={styles.uploadtext}>Upload Deal Ticket</span>
+                  <p className={styles.uploadSubText}>
+                    Drag & drop files here to upload
+                  </p>
+                </Upload.Dragger>
               </Col>
-            ))}
-          </Row>
+            </Row>
+
+            {/* Files Display */}
+            <Row gutter={[16, 16]} className={styles.fileListSpacingDiv}>
+              {fileList.length === 0 ? (
+                <Col span={24} className={styles.noDealTicketClass}>
+                  <img
+                    src={NoDealTicket}
+                    alt="No Deal Ticket"
+                  />
+                </Col>
+              ) : (
+                fileList.map((file) => (
+                  <Col span={12} key={file.uid || file.name}>
+                    <div className={styles.fileListMainDiv}>
+                      {/* Left: Icon + Name */}
+                      <div className={styles.fileListSubDiv}>
+                        <img
+                          src={getFileIcon(file.name)}
+                          alt="file-icon"
+                          className={styles.fileImagesclass}
+                        />
+                        <span className={styles.fileNameText}>{file.name}</span>
+                      </div>
+
+                      {/* Right: Delete */}
+                      <img
+                        src={CrossImg}
+                        alt="remove"
+                        className={styles.crossImageClass}
+                        onClick={() => removeFile(file.name)}
+                      />
+                    </div>
+                  </Col>
+                ))
+              )}
+            </Row>
+          </div>
 
           {/* Footer Buttons */}
-          <Row justify="end" style={{ marginTop: 24, gap: "20px" }}>
+          <Row gutter={[16, 16]} className={styles.btnClassupload}>
             <Col>
               <CustomButton
                 text={"Close"}
