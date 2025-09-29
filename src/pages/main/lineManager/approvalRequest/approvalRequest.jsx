@@ -63,6 +63,8 @@ const ApprovalRequest = () => {
     lineManagerApproval,
     setLineManagerApproval,
     setViewDetailsLineManagerData,
+    lineManagerApprovalMqtt,
+    setLineManagerApprovalMQtt,
   } = useMyApproval();
 
   const [loadingMore, setLoadingMore] = useState(false);
@@ -74,18 +76,21 @@ const ApprovalRequest = () => {
     setLineManagerApprovalSearch,
     resetLineManagerApprovalSearch,
   } = useSearchBarContext();
-
+  console.log("lineManagerApprovalSearch", lineManagerApprovalSearch);
   // Sort state for AntD Table
   const [sortedInfo, setSortedInfo] = useState({});
 
   // Confirmed filters displayed as tags
   const [submittedFilters, setSubmittedFilters] = useState([]);
+  const assetType = "Equities";
 
   /**
    * Fetches approval data from API on component mount
    */
-  const fetchApprovals = async () => {
-    await showLoader(true);
+  const fetchApprovals = async (flag) => {
+    if (flag) {
+      await showLoader(true);
+    }
     const requestdata = {
       InstrumentName:
         lineManagerApprovalSearch.instrumentName ||
@@ -94,8 +99,11 @@ const ApprovalRequest = () => {
       Quantity: lineManagerApprovalSearch.quantity || 0,
       PageNumber: 0,
       Length: lineManagerApprovalSearch.pageSize || 10,
-      StatusIds: lineManagerApprovalSearch.status || [],
-      TypeIds: lineManagerApprovalSearch.type || [],
+      StatusIds: mapStatusToIds(lineManagerApprovalSearch.status),
+      TypeIds: mapBuySellToIds(
+        lineManagerApprovalSearch.type,
+        addApprovalRequestData?.[assetType]
+      ),
       RequesterName: lineManagerApprovalSearch.requesterName || "",
     };
 
@@ -116,7 +124,7 @@ const ApprovalRequest = () => {
   useEffect(() => {
     if (hasFetched.current) return;
     hasFetched.current = true;
-    fetchApprovals();
+    fetchApprovals(true);
     setNoteGlobalModal({ visible: false, action: null });
 
     resetLineManagerApprovalSearch();
@@ -127,7 +135,7 @@ const ApprovalRequest = () => {
       mainInstrumentName: "",
       type: [],
       status: [],
-      pageSize: 0,
+      pageSize: 10,
       pageNumber: 0,
       totalRecords: 0,
       quantity: 0,
@@ -135,6 +143,16 @@ const ApprovalRequest = () => {
       tableFilterTrigger: false,
     });
   }, []);
+
+  useEffect(() => {
+    if (!lineManagerApprovalMqtt) return;
+    fetchApprovals(false);
+    setLineManagerApprovalMQtt(false);
+    setLineManagerApprovalSearch((prev) => ({
+      ...prev,
+      pageNumber: 0,
+    }));
+  }, [lineManagerApprovalMqtt]);
 
   // Keys to track which filters to sync/display
   const filterKeys = [
@@ -175,13 +193,11 @@ const ApprovalRequest = () => {
     handleViewDetailsForLineManager,
   });
 
-  console.log(approvalStatusMap, "approvalStatusMapapprovalStatusMap");
 
   /**
    * Removes a filter tag and re-fetches data
    */
   const handleRemoveFilter = async (key) => {
-    console.log("Check Data");
     const normalizedKey = key?.toLowerCase();
     // 1️⃣ Update UI state for removed filters
     setSubmittedFilters((prev) => prev.filter((item) => item.key !== key));
@@ -264,8 +280,6 @@ const ApprovalRequest = () => {
    * Syncs filters on `filterTrigger` from context
    */
   useEffect(() => {
-    console.log("Filter Checker align");
-    console.log(selectedKey, "Filter Checker align");
     if (lineManagerApprovalSearch.filterTrigger) {
       const snapshot = filterKeys
         .filter(({ key }) => lineManagerApprovalSearch[key])
@@ -287,10 +301,6 @@ const ApprovalRequest = () => {
    * Handles table-specific filter trigger
    */
   useEffect(() => {
-    console.log(
-      lineManagerApprovalSearch.tableFilterTrigger,
-      "Filter Checker align"
-    );
     const fetchFilteredData = async () => {
       if (!lineManagerApprovalSearch.tableFilterTrigger) return;
 
@@ -301,7 +311,6 @@ const ApprovalRequest = () => {
           value: lineManagerApprovalSearch[key],
         }));
 
-      console.log(selectedKey, "Filter Checker align");
       await apiCallSearchForLineManager({
         selectedKey,
         lineManagerApprovalSearch,
@@ -349,7 +358,6 @@ const ApprovalRequest = () => {
         lineManagerApproval?.lineApprovals &&
         Array.isArray(lineManagerApproval?.lineApprovals)
       ) {
-        console.log(lineManagerApproval, "CheckDatayagjvashvajhs");
         // 🔹 Map and normalize data
         const mappedData = lineManagerApproval?.lineApprovals?.map((item) => ({
           key: item.approvalID,

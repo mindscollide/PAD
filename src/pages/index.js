@@ -13,3 +13,4 @@ export { default as ApprovalRequest } from "./main/lineManager/approvalRequest/a
 
 // Export For compliance officer
 export { default as ReconcileIndex } from "./main/complianceOfficer/reconcile/index";
+export { default as EscalatedTransactionsIndex } from "./main/headOfComplianceOffice/escalatedVerifications/index";

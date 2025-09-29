@@ -262,36 +262,19 @@ const ReconcileTransaction = () => {
   // 🔄 REAL-TIME: Handle new MQTT rows
   // ----------------------------------------------------------------
   useEffect(() => {
-    if (!complianceOfficerReconcileTransactionDataMqtt?.mqttRecived) return;
+    if (!complianceOfficerReconcileTransactionDataMqtt) return;
 
-    const newRows = mapToTableRows(
-      addApprovalRequestData?.Equities,
-      Array.isArray(
-        complianceOfficerReconcileTransactionDataMqtt?.mqttRecivedData
-      )
-        ? complianceOfficerReconcileTransactionDataMqtt.mqttRecivedData
-        : [complianceOfficerReconcileTransactionDataMqtt.mqttRecivedData]
-    );
+    const requestData = {
+      ...buildPortfolioRequest(complianceOfficerReconcileTransactionsSearch),
+      PageNumber: 0,
+    };
 
-    if (newRows.length) {
-      setTableData((prev) => ({
-        rows: [newRows[0], ...(prev.rows || [])],
-        totalRecords: (prev.totalRecords || 0) + 1,
-      }));
-
-      setComplianceOfficerReconcileTransactionData((prev) => ({
-        ...prev,
-        data: [newRows[0], ...(prev.data || [])],
-        totalRecords: (prev.totalRecords || 0) + 1,
-        Apicall: false,
-      }));
-    }
-
-    setComplianceOfficerReconcileTransactionDataMqtt({
-      mqttRecivedData: [],
-      mqttRecived: false,
-    });
-  }, [complianceOfficerReconcileTransactionDataMqtt?.mqttRecived]);
+    fetchPendingApprovals(requestData, true);
+    setComplianceOfficerReconcileTransactionsSearch((prev) => ({
+      ...prev,
+      PageNumber: 0,
+    }));
+  }, [complianceOfficerReconcileTransactionDataMqtt]);
 
   // ----------------------------------------------------------------
   // 🔄 On search/filter trigger

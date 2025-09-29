@@ -397,7 +397,6 @@ const Approval = () => {
   useEffect(() => {
     try {
       if (employeeMyApprovalMqtt) {
-      console.log("Error setIsEmployeeMyApprovalMqtt employee approvals:",employeeMyApprovalMqtt);
         setIsEmployeeMyApprovalMqtt(false);
         fetchApprovals(false);
       }

@@ -1,4 +1,4 @@
-// src/pages/complianceOfficer/reconcile/ReconcilePortfolio.jsx
+// src/pages/headOfComplianceOfficer/reconcile/ReconcilePortfolioHCO.jsx
 
 import React, { useEffect, useState, useCallback, useRef } from "react";
 import { useNavigate } from "react-router-dom";
@@ -9,7 +9,7 @@ import moment from "moment";
 // 🔹 Components
 import BorderlessTable from "../../../../../components/tables/borderlessTable/borderlessTable";
 
-// 🔹 Utils (Portfolio-specific)
+// 🔹 Utils
 import { getBorderlessTableColumns, mapToTableRows } from "./util";
 import { approvalStatusMap } from "../../../../../components/tables/borderlessTable/utill";
 
@@ -25,30 +25,31 @@ import { useTableScrollBottom } from "../../../employes/myApprovals/utill";
 
 // 🔹 Helpers
 import { toYYMMDD } from "../../../../../commen/funtions/rejex";
-import {
-  GetAllReconcilePortfolioTransactionRequest,
-  SearchComplianceOfficerReconcilePortfolioRequest,
-} from "../../../../../api/reconsile";
+// import {
+//   GetAllReconcilePortfolioTransactionRequest,
+//   SearchHeadOfComplianceReconcilePortfolioRequest,
+// } from "../../../../../api/reconsile";
 import { useDashboardContext } from "../../../../../context/dashboardContaxt";
 import { useGlobalModal } from "../../../../../context/GlobalModalContext";
 import { usePortfolioContext } from "../../../../../context/portfolioContax";
 import ViewDetailPortfolioTransaction from "./modals/viewDetailReconcileTransaction.jsx/ViewDetailPortfolioTransaction";
 
 /**
- * 📌 ReconcilePortfolio
+ * 📌 ReconcilePortfolioHCO
  *
- * Displays and manages the **Reconcile → Portfolio tab** for Compliance Officers.
+ * Displays and manages the **Reconcile → Portfolio tab** for
+ * **Head of Compliance Officer (HCO)** role.
  *
  * Responsibilities:
- * - Fetch **portfolio reconciliation data** (paginated + infinite scroll).
+ * - Fetch **HCO portfolio reconciliation data** (paginated + infinite scroll).
  * - Handle **real-time updates** from MQTT.
  * - Sync global state ↔ local table data.
  * - Manage search, filters, sorting, and cleanup.
  *
  * @component
- * @returns {JSX.Element} BorderlessTable with reconcile portfolios.
+ * @returns {JSX.Element} BorderlessTable with HCO reconcile portfolios.
  */
-const ReconcilePortfolio = () => {
+const ReconcilePortfolioHCO = () => {
   const navigate = useNavigate();
 
   // -------------------------
@@ -60,9 +61,9 @@ const ReconcilePortfolio = () => {
   const { viewDetailPortfolioTransaction } = useGlobalModal();
 
   const {
-    complianceOfficerReconcilePortfolioSearch,
-    setComplianceOfficerReconcilePortfolioSearch,
-    resetComplianceOfficerReconcilePortfoliosSearch,
+    headOfComplianceApprovalPortfolioSearch,
+    setHeadOfComplianceApprovalPortfolioSearch,
+    resetHeadOfComplianceApprovalPortfolioSearch,
   } = useSearchBarContext();
 
   const {
@@ -71,12 +72,14 @@ const ReconcilePortfolio = () => {
   } = usePortfolioContext();
 
   const {
-    setComplianceOfficerReconcilePortfolioData,
-    complianceOfficerReconcilePortfolioData,
-    setComplianceOfficerReconcilePortfolioDataMqtt,
-    complianceOfficerReconcilePortfolioDataMqtt,
+    setHeadOfComplianceApprovalPortfolioData,
+    headOfComplianceApprovalPortfolioData,
+    setHeadOfComplianceApprovalPortfolioMqtt,
+    headOfComplianceApprovalPortfolioMqtt,
   } = useReconcileContext();
+
   const { addApprovalRequestData } = useDashboardContext();
+
   // -------------------------
   // ✅ Local state
   // -------------------------
@@ -84,45 +87,38 @@ const ReconcilePortfolio = () => {
   const [tableData, setTableData] = useState({ rows: [], totalRecords: 0 });
   const [loadingMore, setLoadingMore] = useState(false);
 
-  // This Api is for the getAllViewDetailModal For myTransaction in Emp role
-  // GETALLVIEWDETAIL OF Transaction API FUNCTION
-  const handleViewDetailsForReconcileTransaction = async (workFlowID) => {
-    await showLoader(true);
-    const requestdata = { TradeApprovalID: workFlowID };
-
-    const responseData = await GetAllReconcilePortfolioTransactionRequest({
-      callApi,
-      showNotification,
-      showLoader,
-      requestdata,
-      navigate,
-    });
-
-    if (responseData) {
-      setReconcilePortfolioViewDetailData(responseData);
-    }
-  };
-
-  // -------------------------
-  // ✅ Derived values
-  // -------------------------
-  const columns = getBorderlessTableColumns({
-    approvalStatusMap,
-    sortedInfo,
-    complianceOfficerReconcilePortfolioSearch,
-    setComplianceOfficerReconcilePortfolioSearch,
-    handleViewDetailsForReconcileTransaction,
-  });
-
-  // Prevent duplicate API calls (StrictMode safeguard)
-  const didFetchRef = useRef(false);
-
   // ----------------------------------------------------------------
   // 🔧 HELPERS
   // ----------------------------------------------------------------
 
   /**
+   * Handle fetching of detailed transaction view.
+   *
+   * @async
+   * @param {string|number} workFlowID - ID of the workflow to fetch details for.
+   */
+  const handleViewDetailsForReconcileTransaction = async (workFlowID) => {
+    await showLoader(true);
+    const requestdata = { TradeApprovalID: workFlowID };
+
+    // const responseData = await GetAllReconcilePortfolioTransactionRequest({
+    //   callApi,
+    //   showNotification,
+    //   showLoader,
+    //   requestdata,
+    //   navigate,
+    // });
+
+    // if (responseData) {
+    //   setReconcilePortfolioViewDetailData(responseData);
+    // }
+  };
+
+  /**
    * Build API request payload from search/filter state.
+   *
+   * @param {object} searchState - Current search/filter state.
+   * @returns {object} API request payload.
    */
   const buildPortfolioRequest = (searchState = {}) => {
     const startDate = searchState.startDate
@@ -146,7 +142,12 @@ const ReconcilePortfolio = () => {
 
   /**
    * Merge new rows into existing table data.
-   * Ensures no duplicate rows by `key`.
+   * Prevents duplicates by comparing `key`.
+   *
+   * @param {Array} prevRows - Existing table rows.
+   * @param {Array} newRows - New rows to merge in.
+   * @param {boolean} replace - If true, replaces rows instead of appending.
+   * @returns {Array} Updated rows.
    */
   const mergeRows = (prevRows, newRows, replace = false) => {
     if (replace) return newRows;
@@ -155,38 +156,39 @@ const ReconcilePortfolio = () => {
   };
 
   // ----------------------------------------------------------------
-  // 🔹 API CALL: Fetch reconcile portfolios
+  // 🔹 API CALL: Fetch HCO reconcile portfolios
   // ----------------------------------------------------------------
   const fetchPortfolios = useCallback(
     async (requestData, replace = false, loader = false) => {
       if (!requestData || typeof requestData !== "object") return;
-      if (!loader) showLoader(true);
+      // if (!loader) showLoader(true);
 
-      try {
-        const res = await SearchComplianceOfficerReconcilePortfolioRequest({
-          callApi,
-          showNotification,
-          showLoader,
-          requestdata: requestData,
-          navigate,
-        });
-        const portfolios = Array.isArray(res?.portfolios) ? res.portfolios : [];
-        const mapped = mapToTableRows(
-          addApprovalRequestData?.Equities,
-          portfolios
-        );
+      // try {
+      //   const res = await SearchHeadOfComplianceReconcilePortfolioRequest({
+      //     callApi,
+      //     showNotification,
+      //     showLoader,
+      //     requestdata: requestData,
+      //     navigate,
+      //   });
 
-        setComplianceOfficerReconcilePortfolioData({
-          data: mapped,
-          totalRecords: res?.totalRecords ?? mapped.length,
-          Apicall: true,
-          replace,
-        });
-      } catch (error) {
-        console.error("❌ Error fetching reconcile portfolios:", error);
-      } finally {
-        if (!loader) showLoader(false);
-      }
+      //   const portfolios = Array.isArray(res?.portfolios) ? res.portfolios : [];
+      //   const mapped = mapToTableRows(
+      //     addApprovalRequestData?.Equities,
+      //     portfolios
+      //   );
+
+      //   setHeadOfComplianceApprovalPortfolioData({
+      //     data: mapped,
+      //     totalRecords: res?.totalRecords ?? mapped.length,
+      //     Apicall: true,
+      //     replace,
+      //   });
+      // } catch (error) {
+      //   console.error("❌ Error fetching HCO reconcile portfolios:", error);
+      // } finally {
+      //   if (!loader) showLoader(false);
+      // }
     },
     [callApi, showNotification, showLoader, navigate]
   );
@@ -195,112 +197,76 @@ const ReconcilePortfolio = () => {
   // 🔄 SYNC: Global → Local table data
   // ----------------------------------------------------------------
   useEffect(() => {
-    if (!complianceOfficerReconcilePortfolioData?.Apicall) return;
+    if (!headOfComplianceApprovalPortfolioData?.Apicall) return;
 
     setTableData((prev) => ({
       rows: mergeRows(
         prev.rows || [],
-        complianceOfficerReconcilePortfolioData.data,
-        complianceOfficerReconcilePortfolioData.replace
+        headOfComplianceApprovalPortfolioData.data,
+        headOfComplianceApprovalPortfolioData.replace
       ),
-      totalRecords: complianceOfficerReconcilePortfolioData.totalRecords || 0,
+      totalRecords: headOfComplianceApprovalPortfolioData.totalRecords || 0,
     }));
 
-    setComplianceOfficerReconcilePortfolioSearch((prev) => ({
+    setHeadOfComplianceApprovalPortfolioSearch((prev) => ({
       ...prev,
       totalRecords:
-        complianceOfficerReconcilePortfolioData.totalRecords ??
-        complianceOfficerReconcilePortfolioData.data.length,
-      pageNumber: complianceOfficerReconcilePortfolioData.replace
+        headOfComplianceApprovalPortfolioData.totalRecords ??
+        headOfComplianceApprovalPortfolioData.data.length,
+      pageNumber: headOfComplianceApprovalPortfolioData.replace
         ? 10
         : prev.pageNumber,
     }));
 
-    setComplianceOfficerReconcilePortfolioData((prev) => ({
+    setHeadOfComplianceApprovalPortfolioData((prev) => ({
       ...prev,
       Apicall: false,
     }));
-  }, [complianceOfficerReconcilePortfolioData?.Apicall]);
+  }, [headOfComplianceApprovalPortfolioData?.Apicall]);
 
   // ----------------------------------------------------------------
-  // 🔄 REAL-TIME: Handle new MQTT rows
+  // 🔄 REAL-TIME: Handle MQTT updates
   // ----------------------------------------------------------------
-  // useEffect(() => {
-  //   if (!complianceOfficerReconcilePortfolioDataMqtt?.mqtt) return;
-
-  //   const newRows = mapToTableRows(
-  //     addApprovalRequestData?.Equities,
-  //     Array.isArray(complianceOfficerReconcilePortfolioDataMqtt?.data)
-  //       ? complianceOfficerReconcilePortfolioDataMqtt.data
-  //       : [complianceOfficerReconcilePortfolioDataMqtt.data]
-  //   );
-
-  //   if (newRows.length) {
-  //     setTableData((prev) => ({
-  //       rows: [newRows[0], ...(prev.rows || [])],
-  //       totalRecords: (prev.totalRecords || 0) + 1,
-  //     }));
-
-  //     setComplianceOfficerReconcilePortfolioData((prev) => ({
-  //       ...prev,
-  //       data: [newRows[0], ...(prev.data || [])],
-  //       totalRecords: (prev.totalRecords || 0) + 1,
-  //       Apicall: false,
-  //     }));
-  //   }
-
-  //   setComplianceOfficerReconcilePortfolioDataMqtt({
-  //     data: [],
-  //     mqtt: false,
-  //   });
-  // }, [complianceOfficerReconcilePortfolioDataMqtt?.mqtt]);
   useEffect(() => {
-    if (!complianceOfficerReconcilePortfolioDataMqtt) return;
+    if (!headOfComplianceApprovalPortfolioMqtt) return;
     const requestData = {
-      ...buildPortfolioRequest(complianceOfficerReconcilePortfolioSearch),
+      ...buildPortfolioRequest(headOfComplianceApprovalPortfolioSearch),
       PageNumber: 0,
     };
 
     fetchPortfolios(requestData, true);
-    setComplianceOfficerReconcilePortfolioSearch((prev) => ({
+    setHeadOfComplianceApprovalPortfolioSearch((prev) => ({
       ...prev,
       PageNumber: 0,
     }));
 
-    setComplianceOfficerReconcilePortfolioDataMqtt(false);
-  }, [complianceOfficerReconcilePortfolioDataMqtt]);
+    setHeadOfComplianceApprovalPortfolioMqtt(false);
+  }, [headOfComplianceApprovalPortfolioMqtt]);
+
   // ----------------------------------------------------------------
   // 🔄 On search/filter trigger
   // ----------------------------------------------------------------
-  console.log(
-    "fetchPendingApprovals",
-    complianceOfficerReconcilePortfolioSearch
-  );
   useEffect(() => {
-    if (complianceOfficerReconcilePortfolioSearch?.filterTrigger) {
+    if (headOfComplianceApprovalPortfolioSearch?.filterTrigger) {
       const data = buildPortfolioRequest(
-        complianceOfficerReconcilePortfolioSearch
+        headOfComplianceApprovalPortfolioSearch
       );
 
       fetchPortfolios(data, true);
-      setComplianceOfficerReconcilePortfolioSearch((prev) => ({
+      setHeadOfComplianceApprovalPortfolioSearch((prev) => ({
         ...prev,
         filterTrigger: false,
       }));
     }
-  }, [
-    complianceOfficerReconcilePortfolioSearch?.filterTrigger,
-    fetchPortfolios,
-  ]);
+  }, [headOfComplianceApprovalPortfolioSearch?.filterTrigger, fetchPortfolios]);
 
   // ----------------------------------------------------------------
   // 🔄 INFINITE SCROLL
   // ----------------------------------------------------------------
-
   useTableScrollBottom(
     async () => {
       if (
-        complianceOfficerReconcilePortfolioSearch?.totalRecords <=
+        headOfComplianceApprovalPortfolioSearch?.totalRecords <=
         tableData?.rows?.length
       )
         return;
@@ -308,17 +274,17 @@ const ReconcilePortfolio = () => {
       try {
         setLoadingMore(true);
         const requestData = {
-          ...buildPortfolioRequest(complianceOfficerReconcilePortfolioSearch),
-          PageNumber: complianceOfficerReconcilePortfolioSearch.pageNumber || 0,
+          ...buildPortfolioRequest(headOfComplianceApprovalPortfolioSearch),
+          PageNumber: headOfComplianceApprovalPortfolioSearch.pageNumber || 0,
           Length: 10,
         };
         await fetchPortfolios(requestData, false, true); // append mode
-        setComplianceOfficerReconcilePortfolioSearch((prev) => ({
+        setHeadOfComplianceApprovalPortfolioSearch((prev) => ({
           ...prev,
           pageNumber: (prev.pageNumber || 0) + 10,
         }));
       } catch (error) {
-        console.error("❌ Error loading more approvals:", error);
+        console.error("❌ Error loading more HCO portfolios:", error);
       } finally {
         setLoadingMore(false);
       }
@@ -326,26 +292,27 @@ const ReconcilePortfolio = () => {
     0,
     "border-less-table-blue"
   );
+
   // ----------------------------------------------------------------
   // 🔄 INITIAL LOAD (on mount)
   // ----------------------------------------------------------------
+  const didFetchRef = useRef(false);
   useEffect(() => {
     if (didFetchRef.current) return;
     didFetchRef.current = true;
 
     const requestData = buildPortfolioRequest({ PageNumber: 0, Length: 10 });
-    console.log("resetComplianceOfficerReconcilePortfoliosSearch");
     fetchPortfolios(requestData, true);
 
     try {
       const navigationEntries = performance.getEntriesByType("navigation");
       if (navigationEntries?.[0]?.type === "reload") {
-        resetComplianceOfficerReconcilePortfoliosSearch();
+        resetHeadOfComplianceApprovalPortfolioSearch();
       }
     } catch (error) {
       console.error("❌ Error detecting page reload:", error);
     }
-  }, [fetchPortfolios, resetComplianceOfficerReconcilePortfoliosSearch]);
+  }, [fetchPortfolios, resetHeadOfComplianceApprovalPortfolioSearch]);
 
   // ----------------------------------------------------------------
   // 🔄 CLEANUP (on unmount)
@@ -355,8 +322,8 @@ const ReconcilePortfolio = () => {
       setSortedInfo({});
       setTableData({ rows: [], totalRecords: 0 });
       setLoadingMore(false);
-      resetComplianceOfficerReconcilePortfoliosSearch();
-      setComplianceOfficerReconcilePortfolioData({
+      resetHeadOfComplianceApprovalPortfolioSearch();
+      setHeadOfComplianceApprovalPortfolioData({
         data: [],
         totalRecords: 0,
         Apicall: false,
@@ -367,6 +334,14 @@ const ReconcilePortfolio = () => {
   // ----------------------------------------------------------------
   // ✅ RENDER
   // ----------------------------------------------------------------
+  const columns = getBorderlessTableColumns({
+    approvalStatusMap,
+    sortedInfo,
+    headOfComplianceApprovalPortfolioSearch,
+    setHeadOfComplianceApprovalPortfolioSearch,
+    handleViewDetailsForReconcileTransaction,
+  });
+
   return (
     <>
       <BorderlessTable
@@ -384,4 +359,4 @@ const ReconcilePortfolio = () => {
   );
 };
 
-export default ReconcilePortfolio;
+export default ReconcilePortfolioHCO;

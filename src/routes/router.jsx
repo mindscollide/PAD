@@ -26,6 +26,7 @@ import {
   //For Line Manager
   ApprovalRequest,
   ReconcileIndex,
+  EscalatedTransactionsIndex,
 } from "../pages";
 import RoleBasedRoute from "./RoleBasedRoute";
 
@@ -142,6 +143,32 @@ const router = createBrowserRouter(
           path="co-reports"
           element={
             <RoleBasedRoute allowedRoles={[4]}>
+              <EmpolyesReportsIndex />{" "}
+            </RoleBasedRoute>
+          }
+        />
+
+          {/* Head of Compliance Approval */}
+        <Route
+          path="hca-escalated-transactions-verifications"
+          element={
+            <RoleBasedRoute allowedRoles={[6]}>
+              {<EscalatedTransactionsIndex />}
+            </RoleBasedRoute>
+          }
+        />
+        <Route
+          path="hca-my-actions"
+          element={
+            <RoleBasedRoute allowedRoles={[6]}>
+              <EmployeMyTransaction />{" "}
+            </RoleBasedRoute>
+          }
+        />
+        <Route
+          path="hca-reports"
+          element={
+            <RoleBasedRoute allowedRoles={[6]}>
               <EmpolyesReportsIndex />{" "}
             </RoleBasedRoute>
           }

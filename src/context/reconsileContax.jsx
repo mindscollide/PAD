@@ -1,114 +1,88 @@
-import React, { createContext, useContext, useState } from "react";
+import React, {
+  createContext,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 
 /**
  * ReconcileContext
  *
- * Provides global state for managing the **Compliance Officer Reconciliation** module:
- * - Active tab control
- * - Modal visibility for reconciliation (transactions & portfolio)
- * - Compliance Officer reconcile transactions (API + MQTT)
- * - Compliance Officer reconcile portfolio (API + MQTT)
- * - Aggregate totals across reconciliation portfolio
+ * Global context for managing the **Compliance Officer Reconciliation** and
+ * **Head of Compliance Officer (HCO)** workflows:
+ *
+ * - Active tab states (Compliance Officer + HCO)
+ * - Modal states (Transactions + Portfolio)
+ * - Data sources (API + MQTT updates)
+ * - View detail states
+ * - Reset utilities for clearing state
+ * - Aggregate totals (e.g., portfolio quantities)
  */
 export const ReconcileContext = createContext();
 
 /**
  * ReconcileProvider
  *
- * Wraps the app (or subtree) with reconciliation-related state and methods.
+ * Wraps the reconciliation module with state and actions for:
+ * - Compliance Officer reconciliation (Transactions + Portfolio)
+ * - Head of Compliance Officer approvals and escalations
  *
  * @component
  * @param {object} props
- * @param {React.ReactNode} props.children - Components that consume the context.
- * @returns {JSX.Element} Reconcile context provider.
+ * @param {React.ReactNode} props.children - Components that consume this context.
+ * @returns {JSX.Element} Provider exposing reconciliation state and utilities.
  */
 export const ReconcileProvider = ({ children }) => {
-  /**
-   * Currently active tab inside the reconciliation module.
-   *
-   * Can be:
-   * - `"Transactions"` → shows the reconcile portfolio view
-   * - `"transactions"` → shows the reconcile transactions view
-   *
-   * @type {[string, function]}
-   */
-  const [activeTab, setActiveTab] = useState("transactions");
+  // ───────────────────────────────
+  // Compliance Officer State
+  // ───────────────────────────────
 
-  /**
-   * Controls visibility of the "Compliance Officer Reconcile Transaction" modal.
-   *
-   * @type {[boolean, function]}
-   */
+  /** Active tab inside the Compliance Officer reconciliation module. */
+  const [activeTab, setActiveTab] = useState("transactions");
+  const activeTabRef = useRef(activeTab);
+
+  useEffect(() => {
+    activeTabRef.current = activeTab; // keep ref updated with latest tab
+  }, [activeTab]);
+
+  /** Controls visibility of the Compliance Officer Transaction modal. */
   const [
     complianceOfficerReconcileTransactionModal,
     setComplianceOfficerReconcileTransactionModal,
   ] = useState(false);
 
-  /**
-   * Controls visibility of the "Compliance Officer Reconcile Portfolio" modal.
-   *
-   * @type {[boolean, function]}
-   */
+  /** Controls visibility of the Compliance Officer Portfolio modal. */
   const [
     complianceOfficerReconcilePortfolioModal,
     setComplianceOfficerReconcilePortfolioModal,
   ] = useState(false);
 
-  /**
-   * Compliance Officer reconcile transactions fetched via API.
-   *
-   * @type {[{ data: Array, totalRecords: number, apiCall: boolean }, function]}
-   */
+  /** API + MQTT data for Compliance Officer Transactions. */
   const [
     complianceOfficerReconcileTransactionData,
     setComplianceOfficerReconcileTransactionData,
-  ] = useState({
-    data: [],
-    totalRecords: 0,
-    apiCall: false,
-  });
+  ] = useState({ data: [], totalRecords: 0, apiCall: false });
 
-  /**
-   * Compliance Officer reconcile transactions received via MQTT.
-   *
-   * @type {[{ data: Array, mqtt: boolean }, function]}
-   */
+  /** Stores the latest MQTT update for Compliance Officer Transactions. */
   const [
     complianceOfficerReconcileTransactionDataMqtt,
     setComplianceOfficerReconcileTransactionDataMqtt,
-  ] = useState({
-    data: [],
-    mqtt: false,
-  });
+  ] = useState(false);
 
-  /**
-   * Compliance Officer reconcile portfolio fetched via API.
-   *
-   * @type {[{ data: Array, totalRecords: number, apiCall: boolean }, function]}
-   */
+  /** API + MQTT data for Compliance Officer Portfolio. */
   const [
     complianceOfficerReconcilePortfolioData,
     setComplianceOfficerReconcilePortfolioData,
-  ] = useState({
-    data: [],
-    totalRecords: 0,
-    apiCall: false,
-  });
+  ] = useState({ data: [], totalRecords: 0, apiCall: false });
 
-  /**
-   * Compliance Officer reconcile portfolio received via MQTT.
-   *
-   * @type {[{ data: Array, mqtt: boolean }, function]}
-   */
+  /** Stores the latest MQTT update for Compliance Officer Portfolio. */
   const [
     complianceOfficerReconcilePortfolioDataMqtt,
     setComplianceOfficerReconcilePortfolioDataMqtt,
-  ] = useState({
-    data: [],
-    mqtt: false,
-  });
+  ] = useState(false);
 
-  // Context STate to extract data from get All View Transaction Trade Approval which is show by click on View Detail of reconcile transaction
+  /** Data for viewing detailed information of a transaction. */
   const [
     reconcileTransactionViewDetailData,
     setReconcileTransactionViewDetailData,
@@ -122,6 +96,7 @@ export const ReconcileProvider = ({ children }) => {
     reqeusterName: "",
   });
 
+  /** Aggregate portfolio quantity for Compliance Officer. */
   //To get the selected data by clicking on View Detail of reconcile Transaction
   const [
     selectedReconcileTransactionData,
@@ -135,9 +110,47 @@ export const ReconcileProvider = ({ children }) => {
    */
   const [aggregateTotalQuantity, setAggregateTotalQuantity] = useState(0);
 
-  /**
-   * Reset only the reconcile portfolio tab state.
-   */
+  // ───────────────────────────────
+  // Head of Compliance Officer (HCO) State
+  // ───────────────────────────────
+
+  /** Active tab inside the HCO reconciliation module. */
+  const [activeTabHCO, setActiveTabHCO] = useState("escalated");
+  const activeTabHCORef = useRef(activeTabHCO);
+
+  useEffect(() => {
+    activeTabHCORef.current = activeTabHCO; // keep ref updated with latest tab
+  }, [activeTabHCO]);
+
+  /** API + MQTT data for HCO portfolio approvals. */
+  const [
+    headOfComplianceApprovalPortfolioData,
+    setHeadOfComplianceApprovalPortfolioData,
+  ] = useState({ data: [], totalRecords: 0, apiCall: false });
+
+  /** Stores the latest MQTT update for HCO portfolio approvals. */
+  const [
+    headOfComplianceApprovalPortfolioMqtt,
+    setHeadOfComplianceApprovalPortfolioMqtt,
+  ] = useState(false);
+
+  /** API + MQTT data for HCO escalated verifications. */
+  const [
+    headOfComplianceApprovalEscalatedVerificationsData,
+    setHeadOfComplianceApprovalEscalatedVerificationsData,
+  ] = useState({ data: [], totalRecords: 0, apiCall: false });
+
+  /** Stores the latest MQTT update for HCO escalated verifications. */
+  const [
+    headOfComplianceApprovalEscalatedVerificationsMqtt,
+    setHeadOfComplianceApprovalEscalatedVerificationsMqtt,
+  ] = useState(false);
+
+  // ───────────────────────────────
+  // Reset Utilities
+  // ───────────────────────────────
+
+  /** Reset the Compliance Officer Portfolio tab (API + MQTT + totals). */
   const resetComplianceOfficerReconcilePortfolioTab = () => {
     setActiveTab("Transactions");
     setComplianceOfficerReconcilePortfolioData({
@@ -145,16 +158,11 @@ export const ReconcileProvider = ({ children }) => {
       totalRecords: 0,
       apiCall: false,
     });
-    setComplianceOfficerReconcilePortfolioDataMqtt({
-      data: [],
-      mqtt: false,
-    });
+    setComplianceOfficerReconcilePortfolioDataMqtt(false);
     setAggregateTotalQuantity(0);
   };
 
-  /**
-   * Reset the reconcile transactions tab state (API + MQTT).
-   */
+  /** Reset the Compliance Officer Transactions tab (API + MQTT). */
   const resetComplianceOfficerReconcileTransactionTab = () => {
     setActiveTab("Transactions");
     setComplianceOfficerReconcileTransactionData({
@@ -162,37 +170,79 @@ export const ReconcileProvider = ({ children }) => {
       totalRecords: 0,
       apiCall: false,
     });
-    setComplianceOfficerReconcileTransactionDataMqtt({
+    setComplianceOfficerReconcileTransactionDataMqtt(false);
+  };
+
+  /** Reset the HCO Portfolio Approvals tab (API + MQTT). */
+  const resetHeadOfComplianceApprovalPortfolioTab = () => {
+    setActiveTabHCO("portfolio");
+    setHeadOfComplianceApprovalPortfolioData({
       data: [],
-      mqtt: false,
+      totalRecords: 0,
+      apiCall: false,
     });
+    setHeadOfComplianceApprovalPortfolioMqtt(false);
+  };
+
+  /** Reset the HCO Escalated Verifications tab (API + MQTT). */
+  const resetHeadOfComplianceApprovalEscalatedVerificationsTab = () => {
+    setActiveTabHCO("escalated");
+    setHeadOfComplianceApprovalEscalatedVerificationsData({
+      data: [],
+      totalRecords: 0,
+      apiCall: false,
+    });
+    setHeadOfComplianceApprovalEscalatedVerificationsMqtt(false);
   };
 
   return (
     <ReconcileContext.Provider
       value={{
+        // Compliance Officer Tabs
         activeTab,
+        activeTabRef,
         setActiveTab,
 
+        // Compliance Officer Modals
         complianceOfficerReconcileTransactionModal,
         setComplianceOfficerReconcileTransactionModal,
+        complianceOfficerReconcilePortfolioModal,
+        setComplianceOfficerReconcilePortfolioModal,
+
+        // Compliance Officer Transactions
         complianceOfficerReconcileTransactionData,
         setComplianceOfficerReconcileTransactionData,
         complianceOfficerReconcileTransactionDataMqtt,
         setComplianceOfficerReconcileTransactionDataMqtt,
         resetComplianceOfficerReconcileTransactionTab,
 
-        complianceOfficerReconcilePortfolioModal,
-        setComplianceOfficerReconcilePortfolioModal,
+        // Compliance Officer Portfolio
         complianceOfficerReconcilePortfolioData,
         setComplianceOfficerReconcilePortfolioData,
         complianceOfficerReconcilePortfolioDataMqtt,
         setComplianceOfficerReconcilePortfolioDataMqtt,
         resetComplianceOfficerReconcilePortfolioTab,
 
+        // Head of Compliance Officer (HCO)
+        activeTabHCO,
+        setActiveTabHCO,
+        activeTabHCORef,
+        headOfComplianceApprovalPortfolioData,
+        setHeadOfComplianceApprovalPortfolioData,
+        headOfComplianceApprovalPortfolioMqtt,
+        setHeadOfComplianceApprovalPortfolioMqtt,
+        headOfComplianceApprovalEscalatedVerificationsData,
+        setHeadOfComplianceApprovalEscalatedVerificationsData,
+        headOfComplianceApprovalEscalatedVerificationsMqtt,
+        setHeadOfComplianceApprovalEscalatedVerificationsMqtt,
+        resetHeadOfComplianceApprovalPortfolioTab,
+        resetHeadOfComplianceApprovalEscalatedVerificationsTab,
+
+        // Shared Totals
         aggregateTotalQuantity,
         setAggregateTotalQuantity,
 
+        // View detail
         reconcileTransactionViewDetailData,
         setReconcileTransactionViewDetailData,
 
@@ -208,33 +258,10 @@ export const ReconcileProvider = ({ children }) => {
 /**
  * useReconcileContext
  *
- * Custom hook to access ReconcileContext values.
+ * Custom hook for consuming `ReconcileContext`.
  *
- * @returns {{
- *  activeTab: string,
- *  setActiveTab: function,
- *
- *  complianceOfficerReconcileTransactionModal: boolean,
- *  setComplianceOfficerReconcileTransactionModal: function,
- *  complianceOfficerReconcileTransactionData: { data: Array, totalRecords: number, apiCall: boolean },
- *  setComplianceOfficerReconcileTransactionData: function,
- *  complianceOfficerReconcileTransactionDataMqtt: { data: Array, mqtt: boolean },
- *  setComplianceOfficerReconcileTransactionDataMqtt: function,
- *  resetComplianceOfficerReconcileTransactionTab: function,
- *
- *  complianceOfficerReconcilePortfolioModal: boolean,
- *  setComplianceOfficerReconcilePortfolioModal: function,
- *  complianceOfficerReconcilePortfolioData: { data: Array, totalRecords: number, apiCall: boolean },
- *  setComplianceOfficerReconcilePortfolioData: function,
- *  complianceOfficerReconcilePortfolioDataMqtt: { data: Array, mqtt: boolean },
- *  setComplianceOfficerReconcilePortfolioDataMqtt: function,
- *  resetComplianceOfficerReconcilePortfolioTab: function,
- *
- *  aggregateTotalQuantity: number,
- *  setAggregateTotalQuantity: function
- * }}
- *
- * @throws {Error} If used outside of ReconcileProvider.
+ * @returns {object} All reconciliation state and setters.
+ * @throws {Error} If used outside of a `ReconcileProvider`.
  */
 export const useReconcileContext = () => {
   const context = useContext(ReconcileContext);

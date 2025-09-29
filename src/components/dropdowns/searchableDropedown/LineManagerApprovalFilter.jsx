@@ -69,8 +69,6 @@ export const LineManagerApprovalFilter = ({ handleSearch, setVisible }) => {
 
   /** Handle date selection */
   const handleSearchClick = async () => {
-    console.log("Checke Select");
-
     setLineManagerApprovalSearch((prev) => {
       const finalSearch = {
         ...prev, // keep previous values as-is
@@ -89,6 +87,7 @@ export const LineManagerApprovalFilter = ({ handleSearch, setVisible }) => {
             ? localState.startDate.format("YYYY-MM-DD")
             : "",
         }),
+        pageSize:10,
         pageNumber: 0, // always reset page when searching
         filterTrigger: true, // optional: let table know filters changed
       };

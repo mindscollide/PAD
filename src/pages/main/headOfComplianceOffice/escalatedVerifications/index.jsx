@@ -1,4 +1,4 @@
-// src/pages/complianceOfficer/reconcile/ReconcileIndex.jsx
+// src/pages/complianceOfficer/reconcile/EscalatedTransactionsIndex.jsx
 
 import React, { useEffect, useState } from "react";
 import { Typography, Row, Col } from "antd";
@@ -13,39 +13,37 @@ import { Button, SubmittedModal } from "../../../../components";
 import { useSearchBarContext } from "../../../../context/SearchBarContaxt";
 import { useGlobalModal } from "../../../../context/GlobalModalContext";
 import { useReconcileContext } from "../../../../context/reconsileContax";
-import ReconcileTransaction from "./transaction/reconcileTransaction";
-import ReconcilePortfolio from "./portfolio/reconcilePortfolio";
+import ReconcileTransaction from "./escalatedVerification/reconcileTransaction";
+import ReconcilePortfolio from "./reconcilePortfolio/reconcilePortfolio";
 
 const { Title } = Typography;
 
 /**
- * 📌 ReconcileIndex
+ * 📌 EscalatedTransactionsIndex
  *
  * Main landing page for the **Compliance Officer → Reconcile Module**.
  *
  * Features:
  * - Provides **tab navigation** between:
- *   - Reconcile Transactions
+ *   - Escalated Verifications
  *   - Reconcile Portfolio
  * - Handles **state cleanup** on unmount (search filters, context resets, localStorage cleanup).
  * - Displays **aggregate totals** (positive = green, negative = red).
  * - Integrates with global modals (e.g., submission success).
  * - Prepares hooks for future **Upload Portfolio modal** integration.
  *
- * @returns {JSX.Element} ReconcileIndex page component
+ * @returns {JSX.Element} EscalatedTransactionsIndex page component
  */
-const ReconcileIndex = () => {
+const EscalatedTransactionsIndex = () => {
   const navigate = useNavigate();
 
   // ─── Context Hooks ─────────────────────────────────────────────
-  const { activeTab, setActiveTab, aggregateTotalQuantity } =
-    useReconcileContext();
+  const { activeTabHCO, setActiveTabHCO } = useReconcileContext();
 
   const {
-    resetComplianceOfficerReconcileTransactionsSearch,
-    resetComplianceOfficerReconcilePortfoliosSearch,
+    resetHeadOfComplianceApprovalEscalatedVerificationsSearch,
+    resetHeadOfComplianceApprovalPortfolioSearch,
   } = useSearchBarContext();
-
   const { isSubmit } = useGlobalModal();
 
   // ─── Local States ──────────────────────────────────────────────
@@ -53,17 +51,17 @@ const ReconcileIndex = () => {
   const [uploadPortfolioModal, setUploadPortfolioModal] = useState(false); // Toggle Upload Portfolio modal
 
   // ─── Derived State ─────────────────────────────────────────────
-  const isTransactions = activeTab === "transactions";
+  const isTransactions = activeTabHCO === "escalated";
 
   // ─── Lifecycle: Cleanup ────────────────────────────────────────
   useEffect(() => {
     return () => {
       // Reset search filters
-      resetComplianceOfficerReconcileTransactionsSearch();
-      resetComplianceOfficerReconcilePortfoliosSearch();
+      resetHeadOfComplianceApprovalEscalatedVerificationsSearch();
+      resetHeadOfComplianceApprovalPortfolioSearch();
 
       // Restore default active tab
-      setActiveTab("transactions");
+      setActiveTabHCO("escalated");
 
       // Clear local states
       setSubmittedFilters([]);
@@ -74,28 +72,21 @@ const ReconcileIndex = () => {
     };
   }, []);
 
-  // ─── Derived UI Values ─────────────────────────────────────────
-  const formattedTotal = new Intl.NumberFormat("en-US").format(
-    aggregateTotalQuantity || 0
-  );
-
-  const totalColor = Number(aggregateTotalQuantity) < 0 ? "#A50000" : "#00640A";
-
   // ─── Handlers ──────────────────────────────────────────────────
   /**
-   * Switch to Reconcile Transactions tab
+   * Switch to Escalated Verifications tab
    */
-  const handleTransactionsClick = () => {
-    setActiveTab("transactions");
-    resetComplianceOfficerReconcilePortfoliosSearch();
+  const handleEscalationClick = () => {
+    setActiveTabHCO("escalated");
+    resetHeadOfComplianceApprovalPortfolioSearch();
   };
 
   /**
    * Switch to Reconcile Portfolio tab
    */
   const handlePortfolioClick = () => {
-    setActiveTab("portfolio");
-    resetComplianceOfficerReconcileTransactionsSearch();
+    setActiveTabHCO("portfolio");
+    resetHeadOfComplianceApprovalEscalatedVerificationsSearch();
   };
 
   // ─── Render ────────────────────────────────────────────────────
@@ -108,10 +99,10 @@ const ReconcileIndex = () => {
           <Col>
             <div className={styles.tabWrapper}>
               <div className={styles.tabButtons}>
-                {/* Tab: Reconcile Transactions */}
+                {/* Tab: Escalated Verifications */}
                 <div
                   className={styles.tabButton}
-                  onClick={handleTransactionsClick}
+                  onClick={handleEscalationClick}
                 >
                   <Button
                     type="text"
@@ -120,7 +111,7 @@ const ReconcileIndex = () => {
                         ? "only-tex-selected"
                         : "only-tex-not-selected"
                     }
-                    text="Reconcile Transactions"
+                    text="Escalated Verifications"
                   />
                 </div>
 
@@ -185,4 +176,4 @@ const ReconcileIndex = () => {
   );
 };
 
-export default ReconcileIndex;
+export default EscalatedTransactionsIndex;
