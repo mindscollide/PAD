@@ -19,8 +19,12 @@ import { usePortfolioContext } from "../../../../../../../context/portfolioConta
 
 const ViewDetailPortfolioTransaction = () => {
   // This is Global State for modal which is create in ContextApi
-  const { viewDetailPortfolioTransaction, setViewDetailPortfolioTransaction } =
-    useGlobalModal();
+  const {
+    viewDetailPortfolioTransaction,
+    setViewDetailPortfolioTransaction,
+    setNoteGlobalModal,
+    setViewCommentPortfolioModal,
+  } = useGlobalModal();
 
   // get data from sessionStorage
   const userProfileData = JSON.parse(
@@ -88,6 +92,18 @@ const ViewDetailPortfolioTransaction = () => {
           labelClassName: styles.notTradedDetailHeading,
           divClassName: styles.notTradedBorderClass,
         };
+      case "8":
+        return {
+          label: "Compliant",
+          labelClassName: styles.approvedDetailHeading,
+          divClassName: styles.approvedBorderClass,
+        };
+      case "9":
+        return {
+          label: "Non Compliant",
+          labelClassName: styles.declinedDetailHeading,
+          divClassName: styles.declinedBorderClass,
+        };
 
       default:
         return {
@@ -113,12 +129,16 @@ const ViewDetailPortfolioTransaction = () => {
     (item) => item.instrumentID === instrumentId
   );
 
-  //This the Copy Functionality where user can copy email by click on COpyIcon
-  const handleCopyEmail = () => {
-    const emailToCopy =
-      complianceOfficerDetails?.managerEmail || "compliance@horizoncapital.com";
-    navigator.clipboard.writeText(emailToCopy);
-    message.success("Email copied to clipboard!");
+  // To Show Note Modal When Click on Compliant on Portfolio Reconcile Click
+  const openNoteModalOnCompliantClick = () => {
+    setNoteGlobalModal({ visible: true, action: "Portfolio-Compliant" });
+    setViewDetailPortfolioTransaction(false);
+  };
+
+  // To Show Note Modal When Click on Non-Compliant on Portfolio Reconcile Click
+  const openNoteModalOnNonCompliantClick = () => {
+    setNoteGlobalModal({ visible: true, action: "Portfolio-Non-Compliant" });
+    setViewDetailPortfolioTransaction(false);
   };
 
   return (
@@ -135,10 +155,9 @@ const ViewDetailPortfolioTransaction = () => {
               {/* Show Heading by Status in View Detail Modal */}
               <Row>
                 <Col span={24}>
-                  <div className={styles.pendingBorderClass}>
-                    <label className={styles.pendingDetailHeading}>
-                      {/* {statusData.label} */}
-                      Pending
+                  <div className={statusData.divClassName}>
+                    <label className={statusData.labelClassName}>
+                      {statusData.label}
                     </label>
                   </div>
                 </Col>
@@ -175,7 +194,10 @@ const ViewDetailPortfolioTransaction = () => {
                         Portfolio ID
                       </label>
                       <label className={styles.viewDetailSubLabels}>
-                        P-0231
+                        {dashBetweenApprovalAssets(
+                          reconcilePortfolioViewDetailData?.details?.[0]
+                            ?.tradeApprovalID
+                        )}
                       </label>
                     </div>
                   </Col>
@@ -320,31 +342,47 @@ const ViewDetailPortfolioTransaction = () => {
                                 `${modifiedDate} ${modifiedTime}`
                               );
 
+                              // Decide icon and text based on status
                               let iconSrc;
-                              console.log(
-                                bundleStatusID,
-                                "CheckerrrrrbundleStatusID"
-                              );
+                              let displayText;
+
                               switch (bundleStatusID) {
-                                case 1:
-                                  iconSrc = EllipsesIcon;
-                                  break;
-                                case 2:
+                                case 2: // ✅ Compliant
                                   iconSrc = CheckIcon;
+                                  displayText = "You marked this as compliant";
                                   break;
+                                case 3: // ❌ Non-Compliant
+                                  iconSrc = CrossIcon;
+                                  displayText =
+                                    "You marked this as non-compliant";
+                                  break;
+                                case 1: // ⏳ Pending
                                 default:
                                   iconSrc = EllipsesIcon;
+                                  displayText = fullName;
                               }
 
                               return (
                                 <Step
                                   key={index}
                                   label={
-                                    <div className={styles.customlabel}>
+                                    <div
+                                      className={`${styles.customlabel} ${
+                                        bundleStatusID === 2 || 3
+                                          ? styles.centerAlignLabel
+                                          : ""
+                                      }`}
+                                    >
                                       <div className={styles.customtitle}>
-                                        {fullName}
+                                        {displayText}
                                       </div>
-                                      <div className={styles.customdesc}>
+                                      <div
+                                        className={`${styles.customdesc} ${
+                                          bundleStatusID === 2 || 3
+                                            ? styles.centerAlignText
+                                            : ""
+                                        }`}
+                                      >
                                         {bundleStatusID !== 1 &&
                                           formattedDateTime}
                                       </div>
@@ -373,16 +411,63 @@ const ViewDetailPortfolioTransaction = () => {
               <Row className={styles.mainButtonDivClose}>
                 <Col span={[24]}>
                   <>
-                    <div className={styles.approvedButtonClass}>
-                      <CustomButton
-                        text={"Non Compliant"}
-                        className="Decline-dark-button"
-                      />
-                      <CustomButton
-                        text={"Compliant"}
-                        className="Approved-dark-button"
-                      />
-                    </div>
+                    {statusData?.label === "Pending" ? (
+                      <>
+                        {" "}
+                        <div className={styles.approvedButtonClass}>
+                          <CustomButton
+                            text={"Non Compliant"}
+                            className="Decline-dark-button"
+                            onClick={openNoteModalOnNonCompliantClick}
+                          />
+                          <CustomButton
+                            text={"Compliant"}
+                            onClick={openNoteModalOnCompliantClick}
+                            className="Approved-dark-button"
+                          />
+                        </div>
+                      </>
+                    ) : statusData.label === "Compliant" ? (
+                      <>
+                        <div className={styles.compliantNonCompliant}>
+                          <CustomButton
+                            text={"View Comment"}
+                            onClick={() => {
+                              setViewDetailPortfolioTransaction(false);
+                              setViewCommentPortfolioModal(true);
+                            }}
+                            className="big-light-button"
+                          />
+                          <CustomButton
+                            text={"Close"}
+                            onClick={() =>
+                              setViewDetailPortfolioTransaction(false)
+                            }
+                            className="big-light-button"
+                          />
+                        </div>
+                      </>
+                    ) : statusData.label === "Non Compliant" ? (
+                      <>
+                        <div className={styles.compliantNonCompliant}>
+                          <CustomButton
+                            text={"View Comment"}
+                            onClick={() => {
+                              setViewDetailPortfolioTransaction(false);
+                              setViewCommentPortfolioModal(true);
+                            }}
+                            className="big-light-button"
+                          />
+                          <CustomButton
+                            text={"Close"}
+                            onClick={() =>
+                              setViewDetailPortfolioTransaction(false)
+                            }
+                            className="big-light-button"
+                          />
+                        </div>
+                      </>
+                    ) : null}
                   </>
                 </Col>
               </Row>

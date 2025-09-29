@@ -12,6 +12,7 @@ import { useApi } from "../../../context/ApiContext";
 import { useReconcileContext } from "../../../context/reconsileContax";
 import { useSidebarContext } from "../../../context/sidebarContaxt";
 import { UpdatedComplianceOfficerTransactionRequest } from "../../../api/reconsile";
+import { usePortfolioContext } from "../../../context/portfolioContax";
 
 const { TextArea } = Input;
 const { Text } = Typography;
@@ -34,15 +35,22 @@ const CommentModal = ({
   const { callApi } = useApi();
 
   const {
+    noteGlobalModal,
     setNoteGlobalModal,
     isSelectedViewDetailLineManager,
     setApprovedGlobalModal,
     setCompliantApproveModal,
     setNonCompliantDeclineModal,
+    setCompliantPortfolioApproveModal,
+    setNonCompliantPortfolioDeclineModal,
   } = useGlobalModal();
+
+  console.log(noteGlobalModal, "noteGlobalModalnoteGlobalModal");
 
   //This is the Global state of Context Api
   const { selectedReconcileTransactionData } = useReconcileContext();
+
+  const { selectedPortfolioTransactionData } = usePortfolioContext();
 
   // State to get option reason while selecting any reason
   const [selectedOption, setSelectedOption] = useState(null);
@@ -95,7 +103,7 @@ const CommentModal = ({
     });
   };
 
-  // When User Click on COmpliant then this nOte Modal will open and this Api will hit
+  // When User Click on COmpliant when he was on Reconcile Transaction then this nOte Modal will open and this Api will hit
   const updateCompliantRequestData = async () => {
     showLoader(true);
 
@@ -112,12 +120,38 @@ const CommentModal = ({
       setNoteGlobalModal,
       setCompliantApproveModal,
       setNonCompliantDeclineModal,
+      setCompliantPortfolioApproveModal,
+      setNonCompliantPortfolioDeclineModal,
       submitText,
       setValue,
       navigate,
     });
   };
 
+  // When User Click on COmpliant when he was on Reconcile Portfolio  then this nOte Modal will open and this Api will hit
+  const updateCompliantPortfolioRequestData = async () => {
+    showLoader(true);
+
+    const requestdata = {
+      TradeApprovalID: String(selectedPortfolioTransactionData?.approvalID),
+      StatusID: submitText === "Portfolio-Non-Compliant" ? 3 : 2, //Approved Status
+      Comment: value,
+    };
+    await UpdatedComplianceOfficerTransactionRequest({
+      callApi,
+      showNotification,
+      showLoader,
+      requestdata,
+      setNoteGlobalModal,
+      setCompliantApproveModal,
+      setNonCompliantDeclineModal,
+      setCompliantPortfolioApproveModal,
+      setNonCompliantPortfolioDeclineModal,
+      submitText,
+      setValue,
+      navigate,
+    });
+  };
   return (
     <GlobalModal
       visible={visible}
@@ -199,6 +233,10 @@ const CommentModal = ({
                       updateCompliantRequestData();
                     } else if (submitText === "Non-Compliant") {
                       updateCompliantRequestData();
+                    } else if (submitText === "Portfolio-Compliant") {
+                      updateCompliantPortfolioRequestData();
+                    } else if (submitText === "Portfolio-Non-Compliant") {
+                      updateCompliantPortfolioRequestData();
                     } else {
                       onSubmit({ value, selectedOption });
                     }

@@ -108,11 +108,18 @@ export const PortfolioProvider = ({ children }) => {
     reconcilePortfolioViewDetailData,
     setReconcilePortfolioViewDetailData,
   ] = useState({
-    details: [],
-    requesterName: "",
     assetTypes: [],
+    details: [],
     hierarchyDetails: [],
+    requesterName: "",
+    workFlowStatus: {},
   });
+
+  //To get the selected data by clicking on View Detail of reconcile Transaction
+  const [
+    selectedPortfolioTransactionData,
+    setSelectedPortfolioTransactionData,
+  ] = useState(null);
 
   /**
    * Reset only the portfolio tab state.
@@ -169,6 +176,8 @@ export const PortfolioProvider = ({ children }) => {
         resetPendingApprovalTab,
         reconcilePortfolioViewDetailData,
         setReconcilePortfolioViewDetailData,
+        selectedPortfolioTransactionData,
+        setSelectedPortfolioTransactionData,
       }}
     >
       {children}
