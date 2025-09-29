@@ -121,6 +121,12 @@ const ViewDetailModal = () => {
           labelClassName: styles.notTradedDetailHeading,
           divClassName: styles.notTradedBorderClass,
         };
+      case "8":
+        return {
+          label: "Compliant",
+          labelClassName: styles.approvedDetailHeading,
+          divClassName: styles.approvedBorderClass,
+        };
       default:
         return {
           label: "Detail",
@@ -175,28 +181,6 @@ const ViewDetailModal = () => {
                   </div>
                 </Col>
               </Row>
-
-              {/* Show Approved Status Scenario in View Details Modal */}
-              {statusDataLM.label === "Approved" && (
-                <>
-                  <Row style={{ marginTop: "5px" }}>
-                    <Col span={24}>
-                      <div
-                        className={
-                          styles.backgroundColorOfInstrumentDetailApproved
-                        }
-                      >
-                        <label className={styles.viewDetailMainLabels}>
-                          Instrument
-                        </label>
-                        <label className={styles.viewDetailSubLabels}>
-                          <span className={styles.customTag}>EQ</span> PSO-OCT
-                        </label>
-                      </div>
-                    </Col>
-                  </Row>
-                </>
-              )}
 
               {/* Show Resubmit,Pending,Declined and Not Traded status Sceanrios */}
 
@@ -547,19 +531,41 @@ const ViewDetailModal = () => {
                   <>
                     {!hasAlreadyApprovedOrDeclined && (
                       <>
-                        <Col>
-                          <div className={styles.approvedButtonClass}>
-                            <CustomButton
-                              text={"Decline"}
-                              onClick={onClickToOpenNoteModal}
-                              className="Decline-dark-button"
-                            />
-                            <CustomButton
-                              text={"Approve"}
-                              onClick={onClickToOpenApprovedModal}
-                              className="Approved-dark-button"
-                            />
-                          </div>
+                        <Col span={[24]}>
+                          {statusDataLM?.label === "Pending" ? (
+                            <>
+                              {" "}
+                              <div className={styles.approvedButtonClass}>
+                                <CustomButton
+                                  text={"Decline"}
+                                  onClick={onClickToOpenNoteModal}
+                                  className="Decline-dark-button"
+                                />
+                                <CustomButton
+                                  text={"Approve"}
+                                  onClick={onClickToOpenApprovedModal}
+                                  className="Approved-dark-button"
+                                />
+                              </div>
+                            </>
+                          ) : statusDataLM?.label === "Compliant" ? (
+                            <>
+                              {" "}
+                              <div className={styles.CompliantButtonClass}>
+                                <CustomButton
+                                  text={"View Ticket"}
+                                  className="big-light-button"
+                                />
+                                <CustomButton
+                                  text={"close"}
+                                  onClick={() =>
+                                    setViewDetailLineManagerModal(false)
+                                  }
+                                  className="big-light-button"
+                                />
+                              </div>
+                            </>
+                          ) : null}
                         </Col>
                       </>
                     )}

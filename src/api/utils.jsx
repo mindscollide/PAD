@@ -217,6 +217,16 @@ export const responseMessages = {
     "No data available",
   PAD_Trade_TradeServiceManager_GetComplianceOfficerViewDetailsByTradeApprovalID_03:
     "Exception",
+
+  PAD_Trade_TradeServiceManager_UpdateTransactionRequestStatus_01:
+    "Successfully updated",
+  PAD_Trade_TradeServiceManager_UpdateTransactionRequestStatus_02:
+    "No update performed",
+  PAD_Trade_TradeServiceManager_UpdateTransactionRequestStatus_03: "Exception",
+  PAD_Trade_TradeServiceManager_UpdateTransactionRequestStatus_04:
+    "User role not found",
+  PAD_Trade_TradeServiceManager_UpdateTransactionRequestStatus_05:
+    "Not authorized (Not Compliance)",
 };
 
 /**

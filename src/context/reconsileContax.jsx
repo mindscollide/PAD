@@ -92,9 +92,22 @@ export const ReconcileProvider = ({ children }) => {
     hierarchyDetails: [],
     workFlowStatus: {},
     tradedWorkFlowReqeust: [],
+    ticketUploaded: false,
+    reqeusterName: "",
   });
 
   /** Aggregate portfolio quantity for Compliance Officer. */
+  //To get the selected data by clicking on View Detail of reconcile Transaction
+  const [
+    selectedReconcileTransactionData,
+    setSelectedReconcileTransactionData,
+  ] = useState(null);
+
+  /**
+   * Aggregate total quantity across all reconcile portfolio holdings.
+   *
+   * @type {[number, function]}
+   */
   const [aggregateTotalQuantity, setAggregateTotalQuantity] = useState(0);
 
   // ───────────────────────────────
@@ -232,6 +245,9 @@ export const ReconcileProvider = ({ children }) => {
         // View detail
         reconcileTransactionViewDetailData,
         setReconcileTransactionViewDetailData,
+
+        selectedReconcileTransactionData,
+        setSelectedReconcileTransactionData,
       }}
     >
       {children}

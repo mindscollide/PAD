@@ -14,6 +14,7 @@ import { formatApiDateTime } from "../../../../../commen/funtions/rejex";
 import TypeColumnTitle from "../../../../../components/dropdowns/filters/typeColumnTitle";
 import StatusColumnTitle from "../../../../../components/dropdowns/filters/statusColumnTitle";
 import { useGlobalModal } from "../../../../../context/GlobalModalContext";
+import { useReconcileContext } from "../../../../../context/reconsileContax";
 
 /* ------------------------------------------------------------------ */
 /* 🔹 Trade Type Resolver */
@@ -326,11 +327,13 @@ export const getBorderlessTableColumns = ({
     render: (text, record) => {
       console.log(record, "Checekcneceucyv");
       const { setViewDetailReconcileTransaction } = useGlobalModal();
+      const { setSelectedReconcileTransactionData } = useReconcileContext();
       return (
         <Button
           className="big-blue-button"
           text="View Details"
           onClick={() => {
+            setSelectedReconcileTransactionData(record);
             handleViewDetailsForReconcileTransaction(record?.approvalID);
             setViewDetailReconcileTransaction(true);
           }}
