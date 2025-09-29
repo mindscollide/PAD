@@ -77,7 +77,7 @@ const BoxCard = ({
 
   // Normalize boxes input (always an array)
   const normalizedBoxes = Array.isArray(boxes) ? boxes : boxes ? [boxes] : [];
-
+  console.log("normalizedBoxes", normalizedBoxes);
   /**
    * Handles button click → navigates to the correct route
    * using helper `navigateToPage` (handles role-based logic).
@@ -126,7 +126,10 @@ const BoxCard = ({
                 textCountColor: "#000",
                 textAlign: "center",
               };
-
+            console.log("textLableColor", box);
+            console.log("textLableColor", box.type?.toLowerCase().replace(/[\s-]+/g, "_"));
+            console.log("textLableColor", textLableColor);
+            console.log("textLableColor", bgColor);
             // Split label into first word + remaining text (used in "left" layout)
             const [firstWord, ...rest] = box.label.split(" ");
             const secondPart = rest.join(" ");

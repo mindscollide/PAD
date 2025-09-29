@@ -27,8 +27,13 @@ const Dashboard = () => {
   const connectionAttemptedRef = useRef(false); // ✅ Track connection attempts
 
   // Context hooks
-  const { setIsEmployeeMyApproval, setLineManagerApproval ,    
-        setIsEmployeeMyApprovalMqtt,} = useMyApproval();
+  const {
+    setIsEmployeeMyApproval,
+    setLineManagerApproval,
+    lineManagerApprovalMqtt,
+    setLineManagerApprovalMQtt,
+    setIsEmployeeMyApprovalMqtt,
+  } = useMyApproval();
   const {
     employeeMyApprovalSearchRef,
     employeeMyTransactionSearchRef,
@@ -44,10 +49,11 @@ const Dashboard = () => {
   const {
     setComplianceOfficerReconcileTransactionDataMqtt,
     setComplianceOfficerReconcilePortfolioDataMqtt,
-    activeTab: reconcileActiveTab,
+    activeTabRef: reconcileActiveTab,
   } = useReconcileContext();
   const { setDashboardData } = useDashboardContext();
-  const { setEmployeeTransactionsData,setEmployeeTransactionsTableDataMqtt } = useTransaction();
+  const { setEmployeeTransactionsData, setEmployeeTransactionsTableDataMqtt } =
+    useTransaction();
   const { selectedKeyRef } = useSidebarContext();
 
   // User info from session storage
@@ -88,8 +94,9 @@ const Dashboard = () => {
       }
       try {
         const currentKey = selectedKeyRef.current;
+        const currentreconcileActiveTab = reconcileActiveTab.current;
         const currentactiveTabRef = activeTabRef.current;
-      
+    
 
         const { message, payload, roleIDs } = data;
 
@@ -116,13 +123,13 @@ const Dashboard = () => {
                 }
                 case "EMPLOYEE_NEW_TRADE_APPROVAL_REQUEST": {
                   if (currentKey === "1") {
-                    setIsEmployeeMyApprovalMqtt(true)
+                    setIsEmployeeMyApprovalMqtt(true);
                   }
                   break;
                 }
                 case "EMPLOYEE_TRADE_APPROVAL_REQUEST_APPROVED": {
                   if (currentKey === "1") {
-                    setIsEmployeeMyApprovalMqtt(true)
+                    setIsEmployeeMyApprovalMqtt(true);
 
                     // setIsEmployeeMyApproval((prev) => {
                     //   const approvals = prev.approvals || [];
@@ -145,7 +152,7 @@ const Dashboard = () => {
                 }
                 case "EMPLOYEE_TRADE_APPROVAL_REQUEST_STATUS_CHANGE_TRADED": {
                   if (currentKey === "1") {
-                    setIsEmployeeMyApprovalMqtt(true)
+                    setIsEmployeeMyApprovalMqtt(true);
 
                     // setIsEmployeeMyApproval((prev) => {
                     //   const approvals = prev.approvals || [];
@@ -172,13 +179,13 @@ const Dashboard = () => {
                     //   mqttRecivedData: payload,
                     //   mqttRecived: true,
                     // });
-                    setEmployeePendingApprovalsDataMqtt(true)
+                    setEmployeePendingApprovalsDataMqtt(true);
                   }
                   break;
                 }
                 case "EMPLOYEE_CONDUCTED_TRANSACTION": {
                   if (currentKey === "2") {
-                    setEmployeeTransactionsTableDataMqtt(true)
+                    setEmployeeTransactionsTableDataMqtt(true);
                     // setEmployeeTransactionsData((prev) => ({
                     //   ...prev,
                     //   data: [payload, ...(prev.data || [])],
@@ -211,6 +218,7 @@ const Dashboard = () => {
                 }
                 case "LINE_MANAGER_NEW_TRADE_APPROVAL_REQUEST": {
                   if (currentKey === "6") {
+                    setLineManagerApprovalMQtt(true);
                     // handleLineManagerApprovalNewTrade(
                     //   payload,
                     //   currentlineManagerApprovalSearchRef,
@@ -221,22 +229,24 @@ const Dashboard = () => {
                 }
                 case "LINE_MANAGER_TRADE_APPROVAL_REQUEST_APPROVED": {
                   if (currentKey === "6") {
-                    setLineManagerApproval((prev) => {
-                      const lineApprovals = prev.lineApprovals || [];
-                      const existingIndex = lineApprovals.findIndex(
-                        (item) => item.approvalID === payload.approvalID
-                      );
+                    setLineManagerApprovalMQtt(true);
 
-                      if (existingIndex === -1) return prev;
+                    // setLineManagerApproval((prev) => {
+                    //   const lineApprovals = prev.lineApprovals || [];
+                    //   const existingIndex = lineApprovals.findIndex(
+                    //     (item) => item.approvalID === payload.approvalID
+                    //   );
 
-                      const updatedApprovals = [...lineApprovals];
-                      updatedApprovals[existingIndex] = payload;
+                    //   if (existingIndex === -1) return prev;
 
-                      return {
-                        ...prev,
-                        lineApprovals: updatedApprovals,
-                      };
-                    });
+                    //   const updatedApprovals = [...lineApprovals];
+                    //   updatedApprovals[existingIndex] = payload;
+
+                    //   return {
+                    //     ...prev,
+                    //     lineApprovals: updatedApprovals,
+                    //   };
+                    // });
                   }
                   break;
                 }
@@ -251,7 +261,7 @@ const Dashboard = () => {
                 case "COMPLIANCE_OFFICER_NEW_UPLOAD_PORTFOLIO_REQUEST": {
                   if (
                     currentKey === "9" &&
-                    reconcileActiveTab === "portfolio"
+                    currentreconcileActiveTab === "portfolio"
                   ) {
                     setComplianceOfficerReconcilePortfolioDataMqtt({
                       data: payload,
@@ -263,7 +273,7 @@ const Dashboard = () => {
                 case "COMPLIANCE_OFFICER_CONDUCTED_TRANSACTION": {
                   if (
                     currentKey === "9" &&
-                    reconcileActiveTab === "transactions"
+                    currentreconcileActiveTab === "transactions"
                   ) {
                     setComplianceOfficerReconcileTransactionDataMqtt({
                       data: payload,

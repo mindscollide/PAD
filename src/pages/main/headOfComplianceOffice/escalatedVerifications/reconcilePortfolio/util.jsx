@@ -14,6 +14,7 @@ import StatusColumnTitle from "../../../../../components/dropdowns/filters/statu
 
 // Helpers
 import { formatApiDateTime } from "../../../../../commen/funtions/rejex";
+import { useGlobalModal } from "../../../../../context/GlobalModalContext";
 
 const { Text } = Typography;
 
@@ -58,10 +59,10 @@ const getSortIcon = (columnKey, sortedInfo) => {
  * @param {string|number} tradeTypeID - Trade type ID to match.
  * @returns {string} Trade type label or "—".
  */
-export const getTradeTypeById = (assetTypeData, tradeTypeID) => {
+export const getTradeTypeById = (assetTypeData, tradeType) => {
   if (!Array.isArray(assetTypeData?.items)) return "—";
   return (
-    assetTypeData.items.find((i) => i.tradeApprovalTypeID === tradeTypeID)
+    assetTypeData.items.find((i) => i.tradeApprovalTypeID === tradeType.typeID)
       ?.type || "—"
   );
 };
@@ -75,17 +76,17 @@ export const getTradeTypeById = (assetTypeData, tradeTypeID) => {
  */
 export const mapToTableRows = (assetTypeData, list = []) =>
   (Array.isArray(list) ? list : []).map((item = {}) => ({
-    approvalID: item?.approvalID || `row-${Math.random()}`,
-    requesterName: item?.requesterName || "—",
-    assetTypeShortCode: item?.assetType?.assetTypeShortCode || "—",
-    instrument: item?.instrument?.instrumentShortCode || "—",
-    instrumentName: item?.instrument?.instrumentName || "—",
-    tradeApprovalID: item?.tradeApprovalID || "—",
+    approvalID: item?.approvalID ?? "—",
+    requesterName: item?.requesterName ?? "—",
+    assetTypeShortCode: item?.assetType?.assetTypeShortCode ?? "—",
+    instrument: item?.instrument?.instrumentCode ?? "—",
+    instrumentName: item?.instrument?.instrumentName ?? "—",
+    tradeApprovalID: item?.tradeApprovalID ?? "—",
     transactionRequestDateime:
       [item?.requestDate, item?.requestTime].filter(Boolean).join(" ") || "—",
-    quantity: item?.quantity ?? 0,
-    type: getTradeTypeById(assetTypeData, item?.tradeType),
-    status: item?.workFlowStatus?.workFlowStatus || "—",
+    quantity: item?.quantity ?? "—",
+    type: getTradeTypeById(assetTypeData, item?.tradeType) ?? "—",
+    status: item?.approvalStatus?.approvalStatusName ?? "—",
   }));
 
 /* ------------------------------------------------------------------ */
@@ -117,16 +118,18 @@ const nowrapCell = (minWidth, maxWidth) => ({
  *
  * @param {Object} approvalStatusMap - Map of statuses (`status -> { label, backgroundColor, textColor }`).
  * @param {Object} sortedInfo - Ant Design Table sort state.
- * @param {Object} filterState - Current filter/search state.
- * @param {Function} setFilterState - Setter to update filter/search state.
+ * @param {Object} complianceOfficerReconcilePortfolioSearch - Current filter/search state.
+ * @param {Function} setComplianceOfficerReconcilePortfolioSearch - Setter to update filter/search state.
  * @returns {Array<Object>} AntD `Table` column configs.
  */
-export const getBorderlessTableColumns = (
+export const getBorderlessTableColumns = ({
   approvalStatusMap = {},
   sortedInfo = {},
-  filterState = {},
-  setFilterState = () => {}
-) => [
+  complianceOfficerReconcilePortfolioSearch = {},
+  setComplianceOfficerReconcilePortfolioSearch = () => {},
+  setIsViewDetail,
+  handleViewDetailsForReconcileTransaction,
+}) => [
   // 🔹 Requester Name
   {
     title: (
@@ -149,6 +152,8 @@ export const getBorderlessTableColumns = (
         {text || "—"}
       </span>
     ),
+    onHeaderCell: () => nowrapCell(70, 150),
+    onCell: () => nowrapCell(70, 150),
   },
 
   // 🔹 Instrument
@@ -173,14 +178,27 @@ export const getBorderlessTableColumns = (
       const assetCode = record?.assetTypeShortCode || "";
 
       return (
-        <div className="flex items-center gap-3">
-          <span className="custom-shortCode-asset min-w-[30px]">
-            {assetCode.substring(0, 2).toUpperCase()}
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: "12px",
+          }}
+        >
+          <span className="custom-shortCode-asset" style={{ minWidth: 30 }}>
+            {assetCode?.substring(0, 2).toUpperCase()}
           </span>
           <Tooltip title={name} placement="topLeft">
             <span
-              className="font-medium truncate inline-block cursor-pointer"
-              style={{ maxWidth: 200 }}
+              className="font-medium"
+              style={{
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+                whiteSpace: "nowrap",
+                maxWidth: "200px",
+                display: "inline-block",
+                cursor: "pointer",
+              }}
             >
               {code}
             </span>
@@ -229,7 +247,7 @@ export const getBorderlessTableColumns = (
     ),
     dataIndex: "quantity",
     key: "quantity",
-    align: "right",
+    align: "left",
     sorter: (a, b) => (a?.quantity ?? 0) - (b?.quantity ?? 0),
     sortOrder: sortedInfo?.columnKey === "quantity" ? sortedInfo.order : null,
     showSorterTooltip: false,
@@ -241,11 +259,18 @@ export const getBorderlessTableColumns = (
 
   // 🔹 Trade Type
   {
-    title: <TypeColumnTitle state={filterState} setState={setFilterState} />,
+    title: (
+      <TypeColumnTitle
+        state={complianceOfficerReconcilePortfolioSearch}
+        setState={setComplianceOfficerReconcilePortfolioSearch}
+      />
+    ),
     dataIndex: "type",
     key: "type",
     ellipsis: true,
-    filteredValue: filterState?.type?.length ? filterState.type : null,
+    filteredValue: complianceOfficerReconcilePortfolioSearch?.type?.length
+      ? complianceOfficerReconcilePortfolioSearch.type
+      : null,
     onFilter: () => true,
     render: (type) => <span title={type || "—"}>{type || "—"}</span>,
     onHeaderCell: () => nowrapCell(100, 100),
@@ -254,11 +279,18 @@ export const getBorderlessTableColumns = (
 
   // 🔹 Status
   {
-    title: <StatusColumnTitle state={filterState} setState={setFilterState} />,
+    title: (
+      <StatusColumnTitle
+        state={complianceOfficerReconcilePortfolioSearch}
+        setState={setComplianceOfficerReconcilePortfolioSearch}
+      />
+    ),
     dataIndex: "status",
     key: "status",
     ellipsis: true,
-    filteredValue: filterState?.status?.length ? filterState.status : null,
+    filteredValue: complianceOfficerReconcilePortfolioSearch?.status?.length
+      ? complianceOfficerReconcilePortfolioSearch.status
+      : null,
     onFilter: () => true,
     render: (status) => {
       const tag = approvalStatusMap?.[status] || {};
@@ -286,10 +318,20 @@ export const getBorderlessTableColumns = (
   {
     title: "",
     key: "actions",
-    width: "15%",
-    render: (record) =>
-      record?.status === "Non Compliant" ? (
-        <Button className="big-white-button" text="Comments" />
-      ) : null,
+    align: "center",
+    render: (text, record) => {
+      //Global State to selected data to show in ViewDetailModal
+      const { setViewDetailPortfolioTransaction } = useGlobalModal();
+      return (
+        <Button
+          className="big-blue-button"
+          text="View Details"
+          onClick={() => {
+            handleViewDetailsForReconcileTransaction(record?.approvalID);
+            setViewDetailPortfolioTransaction(true);
+          }}
+        />
+      );
+    },
   },
 ];
