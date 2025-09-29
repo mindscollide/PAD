@@ -1,4 +1,3 @@
-
 // ============================
 // ROUTE MAPS FOR EACH USER ROLE
 // ============================
@@ -26,11 +25,9 @@ export const complianceOfficerRouteMap = {
 };
 
 export const headOfTradeRouteMap = {
-  approvals: { path: "approvals", key: "1" },
-  transactions: { path: "transactions", key: "2" },
-  history: { path: "history", key: "3" },
-  portfolio: { path: "portfolios", key: "4" },
-  reports: { path: "reports", key: "5" },
+  escalated: { path: "hta-escalated-requests", key: "12" },
+  action: { path: "hta-my-actions", key: "13" },
+  reports: { path: "hta-reports", key: "14" },
 };
 
 export const headOfComplianceRouteMap = {
