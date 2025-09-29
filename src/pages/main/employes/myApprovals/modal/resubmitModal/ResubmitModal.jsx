@@ -39,11 +39,11 @@ const ResubmitModal = () => {
   const [commentValue, setCommentValue] = useState("");
 
   //This is the Api Function I created
-  const fetchResubmitRequest = async (selectedOption) => {
+  const fetchResubmitRequest = async (value) => {
     showLoader(true);
 
     const requestData = {
-      ResubmittedCommentID: selectedOption?.predefinedReasonsID || 0,
+      ResubmittedComment: value?.trim() || "",
       TradeApprovalID: selectedViewDetail?.approvalID,
     };
 
@@ -62,8 +62,8 @@ const ResubmitModal = () => {
   };
 
   // Call an API which inside the fetchResubmitRequest Request on Resubmit Button
-  const clickOnReSubmitButton = ({ selectedOption }) => {
-    fetchResubmitRequest(selectedOption);
+  const clickOnReSubmitButton = ({ value, selectedOption }) => {
+    fetchResubmitRequest(value, selectedOption);
   };
 
   //onClose button Handler
