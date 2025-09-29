@@ -559,6 +559,79 @@ export const ConductTransactionUpdateApi = async ({
   }
 };
 
+// Resubmit Approval Request Api after Selecting Predefine Reason
+export const ResubmitApprovalRequestApi = async ({
+  callApi,
+  showNotification,
+  showLoader,
+  requestData,
+  setIsResubmitted,
+  setCommentValue,
+  setResubmitIntimation,
+  navigate,
+}) => {
+  try {
+    // 🔹 API Call
+    const res = await callApi({
+      requestMethod: import.meta.env.VITE_RESUBMIT_APPROVAL_REQUEST_METHOD, // <-- Add Trade Approval method
+      endpoint: import.meta.env.VITE_API_TRADE,
+      requestData: requestData,
+    });
+
+    //  Check Session Expiry
+    if (handleExpiredSession(res, navigate, showLoader)) return false;
+
+    // when Api send isExecuted false
+    if (!res?.result?.isExecuted) {
+      showNotification({
+        type: "error",
+        title: "Error",
+        description: "Something went wrong. Please try again.",
+      });
+      return false;
+    }
+
+    // When Api Send Success Response
+    if (res.success) {
+      const { responseMessage } = res.result;
+
+      if (
+        responseMessage ===
+        "PAD_Trade_TradeServiceManager_ResubmitApprovalRequest_01"
+      ) {
+        setIsResubmitted(false);
+        setCommentValue("");
+        setResubmitIntimation(true);
+        return true;
+      } else {
+        showNotification({
+          type: "warning",
+          title: getMessage(responseMessage),
+        });
+        return false;
+      }
+    }
+
+    // When Response will be Something Went Wrong
+    showNotification({
+      type: "error",
+      title: "Request Failed",
+      description: getMessage(res.message),
+    });
+    return false;
+  } catch (error) {
+    // ❌ Exception handling
+    showNotification({
+      type: "error",
+      title: "Error",
+      description: "An unexpected error occurred.",
+    });
+    return false;
+  } finally {
+    showLoader(false);
+  }
+};
+
 /* ** 
 LINE MANAGER API'S END FROM HERE
 ** */
