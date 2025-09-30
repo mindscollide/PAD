@@ -68,7 +68,6 @@ export const SearchEmployeePendingUploadedPortFolio = async ({
 
     // 🔹 Handle successful execution
     if (res.success) {
-      console.log("requestdata", res);
       const { responseMessage, pendingPortfolios, totalRecords } = res.result;
       const message = getMessage(responseMessage);
 
@@ -77,7 +76,6 @@ export const SearchEmployeePendingUploadedPortFolio = async ({
         responseMessage ===
         "PAD_Trade_TradeServiceManager_SearchEmployeePendingUploadedPortFolio_01"
       ) {
-        console.log("requestdata", pendingPortfolios);
 
         return {
           pendingPortfolios: pendingPortfolios || [],

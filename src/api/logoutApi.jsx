@@ -10,8 +10,7 @@ export const logoutRequest = async ({
     showLoader(true);
 
     const response = await callApi({
-      requestMethod: import.meta.env
-        .VITE_LOGOUT_REQUEST_METHOD,
+      requestMethod: import.meta.env.VITE_LOGOUT_REQUEST_METHOD,
       endpoint: import.meta.env.VITE_API_AUTH,
     });
 
@@ -27,27 +26,12 @@ export const logoutRequest = async ({
       return false;
     }
 
-    const { responseCode, responseResult } = response;
+    const { responseMessage } = response.result;
 
-    if (responseCode === 200 && responseResult?.isExecuted) {
-      if (
-        responseResult.responseMessage ===
-        "ERM_AuthService_AuthManager_LogOut_01"
-      ) {
-        showNotification({
-          type: "success",
-          title: "Logout Successful",
-          description: "You have been logged out.",
-        });
-
-        // ✅ Clear local storage/session
-        localStorage.clear();
-
-        // ✅ Redirect to login
-        navigate("/login");
-
-        return true;
-      }
+    if (responseMessage === "ERM_AuthService_AuthManager_LogOut_01") {
+      console.log("logoutRequest");
+      // ✅ Redirect to login
+      return true;
     }
 
     // ❌ Fallback: error case

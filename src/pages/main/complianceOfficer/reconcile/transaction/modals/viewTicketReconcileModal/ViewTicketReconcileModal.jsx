@@ -12,7 +12,7 @@
  *  - Provides navigation between ticket view and reconcile detail
  */
 
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import { Col, Row, Tooltip } from "antd";
 import styles from "./ViewTicketReconcileModal.module.css";
 
@@ -41,11 +41,6 @@ const ViewTicketReconcileModal = () => {
   const { showNotification } = useNotification();
   const { showLoader } = useGlobalLoader();
   const navigate = useNavigate();
-
-  // 📌 Local state
-  const [selectedIndex, setSelectedIndex] = useState(null); // currently selected file index
-  const [loadingIndex, setLoadingIndex] = useState(null); // index of file being loaded
-
   // 📌 Global modal state (from context)
   const {
     isViewTicketTransactionModal,
@@ -54,6 +49,16 @@ const ViewTicketReconcileModal = () => {
     uploadattAchmentsFiles,
     setUploadattAchmentsFiles,
   } = useGlobalModal();
+  // 📌 Local state
+  const [selectedIndex, setSelectedIndex] = useState(null); // currently selected file index
+  const [loadingIndex, setLoadingIndex] = useState(null); // index of file being loaded
+  
+  // ✅ Auto-select 0th index when files are available
+  useEffect(() => {
+    if (uploadattAchmentsFiles?.length > 0 && selectedIndex === null) {
+      setSelectedIndex(0);
+    }
+  }, [uploadattAchmentsFiles, selectedIndex]);
 
   /**
    * 🔹 Memoized selected file

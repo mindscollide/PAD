@@ -1,447 +1,411 @@
-import React, { useEffect, useRef } from "react";
-import { Col, Row, Tag } from "antd";
-import { useGlobalModal } from "../../../../../../context/GlobalModalContext";
-import { BrokerList, GlobalModal } from "../../../../../../components";
-import styles from "./ViewDetailTransactionModal.module.css";
-import { Stepper, Step } from "react-form-stepper";
-import CustomButton from "../../../../../../components/buttons/button";
-import CheckIcon from "../../../../../../assets/img/Check.png";
-import EllipsesIcon from "../../../../../../assets/img/Ellipses.png";
+/**
+ * 📄 ViewDetailsTransactionModal.jsx
+ *
+ * A modal component to display detailed information about a transaction.
+ * Integrates with global contexts for modal handling, API calls, notifications, loaders, and transaction data.
+ *
+ * Features:
+ *  - Displays transaction details: Instrument, Approval ID, Transaction ID, Quantity, Type, Asset Class
+ *  - Shows hierarchical approval workflow using a stepper
+ *  - Supports viewing comments and associated tickets
+ *  - Fetches workflow files for ticket view
+ *  - Uses status mapping to dynamically apply label text, label style, and border style
+ */
+
+import React, { useRef } from "react";
+import { Col, Row } from "antd";
 import { useNavigate } from "react-router-dom";
+import { Stepper, Step } from "react-form-stepper";
+
+// 🔹 Components & Contexts
+import { GlobalModal, BrokerList } from "../../../../../../components";
+import CustomButton from "../../../../../../components/buttons/button";
+import { useGlobalModal } from "../../../../../../context/GlobalModalContext";
 import { useNotification } from "../../../../../../components/NotificationProvider/NotificationProvider";
 import { useGlobalLoader } from "../../../../../../context/LoaderContext";
 import { useApi } from "../../../../../../context/ApiContext";
-import { GetAllTransactionViewDetails } from "../../../../../../api/myTransactionsApi";
 import { useTransaction } from "../../../../../../context/myTransaction";
+import { useDashboardContext } from "../../../../../../context/dashboardContaxt";
+
+// 🔹 Assets
+import CheckIcon from "../../../../../../assets/img/Check.png";
+import EllipsesIcon from "../../../../../../assets/img/Ellipses.png";
+
+// 🔹 Utils & APIs
 import {
   dashBetweenApprovalAssets,
   formatApiDateTime,
   formatNumberWithCommas,
 } from "../../../../../../commen/funtions/rejex";
-import { useDashboardContext } from "../../../../../../context/dashboardContaxt";
+import { getStatusConfig } from "./util";
+import {
+  GetAnnotationOfFilesAttachementAPI,
+  GetWorkFlowFilesAPI,
+} from "../../../../../../api/fileApi";
+
+// 🔹 Styles
+import styles from "./ViewDetailTransactionModal.module.css";
 
 const ViewDetailsTransactionModal = () => {
+  // -----------------------
+  // 🔹 Hooks & Contexts
+  // -----------------------
   const navigate = useNavigate();
   const hasFetched = useRef(false);
   const { showNotification } = useNotification();
   const { showLoader } = useGlobalLoader();
   const { callApi } = useApi();
-  // This is Global State for modal which is create in ContextApi
+
+  const { employeeBasedBrokersData } = useDashboardContext();
+  const { employeeTransactionViewDetailData } = useTransaction();
+
   const {
     viewDetailTransactionModal,
     setViewDetailTransactionModal,
-    selectedViewDetailOfTransaction,
     setViewCommentTransactionModal,
     setIsViewTicketTransactionModal,
+    selectedViewDetailOfTransaction,
+    setUploadattAchmentsFiles,
   } = useGlobalModal();
 
-  const { employeeBasedBrokersData } = useDashboardContext();
-
-  // get data from sessionStorage
-  const userProfileData = JSON.parse(
-    sessionStorage.getItem("user_profile_data") || "{}"
-  );
-  const loggedInUserID = userProfileData?.userID;
-
-  //This is Global STate for modal of viewDetail Data in contextApi of transaction
-  const {
-    employeeTransactionViewDetailData,
-    setEmployeeTransactionViewDetailData,
-  } = useTransaction();
-
-  console.log(
-    "selectedViewDetailOfTransaction",
-    employeeTransactionViewDetailData
-  );
-
-  // Extract workFlowStatusID from API response
+  // -----------------------
+  // 🔹 Extract Data
+  // -----------------------
   const statusId =
     employeeTransactionViewDetailData?.workFlowStatus?.workFlowStatusID;
 
-  // Mapping for each status → label text + label style + border style
-  const statusConfig = {
-    1: {
-      label: "Pending",
-      labelClass: styles.pendingDetailHeading,
-      borderClass: styles.pendingBorderClass,
-    },
-    2: {
-      label: "Resubmit",
-      labelClass: styles.resubmittedDetailHeading,
-      borderClass: styles.resubmittedBorderClass,
-    },
-    3: {
-      label: "Approved",
-      labelClass: styles.approvedDetailHeading,
-      borderClass: styles.approvedBorderClass,
-    },
-    4: {
-      label: "Declined",
-      labelClass: styles.declinedDetailHeading,
-      borderClass: styles.declinedBorderClass,
-    },
-    5: {
-      label: "Traded",
-      labelClass: styles.pendingDetailHeading,
-      borderClass: styles.pendingBorderClass,
-    },
-    6: {
-      label: "Not-Traded",
-      labelClass: styles.notTradedDetailHeading,
-      borderClass: styles.notTradedBorderClass,
-    },
-    8: {
-      label: "Compliant",
-      labelClass: styles.approvedDetailHeading,
-      borderClass: styles.approvedBorderClass,
-    },
-    9: {
-      label: "Non-Compliant",
-      labelClass: styles.declinedDetailHeading,
-      borderClass: styles.declinedBorderClass,
-    },
-  };
-
-  // Pick values from mapping using statusId
-  // If statusId not found → show fallback "Unknown"
-  const { label, labelClass, borderClass } = statusConfig[statusId] || {
+  // Get label and styles for the current status
+  const { label, labelClass, borderClass } = getStatusConfig(statusId) || {
     label: "Unknown",
     labelClass: styles.approvedDetailHeading,
     borderClass: styles.approvedBorderClass,
   };
 
-  console.log(typeof label, "checkecehlabelHere");
-
-  // safely extract data from the assetType
-  // outside return
   const variableOfAssetType =
     employeeTransactionViewDetailData?.assetTypes?.[0];
-
-  // Extract Instrument outside return
   const variableOfInstrument =
     employeeTransactionViewDetailData?.details?.[0]?.instrument || null;
+  const variableOfDetailData =
+    employeeTransactionViewDetailData?.details?.[0] || null;
 
-  //Extract other nonObject data from details
-  const variableOfDeatilData =
-    employeeTransactionViewDetailData?.details[0] || null;
-
-  console.log(variableOfAssetType, "variableOfAssetType");
-
-  // Extract the trade Apprvoal Request ID data and their quantity
-  const tradedWorkFlowDataVariable =
-    employeeTransactionViewDetailData.tradedWorkFlowReqeust.map((item) => ({
+  const tradedWorkFlowData =
+    employeeTransactionViewDetailData?.tradedWorkFlowReqeust?.map((item) => ({
       tradeApprovalID: item.tradeApprovalID,
       quantity: item.quantity,
       tradeWorkFlowID: item.tradeWorkFlowID,
     }));
 
+  const userProfileData = JSON.parse(
+    sessionStorage.getItem("user_profile_data") || "{}"
+  );
+  const loggedInUserID = userProfileData?.userID;
+
+  // -----------------------
+  // 🔹 Handlers
+  // -----------------------
+  console.log(
+    "employeeTransactionViewDetailData",
+    employeeTransactionViewDetailData
+  );
+  /**
+   * Fetch workflow files for viewing tickets and open the ticket modal
+   */
+  const handleViewTicket = async () => {
+    showLoader(true);
+    try {
+      const res = await GetWorkFlowFilesAPI({
+        callApi,
+        showNotification,
+        showLoader,
+        requestData: {
+          WorkFlowID: employeeTransactionViewDetailData?.TradeApprovalID,
+        },
+        navigate,
+      });
+
+      if (res?.length > 0) {
+        // Add empty blob initially
+        const updatedFiles = res.map((file) => ({
+          ...file,
+          attachmentBlob: "",
+        }));
+
+        // Work only on the first file
+        const firstFile = updatedFiles[0];
+
+        // 🔹 Wait for blob
+        const blob = await GetAnnotationOfFilesAttachementAPI({
+          callApi,
+          showNotification,
+          showLoader,
+          requestData: { FileID: firstFile.pK_FileID },
+          navigate,
+        });
+
+        if (blob) {
+          // 🔹 Only after blob is ready, update index 0
+          updatedFiles[0] = { ...firstFile, attachmentBlob: blob };
+        }
+
+        // 🔹 Now set final files in state (with blob injected in 0th index)
+        console.log("updatedFiles workflow files", updatedFiles);
+        setUploadattAchmentsFiles(updatedFiles);
+
+        // 🔹 Open modal after files are fully ready
+        setIsViewTicketTransactionModal(true);
+        setViewDetailTransactionModal(false);
+      }
+    } catch (err) {
+      console.error("Failed to fetch workflow files", err);
+      showNotification({
+        type: "error",
+        title: "Error",
+        description: "Unable to fetch workflow files.",
+      });
+    } finally {
+      showLoader(false);
+    }
+  };
+
+  // -----------------------
+  // 🔹 Render
+  // -----------------------
   return (
-    <>
-      <GlobalModal
-        visible={viewDetailTransactionModal}
-        width={"942px"}
-        centered={true}
-        onCancel={() => setViewDetailTransactionModal(false)}
-        modalHeader={<></>}
-        modalBody={
-          <>
-            <div className={styles.modalBodyWrapper}>
-              {/* Show Heading by Status in View Detail Modal */}
+    <GlobalModal
+      visible={viewDetailTransactionModal}
+      width="942px"
+      centered
+      modalHeader={null}
+      onCancel={() => setViewDetailTransactionModal(false)}
+      modalBody={
+        <div className={styles.modalBodyWrapper}>
+          {/* Status Header */}
+          <Row>
+            <Col span={24}>
+              <div className={borderClass}>
+                <label className={labelClass}>{label}</label>
+              </div>
+            </Col>
+          </Row>
 
-              <Row>
-                <Col span={24}>
-                  {/* borderClass and labelClass come from mapping */}
-                  <div className={borderClass}>
-                    <label className={labelClass}>{label}</label>
-                  </div>
-                </Col>
-              </Row>
+          {/* Transaction Summary */}
+          <Row gutter={[4, 4]} style={{ marginTop: "13px" }}>
+            <Col span={12}>
+              <div className={styles.backgroundColorOfInstrumentDetailApproved}>
+                <label className={styles.viewDetailMainLabels}>
+                  Instrument
+                </label>
+                <label className={styles.viewDetailSubLabels}>
+                  <span className={styles.customTag}>
+                    {variableOfAssetType?.shortCode}
+                  </span>
+                  <span className={styles.viewDetailSubLabelsForInstrument}>
+                    {variableOfInstrument?.instrumentShortCode}
+                  </span>
+                </label>
+              </div>
+            </Col>
+            <Col span={12}>
+              <div className={styles.backgrounColorOfApprovedDetail}>
+                <label className={styles.viewDetailMainLabels}>
+                  Approval ID
+                </label>
+                <label className={styles.viewDetailSubLabels}>
+                  {dashBetweenApprovalAssets(
+                    tradedWorkFlowData?.[0]?.tradeApprovalID
+                  )}
+                </label>
+              </div>
+            </Col>
+          </Row>
 
-              {/* Show Resubmit,Pending,Declined and Not Traded status Sceanrios */}
+          <Row gutter={[4, 4]} style={{ marginTop: "3px" }}>
+            <Col span={12}>
+              <div className={styles.backgrounColorOfDetail}>
+                <label className={styles.viewDetailMainLabels}>
+                  Transaction ID
+                </label>
+                <label className={styles.viewDetailSubLabels}>
+                  {dashBetweenApprovalAssets(
+                    variableOfDetailData?.tradeApprovalID
+                  )}
+                </label>
+              </div>
+            </Col>
+            <Col span={12}>
+              <div className={styles.backgrounColorOfDetail}>
+                <label className={styles.viewDetailMainLabels}>Type</label>
+                <label className={styles.viewDetailSubLabels}>
+                  {variableOfDetailData?.approvalTypeID === "1"
+                    ? "Buy"
+                    : variableOfDetailData?.approvalTypeID === "2"
+                    ? "Sell"
+                    : "-"}
+                </label>
+              </div>
+            </Col>
+          </Row>
 
-              <Row
-                gutter={[4, 4]}
-                style={{
-                  marginTop: "13px",
-                }}
+          <Row gutter={[4, 4]} style={{ marginTop: "3px" }}>
+            <Col span={12}>
+              <div className={styles.backgrounColorOfDetail}>
+                <label className={styles.viewDetailMainLabels}>
+                  Approved Quantity
+                </label>
+                <label className={styles.viewDetailSubLabels}>
+                  {formatNumberWithCommas(variableOfDetailData?.quantity)}
+                </label>
+              </div>
+            </Col>
+            <Col span={12}>
+              <div className={styles.backgrounColorOfDetail}>
+                <label className={styles.viewDetailMainLabels}>
+                  Shared Traded
+                </label>
+                <label className={styles.viewDetailSubLabels}>
+                  {formatNumberWithCommas(tradedWorkFlowData?.[0]?.quantity)}
+                </label>
+              </div>
+            </Col>
+          </Row>
+
+          <Row gutter={[4, 4]} style={{ marginTop: "3px" }}>
+            <Col span={12}>
+              <div className={styles.backgrounColorOfDetail}>
+                <label className={styles.viewDetailMainLabels}>
+                  Transaction Date
+                </label>
+                <label className={styles.viewDetailSubLabels}>
+                  {formatApiDateTime(
+                    `${selectedViewDetailOfTransaction?.transactionConductedDate} ${selectedViewDetailOfTransaction?.transactionConductedTime}`
+                  )}
+                </label>
+              </div>
+            </Col>
+            <Col span={12}>
+              <div className={styles.backgrounColorOfDetail}>
+                <label className={styles.viewDetailMainLabels}>
+                  Asset Class
+                </label>
+                <label className={styles.viewDetailSubLabels}>
+                  {variableOfAssetType?.title}
+                </label>
+              </div>
+            </Col>
+          </Row>
+
+          {/* Broker List */}
+          <Row style={{ marginTop: "3px" }}>
+            <Col span={24}>
+              <BrokerList
+                statusData={label}
+                viewDetailsData={employeeTransactionViewDetailData}
+                variant="Blue"
+              />
+            </Col>
+          </Row>
+
+          {/* Approval Stepper */}
+          <Row>
+            <div className={styles.mainStepperContainer}>
+              <div
+                className={`${styles.backgrounColorOfStepper} ${
+                  (employeeTransactionViewDetailData?.hierarchyDetails
+                    ?.length || 0) <= 3
+                    ? styles.centerAlignStepper
+                    : styles.leftAlignStepper
+                }`}
               >
-                <Col span={12}>
-                  <div
-                    className={styles.backgroundColorOfInstrumentDetailApproved}
-                  >
-                    <label className={styles.viewDetailMainLabels}>
-                      Instrument
-                    </label>
-                    <label className={styles.viewDetailSubLabels}>
-                      <>
-                        <span className={styles.customTag}>
-                          <span>{variableOfAssetType?.shortCode}</span>
-                        </span>
-                        <span
-                          className={styles.viewDetailSubLabelsForInstrument}
-                        >
-                          {variableOfInstrument?.instrumentShortCode}
-                        </span>
-                      </>
-                    </label>
-                  </div>
-                </Col>
-                <Col span={12}>
-                  <div className={styles.backgrounColorOfApprovedDetail}>
-                    <label className={styles.viewDetailMainLabels}>
-                      Approval ID
-                    </label>
-                    <label className={styles.viewDetailSubLabels}>
-                      {dashBetweenApprovalAssets(
-                        tradedWorkFlowDataVariable?.[0]?.tradeApprovalID
-                      )}
-                    </label>
-                  </div>
-                </Col>
-              </Row>
-
-              <Row
-                gutter={[4, 4]}
-                style={{
-                  marginTop: "3px",
-                }}
-              >
-                <Col span={12}>
-                  <div className={styles.backgrounColorOfDetail}>
-                    <label className={styles.viewDetailMainLabels}>
-                      Transaction ID
-                    </label>
-                    <label className={styles.viewDetailSubLabels}>
-                      {dashBetweenApprovalAssets(
-                        variableOfDeatilData?.tradeApprovalID
-                      )}
-                    </label>
-                  </div>
-                </Col>
-                <Col span={12}>
-                  <div className={styles.backgrounColorOfDetail}>
-                    <label className={styles.viewDetailMainLabels}>Type</label>
-                    <label className={styles.viewDetailSubLabels}>
-                      {variableOfDeatilData?.approvalTypeID === "1" && (
-                        <span>Buy</span>
-                      )}
-                      {variableOfDeatilData?.approvalTypeID === "2" && (
-                        <span>Sell</span>
-                      )}
-                    </label>
-                  </div>
-                </Col>
-              </Row>
-
-              {/* Show Other Scenario's SUb Heading and Field Sceanrio's */}
-              <Row gutter={[4, 4]} style={{ marginTop: "3px" }}>
-                <Col span={12}>
-                  <div className={styles.backgrounColorOfDetail}>
-                    <label className={styles.viewDetailMainLabels}>
-                      Approved Quantity
-                    </label>
-                    <label className={styles.viewDetailSubLabels}>
-                      {formatNumberWithCommas(variableOfDeatilData?.quantity)}
-                    </label>
-                  </div>
-                </Col>
-                <Col span={12}>
-                  <div className={styles.backgrounColorOfDetail}>
-                    <label className={styles.viewDetailMainLabels}>
-                      Shared Traded
-                    </label>
-                    <label className={styles.viewDetailSubLabels}>
-                      {formatNumberWithCommas(
-                        tradedWorkFlowDataVariable?.[0]?.quantity
-                      )}
-                    </label>
-                  </div>
-                </Col>
-              </Row>
-
-              <Row gutter={[4, 4]} style={{ marginTop: "3px" }}>
-                <Col span={12}>
-                  <div className={styles.backgrounColorOfDetail}>
-                    <label className={styles.viewDetailMainLabels}>
-                      Transaction Date
-                    </label>
-                    <label className={styles.viewDetailSubLabels}>
-                      {formatApiDateTime(
-                        `${selectedViewDetailOfTransaction?.transactionConductedDate} ${selectedViewDetailOfTransaction?.transactionConductedTime}`
-                      )}
-                    </label>
-                  </div>
-                </Col>
-                <Col span={12}>
-                  <div className={styles.backgrounColorOfDetail}>
-                    <label className={styles.viewDetailMainLabels}>
-                      Asset Class
-                    </label>
-                    <label className={styles.viewDetailSubLabels}>
-                      {variableOfAssetType?.title}
-                    </label>
-                  </div>
-                </Col>
-              </Row>
-
-              <Row style={{ marginTop: "3px" }}>
-                <Col span={24}>
-                  {/* <div className={styles.backgrounColorOfBrokerDetail}>
-                    <label className={styles.viewDetailMainLabels}>
-                      Brokers
-                    </label>
-                    <div className={styles.tagContainer}>
-                      {variableOfDeatilData?.brokers?.map((brokerId) => {
-                        const broker = employeeBasedBrokersData?.find(
-                          (b) => String(b.brokerID) === String(brokerId)
+                <Stepper
+                  activeStep={Math.max(
+                    0,
+                    Array.isArray(
+                      employeeTransactionViewDetailData?.hierarchyDetails
+                    )
+                      ? employeeTransactionViewDetailData.hierarchyDetails.filter(
+                          (person) => person.userID !== loggedInUserID
+                        ).length - 1
+                      : 0
+                  )}
+                >
+                  {Array.isArray(
+                    employeeTransactionViewDetailData?.hierarchyDetails
+                  ) &&
+                    employeeTransactionViewDetailData.hierarchyDetails
+                      .filter((person) => person.userID !== loggedInUserID)
+                      .map((person, index) => {
+                        const {
+                          fullName,
+                          bundleStatusID,
+                          modifiedDate,
+                          modifiedTime,
+                        } = person;
+                        const formattedDateTime = formatApiDateTime(
+                          `${modifiedDate} ${modifiedTime}`
                         );
-                        console.log(broker, "brokerNamerChecker");
+
+                        const iconSrc =
+                          bundleStatusID === 2 ? CheckIcon : EllipsesIcon;
+
                         return (
-                          broker && (
-                            <Tag
-                              key={broker.brokerID}
-                              className={styles.tagClasses}
-                            >
-                              {broker.brokerName}
-                            </Tag>
-                          )
+                          <Step
+                            key={index}
+                            label={
+                              <div className={styles.customlabel}>
+                                <div className={styles.customtitle}>
+                                  {fullName}
+                                </div>
+                                <div className={styles.customdesc}>
+                                  {formattedDateTime}
+                                </div>
+                              </div>
+                            }
+                            children={
+                              <div className={styles.stepCircle}>
+                                <img
+                                  draggable={false}
+                                  src={iconSrc}
+                                  alt="status-icon"
+                                  className={styles.circleImg}
+                                />
+                              </div>
+                            }
+                          />
                         );
                       })}
-                    </div>
-                  </div> */}
-                  <BrokerList
-                    statusData={label}
-                    viewDetailsData={employeeTransactionViewDetailData}
-                    variant={"Blue"}
-                  />
-                </Col>
-              </Row>
-
-              {/* This is the Stepper Libarary Section */}
-              <Row>
-                <div className={styles.mainStepperContainer}>
-                  <div
-                    className={`${styles.backgrounColorOfStepper} ${
-                      (employeeTransactionViewDetailData?.hierarchyDetails
-                        ?.length || 0) <= 3
-                        ? styles.centerAlignStepper
-                        : styles.leftAlignStepper
-                    }`}
-                  >
-                    {/* Agar loginUserID match krti hai hierarchyDetails ki userID sy to wo wala stepper show nahi hoga */}
-                    <Stepper
-                      activeStep={Math.max(
-                        0,
-                        Array.isArray(
-                          employeeTransactionViewDetailData?.hierarchyDetails
-                        )
-                          ? employeeTransactionViewDetailData.hierarchyDetails.filter(
-                              (person) => person.userID !== loggedInUserID
-                            ).length - 1
-                          : 0
-                      )}
-                    >
-                      {Array.isArray(
-                        employeeTransactionViewDetailData?.hierarchyDetails
-                      ) &&
-                        employeeTransactionViewDetailData.hierarchyDetails
-                          .filter((person) => person.userID !== loggedInUserID)
-                          .map((person, index) => {
-                            const {
-                              fullName,
-                              bundleStatusID,
-                              modifiedDate,
-                              modifiedTime,
-                            } = person;
-
-                            const formattedDateTime = formatApiDateTime(
-                              `${modifiedDate} ${modifiedTime}`
-                            );
-
-                            let iconSrc;
-                            console.log(
-                              bundleStatusID,
-                              "CheckerrrrrbundleStatusID"
-                            );
-                            switch (bundleStatusID) {
-                              case 1:
-                                iconSrc = EllipsesIcon;
-                                break;
-                              case 2:
-                                iconSrc = CheckIcon;
-                                break;
-                              default:
-                                iconSrc = EllipsesIcon;
-                            }
-
-                            return (
-                              <Step
-                                key={index}
-                                label={
-                                  <div className={styles.customlabel}>
-                                    <div className={styles.customtitle}>
-                                      {fullName}
-                                    </div>
-                                    <div className={styles.customdesc}>
-                                      {formattedDateTime}
-                                    </div>
-                                  </div>
-                                }
-                                children={
-                                  <div className={styles.stepCircle}>
-                                    <img
-                                      draggable={false}
-                                      src={iconSrc}
-                                      alt="status-icon"
-                                      className={styles.circleImg}
-                                    />
-                                  </div>
-                                }
-                              />
-                            );
-                          })}
-                    </Stepper>
-                  </div>
-                </div>
-              </Row>
-
-              {/* All Others button Scenario's for footer button */}
-              <Row>
-                <>
-                  <Col span={[24]}>
-                    <div className={styles.approvedButtonClassViewComment}>
-                      <CustomButton
-                        text={"View Comment"}
-                        onClick={() => {
-                          setViewCommentTransactionModal(true);
-                          setViewDetailTransactionModal(false);
-                        }}
-                        className="big-light-button"
-                      />
-                      <CustomButton
-                        text={"View Ticket"}
-                        className="big-light-button"
-                        onClick={() => {
-                          setIsViewTicketTransactionModal(true);
-                          setViewDetailTransactionModal(false);
-                        }}
-                      />
-                      <CustomButton
-                        text={"Close"}
-                        onClick={() => {
-                          setViewDetailTransactionModal(false);
-                        }}
-                        className="big-light-button"
-                      />
-                    </div>
-                  </Col>
-                </>
-              </Row>
+                </Stepper>
+              </div>
             </div>
-          </>
-        }
-      />
-    </>
+          </Row>
+
+          {/* Footer Buttons */}
+          <Row>
+            <Col span={24}>
+              <div className={styles.approvedButtonClassViewComment}>
+                <CustomButton
+                  text="View Comment"
+                  className="big-light-button"
+                  onClick={() => {
+                    setViewCommentTransactionModal(true);
+                    setViewDetailTransactionModal(false);
+                  }}
+                />
+                <CustomButton
+                  text="View Ticket"
+                  className="big-light-button"
+                  onClick={handleViewTicket}
+                />
+                <CustomButton
+                  text="Close"
+                  className="big-light-button"
+                  onClick={() => setViewDetailTransactionModal(false)}
+                />
+              </div>
+            </Col>
+          </Row>
+        </div>
+      }
+    />
   );
 };
 

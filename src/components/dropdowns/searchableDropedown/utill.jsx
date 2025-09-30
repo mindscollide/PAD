@@ -30,13 +30,16 @@ export const getMainSearchInputValueByKey = (
   selectedKey,
   activeTab,
   reconcileActiveTab,
+  activeTabHCO,
   employeeMyApprovalSearch,
   employeeMyTransactionSearch,
   employeePortfolioSearch,
   employeePendingApprovalSearch,
   lineManagerApprovalSearch,
   complianceOfficerReconcilePortfolioSearch,
-  complianceOfficerReconcileTransactionsSearch
+  complianceOfficerReconcileTransactionsSearch,
+  headOfComplianceApprovalEscalatedVerificationsSearch,
+  headOfComplianceApprovalPortfolioSearch
 ) => {
   switch (selectedKey) {
     case "1":
@@ -61,6 +64,15 @@ export const getMainSearchInputValueByKey = (
         default:
           return "";
       }
+    case "15":
+      switch (activeTabHCO) {
+        case "escalated":
+          return headOfComplianceApprovalEscalatedVerificationsSearch.mainInstrumentName;
+        case "portfolio":
+          return headOfComplianceApprovalPortfolioSearch.mainInstrumentName;
+        default:
+          return "";
+      }
     case "6":
       return lineManagerApprovalSearch.mainInstrumentName;
       break;
@@ -76,6 +88,7 @@ export const handleMainInstrumentChange = (
   selectedKey,
   activeTab,
   reconcileActiveTab,
+  activeTabHCO,
   value,
   setEmployeeMyApprovalSearch,
   setEmployeeMyTransactionSearch,
@@ -83,7 +96,9 @@ export const handleMainInstrumentChange = (
   setEmployeePendingApprovalSearch,
   setLineManagerApprovalSearch,
   setComplianceOfficerReconcilePortfolioSearch,
-  setComplianceOfficerReconcileTransactionsSearch
+  setComplianceOfficerReconcileTransactionsSearch,
+  setHeadOfComplianceApprovalEscalatedVerificationsSearch,
+  setHeadOfComplianceApprovalPortfolioSearch
 ) => {
   switch (selectedKey) {
     case "1":
@@ -99,6 +114,7 @@ export const handleMainInstrumentChange = (
         mainInstrumentName: value,
       }));
       break;
+
     case "4":
       switch (activeTab) {
         case "portfolio":
@@ -128,6 +144,7 @@ export const handleMainInstrumentChange = (
         mainInstrumentName: value,
       }));
       break;
+
     case "9":
       switch (reconcileActiveTab) {
         case "transactions":
@@ -151,6 +168,29 @@ export const handleMainInstrumentChange = (
 
       break;
 
+    case "15":
+      switch (activeTabHCO) {
+        case "escalated":
+          setHeadOfComplianceApprovalEscalatedVerificationsSearch((prev) => ({
+            ...prev,
+            mainInstrumentName: value,
+          }));
+          break;
+        case "portfolio":
+          setHeadOfComplianceApprovalPortfolioSearch((prev) => ({
+            ...prev,
+            mainInstrumentName: value,
+          }));
+          break;
+        default:
+          setEmployeePortfolioSearch((prev) => ({
+            ...prev,
+            mainInstrumentShortName: value,
+          }));
+      }
+
+      break;
+
     // Add more cases for other selectedKeys if needed
 
     default:
@@ -163,6 +203,7 @@ export const handleSearchMainInputReset = ({
   selectedKey,
   activeTab,
   reconcileActiveTab,
+  activeTabHCO,
   setEmployeeMyApprovalSearch,
   setEmployeeMyTransactionSearch,
   setEmployeePortfolioSearch,
@@ -170,6 +211,8 @@ export const handleSearchMainInputReset = ({
   setLineManagerApprovalSearch,
   setComplianceOfficerReconcilePortfolioSearch,
   setComplianceOfficerReconcileTransactionsSearch,
+  setHeadOfComplianceApprovalEscalatedVerificationsSearch,
+  setHeadOfComplianceApprovalPortfolioSearch,
 }) => {
   switch (selectedKey) {
     case "1":
@@ -185,6 +228,7 @@ export const handleSearchMainInputReset = ({
         mainInstrumentName: "",
       }));
       break;
+
     case "4":
       switch (activeTab) {
         case "portfolio":
@@ -207,13 +251,15 @@ export const handleSearchMainInputReset = ({
       }
 
       break;
+
     case "6":
       setLineManagerApprovalSearch((prev) => ({
         ...prev,
         mainInstrumentName: "",
       }));
       break;
-       case "9":
+
+    case "9":
       switch (reconcileActiveTab) {
         case "transactions":
           setEmployeePortfolioSearch((prev) => ({
@@ -236,6 +282,29 @@ export const handleSearchMainInputReset = ({
 
       break;
 
+    case "15":
+      switch (activeTabHCO) {
+        case "escalated":
+          setHeadOfComplianceApprovalEscalatedVerificationsSearch((prev) => ({
+            ...prev,
+            mainInstrumentName: "",
+          }));
+          break;
+        case "portfolio":
+          setHeadOfComplianceApprovalPortfolioSearch((prev) => ({
+            ...prev,
+            mainInstrumentName: "",
+          }));
+          break;
+        default:
+          setHeadOfComplianceApprovalPortfolioSearch((prev) => ({
+            ...prev,
+            mainInstrumentShortName: "",
+          }));
+      }
+
+      break;
+
     default:
       break;
   }
@@ -246,6 +315,7 @@ export const renderFilterContent = (
   selectedKey,
   activeTab,
   reconcileActiveTab,
+  activeTabHCO,
   handleSearch,
   setVisible
 ) => {
@@ -304,11 +374,11 @@ export const renderFilterContent = (
           setVisible={setVisible}
         />
       );
-       case "15":
+    case "15":
       return (
         <HcaReconcileFilter
           handleSearch={handleSearch}
-          activeTab={reconcileActiveTab}
+          activeTab={activeTabHCO}
           setVisible={setVisible}
         />
       );

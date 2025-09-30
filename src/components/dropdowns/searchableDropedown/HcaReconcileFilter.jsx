@@ -14,18 +14,18 @@ export const HcaReconcileFilter = ({ handleSearch, activeTab, setVisible }) => {
   const [localStateEscalated, setLocalStateEscalated] = useState({
     instrumentName: "",
     requesterName: "",
-    quantity: "",
-    startDate: null,
-    endDate: null,
-    escalationStartDate: null,
-    escalationEndDate: null,
+    quantity: 0,
+    requestDateFrom: null,
+    requestDateTo: null,
+    escalatedDateFrom: null,
+    escalatedDateTo: null,
   });
   const [localStatePortfolio, setLocalStatePortfolio] = useState({
     instrumentName: "",
     requesterName: "",
-    quantity: "",
-    startDate: null,
-    endDate: null,
+    quantity: 0,
+    requestDateFrom: null,
+    requestDateTo: null,
   });
 
   // Context states (HCA Reconcile)
@@ -36,16 +36,6 @@ export const HcaReconcileFilter = ({ handleSearch, activeTab, setVisible }) => {
     headOfComplianceApprovalEscalatedVerificationsSearch,
     setHeadOfComplianceApprovalEscalatedVerificationsSearch,
     resetHeadOfComplianceApprovalEscalatedVerificationsSearch,
-
-    hcaReconcileTransactionsSearch,
-    setHcaReconcileTransactionsSearch,
-    resetHcaReconcileTransactionsSearch,
-    hcaReconcilePortfolioSearch,
-    setHcaReconcilePortfolioSearch,
-    resetHcaReconcilePortfolioSearch,
-    hcaReconcileEscalatedSearch,
-    setHcaReconcileEscalatedSearch,
-    resetHcaReconcileEscalatedSearch,
   } = useSearchBarContext();
 
   // Reset local state
@@ -55,18 +45,18 @@ export const HcaReconcileFilter = ({ handleSearch, activeTab, setVisible }) => {
         instrumentName: "",
         requesterName: "",
         quantity: "",
-        startDate: null,
-        endDate: null,
-        escalationStartDate: null,
-        escalationEndDate: null,
+        requestDateFrom: null,
+        requestDateTo: null,
+        escalatedDateFrom: null,
+        escalatedDateTo: null,
       });
     } else {
       setLocalStatePortfolio({
         instrumentName: "",
         requesterName: "",
         quantity: "",
-        startDate: null,
-        endDate: null,
+        requestDateFrom: null,
+        requestDateTo: null,
       });
     }
   };
@@ -79,10 +69,10 @@ export const HcaReconcileFilter = ({ handleSearch, activeTab, setVisible }) => {
         instrumentName: "",
         requesterName: "",
         quantity: 0,
-        startDate: "",
-        endDate: "",
-        escalationStartDate: "",
-        escalationEndDate: "",
+        requestDateFrom: "",
+        requestDateTo: "",
+        escalatedDateFrom: "",
+        escalatedDateTo: "",
         pageNumber: 0,
         filterTrigger: true,
       }));
@@ -92,8 +82,8 @@ export const HcaReconcileFilter = ({ handleSearch, activeTab, setVisible }) => {
         instrumentName: "",
         requesterName: "",
         quantity: 0,
-        startDate: "",
-        endDate: "",
+        requestDateFrom: "",
+        requestDateTo: "",
         pageNumber: 0,
         filterTrigger: true,
       }));
@@ -184,22 +174,22 @@ export const HcaReconcileFilter = ({ handleSearch, activeTab, setVisible }) => {
             label="Date Range"
             size="medium"
             value={
-              searchState.startDate && searchState.endDate
-                ? [searchState.startDate, searchState.endDate]
+              searchState.requestDateFrom && searchState.requestDateTo
+                ? [searchState.requestDateFrom, searchState.requestDateTo]
                 : null
             }
             onChange={(dates) =>
               setSearchState((prev) => ({
                 ...prev,
-                startDate: dates?.[0] || null,
-                endDate: dates?.[1] || null,
+                requestDateFrom: dates?.[0] || null,
+                requestDateTo: dates?.[1] || null,
               }))
             }
             onClear={() =>
               setSearchState((prev) => ({
                 ...prev,
-                startDate: null,
-                endDate: null,
+                requestDateFrom: null,
+                requestDateTo: null,
               }))
             }
           />
@@ -214,25 +204,25 @@ export const HcaReconcileFilter = ({ handleSearch, activeTab, setVisible }) => {
               label="Escalation Date Range"
               size="medium"
               value={
-                searchState.escalationStartDate && searchState.escalationEndDate
+                searchState.escalatedDateFrom && searchState.escalatedDateTo
                   ? [
-                      searchState.escalationStartDate,
-                      searchState.escalationEndDate,
+                      searchState.escalatedDateFrom,
+                      searchState.escalatedDateTo,
                     ]
                   : null
               }
               onChange={(dates) =>
                 setSearchState((prev) => ({
                   ...prev,
-                  escalationStartDate: dates?.[0] || null,
-                  escalationEndDate: dates?.[1] || null,
+                  escalatedDateFrom: dates?.[0] || null,
+                  escalatedDateTo: dates?.[1] || null,
                 }))
               }
               onClear={() =>
                 setSearchState((prev) => ({
                   ...prev,
-                  escalationStartDate: null,
-                  escalationEndDate: null,
+                  escalatedDateFrom: null,
+                  escalatedDateTo: null,
                 }))
               }
             />

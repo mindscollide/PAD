@@ -15,7 +15,7 @@ import {
   formatNumberWithCommas,
 } from "../../../../../../../commen/funtions/rejex";
 import { useReconcileContext } from "../../../../../../../context/reconsileContax";
-import { GetWorkFlowFilesAPI } from "../../../../../../../api/fileApi";
+import { GetAnnotationOfFilesAttachementAPI, GetWorkFlowFilesAPI } from "../../../../../../../api/fileApi";
 import { useApi } from "../../../../../../../context/ApiContext";
 import { useNotification } from "../../../../../../../components/NotificationProvider/NotificationProvider";
 import { useGlobalLoader } from "../../../../../../../context/LoaderContext";
@@ -144,27 +144,80 @@ const ViewDetailReconcileTransaction = () => {
     setNoteGlobalModal({ visible: true, action: "Non-Compliant" });
     setViewDetailReconcileTransaction(false);
   };
+  // const handleViewTicket = async () => {
+  //   showLoader(true);
+  //   const res = await GetWorkFlowFilesAPI({
+  //     callApi,
+  //     showNotification,
+  //     showLoader,
+  //     requestData: {
+  //       WorkFlowID: selectedReconcileTransactionData.approvalID,
+  //     },
+  //     navigate,
+  //   });
+  //   // 🔹 Add blobName = ""
+  //   const updatedFiles = res.map((file) => ({
+  //     ...file,
+  //     attachmentBlob: "",
+  //   }));
+  //   await setUploadattAchmentsFiles(updatedFiles);
+  //   setViewDetailReconcileTransaction(false);
+  //   setIsViewTicketTransactionModal(true);
+  // };
   const handleViewTicket = async () => {
     showLoader(true);
-    const res = await GetWorkFlowFilesAPI({
-      callApi,
-      showNotification,
-      showLoader,
-      requestData: {
-        WorkFlowID: selectedReconcileTransactionData.approvalID,
-      },
-      navigate,
-    });
-    // 🔹 Add blobName = ""
-    const updatedFiles = res.map((file) => ({
-      ...file,
-      attachmentBlob: "",
-    }));
-    await setUploadattAchmentsFiles(updatedFiles);
-    setViewDetailReconcileTransaction(false);
-    setIsViewTicketTransactionModal(true);
-  };
+    try {
+      const res = await GetWorkFlowFilesAPI({
+        callApi,
+        showNotification,
+        showLoader,
+        requestData: {
+          WorkFlowID: selectedReconcileTransactionData.approvalID,
+        },
+        navigate,
+      });
 
+      if (res?.length > 0) {
+        // Add empty blob initially
+        const updatedFiles = res.map((file) => ({
+          ...file,
+          attachmentBlob: "",
+        }));
+
+        // Work only on the first file
+        const firstFile = updatedFiles[0];
+
+        // 🔹 Wait for blob
+        const blob = await GetAnnotationOfFilesAttachementAPI({
+          callApi,
+          showNotification,
+          showLoader,
+          requestData: { FileID: firstFile.pK_FileID },
+          navigate,
+        });
+
+        if (blob) {
+          // 🔹 Only after blob is ready, update index 0
+          updatedFiles[0] = { ...firstFile, attachmentBlob: blob };
+        }
+
+        // 🔹 Now set final files in state (with blob injected in 0th index)
+        console.log("updatedFiles workflow files", updatedFiles);
+        await setUploadattAchmentsFiles(updatedFiles);
+        setViewDetailReconcileTransaction(false);
+        setIsViewTicketTransactionModal(true);
+      }
+    } catch (err) {
+      console.error("Failed to fetch workflow files", err);
+      showNotification({
+        type: "error",
+        title: "Error",
+        description: "Unable to fetch workflow files.",
+      });
+    } finally {
+      showLoader(false);
+    }
+  };
   return (
     <>
       <GlobalModal
