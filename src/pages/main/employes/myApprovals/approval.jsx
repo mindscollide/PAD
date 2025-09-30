@@ -479,7 +479,6 @@ const Approval = () => {
     0,
     "border-less-table-orange" // Container selector
   );
-  console.log("MQTT: employeeMyApprovalSearch", employeeMyApprovalSearch);
   return (
     <>
       {/* Filter Tags */}

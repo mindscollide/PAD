@@ -833,6 +833,33 @@ span.ant-btn-icon {
   cursor: not-allowed !important;
 }
 
+
+.large-dark-button-2 {
+  padding: 0px 40px !important;
+
+  height: 38px !important;
+  background: var(--Blue-V1, #30426a) !important;
+  border: 1px solid var(--Blue-V1, #30426a) !important;
+  color: #ffffff !important;
+  border-radius: 6.95px !important;
+  font-family: "Switzer Variable" !important;
+  font-weight: 600 !important;
+  font-size: 20px !important;
+  line-height: 100% !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease !important;
+}
+
+.large-dark-button-2:not(:disabled):hover {
+  box-shadow: 4px 4px 6px 0px #00000033 !important;
+}
+
+.large-dark-button-2:disabled {
+  background: #d9d9d9 !important;
+  border: 1px solid #d9d9d9 !important;
+  color: #ffffff !important;
+  cursor: not-allowed !important;
+}
 /* ================================= */
 /* LARGE ICON BUTTONS (263×38px) */
 /* ================================= */
