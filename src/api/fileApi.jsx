@@ -176,7 +176,6 @@ export const SaveDocumentsAPI = async ({
   }
 };
 
-
 export const GetWorkFlowFilesAPI = async ({
   callApi,
   showNotification,
@@ -189,8 +188,8 @@ export const GetWorkFlowFilesAPI = async ({
 
     // 🔹 API Call
     const res = await callApi({
-      requestMethod: import.meta.env.VITE_GET_WORKFLOW_FILES_REQUEST_METHOD, // "ServiceManager.GetWorkFlowFiles"
-      endpoint: import.meta.env.VITE_API_SETTINGS, // "http://192.168.18.241:14004/Settings"
+      requestMethod: import.meta.env.VITE_GET_WORKFLOW_FILES_REQUEST_METHOD,
+      endpoint: import.meta.env.VITE_API_SETTINGS,
       requestData,
     });
 
@@ -209,30 +208,111 @@ export const GetWorkFlowFilesAPI = async ({
 
     // 🔹 Extract response
     const { responseMessage, files } = res.result;
+    const message = getMessage(responseMessage);
 
     // Case 1 → Successfully fetched files
-    if (responseMessage === "Settings_SettingsServiceManager_GetWorkFlowFiles_01") {
+    if (
+      responseMessage === "Settings_SettingsServiceManager_GetWorkFlowFiles_01"
+    ) {
       return files || [];
     }
 
     // Case 2 → No files exist
-    if (responseMessage === "Settings_SettingsServiceManager_GetWorkFlowFiles_02") {
+    if (
+      responseMessage === "Settings_SettingsServiceManager_GetWorkFlowFiles_02"
+    ) {
       return [];
     }
+    if (message) {
+      // Case 3 → Unknown but valid
+      showNotification({
+        type: "warning",
+        title: "No Files Found",
+        description: "No workflow files available.",
+      });
+    }
 
-    // Case 3 → Unknown but valid
-    showNotification({
-      type: "warning",
-      title: "No Files Found",
-      description: "No workflow files available.",
-    });
     return [];
   } catch (error) {
     console.error("GetWorkFlowFilesAPI error:", error);
     showNotification({
       type: "error",
       title: "Error",
-      description: "An unexpected error occurred while fetching workflow files.",
+      description:
+        "An unexpected error occurred while fetching workflow files.",
+    });
+    return null;
+  } finally {
+    showLoader(false);
+  }
+};
+
+export const GetAnnotationOfFilesAttachementAPI = async ({
+  callApi,
+  showNotification,
+  showLoader,
+  requestData, // { FileID: 2 }
+  navigate,
+}) => {
+  try {
+    // 🔹 API Call
+    const res = await callApi({
+      requestMethod: import.meta.env
+        .VITE_GET_ANNOTATION_OF_FILES_ATTACHEMENT_REQUEST_METHOD,
+      endpoint: import.meta.env.VITE_API_SETTINGS,
+      requestData,
+    });
+
+    // 🔹 Handle session expiry
+    if (handleExpiredSession(res, navigate, showLoader)) return null;
+
+    // 🔹 Validate execution
+    if (!res?.result?.isExecuted) {
+      showNotification({
+        type: "error",
+        title: "Get Attachment Failed",
+        description: "Something went wrong while fetching file attachment.",
+      });
+      return null;
+    }
+
+    // 🔹 Extract response
+    const { responseMessage, attachmentBlob } = res.result;
+    const message = getMessage(responseMessage);
+
+    // Case 1 → Successfully fetched
+    if (
+      responseMessage ===
+      "Settings_SettingsServiceManager_GetAnnotationOfFilesAttachement_01"
+    ) {
+      return attachmentBlob || null;
+    }
+
+    // Case 2 → No attachment exists
+    if (
+      responseMessage ===
+      "Settings_SettingsServiceManager_GetAnnotationOfFilesAttachement_02"
+    ) {
+      return null;
+    }
+
+    // Case 3 → Unknown but valid
+    if (message) {
+      showNotification({
+        type: "warning",
+        title: "No Attachment Found",
+        description: "No attachment available for this file.",
+      });
+    }
+
+    return null;
+  } catch (error) {
+    console.error("GetAnnotationOfFilesAttachementAPI error:", error);
+    showNotification({
+      type: "error",
+      title: "Error",
+      description:
+        "An unexpected error occurred while fetching file attachment.",
     });
     return null;
   } finally {
