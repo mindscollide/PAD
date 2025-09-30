@@ -93,7 +93,7 @@ const Home = () => {
   );
 
   // This is For HTA Dashboard Verification Request
-  const headofComplianceFlowVerificationRequest = useMemo(
+  const headofApprovalEscalatedRequest = useMemo(
     () => dashboardData?.headofTradeApproval?.escalatedApprovals?.data || [],
     [dashboardData?.headofTradeApproval?.escalatedApprovals?.data]
   );
@@ -527,13 +527,13 @@ const Home = () => {
                 // warningFlag={true}
                 locationStyle={"up"}
                 title="Escalated Approvals"
-                buttonId={"Reconcile-transactions-view-btn-hca"}
+                buttonId={"Reconcile-transactions-view-btn-hta"}
                 mainClassName={"mediumHomeCard"}
-                boxes={headofComplianceFlowVerificationRequest}
+                boxes={headofApprovalEscalatedRequest}
                 buttonTitle={"See More"}
                 buttonClassName={"big-white-card-button"}
                 userRole={"HTA"}
-                route={"verification"}
+                route={"escalated"}
               />
             </Col>
 

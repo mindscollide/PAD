@@ -159,7 +159,7 @@ export const navigateToPage = (userRole, route, setSelectedKey, navigate) => {
     case "CO":
       pathInfo = complianceOfficerRouteMap[route];
       break;
-    case "headOfTrade":
+    case "HTA":
       pathInfo = headOfTradeRouteMap[route];
       break;
     case "HCA":

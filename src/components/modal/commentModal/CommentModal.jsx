@@ -43,6 +43,8 @@ const CommentModal = ({
     setNonCompliantDeclineModal,
     setCompliantPortfolioApproveModal,
     setNonCompliantPortfolioDeclineModal,
+    isSelectedViewDetailHeadOfApproval,
+    setHeadApprovalNoteModal,
   } = useGlobalModal();
 
   console.log(noteGlobalModal, "noteGlobalModalnoteGlobalModal");
@@ -97,6 +99,8 @@ const CommentModal = ({
       requestdata,
       setNoteGlobalModal,
       setApprovedGlobalModal,
+      setHeadApprovalNoteModal,
+      setHeadDeclineNoteModal,
       submitText,
       setValue,
       navigate,
@@ -152,6 +156,34 @@ const CommentModal = ({
       navigate,
     });
   };
+
+  //When User Click on Approve then note Modal will open then this Api need to Hit
+  const fetchHeadOfApprovalsRequest = async () => {
+    showLoader(true);
+
+    const requestdata = {
+      TradeApprovalID: String(isSelectedViewDetailHeadOfApproval?.approvalID),
+      StatusID: submitText === "HTA-Decline" ? 3 : 2, //Approved or Declined Status
+      Comment: value,
+    };
+
+    console.log(requestdata, "requestdatarequestdata");
+
+    // await UpdateApprovalRequestStatusLineManager({
+    //   callApi,
+    //   showNotification,
+    //   showLoader,
+    //   requestdata,
+    //   setNoteGlobalModal,
+    //   setApprovedGlobalModal,
+    //   setHeadApprovalNoteModal,
+    // setHeadDeclineNoteModal,
+    //   submitText,
+    //   setValue,
+    //   navigate,
+    // });
+  };
+
   return (
     <GlobalModal
       visible={visible}
@@ -227,6 +259,10 @@ const CommentModal = ({
                   onClick={() => {
                     if (submitText === "Approve") {
                       fetchUpdateApprovalsRequest();
+                    } else if (submitText === "HTA-Approve") {
+                      fetchHeadOfApprovalsRequest();
+                    } else if (submitText === "HTA-Decline") {
+                      fetchHeadOfApprovalsRequest();
                     } else if (submitText === "Decline") {
                       fetchUpdateDeclineRequest({ value, selectedOption });
                     } else if (submitText === "Compliant") {

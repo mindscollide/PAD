@@ -226,6 +226,28 @@ export const SearchBarProvider = ({ children }) => {
     tableFilterTrigger: false,
   });
 
+  /**  Head Of Trade Approvals Escalated Approvals Filters*/
+
+  const [
+    HeadOfTradeEscalatedApprovalsSearch,
+    setHeadOfTradeEscalatedApprovalsSearch,
+  ] = useState({
+    InstrumentName: null,
+    Quantity: null,
+    RequestDateFrom: null,
+    RequestDateTo: null,
+    EscalatedDateFrom: null,
+    EscalatedDateTo: null,
+    StatusIds: [],
+    TypeIds: [],
+    RequesterName: null,
+    LineManagerName: null,
+    PageNumber: 0,
+    Length: 10,
+    filterTrigger: false,
+    tableFilterTrigger: false,
+  });
+
   // ===============================
   // Sync Refs (Always-Latest Values)
   // ===============================
@@ -248,6 +270,11 @@ export const SearchBarProvider = ({ children }) => {
   );
   const headOfComplianceApprovalEscalatedVerificationsSearchRef = useRef(
     headOfComplianceApprovalEscalatedVerificationsSearch
+  );
+
+  // Head Of Trade Approval Escalated Approvals
+  const HeadOfTradeEscalatedApprovalsSearchRef = useRef(
+    HeadOfTradeEscalatedApprovalsSearch
   );
 
   // 🔄 Keep refs in sync with latest state
@@ -294,6 +321,12 @@ export const SearchBarProvider = ({ children }) => {
     headOfComplianceApprovalEscalatedVerificationsSearchRef.current =
       headOfComplianceApprovalEscalatedVerificationsSearch;
   }, [headOfComplianceApprovalEscalatedVerificationsSearch]);
+
+  // Head Of Trade Approvals Escalated Approvals
+  useEffect(() => {
+    HeadOfTradeEscalatedApprovalsSearchRef.current =
+      HeadOfTradeEscalatedApprovalsSearch;
+  }, [HeadOfTradeEscalatedApprovalsSearch]);
 
   // ===============================
   // Reset Helpers
@@ -474,6 +507,25 @@ export const SearchBarProvider = ({ children }) => {
       tableFilterTrigger: false,
     });
 
+  /** Reset HTA Escalated Approval filters */
+  const resetHeadOfTradeApprovalEscalatedApprovalsSearch = () =>
+    setHeadOfTradeEscalatedApprovalsSearch({
+      InstrumentName: null,
+      Quantity: null,
+      RequestDateFrom: null,
+      RequestDateTo: null,
+      EscalatedDateFrom: null,
+      EscalatedDateTo: null,
+      StatusIds: [],
+      TypeIds: [],
+      RequesterName: null,
+      LineManagerName: null,
+      PageNumber: 0,
+      Length: 10,
+      filterTrigger: false,
+      tableFilterTrigger: false,
+    });
+
   /** Reset all filters across modules */
   const resetSearchBarContextState = () => {
     resetEmployeeMyApprovalSearch();
@@ -486,6 +538,7 @@ export const SearchBarProvider = ({ children }) => {
     resetComplianceOfficerReconcilePortfoliosSearch();
     resetHeadOfComplianceApprovalPortfolioSearch();
     resetHeadOfComplianceApprovalEscalatedVerificationsSearch();
+    resetHeadOfTradeApprovalEscalatedApprovalsSearch();
   };
 
   // ===============================
@@ -531,6 +584,11 @@ export const SearchBarProvider = ({ children }) => {
         headOfComplianceApprovalEscalatedVerificationsSearch,
         setHeadOfComplianceApprovalEscalatedVerificationsSearch,
         resetHeadOfComplianceApprovalEscalatedVerificationsSearch,
+
+        // Head Of Trade Approval Escalated Approvals
+        HeadOfTradeEscalatedApprovalsSearch,
+        setHeadOfTradeEscalatedApprovalsSearch,
+        resetHeadOfTradeApprovalEscalatedApprovalsSearch,
 
         // Always-latest refs
         employeeMyApprovalSearchRef,
