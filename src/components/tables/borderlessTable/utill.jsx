@@ -11,6 +11,7 @@ export const approvalStatusMap = {
   Resubmit: { backgroundColor: "#f5f5f5", textColor: "#333", label: "Resubmitted" },
 
   
+  "Non-Compliant": { backgroundColor: "#FFDBDB", textColor: "#a50000", label: "Non-Compliant" },
   "Non Compliant": { backgroundColor: "#FFDBDB", textColor: "#a50000", label: "Non-Compliant" },
   Compliant: { backgroundColor: "#C5FFC7", textColor: "#1a6e22", label: "Compliant" },
 };

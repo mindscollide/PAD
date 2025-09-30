@@ -99,6 +99,9 @@ const StatusFilterDropdown = ({
       case "9":
         setFilterOptions(emtStatusOptions);
         break;
+      case "15":
+        setFilterOptions(emtStatusOptions);
+        break;
       default:
         setFilterOptions([]);
     }
@@ -118,6 +121,13 @@ const StatusFilterDropdown = ({
         filterTrigger: true,
       }));
     } else if (selectedKey === "9") {
+      setState((prev) => ({
+        ...prev,
+        status: tempSelected,
+        pageNumber: 0,
+        filterTrigger: true,
+      }));
+    } else if (selectedKey === "15") {
       setState((prev) => ({
         ...prev,
         status: tempSelected,
@@ -155,7 +165,6 @@ const StatusFilterDropdown = ({
    * Also triggers API call with empty filter.
    */
   const handleReset = async () => {
-    console.log("fetchPendingApprovals", selectedKey);
     // we handle employe profolio from here
     if (selectedKey === "4") {
       setState((prev) => ({
@@ -165,6 +174,13 @@ const StatusFilterDropdown = ({
         filterTrigger: true,
       }));
     } else if (selectedKey === "9") {
+      setState((prev) => ({
+        ...prev,
+        status: [],
+        pageNumber: 0,
+        filterTrigger: true,
+      }));
+    } else if (selectedKey === "15") {
       setState((prev) => ({
         ...prev,
         status: [],
@@ -198,7 +214,6 @@ const StatusFilterDropdown = ({
     setOpenState(false);
     confirm(); // Close dropdown
   };
-  console.log("selected tempSelected", tempSelected);
 
   return (
     <div className={styles.dropdownContainer}>
