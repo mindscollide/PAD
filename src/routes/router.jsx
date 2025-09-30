@@ -122,6 +122,36 @@ const router = createBrowserRouter(
             </RoleBasedRoute>
           }
         />
+
+        {/* Head Of Trade Approval */}
+        <Route
+          path="hta-escalated-requests"
+          element={
+            <RoleBasedRoute allowedRoles={[5]}>
+              {/* <EmployeApproval /> */}
+              {<ReconcileIndex />}
+            </RoleBasedRoute>
+          }
+        />
+
+        <Route
+          path="hta-my-actions"
+          element={
+            <RoleBasedRoute allowedRoles={[5]}>
+              <EmployeMyTransaction />{" "}
+            </RoleBasedRoute>
+          }
+        />
+
+        <Route
+          path="hta-reports"
+          element={
+            <RoleBasedRoute allowedRoles={[5]}>
+              <EmpolyesReportsIndex />{" "}
+            </RoleBasedRoute>
+          }
+        />
+
         {/* Compliance Officer */}
         <Route
           path="co-reconcile-transactions"
@@ -148,7 +178,7 @@ const router = createBrowserRouter(
           }
         />
 
-          {/* Head of Compliance Approval */}
+        {/* Head of Compliance Approval */}
         <Route
           path="hca-escalated-transactions-verifications"
           element={

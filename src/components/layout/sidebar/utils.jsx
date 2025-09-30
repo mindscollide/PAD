@@ -249,11 +249,7 @@ const sidebarItems = (collapsed, userRoles = [], selectedKey) => {
           icon: (
             <img
               draggable={false}
-              src={getIcon(
-                "12",
-                ApprovalRequestLightIcon,
-                ApprovalRequestDarkIcon
-              )}
+              src={getIcon("12", VerificationsLightIcon, VerificationsDarkIcon)}
               alt="Escalated Trade Approval Requests"
               className={getIconClasses()}
             />
@@ -387,9 +383,9 @@ export const routeMap = {
   9: "/PAD/co-reconcile-transactions",
   10: "/PAD/co-my-actions",
   11: "/PAD/co-reports",
-  12: "/PAD/escalated-requests",
-  13: "/PAD/my-actions",
-  14: "/PAD/reports",
+  12: "/PAD/hta-escalated-requests",
+  13: "/PAD/hta-my-actions",
+  14: "/PAD/hta-reports",
   15: "/PAD/hca-escalated-transactions-verifications",
   16: "/PAD/hca-my-actions",
   17: "/PAD/hca-reports",

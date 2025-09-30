@@ -80,10 +80,17 @@ export const typeColorMap = {
     textCountColor: "#30426A",
     textAlign: "center",
   },
-    pending_verification_request: {
+  pending_verification_request: {
     bgColor: "#EDF3FF",
     textLableColor: "#30426A", // Using var(--Blue-V1)
     textCountColor: "#30426A",
+    textAlign: "center",
+  },
+
+  escalated_approval_request: {
+    bgColor: "#FFF1E7",
+    textLableColor: "#F67F29", // Using var(--Blue-V1)
+    textCountColor: "#F67F29",
     textAlign: "center",
   },
 };
@@ -113,11 +120,9 @@ export const complianceOfficerRouteMap = {
 };
 
 export const headOfTradeRouteMap = {
-  approvals: { path: "approvals", key: "1" },
-  transactions: { path: "transactions", key: "2" },
-  history: { path: "history", key: "3" },
-  portfolio: { path: "portfolios", key: "4" },
-  reports: { path: "reports", key: "5" },
+  escalated: { path: "hta-escalated-requests", key: "12" },
+  action: { path: "hta-my-actions", key: "13" },
+  reports: { path: "hta-reports", key: "14" },
 };
 
 export const headOfComplianceOfficerRouteMap = {
