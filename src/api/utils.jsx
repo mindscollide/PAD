@@ -251,11 +251,19 @@ export const responseMessages = {
   Settings_SettingsServiceManager_SaveFiles_03: "Exception",
   Settings_SettingsServiceManager_SaveFiles_04: "Delete failed",
 
-    // GetWorkFlowFiles
+  // GetWorkFlowFiles
   Settings_SettingsServiceManager_GetWorkFlowFiles_01: "Data found",
   Settings_SettingsServiceManager_GetWorkFlowFiles_02: "No data",
   Settings_SettingsServiceManager_GetWorkFlowFiles_03: "Exception",
   Settings_SettingsServiceManager_GetWorkFlowFiles_04: "Invalid request",
+
+  // GetAnnotationOfFilesAttachement
+  Settings_SettingsServiceManager_GetAnnotationOfFilesAttachement_01:
+    " Data Available",
+  Settings_SettingsServiceManager_GetAnnotationOfFilesAttachement_02:
+    "No data available",
+  Settings_SettingsServiceManager_GetAnnotationOfFilesAttachement_03:
+    "Exception",
 };
 
 /**
