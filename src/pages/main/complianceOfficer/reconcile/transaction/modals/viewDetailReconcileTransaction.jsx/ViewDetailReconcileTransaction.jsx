@@ -155,7 +155,12 @@ const ViewDetailReconcileTransaction = () => {
       },
       navigate,
     });
-    await setUploadattAchmentsFiles(res);
+    // 🔹 Add blobName = ""
+    const updatedFiles = res.map((file) => ({
+      ...file,
+      attachmentBlob: "",
+    }));
+    await setUploadattAchmentsFiles(updatedFiles);
     setViewDetailReconcileTransaction(false);
     setIsViewTicketTransactionModal(true);
   };
