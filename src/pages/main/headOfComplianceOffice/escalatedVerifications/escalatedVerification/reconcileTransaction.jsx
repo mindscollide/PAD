@@ -1,4 +1,4 @@
-// src/pages/complianceOfficer/reconcile/ReconcileTransaction.jsx
+// src/pages/complianceOfficer/reconcile/EscalatedTransactionVerifications.jsx
 
 import React, { useEffect, useState, useCallback, useRef } from "react";
 import { useNavigate } from "react-router-dom";
@@ -59,7 +59,7 @@ const COMPONENT_CONFIG = {
 // =============================================================================
 
 /**
- * ReconcileTransaction Component
+ * EscalatedTransactionVerifications Component
  *
  * Displays and manages the Reconcile → Transactions tab for Compliance Officers.
  * Handles fetching, displaying, and managing escalated transactions that require
@@ -69,7 +69,7 @@ const COMPONENT_CONFIG = {
  * @component
  * @returns {JSX.Element} Rendered component with transaction table and modals
  */
-const ReconcileTransaction = () => {
+const EscalatedTransactionVerifications = () => {
   const navigate = useNavigate();
 
   // ===========================================================================
@@ -176,17 +176,17 @@ const ReconcileTransaction = () => {
     return {
       RequesterName: searchState.requesterName || "",
       InstrumentName:
-        searchState.mainInstrumentName || searchState.instrumentName ||"",
-      Quantity: searchState.quantity ? Number(searchState.quantity) :0,
+        searchState.mainInstrumentName || searchState.instrumentName || "",
+      Quantity: searchState.quantity ? Number(searchState.quantity) : 0,
       RequestDateFrom: RequestDateFrom,
       RequestDateTo: RequestDateTo,
       EscalatedDateFrom: EscalatedDateFrom,
       EscalatedDateTo: EscalatedDateTo,
       StatusIds: mapStatusToIds(searchState.status),
-      TypeIds: mapBuySellToIds(
-        searchState.type,
-        addApprovalRequestData?.[COMPONENT_CONFIG.ASSET_TYPE]
-      ),
+      TypeIds:
+        mapBuySellToIds(searchState.type, addApprovalRequestData?.Equities) ||
+        [],
+
       PageNumber: Number(searchState.pageNumber) || 0,
       Length:
         Number(searchState.pageSize) || COMPONENT_CONFIG.DEFAULT_PAGE_SIZE,
@@ -462,4 +462,4 @@ const ReconcileTransaction = () => {
   );
 };
 
-export default ReconcileTransaction;
+export default EscalatedTransactionVerifications;

@@ -76,17 +76,21 @@ export const getTradeTypeById = (assetTypeData, tradeType) => {
  */
 export const mapToTableRows = (assetTypeData, list = []) =>
   (Array.isArray(list) ? list : []).map((item = {}) => ({
-    approvalID: item?.approvalID ?? "—",
-    requesterName: item?.requesterName ?? "—",
-    assetTypeShortCode: item?.assetType?.assetTypeShortCode ?? "—",
-    instrument: item?.instrument?.instrumentCode ?? "—",
-    instrumentName: item?.instrument?.instrumentName ?? "—",
-    tradeApprovalID: item?.tradeApprovalID ?? "—",
-    transactionRequestDateime:
+    requesterName: item?.requesterName,
+    complianceOfficerName: item?.complianceOfficerName,
+    approvalID: item?.approvalID,
+    instrumentCode: item?.instrument?.instrumentCode || "—",
+    instrumentName: item?.instrument?.instrumentName || "—",
+    assetTypeShortCode: item?.assetType?.assetTypeShortCode || "—",
+    transactionDate:
       [item?.requestDate, item?.requestTime].filter(Boolean).join(" ") || "—",
-    quantity: item?.quantity ?? "—",
-    type: getTradeTypeById(assetTypeData, item?.tradeType) ?? "—",
-    status: item?.approvalStatus?.approvalStatusName ?? "—",
+    escalatedDate:
+      [item?.escalatedOnDate, item?.escalatedOnTime]
+        .filter(Boolean)
+        .join(" ") || "—",
+    quantity: item?.quantity,
+    type: getTradeTypeById(assetTypeData, item?.tradeType),
+    status: item?.approvalStatus?.approvalStatusName || "—",
   }));
 
 /* ------------------------------------------------------------------ */
@@ -106,41 +110,33 @@ const nowrapCell = (minWidth, maxWidth) => ({
 /* ------------------------------------------------------------------ */
 /* 🔹 Column Definitions */
 /* ------------------------------------------------------------------ */
-
 /**
- * Generates column definitions for the Reconcile (Pending Approval) table.
+ * Builds column definitions for the "Reconcile Portfolio" borderless table.
  *
- * Features:
- * - Sorting with custom icons
- * - Ellipsis handling
- * - Fallback values for missing data
- * - External filter dropdowns for trade type & status
- *
- * @param {Object} approvalStatusMap - Map of statuses (`status -> { label, backgroundColor, textColor }`).
- * @param {Object} sortedInfo - Ant Design Table sort state.
- * @param {Object} complianceOfficerReconcilePortfolioSearch - Current filter/search state.
- * @param {Function} setComplianceOfficerReconcilePortfolioSearch - Setter to update filter/search state.
- * @returns {Array<Object>} AntD `Table` column configs.
+ * @param {Object} approvalStatusMap - Mapping of status keys → {label, backgroundColor, textColor}.
+ * @param {Object} sortedInfo - AntD sorter state (columnKey, order).
+ * @param {Object} headOfComplianceApprovalPortfolioSearch - Current filter state for the table.
+ * @param {Function} setHeadOfComplianceApprovalPortfolioSearch - Setter to update filter state.
+ * @returns {Array<Object>} Column configurations for AntD Table.
  */
 export const getBorderlessTableColumns = ({
   approvalStatusMap = {},
   sortedInfo = {},
-  complianceOfficerReconcilePortfolioSearch = {},
-  setComplianceOfficerReconcilePortfolioSearch = () => {},
-  setIsViewDetail,
+  headOfComplianceApprovalPortfolioSearch = {},
+  setHeadOfComplianceApprovalPortfolioSearch = () => {},
   handleViewDetailsForReconcileTransaction,
 }) => [
-  // 🔹 Requester Name
+  /* --------------------- Requester Name --------------------- */
   {
     title: (
       <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-        Requester Name{getSortIcon("requesterName", sortedInfo)}
+        Requester Name {getSortIcon("requesterName", sortedInfo)}
       </div>
     ),
-
     dataIndex: "requesterName",
     key: "requesterName",
     ellipsis: true,
+    width: 140,
     sorter: (a, b) =>
       (a?.requesterName || "").localeCompare(b?.requesterName || ""),
     sortOrder:
@@ -152,11 +148,11 @@ export const getBorderlessTableColumns = ({
         {text || "—"}
       </span>
     ),
-    onHeaderCell: () => nowrapCell(70, 150),
-    onCell: () => nowrapCell(70, 150),
+    onHeaderCell: () => nowrapCell(120, 160),
+    onCell: () => nowrapCell(120, 160),
   },
 
-  // 🔹 Instrument
+  /* --------------------- Instrument --------------------- */
   {
     title: (
       <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
@@ -166,6 +162,7 @@ export const getBorderlessTableColumns = ({
     dataIndex: "instrumentCode",
     key: "instrumentCode",
     ellipsis: true,
+    width: 150,
     sorter: (a, b) =>
       (a?.instrumentCode || "").localeCompare(b?.instrumentCode || ""),
     sortOrder:
@@ -173,31 +170,32 @@ export const getBorderlessTableColumns = ({
     showSorterTooltip: false,
     sortIcon: () => null,
     render: (_, record) => {
-      const code = record?.instrument || "—";
+      const code = record?.instrumentCode || "—";
       const name = record?.instrumentName || "—";
       const assetCode = record?.assetTypeShortCode || "";
 
       return (
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: "12px",
-          }}
-        >
-          <span className="custom-shortCode-asset" style={{ minWidth: 30 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+          <span
+            className="custom-shortCode-asset"
+            style={{
+              minWidth: 32,
+              flexShrink: 0,
+            }}
+          >
             {assetCode?.substring(0, 2).toUpperCase()}
           </span>
-          <Tooltip title={name} placement="topLeft">
+          <Tooltip title={`${code} - ${name}`} placement="topLeft">
             <span
               className="font-medium"
               style={{
                 overflow: "hidden",
                 textOverflow: "ellipsis",
                 whiteSpace: "nowrap",
-                maxWidth: "200px",
+                maxWidth: "100%",
                 display: "inline-block",
                 cursor: "pointer",
+                flex: 1,
               }}
             >
               {code}
@@ -206,29 +204,25 @@ export const getBorderlessTableColumns = ({
         </div>
       );
     },
-    onHeaderCell: () => nowrapCell(40, 150),
-    onCell: () => nowrapCell(40, 150),
+    onHeaderCell: () => nowrapCell(130, 170),
+    onCell: () => nowrapCell(130, 170),
   },
 
-  // 🔹 Date & Time
+  /* --------------------- Date & Time --------------------- */
   {
     title: (
       <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-        Upload date & time{" "}
-        {getSortIcon("transactionRequestDateime", sortedInfo)}
+        Upload Date & Time {getSortIcon("transactionDate", sortedInfo)}
       </div>
     ),
-    dataIndex: "transactionRequestDateime",
-    key: "transactionRequestDateime",
+    dataIndex: "transactionDate",
+    key: "transactionDate",
     ellipsis: true,
+    width: 140,
     sorter: (a, b) =>
-      (a?.transactionRequestDateime || "").localeCompare(
-        b?.transactionRequestDateime || ""
-      ),
+      (a?.transactionDate || "").localeCompare(b?.transactionDate || ""),
     sortOrder:
-      sortedInfo?.columnKey === "transactionRequestDateime"
-        ? sortedInfo.order
-        : null,
+      sortedInfo?.columnKey === "transactionDate" ? sortedInfo.order : null,
     showSorterTooltip: false,
     sortIcon: () => null,
     render: (date) => (
@@ -236,9 +230,11 @@ export const getBorderlessTableColumns = ({
         {formatApiDateTime(date) || "—"}
       </span>
     ),
+    onHeaderCell: () => nowrapCell(120, 160),
+    onCell: () => nowrapCell(120, 160),
   },
 
-  // 🔹 Quantity
+  /* --------------------- Quantity --------------------- */
   {
     title: (
       <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
@@ -248,48 +244,55 @@ export const getBorderlessTableColumns = ({
     dataIndex: "quantity",
     key: "quantity",
     align: "left",
+    width: 100,
     sorter: (a, b) => (a?.quantity ?? 0) - (b?.quantity ?? 0),
     sortOrder: sortedInfo?.columnKey === "quantity" ? sortedInfo.order : null,
     showSorterTooltip: false,
     sortIcon: () => null,
-    render: (q) => <span className="font-medium">{q.toLocaleString()}</span>,
+    render: (q) => (
+      <span className="font-medium">{q?.toLocaleString() || "—"}</span>
+    ),
     onHeaderCell: () => nowrapCell(80, 120),
     onCell: () => nowrapCell(80, 120),
   },
 
-  // 🔹 Trade Type
+  /* --------------------- Trade Type --------------------- */
   {
     title: (
       <TypeColumnTitle
-        state={complianceOfficerReconcilePortfolioSearch}
-        setState={setComplianceOfficerReconcilePortfolioSearch}
+        state={headOfComplianceApprovalPortfolioSearch}
+        setState={setHeadOfComplianceApprovalPortfolioSearch}
       />
     ),
     dataIndex: "type",
     key: "type",
     ellipsis: true,
-    filteredValue: complianceOfficerReconcilePortfolioSearch?.type?.length
-      ? complianceOfficerReconcilePortfolioSearch.type
+    width: 100,
+    filteredValue: headOfComplianceApprovalPortfolioSearch?.type
+      ?.length
+      ? headOfComplianceApprovalPortfolioSearch.type
       : null,
     onFilter: () => true,
     render: (type) => <span title={type || "—"}>{type || "—"}</span>,
-    onHeaderCell: () => nowrapCell(100, 100),
-    onCell: () => nowrapCell(100, 100),
+    onHeaderCell: () => nowrapCell(90, 110),
+    onCell: () => nowrapCell(90, 110),
   },
 
-  // 🔹 Status
+  /* --------------------- Status --------------------- */
   {
     title: (
       <StatusColumnTitle
-        state={complianceOfficerReconcilePortfolioSearch}
-        setState={setComplianceOfficerReconcilePortfolioSearch}
+        state={headOfComplianceApprovalPortfolioSearch}
+        setState={setHeadOfComplianceApprovalPortfolioSearch}
       />
     ),
     dataIndex: "status",
     key: "status",
     ellipsis: true,
-    filteredValue: complianceOfficerReconcilePortfolioSearch?.status?.length
-      ? complianceOfficerReconcilePortfolioSearch.status
+    width: 140,
+    filteredValue: headOfComplianceApprovalPortfolioSearch?.status
+      ?.length
+      ? headOfComplianceApprovalPortfolioSearch.status
       : null,
     onFilter: () => true,
     render: (status) => {
@@ -303,6 +306,12 @@ export const getBorderlessTableColumns = ({
             overflow: "hidden",
             textOverflow: "ellipsis",
             display: "inline-block",
+            maxWidth: "120px",
+            border: "none",
+            borderRadius: "4px",
+            padding: "2px 8px",
+            fontSize: "12px",
+            fontWeight: "500",
           }}
           className="border-less-table-orange-status"
         >
@@ -310,28 +319,80 @@ export const getBorderlessTableColumns = ({
         </Tag>
       );
     },
-    onHeaderCell: () => nowrapCell(150, 240),
-    onCell: () => nowrapCell(150, 240),
+    onHeaderCell: () => nowrapCell(120, 160),
+    onCell: () => nowrapCell(120, 160),
   },
 
-  // 🔹 Actions
+  /* --------------------- Escalated Date & Time --------------------- */
+  {
+    title: (
+      <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+        Escalated on {getSortIcon("escalatedDate", sortedInfo)}
+      </div>
+    ),
+    dataIndex: "escalatedDate",
+    key: "escalatedDate",
+    ellipsis: true,
+    width: 140,
+    sorter: (a, b) =>
+      (a?.escalatedDate || "").localeCompare(b?.escalatedDate || ""),
+    sortOrder:
+      sortedInfo?.columnKey === "escalatedDate" ? sortedInfo.order : null,
+    showSorterTooltip: false,
+    sortIcon: () => null,
+    render: (date) => (
+      <span className="text-gray-600" title={date || "—"}>
+        {formatApiDateTime(date) || "—"}
+      </span>
+    ),
+    onHeaderCell: () => nowrapCell(120, 160),
+    onCell: () => nowrapCell(120, 160),
+  },
+
+  /* --------------------- Actions --------------------- */
   {
     title: "",
     key: "actions",
     align: "center",
+    width: 120,
+    fixed: "right",
     render: (text, record) => {
-      //Global State to selected data to show in ViewDetailModal
-      const { setViewDetailPortfolioTransaction } = useGlobalModal();
+      // Note: Using hook inside render might cause issues, consider moving this logic
+      const { setViewDetailReconcileTransaction } = useGlobalModal();
       return (
         <Button
           className="big-blue-button"
           text="View Details"
+          style={{
+            padding: "4px 12px",
+            fontSize: "12px",
+            height: "28px",
+            whiteSpace: "nowrap",
+          }}
           onClick={() => {
             handleViewDetailsForReconcileTransaction(record?.approvalID);
-            setViewDetailPortfolioTransaction(true);
+            setViewDetailReconcileTransaction(true);
           }}
         />
       );
     },
+    onHeaderCell: () => nowrapCell(110, 130),
+    onCell: () => nowrapCell(110, 130),
   },
 ];
+
+// Optional: Add a helper function to calculate total width
+export const getTotalTableWidth = () => {
+  const columns = [
+    140, // Requester Name
+    160, // Compliance Officer
+    150, // Instrument
+    140, // Date & Time
+    100, // Quantity
+    100, // Trade Type
+    140, // Status
+    140, // Escalated Date
+    120, // Actions
+  ];
+  return columns.reduce((total, width) => total + width, 0);
+};

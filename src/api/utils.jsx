@@ -272,6 +272,14 @@ export const responseMessages = {
     "No data available",
   PAD_Trade_TradeServiceManager_SearchHeadOfComplianceEscalatedTransactions_03:
     "Exception",
+
+  // SearchHeadOfComplianceEscalatedPortfolio
+  PAD_Trade_TradeServiceManager_SearchHeadOfComplianceEscalatedPortfolio_01:
+    "Data Available",
+  PAD_Trade_TradeServiceManager_SearchHeadOfComplianceEscalatedPortfolio_02:
+    "No data available",
+  PAD_Trade_TradeServiceManager_SearchHeadOfComplianceEscalatedPortfolio_03:
+    "Exception",
 };
 
 /**

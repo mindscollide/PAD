@@ -171,7 +171,7 @@ export const HcaReconcileFilter = ({ handleSearch, activeTab, setVisible }) => {
 
         <Col xs={24} sm={24} md={12}>
           <DateRangePicker
-            label="Date Range"
+            label="Transaction Date Range"
             size="medium"
             value={
               searchState.requestDateFrom && searchState.requestDateTo
@@ -197,38 +197,33 @@ export const HcaReconcileFilter = ({ handleSearch, activeTab, setVisible }) => {
       </Row>
 
       {/* Escalation Date Range (only for escalated tab) */}
-      {activeTab === "escalated" && (
-        <Row gutter={[12, 12]}>
-          <Col xs={24} sm={24} md={12}>
-            <DateRangePicker
-              label="Escalation Date Range"
-              size="medium"
-              value={
-                searchState.escalatedDateFrom && searchState.escalatedDateTo
-                  ? [
-                      searchState.escalatedDateFrom,
-                      searchState.escalatedDateTo,
-                    ]
-                  : null
-              }
-              onChange={(dates) =>
-                setSearchState((prev) => ({
-                  ...prev,
-                  escalatedDateFrom: dates?.[0] || null,
-                  escalatedDateTo: dates?.[1] || null,
-                }))
-              }
-              onClear={() =>
-                setSearchState((prev) => ({
-                  ...prev,
-                  escalatedDateFrom: null,
-                  escalatedDateTo: null,
-                }))
-              }
-            />
-          </Col>
-        </Row>
-      )}
+      <Row gutter={[12, 12]}>
+        <Col xs={24} sm={24} md={12}>
+          <DateRangePicker
+            label="Escalation Date Range"
+            size="medium"
+            value={
+              searchState.escalatedDateFrom && searchState.escalatedDateTo
+                ? [searchState.escalatedDateFrom, searchState.escalatedDateTo]
+                : null
+            }
+            onChange={(dates) =>
+              setSearchState((prev) => ({
+                ...prev,
+                escalatedDateFrom: dates?.[0] || null,
+                escalatedDateTo: dates?.[1] || null,
+              }))
+            }
+            onClear={() =>
+              setSearchState((prev) => ({
+                ...prev,
+                escalatedDateFrom: null,
+                escalatedDateTo: null,
+              }))
+            }
+          />
+        </Col>
+      </Row>
 
       {/* Buttons */}
       <Row gutter={[12, 12]} justify="end" style={{ marginTop: 16 }}>
