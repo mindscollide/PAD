@@ -37,6 +37,10 @@ import NotePortfolioComplianceOfficerModal from "./modals/notePortfolioComplianc
 import ViewReconcilePortfolioComment from "./modals/viewReconcilePortfolioComment/ViewReconcilePortfolioComment";
 import CompliantPortfolioApproveModal from "./modals/compliantPortfolioApproveModal/CompliantPortfolioApproveModal";
 import NonCompliantPortdolioDeclineModal from "./modals/nonCompliantPortdolioDeclineModal/nonCompliantPortdolioDeclineModal";
+import {
+  mapBuySellToIds,
+  mapStatusToIds,
+} from "../../../../../components/dropdowns/filters/utils";
 
 /**
  * 📌 ReconcilePortfolio
@@ -139,7 +143,11 @@ const ReconcilePortfolio = () => {
       ? toYYMMDD(searchState.startDate)
       : "";
     const endDate = searchState.endDate ? toYYMMDD(searchState.endDate) : "";
-
+    const TypeIds = mapBuySellToIds(
+      searchState.type,
+      addApprovalRequestData?.Equities
+    );
+    const statusIds = mapStatusToIds(searchState.status);
     return {
       RequesterName: searchState.requesterName || "",
       InstrumentName:
@@ -147,8 +155,8 @@ const ReconcilePortfolio = () => {
       Quantity: searchState.quantity ? Number(searchState.quantity) : 0,
       StartDate: startDate,
       EndDate: endDate,
-      StatusIds: searchState.status || [],
-      TypeIds: searchState.type || [],
+      StatusIds: statusIds || [],
+      TypeIds: TypeIds || [],
       PageNumber: Number(searchState.pageNumber) || 0,
       Length: Number(searchState.pageSize) || 10,
     };

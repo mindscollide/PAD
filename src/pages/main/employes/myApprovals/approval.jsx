@@ -140,15 +140,19 @@ const Approval = () => {
     if (loader) {
       await showLoader(true);
     }
-
+    const TypeIds = mapBuySellToIds(
+      employeeMyApprovalSearch.type,
+      addApprovalRequestData?.Equities
+    );
+    const statusIds = mapStatusToIds(employeeMyApprovalSearch.status);
     const requestdata = {
       InstrumentName:
         employeeMyApprovalSearch.instrumentName ||
         employeeMyApprovalSearch.mainInstrumentName,
       Date: toYYMMDD(employeeMyApprovalSearch.startDate) || "",
       Quantity: employeeMyApprovalSearch.quantity || 0,
-      StatusIds: employeeMyApprovalSearch.status || [],
-      TypeIds: employeeMyApprovalSearch.type || [],
+      StatusIds: statusIds || [],
+      TypeIds: TypeIds || [],
       PageNumber: 0,
       Length: employeeMyApprovalSearch.pageSize || 10,
     };
@@ -394,6 +398,7 @@ const Approval = () => {
       setLoadingMore(false);
     }
   }, [employeeMyApproval]);
+
   useEffect(() => {
     try {
       if (employeeMyApprovalMqtt) {
