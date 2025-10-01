@@ -30,6 +30,7 @@ export const emaStatusOptions = [
  * Status options for Employee My Approval (Line Manager Approvals).
  */
 export const emtStatusOptions = ["Pending", "Compliant", "Non-Compliant"];
+export const escalated = ["Pending",];
 
 /**
  * Status options for pending approvals (Line Manager).

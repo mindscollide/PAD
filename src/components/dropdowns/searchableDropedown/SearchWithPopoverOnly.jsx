@@ -60,6 +60,8 @@ const SearchWithPopoverOnly = () => {
     setHeadOfComplianceApprovalPortfolioSearch,
     headOfComplianceApprovalEscalatedVerificationsSearch,
     setHeadOfComplianceApprovalEscalatedVerificationsSearch,
+    headOfTradeEscalatedApprovalsSearch,
+    setHeadOfTradeEscalatedApprovalsSearch,
   } = useSearchBarContext();
 
   // -------------------------
@@ -137,6 +139,16 @@ const SearchWithPopoverOnly = () => {
           }));
         }
         break;
+
+      case "12": // HTA Escalated
+        setHeadOfTradeEscalatedApprovalsSearch((prev) => ({
+          ...prev,
+          mainInstrumentName: "",
+          pageNumber: 0,
+          filterTrigger: true,
+        }));
+        break;
+
       case "15": // Head of Compliance Approval
         if (activeTabHCO === "escalated") {
           setHeadOfComplianceApprovalEscalatedVerificationsSearch((prev) => ({
@@ -255,6 +267,25 @@ const SearchWithPopoverOnly = () => {
         }
         break;
 
+      case "12": // HTA Escalated
+        setHeadOfTradeEscalatedApprovalsSearch((prev) => ({
+          ...prev,
+          instrumentName: "",
+          quantity: "",
+          requestDateFrom: "",
+          requestDateTo: "",
+          escalatedDateFrom: "",
+          escalatedDateTo: "",
+          status: [],
+          type: [],
+          requesterName: "",
+          lineManagerName: "",
+          pageNumber: 0,
+          length: 10,
+          filterTrigger: true,
+        }));
+        break;
+
       case "15": // Head of Compliance Approval
         if (activeTabHCO === "escalated") {
           setHeadOfComplianceApprovalEscalatedVerificationsSearch((prev) => ({
@@ -315,7 +346,8 @@ const SearchWithPopoverOnly = () => {
           complianceOfficerReconcilePortfolioSearch,
           complianceOfficerReconcileTransactionsSearch,
           headOfComplianceApprovalEscalatedVerificationsSearch,
-          headOfComplianceApprovalPortfolioSearch
+          headOfComplianceApprovalPortfolioSearch,
+          headOfTradeEscalatedApprovalsSearch
         )}
         onChange={(e) => {
           const value = removeFirstSpace(e.target.value); // ✅ Prevent leading space
@@ -333,7 +365,8 @@ const SearchWithPopoverOnly = () => {
             setComplianceOfficerReconcilePortfolioSearch,
             setComplianceOfficerReconcileTransactionsSearch,
             setHeadOfComplianceApprovalEscalatedVerificationsSearch,
-            setHeadOfComplianceApprovalPortfolioSearch
+            setHeadOfComplianceApprovalPortfolioSearch,
+            setHeadOfTradeEscalatedApprovalsSearch
           );
         }}
         style={{
@@ -381,6 +414,7 @@ const SearchWithPopoverOnly = () => {
               setComplianceOfficerReconcileTransactionsSearch,
               setHeadOfComplianceApprovalEscalatedVerificationsSearch,
               setHeadOfComplianceApprovalPortfolioSearch,
+              setHeadOfTradeEscalatedApprovalsSearch
             });
           }
         }}

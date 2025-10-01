@@ -231,21 +231,21 @@ export const SearchBarProvider = ({ children }) => {
   /**  Head Of Trade Approvals Escalated Approvals Filters*/
 
   const [
-    HeadOfTradeEscalatedApprovalsSearch,
+    headOfTradeEscalatedApprovalsSearch,
     setHeadOfTradeEscalatedApprovalsSearch,
   ] = useState({
-    InstrumentName: null,
-    Quantity: null,
-    RequestDateFrom: null,
-    RequestDateTo: null,
-    EscalatedDateFrom: null,
-    EscalatedDateTo: null,
-    StatusIds: [],
-    TypeIds: [],
-    RequesterName: null,
-    LineManagerName: null,
-    PageNumber: 0,
-    Length: 10,
+    instrumentName: "",
+    quantity: "",
+    requestDateFrom: "",
+    requestDateTo: "",
+    escalatedDateFrom: "",
+    escalatedDateTo: "",
+    status: [],
+    type: [],
+    requesterName: "",
+    lineManagerName: "",
+    pageNumber: 0,
+    length: 10,
     filterTrigger: false,
     tableFilterTrigger: false,
   });
@@ -275,8 +275,8 @@ export const SearchBarProvider = ({ children }) => {
   );
 
   // Head Of Trade Approval Escalated Approvals
-  const HeadOfTradeEscalatedApprovalsSearchRef = useRef(
-    HeadOfTradeEscalatedApprovalsSearch
+  const headOfTradeEscalatedApprovalsSearchRef = useRef(
+    headOfTradeEscalatedApprovalsSearch
   );
 
   // 🔄 Keep refs in sync with latest state
@@ -326,9 +326,9 @@ export const SearchBarProvider = ({ children }) => {
 
   // Head Of Trade Approvals Escalated Approvals
   useEffect(() => {
-    HeadOfTradeEscalatedApprovalsSearchRef.current =
-      HeadOfTradeEscalatedApprovalsSearch;
-  }, [HeadOfTradeEscalatedApprovalsSearch]);
+    headOfTradeEscalatedApprovalsSearchRef.current =
+      headOfTradeEscalatedApprovalsSearch;
+  }, [headOfTradeEscalatedApprovalsSearch]);
 
   // ===============================
   // Reset Helpers
@@ -514,18 +514,18 @@ export const SearchBarProvider = ({ children }) => {
   /** Reset HTA Escalated Approval filters */
   const resetHeadOfTradeApprovalEscalatedApprovalsSearch = () =>
     setHeadOfTradeEscalatedApprovalsSearch({
-      InstrumentName: null,
-      Quantity: null,
-      RequestDateFrom: null,
-      RequestDateTo: null,
-      EscalatedDateFrom: null,
-      EscalatedDateTo: null,
-      StatusIds: [],
-      TypeIds: [],
-      RequesterName: null,
-      LineManagerName: null,
-      PageNumber: 0,
-      Length: 10,
+      instrumentName: "",
+      quantity: "",
+      requestDateFrom: "",
+      requestDateTo: "",
+      escalatedDateFrom: "",
+      escalatedDateTo: "",
+      status: [],
+      type: [],
+      requesterName: "",
+      lineManagerName: "",
+      pageNumber: 0,
+      length: 10,
       filterTrigger: false,
       tableFilterTrigger: false,
     });
@@ -590,7 +590,7 @@ export const SearchBarProvider = ({ children }) => {
         resetHeadOfComplianceApprovalEscalatedVerificationsSearch,
 
         // Head Of Trade Approval Escalated Approvals
-        HeadOfTradeEscalatedApprovalsSearch,
+        headOfTradeEscalatedApprovalsSearch,
         setHeadOfTradeEscalatedApprovalsSearch,
         resetHeadOfTradeApprovalEscalatedApprovalsSearch,
 

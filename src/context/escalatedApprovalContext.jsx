@@ -36,8 +36,9 @@ export const MyEscalatedApprovalsProvider = ({ children }) => {
    * - `totalRecords`: Total count of records
    */
   const [escalatedApprovalData, setEscalatedApprovalData] = useState({
-    htaEscalatedApprovals: [],
+    data: [],
     totalRecords: 0,
+    apiCall: false,
   });
 
   // Context STate to extract data from get All View Trade Approval which is show by click on View Detail
@@ -57,8 +58,7 @@ export const MyEscalatedApprovalsProvider = ({ children }) => {
    */
   const resetMyEscalatedApprovalContextState = () => {
     setEscalatedApprovalData({
-      htaEscalatedApprovals: [],
-      totalRecords: 0,
+       data: [], totalRecords: 0, apiCall: false 
     });
   };
 
