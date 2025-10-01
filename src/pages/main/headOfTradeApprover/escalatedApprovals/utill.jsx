@@ -293,7 +293,7 @@ export const getBorderlessTableColumns = ({
     }),
   },
   {
-    title: withSortIcon("Request Date & Time", "requestDateTime", sortedInfo),
+    title: withSortIcon("Date & Time", "requestDateTime", sortedInfo),
     dataIndex: "requestDateTime",
     key: "requestDateTime",
     width: "13%",
