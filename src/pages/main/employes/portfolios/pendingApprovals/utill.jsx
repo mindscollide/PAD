@@ -1,6 +1,6 @@
 // utils.jsx
 import React from "react";
-import { Tag, Typography } from "antd";
+import { Tag, Tooltip, Typography } from "antd";
 import { Button } from "../../../../../components";
 
 // Assets (sort icons)
@@ -91,9 +91,9 @@ export const getBorderlessTableColumns = (
     showSorterTooltip: false,
     sortIcon: () => null,
     render: (text) => (
-      <span className="font-medium" title={text || "N/A"}>
-        {text || "—"}
-      </span>
+      <Tooltip title={text} placement="topLeft">
+        <span className="font-medium">{text || "—"}</span>
+      </Tooltip>
     ),
   },
 

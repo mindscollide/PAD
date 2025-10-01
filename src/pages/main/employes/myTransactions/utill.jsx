@@ -5,7 +5,7 @@ import ArrowDown from "../../../../assets/img/arrow-down-dark.png";
 import DefaultColumArrow from "../../../../assets/img/default-colum-arrow.png";
 import TypeColumnTitle from "../../../../components/dropdowns/filters/typeColumnTitle";
 import StatusColumnTitle from "../../../../components/dropdowns/filters/statusColumnTitle";
-import { Tag } from "antd";
+import { Tag, Tooltip } from "antd";
 import style from "./myTransaction.module.css";
 
 import {
@@ -115,6 +115,8 @@ export const getBorderlessTableColumns = ({
       console.log(record, "Checkerrrrr");
       const assetCode = record?.assetShortCode;
       const code = record?.instrumentShortCode || "";
+      const instrumentName = record?.instrumentName || "";
+
       return (
         <div
           style={{
@@ -126,20 +128,22 @@ export const getBorderlessTableColumns = ({
           <span className="custom-shortCode-asset" style={{ minWidth: 30 }}>
             {assetCode?.substring(0, 2).toUpperCase()}
           </span>
-          <span
-            className="font-medium"
-            style={{
-              overflow: "hidden",
-              textOverflow: "ellipsis",
-              whiteSpace: "nowrap",
-              maxWidth: "200px",
-              display: "inline-block",
-              cursor: "pointer",
-            }}
-            title={code}
-          >
-            {code}
-          </span>
+          <Tooltip title={instrumentName} placement="topLeft">
+            <span
+              className="font-medium"
+              style={{
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+                whiteSpace: "nowrap",
+                maxWidth: "200px",
+                display: "inline-block",
+                cursor: "pointer",
+              }}
+              title={code}
+            >
+              {code}
+            </span>
+          </Tooltip>
         </div>
       );
     },

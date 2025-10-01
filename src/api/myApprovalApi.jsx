@@ -315,6 +315,7 @@ export const UpdateApprovalRequestStatusLineManager = async ({
   showLoader,
   requestdata,
   setNoteGlobalModal,
+  setDeclinedGlobalModal,
   setApprovedGlobalModal,
   setHeadApprovalNoteModal,
   setHeadDeclineNoteModal,
@@ -355,6 +356,9 @@ export const UpdateApprovalRequestStatusLineManager = async ({
         setNoteGlobalModal({ visible: false, action: null });
         if (submitText === "Approve") {
           setApprovedGlobalModal(true);
+          setValue("");
+        } else if (submitText === "Decline") {
+          setDeclinedGlobalModal(true);
           setValue("");
         } else if (submitText === "HTA-Approve") {
           setHeadApprovalNoteModal(true);
