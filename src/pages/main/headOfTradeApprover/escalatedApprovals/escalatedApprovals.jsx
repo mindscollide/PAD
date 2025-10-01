@@ -30,6 +30,7 @@ import ViewDetailHeadOfApprovalModal from "./modals/viewDetailHeadOfApprovalModa
 import NoteHeadOfApprovalModal from "./modals/noteHeadOfApprovalModal/NoteHeadOfApprovalModal";
 import DeclinedHeadOfApprovalModal from "./modals/declinedHeadOfApprovalModal/DeclinedHeadOfApprovalModal";
 import ApprovedHeadOfApprovalModal from "./modals/approvedHeadOfApprovalModal/ApprovedHeadOfApprovalModal";
+import ViewCommentHeadOfApprovalModal from "./modals/viewCommentHeadOfApprovalModal/ViewCommentHeadOfApprovalModal";
 
 const EscalatedApprovals = () => {
   const navigate = useNavigate();
@@ -42,6 +43,7 @@ const EscalatedApprovals = () => {
     setNoteGlobalModal,
     headApprovalNoteModal,
     headDeclineNoteModal,
+    viewCommentGlobalModal,
   } = useGlobalModal();
 
   const { addApprovalRequestData } = useDashboardContext();
@@ -567,6 +569,9 @@ const EscalatedApprovals = () => {
 
       {/* To Show Head Of Decline after click on Note Modal submit */}
       {headDeclineNoteModal && <DeclinedHeadOfApprovalModal />}
+
+      {/* To Show View Comment Modal By click on View Comment Button in HTA */}
+      {viewCommentGlobalModal && <ViewCommentHeadOfApprovalModal />}
     </>
   );
 };

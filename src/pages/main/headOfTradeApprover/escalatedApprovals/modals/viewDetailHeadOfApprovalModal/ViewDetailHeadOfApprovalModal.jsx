@@ -28,20 +28,10 @@ const ViewDetailHeadOfApprovalModal = () => {
     setViewDetailsHeadOfApprovalModal,
     isSelectedViewDetailHeadOfApproval,
     setNoteGlobalModal,
+    setViewCommentGlobalModal,
   } = useGlobalModal();
 
-  const { viewDetailsHeadOfApprovalData, setViewDetailsHeadOfApprovalData } =
-    useEscalatedApprovals();
-
-  console.log(
-    isSelectedViewDetailHeadOfApproval,
-    "isSelectedViewDetailHeadOfApproval"
-  );
-
-  console.log(
-    viewDetailsHeadOfApprovalData,
-    "viewDetailsHeadOfApprovalDataviewDetailsHeadOfApprovalData"
-  );
+  const { viewDetailsHeadOfApprovalData } = useEscalatedApprovals();
 
   const { allInstrumentsData, employeeBasedBrokersData } =
     useDashboardContext();
@@ -133,7 +123,6 @@ const ViewDetailHeadOfApprovalModal = () => {
 
   const escalatedFromID =
     viewDetailsHeadOfApprovalData?.escalations?.[0]?.escalatedFromID;
-  console.log(escalatedFromID, "CheckID Escalated");
 
   // To open Approved Modal when Click on Approved Button in ViewDetailLineManager Modal
   const onClickToOpenApprovedModal = () => {
@@ -150,6 +139,7 @@ const ViewDetailHeadOfApprovalModal = () => {
   // To open View Comment Line Maneger Modal by click on View COmment button
   const onClickViewCommentModal = () => {
     setViewDetailsHeadOfApprovalModal(false);
+    setViewCommentGlobalModal(true);
   };
 
   return (
