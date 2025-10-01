@@ -259,7 +259,7 @@ export const responseMessages = {
 
   // GetAnnotationOfFilesAttachement
   Settings_SettingsServiceManager_GetAnnotationOfFilesAttachement_01:
-    " Data Available",
+    "Data Available",
   Settings_SettingsServiceManager_GetAnnotationOfFilesAttachement_02:
     "No data available",
   Settings_SettingsServiceManager_GetAnnotationOfFilesAttachement_03:
@@ -280,6 +280,22 @@ export const responseMessages = {
   PAD_Trade_TradeServiceManager_GetHTAViewDetailsByTradeApprovalID_02:
     "No data available",
   PAD_Trade_TradeServiceManager_GetHTAViewDetailsByTradeApprovalID_03:
+    "Exception",
+
+  // SearchHeadOfComplianceEscalatedTransactions
+  PAD_Trade_TradeServiceManager_SearchHeadOfComplianceEscalatedTransactions_01:
+    "Data Available",
+  PAD_Trade_TradeServiceManager_SearchHeadOfComplianceEscalatedTransactions_02:
+    "No data available",
+  PAD_Trade_TradeServiceManager_SearchHeadOfComplianceEscalatedTransactions_03:
+    "Exception",
+
+  // SearchHeadOfComplianceEscalatedPortfolio
+  PAD_Trade_TradeServiceManager_SearchHeadOfComplianceEscalatedPortfolio_01:
+    "Data Available",
+  PAD_Trade_TradeServiceManager_SearchHeadOfComplianceEscalatedPortfolio_02:
+    "No data available",
+  PAD_Trade_TradeServiceManager_SearchHeadOfComplianceEscalatedPortfolio_03:
     "Exception",
 };
 

@@ -1,97 +1,123 @@
-// src/pages/complianceOfficer/reconcile/ReconcileTransaction.jsx
+// src/pages/complianceOfficer/reconcile/EscalatedTransactionVerifications.jsx
 
 import React, { useEffect, useState, useCallback, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 
-// 📦 Third-party
+// 📦 Third-party imports
 import moment from "moment";
 
-// 🔹 Components
+// 🔹 Component imports
 import BorderlessTable from "../../../../../components/tables/borderlessTable/borderlessTable";
 
-// 🔹 Utils
+// 🔹 Utility imports
 import { getBorderlessTableColumns, mapToTableRows } from "./util";
 import { approvalStatusMap } from "../../../../../components/tables/borderlessTable/utill";
 
-// 🔹 Contexts
+// 🔹 Context imports
 import { useSearchBarContext } from "../../../../../context/SearchBarContaxt";
 import { useApi } from "../../../../../context/ApiContext";
 import { useGlobalLoader } from "../../../../../context/LoaderContext";
 import { useDashboardContext } from "../../../../../context/dashboardContaxt";
 import { useReconcileContext } from "../../../../../context/reconsileContax";
+import { useGlobalModal } from "../../../../../context/GlobalModalContext";
 
-// 🔹 Hooks
+// 🔹 Hook imports
 import { useNotification } from "../../../../../components/NotificationProvider/NotificationProvider";
 import { useTableScrollBottom } from "../../../employes/myApprovals/utill";
 
-// 🔹 API
+// 🔹 API imports
 import { SearchEmployeePendingUploadedPortFolio } from "../../../../../api/protFolioApi";
+import { GetAllTransactionViewDetails } from "../../../../../api/myTransactionsApi";
+import { SearchHeadOfComplianceEscalatedTransactionsAPI } from "../../../../../api/reconsile";
 
-// 🔹 Helpers
+// 🔹 Helper imports
 import {
   mapBuySellToIds,
   mapStatusToIds,
 } from "../../../../../components/dropdowns/filters/utils";
 import { toYYMMDD } from "../../../../../commen/funtions/rejex";
-import { SearchComplianceOfficerReconcileTransactionRequest } from "../../../../../api/reconsile";
-import { useGlobalModal } from "../../../../../context/GlobalModalContext";
-import { GetAllTransactionViewDetails } from "../../../../../api/myTransactionsApi";
+
+// 🔹 Modal imports
 import ViewDetailReconcileTransaction from "./modals/viewDetailReconcileTransaction.jsx/ViewDetailReconcileTransaction";
 
+// =============================================================================
+// 🎯 CONSTANTS & CONFIGURATION
+// =============================================================================
+
 /**
- * 📌 ReconcileTransaction
+ * Configuration constants for the component
+ */
+const COMPONENT_CONFIG = {
+  ASSET_TYPE: "Equities",
+  DEFAULT_PAGE_SIZE: 10,
+  TABLE_SCROLL_Y: 550,
+  TABLE_CLASS_NAME: "border-less-table-blue",
+};
+
+// =============================================================================
+// 🎯 MAIN COMPONENT
+// =============================================================================
+
+/**
+ * EscalatedTransactionVerifications Component
  *
- * Displays and manages the **Reconcile → Transactions tab** for Compliance Officers.
- *
- * Responsibilities:
- * - Fetch **pending approvals** (paginated + infinite scroll).
- * - Handle **real-time updates** from MQTT.
- * - Sync global state ↔ local table data.
- * - Manage search, filters, sorting, and cleanup.
+ * Displays and manages the Reconcile → Transactions tab for Compliance Officers.
+ * Handles fetching, displaying, and managing escalated transactions that require
+ * reconciliation approval with support for infinite scroll, real-time updates,
+ * search, filtering, and detailed view modals.
  *
  * @component
- * @returns {JSX.Element} BorderlessTable with reconcile transactions.
+ * @returns {JSX.Element} Rendered component with transaction table and modals
  */
-const ReconcileTransaction = () => {
+const EscalatedTransactionVerifications = () => {
   const navigate = useNavigate();
 
-  // -------------------------
-  // ✅ Context hooks
-  // -------------------------
+  // ===========================================================================
+  // 🎯 HOOKS & CONTEXTS
+  // ===========================================================================
+
+  // API & UI Contexts
   const { callApi } = useApi();
   const { showNotification } = useNotification();
   const { showLoader } = useGlobalLoader();
   const { viewDetailReconcileTransaction } = useGlobalModal();
   const { addApprovalRequestData } = useDashboardContext();
 
+  // Search & Filter Contexts
   const {
-    complianceOfficerReconcileTransactionsSearch,
-    setComplianceOfficerReconcileTransactionsSearch,
-    resetComplianceOfficerReconcileTransactionsSearch,
+    headOfComplianceApprovalEscalatedVerificationsSearch,
+    setHeadOfComplianceApprovalEscalatedVerificationsSearch,
+    resetHeadOfComplianceApprovalEscalatedVerificationsSearch,
   } = useSearchBarContext();
 
+  // Reconcile Data Contexts
   const {
-    setComplianceOfficerReconcileTransactionData,
-    complianceOfficerReconcileTransactionData,
-    setComplianceOfficerReconcileTransactionDataMqtt,
-    complianceOfficerReconcileTransactionDataMqtt,
+    setHeadOfComplianceApprovalEscalatedVerificationsData,
+    headOfComplianceApprovalEscalatedVerificationsData,
+    setHeadOfComplianceApprovalEscalatedVerificationsMqtt,
+    headOfComplianceApprovalEscalatedVerificationsMqtt,
     setReconcileTransactionViewDetailData,
   } = useReconcileContext();
 
-  console.log(
-    complianceOfficerReconcileTransactionData,
-    "complianceOfficerReconcileTransactionData"
-  );
+  // ===========================================================================
+  // 🎯 STATE MANAGEMENT
+  // ===========================================================================
 
-  // -------------------------
-  // ✅ Local state
-  // -------------------------
   const [sortedInfo, setSortedInfo] = useState({});
   const [tableData, setTableData] = useState({ rows: [], totalRecords: 0 });
   const [loadingMore, setLoadingMore] = useState(false);
 
-  // This Api is for the getAllViewDetailModal For myTransaction in Emp role
-  // GETALLVIEWDETAIL OF Transaction API FUNCTION
+  // Prevent duplicate API calls in StrictMode
+  const didFetchRef = useRef(false);
+  // ===========================================================================
+  // 🎯 API FUNCTIONS
+  // ===========================================================================
+
+  /**
+   * Fetches transaction view details for the reconcile modal
+   *
+   * @param {string} workFlowID - The workflow ID of the transaction to view
+   */
   const handleViewDetailsForReconcileTransaction = async (workFlowID) => {
     await showLoader(true);
     const requestdata = { TradeApprovalID: workFlowID };
@@ -108,55 +134,72 @@ const ReconcileTransaction = () => {
       setReconcileTransactionViewDetailData(responseData);
     }
   };
+  // ===========================================================================
+  // 🎯 DERIVED VALUES & MEMOIZATIONS
+  // ===========================================================================
 
-  // -------------------------
-  // ✅ Derived values
-  // -------------------------
+  /**
+   * Table columns configuration
+   */
   const columns = getBorderlessTableColumns({
     approvalStatusMap,
     sortedInfo,
-    complianceOfficerReconcileTransactionsSearch,
-    setComplianceOfficerReconcileTransactionsSearch,
+    headOfComplianceApprovalEscalatedVerificationsSearch,
+    setHeadOfComplianceApprovalEscalatedVerificationsSearch,
     handleViewDetailsForReconcileTransaction,
   });
 
-  // Prevent duplicate API calls (StrictMode safeguard)
-  const didFetchRef = useRef(false);
-  const assetType = "Equities";
-
-  // ----------------------------------------------------------------
-  // 🔧 HELPERS
-  // ----------------------------------------------------------------
+  // ===========================================================================
+  // 🎯 UTILITY FUNCTIONS
+  // ===========================================================================
 
   /**
-   * Build API request payload from search/filter state.
+   * Builds API request payload from search/filter state
+   *
+   * @param {Object} searchState - Current search and filter state
+   * @returns {Object} Formatted request payload for API
    */
   const buildPortfolioRequest = (searchState = {}) => {
-    const startDate = searchState.startDate
-      ? toYYMMDD(searchState.startDate)
+    const RequestDateFrom = searchState.requestDateFrom
+      ? toYYMMDD(searchState.requestDateFrom)
       : "";
-    const endDate = searchState.endDate ? toYYMMDD(searchState.endDate) : "";
+    const RequestDateTo = searchState.requestDateTo
+      ? toYYMMDD(searchState.requestDateTo)
+      : "";
+    const EscalatedDateFrom = searchState.escalatedDateFrom
+      ? toYYMMDD(searchState.escalatedDateFrom)
+      : "";
+    const EscalatedDateTo = searchState.escalatedDateTo
+      ? toYYMMDD(searchState.escalatedDateTo)
+      : "";
 
     return {
       RequesterName: searchState.requesterName || "",
       InstrumentName:
         searchState.mainInstrumentName || searchState.instrumentName || "",
       Quantity: searchState.quantity ? Number(searchState.quantity) : 0,
-      StartDate: startDate,
-      EndDate: endDate,
+      RequestDateFrom: RequestDateFrom,
+      RequestDateTo: RequestDateTo,
+      EscalatedDateFrom: EscalatedDateFrom,
+      EscalatedDateTo: EscalatedDateTo,
       StatusIds: mapStatusToIds(searchState.status),
-      TypeIds: mapBuySellToIds(
-        searchState.type,
-        addApprovalRequestData?.[assetType]
-      ),
+      TypeIds:
+        mapBuySellToIds(searchState.type, addApprovalRequestData?.Equities) ||
+        [],
+
       PageNumber: Number(searchState.pageNumber) || 0,
-      Length: Number(searchState.pageSize) || 10,
+      Length:
+        Number(searchState.pageSize) || COMPONENT_CONFIG.DEFAULT_PAGE_SIZE,
     };
   };
 
   /**
-   * Merge new rows into existing table data.
-   * Ensures no duplicate rows by `key`.
+   * Merges new rows into existing table data, ensuring no duplicates
+   *
+   * @param {Array} prevRows - Previous table rows
+   * @param {Array} newRows - New rows to merge
+   * @param {boolean} replace - Whether to replace existing rows
+   * @returns {Array} Merged rows array
    */
   const mergeRows = (prevRows, newRows, replace = false) => {
     if (replace) return newRows;
@@ -164,22 +207,33 @@ const ReconcileTransaction = () => {
     return [...prevRows, ...newRows.filter((r) => !ids.has(r.key))];
   };
 
-  // ----------------------------------------------------------------
-  // 🔹 API CALL: Fetch pending approvals
-  // ----------------------------------------------------------------
+  // ===========================================================================
+  // 🎯 DATA FETCHING FUNCTIONS
+  // ===========================================================================
+
+  /**
+   * Fetches pending approvals from API
+   *
+   * @param {Object} requestData - API request parameters
+   * @param {boolean} replace - Whether to replace existing data
+   * @param {boolean} loader - Whether to show loader during fetch
+   */
   const fetchPendingApprovals = useCallback(
     async (requestData, replace = false, loader = false) => {
       if (!requestData || typeof requestData !== "object") return;
+
       if (!loader) showLoader(true);
+
       try {
-        const res = await SearchComplianceOfficerReconcileTransactionRequest({
+        const res = await SearchHeadOfComplianceEscalatedTransactionsAPI({
           callApi,
           showNotification,
           showLoader,
           requestdata: requestData,
           navigate,
         });
-        console.log("fetchPendingApprovals", res);
+
+        console.log("fetchPendingApprovals API Response:", res);
 
         const transactions = Array.isArray(res?.transactions)
           ? res.transactions
@@ -189,9 +243,10 @@ const ReconcileTransaction = () => {
           addApprovalRequestData?.Equities,
           transactions
         );
-        console.log("fetchPendingApprovals", mapped);
 
-        setComplianceOfficerReconcileTransactionData({
+        console.log("Mapped table data:", mapped);
+
+        setHeadOfComplianceApprovalEscalatedVerificationsData({
           data: mapped,
           totalRecords: res?.totalRecords ?? mapped.length,
           Apicall: true,
@@ -199,6 +254,10 @@ const ReconcileTransaction = () => {
         });
       } catch (error) {
         console.error("❌ Error fetching pending approvals:", error);
+        showNotification({
+          type: "error",
+          message: "Failed to fetch transactions",
+        });
       } finally {
         if (!loader) showLoader(false);
       }
@@ -206,179 +265,201 @@ const ReconcileTransaction = () => {
     [callApi, showNotification, showLoader, navigate, addApprovalRequestData]
   );
 
-  // ----------------------------------------------------------------
-  // 🔄 SYNC: Global → Local table data
-  // ----------------------------------------------------------------
+  // ===========================================================================
+  // 🎯 EFFECTS - DATA SYNCING
+  // ===========================================================================
+
+  /**
+   * Sync global transaction data to local table state
+   */
   useEffect(() => {
-    if (!complianceOfficerReconcileTransactionData?.Apicall) return;
+    if (!headOfComplianceApprovalEscalatedVerificationsData?.Apicall) return;
 
     setTableData((prev) => ({
       rows: mergeRows(
         prev.rows || [],
-        complianceOfficerReconcileTransactionData.data,
-        complianceOfficerReconcileTransactionData.replace
+        headOfComplianceApprovalEscalatedVerificationsData.data,
+        headOfComplianceApprovalEscalatedVerificationsData.replace
       ),
-      totalRecords: complianceOfficerReconcileTransactionData.totalRecords || 0,
+      totalRecords:
+        headOfComplianceApprovalEscalatedVerificationsData.totalRecords || 0,
     }));
 
-    // Sync pagination info
-    setComplianceOfficerReconcileTransactionsSearch((prev) => ({
+    // Sync pagination info with search context
+    setHeadOfComplianceApprovalEscalatedVerificationsSearch((prev) => ({
       ...prev,
       totalRecords:
-        complianceOfficerReconcileTransactionData.totalRecords ??
-        complianceOfficerReconcileTransactionData.data.length,
-      pageNumber: complianceOfficerReconcileTransactionData.replace
-        ? 10
+        headOfComplianceApprovalEscalatedVerificationsData.totalRecords ??
+        headOfComplianceApprovalEscalatedVerificationsData.data.length,
+      pageNumber: headOfComplianceApprovalEscalatedVerificationsData.replace
+        ? COMPONENT_CONFIG.DEFAULT_PAGE_SIZE
         : prev.pageNumber,
     }));
 
     // Reset API trigger flag
-    setComplianceOfficerReconcileTransactionData((prev) => ({
+    setHeadOfComplianceApprovalEscalatedVerificationsData((prev) => ({
       ...prev,
       Apicall: false,
     }));
-  }, [complianceOfficerReconcileTransactionData?.Apicall]);
+  }, [headOfComplianceApprovalEscalatedVerificationsData?.Apicall]);
 
-  // ----------------------------------------------------------------
-  // 🔄 REAL-TIME: Handle new MQTT rows
-  // ----------------------------------------------------------------
+  /**
+   * Handle real-time MQTT data updates
+   */
   useEffect(() => {
-    if (!complianceOfficerReconcileTransactionDataMqtt) return;
+    if (headOfComplianceApprovalEscalatedVerificationsMqtt) {
+      const requestData = {
+        ...buildPortfolioRequest(
+          headOfComplianceApprovalEscalatedVerificationsSearch
+        ),
+        PageNumber: 0,
+      };
 
-    const requestData = {
-      ...buildPortfolioRequest(complianceOfficerReconcileTransactionsSearch),
-      PageNumber: 0,
-    };
+      fetchPendingApprovals(requestData, true);
+      setHeadOfComplianceApprovalEscalatedVerificationsSearch((prev) => ({
+        ...prev,
+        PageNumber: 0,
+      }));
+      setHeadOfComplianceApprovalEscalatedVerificationsMqtt(false);
+    }
+  }, [headOfComplianceApprovalEscalatedVerificationsMqtt]);
 
-    fetchPendingApprovals(requestData, true);
-    setComplianceOfficerReconcileTransactionsSearch((prev) => ({
-      ...prev,
-      PageNumber: 0,
-    }));
-  }, [complianceOfficerReconcileTransactionDataMqtt]);
-
-  // ----------------------------------------------------------------
-  // 🔄 On search/filter trigger
-  // ----------------------------------------------------------------
+  /**
+   * Handle search/filter triggers
+   */
   useEffect(() => {
-    if (complianceOfficerReconcileTransactionsSearch?.filterTrigger) {
+    if (headOfComplianceApprovalEscalatedVerificationsSearch?.filterTrigger) {
       const data = buildPortfolioRequest(
-        complianceOfficerReconcileTransactionsSearch
+        headOfComplianceApprovalEscalatedVerificationsSearch
       );
 
       fetchPendingApprovals(data, true); // replace mode
-      setComplianceOfficerReconcileTransactionsSearch((prev) => ({
+      setHeadOfComplianceApprovalEscalatedVerificationsSearch((prev) => ({
         ...prev,
         filterTrigger: false,
       }));
     }
   }, [
-    complianceOfficerReconcileTransactionsSearch?.filterTrigger,
+    headOfComplianceApprovalEscalatedVerificationsSearch?.filterTrigger,
     fetchPendingApprovals,
   ]);
 
-  // ----------------------------------------------------------------
-  // 🔄 INFINITE SCROLL
-  // ----------------------------------------------------------------
+  // ===========================================================================
+  // 🎯 INFINITE SCROLL
+  // ===========================================================================
+
   useTableScrollBottom(
     async () => {
       if (
-        complianceOfficerReconcileTransactionsSearch?.totalRecords <=
+        headOfComplianceApprovalEscalatedVerificationsSearch?.totalRecords <=
         tableData?.rows?.length
-      )
+      ) {
         return;
+      }
 
       try {
         setLoadingMore(true);
         const requestData = {
           ...buildPortfolioRequest(
-            complianceOfficerReconcileTransactionsSearch
+            headOfComplianceApprovalEscalatedVerificationsSearch
           ),
           PageNumber:
-            complianceOfficerReconcileTransactionsSearch.pageNumber || 0,
-          Length: 10,
+            headOfComplianceApprovalEscalatedVerificationsSearch.pageNumber ||
+            0,
+          Length: COMPONENT_CONFIG.DEFAULT_PAGE_SIZE,
         };
+
         await fetchPendingApprovals(requestData, false, true); // append mode
-        setComplianceOfficerReconcileTransactionsSearch((prev) => ({
+        setHeadOfComplianceApprovalEscalatedVerificationsSearch((prev) => ({
           ...prev,
-          pageNumber: (prev.pageNumber || 0) + 10,
+          pageNumber:
+            (prev.pageNumber || 0) + COMPONENT_CONFIG.DEFAULT_PAGE_SIZE,
         }));
       } catch (error) {
         console.error("❌ Error loading more approvals:", error);
+        showNotification({
+          type: "error",
+          message: "Failed to load more transactions",
+        });
       } finally {
         setLoadingMore(false);
       }
     },
     0,
-    "border-less-table-blue"
+    COMPONENT_CONFIG.TABLE_CLASS_NAME
   );
 
-  // ----------------------------------------------------------------
-  // 🔄 INITIAL LOAD (on mount)
-  // ----------------------------------------------------------------
+  // ===========================================================================
+  // 🎯 INITIALIZATION & CLEANUP
+  // ===========================================================================
+
+  /**
+   * Initial data load on component mount
+   */
   useEffect(() => {
     if (didFetchRef.current) return;
     didFetchRef.current = true;
 
-    const requestData = buildPortfolioRequest({
-      PageNumber: 0,
-      Length: 10,
-    });
+    const requestData = buildPortfolioRequest(
+      headOfComplianceApprovalEscalatedVerificationsSearch
+    );
     fetchPendingApprovals(requestData, true);
 
+    // Reset search state on page reload
     try {
       const navigationEntries = performance.getEntriesByType("navigation");
       if (navigationEntries?.[0]?.type === "reload") {
-        resetComplianceOfficerReconcileTransactionsSearch();
+        resetHeadOfComplianceApprovalEscalatedVerificationsSearch();
       }
     } catch (error) {
       console.error("❌ Error detecting page reload:", error);
     }
   }, [
     fetchPendingApprovals,
-    resetComplianceOfficerReconcileTransactionsSearch,
+    resetHeadOfComplianceApprovalEscalatedVerificationsSearch,
   ]);
 
-  // ----------------------------------------------------------------
-  // 🔄 CLEANUP (on unmount)
-  // ----------------------------------------------------------------
+  /**
+   * Cleanup on component unmount
+   */
   useEffect(() => {
     return () => {
       setSortedInfo({});
       setTableData({ rows: [], totalRecords: 0 });
       setLoadingMore(false);
-      resetComplianceOfficerReconcileTransactionsSearch();
-      setComplianceOfficerReconcileTransactionData({
+      resetHeadOfComplianceApprovalEscalatedVerificationsSearch();
+      setHeadOfComplianceApprovalEscalatedVerificationsData({
         data: [],
         totalRecords: 0,
         Apicall: false,
       });
-      setComplianceOfficerReconcileTransactionDataMqtt({
-        mqttRecivedData: [],
-        mqttRecived: false,
-      });
+      setHeadOfComplianceApprovalEscalatedVerificationsMqtt(false);
     };
   }, []);
 
-  // ----------------------------------------------------------------
-  // ✅ RENDER
-  // ----------------------------------------------------------------
+  // ===========================================================================
+  // 🎯 RENDER
+  // ===========================================================================
+
   return (
     <>
       <BorderlessTable
         rows={tableData?.rows || []}
         columns={columns}
-        classNameTable="border-less-table-blue"
+        classNameTable={COMPONENT_CONFIG.TABLE_CLASS_NAME}
         scroll={
-          tableData?.rows?.length ? { x: "max-content", y: 550 } : undefined
+          tableData?.rows?.length
+            ? { x: "max-content", y: COMPONENT_CONFIG.TABLE_SCROLL_Y }
+            : undefined
         }
         onChange={(_, __, sorter) => setSortedInfo(sorter || {})}
         loading={loadingMore}
       />
 
+      {/* View Detail Modal */}
       {viewDetailReconcileTransaction && <ViewDetailReconcileTransaction />}
     </>
   );
 };
 
-export default ReconcileTransaction;
+export default EscalatedTransactionVerifications;

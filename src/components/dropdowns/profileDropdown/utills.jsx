@@ -8,7 +8,7 @@ import {
   LoginOutlined,
 } from "@ant-design/icons";
 
-export const getMenuItems = (hasAdmin, hasEmployee, style) => {
+export const getMenuItems = (hasAdmin, hasEmployee, style, handleLogout) => {
   const baseItems = [
     {
       key: "1",
@@ -46,10 +46,17 @@ export const getMenuItems = (hasAdmin, hasEmployee, style) => {
     {
       key: "4",
       label: (
-        <Link to="/" className={style["dropdown-menu-item"]}>
+        // <Link to="/" className={style["dropdown-menu-item"]}>
+        <div
+          className={style["dropdown-menu-item"]}
+          onClick={handleLogout}
+          style={{ cursor: "pointer" }}
+        >
           <LoginOutlined className={style["dropdown-menu-icon"]} />
           <span className={style["dropdown-menu-options-title"]}>Logout</span>
-        </Link>
+        </div>
+
+        // </Link>
       ),
     },
   ].filter(Boolean); // remove false values when hasEmployee is false

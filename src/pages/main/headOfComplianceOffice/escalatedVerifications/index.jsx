@@ -13,7 +13,7 @@ import { Button, SubmittedModal } from "../../../../components";
 import { useSearchBarContext } from "../../../../context/SearchBarContaxt";
 import { useGlobalModal } from "../../../../context/GlobalModalContext";
 import { useReconcileContext } from "../../../../context/reconsileContax";
-import ReconcileTransaction from "./escalatedVerification/reconcileTransaction";
+import EscalatedTransactionVerifications from "./escalatedVerification/reconcileTransaction";
 import ReconcilePortfolio from "./reconcilePortfolio/reconcilePortfolio";
 
 const { Title } = Typography;
@@ -127,7 +127,7 @@ const EscalatedTransactionsIndex = () => {
                         ? "only-tex-selected"
                         : "only-tex-not-selected"
                     }
-                    text="Reconcile Portfolio"
+                    text="Escalated Portfolio"
                   />
                 </div>
 
@@ -153,7 +153,7 @@ const EscalatedTransactionsIndex = () => {
         <div className={styles.content}>
           {isTransactions ? (
             <div className={styles.placeholder}>
-              <ReconcileTransaction />
+              <EscalatedTransactionVerifications />
             </div>
           ) : (
             <div className={styles.placeholder}>

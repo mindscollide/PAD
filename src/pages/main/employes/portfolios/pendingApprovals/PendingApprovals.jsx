@@ -210,7 +210,7 @@ const PendingApprovals = () => {
       ...prev,
       pageNumber: 10,
     }));
-    fetchPendingApprovals(requestData, true,false); // replace mode
+    fetchPendingApprovals(requestData, true, false); // replace mode
 
     // const newRows = mapToTableRows(
     //   addApprovalRequestData?.Equities,
@@ -245,8 +245,11 @@ const PendingApprovals = () => {
   // ----------------------------------------------------------------
   useEffect(() => {
     if (employeePendingApprovalSearch?.filterTrigger) {
-      const data = buildPortfolioRequest(employeePendingApprovalSearch);
-      fetchPendingApprovals(data, true); // replace mode
+      const requestData = {
+        ...buildPortfolioRequest(employeePendingApprovalSearch),
+        PageNumber: 0,
+      };
+      fetchPendingApprovals(requestData, true); // replace mode
       setEmployeePendingApprovalSearch((prev) => ({
         ...prev,
         filterTrigger: false,

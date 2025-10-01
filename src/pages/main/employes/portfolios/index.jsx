@@ -142,7 +142,7 @@ const PortfolioIndex = () => {
                 </Title>
               </div>
               <Button
-                className={"large-dark-button"}
+                className={"large-dark-button-2"}
                 text={" + Upload Portfolio"}
                 onClick={() => setUploadPortfolioModal(true)}
               />
