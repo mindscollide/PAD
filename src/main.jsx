@@ -23,6 +23,8 @@ import { MyTransactionsProvider } from "./context/myTransaction";
 
 // 🔹 Components
 import { Loader } from "./components";
+import { ReconcileProvider } from "./context/reconsileContax";
+import { MyEscalatedApprovalsProvider } from "./context/escalatedApprovalContext";
 
 /**
  * 🌍 RootComponent
@@ -77,14 +79,18 @@ const RootComponent = () => {
               <ApiProvider>
                 <DashboardProvider>
                   <PortfolioProvider>
-                    <SidebarProvider>
-                      <SearchBarProvider>
-                        {/* 🔹 Main App Router */}
-                        <RouterProvider router={router} />
-                        {/* 🔹 Global Loader Component */}
-                        <Loader />
-                      </SearchBarProvider>
-                    </SidebarProvider>
+                    <ReconcileProvider>
+                      <MyEscalatedApprovalsProvider>
+                        <SidebarProvider>
+                          <SearchBarProvider>
+                            {/* 🔹 Main App Router */}
+                            <RouterProvider router={router} />
+                            {/* 🔹 Global Loader Component */}
+                            <Loader />
+                          </SearchBarProvider>
+                        </SidebarProvider>
+                      </MyEscalatedApprovalsProvider>
+                    </ReconcileProvider>
                   </PortfolioProvider>
                 </DashboardProvider>
               </ApiProvider>

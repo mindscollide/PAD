@@ -9,6 +9,7 @@ import {
   emaStatusOptions,
   emtStatusOptions,
   emtStatusOptionsForPendingApproval,
+  escalated,
 } from "./utils";
 
 // Context imports
@@ -17,7 +18,7 @@ import { useApi } from "../../../context/ApiContext";
 import { useGlobalLoader } from "../../../context/LoaderContext";
 import { useNotification } from "../../../components/NotificationProvider/NotificationProvider";
 import { useMyApproval } from "../../../context/myApprovalContaxt";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useDashboardContext } from "../../../context/dashboardContaxt";
 import { useTransaction } from "../../../context/myTransaction";
 
@@ -50,6 +51,7 @@ const StatusFilterDropdown = ({
   setTempSelected,
 }) => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { selectedKey } = useSidebarContext();
   const { addApprovalRequestData } = useDashboardContext();
   const { callApi } = useApi();
@@ -59,7 +61,11 @@ const StatusFilterDropdown = ({
 
   const { setEmployeeTransactionsData } = useTransaction();
   const [filterOption, setFilterOptions] = useState([]);
-
+  // Reset local state on route change
+  // useEffect(() => {
+  //   setTempSelected([]);
+  //   setFilterOptions([]);
+  // }, [location.pathname]);
   /**
    * Toggles the selection state of a status option.
    * @param {string} status - The status being toggled.
@@ -89,13 +95,23 @@ const StatusFilterDropdown = ({
         setFilterOptions(emtStatusOptionsForPendingApproval);
         break;
       case "6":
+        setFilterOptions(emaStatusOptions);
+        break;
+      case "9":
         setFilterOptions(emtStatusOptions);
         break;
+      case "12":
+        setFilterOptions(escalated);
+        break;
+      case "15":
+        setFilterOptions(emtStatusOptions);
+        break;
+
       default:
         setFilterOptions([]);
     }
   }, [selectedKey]);
-
+  console.log("selectedKey", selectedKey);
   /**
    * Handles confirmation of selected statuses.
    * Updates parent state and triggers API call.
@@ -109,10 +125,33 @@ const StatusFilterDropdown = ({
         pageNumber: 0,
         filterTrigger: true,
       }));
+    } else if (selectedKey === "9") {
+      setState((prev) => ({
+        ...prev,
+        status: tempSelected,
+        pageNumber: 0,
+        filterTrigger: true,
+      }));
+    } else if (selectedKey === "12") {
+      setState((prev) => ({
+        ...prev,
+        status: tempSelected,
+        pageNumber: 0,
+        filterTrigger: true,
+      }));
+    } else if (selectedKey === "15") {
+      setState((prev) => ({
+        ...prev,
+        status: tempSelected,
+        pageNumber: 0,
+        filterTrigger: true,
+      }));
     } else {
       setState((prev) => ({
         ...prev,
         status: tempSelected,
+        pageSize: 10, // Pagination: size of page
+        pageNumber: 0,
       }));
 
       await apiCallStatus({
@@ -146,6 +185,27 @@ const StatusFilterDropdown = ({
         pageNumber: 0,
         filterTrigger: true,
       }));
+    } else if (selectedKey === "9") {
+      setState((prev) => ({
+        ...prev,
+        status: [],
+        pageNumber: 0,
+        filterTrigger: true,
+      }));
+    } else if (selectedKey === "12") {
+      setState((prev) => ({
+        ...prev,
+        status: [],
+        pageNumber: 0,
+        filterTrigger: true,
+      }));
+    } else if (selectedKey === "15") {
+      setState((prev) => ({
+        ...prev,
+        status: [],
+        pageNumber: 0,
+        filterTrigger: true,
+      }));
     } else {
       await apiCallStatus({
         selectedKey,
@@ -164,6 +224,8 @@ const StatusFilterDropdown = ({
       setState((prev) => ({
         ...prev,
         status: [],
+        pageSize: 10,
+        pageNumber: 0,
       }));
     }
     setTempSelected([]);

@@ -47,6 +47,10 @@ export const GlobalModalProvider = ({ children }) => {
   const [viewCommentTransactionModal, setViewCommentTransactionModal] =
     useState(false);
 
+  // To  show view Ticket Modal on Transaction View Detail Modal
+  const [isViewTicketTransactionModal, setIsViewTicketTransactionModal] =
+    useState(false);
+
   /**
    * Global States For Employee Modals End here
    */
@@ -64,7 +68,10 @@ export const GlobalModalProvider = ({ children }) => {
     useState(null);
 
   // To Show Global States of Notes modals in LM
-  const [noteGlobalModal, setNoteGlobalModal] = useState(false);
+  const [noteGlobalModal, setNoteGlobalModal] = useState({
+    visible: false,
+    action: null,
+  });
 
   //To Show Global State of Approved Modal in LM
   const [approvedGlobalModal, setApprovedGlobalModal] = useState(false);
@@ -77,6 +84,74 @@ export const GlobalModalProvider = ({ children }) => {
 
   /**
    * Global States For Line Manager Modals End here
+   */
+
+  /**
+   * Global States For Compliance Officer Modals Start here
+   */
+  //This is For Head Of COmpliance Modal for upload
+  const [uploadComplianceModal, setUploadComplianceModal] = useState(false);
+  const [uploadattAchmentsFiles, setUploadattAchmentsFiles] = useState([]);
+
+  //This is For Compliance Officer View Detail for reconcile transaction modal
+  const [viewDetailReconcileTransaction, setViewDetailReconcileTransaction] =
+    useState(false);
+
+  //This is For Compliance Officer View Detail for Portfolio transaction modal
+  const [viewDetailPortfolioTransaction, setViewDetailPortfolioTransaction] =
+    useState(false);
+
+  //This is For the Compliant Approved Modal Open After NOte Modal on Api succes
+  const [compliantApproveModal, setCompliantApproveModal] = useState(false);
+
+  //This is For the Compliant Portfolio Approved Modal Open After NOte Modal on Api succes
+  const [compliantPortfolioApproveModal, setCompliantPortfolioApproveModal] =
+    useState(false);
+
+  //This is For the NONCompliant Declined Modal Open After NOte Modal on Api succes
+  const [nonCompliantDeclineModal, setNonCompliantDeclineModal] =
+    useState(false);
+
+  //This is For the NONCompliant Portfolio Declined Modal Open After NOte Modal on Api succes
+  const [
+    nonCompliantPortfolioDeclineModal,
+    setNonCompliantPortfolioDeclineModal,
+  ] = useState(false);
+
+  // This is for View Comment When Compliant and NonCompliant modal will be open
+  const [viewCommentReconcileModal, setViewCommentReconcileModal] =
+    useState(false);
+
+  // This is for View Comment When Compliant and NonCompliant modal will be open on portfolio
+  const [viewCommentPortfolioModal, setViewCommentPortfolioModal] =
+    useState(false);
+
+  /**
+   * Global States For Compliance Officer Modals End here
+   */
+
+  /**
+   * Global States For Head Od Approval (HTA) Modals Start here
+   */
+
+  // To show Data inView Detail Modal
+  const [viewDetailsHeadOfApprovalModal, setViewDetailsHeadOfApprovalModal] =
+    useState(false);
+
+  // To show Selected Data
+  const [
+    isSelectedViewDetailHeadOfApproval,
+    setIsSelectedViewDetailHeadOfApproval,
+  ] = useState(null);
+
+  // to Show Approved Modal after Submitted When click on Head Of Approval
+  const [headApprovalNoteModal, setHeadApprovalNoteModal] = useState(false);
+
+  // to Show Decline Modal after submitted  When click on Head Of Decline
+  const [headDeclineNoteModal, setHeadDeclineNoteModal] = useState(false);
+
+  /**
+   * Global States For Head Od Approval (HTA) Modals End here
    */
 
   //  Main resetDashboardContext  reset State to call in dashboard
@@ -94,10 +169,17 @@ export const GlobalModalProvider = ({ children }) => {
 
     setViewDetailLineManagerModal(false);
     setIsSelectedViewDetailLineManager(false);
-    setNoteGlobalModal(false);
+    setNoteGlobalModal({ visible: false, action: null });
     setApprovedGlobalModal(false);
     setDeclinedGlobalModal(false);
     setViewCommentGlobalModal(false);
+    setUploadattAchmentsFiles([]);
+  };
+
+  const resetForLineManagerModal = () => {
+    setViewDetailLineManagerModal(false);
+    setNoteGlobalModal({ visible: false, action: null });
+    setApprovedGlobalModal(false);
   };
 
   return (
@@ -127,6 +209,8 @@ export const GlobalModalProvider = ({ children }) => {
         setSelectedViewDetailOfTransaction,
         viewCommentTransactionModal,
         setViewCommentTransactionModal,
+        isViewTicketTransactionModal,
+        setIsViewTicketTransactionModal,
 
         /**
          * Global States For Line Manager Modals
@@ -144,6 +228,65 @@ export const GlobalModalProvider = ({ children }) => {
         setDeclinedGlobalModal,
         viewCommentGlobalModal,
         setViewCommentGlobalModal,
+        resetForLineManagerModal,
+
+        /**
+         * Global States For Line Manager Modals End Here
+         */
+
+        /**
+         * Global States For Compliance Officer Modals Start here
+         */
+        viewDetailReconcileTransaction,
+        setViewDetailReconcileTransaction,
+        uploadComplianceModal,
+        setUploadComplianceModal,
+        viewDetailPortfolioTransaction,
+        setViewDetailPortfolioTransaction,
+        compliantApproveModal,
+        setCompliantApproveModal,
+        nonCompliantDeclineModal,
+        setNonCompliantDeclineModal,
+        viewCommentReconcileModal,
+        setViewCommentReconcileModal,
+        // uploaded files array for view
+        uploadattAchmentsFiles,
+        setUploadattAchmentsFiles,
+
+        viewCommentPortfolioModal,
+        setViewCommentPortfolioModal,
+
+        compliantPortfolioApproveModal,
+        setCompliantPortfolioApproveModal,
+
+        nonCompliantPortfolioDeclineModal,
+        setNonCompliantPortfolioDeclineModal,
+
+        /**
+         * Global States For Compliance Officer Modals End here
+         */
+
+        /**
+         * Global States For Head Of Approval Modals Start here
+         */
+
+        // View Detail Data
+        viewDetailsHeadOfApprovalModal,
+        setViewDetailsHeadOfApprovalModal,
+
+        // to set selected Data
+        isSelectedViewDetailHeadOfApproval,
+        setIsSelectedViewDetailHeadOfApproval,
+
+        headApprovalNoteModal,
+        setHeadApprovalNoteModal,
+
+        headDeclineNoteModal,
+        setHeadDeclineNoteModal,
+
+        /**
+         * Global States For Head Of Approval Modals End here
+         */
 
         resetModalContextState,
       }}

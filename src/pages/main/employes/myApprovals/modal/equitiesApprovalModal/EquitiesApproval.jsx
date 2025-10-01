@@ -46,19 +46,6 @@ const EquitiesApproval = () => {
   // for employeeBroker state to show data in dropdown
   const [selectedBrokers, setSelectedBrokers] = useState([]);
 
-  //For Type and Asset Type States to show Data in Type Dropdown
-  const [selectedTradeApprovalType, setSelectedTradeApprovalType] =
-    useState(null);
-
-  //To Show Asset type Id
-  const [selectedAssetTypeID, setSelectedAssetTypeID] = useState(null);
-
-  //To Show Asset type Name
-  const [selectedAssetTypeName, setSelectedAssetTypeName] = useState("");
-
-  //For Quantity Data State
-  const [quantity, setQuantity] = useState("");
-
   // Refactor sessionStorage read with useMemo for performance & error handling
   const lineManagerDetails = useMemo(() => {
     try {
@@ -105,6 +92,7 @@ const EquitiesApproval = () => {
       </div>
     ),
     value: broker.brokerID,
+    searchText: broker.brokerName,
     raw: broker, // keep full broker data for later use
   }));
 
@@ -163,6 +151,12 @@ const EquitiesApproval = () => {
     fetchAddApprovalsRequest(formData);
   };
 
+  const handleCopyEmailOfLineManager = () => {
+    const emailToCopy =
+      lineManagerDetails?.managerEmail || "LineManager@horizoncapital.com";
+    navigator.clipboard.writeText(emailToCopy);
+  };
+
   // Close handler
   const handleClose = async () => {
     await resetStates();
@@ -186,6 +180,7 @@ const EquitiesApproval = () => {
         closeButtonText="Close"
         lineManagerBackgroundClass={styles.linemanagerBackground}
         isUploadPortfolioTrue={false}
+        copyEmail={handleCopyEmailOfLineManager}
       />
     </>
   );

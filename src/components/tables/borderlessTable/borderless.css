@@ -8,7 +8,6 @@
   overflow-x: hidden !important;
   overflow-y: auto !important;
   scrollbar-color: #eaeaea transparent !important;
-  
 }
 
 /* Table Row Styling */
@@ -181,6 +180,12 @@ border-  bottom-bottom-right-radius: 6.94px !important;
 }
 /* For blue */
 
+.border-less-table-blue-body {
+  overflow: hidden;
+  max-height: 500px !important;
+  overflow-y: auto !important;
+}
+
 /* Root Table Layout */
 .border-less-table-blue-body table {
   border-spacing: 0 10px; /* Space between rows */
@@ -205,6 +210,12 @@ td.border-less-table-blue-cell:last-child {
   border-bottom-right-radius: 6.94px;
   border-top-right-radius: 6.94px;
   /* Example: add padding, border, etc. */
+}
+
+.border-less-table-blue .ant-table-body {
+  overflow-x: hidden !important; /* kill horizontal scrollbar */
+  overflow-y: auto !important; /* keep vertical scroll for lazy loading */
+  max-height: 550px; /* same height you passed */
 }
 
 /* Middle columns (excluding first and last) */
@@ -482,5 +493,3 @@ border-  bottom-bottom-right-radius: 6.94px !important;
   .border-less-table-white-column-title {
   z-index: 0 !important;
 }
-
-

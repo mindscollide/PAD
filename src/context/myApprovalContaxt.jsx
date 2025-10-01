@@ -7,7 +7,7 @@ export const MyApprovalProvider = ({ children }) => {
     approvals: [],
     totalRecords: 0,
   });
-
+  const [employeeMyApprovalMqtt, setIsEmployeeMyApprovalMqtt] = useState(false);
   // Context STate to extract data from get All View Trade Approval which is show by click on View Detail
   const [viewDetailsModalData, setViewDetailsModalData] = useState({
     assetTypes: [],
@@ -36,6 +36,8 @@ export const MyApprovalProvider = ({ children }) => {
     totalRecords: 0,
   });
 
+  const [lineManagerApprovalMqtt, setLineManagerApprovalMQtt] = useState(false);
+
   // Context STate to extract data from get All View Trade Approval which is show by click on View Detail
   const [viewDetailsLineManagerData, setViewDetailsLineManagerData] = useState({
     assetTypes: [],
@@ -54,6 +56,8 @@ export const MyApprovalProvider = ({ children }) => {
       value={{
         employeeMyApproval,
         setIsEmployeeMyApproval,
+        employeeMyApprovalMqtt,
+        setIsEmployeeMyApprovalMqtt,
         viewDetailsModalData,
         setViewDetailsModalData,
         resetMyApprovalContextState,
@@ -61,6 +65,8 @@ export const MyApprovalProvider = ({ children }) => {
         //Context Api States For Line Manager Start Here
         lineManagerApproval,
         setLineManagerApproval,
+        lineManagerApprovalMqtt,
+        setLineManagerApprovalMQtt,
         viewDetailsLineManagerData,
         setViewDetailsLineManagerData,
       }}

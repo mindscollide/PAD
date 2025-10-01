@@ -47,11 +47,14 @@ export const MyTransactionsProvider = ({ children }) => {
     employeeTransactionViewDetailData,
     setEmployeeTransactionViewDetailData,
   ] = useState({
+    assetTypes: [],
     details: [],
     hierarchyList: [],
     hierarchyDetails: [],
     workFlowStatus: {},
     tradedWorkFlowReqeust: [],
+    reqeusterName: "",
+    ticketUploaded: false,
   });
 
   /**
@@ -63,10 +66,7 @@ export const MyTransactionsProvider = ({ children }) => {
   const [
     employeeTransactionsTableDataMqtt,
     setEmployeeTransactionsTableDataMqtt,
-  ] = useState({
-    mqttRecivedData: [],
-    mqttRecived: false,
-  });
+  ] = useState(false);
 
   /**
    * 🔹 State: MQTT Updates (for Modal)

@@ -3,7 +3,12 @@ import { Avatar, Col, Row } from "antd";
 import { BarChartOutlined, FileDoneOutlined } from "@ant-design/icons";
 
 // Reusable components
-import { BoxCard, ReportCard, TextCard } from "../../../components";
+import {
+  BoxCard,
+  DocumentViewer,
+  ReportCard,
+  TextCard,
+} from "../../../components";
 
 // API call
 import { GetUserDashBoardStats } from "../../../api/dashboardApi";
@@ -37,7 +42,6 @@ const Home = () => {
   const { callApi } = useApi();
   const { showLoader } = useGlobalLoader();
   const roles = JSON.parse(sessionStorage.getItem("user_assigned_roles"));
-  const { setAllyType } = useSearchBarContext();
   // Prevent multiple fetches on mount
   const hasFetched = useRef(false);
   console.log(dashboardData, "dashboardDatadashboardData");
@@ -63,7 +67,7 @@ const Home = () => {
     [dashboardData?.lineManager?.myActions?.data]
   );
 
-    const complianceOfficerYyActions = useMemo(
+  const complianceOfficerMyActions = useMemo(
     () => dashboardData?.complianceOfficer?.myActions?.data || [],
     [dashboardData?.complianceOfficer?.myActions?.data]
   );
@@ -71,6 +75,29 @@ const Home = () => {
     () => dashboardData?.complianceOfficer?.myApprovals?.data || [],
     [dashboardData?.complianceOfficer?.myApprovals?.data]
   );
+  console.log("dashboardData", dashboardData);
+  const headofComplianceOfficerMyActions = useMemo(
+    () => dashboardData?.headofComplianceOfficer?.myActions?.data || [],
+    [dashboardData?.headofComplianceOfficer?.myActions?.data]
+  );
+  const headofComplianceOfficerVerificationRequest = useMemo(
+    () =>
+      dashboardData?.headofComplianceOfficer?.verificationRequests?.data || [],
+    [dashboardData?.headofComplianceOfficer?.verificationRequests?.data]
+  );
+
+  // This is For HTA Dashboard
+  const headofComplianceFlowMyAction = useMemo(
+    () => dashboardData?.headofTradeApproval?.myActions?.data || [],
+    [dashboardData?.headofTradeApproval?.myActions?.data]
+  );
+
+  // This is For HTA Dashboard Verification Request
+  const headofApprovalEscalatedRequest = useMemo(
+    () => dashboardData?.headofTradeApproval?.escalatedApprovals?.data || [],
+    [dashboardData?.headofTradeApproval?.escalatedApprovals?.data]
+  );
+
   useEffect(() => {
     if (hasFetched.current) return;
     hasFetched.current = true;
@@ -120,7 +147,6 @@ const Home = () => {
   useEffect(() => {
     console.log("dashboardData", dashboardData);
   }, [dashboardData]);
-
 
   return (
     <div style={{ padding: " 16px 24px 0px 24px " }}>
@@ -227,6 +253,18 @@ const Home = () => {
               />
             </Col>
           </Row>
+          {/* <div style={{ padding: "16px 24px" }}>
+            <h2 style={{ marginTop: "32px" }}>📄 Document Previews</h2>
+            {sampleDocs.map((doc, index) => (
+              <div key={index} style={{ margin: "12px 0" }}>
+                <DocumentViewer
+                  base64Data={doc.base64}
+                  mimeType={doc.mimeType}
+                  fileName={doc.fileName}
+                />
+              </div>
+            ))}
+          </div> */}
         </>
       )}
       {checkRoleMatch(roles, 3) && (
@@ -250,7 +288,7 @@ const Home = () => {
               <MemoizedBoxCard
                 // warningFlag={true}
                 locationStyle={"up"}
-                title="Approvals Request"
+                title="Approval Requests"
                 buttonId={"Approvals-view-btn-LM"}
                 mainClassName={"mediumHomeCard"}
                 boxes={lineManagerApprovals}
@@ -346,7 +384,7 @@ const Home = () => {
                 locationStyle={"up"}
                 title="My Actions"
                 mainClassName={"mediumHomeCard"}
-                boxes={complianceOfficerYyActions}
+                boxes={complianceOfficerMyActions}
                 buttonTitle={"See More"}
                 buttonClassName={"big-white-card-button"}
                 userRole={"CO"}
@@ -381,6 +419,165 @@ const Home = () => {
                   },
                 ]}
                 userRole={"LM"}
+                route={"reports"}
+              />
+            </Col>
+          </Row>
+        </>
+      )}
+      {checkRoleMatch(roles, 6) && (
+        <>
+          <Row gutter={[16, 16]}>
+            <Col xs={24} md={24} lg={24}>
+              <TextCard
+                className="smallCard"
+                title={
+                  <>
+                    <span id="greeting-text-LM">Hi</span>{" "}
+                    <span id="user-name-LM">{dashboardData?.title}</span>,
+                  </>
+                }
+                subtitle="Good Morning!"
+              />
+            </Col>
+          </Row>
+          <Row gutter={[16, 16]}>
+            <Col xs={24} md={12} lg={12}>
+              <MemoizedBoxCard
+                // warningFlag={true}
+                locationStyle={"up"}
+                title="Verification Requests"
+                buttonId={"Reconcile-transactions-view-btn-hca"}
+                mainClassName={"mediumHomeCard"}
+                boxes={headofComplianceOfficerVerificationRequest}
+                buttonTitle={"See More"}
+                buttonClassName={"big-white-card-button"}
+                userRole={"HCA"}
+                route={"verification"}
+              />
+            </Col>
+
+            <Col xs={24} md={12} lg={12}>
+              <MemoizedBoxCard
+                buttonId={"my-action-view-btn-hca"}
+                locationStyle={"up"}
+                title="My Actions"
+                mainClassName={"mediumHomeCard"}
+                boxes={headofComplianceOfficerMyActions}
+                buttonTitle={"See More"}
+                buttonClassName={"big-white-card-button"}
+                userRole={"HCA"}
+                route={"action"}
+              />
+            </Col>
+          </Row>
+          <Row gutter={[16, 16]}>
+            <Col xs={24} md={12} lg={12}>
+              <ReportCard
+                mainClassName={"home-reprot-card"}
+                title="Reports"
+                buttonTitle={"See More"}
+                buttonId={"Reports-view-btn-LM"}
+                buttonClassName={"big-white-card-button"}
+                rowButtonClassName={"small-card-light-button"}
+                data={[
+                  {
+                    icon: <Avatar icon={<FileDoneOutlined />} />,
+                    label: "My Compliance",
+                    action: "View Report",
+                  },
+                  {
+                    icon: <Avatar icon={<BarChartOutlined />} />,
+                    label: "My Transactions",
+                    action: "View Report",
+                  },
+                  {
+                    icon: <Avatar icon={<BarChartOutlined />} />,
+                    label: "My Transactions",
+                    action: "View Report",
+                  },
+                ]}
+                userRole={"HCA"}
+                route={"reports"}
+              />
+            </Col>
+          </Row>
+        </>
+      )}
+
+      {checkRoleMatch(roles, 5) && (
+        <>
+          <Row gutter={[16, 16]}>
+            <Col xs={24} md={24} lg={24}>
+              <TextCard
+                className="smallCard"
+                title={
+                  <>
+                    <span id="greeting-text-LM">Hi</span>{" "}
+                    <span id="user-name-LM">{dashboardData?.title}</span>,
+                  </>
+                }
+                subtitle="Good Morning!"
+              />
+            </Col>
+          </Row>
+          <Row gutter={[16, 16]}>
+            <Col xs={24} md={12} lg={12}>
+              <MemoizedBoxCard
+                // warningFlag={true}
+                locationStyle={"up"}
+                title="Escalated Approvals"
+                buttonId={"Reconcile-transactions-view-btn-hta"}
+                mainClassName={"mediumHomeCard"}
+                boxes={headofApprovalEscalatedRequest}
+                buttonTitle={"See More"}
+                buttonClassName={"big-white-card-button"}
+                userRole={"HTA"}
+                route={"escalated"}
+              />
+            </Col>
+
+            <Col xs={24} md={12} lg={12}>
+              <MemoizedBoxCard
+                buttonId={"my-action-view-btn-hca"}
+                locationStyle={"up"}
+                title="My Actions"
+                mainClassName={"mediumHomeCard"}
+                boxes={headofComplianceFlowMyAction}
+                buttonTitle={"See More"}
+                buttonClassName={"big-white-card-button"}
+                userRole={"HTA"}
+                route={"action"}
+              />
+            </Col>
+          </Row>
+          <Row gutter={[16, 16]}>
+            <Col xs={24} md={12} lg={12}>
+              <ReportCard
+                mainClassName={"home-reprot-card"}
+                title="Reports"
+                buttonTitle={"See More"}
+                buttonId={"Reports-view-btn-LM"}
+                buttonClassName={"big-white-card-button"}
+                rowButtonClassName={"small-card-light-button"}
+                data={[
+                  {
+                    icon: <Avatar icon={<FileDoneOutlined />} />,
+                    label: "My Compliance",
+                    action: "View Report",
+                  },
+                  {
+                    icon: <Avatar icon={<BarChartOutlined />} />,
+                    label: "My Transactions",
+                    action: "View Report",
+                  },
+                  {
+                    icon: <Avatar icon={<BarChartOutlined />} />,
+                    label: "My Transactions",
+                    action: "View Report",
+                  },
+                ]}
+                userRole={"HTA"}
                 route={"reports"}
               />
             </Col>

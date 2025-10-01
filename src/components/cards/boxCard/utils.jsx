@@ -80,6 +80,19 @@ export const typeColorMap = {
     textCountColor: "#30426A",
     textAlign: "center",
   },
+  pending_verification_request: {
+    bgColor: "#EDF3FF",
+    textLableColor: "#30426A", // Using var(--Blue-V1)
+    textCountColor: "#30426A",
+    textAlign: "center",
+  },
+
+  escalated_approval_request: {
+    bgColor: "#FFF1E7",
+    textLableColor: "#F67F29", // Using var(--Blue-V1)
+    textCountColor: "#F67F29",
+    textAlign: "center",
+  },
 };
 
 // ============================
@@ -101,25 +114,21 @@ export const lineManagerRouteMap = {
 };
 
 export const complianceOfficerRouteMap = {
-  approvals: { path: "co-reconcile-transactions", key: "9" },
-  transactions: { path: "co-my-actions", key: "10" },
+  reconcile: { path: "co-reconcile-transactions", key: "9" },
+  action: { path: "co-my-actions", key: "10" },
   reports: { path: "co-reports", key: "11" },
 };
 
 export const headOfTradeRouteMap = {
-  approvals: { path: "approvals", key: "1" },
-  transactions: { path: "transactions", key: "2" },
-  history: { path: "history", key: "3" },
-  portfolio: { path: "portfolios", key: "4" },
-  reports: { path: "reports", key: "5" },
+  escalated: { path: "hta-escalated-requests", key: "12" },
+  action: { path: "hta-my-actions", key: "13" },
+  reports: { path: "hta-reports", key: "14" },
 };
 
-export const headOfComplianceRouteMap = {
-  approvals: { path: "approvals", key: "1" },
-  transactions: { path: "transactions", key: "2" },
-  history: { path: "history", key: "3" },
-  portfolio: { path: "portfolios", key: "4" },
-  reports: { path: "reports", key: "5" },
+export const headOfComplianceOfficerRouteMap = {
+  verification: { path: "hca-escalated-transactions-verifications", key: "15" },
+  action: { path: "hca-my-actions", key: "16" },
+  reports: { path: "hca-reports", key: "17" },
 };
 
 // ===================================
@@ -147,14 +156,14 @@ export const navigateToPage = (userRole, route, setSelectedKey, navigate) => {
     case "LM":
       pathInfo = lineManagerRouteMap[route];
       break;
-    case "complianceOfficer":
+    case "CO":
       pathInfo = complianceOfficerRouteMap[route];
       break;
-    case "headOfTrade":
+    case "HTA":
       pathInfo = headOfTradeRouteMap[route];
       break;
-    case "headOfCompliance":
-      pathInfo = headOfComplianceRouteMap[route];
+    case "HCA":
+      pathInfo = headOfComplianceOfficerRouteMap[route];
       break;
     default:
       console.warn("Unknown userRole:", userRole);

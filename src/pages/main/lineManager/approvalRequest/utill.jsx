@@ -1,7 +1,7 @@
 // components/pages/employee/approval/tableColumns.js
 
 import React from "react";
-import { Tag } from "antd";
+import { Tag, Tooltip } from "antd";
 import { Button, StatusFilterDropdown } from "../../../../components";
 import style from "./approvalRequest.module.css";
 import EscalatedIcon from "../../../../assets/img/escalated.png";
@@ -27,9 +27,19 @@ import {
 const getSortIcon = (columnKey, sortedInfo) => {
   if (sortedInfo?.columnKey === columnKey) {
     return sortedInfo.order === "ascend" ? (
-      <img src={ArrowDown} alt="Asc" className="custom-sort-icon" />
+      <img
+        draggable={false}
+        src={ArrowDown}
+        alt="Asc"
+        className="custom-sort-icon"
+      />
     ) : (
-      <img src={ArrowUP} alt="Desc" className="custom-sort-icon" />
+      <img
+        draggable={false}
+        src={ArrowUP}
+        alt="Desc"
+        className="custom-sort-icon"
+      />
     );
   }
   return <ArrowsAltOutlined className="custom-sort-icon" />;
@@ -44,13 +54,15 @@ const withSortIcon = (label, columnKey, sortedInfo) => (
   </div>
 );
 
-export const getBorderlessLineManagerTableColumns = (
+export const getBorderlessLineManagerTableColumns = ({
   approvalStatusMap,
   sortedInfo,
   lineManagerApprovalSearch,
   setLineManagerApprovalSearch,
-  setViewDetailLineManagerModal
-) => [
+  setViewDetailLineManagerModal,
+  setIsSelectedViewDetailLineManager,
+  handleViewDetailsForLineManager,
+}) => [
   {
     title: withSortIcon("Approval ID", "tradeApprovalID", sortedInfo),
     dataIndex: "tradeApprovalID",
@@ -113,6 +125,8 @@ export const getBorderlessLineManagerTableColumns = (
       console.log(record, "Checkerrrrr");
       const assetCode = record?.assetType?.assetTypeShortCode;
       const code = instrument?.instrumentCode || "";
+      const instrumentName = instrument?.instrumentName || "";
+
       return (
         <div
           style={{
@@ -124,20 +138,22 @@ export const getBorderlessLineManagerTableColumns = (
           <span className="custom-shortCode-asset" style={{ minWidth: 30 }}>
             {assetCode?.substring(0, 2).toUpperCase()}
           </span>
-          <span
-            className="font-medium"
-            style={{
-              overflow: "hidden",
-              textOverflow: "ellipsis",
-              whiteSpace: "nowrap",
-              maxWidth: "200px",
-              display: "inline-block",
-              cursor: "pointer",
-            }}
-            title={code}
-          >
-            {code}
-          </span>
+          <Tooltip title={instrumentName} placement="topLeft">
+            <span
+              className="font-medium"
+              style={{
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+                whiteSpace: "nowrap",
+                maxWidth: "200px",
+                display: "inline-block",
+                cursor: "pointer",
+              }}
+              title={code}
+            >
+              {code}
+            </span>
+          </Tooltip>
         </div>
       );
     },
@@ -222,6 +238,7 @@ export const getBorderlessLineManagerTableColumns = (
     title: withSortIcon("Quantity", "quantity", sortedInfo),
     dataIndex: "quantity",
     key: "quantity",
+    width: "8%",
     ellipsis: true,
     sorter: (a, b) => a.quantity - b.quantity,
     sortDirections: ["ascend", "descend"],
@@ -239,7 +256,12 @@ export const getBorderlessLineManagerTableColumns = (
     render: (isEscalated, record) => {
       console.log(record, "CheckIsEsclated");
       return isEscalated ? (
-        <img src={EscalatedIcon} alt="Escalated" title="Escalated" />
+        <img
+          draggable={false}
+          src={EscalatedIcon}
+          alt="Escalated"
+          title="Escalated"
+        />
       ) : null;
     },
   },
@@ -249,9 +271,7 @@ export const getBorderlessLineManagerTableColumns = (
     key: "actions",
     align: "right",
     render: (record) => {
-      console.log(record.status, "checkerStateus");
       //Global State to selected data to show in ViewDetailLineManagerModal Statuses
-      const { setIsSelectedViewDetailLineManager } = useGlobalModal();
       return (
         <>
           <div
@@ -266,6 +286,7 @@ export const getBorderlessLineManagerTableColumns = (
               className="big-orange-button"
               text="View Details"
               onClick={() => {
+                handleViewDetailsForLineManager(record?.approvalID);
                 setIsSelectedViewDetailLineManager(record);
                 setViewDetailLineManagerModal(true);
               }}

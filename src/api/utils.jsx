@@ -129,6 +129,17 @@ export const responseMessages = {
   PAD_Trade_TradeServiceManager_GetLineManagerViewDetailsByTradeApprovalID_03:
     "Exception",
 
+  // UPDATE DATA ON HIT OF RESUBMIT BY SELECTING PREDEFINE REASON
+  PAD_Trade_TradeServiceManager_ResubmitApprovalRequest_01:
+    "Resubmission Successful",
+  PAD_Trade_TradeServiceManager_ResubmitApprovalRequest_02:
+    "Resubmission Failed",
+  PAD_Trade_TradeServiceManager_ResubmitApprovalRequest_03: "Exception",
+  PAD_Trade_TradeServiceManager_ResubmitApprovalRequest_04:
+    "please Select a reason for resubmitting",
+  PAD_Trade_TradeServiceManager_ResubmitApprovalRequest_5:
+    "Failed to generate ApprovalID",
+
   // LINE MANAGER API'S RESPONSES FROM END HERE
   // =============================
 
@@ -162,6 +173,20 @@ export const responseMessages = {
     "No data available",
   PAD_Trade_TradeServiceManager_SSearchEmployeeApprovedUploadedPortFolio_03:
     "Exception",
+
+  // Conduct Transaction Api Response Data
+  PAD_Trade_TradeServiceManager_CondcutTransactionRequest_01:
+    "Transaction Conducted",
+  PAD_Trade_TradeServiceManager_CondcutTransactionRequest_02:
+    "Transaction Not Conducted",
+  PAD_Trade_TradeServiceManager_CondcutTransactionRequest_03: "Exception",
+  PAD_Trade_TradeServiceManager_CondcutTransactionRequest_04:
+    "User Hierarchy Not Found",
+  PAD_Trade_TradeServiceManager_CondcutTransactionRequest_05:
+    "TradeApprovalID Missing on which Transaction has to be performed",
+  PAD_Trade_TradeServiceManager_CondcutTransactionRequest_07:
+    "Quantity cannot be more then Approved Quantity",
+
   // ==============================
   // 📂 My Transaction API (myTransactionsApi.jsx)
   // ==============================
@@ -178,6 +203,99 @@ export const responseMessages = {
   PAD_Trade_TradeServiceManager_GetAllViewDetailsTransactionsByTradeApprovalID_02:
     "No data available",
   PAD_Trade_TradeServiceManager_GetAllViewDetailsTransactionsByTradeApprovalID_03:
+    "Exception",
+
+  // ==============================
+  // 📂Reconsile  (reconsile.jsx)
+  // ==============================
+  PAD_Trade_TradeServiceManager_SearchComplianceOfficerReconcileTransactionRequest_01:
+    "Data Available",
+  PAD_Trade_TradeServiceManager_SearchComplianceOfficerReconcileTransactionRequest_02:
+    "No data available",
+  PAD_Trade_TradeServiceManager_SearchComplianceOfficerReconcileTransactionRequest_03:
+    "Exception",
+
+  PAD_Trade_TradeServiceManager_SearchComplianceOfficerReconcilePortfolioRequest_01:
+    "Data Available",
+  PAD_Trade_TradeServiceManager_SearchComplianceOfficerReconcilePortfolioRequest_02:
+    "No data available",
+  PAD_Trade_TradeServiceManager_SearchComplianceOfficerReconcilePortfolioRequest_03:
+    "Exception",
+
+  PAD_Trade_TradeServiceManager_GetComplianceOfficerViewDetailsByTradeApprovalID_01:
+    "Data Available",
+  PAD_Trade_TradeServiceManager_GetComplianceOfficerViewDetailsByTradeApprovalID_02:
+    "No data available",
+  PAD_Trade_TradeServiceManager_GetComplianceOfficerViewDetailsByTradeApprovalID_03:
+    "Exception",
+
+  PAD_Trade_TradeServiceManager_UpdateTransactionRequestStatus_01:
+    "Successfully updated",
+  PAD_Trade_TradeServiceManager_UpdateTransactionRequestStatus_02:
+    "No update performed",
+  PAD_Trade_TradeServiceManager_UpdateTransactionRequestStatus_03: "Exception",
+  PAD_Trade_TradeServiceManager_UpdateTransactionRequestStatus_04:
+    "User role not found",
+  PAD_Trade_TradeServiceManager_UpdateTransactionRequestStatus_05:
+    "Not authorized (Not Compliance)",
+
+  // upload document
+  Settings_SettingsServiceManager_UploadDocuments_01:
+    "Document Uploaded Successfull",
+  Settings_SettingsServiceManager_UploadDocuments_02: "No Document Uploaded",
+  Settings_SettingsServiceManager_UploadDocuments_03: "Exception",
+
+  // SaveFiles
+  Settings_SettingsServiceManager_SaveFiles_01: "Files saved successfully",
+  Settings_SettingsServiceManager_SaveFiles_02: "Failed to save any file",
+  Settings_SettingsServiceManager_SaveFiles_03: "Exception",
+  Settings_SettingsServiceManager_SaveFiles_04: "Delete failed",
+
+  // GetWorkFlowFiles
+  Settings_SettingsServiceManager_GetWorkFlowFiles_01: "Data found",
+  Settings_SettingsServiceManager_GetWorkFlowFiles_02: "No data",
+  Settings_SettingsServiceManager_GetWorkFlowFiles_03: "Exception",
+  Settings_SettingsServiceManager_GetWorkFlowFiles_04: "Invalid request",
+
+  // GetAnnotationOfFilesAttachement
+  Settings_SettingsServiceManager_GetAnnotationOfFilesAttachement_01:
+    "Data Available",
+  Settings_SettingsServiceManager_GetAnnotationOfFilesAttachement_02:
+    "No data available",
+  Settings_SettingsServiceManager_GetAnnotationOfFilesAttachement_03:
+    "Exception",
+
+  // ==============================
+  // 📂Escalated Approvals  (Head Of Trade Approvals(escalatedApprovals.jsx))
+  // ==============================
+  PAD_Trade_TradeServiceManager_SearchHTAEscalatedApprovalsRequest_01:
+    "Data Available",
+  PAD_Trade_TradeServiceManager_SearchHTAEscalatedApprovalsRequest_02:
+    "No data available",
+  PAD_Trade_TradeServiceManager_SearchHTAEscalatedApprovalsRequest_03:
+    "Exception",
+
+  PAD_Trade_TradeServiceManager_GetHTAViewDetailsByTradeApprovalID_01:
+    "Data Available",
+  PAD_Trade_TradeServiceManager_GetHTAViewDetailsByTradeApprovalID_02:
+    "No data available",
+  PAD_Trade_TradeServiceManager_GetHTAViewDetailsByTradeApprovalID_03:
+    "Exception",
+
+  // SearchHeadOfComplianceEscalatedTransactions
+  PAD_Trade_TradeServiceManager_SearchHeadOfComplianceEscalatedTransactions_01:
+    "Data Available",
+  PAD_Trade_TradeServiceManager_SearchHeadOfComplianceEscalatedTransactions_02:
+    "No data available",
+  PAD_Trade_TradeServiceManager_SearchHeadOfComplianceEscalatedTransactions_03:
+    "Exception",
+
+  // SearchHeadOfComplianceEscalatedPortfolio
+  PAD_Trade_TradeServiceManager_SearchHeadOfComplianceEscalatedPortfolio_01:
+    "Data Available",
+  PAD_Trade_TradeServiceManager_SearchHeadOfComplianceEscalatedPortfolio_02:
+    "No data available",
+  PAD_Trade_TradeServiceManager_SearchHeadOfComplianceEscalatedPortfolio_03:
     "Exception",
 };
 

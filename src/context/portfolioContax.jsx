@@ -1,4 +1,10 @@
-import React, { createContext, useContext, useState } from "react";
+import React, {
+  createContext,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 
 /**
  * PortfolioContext
@@ -29,7 +35,11 @@ export const PortfolioProvider = ({ children }) => {
    * @type {[string, function]}
    */
   const [activeTab, setActiveTab] = useState("portfolio");
+  const activeTabRef = useRef(activeTab);
 
+  useEffect(() => {
+    activeTabRef.current = activeTab; // always latest
+  }, [activeTab]);
   /**
    * Controls visibility of the "Upload Portfolio" modal.
    *
@@ -54,14 +64,17 @@ export const PortfolioProvider = ({ children }) => {
    *
    * @type {[{ data: Array, mqtt: boolean }, function]}
    */
+  // const [
+  //   employeePendingApprovalsDataMqtt,
+  //   setEmployeePendingApprovalsDataMqtt,
+  // ] = useState({
+  //   data: [],
+  //   mqtt: false,
+  // });
   const [
     employeePendingApprovalsDataMqtt,
     setEmployeePendingApprovalsDataMqtt,
-  ] = useState({
-    data: [],
-    mqtt: false,
-  });
-
+  ] = useState(false);
   /**
    * Employee portfolio data fetched via API.
    *
@@ -89,6 +102,24 @@ export const PortfolioProvider = ({ children }) => {
    * @type {[number, function]}
    */
   const [aggregateTotalQuantity, setAggregateTotalQuantity] = useState(0);
+
+  // Context STate to extract data from GetComplianceOfficerViewDetailsByTradeApprovalID which is show by click on Viewdetail of Portfolio reconcile transaction
+  const [
+    reconcilePortfolioViewDetailData,
+    setReconcilePortfolioViewDetailData,
+  ] = useState({
+    assetTypes: [],
+    details: [],
+    hierarchyDetails: [],
+    requesterName: "",
+    workFlowStatus: {},
+  });
+
+  //To get the selected data by clicking on View Detail of reconcile Transaction
+  const [
+    selectedPortfolioTransactionData,
+    setSelectedPortfolioTransactionData,
+  ] = useState(null);
 
   /**
    * Reset only the portfolio tab state.
@@ -127,6 +158,7 @@ export const PortfolioProvider = ({ children }) => {
     <PortfolioContext.Provider
       value={{
         activeTab,
+        activeTabRef,
         setActiveTab,
         uploadPortfolioModal,
         setUploadPortfolioModal,
@@ -142,6 +174,10 @@ export const PortfolioProvider = ({ children }) => {
         setAggregateTotalQuantity,
         resetPortfolioTab,
         resetPendingApprovalTab,
+        reconcilePortfolioViewDetailData,
+        setReconcilePortfolioViewDetailData,
+        selectedPortfolioTransactionData,
+        setSelectedPortfolioTransactionData,
       }}
     >
       {children}

@@ -5,6 +5,8 @@ import { Button, DateRangePicker, TextField } from "../..";
 import { useSearchBarContext } from "../../../context/SearchBarContaxt";
 import {
   allowOnlyNumbers,
+  formatShowOnlyDate,
+  formatShowOnlyDateForDateRange,
   removeFirstSpace,
 } from "../../../commen/funtions/rejex";
 import styles from "./SearchWithPopoverOnly.module.css";
@@ -105,6 +107,7 @@ export const EmployeeTransactionFilter = ({
     }
   };
   // 🔹 Handle date range change
+  // 🔹 Handle date range change
   const handleDateChange = (dates) => {
     setFieldValue("startDate", dates?.[0] || null);
     setFieldValue("endDate", dates?.[1] || null);
@@ -134,14 +137,14 @@ export const EmployeeTransactionFilter = ({
   const dateRangeValue = useMemo(() => {
     if (dirtyFields.startDate || dirtyFields.endDate) {
       return localState.startDate && localState.endDate
-        ? [localState.startDate, localState.endDate]
+        ? [localState.startDate, localState.endDate] // ✅ Date objects
         : null;
     }
     return employeeMyTransactionSearch.startDate &&
       employeeMyTransactionSearch.endDate
       ? [
-          employeeMyTransactionSearch.startDate,
-          employeeMyTransactionSearch.endDate,
+          new Date(employeeMyTransactionSearch.startDate),
+          new Date(employeeMyTransactionSearch.endDate),
         ]
       : null;
   }, [
@@ -174,19 +177,16 @@ export const EmployeeTransactionFilter = ({
         quantity: localState.quantity !== "" ? Number(localState.quantity) : 0,
       }),
       ...(dirtyFields.startDate && {
-        startDate: localState.startDate
-          ? localState.startDate.format("YYYY-MM-DD")
-          : null,
+        startDate: formatShowOnlyDateForDateRange(localState.startDate), // ✅ format here
       }),
       ...(dirtyFields.endDate && {
-        endDate: localState.endDate
-          ? localState.endDate.format("YYYY-MM-DD")
-          : null,
+        endDate: formatShowOnlyDateForDateRange(localState.endDate), // ✅ format here
       }),
-
       ...(dirtyFields.brokerIDs && { brokerIDs: localState.brokerIDs }),
       pageNumber: 0,
     };
+
+    console.log(finalSearch, "CheckFInalSearchAPi");
 
     await setEmployeeMyTransactionSearch(finalSearch);
     handleSearch(finalSearch);

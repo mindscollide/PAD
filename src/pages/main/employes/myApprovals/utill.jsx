@@ -1,7 +1,7 @@
 // components/pages/employee/approval/tableColumns.js
 
 import React, { useEffect, useRef, useState } from "react";
-import { Tag } from "antd";
+import { Tag, Tooltip } from "antd";
 import { Button, StatusFilterDropdown } from "../../../../components";
 import style from "./approval.module.css";
 import EscalatedIcon from "../../../../assets/img/escalated.png";
@@ -29,14 +29,29 @@ import {
 const getSortIcon = (columnKey, sortedInfo) => {
   if (sortedInfo?.columnKey === columnKey) {
     return sortedInfo.order === "ascend" ? (
-      <img src={ArrowDown} alt="Asc" className="custom-sort-icon" />
+      <img
+        draggable={false}
+        src={ArrowDown}
+        alt="Asc"
+        className="custom-sort-icon"
+      />
     ) : (
-      <img src={ArrowUP} alt="Desc" className="custom-sort-icon" />
+      <img
+        draggable={false}
+        src={ArrowUP}
+        alt="Desc"
+        className="custom-sort-icon"
+      />
     );
   }
 
   return (
-    <img src={DefaultColumArrow} alt="Default" className="custom-sort-icon" />
+    <img
+      draggable={false}
+      src={DefaultColumArrow}
+      alt="Default"
+      className="custom-sort-icon"
+    />
   );
 };
 // Helper for consistent column titles
@@ -58,14 +73,15 @@ const withSortIcon = (label, columnKey, sortedInfo) => (
  * @returns {Array} Array of column definitions
  */
 
-export const getBorderlessTableColumns = (
+export const getBorderlessTableColumns = ({
   approvalStatusMap,
   sortedInfo,
   employeeMyApprovalSearch,
   setEmployeeMyApprovalSearch,
   setIsViewDetail,
-  setIsResubmitted
-) => [
+  onViewDetail,
+  setIsResubmitted,
+}) => [
   {
     title: withSortIcon("Approval ID", "tradeApprovalID", sortedInfo),
     dataIndex: "tradeApprovalID",
@@ -124,9 +140,9 @@ export const getBorderlessTableColumns = (
     showSorterTooltip: false,
     sortIcon: () => null,
     render: (instrument, record) => {
-      console.log(record, "Checkerrrrr");
       const assetCode = record?.assetType?.assetTypeShortCode;
       const code = instrument?.instrumentCode || "";
+      const instrumentName = instrument?.instrumentName || "";
       return (
         <div
           style={{
@@ -138,20 +154,21 @@ export const getBorderlessTableColumns = (
           <span className="custom-shortCode-asset" style={{ minWidth: 30 }}>
             {assetCode?.substring(0, 2).toUpperCase()}
           </span>
-          <span
-            className="font-medium"
-            style={{
-              overflow: "hidden",
-              textOverflow: "ellipsis",
-              whiteSpace: "nowrap",
-              maxWidth: "200px",
-              display: "inline-block",
-              cursor: "pointer",
-            }}
-            title={code}
-          >
-            {code}
-          </span>
+          <Tooltip title={instrumentName} placement="topLeft">
+            <span
+              className="font-medium"
+              style={{
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+                whiteSpace: "nowrap",
+                maxWidth: "200px",
+                display: "inline-block",
+                cursor: "pointer",
+              }}
+            >
+              {code}
+            </span>
+          </Tooltip>
         </div>
       );
     },
@@ -220,7 +237,7 @@ export const getBorderlessTableColumns = (
     title: withSortIcon("Request Date & Time", "requestDateTime", sortedInfo),
     dataIndex: "requestDateTime",
     key: "requestDateTime",
-    width:"13%",
+    width: "13%",
     ellipsis: true,
     sorter: (a, b) =>
       formatApiDateTime(a.requestDateTime).localeCompare(
@@ -234,7 +251,6 @@ export const getBorderlessTableColumns = (
     render: (date) => (
       <span className="text-gray-600">{formatApiDateTime(date)}</span>
     ),
-     
   },
   {
     title: (
@@ -296,6 +312,7 @@ export const getBorderlessTableColumns = (
     render: (date) =>
       date && (
         <img
+          draggable={false}
           src={EscalatedIcon}
           alt="escalated"
           className={style["escalated-icon"]}
@@ -334,11 +351,13 @@ export const getBorderlessTableColumns = (
   },
   {
     title: "Time Remaining to Trade",
-    dataIndex: "timeRemaining",
-    key: "timeRemaining",
+    dataIndex: "timeRemainingToTrade",
+    key: "timeRemainingToTrade",
     ellipsis: true,
     align: "center",
     render: (text, record) => {
+      //Global State to selected data to show in ViewDetailModal
+      const { setSelectedViewDetail } = useGlobalModal();
       // ✅ Show nothing if pending
       if (record.status === "Pending")
         return <span className="text-gray-400">-</span>;
@@ -348,7 +367,10 @@ export const getBorderlessTableColumns = (
           <Button
             className="large-transparent-button"
             text="Resubmit for Approval"
-            onClick={() => setIsResubmitted(true)}
+            onClick={() => {
+              setIsResubmitted(true);
+              setSelectedViewDetail(record);
+            }}
           />
         );
       }
@@ -388,6 +410,8 @@ export const getBorderlessTableColumns = (
           className="big-orange-button"
           text="View Details"
           onClick={() => {
+            console.log(record, "CheckRecordData");
+            onViewDetail(record?.approvalID);
             setSelectedViewDetail(record);
             setIsViewDetail(true);
           }}

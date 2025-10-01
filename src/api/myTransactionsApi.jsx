@@ -52,6 +52,7 @@ export const SearchEmployeeTransactionsDetails = async ({
         .VITE_SEARCH_EMPLOYEE_TRANSACTIONS_DETAILS_REQUEST_METHOD, // 🔑 must be defined in .env
       endpoint: import.meta.env.VITE_API_TRADE,
       requestData: requestdata,
+      navigate,
     });
 
     // 🔹 Handle session expiry
@@ -143,6 +144,7 @@ export const GetAllTransactionViewDetails = async ({
         .VITE_Get_All_ViewDetails_Transactions_REQUEST_METHOD,
       endpoint: import.meta.env.VITE_API_TRADE,
       requestData: requestdata,
+      navigate,
     });
     if (handleExpiredSession(res, navigate, showLoader)) return null;
 
@@ -164,6 +166,8 @@ export const GetAllTransactionViewDetails = async ({
         hierarchyDetails,
         workFlowStatus,
         tradedWorkFlowReqeust,
+        ticketUploaded,
+        reqeusterName,
       } = res.result;
 
       if (
@@ -177,6 +181,8 @@ export const GetAllTransactionViewDetails = async ({
           hierarchyDetails: hierarchyDetails || [],
           workFlowStatus: workFlowStatus || {},
           tradedWorkFlowReqeust: tradedWorkFlowReqeust || [],
+          ticketUploaded: ticketUploaded ?? false, // <-- Add this line
+          reqeusterName: reqeusterName || "",
         };
       }
 
@@ -191,6 +197,8 @@ export const GetAllTransactionViewDetails = async ({
         hierarchyDetails: [],
         workFlowStatus: {},
         tradedWorkFlowReqeust: [],
+        ticketUploaded: false,
+        reqeusterName: "",
       };
     }
 

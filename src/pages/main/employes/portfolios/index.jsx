@@ -132,7 +132,7 @@ const PortfolioIndex = () => {
             <div className={styles.actions}>
               <div className={styles.totalWrapper}>
                 <Title level={5} className={styles.total}>
-                  Total:{" "}
+                  <span className={styles.totaltext}>Total:{" "}</span>
                   <span
                     className={styles.totalAmount}
                     style={{ color: totalColor }}
@@ -142,7 +142,7 @@ const PortfolioIndex = () => {
                 </Title>
               </div>
               <Button
-                className={"large-dark-button"}
+                className={"large-dark-button-2"}
                 text={" + Upload Portfolio"}
                 onClick={() => setUploadPortfolioModal(true)}
               />

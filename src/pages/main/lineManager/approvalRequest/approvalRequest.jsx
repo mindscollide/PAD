@@ -11,7 +11,7 @@ import { useSearchBarContext } from "../../../../context/SearchBarContaxt";
 import { useGlobalModal } from "../../../../context/GlobalModalContext";
 import ViewDetailModal from "./modal/viewDetailLineManagerModal/ViewDetailModal";
 import NoteLineManagerModal from "./modal/noteLineManagerModal/NoteLineManagerModal";
-import ApprovedLineManagerModal from "./modal/approvedLineManagerModal/approvedLineManagerModal";
+import ApprovedLineManagerModal from "./modal/approvedLineManagerModal/ApprovedLineManagerModal";
 import DeclinedLineManagerModal from "./modal/declinedLineManagerModal/DeclinedLineManagerModal";
 import ViewCommentLineManagerModal from "./modal/viewCommentLineManagerModal/ViewCommentLineManagerModal";
 import { useNotification } from "../../../../components/NotificationProvider/NotificationProvider";
@@ -19,15 +19,20 @@ import { useSidebarContext } from "../../../../context/sidebarContaxt";
 import { useGlobalLoader } from "../../../../context/LoaderContext";
 import { useApi } from "../../../../context/ApiContext";
 import { useMyApproval } from "../../../../context/myApprovalContaxt";
-import { SearchApprovalRequestLineManager } from "../../../../api/myApprovalApi";
+import {
+  GetAllLineManagerViewDetailRequest,
+  SearchApprovalRequestLineManager,
+} from "../../../../api/myApprovalApi";
 import { useNavigate } from "react-router-dom";
 import { apiCallSearchForLineManager } from "../../../../components/dropdowns/searchableDropedown/utill";
 import { useTableScrollBottom } from "../../employes/myApprovals/utill";
 import {
   mapBuySellToIds,
+  mapStatusToIds,
   mapStatusToIdsForLineManager,
 } from "../../../../components/dropdowns/filters/utils";
 import { useDashboardContext } from "../../../../context/dashboardContaxt";
+import { toYYMMDD } from "../../../../commen/funtions/rejex";
 
 const ApprovalRequest = () => {
   const navigate = useNavigate();
@@ -40,6 +45,8 @@ const ApprovalRequest = () => {
     approvedGlobalModal,
     declinedGlobalModal,
     viewCommentGlobalModal,
+    setNoteGlobalModal,
+    setIsSelectedViewDetailLineManager,
   } = useGlobalModal();
 
   const { showNotification } = useNotification();
@@ -52,7 +59,13 @@ const ApprovalRequest = () => {
   const [approvalRequestLMData, setApprovalRequestLMData] = useState([]);
 
   // state of context which I'm getting from the myApproval for Line Manager
-  const { lineManagerApproval, setLineManagerApproval } = useMyApproval();
+  const {
+    lineManagerApproval,
+    setLineManagerApproval,
+    setViewDetailsLineManagerData,
+    lineManagerApprovalMqtt,
+    setLineManagerApprovalMQtt,
+  } = useMyApproval();
 
   const [loadingMore, setLoadingMore] = useState(false);
 
@@ -63,34 +76,34 @@ const ApprovalRequest = () => {
     setLineManagerApprovalSearch,
     resetLineManagerApprovalSearch,
   } = useSearchBarContext();
-
-  console.log(
-    lineManagerApprovalSearch,
-    lineManagerApproval,
-    "lineManagerApprovalChecker123"
-  );
-
+  console.log("lineManagerApprovalSearch", lineManagerApprovalSearch);
   // Sort state for AntD Table
   const [sortedInfo, setSortedInfo] = useState({});
 
   // Confirmed filters displayed as tags
   const [submittedFilters, setSubmittedFilters] = useState([]);
+  const assetType = "Equities";
 
   /**
    * Fetches approval data from API on component mount
    */
-  const fetchApprovals = async () => {
-    await showLoader(true);
+  const fetchApprovals = async (flag) => {
+    if (flag) {
+      await showLoader(true);
+    }
     const requestdata = {
       InstrumentName:
         lineManagerApprovalSearch.instrumentName ||
         lineManagerApprovalSearch.mainInstrumentName,
-      Date: lineManagerApprovalSearch.date || "",
+      Date: toYYMMDD(lineManagerApprovalSearch.date) || "",
       Quantity: lineManagerApprovalSearch.quantity || 0,
       PageNumber: 0,
       Length: lineManagerApprovalSearch.pageSize || 10,
-      StatusIds: lineManagerApprovalSearch.status || [],
-      TypeIds: lineManagerApprovalSearch.type || [],
+      StatusIds: mapStatusToIds(lineManagerApprovalSearch.status),
+      TypeIds: mapBuySellToIds(
+        lineManagerApprovalSearch.type,
+        addApprovalRequestData?.[assetType]
+      ),
       RequesterName: lineManagerApprovalSearch.requesterName || "",
     };
 
@@ -111,7 +124,8 @@ const ApprovalRequest = () => {
   useEffect(() => {
     if (hasFetched.current) return;
     hasFetched.current = true;
-    fetchApprovals();
+    fetchApprovals(true);
+    setNoteGlobalModal({ visible: false, action: null });
 
     resetLineManagerApprovalSearch();
     setLineManagerApprovalSearch({
@@ -121,13 +135,24 @@ const ApprovalRequest = () => {
       mainInstrumentName: "",
       type: [],
       status: [],
-      pageSize: 0,
+      pageSize: 10,
       pageNumber: 0,
       totalRecords: 0,
+      quantity: 0,
       filterTrigger: true,
       tableFilterTrigger: false,
     });
   }, []);
+
+  useEffect(() => {
+    if (!lineManagerApprovalMqtt) return;
+    fetchApprovals(false);
+    setLineManagerApprovalMQtt(false);
+    setLineManagerApprovalSearch((prev) => ({
+      ...prev,
+      pageNumber: 0,
+    }));
+  }, [lineManagerApprovalMqtt]);
 
   // Keys to track which filters to sync/display
   const filterKeys = [
@@ -135,24 +160,44 @@ const ApprovalRequest = () => {
     { key: "mainInstrumentName", label: "Main Instrument" },
     { key: "startDate", label: "Date" },
     { key: "requesterName", label: "Requester Name" },
+    { key: "quantity", label: "Quantity" },
   ];
 
+  // This Api is for the getAllViewDetailModal For LineManager
+  const handleViewDetailsForLineManager = async (approvalID) => {
+    await showLoader(true);
+    const requestdata = { TradeApprovalID: approvalID };
+
+    const responseData = await GetAllLineManagerViewDetailRequest({
+      callApi,
+      showNotification,
+      showLoader,
+      requestdata,
+      navigate,
+    });
+
+    if (responseData) {
+      setViewDetailsLineManagerData(responseData);
+      setViewDetailLineManagerModal(true);
+    }
+  };
+
   // Table columns with integrated filters
-  const columns = getBorderlessLineManagerTableColumns(
+  const columns = getBorderlessLineManagerTableColumns({
     approvalStatusMap,
     sortedInfo,
     lineManagerApprovalSearch,
     setLineManagerApprovalSearch,
-    setViewDetailLineManagerModal
-  );
+    setViewDetailLineManagerModal,
+    setIsSelectedViewDetailLineManager,
+    handleViewDetailsForLineManager,
+  });
 
-  console.log(approvalStatusMap, "approvalStatusMapapprovalStatusMap");
 
   /**
    * Removes a filter tag and re-fetches data
    */
   const handleRemoveFilter = async (key) => {
-    console.log("Check Data");
     const normalizedKey = key?.toLowerCase();
     // 1️⃣ Update UI state for removed filters
     setSubmittedFilters((prev) => prev.filter((item) => item.key !== key));
@@ -172,7 +217,7 @@ const ApprovalRequest = () => {
         lineManagerApprovalSearch.instrumentName ||
         lineManagerApprovalSearch.mainInstrumentName ||
         "",
-      Date: lineManagerApprovalSearch.date || "",
+      Date: toYYMMDD(lineManagerApprovalSearch.date) || "",
       Quantity: lineManagerApprovalSearch.quantity || 0,
       StatusIds: statusIds || [],
       TypeIds: TypeIds || [],
@@ -180,11 +225,9 @@ const ApprovalRequest = () => {
       Length: lineManagerApprovalSearch.pageSize || 10,
       RequesterName: lineManagerApprovalSearch.requesterName || "",
     };
-    console.log(normalizedKey, "checkRequqestData");
 
     // 3️⃣ Reset API params for the specific filter being removed
     if (normalizedKey === "requestername") {
-      console.log(requestdata, "checkRequqestData");
       requestdata.RequesterName = "";
       // 5️⃣ Update search state — only reset the specific key + page number
       setLineManagerApprovalSearch((prev) => ({
@@ -196,7 +239,6 @@ const ApprovalRequest = () => {
       normalizedKey === "instrumentname" ||
       normalizedKey === "maininstrumentname"
     ) {
-      console.log("Check Data");
       setLineManagerApprovalSearch((prev) => ({
         ...prev,
         instrumentName: "",
@@ -204,6 +246,13 @@ const ApprovalRequest = () => {
         pageNumber: 0,
       }));
       requestdata.InstrumentName = "";
+    } else if (normalizedKey === "quantity") {
+      requestdata.Quantity = 0;
+      setLineManagerApprovalSearch((prev) => ({
+        ...prev,
+        quantity: 0,
+        pageNumber: 0,
+      }));
     } else if (normalizedKey === "startdate") {
       requestdata.StartDate = "";
       setLineManagerApprovalSearch((prev) => ({
@@ -215,7 +264,6 @@ const ApprovalRequest = () => {
 
     // 4️⃣ Show loader and call API
     showLoader(true);
-    console.log("Check Data");
 
     const data = await SearchApprovalRequestLineManager({
       callApi,
@@ -232,8 +280,6 @@ const ApprovalRequest = () => {
    * Syncs filters on `filterTrigger` from context
    */
   useEffect(() => {
-    console.log("Filter Checker align");
-    console.log(selectedKey, "Filter Checker align");
     if (lineManagerApprovalSearch.filterTrigger) {
       const snapshot = filterKeys
         .filter(({ key }) => lineManagerApprovalSearch[key])
@@ -255,10 +301,6 @@ const ApprovalRequest = () => {
    * Handles table-specific filter trigger
    */
   useEffect(() => {
-    console.log(
-      lineManagerApprovalSearch.tableFilterTrigger,
-      "Filter Checker align"
-    );
     const fetchFilteredData = async () => {
       if (!lineManagerApprovalSearch.tableFilterTrigger) return;
 
@@ -269,7 +311,6 @@ const ApprovalRequest = () => {
           value: lineManagerApprovalSearch[key],
         }));
 
-      console.log(selectedKey, "Filter Checker align");
       await apiCallSearchForLineManager({
         selectedKey,
         lineManagerApprovalSearch,
@@ -317,7 +358,6 @@ const ApprovalRequest = () => {
         lineManagerApproval?.lineApprovals &&
         Array.isArray(lineManagerApproval?.lineApprovals)
       ) {
-        console.log(lineManagerApproval, "CheckDatayagjvashvajhs");
         // 🔹 Map and normalize data
         const mappedData = lineManagerApproval?.lineApprovals?.map((item) => ({
           key: item.approvalID,
@@ -371,21 +411,32 @@ const ApprovalRequest = () => {
         try {
           setLoadingMore(true);
 
-          const assetKey = lineManagerApprovalSearch.assetType;
-          const assetData = addApprovalRequestData?.[assetKey];
+          // ✅ Consistent assetKey fallback
+          const assetKey =
+            lineManagerApprovalSearch.assetType ||
+            (addApprovalRequestData &&
+            Object.keys(addApprovalRequestData).length > 0
+              ? Object.keys(addApprovalRequestData)[0]
+              : "Equities");
 
+          const assetData = addApprovalRequestData?.[assetKey] || { items: [] };
+
+          // ✅ Pass assetData to mapBuySellToIds
+          const TypeIds = mapBuySellToIds(
+            lineManagerApprovalSearch.type || [],
+            assetData
+          );
+
+          console.log("CHeck STausu APi here");
           // Build request payload
           const requestdata = {
             InstrumentName:
               lineManagerApprovalSearch.instrumentName ||
               lineManagerApprovalSearch.mainInstrumentName,
-            Date: lineManagerApprovalSearch.date || "",
+            Date: toYYMMDD(lineManagerApprovalSearch.date) || "",
             Quantity: lineManagerApprovalSearch.quantity || 0,
-            StatusIds:
-              mapStatusToIdsForLineManager(lineManagerApprovalSearch.status) ||
-              [],
-            TypeIds:
-              mapBuySellToIds(lineManagerApprovalSearch.type, assetData) || [],
+            StatusIds: mapStatusToIds(lineManagerApprovalSearch.status),
+            TypeIds: TypeIds || [],
             PageNumber: lineManagerApprovalSearch.pageNumber || 0, // Acts as offset for API
             Length: 10,
             RequesterName: lineManagerApprovalSearch.requesterName || "",
@@ -460,28 +511,28 @@ const ApprovalRequest = () => {
           {/* Page Header */}
           <Row justify="space-between" align="middle" className="mb-4">
             <Col span={[24]}>
-              <h2 className={style["heading"]}>Approvals Request</h2>
+              <h2 className={style["heading"]}>Approval Request</h2>
             </Col>
           </Row>
 
           {/* Table or Empty State */}
-          {approvalRequestLMData && approvalRequestLMData.length > 0 ? (
-            <BorderlessTable
-              rows={approvalRequestLMData}
-              columns={columns}
-              scroll={{
-                x: "max-content",
-                y: submittedFilters.length > 0 ? 450 : 500,
-              }}
-              classNameTable="border-less-table-orange"
-              onChange={(pagination, filters, sorter) => {
-                setSortedInfo(sorter);
-              }}
-              loading={loadingMore}
-            />
-          ) : (
-            <EmptyState type="request" />
-          )}
+          <BorderlessTable
+            rows={approvalRequestLMData}
+            columns={columns}
+            scroll={
+              approvalRequestLMData?.length
+                ? {
+                    x: "max-content",
+                    y: submittedFilters.length > 0 ? 450 : 500,
+                  }
+                : undefined
+            }
+            classNameTable="border-less-table-orange"
+            onChange={(pagination, filters, sorter) => {
+              setSortedInfo(sorter);
+            }}
+            loading={loadingMore}
+          />
         </div>
       </PageLayout>
 

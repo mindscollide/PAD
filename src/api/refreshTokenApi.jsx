@@ -2,6 +2,7 @@
 
 export const refreshToken = async (
   callApi,
+  navigate,
   { showNotification, showLoader } = {}
 ) => {
   try {
@@ -18,6 +19,7 @@ export const refreshToken = async (
         Token: token,
         LastLoginDateTime: new Date().toISOString(),
       },
+      navigate,
       withAuth: false,
       retryOnExpire: false, // Prevent infinite refresh loops
     });

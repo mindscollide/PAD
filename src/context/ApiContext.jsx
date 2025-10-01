@@ -15,14 +15,16 @@ export const ApiProvider = ({ children }) => {
   const { showLoader } = useGlobalLoader();
 
   const callApi = async ({
-    endpoint = "",
-    method = "POST",
     requestMethod = "",
+    endpoint = "",
     requestData = {},
+    navigate,
+    method = "POST",
     extraFormFields = {},
     headers = {},
     withAuth = true,
     retryOnExpire = true,
+    isFileUpload = false, // 🔹 NEW FLAG
   }) => {
     try {
       // showLoader(true);
@@ -36,7 +38,13 @@ export const ApiProvider = ({ children }) => {
 
       const form = new FormData();
       form.append("RequestMethod", requestMethod);
-      form.append("RequestData", JSON.stringify(requestData));
+      if (isFileUpload) {
+        // 🔹 requestData is expected to be a File or Blob
+        form.append("RequestData", requestData);
+      } else {
+        // 🔹 Default → stringify object payloads
+        form.append("RequestData", JSON.stringify(requestData));
+      }
 
       Object.entries(extraFormFields).forEach(([key, value]) => {
         form.append(key, value);
@@ -65,7 +73,7 @@ export const ApiProvider = ({ children }) => {
       }
 
       if ((responseCode === 417 || responseCode === 401) && retryOnExpire) {
-        const refreshed = await refreshToken(callApi, {
+        const refreshed = await refreshToken(callApi, navigate, {
           showNotification,
           showLoader,
         });
@@ -77,14 +85,15 @@ export const ApiProvider = ({ children }) => {
             method,
             requestMethod,
             requestData,
+            navigate,
             extraFormFields,
             headers,
             withAuth,
             retryOnExpire: false, // Prevent infinite loops
+            isFileUpload, // keep upload flag
           });
         }
         // logout(navigate, showLoader);
-        console.log("heloo log");
         return { success: false, expired: true };
       }
 

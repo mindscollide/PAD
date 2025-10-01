@@ -20,6 +20,7 @@ export const login = async ({
       DeviceID: "1",
       DeviceName: "Mobile",
     },
+    navigate,
     withAuth: false,
   });
   if (!res?.result?.isExecuted) {

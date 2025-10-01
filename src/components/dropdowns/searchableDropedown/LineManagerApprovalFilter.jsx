@@ -19,6 +19,7 @@ export const LineManagerApprovalFilter = ({ handleSearch, setVisible }) => {
     instrumentName: "",
     requesterName: "",
     startDate: "",
+    quantity: "",
   });
   /**
    * useSidebarContext its state handler for this sidebar.
@@ -68,27 +69,33 @@ export const LineManagerApprovalFilter = ({ handleSearch, setVisible }) => {
 
   /** Handle date selection */
   const handleSearchClick = async () => {
-    console.log("Checke Seletc");
-    const finalSearch = {
-      ...(dirtyFields.instrumentName && {
-        instrumentName: localState.instrumentName,
-      }),
-      ...(dirtyFields.requesterName && {
-        requesterName: localState.requesterName,
-      }),
-      ...(dirtyFields.startDate && {
-        startDate: localState.startDate
-          ? localState.startDate.format("YYYY-MM-DD")
-          : "",
-      }),
-      pageNumber: 0,
-    };
+    setLineManagerApprovalSearch((prev) => {
+      const finalSearch = {
+        ...prev, // keep previous values as-is
+        ...(dirtyFields.instrumentName && {
+          instrumentName: localState.instrumentName,
+        }),
+        ...(dirtyFields.quantity && {
+          quantity:
+            localState.quantity !== "" ? Number(localState.quantity) : 0,
+        }),
+        ...(dirtyFields.requesterName && {
+          requesterName: localState.requesterName,
+        }),
+        ...(dirtyFields.startDate && {
+          date: localState.startDate
+            ? localState.startDate.format("YYYY-MM-DD")
+            : "",
+        }),
+        pageSize:10,
+        pageNumber: 0, // always reset page when searching
+        filterTrigger: true, // optional: let table know filters changed
+      };
 
-    await setLineManagerApprovalSearch(finalSearch);
-    console.log("Checke Seletc", finalSearch);
-    handleSearch(finalSearch);
-
-    // 🚫 don’t reset here, let Reset button handle it
+      console.log("Checke Select", finalSearch);
+      handleSearch(finalSearch);
+      return finalSearch;
+    });
   };
 
   /** Reset filters */
@@ -99,6 +106,7 @@ export const LineManagerApprovalFilter = ({ handleSearch, setVisible }) => {
       instrumentName: "",
       requesterName: "",
       startDate: "",
+      quantity: 0,
       pageNumber: 0,
       tableFilterTrigger: true,
     }));
@@ -108,7 +116,12 @@ export const LineManagerApprovalFilter = ({ handleSearch, setVisible }) => {
 
   /** Reset local state + dirty flags */
   const resetLocalState = () => {
-    setLocalState({ instrumentName: "", requesterName: "", startDate: "" });
+    setLocalState({
+      instrumentName: "",
+      requesterName: "",
+      startDate: "",
+      quantity: 0,
+    });
     setDirtyFields({});
   };
 
@@ -135,6 +148,16 @@ export const LineManagerApprovalFilter = ({ handleSearch, setVisible }) => {
     dirtyFields.requesterName,
     localState.requesterName,
     lineManagerApprovalSearch.requesterName,
+  ]);
+
+  const quantityValue = useMemo(() => {
+    return dirtyFields.quantity
+      ? localState.quantity
+      : lineManagerApprovalSearch.quantity?.toString() || "";
+  }, [
+    dirtyFields.quantity,
+    localState.quantity,
+    lineManagerApprovalSearch.quantity,
   ]);
 
   const startDateValue = useMemo(() => {
@@ -178,6 +201,19 @@ export const LineManagerApprovalFilter = ({ handleSearch, setVisible }) => {
       </Row>
       <Row gutter={[12, 12]}>
         <Col xs={24} sm={24} md={12} lg={12}>
+          <TextField
+            label="Quantity"
+            name="Quantity"
+            value={
+              quantityValue === 0 || quantityValue === "0" ? "" : quantityValue
+            }
+            onChange={handleInputChange}
+            placeholder="Quantity"
+            size="medium"
+            classNames="Search-Field"
+          />
+        </Col>
+        <Col xs={24} sm={24} md={12} lg={12} style={{ marginTop: "6px" }}>
           <CustomDatePicker
             label="Date"
             name="startDate"

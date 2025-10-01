@@ -60,7 +60,7 @@ const UploadPortfolioModal = () => {
    * 🔹 Extract Line Manager details from sessionStorage
    * Used for showing "Compliance Officer" section in modal.
    */
-  const lineManagerDetails = useMemo(() => {
+  const ComplianceOfficerDetails = useMemo(() => {
     try {
       const storedData = JSON.parse(
         sessionStorage.getItem("user_Hierarchy_Details") || "[]"
@@ -69,7 +69,8 @@ const UploadPortfolioModal = () => {
       if (!Array.isArray(storedData)) return {};
 
       const found = storedData.find(
-        (item) => item.roleName === "Line Manager (LM)" && item.levelNo === 1
+        (item) =>
+          item.roleName === "Compliance Officer (CO)" && item.levelNo === 1
       );
 
       return found
@@ -87,7 +88,7 @@ const UploadPortfolioModal = () => {
    */
   const assetTypeKey = Object.keys(addApprovalRequestData || {})[0];
   const assetTypeData = addApprovalRequestData?.[assetTypeKey];
-console.log("typeOptions",addApprovalRequestData)
+  console.log("typeOptions", addApprovalRequestData);
   /**
    * 🔹 Format instruments for dropdown
    * Pulls instruments from DashboardContext and maps to {id, shortCode, name, description}.
@@ -111,6 +112,7 @@ console.log("typeOptions",addApprovalRequestData)
       </div>
     ),
     value: broker.brokerID,
+    searchText: broker.brokerName,
     raw: broker, // keep full broker object for future use
   }));
 
@@ -195,6 +197,12 @@ console.log("typeOptions",addApprovalRequestData)
     }
   };
 
+  const handleCopyEmailOfComplianceOfficer = () => {
+    const emailToCopy =
+      ComplianceOfficerDetails?.managerEmail || "compliance@horizoncapital.com";
+    navigator.clipboard.writeText(emailToCopy);
+  };
+
   return (
     <TradeAndPortfolioModal
       onSubmit={handleSubmit}
@@ -205,11 +213,12 @@ console.log("typeOptions",addApprovalRequestData)
       typeOptions={typeOptions}
       mainHeading="Upload Portfolio"
       ManagerHeading="Compliance Officer"
-      showLineManager={lineManagerDetails}
+      showLineManager={ComplianceOfficerDetails}
       submitButtonText="Send for Verification"
       closeButtonText="Cancel"
       lineManagerBackgroundClass={styles.complianceOfficerClass}
       isUploadPortfolioTrue={true}
+      copyEmail={handleCopyEmailOfComplianceOfficer}
     />
   );
 };

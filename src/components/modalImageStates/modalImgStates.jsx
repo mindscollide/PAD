@@ -46,6 +46,18 @@ const config = {
       "You have approved this transaction. The requester will be notified.",
     image: ApprovedImg,
   },
+  Compliant: {
+    heading: "Compliant",
+    subheading:
+      "You have marked this transaction as Compliant. The requester will be notified.",
+    image: ApprovedImg,
+  },
+
+  NonCompliant: {
+    heading: "Non-Compliant",
+    subheading: "You have marked this transaction as Non-Compliant.",
+    image: DelcinedImg,
+  },
   Declined: {
     heading: "Declined",
     subheading: "You have declined this request.",
@@ -68,7 +80,7 @@ const ModalImgStates = ({
 
   return (
     <div className={`${styles.container} ${containerClassName}`} style={style}>
-      <img src={image} alt={type} />
+      <img draggable={false} src={image} alt={type} />
       <div className={`${styles.heading} ${headingClassName}`}>{heading}</div>
       <div className={`${styles.subheading} ${subheadingClassName}`}>
         {subheading}

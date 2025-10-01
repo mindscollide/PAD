@@ -13,10 +13,10 @@ const CustomButton = ({
   size = "middle",
   loading = false,
   htmlType = "button",
-  position,
+  iconPosition = "start", // "start" = before text, "end" = after text
 }) => {
   // please make shoure when ever disable function use on dark please apply light icon img their
-  // icon={<img src={disabled?pdflightIcon:pdfDarkIcon} alt="PDF Icon" />}
+  // icon={<img draggable={false}  src={disabled?pdflightIcon:pdfDarkIcon} alt="PDF Icon" />}
   // we have make basic that white icon is light icon becasue its apply on dark and dark icon is black or other icon excpt white becaus its apply on white button or light button
   // and on dis able alway apply light icon
   return (
@@ -29,11 +29,13 @@ const CustomButton = ({
       onClick={onClick}
       loading={loading}
       htmlType={htmlType}
-      icon={position ? "" : icon}
+      icon={iconPosition === "start" ? icon : null} // only attach if start
     >
       {text}
       {/* Add this span if you want to ensure icon appears after text */}
-      {position && icon && <span className="ant-btn-icon">{icon}</span>}
+      {iconPosition === "end" && icon && (
+        <span className="ant-btn-icon">{icon}</span>
+      )}
     </Button>
   );
 };

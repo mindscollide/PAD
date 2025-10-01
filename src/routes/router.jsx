@@ -25,8 +25,11 @@ import {
 
   //For Line Manager
   ApprovalRequest,
+  ReconcileIndex,
+  EscalatedTransactionsIndex,
 } from "../pages";
 import RoleBasedRoute from "./RoleBasedRoute";
+import EscalatedApprovals from "../pages/main/headOfTradeApprover/escalatedApprovals/escalatedApprovals";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -120,19 +123,50 @@ const router = createBrowserRouter(
             </RoleBasedRoute>
           }
         />
+
+        {/* Head Of Trade Approval */}
+        <Route
+          path="hta-escalated-requests"
+          element={
+            <RoleBasedRoute allowedRoles={[5]}>
+              {/* <EmployeApproval /> */}
+              {<EscalatedApprovals />}
+              {/* {<ReconcileIndex />} */}
+            </RoleBasedRoute>
+          }
+        />
+
+        <Route
+          path="hta-my-actions"
+          element={
+            <RoleBasedRoute allowedRoles={[5]}>
+              <EmployeMyTransaction />{" "}
+            </RoleBasedRoute>
+          }
+        />
+
+        <Route
+          path="hta-reports"
+          element={
+            <RoleBasedRoute allowedRoles={[5]}>
+              <EmpolyesReportsIndex />{" "}
+            </RoleBasedRoute>
+          }
+        />
+
         {/* Compliance Officer */}
         <Route
           path="co-reconcile-transactions"
           element={
-            <RoleBasedRoute allowedRoles={[5]}>
-              {<ApprovalRequest />}
+            <RoleBasedRoute allowedRoles={[4]}>
+              {<ReconcileIndex />}
             </RoleBasedRoute>
           }
         />
         <Route
           path="co-my-actions"
           element={
-            <RoleBasedRoute allowedRoles={[5]}>
+            <RoleBasedRoute allowedRoles={[4]}>
               <EmployeMyTransaction />{" "}
             </RoleBasedRoute>
           }
@@ -140,7 +174,33 @@ const router = createBrowserRouter(
         <Route
           path="co-reports"
           element={
-            <RoleBasedRoute allowedRoles={[5]}>
+            <RoleBasedRoute allowedRoles={[4]}>
+              <EmpolyesReportsIndex />{" "}
+            </RoleBasedRoute>
+          }
+        />
+
+        {/* Head of Compliance Approval */}
+        <Route
+          path="hca-escalated-transactions-verifications"
+          element={
+            <RoleBasedRoute allowedRoles={[6]}>
+              {<EscalatedTransactionsIndex />}
+            </RoleBasedRoute>
+          }
+        />
+        <Route
+          path="hca-my-actions"
+          element={
+            <RoleBasedRoute allowedRoles={[6]}>
+              <EmployeMyTransaction />{" "}
+            </RoleBasedRoute>
+          }
+        />
+        <Route
+          path="hca-reports"
+          element={
+            <RoleBasedRoute allowedRoles={[6]}>
               <EmpolyesReportsIndex />{" "}
             </RoleBasedRoute>
           }

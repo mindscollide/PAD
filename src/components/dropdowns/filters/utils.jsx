@@ -6,6 +6,7 @@ import {
   SearchTadeApprovals,
 } from "../../../api/myApprovalApi";
 import { SearchEmployeeTransactionsDetails } from "../../../api/myTransactionsApi";
+import { toYYMMDD } from "../../../commen/funtions/rejex";
 
 // -----------------------------------------------------------------------------
 // 📌 Constants
@@ -29,6 +30,7 @@ export const emaStatusOptions = [
  * Status options for Employee My Approval (Line Manager Approvals).
  */
 export const emtStatusOptions = ["Pending", "Compliant", "Non-Compliant"];
+export const escalated = ["Pending",];
 
 /**
  * Status options for pending approvals (Line Manager).
@@ -139,21 +141,31 @@ export const mapStatusToIdsForLineManager = (arr) => {
  * @param {boolean} [params.includeRequester=false] - Include RequesterName if true.
  * @returns {Object} API request payload.
  */
-const buildApprovalRequestData = ({
+export const buildApprovalRequestData = ({
   state,
-  statusIds,
-  typeIds,
-  includeRequester,
-}) => ({
-  InstrumentName: state.instrumentName || state.mainInstrumentName,
-  Date: state.startDate || "",
-  Quantity: state.quantity || 0,
-  StatusIds: statusIds || [],
-  TypeIds: typeIds || [],
-  PageNumber: 0,
-  Length: state.pageSize || 10,
-  ...(includeRequester && { RequesterName: state.requesterName }),
-});
+  statusIds = [],
+  typeIds = [],
+  includeRequester = false,
+}) => {
+  const {
+    instrumentName = "",
+    mainInstrumentName = "",
+    startDate,
+    quantity = 0,
+    requesterName = "",
+  } = state;
+
+  return {
+    InstrumentName: instrumentName || mainInstrumentName || "",
+    Date: toYYMMDD(startDate) || "",
+    Quantity: quantity,
+    StatusIds: statusIds,
+    TypeIds: typeIds,
+    PageNumber: 0,
+    Length: 10,
+    ...(includeRequester && { RequesterName: requesterName }),
+  };
+};
 
 /**
  * Builds a request object for Employee Transaction details.
@@ -164,17 +176,22 @@ const buildApprovalRequestData = ({
  * @param {number[]} params.typeIds - Type IDs.
  * @returns {Object} API request payload.
  */
-const buildTransactionRequestData = ({ state, statusIds, typeIds }) => ({
-  InstrumentName: state.instrumentName || state.mainInstrumentName,
-  Quantity: state.quantity || 0,
-  StartDate: state.startDate || null,
-  EndDate: state.startDate || null, // ⚠️ check if this should be state.endDate
-  BrokerIDs: [],
-  StatusIds: statusIds || [],
-  TypeIds: typeIds || [],
-  PageNumber: 0,
-  Length: state.pageSize || 10,
-});
+const buildTransactionRequestData = ({ state, statusIds, typeIds }) => {
+  const startDate = state.startDate ? toYYMMDD(state.startDate) : "";
+  const endDate = state.endDate ? toYYMMDD(state.endDate) : "";
+
+  return {
+    InstrumentName: state.instrumentName || state.mainInstrumentName || "",
+    Quantity: state.quantity || 0,
+    StartDate: startDate,
+    EndDate: endDate,
+    BrokerIDs: state.brokerIds || [], // ✅ added dynamic support
+    StatusIds: statusIds || [],
+    TypeIds: typeIds || [],
+    PageNumber: 0,
+    Length: state.pageSize || 10,
+  };
+};
 
 // -----------------------------------------------------------------------------
 // 📌 API Call Handlers
@@ -316,34 +333,40 @@ export const apiCallStatus = async ({
       setIsEmployeeMyApproval(data);
       break;
 
-    case "2": // Employee Transactions
-      // ✅ Only allow specific statuses for case "2"
-      const allowedStatusesForTransactions = [
-        "Pending",
-        "Compliant",
-        "Non-Compliant",
-      ];
-      const filteredStatuses = newdata.filter((s) =>
-        allowedStatusesForTransactions.includes(s)
-      );
-      statusIds = mapStatusToIds(filteredStatuses);
-      console.log(statusIds, "NotCompliantNotCompliant");
+    case "2":
+      {
+        // Employee Transactions
+        // ✅ Only allow specific statuses for case "2"
+        const allowedStatusesForTransactions = [
+          "Pending",
+          "Compliant",
+          "Non-Compliant",
+        ];
+        const filteredStatuses = newdata.filter((s) =>
+          allowedStatusesForTransactions.includes(s)
+        );
+        statusIds = mapStatusToIds(filteredStatuses);
 
-      requestdata = buildTransactionRequestData({ state, statusIds, typeIds });
-      showLoader(true);
-      data = await SearchEmployeeTransactionsDetails({
-        callApi,
-        showNotification,
-        showLoader,
-        requestdata,
-        navigate,
-      });
-      setEmployeeTransactionsData(data);
+        requestdata = buildTransactionRequestData({
+          state,
+          statusIds,
+          typeIds,
+        });
+        showLoader(true);
+        data = await SearchEmployeeTransactionsDetails({
+          callApi,
+          showNotification,
+          showLoader,
+          requestdata,
+          navigate,
+        });
+        setEmployeeTransactionsData(data);
+      }
       break;
 
     case "3":
     case "6": // Line Manager Approvals
-      statusIds = mapStatusToIdsForLineManager(newdata);
+      statusIds = mapStatusToIds(newdata);
       requestdata = buildApprovalRequestData({
         state,
         statusIds,

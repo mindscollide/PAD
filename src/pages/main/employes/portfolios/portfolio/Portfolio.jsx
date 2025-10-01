@@ -25,10 +25,12 @@ import { SearchEmployeeApprovedUploadedPortFolio } from "../../../../../api/prot
 import {
   formatApiDateTime,
   formatCode,
+  toYYMMDD,
 } from "../../../../../commen/funtions/rejex";
 import UploadIcon from "../../../../../assets/img/upload-icon.png";
 import { getEmployeePortfolioColumns } from "./utils";
 import { formatBrokerOptions } from "../pendingApprovals/utill";
+import { useNavigate } from "react-router-dom";
 
 const { Panel } = Collapse;
 const { Text } = Typography;
@@ -54,6 +56,7 @@ const { Text } = Typography;
 const Portfolio = ({ className }) => {
   /** Tracks open/closed collapse panels */
   const [activeKey, setActiveKey] = useState([]);
+  const navigate = useNavigate();
 
   /** Local state for instruments list */
   const [instrumentData, setInstrumentData] = useState([]);
@@ -83,20 +86,23 @@ const Portfolio = ({ className }) => {
    * @param {Object} [searchState={}] - Current search/filter state
    * @returns {Object} API request payload
    */
-  const buildPortfolioRequest = (searchState = {}) => ({
-    InstrumentName:
-      searchState.mainInstrumentName || searchState.instrumentName || "",
-    Quantity: searchState.quantity ? Number(searchState.quantity) : 0,
-    StartDate: searchState.startDate
-      ? moment(searchState.startDate).format("YYYYMMDD")
-      : "",
-    EndDate: searchState.endDate
-      ? moment(searchState.endDate).format("YYYYMMDD")
-      : "",
-    BrokerIds: Array.isArray(searchState.broker) ? searchState.broker : [],
-    PageNumber: Number(searchState.pageNumber) || 0,
-    Length: Number(searchState.pageSize) || 10,
-  });
+  const buildPortfolioRequest = (searchState = {}) => {
+    const startDate = searchState.startDate
+      ? toYYMMDD(searchState.startDate)
+      : "";
+    const endDate = searchState.endDate ? toYYMMDD(searchState.endDate) : "";
+
+    return {
+      InstrumentName:
+        searchState.mainInstrumentName || searchState.instrumentName || "",
+      Quantity: searchState.quantity ? Number(searchState.quantity) : 0,
+      StartDate: startDate,
+      EndDate: endDate,
+      BrokerIds: Array.isArray(searchState.broker) ? searchState.broker : [],
+      PageNumber: Number(searchState.pageNumber) || 0,
+      Length: Number(searchState.pageSize) || 10,
+    };
+  };
 
   /** Broker dropdown options */
   const brokerOptions = formatBrokerOptions(employeeBasedBrokersData || []);
@@ -128,6 +134,7 @@ const Portfolio = ({ className }) => {
           showNotification,
           showLoader,
           requestdata: requestData,
+          navigate,
         });
 
         const instruments = Array.isArray(res?.instruments)
@@ -223,6 +230,13 @@ const Portfolio = ({ className }) => {
           bordered={false}
           className={className || ""}
           style={{ background: "#fff", border: "none" }}
+          expandIcon={({ isActive }) => (
+            <CaretDownOutlined
+              style={{ fontSize: "14px", transition: "transform 0.3s" }}
+              rotate={isActive ? 180 : 0} // 🔄 rotate when active
+            />
+          )}
+          expandIconPosition="end"
         >
           {instrumentData.map((instrument, idx) => {
             const panelKey = instrument.instrumentId || idx.toString();
@@ -249,11 +263,11 @@ const Portfolio = ({ className }) => {
                     >
                       {instrument.totalQuantity?.toLocaleString()}
                     </span>
-                    <span className={styles.icon}>{toggleIcon(panelKey)}</span>
+                    {/* <span className={styles.icon}>{toggleIcon(panelKey)}</span> */}
                   </div>
                 }
                 key={panelKey}
-                showArrow={false}
+                // showArrow={false}
               >
                 <BorderlessTable
                   rows={instrument.transactions || []}

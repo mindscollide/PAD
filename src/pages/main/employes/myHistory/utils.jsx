@@ -10,13 +10,28 @@ import style from "./myHistory.module.css";
 const getSortIcon = (columnKey, sortedInfo) => {
   if (sortedInfo?.columnKey === columnKey) {
     return sortedInfo.order === "ascend" ? (
-      <img src={ArrowDown} alt="Asc" className="custom-sort-icon" />
+      <img
+        draggable={false}
+        src={ArrowDown}
+        alt="Asc"
+        className="custom-sort-icon"
+      />
     ) : (
-      <img src={ArrowUP} alt="Desc" className="custom-sort-icon" />
+      <img
+        draggable={false}
+        src={ArrowUP}
+        alt="Desc"
+        className="custom-sort-icon"
+      />
     );
   }
   return (
-    <img src={DefaultColumArrow} alt="Default" className="custom-sort-icon" />
+    <img
+      draggable={false}
+      src={DefaultColumArrow}
+      alt="Default"
+      className="custom-sort-icon"
+    />
   );
 };
 
@@ -115,6 +130,20 @@ export const getColumns = (
     onFilter: () => true,
     render: (type) => <span>{type}</span>,
   },
+
+  {
+    title: withSortIcon("Quantity", "quantity", sortedInfo),
+    dataIndex: "quantity",
+    key: "quantity",
+    width: 120,
+    ellipsis: true,
+    sorter: (a, b) => a.quantity - b.quantity,
+    sortDirections: ["ascend", "descend"],
+    sortOrder: sortedInfo?.columnKey === "quantity" ? sortedInfo.order : null,
+    showSorterTooltip: false,
+    sortIcon: () => null,
+    render: (q) => <span className="font-medium">{q.toLocaleString()}</span>,
+  },
   {
     title: (
       <StatusColumnTitle
@@ -144,18 +173,5 @@ export const getColumns = (
         </Tag>
       );
     },
-  },
-  {
-    title: withSortIcon("Quantity", "quantity", sortedInfo),
-    dataIndex: "quantity",
-    key: "quantity",
-    width: 120,
-    ellipsis: true,
-    sorter: (a, b) => a.quantity - b.quantity,
-    sortDirections: ["ascend", "descend"],
-    sortOrder: sortedInfo?.columnKey === "quantity" ? sortedInfo.order : null,
-    showSorterTooltip: false,
-    sortIcon: () => null,
-    render: (q) => <span className="font-medium">{q.toLocaleString()}</span>,
   },
 ];

@@ -1,0 +1,401 @@
+.resubmittedBorderClass {
+  border: 2.65px dashed #717171 !important;
+  border-radius: 8px !important;
+  padding: 0px 20px !important;
+  gap: 10px !important;
+}
+
+.pendingBorderClass {
+  border: 2.65px dashed #717171 !important;
+  border-radius: 8px !important;
+  padding: 0px 20px !important;
+  gap: 10px !important;
+}
+
+.notTradedBorderClass {
+  border: 2.65px dashed #717171 !important;
+  background-color: #d9d9d9 !important;
+  border-radius: 8px !important;
+  padding: 0px 20px !important;
+  gap: 10px !important;
+}
+
+.declinedBorderClass {
+  border: 2.65px dashed #a50000 !important;
+  background-color: #ffdbdb !important;
+  border-radius: 8px !important;
+  padding: 0px 20px !important;
+  gap: 10px !important;
+}
+
+.tradedBorderClass {
+  border: 2.65px dashed #30426a !important;
+  background-color: #f8fcff !important;
+  border-radius: 8px !important;
+  padding: 0px 20px !important;
+  gap: 10px !important;
+}
+
+.approvedBorderClass {
+  border: 2.65px dashed #81d885 !important;
+  background-color: #c5ffc7 !important;
+  border-radius: 8px !important;
+  padding: 0px 20px !important;
+  gap: 10px !important;
+}
+
+.declinedDetailHeading {
+  font-size: 36px !important;
+  color: #a50000 !important;
+  font-weight: 600;
+  font-family: "Switzer Variable";
+  text-transform: uppercase;
+  display: flex;
+  justify-content: center !important;
+}
+
+.pendingDetailHeading {
+  font-size: 36px !important;
+  color: #424242 !important;
+  font-weight: 600;
+  font-family: "Switzer Variable";
+  text-transform: uppercase;
+  display: flex;
+  justify-content: center !important;
+}
+
+.resubmittedDetailHeading {
+  font-size: 36px !important;
+  color: #424242 !important;
+  font-weight: 600;
+  font-family: "Switzer Variable";
+  text-transform: uppercase;
+  display: flex;
+  justify-content: center !important;
+}
+
+.tradedDetailHeading {
+  font-size: 36px !important;
+  color: #30426a !important;
+  font-weight: 600;
+  font-family: "Switzer Variable";
+  text-transform: uppercase;
+  display: flex;
+  justify-content: center !important;
+}
+
+.notTradedDetailHeading {
+  font-size: 36px !important;
+  color: #424242 !important;
+  font-weight: 600;
+  font-family: "Switzer Variable";
+  text-transform: uppercase;
+  display: flex;
+  justify-content: center !important;
+}
+
+.approvedDetailHeading {
+  font-size: 36px !important;
+  color: #00640a !important;
+  font-weight: 600;
+  font-family: "Switzer Variable";
+  text-transform: uppercase;
+  display: flex;
+  justify-content: center !important;
+}
+
+.backgrounColorOfDetail {
+  background-color: #edf3ff !important;
+  padding: 10px 20px;
+  display: flex;
+  flex-direction: column !important;
+}
+
+.backgrounColorOfBrokerDetail {
+  background-color: #fff1e7 !important;
+  padding: 10px 20px;
+  display: flex;
+  flex-direction: column !important;
+  border-bottom-right-radius: 8px;
+  border-bottom-left-radius: 8px;
+}
+
+.backgroundColorOfInstrumentDetailTraded {
+  background-color: #edf3ff !important;
+  padding: 10px 20px;
+  display: flex;
+  flex-direction: column !important;
+  border-top-left-radius: 8px !important;
+}
+
+.backgroundColorOfInstrumentDetailTradedRight {
+  background-color: #edf3ff !important;
+  padding: 10px 20px;
+  display: flex;
+  flex-direction: column !important;
+  border-top-right-radius: 8px !important;
+}
+
+.backgroundColorOfInstrumentDetailTradednoradius {
+  background-color: #edf3ff !important;
+  padding: 10px 20px;
+  display: flex;
+  flex-direction: column !important;
+}
+
+.backgroundColorOfInstrumentDetailApproved {
+  background-color: #edf3ff !important;
+  padding: 10px 20px;
+  display: flex;
+  flex-direction: column !important;
+  border-top-left-radius: 8px !important;
+  border-top-right-radius: 8px !important;
+}
+
+.backgrounColorOfInstrumentDetail {
+  background-color: #edf3ff !important;
+  padding: 10px 20px;
+  display: flex;
+  flex-direction: column !important;
+  border-top-left-radius: 8px;
+}
+.backgrounColorOfApprovalDetail {
+  background-color: #edf3ff !important;
+  padding: 10px 20px;
+  display: flex;
+  flex-direction: column !important;
+  border-top-right-radius: 8px;
+}
+.viewDetailMainLabels {
+  font-size: 14px !important;
+  color: #30426a !important;
+  font-weight: 700;
+  font-family: "Switzer Variable";
+}
+
+.viewDetailSubLabels {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 20px !important;
+  color: #424242 !important;
+  font-weight: 500;
+  font-family: "Switzer Variable";
+}
+
+.viewDetailSubLabelsForInstrument {
+  flex: 1; /* let it shrink inside flex */
+  max-width: 250px; /* 👈 critical inside flex */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 20px !important;
+  color: #424242 !important;
+  font-weight: 500;
+  font-family: "Switzer Variable";
+  cursor: pointer;
+}
+
+.tagContainer {
+  display: flex;
+  gap: 10px;
+  padding-bottom: 10px;
+  cursor: pointer !important;
+  overflow-x: auto;
+  white-space: nowrap;
+  flex-wrap: nowrap; /* keep single line */
+  scrollbar-width: thin; /* Firefox */
+  scrollbar-color: #bfbfbf transparent;
+}
+
+.tagClasses {
+  font-size: 16px !important;
+  font-weight: 400 !important;
+  font-family: "Switzer Variable" !important;
+  color: #30426a !important;
+  border: none !important;
+  background-color: #ffffff !important;
+  border-radius: 7px !important;
+  padding: 5px 10px !important;
+  display: inline-flex !important;
+  align-items: center;
+}
+
+.mainButtonDivClose {
+  display: flex;
+  justify-content: end !important;
+  margin-top: 25px !important;
+}
+
+.modalBodyWrapper {
+  padding: 10px 50px; /* or any padding you want */
+}
+
+.customlabel {
+  text-align: center;
+}
+
+.customtitle {
+  font-family: "Switzer Variable";
+  color: #30426a;
+  font-weight: 700;
+  font-size: 14px;
+}
+.backgrounColorOfStepper {
+  background-color: #edf3ff !important;
+  padding: 5px 0px;
+  display: inline-flex; /* keep children in a row */
+  flex-direction: row !important; /* force horizontal */
+  margin-top: 10px;
+  border-radius: 8px !important;
+  gap: 20px; /* space between steps */
+  width: 100%;
+  overflow: hidden !important;
+  overflow-x: auto !important; /* allow horizontal scroll */
+  overflow-y: hidden !important; /* no vertical scroll */
+  white-space: nowrap !important;
+  scrollbar-width: thin; /* Firefox */
+  scrollbar-color: #bfbfbf transparent;
+}
+
+.customdesc {
+  font-size: 14px;
+  font-family: "Switzer Variable";
+  color: #30426a;
+  font-weight: 500;
+  width: 165px !important;
+}
+
+.customellipsis {
+  background: #fff;
+  border-radius: 50%;
+  border: 2px solid #d9d9d9;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.stepCircle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 50px;
+  width: 50px;
+}
+
+.circleImg {
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+}
+
+.customTag {
+  display: inline-block;
+  width: 41px;
+  height: 24px;
+  padding: 0 4px;
+  text-align: center;
+
+  /* Typography */
+  font-family: "Switzer Variable";
+  font-size: 14px;
+  font-weight: 500;
+  color: white;
+
+  /* Styling */
+  background-color: #30426a; /* Single color for all */
+  border-radius: 4px;
+
+  /* Text handling */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.approvedButtonClass {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  gap: 20px !important;
+}
+
+.addticketBuuton {
+  background-color: #edf3ff !important;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  padding-bottom: 10px;
+}
+
+.buttonWrapper {
+  display: flex;
+  justify-content: center; /* center align */
+  gap: 12px; /* spacing between buttons */
+  margin-top: 20px;
+  width: 100%; /* ya jo bhi chahiye */
+}
+
+.anotherClass {
+  width: 160px; /* button ki fixed width */
+}
+
+.mainStepperContainer {
+  width: 100% !important;
+}
+
+.centerAlignStepper {
+  justify-content: center !important;
+}
+
+.leftAlignStepper {
+  justify-content: flex-start;
+}
+
+.complianceOfficerText {
+  font-size: 18px;
+  color: #30426a;
+  font-weight: 700;
+  font-family: "Switzer Variable";
+}
+
+.backgrounColorOfConduct {
+  position: relative;
+  background-color: #edf3ff !important;
+  padding: 10px 20px;
+  border-radius: 8px;
+}
+
+.complianceHeading {
+  font-size: 14px !important;
+  color: #30426a !important;
+  font-weight: 700;
+  font-family: "Switzer Variable";
+  margin-bottom: 4px; /* space between label and value */
+  display: block;
+}
+
+.copyEmailConductMainClass {
+  position: absolute;
+  left: auto !important;
+  right: 20px;
+  top: 16px;
+  cursor: pointer;
+}
+
+.complianceSubHeading {
+  font-size: 18px !important;
+  color: #424242 !important;
+  font-weight: 500;
+  font-family: "Switzer Variable";
+}
+
+.modalBodyContentScroller {
+  height: 61vh;
+  overflow: hidden;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  padding-right: 10px !important;
+  scrollbar-color: #b9c1d1 !important;
+}

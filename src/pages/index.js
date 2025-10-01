@@ -10,3 +10,7 @@ export { default as EmpolyesReportsIndex } from "./main/employes/reports/index";
 // Export For Line Manager
 
 export { default as ApprovalRequest } from "./main/lineManager/approvalRequest/approvalRequest";
+
+// Export For compliance officer
+export { default as ReconcileIndex } from "./main/complianceOfficer/reconcile/index";
+export { default as EscalatedTransactionsIndex } from "./main/headOfComplianceOffice/escalatedVerifications/index";

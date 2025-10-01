@@ -1,119 +1,341 @@
-import React, { createContext, useContext, useState } from "react";
+import React, {
+  createContext,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 
 /**
- * 1. Create the SearchBarContext
- * This context is used to manage and share search filter state
- * across Employee My Approval and My Transaction components.
+ * 🔎 SearchBarContext
+ *
+ * Centralized state management for **search & filter bars** across:
+ * - Employee (My Approval, My Transactions, Portfolio, Pending Approval, My History)
+ * - Line Manager Approvals
+ * - Compliance Officer Reconciliation (Transactions & Portfolio)
+ * - Head of Compliance Approval (Portfolio & Escalated Verifications)
+ *
+ * Exposes filter state, refs (always-latest values), and reset helpers.
  */
 export const SearchBarContext = createContext();
 
 /**
- * 2. Provider Component
- * Wrap your components with <SearchBarProvider> to give them access
- * to the global search/filter state.
+ * 🚀 SearchBarProvider
+ *
+ * Wrap your app (or subtree) inside `<SearchBarProvider>` to give children
+ * access to search/filter states and reset utilities via `useSearchBarContext`.
+ *
+ * @component
+ * @param {object} props
+ * @param {React.ReactNode} props.children - Child components that consume the context.
+ * @returns {JSX.Element} Context provider.
  */
 export const SearchBarProvider = ({ children }) => {
-  /**
-   * 🔍 Employee My Approval Filters State
-   * Used for filtering data in the Employee My Approval table.
-   */
+  // ===============================
+  // Employee States
+  // ===============================
+
+  /** 🔍 Employee My Approval table filters */
   const [employeeMyApprovalSearch, setEmployeeMyApprovalSearch] = useState({
-    instrumentName: "", // Name of the instrument
-    quantity: "", // Quantity filter
-    startDate: null, // Single date (could be Date object or string)
-    mainInstrumentName: "", // Main instrument name for popover or modal
-    type: [], // Type filter: ["Buy", "Sell"]
-    status: [], // Status filter: ["Pending", "Approved", etc.]
-    pageSize: 0, // Pagination: size of page
-    pageNumber: 0, // Pagination: current page number
+    instrumentName: "",
+    quantity: "",
+    startDate: null,
+    mainInstrumentName: "",
+    type: [],
+    status: [],
+    pageSize: 0,
+    pageNumber: 0,
     totalRecords: 0,
     filterTrigger: false,
     tableFilterTrigger: false,
-  })
+  });
 
-  console.log(employeeMyApprovalSearch, "employeeMyApprovalSearch")
-  /**
-   * 🔍 Employee My Transaction Filters State
-   * Used for filtering data in the Employee My Transaction table.
-   */
+  /** 🔍 Employee My Transaction table filters */
   const [employeeMyTransactionSearch, setEmployeeMyTransactionSearch] =
     useState({
-      instrumentName: "", // Name of the instrument
-      quantity: 0, // Quantity filter
-      startDate: null, // Start of date range
-      endDate: null, // End of date range
-      mainInstrumentName: "", // Main instrument name for popover or modal
-      type: [], // Type filter: ["Buy", "Sell"]
-      status: [], // Status filter: ["Pending", "Approved", etc.]
+      instrumentName: "",
+      quantity: 0,
+      startDate: null,
+      endDate: null,
+      mainInstrumentName: "",
+      type: [],
+      status: [],
       brokerIDs: [],
-      pageSize: "", // Pagination: size of page
-      pageNumber: 0, // Pagination: current page number
+      pageSize: "",
+      pageNumber: 0,
       filterTrigger: false,
       tableFilterTrigger: false,
     });
 
-  /**
-   * 🔍 Employee Portfolio Filters State
-   * Used for filtering data in the Employee Portfolio table.
-   */
+  /** 🔍 Employee Portfolio table filters */
   const [employeePortfolioSearch, setEmployeePortfolioSearch] = useState({
-    instrumentName: "", // Name of the instrument short
-    quantity: "", // Quantity filter
-    startDate: null, // Start of date range
-    endDate: null, // End of date range
-    mainInstrumentName: "", // Main instrument short name for popover or modal
-    type: [], // Type filter: ["Buy", "Sell"]
-    broker: [], // broker filter:
-    pageSize: "", // Pagination: size of page
-    pageNumber: 0, // Pagination: current page number
+    instrumentName: "",
+    quantity: "",
+    startDate: null,
+    endDate: null,
+    mainInstrumentName: "",
+    type: [],
+    broker: [],
+    pageSize: "",
+    pageNumber: 0,
     filterTrigger: false,
     tableFilterTrigger: false,
   });
 
-  /**
-   * 🔍 Employee Pending Approval Filters State
-   * Used for filtering data in the Employee Pending Approval table.
-   */
+  /** 🔍 Employee Pending Approval table filters */
   const [employeePendingApprovalSearch, setEmployeePendingApprovalSearch] =
     useState({
-      instrumentName: "", // Name of the instrument
-      quantity: "", // Quantity filter
-      startDate: null, // Start of date range
-      endDate: null, // End of date range
-      mainInstrumentName: "", // Main instrument name for popover or modal
-      type: [], // Type filter: ["Buy", "Sell"]
-      status: [], // Status filter: ["Pending", "Approved", etc.]
-      broker: [], // Status filter: ["Pending", "Approved", etc.]
-      pageSize: "", // Pagination: size of page
-      pageNumber: 0, // Pagination: current page number
+      instrumentName: "",
+      quantity: "",
+      startDate: null,
+      endDate: null,
+      mainInstrumentName: "",
+      type: [],
+      status: [],
+      broker: [],
+      pageSize: "",
+      pageNumber: 0,
       filterTrigger: false,
       tableFilterTrigger: false,
     });
 
-  /**
-   * 🔍 Employee My History Filters State
-   * Used for filtering data in the Employee My History table.
-   */
+  /** 🔍 Employee My History table filters */
   const [employeeMyHistorySearch, setEmployeeMyHistorySearch] = useState({
     transactionid: "",
-    instrumentName: "", // Name of the instrument
-    quantity: 0, // Quantity filter
-    startDate: null, // Start of date range
-    endDate: null, // End of date range
-    mainInstrumentName: "", // Main instrument name for popover or modal
-    type: [], // Type filter: ["Buy", "Sell"]
-    nature: [], // Type filter: ["Buy", "Sell"]
-    status: [], // Status filter: ["Pending", "Approved", etc.]
-    pageSize: 0, // Pagination: size of page
-    pageNumber: 0, // Pagination: current page number
+    instrumentName: "",
+    quantity: 0,
+    startDate: null,
+    endDate: null,
+    mainInstrumentName: "",
+    type: [],
+    nature: [],
+    status: [],
+    pageSize: 0,
+    pageNumber: 0,
     filterTrigger: false,
     tableFilterTrigger: false,
   });
 
-  /**
-   * 🔁 Helper: Reset all Employee My Approval filters to initial state
-   */
-  const resetEmployeeMyApprovalSearch = () => {
+  // ===============================
+  // Line Manager States
+  // ===============================
+
+  /** 🔍 Line Manager Approval Request filters */
+  const [lineManagerApprovalSearch, setLineManagerApprovalSearch] = useState({
+    instrumentName: "",
+    requesterName: "",
+    quantity: 0,
+    date: null,
+    mainInstrumentName: "",
+    type: [],
+    status: [],
+    pageSize: 0,
+    pageNumber: 0,
+    totalRecords: 0,
+    filterTrigger: false,
+    tableFilterTrigger: false,
+  });
+
+  // ===============================
+  // Compliance Officer States
+  // ===============================
+
+  /** 🔍 Compliance Officer Reconcile Transactions filters */
+  const [
+    complianceOfficerReconcileTransactionsSearch,
+    setComplianceOfficerReconcileTransactionsSearch,
+  ] = useState({
+    requesterName: "",
+    mainInstrumentName: "",
+    instrumentName: "",
+    quantity: 0,
+    startDate: null,
+    endDate: null,
+    type: [],
+    status: [],
+    pageSize: 0,
+    pageNumber: 0,
+    totalRecords: 0,
+    filterTrigger: false,
+    tableFilterTrigger: false,
+  });
+
+  /** 🔍 Compliance Officer Reconcile Portfolio filters */
+  const [
+    complianceOfficerReconcilePortfolioSearch,
+    setComplianceOfficerReconcilePortfolioSearch,
+  ] = useState({
+    requesterName: "",
+    instrumentName: "",
+    mainInstrumentName: "",
+    quantity: 0,
+    startDate: null,
+    endDate: null,
+    type: [],
+    status: [],
+    pageSize: 0,
+    pageNumber: 0,
+    totalRecords: 0,
+    filterTrigger: false,
+    tableFilterTrigger: false,
+  });
+
+  // ===============================
+  // Head of Compliance Approval (HCA) States
+  // ===============================
+
+  /** 🔍 HCA Portfolio filters */
+  const [
+    headOfComplianceApprovalPortfolioSearch,
+    setHeadOfComplianceApprovalPortfolioSearch,
+  ] = useState({
+    requesterName: "",
+    instrumentName: "",
+    mainInstrumentName: "",
+    quantity: 0,
+    requestDateFrom: null,
+    requestDateTo: null,
+    escalatedDateFrom: null,
+    escalatedDateTo: null,
+    type: [],
+    status: [],
+    pageSize: 0,
+    pageNumber: 0,
+    totalRecords: 0,
+    filterTrigger: false,
+    tableFilterTrigger: false,
+  });
+
+  /** 🔍 HCA Escalated Verifications filters */
+  const [
+    headOfComplianceApprovalEscalatedVerificationsSearch,
+    setHeadOfComplianceApprovalEscalatedVerificationsSearch,
+  ] = useState({
+    requesterName: "",
+    instrumentName: "",
+    mainInstrumentName: "",
+    quantity: 0,
+    requestDateFrom: null,
+    requestDateTo: null,
+    escalatedDateFrom: null,
+    escalatedDateTo: null,
+    type: [],
+    status: [],
+    pageSize: 0,
+    pageNumber: 0,
+    totalRecords: 0,
+    filterTrigger: false,
+    tableFilterTrigger: false,
+  });
+
+  /**  Head Of Trade Approvals Escalated Approvals Filters*/
+
+  const [
+    headOfTradeEscalatedApprovalsSearch,
+    setHeadOfTradeEscalatedApprovalsSearch,
+  ] = useState({
+    instrumentName: "",
+    quantity: "",
+    requestDateFrom: "",
+    requestDateTo: "",
+    escalatedDateFrom: "",
+    escalatedDateTo: "",
+    status: [],
+    type: [],
+    requesterName: "",
+    lineManagerName: "",
+    pageNumber: 0,
+    length: 10,
+    filterTrigger: false,
+    tableFilterTrigger: false,
+  });
+
+  // ===============================
+  // Sync Refs (Always-Latest Values)
+  // ===============================
+  const employeeMyApprovalSearchRef = useRef(employeeMyApprovalSearch);
+  const employeeMyTransactionSearchRef = useRef(employeeMyTransactionSearch);
+  const employeePortfolioSearchRef = useRef(employeePortfolioSearch);
+  const employeePendingApprovalSearchRef = useRef(
+    employeePendingApprovalSearch
+  );
+  const employeeMyHistorySearchRef = useRef(employeeMyHistorySearch);
+  const lineManagerApprovalSearchRef = useRef(lineManagerApprovalSearch);
+  const complianceOfficerReconcileTransactionsSearchRef = useRef(
+    complianceOfficerReconcileTransactionsSearch
+  );
+  const complianceOfficerReconcilePortfolioSearchRef = useRef(
+    complianceOfficerReconcilePortfolioSearch
+  );
+  const headOfComplianceApprovalPortfolioSearchRef = useRef(
+    headOfComplianceApprovalPortfolioSearch
+  );
+  const headOfComplianceApprovalEscalatedVerificationsSearchRef = useRef(
+    headOfComplianceApprovalEscalatedVerificationsSearch
+  );
+
+  // Head Of Trade Approval Escalated Approvals
+  const headOfTradeEscalatedApprovalsSearchRef = useRef(
+    headOfTradeEscalatedApprovalsSearch
+  );
+
+  // 🔄 Keep refs in sync with latest state
+  useEffect(() => {
+    employeeMyApprovalSearchRef.current = employeeMyApprovalSearch;
+  }, [employeeMyApprovalSearch]);
+
+  useEffect(() => {
+    employeeMyTransactionSearchRef.current = employeeMyTransactionSearch;
+  }, [employeeMyTransactionSearch]);
+
+  useEffect(() => {
+    employeePortfolioSearchRef.current = employeePortfolioSearch;
+  }, [employeePortfolioSearch]);
+
+  useEffect(() => {
+    employeePendingApprovalSearchRef.current = employeePendingApprovalSearch;
+  }, [employeePendingApprovalSearch]);
+
+  useEffect(() => {
+    employeeMyHistorySearchRef.current = employeeMyHistorySearch;
+  }, [employeeMyHistorySearch]);
+
+  useEffect(() => {
+    lineManagerApprovalSearchRef.current = lineManagerApprovalSearch;
+  }, [lineManagerApprovalSearch]);
+
+  useEffect(() => {
+    complianceOfficerReconcileTransactionsSearchRef.current =
+      complianceOfficerReconcileTransactionsSearch;
+  }, [complianceOfficerReconcileTransactionsSearch]);
+
+  useEffect(() => {
+    complianceOfficerReconcilePortfolioSearchRef.current =
+      complianceOfficerReconcilePortfolioSearch;
+  }, [complianceOfficerReconcilePortfolioSearch]);
+
+  useEffect(() => {
+    headOfComplianceApprovalPortfolioSearchRef.current =
+      headOfComplianceApprovalPortfolioSearch;
+  }, [headOfComplianceApprovalPortfolioSearch]);
+
+  useEffect(() => {
+    headOfComplianceApprovalEscalatedVerificationsSearchRef.current =
+      headOfComplianceApprovalEscalatedVerificationsSearch;
+  }, [headOfComplianceApprovalEscalatedVerificationsSearch]);
+
+  // Head Of Trade Approvals Escalated Approvals
+  useEffect(() => {
+    headOfTradeEscalatedApprovalsSearchRef.current =
+      headOfTradeEscalatedApprovalsSearch;
+  }, [headOfTradeEscalatedApprovalsSearch]);
+
+  // ===============================
+  // Reset Helpers
+  // ===============================
+
+  /** Reset Employee My Approval filters */
+  const resetEmployeeMyApprovalSearch = () =>
     setEmployeeMyApprovalSearch({
       instrumentName: "",
       quantity: 0,
@@ -127,12 +349,9 @@ export const SearchBarProvider = ({ children }) => {
       filterTrigger: true,
       tableFilterTrigger: false,
     });
-  };
 
-  /**
-   * 🔁 Helper: Reset all Employee My Transaction filters to initial state
-   */
-  const resetEmployeeMyTransactionSearch = () => {
+  /** Reset Employee My Transaction filters */
+  const resetEmployeeMyTransactionSearch = () =>
     setEmployeeMyTransactionSearch({
       instrumentName: "",
       quantity: "",
@@ -147,31 +366,25 @@ export const SearchBarProvider = ({ children }) => {
       filterTrigger: true,
       tableFilterTrigger: false,
     });
-  };
 
-  /**
-   * 🔁 Helper: Reset all Employee portfolio filters to initial state
-   */
-  const resetEmployeePortfolioSearch = () => {
+  /** Reset Employee Portfolio filters */
+  const resetEmployeePortfolioSearch = () =>
     setEmployeePortfolioSearch({
-      instrumentName: "", // Name of the instrument short
-      quantity: "", // Quantity filter
-      startDate: null, // Start of date range
-      endDate: null, // End of date range
-      mainInstrumentName: "", // Main instrument short name for popover or modal
-      type: [], // Type filter: ["Buy", "Sell"]
-      broker: [], // broker filter:
-      pageSize: "", // Pagination: size of page
-      pageNumber: 0, // Pagination: current page number
+      instrumentName: "",
+      quantity: "",
+      startDate: null,
+      endDate: null,
+      mainInstrumentName: "",
+      type: [],
+      broker: [],
+      pageSize: "",
+      pageNumber: 0,
       filterTrigger: false,
       tableFilterTrigger: false,
     });
-  };
 
-  /**
-   * 🔁 Helper: Reset all Employee My Transaction filters to initial state
-   */
-  const resetEmployeePendingApprovalSearch = () => {
+  /** Reset Employee Pending Approval filters */
+  const resetEmployeePendingApprovalSearch = () =>
     setEmployeePendingApprovalSearch({
       instrumentName: "",
       quantity: "",
@@ -186,51 +399,27 @@ export const SearchBarProvider = ({ children }) => {
       filterTrigger: false,
       tableFilterTrigger: false,
     });
-  };
 
-  /**
-   * 🔁 Helper: Reset all Employee My History filters to initial state
-   */
-  const resetEmployeeMyHistorySearch = () => {
+  /** Reset Employee My History filters */
+  const resetEmployeeMyHistorySearch = () =>
     setEmployeeMyHistorySearch({
       transactionid: "",
-      instrumentName: "", // Name of the instrument
-      quantity: 0, // Quantity filter
-      startDate: null, // Start of date range
-      endDate: null, // End of date range
-      mainInstrumentName: "", // Main instrument name for popover or modal
-      type: [], // Type filter: ["Buy", "Sell"]
-      nature: [], // Type filter: ["Buy", "Sell"]
-      status: [], // Status filter: ["Pending", "Approved", etc.]
-      pageSize: "", // Pagination: size of page
-      pageNumber: 0, // Pagination: current page number
+      instrumentName: "",
+      quantity: 0,
+      startDate: null,
+      endDate: null,
+      mainInstrumentName: "",
+      type: [],
+      nature: [],
+      status: [],
+      pageSize: "",
+      pageNumber: 0,
       filterTrigger: true,
       tableFilterTrigger: false,
     });
-  };
 
-  /**
-   * 🔍 Line-Manager Approval Request Filters State
-   * Used for filtering data in the Line-Manager Approval Request table.
-   */
-  const [lineManagerApprovalSearch, setLineManagerApprovalSearch] = useState({
-    instrumentName: "", // Name of the instrument
-    requesterName: "", // requester Name filter
-    date: null, // Single date (could be Date object or string)
-    mainInstrumentName: "", // Main instrument name for popover or modal
-    type: [], // Type filter: ["Buy", "Sell"]
-    status: [], // Status filter: ["Pending", "Approved", etc.]
-    pageSize: 0, // Pagination: size of page
-    pageNumber: 0, // Pagination: current page number
-    totalRecords: 0,
-    filterTrigger: false,
-    tableFilterTrigger: false,
-  });
-
-  /**
-   * 🔁 Helper: Reset all Employee My Approval filters to initial state
-   */
-  const resetLineManagerApprovalSearch = () => {
+  /** Reset Line Manager Approval filters */
+  const resetLineManagerApprovalSearch = () =>
     setLineManagerApprovalSearch({
       instrumentName: "",
       requesterName: "",
@@ -238,15 +427,110 @@ export const SearchBarProvider = ({ children }) => {
       mainInstrumentName: "",
       type: [],
       status: [],
-      pageSize: 0,
+      pageSize: 10,
       pageNumber: 0,
+      quantity: 0,
       totalRecords: 0,
       filterTrigger: true,
       tableFilterTrigger: false,
     });
-  };
 
-  // 🔁 New helper: Reset ALL filters at once
+  /** Reset Compliance Officer Reconcile Transactions filters */
+  const resetComplianceOfficerReconcileTransactionsSearch = () =>
+    setComplianceOfficerReconcileTransactionsSearch({
+      requesterName: "",
+      instrumentName: "",
+      mainInstrumentName: "",
+      quantity: 0,
+      startDate: null,
+      endDate: null,
+      type: [],
+      status: [],
+      pageSize: 0,
+      pageNumber: 0,
+      totalRecords: 0,
+      filterTrigger: false,
+      tableFilterTrigger: false,
+    });
+
+  /** Reset Compliance Officer Reconcile Portfolio filters */
+  const resetComplianceOfficerReconcilePortfoliosSearch = () =>
+    setComplianceOfficerReconcilePortfolioSearch({
+      requesterName: "",
+      mainInstrumentName: "",
+      instrumentName: "",
+      startDate: null,
+      endDate: null,
+      quantity: 0,
+      type: [],
+      status: [],
+      pageSize: 0,
+      pageNumber: 0,
+      totalRecords: 0,
+      filterTrigger: false,
+      tableFilterTrigger: false,
+    });
+
+  /** Reset HCA Portfolio filters */
+  const resetHeadOfComplianceApprovalPortfolioSearch = () =>
+    setHeadOfComplianceApprovalPortfolioSearch({
+      requesterName: "",
+      instrumentName: "",
+      mainInstrumentName: "",
+      quantity: 0,
+      requestDateFrom: null,
+      requestDateTo: null,
+      escalatedDateFrom: null,
+      escalatedDateTo: null,
+      type: [],
+      status: [],
+      pageSize: 0,
+      pageNumber: 0,
+      totalRecords: 0,
+      filterTrigger: false,
+      tableFilterTrigger: false,
+    });
+
+  /** Reset HCA Escalated Verifications filters */
+  const resetHeadOfComplianceApprovalEscalatedVerificationsSearch = () =>
+    setHeadOfComplianceApprovalEscalatedVerificationsSearch({
+      requesterName: "",
+      instrumentName: "",
+      mainInstrumentName: "",
+      quantity: 0,
+      requestDateFrom: null,
+      requestDateTo: null,
+      escalatedDateFrom: null,
+      escalatedDateTo: null,
+      type: [],
+      status: [],
+      pageSize: 0,
+      pageNumber: 0,
+      totalRecords: 0,
+      filterTrigger: false,
+      tableFilterTrigger: false,
+    });
+
+  /** Reset HTA Escalated Approval filters */
+  const resetHeadOfTradeApprovalEscalatedApprovalsSearch = () =>
+    setHeadOfTradeEscalatedApprovalsSearch({
+      instrumentName: "",
+      quantity: "",
+      requestDateFrom: "",
+      requestDateTo: "",
+      escalatedDateFrom: "",
+      escalatedDateTo: "",
+      status: [],
+      type: [],
+      requesterName: "",
+      lineManagerName: "",
+      pageNumber: 0,
+      length: 10,
+      filterTrigger: false,
+      tableFilterTrigger: false,
+    });
+
+  /** Reset all filters across modules */
   const resetSearchBarContextState = () => {
     resetEmployeeMyApprovalSearch();
     resetEmployeeMyTransactionSearch();
@@ -254,44 +538,75 @@ export const SearchBarProvider = ({ children }) => {
     resetEmployeePendingApprovalSearch();
     resetEmployeeMyHistorySearch();
     resetLineManagerApprovalSearch();
+    resetComplianceOfficerReconcileTransactionsSearch();
+    resetComplianceOfficerReconcilePortfoliosSearch();
+    resetHeadOfComplianceApprovalPortfolioSearch();
+    resetHeadOfComplianceApprovalEscalatedVerificationsSearch();
+    resetHeadOfTradeApprovalEscalatedApprovalsSearch();
   };
 
-  /**
-   * Provide state and actions to the component tree
-   */
+  // ===============================
+  // Context Provider Value
+  // ===============================
   return (
     <SearchBarContext.Provider
       value={{
-        // Employee My Approval filters and updater
+        // Employee
         employeeMyApprovalSearch,
         setEmployeeMyApprovalSearch,
         resetEmployeeMyApprovalSearch,
-
-        // Employee My Transaction filters and updater
         employeeMyTransactionSearch,
         setEmployeeMyTransactionSearch,
         resetEmployeeMyTransactionSearch,
-
-        // Employee My portfolio filters and updater
         employeePortfolioSearch,
         setEmployeePortfolioSearch,
         resetEmployeePortfolioSearch,
-
-        // Employee Pending Approval filters and updater
         employeePendingApprovalSearch,
         setEmployeePendingApprovalSearch,
         resetEmployeePendingApprovalSearch,
-
-        // Employee My History filters and updater
         employeeMyHistorySearch,
         setEmployeeMyHistorySearch,
         resetEmployeeMyHistorySearch,
 
-        // This is For LineManager Approval
+        // Line Manager
         lineManagerApprovalSearch,
         setLineManagerApprovalSearch,
         resetLineManagerApprovalSearch,
 
+        // Compliance Officer
+        complianceOfficerReconcileTransactionsSearch,
+        setComplianceOfficerReconcileTransactionsSearch,
+        resetComplianceOfficerReconcileTransactionsSearch,
+        complianceOfficerReconcilePortfolioSearch,
+        setComplianceOfficerReconcilePortfolioSearch,
+        resetComplianceOfficerReconcilePortfoliosSearch,
+
+        // Head of Compliance Approval
+        headOfComplianceApprovalPortfolioSearch,
+        setHeadOfComplianceApprovalPortfolioSearch,
+        resetHeadOfComplianceApprovalPortfolioSearch,
+        headOfComplianceApprovalEscalatedVerificationsSearch,
+        setHeadOfComplianceApprovalEscalatedVerificationsSearch,
+        resetHeadOfComplianceApprovalEscalatedVerificationsSearch,
+
+        // Head Of Trade Approval Escalated Approvals
+        headOfTradeEscalatedApprovalsSearch,
+        setHeadOfTradeEscalatedApprovalsSearch,
+        resetHeadOfTradeApprovalEscalatedApprovalsSearch,
+
+        // Always-latest refs
+        employeeMyApprovalSearchRef,
+        employeeMyTransactionSearchRef,
+        employeePortfolioSearchRef,
+        employeePendingApprovalSearchRef,
+        employeeMyHistorySearchRef,
+        lineManagerApprovalSearchRef,
+        complianceOfficerReconcileTransactionsSearchRef,
+        complianceOfficerReconcilePortfolioSearchRef,
+        headOfComplianceApprovalPortfolioSearchRef,
+        headOfComplianceApprovalEscalatedVerificationsSearchRef,
+
+        // Global reset
         resetSearchBarContextState,
       }}
     >
@@ -301,9 +616,12 @@ export const SearchBarProvider = ({ children }) => {
 };
 
 /**
- * 3. Custom Hook: useSearchBarContext
- * This allows consuming components to access and update search state.
- * Must be used inside a <SearchBarProvider>.
+ * 🪝 useSearchBarContext
+ *
+ * Hook to consume the `SearchBarContext`.
+ *
+ * @returns {object} Context values: all filter states, setters, reset helpers, and refs.
+ * @throws {Error} If used outside of a `<SearchBarProvider>`.
  */
 export const useSearchBarContext = () => {
   const context = useContext(SearchBarContext);

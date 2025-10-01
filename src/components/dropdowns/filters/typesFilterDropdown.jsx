@@ -52,10 +52,32 @@ const TypeFilterDropdown = ({
         pageNumber: 0,
         filterTrigger: true,
       }));
+    } else if (selectedKey === "9") {
+      setState((prev) => ({
+        ...prev,
+        type: tempSelected,
+        pageNumber: 0,
+        filterTrigger: true,
+      }));
+    } else if (selectedKey === "12") {
+      setState((prev) => ({
+        ...prev,
+        type: tempSelected,
+        pageNumber: 0,
+        filterTrigger: true,
+      }));
+    } else if (selectedKey === "15") {
+      setState((prev) => ({
+        ...prev,
+        type: tempSelected,
+        pageNumber: 0,
+        filterTrigger: true,
+      }));
     } else {
       setState((prev) => ({
         ...prev,
         type: tempSelected,
+        pageNumber: 0,
       }));
       await apiCallType({
         selectedKey,
@@ -85,6 +107,27 @@ const TypeFilterDropdown = ({
         pageNumber: 0,
         filterTrigger: true,
       }));
+    } else if (selectedKey === "9") {
+      setState((prev) => ({
+        ...prev,
+        type: [],
+        pageNumber: 0,
+        filterTrigger: true,
+      }));
+    } else if (selectedKey === "12") {
+      setState((prev) => ({
+        ...prev,
+        type: [],
+        pageNumber: 0,
+        filterTrigger: true,
+      }));
+    } else if (selectedKey === "15") {
+      setState((prev) => ({
+        ...prev,
+        type: [],
+        pageNumber: 0,
+        filterTrigger: true,
+      }));
     } else {
       await apiCallType({
         selectedKey,
@@ -102,6 +145,7 @@ const TypeFilterDropdown = ({
       setState((prev) => ({
         ...prev,
         type: [],
+        pageNumber: 0,
       }));
     }
     setTempSelected([]);

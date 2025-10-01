@@ -97,6 +97,7 @@ const sidebarItems = (collapsed, userRoles = [], selectedKey) => {
           key: "1",
           icon: (
             <img
+              draggable={false}
               src={getIcon("1", ApprovalLightIcon, ApprovalDarkIcon)}
               alt="My Approvals"
               className={getIconClasses()}
@@ -108,6 +109,7 @@ const sidebarItems = (collapsed, userRoles = [], selectedKey) => {
           key: "2",
           icon: (
             <img
+              draggable={false}
               src={getIcon("2", TransactionLightIcon, TransactionDarkIcon)}
               alt="My Transactions"
               className={getIconClasses()}
@@ -119,6 +121,7 @@ const sidebarItems = (collapsed, userRoles = [], selectedKey) => {
           key: "3",
           icon: (
             <img
+              draggable={false}
               src={getIcon("3", HistoryLightIcon, HistoryDarkIcon)}
               alt="My History"
               className={getIconClasses()}
@@ -130,6 +133,7 @@ const sidebarItems = (collapsed, userRoles = [], selectedKey) => {
           key: "4",
           icon: (
             <img
+              draggable={false}
               src={getIcon("4", PortfolioLightIcon, PortfolioDarkIcon)}
               alt="Portfolio"
               className={getIconClasses()}
@@ -141,6 +145,7 @@ const sidebarItems = (collapsed, userRoles = [], selectedKey) => {
           key: "5",
           icon: (
             <img
+              draggable={false}
               src={getIcon("5", ReportsLightIcon, ReportsDarkIcon)}
               alt="Reports"
               className={getIconClasses()}
@@ -157,6 +162,7 @@ const sidebarItems = (collapsed, userRoles = [], selectedKey) => {
           key: "6",
           icon: (
             <img
+              draggable={false}
               src={getIcon(
                 "6",
                 ApprovalRequestLightIcon,
@@ -172,6 +178,7 @@ const sidebarItems = (collapsed, userRoles = [], selectedKey) => {
           key: "7",
           icon: (
             <img
+              draggable={false}
               src={getIcon("7", ActionLightIcon, ActionDarkIcon)}
               alt="My Actions"
               className={getIconClasses()}
@@ -183,6 +190,7 @@ const sidebarItems = (collapsed, userRoles = [], selectedKey) => {
           key: "8",
           icon: (
             <img
+              draggable={false}
               src={getIcon("8", ReportsLightIcon, ReportsDarkIcon)}
               alt="Reports"
               className={getIconClasses()}
@@ -199,6 +207,7 @@ const sidebarItems = (collapsed, userRoles = [], selectedKey) => {
           key: "9",
           icon: (
             <img
+              draggable={false}
               src={getIcon("9", VerificationsLightIcon, VerificationsDarkIcon)}
               alt="Reconcile Transactions"
               className={getIconClasses()}
@@ -210,6 +219,7 @@ const sidebarItems = (collapsed, userRoles = [], selectedKey) => {
           key: "10",
           icon: (
             <img
+              draggable={false}
               src={getIcon("10", ActionLightIcon, ActionDarkIcon)}
               alt="My Actions"
               className={getIconClasses()}
@@ -221,6 +231,7 @@ const sidebarItems = (collapsed, userRoles = [], selectedKey) => {
           key: "11",
           icon: (
             <img
+              draggable={false}
               src={getIcon("11", ReportsLightIcon, ReportsDarkIcon)}
               alt="Reports"
               className={getIconClasses()}
@@ -237,11 +248,8 @@ const sidebarItems = (collapsed, userRoles = [], selectedKey) => {
           key: "12",
           icon: (
             <img
-              src={getIcon(
-                "12",
-                ApprovalRequestLightIcon,
-                ApprovalRequestDarkIcon
-              )}
+              draggable={false}
+              src={getIcon("12", VerificationsLightIcon, VerificationsDarkIcon)}
               alt="Escalated Trade Approval Requests"
               className={getIconClasses()}
             />
@@ -252,6 +260,7 @@ const sidebarItems = (collapsed, userRoles = [], selectedKey) => {
           key: "13",
           icon: (
             <img
+              draggable={false}
               src={getIcon("13", ActionLightIcon, ActionDarkIcon)}
               alt="My Actions"
               className={getIconClasses()}
@@ -263,6 +272,7 @@ const sidebarItems = (collapsed, userRoles = [], selectedKey) => {
           key: "14",
           icon: (
             <img
+              draggable={false}
               src={getIcon("14", ReportsLightIcon, ReportsDarkIcon)}
               alt="Reports"
               className={getIconClasses()}
@@ -273,12 +283,13 @@ const sidebarItems = (collapsed, userRoles = [], selectedKey) => {
       ],
     },
     6: {
-      title: "Head of Compliance",
+      title: "Head of Compliance Approval",
       items: [
         {
           key: "15",
           icon: (
             <img
+              draggable={false}
               src={getIcon("15", VerificationsLightIcon, VerificationsDarkIcon)}
               alt="Escalated Trade Approval Verifications"
               className={getIconClasses()}
@@ -290,6 +301,7 @@ const sidebarItems = (collapsed, userRoles = [], selectedKey) => {
           key: "16",
           icon: (
             <img
+              draggable={false}
               src={getIcon("16", ActionLightIcon, ActionDarkIcon)}
               alt="My Actions"
               className={getIconClasses()}
@@ -301,6 +313,7 @@ const sidebarItems = (collapsed, userRoles = [], selectedKey) => {
           key: "17",
           icon: (
             <img
+              draggable={false}
               src={getIcon("17", ReportsLightIcon, ReportsDarkIcon)}
               alt="Reports"
               className={getIconClasses()}
@@ -341,6 +354,7 @@ const sidebarItems = (collapsed, userRoles = [], selectedKey) => {
     key: "faq",
     icon: (
       <img
+        draggable={false}
         src={getIcon("faq", FaqLightIcon, FaqDarkIcon)}
         alt="FAQ"
         className={getIconClasses()}
@@ -366,14 +380,14 @@ export const routeMap = {
   6: "/PAD/lm-approval-requests",
   7: "/PAD/lm-my-actions",
   8: "/PAD/lm-reports", // Reuse or change path if needed
-  9: "/PAD/reconcile-transactions",
-  10: "/PAD/my-actions",
-  11: "/PAD/reports",
-  12: "/PAD/escalated-requests",
-  13: "/PAD/my-actions",
-  14: "/PAD/reports",
-  15: "/PAD/escalated-verifications",
-  16: "/PAD/my-actions",
-  17: "/PAD/reports",
+  9: "/PAD/co-reconcile-transactions",
+  10: "/PAD/co-my-actions",
+  11: "/PAD/co-reports",
+  12: "/PAD/hta-escalated-requests",
+  13: "/PAD/hta-my-actions",
+  14: "/PAD/hta-reports",
+  15: "/PAD/hca-escalated-transactions-verifications",
+  16: "/PAD/hca-my-actions",
+  17: "/PAD/hca-reports",
   faq: "/PAD/faq",
 };

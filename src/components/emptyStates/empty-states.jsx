@@ -108,6 +108,7 @@ const EmptyState = ({
       image={
         isImage ? (
           <img
+            draggable={false}
             src={IconSrc}
             alt={displayMessage}
             className={styles.emptyIcon}

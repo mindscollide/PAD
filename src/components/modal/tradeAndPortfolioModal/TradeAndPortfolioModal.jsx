@@ -26,6 +26,7 @@ const TradeAndPortfolioModal = ({
   closeButtonText,
   lineManagerBackgroundClass = "",
   isUploadPortfolioTrue,
+  copyEmail,
 }) => {
   //For Instrument Dropdown show selected Name
   const [selectedInstrument, setSelectedInstrument] = useState(null);
@@ -117,12 +118,6 @@ const TradeAndPortfolioModal = ({
     selectedBrokers,
   ]);
 
-  //This the Copy Functionality where user can copy email by click on COpyIcon
-  const handleCopyEmail = () => {
-    navigator.clipboard.writeText("compliance@horizoncapital.com");
-    message.success("Email copied to clipboard!");
-  };
-
   const handleSubmit = () => {
     onSubmit({
       selectedInstrument,
@@ -208,6 +203,7 @@ const TradeAndPortfolioModal = ({
               <Select
                 mode="multiple"
                 placeholder="Select"
+                showSearch
                 value={selectedBrokerIDs}
                 onChange={handleBrokerChange}
                 options={brokerOptions}
@@ -225,8 +221,14 @@ const TradeAndPortfolioModal = ({
                       style={{ marginRight: 8 }}
                     />
                     {option.data.raw.brokerName}
+                    {/* 👈 label is plain text now */}
                   </div>
                 )}
+                filterOption={(input, option) =>
+                  option?.searchText
+                    ?.toLowerCase()
+                    .includes(input.toLowerCase())
+                }
               />
             </Col>
           </Row>
@@ -261,7 +263,11 @@ const TradeAndPortfolioModal = ({
                         </Col>
                         <Col span={3}>
                           <div className={styles.copyEmailConductMainClass}>
-                            <img src={copyIcon} onClick={handleCopyEmail} />
+                            <img
+                              draggable={false}
+                              src={copyIcon}
+                              onClick={copyEmail}
+                            />
                           </div>
                         </Col>
                       </>

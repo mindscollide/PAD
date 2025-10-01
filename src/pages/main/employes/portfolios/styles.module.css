@@ -80,12 +80,25 @@
   line-height: 1;
   font-size: 16px;
 }
-
+.totaltext {
+  font-family: Switzer Variable;
+  font-weight: 700;
+  font-style: Bold;
+  font-size: 22px;
+  leading-trim: NONE;
+  line-height: 100%;
+  letter-spacing: 0%;
+  color: #30426a;
+}
 /* Highlighted amount next to "Total:" */
 .totalAmount {
-  color: green;
-  font-weight: 600;
-  margin-left: 4px;
+  font-family: Switzer Variable;
+  font-weight: 700;
+  font-style: Bold;
+  font-size: 22px;
+  leading-trim: NONE;
+  line-height: 100%;
+  letter-spacing: 0%;
 }
 
 .panelHeader {
@@ -108,7 +121,6 @@
   letter-spacing: 0%;
   vertical-align: middle;
   color: #424242;
-  
 }
 
 .longName {
@@ -136,9 +148,13 @@
   letter-spacing: 0%;
   vertical-align: middle;
 }
-.icon{
-  width: 3%;
-  
+.icon {
+  display: inline-flex;
+  transition: transform 0.3s ease; /* smooth rotation */
+}
+
+.iconOpen {
+  transform: rotate(180deg); /* flipped when open */
 }
 .Panel {
   min-height: 53.8px;

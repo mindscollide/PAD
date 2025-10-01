@@ -5,7 +5,7 @@ import ArrowDown from "../../../../assets/img/arrow-down-dark.png";
 import DefaultColumArrow from "../../../../assets/img/default-colum-arrow.png";
 import TypeColumnTitle from "../../../../components/dropdowns/filters/typeColumnTitle";
 import StatusColumnTitle from "../../../../components/dropdowns/filters/statusColumnTitle";
-import { Tag } from "antd";
+import { Tag, Tooltip } from "antd";
 import style from "./myTransaction.module.css";
 
 import {
@@ -27,13 +27,28 @@ import { useEffect, useRef, useState } from "react";
 const getSortIcon = (columnKey, sortedInfo) => {
   if (sortedInfo?.columnKey === columnKey) {
     return sortedInfo.order === "ascend" ? (
-      <img src={ArrowDown} alt="Asc" className="custom-sort-icon" />
+      <img
+        draggable={false}
+        src={ArrowDown}
+        alt="Asc"
+        className="custom-sort-icon"
+      />
     ) : (
-      <img src={ArrowUP} alt="Desc" className="custom-sort-icon" />
+      <img
+        draggable={false}
+        src={ArrowUP}
+        alt="Desc"
+        className="custom-sort-icon"
+      />
     );
   }
   return (
-    <img src={DefaultColumArrow} alt="Default" className="custom-sort-icon" />
+    <img
+      draggable={false}
+      src={DefaultColumArrow}
+      alt="Default"
+      className="custom-sort-icon"
+    />
   );
 };
 
@@ -47,13 +62,14 @@ const withSortIcon = (label, columnKey, sortedInfo) => (
   </div>
 );
 
-export const getBorderlessTableColumns = (
+export const getBorderlessTableColumns = ({
   approvalStatusMap,
   sortedInfo,
   employeeMyTransactionSearch,
   setViewDetailTransactionModal,
-  setEmployeeMyTransactionSearch
-) => [
+  setEmployeeMyTransactionSearch,
+  handleViewDetailsForTransaction,
+}) => [
   {
     title: withSortIcon("Transaction ID", "tradeApprovalID", sortedInfo),
     dataIndex: "tradeApprovalID",
@@ -99,6 +115,8 @@ export const getBorderlessTableColumns = (
       console.log(record, "Checkerrrrr");
       const assetCode = record?.assetShortCode;
       const code = record?.instrumentShortCode || "";
+      const instrumentName = record?.instrumentName || "";
+
       return (
         <div
           style={{
@@ -110,20 +128,22 @@ export const getBorderlessTableColumns = (
           <span className="custom-shortCode-asset" style={{ minWidth: 30 }}>
             {assetCode?.substring(0, 2).toUpperCase()}
           </span>
-          <span
-            className="font-medium"
-            style={{
-              overflow: "hidden",
-              textOverflow: "ellipsis",
-              whiteSpace: "nowrap",
-              maxWidth: "200px",
-              display: "inline-block",
-              cursor: "pointer",
-            }}
-            title={code}
-          >
-            {code}
-          </span>
+          <Tooltip title={instrumentName} placement="topLeft">
+            <span
+              className="font-medium"
+              style={{
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+                whiteSpace: "nowrap",
+                maxWidth: "200px",
+                display: "inline-block",
+                cursor: "pointer",
+              }}
+              title={code}
+            >
+              {code}
+            </span>
+          </Tooltip>
         </div>
       );
     },
@@ -246,6 +266,7 @@ export const getBorderlessTableColumns = (
           className="small-dark-button"
           text={"View Details"}
           onClick={() => {
+            handleViewDetailsForTransaction(record?.workFlowID);
             setSelectedViewDetailOfTransaction(record);
             setViewDetailTransactionModal(true);
           }}
@@ -254,54 +275,3 @@ export const getBorderlessTableColumns = (
     },
   },
 ];
-
-export const useTableScrollBottom = (
-  onBottomReach,
-  threshold = 0,
-  prefixCls = "ant-table"
-) => {
-  const [hasReachedBottom, setHasReachedBottom] = useState(false);
-  const containerRef = useRef(null);
-  const previousScrollTopRef = useRef(0); // for detecting vertical scroll only
-
-  useEffect(() => {
-    const selector = `.${prefixCls}-body`;
-    const scrollContainer = document.querySelector(selector);
-
-    if (!scrollContainer) {
-      console.warn(`📛 Scroll container not found for selector: ${selector}`);
-      return;
-    }
-
-    containerRef.current = scrollContainer;
-
-    const handleScroll = () => {
-      const { scrollTop, scrollHeight, clientHeight } = scrollContainer;
-
-      // Check if vertical scroll happened
-      const scrolledVertically = scrollTop !== previousScrollTopRef.current;
-      previousScrollTopRef.current = scrollTop;
-
-      if (!scrolledVertically) return; // ignore horizontal-only scroll
-
-      const isScrollable = scrollHeight > clientHeight;
-      const isBottom = scrollTop + clientHeight >= scrollHeight - threshold;
-
-      if (isScrollable && isBottom && !hasReachedBottom) {
-        setHasReachedBottom(true);
-        onBottomReach?.();
-
-        setTimeout(() => setHasReachedBottom(false), 1000);
-      }
-    };
-
-    scrollContainer.addEventListener("scroll", handleScroll);
-    return () => scrollContainer.removeEventListener("scroll", handleScroll);
-  }, [hasReachedBottom, onBottomReach, threshold, prefixCls]);
-
-  return {
-    hasReachedBottom,
-    containerRef,
-    setHasReachedBottom,
-  };
-};

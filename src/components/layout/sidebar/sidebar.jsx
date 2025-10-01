@@ -1,20 +1,34 @@
-import React, { useEffect, useState } from "react";
+// src/components/SideBar/SideBar.jsx
+import React, { useEffect } from "react";
 import { Layout, Menu, Button } from "antd";
+import { useLocation, useNavigate } from "react-router-dom";
+
+// Assets
 import MenuIcon from "../../../assets/img/menu-side-bar.png";
 import BackArrowIcon from "../../../assets/img/back-arrow-side-bar.png";
-import "./sidebar.css";
 
-import sidebarItems, { routeMap } from "./utils";
-import { useNavigate } from "react-router-dom";
+// Contexts
 import { useSidebarContext } from "../../../context/sidebarContaxt";
 import { useDashboardContext } from "../../../context/dashboardContaxt";
 
+// Utilities
+import sidebarItems, { routeMap } from "./utils";
+
+// Styles
+import "./sidebar.css";
+
 const { Sider } = Layout;
+const ROOT_KEY = "0"; // Default root menu key
 
 const SideBar = () => {
-  const navigate = useNavigate(); // ✅ Add navigate hook
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  // Sidebar state/context
   const { collapsed, setCollapsed, selectedKey, setSelectedKey } =
     useSidebarContext();
+
+  // Dashboard context states
   const {
     employeeBasedBrokersData,
     setEmployeeBasedBrokersData,
@@ -25,81 +39,76 @@ const SideBar = () => {
     getAllPredefineReasonData,
     setGetAllPredefineReasonData,
   } = useDashboardContext();
-  let roles = JSON.parse(sessionStorage.getItem("user_assigned_roles"));
+
+  // Roles
+  const roles = JSON.parse(sessionStorage.getItem("user_assigned_roles")) || [];
   const allRoleIDs = roles.map((role) => role.roleID);
+
   /**
-   * Restores the last selected sidebar key from sessionStorage after a full page reload.
+   * 🔄 Restore state after browser reload
    */
   useEffect(() => {
     try {
-      // Get browser navigation entries (used to detect reload)
       const navigationEntries = performance.getEntriesByType("navigation");
 
       if (navigationEntries.length > 0) {
         const navigationType = navigationEntries[0].type;
 
         if (navigationType === "reload") {
-          // Check sessionStorage for previously saved selectedKey
+          // Restore sidebar key
           const lastSelectedKey = sessionStorage.getItem("selectedKey");
-          let getEmployeeBasedBrokersData = JSON.parse(
-            sessionStorage.getItem("employeeBasedBrokersData")
-          );
-          let getAllInstrumentsData = JSON.parse(
-            sessionStorage.getItem("allInstrumentsData")
-          );
-          let getAllAddTradeApprovalData = JSON.parse(
-            sessionStorage.getItem("addApprovalRequestData")
-          );
-          let getAllPredefineReasonNewData = JSON.parse(
-            sessionStorage.getItem("getAllPredefineReasonData")
-          );
-
           if (lastSelectedKey) {
-            setSelectedKey(lastSelectedKey); // Restore key to context
-            if (lastSelectedKey !== "0") {
-              setCollapsed(true);
-            }
-            sessionStorage.removeItem("selectedKey"); // Clear it after usage
-          }
-          if (getEmployeeBasedBrokersData) {
-            setEmployeeBasedBrokersData(getEmployeeBasedBrokersData); // Restore key to context
-            sessionStorage.removeItem("employeeBasedBrokersData"); // Clear it after usage
-          }
-          if (getAllInstrumentsData) {
-            setAllInstrumentsData(getAllInstrumentsData); // Restore key to context
-            sessionStorage.removeItem("allInstrumentsData"); // Clear it after usage
-          }
-          if (getAllAddTradeApprovalData) {
-            setAddApprovalRequestData(getAllAddTradeApprovalData); // Restore key to context
-            sessionStorage.removeItem("addApprovalRequestData"); // Clear it after usage
-          }
-          if (getAllPredefineReasonNewData) {
-            setGetAllPredefineReasonData(getAllPredefineReasonNewData); // Restore key to context
-            sessionStorage.removeItem("getAllPredefineReasonData"); // Clear it after usage
+            setSelectedKey(lastSelectedKey);
+            if (lastSelectedKey !== ROOT_KEY) setCollapsed(true);
+            sessionStorage.removeItem("selectedKey");
           }
 
-          console.log("🔄 Page was reloaded by browser.");
-        } else if (navigationType === "navigate") {
-          console.log("🚀 Initial page load or route navigation.");
+          // Restore cached dashboard data
+          const restoreAndRemove = (key, setter) => {
+            const data = JSON.parse(sessionStorage.getItem(key));
+            if (data) {
+              setter(data);
+              sessionStorage.removeItem(key);
+            }
+          };
+
+          restoreAndRemove(
+            "employeeBasedBrokersData",
+            setEmployeeBasedBrokersData
+          );
+          restoreAndRemove("allInstrumentsData", setAllInstrumentsData);
+          restoreAndRemove("addApprovalRequestData", setAddApprovalRequestData);
+          restoreAndRemove(
+            "getAllPredefineReasonData",
+            setGetAllPredefineReasonData
+          );
+
+          console.log("🔄 State restored after reload");
         }
       }
     } catch (error) {
-      console.error(
-        "❌ Error detecting page reload or restoring state:",
-        error
-      );
+      console.error("❌ Error restoring state after reload:", error);
     }
-  }, [setSelectedKey]);
+  }, [
+    setSelectedKey,
+    setEmployeeBasedBrokersData,
+    setAllInstrumentsData,
+    setAddApprovalRequestData,
+    setGetAllPredefineReasonData,
+  ]);
 
   /**
-   * Saves the currently selected sidebar key to sessionStorage
-   * before the page is refreshed or closed.
+   * 💾 Save sidebar state before page unload
    */
   useEffect(() => {
     const handleBeforeUnload = () => {
-      if (selectedKey !== "0") {
+      if (selectedKey !== ROOT_KEY) {
         setCollapsed(true);
+
+        // Save sidebar key
         sessionStorage.setItem("selectedKey", selectedKey);
+
+        // Save dashboard context data
         sessionStorage.setItem(
           "employeeBasedBrokersData",
           JSON.stringify(employeeBasedBrokersData)
@@ -117,20 +126,30 @@ const SideBar = () => {
           JSON.stringify(getAllPredefineReasonData)
         );
       }
-
-      // Optional: Show confirmation dialog (only in some browsers)
-      // e.preventDefault();
-      // e.returnValue = '';
     };
 
     window.addEventListener("beforeunload", handleBeforeUnload);
+    return () => window.removeEventListener("beforeunload", handleBeforeUnload);
+  }, [
+    selectedKey,
+    employeeBasedBrokersData,
+    allInstrumentsData,
+    addApprovalRequestData,
+    getAllPredefineReasonData,
+  ]);
 
-    return () => {
-      window.removeEventListener("beforeunload", handleBeforeUnload);
-    };
-  }, [selectedKey]);
-  console.log("selectedKey", selectedKey);
-  console.log("selectedKey", collapsed);
+  /**
+   * 🔗 Sync sidebar with current route (handles browser back/forward)
+   */
+  const pathToKey = Object.entries(routeMap).reduce((acc, [key, path]) => {
+    acc[path] = key;
+    return acc;
+  }, {});
+
+  useEffect(() => {
+    const currentKey = pathToKey[location.pathname] || ROOT_KEY;
+    if (currentKey !== selectedKey) setSelectedKey(currentKey);
+  }, [location.pathname, selectedKey, setSelectedKey, pathToKey]);
 
   return (
     <Sider
@@ -138,51 +157,49 @@ const SideBar = () => {
       width={263}
       collapsed={collapsed}
       trigger={null}
-      prefixCls={`${"sidebar-container"} ${
-        collapsed ? "collapsed" : "expanded"
-      }`}
+      prefixCls={`sidebar-container ${collapsed ? "collapsed" : "expanded"}`}
     >
+      {/* 🔘 Toggle Button */}
       <div
-        className={`${"toggle-button-container"} ${
+        className={`toggle-button-container ${
           collapsed ? "collapsed" : "expanded"
         }`}
       >
         <Button
           type="text"
-          disabled={selectedKey !== "0"}
+          disabled={selectedKey !== ROOT_KEY}
           onClick={() => setCollapsed(!collapsed)}
-          className={"toggle-button"}
+          className="toggle-button"
           icon={
             <img
+              draggable={false}
               src={collapsed ? MenuIcon : BackArrowIcon}
               alt={collapsed ? "Open Menu" : "Collapse Menu"}
-              className={"toggle-icon"}
+              className="toggle-icon"
             />
           }
         />
       </div>
 
-      {/* Scrollable Menu Area */}
-      <div className={"menu-scroll-container"}>
+      {/* 📜 Scrollable Sidebar Menu */}
+      <div className="menu-scroll-container">
         <Menu
           theme="dark"
           mode="inline"
-          defaultSelectedKeys={[""]}
           selectedKeys={[selectedKey]}
           onSelect={({ key }) => {
             setSelectedKey(key);
 
-            // collapse automatically if key is not "0"
-            if (key !== "0") {
-              setCollapsed(true);
-            }
-            const path = routeMap[key]; // ✅ Correct usage
-            if (path) navigate(path); // ✅ Navigation
+            // Collapse automatically if not root
+            if (key !== ROOT_KEY) setCollapsed(true);
+
+            const path = routeMap[key];
+            if (path) navigate(path);
           }}
           items={sidebarItems(collapsed, allRoleIDs, selectedKey)}
           inlineCollapsed={collapsed}
           inlineIndent={20}
-          prefixCls={"custom-menu"}
+          prefixCls="custom-menu"
         />
       </div>
     </Sider>
