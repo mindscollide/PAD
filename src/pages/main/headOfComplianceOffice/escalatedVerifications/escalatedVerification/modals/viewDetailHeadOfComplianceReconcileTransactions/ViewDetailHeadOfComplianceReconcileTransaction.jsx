@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useRef } from "react";
 import { Col, Row, Tag } from "antd";
 import { useGlobalModal } from "../../../../../../../context/GlobalModalContext";
 import { BrokerList, GlobalModal } from "../../../../../../../components";
-import styles from "./ViewDetailReconcileTransaction.module.css";
+import styles from "./ViewDetailHeadOfComplianceReconcileTransaction.module.css";
 import { Stepper, Step } from "react-form-stepper";
 import CustomButton from "../../../../../../../components/buttons/button";
 import CheckIcon from "../../../../../../../assets/img/Check.png";
@@ -16,10 +16,14 @@ import {
 } from "../../../../../../../commen/funtions/rejex";
 import { useReconcileContext } from "../../../../../../../context/reconsileContax";
 
-const ViewDetailReconcileTransaction = () => {
+const ViewDetailHeadOfComplianceReconcileTransaction = () => {
   // This is Global State for modal which is create in ContextApi
-  const { viewDetailReconcileTransaction, setViewDetailReconcileTransaction } =
-    useGlobalModal();
+  const {
+    viewDetailHeadOfComplianceEscalated,
+    setViewDetailHeadOfComplianceEscalated,
+    setUploadComplianceModal,
+    setNoteGlobalModal,
+  } = useGlobalModal();
 
   // get data from sessionStorage
   const userProfileData = JSON.parse(
@@ -29,21 +33,20 @@ const ViewDetailReconcileTransaction = () => {
 
   //This is the Global state of Context Api
   const {
-    reconcileTransactionViewDetailData,
-    complianceOfficerReconcileTransactionData,
-    setReconcileTransactionViewDetailData,
+    isEscalatedHeadOfComplianceViewDetailData,
+    headOfComplianceApprovalEscalatedVerificationsData,
   } = useReconcileContext();
 
   const { allInstrumentsData } = useDashboardContext();
 
   console.log(
-    reconcileTransactionViewDetailData,
-    "reconcileTransactionViewDetailData"
+    isEscalatedHeadOfComplianceViewDetailData,
+    "isEscalatedHeadOfComplianceViewDetailData"
   );
 
   console.log(
-    complianceOfficerReconcileTransactionData,
-    "complianceOfficerReconcileTransactionData"
+    headOfComplianceApprovalEscalatedVerificationsData,
+    "headOfComplianceApprovalEscalatedVerificationsData"
   );
 
   // This is the Status Which is I'm getting from the selectedViewDetail contextApi state
@@ -86,6 +89,18 @@ const ViewDetailReconcileTransaction = () => {
           labelClassName: styles.notTradedDetailHeading,
           divClassName: styles.notTradedBorderClass,
         };
+      case "8":
+        return {
+          label: "Compliant",
+          labelClassName: styles.approvedDetailHeading,
+          divClassName: styles.approvedBorderClass,
+        };
+      case "9":
+        return {
+          label: "Not-Compliant",
+          labelClassName: styles.declinedDetailHeading,
+          divClassName: styles.declinedBorderClass,
+        };
 
       default:
         return {
@@ -98,12 +113,15 @@ const ViewDetailReconcileTransaction = () => {
 
   //This is how I can pass the status in statusData Variables
   const statusData = getStatusStyle(
-    String(reconcileTransactionViewDetailData?.workFlowStatus?.workFlowStatusID)
+    String(
+      isEscalatedHeadOfComplianceViewDetailData?.workFlowStatus
+        ?.workFlowStatusID
+    )
   );
 
   // Extarct and Instrument from viewDetailsModalData context Api
   const instrumentId = Number(
-    reconcileTransactionViewDetailData?.details?.[0]?.instrumentID
+    isEscalatedHeadOfComplianceViewDetailData?.details?.[0]?.instrumentID
   );
 
   // Match that selected instrument Id in viewDetailsModalData and match them with allinstrumentsData context State
@@ -111,21 +129,41 @@ const ViewDetailReconcileTransaction = () => {
     (item) => item.instrumentID === instrumentId
   );
 
-  //This the Copy Functionality where user can copy email by click on COpyIcon
-  const handleCopyEmail = () => {
-    const emailToCopy =
-      complianceOfficerDetails?.managerEmail || "compliance@horizoncapital.com";
-    navigator.clipboard.writeText(emailToCopy);
-    message.success("Email copied to clipboard!");
+  //if status is Pending and ticketUpload is false then compliant and Non Compliant is disable
+  const disableCompliantOrNonCompliantBtn =
+    statusData.label === "Pending" &&
+    isEscalatedHeadOfComplianceViewDetailData?.ticketUploaded === false;
+
+  // need to extract and escalatedFrom ID from escalation
+
+  const escalatedFromID =
+    isEscalatedHeadOfComplianceViewDetailData?.escalations?.[0]
+      ?.escalatedFromID;
+
+  console.log(escalatedFromID, "escalatedFromIDescalatedFromID");
+
+  const complianceOfficer =
+    isEscalatedHeadOfComplianceViewDetailData?.hierarchyDetails?.find(
+      (item) => item.roleID === 4
+    );
+
+  const onClickFromCompliantNoteModalFromHeadOfCompliance = () => {
+    setNoteGlobalModal({ visible: true, action: "HOC-Compliant" });
+    setViewDetailHeadOfComplianceEscalated(false);
+  };
+
+  const onClickFromNonCompliantNoteModalFromHeadOfCompliance = () => {
+    setNoteGlobalModal({ visible: true, action: "HOC-Non-Compliant" });
+    setViewDetailHeadOfComplianceEscalated(false);
   };
 
   return (
     <>
       <GlobalModal
-        visible={viewDetailReconcileTransaction}
+        visible={viewDetailHeadOfComplianceEscalated}
         width={"942px"}
         centered={true}
-        onCancel={() => setViewDetailReconcileTransaction(false)}
+        onCancel={() => setViewDetailHeadOfComplianceEscalated(false)}
         modalHeader={<></>}
         modalBody={
           <>
@@ -156,8 +194,10 @@ const ViewDetailReconcileTransaction = () => {
                       </label>
                       <label className={styles.viewDetailSubLabels}>
                         <span className={styles.customTag}>
-                          {reconcileTransactionViewDetailData?.details?.[0]
-                            ?.assetTypeID === "1" && <span>EQ</span>}
+                          {isEscalatedHeadOfComplianceViewDetailData
+                            ?.details?.[0]?.assetTypeID === "1" && (
+                            <span>EQ</span>
+                          )}
                         </span>{" "}
                         {selectedInstrument?.instrumentCode}
                       </label>
@@ -192,8 +232,8 @@ const ViewDetailReconcileTransaction = () => {
                       </label>
                       <label className={styles.viewDetailSubLabels}>
                         {dashBetweenApprovalAssets(
-                          reconcileTransactionViewDetailData
-                            ?.tradedWorkFlowReqeust?.[0]?.tradeApprovalID
+                          isEscalatedHeadOfComplianceViewDetailData
+                            ?.tradedWorkFlowRequests?.[0]?.tradeApprovalID
                         )}
                       </label>
                     </div>
@@ -209,8 +249,8 @@ const ViewDetailReconcileTransaction = () => {
                       </label>
                       <label className={styles.viewDetailSubLabels}>
                         {dashBetweenApprovalAssets(
-                          reconcileTransactionViewDetailData?.details?.[0]
-                            ?.tradeApprovalID
+                          isEscalatedHeadOfComplianceViewDetailData
+                            ?.details?.[0]?.tradeApprovalID
                         )}
                       </label>
                     </div>
@@ -229,9 +269,9 @@ const ViewDetailReconcileTransaction = () => {
                       <label className={styles.viewDetailSubLabels}>
                         {/* {selectedViewDetail?.type} */}
 
-                        {reconcileTransactionViewDetailData?.details?.[0]
+                        {isEscalatedHeadOfComplianceViewDetailData?.details?.[0]
                           ?.approvalTypeID === "1" && <span>Buy</span>}
-                        {reconcileTransactionViewDetailData?.details?.[0]
+                        {isEscalatedHeadOfComplianceViewDetailData?.details?.[0]
                           ?.approvalTypeID === "2" && <span>Sell</span>}
                       </label>
                     </div>
@@ -246,8 +286,8 @@ const ViewDetailReconcileTransaction = () => {
                       </label>
                       <label className={styles.viewDetailSubLabels}>
                         {formatNumberWithCommas(
-                          reconcileTransactionViewDetailData
-                            ?.tradedWorkFlowReqeust?.[0]?.quantity
+                          isEscalatedHeadOfComplianceViewDetailData
+                            ?.tradedWorkFlowRequests?.[0]?.quantity
                         )}
                       </label>
                     </div>
@@ -259,8 +299,8 @@ const ViewDetailReconcileTransaction = () => {
                       </label>
                       <label className={styles.viewDetailSubLabels}>
                         {formatNumberWithCommas(
-                          reconcileTransactionViewDetailData?.details?.[0]
-                            ?.quantity
+                          isEscalatedHeadOfComplianceViewDetailData
+                            ?.details?.[0]?.quantity
                         )}
                       </label>
                     </div>
@@ -275,8 +315,8 @@ const ViewDetailReconcileTransaction = () => {
                       </label>
                       <label className={styles.viewDetailSubLabels}>
                         {formatApiDateTime(
-                          complianceOfficerReconcileTransactionData?.data[0]
-                            ?.transactionDate
+                          headOfComplianceApprovalEscalatedVerificationsData
+                            ?.data[0]?.transactionDate
                         )}
                       </label>
                     </div>
@@ -293,7 +333,7 @@ const ViewDetailReconcileTransaction = () => {
                         Asset Class
                       </label>
                       <label className={styles.viewDetailSubLabels}>
-                        {reconcileTransactionViewDetailData?.details?.[0]
+                        {isEscalatedHeadOfComplianceViewDetailData?.details?.[0]
                           ?.assetTypeID === "1" && <span>Equity</span>}
                       </label>
                     </div>
@@ -304,9 +344,34 @@ const ViewDetailReconcileTransaction = () => {
                   <Col span={24}>
                     <BrokerList
                       statusData={statusData}
-                      viewDetailsData={reconcileTransactionViewDetailData}
+                      viewDetailsData={
+                        isEscalatedHeadOfComplianceViewDetailData
+                      }
                       variant={"Blue"}
                     />
+                  </Col>
+                </Row>
+
+                <Row style={{ marginTop: "5px" }}>
+                  <Col span={12}>
+                    <div className={styles.backgrounColorOfDetailCompliance}>
+                      <p className={styles.Compliancelabel}>
+                        Compliance Officer Name
+                      </p>
+                      <p className={styles.Compliancevalue}>
+                        {complianceOfficer?.fullName || "—"}
+                      </p>
+                    </div>
+                  </Col>
+                  <Col span={12}>
+                    <div className={styles.backgrounColorOfDetailCompliance}>
+                      <p className={styles.Compliancelabel}>
+                        Compliance Officer Email
+                      </p>
+                      <p className={styles.Compliancevalue}>
+                        {complianceOfficer?.email || "—"}
+                      </p>
+                    </div>
                   </Col>
                 </Row>
 
@@ -314,8 +379,8 @@ const ViewDetailReconcileTransaction = () => {
                   <div className={styles.mainStepperContainer}>
                     <div
                       className={`${styles.backgrounColorOfStepper} ${
-                        (reconcileTransactionViewDetailData?.hierarchyDetails
-                          ?.length || 0) <= 3
+                        (isEscalatedHeadOfComplianceViewDetailData
+                          ?.hierarchyDetails?.length || 0) <= 3
                           ? styles.centerAlignStepper
                           : styles.leftAlignStepper
                       }`}
@@ -325,14 +390,14 @@ const ViewDetailReconcileTransaction = () => {
                         activeStep={Math.max(
                           0,
                           Array.isArray(
-                            reconcileTransactionViewDetailData?.hierarchyDetails
+                            isEscalatedHeadOfComplianceViewDetailData?.hierarchyDetails
                           )
-                            ? (reconcileTransactionViewDetailData
+                            ? (isEscalatedHeadOfComplianceViewDetailData
                                 ?.hierarchyDetails.length > 1
-                                ? reconcileTransactionViewDetailData?.hierarchyDetails.filter(
+                                ? isEscalatedHeadOfComplianceViewDetailData?.hierarchyDetails.filter(
                                     (person) => person.userID !== loggedInUserID
                                   )
-                                : reconcileTransactionViewDetailData?.hierarchyDetails
+                                : isEscalatedHeadOfComplianceViewDetailData?.hierarchyDetails
                               ).length - 1 // 🔥 fix here
                             : 0
                         )}
@@ -350,14 +415,14 @@ const ViewDetailReconcileTransaction = () => {
                         }}
                       >
                         {Array.isArray(
-                          reconcileTransactionViewDetailData?.hierarchyDetails
+                          isEscalatedHeadOfComplianceViewDetailData?.hierarchyDetails
                         ) &&
-                          (reconcileTransactionViewDetailData?.hierarchyDetails
-                            .length > 1
-                            ? reconcileTransactionViewDetailData?.hierarchyDetails.filter(
+                          (isEscalatedHeadOfComplianceViewDetailData
+                            ?.hierarchyDetails.length > 1
+                            ? isEscalatedHeadOfComplianceViewDetailData?.hierarchyDetails.filter(
                                 (person) => person.userID !== loggedInUserID
                               )
-                            : reconcileTransactionViewDetailData?.hierarchyDetails
+                            : isEscalatedHeadOfComplianceViewDetailData?.hierarchyDetails
                           ) // 🔥 fix here
                             .map((person, index) => {
                               const {
@@ -365,6 +430,7 @@ const ViewDetailReconcileTransaction = () => {
                                 bundleStatusID,
                                 modifiedDate,
                                 modifiedTime,
+                                userID,
                               } = person;
 
                               const formattedDateTime = formatApiDateTime(
@@ -372,46 +438,105 @@ const ViewDetailReconcileTransaction = () => {
                               );
 
                               let iconSrc;
-                              console.log(
-                                bundleStatusID,
-                                "CheckerrrrrbundleStatusID"
-                              );
-                              switch (bundleStatusID) {
-                                case 1:
-                                  iconSrc = EllipsesIcon;
-                                  break;
-                                case 2:
-                                  iconSrc = CheckIcon;
-                                  break;
-                                default:
-                                  iconSrc = EllipsesIcon;
+                              let statusText = ""; // Initialize variable for status text
+                              let labelContent = null; // Define a variable for label content
+
+                              // 👉 Escalation condition
+                              const isEscalatedUser =
+                                userID === escalatedFromID;
+
+                              if (isEscalatedUser) {
+                                iconSrc = EscaltedOn;
+                                labelContent = (
+                                  <div className={styles.customlabel}>
+                                    <div className={styles.customtitle}>
+                                      Escalated On
+                                    </div>
+                                    <div className={styles.customdesc}>
+                                      {formattedDateTime}
+                                    </div>
+                                  </div>
+                                );
+                              } else {
+                                switch (bundleStatusID) {
+                                  case 1:
+                                    iconSrc = EllipsesIcon;
+                                    if (loggedInUserID === userID) {
+                                      statusText = "Waiting for Approval";
+                                    }
+                                    labelContent = (
+                                      <div className={styles.customlabel}>
+                                        <div className={styles.customtitle}>
+                                          {loggedInUserID === userID
+                                            ? ""
+                                            : fullName}
+                                        </div>
+                                        <div className={styles.customdesc}>
+                                          {loggedInUserID === userID
+                                            ? ""
+                                            : formattedDateTime}
+                                        </div>
+                                      </div>
+                                    );
+                                    break;
+
+                                  case 2:
+                                    iconSrc = CheckIcon;
+                                    labelContent = (
+                                      <div className={styles.customlabel}>
+                                        <div className={styles.customtitle}>
+                                          {loggedInUserID === userID
+                                            ? "Approved by You"
+                                            : fullName}
+                                        </div>
+                                        <div className={styles.customdesc}>
+                                          {formattedDateTime}
+                                        </div>
+                                      </div>
+                                    );
+                                    break;
+
+                                  default:
+                                    iconSrc = EllipsesIcon;
+                                    labelContent = (
+                                      <div className={styles.customlabel}>
+                                        <div className={styles.customtitle}>
+                                          {fullName}
+                                        </div>
+                                        <div className={styles.customdesc}>
+                                          {formattedDateTime}
+                                        </div>
+                                      </div>
+                                    );
+                                }
                               }
 
                               return (
                                 <Step
                                   key={index}
+                                  className={styles.stepButtonActive}
                                   label={
-                                    <div className={styles.customlabel}>
-                                      <div className={styles.customtitle}>
-                                        {fullName}
-                                      </div>
-                                      <div className={styles.customdesc}>
-                                        {bundleStatusID !== 1 &&
-                                          formattedDateTime}
-                                      </div>
+                                    <div className={styles.stepLabelWrapper}>
+                                      {statusText && (
+                                        <div
+                                          className={styles.waitingApprovalText}
+                                        >
+                                          {statusText}
+                                        </div>
+                                      )}
+                                      {labelContent}
                                     </div>
                                   }
-                                  children={
-                                    <div className={styles.stepCircle}>
-                                      <img
-                                        draggable={false}
-                                        src={iconSrc}
-                                        alt="status-icon"
-                                        className={styles.circleImg}
-                                      />
-                                    </div>
-                                  }
-                                />
+                                >
+                                  <div className={styles.stepCircle}>
+                                    <img
+                                      draggable={false}
+                                      src={iconSrc}
+                                      alt="status-icon"
+                                      className={styles.circleImg}
+                                    />
+                                  </div>
+                                </Step>
                               );
                             })}
                       </Stepper>
@@ -421,11 +546,15 @@ const ViewDetailReconcileTransaction = () => {
                     <div className={styles.addticketBuuton}>
                       <CustomButton
                         text={"View Ticket"}
-                        className={"big-light-button"}
+                        className={"big-ViewTicket-light-button"}
                       />
                       <CustomButton
                         text={"Add Ticket"}
-                        className="big-dark-button"
+                        onClick={() => {
+                          setUploadComplianceModal(true);
+                          setViewDetailHeadOfComplianceEscalated(false);
+                        }}
+                        className="big-ViewTicket-dark-button"
                       />
                     </div>
                   </Col>
@@ -440,10 +569,18 @@ const ViewDetailReconcileTransaction = () => {
                       <CustomButton
                         text={"Non Compliant"}
                         className="Decline-dark-button"
+                        disabled={disableCompliantOrNonCompliantBtn}
+                        onClick={
+                          onClickFromNonCompliantNoteModalFromHeadOfCompliance
+                        }
                       />
                       <CustomButton
                         text={"Compliant"}
                         className="Approved-dark-button"
+                        disabled={disableCompliantOrNonCompliantBtn}
+                        onClick={
+                          onClickFromCompliantNoteModalFromHeadOfCompliance
+                        }
                       />
                     </div>
                   </>
@@ -457,4 +594,4 @@ const ViewDetailReconcileTransaction = () => {
   );
 };
 
-export default ViewDetailReconcileTransaction;
+export default ViewDetailHeadOfComplianceReconcileTransaction;

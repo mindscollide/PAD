@@ -184,6 +184,29 @@ export const ReconcileProvider = ({ children }) => {
     setHeadOfComplianceApprovalPortfolioMqtt(false);
   };
 
+  // Head Of Compliance (HOC) view detail data state Start here
+  const [
+    isEscalatedHeadOfComplianceViewDetailData,
+    setIsEscalatedHeadOfComplianceViewDetailData,
+  ] = useState({
+    details: [],
+    assetTypes: [],
+    hierarchyDetails: [],
+    workFlowStatus: {},
+    tradedWorkFlowRequests: [],
+    ticketUploaded: false,
+    requesterName: "",
+    escalations: [],
+  });
+
+  //To get the selected data by clicking on View Detail of reconcile Transaction
+  const [
+    selectedEscalatedHeadOfComplianceData,
+    setSelectedEscalatedHeadOfComplianceData,
+  ] = useState(null);
+
+  // Head Of Compliance (HOC) view detail data state End here
+
   /** Reset the HCO Escalated Verifications tab (API + MQTT). */
   const resetHeadOfComplianceApprovalEscalatedVerificationsTab = () => {
     setActiveTabHCO("escalated");
@@ -248,6 +271,13 @@ export const ReconcileProvider = ({ children }) => {
 
         selectedReconcileTransactionData,
         setSelectedReconcileTransactionData,
+
+        // Head Of Compliance (HOC) States
+        isEscalatedHeadOfComplianceViewDetailData,
+        setIsEscalatedHeadOfComplianceViewDetailData,
+
+        selectedEscalatedHeadOfComplianceData,
+        setSelectedEscalatedHeadOfComplianceData,
       }}
     >
       {children}

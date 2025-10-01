@@ -14,6 +14,7 @@ import { formatApiDateTime } from "../../../../../commen/funtions/rejex";
 import TypeColumnTitle from "../../../../../components/dropdowns/filters/typeColumnTitle";
 import StatusColumnTitle from "../../../../../components/dropdowns/filters/statusColumnTitle";
 import { useGlobalModal } from "../../../../../context/GlobalModalContext";
+import { useReconcileContext } from "../../../../../context/reconsileContax";
 
 /* ------------------------------------------------------------------ */
 /* 🔹 Trade Type Resolver */
@@ -83,7 +84,7 @@ export const mapToTableRows = (assetTypeData, list = []) =>
   (Array.isArray(list) ? list : []).map((item = {}) => ({
     requesterName: item?.requesterName,
     complianceOfficerName: item?.complianceOfficerName,
-    approvalID: item?.approvalID,
+    workflowID: item?.workflowID,
     instrumentCode: item?.instrument?.instrumentCode || "—",
     instrumentName: item?.instrument?.instrumentName || "—",
     assetTypeShortCode: item?.assetType?.assetTypeShortCode || "—",
@@ -135,7 +136,7 @@ export const getBorderlessTableColumns = ({
   sortedInfo = {},
   headOfComplianceApprovalEscalatedVerificationsSearch = {},
   setHeadOfComplianceApprovalEscalatedVerificationsSearch = () => {},
-  handleViewDetailsForReconcileTransaction,
+  onViewDetail,
 }) => [
   /* --------------------- Requester Name --------------------- */
   {
@@ -309,7 +310,8 @@ export const getBorderlessTableColumns = ({
     key: "type",
     ellipsis: true,
     width: 100,
-    filteredValue: headOfComplianceApprovalEscalatedVerificationsSearch?.type?.length
+    filteredValue: headOfComplianceApprovalEscalatedVerificationsSearch?.type
+      ?.length
       ? headOfComplianceApprovalEscalatedVerificationsSearch.type
       : null,
     onFilter: () => true,
@@ -330,7 +332,8 @@ export const getBorderlessTableColumns = ({
     key: "status",
     ellipsis: true,
     width: 140,
-    filteredValue: headOfComplianceApprovalEscalatedVerificationsSearch?.status?.length
+    filteredValue: headOfComplianceApprovalEscalatedVerificationsSearch?.status
+      ?.length
       ? headOfComplianceApprovalEscalatedVerificationsSearch.status
       : null,
     onFilter: () => true,
@@ -396,8 +399,10 @@ export const getBorderlessTableColumns = ({
     width: 120,
     fixed: "right",
     render: (text, record) => {
+      console.log(record, "checkReconsicle najsva sas");
+      const { setSelectedEscalatedHeadOfComplianceData } =
+        useReconcileContext();
       // Note: Using hook inside render might cause issues, consider moving this logic
-      const { setViewDetailReconcileTransaction } = useGlobalModal();
       return (
         <Button
           className="big-blue-button"
@@ -409,8 +414,8 @@ export const getBorderlessTableColumns = ({
             whiteSpace: "nowrap",
           }}
           onClick={() => {
-            handleViewDetailsForReconcileTransaction(record?.approvalID);
-            setViewDetailReconcileTransaction(true);
+            onViewDetail(record?.workflowID);
+            setSelectedEscalatedHeadOfComplianceData(record);
           }}
         />
       );

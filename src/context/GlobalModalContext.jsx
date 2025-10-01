@@ -131,7 +131,7 @@ export const GlobalModalProvider = ({ children }) => {
    */
 
   /**
-   * Global States For Head Od Approval (HTA) Modals Start here
+   * Global States For Head Of Approval (HTA) Modals Start here
    */
 
   // To show Data inView Detail Modal
@@ -152,6 +152,26 @@ export const GlobalModalProvider = ({ children }) => {
 
   /**
    * Global States For Head Od Approval (HTA) Modals End here
+   */
+
+  /**
+   * Global States For Head Of Compliance (HOC) Modals Start here
+   */
+
+  // To show View Detail Modal of HOC in Escalated Verification
+  const [
+    viewDetailHeadOfComplianceEscalated,
+    setViewDetailHeadOfComplianceEscalated,
+  ] = useState(false);
+
+  // To set Selected Data by click on View Detail Button of HOC in Escalated Verification
+  const [
+    isSelectedViewDetailOfHeadOfComplianceData,
+    setIsSelectedViewDetailOfHeadOfComplianceData,
+  ] = useState(null);
+
+  /**
+   * Global States For Head Of Compliance (HOC) Modals End here
    */
 
   //  Main resetDashboardContext  reset State to call in dashboard
@@ -286,6 +306,19 @@ export const GlobalModalProvider = ({ children }) => {
 
         /**
          * Global States For Head Of Approval Modals End here
+         */
+
+        /**
+         * Global States For Head Of Compliance Officer Modals Start here
+         */
+        viewDetailHeadOfComplianceEscalated,
+        setViewDetailHeadOfComplianceEscalated,
+
+        isSelectedViewDetailOfHeadOfComplianceData,
+        setIsSelectedViewDetailOfHeadOfComplianceData,
+
+        /**
+         * Global States For Head Of Compliance Officer Modals End here
          */
 
         resetModalContextState,

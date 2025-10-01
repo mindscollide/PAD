@@ -28,7 +28,10 @@ import { useTableScrollBottom } from "../../../employes/myApprovals/utill";
 // 🔹 API imports
 import { SearchEmployeePendingUploadedPortFolio } from "../../../../../api/protFolioApi";
 import { GetAllTransactionViewDetails } from "../../../../../api/myTransactionsApi";
-import { SearchHeadOfComplianceEscalatedTransactionsAPI } from "../../../../../api/reconsile";
+import {
+  GetAllComplianceOfficerReconcileTransactionAndPortfolioRequest,
+  SearchHeadOfComplianceEscalatedTransactionsAPI,
+} from "../../../../../api/reconsile";
 
 // 🔹 Helper imports
 import {
@@ -36,10 +39,10 @@ import {
   mapStatusToIds,
 } from "../../../../../components/dropdowns/filters/utils";
 import { toYYMMDD } from "../../../../../commen/funtions/rejex";
+import ViewDetailHeadOfComplianceReconcileTransaction from "./modals/viewDetailHeadOfComplianceReconcileTransactions/ViewDetailHeadOfComplianceReconcileTransaction";
+import UploadHeadOfComplianceTicketModal from "./modals/uploadHeadOfComplianceTicketModal/UploadHeadOfComplianceTicketModal";
 
 // 🔹 Modal imports
-import ViewDetailReconcileTransaction from "./modals/viewDetailReconcileTransaction.jsx/ViewDetailReconcileTransaction";
-
 // =============================================================================
 // 🎯 CONSTANTS & CONFIGURATION
 // =============================================================================
@@ -80,7 +83,11 @@ const EscalatedTransactionVerifications = () => {
   const { callApi } = useApi();
   const { showNotification } = useNotification();
   const { showLoader } = useGlobalLoader();
-  const { viewDetailReconcileTransaction } = useGlobalModal();
+  const {
+    viewDetailHeadOfComplianceEscalated,
+    setViewDetailHeadOfComplianceEscalated,
+    uploadComplianceModal,
+  } = useGlobalModal();
   const { addApprovalRequestData } = useDashboardContext();
 
   // Search & Filter Contexts
@@ -96,8 +103,13 @@ const EscalatedTransactionVerifications = () => {
     headOfComplianceApprovalEscalatedVerificationsData,
     setHeadOfComplianceApprovalEscalatedVerificationsMqtt,
     headOfComplianceApprovalEscalatedVerificationsMqtt,
-    setReconcileTransactionViewDetailData,
+    setIsEscalatedHeadOfComplianceViewDetailData,
   } = useReconcileContext();
+
+  console.log(
+    headOfComplianceApprovalEscalatedVerificationsData,
+    "headOfComplianceApprovalEscalatedVerificationsData"
+  );
 
   // ===========================================================================
   // 🎯 STATE MANAGEMENT
@@ -118,20 +130,25 @@ const EscalatedTransactionVerifications = () => {
    *
    * @param {string} workFlowID - The workflow ID of the transaction to view
    */
-  const handleViewDetailsForReconcileTransaction = async (workFlowID) => {
+  const handleViewDetailsHeadOfComplianceForReconcileTransaction = async (
+    workFlowID
+  ) => {
+    console.log("handleViewDetailsHeadOfComplianceForReconcileTransaction");
     await showLoader(true);
     const requestdata = { TradeApprovalID: workFlowID };
 
-    const responseData = await GetAllTransactionViewDetails({
-      callApi,
-      showNotification,
-      showLoader,
-      requestdata,
-      navigate,
-    });
+    const responseData =
+      await GetAllComplianceOfficerReconcileTransactionAndPortfolioRequest({
+        callApi,
+        showNotification,
+        showLoader,
+        requestdata,
+        navigate,
+      });
 
     if (responseData) {
-      setReconcileTransactionViewDetailData(responseData);
+      setIsEscalatedHeadOfComplianceViewDetailData(responseData);
+      setViewDetailHeadOfComplianceEscalated(true);
     }
   };
   // ===========================================================================
@@ -146,7 +163,7 @@ const EscalatedTransactionVerifications = () => {
     sortedInfo,
     headOfComplianceApprovalEscalatedVerificationsSearch,
     setHeadOfComplianceApprovalEscalatedVerificationsSearch,
-    handleViewDetailsForReconcileTransaction,
+    onViewDetail: handleViewDetailsHeadOfComplianceForReconcileTransaction,
   });
 
   // ===========================================================================
@@ -457,7 +474,11 @@ const EscalatedTransactionVerifications = () => {
       />
 
       {/* View Detail Modal */}
-      {viewDetailReconcileTransaction && <ViewDetailReconcileTransaction />}
+      {viewDetailHeadOfComplianceEscalated && (
+        <ViewDetailHeadOfComplianceReconcileTransaction />
+      )}
+
+      {uploadComplianceModal && <UploadHeadOfComplianceTicketModal />}
     </>
   );
 };
