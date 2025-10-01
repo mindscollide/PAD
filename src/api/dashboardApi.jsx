@@ -49,7 +49,6 @@ export const GetUserDashBoardStats = async ({
 
     // 🔸 Handle expired session
     if (handleExpiredSession(res, navigate, showLoader)) return null;
-
     // 🔸 Handle failed execution
     if (!res?.result?.isExecuted) {
       showErrorNotification(showNotification);
