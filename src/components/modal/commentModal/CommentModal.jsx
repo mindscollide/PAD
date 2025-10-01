@@ -44,7 +44,9 @@ const CommentModal = ({
     setCompliantPortfolioApproveModal,
     setNonCompliantPortfolioDeclineModal,
     isSelectedViewDetailHeadOfApproval,
+    setDeclinedGlobalModal,
     setHeadApprovalNoteModal,
+    setHeadDeclineNoteModal,
   } = useGlobalModal();
 
   console.log(noteGlobalModal, "noteGlobalModalnoteGlobalModal");
@@ -98,6 +100,7 @@ const CommentModal = ({
       showLoader,
       requestdata,
       setNoteGlobalModal,
+      setDeclinedGlobalModal,
       setApprovedGlobalModal,
       setHeadApprovalNoteModal,
       setHeadDeclineNoteModal,
@@ -169,19 +172,20 @@ const CommentModal = ({
 
     console.log(requestdata, "requestdatarequestdata");
 
-    // await UpdateApprovalRequestStatusLineManager({
-    //   callApi,
-    //   showNotification,
-    //   showLoader,
-    //   requestdata,
-    //   setNoteGlobalModal,
-    //   setApprovedGlobalModal,
-    //   setHeadApprovalNoteModal,
-    // setHeadDeclineNoteModal,
-    //   submitText,
-    //   setValue,
-    //   navigate,
-    // });
+    await UpdateApprovalRequestStatusLineManager({
+      callApi,
+      showNotification,
+      showLoader,
+      requestdata,
+      setNoteGlobalModal,
+      setDeclinedGlobalModal,
+      setApprovedGlobalModal,
+      setHeadApprovalNoteModal,
+      setHeadDeclineNoteModal,
+      submitText,
+      setValue,
+      navigate,
+    });
   };
 
   return (
@@ -259,12 +263,12 @@ const CommentModal = ({
                   onClick={() => {
                     if (submitText === "Approve") {
                       fetchUpdateApprovalsRequest();
+                    } else if (submitText === "Decline") {
+                      fetchUpdateApprovalsRequest();
                     } else if (submitText === "HTA-Approve") {
                       fetchHeadOfApprovalsRequest();
                     } else if (submitText === "HTA-Decline") {
                       fetchHeadOfApprovalsRequest();
-                    } else if (submitText === "Decline") {
-                      fetchUpdateDeclineRequest({ value, selectedOption });
                     } else if (submitText === "Compliant") {
                       updateCompliantRequestData();
                     } else if (submitText === "Non-Compliant") {
