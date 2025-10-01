@@ -15,10 +15,11 @@ export const ApiProvider = ({ children }) => {
   const { showLoader } = useGlobalLoader();
 
   const callApi = async ({
-    endpoint = "",
-    method = "POST",
     requestMethod = "",
+    endpoint = "",
     requestData = {},
+    navigate,
+    method = "POST",
     extraFormFields = {},
     headers = {},
     withAuth = true,
@@ -43,7 +44,6 @@ export const ApiProvider = ({ children }) => {
       } else {
         // 🔹 Default → stringify object payloads
         form.append("RequestData", JSON.stringify(requestData));
-        
       }
 
       Object.entries(extraFormFields).forEach(([key, value]) => {
@@ -73,7 +73,7 @@ export const ApiProvider = ({ children }) => {
       }
 
       if ((responseCode === 417 || responseCode === 401) && retryOnExpire) {
-        const refreshed = await refreshToken(callApi, {
+        const refreshed = await refreshToken(callApi, navigate, {
           showNotification,
           showLoader,
         });
@@ -85,6 +85,7 @@ export const ApiProvider = ({ children }) => {
             method,
             requestMethod,
             requestData,
+            navigate,
             extraFormFields,
             headers,
             withAuth,

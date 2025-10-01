@@ -20,6 +20,7 @@ export const UploadDocumentsAPI = async ({
           requestMethod: import.meta.env.VITE_UPLOAD_DOCUMENT_REQUEST_METHOD,
           endpoint: import.meta.env.VITE_API_SETTINGS, // Your Settings endpoint
           requestData: file, // Send file directly
+          navigate,
           isFileUpload: true, // Optional flag if your callApi needs it
         });
 
@@ -111,6 +112,7 @@ export const SaveDocumentsAPI = async ({
       requestMethod: import.meta.env.VITE_SAVE_FILES_REQUEST_METHOD, // must exist in .env
       endpoint: import.meta.env.VITE_API_SETTINGS, // change if your endpoint is different
       requestData,
+      navigate,
       isFileUpload: false, // 👈 if your callApi supports multipart/form-data
     });
 
@@ -191,6 +193,7 @@ export const GetWorkFlowFilesAPI = async ({
       requestMethod: import.meta.env.VITE_GET_WORKFLOW_FILES_REQUEST_METHOD,
       endpoint: import.meta.env.VITE_API_SETTINGS,
       requestData,
+      navigate,
     });
 
     // 🔹 Handle session expiry
@@ -261,6 +264,7 @@ export const GetAnnotationOfFilesAttachementAPI = async ({
         .VITE_GET_ANNOTATION_OF_FILES_ATTACHEMENT_REQUEST_METHOD,
       endpoint: import.meta.env.VITE_API_SETTINGS,
       requestData,
+      navigate,
     });
 
     // 🔹 Handle session expiry

@@ -44,6 +44,7 @@ export const GetUserDashBoardStats = async ({
       requestMethod: import.meta.env.VITE_DASHBOARD_DATA_REQUEST_METHOD,
       endpoint: import.meta.env.VITE_API_TRADE,
       requestData: {},
+      navigate,
     });
 
     // 🔸 Handle expired session
@@ -140,6 +141,7 @@ export const GetAllEmployeeBrokers = async ({
         .VITE_ALL_EMPLOYEE_BASED_BROKERS_DATA_REQUEST_METHOD,
       endpoint: import.meta.env.VITE_API_TRADE,
       requestData: {},
+      navigate,
     });
 
     if (handleExpiredSession(res, navigate, showLoader)) return null;
@@ -190,6 +192,7 @@ export const GetAllInstruments = async ({
       requestMethod: import.meta.env.VITE_ALL_INSTRUMENTS_DATA_REQUEST_METHOD,
       endpoint: import.meta.env.VITE_API_TRADE,
       requestData: {},
+      navigate,
     });
 
     if (handleExpiredSession(res, navigate, showLoader)) return null;
@@ -241,6 +244,7 @@ export const GetAllTradeApproval = async ({
         .VITE_GET_ALL_TRADE_APPROVAL_TYPES_REQUEST_METHOD,
       endpoint: import.meta.env.VITE_API_TRADE,
       requestData: {},
+      navigate,
     });
 
     if (handleExpiredSession(res, navigate, showLoader)) return null;
@@ -293,6 +297,7 @@ export const GetAllPredefineReassonApi = async ({
         .VITE_GET_ALL_PREDEFINE_REASON_REQUEST_METHOD,
       endpoint: import.meta.env.VITE_API_TRADE,
       requestData: {},
+      navigate,
     });
 
     if (handleExpiredSession(res, navigate, showLoader)) return null;

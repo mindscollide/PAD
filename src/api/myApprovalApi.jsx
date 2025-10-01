@@ -14,6 +14,7 @@ export const SearchTadeApprovals = async ({
       requestMethod: import.meta.env.VITE_SEARCH_APPROVAL_DATA_REQUEST_METHOD,
       endpoint: import.meta.env.VITE_API_TRADE,
       requestData: requestdata,
+      navigate,
     });
 
     if (handleExpiredSession(res, navigate, showLoader)) return null;
@@ -88,6 +89,7 @@ export const AddTradeApprovalRequest = async ({
       requestMethod: import.meta.env.VITE_ADD_TRADE_APPROVAL_REQUEST_METHOD, // <-- Add Trade Approval method
       endpoint: import.meta.env.VITE_API_TRADE,
       requestData: requestdata,
+      navigate,
     });
 
     //  Check Session Expiry
@@ -178,6 +180,7 @@ export const GetAllViewDetailsByTradeApprovalID = async ({
         .VITE_GET_ALL_VIEW_DETAIL_TRADEAPPROVAL_ID_REQUEST_METHOD,
       endpoint: import.meta.env.VITE_API_TRADE,
       requestData: requestdata,
+      navigate,
     });
     if (handleExpiredSession(res, navigate, showLoader)) return null;
 
@@ -262,6 +265,7 @@ export const SearchApprovalRequestLineManager = async ({
         .VITE_GET_SEARCH_LINE_MANAGER_APPROVAL_REQUEST_METHOD,
       endpoint: import.meta.env.VITE_API_TRADE,
       requestData: requestdata,
+      navigate,
     });
 
     if (handleExpiredSession(res, navigate, showLoader)) {
@@ -330,6 +334,7 @@ export const UpdateApprovalRequestStatusLineManager = async ({
         .VITE_UPDATE_APPROVAL_REQUEST_STATUS_REQUEST_METHOD,
       endpoint: import.meta.env.VITE_API_TRADE,
       requestData: requestdata,
+      navigate,
     });
 
     //  Check if session has expired
@@ -414,6 +419,7 @@ export const GetAllLineManagerViewDetailRequest = async ({
         .VITE_GET_LINE_MANAGER_VIEW_DETAIL_REQUEST_METHOD,
       endpoint: import.meta.env.VITE_API_TRADE,
       requestData: requestdata,
+      navigate,
     });
     if (handleExpiredSession(res, navigate, showLoader)) return null;
 
@@ -504,6 +510,7 @@ export const ConductTransactionUpdateApi = async ({
         .VITE_CONDUCT_TRANSACTION_API_REQUEST_METHOD, // <-- Add Trade Approval method
       endpoint: import.meta.env.VITE_API_TRADE,
       requestData: requestdata,
+      navigate,
     });
 
     //  Check Session Expiry
@@ -588,6 +595,7 @@ export const ResubmitApprovalRequestApi = async ({
       requestMethod: import.meta.env.VITE_RESUBMIT_APPROVAL_REQUEST_METHOD, // <-- Add Trade Approval method
       endpoint: import.meta.env.VITE_API_TRADE,
       requestData: requestData,
+      navigate,
     });
 
     //  Check Session Expiry
