@@ -51,6 +51,7 @@ export const SearchEmployeePendingUploadedPortFolio = async ({
         .VITE_SEARCH_EMPLOYEE_PENDING_UPLOADED_PORTFOLIO_REQUEST_METHOD,
       endpoint: import.meta.env.VITE_API_TRADE,
       requestData: requestdata,
+      navigate,
     });
 
     // 🔹 Handle session expiry (triggers logout if expired)
@@ -76,7 +77,6 @@ export const SearchEmployeePendingUploadedPortFolio = async ({
         responseMessage ===
         "PAD_Trade_TradeServiceManager_SearchEmployeePendingUploadedPortFolio_01"
       ) {
-
         return {
           pendingPortfolios: pendingPortfolios || [],
           totalRecords: totalRecords || 0,
@@ -145,6 +145,7 @@ export const UploadPortFolioRequest = async ({
       requestMethod: import.meta.env.VITE_UPLOAD_PORTFOLIO_REQUEST_METHOD,
       endpoint: import.meta.env.VITE_API_TRADE,
       requestData: requestdata,
+      navigate,
     });
 
     // 🔹 Handle session expiry
@@ -235,6 +236,7 @@ export const SearchEmployeeApprovedUploadedPortFolio = async ({
         .VITE_SEARCH_EMPLOYEE_APPROVED_UPLOADED_PORTFOLIO_REQUEST_METHOD, // ✅ update env var
       endpoint: import.meta.env.VITE_API_TRADE,
       requestData: requestdata,
+      navigate,
     });
 
     // 🔹 Handle session expiry

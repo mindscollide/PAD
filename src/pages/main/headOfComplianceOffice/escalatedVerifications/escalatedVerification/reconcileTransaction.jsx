@@ -182,14 +182,14 @@ const EscalatedTransactionVerifications = () => {
       RequestDateTo: RequestDateTo,
       EscalatedDateFrom: EscalatedDateFrom,
       EscalatedDateTo: EscalatedDateTo,
-      StatusIds: mapStatusToIds(searchState.status),
+      StatusIds: mapStatusToIds(searchState.status)||[],
       TypeIds:
         mapBuySellToIds(searchState.type, addApprovalRequestData?.Equities) ||
         [],
 
       PageNumber: Number(searchState.pageNumber) || 0,
       Length:
-        Number(searchState.pageSize) || COMPONENT_CONFIG.DEFAULT_PAGE_SIZE,
+        Number(searchState.pageSize) || 10,
     };
   };
 

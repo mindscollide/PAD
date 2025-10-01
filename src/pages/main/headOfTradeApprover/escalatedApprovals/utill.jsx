@@ -1,516 +1,548 @@
-// components/pages/employee/approval/tableColumns.js
-
-import React, { useEffect, useRef, useState } from "react";
+// utils.jsx (Head of Trade Approval - Escalated Approvals)
+import React from "react";
 import { Tag, Tooltip } from "antd";
-import { Button, StatusFilterDropdown } from "../../../../components";
-import style from "./escalatedApprovals.module.css";
-import EscalatedIcon from "../../../../assets/img/escalated.png";
-import ArrowUP from "../../../../assets/img/arrow-up-dark.png";
+import { Button } from "../../../../components";
+
+// Assets (sort icons)
+import DefaultColumnArrow from "../../../../assets/img/default-colum-arrow.png";
+import ArrowUp from "../../../../assets/img/arrow-up-dark.png";
 import ArrowDown from "../../../../assets/img/arrow-down-dark.png";
-import DefaultColumArrow from "../../../../assets/img/default-colum-arrow.png";
+import EscalatedIcon from "../../../../assets/img/escalated.png";
+
+// Helpers
+import { formatApiDateTime } from "../../../../commen/funtions/rejex";
 import TypeColumnTitle from "../../../../components/dropdowns/filters/typeColumnTitle";
 import StatusColumnTitle from "../../../../components/dropdowns/filters/statusColumnTitle";
 import { useGlobalModal } from "../../../../context/GlobalModalContext";
-import {
-  dashBetweenApprovalAssets,
-  formatApiDateTime,
-} from "../../../../commen/funtions/rejex";
 
-// import TypeColumnTitle from "./typeFilter";
+// ===========================================================================
+// 🎯 CONSTANTS & CONFIGURATION
+// ===========================================================================
 
+const COLUMN_CONFIG = {
+  REQUISITION: { minWidth: 120, maxWidth: 160 },
+  INSTRUMENT: { minWidth: 130, maxWidth: 170 },
+  DATE: { minWidth: 120, maxWidth: 160 },
+  QUANTITY: { minWidth: 80, maxWidth: 120 },
+  TYPE: { minWidth: 90, maxWidth: 110 },
+  STATUS: { minWidth: 120, maxWidth: 160 },
+  ESCALATED: { minWidth: 120, maxWidth: 160 },
+  ACTIONS: { minWidth: 110, maxWidth: 130 },
+};
+
+// ===========================================================================
+// 🎯 UTILITY FUNCTIONS
+// ===========================================================================
+
+/* ------------------------------------------------------------------ */
+/* 🔹 Trade Type Resolver */
+/* ------------------------------------------------------------------ */
 /**
- * Returns the appropriate sort icon based on current sort state
+ * Resolves trade type label by matching the given `tradeType` ID
+ * with the API-provided `assetTypeData`.
  *
- * @param {string} columnKey - The column's key
- * @param {object} sortedInfo - Current sort state from the table
- * @returns {JSX.Element} The sort icon
+ * @param {Object} assetTypeData - Asset type API response object.
+ * @param {Array<Object>} assetTypeData.items - Array of trade approval types.
+ * @param {Object} tradeType - Trade type object (with typeID).
+ * @param {string|number} tradeType.typeID - Trade type ID.
+ * @returns {string} The trade type label (e.g., "Buy", "Sell") or "—".
  */
+export const getTradeTypeById = (assetTypeData, tradeType) => {
+  console.log("getTradeTypeById", assetTypeData);
+  if (!Array.isArray(assetTypeData?.items)) return "—";
+  return (
+    assetTypeData.items.find((i) => i.tradeApprovalTypeID === tradeType.typeID)
+      ?.type || "—"
+  );
+};
 
+/* ------------------------------------------------------------------ */
+/* 🔹 Sort Icon Helper */
+/* ------------------------------------------------------------------ */
+/**
+ * Returns the appropriate sort icon based on column key and sorting info.
+ *
+ * @param {string} columnKey - The column key being sorted.
+ * @param {Object} sortedInfo - AntD sorting info (columnKey, order).
+ * @returns {JSX.Element} The corresponding sort icon (default, asc, desc).
+ */
 const getSortIcon = (columnKey, sortedInfo) => {
-  if (sortedInfo?.columnKey === columnKey) {
-    return sortedInfo.order === "ascend" ? (
+  if (sortedInfo?.columnKey !== columnKey) {
+    return (
       <img
         draggable={false}
-        src={ArrowDown}
-        alt="Asc"
-        className="custom-sort-icon"
-      />
-    ) : (
-      <img
-        draggable={false}
-        src={ArrowUP}
-        alt="Desc"
+        src={DefaultColumnArrow}
+        alt="Default"
         className="custom-sort-icon"
       />
     );
   }
-
+  const isAsc = sortedInfo.order === "ascend";
   return (
     <img
       draggable={false}
-      src={DefaultColumArrow}
-      alt="Default"
+      src={isAsc ? ArrowDown : ArrowUp}
+      alt={isAsc ? "Asc" : "Desc"}
       className="custom-sort-icon"
     />
   );
 };
-// Helper for consistent column titles
-const withSortIcon = (label, columnKey, sortedInfo) => (
-  <div className={style["table-header-wrapper"]}>
-    <span className={style["table-header-text"]}>{label}</span>
-    <span className={style["table-header-icon"]}>
-      {getSortIcon(columnKey, sortedInfo)}
-    </span>
-  </div>
-);
-/**
- * Generates column definitions for the borderless approval table
- *
- * @param {object} approvalStatusMap - Mapping of status to label, colors, etc.
- * @param {object} sortedInfo - Sorting state from Ant Design table
- * @param {object} HeadOfTradeEscalatedApprovalsSearch - Current filter/search context
- * @param {function} setHeadOfTradeEscalatedApprovalsSearch - Setter to update context filter state
- * @returns {Array} Array of column definitions
- */
 
-export const getBorderlessTableColumns = ({
-  approvalStatusMap,
-  sortedInfo,
-  HeadOfTradeEscalatedApprovalsSearch,
-  setHeadOfTradeEscalatedApprovalsSearch,
-  setViewDetailsHeadOfApprovalModal,
+/* ------------------------------------------------------------------ */
+/* 🔹 Style Helpers */
+/* ------------------------------------------------------------------ */
+/**
+ * Generates AntD table cell styles for nowrap text handling.
+ *
+ * @param {number} minWidth - Minimum cell width.
+ * @param {number} maxWidth - Maximum cell width.
+ * @returns {Object} Style object for AntD `onCell`/`onHeaderCell`.
+ */
+const nowrapCell = (minWidth, maxWidth) => ({
+  style: {
+    minWidth,
+    maxWidth,
+    whiteSpace: "nowrap",
+    overflow: "hidden",
+    textOverflow: "ellipsis",
+  },
+});
+
+// ===========================================================================
+// 🗺️ DATA MAPPING FUNCTIONS
+// ===========================================================================
+
+/* ------------------------------------------------------------------ */
+/* 🔹 Data Mapper */
+/* ------------------------------------------------------------------ */
+/**
+ * Maps escalated approvals API response into a table-friendly format.
+ *
+ * @param {Object} assetTypeData - Asset type API response (for resolving trade type).
+ * @param {Array<Object>} approvals - API response data array.
+ * @returns {Array<Object>} Transformed rows for AntD Table.
+ */
+export const mapEscalatedApprovalsToTableRows = (
+  assetTypeData,
+  approvals = []
+) =>
+  (Array.isArray(approvals) ? approvals : []).map((item = {}) => ({
+    key: item?.approvalID ?? `approval-${Math.random()}`,
+    approvalID: item?.approvalID,
+    requesterName: item?.requesterName || "—",
+    lineManagerName: item?.lineManager || "—",
+    instrumentCode: item?.instrument?.instrumentCode || "—",
+    instrumentName: item?.instrument?.instrumentName || "—",
+    assetTypeShortCode: item?.assetType?.assetTypeShortCode || "—",
+    requestDateTime:
+      `${item?.requestDate || ""} ${item?.requestTime || ""}`.trim() || "—",
+    escalatedDateTime: item?.escalatedOnDate
+      ? `${item.escalatedOnDate} ${item.escalatedOnTime || ""}`.trim()
+      : "—",
+    quantity: item?.quantity || 0,
+    type: getTradeTypeById(assetTypeData, item?.tradeType),
+    status: item?.approvalStatus?.approvalStatusName || "—",
+    timeRemainingToTrade: item?.timeRemainingToTrade || "—",
+    assetType: item?.assetType?.assetTypeName || "—",
+    tradeApprovalID: item?.tradeApprovalID || "—",
+    isEscalated: Boolean(item?.isEscalationOpen),
+  }));
+
+// ===========================================================================
+// 🎨 COLUMN RENDERERS
+// ===========================================================================
+
+/**
+ * Renders instrument cell with asset type badge
+ * @param {Object} record - Table row data
+ * @returns {JSX.Element} Instrument cell content
+ */
+const renderInstrumentCell = (record) => {
+  const code = record?.instrumentCode || "—";
+  const name = record?.instrumentName || "—";
+  const assetCode = record?.assetTypeShortCode || "";
+
+  return (
+    <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+      <span
+        className="custom-shortCode-asset"
+        style={{
+          minWidth: 32,
+          flexShrink: 0,
+        }}
+      >
+        {assetCode?.substring(0, 2).toUpperCase()}
+      </span>
+      <Tooltip title={`${code} - ${name}`} placement="topLeft">
+        <span
+          className="font-medium"
+          style={{
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+            whiteSpace: "nowrap",
+            maxWidth: "100px",
+            display: "inline-block",
+            cursor: "pointer",
+            flex: 1,
+          }}
+        >
+          {code}
+        </span>
+      </Tooltip>
+    </div>
+  );
+};
+
+/**
+ * Renders status tag with appropriate colors
+ * @param {string} status - Approval status
+ * @param {Object} approvalStatusMap - Status color mapping
+ * @returns {JSX.Element} Status tag component
+ */
+const renderStatusCell = (status, approvalStatusMap) => {
+  const tag = approvalStatusMap?.[status] || {};
+  return (
+    <Tag
+      style={{
+        backgroundColor: tag.backgroundColor,
+        color: tag.textColor,
+        whiteSpace: "nowrap",
+        overflow: "hidden",
+        textOverflow: "ellipsis",
+        display: "inline-block",
+        maxWidth: "120px",
+        border: "none",
+        borderRadius: "4px",
+        padding: "2px 8px",
+        fontSize: "12px",
+        fontWeight: "500",
+      }}
+      className="border-less-table-orange-status"
+    >
+      {tag.label || status || "—"}
+    </Tag>
+  );
+};
+
+/**
+ * Renders action buttons for table rows
+ * @param {Object} record - Table row data
+ * @param {Function} onViewDetail - View detail handler
+ * @param {Function} setViewDetailsHeadOfApprovalModal - Modal state setter
+ * @returns {JSX.Element} Action buttons
+ */
+const renderActionCell = (
+  record,
   onViewDetail,
+  setViewDetailsHeadOfApprovalModal
+) => {
+  const { setIsSelectedViewDetailHeadOfApproval } = useGlobalModal();
+
+  const handleViewDetails = () => {
+    if (record?.approvalID) {
+      onViewDetail(record.approvalID);
+      setIsSelectedViewDetailHeadOfApproval(record);
+      setViewDetailsHeadOfApprovalModal(true);
+    }
+  };
+
+  return (
+    <Button
+      className="big-orange-button"
+      text="View Details"
+      style={{
+        padding: "4px 12px",
+        fontSize: "12px",
+        height: "28px",
+        whiteSpace: "nowrap",
+      }}
+      onClick={handleViewDetails}
+      disabled={!record?.approvalID}
+    />
+  );
+};
+
+// ===========================================================================
+// 📊 COLUMN DEFINITIONS
+// ===========================================================================
+
+/* ------------------------------------------------------------------ */
+/* 🔹 Column Definitions */
+/* ------------------------------------------------------------------ */
+/**
+ * Builds column definitions for the "Escalated Approvals" borderless table.
+ *
+ * @param {Object} approvalStatusMap - Mapping of status keys → {label, backgroundColor, textColor}.
+ * @param {Object} sortedInfo - AntD sorter state (columnKey, order).
+ * @param {Object} headOfTradeEscalatedApprovalsSearch - Current filter state for the table.
+ * @param {Function} setHeadOfTradeEscalatedApprovalsSearch - Setter to update filter state.
+ * @param {Function} setViewDetailsHeadOfApprovalModal - Setter for view details modal.
+ * @param {Function} onViewDetail - Callback for view details action.
+ * @returns {Array<Object>} Column configurations for AntD Table.
+ */
+export const getBorderlessTableColumns = ({
+  approvalStatusMap = {},
+  sortedInfo = {},
+  headOfTradeEscalatedApprovalsSearch = {},
+  setHeadOfTradeEscalatedApprovalsSearch = () => {},
+  setViewDetailsHeadOfApprovalModal = () => {},
+  onViewDetail = () => {},
 }) => [
-  //   {
-  //     title: withSortIcon("Approval ID", "tradeApprovalID", sortedInfo),
-  //     dataIndex: "tradeApprovalID",
-  //     key: "tradeApprovalID",
-  //     ellipsis: true,
-  //     sorter: (a, b) =>
-  //       parseInt(a.tradeApprovalID.replace(/[^\d]/g, ""), 10) -
-  //       parseInt(b.tradeApprovalID.replace(/[^\d]/g, ""), 10),
-  //     sortDirections: ["ascend", "descend"],
-  //     sortOrder:
-  //       sortedInfo?.columnKey === "tradeApprovalID" ? sortedInfo.order : null,
-  //     showSorterTooltip: false,
-  //     sortIcon: () => null,
-  //     render: (tradeApprovalID) => {
-  //       return (
-  //         <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-  //           <span className="font-medium">
-  //             {dashBetweenApprovalAssets(tradeApprovalID)}
-  //             {/* {dashBetweenApprovalAssets("REQ888888")} */}
-  //           </span>
-  //         </div>
-  //       );
-  //     },
-  //     onHeaderCell: () => ({
-  //       style: {
-  //         minWidth: "100px", // ✅ minimum width
-  //         maxWidth: "150px", // 👈 custom max width
-  //         whiteSpace: "nowrap",
-  //         overflow: "hidden",
-  //         textOverflow: "ellipsis",
-  //       },
-  //     }),
-  //     onCell: () => ({
-  //       style: {
-  //         minWidth: "100px", // ✅ minimum width
-  //         maxWidth: "150px", // 👈 custom max width
-  //         whiteSpace: "nowrap",
-  //         overflow: "hidden",
-  //         textOverflow: "ellipsis",
-  //       },
-  //     }),
-  //   },
+  /* --------------------- Requester Name --------------------- */
   {
-    title: withSortIcon("Requester Name", "requesterName", sortedInfo),
+    title: (
+      <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+        Requester Name {getSortIcon("requesterName", sortedInfo)}
+      </div>
+    ),
     dataIndex: "requesterName",
-    key: "Requester Name",
+    key: "requesterName",
     ellipsis: true,
-    sorter: (a, b) => {
-      const nameA = a.requesterName || "";
-      const nameB = b.requesterName || "";
-      return nameA.localeCompare(nameB);
-    },
-    sortDirections: ["ascend", "descend"],
+    width: 140,
+    sorter: (a, b) =>
+      (a?.requesterName || "").localeCompare(b?.requesterName || ""),
     sortOrder:
       sortedInfo?.columnKey === "requesterName" ? sortedInfo.order : null,
     showSorterTooltip: false,
     sortIcon: () => null,
-
-    // Simple render function for requesterName
     render: (text) => (
-      <Tooltip title={text} placement="topLeft">
-        <span
-          className="font-medium"
-          style={{
-            overflow: "hidden",
-            textOverflow: "ellipsis",
-            whiteSpace: "nowrap",
-            maxWidth: "250px",
-            display: "inline-block",
-            cursor: "pointer",
-          }}
-        >
-          {text}
-        </span>
-      </Tooltip>
+      <span className="font-medium" title={text || "—"}>
+        {text || "—"}
+      </span>
     ),
-
-    // Column width and overflow handling
-    onHeaderCell: () => ({
-      style: {
-        minWidth: "120px",
-        maxWidth: "250px",
-        whiteSpace: "nowrap",
-      },
-    }),
-    onCell: () => ({
-      style: {
-        minWidth: "120px",
-        maxWidth: "250px",
-        whiteSpace: "nowrap",
-        overflow: "hidden",
-        textOverflow: "ellipsis",
-      },
-    }),
+    onHeaderCell: () =>
+      nowrapCell(
+        COLUMN_CONFIG.REQUISITION.minWidth,
+        COLUMN_CONFIG.REQUISITION.maxWidth
+      ),
+    onCell: () =>
+      nowrapCell(
+        COLUMN_CONFIG.REQUISITION.minWidth,
+        COLUMN_CONFIG.REQUISITION.maxWidth
+      ),
   },
+
+  /* --------------------- Line Manager Name --------------------- */
   {
-    title: withSortIcon("line Manager Name", "lineManager", sortedInfo),
-    dataIndex: "lineManager",
-    key: "lineManager",
+    title: (
+      <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+        Line Manager {getSortIcon("lineManagerName", sortedInfo)}
+      </div>
+    ),
+    dataIndex: "lineManagerName",
+    key: "lineManagerName",
     ellipsis: true,
-    sorter: (a, b) => {
-      const nameA = a.lineManager || "";
-      const nameB = b.lineManager || "";
-      return nameA.localeCompare(nameB);
-    },
-    sortDirections: ["ascend", "descend"],
+    width: 160,
+    sorter: (a, b) =>
+      (a?.lineManagerName || "").localeCompare(b?.lineManagerName || ""),
     sortOrder:
-      sortedInfo?.columnKey === "lineManager" ? sortedInfo.order : null,
+      sortedInfo?.columnKey === "lineManagerName" ? sortedInfo.order : null,
     showSorterTooltip: false,
     sortIcon: () => null,
     render: (text) => (
-      <Tooltip title={text} placement="topLeft">
-        <span
-          className="font-medium"
-          style={{
-            overflow: "hidden",
-            textOverflow: "ellipsis",
-            whiteSpace: "nowrap",
-            maxWidth: "250px",
-            display: "inline-block",
-            cursor: "pointer",
-          }}
-        >
-          {text}
-        </span>
-      </Tooltip>
+      <span className="font-medium" title={text || "—"}>
+        {text || "—"}
+      </span>
     ),
-    onHeaderCell: () => ({
-      style: {
-        minWidth: "120px",
-        maxWidth: "250px",
-        whiteSpace: "nowrap",
-      },
-    }),
-    onCell: () => ({
-      style: {
-        minWidth: "120px",
-        maxWidth: "250px",
-        whiteSpace: "nowrap",
-        overflow: "hidden",
-        textOverflow: "ellipsis",
-      },
-    }),
+    onHeaderCell: () =>
+      nowrapCell(
+        COLUMN_CONFIG.REQUISITION.minWidth,
+        COLUMN_CONFIG.REQUISITION.maxWidth
+      ),
+    onCell: () =>
+      nowrapCell(
+        COLUMN_CONFIG.REQUISITION.minWidth,
+        COLUMN_CONFIG.REQUISITION.maxWidth
+      ),
   },
+
+  /* --------------------- Instrument --------------------- */
   {
-    title: withSortIcon("Instrument", "instrumentName", sortedInfo),
-    dataIndex: "instrument",
-    key: "instrumentName",
+    title: (
+      <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+        Instrument {getSortIcon("instrumentCode", sortedInfo)}
+      </div>
+    ),
+    dataIndex: "instrumentCode",
+    key: "instrumentCode",
     ellipsis: true,
-    sorter: (a, b) => {
-      const nameA = a.instrument?.instrumentName || "";
-      const nameB = b.instrument?.instrumentName || "";
-      return nameA.localeCompare(nameB);
-    },
-    sortDirections: ["ascend", "descend"],
+    width: 150,
+    sorter: (a, b) =>
+      (a?.instrumentCode || "").localeCompare(b?.instrumentCode || ""),
     sortOrder:
-      sortedInfo?.columnKey === "instrumentName" ? sortedInfo.order : null,
+      sortedInfo?.columnKey === "instrumentCode" ? sortedInfo.order : null,
     showSorterTooltip: false,
     sortIcon: () => null,
-    render: (instrument, record) => {
-      const assetCode = record?.assetType?.assetTypeShortCode;
-      const code = instrument?.instrumentCode || "";
-      const instrumentName = instrument?.instrumentName || "";
-      return (
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: "12px",
-          }}
-        >
-          <span className="custom-shortCode-asset" style={{ minWidth: 30 }}>
-            {assetCode?.substring(0, 2).toUpperCase()}
-          </span>
-          <Tooltip title={instrumentName} placement="topLeft">
-            <span
-              className="font-medium"
-              style={{
-                overflow: "hidden",
-                textOverflow: "ellipsis",
-                whiteSpace: "nowrap",
-                maxWidth: "200px",
-                display: "inline-block",
-                cursor: "pointer",
-              }}
-            >
-              {code}
-            </span>
-          </Tooltip>
-        </div>
-      );
-    },
-    onHeaderCell: () => ({
-      style: {
-        minWidth: "40px", // ✅ minimum width
-        maxWidth: "150px", // 👈 custom max width
-        whiteSpace: "nowrap",
-        overflow: "hidden",
-        textOverflow: "ellipsis",
-      },
-    }),
-    onCell: () => ({
-      style: {
-        minWidth: "40px", // ✅ minimum width
-        maxWidth: "150px", // 👈 custom max width
-        whiteSpace: "nowrap",
-        overflow: "hidden",
-        textOverflow: "ellipsis",
-      },
-    }),
+    render: (_, record) => renderInstrumentCell(record),
+    onHeaderCell: () =>
+      nowrapCell(
+        COLUMN_CONFIG.INSTRUMENT.minWidth,
+        COLUMN_CONFIG.INSTRUMENT.maxWidth
+      ),
+    onCell: () =>
+      nowrapCell(
+        COLUMN_CONFIG.INSTRUMENT.minWidth,
+        COLUMN_CONFIG.INSTRUMENT.maxWidth
+      ),
   },
+
+  /* --------------------- Date & Time --------------------- */
   {
-    title: withSortIcon("Date & Time", "requestDateTime", sortedInfo),
+    title: (
+      <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+        Date & Time {getSortIcon("requestDateTime", sortedInfo)}
+      </div>
+    ),
     dataIndex: "requestDateTime",
     key: "requestDateTime",
-    width: "13%",
     ellipsis: true,
+    width: 140,
     sorter: (a, b) =>
-      formatApiDateTime(a.requestDateTime).localeCompare(
-        formatApiDateTime(b.requestDateTime)
-      ),
-    sortDirections: ["ascend", "descend"],
+      (a?.requestDateTime || "").localeCompare(b?.requestDateTime || ""),
     sortOrder:
       sortedInfo?.columnKey === "requestDateTime" ? sortedInfo.order : null,
     showSorterTooltip: false,
     sortIcon: () => null,
     render: (date) => (
-      <span className="text-gray-600">{formatApiDateTime(date)}</span>
+      <span className="text-gray-600" title={date || "—"}>
+        {formatApiDateTime(date) || "—"}
+      </span>
     ),
+    onHeaderCell: () =>
+      nowrapCell(COLUMN_CONFIG.DATE.minWidth, COLUMN_CONFIG.DATE.maxWidth),
+    onCell: () =>
+      nowrapCell(COLUMN_CONFIG.DATE.minWidth, COLUMN_CONFIG.DATE.maxWidth),
   },
+
+  /* --------------------- Trade Type --------------------- */
   {
     title: (
-      <>
-        {/* <span className={style["table-header-text"]}> */}
-        <TypeColumnTitle
-          state={HeadOfTradeEscalatedApprovalsSearch}
-          setState={setHeadOfTradeEscalatedApprovalsSearch}
-        />
-        {/* </span> */}
-      </>
+      <TypeColumnTitle
+        state={headOfTradeEscalatedApprovalsSearch}
+        setState={setHeadOfTradeEscalatedApprovalsSearch}
+      />
     ),
     dataIndex: "type",
     key: "type",
     ellipsis: true,
-    // filteredValue: HeadOfTradeEscalatedApprovalsSearch.type?.length
-    //   ? HeadOfTradeEscalatedApprovalsSearch.type
-    //   : null,
+    width: 100,
+    filteredValue: headOfTradeEscalatedApprovalsSearch?.type?.length
+      ? headOfTradeEscalatedApprovalsSearch.type
+      : null,
     onFilter: () => true,
     render: (type) => (
-      <span className={type === "Buy" ? "text-green-600" : "text-red-600"}>
-        {type}
+      <span
+        className={type === "Buy" ? "text-green-600" : "text-red-600"}
+        title={type || "—"}
+      >
+        {type || "—"}
       </span>
     ),
-    onHeaderCell: () => ({
-      style: {
-        minWidth: "80px", // 👈 custom min width
-        maxWidth: "100px", // 👈 custom max width
-        whiteSpace: "nowrap",
-        overflow: "hidden",
-        textOverflow: "ellipsis",
-      },
-    }),
-    onCell: () => ({
-      style: {
-        minWidth: "80px",
-        maxWidth: "100px",
-        whiteSpace: "nowrap",
-        overflow: "hidden",
-        textOverflow: "ellipsis",
-      },
-    }),
+    onHeaderCell: () =>
+      nowrapCell(COLUMN_CONFIG.TYPE.minWidth, COLUMN_CONFIG.TYPE.maxWidth),
+    onCell: () =>
+      nowrapCell(COLUMN_CONFIG.TYPE.minWidth, COLUMN_CONFIG.TYPE.maxWidth),
   },
+
+  /* --------------------- Status --------------------- */
   {
     title: (
       <StatusColumnTitle
-        state={HeadOfTradeEscalatedApprovalsSearch}
+        state={headOfTradeEscalatedApprovalsSearch}
         setState={setHeadOfTradeEscalatedApprovalsSearch}
       />
     ),
     dataIndex: "status",
     key: "status",
     ellipsis: true,
-    // filteredValue: HeadOfTradeEscalatedApprovalsSearch.status?.length
-    //   ? HeadOfTradeEscalatedApprovalsSearch.status
-    //   : null,
+    width: 140,
+    filteredValue: headOfTradeEscalatedApprovalsSearch?.status?.length
+      ? headOfTradeEscalatedApprovalsSearch.status
+      : null,
     onFilter: () => true,
-    render: (status) => {
-      const tag = approvalStatusMap[status] || {};
-      return (
-        <Tag
-          style={{
-            backgroundColor: tag.backgroundColor,
-            color: tag.textColor,
-            whiteSpace: "nowrap", // prevent wrapping
-            overflow: "hidden",
-            textOverflow: "ellipsis",
-            display: "inline-block",
-            // maxWidth: "100%", // tag respects parent cell width
-          }}
-          className="border-less-table-orange-status"
-        >
-          {tag.label}
-        </Tag>
-      );
-    },
-    onHeaderCell: () => ({
-      style: {
-        minWidth: "110px", // 👈 adjust as needed
-        maxWidth: "240px",
-        whiteSpace: "nowrap",
-        overflow: "hidden",
-        textOverflow: "ellipsis",
-      },
-    }),
-    onCell: () => ({
-      style: {
-        minWidth: "110px",
-        maxWidth: "240px",
-        whiteSpace: "nowrap",
-        overflow: "hidden",
-        textOverflow: "ellipsis",
-      },
-    }),
+    render: (status) => renderStatusCell(status, approvalStatusMap),
+    onHeaderCell: () =>
+      nowrapCell(COLUMN_CONFIG.STATUS.minWidth, COLUMN_CONFIG.STATUS.maxWidth),
+    onCell: () =>
+      nowrapCell(COLUMN_CONFIG.STATUS.minWidth, COLUMN_CONFIG.STATUS.maxWidth),
   },
+
+  /* --------------------- Escalated On --------------------- */
   {
-    title: withSortIcon("Escalated On", "escalatedDateTime", sortedInfo),
+    title: (
+      <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+        Escalated On {getSortIcon("escalatedDateTime", sortedInfo)}
+      </div>
+    ),
     dataIndex: "escalatedDateTime",
     key: "escalatedDateTime",
     ellipsis: true,
-    width: "13%",
+    width: 140,
     sorter: (a, b) =>
-      formatApiDateTime(a.escalatedDateTime).localeCompare(
-        formatApiDateTime(b.escalatedDateTime)
-      ),
-    sortDirections: ["ascend", "descend"],
+      (a?.escalatedDateTime || "").localeCompare(b?.escalatedDateTime || ""),
     sortOrder:
       sortedInfo?.columnKey === "escalatedDateTime" ? sortedInfo.order : null,
     showSorterTooltip: false,
     sortIcon: () => null,
     render: (date) => (
-      <span className="text-gray-600">{formatApiDateTime(date)}</span>
+      <span className="text-gray-600" title={date || "—"}>
+        {formatApiDateTime(date) || "—"}
+      </span>
     ),
-    onHeaderCell: () => ({
-      style: {
-        minWidth: "120px",
-        maxWidth: "220px",
-        whiteSpace: "nowrap",
-      },
-    }),
-    onCell: () => ({
-      style: {
-        minWidth: "120px",
-        maxWidth: "220px",
-        whiteSpace: "nowrap",
-        overflow: "hidden",
-        textOverflow: "ellipsis",
-      },
-    }),
+    onHeaderCell: () =>
+      nowrapCell(
+        COLUMN_CONFIG.ESCALATED.minWidth,
+        COLUMN_CONFIG.ESCALATED.maxWidth
+      ),
+    onCell: () =>
+      nowrapCell(
+        COLUMN_CONFIG.ESCALATED.minWidth,
+        COLUMN_CONFIG.ESCALATED.maxWidth
+      ),
   },
 
+  /* --------------------- Actions --------------------- */
   {
     title: "",
     key: "actions",
     align: "center",
-    render: (text, record) => {
-      //Global State to selected data to show in ViewDetailModal
-      const { setIsSelectedViewDetailHeadOfApproval } = useGlobalModal();
-      return (
-        <Button
-          className="big-orange-button"
-          text="View Details"
-          onClick={() => {
-            console.log(record, "CheckRecordData");
-            onViewDetail(record?.approvalID);
-            setIsSelectedViewDetailHeadOfApproval(record);
-            setViewDetailsHeadOfApprovalModal(true);
-          }}
-        />
-      );
-    },
+    width: 120,
+    fixed: "right",
+    render: (text, record) =>
+      renderActionCell(record, onViewDetail, setViewDetailsHeadOfApprovalModal),
+    onHeaderCell: () =>
+      nowrapCell(
+        COLUMN_CONFIG.ACTIONS.minWidth,
+        COLUMN_CONFIG.ACTIONS.maxWidth
+      ),
+    onCell: () =>
+      nowrapCell(
+        COLUMN_CONFIG.ACTIONS.minWidth,
+        COLUMN_CONFIG.ACTIONS.maxWidth
+      ),
   },
 ];
 
-export const useTableScrollBottom = (
-  onBottomReach,
-  threshold = 0,
-  prefixCls = "ant-table"
-) => {
-  const [hasReachedBottom, setHasReachedBottom] = useState(false);
-  const containerRef = useRef(null);
-  const previousScrollTopRef = useRef(0); // for detecting vertical scroll only
+// ===========================================================================
+// 📏 TABLE WIDTH CALCULATION
+// ===========================================================================
 
-  useEffect(() => {
-    const selector = `.${prefixCls}-body`;
-    const scrollContainer = document.querySelector(selector);
-
-    if (!scrollContainer) {
-      console.warn(`📛 Scroll container not found for selector: ${selector}`);
-      return;
-    }
-
-    containerRef.current = scrollContainer;
-
-    const handleScroll = () => {
-      const { scrollTop, scrollHeight, clientHeight } = scrollContainer;
-
-      // Check if vertical scroll happened
-      const scrolledVertically = scrollTop !== previousScrollTopRef.current;
-      previousScrollTopRef.current = scrollTop;
-
-      if (!scrolledVertically) return; // ignore horizontal-only scroll
-
-      const isScrollable = scrollHeight > clientHeight;
-      const isBottom = scrollTop + clientHeight >= scrollHeight - threshold;
-
-      if (isScrollable && isBottom && !hasReachedBottom) {
-        setHasReachedBottom(true);
-        onBottomReach?.();
-
-        setTimeout(() => setHasReachedBottom(false), 1000);
-      }
-    };
-
-    scrollContainer.addEventListener("scroll", handleScroll);
-    return () => scrollContainer.removeEventListener("scroll", handleScroll);
-  }, [hasReachedBottom, onBottomReach, threshold, prefixCls]);
-
-  return {
-    hasReachedBottom,
-    containerRef,
-    setHasReachedBottom,
-  };
+/**
+ * Calculates total table width for proper scroll configuration
+ * @returns {number} Total width of all columns in pixels
+ */
+export const getTotalTableWidth = () => {
+  const columns = [
+    140, // Requester Name
+    160, // Line Manager
+    150, // Instrument
+    140, // Date & Time
+    100, // Trade Type
+    140, // Status
+    140, // Escalated On
+    120, // Actions
+  ];
+  return columns.reduce((total, width) => total + width, 0);
 };
+
+
