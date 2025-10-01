@@ -265,6 +265,23 @@ export const responseMessages = {
   Settings_SettingsServiceManager_GetAnnotationOfFilesAttachement_03:
     "Exception",
 
+  // ==============================
+  // 📂Escalated Approvals  (Head Of Trade Approvals(escalatedApprovals.jsx))
+  // ==============================
+  PAD_Trade_TradeServiceManager_SearchHTAEscalatedApprovalsRequest_01:
+    "Data Available",
+  PAD_Trade_TradeServiceManager_SearchHTAEscalatedApprovalsRequest_02:
+    "No data available",
+  PAD_Trade_TradeServiceManager_SearchHTAEscalatedApprovalsRequest_03:
+    "Exception",
+
+  PAD_Trade_TradeServiceManager_GetHTAViewDetailsByTradeApprovalID_01:
+    "Data Available",
+  PAD_Trade_TradeServiceManager_GetHTAViewDetailsByTradeApprovalID_02:
+    "No data available",
+  PAD_Trade_TradeServiceManager_GetHTAViewDetailsByTradeApprovalID_03:
+    "Exception",
+
   // SearchHeadOfComplianceEscalatedTransactions
   PAD_Trade_TradeServiceManager_SearchHeadOfComplianceEscalatedTransactions_01:
     "Data Available",

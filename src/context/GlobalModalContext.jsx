@@ -130,6 +130,30 @@ export const GlobalModalProvider = ({ children }) => {
    * Global States For Compliance Officer Modals End here
    */
 
+  /**
+   * Global States For Head Od Approval (HTA) Modals Start here
+   */
+
+  // To show Data inView Detail Modal
+  const [viewDetailsHeadOfApprovalModal, setViewDetailsHeadOfApprovalModal] =
+    useState(false);
+
+  // To show Selected Data
+  const [
+    isSelectedViewDetailHeadOfApproval,
+    setIsSelectedViewDetailHeadOfApproval,
+  ] = useState(null);
+
+  // to Show Approved Modal after Submitted When click on Head Of Approval
+  const [headApprovalNoteModal, setHeadApprovalNoteModal] = useState(false);
+
+  // to Show Decline Modal after submitted  When click on Head Of Decline
+  const [headDeclineNoteModal, setHeadDeclineNoteModal] = useState(false);
+
+  /**
+   * Global States For Head Od Approval (HTA) Modals End here
+   */
+
   //  Main resetDashboardContext  reset State to call in dashboard
   // The reset function — inline resetting all states
   const resetModalContextState = () => {
@@ -240,6 +264,28 @@ export const GlobalModalProvider = ({ children }) => {
 
         /**
          * Global States For Compliance Officer Modals End here
+         */
+
+        /**
+         * Global States For Head Of Approval Modals Start here
+         */
+
+        // View Detail Data
+        viewDetailsHeadOfApprovalModal,
+        setViewDetailsHeadOfApprovalModal,
+
+        // to set selected Data
+        isSelectedViewDetailHeadOfApproval,
+        setIsSelectedViewDetailHeadOfApproval,
+
+        headApprovalNoteModal,
+        setHeadApprovalNoteModal,
+
+        headDeclineNoteModal,
+        setHeadDeclineNoteModal,
+
+        /**
+         * Global States For Head Of Approval Modals End here
          */
 
         resetModalContextState,

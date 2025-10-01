@@ -29,6 +29,7 @@ import {
   EscalatedTransactionsIndex,
 } from "../pages";
 import RoleBasedRoute from "./RoleBasedRoute";
+import EscalatedApprovals from "../pages/main/headOfTradeApprover/escalatedApprovals/escalatedApprovals";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -129,7 +130,8 @@ const router = createBrowserRouter(
           element={
             <RoleBasedRoute allowedRoles={[5]}>
               {/* <EmployeApproval /> */}
-              {<ReconcileIndex />}
+              {<EscalatedApprovals />}
+              {/* {<ReconcileIndex />} */}
             </RoleBasedRoute>
           }
         />

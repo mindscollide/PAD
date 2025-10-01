@@ -1,0 +1,137 @@
+.heading {
+  width: 100% !important;
+  height: 34px !important;
+  opacity: 1 !important;
+  font-family: Switzer Variable !important;
+  font-weight: 700 !important;
+  font-style: Bold !important;
+  font-size: 26px !important;
+  line-height: 100% !important;
+  letter-spacing: 0% !important;
+  color: #f67f29 !important;
+}
+.main-box {
+  width: 286px !important;
+  opacity: 1 !important;
+  border-radius: 5.94px !important;
+  border-width: 0.74px !important;
+  background: #ffffff !important;
+  border: 0.74px solid #b4b4b4 !important;
+}
+
+/* Custom header container with base layout */
+.custom-column-header {
+  display: inline-flex;
+  align-items: center;
+  font-family: Switzer Variable;
+  font-weight: 500;
+  font-style: Medium;
+  font-size: 14px;
+  leading-trim: NONE;
+  line-height: 100%;
+  letter-spacing: 0%;
+  color: var(--Blue-V1, #30426a);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+/* Highlighted style when filters are applied */
+.filtered-header {
+  background-color: var(--Blue-V1, #30426a);
+  border-radius: 7.09px;
+  height: 35px;
+  width: 100%;
+  color: #fff;
+  display: flex;
+  justify-content: center;
+}
+
+/* Icon base style */
+.icon {
+  font-size: 12px;
+  transition: transform 0.3s ease-in-out;
+  /* padding-left: 4px auto; */
+}
+
+/* Rotate icon when filter is active */
+.rotated {
+  /* padding-left: 4px auto; */
+  transform: rotate(180deg);
+}
+
+/* Style for AntD dropdown root if needed */
+.table-filter-dropdown .ant-dropdown-menu {
+  padding: 0px I !important;
+}
+
+.filter-tags-container {
+  padding: 0 32px;
+  margin-bottom: -20px;
+  margin-top: 20px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.filter-tag {
+  display: flex;
+  align-items: center;
+  height: 35px;
+  padding: 8px 12px;
+  background: #30426a;
+  color: white;
+  border-radius: 7.09px;
+  font-size: 14px;
+  gap: 10px;
+}
+
+.filter-tag-close {
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 16px;
+  line-height: 1;
+}
+/* approval.module.css */
+:global(.ant-table-thead > tr > th) {
+  white-space: normal !important;
+  line-height: 1.3; /* Makes double line look cleaner */
+}
+
+:global(.ant-table-thead .custom-sort-icon) {
+  flex-shrink: 0; /* keeps icon from squeezing text */
+}
+
+.table-header-wrapper {
+  display: flex;
+  align-items: flex-start; /* Keep icon aligned to top if text wraps */
+  gap: 6px;
+  flex-wrap: wrap; /* Allow text + icon to move to next line if needed */
+}
+
+.table-header-text {
+  font-family: "Switzer Variable";
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 1.3;
+  color: var(--Blue-V1, #30426a);
+
+  white-space: normal; /* Allow wrapping */
+  word-break: break-word;
+  /* flex: 1 1 auto; */ /* Let text take available space */
+  flex: none;
+  min-width: 0; /* Prevent overflow issues in flex */
+}
+
+.table-header-icon {
+  /* margin-left: 4px; bas halka sa gap */
+  color: var(--Blue-V1, #30426a);
+  display: flex;
+  align-items: center;
+}
+
+.dropedowndark :global(.ant-dropdown-trigger.ant-btn .anticon-down) {
+  margin-left: 15px !important;
+  font-size: 14px !important;
+  position: relative;
+  top: 2px;
+}
