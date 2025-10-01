@@ -12,6 +12,7 @@ export const logoutRequest = async ({
     const response = await callApi({
       requestMethod: import.meta.env.VITE_LOGOUT_REQUEST_METHOD,
       endpoint: import.meta.env.VITE_API_AUTH,
+      navigate,
     });
 
     // ✅ Session expiry handler (if you already use this in other requests)

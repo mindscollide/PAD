@@ -276,10 +276,7 @@ const Dashboard = () => {
                     currentKey === "9" &&
                     currentreconcileActiveTab === "portfolio"
                   ) {
-                    setComplianceOfficerReconcilePortfolioDataMqtt({
-                      data: payload,
-                      mqtt: true,
-                    });
+                    setComplianceOfficerReconcilePortfolioDataMqtt(true);
                   }
                   break;
                 }
@@ -288,10 +285,7 @@ const Dashboard = () => {
                     currentKey === "9" &&
                     currentreconcileActiveTab === "transactions"
                   ) {
-                    setComplianceOfficerReconcileTransactionDataMqtt({
-                      data: payload,
-                      mqtt: true,
-                    });
+                    setComplianceOfficerReconcileTransactionDataMqtt(true);
                   }
                   break;
                 }

@@ -15,6 +15,7 @@ export const SearchComplianceOfficerReconcileTransactionRequest = async ({
         .VITE_SEARCH_COMPLIANCE_OFFICER_RECONCILE_TRANSACTIONS_REQUEST_METHOD,
       endpoint: import.meta.env.VITE_API_TRADE,
       requestData: requestdata,
+      navigate,
     });
 
     // 🔹 Handle session expiry
@@ -106,6 +107,7 @@ export const SearchComplianceOfficerReconcilePortfolioRequest = async ({
         .VITE_SEARCH_COMPLIANCE_OFFICER_RECONCILE_PORTFOLIO_REQUEST_METHOD,
       endpoint: import.meta.env.VITE_API_TRADE,
       requestData: requestdata,
+      navigate,
     });
 
     // 🔹 Handle session expiry
@@ -200,6 +202,7 @@ export const GetAllReconcilePortfolioTransactionRequest = async ({
         .VITE_GET_COMPLIANCE_OFFICER_RECONCILE_PORTFOLIO_REQUEST_METHOD,
       endpoint: import.meta.env.VITE_API_TRADE,
       requestData: requestdata,
+      navigate,
     });
     if (handleExpiredSession(res, navigate, showLoader)) return null;
 
@@ -291,6 +294,7 @@ export const UpdatedComplianceOfficerTransactionRequest = async ({
         .VITE_UPDATE_COMPLIANCE_OFFICER_TRANSACTION_REQUEST_METHOD,
       endpoint: import.meta.env.VITE_API_TRADE,
       requestData: requestdata,
+      navigate,
     });
 
     //  Check if session has expired
@@ -376,6 +380,7 @@ export const SearchHeadOfComplianceEscalatedTransactionsAPI = async ({
         .VITE_SEARCH_HEAD_OF_COMPLIANCE_OFFICER_RECONCILE_TRANSACTIONS_REQUEST_METHOD,
       endpoint: import.meta.env.VITE_API_TRADE,
       requestData: requestdata,
+      navigate,
     });
 
     // 🔹 Handle session expiry
@@ -467,6 +472,7 @@ export const SearchHeadOfComplianceEscalatedPortfolioAPI = async ({
         .VITE_SEARCH_HEAD_OF_COMPLIANCE_OFFICER_RECONCILE_ESCALATED_PORTFOLIO_REQUEST_METHOD,
       endpoint: import.meta.env.VITE_API_TRADE,
       requestData: requestdata,
+      navigate,
     });
 
     // 🔹 Handle session expiry

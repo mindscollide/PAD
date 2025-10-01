@@ -270,6 +270,7 @@ const ReconcileTransaction = () => {
     };
 
     fetchPendingApprovals(requestData, true);
+    setComplianceOfficerReconcileTransactionDataMqtt(false)
     setComplianceOfficerReconcileTransactionsSearch((prev) => ({
       ...prev,
       PageNumber: 0,
@@ -372,10 +373,7 @@ const ReconcileTransaction = () => {
         totalRecords: 0,
         Apicall: false,
       });
-      setComplianceOfficerReconcileTransactionDataMqtt({
-        mqttRecivedData: [],
-        mqttRecived: false,
-      });
+      setComplianceOfficerReconcileTransactionDataMqtt(false);
     };
   }, []);
 

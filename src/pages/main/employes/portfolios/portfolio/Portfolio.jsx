@@ -30,6 +30,7 @@ import {
 import UploadIcon from "../../../../../assets/img/upload-icon.png";
 import { getEmployeePortfolioColumns } from "./utils";
 import { formatBrokerOptions } from "../pendingApprovals/utill";
+import { useNavigate } from "react-router-dom";
 
 const { Panel } = Collapse;
 const { Text } = Typography;
@@ -55,6 +56,7 @@ const { Text } = Typography;
 const Portfolio = ({ className }) => {
   /** Tracks open/closed collapse panels */
   const [activeKey, setActiveKey] = useState([]);
+  const navigate = useNavigate();
 
   /** Local state for instruments list */
   const [instrumentData, setInstrumentData] = useState([]);
@@ -132,6 +134,7 @@ const Portfolio = ({ className }) => {
           showNotification,
           showLoader,
           requestdata: requestData,
+          navigate,
         });
 
         const instruments = Array.isArray(res?.instruments)

@@ -51,6 +51,7 @@ export const SearchEscalatedApprovalsRequestMethod = async ({
         .VITE_SEARCH_HTA_ESCALATED_APPROVALS_REQUEST_METHOD,
       endpoint: import.meta.env.VITE_API_TRADE,
       requestData: requestdata,
+      navigate,
     });
 
     // 🔹 Handle session expiry (triggers logout if expired)
@@ -146,6 +147,7 @@ export const GetHeadOfApprovalViewDetailRequest = async ({
         .VITE_GET_HTA_VIEW_DETAIL_ESCALATED_APPROVAL_REQUEST_METHOD,
       endpoint: import.meta.env.VITE_API_TRADE,
       requestData: requestdata,
+      navigate,
     });
     if (handleExpiredSession(res, navigate, showLoader)) return null;
 
