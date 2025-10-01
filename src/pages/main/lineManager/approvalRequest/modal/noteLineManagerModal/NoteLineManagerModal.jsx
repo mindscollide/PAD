@@ -17,6 +17,7 @@ const NoteLineManagerModal = () => {
   const onClickClose = () => {
     setNoteGlobalModal({ visible: false, action: null });
     setViewDetailLineManagerModal(true);
+    setCommentValue("");
   };
 
   //submit click to open Declined Modal
