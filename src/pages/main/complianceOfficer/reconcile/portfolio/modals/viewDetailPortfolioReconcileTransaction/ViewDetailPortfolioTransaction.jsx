@@ -8,6 +8,7 @@ import CustomButton from "../../../../../../../components/buttons/button";
 import CheckIcon from "../../../../../../../assets/img/Check.png";
 import EllipsesIcon from "../../../../../../../assets/img/Ellipses.png";
 import copyIcon from "../../../../../../../assets/img/copy-dark.png";
+import CrossIcon from "../../../../../../../assets/img/Cross.png";
 import { useDashboardContext } from "../../../../../../../context/dashboardContaxt";
 import {
   dashBetweenApprovalAssets,
