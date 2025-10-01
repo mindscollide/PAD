@@ -9,6 +9,7 @@ import {
   emaStatusOptions,
   emtStatusOptions,
   emtStatusOptionsForPendingApproval,
+  escalated,
 } from "./utils";
 
 // Context imports
@@ -99,14 +100,18 @@ const StatusFilterDropdown = ({
       case "9":
         setFilterOptions(emtStatusOptions);
         break;
+      case "12":
+        setFilterOptions(escalated);
+        break;
       case "15":
         setFilterOptions(emtStatusOptions);
         break;
+
       default:
         setFilterOptions([]);
     }
   }, [selectedKey]);
-
+  console.log("selectedKey", selectedKey);
   /**
    * Handles confirmation of selected statuses.
    * Updates parent state and triggers API call.
@@ -121,6 +126,13 @@ const StatusFilterDropdown = ({
         filterTrigger: true,
       }));
     } else if (selectedKey === "9") {
+      setState((prev) => ({
+        ...prev,
+        status: tempSelected,
+        pageNumber: 0,
+        filterTrigger: true,
+      }));
+    } else if (selectedKey === "12") {
       setState((prev) => ({
         ...prev,
         status: tempSelected,
@@ -174,6 +186,13 @@ const StatusFilterDropdown = ({
         filterTrigger: true,
       }));
     } else if (selectedKey === "9") {
+      setState((prev) => ({
+        ...prev,
+        status: [],
+        pageNumber: 0,
+        filterTrigger: true,
+      }));
+    } else if (selectedKey === "12") {
       setState((prev) => ({
         ...prev,
         status: [],

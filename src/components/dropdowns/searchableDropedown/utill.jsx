@@ -15,6 +15,7 @@ import { EmployeePendingApprovalFilter } from "./EmployeePendingApprovalFilter";
 import { EmployeePortfolioFilter } from "./EmployeePortfolioFilter";
 import { EmployeeTransactionFilter } from "./EmployeeTransactionFilter";
 import { HcaReconcileFilter } from "./HcaReconcileFilter";
+import { HeadOfTradeEscalatedFilter } from "./HeadOfTradeEscalatedFilter";
 import { LineManagerApprovalFilter } from "./LineManagerApprovalFilter";
 
 /**
@@ -39,7 +40,8 @@ export const getMainSearchInputValueByKey = (
   complianceOfficerReconcilePortfolioSearch,
   complianceOfficerReconcileTransactionsSearch,
   headOfComplianceApprovalEscalatedVerificationsSearch,
-  headOfComplianceApprovalPortfolioSearch
+  headOfComplianceApprovalPortfolioSearch,
+  headOfTradeEscalatedApprovalsSearch
 ) => {
   switch (selectedKey) {
     case "1":
@@ -64,6 +66,8 @@ export const getMainSearchInputValueByKey = (
         default:
           return "";
       }
+    case "12":
+      return headOfTradeEscalatedApprovalsSearch.mainInstrumentName;
     case "15":
       switch (activeTabHCO) {
         case "escalated":
@@ -98,7 +102,8 @@ export const handleMainInstrumentChange = (
   setComplianceOfficerReconcilePortfolioSearch,
   setComplianceOfficerReconcileTransactionsSearch,
   setHeadOfComplianceApprovalEscalatedVerificationsSearch,
-  setHeadOfComplianceApprovalPortfolioSearch
+  setHeadOfComplianceApprovalPortfolioSearch,
+  setHeadOfTradeEscalatedApprovalsSearch
 ) => {
   switch (selectedKey) {
     case "1":
@@ -168,6 +173,13 @@ export const handleMainInstrumentChange = (
 
       break;
 
+    case "12":
+      setHeadOfTradeEscalatedApprovalsSearch((prev) => ({
+        ...prev,
+        mainInstrumentName: value,
+      }));
+      break;
+
     case "15":
       switch (activeTabHCO) {
         case "escalated":
@@ -213,6 +225,7 @@ export const handleSearchMainInputReset = ({
   setComplianceOfficerReconcileTransactionsSearch,
   setHeadOfComplianceApprovalEscalatedVerificationsSearch,
   setHeadOfComplianceApprovalPortfolioSearch,
+  setHeadOfTradeEscalatedApprovalsSearch,
 }) => {
   switch (selectedKey) {
     case "1":
@@ -282,6 +295,13 @@ export const handleSearchMainInputReset = ({
 
       break;
 
+    case "12":
+      setHeadOfTradeEscalatedApprovalsSearch((prev) => ({
+        ...prev,
+        mainInstrumentName: "",
+      }));
+      break;
+
     case "15":
       switch (activeTabHCO) {
         case "escalated":
@@ -335,21 +355,6 @@ export const renderFilterContent = (
           setVisible={setVisible}
         />
       );
-    // just cominting for for sprint 6
-    // case "4":
-    //   switch (activeTab) {
-    //     case "portfolio":
-    //       return (
-    //         <EmployeePortfolioFilter
-    //           handleSearch={handleSearch}
-    //           setVisible={setVisible}
-    //         />
-    //       );
-    //     case "pending":
-    //       return <EmployeePendingApprovalFilter handleSearch={handleSearch} />;
-    //     default:
-    //       return null;
-    //   }
     case "4":
       return (
         <EmployeePortfolioFilter
@@ -371,6 +376,13 @@ export const renderFilterContent = (
         <ComplianceReconcileFilter
           handleSearch={handleSearch}
           activeTab={reconcileActiveTab}
+          setVisible={setVisible}
+        />
+      );
+    case "12":
+      return (
+        <HeadOfTradeEscalatedFilter
+          handleSearch={handleSearch}
           setVisible={setVisible}
         />
       );

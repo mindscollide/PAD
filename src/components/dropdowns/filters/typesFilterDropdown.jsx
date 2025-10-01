@@ -59,6 +59,13 @@ const TypeFilterDropdown = ({
         pageNumber: 0,
         filterTrigger: true,
       }));
+    } else if (selectedKey === "12") {
+      setState((prev) => ({
+        ...prev,
+        type: tempSelected,
+        pageNumber: 0,
+        filterTrigger: true,
+      }));
     } else if (selectedKey === "15") {
       setState((prev) => ({
         ...prev,
@@ -101,6 +108,13 @@ const TypeFilterDropdown = ({
         filterTrigger: true,
       }));
     } else if (selectedKey === "9") {
+      setState((prev) => ({
+        ...prev,
+        type: [],
+        pageNumber: 0,
+        filterTrigger: true,
+      }));
+    } else if (selectedKey === "12") {
       setState((prev) => ({
         ...prev,
         type: [],
