@@ -96,7 +96,6 @@ const Dashboard = () => {
         const currentKey = selectedKeyRef.current;
         const currentreconcileActiveTab = reconcileActiveTab.current;
         const currentactiveTabRef = activeTabRef.current;
-    
 
         const { message, payload, roleIDs } = data;
 
@@ -258,6 +257,20 @@ const Dashboard = () => {
             // Compliance officer mqtt
             case "4": {
               switch (message) {
+                case "COMPLIANCE_OFFICER_DASHBOARD_DATA": {
+                  if (currentKey === "0") {
+                    setDashboardData((prev) => {
+                      if (!prev?.complianceOfficer) return prev;
+                      const updatedEmployee = { ...prev.complianceOfficer };
+                      Object.keys(payload).forEach((key) => {
+                        if (payload[key] !== null)
+                          updatedEmployee[key] = payload[key];
+                      });
+                      return { ...prev, complianceOfficer: updatedEmployee };
+                    });
+                  }
+                  break;
+                }
                 case "COMPLIANCE_OFFICER_NEW_UPLOAD_PORTFOLIO_REQUEST": {
                   if (
                     currentKey === "9" &&
