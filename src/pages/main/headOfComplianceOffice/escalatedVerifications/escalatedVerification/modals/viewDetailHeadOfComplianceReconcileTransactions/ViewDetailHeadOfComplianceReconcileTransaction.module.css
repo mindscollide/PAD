@@ -437,7 +437,7 @@
   font-weight: 500;
   font-family: "Switzer Variable";
   margin: 0;
-  line-height: 1.4; /* adjust as needed */
+  margin-top: -15px;
 }
 
 .Compliancelabel {

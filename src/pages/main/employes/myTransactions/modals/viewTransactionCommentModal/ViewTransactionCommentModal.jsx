@@ -1,6 +1,7 @@
 import React from "react";
 import { useGlobalModal } from "../../../../../../context/GlobalModalContext";
 import { ViewCommentModal } from "../../../../../../components";
+import { useTransaction } from "../../../../../../context/myTransaction";
 
 const ViewTransactionCommentModal = () => {
   // This is Global State for modal which is create in ContextApi
@@ -9,6 +10,26 @@ const ViewTransactionCommentModal = () => {
     setViewCommentTransactionModal,
     setViewDetailTransactionModal,
   } = useGlobalModal();
+
+  const { employeeTransactionViewDetailData } = useTransaction();
+
+  const workflowStatusID =
+    employeeTransactionViewDetailData?.workFlowStatus?.workFlowStatusID;
+  const detail =
+    employeeTransactionViewDetailData?.details?.[0];
+
+  const approvalComment = detail?.approvalComment;
+  const rejectionComment = detail?.rejectionComment;
+
+  const getCommentText = () => {
+    if (workflowStatusID === 8) {
+      return approvalComment || "No approval comment available.";
+    } else if (workflowStatusID === 9) {
+      return rejectionComment || "No rejection comment available.";
+    } else {
+      return "No comment available for this status.";
+    }
+  };
 
   // This is onClick of Go Back Functionality
   const onClickGoBack = () => {
@@ -29,9 +50,7 @@ const ViewTransactionCommentModal = () => {
         onClose={onClickCloseComment}
         onGoBack={onClickGoBack}
         CommentHeading={"View Comment"}
-        commentText="Your transaction request for [Buying 500 Shares of StarTech Inc] has been rejected due to insufficient 
-        documentation and discrepancies in the provided financial details. Please review the required documents and resubmit
-        the request with accurate information."
+        commentText={getCommentText()}
       />
     </>
   );

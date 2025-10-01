@@ -47,6 +47,21 @@ export const MyApprovalProvider = ({ children }) => {
     workFlowStatus: {},
   });
 
+  // Reset function to set all states back to initial values
+  const resetApprovalRequestContextState = () => {
+    setLineManagerApproval({
+      lineApprovals: [],
+      totalRecords: 0,
+    });
+    setViewDetailsLineManagerData({
+      assetTypes: [],
+      details: [],
+      hierarchyDetails: [],
+      requesterName: "",
+      workFlowStatus: {},
+    });
+  };
+
   /* **
    Context Api States For Line Manager End Here
    ** */
@@ -69,6 +84,7 @@ export const MyApprovalProvider = ({ children }) => {
         setLineManagerApprovalMQtt,
         viewDetailsLineManagerData,
         setViewDetailsLineManagerData,
+        resetApprovalRequestContextState,
       }}
     >
       {children}

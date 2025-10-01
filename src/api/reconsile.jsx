@@ -319,7 +319,11 @@ export const UpdatedComplianceOfficerTransactionRequest = async ({
         "PAD_Trade_TradeServiceManager_UpdateTransactionRequestStatus_01"
       ) {
         setNoteGlobalModal({ visible: false, action: null });
-        if (submitText === "Compliant") {
+        if (
+          submitText === "Compliant" ||
+          submitText === "HOC-Compliant" ||
+          submitText === "HOC-Portfolio-Compliant"
+        ) {
           setCompliantApproveModal(true);
           setValue("");
         } else if (submitText === "Portfolio-Compliant") {
@@ -328,7 +332,11 @@ export const UpdatedComplianceOfficerTransactionRequest = async ({
         } else if (submitText === "Portfolio-Non-Compliant") {
           setNonCompliantPortfolioDeclineModal(true);
           setValue("");
-        } else {
+        } else if (
+          submitText === "Non-Compliant" ||
+          submitText === "HOC-NOC-Compliant" ||
+          submitText === "HOC-Portfolio-Non-Compliant"
+        ) {
           setNonCompliantDeclineModal(true);
           setValue("");
         }

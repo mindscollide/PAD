@@ -41,6 +41,10 @@ import {
 import { toYYMMDD } from "../../../../../commen/funtions/rejex";
 import ViewDetailHeadOfComplianceReconcileTransaction from "./modals/viewDetailHeadOfComplianceReconcileTransactions/ViewDetailHeadOfComplianceReconcileTransaction";
 import UploadHeadOfComplianceTicketModal from "./modals/uploadHeadOfComplianceTicketModal/UploadHeadOfComplianceTicketModal";
+import NoteHeadOfComplianceModal from "./modals/noteHeadOfComplianceModal/NoteHeadOfComplianceModal";
+import ApproveHeadOfComplianceModal from "./modals/approveHeadOfComplianceModal/ApproveHeadOfComplianceModal";
+import DeclinedHeadOfComplianceModal from "./modals/declinedHeadOfComplianceModal/DeclinedHeadOfComplianceModal";
+import ViewTicketEscalatedModal from "./modals/viewTicketEscalatedModal/ViewTicketEscalatedModal";
 
 // 🔹 Modal imports
 // =============================================================================
@@ -87,6 +91,10 @@ const EscalatedTransactionVerifications = () => {
     viewDetailHeadOfComplianceEscalated,
     setViewDetailHeadOfComplianceEscalated,
     uploadComplianceModal,
+    noteGlobalModal,
+    compliantApproveModal,
+    nonCompliantDeclineModal,
+    isViewTicketTransactionModal,
   } = useGlobalModal();
   const { addApprovalRequestData } = useDashboardContext();
 
@@ -199,14 +207,13 @@ const EscalatedTransactionVerifications = () => {
       RequestDateTo: RequestDateTo,
       EscalatedDateFrom: EscalatedDateFrom,
       EscalatedDateTo: EscalatedDateTo,
-      StatusIds: mapStatusToIds(searchState.status)||[],
+      StatusIds: mapStatusToIds(searchState.status) || [],
       TypeIds:
         mapBuySellToIds(searchState.type, addApprovalRequestData?.Equities) ||
         [],
 
       PageNumber: Number(searchState.pageNumber) || 0,
-      Length:
-        Number(searchState.pageSize) || 10,
+      Length: Number(searchState.pageSize) || 10,
     };
   };
 
@@ -472,13 +479,24 @@ const EscalatedTransactionVerifications = () => {
         onChange={(_, __, sorter) => setSortedInfo(sorter || {})}
         loading={loadingMore}
       />
-
       {/* View Detail Modal */}
       {viewDetailHeadOfComplianceEscalated && (
         <ViewDetailHeadOfComplianceReconcileTransaction />
       )}
 
+      {/* To SHow Upload Modal While click on Add Tocket Button */}
       {uploadComplianceModal && <UploadHeadOfComplianceTicketModal />}
+
+      {/* To show Note Modal When Click on Compliant btn to open Note Modal */}
+      {noteGlobalModal && <NoteHeadOfComplianceModal />}
+
+      {/* To SHow Compliant Modal When note Modal APi is success */}
+      {compliantApproveModal && <ApproveHeadOfComplianceModal />}
+
+      {/* To Show Non Compliant Modal WHen Note Modal Api is Success */}
+      {nonCompliantDeclineModal && <DeclinedHeadOfComplianceModal />}
+
+      {isViewTicketTransactionModal && <ViewTicketEscalatedModal />}
     </>
   );
 };

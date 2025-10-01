@@ -15,15 +15,30 @@ import {
   formatNumberWithCommas,
 } from "../../../../../../../commen/funtions/rejex";
 import { useReconcileContext } from "../../../../../../../context/reconsileContax";
+import {
+  GetAnnotationOfFilesAttachementAPI,
+  GetWorkFlowFilesAPI,
+} from "../../../../../../../api/fileApi";
+import { useGlobalLoader } from "../../../../../../../context/LoaderContext";
+import { useNotification } from "../../../../../../../components/NotificationProvider/NotificationProvider";
+import { useApi } from "../../../../../../../context/ApiContext";
+import { useNavigate } from "react-router-dom";
 
 const ViewDetailHeadOfComplianceReconcileTransaction = () => {
+  const navigate = useNavigate();
+
   // This is Global State for modal which is create in ContextApi
   const {
     viewDetailHeadOfComplianceEscalated,
     setViewDetailHeadOfComplianceEscalated,
     setUploadComplianceModal,
     setNoteGlobalModal,
+    setIsViewTicketTransactionModal,
+    setUploadattAchmentsFiles,
   } = useGlobalModal();
+  const { callApi } = useApi();
+  const { showLoader } = useGlobalLoader();
+  const { showNotification } = useNotification();
 
   // get data from sessionStorage
   const userProfileData = JSON.parse(
@@ -35,6 +50,7 @@ const ViewDetailHeadOfComplianceReconcileTransaction = () => {
   const {
     isEscalatedHeadOfComplianceViewDetailData,
     headOfComplianceApprovalEscalatedVerificationsData,
+    selectedEscalatedHeadOfComplianceData,
   } = useReconcileContext();
 
   const { allInstrumentsData } = useDashboardContext();
@@ -97,7 +113,7 @@ const ViewDetailHeadOfComplianceReconcileTransaction = () => {
         };
       case "9":
         return {
-          label: "Not-Compliant",
+          label: "Non Compliant",
           labelClassName: styles.declinedDetailHeading,
           divClassName: styles.declinedBorderClass,
         };
@@ -155,6 +171,61 @@ const ViewDetailHeadOfComplianceReconcileTransaction = () => {
   const onClickFromNonCompliantNoteModalFromHeadOfCompliance = () => {
     setNoteGlobalModal({ visible: true, action: "HOC-Non-Compliant" });
     setViewDetailHeadOfComplianceEscalated(false);
+  };
+
+  const handleViewTicket = async () => {
+    showLoader(true);
+    try {
+      const res = await GetWorkFlowFilesAPI({
+        callApi,
+        showNotification,
+        showLoader,
+        requestData: {
+          WorkFlowID: selectedEscalatedHeadOfComplianceData?.workflowID,
+        },
+        navigate,
+      });
+
+      if (res?.length > 0) {
+        // Add empty blob initially
+        const updatedFiles = res.map((file) => ({
+          ...file,
+          attachmentBlob: "",
+        }));
+
+        // Work only on the first file
+        const firstFile = updatedFiles[0];
+
+        // 🔹 Wait for blob
+        const blob = await GetAnnotationOfFilesAttachementAPI({
+          callApi,
+          showNotification,
+          showLoader,
+          requestData: { FileID: firstFile.pK_FileID },
+          navigate,
+        });
+
+        if (blob) {
+          // 🔹 Only after blob is ready, update index 0
+          updatedFiles[0] = { ...firstFile, attachmentBlob: blob };
+        }
+
+        // 🔹 Now set final files in state (with blob injected in 0th index)
+        console.log("updatedFiles workflow files", updatedFiles);
+        await setUploadattAchmentsFiles(updatedFiles);
+        setViewDetailHeadOfComplianceEscalated(false);
+        setIsViewTicketTransactionModal(true);
+      }
+    } catch (err) {
+      console.error("Failed to fetch workflow files", err);
+      showNotification({
+        type: "error",
+        title: "Error",
+        description: "Unable to fetch workflow files.",
+      });
+    } finally {
+      showLoader(false);
+    }
   };
 
   return (
@@ -547,6 +618,7 @@ const ViewDetailHeadOfComplianceReconcileTransaction = () => {
                       <CustomButton
                         text={"View Ticket"}
                         className={"big-ViewTicket-light-button"}
+                        onClick={handleViewTicket}
                       />
                       <CustomButton
                         text={"Add Ticket"}
@@ -565,24 +637,72 @@ const ViewDetailHeadOfComplianceReconcileTransaction = () => {
               <Row className={styles.mainButtonDivClose}>
                 <Col span={[24]}>
                   <>
-                    <div className={styles.approvedButtonClass}>
-                      <CustomButton
-                        text={"Non Compliant"}
-                        className="Decline-dark-button"
-                        disabled={disableCompliantOrNonCompliantBtn}
-                        onClick={
-                          onClickFromNonCompliantNoteModalFromHeadOfCompliance
-                        }
-                      />
-                      <CustomButton
-                        text={"Compliant"}
-                        className="Approved-dark-button"
-                        disabled={disableCompliantOrNonCompliantBtn}
-                        onClick={
-                          onClickFromCompliantNoteModalFromHeadOfCompliance
-                        }
-                      />
-                    </div>
+                    {statusData?.label === "Pending" ? (
+                      <>
+                        <div className={styles.approvedButtonClass}>
+                          <CustomButton
+                            text="Non Compliant"
+                            className="Decline-dark-button"
+                            disabled={disableCompliantOrNonCompliantBtn}
+                            onClick={
+                              onClickFromNonCompliantNoteModalFromHeadOfCompliance
+                            }
+                          />
+                          <CustomButton
+                            text="Compliant"
+                            className="Approved-dark-button"
+                            disabled={disableCompliantOrNonCompliantBtn}
+                            onClick={
+                              onClickFromCompliantNoteModalFromHeadOfCompliance
+                            }
+                          />
+                        </div>
+                      </>
+                    ) : statusData?.label === "Non Compliant" ? (
+                      <div className={styles.noncompliantButtonClass}>
+                        <CustomButton
+                          text="View Ticket"
+                          className="big-light-button"
+                          onClick={handleViewTicket}
+                        />{" "}
+                        <CustomButton
+                          text="View Comment"
+                          className="big-light-button"
+                          onClick={() => {
+                            setViewDetailHeadOfComplianceEscalated(false);
+                          }}
+                        />{" "}
+                        <CustomButton
+                          text="Close"
+                          onClick={() => {
+                            setViewDetailHeadOfComplianceEscalated(false);
+                          }}
+                          className="big-light-button"
+                        />
+                      </div>
+                    ) : statusData?.label === "Compliant" ? (
+                      <div className={styles.noncompliantButtonClass}>
+                        <CustomButton
+                          text="View Ticket"
+                          className="big-light-button"
+                          onClick={handleViewTicket}
+                        />{" "}
+                        <CustomButton
+                          text="View Comment"
+                          className="big-light-button"
+                          onClick={() => {
+                            setViewDetailHeadOfComplianceEscalated(false);
+                          }}
+                        />{" "}
+                        <CustomButton
+                          text="Close"
+                          onClick={() => {
+                            setViewDetailHeadOfComplianceEscalated(false);
+                          }}
+                          className="big-light-button"
+                        />
+                      </div>
+                    ) : null}
                   </>
                 </Col>
               </Row>

@@ -2,11 +2,11 @@ import React, { useState } from "react";
 import { useGlobalModal } from "../../../../../../../context/GlobalModalContext";
 import { CommentModal } from "../../../../../../../components";
 
-const NoteHeadOfComplianceModal = () => {
+const NoteHeadOfCompliancePortfolioModal = () => {
   const {
     noteGlobalModal,
     setNoteGlobalModal,
-    setViewDetailHeadOfComplianceEscalated,
+    setViewDetailHeadOfComplianceEscalatedPortfolio,
     setDeclinedGlobalModal,
   } = useGlobalModal();
 
@@ -16,7 +16,7 @@ const NoteHeadOfComplianceModal = () => {
   //onClose button Handler
   const onClickClose = () => {
     setNoteGlobalModal({ visible: false, action: null });
-    setViewDetailHeadOfComplianceEscalated(true);
+    setViewDetailHeadOfComplianceEscalatedPortfolio(true);
     setCommentValue("");
   };
 
@@ -38,9 +38,9 @@ const NoteHeadOfComplianceModal = () => {
       height={"620px"}
       centered={false}
       submitText={
-        noteGlobalModal.action === "HOC-Compliant"
-          ? "HOC-Compliant"
-          : "HOC-Non-Compliant"
+        noteGlobalModal.action === "HOC-Portfolio-Compliant"
+          ? "HOC-Portfolio-Compliant"
+          : "HOC-Portfolio-Non-Compliant"
       }
       onCancel={() => setNoteGlobalModal({ visible: false, action: null })}
       title={"Write a Notes"}
@@ -49,4 +49,4 @@ const NoteHeadOfComplianceModal = () => {
   );
 };
 
-export default NoteHeadOfComplianceModal;
+export default NoteHeadOfCompliancePortfolioModal;

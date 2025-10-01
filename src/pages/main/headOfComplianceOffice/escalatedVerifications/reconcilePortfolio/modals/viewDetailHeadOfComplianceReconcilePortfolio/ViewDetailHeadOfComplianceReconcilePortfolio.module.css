@@ -392,10 +392,75 @@
 }
 
 .modalBodyContentScroller {
-  height: 61vh;
+  height: 70vh;
   overflow: hidden;
   overflow-y: auto;
   scrollbar-width: thin;
   padding-right: 10px !important;
   scrollbar-color: #b9c1d1 !important;
+}
+
+.waitingApprovalText {
+  font-size: 14px;
+  color: #30426a;
+  font-family: "Switzer Variable";
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.stepLabelWrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  margin-top: 8px;
+}
+
+.stepButtonActive {
+  background: none !important; /* Remove background for active state */
+  /* You can add any other styles you need */
+}
+
+.backgrounColorOfDetailCompliance {
+  background-color: #edf3ff !important;
+  padding: 10px 20px;
+  display: flex;
+  flex-direction: column !important;
+  gap: 4px;
+}
+
+.Compliancevalue {
+  display: flex;
+  align-items: center;
+  font-size: 20px !important;
+  color: #424242 !important;
+  font-weight: 500;
+  font-family: "Switzer Variable";
+  margin: 0;
+  margin-top: -15px;
+}
+
+.Compliancelabel {
+  font-size: 14px !important;
+  color: #30426a !important;
+  font-weight: 700;
+  font-family: "Switzer Variable";
+}
+
+.noncompliantButtonClass {
+  display: flex;
+  justify-content: end;
+  align-items: center;
+  gap: 20px !important;
+}
+
+.centerAlignLabel {
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* sab text center ho jaye */
+}
+
+.centerAlignText {
+  text-align: center;
+  margin-top: 4px; /* thoda gap title aur date ke beech */
 }

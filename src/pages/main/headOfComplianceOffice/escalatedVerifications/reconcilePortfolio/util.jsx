@@ -15,6 +15,7 @@ import StatusColumnTitle from "../../../../../components/dropdowns/filters/statu
 // Helpers
 import { formatApiDateTime } from "../../../../../commen/funtions/rejex";
 import { useGlobalModal } from "../../../../../context/GlobalModalContext";
+import { usePortfolioContext } from "../../../../../context/portfolioContax";
 
 const { Text } = Typography;
 
@@ -78,7 +79,7 @@ export const mapToTableRows = (assetTypeData, list = []) =>
   (Array.isArray(list) ? list : []).map((item = {}) => ({
     requesterName: item?.requesterName,
     complianceOfficerName: item?.complianceOfficerName,
-    approvalID: item?.approvalID,
+    workflowID: item?.workflowID,
     instrumentCode: item?.instrument?.instrumentCode || "—",
     instrumentName: item?.instrument?.instrumentName || "—",
     assetTypeShortCode: item?.assetType?.assetTypeShortCode || "—",
@@ -124,7 +125,7 @@ export const getBorderlessTableColumns = ({
   sortedInfo = {},
   headOfComplianceApprovalPortfolioSearch = {},
   setHeadOfComplianceApprovalPortfolioSearch = () => {},
-  handleViewDetailsForReconcileTransaction,
+  onViewDetail,
 }) => [
   /* --------------------- Requester Name --------------------- */
   {
@@ -268,8 +269,7 @@ export const getBorderlessTableColumns = ({
     key: "type",
     ellipsis: true,
     width: 100,
-    filteredValue: headOfComplianceApprovalPortfolioSearch?.type
-      ?.length
+    filteredValue: headOfComplianceApprovalPortfolioSearch?.type?.length
       ? headOfComplianceApprovalPortfolioSearch.type
       : null,
     onFilter: () => true,
@@ -290,8 +290,7 @@ export const getBorderlessTableColumns = ({
     key: "status",
     ellipsis: true,
     width: 140,
-    filteredValue: headOfComplianceApprovalPortfolioSearch?.status
-      ?.length
+    filteredValue: headOfComplianceApprovalPortfolioSearch?.status?.length
       ? headOfComplianceApprovalPortfolioSearch.status
       : null,
     onFilter: () => true,
@@ -357,8 +356,10 @@ export const getBorderlessTableColumns = ({
     width: 120,
     fixed: "right",
     render: (text, record) => {
+      console.log(record, "Checksjakhdbahsdash");
       // Note: Using hook inside render might cause issues, consider moving this logic
-      const { setViewDetailReconcileTransaction } = useGlobalModal();
+      const { setSelectedEscalatedPortfolioHeadOfComplianceData } =
+        usePortfolioContext();
       return (
         <Button
           className="big-blue-button"
@@ -370,8 +371,8 @@ export const getBorderlessTableColumns = ({
             whiteSpace: "nowrap",
           }}
           onClick={() => {
-            handleViewDetailsForReconcileTransaction(record?.approvalID);
-            setViewDetailReconcileTransaction(true);
+            onViewDetail(record?.workflowID);
+            setSelectedEscalatedPortfolioHeadOfComplianceData(record);
           }}
         />
       );

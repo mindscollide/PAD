@@ -1,30 +1,30 @@
 import React from "react";
 import { useGlobalModal } from "../../../../../../../context/GlobalModalContext";
 import { ViewCommentModal } from "../../../../../../../components";
-import { useReconcileContext } from "../../../../../../../context/reconsileContax";
+import { usePortfolioContext } from "../../../../../../../context/portfolioContax";
 
-const ViewReconcileTransactionComment = () => {
+const ViewReconcilePortfolioComment = () => {
   // This is Global State for modal which is create in ContextApi
   const {
-    isViewComments,
-    setIsViewComments,
-    setIsViewDetail,
-    viewCommentReconcileModal,
-    setViewCommentReconcileModal,
-    setViewDetailReconcileTransaction,
+    viewCommentPortfolioModal,
+    setViewCommentPortfolioModal,
+    setViewDetailHeadOfComplianceEscalatedPortfolio,
   } = useGlobalModal();
 
-  //This is the Global state of Context Api
-  const { reconcileTransactionViewDetailData } = useReconcileContext();
+  const { isEscalatedPortfolioHeadOfComplianceViewDetailData } =
+    usePortfolioContext();
 
-  console.log(
-    reconcileTransactionViewDetailData,
-    "viewCommentReconcileModalviewCommentReconcileModal"
-  );
+  // This is onClick of Go Back Functionality
+  const onClickGoBack = () => {
+    setViewCommentPortfolioModal(false);
+    setViewDetailHeadOfComplianceEscalatedPortfolio(true);
+  };
 
   const workflowStatusID =
-    reconcileTransactionViewDetailData?.workFlowStatus?.workFlowStatusID;
-  const detail = reconcileTransactionViewDetailData?.details?.[0];
+    isEscalatedPortfolioHeadOfComplianceViewDetailData?.workFlowStatus
+      ?.workFlowStatusID;
+  const detail =
+    isEscalatedPortfolioHeadOfComplianceViewDetailData?.details?.[0];
 
   const approvalComment = detail?.approvalComment;
   const rejectionComment = detail?.rejectionComment;
@@ -39,23 +39,17 @@ const ViewReconcileTransactionComment = () => {
     }
   };
 
-  // This is onClick of Go Back Functionality
-  const onClickGoBack = () => {
-    setViewCommentReconcileModal(false);
-    setViewDetailReconcileTransaction(true);
-  };
-
   //This is the onCLick of Close Comment
   const onClickCloseComment = () => {
-    setViewDetailReconcileTransaction(false);
-    setViewCommentReconcileModal(false);
+    setViewDetailPortfolioTransaction(false);
+    setViewCommentPortfolioModal(false);
   };
 
   return (
     <>
       {/* Import View Comment Modal Which Is Create inside modal folder Component because now we can use on multiple time */}
       <ViewCommentModal
-        visible={viewCommentReconcileModal}
+        visible={viewCommentPortfolioModal}
         onClose={onClickCloseComment}
         onGoBack={onClickGoBack}
         CommentHeading={"View Comment"}
@@ -65,4 +59,4 @@ const ViewReconcileTransactionComment = () => {
   );
 };
 
-export default ViewReconcileTransactionComment;
+export default ViewReconcilePortfolioComment;

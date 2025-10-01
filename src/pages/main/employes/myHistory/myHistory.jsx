@@ -14,15 +14,12 @@ import { getColumns } from "./utils";
 import { useSearchBarContext } from "../../../../context/SearchBarContaxt";
 import { approvalStatusMap } from "../../../../components/tables/borderlessTable/utill";
 import { useGlobalModal } from "../../../../context/GlobalModalContext";
-import UploadModal from "../../headOfComplianceOffice/modals/uploadsModal/UploadModal";
 const MyHistory = () => {
   const [searchText, setSearchText] = useState("");
   const [dateRange, setDateRange] = useState([]);
   const [sortedInfo, setSortedInfo] = useState({});
 
   const [open, setOpen] = useState(false);
-
-  const { uploadComplianceModal, setUploadComplianceModal } = useGlobalModal();
 
   const {
     employeeMyHistorySearch,
@@ -233,8 +230,6 @@ const MyHistory = () => {
           )}
         </div>
       </PageLayout>
-
-      {uploadComplianceModal && <UploadModal />}
     </>
   );
 };
