@@ -115,6 +115,27 @@ export const PortfolioProvider = ({ children }) => {
     workFlowStatus: {},
   });
 
+  // Head Of Compliance (HOC) view detail data state Start here
+  const [
+    isEscalatedPortfolioHeadOfComplianceViewDetailData,
+    setIsEscalatedPortfolioHeadOfComplianceViewDetailData,
+  ] = useState({
+    details: [],
+    assetTypes: [],
+    hierarchyDetails: [],
+    workFlowStatus: {},
+    tradedWorkFlowRequests: [],
+    ticketUploaded: false,
+    requesterName: "",
+    escalations: [],
+  });
+
+  //To get the selected data by clicking on View Detail of reconcile Transaction
+  const [
+    selectedEscalatedPortfolioHeadOfComplianceData,
+    setSelectedEscalatedPortfolioHeadOfComplianceData,
+  ] = useState(null);
+
   //To get the selected data by clicking on View Detail of reconcile Transaction
   const [
     selectedPortfolioTransactionData,
@@ -178,6 +199,12 @@ export const PortfolioProvider = ({ children }) => {
         setReconcilePortfolioViewDetailData,
         selectedPortfolioTransactionData,
         setSelectedPortfolioTransactionData,
+
+        // Head Of Compliance (HOC) States
+        isEscalatedPortfolioHeadOfComplianceViewDetailData,
+        setIsEscalatedPortfolioHeadOfComplianceViewDetailData,
+        selectedEscalatedPortfolioHeadOfComplianceData,
+        setSelectedEscalatedPortfolioHeadOfComplianceData,
       }}
     >
       {children}

@@ -319,7 +319,11 @@ export const UpdatedComplianceOfficerTransactionRequest = async ({
         "PAD_Trade_TradeServiceManager_UpdateTransactionRequestStatus_01"
       ) {
         setNoteGlobalModal({ visible: false, action: null });
-        if (submitText === "Compliant") {
+        if (
+          submitText === "Compliant" ||
+          submitText === "HOC-Compliant" ||
+          submitText === "HOC-Portfolio-Compliant"
+        ) {
           setCompliantApproveModal(true);
           setValue("");
         } else if (submitText === "Portfolio-Compliant") {
@@ -328,7 +332,11 @@ export const UpdatedComplianceOfficerTransactionRequest = async ({
         } else if (submitText === "Portfolio-Non-Compliant") {
           setNonCompliantPortfolioDeclineModal(true);
           setValue("");
-        } else {
+        } else if (
+          submitText === "Non-Compliant" ||
+          submitText === "HOC-NOC-Compliant" ||
+          submitText === "HOC-Portfolio-Non-Compliant"
+        ) {
           setNonCompliantDeclineModal(true);
           setValue("");
         }
@@ -551,3 +559,95 @@ export const SearchHeadOfComplianceEscalatedPortfolioAPI = async ({
     showLoader(false);
   }
 };
+
+//Get All View Details By rECONCILE pORTFOLIO tRANSACTION Trade Approval ID
+export const GetAllComplianceOfficerReconcileTransactionAndPortfolioRequest =
+  async ({ callApi, showNotification, showLoader, requestdata, navigate }) => {
+    try {
+      console.log("handleViewDetailsHeadOfComplianceForReconcileTransaction");
+
+      const res = await callApi({
+        requestMethod: import.meta.env
+          .VITE_GET_ALL_VIEW_DETAILS_FOR_COMPLIANCE_OFFICER_ESCALATED_TRANSACTION_AND_PORTFOLIO_REQUEST_METHOD,
+        endpoint: import.meta.env.VITE_API_TRADE,
+        requestData: requestdata,
+      });
+      if (handleExpiredSession(res, navigate, showLoader)) return null;
+
+      if (!res?.result?.isExecuted) {
+        showNotification({
+          type: "error",
+          title: "Error",
+          description: "Something went wrong. Please try again.",
+        });
+        return null;
+      }
+      console.log("handleViewDetailsHeadOfComplianceForReconcileTransaction");
+
+      if (res.success) {
+        const {
+          responseMessage,
+          details,
+          assetTypes,
+          hierarchyDetails,
+          workFlowStatus,
+          tradedWorkFlowRequests,
+          ticketUploaded,
+          requesterName,
+          escalations,
+        } = res.result;
+
+        if (
+          responseMessage ===
+          "PAD_Trade_TradeServiceManager_GetAllViewDetailsEscalatedTransactionsAndPortFolioByTradeApprovalID_01"
+        ) {
+          console.log(
+            "handleViewDetailsHeadOfComplianceForReconcileTransaction"
+          );
+
+          return {
+            details: details || [],
+            assetTypes: assetTypes || [],
+            hierarchyDetails: hierarchyDetails || [],
+            workFlowStatus: workFlowStatus || {},
+            tradedWorkFlowRequests: tradedWorkFlowRequests || [],
+            ticketUploaded: ticketUploaded || false,
+            requesterName: requesterName || "",
+            escalations: escalations || [],
+          };
+        }
+
+        showNotification({
+          type: "warning",
+          title: getMessage(responseMessage),
+          description: "No details available for this Trade Approval ID.",
+        });
+        return {
+          details: [],
+          assetTypes: [],
+          hierarchyDetails: [],
+          workFlowStatus: {},
+          tradedWorkFlowRequests: [],
+          ticketUploaded: false,
+          requesterName: "",
+          escalations: [],
+        };
+      }
+
+      showNotification({
+        type: "error",
+        title: "Fetch Failed",
+        description: getMessage(res.message),
+      });
+      return null;
+    } catch (error) {
+      showNotification({
+        type: "error",
+        title: "Error",
+        description: "An unexpected error occurred.",
+      });
+      return null;
+    } finally {
+      showLoader(false);
+    }
+  };

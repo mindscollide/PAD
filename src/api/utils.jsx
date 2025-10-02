@@ -282,6 +282,10 @@ export const responseMessages = {
   PAD_Trade_TradeServiceManager_GetHTAViewDetailsByTradeApprovalID_03:
     "Exception",
 
+  // ==============================
+  // 📂Escalated Verification and Portfolio (Head Of Compliance (HOC))
+  // ==============================
+
   // SearchHeadOfComplianceEscalatedTransactions
   PAD_Trade_TradeServiceManager_SearchHeadOfComplianceEscalatedTransactions_01:
     "Data Available",
@@ -296,6 +300,14 @@ export const responseMessages = {
   PAD_Trade_TradeServiceManager_SearchHeadOfComplianceEscalatedPortfolio_02:
     "No data available",
   PAD_Trade_TradeServiceManager_SearchHeadOfComplianceEscalatedPortfolio_03:
+    "Exception",
+
+  // GetAllViewDetailsEscalatedTransactionsAndPortFolioByTradeApprovalID
+  PAD_Trade_TradeServiceManager_GetAllViewDetailsEscalatedTransactionsAndPortFolioByTradeApprovalID_01:
+    "Data Available",
+  PAD_Trade_TradeServiceManager_GetAllViewDetailsEscalatedTransactionsAndPortFolioByTradeApprovalID_02:
+    "No data available",
+  PAD_Trade_TradeServiceManager_GetAllViewDetailsEscalatedTransactionsAndPortFolioByTradeApprovalID_03:
     "Exception",
 };
 

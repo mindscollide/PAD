@@ -30,12 +30,19 @@ import { useTableScrollBottom } from "../../../employes/myApprovals/utill";
 import { toYYMMDD } from "../../../../../commen/funtions/rejex";
 
 // 🔹 Modal imports
-import ViewDetailPortfolioTransaction from "./modals/viewDetailReconcileTransaction.jsx/ViewDetailPortfolioTransaction";
-import { SearchHeadOfComplianceEscalatedPortfolioAPI } from "../../../../../api/reconsile";
+import {
+  GetAllComplianceOfficerReconcileTransactionAndPortfolioRequest,
+  SearchHeadOfComplianceEscalatedPortfolioAPI,
+} from "../../../../../api/reconsile";
 import {
   mapBuySellToIds,
   mapStatusToIds,
 } from "../../../../../components/dropdowns/filters/utils";
+import ViewDetailHeadOfComplianceReconcilePortfolio from "./modals/viewDetailHeadOfComplianceReconcilePortfolio/ViewDetailHeadOfComplianceReconcilePortfolio";
+import ViewReconcilePortfolioComment from "./modals/viewEscalatedPortfolioComment/ViewReconcilePortfolioComment";
+import NoteHeadOfCompliancePortfolioModal from "./modals/noteHeadOfCompliancePortfolioModal/NoteHeadOfCompliancePortfolioModal";
+import ApproveHeadOfCompliancePortfolioModal from "./modals/approveHeadOfCompliancePortfolioModal/ApproveHeadOfCompliancePortfolioModal";
+import DeclinedHeadOfCompliancePortfolioModal from "./modals/declinedHeadOfCompliancePortfolioModal/DeclinedHeadOfCompliancePortfolioModal";
 
 // 🔹 API imports (uncomment when ready)
 // import {
@@ -82,7 +89,14 @@ const ReconcilePortfolioHCO = () => {
   const { callApi } = useApi();
   const { showNotification } = useNotification();
   const { showLoader } = useGlobalLoader();
-  const { viewDetailPortfolioTransaction } = useGlobalModal();
+  const {
+    viewDetailHeadOfComplianceEscalatedPortfolio,
+    setViewDetailHeadOfComplianceEscalatedPortfolio,
+    viewCommentPortfolioModal,
+    compliantApproveModal,
+    nonCompliantDeclineModal,
+    noteGlobalModal,
+  } = useGlobalModal();
   const { addApprovalRequestData } = useDashboardContext();
 
   // Search & Filter Contexts
@@ -94,8 +108,10 @@ const ReconcilePortfolioHCO = () => {
 
   // Portfolio Data Contexts
   const {
-    reconcilePortfolioViewDetailData,
-    setReconcilePortfolioViewDetailData,
+    isEscalatedPortfolioHeadOfComplianceViewDetailData,
+    setIsEscalatedPortfolioHeadOfComplianceViewDetailData,
+    selectedEscalatedPortfolioHeadOfComplianceData,
+    setSelectedEscalatedPortfolioHeadOfComplianceData,
   } = usePortfolioContext();
 
   // Reconcile Data Contexts
@@ -121,26 +137,30 @@ const ReconcilePortfolioHCO = () => {
   // ===========================================================================
 
   /**
-   * Fetches detailed portfolio transaction view for the modal
+   * Fetches transaction view details for the reconcile modal
    *
-   * @param {string} workFlowID - The workflow ID of the portfolio transaction to view
+   * @param {string} workFlowID - The workflow ID of the transaction to view
    */
-  const handleViewDetailsForReconcileTransaction = async (workFlowID) => {
+  const handleViewDetailsHeadOfComplianceForPortfolioTransaction = async (
+    workFlowID
+  ) => {
+    console.log("handleViewDetailsHeadOfComplianceForReconcileTransaction");
     await showLoader(true);
     const requestdata = { TradeApprovalID: workFlowID };
 
-    // 🔹 Uncomment when API is ready
-    // const responseData = await GetAllReconcilePortfolioTransactionRequest({
-    //   callApi,
-    //   showNotification,
-    //   showLoader,
-    //   requestdata,
-    //   navigate,
-    // });
+    const responseData =
+      await GetAllComplianceOfficerReconcileTransactionAndPortfolioRequest({
+        callApi,
+        showNotification,
+        showLoader,
+        requestdata,
+        navigate,
+      });
 
-    // if (responseData) {
-    //   setReconcilePortfolioViewDetailData(responseData);
-    // }
+    if (responseData) {
+      setIsEscalatedPortfolioHeadOfComplianceViewDetailData(responseData);
+      setViewDetailHeadOfComplianceEscalatedPortfolio(true);
+    }
   };
   // ===========================================================================
   // 🎯 DERIVED VALUES & MEMOIZATIONS
@@ -154,7 +174,7 @@ const ReconcilePortfolioHCO = () => {
     sortedInfo,
     headOfComplianceApprovalPortfolioSearch,
     setHeadOfComplianceApprovalPortfolioSearch,
-    handleViewDetailsForReconcileTransaction,
+    onViewDetail: handleViewDetailsHeadOfComplianceForPortfolioTransaction,
   });
 
   // ===========================================================================
@@ -449,7 +469,21 @@ const ReconcilePortfolioHCO = () => {
       />
 
       {/* View Detail Modal */}
-      {viewDetailPortfolioTransaction && <ViewDetailPortfolioTransaction />}
+      {viewDetailHeadOfComplianceEscalatedPortfolio && (
+        <ViewDetailHeadOfComplianceReconcilePortfolio />
+      )}
+
+      {/* To Show Note Modal when Click on Note from the Escalated Portfolio */}
+      {noteGlobalModal && <NoteHeadOfCompliancePortfolioModal />}
+
+      {/* View Comment Modal Open When Click On Portfolio View Comment */}
+      {viewCommentPortfolioModal && <ViewReconcilePortfolioComment />}
+
+      {/* To SHow Approved Compliant Modal WHen APi is succes */}
+      {compliantApproveModal && <ApproveHeadOfCompliancePortfolioModal />}
+
+      {/* To SHow Approved Non-Compliant Modal WHen APi is succes */}
+      {nonCompliantDeclineModal && <DeclinedHeadOfCompliancePortfolioModal />}
     </>
   );
 };
