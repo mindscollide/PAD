@@ -640,8 +640,9 @@ const ViewDetailModal = () => {
                   </>
                 )}
 
-                {isSelectedViewDetailLineManager?.status === "Traded" ||
-                isSelectedViewDetailLineManager?.status === "Not Traded" ? (
+                {statusDataLM.label === "Traded" ||
+                statusDataLM.label === "Resubmitted" ||
+                statusDataLM.label === "Not Traded" ? (
                   <>
                     <Col span={[24]}>
                       <div className={styles.approvedButtonClassViewComment}>

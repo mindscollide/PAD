@@ -301,7 +301,9 @@ const ViewDetailModal = () => {
                           Approval ID
                         </label>
                         <label className={styles.viewDetailSubLabels}>
-                          REQ-001
+                          {dashBetweenApprovalAssets(
+                            viewDetailsModalData?.details?.[0]?.tradeApprovalID
+                          )}
                         </label>
                       </div>
                     </Col>
@@ -321,7 +323,12 @@ const ViewDetailModal = () => {
                           Tracking ID
                         </label>
                         <label className={styles.viewDetailSubLabels}>
-                          <u>REQ-002</u>
+                          <u>
+                            {dashBetweenApprovalAssets(
+                              viewDetailsModalData?.details?.[0]
+                                ?.resubmitRequestTrackingID
+                            )}
+                          </u>
                         </label>
                       </div>
                     </Col>
