@@ -328,7 +328,7 @@ const SearchWithPopoverOnly = () => {
     <Space.Compact className={styles.searchWrapper}>
       {/* 🔎 Main Search Input */}
       <Input
-        placeholder="Instrument name. Click to view more options"
+        placeholder="Instrument name. Click the icon to view more options"
         allowClear
         className={
           collapsed ? styles["inputWrapperCollapsed"] : styles["inputWrapper"]
