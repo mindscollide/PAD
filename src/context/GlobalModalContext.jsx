@@ -131,7 +131,7 @@ export const GlobalModalProvider = ({ children }) => {
    */
 
   /**
-   * Global States For Head Od Approval (HTA) Modals Start here
+   * Global States For Head Of Approval (HTA) Modals Start here
    */
 
   // To show Data inView Detail Modal
@@ -154,6 +154,32 @@ export const GlobalModalProvider = ({ children }) => {
    * Global States For Head Od Approval (HTA) Modals End here
    */
 
+  /**
+   * Global States For Head Of Compliance (HOC) Modals Start here
+   */
+
+  // To show View Detail Modal of HOC in Escalated Verification
+  const [
+    viewDetailHeadOfComplianceEscalated,
+    setViewDetailHeadOfComplianceEscalated,
+  ] = useState(false);
+
+  // To show View Detail Modal of HOC in Escalated Portfolio
+  const [
+    viewDetailHeadOfComplianceEscalatedPortfolio,
+    setViewDetailHeadOfComplianceEscalatedPortfolio,
+  ] = useState(false);
+
+  // To set Selected Data by click on View Detail Button of HOC in Escalated Verification
+  const [
+    isSelectedViewDetailOfHeadOfComplianceData,
+    setIsSelectedViewDetailOfHeadOfComplianceData,
+  ] = useState(null);
+
+  /**
+   * Global States For Head Of Compliance (HOC) Modals End here
+   */
+
   //  Main resetDashboardContext  reset State to call in dashboard
   // The reset function — inline resetting all states
   const resetModalContextState = () => {
@@ -163,6 +189,10 @@ export const GlobalModalProvider = ({ children }) => {
     setIsViewDetail(false);
     setSelectedViewDetail(null);
     setIsViewComments(false);
+    setViewDetailTransactionModal(false);
+    setViewCommentTransactionModal(false);
+    setSelectedViewDetailOfTransaction(null);
+    setIsViewTicketTransactionModal(false);
     setIsResubmitted(false);
     setResubmitIntimation(false);
     setIsConductedTransaction(false);
@@ -180,6 +210,30 @@ export const GlobalModalProvider = ({ children }) => {
     setViewDetailLineManagerModal(false);
     setNoteGlobalModal({ visible: false, action: null });
     setApprovedGlobalModal(false);
+  };
+
+  const resetStateForComplianceOfficer = () => {
+    setViewDetailPortfolioTransaction(false);
+    setCompliantApproveModal(false);
+    setNonCompliantDeclineModal(false);
+    setViewCommentReconcileModal(false);
+    setUploadattAchmentsFiles([]);
+    setViewCommentPortfolioModal(false);
+    setCompliantPortfolioApproveModal(false);
+    setNonCompliantPortfolioDeclineModal(false);
+  };
+
+  const resetStateForHeadOfApproval = () => {
+    setViewDetailsHeadOfApprovalModal(false);
+    setIsSelectedViewDetailHeadOfApproval(null);
+    setHeadApprovalNoteModal(false);
+    setHeadDeclineNoteModal(false);
+  };
+
+  const resetStateForHeadOfCompliance = () => {
+    setViewDetailHeadOfComplianceEscalated(false);
+    setIsSelectedViewDetailOfHeadOfComplianceData(null);
+    setViewDetailHeadOfComplianceEscalatedPortfolio(false);
   };
 
   return (
@@ -262,6 +316,8 @@ export const GlobalModalProvider = ({ children }) => {
         nonCompliantPortfolioDeclineModal,
         setNonCompliantPortfolioDeclineModal,
 
+        resetStateForComplianceOfficer,
+
         /**
          * Global States For Compliance Officer Modals End here
          */
@@ -284,8 +340,28 @@ export const GlobalModalProvider = ({ children }) => {
         headDeclineNoteModal,
         setHeadDeclineNoteModal,
 
+        resetStateForHeadOfApproval,
+
         /**
          * Global States For Head Of Approval Modals End here
+         */
+
+        /**
+         * Global States For Head Of Compliance Officer Modals Start here
+         */
+        viewDetailHeadOfComplianceEscalated,
+        setViewDetailHeadOfComplianceEscalated,
+
+        isSelectedViewDetailOfHeadOfComplianceData,
+        setIsSelectedViewDetailOfHeadOfComplianceData,
+
+        viewDetailHeadOfComplianceEscalatedPortfolio,
+        setViewDetailHeadOfComplianceEscalatedPortfolio,
+
+        resetStateForHeadOfCompliance,
+
+        /**
+         * Global States For Head Of Compliance Officer Modals End here
          */
 
         resetModalContextState,

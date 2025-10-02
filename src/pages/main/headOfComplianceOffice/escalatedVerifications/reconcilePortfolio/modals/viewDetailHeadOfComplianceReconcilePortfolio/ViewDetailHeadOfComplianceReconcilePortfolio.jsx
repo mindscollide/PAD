@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useRef } from "react";
 import { Col, Row, Tag } from "antd";
 import { useGlobalModal } from "../../../../../../../context/GlobalModalContext";
 import { BrokerList, GlobalModal } from "../../../../../../../components";
-import styles from "./ViewDetailPortfolioTransaction.module.css";
+import styles from "./ViewDetailHeadOfComplianceReconcilePortfolio.module.css";
 import { Stepper, Step } from "react-form-stepper";
 import CustomButton from "../../../../../../../components/buttons/button";
 import CheckIcon from "../../../../../../../assets/img/Check.png";
@@ -15,12 +15,22 @@ import {
   formatNumberWithCommas,
 } from "../../../../../../../commen/funtions/rejex";
 import { useReconcileContext } from "../../../../../../../context/reconsileContax";
+import { useGlobalLoader } from "../../../../../../../context/LoaderContext";
+import { useNotification } from "../../../../../../../components/NotificationProvider/NotificationProvider";
+import { useApi } from "../../../../../../../context/ApiContext";
+import { useNavigate } from "react-router-dom";
 import { usePortfolioContext } from "../../../../../../../context/portfolioContax";
 
-const ViewDetailPortfolioTransaction = () => {
+const ViewDetailHeadOfComplianceReconcilePortfolio = () => {
+  const navigate = useNavigate();
+
   // This is Global State for modal which is create in ContextApi
-  const { viewDetailPortfolioTransaction, setViewDetailPortfolioTransaction } =
-    useGlobalModal();
+  const {
+    viewDetailHeadOfComplianceEscalatedPortfolio,
+    setViewDetailHeadOfComplianceEscalatedPortfolio,
+    setNoteGlobalModal,
+    setViewCommentPortfolioModal,
+  } = useGlobalModal();
 
   // get data from sessionStorage
   const userProfileData = JSON.parse(
@@ -28,24 +38,18 @@ const ViewDetailPortfolioTransaction = () => {
   );
   const loggedInUserID = userProfileData?.userID;
 
-  //This is the Global state of Context Api
-  const { complianceOfficerReconcilePortfolioData } = useReconcileContext();
+  const { isEscalatedPortfolioHeadOfComplianceViewDetailData } =
+    usePortfolioContext();
 
-  const {
-    reconcilePortfolioViewDetailData,
-    setReconcilePortfolioViewDetailData,
-  } = usePortfolioContext();
+  //This is the Global state of Context Api
+  const { headOfComplianceApprovalEscalatedVerificationsData } =
+    useReconcileContext();
 
   const { allInstrumentsData } = useDashboardContext();
 
   console.log(
-    reconcilePortfolioViewDetailData,
-    "reconcilePortfolioViewDetailData"
-  );
-
-  console.log(
-    complianceOfficerReconcilePortfolioData,
-    "complianceOfficerReconcilePortfolioData"
+    headOfComplianceApprovalEscalatedVerificationsData,
+    "headOfComplianceApprovalEscalatedVerificationsData"
   );
 
   // This is the Status Which is I'm getting from the selectedViewDetail contextApi state
@@ -88,6 +92,18 @@ const ViewDetailPortfolioTransaction = () => {
           labelClassName: styles.notTradedDetailHeading,
           divClassName: styles.notTradedBorderClass,
         };
+      case "8":
+        return {
+          label: "Compliant",
+          labelClassName: styles.approvedDetailHeading,
+          divClassName: styles.approvedBorderClass,
+        };
+      case "9":
+        return {
+          label: "Non Compliant",
+          labelClassName: styles.declinedDetailHeading,
+          divClassName: styles.declinedBorderClass,
+        };
 
       default:
         return {
@@ -100,12 +116,16 @@ const ViewDetailPortfolioTransaction = () => {
 
   //This is how I can pass the status in statusData Variables
   const statusData = getStatusStyle(
-    String(reconcilePortfolioViewDetailData?.workFlowStatus?.workFlowStatusID)
+    String(
+      isEscalatedPortfolioHeadOfComplianceViewDetailData?.workFlowStatus
+        ?.workFlowStatusID
+    )
   );
 
   // Extarct and Instrument from viewDetailsModalData context Api
   const instrumentId = Number(
-    reconcilePortfolioViewDetailData?.details?.[0]?.instrumentID
+    isEscalatedPortfolioHeadOfComplianceViewDetailData?.details?.[0]
+      ?.instrumentID
   );
 
   // Match that selected instrument Id in viewDetailsModalData and match them with allinstrumentsData context State
@@ -113,21 +133,34 @@ const ViewDetailPortfolioTransaction = () => {
     (item) => item.instrumentID === instrumentId
   );
 
-  //This the Copy Functionality where user can copy email by click on COpyIcon
-  const handleCopyEmail = () => {
-    const emailToCopy =
-      complianceOfficerDetails?.managerEmail || "compliance@horizoncapital.com";
-    navigator.clipboard.writeText(emailToCopy);
-    message.success("Email copied to clipboard!");
+  //if status is Pending and ticketUpload is false then compliant and Non Compliant is disable
+  const disableCompliantOrNonCompliantBtn =
+    statusData.label === "Pending" &&
+    isEscalatedPortfolioHeadOfComplianceViewDetailData?.ticketUploaded ===
+      false;
+
+  // need to extract and escalatedFrom ID from escalation
+
+  const onClickFromCompliantNoteModalFromHeadOfCompliance = () => {
+    setNoteGlobalModal({ visible: true, action: "HOC-Portfolio-Compliant" });
+    setViewDetailHeadOfComplianceEscalatedPortfolio(false);
+  };
+
+  const onClickFromNonCompliantNoteModalFromHeadOfCompliance = () => {
+    setNoteGlobalModal({
+      visible: true,
+      action: "HOC-Portfolio-Non-Compliant",
+    });
+    setViewDetailHeadOfComplianceEscalatedPortfolio(false);
   };
 
   return (
     <>
       <GlobalModal
-        visible={viewDetailPortfolioTransaction}
+        visible={viewDetailHeadOfComplianceEscalatedPortfolio}
         width={"942px"}
         centered={true}
-        onCancel={() => setViewDetailPortfolioTransaction(false)}
+        onCancel={() => setViewDetailHeadOfComplianceEscalatedPortfolio(false)}
         modalHeader={<></>}
         modalBody={
           <>
@@ -135,10 +168,9 @@ const ViewDetailPortfolioTransaction = () => {
               {/* Show Heading by Status in View Detail Modal */}
               <Row>
                 <Col span={24}>
-                  <div className={styles.pendingBorderClass}>
-                    <label className={styles.pendingDetailHeading}>
-                      {/* {statusData.label} */}
-                      Pending
+                  <div className={statusData.divClassName}>
+                    <label className={statusData.labelClassName}>
+                      {statusData.label}
                     </label>
                   </div>
                 </Col>
@@ -149,9 +181,10 @@ const ViewDetailPortfolioTransaction = () => {
                 <Row
                   gutter={[4, 4]}
                   style={{
-                    marginTop: "10px",
+                    marginTop: "15px",
                   }}
                 >
+                  {/* status 2 is Resubmitted */}
                   <Col span={12}>
                     <div className={styles.backgrounColorOfDetail}>
                       <label className={styles.viewDetailMainLabels}>
@@ -159,23 +192,25 @@ const ViewDetailPortfolioTransaction = () => {
                       </label>
                       <label className={styles.viewDetailSubLabels}>
                         <span className={styles.customTag}>
-                          {reconcilePortfolioViewDetailData?.details?.[0]
-                            ?.assetTypeID === "1" && <span>EQ</span>}
+                          {isEscalatedPortfolioHeadOfComplianceViewDetailData
+                            ?.details?.[0]?.assetTypeID === "1" && (
+                            <span>EQ</span>
+                          )}
                         </span>{" "}
                         {selectedInstrument?.instrumentCode}
                       </label>
                     </div>
                   </Col>
-
-                  {/* status 2 is Resubmitted */}
-
                   <Col span={12}>
                     <div className={styles.backgrounColorOfDetail}>
                       <label className={styles.viewDetailMainLabels}>
                         Portfolio ID
                       </label>
                       <label className={styles.viewDetailSubLabels}>
-                        P-0231
+                        {dashBetweenApprovalAssets(
+                          isEscalatedPortfolioHeadOfComplianceViewDetailData
+                            ?.details?.[0]?.tradeApprovalID
+                        )}
                       </label>
                     </div>
                   </Col>
@@ -189,7 +224,9 @@ const ViewDetailPortfolioTransaction = () => {
                         Requester Name
                       </label>
                       <label className={styles.viewDetailSubLabels}>
-                        {reconcilePortfolioViewDetailData?.requesterName}
+                        {
+                          isEscalatedPortfolioHeadOfComplianceViewDetailData?.requesterName
+                        }
                       </label>
                     </div>
                   </Col>
@@ -207,10 +244,14 @@ const ViewDetailPortfolioTransaction = () => {
                       <label className={styles.viewDetailSubLabels}>
                         {/* {selectedViewDetail?.type} */}
 
-                        {reconcilePortfolioViewDetailData?.details?.[0]
-                          ?.approvalTypeID === "1" && <span>Buy</span>}
-                        {reconcilePortfolioViewDetailData?.details?.[0]
-                          ?.approvalTypeID === "2" && <span>Sell</span>}
+                        {isEscalatedPortfolioHeadOfComplianceViewDetailData
+                          ?.details?.[0]?.approvalTypeID === "1" && (
+                          <span>Buy</span>
+                        )}
+                        {isEscalatedPortfolioHeadOfComplianceViewDetailData
+                          ?.details?.[0]?.approvalTypeID === "2" && (
+                          <span>Sell</span>
+                        )}
                       </label>
                     </div>
                   </Col>
@@ -224,13 +265,12 @@ const ViewDetailPortfolioTransaction = () => {
                       </label>
                       <label className={styles.viewDetailSubLabels}>
                         {formatNumberWithCommas(
-                          reconcilePortfolioViewDetailData?.details?.[0]
-                            ?.quantity
+                          isEscalatedPortfolioHeadOfComplianceViewDetailData
+                            ?.details?.[0]?.quantity
                         )}
                       </label>
                     </div>
                   </Col>
-
                   <Col span={12}>
                     <div
                       className={
@@ -243,17 +283,22 @@ const ViewDetailPortfolioTransaction = () => {
                         Asset Class
                       </label>
                       <label className={styles.viewDetailSubLabels}>
-                        {reconcilePortfolioViewDetailData?.details?.[0]
-                          ?.assetTypeID === "1" && <span>Equity</span>}
+                        {isEscalatedPortfolioHeadOfComplianceViewDetailData
+                          ?.details?.[0]?.assetTypeID === "1" && (
+                          <span>Equity</span>
+                        )}
                       </label>
                     </div>
                   </Col>
                 </Row>
-                <Row>
+
+                <Row style={{ marginTop: "3px" }}>
                   <Col span={24}>
                     <BrokerList
                       statusData={statusData}
-                      viewDetailsData={reconcilePortfolioViewDetailData}
+                      viewDetailsData={
+                        isEscalatedPortfolioHeadOfComplianceViewDetailData
+                      }
                       variant={"Blue"}
                     />
                   </Col>
@@ -263,8 +308,8 @@ const ViewDetailPortfolioTransaction = () => {
                   <div className={styles.mainStepperContainer}>
                     <div
                       className={`${styles.backgrounColorOfStepper} ${
-                        (reconcilePortfolioViewDetailData?.hierarchyDetails
-                          ?.length || 0) <= 3
+                        (isEscalatedPortfolioHeadOfComplianceViewDetailData
+                          ?.hierarchyDetails?.length || 0) <= 3
                           ? styles.centerAlignStepper
                           : styles.leftAlignStepper
                       }`}
@@ -274,14 +319,14 @@ const ViewDetailPortfolioTransaction = () => {
                         activeStep={Math.max(
                           0,
                           Array.isArray(
-                            reconcilePortfolioViewDetailData?.hierarchyDetails
+                            isEscalatedPortfolioHeadOfComplianceViewDetailData?.hierarchyDetails
                           )
-                            ? (reconcilePortfolioViewDetailData
+                            ? (isEscalatedPortfolioHeadOfComplianceViewDetailData
                                 ?.hierarchyDetails.length > 1
-                                ? reconcilePortfolioViewDetailData?.hierarchyDetails.filter(
+                                ? isEscalatedPortfolioHeadOfComplianceViewDetailData?.hierarchyDetails.filter(
                                     (person) => person.userID !== loggedInUserID
                                   )
-                                : reconcilePortfolioViewDetailData?.hierarchyDetails
+                                : isEscalatedPortfolioHeadOfComplianceViewDetailData?.hierarchyDetails
                               ).length - 1 // 🔥 fix here
                             : 0
                         )}
@@ -299,14 +344,14 @@ const ViewDetailPortfolioTransaction = () => {
                         }}
                       >
                         {Array.isArray(
-                          reconcilePortfolioViewDetailData?.hierarchyDetails
+                          isEscalatedPortfolioHeadOfComplianceViewDetailData?.hierarchyDetails
                         ) &&
-                          (reconcilePortfolioViewDetailData?.hierarchyDetails
-                            .length > 1
-                            ? reconcilePortfolioViewDetailData?.hierarchyDetails.filter(
+                          (isEscalatedPortfolioHeadOfComplianceViewDetailData
+                            ?.hierarchyDetails.length > 1
+                            ? isEscalatedPortfolioHeadOfComplianceViewDetailData?.hierarchyDetails.filter(
                                 (person) => person.userID !== loggedInUserID
                               )
-                            : reconcilePortfolioViewDetailData?.hierarchyDetails
+                            : isEscalatedPortfolioHeadOfComplianceViewDetailData?.hierarchyDetails
                           ) // 🔥 fix here
                             .map((person, index) => {
                               const {
@@ -314,37 +359,54 @@ const ViewDetailPortfolioTransaction = () => {
                                 bundleStatusID,
                                 modifiedDate,
                                 modifiedTime,
+                                userID,
                               } = person;
 
                               const formattedDateTime = formatApiDateTime(
                                 `${modifiedDate} ${modifiedTime}`
                               );
 
+                              // Decide icon and text based on status
                               let iconSrc;
-                              console.log(
-                                bundleStatusID,
-                                "CheckerrrrrbundleStatusID"
-                              );
+                              let displayText;
+
                               switch (bundleStatusID) {
-                                case 1:
-                                  iconSrc = EllipsesIcon;
-                                  break;
-                                case 2:
+                                case 2: // ✅ Compliant
                                   iconSrc = CheckIcon;
+                                  displayText = "You marked this as compliant";
                                   break;
+                                case 3: // ❌ Non-Compliant
+                                  iconSrc = CrossIcon;
+                                  displayText =
+                                    "You marked this as non-compliant";
+                                  break;
+                                case 1: // ⏳ Pending
                                 default:
                                   iconSrc = EllipsesIcon;
+                                  displayText = fullName;
                               }
 
                               return (
                                 <Step
                                   key={index}
                                   label={
-                                    <div className={styles.customlabel}>
+                                    <div
+                                      className={`${styles.customlabel} ${
+                                        bundleStatusID === 2 || 3
+                                          ? styles.centerAlignLabel
+                                          : ""
+                                      }`}
+                                    >
                                       <div className={styles.customtitle}>
-                                        {fullName}
+                                        {displayText}
                                       </div>
-                                      <div className={styles.customdesc}>
+                                      <div
+                                        className={`${styles.customdesc} ${
+                                          bundleStatusID === 2 || 3
+                                            ? styles.centerAlignText
+                                            : ""
+                                        }`}
+                                      >
                                         {bundleStatusID !== 1 &&
                                           formattedDateTime}
                                       </div>
@@ -373,16 +435,72 @@ const ViewDetailPortfolioTransaction = () => {
               <Row className={styles.mainButtonDivClose}>
                 <Col span={[24]}>
                   <>
-                    <div className={styles.approvedButtonClass}>
-                      <CustomButton
-                        text={"Non Compliant"}
-                        className="Decline-dark-button"
-                      />
-                      <CustomButton
-                        text={"Compliant"}
-                        className="Approved-dark-button"
-                      />
-                    </div>
+                    {statusData?.label === "Pending" ? (
+                      <>
+                        <div className={styles.approvedButtonClass}>
+                          <CustomButton
+                            text="Non Compliant"
+                            className="Decline-dark-button"
+                            disabled={disableCompliantOrNonCompliantBtn}
+                            onClick={
+                              onClickFromNonCompliantNoteModalFromHeadOfCompliance
+                            }
+                          />
+                          <CustomButton
+                            text="Compliant"
+                            className="Approved-dark-button"
+                            disabled={disableCompliantOrNonCompliantBtn}
+                            onClick={
+                              onClickFromCompliantNoteModalFromHeadOfCompliance
+                            }
+                          />
+                        </div>
+                      </>
+                    ) : statusData?.label === "Non Compliant" ? (
+                      <div className={styles.noncompliantButtonClass}>
+                        <CustomButton
+                          text="View Comment"
+                          className="big-light-button"
+                          onClick={() => {
+                            setViewCommentPortfolioModal(true);
+                            setViewDetailHeadOfComplianceEscalatedPortfolio(
+                              false
+                            );
+                          }}
+                        />{" "}
+                        <CustomButton
+                          text="Close"
+                          onClick={() => {
+                            setViewDetailHeadOfComplianceEscalatedPortfolio(
+                              false
+                            );
+                          }}
+                          className="big-light-button"
+                        />
+                      </div>
+                    ) : statusData?.label === "Compliant" ? (
+                      <div className={styles.noncompliantButtonClass}>
+                        <CustomButton
+                          text="View Comment"
+                          className="big-light-button"
+                          onClick={() => {
+                            setViewCommentPortfolioModal(true);
+                            setViewDetailHeadOfComplianceEscalatedPortfolio(
+                              false
+                            );
+                          }}
+                        />{" "}
+                        <CustomButton
+                          text="Close"
+                          onClick={() => {
+                            setViewDetailHeadOfComplianceEscalatedPortfolio(
+                              false
+                            );
+                          }}
+                          className="big-light-button"
+                        />
+                      </div>
+                    ) : null}
                   </>
                 </Col>
               </Row>
@@ -394,4 +512,4 @@ const ViewDetailPortfolioTransaction = () => {
   );
 };
 
-export default ViewDetailPortfolioTransaction;
+export default ViewDetailHeadOfComplianceReconcilePortfolio;

@@ -28,7 +28,10 @@ import { useTableScrollBottom } from "../../../employes/myApprovals/utill";
 // 🔹 API imports
 import { SearchEmployeePendingUploadedPortFolio } from "../../../../../api/protFolioApi";
 import { GetAllTransactionViewDetails } from "../../../../../api/myTransactionsApi";
-import { SearchHeadOfComplianceEscalatedTransactionsAPI } from "../../../../../api/reconsile";
+import {
+  GetAllComplianceOfficerReconcileTransactionAndPortfolioRequest,
+  SearchHeadOfComplianceEscalatedTransactionsAPI,
+} from "../../../../../api/reconsile";
 
 // 🔹 Helper imports
 import {
@@ -36,10 +39,14 @@ import {
   mapStatusToIds,
 } from "../../../../../components/dropdowns/filters/utils";
 import { toYYMMDD } from "../../../../../commen/funtions/rejex";
+import ViewDetailHeadOfComplianceReconcileTransaction from "./modals/viewDetailHeadOfComplianceReconcileTransactions/ViewDetailHeadOfComplianceReconcileTransaction";
+import UploadHeadOfComplianceTicketModal from "./modals/uploadHeadOfComplianceTicketModal/UploadHeadOfComplianceTicketModal";
+import NoteHeadOfComplianceModal from "./modals/noteHeadOfComplianceModal/NoteHeadOfComplianceModal";
+import ApproveHeadOfComplianceModal from "./modals/approveHeadOfComplianceModal/ApproveHeadOfComplianceModal";
+import DeclinedHeadOfComplianceModal from "./modals/declinedHeadOfComplianceModal/DeclinedHeadOfComplianceModal";
+import ViewTicketEscalatedModal from "./modals/viewTicketEscalatedModal/ViewTicketEscalatedModal";
 
 // 🔹 Modal imports
-import ViewDetailReconcileTransaction from "./modals/viewDetailReconcileTransaction.jsx/ViewDetailReconcileTransaction";
-
 // =============================================================================
 // 🎯 CONSTANTS & CONFIGURATION
 // =============================================================================
@@ -80,7 +87,15 @@ const EscalatedTransactionVerifications = () => {
   const { callApi } = useApi();
   const { showNotification } = useNotification();
   const { showLoader } = useGlobalLoader();
-  const { viewDetailReconcileTransaction } = useGlobalModal();
+  const {
+    viewDetailHeadOfComplianceEscalated,
+    setViewDetailHeadOfComplianceEscalated,
+    uploadComplianceModal,
+    noteGlobalModal,
+    compliantApproveModal,
+    nonCompliantDeclineModal,
+    isViewTicketTransactionModal,
+  } = useGlobalModal();
   const { addApprovalRequestData } = useDashboardContext();
 
   // Search & Filter Contexts
@@ -96,8 +111,13 @@ const EscalatedTransactionVerifications = () => {
     headOfComplianceApprovalEscalatedVerificationsData,
     setHeadOfComplianceApprovalEscalatedVerificationsMqtt,
     headOfComplianceApprovalEscalatedVerificationsMqtt,
-    setReconcileTransactionViewDetailData,
+    setIsEscalatedHeadOfComplianceViewDetailData,
   } = useReconcileContext();
+
+  console.log(
+    headOfComplianceApprovalEscalatedVerificationsData,
+    "headOfComplianceApprovalEscalatedVerificationsData"
+  );
 
   // ===========================================================================
   // 🎯 STATE MANAGEMENT
@@ -118,20 +138,25 @@ const EscalatedTransactionVerifications = () => {
    *
    * @param {string} workFlowID - The workflow ID of the transaction to view
    */
-  const handleViewDetailsForReconcileTransaction = async (workFlowID) => {
+  const handleViewDetailsHeadOfComplianceForReconcileTransaction = async (
+    workFlowID
+  ) => {
+    console.log("handleViewDetailsHeadOfComplianceForReconcileTransaction");
     await showLoader(true);
     const requestdata = { TradeApprovalID: workFlowID };
 
-    const responseData = await GetAllTransactionViewDetails({
-      callApi,
-      showNotification,
-      showLoader,
-      requestdata,
-      navigate,
-    });
+    const responseData =
+      await GetAllComplianceOfficerReconcileTransactionAndPortfolioRequest({
+        callApi,
+        showNotification,
+        showLoader,
+        requestdata,
+        navigate,
+      });
 
     if (responseData) {
-      setReconcileTransactionViewDetailData(responseData);
+      setIsEscalatedHeadOfComplianceViewDetailData(responseData);
+      setViewDetailHeadOfComplianceEscalated(true);
     }
   };
   // ===========================================================================
@@ -146,7 +171,7 @@ const EscalatedTransactionVerifications = () => {
     sortedInfo,
     headOfComplianceApprovalEscalatedVerificationsSearch,
     setHeadOfComplianceApprovalEscalatedVerificationsSearch,
-    handleViewDetailsForReconcileTransaction,
+    onViewDetail: handleViewDetailsHeadOfComplianceForReconcileTransaction,
   });
 
   // ===========================================================================
@@ -182,14 +207,13 @@ const EscalatedTransactionVerifications = () => {
       RequestDateTo: RequestDateTo,
       EscalatedDateFrom: EscalatedDateFrom,
       EscalatedDateTo: EscalatedDateTo,
-      StatusIds: mapStatusToIds(searchState.status)||[],
+      StatusIds: mapStatusToIds(searchState.status) || [],
       TypeIds:
         mapBuySellToIds(searchState.type, addApprovalRequestData?.Equities) ||
         [],
 
       PageNumber: Number(searchState.pageNumber) || 0,
-      Length:
-        Number(searchState.pageSize) || 10,
+      Length: Number(searchState.pageSize) || 10,
     };
   };
 
@@ -455,9 +479,24 @@ const EscalatedTransactionVerifications = () => {
         onChange={(_, __, sorter) => setSortedInfo(sorter || {})}
         loading={loadingMore}
       />
-
       {/* View Detail Modal */}
-      {viewDetailReconcileTransaction && <ViewDetailReconcileTransaction />}
+      {viewDetailHeadOfComplianceEscalated && (
+        <ViewDetailHeadOfComplianceReconcileTransaction />
+      )}
+
+      {/* To SHow Upload Modal While click on Add Tocket Button */}
+      {uploadComplianceModal && <UploadHeadOfComplianceTicketModal />}
+
+      {/* To show Note Modal When Click on Compliant btn to open Note Modal */}
+      {noteGlobalModal && <NoteHeadOfComplianceModal />}
+
+      {/* To SHow Compliant Modal When note Modal APi is success */}
+      {compliantApproveModal && <ApproveHeadOfComplianceModal />}
+
+      {/* To Show Non Compliant Modal WHen Note Modal Api is Success */}
+      {nonCompliantDeclineModal && <DeclinedHeadOfComplianceModal />}
+
+      {isViewTicketTransactionModal && <ViewTicketEscalatedModal />}
     </>
   );
 };
