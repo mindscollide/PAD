@@ -38,7 +38,7 @@ import {
 } from "../../../../components/dropdowns/filters/utils";
 import { apiCallSearch } from "../../../../components/dropdowns/searchableDropedown/utill";
 import { toYYMMDD } from "../../../../commen/funtions/rejex";
-import { useTableScrollBottom } from "../myApprovals/utill";
+import { useTableScrollBottom } from "../myApprovals/utils";
 
 // 🔹 Styles
 import style from "./myTransaction.module.css";

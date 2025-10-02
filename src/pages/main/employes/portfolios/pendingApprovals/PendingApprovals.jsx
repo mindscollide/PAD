@@ -24,7 +24,7 @@ import { useDashboardContext } from "../../../../../context/dashboardContaxt";
 
 // Hooks
 import { useNotification } from "../../../../../components/NotificationProvider/NotificationProvider";
-import { useTableScrollBottom } from "../../myApprovals/utill";
+import { useTableScrollBottom } from "../../myApprovals/utils";
 
 // API
 import { SearchEmployeePendingUploadedPortFolio } from "../../../../../api/protFolioApi";

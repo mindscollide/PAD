@@ -1,6 +1,6 @@
 import React from "react";
 import { DatePicker } from "antd";
-import moment from "moment";
+import dayjs from "dayjs";
 import classNames from "classnames";
 import styles from "./dateRange.module.css";
 
@@ -23,21 +23,19 @@ const DateRangePicker = ({
 }) => {
   const sizeClass = styles[size] || "";
 
-  // Convert ["YYYY-MM-DD", "YYYY-MM-DD"] to [moment, moment]
-  const parseToMomentRange = (val) => {
+  // Convert ["YYYY-MM-DD", "YYYY-MM-DD"] to [dayjs, dayjs]
+  const parseToDayjsRange = (val) => {
     if (!Array.isArray(val) || val.length !== 2) return null;
     const [start, end] = val;
-    return [moment(start, "YYYY-MM-DD"), moment(end, "YYYY-MM-DD")];
+    return [start ? dayjs(start, "YYYY-MM-DD") : null, end ? dayjs(end, "YYYY-MM-DD") : null];
   };
 
-  // Convert [moment, moment] to ["YYYY-MM-DD", "YYYY-MM-DD"]
-  const formatToYYYYMMDD = (momentObj) => momentObj.format("YYYY-MM-DD");
-
+  // Convert [dayjs, dayjs] to ["YYYY-MM-DD", "YYYY-MM-DD"]
   const handleChange = (dates) => {
     if (!dates) {
       onClear?.();
     } else {
-      const formatted = dates.map(formatToYYYYMMDD);
+      const formatted = dates.map((d) => (d ? d.format("YYYY-MM-DD") : null));
       onChange?.(formatted);
     }
   };
@@ -53,7 +51,7 @@ const DateRangePicker = ({
 
       <RangePicker
         name={name}
-        value={parseToMomentRange(value)}
+        value={parseToDayjsRange(value)}
         onChange={handleChange}
         onBlur={onBlur}
         placeholder={
