@@ -54,16 +54,6 @@ const ViewDetailModal = () => {
 
   const { allInstrumentsData, employeeBasedBrokersData } =
     useDashboardContext();
-  console.log(isViewDetail, "isViewDetail");
-
-  console.log(viewDetailsModalData, "viewDetailsModalData555");
-
-  console.log(setViewDetailsModalData, "setViewDetailsModalData");
-
-  console.log(employeeBasedBrokersData, "employeeBasedBrokersDataData555");
-
-  console.log("hierarchyDetails:", viewDetailsModalData?.hierarchyDetails);
-  console.log("Type:", typeof viewDetailsModalData?.hierarchyDetails);
 
   // Refactor sessionStorage read with useMemo for performance & error handling
   const complianceOfficerDetails = useMemo(() => {
@@ -143,8 +133,6 @@ const ViewDetailModal = () => {
     String(viewDetailsModalData?.workFlowStatus?.workFlowStatusID)
   );
 
-  console.log(statusData, "statusDatastatusData121");
-
   // Extarct and Instrument from viewDetailsModalData context Api
   const instrumentId = Number(viewDetailsModalData?.details?.[0]?.instrumentID);
 
@@ -152,8 +140,6 @@ const ViewDetailModal = () => {
   const selectedInstrument = allInstrumentsData?.find(
     (item) => item.instrumentID === instrumentId
   );
-
-  console.log(selectedInstrument, "selectedInstrument");
 
   // Extract an brokerName from viewDetailsModalData context Api
   const details = viewDetailsModalData?.details?.[0];
@@ -163,8 +149,6 @@ const ViewDetailModal = () => {
   const matchedBrokers = employeeBasedBrokersData.filter(
     (broker) => selectedBrokers.includes(String(broker.brokerID)) // convert brokerID to string
   );
-
-  console.log(matchedBrokers, "CheckceeeerrStatusbroker");
 
   // To Show View Comments Modal and Closed Declined Modal
   const onClickViewModal = () => {
@@ -453,7 +437,7 @@ const ViewDetailModal = () => {
                     </label>
                     <label className={styles.viewDetailSubLabels}>
                       {viewDetailsModalData?.details?.[0]?.assetTypeID ===
-                        "1" && <span>Equity</span>}
+                        "1" && <span>Equities</span>}
                     </label>
                   </div>
                 </Col>

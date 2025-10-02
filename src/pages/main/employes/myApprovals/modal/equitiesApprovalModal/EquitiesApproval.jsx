@@ -173,7 +173,7 @@ const EquitiesApproval = () => {
         brokerOptions={brokerOptions}
         typeOptions={typeOptions}
         mainHeading="Add Approval Request:"
-        heading="Equities"
+        heading=" Equities"
         ManagerHeading="Line Manager"
         showLineManager={lineManagerDetails}
         submitButtonText="Submit"
