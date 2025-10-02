@@ -188,7 +188,11 @@ const ViewDetailModal = () => {
               >
                 <Col span={24}>
                   <div
-                    className={styles.backgroundColorOfInstrumentDetailApproved}
+                    className={
+                      statusDataLM.label === "Traded"
+                        ? styles.backgroundColorOfInstrumentDetailTradednoradius
+                        : styles.backgroundColorOfInstrumentDetailApproved
+                    }
                   >
                     <label className={styles.viewDetailMainLabels}>
                       Instrument
@@ -221,7 +225,13 @@ const ViewDetailModal = () => {
                 }}
               >
                 <Col span={12}>
-                  <div className={styles.backgrounColorOfDetail}>
+                  <div
+                    className={
+                      statusDataLM.label === "Traded"
+                        ? styles.backgroundColorOfInstrumentDetailTradednoradius
+                        : styles.backgrounColorOfDetail
+                    }
+                  >
                     <label className={styles.viewDetailMainLabels}>
                       Requester Name
                     </label>
@@ -262,7 +272,13 @@ const ViewDetailModal = () => {
                   </>
                 ) : (
                   <Col span={12}>
-                    <div className={styles.backgrounColorOfDetail}>
+                    <div
+                      className={
+                        statusDataLM.label === "Traded"
+                          ? styles.backgroundColorOfInstrumentDetailTradednoradius
+                          : styles.backgrounColorOfDetail
+                      }
+                    >
                       <label className={styles.viewDetailMainLabels}>
                         Approval ID
                       </label>
@@ -280,7 +296,13 @@ const ViewDetailModal = () => {
               {/* Show Other Scenario's SUb Heading and Field Sceanrio's */}
               <Row gutter={[4, 4]} style={{ marginTop: "3px" }}>
                 <Col span={12}>
-                  <div className={styles.backgrounColorOfDetail}>
+                  <div
+                    className={
+                      statusDataLM.label === "Traded"
+                        ? styles.backgroundColorOfInstrumentDetailTradednoradius
+                        : styles.backgrounColorOfDetail
+                    }
+                  >
                     <label className={styles.viewDetailMainLabels}>Type</label>
                     <label className={styles.viewDetailSubLabels}>
                       {viewDetailsLineManagerData?.details?.[0]
@@ -291,7 +313,13 @@ const ViewDetailModal = () => {
                   </div>
                 </Col>
                 <Col span={12}>
-                  <div className={styles.backgrounColorOfDetail}>
+                  <div
+                    className={
+                      statusDataLM.label === "Traded"
+                        ? styles.backgroundColorOfInstrumentDetailTradednoradius
+                        : styles.backgrounColorOfDetail
+                    }
+                  >
                     <label className={styles.viewDetailMainLabels}>
                       Quantity
                     </label>
@@ -306,7 +334,13 @@ const ViewDetailModal = () => {
 
               <Row gutter={[4, 4]} style={{ marginTop: "3px" }}>
                 <Col span={12}>
-                  <div className={styles.backgrounColorOfDetail}>
+                  <div
+                    className={
+                      statusDataLM.label === "Traded"
+                        ? styles.backgroundColorOfInstrumentDetailTradednoradius
+                        : styles.backgrounColorOfDetail
+                    }
+                  >
                     <label className={styles.viewDetailMainLabels}>
                       Request Date
                     </label>
@@ -318,7 +352,13 @@ const ViewDetailModal = () => {
                   </div>
                 </Col>
                 <Col span={12}>
-                  <div className={styles.backgrounColorOfDetail}>
+                  <div
+                    className={
+                      statusDataLM.label === "Traded"
+                        ? styles.backgroundColorOfInstrumentDetailTradednoradius
+                        : styles.backgrounColorOfDetail
+                    }
+                  >
                     <label className={styles.viewDetailMainLabels}>
                       Asset Class
                     </label>
@@ -343,7 +383,11 @@ const ViewDetailModal = () => {
               <Row>
                 <div className={styles.mainStepperContainer}>
                   <div
-                    className={`${styles.backgrounColorOfStepper} ${
+                    className={`${
+                      statusDataLM?.label === "Traded"
+                        ? styles.TradedbackgrounColorOfStepper
+                        : styles.backgrounColorOfStepper
+                    } ${
                       (viewDetailsLineManagerData?.hierarchyDetails?.length ||
                         0) <= 3
                         ? styles.centerAlignStepper
@@ -595,6 +639,21 @@ const ViewDetailModal = () => {
                     )}
                   </>
                 )}
+
+                {isSelectedViewDetailLineManager?.status === "Traded" ||
+                isSelectedViewDetailLineManager?.status === "Not Traded" ? (
+                  <>
+                    <Col span={[24]}>
+                      <div className={styles.approvedButtonClassViewComment}>
+                        <CustomButton
+                          text={"Close"}
+                          onClick={() => setViewDetailLineManagerModal(false)}
+                          className="big-light-button"
+                        />
+                      </div>
+                    </Col>
+                  </>
+                ) : null}
               </Row>
             </div>
           </>
