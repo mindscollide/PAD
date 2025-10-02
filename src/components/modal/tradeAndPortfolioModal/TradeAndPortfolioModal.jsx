@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from "react";
-import { Row, Col, Select, Checkbox } from "antd";
+import { Row, Col, Select, Checkbox, Tooltip } from "antd";
 import { GlobalModal, InstrumentSelect, TextField } from "../../../components";
 import styles from "./TradeAndPortfolioModal.module.css";
 import CustomButton from "../../../components/buttons/button";
@@ -208,9 +208,16 @@ const TradeAndPortfolioModal = ({
                 onChange={handleBrokerChange}
                 options={brokerOptions}
                 maxTagCount={0}
-                maxTagPlaceholder={(omittedValues) =>
-                  `${omittedValues.length} selected`
-                }
+                maxTagPlaceholder={(omittedValues) => {
+                  return (
+                    <Tooltip
+                      title={`${omittedValues.length} selected`}
+                      placement="topRight"
+                    >
+                      <span>{`${omittedValues.length} selected`}</span>
+                    </Tooltip>
+                  );
+                }}
                 prefixCls="EquitiesBrokerSelectPrefix"
                 optionLabelProp="label"
                 optionRender={(option) => (

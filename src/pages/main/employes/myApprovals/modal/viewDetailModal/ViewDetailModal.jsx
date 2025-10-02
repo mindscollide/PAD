@@ -16,6 +16,7 @@ import {
   formatApiDateTime,
   formatNumberWithCommas,
 } from "../../../../../../commen/funtions/rejex";
+import { useNotification } from "../../../../../../components/NotificationProvider/NotificationProvider";
 
 const ViewDetailModal = () => {
   // This is Global State for modal which is create in ContextApi
@@ -27,6 +28,7 @@ const ViewDetailModal = () => {
     setIsConductedTransaction,
     setIsResubmitted,
   } = useGlobalModal();
+  const { showNotification } = useNotification();
 
   // get data from sessionStorage
   const userProfileData = JSON.parse(
@@ -151,11 +153,22 @@ const ViewDetailModal = () => {
   };
 
   //This the Copy Functionality where user can copy email by click on COpyIcon
-  const handleCopyEmail = () => {
+  const handleCopyEmail = async () => {
     const emailToCopy =
       complianceOfficerDetails?.managerEmail || "compliance@horizoncapital.com";
-    navigator.clipboard.writeText(emailToCopy);
-    message.success("Email copied to clipboard!");
+
+    try {
+      await navigator.clipboard.writeText(emailToCopy);
+      // ✅ Success case (like if block)
+      showNotification({
+        type: "success",
+        title: "Copied",
+        description: "Email copied to clipboard.",
+        placement: "bottomLeft",
+      });
+    } catch (error) {
+      console.error("Email Not Copied");
+    }
   };
 
   return (
