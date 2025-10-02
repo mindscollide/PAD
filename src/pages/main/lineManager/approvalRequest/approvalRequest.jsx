@@ -25,7 +25,7 @@ import {
 } from "../../../../api/myApprovalApi";
 import { useNavigate } from "react-router-dom";
 import { apiCallSearchForLineManager } from "../../../../components/dropdowns/searchableDropedown/utill";
-import { useTableScrollBottom } from "../../employes/myApprovals/utill";
+import { useTableScrollBottom } from "../../employes/myApprovals/utils";
 import {
   mapBuySellToIds,
   mapStatusToIds,
