@@ -55,8 +55,10 @@ const CommentModal = ({
     selectedEscalatedHeadOfComplianceData,
   } = useReconcileContext();
 
-  const { selectedEscalatedPortfolioHeadOfComplianceData } =
-    usePortfolioContext();
+  const {
+    selectedEscalatedPortfolioHeadOfComplianceData,
+    selectedPortfolioTransactionData,
+  } = usePortfolioContext();
 
   // State to get option reason while selecting any reason
   const [selectedOption, setSelectedOption] = useState(null);
