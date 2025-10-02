@@ -75,9 +75,6 @@ const Approval = () => {
   const [approvalData, setApprovalData] = useState([]);
   const [loadingMore, setLoadingMore] = useState(false); // spinner at bottom
 
-  console.log(setIsViewDetail, "employeeMyApproval4555");
-  console.log(isViewDetail, "isViewDetail");
-
   // Confirmed filters displayed as tags
   const [submittedFilters, setSubmittedFilters] = useState([]);
 
@@ -248,7 +245,6 @@ const Approval = () => {
       }));
       requestdata.InstrumentName = "";
     } else if (normalizedKey === "startdate") {
-      console.log("normalizedKey", normalizedKey);
       requestdata.Date = "";
       setEmployeeMyApprovalSearch((prev) => ({
         ...prev,
@@ -259,7 +255,6 @@ const Approval = () => {
 
     // 4️⃣ Show loader and call API
     showLoader(true);
-    console.log("normalizedKey", requestdata);
 
     const data = await SearchTadeApprovals({
       callApi,
@@ -538,7 +533,7 @@ const Approval = () => {
                 : undefined
             }
             classNameTable="border-less-table-orange"
-            onChange={(pagination, filters, sorter) => {
+            onChange={(sorter) => {
               setSortedInfo(sorter);
             }}
             loading={loadingMore}

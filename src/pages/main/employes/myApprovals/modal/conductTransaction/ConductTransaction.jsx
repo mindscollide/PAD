@@ -41,8 +41,6 @@ const ConductTransaction = () => {
   //This is the Global state of Context Api
   const { viewDetailsModalData } = useMyApproval();
 
-  console.log(viewDetailsModalData, "CheckDataCheckViewData");
-
   const { allInstrumentsData, employeeBasedBrokersData } =
     useDashboardContext();
 
@@ -76,8 +74,6 @@ const ConductTransaction = () => {
   const selectedInstrument = allInstrumentsData?.find(
     (item) => item.instrumentID === instrumentId
   );
-
-  console.log(selectedInstrument, "heckeckecnekcnenc");
 
   //This is the quantity state in which user can enter the quantity for specific limit or Limitation
   const [quantity, setQuantity] = useState("");
@@ -221,8 +217,7 @@ const ConductTransaction = () => {
                     </label>
                     <label className={styles.viewDetailSubLabels}>
                       <span className={styles.customTag}>
-                        {viewDetailsModalData?.details?.[0]?.assetTypeID ===
-                          "1" && <span>EQ</span>}
+                        {viewDetailsModalData?.assetTypes?.[0]?.shortCode}
                       </span>
                       {selectedInstrument?.instrumentCode}
                     </label>
@@ -287,8 +282,7 @@ const ConductTransaction = () => {
                       Asset Class
                     </label>
                     <label className={styles.viewDetailSubLabels}>
-                      {viewDetailsModalData?.details?.[0]?.assetTypeID ===
-                        "1" && <span>Equity</span>}
+                      {viewDetailsModalData?.assetTypes?.[0]?.title}
                     </label>
                   </div>
                 </Col>

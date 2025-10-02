@@ -75,8 +75,6 @@ const ViewDetailModal = () => {
     (item) => item.instrumentID === instrumentId
   );
 
-  console.log(selectedInstrument, "selectedInstrument");
-
   // To show Note Modal when Click on Declined in ViewDetailLineManager Modal
   const onClickToOpenNoteModal = () => {
     setViewDetailLineManagerModal(false);
@@ -145,8 +143,6 @@ const ViewDetailModal = () => {
       (item) => item.userID === loggedInUserID && item.bundleStatusID === 2 // 2 is approved
     );
 
-  console.log("Check Apprvoed or declined", hasAlreadyApprovedOrDeclined);
-
   // To open Approved Modal when Click on Approved Button in ViewDetailLineManager Modal
   const onClickToOpenApprovedModal = () => {
     setViewDetailLineManagerModal(false);
@@ -201,8 +197,10 @@ const ViewDetailModal = () => {
                       <>
                         <span className={styles.customTag}>
                           {/* Extract an assetTypeID id which is 1 then show Equity(EQ) */}
-                          {viewDetailsLineManagerData?.details?.[0]
-                            ?.assetTypeID === "1" && <span>EQ</span>}
+                          {
+                            viewDetailsLineManagerData?.assetTypes?.[0]
+                              ?.shortCode
+                          }
                         </span>
                         <span
                           className={styles.viewDetailSubLabelsForInstrument}
@@ -441,6 +439,32 @@ const ViewDetailModal = () => {
                                     <div className={styles.customlabel}>
                                       <div className={styles.customtitle}>
                                         Approved by You
+                                      </div>
+                                      <div className={styles.customdesc}>
+                                        {formattedDateTime}
+                                      </div>
+                                    </div>
+                                  );
+                                } else {
+                                  labelContent = (
+                                    <div className={styles.customlabel}>
+                                      <div className={styles.customtitle}>
+                                        {fullName}
+                                      </div>
+                                      <div className={styles.customdesc}>
+                                        {formattedDateTime}
+                                      </div>
+                                    </div>
+                                  );
+                                }
+                                break;
+                              case 3:
+                                iconSrc = CrossIcon; // Cross icon for declined
+                                if (loggedInUserID === userID) {
+                                  labelContent = (
+                                    <div className={styles.customlabel}>
+                                      <div className={styles.customtitle}>
+                                        Declined by You
                                       </div>
                                       <div className={styles.customdesc}>
                                         {formattedDateTime}

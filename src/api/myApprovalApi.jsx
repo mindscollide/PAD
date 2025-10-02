@@ -197,8 +197,8 @@ export const GetAllViewDetailsByTradeApprovalID = async ({
     if (res.success) {
       const {
         responseMessage,
+        assetTypes,
         details,
-        hierarchyList,
         hierarchyDetails,
         workFlowStatus,
       } = res.result;
@@ -209,8 +209,8 @@ export const GetAllViewDetailsByTradeApprovalID = async ({
       ) {
         console.log("Check APi");
         return {
+          assetTypes: assetTypes || [],
           details: details || [],
-          hierarchyList: hierarchyList || [],
           hierarchyDetails: hierarchyDetails || [],
           workFlowStatus: workFlowStatus || {},
         };
@@ -222,8 +222,8 @@ export const GetAllViewDetailsByTradeApprovalID = async ({
         description: "No details available for this Trade Approval ID.",
       });
       return {
+        assetTypes: [],
         details: [],
-        hierarchyList: [],
         hierarchyDetails: [],
         workFlowStatus: {},
       };
