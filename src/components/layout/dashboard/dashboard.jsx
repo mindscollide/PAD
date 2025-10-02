@@ -193,6 +193,17 @@ const Dashboard = () => {
                   }
                   break;
                 }
+                case "TRANSACTION_APPROVAL_REQUEST_APPROVED": {
+                  if (currentKey === "2") {
+                    setEmployeeTransactionsTableDataMqtt(true);
+                    // setEmployeeTransactionsData((prev) => ({
+                    //   ...prev,
+                    //   data: [payload, ...(prev.data || [])],
+                    //   totalRecords: (prev.totalRecords || 0) + 1,
+                    // }));
+                  }
+                  break;
+                }
                 default:
                   console.warn("MQTT: No handler for message →", message);
               }
