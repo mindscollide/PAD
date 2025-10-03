@@ -198,8 +198,6 @@ const ReconcileTransaction = () => {
           requestdata: requestData,
           navigate,
         });
-        console.log("fetchPendingApprovals", res);
-    console.log("complianceOfficerReconcileTransactionDataMqtt");
 
         const transactions = Array.isArray(res?.transactions)
           ? res.transactions
@@ -231,17 +229,20 @@ const ReconcileTransaction = () => {
   // ----------------------------------------------------------------
   useEffect(() => {
     if (!complianceOfficerReconcileTransactionData?.Apicall) return;
+  console.log("requestData", complianceOfficerReconcileTransactionData.replace);
+    setTableData((prev) => {
+      const {
+        data = [],
+        totalRecords = 0,
+        replace = false,
+      } = complianceOfficerReconcileTransactionData;
 
-    setTableData((prev) => ({
-      rows: mergeRows(
-        prev.rows || [],
-        complianceOfficerReconcileTransactionData.data,
-        complianceOfficerReconcileTransactionData.replace
-      ),
-      totalRecords: complianceOfficerReconcileTransactionData.totalRecords || 0,
-    }));
+      return {
+        rows: replace ? data : [...prev.rows, ...data],
+        totalRecords,
+      };
+    });
 
-    // Sync pagination info
     setComplianceOfficerReconcileTransactionsSearch((prev) => ({
       ...prev,
       totalRecords:
@@ -249,14 +250,38 @@ const ReconcileTransaction = () => {
         complianceOfficerReconcileTransactionData.data.length,
       pageNumber: complianceOfficerReconcileTransactionData.replace
         ? 10
-        : prev.pageNumber,
+        : prev.pageNumber + complianceOfficerReconcileTransactionData.data.length,
     }));
 
-    // Reset API trigger flag
     setComplianceOfficerReconcileTransactionData((prev) => ({
       ...prev,
       Apicall: false,
     }));
+    // setTableData((prev) => ({
+    //   rows: mergeRows(
+    //     prev.rows || [],
+    //     complianceOfficerReconcileTransactionData.data,
+    //     complianceOfficerReconcileTransactionData.replace
+    //   ),
+    //   totalRecords: complianceOfficerReconcileTransactionData.totalRecords || 0,
+    // }));
+
+    // // Sync pagination info
+    // setComplianceOfficerReconcileTransactionsSearch((prev) => ({
+    //   ...prev,
+    //   totalRecords:
+    //     complianceOfficerReconcileTransactionData.totalRecords ??
+    //     complianceOfficerReconcileTransactionData.data.length,
+    //   pageNumber: complianceOfficerReconcileTransactionData.replace
+    //     ? 10
+    //     : prev.pageNumber,
+    // }));
+
+    // // Reset API trigger flag
+    // setComplianceOfficerReconcileTransactionData((prev) => ({
+    //   ...prev,
+    //   Apicall: false,
+    // }));
   }, [complianceOfficerReconcileTransactionData?.Apicall]);
 
   // ----------------------------------------------------------------
