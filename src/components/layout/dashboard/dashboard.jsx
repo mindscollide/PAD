@@ -193,7 +193,7 @@ const Dashboard = () => {
                   }
                   break;
                 }
-                case "TRANSACTION_APPROVAL_REQUEST_APPROVED": {
+                case "EMPLOYEE_TRANSACTION_APPROVAL_REQUEST_APPROVED": {
                   if (currentKey === "2") {
                     setEmployeeTransactionsTableDataMqtt(true);
                     // setEmployeeTransactionsData((prev) => ({
