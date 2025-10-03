@@ -167,7 +167,7 @@ const Approval = () => {
       });
       setEmployeeMyApprovalSearch((prev) => ({
         ...prev,
-        pageNumber: (prev.pageNumber || 0) + mapped.length,
+        pageNumber: lazy ? prev.pageNumber + mapped.length : mapped.length,
       }));
     },
     [
@@ -212,6 +212,7 @@ const Approval = () => {
     if (!hasFetched.current) {
       hasFetched.current = true;
       const requestdata = buildApprovalRequest(employeeMyApprovalSearch);
+      console.log("fetchApprovals")
       fetchApprovals(requestdata, { loader: true });
     }
   }, [buildApprovalRequest, employeeMyApprovalSearch, fetchApprovals]);
@@ -229,6 +230,7 @@ const Approval = () => {
   useEffect(() => {
     if (employeeMyApprovalSearch.filterTrigger) {
       const requestdata = buildApprovalRequest(employeeMyApprovalSearch);
+      console.log("fetchApprovals")
       fetchApprovals(requestdata, { loader: true });
 
       // const snapshot = filterKeys
@@ -271,6 +273,7 @@ const Approval = () => {
         ...buildApprovalRequest(employeeMyApprovalSearch),
         PageNumber: 0,
       };
+      console.log("fetchApprovals")
       setIsEmployeeMyApprovalMqtt(false);
       fetchApprovals(requestdata);
     }
@@ -291,6 +294,7 @@ const Approval = () => {
           ...buildApprovalRequest(employeeMyApprovalSearch),
           PageNumber: employeeMyApprovalSearch.pageNumber || 0,
         };
+      console.log("fetchApprovals")
         await fetchApprovals(requestdata, { lazy: true });
         // setEmployeeMyApprovalSearch((prev) => ({
         //   ...prev,
