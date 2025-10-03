@@ -23,7 +23,7 @@ import { useGlobalModal } from "../../../../../context/GlobalModalContext";
 
 // 🔹 Hook imports
 import { useNotification } from "../../../../../components/NotificationProvider/NotificationProvider";
-import { useTableScrollBottom } from "../../../employes/myApprovals/utill";
+import { useTableScrollBottom } from "../../../employes/myApprovals/utils";
 
 // 🔹 API imports
 import { SearchEmployeePendingUploadedPortFolio } from "../../../../../api/protFolioApi";

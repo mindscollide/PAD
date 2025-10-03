@@ -1,36 +1,33 @@
 import React, { useMemo, useState } from "react";
 import { Row, Col, Space } from "antd";
-import { Button, TextField } from "../..";
-import CustomDatePicker from "../../dateSelector/datePicker/datePicker";
+import { Button, TextField, DateRangePicker } from "../.."; // ✅ Import DateRangePicker directly
 import { useSearchBarContext } from "../../../context/SearchBarContaxt";
 import {
   allowOnlyNumbers,
   removeFirstSpace,
 } from "../../../commen/funtions/rejex";
-import moment from "moment";
 
 export const EmployeeMyApprovalFilter = ({ handleSearch, setVisible }) => {
   const { employeeMyApprovalSearch, setEmployeeMyApprovalSearch } =
     useSearchBarContext();
 
-  // 🔹 Local form state
+  /**
+   * 🔹 Local state holds temporary filter values before search
+   * - instrumentName: string
+   * - quantity: string
+   */
   const [localState, setLocalState] = useState({
     instrumentName: "",
     quantity: "",
-    startDate: "",
+    dateRange: null,
   });
-
-  console.log(localState.startDate, "chekcejcehevhjvadatdad");
 
   // 🔹 Track touched fields
   const [dirtyFields, setDirtyFields] = useState({});
 
   // 🔹 Helper to update field + mark dirty
   const setFieldValue = (field, value) => {
-    console.log("handleDateChange", field, value);
-
     setLocalState((prev) => ({ ...prev, [field]: value }));
-
     setDirtyFields((prev) => ({ ...prev, [field]: true }));
   };
 
@@ -47,13 +44,11 @@ export const EmployeeMyApprovalFilter = ({ handleSearch, setVisible }) => {
     }
   };
 
-  /** Handle date selection */
-  const handleSearchClick = async () => {
-    console.log("Checke Seletc");
-
+  /** Handle Search */
+  const handleSearchClick = () => {
     setEmployeeMyApprovalSearch((prev) => {
       const finalSearch = {
-        ...prev, // ✅ keep all previous state values
+        ...prev,
         ...(dirtyFields.instrumentName && {
           instrumentName: localState.instrumentName,
         }),
@@ -61,31 +56,30 @@ export const EmployeeMyApprovalFilter = ({ handleSearch, setVisible }) => {
           quantity:
             localState.quantity !== "" ? Number(localState.quantity) : 0,
         }),
-        ...(dirtyFields.startDate && {
-          startDate: localState.startDate
-            ? localState.startDate.format("YYYY-MM-DD")
+        ...(dirtyFields.dateRange && {
+          startDate: localState.dateRange?.[0]
+            ? localState.dateRange[0].format("YYYY-MM-DD")
+            : null,
+          endDate: localState.dateRange?.[1]
+            ? localState.dateRange[1].format("YYYY-MM-DD")
             : null,
         }),
-        pageNumber: 0, // ✅ overwrite pageNumber only
+        pageNumber: 0,
       };
-
-      console.log("Checke Seletc", finalSearch);
-
-      // trigger your search callback
+      console.log("finalSearch", finalSearch);
       handleSearch(finalSearch);
-
       return finalSearch;
     });
   };
 
   /** Reset filters */
   const handleResetClick = () => {
-    console.log("Checke Seletc");
     setEmployeeMyApprovalSearch((prev) => ({
       ...prev,
       instrumentName: "",
       quantity: 0,
-      startDate: "",
+      startDate: null,
+      endDate: null,
       pageNumber: 0,
       tableFilterTrigger: true,
     }));
@@ -95,13 +89,22 @@ export const EmployeeMyApprovalFilter = ({ handleSearch, setVisible }) => {
 
   /** Reset local state + dirty flags */
   const resetLocalState = () => {
-    setLocalState({ instrumentName: "", quantity: "", startDate: "" });
+    setLocalState({ instrumentName: "", quantity: "", dateRange: null });
     setDirtyFields({});
   };
-  const handleDateChange = (date, fieldName) => {
-    setFieldValue(fieldName, date); // keep moment | null in state
+
+  /** Handle Date Range change */
+  const handleDateChange = (dates) => {
+    console.log("dateRange", dates);
+
+    setEmployeeMyApprovalSearch((prev) => ({
+      ...prev,
+      startDate: dates?.[0] || null,
+      endDate: dates?.[1] || null,
+    }));
   };
-  // ✅ Memoized values (only recompute when needed)
+
+  // ✅ Memoized values
   const instrumentNameValue = useMemo(() => {
     return dirtyFields.instrumentName
       ? localState.instrumentName
@@ -122,22 +125,9 @@ export const EmployeeMyApprovalFilter = ({ handleSearch, setVisible }) => {
     employeeMyApprovalSearch.quantity,
   ]);
 
-  const startDateValue = useMemo(() => {
-    if (dirtyFields.startDate) {
-      return localState.startDate; // already a moment | null
-    }
-    return employeeMyApprovalSearch.startDate
-      ? moment(employeeMyApprovalSearch.startDate, "YYYY-MM-DD")
-      : null;
-  }, [
-    dirtyFields.startDate,
-    localState.startDate,
-    employeeMyApprovalSearch.startDate,
-  ]);
-  console.log("quantityValue", quantityValue);
   return (
     <>
-      {/* 🔸 First Row: Instrument Name & Date */}
+      {/* 🔸 First Row: Instrument Name & Date Range */}
       <Row gutter={[12, 12]}>
         <Col xs={24} sm={24} md={12} lg={12}>
           <TextField
@@ -152,12 +142,21 @@ export const EmployeeMyApprovalFilter = ({ handleSearch, setVisible }) => {
         </Col>
 
         <Col xs={24} sm={24} md={12} lg={12} style={{ marginTop: "6px" }}>
-          <CustomDatePicker
-            label="Date"
-            name="startDate"
+          <DateRangePicker
+            label="Date Range"
             size="medium"
-            value={startDateValue}
-            onChange={(date) => handleDateChange(date, "startDate")}
+            value={[
+              employeeMyApprovalSearch.startDate || null,
+              employeeMyApprovalSearch.endDate || null,
+            ]}
+            onChange={(dates) => handleDateChange(dates)}
+            onClear={() =>
+              setEmployeeMyApprovalSearch((prev) => ({
+                ...prev,
+                startDate: null,
+                endDate: null,
+              }))
+            }
             format="YYYY-MM-DD"
           />
         </Col>

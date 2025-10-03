@@ -1,7 +1,6 @@
 import React from "react";
 import { DatePicker } from "antd";
 import classNames from "classnames";
-import moment from "moment";
 import styles from "./datePicker.module.css";
 
 const CustomDatePicker = ({
@@ -33,7 +32,7 @@ const CustomDatePicker = ({
 
       <DatePicker
         name={name}
-        value={value} // keep as moment object
+        value={value} 
         onChange={onChange}
         onBlur={onBlur}
         placeholder={placeholder}

@@ -189,6 +189,7 @@ const SearchWithPopoverOnly = () => {
           instrumentName: "",
           quantity: 0,
           startDate: null,
+          endDate: null,
           pageNumber: 0,
           tableFilterTrigger: true,
         }));

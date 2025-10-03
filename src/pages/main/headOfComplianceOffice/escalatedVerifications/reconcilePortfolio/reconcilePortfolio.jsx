@@ -24,7 +24,7 @@ import { usePortfolioContext } from "../../../../../context/portfolioContax";
 
 // 🔹 Hook imports
 import { useNotification } from "../../../../../components/NotificationProvider/NotificationProvider";
-import { useTableScrollBottom } from "../../../employes/myApprovals/utill";
+import { useTableScrollBottom } from "../../../employes/myApprovals/utils";
 
 // 🔹 Helper imports
 import { toYYMMDD } from "../../../../../commen/funtions/rejex";
