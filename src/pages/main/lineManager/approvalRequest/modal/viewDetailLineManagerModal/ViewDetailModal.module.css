@@ -24,7 +24,22 @@
   padding: 0px 20px !important;
   gap: 10px !important;
 }
-
+.tradedDetailHeading {
+  font-size: 36px !important;
+  color: #30426a !important;
+  font-weight: 600;
+  font-family: "Switzer Variable";
+  text-transform: uppercase;
+  display: flex;
+  justify-content: center !important;
+}
+.tradedBorderClass {
+  border: 2.65px dashed #30426a !important;
+  background-color: #f8fcff !important;
+  border-radius: 8px !important;
+  padding: 0px 20px !important;
+  gap: 10px !important;
+}
 .declinedBorderClass {
   border: 2.65px dashed #a50000 !important;
   background-color: #ffdbdb !important;
@@ -138,6 +153,14 @@
   flex-direction: column !important;
   border-top-right-radius: 8px;
 }
+
+.backgroundColorOfInstrumentDetailTradednoradius {
+  background-color: #edf3ff !important;
+  padding: 10px 20px;
+  display: flex;
+  flex-direction: column !important;
+}
+
 .viewDetailMainLabels {
   font-size: 14px !important;
   color: #30426a !important;
@@ -215,6 +238,23 @@
 }
 .backgrounColorOfStepper {
   background-color: #fff1e7 !important;
+  padding: 5px 0px;
+  display: inline-flex; /* keep children in a row */
+  flex-direction: row !important; /* force horizontal */
+  margin-top: 10px;
+  border-radius: 8px !important;
+  gap: 20px; /* space between steps */
+  width: 100%;
+  overflow: hidden !important;
+  overflow-x: auto !important; /* allow horizontal scroll */
+  overflow-y: hidden !important; /* no vertical scroll */
+  white-space: nowrap !important;
+  scrollbar-width: thin; /* Firefox */
+  scrollbar-color: #bfbfbf transparent;
+}
+
+.TradedbackgrounColorOfStepper {
+  background-color: #edf3ff !important;
   padding: 5px 0px;
   display: inline-flex; /* keep children in a row */
   flex-direction: row !important; /* force horizontal */

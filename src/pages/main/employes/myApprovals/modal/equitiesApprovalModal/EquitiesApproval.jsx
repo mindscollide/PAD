@@ -151,10 +151,22 @@ const EquitiesApproval = () => {
     fetchAddApprovalsRequest(formData);
   };
 
-  const handleCopyEmailOfLineManager = () => {
+  const handleCopyEmailOfLineManager = async () => {
     const emailToCopy =
       lineManagerDetails?.managerEmail || "LineManager@horizoncapital.com";
-    navigator.clipboard.writeText(emailToCopy);
+
+    try {
+      await navigator.clipboard.writeText(emailToCopy);
+      // ✅ Success case (like if block)
+      showNotification({
+        type: "success",
+        title: "Copied",
+        description: "Email copied to clipboard.",
+        placement: "bottomLeft",
+      });
+    } catch (error) {
+      console.error("Email Not Copied");
+    }
   };
 
   // Close handler

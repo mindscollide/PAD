@@ -41,8 +41,6 @@ const ConductTransaction = () => {
   //This is the Global state of Context Api
   const { viewDetailsModalData } = useMyApproval();
 
-  console.log(viewDetailsModalData, "CheckDataCheckViewData");
-
   const { allInstrumentsData, employeeBasedBrokersData } =
     useDashboardContext();
 
@@ -77,8 +75,6 @@ const ConductTransaction = () => {
     (item) => item.instrumentID === instrumentId
   );
 
-  console.log(selectedInstrument, "heckeckecnekcnenc");
-
   //This is the quantity state in which user can enter the quantity for specific limit or Limitation
   const [quantity, setQuantity] = useState("");
 
@@ -97,11 +93,21 @@ const ConductTransaction = () => {
   }, [viewDetailsModalData]);
 
   //This the Copy Functionality where user can copy email by click on COpyIcon
-  const handleCopyEmail = () => {
+  const handleCopyEmail = async () => {
     const emailToCopy =
       complianceOfficerDetails?.managerEmail || "compliance@horizoncapital.com";
-    navigator.clipboard.writeText(emailToCopy);
-    message.success("Email copied to clipboard!");
+    try {
+      await navigator.clipboard.writeText(emailToCopy);
+      // ✅ Success case (like if block)
+      showNotification({
+        type: "success",
+        title: "Copied",
+        description: "Email copied to clipboard.",
+        placement: "bottomLeft",
+      });
+    } catch (error) {
+      console.error("Email Not Copied");
+    }
   };
 
   // This is the onChange of qunatity Field
@@ -221,8 +227,7 @@ const ConductTransaction = () => {
                     </label>
                     <label className={styles.viewDetailSubLabels}>
                       <span className={styles.customTag}>
-                        {viewDetailsModalData?.details?.[0]?.assetTypeID ===
-                          "1" && <span>EQ</span>}
+                        {viewDetailsModalData?.assetTypes?.[0]?.shortCode}
                       </span>
                       {selectedInstrument?.instrumentCode}
                     </label>
@@ -287,8 +292,7 @@ const ConductTransaction = () => {
                       Asset Class
                     </label>
                     <label className={styles.viewDetailSubLabels}>
-                      {viewDetailsModalData?.details?.[0]?.assetTypeID ===
-                        "1" && <span>Equity</span>}
+                      {viewDetailsModalData?.assetTypes?.[0]?.title}
                     </label>
                   </div>
                 </Col>
