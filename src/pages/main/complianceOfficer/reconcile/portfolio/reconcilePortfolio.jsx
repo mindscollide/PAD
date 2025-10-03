@@ -166,11 +166,11 @@ const ReconcilePortfolio = () => {
    * Merge new rows into existing table data.
    * Ensures no duplicate rows by `key`.
    */
-  const mergeRows = (prevRows, newRows, replace = false) => {
-    if (replace) return newRows;
-    const ids = new Set(prevRows.map((r) => r.key));
-    return [...prevRows, ...newRows.filter((r) => !ids.has(r.key))];
-  };
+  // const mergeRows = (prevRows, newRows, replace = false) => {
+  //   if (replace) return newRows;
+  //   const ids = new Set(prevRows.map((r) => r.key));
+  //   return [...prevRows, ...newRows.filter((r) => !ids.has(r.key))];
+  // };
 
   // ----------------------------------------------------------------
   // 🔹 API CALL: Fetch reconcile portfolios
@@ -179,7 +179,9 @@ const ReconcilePortfolio = () => {
     async (requestData, replace = false, loader = false) => {
       if (!requestData || typeof requestData !== "object") return;
       if (!loader) showLoader(true);
-
+      console.log("requestData", requestData);
+      console.log("requestData", replace);
+      console.log("requestData", loader);
       try {
         const res = await SearchComplianceOfficerReconcilePortfolioRequest({
           callApi,
@@ -214,15 +216,19 @@ const ReconcilePortfolio = () => {
   // ----------------------------------------------------------------
   useEffect(() => {
     if (!complianceOfficerReconcilePortfolioData?.Apicall) return;
+    console.log("requestData", complianceOfficerReconcilePortfolioData.replace);
+    setTableData((prev) => {
+      const {
+        data = [],
+        totalRecords = 0,
+        replace = false,
+      } = complianceOfficerReconcilePortfolioData;
 
-    setTableData((prev) => ({
-      rows: mergeRows(
-        prev.rows || [],
-        complianceOfficerReconcilePortfolioData.data,
-        complianceOfficerReconcilePortfolioData.replace
-      ),
-      totalRecords: complianceOfficerReconcilePortfolioData.totalRecords || 0,
-    }));
+      return {
+        rows: replace ? data : [...prev.rows, ...data],
+        totalRecords,
+      };
+    });
 
     setComplianceOfficerReconcilePortfolioSearch((prev) => ({
       ...prev,
@@ -231,7 +237,7 @@ const ReconcilePortfolio = () => {
         complianceOfficerReconcilePortfolioData.data.length,
       pageNumber: complianceOfficerReconcilePortfolioData.replace
         ? 10
-        : prev.pageNumber,
+        : prev.pageNumber + complianceOfficerReconcilePortfolioData.data.length,
     }));
 
     setComplianceOfficerReconcilePortfolioData((prev) => ({
@@ -331,10 +337,10 @@ const ReconcilePortfolio = () => {
           Length: 10,
         };
         await fetchPortfolios(requestData, false, true); // append mode
-        setComplianceOfficerReconcilePortfolioSearch((prev) => ({
-          ...prev,
-          pageNumber: (prev.pageNumber || 0) + 10,
-        }));
+        // setComplianceOfficerReconcilePortfolioSearch((prev) => ({
+        //   ...prev,
+        //   pageNumber: (prev.pageNumber || 0) + 10,
+        // }));
       } catch (error) {
         console.error("❌ Error loading more approvals:", error);
       } finally {
