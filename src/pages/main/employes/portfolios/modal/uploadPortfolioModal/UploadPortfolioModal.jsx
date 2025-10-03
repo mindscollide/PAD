@@ -20,6 +20,7 @@ import { UploadPortFolioRequest } from "../../../../../../api/protFolioApi";
 
 // Styles
 import styles from "./UploadPortfolioModal.module.css";
+import CopyToClipboard from "../../../../../../hooks/useClipboard";
 
 /**
  * 📌 UploadPortfolioModal
@@ -202,8 +203,7 @@ const UploadPortfolioModal = () => {
       ComplianceOfficerDetails?.managerEmail || "compliance@horizoncapital.com";
 
     try {
-      await navigator.clipboard.writeText(emailToCopy);
-      // ✅ Success case (like if block)
+      await CopyToClipboard(emailToCopy); // ✅ Use your utility function here
       showNotification({
         type: "success",
         title: "Copied",
@@ -211,7 +211,7 @@ const UploadPortfolioModal = () => {
         placement: "bottomLeft",
       });
     } catch (error) {
-      console.error("Email Not Copied");
+      console.error("Email Not Copied:", error);
     }
   };
 

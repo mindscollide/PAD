@@ -19,6 +19,7 @@ import { useGlobalLoader } from "../../../../../../context/LoaderContext";
 import { useApi } from "../../../../../../context/ApiContext";
 import { useNavigate } from "react-router-dom";
 import { ConductTransactionUpdateApi } from "../../../../../../api/myApprovalApi";
+import CopyToClipboard from "../../../../../../hooks/useClipboard";
 
 const ConductTransaction = () => {
   const navigate = useNavigate();
@@ -96,9 +97,9 @@ const ConductTransaction = () => {
   const handleCopyEmail = async () => {
     const emailToCopy =
       complianceOfficerDetails?.managerEmail || "compliance@horizoncapital.com";
+
     try {
-      await navigator.clipboard.writeText(emailToCopy);
-      // ✅ Success case (like if block)
+      await CopyToClipboard(emailToCopy); // ✅ Use your utility function here
       showNotification({
         type: "success",
         title: "Copied",
@@ -106,7 +107,7 @@ const ConductTransaction = () => {
         placement: "bottomLeft",
       });
     } catch (error) {
-      console.error("Email Not Copied");
+      console.error("Email Not Copied:", error);
     }
   };
 

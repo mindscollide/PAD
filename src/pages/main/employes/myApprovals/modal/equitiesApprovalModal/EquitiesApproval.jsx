@@ -19,6 +19,7 @@ import {
   allowOnlyNumbers,
   formatNumberWithCommas,
 } from "../../../../../../commen/funtions/rejex";
+import CopyToClipboard from "../../../../../../hooks/useClipboard";
 
 const EquitiesApproval = () => {
   const navigate = useNavigate();
@@ -156,8 +157,7 @@ const EquitiesApproval = () => {
       lineManagerDetails?.managerEmail || "LineManager@horizoncapital.com";
 
     try {
-      await navigator.clipboard.writeText(emailToCopy);
-      // ✅ Success case (like if block)
+      await CopyToClipboard(emailToCopy); // ✅ Use your utility function here
       showNotification({
         type: "success",
         title: "Copied",
@@ -165,7 +165,7 @@ const EquitiesApproval = () => {
         placement: "bottomLeft",
       });
     } catch (error) {
-      console.error("Email Not Copied");
+      console.error("Email Not Copied:", error);
     }
   };
 
