@@ -17,6 +17,7 @@ import {
   formatNumberWithCommas,
 } from "../../../../../../commen/funtions/rejex";
 import { useNotification } from "../../../../../../components/NotificationProvider/NotificationProvider";
+import CopyToClipboard from "../../../../../../hooks/useClipboard";
 
 const ViewDetailModal = () => {
   // This is Global State for modal which is create in ContextApi
@@ -158,8 +159,7 @@ const ViewDetailModal = () => {
       complianceOfficerDetails?.managerEmail || "compliance@horizoncapital.com";
 
     try {
-      await navigator.clipboard.writeText(emailToCopy);
-      // ✅ Success case (like if block)
+      await CopyToClipboard(emailToCopy); // ✅ Use your utility function here
       showNotification({
         type: "success",
         title: "Copied",
@@ -167,7 +167,7 @@ const ViewDetailModal = () => {
         placement: "bottomLeft",
       });
     } catch (error) {
-      console.error("Email Not Copied");
+      console.error("Email Not Copied:", error);
     }
   };
 

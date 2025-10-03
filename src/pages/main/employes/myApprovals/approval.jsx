@@ -165,10 +165,10 @@ const Approval = () => {
           totalRecords: res?.totalRecords ?? mapped.length,
         };
       });
-        setEmployeeMyApprovalSearch((prev) => ({
-          ...prev,
-          pageNumber: (prev.pageNumber || 0) + mapped.length,
-        }));
+      setEmployeeMyApprovalSearch((prev) => ({
+        ...prev,
+        pageNumber: (prev.pageNumber || 0) + mapped.length,
+      }));
     },
     [
       addApprovalRequestData,
@@ -228,9 +228,9 @@ const Approval = () => {
   // Sync Active Filters → Tags
   useEffect(() => {
     if (employeeMyApprovalSearch.filterTrigger) {
-       const requestdata = buildApprovalRequest(employeeMyApprovalSearch);
+      const requestdata = buildApprovalRequest(employeeMyApprovalSearch);
       fetchApprovals(requestdata, { loader: true });
-      
+
       // const snapshot = filterKeys
       //   .filter(({ key }) => employeeMyApprovalSearch[key])
       //   .map(({ key }) => ({ key, value: employeeMyApprovalSearch[key] }));
