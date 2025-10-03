@@ -199,6 +199,7 @@ const ReconcileTransaction = () => {
           navigate,
         });
         console.log("fetchPendingApprovals", res);
+    console.log("complianceOfficerReconcileTransactionDataMqtt");
 
         const transactions = Array.isArray(res?.transactions)
           ? res.transactions
@@ -268,9 +269,9 @@ const ReconcileTransaction = () => {
       ...buildPortfolioRequest(complianceOfficerReconcileTransactionsSearch),
       PageNumber: 0,
     };
-
+    console.log("complianceOfficerReconcileTransactionDataMqtt");
     fetchPendingApprovals(requestData, true);
-    setComplianceOfficerReconcileTransactionDataMqtt(false)
+    setComplianceOfficerReconcileTransactionDataMqtt(false);
     setComplianceOfficerReconcileTransactionsSearch((prev) => ({
       ...prev,
       PageNumber: 0,

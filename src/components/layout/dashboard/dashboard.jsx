@@ -296,10 +296,26 @@ const Dashboard = () => {
                     currentKey === "9" &&
                     currentreconcileActiveTab === "transactions"
                   ) {
+                    console.log(
+                      "complianceOfficerReconcileTransactionDataMqtt"
+                    );
                     setComplianceOfficerReconcileTransactionDataMqtt(true);
                   }
                   break;
                 }
+                case "COMPLIANCE_OFFICER_TRANSACTION_APPROVAL_REQUEST_APPROVED": {
+                  if (
+                    currentKey === "9" &&
+                    currentreconcileActiveTab === "transactions"
+                  ) {
+                    console.log(
+                      "complianceOfficerReconcileTransactionDataMqtt"
+                    );
+                    setComplianceOfficerReconcileTransactionDataMqtt(true);
+                  }
+                  break;
+                }
+
                 default:
                   console.warn("MQTT: No handler for message →", message);
               }
