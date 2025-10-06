@@ -86,13 +86,22 @@ const Approval = () => {
     isResubmitted,
     resubmitIntimation,
     isConductedTransaction,
+    setSelectedAssetTypeId,
   } = useGlobalModal();
+
+  console.log(
+    addApprovalRequestData,
+    "addApprovalRequestDataaddApprovalRequestData"
+  );
 
   // ----------------- Local State -----------------
   const [sortedInfo, setSortedInfo] = useState({});
   const [submittedFilters, setSubmittedFilters] = useState([]);
   const [isEquitiesModalOpen, setIsEquitiesModalOpen] = useState(false);
   const [loadingMore, setLoadingMore] = useState(false);
+
+  // For Common Dropdown state to set Api response in this local state
+  const [equitiesCommonDropdown, setEquitiesCommonDropdown] = useState([]);
 
   // Keys for displaying active filters as tags
   const filterKeys = [
@@ -104,16 +113,40 @@ const Approval = () => {
   ];
 
   // ----------------- Dropdown -----------------
-  const menuItems = [
-    {
-      key: "1",
-      label: "Equities",
-      onClick: () => {
-        setIsEquitiesModalOpen(true);
-        setIsEquitiesModalVisible(true);
-      },
+
+  // make a global context state which is selectedAssetTypeId to show select assetTypeID on selected dropdown value
+  // from the add Approval Request in Approval list to send that selected assetType Id into AssetTypeID in
+  // AddTradeApprovalRequest Api
+
+  const menuItems = Object.entries(addApprovalRequestData || {}).reduce(
+    (acc, [categoryLabel, categoryData]) => {
+      const items = categoryData?.items || [];
+
+      items.forEach((item) => {
+        const { assetTypeID } = item;
+        const key = String(assetTypeID);
+
+        // Avoid duplicate assetTypeID entries
+        if (!acc.some((m) => m.key === key)) {
+          acc.push({
+            key,
+            label: categoryLabel, // <-- This is dynamic: "Equities", "FixedIncome", etc.
+            onClick: () => {
+              setIsEquitiesModalOpen(true);
+              setIsEquitiesModalVisible(true);
+              setSelectedAssetTypeId(assetTypeID);
+              console.log(
+                `Open modal for: ${categoryLabel} (AssetTypeID: ${assetTypeID})`
+              );
+            },
+          });
+        }
+      });
+
+      return acc;
     },
-  ];
+    []
+  );
 
   // ----------------- Helpers -----------------
   /** Build API request payload */
@@ -148,6 +181,10 @@ const Approval = () => {
       });
 
       const approvals = Array.isArray(res?.approvals) ? res.approvals : [];
+
+      // This is the local state to get Api response
+      setEquitiesCommonDropdown(approvals);
+
       const mapped = mapEmployeeMyApprovalData(
         addApprovalRequestData?.Equities,
         approvals

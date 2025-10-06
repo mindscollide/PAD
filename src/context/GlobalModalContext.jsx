@@ -51,6 +51,9 @@ export const GlobalModalProvider = ({ children }) => {
   const [isViewTicketTransactionModal, setIsViewTicketTransactionModal] =
     useState(false);
 
+  // Set assetTypeId when I click on addtrade approval dropdown
+  const [selectedAssetTypeId, setSelectedAssetTypeId] = useState(null);
+
   /**
    * Global States For Employee Modals End here
    */
@@ -265,6 +268,9 @@ export const GlobalModalProvider = ({ children }) => {
         setViewCommentTransactionModal,
         isViewTicketTransactionModal,
         setIsViewTicketTransactionModal,
+
+        selectedAssetTypeId,
+        setSelectedAssetTypeId,
 
         /**
          * Global States For Line Manager Modals

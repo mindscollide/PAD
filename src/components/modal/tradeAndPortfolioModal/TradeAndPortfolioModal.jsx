@@ -71,12 +71,24 @@ const TradeAndPortfolioModal = ({
   };
 
   // Handler For quantity
+  // Handler For Quantity
   const handleQuantityChange = (e) => {
     let { value } = e.target;
     const rawValue = value.replace(/,/g, "");
+
+    // Block 0 and leading zeros
+    if (rawValue === "0") {
+      return; // ignore if exactly 0
+    }
+    if (/^0\d+/.test(rawValue)) {
+      value = rawValue.replace(/^0+/, ""); // trim leading zeros
+    }
+
     if (rawValue === "" || allowOnlyNumbers(rawValue)) {
       if (rawValue.length <= 20) {
-        const formattedValue = rawValue ? formatNumberWithCommas(rawValue) : "";
+        const formattedValue = rawValue
+          ? formatNumberWithCommas(rawValue.replace(/^0+/, "")) // trim leading zeros before formatting
+          : "";
         setQuantity(formattedValue);
       }
     }

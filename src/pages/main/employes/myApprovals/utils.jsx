@@ -59,6 +59,7 @@ export const mapEmployeeMyApprovalData = (
     quantity: item.quantity || 0,
     timeRemainingToTrade: item.timeRemainingToTrade || "",
     assetType: item.assetType?.assetTypeName || "",
+    assetTypeID: item.assetType?.assetTypeID || 0,
   }));
 };
 
