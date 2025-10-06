@@ -89,7 +89,10 @@ const Approval = () => {
     setSelectedAssetTypeId,
   } = useGlobalModal();
 
-  console.log(employeeMyApproval, "employeeMyApproval");
+  console.log(
+    addApprovalRequestData,
+    "addApprovalRequestDataaddApprovalRequestData"
+  );
 
   // ----------------- Local State -----------------
   const [sortedInfo, setSortedInfo] = useState({});
@@ -115,22 +118,35 @@ const Approval = () => {
   // from the add Approval Request in Approval list to send that selected assetType Id into AssetTypeID in
   // AddTradeApprovalRequest Api
 
-  const menuItems = (equitiesCommonDropdown || []).reduce((acc, item) => {
-    const { assetType } = item;
-    if (!acc.some((m) => m.key === String(assetType.assetTypeID))) {
-      acc.push({
-        key: String(assetType.assetTypeID),
-        label: assetType.assetTypeName,
-        onClick: () => {
-          setIsEquitiesModalOpen(true);
-          setIsEquitiesModalVisible(true);
-          setSelectedAssetTypeId(assetType.assetTypeID);
-          console.log(`Open modal for: ${assetType.assetTypeName}`);
-        },
+  const menuItems = Object.entries(addApprovalRequestData || {}).reduce(
+    (acc, [categoryLabel, categoryData]) => {
+      const items = categoryData?.items || [];
+
+      items.forEach((item) => {
+        const { assetTypeID } = item;
+        const key = String(assetTypeID);
+
+        // Avoid duplicate assetTypeID entries
+        if (!acc.some((m) => m.key === key)) {
+          acc.push({
+            key,
+            label: categoryLabel, // <-- This is dynamic: "Equities", "FixedIncome", etc.
+            onClick: () => {
+              setIsEquitiesModalOpen(true);
+              setIsEquitiesModalVisible(true);
+              setSelectedAssetTypeId(assetTypeID);
+              console.log(
+                `Open modal for: ${categoryLabel} (AssetTypeID: ${assetTypeID})`
+              );
+            },
+          });
+        }
       });
-    }
-    return acc;
-  }, []);
+
+      return acc;
+    },
+    []
+  );
 
   // ----------------- Helpers -----------------
   /** Build API request payload */
