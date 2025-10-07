@@ -365,7 +365,7 @@ li.ant-dropdown-menu-item.ant-dropdown-menu-item-only-child:focus {
   font-size: 17px !important;
   font-family: "Switzer Variable" !important;
   font-weight: 400 !important;
-  margin-top: -15px !important;
+  /* margin-top: -15px !important; */
 }
 
 /* Dropdown menu */
@@ -389,9 +389,13 @@ li.ant-dropdown-menu-item.ant-dropdown-menu-item-only-child:focus {
 .EquitiesBrokerSelectPrefix-selection-overflow {
   position: relative;
   flex: auto;
-  margin-top: 20px !important;
   flex-wrap: wrap;
   max-width: 100%;
+
+  display: flex; /* Enables flexbox */
+  align-items: center; /* Vertically centers children */
+  height: 45px; /* Set a fixed height */
+  line-height: 45px;
 }
 
 .EquitiesBrokerSelectPrefix-item-option-state {
@@ -412,9 +416,8 @@ li.ant-dropdown-menu-item.ant-dropdown-menu-item-only-child:focus {
   padding: 9px 9px !important;
 }
 
-
 #toolbar {
-    display: none;
+  display: none;
 }
 .stepperStyles {
   /* gap: 50px !important; */

@@ -211,11 +211,10 @@ const renderStatusTag = (status, approvalStatusMap) => {
 /**
  * Renders time remaining cell with conditional logic
  * @param {Object} record - Table row data
- * @param {Function} setIsResubmitted - Resubmit modal setter
  * @returns {JSX.Element} Time remaining cell component
  */
-const renderTimeRemainingCell = (record, setIsResubmitted) => {
-  const { setSelectedViewDetail } = useGlobalModal();
+const renderTimeRemainingCell = (record) => {
+  const { setSelectedViewDetail, setIsResubmitted } = useGlobalModal();
 
   // Show nothing for pending status
   if (record.status === "Pending") {
@@ -229,7 +228,7 @@ const renderTimeRemainingCell = (record, setIsResubmitted) => {
         className="large-transparent-button"
         text="Resubmit for Approval"
         onClick={() => {
-          setIsResubmitted?.(true);
+          setIsResubmitted(true);
           setSelectedViewDetail(record);
         }}
         data-testid="resubmit-button"
@@ -258,7 +257,6 @@ const renderTimeRemainingCell = (record, setIsResubmitted) => {
  * @param {Function} params.setEmployeeMyApprovalSearch - Search state setter
  * @param {Function} params.setIsViewDetail - View detail modal setter
  * @param {Function} params.onViewDetail - View detail handler
- * @param {Function} params.setIsResubmitted - Resubmit modal setter
  * @returns {Array} Array of Ant Design column configurations
  */
 export const getBorderlessTableColumns = ({
@@ -268,7 +266,6 @@ export const getBorderlessTableColumns = ({
   setEmployeeMyApprovalSearch,
   setIsViewDetail,
   onViewDetail,
-  setIsResubmitted,
 }) => [
   {
     title: withSortIcon("Approval ID", "tradeApprovalID", sortedInfo),
@@ -434,7 +431,7 @@ export const getBorderlessTableColumns = ({
     key: "timeRemainingToTrade",
     ellipsis: true,
     align: "center",
-    render: (text, record) => renderTimeRemainingCell(record, setIsResubmitted),
+    render: (text, record) => renderTimeRemainingCell(record),
     onHeaderCell: () => createCellStyle(COLUMN_WIDTHS.TIME_REMAINING.min),
     onCell: () => createCellStyle(COLUMN_WIDTHS.TIME_REMAINING.min),
   },
