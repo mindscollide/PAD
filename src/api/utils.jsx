@@ -309,6 +309,15 @@ export const responseMessages = {
     "No data available",
   PAD_Trade_TradeServiceManager_GetAllViewDetailsEscalatedTransactionsAndPortFolioByTradeApprovalID_03:
     "Exception",
+
+  // ==============================
+  // 📂Web Notification  (Employee Role)
+  // ==============================
+
+  Settings_SettingsServiceManager_GetUserWebNotifications_01: "Data Available",
+  Settings_SettingsServiceManager_GetUserWebNotifications_02:
+    "No data available",
+  Settings_SettingsServiceManager_GetUserWebNotifications_03: "Exception",
 };
 
 /**

@@ -81,7 +81,13 @@ const Approval = () => {
     isResubmitted,
     resubmitIntimation,
     isConductedTransaction,
+    setSelectedAssetTypeId,
   } = useGlobalModal();
+
+  console.log(
+    addApprovalRequestData,
+    "addApprovalRequestDataaddApprovalRequestData"
+  );
 
   // ----------------- Local State -----------------
   const [sortedInfo, setSortedInfo] = useState({});
@@ -89,16 +95,40 @@ const Approval = () => {
   const [loadingMore, setLoadingMore] = useState(false);
 
   // ----------------- Dropdown -----------------
-  const menuItems = [
-    {
-      key: "1",
-      label: "Equities",
-      onClick: () => {
-        setIsEquitiesModalOpen(true);
-        setIsEquitiesModalVisible(true);
-      },
+
+  // make a global context state which is selectedAssetTypeId to show select assetTypeID on selected dropdown value
+  // from the add Approval Request in Approval list to send that selected assetType Id into AssetTypeID in
+  // AddTradeApprovalRequest Api
+
+  const menuItems = Object.entries(addApprovalRequestData || {}).reduce(
+    (acc, [categoryLabel, categoryData]) => {
+      const items = categoryData?.items || [];
+
+      items.forEach((item) => {
+        const { assetTypeID } = item;
+        const key = String(assetTypeID);
+
+        // Avoid duplicate assetTypeID entries
+        if (!acc.some((m) => m.key === key)) {
+          acc.push({
+            key,
+            label: categoryLabel, // <-- This is dynamic: "Equities", "FixedIncome", etc.
+            onClick: () => {
+              setIsEquitiesModalOpen(true);
+              setIsEquitiesModalVisible(true);
+              setSelectedAssetTypeId(assetTypeID);
+              console.log(
+                `Open modal for: ${categoryLabel} (AssetTypeID: ${assetTypeID})`
+              );
+            },
+          });
+        }
+      });
+
+      return acc;
     },
-  ];
+    []
+  );
 
   // ----------------- Helpers -----------------
 
@@ -134,6 +164,7 @@ const Approval = () => {
       });
 
       const approvals = Array.isArray(res?.approvals) ? res.approvals : [];
+
       const mapped = mapEmployeeMyApprovalData(
         addApprovalRequestData?.Equities,
         approvals

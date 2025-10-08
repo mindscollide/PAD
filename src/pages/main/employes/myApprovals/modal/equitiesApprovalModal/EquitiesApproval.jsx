@@ -24,8 +24,12 @@ import CopyToClipboard from "../../../../../../hooks/useClipboard";
 const EquitiesApproval = () => {
   const navigate = useNavigate();
 
-  const { isEquitiesModalVisible, setIsEquitiesModalVisible, setIsSubmit } =
-    useGlobalModal();
+  const {
+    isEquitiesModalVisible,
+    setIsEquitiesModalVisible,
+    setIsSubmit,
+    selectedAssetTypeId,
+  } = useGlobalModal();
 
   const {
     employeeBasedBrokersData,
@@ -118,7 +122,7 @@ const EquitiesApproval = () => {
       TradeApprovalID: 0,
       InstrumentID: formData.selectedInstrument?.id || null,
       InstrumentName: formData.selectedInstrument?.description || "",
-      AssetTypeID: formData.selectedAssetTypeID,
+      AssetTypeID: selectedAssetTypeId || 0,
       ApprovalTypeID: formData.selectedTradeApprovalType,
       Quantity: quantityNumber,
       InstrumentShortCode: formData.selectedInstrument?.name || "",

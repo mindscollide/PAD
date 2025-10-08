@@ -71,6 +71,7 @@ export const mapEmployeeMyApprovalData = (
     quantity: item.quantity || 0,
     timeRemainingToTrade: item.timeRemainingToTrade || "",
     assetType: item.assetType?.assetTypeName || "",
+    assetTypeID: item.assetType?.assetTypeID || 0,
   }));
 };
 
@@ -280,11 +281,10 @@ const renderStatusTag = (status, approvalStatusMap) => {
 /**
  * Renders time remaining cell with conditional logic
  * @param {Object} record - Table row data
- * @param {Function} setIsResubmitted - Resubmit modal setter
  * @returns {JSX.Element} Time remaining cell component
  */
-const renderTimeRemainingCell = (record, setIsResubmitted) => {
-  const { setSelectedViewDetail } = useGlobalModal();
+const renderTimeRemainingCell = (record) => {
+  const { setSelectedViewDetail, setIsResubmitted } = useGlobalModal();
 
   if (record.status === COLUMN_CONFIG.STATUS.PENDING) {
     return <span className="text-gray-400">-</span>;
@@ -296,7 +296,7 @@ const renderTimeRemainingCell = (record, setIsResubmitted) => {
         className="large-transparent-button"
         text="Resubmit for Approval"
         onClick={() => {
-          setIsResubmitted?.(true);
+          setIsResubmitted(true);
           setSelectedViewDetail(record);
         }}
         data-testid="resubmit-button"
@@ -339,7 +339,6 @@ const renderTimeRemainingCell = (record, setIsResubmitted) => {
  * @param {Function} params.setEmployeeMyApprovalSearch - Search state setter
  * @param {Function} params.setIsViewDetail - View detail modal setter
  * @param {Function} params.onViewDetail - View detail handler
- * @param {Function} params.setIsResubmitted - Resubmit modal setter
  * @returns {Array} Array of Ant Design column configurations
  */
 export const getBorderlessTableColumns = ({
@@ -349,7 +348,6 @@ export const getBorderlessTableColumns = ({
   setEmployeeMyApprovalSearch,
   setIsViewDetail,
   onViewDetail,
-  setIsResubmitted,
 }) => [
   {
     title: withSortIcon("Approval ID", "tradeApprovalID", sortedInfo),
@@ -368,17 +366,12 @@ export const getBorderlessTableColumns = ({
       sortedInfo?.columnKey === "tradeApprovalID" ? sortedInfo.order : null,
     showSorterTooltip: false,
     sortIcon: () => null,
-    render: (tradeApprovalID) => (
-      <div style={{ display: "flex", alignItems: "center" }}>
-        <span
-          className="font-medium"
-          data-testid="formatted-approval-id"
-          style={{
-            overflow: "hidden",
-            textOverflow: "ellipsis",
-            whiteSpace: "nowrap",
-          }}
-        >
+    render: (tradeApprovalID, record) => (
+      <div
+        id={`cell-${record.key}-tradeApprovalID`}
+        style={{ display: "flex", alignItems: "center", gap: "12px" }}
+      >
+        <span className="font-medium" data-testid="formatted-approval-id">
           {dashBetweenApprovalAssets(tradeApprovalID)}
         </span>
       </div>
@@ -405,7 +398,11 @@ export const getBorderlessTableColumns = ({
       sortedInfo?.columnKey === "instrumentCode" ? sortedInfo.order : null,
     showSorterTooltip: false,
     sortIcon: () => null,
-    render: (_, record) => renderInstrumentCell(record),
+    render: (_, record) => (
+      <div id={`cell-${record.key}-instrumentCode`}>
+        {renderInstrumentCell(record)}
+      </div>
+    ),
     onHeaderCell: () =>
       createCellStyle(
         COLUMN_CONFIG.WIDTHS.INSTRUMENT.min,
@@ -430,9 +427,10 @@ export const getBorderlessTableColumns = ({
     filteredValue: employeeMyApprovalSearch.type?.length
       ? employeeMyApprovalSearch.type
       : null,
-    onFilter: () => true,
-    render: (type) => (
+    onFilter: () => true, // Actual filtering handled by API
+    render: (type, record) => (
       <span
+        id={`cell-${record.key}-type`}
         className={type === "Buy" ? "text-green-600" : "text-red-600"}
         data-testid={`trade-type-${type}`}
         style={{
@@ -474,8 +472,9 @@ export const getBorderlessTableColumns = ({
       sortedInfo?.columnKey === "requestDateTime" ? sortedInfo.order : null,
     showSorterTooltip: false,
     sortIcon: () => null,
-    render: (date) => (
+    render: (date, record) => (
       <span
+        id={`cell-${record.key}-requestDateTime`}
         className="text-gray-600"
         data-testid="formatted-date"
         style={{
@@ -514,7 +513,11 @@ export const getBorderlessTableColumns = ({
       ? employeeMyApprovalSearch.status
       : null,
     onFilter: () => true,
-    render: (status) => renderStatusTag(status, approvalStatusMap),
+    render: (status, record) => (
+      <div id={`cell-${record.key}-status`}>
+        {renderStatusTag(status, approvalStatusMap)}
+      </div>
+    ),
     onHeaderCell: () =>
       createCellStyle(
         COLUMN_CONFIG.WIDTHS.STATUS.min,
@@ -569,8 +572,9 @@ export const getBorderlessTableColumns = ({
     sortOrder: sortedInfo?.columnKey === "quantity" ? sortedInfo.order : null,
     showSorterTooltip: false,
     sortIcon: () => null,
-    render: (quantity) => (
+    render: (quantity, record) => (
       <span
+        id={`cell-${record.key}-quantity`}
         className="font-medium"
         data-testid="formatted-quantity"
         style={{
@@ -602,7 +606,11 @@ export const getBorderlessTableColumns = ({
     key: "timeRemainingToTrade",
     ellipsis: true,
     align: "center",
-    render: (text, record) => renderTimeRemainingCell(record, setIsResubmitted),
+    render: (text, record) => (
+      <div id={`cell-${record.key}-timeRemainingToTrade`}>
+        {renderTimeRemainingCell(record)}
+      </div>
+    ),
     onHeaderCell: () =>
       createCellStyle(
         COLUMN_CONFIG.WIDTHS.TIME_REMAINING.min,
@@ -622,22 +630,24 @@ export const getBorderlessTableColumns = ({
       const { setSelectedViewDetail } = useGlobalModal();
 
       return (
-        <Button
-          className="big-orange-button"
-          text="View Details"
-          onClick={() => {
-            onViewDetail(record?.approvalID);
-            setSelectedViewDetail(record);
-            setIsViewDetail(true);
-          }}
-          data-testid="view-details-button"
-          style={{
-            whiteSpace: "nowrap",
-            overflow: "hidden",
-            textOverflow: "ellipsis",
-            maxWidth: "100%",
-          }}
-        />
+        <div id={`cell-${record.key}-actions`}>
+          <Button
+            className="big-orange-button"
+            text="View Details"
+            onClick={() => {
+              onViewDetail(record?.approvalID);
+              setSelectedViewDetail(record);
+              setIsViewDetail(true);
+            }}
+            data-testid="view-details-button"
+            style={{
+              whiteSpace: "nowrap",
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+              maxWidth: "100%",
+            }}
+          />
+        </div>
       );
     },
     onHeaderCell: () =>
@@ -652,62 +662,3 @@ export const getBorderlessTableColumns = ({
       ),
   },
 ];
-
-/**
- * Custom hook for infinite scroll detection on table
- * @param {Function} onBottomReach - Callback when bottom is reached
- * @param {number} threshold - Pixel threshold from bottom
- * @param {string} prefixCls - CSS class prefix for table
- * @returns {Object} Scroll state and container ref
- */
-export const useTableScrollBottom = (
-  onBottomReach,
-  threshold = 0,
-  prefixCls = "ant-table"
-) => {
-  const [hasReachedBottom, setHasReachedBottom] = useState(false);
-  const containerRef = useRef(null);
-  const previousScrollTopRef = useRef(0);
-
-  useEffect(() => {
-    const selector = `.${prefixCls}-body`;
-    const scrollContainer = document.querySelector(selector);
-
-    if (!scrollContainer) {
-      console.warn(`Scroll container not found for selector: ${selector}`);
-      return;
-    }
-
-    containerRef.current = scrollContainer;
-
-    const handleScroll = () => {
-      const { scrollTop, scrollHeight, clientHeight } = scrollContainer;
-
-      // Detect vertical scroll only
-      const scrolledVertically = scrollTop !== previousScrollTopRef.current;
-      previousScrollTopRef.current = scrollTop;
-
-      if (!scrolledVertically) return;
-
-      const isScrollable = scrollHeight > clientHeight;
-      const isBottom = scrollTop + clientHeight >= scrollHeight - threshold;
-
-      if (isScrollable && isBottom && !hasReachedBottom) {
-        setHasReachedBottom(true);
-        onBottomReach?.();
-
-        // Reset after delay to prevent multiple triggers
-        setTimeout(() => setHasReachedBottom(false), 1000);
-      }
-    };
-
-    scrollContainer.addEventListener("scroll", handleScroll);
-    return () => scrollContainer.removeEventListener("scroll", handleScroll);
-  }, [hasReachedBottom, onBottomReach, threshold, prefixCls]);
-
-  return {
-    hasReachedBottom,
-    containerRef,
-    setHasReachedBottom,
-  };
-};

@@ -10,6 +10,7 @@ import {
   AddTradeApprovalRequest,
   ResubmitApprovalRequestApi,
 } from "../../../../../../api/myApprovalApi";
+import { dashBetweenApprovalAssets } from "../../../../../../commen/funtions/rejex";
 
 const ResubmitModal = () => {
   const navigate = useNavigate();
@@ -77,7 +78,9 @@ const ResubmitModal = () => {
     <CommentModal
       visible={isResubmitted}
       onClose={onClickClose}
-      title={"Why do you want to resubmit trade request REQ-001?"}
+      title={`Why do you want to resubmit trade request ${dashBetweenApprovalAssets(
+        selectedViewDetail.tradeApprovalID
+      )}?`}
       predefinedReasons={getAllPredefineReasonData}
       onSubmit={clickOnReSubmitButton}
       centered={true}
