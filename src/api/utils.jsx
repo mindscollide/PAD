@@ -318,6 +318,13 @@ export const responseMessages = {
   Settings_SettingsServiceManager_GetUserWebNotifications_02:
     "No data available",
   Settings_SettingsServiceManager_GetUserWebNotifications_03: "Exception",
+
+  //Mark As Read Notification Api
+  Settings_SettingsServiceManager_MarkNotificationsAsRead_01: "Successfull",
+  Settings_SettingsServiceManager_MarkNotificationsAsRead_02:
+    "Invalid Request Data",
+  Settings_SettingsServiceManager_MarkNotificationsAsRead_03: "UnSuccessfull",
+  Settings_SettingsServiceManager_MarkNotificationsAsRead_04: "Exception",
 };
 
 /**

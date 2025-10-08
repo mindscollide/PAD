@@ -24,6 +24,7 @@ import { roleKeyMap, checkRoleMatch } from "./utills";
 import { useGlobalLoader } from "../../../context/LoaderContext";
 import { useNavigate } from "react-router-dom";
 import { useSearchBarContext } from "../../../context/SearchBarContaxt";
+import { useWebNotification } from "../../../context/notificationContext";
 // ✅ Memoized versions so they only re-render if props actually change
 const MemoizedBoxCard = React.memo(BoxCard);
 const MemoizedReportCard = React.memo(ReportCard);
@@ -39,6 +40,7 @@ const Home = () => {
     setAddApprovalRequestData,
     setGetAllPredefineReasonData,
   } = useDashboardContext();
+  const { setWebNotificationData } = useWebNotification();
   const { callApi } = useApi();
   const { showLoader } = useGlobalLoader();
   const roles = JSON.parse(sessionStorage.getItem("user_assigned_roles"));
@@ -115,6 +117,7 @@ const Home = () => {
           setAllInstrumentsData,
           setAddApprovalRequestData,
           setGetAllPredefineReasonData,
+          setWebNotificationData,
           showNotification,
           showLoader,
           navigate,
