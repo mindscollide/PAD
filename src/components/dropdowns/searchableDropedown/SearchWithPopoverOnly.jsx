@@ -77,7 +77,7 @@ const SearchWithPopoverOnly = () => {
   // Reset on selectedKey change
   useEffect(() => {
     setSearchMain("");
-  }, [selectedKey]);
+  }, [selectedKey, activeTab]);
 
   // ----------------------------------------------------------------
   // 🔧 HELPERS
@@ -225,23 +225,27 @@ const SearchWithPopoverOnly = () => {
         if (activeTab === "portfolio") {
           setEmployeePortfolioSearch((prev) => ({
             ...prev,
-            instrumentName: "",
+            instrumentName: searchMain,
             quantity: 0,
             startDate: null,
             endDate: null,
+            brokerIDs: [],
             pageNumber: 0,
             filterTrigger: true,
           }));
+          setSearchMain("");
         } else if (activeTab === "pending") {
           setEmployeePendingApprovalSearch((prev) => ({
             ...prev,
-            instrumentName: "",
+            instrumentName: searchMain,
             quantity: 0,
             startDate: null,
             endDate: null,
+            brokerIDs: [],
             pageNumber: 0,
             filterTrigger: true,
           }));
+          setSearchMain("");
         }
         break;
 

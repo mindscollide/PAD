@@ -35,7 +35,7 @@ import {
 import { toYYMMDD } from "../../../../../commen/funtions/rejex";
 import { useTableScrollBottom } from "../../../../../commen/funtions/scroll";
 
-const PendingApprovals = () => {
+const PendingApprovals = ({activeFilters}) => {
   const navigate = useNavigate();
 
   // -------------------------
@@ -92,8 +92,7 @@ const PendingApprovals = () => {
     const endDate = searchState.endDate ? toYYMMDD(searchState.endDate) : "";
 
     return {
-      InstrumentName:
-        searchState.mainInstrumentName || searchState.instrumentName || "",
+      InstrumentName: searchState.instrumentName || "",
       Quantity: searchState.quantity ? Number(searchState.quantity) : 0,
       StartDate: startDate,
       StatusIds: mapStatusToIds(searchState.status),
@@ -102,7 +101,7 @@ const PendingApprovals = () => {
         addApprovalRequestData?.[assetType]
       ),
       EndDate: endDate,
-      BrokerIds: Array.isArray(searchState.broker) ? searchState.broker : [],
+      BrokerIds: Array.isArray(searchState.brokerIDs) ? searchState.brokerIDs : [],
       PageNumber: Number(searchState.pageNumber) || 0,
       Length: Number(searchState.pageSize) || 10,
     };

@@ -22,7 +22,6 @@ import { useNotification } from "../../../../components/NotificationProvider/Not
 import { useGlobalLoader } from "../../../../context/LoaderContext";
 import { useTransaction } from "../../../../context/myTransaction";
 import { useDashboardContext } from "../../../../context/dashboardContaxt";
-import { useSidebarContext } from "../../../../context/sidebarContaxt";
 import { useGlobalModal } from "../../../../context/GlobalModalContext";
 
 // 🔹 API
@@ -36,12 +35,12 @@ import {
   mapBuySellToIds,
   mapStatusToIds,
 } from "../../../../components/dropdowns/filters/utils";
-import { apiCallSearch } from "../../../../components/dropdowns/searchableDropedown/utill";
 import { toYYMMDD } from "../../../../commen/funtions/rejex";
 
 // 🔹 Styles
 import style from "./myTransaction.module.css";
 import { useTableScrollBottom } from "../../../../commen/funtions/scroll";
+import { buildBrokerOptions } from "../../../../commen/funtions/brokersList";
 
 /**
  * 📄 MyTransaction Component
@@ -64,7 +63,6 @@ const MyTransaction = () => {
   const { callApi } = useApi();
   const { showNotification } = useNotification();
   const { showLoader } = useGlobalLoader();
-  const { selectedKey } = useSidebarContext();
   const { addApprovalRequestData, employeeBasedBrokersData } =
     useDashboardContext();
   const {
@@ -90,17 +88,9 @@ const MyTransaction = () => {
   const [sortedInfo, setSortedInfo] = useState({});
   const [myTransactionData, setMyTransactionData] = useState([]);
   const [loadingMore, setLoadingMore] = useState(false);
-  const [submittedFilters, setSubmittedFilters] = useState([]);
 
   // -------------------- Helpers --------------------
 
-  /**
-   * Maps broker ID to broker name (fallback = ID).
-   */
-  const brokerIdToName = (id) => {
-    const broker = employeeBasedBrokersData?.find((b) => b.brokerID === id);
-    return broker ? broker.brokerName : id;
-  };
 
   /**
    * Fetches transactions from API.
@@ -110,9 +100,7 @@ const MyTransaction = () => {
     if (flag) await showLoader(true);
 
     const requestdata = {
-      InstrumentName:
-        employeeMyTransactionSearch.instrumentName ||
-        employeeMyTransactionSearch.mainInstrumentName,
+      InstrumentName: employeeMyTransactionSearch.instrumentName,
       Quantity: employeeMyTransactionSearch.quantity || 0,
       StartDate: employeeMyTransactionSearch.startDate
         ? toYYMMDD(employeeMyTransactionSearch.startDate)
@@ -126,7 +114,7 @@ const MyTransaction = () => {
       PageNumber: 0,
       Length: employeeMyTransactionSearch.pageSize || 10,
     };
-
+    console.log("requestdata", requestdata);
     const data = await SearchEmployeeTransactionsDetails({
       callApi,
       showNotification,
@@ -192,7 +180,7 @@ const MyTransaction = () => {
   // 🔹 call api on search
   useEffect(() => {
     if (employeeMyTransactionSearch.filterTrigger) {
-      fetchApprovals(false);
+      fetchApprovals(true);
       setEmployeeMyTransactionSearch((prev) => ({
         ...prev,
         filterTrigger: false,
@@ -336,86 +324,137 @@ const MyTransaction = () => {
     handleViewDetailsForTransaction,
   });
 
+  /** 🔹 Handle removing individual filter */
+  const handleRemoveFilter = (key) => {
+    const resetMap = {
+      instrumentName: { instrumentName: "" },
+      dateRange: { startDate: null, endDate: null },
+      quantity: { quantity: 0 },
+      brokerIDs: { brokerIDs: [] },
+    };
+
+    setEmployeeMyTransactionSearch((prev) => ({
+      ...prev,
+      ...resetMap[key],
+      pageNumber: 0,
+      filterTrigger: true,
+    }));
+  };
+
+  /** 🔹 Handle removing all filters */
+  const handleRemoveAllFilters = () => {
+    setEmployeeMyTransactionSearch((prev) => ({
+      ...prev,
+      instrumentName: "",
+      startDate: null,
+      endDate: null,
+      quantity: 0,
+      brokerIDs: [],
+      pageNumber: 0,
+      filterTrigger: true,
+    }));
+  };
+  const brokerOptions = buildBrokerOptions(employeeBasedBrokersData);
+  /** 🔹 Build Active Filters */
+  const activeFilters = (() => {
+    const { instrumentName, startDate, endDate, quantity, brokerIDs } =
+      employeeMyTransactionSearch || {};
+
+    return [
+      instrumentName && {
+        key: "instrumentName",
+        value:
+          instrumentName.length > 13
+            ? instrumentName.slice(0, 13) + "..."
+            : instrumentName,
+      },
+      startDate &&
+        endDate && {
+          key: "dateRange",
+          value: `${startDate} → ${endDate}`,
+        },
+      quantity &&
+        Number(quantity) > 0 && {
+          key: "quantity",
+          value: Number(quantity).toLocaleString("en-US"),
+        },
+      brokerIDs?.length > 0 && {
+        key: "brokerIDs",
+        value:
+          brokerIDs.length === 1
+            ? (() => {
+                const broker = brokerOptions.find(
+                  (b) => b.value === brokerIDs[0]
+                );
+                if (!broker) return "";
+                return broker.label.length > 13
+                  ? broker.label.slice(0, 13) + "..."
+                  : broker.label;
+              })()
+            : "Multiple",
+      },
+    ].filter(Boolean);
+  })();
   // -------------------- Render --------------------
   return (
     <>
       {/* 🔹 Active Filter Tags */}
-      <div className={style["filter-tags-container"]}>
-        {/* Normal filters */}
-        {submittedFilters
-          .filter(({ key }) => key !== "brokerIDs")
-          .map(({ key, value }) => (
-            <div key={`${key}-${value}`} className={style["filter-tag"]}>
-              <span className={style["filter-tag-text"]}>{value}</span>
-              <span
-                className={style["filter-tag-close"]}
-                onClick={() => handleRemoveFilter(key, value)}
-              >
-                &times;
-              </span>
-            </div>
-          ))}
-
-        {/* Brokers filter */}
-        {employeeMyTransactionSearch?.brokerIDs?.length === 1 &&
-          submittedFilters
-            .filter(({ key }) => key === "brokerIDs")
-            .map(({ key, value, label }) => (
-              <div key={`${key}-${value}`} className={style["filter-tag"]}>
-                <span className={style["filter-tag-text"]}>{label}</span>
+      {activeFilters.length > 0 && (
+        <Row gutter={[12, 12]} className={style["filter-tags-container"]}>
+          {activeFilters.map(({ key, value }) => (
+            <Col key={key}>
+              <div className={style["filter-tag"]}>
+                <span>{value}</span>
                 <span
                   className={style["filter-tag-close"]}
-                  onClick={() => handleRemoveFilter(key, value)}
+                  onClick={() => handleRemoveFilter(key)}
                 >
                   &times;
                 </span>
               </div>
-            ))}
+            </Col>
+          ))}
 
-        {employeeMyTransactionSearch?.brokerIDs?.length > 1 && (
-          <div className={style["filter-tag"]}>
-            <span>{"Multiple Brokers"}</span>
-            <span
-              className={style["filter-tag-close"]}
-              onClick={() => handleRemoveFilter("brokerIDs")}
-            >
-              &times;
-            </span>
-          </div>
-        )}
-      </div>
+          {/* 🔹 Show Clear All only if more than one filter */}
+          {activeFilters.length > 1 && (
+            <Col>
+              <div
+                className={`${style["filter-tag"]} ${style["clear-all-tag"]}`}
+                onClick={handleRemoveAllFilters}
+              >
+                <span>Clear All</span>
+              </div>
+            </Col>
+          )}
+        </Row>
+      )}
 
       {/* 🔹 Transactions Table */}
-      <Row>
-        <Col>
-          <PageLayout background="white" style={{ marginTop: "10px" }}>
-            <div className="px-4 md:px-6 lg:px-8 ">
-              <Row>
-                <Col>
-                  <h2 className={style["heading"]}>My Transactions</h2>
-                </Col>
-              </Row>
-              <BorderlessTable
-                rows={myTransactionData}
-                columns={columns}
-                classNameTable="border-less-table-blue"
-                scroll={
-                  myTransactionData?.length
-                    ? {
-                        x: "max-content",
-                        y: submittedFilters.length > 0 ? 450 : 500,
-                      }
-                    : undefined
-                }
-                onChange={(pagination, filters, sorter) =>
-                  setSortedInfo(sorter)
-                }
-                loading={loadingMore}
-              />
-            </div>
-          </PageLayout>
-        </Col>
-      </Row>
+      <PageLayout background="white" style={{ marginTop: "10px" }}
+       className={activeFilters.length > 0 && "changeHeight"}>
+        <div className="px-4 md:px-6 lg:px-8 ">
+          <Row>
+            <Col>
+              <h2 className={style["heading"]}>My Transactions</h2>
+            </Col>
+          </Row>
+          <BorderlessTable
+            rows={myTransactionData}
+            columns={columns}
+            classNameTable="border-less-table-blue"
+            scroll={
+              myTransactionData?.length
+                ? {
+                    x: "max-content",
+                    y: activeFilters.length > 0 ? 450 : 500,
+                  }
+                : undefined
+            }
+            onChange={(pagination, filters, sorter) => setSortedInfo(sorter)}
+            loading={loadingMore}
+          />
+        </div>
+      </PageLayout>
 
       {/* 🔹 Modals */}
       {viewDetailTransactionModal && <ViewDetailsTransactionModal />}

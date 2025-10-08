@@ -433,3 +433,50 @@ li.ant-dropdown-menu-item.ant-dropdown-menu-item-only-child:focus {
   line-height: 100%;
   vertical-align: middle;
 }
+
+/* Change selected date color */
+:where(.css-dev-only-do-not-override-1rfzxih).ant-picker-dropdown
+  .ant-picker-cell-in-view.ant-picker-cell-selected:not(
+    .ant-picker-cell-disabled
+  )
+  .ant-picker-cell-inner,
+:where(.css-dev-only-do-not-override-1rfzxih).ant-picker-dropdown
+  .ant-picker-cell-in-view.ant-picker-cell-range-start:not(
+    .ant-picker-cell-disabled
+  )
+  .ant-picker-cell-inner,
+:where(.css-dev-only-do-not-override-1rfzxih).ant-picker-dropdown
+  .ant-picker-cell-in-view.ant-picker-cell-range-end:not(
+    .ant-picker-cell-disabled
+  )
+  .ant-picker-cell-inner {
+  background-color: #2a3c65 !important; /* your custom color */
+}
+
+:where(.css-dev-only-do-not-override-1rfzxih).ant-picker-dropdown
+  .ant-picker-cell-in-view.ant-picker-cell-in-range:not(
+    .ant-picker-cell-disabled
+  ):before,
+:where(.css-dev-only-do-not-override-1rfzxih).ant-picker-dropdown
+  .ant-picker-cell-in-view.ant-picker-cell-range-start:not(
+    .ant-picker-cell-disabled
+  ):before,
+:where(.css-dev-only-do-not-override-1rfzxih).ant-picker-dropdown
+  .ant-picker-cell-in-view.ant-picker-cell-range-end:not(
+    .ant-picker-cell-disabled
+  ):before {
+  background: #edf3ff;
+}
+
+:where(.css-dev-only-do-not-override-1rfzxih).ant-picker-dropdown
+  .ant-picker-header {
+  display: flex;
+  padding: 0 8px;
+  color: #2a3c65;
+  border-bottom: 1px solid rgba(5, 5, 5, 0.06);
+}
+
+
+:where(.css-dev-only-do-not-override-1rfzxih).ant-picker-dropdown .ant-picker-header-view >button:hover {
+    color: #213155;
+}

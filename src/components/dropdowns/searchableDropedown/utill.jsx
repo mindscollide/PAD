@@ -11,7 +11,6 @@ import {
 } from "../filters/utils";
 import { ComplianceReconcileFilter } from "./ComplianceReconsile";
 import { EmployeeMyApprovalFilter } from "./EmployeeMyApprovalFilter";
-import { EmployeePendingApprovalFilter } from "./EmployeePendingApprovalFilter";
 import { EmployeePortfolioFilter } from "./EmployeePortfolioFilter";
 import { EmployeeTransactionFilter } from "./EmployeeTransactionFilter";
 import { HcaReconcileFilter } from "./HcaReconcileFilter";
@@ -236,32 +235,32 @@ export const handleSearchMainInputReset = ({
       break;
 
     case "2":
-      setEmployeeMyTransactionSearch((prev) => ({
-        ...prev,
-        mainInstrumentName: "",
-      }));
+      // setEmployeeMyTransactionSearch((prev) => ({
+      //   ...prev,
+      //   mainInstrumentName: "",
+      // }));
       break;
 
     case "4":
-      switch (activeTab) {
-        case "portfolio":
-          setComplianceOfficerReconcileTransactionsSearch((prev) => ({
-            ...prev,
-            mainInstrumentName: "",
-          }));
-          break;
-        case "pending":
-          setComplianceOfficerReconcilePortfolioSearch((prev) => ({
-            ...prev,
-            mainInstrumentName: "",
-          }));
-          break;
-        default:
-          setComplianceOfficerReconcileTransactionsSearch((prev) => ({
-            ...prev,
-            mainInstrumentShortName: "",
-          }));
-      }
+      // switch (activeTab) {
+      //   case "portfolio":
+      //     setComplianceOfficerReconcileTransactionsSearch((prev) => ({
+      //       ...prev,
+      //       mainInstrumentName: "",
+      //     }));
+      //     break;
+      //   case "pending":
+      //     setComplianceOfficerReconcilePortfolioSearch((prev) => ({
+      //       ...prev,
+      //       mainInstrumentName: "",
+      //     }));
+      //     break;
+      //   default:
+      //     setComplianceOfficerReconcileTransactionsSearch((prev) => ({
+      //       ...prev,
+      //       mainInstrumentShortName: "",
+      //     }));
+      // }
 
       break;
 
@@ -369,9 +368,12 @@ export const renderFilterContent = (
     case "4":
       return (
         <EmployeePortfolioFilter
-          handleSearch={handleSearch}
           activeTab={activeTab}
           setVisible={setVisible}
+          clear={clear}
+          setClear={setClear}
+          maininstrumentName={searchMain}
+          setMaininstrumentName={setSearchMain}
         />
       );
 

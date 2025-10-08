@@ -9,6 +9,7 @@ import {
 } from "../../../commen/funtions/rejex";
 import styles from "./SearchWithPopoverOnly.module.css";
 import { useDashboardContext } from "../../../context/dashboardContaxt";
+import { buildBrokerOptions } from "../../../commen/funtions/brokersList";
 
 // 🔹 Initial default state
 const INITIAL_LOCAL_STATE = {
@@ -108,12 +109,7 @@ export const EmployeeTransactionFilter = ({
   };
 
   /** Brokers dropdown */
-  // 🔹 Prepare options
-  const brokerOptions = (employeeBasedBrokersData || []).map((broker) => ({
-    label: broker.brokerName, // plain string for search
-    value: broker.brokerID,
-    raw: broker, // keep full broker data for UI
-  }));
+ const brokerOptions = buildBrokerOptions(employeeBasedBrokersData);
 
   // 🔹 Handle selection
   const handleBrokerChange = (selectedIDs) => {
@@ -134,7 +130,7 @@ export const EmployeeTransactionFilter = ({
       endDate: endDate || null,
       brokerIDs: brokerIDs || [],
       pageNumber: 0,
-      tableFilterTrigger: true,
+      filterTrigger: true,
     };
 
     setEmployeeMyTransactionSearch(searchPayload);
@@ -153,7 +149,7 @@ export const EmployeeTransactionFilter = ({
       endDate: null,
       brokerIDs: [],
       pageNumber: 0,
-      tableFilterTrigger: true,
+      filterTrigger: true,
     }));
 
     setLocalState(INITIAL_LOCAL_STATE);
@@ -220,6 +216,7 @@ export const EmployeeTransactionFilter = ({
                 <Checkbox
                   checked={localState.brokerIDs.includes(option.value)} // ✅ sync with state
                   style={{ marginRight: 8 }}
+                  className="custom-broker-option"
                 />
                 {option.data.raw.brokerName}
               </div>

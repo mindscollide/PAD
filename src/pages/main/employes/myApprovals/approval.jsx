@@ -243,21 +243,20 @@ const Approval = () => {
     return [
       instrumentName && {
         key: "instrumentName",
-        value: `Instrument: ${
+        value:
           instrumentName.length > 13
             ? instrumentName.slice(0, 13) + "..."
-            : instrumentName
-        }`,
+            : instrumentName,
       },
       startDate &&
         endDate && {
           key: "dateRange",
-          value: `Date Range: ${startDate} → ${endDate}`,
+          value: `${startDate} → ${endDate}`,
         },
       quantity &&
         Number(quantity) > 0 && {
           key: "quantity",
-          value: `Quantity: ${Number(quantity).toLocaleString("en-US")}`,
+          value: Number(quantity).toLocaleString("en-US"),
         },
     ].filter(Boolean);
   })();
