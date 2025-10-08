@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Dropdown, Badge } from "antd";
 import styles from "./notificationDropdown.module.css";
 
@@ -12,6 +12,12 @@ import ErrorIcon from "../../../assets/img/error-dark.png";
 import InfoIcon from "../../../assets/img/message-dark.png";
 import WarningIcon from "../../../assets/img/error-dark.png";
 import NotificationItem from "./Utils";
+import { useNotification } from "../../NotificationProvider/NotificationProvider";
+import { useGlobalLoader } from "../../../context/LoaderContext";
+import { useApi } from "../../../context/ApiContext";
+import { useNavigate } from "react-router-dom";
+import { useWebNotification } from "../../../context/notificationContext";
+import { GetUserWebNotificationRequest } from "../../../api/notification";
 
 /**
  * NotificationDropdown Component
@@ -31,9 +37,49 @@ import NotificationItem from "./Utils";
  * - Accessibility considerations
  */
 const NotificationDropdown = () => {
+  const navigate = useNavigate();
+  const hasFetched = useRef(false);
+
+  const { showNotification } = useNotification();
+  const { showLoader } = useGlobalLoader();
+  const { setWebNotificationData, webNotificationData } = useWebNotification();
+  const { callApi } = useApi();
   // Component State
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [hovered, setHovered] = useState(false);
+
+  console.log(dropdownOpen, "dropdownOpendropdownOpen");
+
+  console.log(webNotificationData, "Check Is Notification Occur Or not");
+
+  // Web Notification API Calling
+  const fetchInitialNotificationData = async () => {
+    try {
+      await showLoader(true);
+
+      const requestdata = { sRow: 0, eRow: 10 }; // Initial fetch data from API
+      const responseData = await GetUserWebNotificationRequest({
+        callApi,
+        showNotification,
+        showLoader,
+        requestdata,
+        navigate,
+      });
+      if (responseData) {
+        setWebNotificationData(responseData);
+      }
+    } catch (error) {
+      console.error("Error fetching initial notifications:", error);
+    }
+  };
+
+  // Initial Fetch
+  useEffect(() => {
+    if (!hasFetched.current) {
+      hasFetched.current = true;
+      fetchInitialNotificationData();
+    }
+  }, [fetchInitialNotificationData]);
 
   // Notification Data
   const [notifications, setNotifications] = useState([

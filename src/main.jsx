@@ -25,6 +25,7 @@ import { MyTransactionsProvider } from "./context/myTransaction";
 import { Loader } from "./components";
 import { ReconcileProvider } from "./context/reconsileContax";
 import { MyEscalatedApprovalsProvider } from "./context/escalatedApprovalContext";
+import { MyNotificationProvider } from "./context/notificationContext";
 
 /**
  * 🌍 RootComponent
@@ -81,14 +82,16 @@ const RootComponent = () => {
                   <PortfolioProvider>
                     <ReconcileProvider>
                       <MyEscalatedApprovalsProvider>
-                        <SidebarProvider>
-                          <SearchBarProvider>
-                            {/* 🔹 Main App Router */}
-                            <RouterProvider router={router} />
-                            {/* 🔹 Global Loader Component */}
-                            <Loader />
-                          </SearchBarProvider>
-                        </SidebarProvider>
+                        <MyNotificationProvider>
+                          <SidebarProvider>
+                            <SearchBarProvider>
+                              {/* 🔹 Main App Router */}
+                              <RouterProvider router={router} />
+                              {/* 🔹 Global Loader Component */}
+                              <Loader />
+                            </SearchBarProvider>
+                          </SidebarProvider>
+                        </MyNotificationProvider>
                       </MyEscalatedApprovalsProvider>
                     </ReconcileProvider>
                   </PortfolioProvider>
