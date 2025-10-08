@@ -140,12 +140,6 @@ export const MarkNotificationAsReadRequest = async ({
         responseMessage ===
         "Settings_SettingsServiceManager_MarkNotificationsAsRead_01"
       ) {
-        showNotification({
-          type: "success",
-          title: "Success",
-          description: "Notifications marked as read successfully.",
-        });
-
         return {
           success: true,
           message: responseMessage,
