@@ -17,7 +17,15 @@ import { useGlobalLoader } from "../../../context/LoaderContext";
 import { useApi } from "../../../context/ApiContext";
 import { useNavigate } from "react-router-dom";
 import { useWebNotification } from "../../../context/notificationContext";
-import { GetUserWebNotificationRequest } from "../../../api/notification";
+import {
+  GetUserWebNotificationRequest,
+  MarkNotificationAsReadRequest,
+} from "../../../api/notification";
+import {
+  formatApiDateTime,
+  getCurrentDateTimeMarkAsReadNotification,
+  toYYMMDD,
+} from "../../../commen/funtions/rejex";
 
 /**
  * NotificationDropdown Component
@@ -42,7 +50,12 @@ const NotificationDropdown = () => {
 
   const { showNotification } = useNotification();
   const { showLoader } = useGlobalLoader();
-  const { setWebNotificationData, webNotificationData } = useWebNotification();
+  const {
+    setWebNotificationData,
+    webNotificationData,
+    markAsReadNotificationState,
+    setMarkAsReadNotificationState,
+  } = useWebNotification();
   const { callApi } = useApi();
   // Component State
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -50,226 +63,21 @@ const NotificationDropdown = () => {
 
   console.log(dropdownOpen, "dropdownOpendropdownOpen");
 
-  console.log(webNotificationData, "Check Is Notification Occur Or not");
-
-  // Web Notification API Calling
-  const fetchInitialNotificationData = async () => {
-    try {
-      await showLoader(true);
-
-      const requestdata = { sRow: 0, eRow: 10 }; // Initial fetch data from API
-      const responseData = await GetUserWebNotificationRequest({
-        callApi,
-        showNotification,
-        showLoader,
-        requestdata,
-        navigate,
-      });
-      if (responseData) {
-        setWebNotificationData(responseData);
-      }
-    } catch (error) {
-      console.error("Error fetching initial notifications:", error);
-    }
-  };
-
-  // Initial Fetch
-  useEffect(() => {
-    if (!hasFetched.current) {
-      hasFetched.current = true;
-      fetchInitialNotificationData();
-    }
-  }, [fetchInitialNotificationData]);
-
-  // Notification Data
-  const [notifications, setNotifications] = useState([
-    {
-      id: 1,
-      title: "Trade Approved",
-      description:
-        "Your approval for the trade of 100 bonds of ABC Ltd. has been processed.",
-      time: "30 minutes ago",
-      type: "success",
-      read: false,
-    },
-    {
-      id: 2,
-      title: "New Message",
-      description:
-        "Your approval for the trade of 100 bonds of ABC Ltd. has been processed.",
-      time: "30 minutes ago",
-      type: "success",
-      read: false,
-    },
-    {
-      id: 3,
-      title: "Request Approved",
-      description:
-        "Your approval for the trade of 100 bonds of ABC Ltd. has been processed.",
-      time: "30 minutes ago",
-      type: "success", // success | info | error | warning
-      read: false,
-    },
-    {
-      id: 4,
-      title: "Request Approved",
-      description:
-        "Your approval for the trade of 100 bonds of ABC Ltd. has been processed.",
-      time: "30 minutes ago",
-      type: "success", // success | info | error | warning
-      read: false,
-    },
-    {
-      id: 5,
-      title: "Request Approved",
-      description:
-        "Your approval for the trade of 100 bonds of ABC Ltd. has been processed.",
-      time: "30 minutes ago",
-      type: "success", // success | info | error | warning
-      read: false,
-    },
-    {
-      id: 6,
-      title: "Request Approved",
-      description:
-        "Your approval for the trade of 100 bonds of ABC Ltd. has been processed.",
-      time: "30 minutes ago",
-      type: "success", // success | info | error | warning
-      read: false,
-    },
-    {
-      id: 7,
-      title: "Request Approved",
-      description:
-        "Your approval for the trade of 100 bonds of ABC Ltd. has been processed.",
-      time: "30 minutes ago",
-      type: "error", // success | info | error | warning
-      read: false,
-    },
-    {
-      id: 8,
-      title: "Request Approved",
-      description:
-        "Your approval for the trade of 100 bonds of ABC Ltd. has been processed.",
-      time: "30 minutes ago",
-      type: "success", // success | info | error | warning
-      read: false,
-    },
-    {
-      id: 9,
-      title: "Request Approved",
-      description:
-        "Your approval for the trade of 100 bonds of ABC Ltd. has been processed.",
-      time: "30 minutes ago",
-      type: "success", // success | info | error | warning
-      read: false,
-    },
-    {
-      id: 10,
-      title: "Request Approved",
-      description:
-        "Your approval for the trade of 100 bonds of ABC Ltd. has been processed.",
-      time: "30 minutes ago",
-      type: "success", // success | info | error | warning
-      read: false,
-    },
-    {
-      id: 11,
-      title: "Request Approved",
-      description:
-        "Your approval for the trade of 100 bonds of ABC Ltd. has been processed.",
-      time: "30 minutes ago",
-      type: "success", // success | info | error | warning
-      read: false,
-    },
-    {
-      id: 12,
-      title: "Request Approved",
-      description:
-        "Your approval for the trade of 100 bonds of ABC Ltd. has been processed.",
-      time: "30 minutes ago",
-      type: "success", // success | info | error | warning
-      read: false,
-    },
-    {
-      id: 14,
-      title: "Request Approved",
-      description:
-        "Your approval for the trade of 100 bonds of ABC Ltd. has been processed.",
-      time: "30 minutes ago",
-      type: "success", // success | info | error | warning
-      read: false,
-    },
-    {
-      id: 15,
-      title: "Request Approved",
-      description:
-        "Your approval for the trade of 100 bonds of ABC Ltd. has been processed.",
-      time: "30 minutes ago",
-      type: "success", // success | info | error | warning
-      read: false,
-    },
-    {
-      id: 16,
-      title: "Request Approved",
-      description:
-        "Your approval for the trade of 100 bonds of ABC Ltd. has been processed.",
-      time: "30 minutes ago",
-      type: "success", // success | info | error | warning
-      read: false,
-    },
-    {
-      id: 17,
-      title: "Request Approved",
-      description:
-        "Your approval for the trade of 100 bonds of ABC Ltd. has been processed.",
-      time: "30 minutes ago",
-      type: "success", // success | info | error | warning
-      read: false,
-    },
-    {
-      id: 18,
-      title: "Request Approved",
-      description:
-        "Your approval for the trade of 100 bonds of ABC Ltd. has been processed.",
-      time: "30 minutes ago",
-      type: "success", // success | info | error | warning
-      read: false,
-    },
-    {
-      id: 19,
-      title: "Request Approved",
-      description:
-        "Your approval for the trade of 100 bonds of ABC Ltd. has been processed.",
-      time: "30 minutes ago",
-      type: "success", // success | info | error | warning
-      read: false,
-    },
-    {
-      id: 20,
-      title: "Request Approved",
-      description:
-        "Your approval for the trade of 100 bonds of ABC Ltd. has been processed.",
-      time: "30 minutes ago",
-      type: "success", // success | info | error | warning
-      read: false,
-    },
-    {
-      id: 21,
-      title: "Request Approved",
-      description:
-        "Your approval for the trade of 100 bonds of ABC Ltd. has been processed.",
-      time: "30 minutes ago",
-      type: "success", // success | info | error | warning
-      read: false,
-    },
-  ]);
+  console.log(
+    { webNotificationData, markAsReadNotificationState },
+    "Check Is Notification Occur Or not"
+  );
 
   /**
    * Calculate the number of unread notifications
    * @type {number}
    */
-  const unreadCount = notifications.filter((n) => !n.read).length;
+
+  // 🔹 Extract notifications safely
+  const notifications = webNotificationData?.notifications || [];
+
+  // 🔹 Calculate unread count directly from API data
+  const unreadCount = webNotificationData?.unReadCount || 0;
 
   /**
    * Get the appropriate bell icon based on component state
@@ -286,6 +94,7 @@ const NotificationDropdown = () => {
    * @param {string} type - Notification type (success|error|info|warning)
    * @returns {string} Path to the notification type icon
    */
+
   const getNotificationIcon = (type) => {
     switch (type) {
       case "success":
@@ -301,11 +110,92 @@ const NotificationDropdown = () => {
     }
   };
 
+  const buildNotificationObject = (notification) => {
+    const {
+      notificationID,
+      notificationActionName,
+      description,
+      sentDate,
+      sentTime,
+      isRead,
+    } = notification || {};
+
+    const formatNotificationTime = () => {
+      // 🧠 If sentDate and sentTime exist separately, combine them
+      if (sentDate && sentTime) {
+        const formattedDateTime = `${sentDate} ${sentTime}`;
+        return formatApiDateTime(formattedDateTime);
+      }
+
+      // 🧠 Fallback (no date info)
+      return "";
+    };
+
+    return {
+      id: notificationID,
+      title: notificationActionName,
+      description,
+      time: formatNotificationTime(),
+      type: "success",
+      read: isRead,
+    };
+  };
+
+  // 🔹 Mark all notifications as read when dropdown closes or user clicks anywhere
+  // 🔹 Mark all as read (triggered via context)
+  const markAllAsRead = async () => {
+    if (!unreadCount) return;
+
+    try {
+      const currentDateTime = getCurrentDateTimeMarkAsReadNotification();
+      const requestdata = {
+        ReadOnDateTime: currentDateTime,
+      };
+
+      console.log(requestdata, "CHeckecnecnecln");
+
+      await MarkNotificationAsReadRequest({
+        callApi,
+        showNotification,
+        showLoader,
+        requestdata,
+        navigate,
+      });
+
+      // Update local data
+      setWebNotificationData((prev = {}) => ({
+        ...prev,
+        unReadCount: 0,
+        notifications: (prev.notifications || []).map((n) => ({
+          ...n,
+          isRead: true,
+        })),
+      }));
+
+      // Update context state
+      setMarkAsReadNotificationState(true);
+    } catch (error) {
+      console.error("Error marking all notifications as read:", error);
+    }
+  };
+
+  // 🔹 React when the context triggers mark-as-read
+  useEffect(() => {
+    if (markAsReadNotificationState) {
+      markAllAsRead();
+      setMarkAsReadNotificationState(false); // reset state
+    }
+  }, [markAsReadNotificationState]);
+
   return (
     <Dropdown
       trigger={["click"]}
       placement="bottomRight"
-      onOpenChange={(open) => setDropdownOpen(open)}
+      onOpenChange={(open) => {
+        setDropdownOpen(open);
+        // When it closes, mark all as read (optional)
+        if (!open) setMarkAsReadNotificationState(true);
+      }}
       getPopupContainer={(trigger) => trigger.parentElement}
       overlayClassName={styles["dropdown-overlay"]}
       popupRender={(menu) => (
@@ -319,8 +209,8 @@ const NotificationDropdown = () => {
             <div className={styles["notification-list"]}>
               {notifications.map((notification) => (
                 <NotificationItem
-                  key={notification.id}
-                  notification={notification}
+                  key={notification.notificationID}
+                  notification={buildNotificationObject(notification)}
                   getNotificationIcon={getNotificationIcon}
                 />
               ))}

@@ -77,7 +77,10 @@ export function formatApiDateTime(apiDateTime) {
   const ampm = localHours >= 12 ? "pm" : "am";
 
   localHours = localHours % 12 || 12; // 0 -> 12 for 12-hour clock
-  const formattedTime = `${String(localHours).padStart(2, "0")}:${localMinutes} ${ampm}`;
+  const formattedTime = `${String(localHours).padStart(
+    2,
+    "0"
+  )}:${localMinutes} ${ampm}`;
 
   return `${localYear}-${localMonth}-${localDay} | ${formattedTime}`;
 }
@@ -146,4 +149,17 @@ export const formatShowOnlyDateForDateRange = (date) => {
 
 export const formatCode = (code = "") => {
   return code.replace(/^([A-Za-z]+)(\d+)$/, "$1-$2");
+};
+
+export const getCurrentDateTimeMarkAsReadNotification = () => {
+  const now = new Date();
+
+  const year = now.getFullYear();
+  const month = String(now.getMonth() + 1).padStart(2, "0"); // Months are 0-indexed
+  const day = String(now.getDate()).padStart(2, "0");
+  const hours = String(now.getHours()).padStart(2, "0");
+  const minutes = String(now.getMinutes()).padStart(2, "0");
+  const seconds = String(now.getSeconds()).padStart(2, "0");
+
+  return `${year}${month}${day}${hours}${minutes}${seconds}`;
 };

@@ -42,6 +42,9 @@ export const MyNotificationProvider = ({ children }) => {
     totalCount: 0,
   });
 
+  const [markAsReadNotificationState, setMarkAsReadNotificationState] =
+    useState(false);
+
   /**
    * ♻️ Reset Context State (Table + API Data)
    *
@@ -63,6 +66,8 @@ export const MyNotificationProvider = ({ children }) => {
         // Notification data (API)
         webNotificationData,
         setWebNotificationData,
+        markAsReadNotificationState,
+        setMarkAsReadNotificationState,
         resetWebNotificationDataContextState,
       }}
     >
