@@ -229,10 +229,10 @@ export const handleSearchMainInputReset = ({
 }) => {
   switch (selectedKey) {
     case "1":
-      setEmployeeMyApprovalSearch((prev) => ({
-        ...prev,
-        mainInstrumentName: "",
-      }));
+      // setEmployeeMyApprovalSearch((prev) => ({
+      //   ...prev,
+      //   mainInstrumentName: "",
+      // }));
       break;
 
     case "2":
@@ -337,22 +337,33 @@ export const renderFilterContent = (
   reconcileActiveTab,
   activeTabHCO,
   handleSearch,
-  setVisible
+  visible,
+  setVisible,
+  searchMain,
+  setSearchMain,
+  clear,
+  setClear
 ) => {
   switch (selectedKey) {
     case "1":
       return (
         <EmployeeMyApprovalFilter
-          handleSearch={handleSearch}
           setVisible={setVisible}
+          clear={clear}
+          setClear={setClear}
+          maininstrumentName={searchMain}
+          setMaininstrumentName={setSearchMain}
         />
       );
 
     case "2":
       return (
         <EmployeeTransactionFilter
-          handleSearch={handleSearch}
           setVisible={setVisible}
+          clear={clear}
+          setClear={setClear}
+          maininstrumentName={searchMain}
+          setMaininstrumentName={setSearchMain}
         />
       );
     case "4":

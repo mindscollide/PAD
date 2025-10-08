@@ -38,10 +38,10 @@ import {
 } from "../../../../components/dropdowns/filters/utils";
 import { apiCallSearch } from "../../../../components/dropdowns/searchableDropedown/utill";
 import { toYYMMDD } from "../../../../commen/funtions/rejex";
-import { useTableScrollBottom } from "../myApprovals/utils";
 
 // 🔹 Styles
 import style from "./myTransaction.module.css";
+import { useTableScrollBottom } from "../../../../commen/funtions/scroll";
 
 /**
  * 📄 MyTransaction Component
@@ -188,6 +188,17 @@ const MyTransaction = () => {
       tableFilterTrigger: false,
     });
   }, []);
+
+  // 🔹 call api on search
+  useEffect(() => {
+    if (employeeMyTransactionSearch.filterTrigger) {
+      fetchApprovals(false);
+      setEmployeeMyTransactionSearch((prev) => ({
+        ...prev,
+        filterTrigger: false,
+      }));
+    }
+  }, [employeeMyTransactionSearch.filterTrigger]);
 
   // 🔹 Refresh on MQTT update
   useEffect(() => {

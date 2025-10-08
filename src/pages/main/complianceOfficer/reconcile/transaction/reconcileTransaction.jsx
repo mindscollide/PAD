@@ -22,7 +22,6 @@ import { useReconcileContext } from "../../../../../context/reconsileContax";
 
 // 🔹 Hooks
 import { useNotification } from "../../../../../components/NotificationProvider/NotificationProvider";
-import { useTableScrollBottom } from "../../../employes/myApprovals/utils";
 
 // 🔹 API
 import { SearchEmployeePendingUploadedPortFolio } from "../../../../../api/protFolioApi";
@@ -45,6 +44,7 @@ import NonCompliantDeclineModal from "./modals/nonCompliantDeclineModal/nonCompl
 import ViewReconcileTransactionComment from "./modals/viewReconcileTransactionComment/ViewReconcileTransactionComment";
 import ViewTicketReconcileModal from "./modals/viewTicketReconcileModal/viewTicketReconcileModal";
 import UploadReconcileTicketModal from "./modals/uploadReconcileTicketModal/UploadReconcileTicketModal";
+import { useTableScrollBottom } from "../../../../../commen/funtions/scroll";
 
 /**
  * 📌 ReconcileTransaction

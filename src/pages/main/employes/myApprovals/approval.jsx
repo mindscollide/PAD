@@ -15,7 +15,6 @@ import { useGlobalLoader } from "../../../../context/LoaderContext";
 import { useApi } from "../../../../context/ApiContext";
 import { useMyApproval } from "../../../../context/myApprovalContaxt";
 import { useGlobalModal } from "../../../../context/GlobalModalContext";
-import { useSidebarContext } from "../../../../context/sidebarContaxt";
 import { useDashboardContext } from "../../../../context/dashboardContaxt";
 import { useSearchBarContext } from "../../../../context/SearchBarContaxt";
 
@@ -30,11 +29,7 @@ import {
   mapBuySellToIds,
   mapStatusToIds,
 } from "../../../../components/dropdowns/filters/utils";
-import {
-  getBorderlessTableColumns,
-  mapEmployeeMyApprovalData,
-  useTableScrollBottom,
-} from "./utils";
+import { getBorderlessTableColumns, mapEmployeeMyApprovalData } from "./utils";
 import { approvalStatusMap } from "../../../../components/tables/borderlessTable/utill";
 import { toYYMMDD } from "../../../../commen/funtions/rejex";
 
@@ -49,6 +44,7 @@ import ConductTransaction from "./modal/conductTransaction/ConductTransaction";
 
 // 🔹 Styles
 import style from "./approval.module.css";
+import { useTableScrollBottom } from "../../../../commen/funtions/scroll";
 
 const Approval = () => {
   const navigate = useNavigate();
@@ -59,7 +55,6 @@ const Approval = () => {
   const { showNotification } = useNotification();
   const { showLoader } = useGlobalLoader();
   const { callApi } = useApi();
-  const { selectedKey } = useSidebarContext();
 
   const {
     employeeMyApproval,
@@ -90,18 +85,8 @@ const Approval = () => {
 
   // ----------------- Local State -----------------
   const [sortedInfo, setSortedInfo] = useState({});
-  const [submittedFilters, setSubmittedFilters] = useState([]);
   const [isEquitiesModalOpen, setIsEquitiesModalOpen] = useState(false);
   const [loadingMore, setLoadingMore] = useState(false);
-
-  // Keys for displaying active filters as tags
-  const filterKeys = [
-    { key: "instrumentName", label: "Instrument" },
-    { key: "mainInstrumentName", label: "Main Instrument" },
-    { key: "startDate", label: "Date" },
-    { key: "endDate", label: "Date" },
-    { key: "quantity", label: "Quantity" },
-  ];
 
   // ----------------- Dropdown -----------------
   const menuItems = [
@@ -116,7 +101,8 @@ const Approval = () => {
   ];
 
   // ----------------- Helpers -----------------
-  /** Build API request payload */
+
+  /** 🔹 Build API request payload */
   const buildApprovalRequest = useCallback(
     (searchState = {}) => ({
       InstrumentName:
@@ -134,7 +120,7 @@ const Approval = () => {
     [addApprovalRequestData]
   );
 
-  /** Fetch approvals */
+  /** 🔹 Fetch approvals from API */
   const fetchApprovals = useCallback(
     async (requestdata, { loader = false, lazy = false } = {}) => {
       if (loader) await showLoader(true);
@@ -153,18 +139,11 @@ const Approval = () => {
         approvals
       );
 
-      setIsEmployeeMyApproval((prev) => {
-        if (lazy) {
-          return {
-            approvals: [...(prev?.approvals || []), ...mapped],
-            totalRecords: res?.totalRecords ?? mapped.length,
-          };
-        }
-        return {
-          approvals: mapped,
-          totalRecords: res?.totalRecords ?? mapped.length,
-        };
-      });
+      setIsEmployeeMyApproval((prev) => ({
+        approvals: lazy ? [...(prev?.approvals || []), ...mapped] : mapped,
+        totalRecords: res?.totalRecords ?? mapped.length,
+      }));
+
       setEmployeeMyApprovalSearch((prev) => ({
         ...prev,
         pageNumber: lazy ? prev.pageNumber + mapped.length : mapped.length,
@@ -180,7 +159,7 @@ const Approval = () => {
     ]
   );
 
-  /** Handle "View Details" modal */
+  /** 🔹 Handle "View Details" modal */
   const handleViewDetails = async (approvalID) => {
     await showLoader(true);
     const responseData = await GetAllViewDetailsByTradeApprovalID({
@@ -196,48 +175,89 @@ const Approval = () => {
     }
   };
 
-  // ----------------- Table Columns -----------------
-  const columns = getBorderlessTableColumns({
-    approvalStatusMap,
-    sortedInfo,
-    employeeMyApprovalSearch,
-    setEmployeeMyApprovalSearch,
-    setIsViewDetail,
-    onViewDetail: handleViewDetails,
-  });
+  /** 🔹 Handle removing individual filter */
+  const handleRemoveFilter = (key) => {
+    const resetMap = {
+      instrumentName: { instrumentName: "" },
+      dateRange: { startDate: null, endDate: null },
+      quantity: { quantity: 0 },
+    };
+
+    setEmployeeMyApprovalSearch((prev) => ({
+      ...prev,
+      ...resetMap[key],
+      pageNumber: 0,
+      filterTrigger: true,
+    }));
+  };
+
+  /** 🔹 Handle removing all filters */
+  const handleRemoveAllFilters = () => {
+    setEmployeeMyApprovalSearch((prev) => ({
+      ...prev,
+      instrumentName: "",
+      startDate: null,
+      endDate: null,
+      quantity: 0,
+      pageNumber: 0,
+      filterTrigger: true,
+    }));
+  };
+
+  /** 🔹 Build Active Filters */
+  const activeFilters = (() => {
+    const { instrumentName, startDate, endDate, quantity } =
+      employeeMyApprovalSearch || {};
+
+    return [
+      instrumentName && {
+        key: "instrumentName",
+        value: `Instrument: ${
+          instrumentName.length > 13
+            ? instrumentName.slice(0, 13) + "..."
+            : instrumentName
+        }`,
+      },
+      startDate &&
+        endDate && {
+          key: "dateRange",
+          value: `Date Range: ${startDate} → ${endDate}`,
+        },
+      quantity &&
+        Number(quantity) > 0 && {
+          key: "quantity",
+          value: `Quantity: ${Number(quantity).toLocaleString("en-US")}`,
+        },
+    ].filter(Boolean);
+  })();
 
   // ----------------- Effects -----------------
+
   // Initial Fetch
   useEffect(() => {
     if (!hasFetched.current) {
       hasFetched.current = true;
-      const requestdata = buildApprovalRequest(employeeMyApprovalSearch);
-      console.log("fetchApprovals");
-      fetchApprovals(requestdata, { loader: true });
+      fetchApprovals(buildApprovalRequest(employeeMyApprovalSearch), {
+        loader: true,
+      });
     }
   }, [buildApprovalRequest, employeeMyApprovalSearch, fetchApprovals]);
 
-  // Reset Search State on Unmount
+  // Reset on Unmount
   useEffect(() => {
     return () => {
       resetEmployeeMyApprovalSearch();
       setIsEmployeeMyApproval([]);
-      setSubmittedFilters([]);
     };
   }, []);
 
-  // Sync Active Filters → Tags
+  // Fetch on Filter Trigger
   useEffect(() => {
     if (employeeMyApprovalSearch.filterTrigger) {
-      const requestdata = buildApprovalRequest(employeeMyApprovalSearch);
-      console.log("fetchApprovals");
-      fetchApprovals(requestdata, { loader: true });
+      fetchApprovals(buildApprovalRequest(employeeMyApprovalSearch), {
+        loader: true,
+      });
 
-      // const snapshot = filterKeys
-      //   .filter(({ key }) => employeeMyApprovalSearch[key])
-      //   .map(({ key }) => ({ key, value: employeeMyApprovalSearch[key] }));
-
-      // setSubmittedFilters(snapshot);
       setEmployeeMyApprovalSearch((prev) => ({
         ...prev,
         filterTrigger: false,
@@ -245,25 +265,13 @@ const Approval = () => {
     }
   }, [employeeMyApprovalSearch.filterTrigger]);
 
-  // Table Filter Trigger
-  // useEffect(() => {
-  //   if (employeeMyApprovalSearch.tableFilterTrigger) {
-  //     const requestdata = buildApprovalRequest(employeeMyApprovalSearch);
-  //     fetchApprovals(requestdata, { loader: true });
-  //     setEmployeeMyApprovalSearch((prev) => ({
-  //       ...prev,
-  //       tableFilterTrigger: false,
-  //     }));
-  //   }
-  // }, [employeeMyApprovalSearch.tableFilterTrigger]);
-
-  // Reload Detection → Reset Search State
+  // Reload Detection
   useEffect(() => {
     try {
       const navEntries = performance.getEntriesByType("navigation");
       if (navEntries[0]?.type === "reload") resetEmployeeMyApprovalSearch();
     } catch (error) {
-      console.error("error", error);
+      console.error("Reload detection failed", error);
     }
   }, []);
 
@@ -271,13 +279,10 @@ const Approval = () => {
   useEffect(() => {
     if (employeeMyApprovalMqtt) {
       setIsEmployeeMyApprovalMqtt(false);
-      const requestdata = {
-        ...buildApprovalRequest(employeeMyApprovalSearch),
-        PageNumber: 0,
-      };
-      console.log("fetchApprovals");
-      setIsEmployeeMyApprovalMqtt(false);
-      fetchApprovals(requestdata);
+      fetchApprovals(
+        { ...buildApprovalRequest(employeeMyApprovalSearch), PageNumber: 0 },
+        {}
+      );
     }
   }, [employeeMyApprovalMqtt]);
 
@@ -289,19 +294,16 @@ const Approval = () => {
         employeeMyApproval?.approvals?.length
       )
         return;
+
       try {
         setLoadingMore(true);
-
-        const requestdata = {
-          ...buildApprovalRequest(employeeMyApprovalSearch),
-          PageNumber: employeeMyApprovalSearch.pageNumber || 0,
-        };
-        console.log("fetchApprovals");
-        await fetchApprovals(requestdata, { lazy: true });
-        // setEmployeeMyApprovalSearch((prev) => ({
-        //   ...prev,
-        //   pageNumber: (prev.pageNumber || 0) + 10,
-        // }));
+        await fetchApprovals(
+          {
+            ...buildApprovalRequest(employeeMyApprovalSearch),
+            PageNumber: employeeMyApprovalSearch.pageNumber || 0,
+          },
+          { lazy: true }
+        );
       } catch (err) {
         console.error("Error loading more approvals:", err);
       } finally {
@@ -316,28 +318,40 @@ const Approval = () => {
   return (
     <>
       {/* 🔹 Active Filter Tags */}
-      {submittedFilters.length > 0 && (
+      {activeFilters.length > 0 && (
         <Row gutter={[12, 12]} className={style["filter-tags-container"]}>
-          {submittedFilters.map(({ key, value }) => (
+          {activeFilters.map(({ key, value }) => (
             <Col key={key}>
               <div className={style["filter-tag"]}>
                 <span>{value}</span>
                 <span
                   className={style["filter-tag-close"]}
-                  onClick={() => console.log("TODO: Remove filter")}
+                  onClick={() => handleRemoveFilter(key)}
                 >
                   &times;
                 </span>
               </div>
             </Col>
           ))}
+
+          {/* 🔹 Show Clear All only if more than one filter */}
+          {activeFilters.length > 1 && (
+            <Col>
+              <div
+                className={`${style["filter-tag"]} ${style["clear-all-tag"]}`}
+                onClick={handleRemoveAllFilters}
+              >
+                <span>Clear All</span>
+              </div>
+            </Col>
+          )}
         </Row>
       )}
 
       {/* 🔹 Page Layout */}
       <PageLayout
         background="white"
-        className={submittedFilters.length > 0 && "changeHeight"}
+        className={activeFilters.length > 0 && "changeHeight"}
       >
         <div className="px-4 md:px-6 lg:px-8">
           {/* Header */}
@@ -357,13 +371,17 @@ const Approval = () => {
           {/* Table */}
           <BorderlessTable
             rows={employeeMyApproval?.approvals || []}
-            columns={columns}
+            columns={getBorderlessTableColumns({
+              approvalStatusMap,
+              sortedInfo,
+              employeeMyApprovalSearch,
+              setEmployeeMyApprovalSearch,
+              setIsViewDetail,
+              onViewDetail: handleViewDetails,
+            })}
             scroll={
               employeeMyApproval?.approvals?.length
-                ? {
-                    x: "max-content",
-                    y: submittedFilters.length > 0 ? 450 : 500,
-                  }
+                ? { x: "max-content", y: activeFilters.length > 0 ? 450 : 500 }
                 : undefined
             }
             classNameTable="border-less-table-orange"

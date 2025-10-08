@@ -17,14 +17,27 @@ import {
 } from "../../../../commen/funtions/rejex";
 import { getTradeTypeById } from "../../headOfComplianceOffice/escalatedVerifications/escalatedVerification/util";
 
-// 🔹 Constants
-const COLUMN_WIDTHS = {
-  APPROVAL_ID: { min: 100, max: 150 },
-  INSTRUMENT: { min: 130, max: 170 },
-  TYPE: { min: 80, max: 100 },
-  STATUS: { min: 110, max: 240 },
-  QUANTITY: { min: 100, max: 150 },
-  TIME_REMAINING: { min: 120 },
+// 🔹 CONSTANTS
+const COLUMN_CONFIG = {
+  WIDTHS: {
+    APPROVAL_ID: { min: 100, max: 130 }, // Reduced
+    INSTRUMENT: { min: 100, max: 150 }, // Reduced
+    TYPE: { min: 70, max: 90 }, // Reduced
+    DATE_TIME: { min: 100, max: 150 }, // Increased significantly for empty state
+    STATUS: { min: 100, max: 130 }, // Reduced
+    QUANTITY: { min: 150, max: 200 }, // Reduced
+    TIME_REMAINING: { min: 200, max: 250 }, // Increased significantly for empty state
+    ACTIONS: { min: 100, max: 120 }, // Reduced
+    ESCALATED: { min: 0, max: 40 }, // Reduced
+  },
+  SORT_ORDER: {
+    ASCEND: "ascend",
+    DESCEND: "descend",
+  },
+  STATUS: {
+    PENDING: "Pending",
+    NOT_TRADED: "Not-Traded",
+  },
 };
 
 /**
@@ -37,7 +50,6 @@ export const mapEmployeeMyApprovalData = (
   assetTypeData,
   employeeMyApproval = []
 ) => {
-  // Normalize input to always work with an array
   const approvals = Array.isArray(employeeMyApproval)
     ? employeeMyApproval
     : employeeMyApproval?.approvals || [];
@@ -45,7 +57,7 @@ export const mapEmployeeMyApprovalData = (
   if (!approvals.length) return [];
 
   return approvals.map((item) => ({
-    key: item.approvalID, // Unique key for React
+    key: item.approvalID,
     approvalID: item.approvalID,
     tradeApprovalID: item.tradeApprovalID || "",
     instrumentCode: item?.instrument?.instrumentCode || "—",
@@ -53,7 +65,7 @@ export const mapEmployeeMyApprovalData = (
     assetTypeShortCode: item?.assetType?.assetTypeShortCode || "—",
     requestDateTime:
       [item?.requestDate, item?.requestTime].filter(Boolean).join(" ") || "—",
-    isEscalated: false, // Default value, can be updated if needed
+    isEscalated: false,
     type: getTradeTypeById(assetTypeData, item?.tradeType) || "-",
     status: item.approvalStatus?.approvalStatusName || "",
     quantity: item.quantity || 0,
@@ -70,7 +82,7 @@ export const mapEmployeeMyApprovalData = (
  */
 const getSortIcon = (columnKey, sortedInfo) => {
   if (sortedInfo?.columnKey === columnKey) {
-    return sortedInfo.order === "ascend" ? (
+    return sortedInfo.order === COLUMN_CONFIG.SORT_ORDER.ASCEND ? (
       <img
         draggable={false}
         src={ArrowDown}
@@ -101,21 +113,39 @@ const getSortIcon = (columnKey, sortedInfo) => {
 };
 
 /**
- * Creates a table header with sort icon
+ * Creates a table header with sort icon and proper alignment
  * @param {string} label - Column display label
  * @param {string} columnKey - Column unique key
  * @param {Object} sortedInfo - Current sorting state
  * @returns {JSX.Element} Header component with sort icon
  */
+
+// Helper for consistent column titles
 const withSortIcon = (label, columnKey, sortedInfo) => (
-  <div
-    className={style["table-header-wrapper"]}
-    data-testid={`header-${columnKey}`}
-  >
+  <div className={style["table-header-wrapper"]}>
     <span className={style["table-header-text"]}>{label}</span>
     <span className={style["table-header-icon"]}>
       {getSortIcon(columnKey, sortedInfo)}
     </span>
+  </div>
+);
+
+/**
+ * Creates a filter header without sort icon
+ * @param {React.Component} FilterComponent - Filter component (TypeColumnTitle, StatusColumnTitle)
+ * @returns {JSX.Element} Header component with filter
+ */
+const withFilterHeader = (FilterComponent) => (
+  <div
+    className={style["table-header-wrapper"]}
+    style={{
+      display: "flex",
+      alignItems: "center",
+      minHeight: "32px",
+      width: "100%",
+    }}
+  >
+    <FilterComponent />
   </div>
 );
 
@@ -126,18 +156,25 @@ const withSortIcon = (label, columnKey, sortedInfo) => (
  * @returns {Object} Style configuration object
  */
 const createCellStyle = (minWidth, maxWidth = null) => {
-  const style = {
+  const baseStyle = {
     minWidth: `${minWidth}px`,
     whiteSpace: "nowrap",
     overflow: "hidden",
     textOverflow: "ellipsis",
+    padding: "8px 12px",
+    lineHeight: "1.4",
   };
 
   if (maxWidth) {
-    style.maxWidth = `${maxWidth}px`;
+    return {
+      style: {
+        ...baseStyle,
+        maxWidth: `${maxWidth}px`,
+      },
+    };
   }
 
-  return { style };
+  return { style: baseStyle };
 };
 
 /**
@@ -151,25 +188,41 @@ const renderInstrumentCell = (record) => {
   const assetCode = record?.assetTypeShortCode || "";
 
   return (
-    <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+    <div
+      style={{
+        display: "flex",
+        alignItems: "center",
+        gap: "8px",
+        minWidth: 0,
+      }}
+    >
       <span
         className="custom-shortCode-asset"
-        style={{ minWidth: 32, flexShrink: 0 }}
+        style={{
+          minWidth: 32,
+          flexShrink: 0,
+          display: "inline-flex",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
         data-testid="asset-code"
       >
         {assetCode?.substring(0, 2).toUpperCase()}
       </span>
-      <Tooltip title={`${code} - ${name}`} placement="topLeft">
+      <Tooltip
+        title={`${code} - ${name}`}
+        placement="topLeft"
+        overlayStyle={{ maxWidth: "300px" }}
+      >
         <span
           className="font-medium"
           style={{
             overflow: "hidden",
             textOverflow: "ellipsis",
             whiteSpace: "nowrap",
-            maxWidth: "100%",
-            display: "inline-block",
-            cursor: "pointer",
+            minWidth: 0,
             flex: 1,
+            cursor: "pointer",
           }}
           data-testid="instrument-code"
         >
@@ -197,12 +250,29 @@ const renderStatusTag = (status, approvalStatusMap) => {
         whiteSpace: "nowrap",
         overflow: "hidden",
         textOverflow: "ellipsis",
-        display: "inline-block",
+        display: "inline-flex",
+        alignItems: "center",
+        maxWidth: "100%",
+        minWidth: 0,
+        margin: 0,
+        border: "none",
+        borderRadius: "4px",
+        padding: "2px 8px",
+        fontSize: "12px",
+        lineHeight: "1.4",
       }}
       className="border-less-table-orange-status"
       data-testid={`status-tag-${status}`}
     >
-      {tagConfig.label || status}
+      <span
+        style={{
+          overflow: "hidden",
+          textOverflow: "ellipsis",
+          whiteSpace: "nowrap",
+        }}
+      >
+        {tagConfig.label || status}
+      </span>
     </Tag>
   );
 };
@@ -216,13 +286,11 @@ const renderStatusTag = (status, approvalStatusMap) => {
 const renderTimeRemainingCell = (record, setIsResubmitted) => {
   const { setSelectedViewDetail } = useGlobalModal();
 
-  // Show nothing for pending status
-  if (record.status === "Pending") {
+  if (record.status === COLUMN_CONFIG.STATUS.PENDING) {
     return <span className="text-gray-400">-</span>;
   }
 
-  // Show resubmit button for not-traded status
-  if (record.status === "Not-Traded") {
+  if (record.status === COLUMN_CONFIG.STATUS.NOT_TRADED) {
     return (
       <Button
         className="large-transparent-button"
@@ -232,14 +300,28 @@ const renderTimeRemainingCell = (record, setIsResubmitted) => {
           setSelectedViewDetail(record);
         }}
         data-testid="resubmit-button"
+        style={{
+          whiteSpace: "nowrap",
+          overflow: "hidden",
+          textOverflow: "ellipsis",
+          maxWidth: "100%",
+        }}
       />
     );
   }
 
-  // Show time remaining if available
   if (record.timeRemainingToTrade) {
     return (
-      <span className="font-medium text-gray-700" data-testid="time-remaining">
+      <span
+        className="font-medium text-gray-700"
+        data-testid="time-remaining"
+        style={{
+          display: "inline-block",
+          maxWidth: "100%",
+          overflow: "hidden",
+          textOverflow: "ellipsis",
+        }}
+      >
         {record.timeRemainingToTrade}
       </span>
     );
@@ -278,27 +360,38 @@ export const getBorderlessTableColumns = ({
       const extractId = (id) => parseInt(id.replace(/[^\d]/g, ""), 10) || 0;
       return extractId(a.tradeApprovalID) - extractId(b.tradeApprovalID);
     },
-    sortDirections: ["ascend", "descend"],
+    sortDirections: [
+      COLUMN_CONFIG.SORT_ORDER.ASCEND,
+      COLUMN_CONFIG.SORT_ORDER.DESCEND,
+    ],
     sortOrder:
       sortedInfo?.columnKey === "tradeApprovalID" ? sortedInfo.order : null,
     showSorterTooltip: false,
     sortIcon: () => null,
     render: (tradeApprovalID) => (
-      <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-        <span className="font-medium" data-testid="formatted-approval-id">
+      <div style={{ display: "flex", alignItems: "center" }}>
+        <span
+          className="font-medium"
+          data-testid="formatted-approval-id"
+          style={{
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+            whiteSpace: "nowrap",
+          }}
+        >
           {dashBetweenApprovalAssets(tradeApprovalID)}
         </span>
       </div>
     ),
     onHeaderCell: () =>
       createCellStyle(
-        COLUMN_WIDTHS.APPROVAL_ID.min,
-        COLUMN_WIDTHS.APPROVAL_ID.max
+        COLUMN_CONFIG.WIDTHS.APPROVAL_ID.min,
+        COLUMN_CONFIG.WIDTHS.APPROVAL_ID.max
       ),
     onCell: () =>
       createCellStyle(
-        COLUMN_WIDTHS.APPROVAL_ID.min,
-        COLUMN_WIDTHS.APPROVAL_ID.max
+        COLUMN_CONFIG.WIDTHS.APPROVAL_ID.min,
+        COLUMN_CONFIG.WIDTHS.APPROVAL_ID.max
       ),
   },
   {
@@ -315,41 +408,54 @@ export const getBorderlessTableColumns = ({
     render: (_, record) => renderInstrumentCell(record),
     onHeaderCell: () =>
       createCellStyle(
-        COLUMN_WIDTHS.INSTRUMENT.min,
-        COLUMN_WIDTHS.INSTRUMENT.max
+        COLUMN_CONFIG.WIDTHS.INSTRUMENT.min,
+        COLUMN_CONFIG.WIDTHS.INSTRUMENT.max
       ),
     onCell: () =>
       createCellStyle(
-        COLUMN_WIDTHS.INSTRUMENT.min,
-        COLUMN_WIDTHS.INSTRUMENT.max
+        COLUMN_CONFIG.WIDTHS.INSTRUMENT.min,
+        COLUMN_CONFIG.WIDTHS.INSTRUMENT.max
       ),
   },
   {
-    title: (
+    title: withFilterHeader(() => (
       <TypeColumnTitle
         state={employeeMyApprovalSearch}
         setState={setEmployeeMyApprovalSearch}
       />
-    ),
+    )),
     dataIndex: "type",
     key: "type",
     ellipsis: true,
     filteredValue: employeeMyApprovalSearch.type?.length
       ? employeeMyApprovalSearch.type
       : null,
-    onFilter: () => true, // Actual filtering handled by API
+    onFilter: () => true,
     render: (type) => (
       <span
         className={type === "Buy" ? "text-green-600" : "text-red-600"}
         data-testid={`trade-type-${type}`}
+        style={{
+          display: "inline-block",
+          width: "100%",
+          overflow: "hidden",
+          textOverflow: "ellipsis",
+          whiteSpace: "nowrap",
+        }}
       >
         {type}
       </span>
     ),
     onHeaderCell: () =>
-      createCellStyle(COLUMN_WIDTHS.TYPE.min, COLUMN_WIDTHS.TYPE.max),
+      createCellStyle(
+        COLUMN_CONFIG.WIDTHS.TYPE.min,
+        COLUMN_CONFIG.WIDTHS.TYPE.max
+      ),
     onCell: () =>
-      createCellStyle(COLUMN_WIDTHS.TYPE.min, COLUMN_WIDTHS.TYPE.max),
+      createCellStyle(
+        COLUMN_CONFIG.WIDTHS.TYPE.min,
+        COLUMN_CONFIG.WIDTHS.TYPE.max
+      ),
   },
   {
     title: withSortIcon("Request Date & Time", "requestDateTime", sortedInfo),
@@ -360,24 +466,47 @@ export const getBorderlessTableColumns = ({
       formatApiDateTime(a.requestDateTime).localeCompare(
         formatApiDateTime(b.requestDateTime)
       ),
-    sortDirections: ["ascend", "descend"],
+    sortDirections: [
+      COLUMN_CONFIG.SORT_ORDER.ASCEND,
+      COLUMN_CONFIG.SORT_ORDER.DESCEND,
+    ],
     sortOrder:
       sortedInfo?.columnKey === "requestDateTime" ? sortedInfo.order : null,
     showSorterTooltip: false,
     sortIcon: () => null,
     render: (date) => (
-      <span className="text-gray-600" data-testid="formatted-date">
+      <span
+        className="text-gray-600"
+        data-testid="formatted-date"
+        style={{
+          display: "inline-block",
+          width: "100%",
+          overflow: "hidden",
+          textOverflow: "ellipsis",
+          whiteSpace: "nowrap",
+        }}
+      >
         {formatApiDateTime(date)}
       </span>
     ),
+    onHeaderCell: () =>
+      createCellStyle(
+        COLUMN_CONFIG.WIDTHS.DATE_TIME.min,
+        COLUMN_CONFIG.WIDTHS.DATE_TIME.max
+      ),
+    onCell: () =>
+      createCellStyle(
+        COLUMN_CONFIG.WIDTHS.DATE_TIME.min,
+        COLUMN_CONFIG.WIDTHS.DATE_TIME.max
+      ),
   },
   {
-    title: (
+    title: withFilterHeader(() => (
       <StatusColumnTitle
         state={employeeMyApprovalSearch}
         setState={setEmployeeMyApprovalSearch}
       />
-    ),
+    )),
     dataIndex: "status",
     key: "status",
     ellipsis: true,
@@ -387,9 +516,15 @@ export const getBorderlessTableColumns = ({
     onFilter: () => true,
     render: (status) => renderStatusTag(status, approvalStatusMap),
     onHeaderCell: () =>
-      createCellStyle(COLUMN_WIDTHS.STATUS.min, COLUMN_WIDTHS.STATUS.max),
+      createCellStyle(
+        COLUMN_CONFIG.WIDTHS.STATUS.min,
+        COLUMN_CONFIG.WIDTHS.STATUS.max
+      ),
     onCell: () =>
-      createCellStyle(COLUMN_WIDTHS.STATUS.min, COLUMN_WIDTHS.STATUS.max),
+      createCellStyle(
+        COLUMN_CONFIG.WIDTHS.STATUS.min,
+        COLUMN_CONFIG.WIDTHS.STATUS.max
+      ),
   },
   {
     title: "",
@@ -404,7 +539,21 @@ export const getBorderlessTableColumns = ({
           alt="Escalated"
           className={style["escalated-icon"]}
           data-testid="escalated-icon"
+          style={{
+            display: "block",
+            margin: "0 auto",
+          }}
         />
+      ),
+    onHeaderCell: () =>
+      createCellStyle(
+        COLUMN_CONFIG.WIDTHS.ESCALATED.min,
+        COLUMN_CONFIG.WIDTHS.ESCALATED.max
+      ),
+    onCell: () =>
+      createCellStyle(
+        COLUMN_CONFIG.WIDTHS.ESCALATED.min,
+        COLUMN_CONFIG.WIDTHS.ESCALATED.max
       ),
   },
   {
@@ -413,19 +562,39 @@ export const getBorderlessTableColumns = ({
     key: "quantity",
     ellipsis: true,
     sorter: (a, b) => a.quantity - b.quantity,
-    sortDirections: ["ascend", "descend"],
+    sortDirections: [
+      COLUMN_CONFIG.SORT_ORDER.ASCEND,
+      COLUMN_CONFIG.SORT_ORDER.DESCEND,
+    ],
     sortOrder: sortedInfo?.columnKey === "quantity" ? sortedInfo.order : null,
     showSorterTooltip: false,
     sortIcon: () => null,
     render: (quantity) => (
-      <span className="font-medium" data-testid="formatted-quantity">
+      <span
+        className="font-medium"
+        data-testid="formatted-quantity"
+        style={{
+          display: "inline-block",
+          width: "100%",
+          overflow: "hidden",
+          textOverflow: "ellipsis",
+          whiteSpace: "nowrap",
+          textAlign: "left",
+        }}
+      >
         {quantity.toLocaleString()}
       </span>
     ),
     onHeaderCell: () =>
-      createCellStyle(COLUMN_WIDTHS.QUANTITY.min, COLUMN_WIDTHS.QUANTITY.max),
+      createCellStyle(
+        COLUMN_CONFIG.WIDTHS.QUANTITY.min,
+        COLUMN_CONFIG.WIDTHS.QUANTITY.max
+      ),
     onCell: () =>
-      createCellStyle(COLUMN_WIDTHS.QUANTITY.min, COLUMN_WIDTHS.QUANTITY.max),
+      createCellStyle(
+        COLUMN_CONFIG.WIDTHS.QUANTITY.min,
+        COLUMN_CONFIG.WIDTHS.QUANTITY.max
+      ),
   },
   {
     title: "Time Remaining to Trade",
@@ -434,8 +603,16 @@ export const getBorderlessTableColumns = ({
     ellipsis: true,
     align: "center",
     render: (text, record) => renderTimeRemainingCell(record, setIsResubmitted),
-    onHeaderCell: () => createCellStyle(COLUMN_WIDTHS.TIME_REMAINING.min),
-    onCell: () => createCellStyle(COLUMN_WIDTHS.TIME_REMAINING.min),
+    onHeaderCell: () =>
+      createCellStyle(
+        COLUMN_CONFIG.WIDTHS.TIME_REMAINING.min,
+        COLUMN_CONFIG.WIDTHS.TIME_REMAINING.max
+      ),
+    onCell: () =>
+      createCellStyle(
+        COLUMN_CONFIG.WIDTHS.TIME_REMAINING.min,
+        COLUMN_CONFIG.WIDTHS.TIME_REMAINING.max
+      ),
   },
   {
     title: "",
@@ -454,9 +631,25 @@ export const getBorderlessTableColumns = ({
             setIsViewDetail(true);
           }}
           data-testid="view-details-button"
+          style={{
+            whiteSpace: "nowrap",
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+            maxWidth: "100%",
+          }}
         />
       );
     },
+    onHeaderCell: () =>
+      createCellStyle(
+        COLUMN_CONFIG.WIDTHS.ACTIONS.min,
+        COLUMN_CONFIG.WIDTHS.ACTIONS.max
+      ),
+    onCell: () =>
+      createCellStyle(
+        COLUMN_CONFIG.WIDTHS.ACTIONS.min,
+        COLUMN_CONFIG.WIDTHS.ACTIONS.max
+      ),
   },
 ];
 

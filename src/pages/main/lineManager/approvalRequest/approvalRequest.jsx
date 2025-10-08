@@ -25,7 +25,6 @@ import {
 } from "../../../../api/myApprovalApi";
 import { useNavigate } from "react-router-dom";
 import { apiCallSearchForLineManager } from "../../../../components/dropdowns/searchableDropedown/utill";
-import { useTableScrollBottom } from "../../employes/myApprovals/utils";
 import {
   mapBuySellToIds,
   mapStatusToIds,
@@ -33,6 +32,7 @@ import {
 } from "../../../../components/dropdowns/filters/utils";
 import { useDashboardContext } from "../../../../context/dashboardContaxt";
 import { toYYMMDD } from "../../../../commen/funtions/rejex";
+import { useTableScrollBottom } from "../../../../commen/funtions/scroll";
 
 const ApprovalRequest = () => {
   const navigate = useNavigate();

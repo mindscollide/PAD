@@ -1,78 +1,185 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Row, Col, Space } from "antd";
-import { Button, TextField, DateRangePicker } from "../.."; // ✅ Import DateRangePicker directly
+import { Button, TextField, DateRangePicker } from "../..";
 import { useSearchBarContext } from "../../../context/SearchBarContaxt";
 import {
   allowOnlyNumbers,
   removeFirstSpace,
 } from "../../../commen/funtions/rejex";
 
-export const EmployeeMyApprovalFilter = ({ handleSearch, setVisible }) => {
+// 🔹 Initial default state for local filters
+const INITIAL_LOCAL_STATE = {
+  instrumentName: "",
+  quantity: 0,
+  startDate: null,
+  endDate: null,
+};
+
+/**
+ * EmployeeMyApprovalFilter Component
+ *
+ * Provides filtering options for employee approval records.
+ * Allows filtering by:
+ *   - Instrument Name (string, trims leading spaces)
+ *   - Quantity (numbers only)
+ *   - Date Range (startDate, endDate in YYYY-MM-DD format)
+ *
+ * Includes Reset and Search actions, with clean state handling.
+ *
+ * @param {Object} props
+ * @param {Function} props.setVisible - Controls visibility of the filter panel
+ * @param {string} props.maininstrumentName - Pre-filled instrument name (e.g., from parent search)
+ * @param {Function} props.setMaininstrumentName - Setter to clear/reset pre-filled instrument name
+ * @param {boolean} props.clear - Flag to trigger filter reset externally
+ * @param {Function} props.setClear - Setter to clear the `clear` flag after reset
+ */
+export const EmployeeMyApprovalFilter = ({
+  setVisible,
+  maininstrumentName,
+  setMaininstrumentName,
+  clear,
+  setClear,
+}) => {
+  // 🔹 CONTEXT (Global search state from context provider)
   const { employeeMyApprovalSearch, setEmployeeMyApprovalSearch } =
     useSearchBarContext();
 
+  // 🔹 LOCAL STATE (Holds temporary filter values inside the popup)
+  const [localState, setLocalState] = useState(INITIAL_LOCAL_STATE);
+
+  // -----------------------------------------------------
+  // 🔹 EFFECTS
+  // -----------------------------------------------------
+
   /**
-   * 🔹 Local state holds temporary filter values before search
-   * - instrumentName: string
-   * - quantity: string
+   * Prefill instrument name if passed from parent (maininstrumentName).
+   * Useful for quick search-to-filter transition.
    */
-  const [localState, setLocalState] = useState({
-    instrumentName: "",
-    quantity: "",
-    dateRange: null,
-  });
+  useEffect(() => {
+    if (maininstrumentName) {
+      setLocalState((prev) => ({
+        ...prev,
+        instrumentName: maininstrumentName,
+      }));
+      setClear(false); // Reset external clear flag
+      setMaininstrumentName(""); // Clear parent’s prefill value
+    }
+  }, [maininstrumentName]);
 
-  // 🔹 Track touched fields
-  const [dirtyFields, setDirtyFields] = useState({});
+  /**
+   * Reset filters if `clear` flag is triggered externally.
+   */
+  useEffect(() => {
+    if (clear && maininstrumentName === "") {
+      setLocalState(INITIAL_LOCAL_STATE);
+      setClear(false); // Reset external clear flag
+    }
+  }, [clear]);
 
-  // 🔹 Helper to update field + mark dirty
+  // -----------------------------------------------------
+  // 🔹 HANDLERS
+  // -----------------------------------------------------
+
+  /**
+   * Update a specific field in localState
+   */
   const setFieldValue = (field, value) => {
     setLocalState((prev) => ({ ...prev, [field]: value }));
-    setDirtyFields((prev) => ({ ...prev, [field]: true }));
   };
 
-  /** Handle text input (instrumentName, quantity) */
+  /**
+   * Handle input changes for text/number fields.
+   * - Quantity: Only allows numbers
+   * - Instrument Name: Removes leading spaces
+   */
   const handleInputChange = (e) => {
     const { name, value } = e.target;
 
-    if (name === "Quantity") {
-      if (value === "" || allowOnlyNumbers(value)) {
-        setFieldValue("quantity", value);
+    switch (name) {
+      case "quantity": {
+        // Remove commas before validation
+        const rawValue = value.replace(/,/g, "");
+
+        // ✅ Allow only numbers + max 12 digits
+        if (
+          (rawValue === "" || allowOnlyNumbers(rawValue)) &&
+          rawValue.length <= 12
+        ) {
+          setFieldValue("quantity", rawValue); // keep raw digits in state
+        }
+        break;
       }
-    } else {
-      setFieldValue(name, removeFirstSpace(value));
+
+      case "instrumentName":
+        setFieldValue("instrumentName", removeFirstSpace(value));
+        break;
+
+      default:
+        setFieldValue(name, removeFirstSpace(value));
     }
   };
 
-  /** Handle Search */
-  const handleSearchClick = () => {
-    setEmployeeMyApprovalSearch((prev) => {
-      const finalSearch = {
-        ...prev,
-        ...(dirtyFields.instrumentName && {
-          instrumentName: localState.instrumentName,
-        }),
-        ...(dirtyFields.quantity && {
-          quantity:
-            localState.quantity !== "" ? Number(localState.quantity) : 0,
-        }),
-        ...(dirtyFields.dateRange && {
-          startDate: localState.dateRange?.[0]
-            ? localState.dateRange[0].format("YYYY-MM-DD")
-            : null,
-          endDate: localState.dateRange?.[1]
-            ? localState.dateRange[1].format("YYYY-MM-DD")
-            : null,
-        }),
-        pageNumber: 0,
-      };
-      console.log("finalSearch", finalSearch);
-      handleSearch(finalSearch);
-      return finalSearch;
+  /**
+   * Handle date range change (startDate, endDate)
+   */
+  const handleDateChange = (dates) => {
+    console.log("handleDateChange", dates);
+    setLocalState({
+      ...localState,
+      startDate: dates?.[0] || null,
+      endDate: dates?.[1] || null,
     });
   };
+  console.log("handleDateChange", localState);
 
-  /** Reset filters */
+  /**
+   * Clear only the date range fields
+   */
+  const handleClearDates = () => {
+    setLocalState((prev) => ({
+      ...prev,
+      startDate: null,
+      endDate: null,
+    }));
+  };
+
+  /**
+   * Execute search with current localState values.
+   * Builds a payload and updates global search context.
+   * Closes popup after applying.
+   */
+  const handleSearchClick = () => {
+    const { instrumentName, quantity, startDate, endDate } = localState;
+    console.log(
+      "handleDateChange",
+      instrumentName,
+      quantity,
+      startDate,
+      endDate
+    );
+
+    const searchPayload = {
+      ...employeeMyApprovalSearch, // Preserve other filters
+      instrumentName: instrumentName?.trim() || "",
+      quantity: quantity ? Number(quantity) : 0,
+      startDate: startDate || null,
+      endDate: endDate || null,
+      pageNumber: 0, // Reset pagination
+      filterTrigger: true, // Extra flag for triggering search
+    };
+    console.log("handleDateChange", searchPayload);
+
+    // Reset local + global state and close panel
+    setEmployeeMyApprovalSearch(searchPayload);
+    setLocalState(INITIAL_LOCAL_STATE);
+    setClear(false);
+    setVisible(false);
+  };
+
+  /**
+   * Reset all filters to initial state.
+   * Updates global search state, clears local form, and closes popup.
+   */
   const handleResetClick = () => {
     setEmployeeMyApprovalSearch((prev) => ({
       ...prev,
@@ -81,61 +188,28 @@ export const EmployeeMyApprovalFilter = ({ handleSearch, setVisible }) => {
       startDate: null,
       endDate: null,
       pageNumber: 0,
-      tableFilterTrigger: true,
+      filterTrigger: true,
     }));
-    resetLocalState();
+
+    setLocalState(INITIAL_LOCAL_STATE);
+    setClear(false);
     setVisible(false);
   };
 
-  /** Reset local state + dirty flags */
-  const resetLocalState = () => {
-    setLocalState({ instrumentName: "", quantity: "", dateRange: null });
-    setDirtyFields({});
-  };
-
-  /** Handle Date Range change */
-  const handleDateChange = (dates) => {
-    console.log("dateRange", dates);
-
-    setEmployeeMyApprovalSearch((prev) => ({
-      ...prev,
-      startDate: dates?.[0] || null,
-      endDate: dates?.[1] || null,
-    }));
-  };
-
-  // ✅ Memoized values
-  const instrumentNameValue = useMemo(() => {
-    return dirtyFields.instrumentName
-      ? localState.instrumentName
-      : employeeMyApprovalSearch.instrumentName || "";
-  }, [
-    dirtyFields.instrumentName,
-    localState.instrumentName,
-    employeeMyApprovalSearch.instrumentName,
-  ]);
-
-  const quantityValue = useMemo(() => {
-    return dirtyFields.quantity
-      ? localState.quantity
-      : employeeMyApprovalSearch.quantity?.toString() || "";
-  }, [
-    dirtyFields.quantity,
-    localState.quantity,
-    employeeMyApprovalSearch.quantity,
-  ]);
-
+  // -----------------------------------------------------
+  // 🔹 RENDER
+  // -----------------------------------------------------
   return (
     <>
-      {/* 🔸 First Row: Instrument Name & Date Range */}
+      {/* ROW 1: Instrument Name & Date Range */}
       <Row gutter={[12, 12]}>
         <Col xs={24} sm={24} md={12} lg={12}>
           <TextField
             label="Instrument Name"
             name="instrumentName"
-            value={instrumentNameValue}
+            value={localState.instrumentName}
             onChange={handleInputChange}
-            placeholder="Instrument Name"
+            placeholder="Enter instrument name"
             size="medium"
             classNames="Search-Field"
           />
@@ -145,41 +219,34 @@ export const EmployeeMyApprovalFilter = ({ handleSearch, setVisible }) => {
           <DateRangePicker
             label="Date Range"
             size="medium"
-            value={[
-              employeeMyApprovalSearch.startDate || null,
-              employeeMyApprovalSearch.endDate || null,
-            ]}
-            onChange={(dates) => handleDateChange(dates)}
-            onClear={() =>
-              setEmployeeMyApprovalSearch((prev) => ({
-                ...prev,
-                startDate: null,
-                endDate: null,
-              }))
-            }
+            value={[localState.startDate, localState.endDate]}
+            onChange={handleDateChange}
+            onClear={handleClearDates}
             format="YYYY-MM-DD"
           />
         </Col>
       </Row>
 
-      {/* 🔸 Second Row: Quantity */}
+      {/* ROW 2: Quantity */}
       <Row gutter={[12, 12]}>
         <Col xs={24} sm={24} md={12} lg={12}>
           <TextField
             label="Quantity"
-            name="Quantity"
+            name="quantity"
             value={
-              quantityValue === 0 || quantityValue === "0" ? "" : quantityValue
+              localState.quantity
+                ? Number(localState.quantity).toLocaleString("en-US") // 👈 formatted for display
+                : ""
             }
             onChange={handleInputChange}
-            placeholder="Quantity"
+            placeholder="Enter quantity"
             size="medium"
             classNames="Search-Field"
           />
         </Col>
       </Row>
 
-      {/* 🔸 Third Row: Actions */}
+      {/* ACTION ROW: Reset & Search */}
       <Row gutter={[12, 12]} justify="end" style={{ marginTop: 16 }}>
         <Col>
           <Space>

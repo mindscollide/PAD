@@ -21,7 +21,6 @@ import { useReconcileContext } from "../../../../../context/reconsileContax";
 
 // 🔹 Hooks
 import { useNotification } from "../../../../../components/NotificationProvider/NotificationProvider";
-import { useTableScrollBottom } from "../../../employes/myApprovals/utils";
 
 // 🔹 Helpers
 import { toYYMMDD } from "../../../../../commen/funtions/rejex";
@@ -41,6 +40,7 @@ import {
   mapBuySellToIds,
   mapStatusToIds,
 } from "../../../../../components/dropdowns/filters/utils";
+import { useTableScrollBottom } from "../../../../../commen/funtions/scroll";
 
 /**
  * 📌 ReconcilePortfolio

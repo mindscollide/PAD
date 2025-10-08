@@ -24,7 +24,7 @@ import { useDashboardContext } from "../../../../../context/dashboardContaxt";
 
 // Hooks
 import { useNotification } from "../../../../../components/NotificationProvider/NotificationProvider";
-import { useTableScrollBottom } from "../../myApprovals/utils";
+
 
 // API
 import { SearchEmployeePendingUploadedPortFolio } from "../../../../../api/protFolioApi";
@@ -33,6 +33,7 @@ import {
   mapStatusToIds,
 } from "../../../../../components/dropdowns/filters/utils";
 import { toYYMMDD } from "../../../../../commen/funtions/rejex";
+import { useTableScrollBottom } from "../../../../../commen/funtions/scroll";
 
 const PendingApprovals = () => {
   const navigate = useNavigate();

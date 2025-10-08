@@ -91,6 +91,11 @@
   font-size: 16px;
   line-height: 1;
 }
+
+.clear-all-tag {
+  cursor: pointer;
+}
+
 /* approval.module.css */
 :global(.ant-table-thead > tr > th) {
   white-space: normal !important;

@@ -1,198 +1,149 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { Row, Col, Space, Select, Checkbox } from "antd";
-import { useSidebarContext } from "../../../context/sidebarContaxt";
 import { Button, DateRangePicker, TextField } from "../..";
 import { useSearchBarContext } from "../../../context/SearchBarContaxt";
 import {
   allowOnlyNumbers,
-  formatShowOnlyDate,
   formatShowOnlyDateForDateRange,
   removeFirstSpace,
 } from "../../../commen/funtions/rejex";
 import styles from "./SearchWithPopoverOnly.module.css";
 import { useDashboardContext } from "../../../context/dashboardContaxt";
 
+// 🔹 Initial default state
+const INITIAL_LOCAL_STATE = {
+  instrumentName: "",
+  quantity: 0,
+  startDate: null,
+  endDate: null,
+  brokerIDs: [],
+};
+
 export const EmployeeTransactionFilter = ({
-  handleSearch,
   setVisible,
-  activeTab,
+  maininstrumentName,
+  setMaininstrumentName,
+  clear,
+  setClear,
 }) => {
-  console.log("Checker Search Coming");
-  /**
-   * useSidebarContext its state handler for this sidebar.
-   * - collapsed for check if its open and closed side abr
-   * - selectedKey is for which tab or route is open
-   */
-  const { collapsed, selectedKey } = useSidebarContext();
-  console.log(selectedKey, "selectedKeyselectedKey6677");
+  // Contexts
+  const { employeeMyTransactionSearch, setEmployeeMyTransactionSearch } =
+    useSearchBarContext();
 
   const { employeeBasedBrokersData } = useDashboardContext();
 
+  // Local form state
+  const [localState, setLocalState] = useState(INITIAL_LOCAL_STATE);
+
+  // -----------------------------------------------------
+  // 🔹 EFFECTS
+  // -----------------------------------------------------
+
   /**
-   * SearchBarContext its state handler for this function.
-   * - instrumentName for instruments of dropdown menu
-   * - quantity for quantity of dropdown menu
-   * - date for date of dropdown menu
-   * - mainInstrumentName for main search bar input
-   * - instrumentName and this mainInstrumentName contain same data but issue is we have to handel both diferently
-   * - resetEmployeeMyTransactionSearch is to reset all their state to its initial
+   * Prefill instrument name if passed from parent (maininstrumentName).
+   * Useful for quick search-to-filter transition.
    */
+  useEffect(() => {
+    if (maininstrumentName) {
+      setLocalState((prev) => ({
+        ...prev,
+        instrumentName: maininstrumentName,
+      }));
+      setClear(false); // Reset external clear flag
+      setMaininstrumentName(""); // Clear parent’s prefill value
+    }
+  }, [maininstrumentName]);
 
-  const {
-    employeeMyTransactionSearch,
-    setEmployeeMyTransactionSearch,
-    resetEmployeeMyTransactionSearch,
-  } = useSearchBarContext();
+  /**
+   * Reset filters if `clear` flag is triggered externally.
+   */
+  useEffect(() => {
+    if (clear && maininstrumentName === "") {
+      setLocalState(INITIAL_LOCAL_STATE);
+      setClear(false); // Reset external clear flag
+    }
+  }, [clear]);
 
-  // for employeeBroker state to show data in dropdown
-  const [selectedBrokers, setSelectedBrokers] = useState([]);
+  // -----------------------------------------------------
+  // 🔹 Handlers
+  // -----------------------------------------------------
 
-  // 🔹 Local form state
-  const [localState, setLocalState] = useState({
-    instrumentName: "",
-    quantity: "",
-    startDate: null,
-    endDate: null,
-    brokerIDs: [],
-  });
-
-  // 🔹 Track touched fields
-  const [dirtyFields, setDirtyFields] = useState({});
-
-  // 🔹 Helper: update state & mark dirty
   const setFieldValue = (field, value) => {
     setLocalState((prev) => ({ ...prev, [field]: value }));
-    setDirtyFields((prev) => ({ ...prev, [field]: true }));
   };
 
-  //  Prepare and Show Brokers selected values for Select's `value` prop
-  const selectedBrokerIDs = selectedBrokers.map((b) => b.brokerID);
-
-  // Format broker options
-  const brokerOptions = (employeeBasedBrokersData || []).map((broker) => ({
-    label: (
-      <div style={{ display: "flex", alignItems: "center" }}>
-        <Checkbox
-          checked={localState.brokerIDs.includes(broker.brokerID)}
-          style={{ marginRight: 8 }}
-        />
-        {broker.brokerName}
-      </div>
-    ),
-    value: broker.brokerID,
-    raw: broker, // keep full broker data for later use
-  }));
-
-  // OnChange Handle when user selects/deselects brokers
-  const handleBrokerChange = (selectedIDs) => {
-    setLocalState((prev) => ({ ...prev, brokerIDs: selectedIDs }));
-    setDirtyFields((prev) => ({ ...prev, brokerIDs: true }));
-  };
-
-  /**
-   * Handles input change for approval filters.
-   * - Allows only numeric input for "Quantity"
-   * - Removes leading space for text fields
-   */
-  // 🔹 Update the local state
+  /** Input change handler */
   const handleInputChange = (e) => {
     const { name, value } = e.target;
 
-    if (name === "Quantity") {
-      if (value === "" || allowOnlyNumbers(value)) {
-        setFieldValue("quantity", value);
+    if (name === "quantity") {
+      const rawValue = value.replace(/,/g, "");
+      if (
+        (rawValue === "" || allowOnlyNumbers(rawValue)) &&
+        rawValue.length <= 12
+      ) {
+        setFieldValue("quantity", rawValue);
       }
     } else {
       setFieldValue(name, removeFirstSpace(value));
     }
   };
-  // 🔹 Handle date range change
-  // 🔹 Handle date range change
+
+  /** Date change */
   const handleDateChange = (dates) => {
-    setFieldValue("startDate", dates?.[0] || null);
-    setFieldValue("endDate", dates?.[1] || null);
+    setLocalState({
+      ...localState,
+      startDate: dates?.[0] || null,
+      endDate: dates?.[1] || null,
+    });
   };
 
-  // ✅ Memoized values
-  const instrumentNameValue = useMemo(() => {
-    return dirtyFields.instrumentName
-      ? localState.instrumentName
-      : employeeMyTransactionSearch.instrumentName || "";
-  }, [
-    dirtyFields.instrumentName,
-    localState.instrumentName,
-    employeeMyTransactionSearch.instrumentName,
-  ]);
+  /** Clear dates only */
+  const handleClearDates = () => {
+    setLocalState((prev) => ({
+      ...prev,
+      startDate: null,
+      endDate: null,
+    }));
+  };
 
-  const quantityValue = useMemo(() => {
-    return dirtyFields.quantity
-      ? localState.quantity
-      : employeeMyTransactionSearch.quantity?.toString() || "";
-  }, [
-    dirtyFields.quantity,
-    localState.quantity,
-    employeeMyTransactionSearch.quantity,
-  ]);
+  /** Brokers dropdown */
+  // 🔹 Prepare options
+  const brokerOptions = (employeeBasedBrokersData || []).map((broker) => ({
+    label: broker.brokerName, // plain string for search
+    value: broker.brokerID,
+    raw: broker, // keep full broker data for UI
+  }));
 
-  const dateRangeValue = useMemo(() => {
-    if (dirtyFields.startDate || dirtyFields.endDate) {
-      return localState.startDate && localState.endDate
-        ? [localState.startDate, localState.endDate] // ✅ Date objects
-        : null;
-    }
-    return employeeMyTransactionSearch.startDate &&
-      employeeMyTransactionSearch.endDate
-      ? [
-          new Date(employeeMyTransactionSearch.startDate),
-          new Date(employeeMyTransactionSearch.endDate),
-        ]
-      : null;
-  }, [
-    dirtyFields.startDate,
-    dirtyFields.endDate,
-    localState.startDate,
-    localState.endDate,
-    employeeMyTransactionSearch.startDate,
-    employeeMyTransactionSearch.endDate,
-  ]);
+  // 🔹 Handle selection
+  const handleBrokerChange = (selectedIDs) => {
+    setLocalState((prev) => ({ ...prev, brokerIDs: selectedIDs }));
+  };
+  console.log("brokerOptions", employeeBasedBrokersData);
+  console.log("brokerOptions", brokerOptions);
+  /** Search click */
+  const handleSearchClick = () => {
+    const { instrumentName, quantity, startDate, endDate, brokerIDs } =
+      localState;
 
-  const brokerIDsValue = useMemo(() => {
-    return dirtyFields.brokerIDs
-      ? localState.brokerIDs
-      : employeeMyTransactionSearch.brokerIDs || [];
-  }, [
-    dirtyFields.brokerIDs,
-    localState.brokerIDs,
-    employeeMyTransactionSearch.brokerIDs,
-  ]);
-
-  // 🔹 Handle search button click
-  // 🔹 Search
-  const handleSearchClick = async () => {
-    const finalSearch = {
-      ...(dirtyFields.instrumentName && {
-        instrumentName: localState.instrumentName,
-      }),
-      ...(dirtyFields.quantity && {
-        quantity: localState.quantity !== "" ? Number(localState.quantity) : 0,
-      }),
-      ...(dirtyFields.startDate && {
-        startDate: formatShowOnlyDateForDateRange(localState.startDate), // ✅ format here
-      }),
-      ...(dirtyFields.endDate && {
-        endDate: formatShowOnlyDateForDateRange(localState.endDate), // ✅ format here
-      }),
-      ...(dirtyFields.brokerIDs && { brokerIDs: localState.brokerIDs }),
+    const searchPayload = {
+      ...employeeMyTransactionSearch,
+      instrumentName: instrumentName?.trim() || "",
+      quantity: quantity ? Number(quantity) : 0,
+      startDate: startDate || null,
+      endDate: endDate || null,
+      brokerIDs: brokerIDs || [],
       pageNumber: 0,
+      tableFilterTrigger: true,
     };
 
-    console.log(finalSearch, "CheckFInalSearchAPi");
-
-    await setEmployeeMyTransactionSearch(finalSearch);
-    handleSearch(finalSearch);
+    setEmployeeMyTransactionSearch(searchPayload);
+    setLocalState(INITIAL_LOCAL_STATE);
+    setVisible(false);
+    setClear(false);
   };
 
-  // 🔹 Reset
+  /** Reset click */
   const handleResetClick = () => {
     setEmployeeMyTransactionSearch((prev) => ({
       ...prev,
@@ -201,24 +152,17 @@ export const EmployeeTransactionFilter = ({
       startDate: null,
       endDate: null,
       brokerIDs: [],
+      pageNumber: 0,
       tableFilterTrigger: true,
     }));
 
-    resetLocalState();
+    setLocalState(INITIAL_LOCAL_STATE);
+    setClear(false);
     setVisible(false);
   };
-
-  /** Reset local state + dirty flags */
-  const resetLocalState = () => {
-    setLocalState({
-      instrumentName: "",
-      quantity: 0,
-      startDate: null,
-      endDate: null,
-      brokerIDs: [],
-    });
-    setDirtyFields({});
-  };
+  // -----------------------------------------------------
+  // 🔹 Render
+  // -----------------------------------------------------
 
   return (
     <>
@@ -227,7 +171,7 @@ export const EmployeeTransactionFilter = ({
           <TextField
             label="Instrument Name"
             name="instrumentName"
-            value={instrumentNameValue}
+            value={localState.instrumentName}
             onChange={handleInputChange}
             placeholder="Instrument Name"
             size="medium"
@@ -237,9 +181,11 @@ export const EmployeeTransactionFilter = ({
         <Col xs={24} sm={24} md={12} lg={12}>
           <TextField
             label="Quantity"
-            name="Quantity"
+            name="quantity" // 👈 should be lowercase to match handler
             value={
-              quantityValue === 0 || quantityValue === "0" ? "" : quantityValue
+              localState.quantity
+                ? Number(localState.quantity).toLocaleString("en-US")
+                : ""
             }
             onChange={handleInputChange}
             placeholder="Quantity"
@@ -253,8 +199,8 @@ export const EmployeeTransactionFilter = ({
           <label className={styles.instrumentLabel}>Brokers</label>
           <Select
             mode="multiple"
-            placeholder="Select"
-            value={brokerIDsValue}
+            placeholder="Select Brokers"
+            value={localState.brokerIDs}
             onChange={handleBrokerChange}
             options={brokerOptions}
             maxTagCount={0}
@@ -263,11 +209,16 @@ export const EmployeeTransactionFilter = ({
             }
             prefixCls="EquitiesBrokerSelectPrefix"
             optionLabelProp="label"
+            disabled={!brokerOptions || brokerOptions.length === 0}
+            showSearch
+            filterOption={(input, option) =>
+              option?.label?.toLowerCase().includes(input.toLowerCase()) ||
+              option?.raw?.psxCode?.toLowerCase().includes(input.toLowerCase())
+            }
             optionRender={(option) => (
               <div style={{ display: "flex", alignItems: "center" }}>
                 <Checkbox
-                  className="custom-broker-option"
-                  checked={brokerIDsValue.includes(option.value)}
+                  checked={localState.brokerIDs.includes(option.value)} // ✅ sync with state
                   style={{ marginRight: 8 }}
                 />
                 {option.data.raw.brokerName}
@@ -279,15 +230,9 @@ export const EmployeeTransactionFilter = ({
           <DateRangePicker
             label="Date Range"
             size="medium"
-            value={dateRangeValue}
+            value={[localState.startDate, localState.endDate]}
             onChange={handleDateChange}
-            onClear={() =>
-              setLocalState((prev) => ({
-                ...prev,
-                startDate: null,
-                endDate: null,
-              }))
-            }
+            onClear={handleClearDates}
           />
         </Col>
       </Row>

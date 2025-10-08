@@ -1,5 +1,5 @@
 // components/SearchWithPopoverOnly.jsx
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Input, Popover, Space } from "antd";
 
 // Assets
@@ -40,7 +40,6 @@ const SearchWithPopoverOnly = () => {
   const { collapsed, selectedKey } = useSidebarContext();
   const { activeTab } = usePortfolioContext(); // Portfolio / Pending
   const { activeTab: reconcileActiveTab, activeTabHCO } = useReconcileContext(); // Transactions / Portfolio
-
   const {
     employeeMyApprovalSearch,
     setEmployeeMyApprovalSearch,
@@ -67,7 +66,18 @@ const SearchWithPopoverOnly = () => {
   // -------------------------
   // ✅ Local state
   // -------------------------
+  const [searchMain, setSearchMain] = useState("");
   const [visible, setVisible] = useState(false);
+  const [clear, setClear] = useState(false);
+
+  const handleInputChange = (e) => {
+    const { value } = e.target;
+    setSearchMain(value.trimStart());
+  };
+  // Reset on selectedKey change
+  useEffect(() => {
+    setSearchMain("");
+  }, [selectedKey]);
 
   // ----------------------------------------------------------------
   // 🔧 HELPERS
@@ -176,6 +186,7 @@ const SearchWithPopoverOnly = () => {
         break;
     }
     setVisible(false); // ✅ Close popover
+    setClear(false);
   };
 
   /**
@@ -186,25 +197,28 @@ const SearchWithPopoverOnly = () => {
       case "1": // Employee → My Approval
         setEmployeeMyApprovalSearch((prev) => ({
           ...prev,
-          instrumentName: "",
+          instrumentName: searchMain,
           quantity: 0,
           startDate: null,
           endDate: null,
           pageNumber: 0,
-          tableFilterTrigger: true,
+          filterTrigger: true,
         }));
+        setSearchMain("");
         break;
 
       case "2": // Employee → My Transaction
         setEmployeeMyTransactionSearch((prev) => ({
           ...prev,
-          instrumentName: "",
+          instrumentName: searchMain,
           quantity: 0,
           startDate: null,
           endDate: null,
+          brokerIDs: [],
           pageNumber: 0,
-          tableFilterTrigger: true,
+          filterTrigger: true,
         }));
+        setSearchMain("");
         break;
 
       case "4": // Employee → Portfolio / Pending
@@ -321,6 +335,7 @@ const SearchWithPopoverOnly = () => {
         break;
     }
   };
+  console.log("visible", visible);
 
   // ----------------------------------------------------------------
   // ✅ RENDER
@@ -334,42 +349,44 @@ const SearchWithPopoverOnly = () => {
         className={
           collapsed ? styles["inputWrapperCollapsed"] : styles["inputWrapper"]
         }
-        value={getMainSearchInputValueByKey(
-          selectedKey,
-          activeTab,
-          reconcileActiveTab,
-          activeTabHCO,
-          employeeMyApprovalSearch,
-          employeeMyTransactionSearch,
-          employeePortfolioSearch,
-          employeePendingApprovalSearch,
-          lineManagerApprovalSearch,
-          complianceOfficerReconcilePortfolioSearch,
-          complianceOfficerReconcileTransactionsSearch,
-          headOfComplianceApprovalEscalatedVerificationsSearch,
-          headOfComplianceApprovalPortfolioSearch,
-          headOfTradeEscalatedApprovalsSearch
-        )}
-        onChange={(e) => {
-          const value = removeFirstSpace(e.target.value); // ✅ Prevent leading space
-          handleMainInstrumentChange(
-            selectedKey,
-            activeTab,
-            reconcileActiveTab,
-            activeTabHCO,
-            value,
-            setEmployeeMyApprovalSearch,
-            setEmployeeMyTransactionSearch,
-            setEmployeePortfolioSearch,
-            setEmployeePendingApprovalSearch,
-            setLineManagerApprovalSearch,
-            setComplianceOfficerReconcilePortfolioSearch,
-            setComplianceOfficerReconcileTransactionsSearch,
-            setHeadOfComplianceApprovalEscalatedVerificationsSearch,
-            setHeadOfComplianceApprovalPortfolioSearch,
-            setHeadOfTradeEscalatedApprovalsSearch
-          );
-        }}
+        value={searchMain}
+        // value={getMainSearchInputValueByKey(
+        //   selectedKey,
+        //   activeTab,
+        //   reconcileActiveTab,
+        //   activeTabHCO,
+        //   employeeMyApprovalSearch,
+        //   employeeMyTransactionSearch,
+        //   employeePortfolioSearch,
+        //   employeePendingApprovalSearch,
+        //   lineManagerApprovalSearch,
+        //   complianceOfficerReconcilePortfolioSearch,
+        //   complianceOfficerReconcileTransactionsSearch,
+        //   headOfComplianceApprovalEscalatedVerificationsSearch,
+        //   headOfComplianceApprovalPortfolioSearch,
+        //   headOfTradeEscalatedApprovalsSearch
+        // )}
+        // onChange={(e) => {
+        //   const value = removeFirstSpace(e.target.value); // ✅ Prevent leading space
+        //   handleMainInstrumentChange(
+        //     selectedKey,
+        //     activeTab,
+        //     reconcileActiveTab,
+        //     activeTabHCO,
+        //     value,
+        //     setEmployeeMyApprovalSearch,
+        //     setEmployeeMyTransactionSearch,
+        //     setEmployeePortfolioSearch,
+        //     setEmployeePendingApprovalSearch,
+        //     setLineManagerApprovalSearch,
+        //     setComplianceOfficerReconcilePortfolioSearch,
+        //     setComplianceOfficerReconcileTransactionsSearch,
+        //     setHeadOfComplianceApprovalEscalatedVerificationsSearch,
+        //     setHeadOfComplianceApprovalPortfolioSearch,
+        //     setHeadOfTradeEscalatedApprovalsSearch
+        //   );
+        // }}
+        onChange={handleInputChange}
         style={{
           borderStartEndRadius: 0,
           borderEndEndRadius: 0,
@@ -393,12 +410,19 @@ const SearchWithPopoverOnly = () => {
           reconcileActiveTab,
           activeTabHCO,
           handleSearch,
-          setVisible
+          visible,
+          setVisible,
+          searchMain,
+          setSearchMain,
+          clear,
+          setClear
         )}
         trigger="click"
         open={visible}
         onOpenChange={(newVisible) => {
           setVisible(newVisible);
+          setClear(newVisible);
+
           if (newVisible) {
             // ✅ Reset filters when opening popover
             handleSearchMainInputReset({
@@ -415,7 +439,9 @@ const SearchWithPopoverOnly = () => {
               setComplianceOfficerReconcileTransactionsSearch,
               setHeadOfComplianceApprovalEscalatedVerificationsSearch,
               setHeadOfComplianceApprovalPortfolioSearch,
-              setHeadOfTradeEscalatedApprovalsSearch
+              setHeadOfTradeEscalatedApprovalsSearch,
+              visible,
+              setVisible,
             });
           }
         }}

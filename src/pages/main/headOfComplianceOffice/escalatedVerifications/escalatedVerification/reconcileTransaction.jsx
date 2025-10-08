@@ -23,7 +23,6 @@ import { useGlobalModal } from "../../../../../context/GlobalModalContext";
 
 // 🔹 Hook imports
 import { useNotification } from "../../../../../components/NotificationProvider/NotificationProvider";
-import { useTableScrollBottom } from "../../../employes/myApprovals/utils";
 
 // 🔹 API imports
 import { SearchEmployeePendingUploadedPortFolio } from "../../../../../api/protFolioApi";
@@ -45,6 +44,7 @@ import NoteHeadOfComplianceModal from "./modals/noteHeadOfComplianceModal/NoteHe
 import ApproveHeadOfComplianceModal from "./modals/approveHeadOfComplianceModal/ApproveHeadOfComplianceModal";
 import DeclinedHeadOfComplianceModal from "./modals/declinedHeadOfComplianceModal/DeclinedHeadOfComplianceModal";
 import ViewTicketEscalatedModal from "./modals/viewTicketEscalatedModal/ViewTicketEscalatedModal";
+import { useTableScrollBottom } from "../../../../../commen/funtions/scroll";
 
 // 🔹 Modal imports
 // =============================================================================
