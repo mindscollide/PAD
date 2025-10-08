@@ -3,7 +3,6 @@ import { Col, Row } from "antd";
 import { useNavigate } from "react-router-dom";
 
 // Components
-import { ComonDropDown } from "../../../../components";
 import BorderlessTable from "../../../../components/tables/borderlessTable/borderlessTable";
 import PageLayout from "../../../../components/pageContainer/pageContainer";
 import { useNotification } from "../../../../components/NotificationProvider/NotificationProvider";
@@ -13,7 +12,6 @@ import { useSearchBarContext } from "../../../../context/SearchBarContaxt";
 import { useGlobalLoader } from "../../../../context/LoaderContext";
 import { useApi } from "../../../../context/ApiContext";
 import { useGlobalModal } from "../../../../context/GlobalModalContext";
-import { useSidebarContext } from "../../../../context/sidebarContaxt";
 import { useDashboardContext } from "../../../../context/dashboardContaxt";
 import { useEscalatedApprovals } from "../../../../context/escalatedApprovalContext";
 
@@ -22,11 +20,14 @@ import {
   getBorderlessTableColumns,
   mapEscalatedApprovalsToTableRows,
 } from "./utill";
+
 import { approvalStatusMap } from "../../../../components/tables/borderlessTable/utill";
+
 import {
   mapBuySellToIds,
   mapStatusToIds,
 } from "../../../../components/dropdowns/filters/utils";
+
 import { toYYMMDD } from "../../../../commen/funtions/rejex";
 
 // API
@@ -44,10 +45,12 @@ import ViewCommentHeadOfApprovalModal from "./modals/viewCommentHeadOfApprovalMo
 
 // Styles
 import style from "./escalatedApprovals.module.css";
+import { useTableScrollBottom } from "../../../../commen/funtions/scroll";
 
 const EscalatedApprovals = () => {
   const navigate = useNavigate();
   const hasFetched = useRef(false);
+  const tableScroll = useRef(null);
 
   // Context Hooks
   const { showNotification } = useNotification();
@@ -83,7 +86,6 @@ const EscalatedApprovals = () => {
     totalRecords: 0,
   });
   const [loadingMore, setLoadingMore] = useState(false);
-  const [escalatedSubmitedFilters, setEscalatedSubmittedFilters] = useState([]);
 
   // ===========================================================================
   // 📦 HELPERS
@@ -94,8 +96,7 @@ const EscalatedApprovals = () => {
     return {
       RequesterName: searchState.requesterName || "",
       LineManagerName: searchState.lineManagerName || "",
-      InstrumentName:
-        searchState.mainInstrumentName || searchState.instrumentName || "",
+      InstrumentName: searchState.instrumentName || "",
       RequestDateFrom: formatDate(searchState.requestDateFrom),
       RequestDateTo: formatDate(searchState.requestDateTo),
       EscalatedDateFrom: formatDate(searchState.escalatedDateFrom),
@@ -145,7 +146,7 @@ const EscalatedApprovals = () => {
 
         setEscalatedApprovalData({
           data: mappedData,
-          totalRecords: response?.totalRecords ?? mappedData.length,
+          totalRecords: response?.totalRecords,
           apiCall: true,
           replace,
         });
@@ -162,6 +163,64 @@ const EscalatedApprovals = () => {
     [callApi, showNotification, showLoader, navigate, addApprovalRequestData]
   );
 
+  // ===========================================================================
+  // 📦 EFFECTS
+  // ===========================================================================
+
+  // Initial fetch
+  useEffect(() => {
+    if (hasFetched.current) return;
+    hasFetched.current = true;
+
+    const requestData = buildEscalatedTradeApprovalRequest(
+      headOfTradeEscalatedApprovalsSearch
+    );
+    fetchEscalatedApprovals(requestData, true, true);
+  }, []);
+
+  // Sync escalatedApprovalData → local state
+  useEffect(() => {
+    if (!escalatedApprovalData?.apiCall) return;
+    const newData = mergeRows(
+      escalatedData.rows,
+      escalatedApprovalData.data,
+      escalatedApprovalData.replace
+    );
+    setEscalatedData({
+      rows: newData,
+      totalRecords: newData?.length,
+    });
+    setEscalatedApprovalData((prev) => ({ ...prev, apiCall: false }));
+    setHeadOfTradeEscalatedApprovalsSearch((prev) => ({
+      ...prev,
+      pageNumber: prev.pageNumber + 10,
+    }));
+  }, [escalatedApprovalData?.apiCall]);
+
+  // Handle filters
+  useEffect(() => {
+    if (!headOfTradeEscalatedApprovalsSearch?.filterTrigger) return;
+
+    const requestData = buildEscalatedTradeApprovalRequest(
+      headOfTradeEscalatedApprovalsSearch
+    );
+    fetchEscalatedApprovals(requestData, true, true);
+
+    setHeadOfTradeEscalatedApprovalsSearch((prev) => ({
+      ...prev,
+      filterTrigger: false,
+    }));
+  }, [headOfTradeEscalatedApprovalsSearch?.filterTrigger]);
+
+  // Reset on unmount
+  useEffect(() => {
+    return () => {
+      setSortedInfo({});
+      resetHeadOfTradeApprovalEscalatedApprovalsSearch();
+      setEscalatedData({ rows: [], totalRecords: 0 });
+    };
+  }, []);
+
   const handleHeadOfApprovalViewDetail = async (approvalID) => {
     showLoader(true);
     const responseData = await GetHeadOfApprovalViewDetailRequest({
@@ -177,68 +236,6 @@ const EscalatedApprovals = () => {
       setViewDetailsHeadOfApprovalModal(true);
     }
   };
-
-  // ===========================================================================
-  // 📦 EFFECTS
-  // ===========================================================================
-
-  // Initial fetch
-  useEffect(() => {
-    if (hasFetched.current) return;
-    hasFetched.current = true;
-
-    const requestData = buildEscalatedTradeApprovalRequest(
-      headOfTradeEscalatedApprovalsSearch
-    );
-    fetchEscalatedApprovals(requestData, true);
-  }, []);
-
-  // Sync escalatedApprovalData → local state
-  useEffect(() => {
-    if (!escalatedApprovalData?.apiCall) return;
-
-    setEscalatedData((prev) => ({
-      rows: mergeRows(
-        prev.rows,
-        escalatedApprovalData.data,
-        escalatedApprovalData.replace
-      ),
-      totalRecords: escalatedApprovalData.totalRecords || prev.totalRecords,
-    }));
-
-    setHeadOfTradeEscalatedApprovalsSearch((prev) => ({
-      ...prev,
-      totalRecords: escalatedApprovalData.totalRecords ?? prev.totalRecords,
-    }));
-
-    setEscalatedApprovalData((prev) => ({ ...prev, apiCall: false }));
-  }, [escalatedApprovalData?.apiCall]);
-
-  // Handle filters
-  useEffect(() => {
-    if (!headOfTradeEscalatedApprovalsSearch?.filterTrigger) return;
-
-    const requestData = buildEscalatedTradeApprovalRequest(
-      headOfTradeEscalatedApprovalsSearch
-    );
-    fetchEscalatedApprovals(requestData, true);
-
-    setHeadOfTradeEscalatedApprovalsSearch((prev) => ({
-      ...prev,
-      filterTrigger: false,
-    }));
-  }, [headOfTradeEscalatedApprovalsSearch?.filterTrigger]);
-
-  // Reset on unmount
-  useEffect(() => {
-    return () => {
-      setSortedInfo({});
-      resetHeadOfTradeApprovalEscalatedApprovalsSearch();
-      setEscalatedData({ rows: [], totalRecords: 0 });
-      setEscalatedSubmittedFilters([]);
-    };
-  }, []);
-
   // ===========================================================================
   // 📦 TABLE CONFIG
   // ===========================================================================
@@ -251,7 +248,114 @@ const EscalatedApprovals = () => {
     setViewDetailsHeadOfApprovalModal,
     onViewDetail: handleHeadOfApprovalViewDetail,
   });
+  /** 🔹 Handle removing individual filter */
+  const handleRemoveFilter = (key) => {
+    const resetMap = {
+      instrumentName: { instrumentName: "" },
+      requesterName: { requesterName: "" },
+      lineManagerName: { inlineManagerNamestrumentName: "" },
+      dateRange: { escalatedDateFrom: null, requestDateTo: null },
+      escalatedDateRange: { escalatedDateFrom: null, escalatedDateTo: null },
+    };
 
+    setHeadOfTradeEscalatedApprovalsSearch((prev) => ({
+      ...prev,
+      ...resetMap[key],
+      pageNumber: 0,
+      filterTrigger: true,
+    }));
+  };
+
+  /** 🔹 Handle removing all filters */
+  const handleRemoveAllFilters = () => {
+    setHeadOfTradeEscalatedApprovalsSearch((prev) => ({
+      ...prev,
+      instrumentName: "",
+      requesterName: "",
+      lineManagerName: "",
+      requestDateFrom: null,
+      requestDateTo: null,
+      escalatedDateFrom: null,
+      escalatedDateTo: null,
+      filterTrigger: true,
+    }));
+  };
+
+  /** 🔹 Build Active Filters */
+  const activeFilters = (() => {
+    const {
+      instrumentName,
+      requesterName,
+      lineManagerName,
+      requestDateFrom,
+      requestDateTo,
+      escalatedDateFrom,
+      escalatedDateTo,
+    } = headOfTradeEscalatedApprovalsSearch || {};
+
+    return [
+      instrumentName && {
+        key: "instrumentName",
+        value:
+          instrumentName.length > 13
+            ? instrumentName.slice(0, 13) + "..."
+            : instrumentName,
+      },
+      requesterName && {
+        key: "requesterName",
+        value:
+          instrumentName.length > 13
+            ? instrumentName.slice(0, 13) + "..."
+            : instrumentName,
+      },
+      lineManagerName && {
+        key: "lineManagerName",
+        value:
+          instrumentName.length > 13
+            ? instrumentName.slice(0, 13) + "..."
+            : instrumentName,
+      },
+      requestDateFrom &&
+        requestDateTo && {
+          key: "dateRange",
+          value: `${requestDateFrom} → ${requestDateTo}`,
+        },
+      escalatedDateFrom &&
+        escalatedDateTo && {
+          key: "escalatedDateRange",
+          value: `${escalatedDateFrom} → ${escalatedDateTo}`,
+        },
+    ].filter(Boolean);
+  })();
+
+  useTableScrollBottom(
+    async () => {
+      if (escalatedApprovalData?.totalRecords <= escalatedData?.rows?.length)
+        return;
+
+      try {
+        setLoadingMore(true);
+        const requestData = {
+          ...buildEscalatedTradeApprovalRequest(
+            headOfTradeEscalatedApprovalsSearch
+          ),
+          PageNumber: headOfTradeEscalatedApprovalsSearch.pageNumber || 0,
+          Length: 10,
+        };
+        await fetchEscalatedApprovals(requestData, false, false); // append mode
+        setHeadOfTradeEscalatedApprovalsSearch((prev) => ({
+          ...prev,
+          pageNumber: (prev.pageNumber || 0) + 10,
+        }));
+      } catch (error) {
+        console.error("❌ Error loading more approvals:", error);
+      } finally {
+        setLoadingMore(false);
+      }
+    },
+    0,
+    "border-less-table-orange"
+  );
   // ===========================================================================
   // 📦 RENDER
   // ===========================================================================
@@ -259,27 +363,41 @@ const EscalatedApprovals = () => {
   return (
     <>
       {/* Filter Tags */}
-      {escalatedSubmitedFilters.length > 0 && (
+      {/* 🔹 Active Filter Tags */}
+      {activeFilters.length > 0 && (
         <Row gutter={[12, 12]} className={style["filter-tags-container"]}>
-          {escalatedSubmitedFilters.map(({ key, value }) => (
+          {activeFilters.map(({ key, value }) => (
             <Col key={key}>
               <div className={style["filter-tag"]}>
                 <span>{value}</span>
                 <span
                   className={style["filter-tag-close"]}
                   onClick={() => handleRemoveFilter(key)}
-                  role="button"
-                  tabIndex={0}
                 >
                   &times;
                 </span>
               </div>
             </Col>
           ))}
+
+          {/* 🔹 Show Clear All only if more than one filter */}
+          {activeFilters.length > 1 && (
+            <Col>
+              <div
+                className={`${style["filter-tag"]} ${style["clear-all-tag"]}`}
+                onClick={handleRemoveAllFilters}
+              >
+                <span>Clear All</span>
+              </div>
+            </Col>
+          )}
         </Row>
       )}
 
-      <PageLayout background="white">
+      <PageLayout
+        background="white"
+        className={activeFilters.length > 0 && "changeHeight"}
+      >
         <div className="px-4 md:px-6 lg:px-8">
           <Row justify="space-between" align="middle" className="mb-4">
             <Col span={24}>
@@ -294,13 +412,14 @@ const EscalatedApprovals = () => {
               escalatedData.rows.length
                 ? {
                     x: "max-content",
-                    y: escalatedSubmitedFilters.length > 0 ? 450 : 500,
+                    y: activeFilters.length > 0 ? 450 : 500,
                   }
                 : undefined
             }
             classNameTable="border-less-table-orange"
             onChange={(_, __, sorter) => setSortedInfo(sorter || {})}
             loading={loadingMore}
+            ref={tableScroll}
           />
         </div>
       </PageLayout>

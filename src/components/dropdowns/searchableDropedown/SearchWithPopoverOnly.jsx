@@ -145,12 +145,12 @@ const SearchWithPopoverOnly = () => {
         break;
 
       case "12": // HTA Escalated
-        setHeadOfTradeEscalatedApprovalsSearch((prev) => ({
-          ...prev,
-          mainInstrumentName: "",
-          pageNumber: 0,
-          filterTrigger: true,
-        }));
+        // setHeadOfTradeEscalatedApprovalsSearch((prev) => ({
+        //   ...prev,
+        //   mainInstrumentName: "",
+        //   pageNumber: 0,
+        //   filterTrigger: true,
+        // }));
         break;
 
       case "15": // Head of Compliance Approval
@@ -285,28 +285,29 @@ const SearchWithPopoverOnly = () => {
       case "12": // HTA Escalated
         setHeadOfTradeEscalatedApprovalsSearch((prev) => ({
           ...prev,
-          instrumentName: "",
-          quantity: "",
-          requestDateFrom: "",
-          requestDateTo: "",
-          escalatedDateFrom: "",
-          escalatedDateTo: "",
-          status: [],
-          type: [],
+          instrumentName: searchMain,
           requesterName: "",
           lineManagerName: "",
+          requestDateFrom: null,
+          requestDateTo: null,
+          escalatedDateFrom: null,
+          escalatedDateTo: null,
+          status: [],
+          type: [],
           pageNumber: 0,
           length: 10,
           filterTrigger: true,
         }));
+        setSearchMain("");
+
         break;
 
       case "15": // Head of Compliance Approval
         if (activeTabHCO === "escalated") {
           setHeadOfComplianceApprovalEscalatedVerificationsSearch((prev) => ({
             ...prev,
+            instrumentName: searchMain,
             requesterName: "",
-            instrumentName: "",
             quantity: 0,
             requestDateFrom: null,
             requestDateTo: null,
@@ -318,13 +319,15 @@ const SearchWithPopoverOnly = () => {
             totalRecords: 0,
             filterTrigger: true,
           }));
+          setSearchMain("");
         } else if (activeTabHCO === "portfolio") {
           setHeadOfComplianceApprovalPortfolioSearch((prev) => ({
             ...prev,
-            mainInstrumentName: "",
+            instrumentName: searchMain,
             pageNumber: 0,
             filterTrigger: true,
           }));
+          setSearchMain("");
         }
         break;
       default:

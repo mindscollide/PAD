@@ -385,8 +385,11 @@ export const renderFilterContent = (
     case "12":
       return (
         <HeadOfTradeEscalatedFilter
-          handleSearch={handleSearch}
           setVisible={setVisible}
+          clear={clear}
+          setClear={setClear}
+          maininstrumentName={searchMain}
+          setMaininstrumentName={setSearchMain}
         />
       );
     case "15":

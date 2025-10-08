@@ -114,8 +114,7 @@ export const EmployeeTransactionFilter = ({
   const handleBrokerChange = (selectedIDs) => {
     setLocalState((prev) => ({ ...prev, brokerIDs: selectedIDs }));
   };
-  console.log("brokerOptions", employeeBasedBrokersData);
-  console.log("brokerOptions", brokerOptions);
+
   /** Search click */
   const handleSearchClick = () => {
     const { instrumentName, quantity, startDate, endDate, brokerIDs } =
@@ -155,6 +154,7 @@ export const EmployeeTransactionFilter = ({
     setClear(false);
     setVisible(false);
   };
+  
   // -----------------------------------------------------
   // 🔹 Render
   // -----------------------------------------------------

@@ -123,14 +123,12 @@ export const EmployeeMyApprovalFilter = ({
    * Handle date range change (startDate, endDate)
    */
   const handleDateChange = (dates) => {
-    console.log("handleDateChange", dates);
     setLocalState({
       ...localState,
       startDate: dates?.[0] || null,
       endDate: dates?.[1] || null,
     });
   };
-  console.log("handleDateChange", localState);
 
   /**
    * Clear only the date range fields
@@ -150,13 +148,6 @@ export const EmployeeMyApprovalFilter = ({
    */
   const handleSearchClick = () => {
     const { instrumentName, quantity, startDate, endDate } = localState;
-    console.log(
-      "handleDateChange",
-      instrumentName,
-      quantity,
-      startDate,
-      endDate
-    );
 
     const searchPayload = {
       ...employeeMyApprovalSearch, // Preserve other filters
@@ -167,7 +158,6 @@ export const EmployeeMyApprovalFilter = ({
       pageNumber: 0, // Reset pagination
       filterTrigger: true, // Extra flag for triggering search
     };
-    console.log("handleDateChange", searchPayload);
 
     // Reset local + global state and close panel
     setEmployeeMyApprovalSearch(searchPayload);
