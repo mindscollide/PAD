@@ -56,7 +56,7 @@ import { useTableScrollBottom } from "../../../../../commen/funtions/scroll";
  * @component
  * @returns {JSX.Element} BorderlessTable with reconcile portfolios.
  */
-const ReconcilePortfolio = () => {
+const ReconcilePortfolio = ({ activeFilters }) => {
   const navigate = useNavigate();
 
   // -------------------------
@@ -296,10 +296,7 @@ const ReconcilePortfolio = () => {
   // ----------------------------------------------------------------
   // 🔄 On search/filter trigger
   // ----------------------------------------------------------------
-  console.log(
-    "fetchPendingApprovals",
-    complianceOfficerReconcilePortfolioSearch
-  );
+
   useEffect(() => {
     if (complianceOfficerReconcilePortfolioSearch?.filterTrigger) {
       const data = buildPortfolioRequest(
@@ -398,7 +395,9 @@ const ReconcilePortfolio = () => {
         columns={columns}
         classNameTable="border-less-table-blue"
         scroll={
-          tableData?.rows?.length ? { x: "max-content", y: 550 } : undefined
+          tableData?.rows?.length
+            ? { x: "max-content", y: activeFilters.length > 0 ? 450 : 500 }
+            : undefined
         }
         onChange={(_, __, sorter) => setSortedInfo(sorter || {})}
         loading={loadingMore}

@@ -339,7 +339,7 @@ const PendingApprovals = ({activeFilters}) => {
       columns={columns}
       classNameTable="border-less-table-blue"
       scroll={
-        tableData?.rows?.length ? { x: "max-content", y: 550 } : undefined
+        tableData?.rows?.length ? { x: "max-content", y:activeFilters.length > 0 ? 450 : 500  } : undefined
       }
       onChange={(_, __, sorter) => setSortedInfo(sorter || {})}
       loading={loadingMore}

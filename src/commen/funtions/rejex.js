@@ -10,6 +10,8 @@ export const allowOnlyNumbers = (value) => {
   return /^\d+$/.test(String(value));
 };
 
+export const allowOnlyAlphabets = (value) => /^[A-Za-z\s]*$/.test(value);
+
 // Comma Separator for numbers
 export const formatNumberWithCommas = (value) => {
   if (value === null || value === undefined || value === "") return 0;

@@ -60,7 +60,7 @@ import { useTableScrollBottom } from "../../../../../commen/funtions/scroll";
  * @component
  * @returns {JSX.Element} BorderlessTable with reconcile transactions.
  */
-const ReconcileTransaction = () => {
+const ReconcileTransaction = ({ activeFilters }) => {
   const navigate = useNavigate();
   const { selectedKey } = useSidebarContext();
 
@@ -229,7 +229,10 @@ const ReconcileTransaction = () => {
   // ----------------------------------------------------------------
   useEffect(() => {
     if (!complianceOfficerReconcileTransactionData?.Apicall) return;
-  console.log("requestData", complianceOfficerReconcileTransactionData.replace);
+    console.log(
+      "requestData",
+      complianceOfficerReconcileTransactionData.replace
+    );
     setTableData((prev) => {
       const {
         data = [],
@@ -250,7 +253,8 @@ const ReconcileTransaction = () => {
         complianceOfficerReconcileTransactionData.data.length,
       pageNumber: complianceOfficerReconcileTransactionData.replace
         ? 10
-        : prev.pageNumber + complianceOfficerReconcileTransactionData.data.length,
+        : prev.pageNumber +
+          complianceOfficerReconcileTransactionData.data.length,
     }));
 
     setComplianceOfficerReconcileTransactionData((prev) => ({
@@ -413,7 +417,9 @@ const ReconcileTransaction = () => {
         columns={columns}
         classNameTable="border-less-table-blue"
         scroll={
-          tableData?.rows?.length ? { x: "max-content", y: 550 } : undefined
+          tableData?.rows?.length
+            ? { x: "max-content", y: activeFilters.length > 0 ? 450 : 500 }
+            : undefined
         }
         onChange={(_, __, sorter) => setSortedInfo(sorter || {})}
         loading={loadingMore}

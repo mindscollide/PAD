@@ -143,7 +143,6 @@ export const SearchBarProvider = ({ children }) => {
     setComplianceOfficerReconcileTransactionsSearch,
   ] = useState({
     requesterName: "",
-    mainInstrumentName: "",
     instrumentName: "",
     quantity: 0,
     startDate: null,
@@ -436,7 +435,6 @@ export const SearchBarProvider = ({ children }) => {
     setComplianceOfficerReconcileTransactionsSearch({
       requesterName: "",
       instrumentName: "",
-      mainInstrumentName: "",
       quantity: 0,
       startDate: null,
       endDate: null,

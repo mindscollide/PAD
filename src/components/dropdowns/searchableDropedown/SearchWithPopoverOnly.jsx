@@ -41,19 +41,13 @@ const SearchWithPopoverOnly = () => {
   const { activeTab } = usePortfolioContext(); // Portfolio / Pending
   const { activeTab: reconcileActiveTab, activeTabHCO } = useReconcileContext(); // Transactions / Portfolio
   const {
-    employeeMyApprovalSearch,
     setEmployeeMyApprovalSearch,
-    employeeMyTransactionSearch,
     setEmployeeMyTransactionSearch,
-    employeePortfolioSearch,
     setEmployeePortfolioSearch,
-    employeePendingApprovalSearch,
     setEmployeePendingApprovalSearch,
     lineManagerApprovalSearch,
     setLineManagerApprovalSearch,
-    complianceOfficerReconcileTransactionsSearch,
     setComplianceOfficerReconcileTransactionsSearch,
-    complianceOfficerReconcilePortfolioSearch,
     setComplianceOfficerReconcilePortfolioSearch,
     headOfComplianceApprovalPortfolioSearch,
     setHeadOfComplianceApprovalPortfolioSearch,
@@ -90,39 +84,39 @@ const SearchWithPopoverOnly = () => {
   const handleSearch = () => {
     switch (selectedKey) {
       case "1": // Employee → My Approval
-        setEmployeeMyApprovalSearch((prev) => ({
-          ...prev,
-          mainInstrumentName: "",
-          pageNumber: 0,
-          tableFilterTrigger: true,
-        }));
+        // setEmployeeMyApprovalSearch((prev) => ({
+        //   ...prev,
+        //   mainInstrumentName: "",
+        //   pageNumber: 0,
+        //   tableFilterTrigger: true,
+        // }));
         break;
 
       case "2": // Employee → My Transaction
-        setEmployeeMyTransactionSearch((prev) => ({
-          ...prev,
-          mainInstrumentName: "",
-          pageNumber: 0,
-          tableFilterTrigger: true,
-        }));
+        // setEmployeeMyTransactionSearch((prev) => ({
+        //   ...prev,
+        //   mainInstrumentName: "",
+        //   pageNumber: 0,
+        //   tableFilterTrigger: true,
+        // }));
         break;
 
       case "4": // Employee → Portfolio / Pending
-        if (activeTab === "portfolio") {
-          setEmployeePortfolioSearch((prev) => ({
-            ...prev,
-            mainInstrumentName: "",
-            pageNumber: 0,
-            filterTrigger: true,
-          }));
-        } else if (activeTab === "pending") {
-          setEmployeePendingApprovalSearch((prev) => ({
-            ...prev,
-            mainInstrumentName: "",
-            pageNumber: 0,
-            filterTrigger: true,
-          }));
-        }
+        // if (activeTab === "portfolio") {
+        //   setEmployeePortfolioSearch((prev) => ({
+        //     ...prev,
+        //     mainInstrumentName: "",
+        //     pageNumber: 0,
+        //     filterTrigger: true,
+        //   }));
+        // } else if (activeTab === "pending") {
+        //   setEmployeePendingApprovalSearch((prev) => ({
+        //     ...prev,
+        //     mainInstrumentName: "",
+        //     pageNumber: 0,
+        //     filterTrigger: true,
+        //   }));
+        // }
         break;
 
       case "6": // Line Manager Approval
@@ -133,21 +127,21 @@ const SearchWithPopoverOnly = () => {
         break;
 
       case "9": // Compliance Officer → Reconcile
-        if (reconcileActiveTab === "transactions") {
-          setComplianceOfficerReconcileTransactionsSearch((prev) => ({
-            ...prev,
-            mainInstrumentName: "",
-            pageNumber: 0,
-            filterTrigger: true,
-          }));
-        } else if (reconcileActiveTab === "portfolio") {
-          setComplianceOfficerReconcilePortfolioSearch((prev) => ({
-            ...prev,
-            mainInstrumentName: "",
-            pageNumber: 0,
-            filterTrigger: true,
-          }));
-        }
+        // if (reconcileActiveTab === "transactions") {
+        //   setComplianceOfficerReconcileTransactionsSearch((prev) => ({
+        //     ...prev,
+        //     mainInstrumentName: "",
+        //     pageNumber: 0,
+        //     filterTrigger: true,
+        //   }));
+        // } else if (reconcileActiveTab === "portfolio") {
+        //   setComplianceOfficerReconcilePortfolioSearch((prev) => ({
+        //     ...prev,
+        //     mainInstrumentName: "",
+        //     pageNumber: 0,
+        //     filterTrigger: true,
+        //   }));
+        // }
         break;
 
       case "12": // HTA Escalated
@@ -264,7 +258,7 @@ const SearchWithPopoverOnly = () => {
         if (reconcileActiveTab === "transactions") {
           setComplianceOfficerReconcileTransactionsSearch((prev) => ({
             ...prev,
-            instrumentName: "",
+            instrumentName: searchMain,
             requesterName: "",
             startDate: null,
             endDate: null,
@@ -272,10 +266,11 @@ const SearchWithPopoverOnly = () => {
             pageNumber: 0,
             filterTrigger: true,
           }));
+          setSearchMain("");
         } else if (reconcileActiveTab === "portfolio") {
           setComplianceOfficerReconcilePortfolioSearch((prev) => ({
             ...prev,
-            instrumentName: "",
+            instrumentName: searchMain,
             requesterName: "",
             startDate: null,
             endDate: null,
@@ -283,6 +278,7 @@ const SearchWithPopoverOnly = () => {
             pageNumber: 0,
             filterTrigger: true,
           }));
+          setSearchMain("");
         }
         break;
 
@@ -410,11 +406,8 @@ const SearchWithPopoverOnly = () => {
         }
         content={renderFilterContent(
           selectedKey,
-          activeTab,
-          reconcileActiveTab,
           activeTabHCO,
           handleSearch,
-          visible,
           setVisible,
           searchMain,
           setSearchMain,

@@ -212,16 +212,8 @@ export const handleMainInstrumentChange = (
 // this is for reset main input to its initial sate when its popover opens
 export const handleSearchMainInputReset = ({
   selectedKey,
-  activeTab,
-  reconcileActiveTab,
   activeTabHCO,
-  setEmployeeMyApprovalSearch,
-  setEmployeeMyTransactionSearch,
-  setEmployeePortfolioSearch,
-  setEmployeePendingApprovalSearch,
   setLineManagerApprovalSearch,
-  setComplianceOfficerReconcilePortfolioSearch,
-  setComplianceOfficerReconcileTransactionsSearch,
   setHeadOfComplianceApprovalEscalatedVerificationsSearch,
   setHeadOfComplianceApprovalPortfolioSearch,
   setHeadOfTradeEscalatedApprovalsSearch,
@@ -272,25 +264,25 @@ export const handleSearchMainInputReset = ({
       break;
 
     case "9":
-      switch (reconcileActiveTab) {
-        case "transactions":
-          setEmployeePortfolioSearch((prev) => ({
-            ...prev,
-            mainInstrumentName: "",
-          }));
-          break;
-        case "portfolio":
-          setEmployeePendingApprovalSearch((prev) => ({
-            ...prev,
-            mainInstrumentName: "",
-          }));
-          break;
-        default:
-          setEmployeePortfolioSearch((prev) => ({
-            ...prev,
-            mainInstrumentShortName: "",
-          }));
-      }
+      // switch (reconcileActiveTab) {
+      //   case "transactions":
+      //     setEmployeePortfolioSearch((prev) => ({
+      //       ...prev,
+      //       mainInstrumentName: "",
+      //     }));
+      //     break;
+      //   case "portfolio":
+      //     setEmployeePendingApprovalSearch((prev) => ({
+      //       ...prev,
+      //       mainInstrumentName: "",
+      //     }));
+      //     break;
+      //   default:
+      //     setEmployeePortfolioSearch((prev) => ({
+      //       ...prev,
+      //       mainInstrumentShortName: "",
+      //     }));
+      // }
 
       break;
 
@@ -332,11 +324,8 @@ export const handleSearchMainInputReset = ({
 // this is used for open specific filter according to page
 export const renderFilterContent = (
   selectedKey,
-  activeTab,
-  reconcileActiveTab,
   activeTabHCO,
   handleSearch,
-  visible,
   setVisible,
   searchMain,
   setSearchMain,
@@ -368,7 +357,6 @@ export const renderFilterContent = (
     case "4":
       return (
         <EmployeePortfolioFilter
-          activeTab={activeTab}
           setVisible={setVisible}
           clear={clear}
           setClear={setClear}
@@ -387,9 +375,11 @@ export const renderFilterContent = (
     case "9":
       return (
         <ComplianceReconcileFilter
-          handleSearch={handleSearch}
-          activeTab={reconcileActiveTab}
           setVisible={setVisible}
+          clear={clear}
+          setClear={setClear}
+          maininstrumentName={searchMain}
+          setMaininstrumentName={setSearchMain}
         />
       );
     case "12":
