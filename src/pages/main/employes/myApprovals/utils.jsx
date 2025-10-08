@@ -281,8 +281,11 @@ export const getBorderlessTableColumns = ({
       sortedInfo?.columnKey === "tradeApprovalID" ? sortedInfo.order : null,
     showSorterTooltip: false,
     sortIcon: () => null,
-    render: (tradeApprovalID) => (
-      <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+    render: (tradeApprovalID, record) => (
+      <div
+        id={`cell-${record.key}-tradeApprovalID`}
+        style={{ display: "flex", alignItems: "center", gap: "12px" }}
+      >
         <span className="font-medium" data-testid="formatted-approval-id">
           {dashBetweenApprovalAssets(tradeApprovalID)}
         </span>
@@ -310,7 +313,11 @@ export const getBorderlessTableColumns = ({
       sortedInfo?.columnKey === "instrumentCode" ? sortedInfo.order : null,
     showSorterTooltip: false,
     sortIcon: () => null,
-    render: (_, record) => renderInstrumentCell(record),
+    render: (_, record) => (
+      <div id={`cell-${record.key}-instrumentCode`}>
+        {renderInstrumentCell(record)}
+      </div>
+    ),
     onHeaderCell: () =>
       createCellStyle(
         COLUMN_WIDTHS.INSTRUMENT.min,
@@ -336,8 +343,9 @@ export const getBorderlessTableColumns = ({
       ? employeeMyApprovalSearch.type
       : null,
     onFilter: () => true, // Actual filtering handled by API
-    render: (type) => (
+    render: (type, record) => (
       <span
+        id={`cell-${record.key}-type`}
         className={type === "Buy" ? "text-green-600" : "text-red-600"}
         data-testid={`trade-type-${type}`}
       >
@@ -363,8 +371,12 @@ export const getBorderlessTableColumns = ({
       sortedInfo?.columnKey === "requestDateTime" ? sortedInfo.order : null,
     showSorterTooltip: false,
     sortIcon: () => null,
-    render: (date) => (
-      <span className="text-gray-600" data-testid="formatted-date">
+    render: (date, record) => (
+      <span
+        id={`cell-${record.key}-requestDateTime`}
+        className="text-gray-600"
+        data-testid="formatted-date"
+      >
         {formatApiDateTime(date)}
       </span>
     ),
@@ -383,7 +395,11 @@ export const getBorderlessTableColumns = ({
       ? employeeMyApprovalSearch.status
       : null,
     onFilter: () => true,
-    render: (status) => renderStatusTag(status, approvalStatusMap),
+    render: (status, record) => (
+      <div id={`cell-${record.key}-status`}>
+        {renderStatusTag(status, approvalStatusMap)}
+      </div>
+    ),
     onHeaderCell: () =>
       createCellStyle(COLUMN_WIDTHS.STATUS.min, COLUMN_WIDTHS.STATUS.max),
     onCell: () =>
@@ -415,8 +431,12 @@ export const getBorderlessTableColumns = ({
     sortOrder: sortedInfo?.columnKey === "quantity" ? sortedInfo.order : null,
     showSorterTooltip: false,
     sortIcon: () => null,
-    render: (quantity) => (
-      <span className="font-medium" data-testid="formatted-quantity">
+    render: (quantity, record) => (
+      <span
+        id={`cell-${record.key}-quantity`}
+        className="font-medium"
+        data-testid="formatted-quantity"
+      >
         {quantity.toLocaleString()}
       </span>
     ),
@@ -431,7 +451,11 @@ export const getBorderlessTableColumns = ({
     key: "timeRemainingToTrade",
     ellipsis: true,
     align: "center",
-    render: (text, record) => renderTimeRemainingCell(record),
+    render: (text, record) => (
+      <div id={`cell-${record.key}-timeRemainingToTrade`}>
+        {renderTimeRemainingCell(record)}
+      </div>
+    ),
     onHeaderCell: () => createCellStyle(COLUMN_WIDTHS.TIME_REMAINING.min),
     onCell: () => createCellStyle(COLUMN_WIDTHS.TIME_REMAINING.min),
   },
@@ -443,16 +467,18 @@ export const getBorderlessTableColumns = ({
       const { setSelectedViewDetail } = useGlobalModal();
 
       return (
-        <Button
-          className="big-orange-button"
-          text="View Details"
-          onClick={() => {
-            onViewDetail(record?.approvalID);
-            setSelectedViewDetail(record);
-            setIsViewDetail(true);
-          }}
-          data-testid="view-details-button"
-        />
+        <div id={`cell-${record.key}-actions`}>
+          <Button
+            className="big-orange-button"
+            text="View Details"
+            onClick={() => {
+              onViewDetail(record?.approvalID);
+              setSelectedViewDetail(record);
+              setIsViewDetail(true);
+            }}
+            data-testid="view-details-button"
+          />
+        </div>
       );
     },
   },
