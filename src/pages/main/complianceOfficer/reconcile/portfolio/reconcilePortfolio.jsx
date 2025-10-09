@@ -179,9 +179,6 @@ const ReconcilePortfolio = ({ activeFilters }) => {
     async (requestData, replace = false, loader = false) => {
       if (!requestData || typeof requestData !== "object") return;
       if (!loader) showLoader(true);
-      console.log("requestData", requestData);
-      console.log("requestData", replace);
-      console.log("requestData", loader);
       try {
         const res = await SearchComplianceOfficerReconcilePortfolioRequest({
           callApi,

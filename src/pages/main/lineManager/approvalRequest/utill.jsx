@@ -14,9 +14,70 @@ import { useGlobalModal } from "../../../../context/GlobalModalContext";
 import {
   dashBetweenApprovalAssets,
   formatApiDateTime,
+  toYYMMDD,
 } from "../../../../commen/funtions/rejex";
+import { getTradeTypeById } from "../../headOfTradeApprover/escalatedApprovals/utill";
+import { mapBuySellToIds, mapStatusToIds } from "../../../../components/dropdowns/filters/utils";
 // import TypeColumnTitle from "./typeFilter";
 
+/**
+ * Utility: Build API request payload for approval listing.
+ *
+ * @param {Object} searchState - Current search/filter state
+ * @param {Object} addApprovalRequestData - Extra request metadata (optional)
+ *
+ * @returns {Object} API-ready payload
+ */
+export const buildApprovalRequest = (searchState = {}, addApprovalRequestData) => {
+  const {
+    instrumentName = "",
+    requesterName = "",
+    quantity = 0,
+    startDate = null,
+    endDate = null,
+    status = [],
+    type = [],
+    pageNumber = 0,
+    pageSize = 10,
+  } = searchState;
+
+  return {
+    InstrumentName: instrumentName.trim(),
+    RequesterName: requesterName.trim(),
+    Quantity: quantity ? Number(quantity) : 0,
+    StartDate: startDate ? toYYMMDD(startDate) : "",
+    EndDate: endDate ? toYYMMDD(endDate) : "",
+    StatusIds: mapStatusToIds?.(status) || [],
+    TypeIds: mapBuySellToIds?.(type, addApprovalRequestData) || [],
+    PageNumber: Number(pageNumber) || 0,
+    Length: Number(pageSize) || 10,
+  };
+};
+
+export const mergeRows = (prevRows, newRows, replace = false) => {
+  if (replace) return newRows;
+  const ids = new Set(prevRows.map((r) => r.key));
+  return [...prevRows, ...newRows.filter((r) => !ids.has(r.key))];
+};
+
+
+export const mapEscalatedApprovalsToTableRows = (
+  assetTypeData,
+  approvals = []
+) =>
+  (Array.isArray(approvals) ? approvals : []).map((item = {}) => ({
+    key: item.approvalID,
+    instrument: `${item.instrument?.instrumentName || ""} - ${
+      item.instrument?.instrumentCode || ""
+    }`,
+    requestDateTime: `${item.requestDate || ""} ${item.requestTime || ""}`,
+    isEscalated: false,
+    type: getTradeTypeById(assetTypeData, item?.tradeType),
+    status: item.approvalStatus?.approvalStatusName || "",
+    quantity: item.quantity || 0,
+    timeRemaining: item.timeRemainingToTrade || "",
+    ...item,
+  }));
 /**
  * Returns the appropriate sort icon based on current sort state
  *

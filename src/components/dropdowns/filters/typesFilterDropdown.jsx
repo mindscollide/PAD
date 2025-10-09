@@ -44,117 +44,95 @@ const TypeFilterDropdown = ({
 
   const handleOk = async () => {
     let newdata = tempSelected;
-    // we handle employe profolio from here
-    if (selectedKey === "4") {
-      setState((prev) => ({
-        ...prev,
-        type: tempSelected,
-        pageNumber: 0,
-        filterTrigger: true,
-      }));
-    } else if (selectedKey === "9") {
-      setState((prev) => ({
-        ...prev,
-        type: tempSelected,
-        pageNumber: 0,
-        filterTrigger: true,
-      }));
-    } else if (selectedKey === "12") {
-      setState((prev) => ({
-        ...prev,
-        type: tempSelected,
-        pageNumber: 0,
-        filterTrigger: true,
-      }));
-    } else if (selectedKey === "1") {
-      setState((prev) => ({
-        ...prev,
-        type: tempSelected,
-        pageNumber: 0,
-        filterTrigger: true,
-      }));
-    } else {
-      setState((prev) => ({
-        ...prev,
-        type: tempSelected,
-        pageNumber: 0,
-      }));
-      await apiCallType({
-        selectedKey,
-        newdata,
-        addApprovalRequestData,
-        state,
-        callApi,
-        showNotification,
-        showLoader,
-        navigate,
-        setEmployeeTransactionsData,
-        setIsEmployeeMyApproval,
-        setLineManagerApproval,
-      });
+
+    switch (selectedKey) {
+      // 🔹 Keys that only update state with filterTrigger = true
+      case "1":
+      case "6":
+      case "4":
+      case "9":
+      case "12":
+      case "15":
+        setState((prev) => ({
+          ...prev,
+          type: tempSelected,
+          pageNumber: 0,
+          filterTrigger: true,
+        }));
+        break;
+
+      // 🔹 Default: Update state and call API
+      default:
+        setState((prev) => ({
+          ...prev,
+          type: tempSelected,
+          pageNumber: 0,
+        }));
+
+        await apiCallType({
+          selectedKey,
+          newdata,
+          addApprovalRequestData,
+          state,
+          callApi,
+          showNotification,
+          showLoader,
+          navigate,
+          setEmployeeTransactionsData,
+          setIsEmployeeMyApproval,
+          setLineManagerApproval,
+        });
+        break;
     }
 
-    confirm(); // close dropdown
+    // 🔹 Common action: always close dropdown
+    confirm();
   };
 
   const handleReset = async () => {
     let newdata = [];
-    // we handle employe profolio from here
-    if (selectedKey === "4") {
-      setState((prev) => ({
-        ...prev,
-        type: [],
-        pageNumber: 0,
-        filterTrigger: true,
-      }));
-    } else if (selectedKey === "9") {
-      setState((prev) => ({
-        ...prev,
-        type: [],
-        pageNumber: 0,
-        filterTrigger: true,
-      }));
-    } else if (selectedKey === "12") {
-      setState((prev) => ({
-        ...prev,
-        type: [],
-        pageNumber: 0,
-        filterTrigger: true,
-      }));
-    } else if (selectedKey === "15") {
-      setState((prev) => ({
-        ...prev,
-        type: [],
-        pageNumber: 0,
-        filterTrigger: true,
-      }));
-    }else if (selectedKey === "1") {
-      setState((prev) => ({
-        ...prev,
-        type: [],
-        pageNumber: 0,
-        filterTrigger: true,
-      }));
-    } else {
-      await apiCallType({
-        selectedKey,
-        newdata,
-        addApprovalRequestData,
-        state,
-        callApi,
-        showNotification,
-        showLoader,
-        navigate,
-        setEmployeeTransactionsData,
-        setIsEmployeeMyApproval,
-        setLineManagerApproval,
-      });
-      setState((prev) => ({
-        ...prev,
-        type: [],
-        pageNumber: 0,
-      }));
+
+    switch (selectedKey) {
+      // 🔹 Cases where we just reset state
+      case "1":
+      case "6":
+      case "4":
+      case "9":
+      case "12":
+      case "15":
+        setState((prev) => ({
+          ...prev,
+          type: [],
+          pageNumber: 0,
+          filterTrigger: true,
+        }));
+        break;
+
+      // 🔹 Default: Call API, then reset state (without filterTrigger)
+      default:
+        await apiCallType({
+          selectedKey,
+          newdata,
+          addApprovalRequestData,
+          state,
+          callApi,
+          showNotification,
+          showLoader,
+          navigate,
+          setEmployeeTransactionsData,
+          setIsEmployeeMyApproval,
+          setLineManagerApproval,
+        });
+
+        setState((prev) => ({
+          ...prev,
+          type: [],
+          pageNumber: 0,
+        }));
+        break;
     }
+
+    // 🔹 Common cleanup (runs after all cases)
     setTempSelected([]);
     clearFilters?.();
     confirm(); // close dropdown

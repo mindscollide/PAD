@@ -368,8 +368,11 @@ export const renderFilterContent = (
     case "6":
       return (
         <LineManagerApprovalFilter
-          handleSearch={handleSearch}
           setVisible={setVisible}
+          clear={clear}
+          setClear={setClear}
+          maininstrumentName={searchMain}
+          setMaininstrumentName={setSearchMain}
         />
       );
     case "9":
@@ -506,77 +509,6 @@ export const apiCallSearch = async ({
       case "6":
         // Add case 3 logic here when needed
         break;
-
-      default:
-        console.warn(`No matching case for selectedKey: ${selectedKey}`);
-        break;
-    }
-  } finally {
-    showLoader(false);
-  }
-};
-
-export const apiCallSearchForLineManager = async ({
-  selectedKey,
-  lineManagerApprovalSearch,
-  addApprovalRequestData,
-  callApi,
-  showNotification,
-  showLoader,
-  navigate,
-  setData,
-}) => {
-  showLoader(true);
-
-  try {
-    switch (selectedKey) {
-      case "1": {
-        break;
-      }
-
-      case "2":
-        // Add case 2 logic here when needed
-        break;
-
-      case "3":
-        // Add case 3 logic here when needed
-        break;
-
-      case "6": {
-        const {
-          type,
-          status,
-          startDate,
-          instrumentName = "",
-          mainInstrumentName = "",
-          quantity = 0,
-          pageSize = 10,
-          requesterName = "",
-        } = lineManagerApprovalSearch;
-
-        const requestdata = {
-          InstrumentName: instrumentName || mainInstrumentName,
-          Date: toYYMMDD(startDate) || "",
-          Quantity: quantity,
-          StatusIds: mapStatusToIdsForLineManager(status) || [],
-          TypeIds:
-            mapBuySellToIds(type, addApprovalRequestData?.Equities) || [],
-          PageNumber: 0,
-          Length: pageSize,
-          RequesterName: requesterName,
-        };
-
-        const data = await SearchApprovalRequestLineManager({
-          callApi,
-          showNotification,
-          showLoader,
-          requestdata,
-          navigate,
-        });
-
-        setData(data);
-        break;
-      }
 
       default:
         console.warn(`No matching case for selectedKey: ${selectedKey}`);

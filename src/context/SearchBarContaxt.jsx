@@ -45,7 +45,6 @@ export const SearchBarProvider = ({ children }) => {
     status: [],
     pageSize: 10,
     pageNumber: 0,
-    totalRecords: 0,
     filterTrigger: false,
     tableFilterTrigger: false,
   });
@@ -107,7 +106,7 @@ export const SearchBarProvider = ({ children }) => {
     type: [],
     nature: [],
     status: [],
-    pageSize: 0,
+    pageSize: 10,
     pageNumber: 0,
     filterTrigger: false,
     tableFilterTrigger: false,
@@ -122,13 +121,36 @@ export const SearchBarProvider = ({ children }) => {
     instrumentName: "",
     requesterName: "",
     quantity: 0,
-    date: null,
-    mainInstrumentName: "",
+    startDate: null,
+    endDate: null,
     type: [],
     status: [],
-    pageSize: 0,
+    pageSize: 10,
     pageNumber: 0,
-    totalRecords: 0,
+    filterTrigger: false,
+    tableFilterTrigger: false,
+  });
+
+  // ===============================
+  // Head Of Trade Approvals
+  // ===============================
+  /**  Head Of Trade Approvals Escalated Approvals Filters*/
+
+  const [
+    headOfTradeEscalatedApprovalsSearch,
+    setHeadOfTradeEscalatedApprovalsSearch,
+  ] = useState({
+    instrumentName: "",
+    requesterName: "",
+    lineManagerName: "",
+    requestDateFrom: null,
+    requestDateTo: null,
+    escalatedDateFrom: null,
+    escalatedDateTo: null,
+    status: [],
+    type: [],
+    pageNumber: 0,
+    pageSize: 10,
     filterTrigger: false,
     tableFilterTrigger: false,
   });
@@ -149,7 +171,7 @@ export const SearchBarProvider = ({ children }) => {
     endDate: null,
     type: [],
     status: [],
-    pageSize: 0,
+    pageSize: 10,
     pageNumber: 0,
     totalRecords: 0,
     filterTrigger: false,
@@ -169,7 +191,7 @@ export const SearchBarProvider = ({ children }) => {
     endDate: null,
     type: [],
     status: [],
-    pageSize: 0,
+    pageSize: 10,
     pageNumber: 0,
     totalRecords: 0,
     filterTrigger: false,
@@ -195,7 +217,7 @@ export const SearchBarProvider = ({ children }) => {
     escalatedDateTo: null,
     type: [],
     status: [],
-    pageSize: 0,
+    pageSize: 10,
     pageNumber: 0,
     totalRecords: 0,
     filterTrigger: false,
@@ -217,30 +239,9 @@ export const SearchBarProvider = ({ children }) => {
     escalatedDateTo: null,
     type: [],
     status: [],
-    pageSize: 0,
+    pageSize: 10,
     pageNumber: 0,
     totalRecords: 0,
-    filterTrigger: false,
-    tableFilterTrigger: false,
-  });
-
-  /**  Head Of Trade Approvals Escalated Approvals Filters*/
-
-  const [
-    headOfTradeEscalatedApprovalsSearch,
-    setHeadOfTradeEscalatedApprovalsSearch,
-  ] = useState({
-    instrumentName: "",
-    requesterName: "",
-    lineManagerName: "",
-    requestDateFrom: null,
-    requestDateTo: null,
-    escalatedDateFrom: null,
-    escalatedDateTo: null,
-    status: [],
-    type: [],
-    pageNumber: 0,
-    length: 10,
     filterTrigger: false,
     tableFilterTrigger: false,
   });
@@ -340,7 +341,6 @@ export const SearchBarProvider = ({ children }) => {
       status: [],
       pageSize: 10,
       pageNumber: 0,
-      totalRecords: 0,
       filterTrigger: false,
       tableFilterTrigger: false,
     });
@@ -357,7 +357,7 @@ export const SearchBarProvider = ({ children }) => {
       brokerIDs: [],
       pageSize: 10,
       pageNumber: 0,
-      filterTrigger: true,
+      filterTrigger: false,
       tableFilterTrigger: false,
     });
 
@@ -417,15 +417,14 @@ export const SearchBarProvider = ({ children }) => {
     setLineManagerApprovalSearch({
       instrumentName: "",
       requesterName: "",
-      date: null,
-      mainInstrumentName: "",
+      quantity: 0,
+      startDate: null,
+      endDate: null,
       type: [],
       status: [],
       pageSize: 10,
       pageNumber: 0,
-      quantity: 0,
-      totalRecords: 0,
-      filterTrigger: true,
+      filterTrigger: false,
       tableFilterTrigger: false,
     });
 
@@ -439,7 +438,7 @@ export const SearchBarProvider = ({ children }) => {
       endDate: null,
       type: [],
       status: [],
-      pageSize: 0,
+      pageSize: 10,
       pageNumber: 0,
       totalRecords: 0,
       filterTrigger: false,
@@ -457,7 +456,7 @@ export const SearchBarProvider = ({ children }) => {
       quantity: 0,
       type: [],
       status: [],
-      pageSize: 0,
+      pageSize: 10,
       pageNumber: 0,
       totalRecords: 0,
       filterTrigger: false,
@@ -477,9 +476,8 @@ export const SearchBarProvider = ({ children }) => {
       escalatedDateTo: null,
       type: [],
       status: [],
-      pageSize: 0,
+      pageSize: 10,
       pageNumber: 0,
-      totalRecords: 0,
       filterTrigger: false,
       tableFilterTrigger: false,
     });
@@ -497,9 +495,8 @@ export const SearchBarProvider = ({ children }) => {
       escalatedDateTo: null,
       type: [],
       status: [],
-      pageSize: 0,
+      pageSize: 10,
       pageNumber: 0,
-      totalRecords: 0,
       filterTrigger: false,
       tableFilterTrigger: false,
     });
@@ -517,7 +514,7 @@ export const SearchBarProvider = ({ children }) => {
       status: [],
       type: [],
       pageNumber: 0,
-      length: 10,
+      pageSize: 10,
       filterTrigger: false,
     });
 

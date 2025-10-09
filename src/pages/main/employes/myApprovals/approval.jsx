@@ -133,10 +133,9 @@ const Approval = () => {
   // ----------------- Helpers -----------------
 
   /** 🔹 Build API request payload */
-  const buildApprovalRequest = useCallback(
+  const buildApiRequest = useCallback(
     (searchState = {}) => ({
-      InstrumentName:
-        searchState.mainInstrumentName || searchState.instrumentName || "",
+      InstrumentName:searchState.instrumentName || "",
       Quantity: searchState.quantity ? Number(searchState.quantity) : 0,
       StartDate: searchState.startDate ? toYYMMDD(searchState.startDate) : "",
       EndDate: searchState.endDate ? toYYMMDD(searchState.endDate) : "",
@@ -267,11 +266,11 @@ const Approval = () => {
   useEffect(() => {
     if (!hasFetched.current) {
       hasFetched.current = true;
-      fetchApprovals(buildApprovalRequest(employeeMyApprovalSearch), {
+      fetchApprovals(buildApiRequest(employeeMyApprovalSearch), {
         loader: true,
       });
     }
-  }, [buildApprovalRequest, employeeMyApprovalSearch, fetchApprovals]);
+  }, [buildApiRequest, employeeMyApprovalSearch, fetchApprovals]);
 
   // Reset on Unmount
   useEffect(() => {
@@ -284,7 +283,7 @@ const Approval = () => {
   // Fetch on Filter Trigger
   useEffect(() => {
     if (employeeMyApprovalSearch.filterTrigger) {
-      fetchApprovals(buildApprovalRequest(employeeMyApprovalSearch), {
+      fetchApprovals(buildApiRequest(employeeMyApprovalSearch), {
         loader: true,
       });
 
@@ -310,7 +309,7 @@ const Approval = () => {
     if (employeeMyApprovalMqtt) {
       setIsEmployeeMyApprovalMqtt(false);
       fetchApprovals(
-        { ...buildApprovalRequest(employeeMyApprovalSearch), PageNumber: 0 },
+        { ...buildApiRequest(employeeMyApprovalSearch), PageNumber: 0 },
         {}
       );
     }
@@ -329,7 +328,7 @@ const Approval = () => {
         setLoadingMore(true);
         await fetchApprovals(
           {
-            ...buildApprovalRequest(employeeMyApprovalSearch),
+            ...buildApiRequest(employeeMyApprovalSearch),
             PageNumber: employeeMyApprovalSearch.pageNumber || 0,
           },
           { lazy: true }

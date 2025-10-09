@@ -30,7 +30,7 @@ export const emaStatusOptions = [
  * Status options for Employee My Approval (Line Manager Approvals).
  */
 export const emtStatusOptions = ["Pending", "Compliant", "Non-Compliant"];
-export const escalated = ["Pending",];
+export const escalated = ["Pending"];
 
 /**
  * Status options for pending approvals (Line Manager).
@@ -319,20 +319,6 @@ export const apiCallStatus = async ({
   let statusIds, requestdata, data;
 
   switch (selectedKey) {
-    case "1": // Employee My Approvals
-      statusIds = mapStatusToIds(newdata);
-      requestdata = buildApprovalRequestData({ state, statusIds, typeIds });
-      showLoader(true);
-      data = await SearchTadeApprovals({
-        callApi,
-        showNotification,
-        showLoader,
-        requestdata,
-        navigate,
-      });
-      setIsEmployeeMyApproval(data);
-      break;
-
     case "2":
       {
         // Employee Transactions
@@ -365,23 +351,6 @@ export const apiCallStatus = async ({
       break;
 
     case "3":
-    case "6": // Line Manager Approvals
-      statusIds = mapStatusToIds(newdata);
-      requestdata = buildApprovalRequestData({
-        state,
-        statusIds,
-        typeIds,
-        includeRequester: true,
-      });
-      showLoader(true);
-      data = await SearchApprovalRequestLineManager({
-        callApi,
-        showNotification,
-        showLoader,
-        requestdata,
-        navigate,
-      });
-      setLineManagerApproval(data);
       break;
 
     default:

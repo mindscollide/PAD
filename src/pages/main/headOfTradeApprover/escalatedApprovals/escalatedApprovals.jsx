@@ -50,7 +50,7 @@ import { useTableScrollBottom } from "../../../../commen/funtions/scroll";
 const EscalatedApprovals = () => {
   const navigate = useNavigate();
   const hasFetched = useRef(false);
-  const tableScroll = useRef(null);
+  const tableScrollEscalatedApprovals = useRef(null);
 
   // Context Hooks
   const { showNotification } = useNotification();
@@ -419,7 +419,7 @@ const EscalatedApprovals = () => {
             classNameTable="border-less-table-orange"
             onChange={(_, __, sorter) => setSortedInfo(sorter || {})}
             loading={loadingMore}
-            ref={tableScroll}
+            ref={tableScrollEscalatedApprovals}
           />
         </div>
       </PageLayout>

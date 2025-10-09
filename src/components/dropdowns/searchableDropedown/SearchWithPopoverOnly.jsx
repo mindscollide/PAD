@@ -246,12 +246,14 @@ const SearchWithPopoverOnly = () => {
       case "6": // Line Manager Approval
         setLineManagerApprovalSearch((prev) => ({
           ...prev,
-          instrumentName: "",
+          instrumentName: searchMain,
           requesterName: "",
           quantity: 0,
           startDate: null,
-          tableFilterTrigger: true,
+          endDate: null,
+          filterTrigger: true,
         }));
+        setSearchMain("");
         break;
 
       case "9": // Compliance Officer → Reconcile
@@ -295,7 +297,7 @@ const SearchWithPopoverOnly = () => {
           status: [],
           type: [],
           pageNumber: 0,
-          length: 10,
+          pageSize: 10,
           filterTrigger: true,
         }));
         setSearchMain("");
