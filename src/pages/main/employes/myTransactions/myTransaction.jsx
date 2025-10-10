@@ -369,11 +369,11 @@ const MyTransaction = () => {
             </Col>
           </Row>
           <BorderlessTable
-            rows={employeeTransactionsData.transactions}
+            rows={employeeTransactionsData?.transactions}
             columns={columns}
             classNameTable="border-less-table-blue"
             scroll={
-              employeeTransactionsData.transactions?.length
+              employeeTransactionsData?.transactions?.length
                 ? {
                     x: "max-content",
                     y: activeFilters.length > 0 ? 450 : 500,

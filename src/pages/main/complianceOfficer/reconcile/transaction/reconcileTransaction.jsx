@@ -117,12 +117,6 @@ const ReconcileTransaction = ({ activeFilters }) => {
           reconsileTransactions
         );
 
-        // setComplianceOfficerReconcileTransactionData({
-        //   data: mapped,
-        //   totalRecords: res?.totalRecords ?? mapped.length,
-        //   Apicall: true,
-        //   replace,
-        // });
         setComplianceOfficerReconcileTransactionData((prev) => ({
           reconsileTransaction: replace
             ? mapped
@@ -296,12 +290,12 @@ const ReconcileTransaction = ({ activeFilters }) => {
     <>
       <BorderlessTable
         rows={
-          complianceOfficerReconcileTransactionData.reconsileTransaction || []
+          complianceOfficerReconcileTransactionData?.reconsileTransaction || []
         }
         columns={columns}
         classNameTable="border-less-table-blue"
         scroll={
-          complianceOfficerReconcileTransactionData.reconsileTransaction?.length
+          complianceOfficerReconcileTransactionData?.reconsileTransaction?.length
             ? { x: "max-content", y: activeFilters.length > 0 ? 450 : 500 }
             : undefined
         }

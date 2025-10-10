@@ -35,10 +35,10 @@ export const MyEscalatedApprovalsProvider = ({ children }) => {
    * - `htaEscalatedApprovals`: All EscalatedApprovals retrieved from API
    * - `totalRecords`: Total count of records
    */
-  const [escalatedApprovalData, setEscalatedApprovalData] = useState({
-    data: [],
-    totalRecords: 0,
-    apiCall: false,
+  const [htaEscalatedApprovalData, setHtaEscalatedApprovalData] = useState({
+    htaEscalatedApprovalsList: [],
+    totalRecordsDataBase: 0,
+    totalRecordsTable: 0,
   });
 
   // Context STate to extract data from get All View Trade Approval which is show by click on View Detail
@@ -51,23 +51,30 @@ export const MyEscalatedApprovalsProvider = ({ children }) => {
       hierarchyDetails: [],
       escalations: [],
     });
-
+  /** Stores the latest MQTT update for Compliance Officer Transactions. */
+  const [htaEscalatedApprovalDataMqtt, setHtaEscalatedApprovalDataMqtt] =
+    useState(false);
   /**
    * ♻️ Reset Context State (Table + API Data)
    *
    */
   const resetMyEscalatedApprovalContextState = () => {
-    setEscalatedApprovalData({
-       data: [], totalRecords: 0, apiCall: false 
+    setHtaEscalatedApprovalData({
+      htaEscalatedApprovalsList: [],
+      totalRecordsDataBase: 0,
+      totalRecordsTable: 0,
     });
+    setHtaEscalatedApprovalDataMqtt(false);
   };
 
   return (
     <MyEscalatedApprovalsContext.Provider
       value={{
         // Transactions data (API)
-        escalatedApprovalData,
-        setEscalatedApprovalData,
+        htaEscalatedApprovalData,
+        setHtaEscalatedApprovalData,
+        htaEscalatedApprovalDataMqtt,
+        setHtaEscalatedApprovalDataMqtt,
         viewDetailsHeadOfApprovalData,
         setViewDetailsHeadOfApprovalData,
 
@@ -86,15 +93,15 @@ export const MyEscalatedApprovalsProvider = ({ children }) => {
  * Custom hook for accessing MyEscalatedApprovalsContext.
  *
  * @returns {{
- *   escalatedApprovalData: { htaEscalatedApprovals: Array, totalRecords: number },
- *   setEscalatedApprovalData: Function,
+ *   htaEscalatedApprovalData: { htaEscalatedApprovals: Array, totalRecords: number },
+ *   setHtaEscalatedApprovalData: Function,
  *   resetMyEscalatedApprovalContextState: Function,
  * }}
  *
  * @example
  * const {
- *   escalatedApprovalData,
- *   setEscalatedApprovalData,
+ *   htaEscalatedApprovalData,
+ *   setHtaEscalatedApprovalData,
  *   resetMyEscalatedApprovalContextState,
  * } = useEscalatedApprovals();
  */

@@ -365,10 +365,10 @@ const ApprovalRequest = () => {
 
           {/* Table or Empty State */}
           <BorderlessTable
-            rows={lineManagerApproval.lineApprovals}
+            rows={lineManagerApproval?.lineApprovals}
             columns={columns}
             scroll={
-              lineManagerApproval.lineApprovals.length
+              lineManagerApproval?.lineApprovals?.length
                 ? {
                     x: "max-content",
                     y: activeFilters.length > 0 ? 450 : 500,

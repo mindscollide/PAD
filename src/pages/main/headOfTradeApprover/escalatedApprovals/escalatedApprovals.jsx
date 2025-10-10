@@ -17,18 +17,12 @@ import { useEscalatedApprovals } from "../../../../context/escalatedApprovalCont
 
 // Utilities
 import {
+  buildApiRequest,
   getBorderlessTableColumns,
   mapEscalatedApprovalsToTableRows,
 } from "./utill";
 
 import { approvalStatusMap } from "../../../../components/tables/borderlessTable/utill";
-
-import {
-  mapBuySellToIds,
-  mapStatusToIds,
-} from "../../../../components/dropdowns/filters/utils";
-
-import { toYYMMDD } from "../../../../common/funtions/rejex";
 
 // API
 import {
@@ -52,12 +46,15 @@ const EscalatedApprovals = () => {
   const hasFetched = useRef(false);
   const tableScrollEscalatedApprovals = useRef(null);
 
+  // Local State
+  const [sortedInfo, setSortedInfo] = useState({});
+  const [loadingMore, setLoadingMore] = useState(false);
+
   // Context Hooks
   const { showNotification } = useNotification();
   const { showLoader } = useGlobalLoader();
   const { callApi } = useApi();
   const { assetTypeListingData } = useDashboardContext();
-
   const {
     viewDetailsHeadOfApprovalModal,
     setViewDetailsHeadOfApprovalModal,
@@ -66,68 +63,31 @@ const EscalatedApprovals = () => {
     headDeclineNoteModal,
     viewCommentGlobalModal,
   } = useGlobalModal();
-
   const {
-    escalatedApprovalData,
-    setEscalatedApprovalData,
+    htaEscalatedApprovalData,
+    setHtaEscalatedApprovalData,
+    htaEscalatedApprovalDataMqtt,
+    setHtaEscalatedApprovalDataMqtt,
     setViewDetailsHeadOfApprovalData,
   } = useEscalatedApprovals();
-
   const {
     headOfTradeEscalatedApprovalsSearch,
     setHeadOfTradeEscalatedApprovalsSearch,
     resetHeadOfTradeApprovalEscalatedApprovalsSearch,
   } = useSearchBarContext();
 
-  // Local State
-  const [sortedInfo, setSortedInfo] = useState({});
-  const [escalatedData, setEscalatedData] = useState({
-    rows: [],
-    totalRecords: 0,
-  });
-  const [loadingMore, setLoadingMore] = useState(false);
-
-  // ===========================================================================
-  // 📦 HELPERS
-  // ===========================================================================
-
-  const buildEscalatedTradeApprovalRequest = (searchState = {}) => {
-    const formatDate = (date) => (date ? toYYMMDD(date) : "");
-    return {
-      RequesterName: searchState.requesterName || "",
-      LineManagerName: searchState.lineManagerName || "",
-      InstrumentName: searchState.instrumentName || "",
-      RequestDateFrom: formatDate(searchState.requestDateFrom),
-      RequestDateTo: formatDate(searchState.requestDateTo),
-      EscalatedDateFrom: formatDate(searchState.escalatedDateFrom),
-      EscalatedDateTo: formatDate(searchState.escalatedDateTo),
-      StatusIds: mapStatusToIds(searchState.status) || [],
-      TypeIds:
-        mapBuySellToIds(searchState.type, assetTypeListingData?.Equities) ||
-        [],
-      PageNumber: Number(searchState.pageNumber) || 0,
-      Length: Number(searchState.pageSize) || 10,
-    };
-  };
-
-  const mergeRows = (prevRows, newRows, replace = false) => {
-    if (replace) return newRows;
-    const ids = new Set(prevRows.map((r) => r.key));
-    return [...prevRows, ...newRows.filter((r) => !ids.has(r.key))];
-  };
-
   // ===========================================================================
   // 📦 API CALLS
   // ===========================================================================
 
-  const fetchEscalatedApprovals = useCallback(
+  const fetchApiCall = useCallback(
     async (requestData, replace = false, showLoaderFlag = true) => {
       if (!requestData || typeof requestData !== "object") return;
 
       if (showLoaderFlag) showLoader(true);
 
       try {
-        const response = await SearchEscalatedApprovalsRequestMethod({
+        const res = await SearchEscalatedApprovalsRequestMethod({
           callApi,
           showNotification,
           showLoader,
@@ -135,20 +95,40 @@ const EscalatedApprovals = () => {
           navigate,
         });
 
-        const transactions = Array.isArray(response?.htaEscalatedApprovals)
-          ? response.htaEscalatedApprovals
+        const htaEscalatedApprovals = Array.isArray(res?.htaEscalatedApprovals)
+          ? res.htaEscalatedApprovals
           : [];
 
-        const mappedData = mapEscalatedApprovalsToTableRows(
+        const mapped = mapEscalatedApprovalsToTableRows(
           assetTypeListingData?.Equities,
-          transactions
+          htaEscalatedApprovals
         );
 
-        setEscalatedApprovalData({
-          data: mappedData,
-          totalRecords: response?.totalRecords,
-          apiCall: true,
-          replace,
+        setHtaEscalatedApprovalData((prev) => ({
+          htaEscalatedApprovalsList: replace
+            ? mapped
+            : [...(prev?.htaEscalatedApprovalsList || []), ...mapped],
+          // this is for to run lazy loading its data comming from database of total data in db
+          totalRecordsDataBase: res?.totalRecords,
+          // this is for to know how mush dta currently fetch from  db
+          totalRecordsTable: replace
+            ? mapped.length
+            : htaEscalatedApprovalData.totalRecordsTable + mapped.length,
+        }));
+
+        setHeadOfTradeEscalatedApprovalsSearch((prev) => {
+          const next = {
+            ...prev,
+            pageNumber: replace
+              ? mapped.length
+              : prev.pageNumber + mapped.length,
+          };
+          // this is for check if filter value get true only on that it will false
+          if (prev.filterTrigger) {
+            next.filterTrigger = false;
+          }
+
+          return next;
         });
       } catch (error) {
         console.error("❌ Error fetching escalated approvals:", error);
@@ -171,53 +151,50 @@ const EscalatedApprovals = () => {
   useEffect(() => {
     if (hasFetched.current) return;
     hasFetched.current = true;
-
-    const requestData = buildEscalatedTradeApprovalRequest(
-      headOfTradeEscalatedApprovalsSearch
+    const requestData = buildApiRequest(
+      headOfTradeEscalatedApprovalsSearch,
+      assetTypeListingData
     );
-    fetchEscalatedApprovals(requestData, true, true);
+    fetchApiCall(requestData, true, true);
   }, []);
-
-  // Sync escalatedApprovalData → local state
-  useEffect(() => {
-    if (!escalatedApprovalData?.apiCall) return;
-    const newData = mergeRows(
-      escalatedData.rows,
-      escalatedApprovalData.data,
-      escalatedApprovalData.replace
-    );
-    setEscalatedData({
-      rows: newData,
-      totalRecords: newData?.length,
-    });
-    setEscalatedApprovalData((prev) => ({ ...prev, apiCall: false }));
-    setHeadOfTradeEscalatedApprovalsSearch((prev) => ({
-      ...prev,
-      pageNumber: prev.pageNumber + 10,
-    }));
-  }, [escalatedApprovalData?.apiCall]);
 
   // Handle filters
   useEffect(() => {
     if (!headOfTradeEscalatedApprovalsSearch?.filterTrigger) return;
 
-    const requestData = buildEscalatedTradeApprovalRequest(
-      headOfTradeEscalatedApprovalsSearch
+    const requestData = buildApiRequest(
+      headOfTradeEscalatedApprovalsSearch,
+      assetTypeListingData
     );
-    fetchEscalatedApprovals(requestData, true, true);
-
-    setHeadOfTradeEscalatedApprovalsSearch((prev) => ({
-      ...prev,
-      filterTrigger: false,
-    }));
+    fetchApiCall(requestData, true, true);
   }, [headOfTradeEscalatedApprovalsSearch?.filterTrigger]);
+
+  // ----------------------------------------------------------------
+  // 🔄 REAL-TIME: Handle new MQTT rows
+  // ----------------------------------------------------------------
+  useEffect(() => {
+    if (!htaEscalatedApprovalDataMqtt) return;
+
+    const requestData = buildApiRequest(
+      headOfTradeEscalatedApprovalsSearch,
+      assetTypeListingData
+    );
+    fetchApiCall(requestData, true, true);
+    setHtaEscalatedApprovalDataMqtt(false);
+  }, [htaEscalatedApprovalDataMqtt]);
 
   // Reset on unmount
   useEffect(() => {
     return () => {
       setSortedInfo({});
+      setLoadingMore(false);
       resetHeadOfTradeApprovalEscalatedApprovalsSearch();
-      setEscalatedData({ rows: [], totalRecords: 0 });
+      setHtaEscalatedApprovalData({
+        reconsileTransaction: [],
+        totalRecordsDataBase: 0,
+        totalRecordsTable: 0,
+      });
+      setHtaEscalatedApprovalDataMqtt(false);
     };
   }, []);
 
@@ -277,6 +254,7 @@ const EscalatedApprovals = () => {
       requestDateTo: null,
       escalatedDateFrom: null,
       escalatedDateTo: null,
+      pageNumber: 0,
       filterTrigger: true,
     }));
   };
@@ -330,23 +308,19 @@ const EscalatedApprovals = () => {
 
   useTableScrollBottom(
     async () => {
-      if (escalatedApprovalData?.totalRecords <= escalatedData?.rows?.length)
+      if (
+        htaEscalatedApprovalData?.totalRecordsDataBase <=
+        htaEscalatedApprovalData?.totalRecordsTable
+      )
         return;
 
       try {
         setLoadingMore(true);
-        const requestData = {
-          ...buildEscalatedTradeApprovalRequest(
-            headOfTradeEscalatedApprovalsSearch
-          ),
-          PageNumber: headOfTradeEscalatedApprovalsSearch.pageNumber || 0,
-          Length: 10,
-        };
-        await fetchEscalatedApprovals(requestData, false, false); // append mode
-        setHeadOfTradeEscalatedApprovalsSearch((prev) => ({
-          ...prev,
-          pageNumber: (prev.pageNumber || 0) + 10,
-        }));
+        const requestData = buildApiRequest(
+          headOfTradeEscalatedApprovalsSearch,
+          assetTypeListingData
+        );
+        await fetchApiCall(requestData, false, false); // append mode
       } catch (error) {
         console.error("❌ Error loading more approvals:", error);
       } finally {
@@ -406,10 +380,10 @@ const EscalatedApprovals = () => {
           </Row>
 
           <BorderlessTable
-            rows={escalatedData.rows}
+            rows={htaEscalatedApprovalData?.htaEscalatedApprovalsList}
             columns={columns}
             scroll={
-              escalatedData.rows.length
+              htaEscalatedApprovalData?.htaEscalatedApprovalsList?.length
                 ? {
                     x: "max-content",
                     y: activeFilters.length > 0 ? 450 : 500,

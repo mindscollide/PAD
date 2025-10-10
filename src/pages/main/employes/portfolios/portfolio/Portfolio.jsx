@@ -237,7 +237,7 @@ const Portfolio = ({ className ,activeFilters}) => {
                 key={panelKey}
               >
                 <BorderlessTable
-                  rows={instrument.transactions || []}
+                  rows={instrument?.transactions || []}
                   columns={columns}
                   pagination={false}
                   rowKey="transactionId"
