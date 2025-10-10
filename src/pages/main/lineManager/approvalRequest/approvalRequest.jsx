@@ -5,7 +5,6 @@ import {
   buildApiRequest,
   getBorderlessLineManagerTableColumns,
   mapEscalatedApprovalsToTableRows,
-  mergeRows,
 } from "./utill";
 import { approvalStatusMap } from "../../../../components/tables/borderlessTable/utill";
 import PageLayout from "../../../../components/pageContainer/pageContainer";
@@ -174,7 +173,7 @@ const ApprovalRequest = () => {
       lineManagerApprovalSearch,
       assetTypeListingData
     );
-    fetchApiCall(requestData, true, true);
+    fetchApiCall(requestData, true, false);
     setLineManagerApprovalMQtt(false);
   }, [lineManagerApprovalMqtt]);
 

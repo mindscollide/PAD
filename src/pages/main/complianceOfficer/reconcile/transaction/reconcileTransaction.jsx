@@ -234,7 +234,7 @@ const ReconcileTransaction = ({ activeFilters }) => {
       complianceOfficerReconcileTransactionsSearch,
       assetTypeListingData
     );
-    fetchApiCall(requestData, true, true);
+    fetchApiCall(requestData, true, false);
     setComplianceOfficerReconcileTransactionDataMqtt(false);
   }, [complianceOfficerReconcileTransactionDataMqtt]);
 

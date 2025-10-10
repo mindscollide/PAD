@@ -83,6 +83,7 @@ export const HeadOfTradeEscalatedFilter = ({
       setFieldValue(name, removeFirstSpace(value));
     }
   };
+  
   /** Date change */
   const handleDateChange = (dates) => {
     setLocalState({

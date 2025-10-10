@@ -54,12 +54,6 @@ export const buildApiRequest = (searchState = {}, assetTypeListingData) => {
   };
 };
 
-export const mergeRows = (prevRows, newRows, replace = false) => {
-  if (replace) return newRows;
-  const ids = new Set(prevRows.map((r) => r.key));
-  return [...prevRows, ...newRows.filter((r) => !ids.has(r.key))];
-};
-
 
 export const mapEscalatedApprovalsToTableRows = (
   assetTypeData,

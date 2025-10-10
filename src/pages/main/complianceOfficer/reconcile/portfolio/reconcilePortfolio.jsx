@@ -259,7 +259,7 @@ const ReconcilePortfolio = ({ activeFilters }) => {
       complianceOfficerReconcilePortfolioSearch,
       assetTypeListingData
     );
-    fetchApiCall(requestData, true, true);
+    fetchApiCall(requestData, true, false);
     setComplianceOfficerReconcilePortfolioDataMqtt(false);
   }, [complianceOfficerReconcilePortfolioDataMqtt]);
 

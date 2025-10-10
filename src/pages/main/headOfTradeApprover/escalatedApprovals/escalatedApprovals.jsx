@@ -179,7 +179,7 @@ const EscalatedApprovals = () => {
       headOfTradeEscalatedApprovalsSearch,
       assetTypeListingData
     );
-    fetchApiCall(requestData, true, true);
+    fetchApiCall(requestData, true, false);
     setHtaEscalatedApprovalDataMqtt(false);
   }, [htaEscalatedApprovalDataMqtt]);
 

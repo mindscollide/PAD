@@ -178,7 +178,7 @@ const PendingApprovals = ({ activeFilters }) => {
         employeePendingApprovalSearch,
         assetTypeListingData
       );
-      fetchApiCall(requestData, true, true);
+      fetchApiCall(requestData, true, false);
       setEmployeePendingApprovalsDataMqtt(false);
     }
 

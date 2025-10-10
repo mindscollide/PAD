@@ -315,7 +315,7 @@ const Approval = () => {
         assetTypeListingData
       );
 
-      fetchApiCall(requestData, true, true);
+      fetchApiCall(requestData, true, false);
     }
   }, [employeeMyApprovalMqtt]);
 

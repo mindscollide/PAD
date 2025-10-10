@@ -1,130 +1,206 @@
 // src/pages/hca/reconcile/HcaReconcileFilter.jsx
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Row, Col, Space } from "antd";
 import { Button, DateRangePicker, TextField } from "../..";
 import { useSearchBarContext } from "../../../context/SearchBarContaxt";
 import {
+  allowOnlyAlphabets,
   allowOnlyNumbers,
   removeFirstSpace,
 } from "../../../common/funtions/rejex";
+import { useReconcileContext } from "../../../context/reconsileContax";
+// 🔹 Initial default state
+const INITIAL_LOCAL_STATE = {
+  instrumentName: "",
+  requesterName: "",
+  quantity: 0,
+  requestDateFrom: null,
+  requestDateTo: null,
+  escalatedDateFrom: null,
+  escalatedDateTo: null,
+};
 
-export const HcaReconcileFilter = ({ handleSearch, activeTab, setVisible }) => {
+export const HcaReconcileFilter = ({
+  setVisible,
+  maininstrumentName,
+  setMaininstrumentName,
+  clear,
+  setClear,
+}) => {
+  const { activeTabHCO } = useReconcileContext(); // Transactions / Portfolio
+
   // Local state (for inputs before pushing into context)
-  const [localStateEscalated, setLocalStateEscalated] = useState({
-    instrumentName: "",
-    requesterName: "",
-    quantity: 0,
-    requestDateFrom: null,
-    requestDateTo: null,
-    escalatedDateFrom: null,
-    escalatedDateTo: null,
-  });
-  const [localStatePortfolio, setLocalStatePortfolio] = useState({
-    instrumentName: "",
-    requesterName: "",
-    quantity: 0,
-    requestDateFrom: null,
-    requestDateTo: null,
-  });
+  const [localState, setLocalState] = useState(INITIAL_LOCAL_STATE);
+  const isEscalatedVerification = activeTabHCO === "escalated";
 
   // Context states (HCA Reconcile)
   const {
-    headOfComplianceApprovalPortfolioSearch,
-    setHeadOfComplianceApprovalPortfolioSearch,
-    resetHeadOfComplianceApprovalPortfolioSearch,
     headOfComplianceApprovalEscalatedVerificationsSearch,
     setHeadOfComplianceApprovalEscalatedVerificationsSearch,
-    resetHeadOfComplianceApprovalEscalatedVerificationsSearch,
+    headOfComplianceApprovalPortfolioSearch,
+    setHeadOfComplianceApprovalPortfolioSearch,
   } = useSearchBarContext();
 
-  // Reset local state
-  const resetLocalState = () => {
-    if (activeTab === "escalated") {
-      setLocalStateEscalated({
-        instrumentName: "",
-        requesterName: "",
-        quantity: "",
-        requestDateFrom: null,
-        requestDateTo: null,
-        escalatedDateFrom: null,
-        escalatedDateTo: null,
-      });
-    } else {
-      setLocalStatePortfolio({
-        instrumentName: "",
-        requesterName: "",
-        quantity: "",
-        requestDateFrom: null,
-        requestDateTo: null,
-      });
-    }
-  };
+  // -----------------------------------------------------
+  // 🔹 EFFECTS
+  // -----------------------------------------------------
 
-  // Reset handler
-  const handleResetClick = () => {
-    if (activeTab === "escalated") {
-      setHeadOfComplianceApprovalEscalatedVerificationsSearch((prev) => ({
+  /**
+   * Prefill instrument name if passed from parent (maininstrumentName).
+   * Useful for quick search-to-filter transition.
+   */
+  useEffect(() => {
+    if (maininstrumentName) {
+      setLocalState((prev) => ({
         ...prev,
-        instrumentName: "",
-        requesterName: "",
-        quantity: 0,
-        requestDateFrom: "",
-        requestDateTo: "",
-        escalatedDateFrom: "",
-        escalatedDateTo: "",
-        pageNumber: 0,
-        filterTrigger: true,
+        instrumentName: maininstrumentName,
       }));
-    } else if (activeTab === "portfolio") {
-      setHeadOfComplianceApprovalPortfolioSearch((prev) => ({
-        ...prev,
-        instrumentName: "",
-        requesterName: "",
-        quantity: 0,
-        requestDateFrom: "",
-        requestDateTo: "",
-        pageNumber: 0,
-        filterTrigger: true,
-      }));
-    }
-    resetLocalState();
-    setVisible(false);
-  };
 
-  // Handle text input changes
-  const handleInputChange = (e, setState) => {
+      setClear(false); // Reset external clear flag
+      setMaininstrumentName(""); // Clear parent’s prefill value
+    }
+  }, [maininstrumentName]);
+
+  /**
+   * Reset filters if `clear` flag is triggered externally.
+   */
+  useEffect(() => {
+    if (clear && maininstrumentName === "") {
+      setLocalState(INITIAL_LOCAL_STATE);
+
+      setClear(false); // Reset external clear flag
+    }
+  }, [clear]);
+
+  // 🔹 Helpers
+  const setFieldValue = (field, value) => {
+    setLocalState((prev) => ({
+      ...prev,
+      [field]: value,
+    }));
+  };
+  // 🔹 Input change handler
+  const handleInputChange = (e) => {
     const { name, value } = e.target;
 
     if (name === "quantity") {
-      if (value === "" || allowOnlyNumbers(value)) {
-        setState((prev) => ({ ...prev, quantity: value }));
+      const rawValue = value.replace(/,/g, "");
+      if (
+        (rawValue === "" || allowOnlyNumbers(rawValue)) &&
+        rawValue.length <= 12
+      ) {
+        setFieldValue("quantity", rawValue);
       }
-      return;
+    } else if (name === "requesterName") {
+      if (allowOnlyAlphabets(value)) {
+        setFieldValue(name, removeFirstSpace(value));
+      }
+    } else {
+      setFieldValue(name, removeFirstSpace(value));
     }
+  };
 
-    setState((prev) => ({
+  /** Date change */
+  const handleDateChange = (dates) => {
+    setLocalState({
+      ...localState,
+      requestDateFrom: dates?.[0] || null,
+      requestDateTo: dates?.[1] || null,
+    });
+  };
+
+  /** Clear dates only */
+  const handleClearDates = () => {
+    setLocalState((prev) => ({
       ...prev,
-      [name]: removeFirstSpace(value),
+      requestDateFrom: null,
+      requestDateTo: null,
     }));
   };
 
-  // Get current search state and setter based on active tab
-  const getSearchState = () => {
-    if (activeTab === "escalated") {
-      return [
-        headOfComplianceApprovalEscalatedVerificationsSearch,
-        setHeadOfComplianceApprovalEscalatedVerificationsSearch,
-      ];
-    } else if (activeTab === "portfolio") {
-      return [
-        headOfComplianceApprovalPortfolioSearch,
-        setHeadOfComplianceApprovalPortfolioSearch,
-      ];
-    }
+  const handleEscalatedDateChange = (dates) => {
+    setLocalState({
+      ...localState,
+      escalatedDateFrom: dates?.[0] || null,
+      escalatedDateTo: dates?.[1] || null,
+    });
   };
 
-  const [searchState, setSearchState] = getSearchState();
+  /** Clear dates only */
+  const handleClearEscalatedDates = () => {
+    setLocalState((prev) => ({
+      ...prev,
+      escalatedDateFrom: null,
+      escalatedDateTo: null,
+    }));
+  };
+
+  // 🔹 Search click
+  const handleSearchClick = () => {
+    const {
+      instrumentName,
+      requesterName,
+      quantity,
+      requestDateFrom,
+      requestDateTo,
+      escalatedDateFrom,
+      escalatedDateTo,
+    } = localState;
+
+    const searchPayload = {
+      ...(isEscalatedVerification
+        ? headOfComplianceApprovalEscalatedVerificationsSearch
+        : headOfComplianceApprovalPortfolioSearch),
+      instrumentName: instrumentName?.trim() || "",
+      requesterName: requesterName.trim() || "",
+      quantity: quantity ? Number(quantity) : 0,
+      requestDateFrom: requestDateFrom || null,
+      requestDateTo: requestDateTo || null,
+      escalatedDateFrom: escalatedDateFrom || null,
+      escalatedDateTo: escalatedDateTo || null,
+      pageNumber: 0,
+      filterTrigger: true,
+    };
+
+    if (isEscalatedVerification) {
+      setHeadOfComplianceApprovalEscalatedVerificationsSearch(searchPayload);
+    } else {
+      setHeadOfComplianceApprovalPortfolioSearch(searchPayload);
+    }
+
+    setLocalState(INITIAL_LOCAL_STATE);
+    setClear(false); // Reset external clear flag
+    setVisible(false);
+  };
+
+  // 🔹 Reset click
+  const handleResetClick = () => {
+    const resetPayload = {
+      ...(isEscalatedVerification
+        ? headOfComplianceApprovalEscalatedVerificationsSearch
+        : headOfComplianceApprovalPortfolioSearch),
+      instrumentName: "",
+      requesterName: "",
+      quantity: 0,
+      requestDateFrom: null,
+      requestDateTo: null,
+      escalatedDateFrom: null,
+      escalatedDateTo: null,
+      pageNumber: 0,
+      filterTrigger: true,
+    };
+
+    if (isEscalatedVerification) {
+      setHeadOfComplianceApprovalEscalatedVerificationsSearch(resetPayload);
+    } else {
+      setHeadOfComplianceApprovalPortfolioSearch(resetPayload);
+    }
+
+    setLocalState(INITIAL_LOCAL_STATE);
+    setClear(false); // Reset external clear flag
+    setVisible(false);
+  };
 
   return (
     <>
@@ -134,8 +210,8 @@ export const HcaReconcileFilter = ({ handleSearch, activeTab, setVisible }) => {
           <TextField
             label="Instrument Name"
             name="instrumentName"
-            value={searchState.instrumentName}
-            onChange={(e) => handleInputChange(e, setSearchState)}
+            value={localState.instrumentName}
+            onChange={handleInputChange}
             placeholder="Instrument Name"
             size="medium"
             classNames="Search-Field"
@@ -144,11 +220,11 @@ export const HcaReconcileFilter = ({ handleSearch, activeTab, setVisible }) => {
 
         <Col xs={24} sm={24} md={12}>
           <TextField
-            label="Quantity"
-            name="quantity"
-            value={searchState.quantity || ""}
-            onChange={(e) => handleInputChange(e, setSearchState)}
-            placeholder="Quantity"
+            label="Requester Name"
+            name="requesterName"
+            value={localState.requesterName}
+            onChange={handleInputChange}
+            placeholder="Requester Name"
             size="medium"
             classNames="Search-Field"
           />
@@ -158,40 +234,21 @@ export const HcaReconcileFilter = ({ handleSearch, activeTab, setVisible }) => {
       {/* Requester Name + Date Range */}
       <Row gutter={[12, 12]}>
         <Col xs={24} sm={24} md={12}>
-          <TextField
-            label="Requester Name"
-            name="requesterName"
-            value={searchState.requesterName}
-            onChange={(e) => handleInputChange(e, setSearchState)}
-            placeholder="Requester Name"
-            size="medium"
-            classNames="Search-Field"
-          />
-        </Col>
-
-        <Col xs={24} sm={24} md={12}>
           <DateRangePicker
             label="Transaction Date Range"
             size="medium"
-            value={
-              searchState.requestDateFrom && searchState.requestDateTo
-                ? [searchState.requestDateFrom, searchState.requestDateTo]
-                : null
-            }
-            onChange={(dates) =>
-              setSearchState((prev) => ({
-                ...prev,
-                requestDateFrom: dates?.[0] || null,
-                requestDateTo: dates?.[1] || null,
-              }))
-            }
-            onClear={() =>
-              setSearchState((prev) => ({
-                ...prev,
-                requestDateFrom: null,
-                requestDateTo: null,
-              }))
-            }
+            value={[localState.requestDateFrom, localState.requestDateTo]}
+            onChange={handleDateChange}
+            onClear={handleClearDates}
+          />
+        </Col>
+        <Col xs={24} sm={24} md={12}>
+          <DateRangePicker
+            label="Escalation Date Range"
+            size="medium"
+            value={[localState.escalatedDateFrom, localState.escalatedDateTo]}
+            onChange={handleEscalatedDateChange}
+            onClear={handleClearEscalatedDates}
           />
         </Col>
       </Row>
@@ -199,28 +256,18 @@ export const HcaReconcileFilter = ({ handleSearch, activeTab, setVisible }) => {
       {/* Escalation Date Range (only for escalated tab) */}
       <Row gutter={[12, 12]}>
         <Col xs={24} sm={24} md={12}>
-          <DateRangePicker
-            label="Escalation Date Range"
-            size="medium"
+          <TextField
+            label="Quantity"
+            name="quantity"
             value={
-              searchState.escalatedDateFrom && searchState.escalatedDateTo
-                ? [searchState.escalatedDateFrom, searchState.escalatedDateTo]
-                : null
+              localState.quantity
+                ? Number(localState.quantity).toLocaleString("en-US")
+                : ""
             }
-            onChange={(dates) =>
-              setSearchState((prev) => ({
-                ...prev,
-                escalatedDateFrom: dates?.[0] || null,
-                escalatedDateTo: dates?.[1] || null,
-              }))
-            }
-            onClear={() =>
-              setSearchState((prev) => ({
-                ...prev,
-                escalatedDateFrom: null,
-                escalatedDateTo: null,
-              }))
-            }
+            onChange={handleInputChange}
+            placeholder="Quantity"
+            size="medium"
+            classNames="Search-Field"
           />
         </Col>
       </Row>
@@ -235,7 +282,7 @@ export const HcaReconcileFilter = ({ handleSearch, activeTab, setVisible }) => {
               onClick={handleResetClick}
             />
             <Button
-              onClick={handleSearch}
+              onClick={handleSearchClick}
               text="Search"
               className="big-dark-button"
             />

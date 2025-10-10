@@ -136,7 +136,13 @@ export const ReconcileProvider = ({ children }) => {
   const [
     headOfComplianceApprovalPortfolioData,
     setHeadOfComplianceApprovalPortfolioData,
-  ] = useState({ data: [], totalRecords: 0, apiCall: false });
+  ] = useState({
+    escalatedPortfolio: [],
+    // this is for to run lazy loading its data comming from database of total data in db
+    totalRecordsDataBase: 0,
+    // this is for to know how mush dta currently fetch from  db
+    totalRecordsTable: 0,
+  });
 
   /** Stores the latest MQTT update for HCO portfolio approvals. */
   const [
@@ -148,7 +154,13 @@ export const ReconcileProvider = ({ children }) => {
   const [
     headOfComplianceApprovalEscalatedVerificationsData,
     setHeadOfComplianceApprovalEscalatedVerificationsData,
-  ] = useState({ data: [], totalRecords: 0, apiCall: false });
+  ] = useState({
+    escalatedVerification: [],
+    // this is for to run lazy loading its data comming from database of total data in db
+    totalRecordsDataBase: 0,
+    // this is for to know how mush dta currently fetch from  db
+    totalRecordsTable: 0,
+  });
 
   /** Stores the latest MQTT update for HCO escalated verifications. */
   const [
@@ -187,9 +199,9 @@ export const ReconcileProvider = ({ children }) => {
   const resetHeadOfComplianceApprovalPortfolioTab = () => {
     setActiveTabHCO("portfolio");
     setHeadOfComplianceApprovalPortfolioData({
-      data: [],
-      totalRecords: 0,
-      apiCall: false,
+      escalatedPortfolio: [],
+      totalRecordsDataBase: 0,
+      totalRecordsTable: 0,
     });
     setHeadOfComplianceApprovalPortfolioMqtt(false);
   };
@@ -221,9 +233,9 @@ export const ReconcileProvider = ({ children }) => {
   const resetHeadOfComplianceApprovalEscalatedVerificationsTab = () => {
     setActiveTabHCO("escalated");
     setHeadOfComplianceApprovalEscalatedVerificationsData({
-      data: [],
-      totalRecords: 0,
-      apiCall: false,
+      escalatedVerification: [],
+      totalRecordsDataBase: 0,
+      totalRecordsTable: 0,
     });
     setHeadOfComplianceApprovalEscalatedVerificationsMqtt(false);
   };

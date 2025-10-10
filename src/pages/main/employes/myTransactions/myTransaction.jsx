@@ -210,7 +210,7 @@ const MyTransaction = () => {
         employeeMyTransactionSearch,
         assetTypeListingData
       );
-      fetchApiCall(requestData, true, true);
+      fetchApiCall(requestData, true, false);
       setEmployeeTransactionsTableDataMqtt(false);
     }
   }, [employeeTransactionsTableDataMqtt]);

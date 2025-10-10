@@ -46,7 +46,6 @@ export const SearchBarProvider = ({ children }) => {
     pageSize: 10,
     pageNumber: 0,
     filterTrigger: false,
-    tableFilterTrigger: false,
   });
 
   /** 🔍 Employee My Transaction table filters */
@@ -62,7 +61,6 @@ export const SearchBarProvider = ({ children }) => {
       pageSize: 10,
       pageNumber: 0,
       filterTrigger: false,
-      tableFilterTrigger: false,
     });
 
   /** 🔍 Employee Portfolio table filters */
@@ -76,7 +74,6 @@ export const SearchBarProvider = ({ children }) => {
     pageSize: 10,
     pageNumber: 0,
     filterTrigger: false,
-    tableFilterTrigger: false,
   });
 
   /** 🔍 Employee Pending Approval table filters */
@@ -92,7 +89,6 @@ export const SearchBarProvider = ({ children }) => {
       pageSize: 10,
       pageNumber: 0,
       filterTrigger: false,
-      tableFilterTrigger: false,
     });
 
   /** 🔍 Employee My History table filters */
@@ -109,7 +105,6 @@ export const SearchBarProvider = ({ children }) => {
     pageSize: 10,
     pageNumber: 0,
     filterTrigger: false,
-    tableFilterTrigger: false,
   });
 
   // ===============================
@@ -128,7 +123,6 @@ export const SearchBarProvider = ({ children }) => {
     pageSize: 10,
     pageNumber: 0,
     filterTrigger: false,
-    tableFilterTrigger: false,
   });
 
   // ===============================
@@ -152,7 +146,6 @@ export const SearchBarProvider = ({ children }) => {
     pageNumber: 0,
     pageSize: 10,
     filterTrigger: false,
-    tableFilterTrigger: false,
   });
 
   // ===============================
@@ -175,7 +168,6 @@ export const SearchBarProvider = ({ children }) => {
     pageNumber: 0,
     totalRecords: 0,
     filterTrigger: false,
-    tableFilterTrigger: false,
   });
 
   /** 🔍 Compliance Officer Reconcile Portfolio filters */
@@ -195,7 +187,6 @@ export const SearchBarProvider = ({ children }) => {
     pageNumber: 0,
     totalRecords: 0,
     filterTrigger: false,
-    tableFilterTrigger: false,
   });
 
   // ===============================
@@ -209,7 +200,6 @@ export const SearchBarProvider = ({ children }) => {
   ] = useState({
     requesterName: "",
     instrumentName: "",
-    mainInstrumentName: "",
     quantity: 0,
     requestDateFrom: null,
     requestDateTo: null,
@@ -221,7 +211,6 @@ export const SearchBarProvider = ({ children }) => {
     pageNumber: 0,
     totalRecords: 0,
     filterTrigger: false,
-    tableFilterTrigger: false,
   });
 
   /** 🔍 HCA Escalated Verifications filters */
@@ -231,7 +220,6 @@ export const SearchBarProvider = ({ children }) => {
   ] = useState({
     requesterName: "",
     instrumentName: "",
-    mainInstrumentName: "",
     quantity: 0,
     requestDateFrom: null,
     requestDateTo: null,
@@ -243,7 +231,6 @@ export const SearchBarProvider = ({ children }) => {
     pageNumber: 0,
     totalRecords: 0,
     filterTrigger: false,
-    tableFilterTrigger: false,
   });
 
   // ===============================
@@ -342,7 +329,6 @@ export const SearchBarProvider = ({ children }) => {
       pageSize: 10,
       pageNumber: 0,
       filterTrigger: false,
-      tableFilterTrigger: false,
     });
 
   /** Reset Employee My Transaction filters */
@@ -358,7 +344,6 @@ export const SearchBarProvider = ({ children }) => {
       pageSize: 10,
       pageNumber: 0,
       filterTrigger: false,
-      tableFilterTrigger: false,
     });
 
   /** Reset Employee Portfolio filters */
@@ -374,7 +359,6 @@ export const SearchBarProvider = ({ children }) => {
       pageSize: 10,
       pageNumber: 0,
       filterTrigger: false,
-      tableFilterTrigger: false,
     });
 
   /** Reset Employee Pending Approval filters */
@@ -391,7 +375,6 @@ export const SearchBarProvider = ({ children }) => {
       pageSize: 10,
       pageNumber: 0,
       filterTrigger: false,
-      tableFilterTrigger: false,
     });
 
   /** Reset Employee My History filters */
@@ -409,7 +392,6 @@ export const SearchBarProvider = ({ children }) => {
       pageSize: "",
       pageNumber: 0,
       filterTrigger: true,
-      tableFilterTrigger: false,
     });
 
   /** Reset Line Manager Approval filters */
@@ -425,7 +407,6 @@ export const SearchBarProvider = ({ children }) => {
       pageSize: 10,
       pageNumber: 0,
       filterTrigger: false,
-      tableFilterTrigger: false,
     });
 
   /** Reset Compliance Officer Reconcile Transactions filters */
@@ -442,7 +423,6 @@ export const SearchBarProvider = ({ children }) => {
       pageNumber: 0,
       totalRecords: 0,
       filterTrigger: false,
-      tableFilterTrigger: false,
     });
 
   /** Reset Compliance Officer Reconcile Portfolio filters */
@@ -460,7 +440,6 @@ export const SearchBarProvider = ({ children }) => {
       pageNumber: 0,
       totalRecords: 0,
       filterTrigger: false,
-      tableFilterTrigger: false,
     });
 
   /** Reset HCA Portfolio filters */
@@ -468,7 +447,6 @@ export const SearchBarProvider = ({ children }) => {
     setHeadOfComplianceApprovalPortfolioSearch({
       requesterName: "",
       instrumentName: "",
-      mainInstrumentName: "",
       quantity: 0,
       requestDateFrom: null,
       requestDateTo: null,
@@ -479,7 +457,6 @@ export const SearchBarProvider = ({ children }) => {
       pageSize: 10,
       pageNumber: 0,
       filterTrigger: false,
-      tableFilterTrigger: false,
     });
 
   /** Reset HCA Escalated Verifications filters */
@@ -487,7 +464,6 @@ export const SearchBarProvider = ({ children }) => {
     setHeadOfComplianceApprovalEscalatedVerificationsSearch({
       requesterName: "",
       instrumentName: "",
-      mainInstrumentName: "",
       quantity: 0,
       requestDateFrom: null,
       requestDateTo: null,
@@ -498,7 +474,6 @@ export const SearchBarProvider = ({ children }) => {
       pageSize: 10,
       pageNumber: 0,
       filterTrigger: false,
-      tableFilterTrigger: false,
     });
 
   /** Reset HTA Escalated Approval filters */

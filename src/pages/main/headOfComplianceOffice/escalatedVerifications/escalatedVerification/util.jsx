@@ -10,14 +10,41 @@ import ArrowDown from "../../../../../assets/img/arrow-down-dark.png";
 import EscalatedIcon from "../../../../../assets/img/escalated.png";
 
 // Helpers
-import { formatApiDateTime } from "../../../../../common/funtions/rejex";
+import { formatApiDateTime, toYYMMDD } from "../../../../../common/funtions/rejex";
 import TypeColumnTitle from "../../../../../components/dropdowns/filters/typeColumnTitle";
 import StatusColumnTitle from "../../../../../components/dropdowns/filters/statusColumnTitle";
 import { useGlobalModal } from "../../../../../context/GlobalModalContext";
 import { useReconcileContext } from "../../../../../context/reconsileContax";
 
 import { getTradeTypeById } from "../../../../../common/funtions/type";
+import { mapBuySellToIds, mapStatusToIds } from "../../../../../components/dropdowns/filters/utils";
 
+
+/**
+ * Builds API request payload from search/filter state
+ *
+ * @param {Object} searchState - Current search and filter state
+ * @param {Object} assetTypeListingData - Asset type listing data (optional)
+ * @returns {Object} Formatted request payload for API
+ */
+export function buildApiRequest(searchState = {}, assetTypeListingData) {
+  const formatDate = (date) => (date ? toYYMMDD(date) : "");
+  return {
+    RequesterName: searchState.requesterName || "",
+    InstrumentName:
+      searchState.mainInstrumentName || searchState.instrumentName || "",
+    Quantity: searchState.quantity ? Number(searchState.quantity) : 0,
+    RequestDateFrom: formatDate(searchState.requestDateFrom),
+    RequestDateTo: formatDate(searchState.requestDateTo),
+    EscalatedDateFrom: formatDate(searchState.escalatedDateFrom),
+    EscalatedDateTo: formatDate(searchState.escalatedDateTo),
+    StatusIds: mapStatusToIds(searchState.status) || [],
+    TypeIds:
+      mapBuySellToIds(searchState.type, assetTypeListingData?.Equities) || [],
+    PageNumber: Number(searchState.pageNumber) || 0,
+    Length: Number(searchState.pageSize) || 10,
+  };
+}
 /* ------------------------------------------------------------------ */
 /* 🔹 Sort Icon Helper */
 /* ------------------------------------------------------------------ */
