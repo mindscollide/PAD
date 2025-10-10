@@ -28,7 +28,7 @@ import { getTradeTypeById } from "../../../../common/funtions/type";
  *
  * @returns {Object} API-ready payload
  */
-export const buildApprovalRequest = (searchState = {}, addApprovalRequestData) => {
+export const buildApiRequest = (searchState = {}, addApprovalRequestData) => {
   const {
     instrumentName = "",
     requesterName = "",
@@ -48,7 +48,7 @@ export const buildApprovalRequest = (searchState = {}, addApprovalRequestData) =
     StartDate: startDate ? toYYMMDD(startDate) : "",
     EndDate: endDate ? toYYMMDD(endDate) : "",
     StatusIds: mapStatusToIds?.(status) || [],
-    TypeIds: mapBuySellToIds?.(type, addApprovalRequestData) || [],
+    TypeIds: mapBuySellToIds?.(type, addApprovalRequestData?.Equities) || [],
     PageNumber: Number(pageNumber) || 0,
     Length: Number(pageSize) || 10,
   };

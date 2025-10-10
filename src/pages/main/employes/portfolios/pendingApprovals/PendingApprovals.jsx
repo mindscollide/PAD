@@ -97,13 +97,11 @@ const PendingApprovals = ({ activeFilters }) => {
           ? res.pendingPortfolios
           : [];
 
-        console.log("employeePendingApprovalsDataportfolios", portfolios);
         const mapped = mapToTableRows(
           addApprovalRequestData?.Equities,
           portfolios,
           brokerOptions
         );
-        console.log("employeePendingApprovalsDataportfolios", mapped);
 
         setEmployeePendingApprovalsData((prev) => ({
           pendingApprovalsData: replace
@@ -116,10 +114,6 @@ const PendingApprovals = ({ activeFilters }) => {
             ? mapped.length
             : employeePendingApprovalsData.totalRecordsTable + mapped.length,
         }));
-        console.log(
-          "employeePendingApprovalsData",
-          employeePendingApprovalSearch
-        );
 
         setEmployeePendingApprovalSearch((prev) => {
           const next = {
@@ -129,6 +123,7 @@ const PendingApprovals = ({ activeFilters }) => {
               : prev.pageNumber + mapped.length,
           };
 
+          // this is for check if filter value get true only on that it will false
           if (prev.filterTrigger) {
             next.filterTrigger = false;
           }

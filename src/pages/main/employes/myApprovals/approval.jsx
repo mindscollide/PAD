@@ -163,6 +163,7 @@ const Approval = () => {
           pageNumber: replace ? mapped.length : prev.pageNumber + mapped.length,
         };
 
+        // this is for check if filter value get true only on that it will false
         if (prev.filterTrigger) {
           next.filterTrigger = false;
         }

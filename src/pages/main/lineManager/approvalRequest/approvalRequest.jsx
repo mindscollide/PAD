@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useRef, useState } from "react";
 import { Col, Row } from "antd";
 import BorderlessTable from "../../../../components/tables/borderlessTable/borderlessTable";
 import {
-  buildApprovalRequest,
+  buildApiRequest,
   getBorderlessLineManagerTableColumns,
   mapEscalatedApprovalsToTableRows,
   mergeRows,
@@ -68,22 +68,10 @@ const ApprovalRequest = () => {
     setLineManagerApprovalMQtt,
   } = useMyApproval();
 
-  //local state to set data i table
-  const [
-    lineManagerApprovalRequestTableData,
-    setLineManagerApprovalRequestTableData,
-  ] = useState({
-    rows: [],
-    totalRecords: 0,
-  });
   const [loadingMore, setLoadingMore] = useState(false);
 
   // Sort state for AntD Table
   const [sortedInfo, setSortedInfo] = useState({});
-
-  // Confirmed filters displayed as tags
-  const assetType = "Equities";
-  /** 🔹 Build API request payload */
 
   /**
    * Fetches approval data from API on component mount
@@ -95,7 +83,7 @@ const ApprovalRequest = () => {
       if (showLoaderFlag) showLoader(true);
 
       try {
-        const response = await SearchApprovalRequestLineManager({
+        const res = await SearchApprovalRequestLineManager({
           callApi,
           showNotification,
           showLoader,
@@ -103,35 +91,41 @@ const ApprovalRequest = () => {
           navigate,
         });
 
-        const lineApprovals = Array.isArray(response?.lineApprovals)
-          ? response.lineApprovals
+        const lineApprovals = Array.isArray(res?.lineApprovals)
+          ? res.lineApprovals
           : [];
         // // map data according to used in table
-        const mappedData = mapEscalatedApprovalsToTableRows(
+        const mapped = mapEscalatedApprovalsToTableRows(
           addApprovalRequestData?.Equities,
           lineApprovals
         );
 
-        setLineManagerApproval({
-          lineApprovals: mappedData,
-          totalRecords: response?.totalRecords,
-          apiCall: true,
-          replace: replace,
+        setLineManagerApproval((prev) => ({
+          lineApprovals: replace
+            ? mapped
+            : [...(prev?.approvals || []), ...mapped],
+          // this is for to run lazy loading its data comming from database of total data in db
+          totalRecordsDataBase: res.totalRecords,
+          // this is for to know how mush dta currently fetch from  db
+          totalRecordsTable: replace
+            ? mapped.length
+            : lineManagerApproval.totalRecordsTable + mapped.length,
+        }));
+
+        setLineManagerApprovalSearch((prev) => {
+          const next = {
+            ...prev,
+            pageNumber: replace
+              ? mapped.length
+              : prev.pageNumber + mapped.length,
+          };
+          // this is for check if filter value get true only on that it will false
+          if (prev.filterTrigger) {
+            next.filterTrigger = false;
+          }
+
+          return next;
         });
-
-        // this work has to be done here
-        //   setEmployeeMyApprovalSearch((prev) => {
-        //   const next = {
-        //     ...prev,
-        //     pageNumber: replace ? mapped.length : prev.pageNumber + mapped.length,
-        //   };
-
-        //   if (prev.filterTrigger) {
-        //     next.filterTrigger = false;
-        //   }
-
-        //   return next;
-        // });
       } catch (error) {
         showNotification({
           type: "error",
@@ -150,50 +144,25 @@ const ApprovalRequest = () => {
   useEffect(() => {
     if (hasFetched.current) return;
     hasFetched.current = true;
-    const requestData = buildApprovalRequest(lineManagerApprovalSearch);
+    const requestData = buildApiRequest(
+      lineManagerApprovalSearch,
+      addApprovalRequestData
+    );
 
     fetchApiCall(requestData, true, true);
     setNoteGlobalModal({ visible: false, action: null });
     resetLineManagerApprovalSearch();
   }, []);
 
-  // when data come to globle state this use useEffect trigger to set set data in local state
-  useEffect(() => {
-    if (!lineManagerApproval?.apiCall) return;
-    const newData = mergeRows(
-      lineManagerApprovalRequestTableData.rows,
-      lineManagerApproval.lineApprovals,
-      lineManagerApproval.replace
-    );
-    // Local state
-    setLineManagerApprovalRequestTableData({
-      rows: newData,
-      totalRecords: newData?.length,
-    });
-
-    // global state return to its initial state but not data and total records
-    setLineManagerApproval((prev) => ({
-      ...prev,
-      apiCall: false,
-      replace: false,
-    }));
-
-    setLineManagerApprovalSearch((prev) => ({
-      ...prev,
-      pageNumber: prev.pageNumber + 10,
-    }));
-  }, [lineManagerApproval?.apiCall]);
-
   /**
    * Syncs filters on `filterTrigger` from context
    */
   useEffect(() => {
     if (lineManagerApprovalSearch.filterTrigger) {
-      console.log("lineManagerApprovalSearch filterTrigger");
       // requestData, replace , mainLoader
-      const requestData = buildApprovalRequest(
+      const requestData = buildApiRequest(
         lineManagerApprovalSearch,
-        addApprovalRequestData?.[assetType]
+        addApprovalRequestData
       );
       fetchApiCall(requestData, true, true);
     }
@@ -201,7 +170,10 @@ const ApprovalRequest = () => {
 
   useEffect(() => {
     if (!lineManagerApprovalMqtt) return;
-    const requestData = buildApprovalRequest(lineManagerApprovalSearch);
+    const requestData = buildApiRequest(
+      lineManagerApprovalSearch,
+      addApprovalRequestData
+    );
     fetchApiCall(requestData, true, true);
     setLineManagerApprovalMQtt(false);
   }, [lineManagerApprovalMqtt]);
@@ -323,18 +295,18 @@ const ApprovalRequest = () => {
   useTableScrollBottom(
     async () => {
       if (
-        lineManagerApproval?.totalRecords <=
-        lineManagerApprovalRequestTableData?.totalRecords
+        lineManagerApproval?.totalRecordsDataBase ===
+        lineManagerApproval?.totalRecordsTable
       )
         return;
 
       try {
         setLoadingMore(true);
-        const requestData = {
-          ...buildApprovalRequest(lineManagerApprovalSearch),
-          PageNumber: lineManagerApprovalSearch.pageNumber || 0,
-          Length: 10,
-        };
+        const requestData = buildApiRequest(
+          lineManagerApprovalSearch,
+          addApprovalRequestData
+        );
+
         await fetchApiCall(requestData, false, false); // append mode
       } catch (error) {
         console.error("❌ Error loading more approvals:", error);
@@ -393,10 +365,10 @@ const ApprovalRequest = () => {
 
           {/* Table or Empty State */}
           <BorderlessTable
-            rows={lineManagerApprovalRequestTableData.rows}
+            rows={lineManagerApproval.lineApprovals}
             columns={columns}
             scroll={
-              lineManagerApprovalRequestTableData.rows.length
+              lineManagerApproval.lineApprovals.length
                 ? {
                     x: "max-content",
                     y: activeFilters.length > 0 ? 450 : 500,

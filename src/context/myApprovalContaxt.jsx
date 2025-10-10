@@ -38,9 +38,8 @@ export const MyApprovalProvider = ({ children }) => {
 
   const [lineManagerApproval, setLineManagerApproval] = useState({
     lineApprovals: [],
-    totalRecords: 0,
-    apiCall: false,
-    replace: false,
+    totalRecordsDataBase: 0,
+    totalRecordsTable: 0,
   });
 
   const [lineManagerApprovalMqtt, setLineManagerApprovalMQtt] = useState(false);
@@ -58,9 +57,8 @@ export const MyApprovalProvider = ({ children }) => {
   const resetApprovalRequestContextState = () => {
     setLineManagerApproval({
       lineApprovals: [],
-      totalRecords: 0,
-      apiCall: false,
-      replace: false,
+      totalRecordsDataBase: 0,
+      totalRecordsTable: 0,
     });
     setViewDetailsLineManagerData({
       assetTypes: [],
