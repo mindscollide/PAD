@@ -62,7 +62,11 @@ export const ReconcileProvider = ({ children }) => {
   const [
     complianceOfficerReconcileTransactionData,
     setComplianceOfficerReconcileTransactionData,
-  ] = useState({ data: [], totalRecords: 0, apiCall: false });
+  ] = useState({
+    reconsileTransaction: [],
+    totalRecordsDataBase: 0,
+    totalRecordsTable: 0,
+  });
 
   /** Stores the latest MQTT update for Compliance Officer Transactions. */
   const [
@@ -74,7 +78,13 @@ export const ReconcileProvider = ({ children }) => {
   const [
     complianceOfficerReconcilePortfolioData,
     setComplianceOfficerReconcilePortfolioData,
-  ] = useState({ data: [], totalRecords: 0, apiCall: false });
+  ] = useState({
+    reconsilePortfolios: [],
+    // this is for to run lazy loading its data comming from database of total data in db
+    totalRecordsDataBase: 0,
+    // this is for to know how mush dta currently fetch from  db
+    totalRecordsTable: 0,
+  });
 
   /** Stores the latest MQTT update for Compliance Officer Portfolio. */
   const [
@@ -126,7 +136,13 @@ export const ReconcileProvider = ({ children }) => {
   const [
     headOfComplianceApprovalPortfolioData,
     setHeadOfComplianceApprovalPortfolioData,
-  ] = useState({ data: [], totalRecords: 0, apiCall: false });
+  ] = useState({
+    escalatedPortfolio: [],
+    // this is for to run lazy loading its data comming from database of total data in db
+    totalRecordsDataBase: 0,
+    // this is for to know how mush dta currently fetch from  db
+    totalRecordsTable: 0,
+  });
 
   /** Stores the latest MQTT update for HCO portfolio approvals. */
   const [
@@ -138,7 +154,13 @@ export const ReconcileProvider = ({ children }) => {
   const [
     headOfComplianceApprovalEscalatedVerificationsData,
     setHeadOfComplianceApprovalEscalatedVerificationsData,
-  ] = useState({ data: [], totalRecords: 0, apiCall: false });
+  ] = useState({
+    escalatedVerification: [],
+    // this is for to run lazy loading its data comming from database of total data in db
+    totalRecordsDataBase: 0,
+    // this is for to know how mush dta currently fetch from  db
+    totalRecordsTable: 0,
+  });
 
   /** Stores the latest MQTT update for HCO escalated verifications. */
   const [
@@ -154,9 +176,9 @@ export const ReconcileProvider = ({ children }) => {
   const resetComplianceOfficerReconcilePortfolioTab = () => {
     setActiveTab("Transactions");
     setComplianceOfficerReconcilePortfolioData({
-      data: [],
-      totalRecords: 0,
-      apiCall: false,
+      reconsilePortfolios: [],
+      totalRecordsDataBase: 0,
+      totalRecordsTable: 0,
     });
     setComplianceOfficerReconcilePortfolioDataMqtt(false);
     setAggregateTotalQuantity(0);
@@ -166,9 +188,9 @@ export const ReconcileProvider = ({ children }) => {
   const resetComplianceOfficerReconcileTransactionTab = () => {
     setActiveTab("Transactions");
     setComplianceOfficerReconcileTransactionData({
-      data: [],
-      totalRecords: 0,
-      apiCall: false,
+      reconsileTransaction: [],
+      totalRecordsDataBase: 0,
+      totalRecordsTable: 0,
     });
     setComplianceOfficerReconcileTransactionDataMqtt(false);
   };
@@ -177,9 +199,9 @@ export const ReconcileProvider = ({ children }) => {
   const resetHeadOfComplianceApprovalPortfolioTab = () => {
     setActiveTabHCO("portfolio");
     setHeadOfComplianceApprovalPortfolioData({
-      data: [],
-      totalRecords: 0,
-      apiCall: false,
+      escalatedPortfolio: [],
+      totalRecordsDataBase: 0,
+      totalRecordsTable: 0,
     });
     setHeadOfComplianceApprovalPortfolioMqtt(false);
   };
@@ -211,9 +233,9 @@ export const ReconcileProvider = ({ children }) => {
   const resetHeadOfComplianceApprovalEscalatedVerificationsTab = () => {
     setActiveTabHCO("escalated");
     setHeadOfComplianceApprovalEscalatedVerificationsData({
-      data: [],
-      totalRecords: 0,
-      apiCall: false,
+      escalatedVerification: [],
+      totalRecordsDataBase: 0,
+      totalRecordsTable: 0,
     });
     setHeadOfComplianceApprovalEscalatedVerificationsMqtt(false);
   };

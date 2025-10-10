@@ -7,7 +7,7 @@ import { navigateToPage, typeColorMap } from "./utils";
 import {
   formatNumberWithCommas,
   convertSingleDigittoDoubble,
-} from "../../../commen/funtions/rejex";
+} from "../../../common/funtions/rejex";
 import { useNavigate } from "react-router-dom";
 import { useSidebarContext } from "../../../context/sidebarContaxt";
 import EmptyState from "../../emptyStates/empty-states";

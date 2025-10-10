@@ -54,7 +54,7 @@ const UploadPortfolioModal = () => {
   const {
     employeeBasedBrokersData,
     allInstrumentsData,
-    addApprovalRequestData,
+    assetTypeListingData,
   } = useDashboardContext();
 
   /**
@@ -85,11 +85,11 @@ const UploadPortfolioModal = () => {
 
   /**
    * 🔹 Asset type key → e.g., "Equities", "FixedIncome"
-   * Data comes from `addApprovalRequestData` in DashboardContext.
+   * Data comes from `assetTypeListingData` in DashboardContext.
    */
-  const assetTypeKey = Object.keys(addApprovalRequestData || {})[0];
-  const assetTypeData = addApprovalRequestData?.[assetTypeKey];
-  console.log("typeOptions", addApprovalRequestData);
+  const assetTypeKey = Object.keys(assetTypeListingData || {})[0];
+  const assetTypeData = assetTypeListingData?.[assetTypeKey];
+  console.log("typeOptions", assetTypeListingData);
   /**
    * 🔹 Format instruments for dropdown
    * Pulls instruments from DashboardContext and maps to {id, shortCode, name, description}.
@@ -119,7 +119,7 @@ const UploadPortfolioModal = () => {
 
   /**
    * 🔹 Format type options (e.g., Buy, Sell)
-   * Derived from `addApprovalRequestData`.
+   * Derived from `assetTypeListingData`.
    */
   const typeOptions = Array.isArray(assetTypeData?.items)
     ? assetTypeData.items.map((item) => ({

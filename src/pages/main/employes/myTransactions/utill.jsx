@@ -11,11 +11,71 @@ import style from "./myTransaction.module.css";
 import {
   dashBetweenApprovalAssets,
   formatApiDateTime,
-} from "../../../../commen/funtions/rejex";
+  toYYMMDD,
+} from "../../../../common/funtions/rejex";
 import { useGlobalModal } from "../../../../context/GlobalModalContext";
-import { useEffect, useRef, useState } from "react";
+import {
+  mapBuySellToIds,
+  mapStatusToIds,
+} from "../../../../components/dropdowns/filters/utils";
+import { getTradeTypeById } from "../../../../common/funtions/type";
 
-// import TypeColumnTitle from "./typeFilter";
+/**
+ * Utility: Build API request payload for approval listing
+ *
+ * @param {Object} searchState - Current search/filter state
+ * @param {Object} assetTypeListingData - Extra request metadata (optional)
+ * @returns {Object} API-ready payload
+ */
+export const buildApiRequest = (searchState = {}, assetTypeListingData) => ({
+  InstrumentName: searchState.instrumentName || "",
+  Quantity: searchState.quantity ? Number(searchState.quantity) : 0,
+  BrokerIDs: searchState.brokerIDs || [],
+
+  StartDate: searchState.startDate ? toYYMMDD(searchState.startDate) : "",
+  EndDate: searchState.endDate ? toYYMMDD(searchState.endDate) : "",
+  StatusIds: mapStatusToIds?.(searchState.status) || [],
+  TypeIds:
+    mapBuySellToIds?.(searchState.type, assetTypeListingData?.Equities) || [],
+  PageNumber: Number(searchState.pageNumber) || 0,
+  Length: Number(searchState.pageSize) || 10,
+});
+
+/**
+ * Maps employee transaction data into a UI-friendly format
+ *
+ * @param {Object} employeeTransactionsData - API response containing transactions
+ * @returns {Array} Mapped transaction list
+ */
+export const mapEmployeeTransactions = (assetTypeData,employeeTransactionsData = {}) => {
+  if (!employeeTransactionsData) return [];
+  console.log("transactions", employeeTransactionsData);
+
+  return employeeTransactionsData.map((item) => ({
+    key: item.workFlowID,
+    workFlowID: item.workFlowID || null,
+    title: `ConductTransactionRequest-${item.workFlowID || ""}-${
+      item.requestDate || ""
+    } ${item.requestTime || ""}`,
+    description: item.description || "",
+    instrumentShortCode: item.instrumentShortCode || "",
+    instrumentName: item.instrumentName || "",
+    quantity: item.quantity || 0,
+    tradeApprovalID: item.tradeApprovalID || "",
+    tradeApprovalTypeID: item.tradeApprovalTypeID || null,
+    tradeType:getTradeTypeById(assetTypeData, item?.tradeType) || "-" ,
+    workFlowStatusID: item.workFlowStatusID || null,
+    workFlowStatus: item.workFlowStatus || "",
+    assetTypeID: item.assetTypeID || null,
+    assetType: item.assetType || "",
+    assetShortCode: item.assetShortCode || "",
+    transactionConductedDate: item.transactionConductedDate || "",
+    transactionConductedTime: item.transactionConductedTime || "",
+    deadlineDate: item.deadlineDate || "",
+    deadlineTime: item.deadlineTime || "",
+    broker: item.broker || "Multiple Brokers",
+  }));
+};
 
 /**
  * Returns the appropriate sort icon based on current sort state

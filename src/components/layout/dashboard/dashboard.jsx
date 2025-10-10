@@ -7,7 +7,7 @@ import { Outlet, useLocation } from "react-router-dom";
 import { useEffect, useMemo, useRef } from "react"; // Added useRef
 
 // Contexts
-import { useMqttClient } from "../../../commen/mqtt/mqttConnection";
+import { useMqttClient } from "../../../common/mqtt/mqttConnection";
 import { useMyApproval } from "../../../context/myApprovalContaxt";
 import { useDashboardContext } from "../../../context/dashboardContaxt";
 import { usePortfolioContext } from "../../../context/portfolioContax";
@@ -178,6 +178,7 @@ const Dashboard = () => {
                     //   mqttRecivedData: payload,
                     //   mqttRecived: true,
                     // });
+                    console.log("employeePendingApprovalsData");
                     setEmployeePendingApprovalsDataMqtt(true);
                   }
                   break;

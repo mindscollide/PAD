@@ -1,8 +1,11 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { Col, Row } from "antd";
-import { Button } from "../../../../components";
 import BorderlessTable from "../../../../components/tables/borderlessTable/borderlessTable";
-import { getBorderlessLineManagerTableColumns } from "./utill";
+import {
+  buildApiRequest,
+  getBorderlessLineManagerTableColumns,
+  mapEscalatedApprovalsToTableRows,
+} from "./utill";
 import { approvalStatusMap } from "../../../../components/tables/borderlessTable/utill";
 import PageLayout from "../../../../components/pageContainer/pageContainer";
 import EmptyState from "../../../../components/emptyStates/empty-states";
@@ -15,7 +18,6 @@ import ApprovedLineManagerModal from "./modal/approvedLineManagerModal/ApprovedL
 import DeclinedLineManagerModal from "./modal/declinedLineManagerModal/DeclinedLineManagerModal";
 import ViewCommentLineManagerModal from "./modal/viewCommentLineManagerModal/ViewCommentLineManagerModal";
 import { useNotification } from "../../../../components/NotificationProvider/NotificationProvider";
-import { useSidebarContext } from "../../../../context/sidebarContaxt";
 import { useGlobalLoader } from "../../../../context/LoaderContext";
 import { useApi } from "../../../../context/ApiContext";
 import { useMyApproval } from "../../../../context/myApprovalContaxt";
@@ -24,19 +26,13 @@ import {
   SearchApprovalRequestLineManager,
 } from "../../../../api/myApprovalApi";
 import { useNavigate } from "react-router-dom";
-import { apiCallSearchForLineManager } from "../../../../components/dropdowns/searchableDropedown/utill";
-import { useTableScrollBottom } from "../../employes/myApprovals/utils";
-import {
-  mapBuySellToIds,
-  mapStatusToIds,
-  mapStatusToIdsForLineManager,
-} from "../../../../components/dropdowns/filters/utils";
 import { useDashboardContext } from "../../../../context/dashboardContaxt";
-import { toYYMMDD } from "../../../../commen/funtions/rejex";
+import { useTableScrollBottom } from "../../../../common/funtions/scroll";
 
 const ApprovalRequest = () => {
   const navigate = useNavigate();
   const hasFetched = useRef(false);
+  const tableScrollLMApprovalRequest = useRef(null);
 
   const {
     viewDetailLineManagerModal,
@@ -50,13 +46,17 @@ const ApprovalRequest = () => {
   } = useGlobalModal();
 
   const { showNotification } = useNotification();
-  const { addApprovalRequestData } = useDashboardContext();
-  const { selectedKey } = useSidebarContext();
+  const { assetTypeListingData } = useDashboardContext();
   const { showLoader } = useGlobalLoader();
   const { callApi } = useApi();
 
-  //local state to set data i table
-  const [approvalRequestLMData, setApprovalRequestLMData] = useState([]);
+  // state of Search context which I'm getting from the SearchBar for Line Manager
+  // Global state for filter/search values
+  const {
+    lineManagerApprovalSearch,
+    setLineManagerApprovalSearch,
+    resetLineManagerApprovalSearch,
+  } = useSearchBarContext();
 
   // state of context which I'm getting from the myApproval for Line Manager
   const {
@@ -69,99 +69,113 @@ const ApprovalRequest = () => {
 
   const [loadingMore, setLoadingMore] = useState(false);
 
-  // state of Search context which I'm getting from the SearchBar for Line Manager
-  // Global state for filter/search values
-  const {
-    lineManagerApprovalSearch,
-    setLineManagerApprovalSearch,
-    resetLineManagerApprovalSearch,
-  } = useSearchBarContext();
-  console.log("lineManagerApprovalSearch", lineManagerApprovalSearch);
   // Sort state for AntD Table
   const [sortedInfo, setSortedInfo] = useState({});
-
-  // Confirmed filters displayed as tags
-  const [submittedFilters, setSubmittedFilters] = useState([]);
-  const assetType = "Equities";
 
   /**
    * Fetches approval data from API on component mount
    */
-  const fetchApprovals = async (flag) => {
-    if (flag) {
-      await showLoader(true);
-    }
-    const requestdata = {
-      InstrumentName:
-        lineManagerApprovalSearch.instrumentName ||
-        lineManagerApprovalSearch.mainInstrumentName,
-      Date: toYYMMDD(lineManagerApprovalSearch.date) || "",
-      Quantity: lineManagerApprovalSearch.quantity || 0,
-      PageNumber: 0,
-      Length: lineManagerApprovalSearch.pageSize || 10,
-      StatusIds: mapStatusToIds(lineManagerApprovalSearch.status),
-      TypeIds: mapBuySellToIds(
-        lineManagerApprovalSearch.type,
-        addApprovalRequestData?.[assetType]
-      ),
-      RequesterName: lineManagerApprovalSearch.requesterName || "",
-    };
+  const fetchApiCall = useCallback(
+    async (requestData, replace = false, showLoaderFlag = true) => {
+      if (!requestData || typeof requestData !== "object") return;
 
-    const data = await SearchApprovalRequestLineManager({
-      callApi,
-      showNotification,
-      showLoader,
-      requestdata,
-      navigate,
-    });
+      if (showLoaderFlag) showLoader(true);
 
-    setLineManagerApproval(data);
-  };
+      try {
+        const res = await SearchApprovalRequestLineManager({
+          callApi,
+          showNotification,
+          showLoader,
+          requestdata: requestData,
+          navigate,
+        });
+
+        const lineApprovals = Array.isArray(res?.lineApprovals)
+          ? res.lineApprovals
+          : [];
+        // // map data according to used in table
+        const mapped = mapEscalatedApprovalsToTableRows(
+          assetTypeListingData?.Equities,
+          lineApprovals
+        );
+
+        setLineManagerApproval((prev) => ({
+          lineApprovals: replace
+            ? mapped
+            : [...(prev?.lineApprovals || []), ...mapped],
+          // this is for to run lazy loading its data comming from database of total data in db
+          totalRecordsDataBase: res.totalRecords,
+          // this is for to know how mush dta currently fetch from  db
+          totalRecordsTable: replace
+            ? mapped.length
+            : lineManagerApproval.totalRecordsTable + mapped.length,
+        }));
+
+        setLineManagerApprovalSearch((prev) => {
+          const next = {
+            ...prev,
+            pageNumber: replace
+              ? mapped.length
+              : prev.pageNumber + mapped.length,
+          };
+          // this is for check if filter value get true only on that it will false
+          if (prev.filterTrigger) {
+            next.filterTrigger = false;
+          }
+
+          return next;
+        });
+      } catch (error) {
+        showNotification({
+          type: "error",
+          message: "Failed to fetch LineManager approvals. Please try again.",
+        });
+      } finally {
+        if (showLoaderFlag) showLoader(false);
+      }
+    },
+    [callApi, showNotification, showLoader, navigate, assetTypeListingData]
+  );
 
   /**
-   * Runs only once to fetch approvals on initial render
+   * Runs only once to fetch api on initial render of a page
    */
   useEffect(() => {
     if (hasFetched.current) return;
     hasFetched.current = true;
-    fetchApprovals(true);
-    setNoteGlobalModal({ visible: false, action: null });
+    const requestData = buildApiRequest(
+      lineManagerApprovalSearch,
+      assetTypeListingData
+    );
 
+    fetchApiCall(requestData, true, true);
+    setNoteGlobalModal({ visible: false, action: null });
     resetLineManagerApprovalSearch();
-    setLineManagerApprovalSearch({
-      instrumentName: "",
-      requesterName: "",
-      date: null,
-      mainInstrumentName: "",
-      type: [],
-      status: [],
-      pageSize: 10,
-      pageNumber: 0,
-      totalRecords: 0,
-      quantity: 0,
-      filterTrigger: true,
-      tableFilterTrigger: false,
-    });
   }, []);
+
+  /**
+   * Syncs filters on `filterTrigger` from context
+   */
+  useEffect(() => {
+    if (lineManagerApprovalSearch.filterTrigger) {
+      // requestData, replace , mainLoader
+      const requestData = buildApiRequest(
+        lineManagerApprovalSearch,
+        assetTypeListingData
+      );
+      fetchApiCall(requestData, true, true);
+    }
+  }, [lineManagerApprovalSearch.filterTrigger]);
 
   useEffect(() => {
     if (!lineManagerApprovalMqtt) return;
-    fetchApprovals(false);
+    const requestData = buildApiRequest(
+      lineManagerApprovalSearch,
+      assetTypeListingData
+    );
+    fetchApiCall(requestData, true, false);
     setLineManagerApprovalMQtt(false);
-    setLineManagerApprovalSearch((prev) => ({
-      ...prev,
-      pageNumber: 0,
-    }));
   }, [lineManagerApprovalMqtt]);
-
-  // Keys to track which filters to sync/display
-  const filterKeys = [
-    { key: "instrumentName", label: "Instrument" },
-    { key: "mainInstrumentName", label: "Main Instrument" },
-    { key: "startDate", label: "Date" },
-    { key: "requesterName", label: "Requester Name" },
-    { key: "quantity", label: "Quantity" },
-  ];
 
   // This Api is for the getAllViewDetailModal For LineManager
   const handleViewDetailsForLineManager = async (approvalID) => {
@@ -193,144 +207,69 @@ const ApprovalRequest = () => {
     handleViewDetailsForLineManager,
   });
 
-
-  /**
-   * Removes a filter tag and re-fetches data
-   */
-  const handleRemoveFilter = async (key) => {
-    const normalizedKey = key?.toLowerCase();
-    // 1️⃣ Update UI state for removed filters
-    setSubmittedFilters((prev) => prev.filter((item) => item.key !== key));
-
-    //To show dynamically AssetType like EQ equities ETC
-    const assetKey = lineManagerApprovalSearch.assetType;
-    const assetData = addApprovalRequestData?.[assetKey];
-
-    // 2️⃣ Prepare API request parameters
-    const TypeIds = mapBuySellToIds(lineManagerApprovalSearch.type, assetData);
-    const statusIds = mapStatusToIdsForLineManager(
-      lineManagerApprovalSearch.status
-    );
-
-    const requestdata = {
-      InstrumentName:
-        lineManagerApprovalSearch.instrumentName ||
-        lineManagerApprovalSearch.mainInstrumentName ||
-        "",
-      Date: toYYMMDD(lineManagerApprovalSearch.date) || "",
-      Quantity: lineManagerApprovalSearch.quantity || 0,
-      StatusIds: statusIds || [],
-      TypeIds: TypeIds || [],
-      PageNumber: 0,
-      Length: lineManagerApprovalSearch.pageSize || 10,
-      RequesterName: lineManagerApprovalSearch.requesterName || "",
+  /** 🔹 Handle removing individual filter */
+  const handleRemoveFilter = (key) => {
+    const resetMap = {
+      instrumentName: { instrumentName: "" },
+      requesterName: { requesterName: "" },
+      dateRange: { startDate: null, endDate: null },
+      quantity: { quantity: 0 },
     };
 
-    // 3️⃣ Reset API params for the specific filter being removed
-    if (normalizedKey === "requestername") {
-      requestdata.RequesterName = "";
-      // 5️⃣ Update search state — only reset the specific key + page number
-      setLineManagerApprovalSearch((prev) => ({
-        ...prev,
-        requesterName: "",
-        pageNumber: 0,
-      }));
-    } else if (
-      normalizedKey === "instrumentname" ||
-      normalizedKey === "maininstrumentname"
-    ) {
-      setLineManagerApprovalSearch((prev) => ({
-        ...prev,
-        instrumentName: "",
-        mainInstrumentName: "",
-        pageNumber: 0,
-      }));
-      requestdata.InstrumentName = "";
-    } else if (normalizedKey === "quantity") {
-      requestdata.Quantity = 0;
-      setLineManagerApprovalSearch((prev) => ({
-        ...prev,
-        quantity: 0,
-        pageNumber: 0,
-      }));
-    } else if (normalizedKey === "startdate") {
-      requestdata.StartDate = "";
-      setLineManagerApprovalSearch((prev) => ({
-        ...prev,
-        startdate: "",
-        pageNumber: 0,
-      }));
-    }
-
-    // 4️⃣ Show loader and call API
-    showLoader(true);
-
-    const data = await SearchApprovalRequestLineManager({
-      callApi,
-      showNotification,
-      showLoader,
-      requestdata,
-      navigate,
-    });
-
-    setLineManagerApproval(data);
+    setLineManagerApprovalSearch((prev) => ({
+      ...prev,
+      ...resetMap[key],
+      pageNumber: 0,
+      filterTrigger: true,
+    }));
   };
 
-  /**
-   * Syncs filters on `filterTrigger` from context
-   */
-  useEffect(() => {
-    if (lineManagerApprovalSearch.filterTrigger) {
-      const snapshot = filterKeys
-        .filter(({ key }) => lineManagerApprovalSearch[key])
-        .map(({ key }) => ({
-          key,
-          value: lineManagerApprovalSearch[key],
-        }));
+  /** 🔹 Handle removing all filters */
+  const handleRemoveAllFilters = () => {
+    setLineManagerApprovalSearch((prev) => ({
+      ...prev,
+      instrumentName: "",
+      requesterName: "",
+      startDate: null,
+      endDate: null,
+      quantity: 0,
+      pageNumber: 0,
+      filterTrigger: true,
+    }));
+  };
 
-      setSubmittedFilters(snapshot);
+  /** 🔹 Build Active Filters */
+  const activeFilters = (() => {
+    const { instrumentName, requesterName, startDate, endDate, quantity } =
+      lineManagerApprovalSearch || {};
 
-      setLineManagerApprovalSearch((prev) => ({
-        ...prev,
-        filterTrigger: false,
-      }));
-    }
-  }, [lineManagerApprovalSearch.filterTrigger]);
-
-  /**
-   * Handles table-specific filter trigger
-   */
-  useEffect(() => {
-    const fetchFilteredData = async () => {
-      if (!lineManagerApprovalSearch.tableFilterTrigger) return;
-
-      const snapshot = filterKeys
-        .filter(({ key }) => lineManagerApprovalSearch[key])
-        .map(({ key }) => ({
-          key,
-          value: lineManagerApprovalSearch[key],
-        }));
-
-      await apiCallSearchForLineManager({
-        selectedKey,
-        lineManagerApprovalSearch,
-        callApi,
-        showNotification,
-        showLoader,
-        navigate,
-        setData: setLineManagerApproval,
-      });
-
-      setSubmittedFilters(snapshot);
-
-      setLineManagerApprovalSearch((prev) => ({
-        ...prev,
-        tableFilterTrigger: false,
-      }));
-    };
-
-    fetchFilteredData();
-  }, [lineManagerApprovalSearch.tableFilterTrigger]);
+    return [
+      instrumentName && {
+        key: "instrumentName",
+        value:
+          instrumentName.length > 13
+            ? instrumentName.slice(0, 13) + "..."
+            : instrumentName,
+      },
+      requesterName && {
+        key: "requesterName",
+        value:
+          requesterName.length > 13
+            ? requesterName.slice(0, 13) + "..."
+            : requesterName,
+      },
+      startDate &&
+        endDate && {
+          key: "dateRange",
+          value: `${startDate} → ${endDate}`,
+        },
+      quantity &&
+        Number(quantity) > 0 && {
+          key: "quantity",
+          value: Number(quantity).toLocaleString("en-US"),
+        },
+    ].filter(Boolean);
+  })();
 
   useEffect(() => {
     try {
@@ -351,142 +290,38 @@ const ApprovalRequest = () => {
     }
   }, []);
 
-  // Lazy Loading Work Start
-  useEffect(() => {
-    try {
-      if (
-        lineManagerApproval?.lineApprovals &&
-        Array.isArray(lineManagerApproval?.lineApprovals)
-      ) {
-        // 🔹 Map and normalize data
-        const mappedData = lineManagerApproval?.lineApprovals?.map((item) => ({
-          key: item.approvalID,
-          instrument: `${item.instrument?.instrumentName || ""} - ${
-            item.instrument?.instrumentCode || ""
-          }`,
-          type: item.tradeType?.typeName || "",
-          requestDateTime: `${item.requestDate || ""} ${
-            item.requestTime || ""
-          }`,
-          isEscalated: false,
-          status: item.approvalStatus?.approvalStatusName || "",
-          quantity: item.quantity || 0,
-          timeRemaining: item.timeRemainingToTrade || "",
-          ...item,
-        }));
-
-        // 🔹 Set approvals data
-        setApprovalRequestLMData(mappedData);
-
-        // 🔹 Update search state (avoid unnecessary updates)
-        setLineManagerApprovalSearch((prev) => ({
-          ...prev,
-          totalRecords:
-            prev.totalRecords !== lineManagerApproval.totalRecords
-              ? lineManagerApproval.totalRecords
-              : prev.totalRecords,
-          pageNumber: mappedData.length,
-        }));
-      } else if (lineManagerApproval === null) {
-        // No data case
-        setApprovalRequestLMData([]);
-      }
-    } catch (error) {
-      console.error("Error processing employee approvals:", error);
-    } finally {
-      // 🔹 Always stop loading state
-      setLoadingMore(false);
-    }
-  }, [lineManagerApproval]);
-
-  // Lazy Loading
-  // Inside your component
+  // For Lazy Loading
   useTableScrollBottom(
     async () => {
-      // ✅ Only load more if there are still records left
       if (
-        lineManagerApproval?.lineApprovals?.totalRecords !==
-        approvalRequestLMData?.length
-      ) {
-        try {
-          setLoadingMore(true);
+        lineManagerApproval?.totalRecordsDataBase ===
+        lineManagerApproval?.totalRecordsTable
+      )
+        return;
 
-          // ✅ Consistent assetKey fallback
-          const assetKey =
-            lineManagerApprovalSearch.assetType ||
-            (addApprovalRequestData &&
-            Object.keys(addApprovalRequestData).length > 0
-              ? Object.keys(addApprovalRequestData)[0]
-              : "Equities");
+      try {
+        setLoadingMore(true);
+        const requestData = buildApiRequest(
+          lineManagerApprovalSearch,
+          assetTypeListingData
+        );
 
-          const assetData = addApprovalRequestData?.[assetKey] || { items: [] };
-
-          // ✅ Pass assetData to mapBuySellToIds
-          const TypeIds = mapBuySellToIds(
-            lineManagerApprovalSearch.type || [],
-            assetData
-          );
-
-          console.log("CHeck STausu APi here");
-          // Build request payload
-          const requestdata = {
-            InstrumentName:
-              lineManagerApprovalSearch.instrumentName ||
-              lineManagerApprovalSearch.mainInstrumentName,
-            Date: toYYMMDD(lineManagerApprovalSearch.date) || "",
-            Quantity: lineManagerApprovalSearch.quantity || 0,
-            StatusIds: mapStatusToIds(lineManagerApprovalSearch.status),
-            TypeIds: TypeIds || [],
-            PageNumber: lineManagerApprovalSearch.pageNumber || 0, // Acts as offset for API
-            Length: 10,
-            RequesterName: lineManagerApprovalSearch.requesterName || "",
-          };
-          // Call API
-          const data = await SearchApprovalRequestLineManager({
-            callApi,
-            showNotification,
-            showLoader, // ✅ Don't trigger full loader for lazy load
-            requestdata,
-            navigate,
-          });
-
-          if (!data) return;
-
-          setLineManagerApproval((prevState) => {
-            const safePrev =
-              prevState && typeof prevState === "object"
-                ? prevState
-                : { lineApprovals: [], totalRecords: 0 };
-
-            return {
-              lineApprovals: [
-                ...(Array.isArray(safePrev.lineApprovals)
-                  ? safePrev.lineApprovals
-                  : []),
-                ...(Array.isArray(data?.lineApprovals)
-                  ? data.lineApprovals
-                  : []),
-              ],
-              totalRecords: data?.totalRecords ?? safePrev.totalRecords,
-            };
-          });
-        } catch (error) {
-          console.error("Error loading more approvals:", error);
-        } finally {
-          setLoadingMore(false);
-        }
+        await fetchApiCall(requestData, false, false); // append mode
+      } catch (error) {
+        console.error("❌ Error loading more approvals:", error);
+      } finally {
+        setLoadingMore(false);
       }
     },
     0,
-    "border-less-table-orange" // Container selector
+    "border-less-table-orange"
   );
-
   return (
     <>
-      {/* Filter Tags Display */}
-      {submittedFilters.length > 0 && (
+      {/* 🔹 Active Filter Tags */}
+      {activeFilters.length > 0 && (
         <Row gutter={[12, 12]} className={style["filter-tags-container"]}>
-          {submittedFilters.map(({ key, value }) => (
+          {activeFilters.map(({ key, value }) => (
             <Col key={key}>
               <div className={style["filter-tag"]}>
                 <span>{value}</span>
@@ -499,13 +334,25 @@ const ApprovalRequest = () => {
               </div>
             </Col>
           ))}
+
+          {/* 🔹 Show Clear All only if more than one filter */}
+          {activeFilters.length > 1 && (
+            <Col>
+              <div
+                className={`${style["filter-tag"]} ${style["clear-all-tag"]}`}
+                onClick={handleRemoveAllFilters}
+              >
+                <span>Clear All</span>
+              </div>
+            </Col>
+          )}
         </Row>
       )}
 
       {/* Page Content */}
       <PageLayout
         background="white"
-        className={submittedFilters.length > 0 && "changeHeight"}
+        className={activeFilters.length > 0 && "changeHeight"}
       >
         <div className="px-4 md:px-6 lg:px-8">
           {/* Page Header */}
@@ -517,21 +364,20 @@ const ApprovalRequest = () => {
 
           {/* Table or Empty State */}
           <BorderlessTable
-            rows={approvalRequestLMData}
+            rows={lineManagerApproval?.lineApprovals}
             columns={columns}
             scroll={
-              approvalRequestLMData?.length
+              lineManagerApproval?.lineApprovals?.length
                 ? {
                     x: "max-content",
-                    y: submittedFilters.length > 0 ? 450 : 500,
+                    y: activeFilters.length > 0 ? 450 : 500,
                   }
                 : undefined
             }
             classNameTable="border-less-table-orange"
-            onChange={(pagination, filters, sorter) => {
-              setSortedInfo(sorter);
-            }}
+            onChange={(_, __, sorter) => setSortedInfo(sorter || {})}
             loading={loadingMore}
+            ref={tableScrollLMApprovalRequest}
           />
         </div>
       </PageLayout>

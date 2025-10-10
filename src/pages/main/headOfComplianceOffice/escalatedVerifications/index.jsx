@@ -41,7 +41,11 @@ const EscalatedTransactionsIndex = () => {
   const { activeTabHCO, setActiveTabHCO } = useReconcileContext();
 
   const {
+    headOfComplianceApprovalEscalatedVerificationsSearch,
+    setHeadOfComplianceApprovalEscalatedVerificationsSearch,
     resetHeadOfComplianceApprovalEscalatedVerificationsSearch,
+    headOfComplianceApprovalPortfolioSearch,
+    setHeadOfComplianceApprovalPortfolioSearch,
     resetHeadOfComplianceApprovalPortfolioSearch,
   } = useSearchBarContext();
   const { isSubmit } = useGlobalModal();
@@ -51,8 +55,7 @@ const EscalatedTransactionsIndex = () => {
   const [uploadPortfolioModal, setUploadPortfolioModal] = useState(false); // Toggle Upload Portfolio modal
 
   // ─── Derived State ─────────────────────────────────────────────
-  const isTransactions = activeTabHCO === "escalated";
-
+  const isEscalatedVerification = activeTabHCO === "escalated";
   // ─── Lifecycle: Cleanup ────────────────────────────────────────
   useEffect(() => {
     return () => {
@@ -89,10 +92,147 @@ const EscalatedTransactionsIndex = () => {
     resetHeadOfComplianceApprovalEscalatedVerificationsSearch();
   };
 
+  /** 🔹 Handle removing individual filter */
+  const handleRemoveFilter = (key) => {
+    const resetMap = {
+      instrumentName: { instrumentName: "" },
+      requesterName: { requesterName: "" },
+      quantity: { quantity: 0 },
+      dateRange: { escalatedDateFrom: null, requestDateTo: null },
+      escalatedDateRange: { escalatedDateFrom: null, escalatedDateTo: null },
+    };
+    if (isEscalatedVerification) {
+      setHeadOfComplianceApprovalEscalatedVerificationsSearch((prev) => ({
+        ...prev,
+        ...resetMap[key],
+        pageNumber: 0,
+        filterTrigger: true,
+      }));
+    } else {
+      setHeadOfComplianceApprovalPortfolioSearch((prev) => ({
+        ...prev,
+        ...resetMap[key],
+        pageNumber: 0,
+        filterTrigger: true,
+      }));
+    }
+  };
+
+  /** 🔹 Handle removing all filters */
+  const handleRemoveAllFilters = () => {
+    if (isEscalatedVerification) {
+      setHeadOfComplianceApprovalEscalatedVerificationsSearch((prev) => ({
+        ...prev,
+        instrumentName: "",
+        requesterName: "",
+        quantity: 0,
+        requestDateFrom: null,
+        requestDateTo: null,
+        escalatedDateFrom: null,
+        escalatedDateTo: null,
+        pageNumber: 0,
+        filterTrigger: true,
+      }));
+    } else {
+      setHeadOfComplianceApprovalPortfolioSearch((prev) => ({
+        ...prev,
+        instrumentName: "",
+        requesterName: "",
+        quantity: 0,
+        requestDateFrom: null,
+        requestDateTo: null,
+        escalatedDateFrom: null,
+        escalatedDateTo: null,
+        pageNumber: 0,
+        filterTrigger: true,
+      }));
+    }
+  };
+
+  /** 🔹 Build Active Filters */
+  const activeFilters = (() => {
+    const {
+      instrumentName,
+      requesterName,
+      quantity,
+      requestDateFrom,
+      requestDateTo,
+      escalatedDateFrom,
+      escalatedDateTo,
+    } = isEscalatedVerification
+      ? headOfComplianceApprovalEscalatedVerificationsSearch || {}
+      : headOfComplianceApprovalPortfolioSearch || {};
+
+    return [
+      instrumentName && {
+        key: "instrumentName",
+        value:
+          instrumentName.length > 13
+            ? instrumentName.slice(0, 13) + "..."
+            : instrumentName,
+      },
+      requesterName && {
+        key: "requesterName",
+        value:
+          requesterName.length > 13
+            ? requesterName.slice(0, 13) + "..."
+            : requesterName,
+      },
+      requestDateFrom &&
+        requestDateTo && {
+          key: "dateRange",
+          value: `${requestDateFrom} → ${requestDateTo}`,
+        },
+      escalatedDateFrom &&
+        escalatedDateTo && {
+          key: "escalatedDateRange",
+          value: `${escalatedDateFrom} → ${escalatedDateTo}`,
+        },
+      quantity &&
+        Number(quantity) > 0 && {
+          key: "quantity",
+          value: Number(quantity).toLocaleString("en-US"),
+        },
+    ].filter(Boolean);
+  })();
+
   // ─── Render ────────────────────────────────────────────────────
   return (
     <>
-      <PageLayout background="white">
+      {/* 🔹 Active Filter Tags */}
+      {activeFilters.length > 0 && (
+        <Row gutter={[12, 12]} className={styles["filter-tags-container"]}>
+          {activeFilters.map(({ key, value }) => (
+            <Col key={key}>
+              <div className={styles["filter-tag"]}>
+                <span>{value}</span>
+                <span
+                  className={styles["filter-tag-close"]}
+                  onClick={() => handleRemoveFilter(key)}
+                >
+                  &times;
+                </span>
+              </div>
+            </Col>
+          ))}
+
+          {/* 🔹 Show Clear All only if more than one filter */}
+          {activeFilters.length > 1 && (
+            <Col>
+              <div
+                className={`${styles["filter-tag"]} ${styles["clear-all-tag"]}`}
+                onClick={handleRemoveAllFilters}
+              >
+                <span>Clear All</span>
+              </div>
+            </Col>
+          )}
+        </Row>
+      )}
+      <PageLayout
+        background="white"
+        className={activeFilters.length > 0 && "changeHeight"}
+      >
         {/* ─── Header Section: Tabs + Totals + Actions ─────────────── */}
         <Row justify="space-between" align="middle" className={styles.header}>
           {/* ─── Tabs ───────────────────────────── */}
@@ -107,7 +247,7 @@ const EscalatedTransactionsIndex = () => {
                   <Button
                     type="text"
                     className={
-                      isTransactions
+                      isEscalatedVerification
                         ? "only-tex-selected"
                         : "only-tex-not-selected"
                     }
@@ -123,7 +263,7 @@ const EscalatedTransactionsIndex = () => {
                   <Button
                     type="text"
                     className={
-                      !isTransactions
+                      !isEscalatedVerification
                         ? "only-tex-selected"
                         : "only-tex-not-selected"
                     }
@@ -134,12 +274,12 @@ const EscalatedTransactionsIndex = () => {
                 {/* Animated underline indicator */}
                 <div
                   className={
-                    isTransactions
+                    isEscalatedVerification
                       ? styles.underlineTransactions
                       : styles.underlinePorfolio
                   }
                   style={{
-                    transform: isTransactions
+                    transform: isEscalatedVerification
                       ? "translateX(0%)"
                       : "translateX(100%)",
                   }}
@@ -151,13 +291,15 @@ const EscalatedTransactionsIndex = () => {
 
         {/* ─── Content Section ────────────────────────────────────── */}
         <div className={styles.content}>
-          {isTransactions ? (
+          {isEscalatedVerification ? (
             <div className={styles.placeholder}>
-              <EscalatedTransactionVerifications />
+              <EscalatedTransactionVerifications
+                activeFilters={activeFilters}
+              />
             </div>
           ) : (
             <div className={styles.placeholder}>
-              <ReconcilePortfolio />
+              <ReconcilePortfolio activeFilters={activeFilters} />
             </div>
           )}
         </div>
