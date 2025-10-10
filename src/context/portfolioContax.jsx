@@ -54,9 +54,9 @@ export const PortfolioProvider = ({ children }) => {
    */
   const [employeePendingApprovalsData, setEmployeePendingApprovalsData] =
     useState({
-      data: [],
-      totalRecords: 0,
-      apiCall: false,
+      pendingApprovalsData: [],
+      totalRecordsDataBase: 0,
+      totalRecordsTable: 0,
     });
 
   /**
@@ -165,14 +165,11 @@ export const PortfolioProvider = ({ children }) => {
   const resetPendingApprovalTab = () => {
     setActiveTab("portfolio");
     setEmployeePendingApprovalsData({
-      data: [],
-      totalRecords: 0,
-      apiCall: false,
+      pendingApprovalsData: [],
+      totalRecordsDataBase: 0,
+      totalRecordsTable: 0,
     });
-    setEmployeePendingApprovalsDataMqtt({
-      data: [],
-      mqtt: false,
-    });
+    setEmployeePendingApprovalsDataMqtt(false);
   };
 
   return (

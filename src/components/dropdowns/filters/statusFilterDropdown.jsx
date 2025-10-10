@@ -53,7 +53,7 @@ const StatusFilterDropdown = ({
   const navigate = useNavigate();
   const location = useLocation();
   const { selectedKey } = useSidebarContext();
-  const { addApprovalRequestData } = useDashboardContext();
+  const { assetTypeListingData } = useDashboardContext();
   const { callApi } = useApi();
   const { showLoader } = useGlobalLoader();
   const { showNotification } = useNotification();
@@ -117,43 +117,23 @@ const StatusFilterDropdown = ({
    * Updates parent state and triggers API call.
    */
   const handleOk = async () => {
-    // we handle employe profolio from here
-    if (selectedKey === "4") {
+  switch (selectedKey) {
+    case "1":
+    case "2":
+    case "4":
+    case "6":
+    case "9":
+    case "12":
+    case "15":
       setState((prev) => ({
         ...prev,
         status: tempSelected,
         pageNumber: 0,
         filterTrigger: true,
       }));
-    } else if (selectedKey === "9") {
-      setState((prev) => ({
-        ...prev,
-        status: tempSelected,
-        pageNumber: 0,
-        filterTrigger: true,
-      }));
-    } else if (selectedKey === "12") {
-      setState((prev) => ({
-        ...prev,
-        status: tempSelected,
-        pageNumber: 0,
-        filterTrigger: true,
-      }));
-    } else if (selectedKey === "15") {
-      setState((prev) => ({
-        ...prev,
-        status: tempSelected,
-        pageNumber: 0,
-        filterTrigger: true,
-      }));
-    } else if (selectedKey === "1") {
-      setState((prev) => ({
-        ...prev,
-        status: tempSelected,
-        pageNumber: 0,
-        filterTrigger: true,
-      }));
-    } else {
+      break;
+
+    default:
       setState((prev) => ({
         ...prev,
         status: tempSelected,
@@ -165,7 +145,7 @@ const StatusFilterDropdown = ({
         selectedKey,
         newdata: tempSelected,
         state,
-        addApprovalRequestData,
+        assetTypeListingData,
         callApi,
         showNotification,
         showLoader,
@@ -174,58 +154,41 @@ const StatusFilterDropdown = ({
         setEmployeeTransactionsData,
         setLineManagerApproval,
       });
-    }
-    setOpenState(false);
-    confirm(); // Close dropdown
-  };
+      break;
+  }
+
+  // 🔹 Common cleanup
+  setOpenState(false);
+  confirm(); // Close dropdown
+};
 
   /**
    * Resets filter selections and clears parent state.
    * Also triggers API call with empty filter.
    */
-  const handleReset = async () => {
-    // we handle employe profolio from here
-    if (selectedKey === "4") {
+ const handleReset = async () => {
+  switch (selectedKey) {
+    case "1":
+    case "2":
+    case "4":
+    case "6":
+    case "9":
+    case "12":
+    case "15":
       setState((prev) => ({
         ...prev,
         status: [],
         pageNumber: 0,
         filterTrigger: true,
       }));
-    } else if (selectedKey === "9") {
-      setState((prev) => ({
-        ...prev,
-        status: [],
-        pageNumber: 0,
-        filterTrigger: true,
-      }));
-    } else if (selectedKey === "12") {
-      setState((prev) => ({
-        ...prev,
-        status: [],
-        pageNumber: 0,
-        filterTrigger: true,
-      }));
-    } else if (selectedKey === "15") {
-      setState((prev) => ({
-        ...prev,
-        status: [],
-        pageNumber: 0,
-        filterTrigger: true,
-      }));
-    } else if (selectedKey === "1") {
-      setState((prev) => ({
-        ...prev,
-        status: [],
-        pageNumber: 0,
-        filterTrigger: true,
-      }));
-    } else {
+      break;
+
+    default:
       await apiCallStatus({
         selectedKey,
         newdata: [],
         state,
-        addApprovalRequestData,
+        assetTypeListingData,
         callApi,
         showNotification,
         showLoader,
@@ -241,12 +204,15 @@ const StatusFilterDropdown = ({
         pageSize: 10,
         pageNumber: 0,
       }));
-    }
-    setTempSelected([]);
-    clearFilters?.();
-    setOpenState(false);
-    confirm(); // Close dropdown
-  };
+      break;
+  }
+
+  // 🔹 Common cleanup
+  setTempSelected([]);
+  clearFilters?.();
+  setOpenState(false);
+  confirm(); // Close dropdown
+};
 
   return (
     <div className={styles.dropdownContainer}>

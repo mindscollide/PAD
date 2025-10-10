@@ -34,8 +34,8 @@ const SideBar = () => {
     setEmployeeBasedBrokersData,
     allInstrumentsData,
     setAllInstrumentsData,
-    addApprovalRequestData,
-    setAddApprovalRequestData,
+    assetTypeListingData,
+    setAssetTypeListingData,
     getAllPredefineReasonData,
     setGetAllPredefineReasonData,
   } = useDashboardContext();
@@ -77,7 +77,7 @@ const SideBar = () => {
             setEmployeeBasedBrokersData
           );
           restoreAndRemove("allInstrumentsData", setAllInstrumentsData);
-          restoreAndRemove("addApprovalRequestData", setAddApprovalRequestData);
+          restoreAndRemove("assetTypeListingData", setAssetTypeListingData);
           restoreAndRemove(
             "getAllPredefineReasonData",
             setGetAllPredefineReasonData
@@ -93,7 +93,7 @@ const SideBar = () => {
     setSelectedKey,
     setEmployeeBasedBrokersData,
     setAllInstrumentsData,
-    setAddApprovalRequestData,
+    setAssetTypeListingData,
     setGetAllPredefineReasonData,
   ]);
 
@@ -118,8 +118,8 @@ const SideBar = () => {
           JSON.stringify(allInstrumentsData)
         );
         sessionStorage.setItem(
-          "addApprovalRequestData",
-          JSON.stringify(addApprovalRequestData)
+          "assetTypeListingData",
+          JSON.stringify(assetTypeListingData)
         );
         sessionStorage.setItem(
           "getAllPredefineReasonData",
@@ -134,7 +134,7 @@ const SideBar = () => {
     selectedKey,
     employeeBasedBrokersData,
     allInstrumentsData,
-    addApprovalRequestData,
+    assetTypeListingData,
     getAllPredefineReasonData,
   ]);
 

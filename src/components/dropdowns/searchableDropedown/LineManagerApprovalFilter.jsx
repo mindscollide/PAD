@@ -1,177 +1,180 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Row, Col, Space } from "antd";
-import { useSidebarContext } from "../../../context/sidebarContaxt";
 import { Button, DateRangePicker, TextField } from "../..";
 import { useSearchBarContext } from "../../../context/SearchBarContaxt";
 import {
+  allowOnlyAlphabets,
   allowOnlyNumbers,
   removeFirstSpace,
-} from "../../../commen/funtions/rejex";
-import moment from "moment";
-import CustomDatePicker from "../../dateSelector/datePicker/datePicker";
+} from "../../../common/funtions/rejex";
 
-export const LineManagerApprovalFilter = ({ handleSearch, setVisible }) => {
+// 🔹 Initial default state for local filters
+const INITIAL_LOCAL_STATE = {
+  instrumentName: "",
+  requesterName: "",
+  quantity: 0,
+  startDate: null,
+  endDate: null,
+};
+
+export const LineManagerApprovalFilter = ({
+  setVisible,
+  maininstrumentName,
+  setMaininstrumentName,
+  clear,
+  setClear,
+}) => {
   const { lineManagerApprovalSearch, setLineManagerApprovalSearch } =
     useSearchBarContext();
 
-  // 🔹 Local form state
-  const [localState, setLocalState] = useState({
-    instrumentName: "",
-    requesterName: "",
-    startDate: "",
-    quantity: "",
-  });
-  /**
-   * useSidebarContext its state handler for this sidebar.
-   * - collapsed for check if its open and closed side abr
-   * - selectedKey is for which tab or route is open
-   */
+  // 🔹 LOCAL STATE (Holds temporary filter values inside the popup)
+  const [localState, setLocalState] = useState(INITIAL_LOCAL_STATE);
 
-  // 🔹 Track touched fields
-  const [dirtyFields, setDirtyFields] = useState({});
+  // -----------------------------------------------------
+  // 🔹 EFFECTS
+  // -----------------------------------------------------
 
   /**
-   * SearchBarContext its state handler for this function.
-   * - instrumentName for instruments of dropdown menu
-   * - quantity for quantity of dropdown menu
-   * - date for date of dropdown menu
-   * - mainInstrumentName for main search bar input
-   * - instrumentName and this mainInstrumentName contain same data but issue is we have to handel both diferently
-   * - resetLineManagerApprovalSearch is to reset all their state to its initial
+   * Prefill instrument name if passed from parent (maininstrumentName).
+   * Useful for quick search-to-filter transition.
    */
+  useEffect(() => {
+    if (maininstrumentName) {
+      setLocalState((prev) => ({
+        ...prev,
+        instrumentName: maininstrumentName,
+      }));
+      setClear(false); // Reset external clear flag
+      setMaininstrumentName(""); // Clear parent’s prefill value
+    }
+  }, [maininstrumentName]);
 
   /**
-   * Handles input change for approval filters.
-   * - Allows only numeric input for "Quantity"
-   * - Removes leading space for text fields
+   * Reset filters if `clear` flag is triggered externally.
    */
+  useEffect(() => {
+    if (clear && maininstrumentName === "") {
+      setLocalState(INITIAL_LOCAL_STATE);
+      setClear(false); // Reset external clear flag
+    }
+  }, [clear]);
 
-  // 🔹 Helper to update field + mark dirty
+  // -----------------------------------------------------
+  // 🔹 HANDLERS
+  // -----------------------------------------------------
+
+  /**
+   * Update a specific field in localState
+   */
   const setFieldValue = (field, value) => {
-    console.log("handleDateChange", field, value);
-
     setLocalState((prev) => ({ ...prev, [field]: value }));
-
-    setDirtyFields((prev) => ({ ...prev, [field]: true }));
   };
 
+  /**
+   * Handle input changes for text/number fields.
+   * - Quantity: Only allows numbers
+   * - Instrument Name: Removes leading spaces
+   */
   const handleInputChange = (e) => {
     const { name, value } = e.target;
 
-    if (name === "Quantity") {
-      if (value === "" || allowOnlyNumbers(value)) {
-        setFieldValue("quantity", value);
+    switch (name) {
+      case "quantity": {
+        // Remove commas before validation
+        const rawValue = value.replace(/,/g, "");
+
+        // ✅ Allow only numbers + max 12 digits
+        if (
+          (rawValue === "" || allowOnlyNumbers(rawValue)) &&
+          rawValue.length <= 12
+        ) {
+          setFieldValue("quantity", rawValue); // keep raw digits in state
+        }
+        break;
       }
-    } else {
-      setFieldValue(name, removeFirstSpace(value));
+      case "requesterName": {
+        if (allowOnlyAlphabets(value)) {
+          setFieldValue(name, removeFirstSpace(value));
+        }
+        break;
+      }
+
+      case "instrumentName":
+        setFieldValue("instrumentName", removeFirstSpace(value));
+        break;
+
+      default:
+        setFieldValue(name, removeFirstSpace(value));
     }
   };
 
-  /** Handle date selection */
-  const handleSearchClick = async () => {
-    setLineManagerApprovalSearch((prev) => {
-      const finalSearch = {
-        ...prev, // keep previous values as-is
-        ...(dirtyFields.instrumentName && {
-          instrumentName: localState.instrumentName,
-        }),
-        ...(dirtyFields.quantity && {
-          quantity:
-            localState.quantity !== "" ? Number(localState.quantity) : 0,
-        }),
-        ...(dirtyFields.requesterName && {
-          requesterName: localState.requesterName,
-        }),
-        ...(dirtyFields.startDate && {
-          date: localState.startDate
-            ? localState.startDate.format("YYYY-MM-DD")
-            : "",
-        }),
-        pageSize:10,
-        pageNumber: 0, // always reset page when searching
-        filterTrigger: true, // optional: let table know filters changed
-      };
-
-      console.log("Checke Select", finalSearch);
-      handleSearch(finalSearch);
-      return finalSearch;
+  /**
+   * Handle date range change (startDate, endDate)
+   */
+  const handleDateChange = (dates) => {
+    setLocalState({
+      ...localState,
+      startDate: dates?.[0] || null,
+      endDate: dates?.[1] || null,
     });
   };
+  /**
+   * Clear only the date range fields
+   */
+  const handleClearDates = () => {
+    setLocalState((prev) => ({
+      ...prev,
+      startDate: null,
+      endDate: null,
+    }));
+  };
+  /**
+   * Execute search with current localState values.
+   * Builds a payload and updates global search context.
+   * Closes popup after applying.
+   */
+  const handleSearchClick = () => {
+    const { instrumentName, requesterName, quantity, startDate, endDate } =
+      localState;
 
-  /** Reset filters */
+    const searchPayload = {
+      ...lineManagerApprovalSearch, // Preserve other filters
+      instrumentName: instrumentName?.trim() || "",
+      requesterName: requesterName?.trim() || "",
+      quantity: quantity ? Number(quantity) : 0,
+      startDate: startDate || null,
+      endDate: endDate || null,
+      pageNumber: 0, // Reset pagination
+      filterTrigger: true, // Extra flag for triggering search
+    };
+
+    // Reset local + global state and close panel
+    setLineManagerApprovalSearch(searchPayload);
+    setLocalState(INITIAL_LOCAL_STATE);
+    setClear(false);
+    setVisible(false);
+  };
+
+  /**
+   * Reset all filters to initial state.
+   * Updates global search state, clears local form, and closes popup.
+   */
   const handleResetClick = () => {
-    console.log("Checke Seletc");
     setLineManagerApprovalSearch((prev) => ({
       ...prev,
       instrumentName: "",
       requesterName: "",
-      startDate: "",
       quantity: 0,
+      startDate: null,
+      endDate: null,
       pageNumber: 0,
-      tableFilterTrigger: true,
+      filterTrigger: true,
     }));
-    resetLocalState();
+
+    setLocalState(INITIAL_LOCAL_STATE);
+    setClear(false);
     setVisible(false);
   };
-
-  /** Reset local state + dirty flags */
-  const resetLocalState = () => {
-    setLocalState({
-      instrumentName: "",
-      requesterName: "",
-      startDate: "",
-      quantity: 0,
-    });
-    setDirtyFields({});
-  };
-
-  const handleDateChange = (date, fieldName) => {
-    setFieldValue(fieldName, date); // keep moment | null in state
-  };
-
-  // ✅ Memoized values (only recompute when needed)
-  const instrumentNameValue = useMemo(() => {
-    return dirtyFields.instrumentName
-      ? localState.instrumentName
-      : lineManagerApprovalSearch.instrumentName || "";
-  }, [
-    dirtyFields.instrumentName,
-    localState.instrumentName,
-    lineManagerApprovalSearch.instrumentName,
-  ]);
-
-  const requesterValue = useMemo(() => {
-    return dirtyFields.requesterName
-      ? localState.requesterName
-      : lineManagerApprovalSearch.requesterName?.toString() || "";
-  }, [
-    dirtyFields.requesterName,
-    localState.requesterName,
-    lineManagerApprovalSearch.requesterName,
-  ]);
-
-  const quantityValue = useMemo(() => {
-    return dirtyFields.quantity
-      ? localState.quantity
-      : lineManagerApprovalSearch.quantity?.toString() || "";
-  }, [
-    dirtyFields.quantity,
-    localState.quantity,
-    lineManagerApprovalSearch.quantity,
-  ]);
-
-  const startDateValue = useMemo(() => {
-    if (dirtyFields.startDate) {
-      return localState.startDate; // already a moment | null
-    }
-    return lineManagerApprovalSearch.startDate
-      ? moment(lineManagerApprovalSearch.startDate, "YYYY-MM-DD")
-      : null;
-  }, [
-    dirtyFields.startDate,
-    localState.startDate,
-    lineManagerApprovalSearch.startDate,
-  ]);
 
   return (
     <>
@@ -180,7 +183,7 @@ export const LineManagerApprovalFilter = ({ handleSearch, setVisible }) => {
           <TextField
             label="Instrument Name"
             name="instrumentName"
-            value={instrumentNameValue}
+            value={localState.instrumentName}
             onChange={handleInputChange}
             placeholder="Instrument Name"
             size="medium"
@@ -191,7 +194,7 @@ export const LineManagerApprovalFilter = ({ handleSearch, setVisible }) => {
           <TextField
             label="Requester Name"
             name="requesterName"
-            value={requesterValue}
+            value={localState.requesterName}
             onChange={handleInputChange}
             placeholder="Requester Name"
             size="medium"
@@ -203,9 +206,11 @@ export const LineManagerApprovalFilter = ({ handleSearch, setVisible }) => {
         <Col xs={24} sm={24} md={12} lg={12}>
           <TextField
             label="Quantity"
-            name="Quantity"
+            name="quantity"
             value={
-              quantityValue === 0 || quantityValue === "0" ? "" : quantityValue
+              localState.quantity
+                ? Number(localState.quantity).toLocaleString("en-US") // 👈 formatted for display
+                : ""
             }
             onChange={handleInputChange}
             placeholder="Quantity"
@@ -214,12 +219,12 @@ export const LineManagerApprovalFilter = ({ handleSearch, setVisible }) => {
           />
         </Col>
         <Col xs={24} sm={24} md={12} lg={12} style={{ marginTop: "6px" }}>
-          <CustomDatePicker
-            label="Date"
-            name="startDate"
+          <DateRangePicker
+            label="Date Range"
             size="medium"
-            value={startDateValue}
-            onChange={(date) => handleDateChange(date, "startDate")}
+            value={[localState.startDate, localState.endDate]}
+            onChange={handleDateChange}
+            onClear={handleClearDates}
             format="YYYY-MM-DD"
           />
         </Col>

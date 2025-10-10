@@ -1,4 +1,3 @@
-import React, { useEffect, useRef } from "react";
 import { Col, Row, Tag } from "antd";
 import { useGlobalModal } from "../../../../../../context/GlobalModalContext";
 import { BrokerList, GlobalModal } from "../../../../../../components";
@@ -8,7 +7,6 @@ import CustomButton from "../../../../../../components/buttons/button";
 import CheckIcon from "../../../../../../assets/img/Check.png";
 import EllipsesIcon from "../../../../../../assets/img/Ellipses.png";
 import CrossIcon from "../../../../../../assets/img/Cross.png";
-import repeat from "../../../../../../assets/img/repeat.png";
 import ApprovedResubmit from "../../../../../../assets/img/ApprovedResubmit.png";
 import DeclinedResubmit from "../../../../../../assets/img/DeclinedResubmite.png";
 import EscaltedOn from "../../../../../../assets/img/EscaltedOn.png";
@@ -17,7 +15,7 @@ import {
   dashBetweenApprovalAssets,
   formatApiDateTime,
   formatNumberWithCommas,
-} from "../../../../../../commen/funtions/rejex";
+} from "../../../../../../common/funtions/rejex";
 import { useDashboardContext } from "../../../../../../context/dashboardContaxt";
 import { useEscalatedApprovals } from "../../../../../../context/escalatedApprovalContext";
 
@@ -33,7 +31,7 @@ const ViewDetailHeadOfApprovalModal = () => {
 
   const { viewDetailsHeadOfApprovalData } = useEscalatedApprovals();
 
-  const { allInstrumentsData, employeeBasedBrokersData } =
+  const { allInstrumentsData } =
     useDashboardContext();
 
   // get data from sessionStorage

@@ -1,96 +1,169 @@
 // src/pages/compliance/reconcile/ComplianceReconcileFilter.jsx
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Row, Col, Space } from "antd";
 import { Button, DateRangePicker, TextField } from "../..";
 import { useSearchBarContext } from "../../../context/SearchBarContaxt";
 import {
+  allowOnlyAlphabets,
   allowOnlyNumbers,
   removeFirstSpace,
-} from "../../../commen/funtions/rejex";
+} from "../../../common/funtions/rejex";
+import { useReconcileContext } from "../../../context/reconsileContax";
+
+// 🔹 Initial state
+const INITIAL_LOCAL_STATE = {
+  instrumentName: "",
+  quantity: 0,
+  startDate: null,
+  endDate: null,
+  requesterName: "",
+};
 
 export const ComplianceReconcileFilter = ({
-  handleSearch,
-  activeTab,
   setVisible,
+  maininstrumentName,
+  setMaininstrumentName,
+  clear,
+  setClear,
 }) => {
-  // Local state (for inputs before pushing into context)
-  const [localState, setLocalState] = useState({
-    instrumentName: "",
-    requesterName: "",
-    quantity: "",
-    startDate: "",
-    endDate: "",
-  });
-
   // Context states (Compliance Reconcile)
   const {
-    complianceOfficerReconcileTransactionsSearch,
     setComplianceOfficerReconcileTransactionsSearch,
-    resetComplianceOfficerReconcileTransactionsSearch,
-    complianceOfficerReconcilePortfolioSearch,
+    complianceOfficerReconcileTransactionsSearch,
     setComplianceOfficerReconcilePortfolioSearch,
-    resetComplianceOfficerReconcilePortfoliosSearch,
+    complianceOfficerReconcilePortfolioSearch,
   } = useSearchBarContext();
 
-  // Reset local state
-  const resetLocalState = () => {
-    setLocalState({
-      instrumentName: "",
-      requesterName: "",
-      quantity: "",
-      startDate: "",
-      endDate: "",
-    });
-  };
+  const { activeTab } = useReconcileContext(); // Transactions / Portfolio
 
-  // Reset handler
-  const handleResetClick = () => {
-    if (activeTab === "transactions") {
-      setComplianceOfficerReconcileTransactionsSearch((prev) => ({
+  const isTransactions = activeTab === "transactions";
+
+  // Local form state
+  const [localState, setLocalState] = useState(INITIAL_LOCAL_STATE);
+
+  // -----------------------------------------------------
+  // 🔹 EFFECTS
+  // -----------------------------------------------------
+
+  /**
+   * Prefill instrument name if passed from parent (maininstrumentName).
+   * Useful for quick search-to-filter transition.
+   */
+  useEffect(() => {
+    if (maininstrumentName) {
+      setLocalState((prev) => ({
         ...prev,
-        instrumentName: "",
-        requesterName: "",
-        quantity: 0,
-        startDate: "",
-        endDate: "",
-        pageNumber: 0,
-        filterTrigger: true,
+        instrumentName: maininstrumentName,
       }));
-      // resetComplianceOfficerReconcileTransactionsSearch();
-    } else {
-      setComplianceOfficerReconcilePortfolioSearch((prev) => ({
-        ...prev,
-        instrumentName: "",
-        requesterName: "",
-        quantity: 0,
-        startDate: "",
-        endDate: "",
-        pageNumber: 0,
-        filterTrigger: true,
-      }));
-      // resetComplianceOfficerReconcilePortfoliosSearch();
+      setClear(false); // Reset external clear flag
+      setMaininstrumentName(""); // Clear parent’s prefill value
     }
+  }, [maininstrumentName]);
 
-    resetLocalState();
-    setVisible(false);
+  /**
+   * Reset filters if `clear` flag is triggered externally.
+   */
+  useEffect(() => {
+    if (clear && maininstrumentName === "") {
+      setLocalState(INITIAL_LOCAL_STATE);
+      setClear(false); // Reset external clear flag
+    }
+  }, [clear]);
+
+  // 🔹 Helpers
+  const setFieldValue = (field, value) => {
+    setLocalState((prev) => ({ ...prev, [field]: value }));
   };
 
-  // Handle text input changes
-  const handleInputChange = (e, setState) => {
+  // 🔹 Input change handler
+  const handleInputChange = (e) => {
     const { name, value } = e.target;
 
     if (name === "quantity") {
-      if (value === "" || allowOnlyNumbers(value)) {
-        setState((prev) => ({ ...prev, quantity: value }));
+      const rawValue = value.replace(/,/g, "");
+      if (
+        (rawValue === "" || allowOnlyNumbers(rawValue)) &&
+        rawValue.length <= 12
+      ) {
+        setFieldValue("quantity", rawValue);
       }
-      return;
+    } else if (name === "requesterName") {
+      if (allowOnlyAlphabets(value)) {
+        setFieldValue(name, removeFirstSpace(value));
+      }
+    } else {
+      setFieldValue(name, removeFirstSpace(value));
+    }
+  };
+
+  // 🔹 Date change
+  const handleDateChange = (dates) => {
+    setLocalState((prev) => ({
+      ...prev,
+      startDate: dates?.[0] || null,
+      endDate: dates?.[1] || null,
+    }));
+  };
+
+  // 🔹 Clear only dates
+  const handleClearDates = () => {
+    setLocalState((prev) => ({ ...prev, startDate: null, endDate: null }));
+  };
+
+  // 🔹 Search click
+  const handleSearchClick = () => {
+    const { instrumentName, quantity, startDate, endDate, requesterName } =
+      localState;
+
+    const searchPayload = {
+      ...(isTransactions
+        ? complianceOfficerReconcileTransactionsSearch
+        : complianceOfficerReconcilePortfolioSearch),
+      instrumentName: instrumentName?.trim() || "",
+      requesterName: requesterName.trim() || "",
+      quantity: quantity ? Number(quantity) : 0,
+      startDate: startDate || null,
+      endDate: endDate || null,
+      pageNumber: 0,
+      filterTrigger: true,
+    };
+
+    if (isTransactions) {
+      setComplianceOfficerReconcileTransactionsSearch(searchPayload);
+    } else {
+      setComplianceOfficerReconcilePortfolioSearch(searchPayload);
     }
 
-    setState((prev) => ({
-      ...prev,
-      [name]: removeFirstSpace(value),
-    }));
+    setLocalState(INITIAL_LOCAL_STATE);
+    setClear(false); // Reset external clear flag
+    setVisible(false);
+  };
+
+  // 🔹 Reset click
+  const handleResetClick = () => {
+    const resetPayload = {
+      ...(isTransactions
+        ? complianceOfficerReconcileTransactionsSearch
+        : complianceOfficerReconcilePortfolioSearch),
+      instrumentName: "",
+      requesterName: "",
+      quantity: 0,
+      startDate: null,
+      endDate: null,
+      pageNumber: 0,
+      filterTrigger: true,
+    };
+
+    if (isTransactions) {
+      setComplianceOfficerReconcileTransactionsSearch(resetPayload);
+    } else {
+      setComplianceOfficerReconcilePortfolioSearch(resetPayload);
+    }
+
+    setLocalState(INITIAL_LOCAL_STATE);
+    setClear(false); // Reset external clear flag
+    setVisible(false);
   };
 
   return (
@@ -101,19 +174,8 @@ export const ComplianceReconcileFilter = ({
           <TextField
             label="Instrument Name"
             name="instrumentName"
-            value={
-              activeTab === "transactions"
-                ? complianceOfficerReconcileTransactionsSearch.instrumentName
-                : complianceOfficerReconcilePortfolioSearch.instrumentName
-            }
-            onChange={(e) =>
-              handleInputChange(
-                e,
-                activeTab === "transactions"
-                  ? setComplianceOfficerReconcileTransactionsSearch
-                  : setComplianceOfficerReconcilePortfolioSearch
-              )
-            }
+            value={localState.instrumentName}
+            onChange={handleInputChange}
             placeholder="Instrument Name"
             size="medium"
             classNames="Search-Field"
@@ -125,18 +187,11 @@ export const ComplianceReconcileFilter = ({
             label="Quantity"
             name="quantity"
             value={
-              activeTab === "transactions"
-                ? complianceOfficerReconcileTransactionsSearch.quantity || ""
-                : complianceOfficerReconcilePortfolioSearch.quantity || ""
+              localState.quantity
+                ? Number(localState.quantity).toLocaleString("en-US")
+                : ""
             }
-            onChange={(e) =>
-              handleInputChange(
-                e,
-                activeTab === "transactions"
-                  ? setComplianceOfficerReconcileTransactionsSearch
-                  : setComplianceOfficerReconcilePortfolioSearch
-              )
-            }
+            onChange={handleInputChange}
             placeholder="Quantity"
             size="medium"
             classNames="Search-Field"
@@ -150,19 +205,8 @@ export const ComplianceReconcileFilter = ({
           <TextField
             label="Requester Name"
             name="requesterName"
-            value={
-              activeTab === "transactions"
-                ? complianceOfficerReconcileTransactionsSearch.requesterName
-                : complianceOfficerReconcilePortfolioSearch.requesterName
-            }
-            onChange={(e) =>
-              handleInputChange(
-                e,
-                activeTab === "transactions"
-                  ? setComplianceOfficerReconcileTransactionsSearch
-                  : setComplianceOfficerReconcilePortfolioSearch
-              )
-            }
+            value={localState.requesterName}
+            onChange={handleInputChange}
             placeholder="Requester Name"
             size="medium"
             classNames="Search-Field"
@@ -173,49 +217,9 @@ export const ComplianceReconcileFilter = ({
           <DateRangePicker
             label="Date Range"
             size="medium"
-            value={
-              activeTab === "transactions"
-                ? complianceOfficerReconcileTransactionsSearch.startDate &&
-                  complianceOfficerReconcileTransactionsSearch.endDate
-                  ? [
-                      complianceOfficerReconcileTransactionsSearch.startDate,
-                      complianceOfficerReconcileTransactionsSearch.endDate,
-                    ]
-                  : null
-                : complianceOfficerReconcilePortfolioSearch.startDate &&
-                  complianceOfficerReconcilePortfolioSearch.endDate
-                ? [
-                    complianceOfficerReconcilePortfolioSearch.startDate,
-                    complianceOfficerReconcilePortfolioSearch.endDate,
-                  ]
-                : null
-            }
-            onChange={(dates) =>
-              activeTab === "transactions"
-                ? setComplianceOfficerReconcileTransactionsSearch((prev) => ({
-                    ...prev,
-                    startDate: dates?.[0] || null,
-                    endDate: dates?.[1] || null,
-                  }))
-                : setComplianceOfficerReconcilePortfolioSearch((prev) => ({
-                    ...prev,
-                    startDate: dates?.[0] || null,
-                    endDate: dates?.[1] || null,
-                  }))
-            }
-            onClear={() =>
-              activeTab === "transactions"
-                ? setComplianceOfficerReconcileTransactionsSearch((prev) => ({
-                    ...prev,
-                    startDate: null,
-                    endDate: null,
-                  }))
-                : setComplianceOfficerReconcilePortfolioSearch((prev) => ({
-                    ...prev,
-                    startDate: null,
-                    endDate: null,
-                  }))
-            }
+            value={[localState.startDate, localState.endDate]}
+            onChange={handleDateChange}
+            onClear={handleClearDates}
           />
         </Col>
       </Row>
@@ -230,7 +234,7 @@ export const ComplianceReconcileFilter = ({
               onClick={handleResetClick}
             />
             <Button
-              onClick={handleSearch}
+              onClick={handleSearchClick}
               text="Search"
               className="big-dark-button"
             />

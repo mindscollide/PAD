@@ -34,7 +34,7 @@ export const GetUserDashBoardStats = async ({
   callApi,
   setEmployeeBasedBrokersData,
   setAllInstrumentsData,
-  setAddApprovalRequestData,
+  setAssetTypeListingData,
   setGetAllPredefineReasonData,
   setWebNotificationData,
   showNotification,
@@ -108,7 +108,7 @@ export const GetUserDashBoardStats = async ({
           setAllInstrumentsData(instrument);
         }
         if (addApprovalRequest) {
-          setAddApprovalRequestData(addApprovalRequest);
+          setAssetTypeListingData(addApprovalRequest);
         }
         if (getPredefineReason) {
           setGetAllPredefineReasonData(getPredefineReason);

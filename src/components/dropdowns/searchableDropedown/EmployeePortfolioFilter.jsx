@@ -1,124 +1,170 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Row, Col, Space, Checkbox, Select } from "antd";
-import { Button, CommenSearchInput, DateRangePicker, TextField } from "../..";
+import { Button, DateRangePicker, TextField } from "../..";
 import { useSearchBarContext } from "../../../context/SearchBarContaxt";
 import {
   allowOnlyNumbers,
   removeFirstSpace,
-} from "../../../commen/funtions/rejex";
+} from "../../../common/funtions/rejex";
 import { useDashboardContext } from "../../../context/dashboardContaxt";
 import styles from "./SearchWithPopoverOnly.module.css";
+import { usePortfolioContext } from "../../../context/portfolioContax";
+import { buildBrokerOptions } from "../../../common/funtions/brokersList";
+
+// 🔹 Initial state
+const INITIAL_LOCAL_STATE = {
+  instrumentName: "",
+  quantity: 0,
+  startDate: null,
+  endDate: null,
+  brokerIDs: [],
+};
 
 export const EmployeePortfolioFilter = ({
-  handleSearch,
-  activeTab,
   setVisible,
+  maininstrumentName,
+  setMaininstrumentName,
+  clear,
+  setClear,
 }) => {
   const { employeeBasedBrokersData } = useDashboardContext();
-
-  // Local state
-  const [localState, setLocalState] = useState({
-    instrumentName: "",
-    quantity: "",
-    startDate: "",
-    endDate: "",
-    broker: [],
-  });
-  const [dirtyFields, setDirtyFields] = useState({});
+  const { activeTab } = usePortfolioContext(); // "portfolio" | "pending"
 
   const {
-    employeePortfolioSearch,
     setEmployeePortfolioSearch,
-    resetEmployeePortfolioSearch,
-    employeePendingApprovalSearch,
+    employeePortfolioSearch,
     setEmployeePendingApprovalSearch,
-    resetEmployeePendingApprovalSearch,
+    employeePendingApprovalSearch,
   } = useSearchBarContext();
 
-  // Format broker options
-  const brokerOptions = (employeeBasedBrokersData || []).map((broker) => ({
-    label: (
-      <div style={{ display: "flex", alignItems: "center" }}>
-        <Checkbox
-          checked={(activeTab === "pending"
-            ? employeePendingApprovalSearch?.broker
-            : employeePortfolioSearch?.broker
-          )?.includes(broker.brokerID)}
-          style={{ marginRight: 8 }}
-        />
-        {broker.brokerName}
-      </div>
-    ),
-    value: broker.brokerID,
-    raw: broker,
-  }));
+  // Local state
+  const [localState, setLocalState] = useState(INITIAL_LOCAL_STATE);
 
-  const resetLocalState = () => {
-    setLocalState({ instrumentName: "", quantity: "", startDate: "" });
-    setDirtyFields({});
+  // -----------------------------------------------------
+  // 🔹 EFFECTS
+  // -----------------------------------------------------
+
+  /**
+   * Prefill instrument name if passed from parent (maininstrumentName).
+   * Useful for quick search-to-filter transition.
+   */
+  useEffect(() => {
+    if (maininstrumentName) {
+      setLocalState((prev) => ({
+        ...prev,
+        instrumentName: maininstrumentName,
+      }));
+      setClear(false); // Reset external clear flag
+      setMaininstrumentName(""); // Clear parent’s prefill value
+    }
+  }, [maininstrumentName]);
+
+  /**
+   * Reset filters if `clear` flag is triggered externally.
+   */
+  useEffect(() => {
+    if (clear && maininstrumentName === "") {
+      setLocalState(INITIAL_LOCAL_STATE);
+      setClear(false); // Reset external clear flag
+    }
+  }, [clear]);
+
+  // 🔹 Helpers
+  const setFieldValue = (field, value) => {
+    setLocalState((prev) => ({ ...prev, [field]: value }));
   };
 
-  const handleResetClick = () => {
-    if (activeTab === "pending") {
-      setEmployeePendingApprovalSearch((prev) => ({
-        ...prev,
-        instrumentName: "",
-        quantity: 0,
-        startDate: "",
-        endDate: "",
-        broker: [],
-        pageNumber: 0,
-        filterTrigger: true,
-      }));
-      // resetEmployeePendingApprovalSearch();
+  // 🔹 Input change handler
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+
+    if (name === "quantity") {
+      const rawValue = value.replace(/,/g, "");
+      if (
+        (rawValue === "" || allowOnlyNumbers(rawValue)) &&
+        rawValue.length <= 12
+      ) {
+        setFieldValue("quantity", rawValue);
+      }
     } else {
-      setEmployeePortfolioSearch((prev) => ({
-        ...prev,
-        instrumentName: "",
-        quantity: 0,
-        startDate: "",
-        endDate: "",
-        broker: [],
-        pageNumber: 0,
-        filterTrigger: true,
-      }));
-      // resetEmployeePortfolioSearch();
+      setFieldValue(name, removeFirstSpace(value));
+    }
+  };
+
+  // 🔹 Date change
+  const handleDateChange = (dates) => {
+    setLocalState((prev) => ({
+      ...prev,
+      startDate: dates?.[0] || null,
+      endDate: dates?.[1] || null,
+    }));
+  };
+
+  // 🔹 Clear only dates
+  const handleClearDates = () => {
+    setLocalState((prev) => ({ ...prev, startDate: null, endDate: null }));
+  };
+
+  // 🔹 Brokers dropdown
+  const brokerOptions = buildBrokerOptions(employeeBasedBrokersData);
+
+  const handleBrokerChange = (selectedIDs) => {
+    setLocalState((prev) => ({ ...prev, brokerIDs: selectedIDs }));
+  };
+
+  // 🔹 Search click
+  const handleSearchClick = () => {
+    const { instrumentName, quantity, startDate, endDate, brokerIDs } =
+      localState;
+
+    const searchPayload = {
+      ...(activeTab === "pending"
+        ? employeePendingApprovalSearch
+        : employeePortfolioSearch),
+      instrumentName: instrumentName?.trim() || "",
+      quantity: quantity ? Number(quantity) : 0,
+      startDate: startDate || null,
+      endDate: endDate || null,
+      brokerIDs: brokerIDs || [],
+      pageNumber: 0,
+      filterTrigger: true,
+    };
+
+    if (activeTab === "pending") {
+      setEmployeePendingApprovalSearch(searchPayload);
+    } else {
+      setEmployeePortfolioSearch(searchPayload);
     }
 
-    resetLocalState();
+    setLocalState(INITIAL_LOCAL_STATE);
+    setClear(false); // Reset external clear flag
     setVisible(false);
   };
 
-  // Handle broker selection
-  const handleBrokerChange = (selectedIDs) => {
+  // 🔹 Reset click
+  const handleResetClick = () => {
+    const resetPayload = {
+      ...(activeTab === "pending"
+        ? employeePendingApprovalSearch
+        : employeePortfolioSearch),
+      instrumentName: "",
+      quantity: 0,
+      startDate: null,
+      endDate: null,
+      brokerIDs: [],
+      pageNumber: 0,
+      filterTrigger: true,
+    };
+
     if (activeTab === "pending") {
-      setEmployeePendingApprovalSearch((prev) => ({
-        ...prev,
-        broker: selectedIDs,
-      }));
+      setEmployeePendingApprovalSearch(resetPayload);
     } else {
-      setEmployeePortfolioSearch((prev) => ({
-        ...prev,
-        broker: selectedIDs,
-      }));
-    }
-  };
-
-  // Handle input changes
-  const handleEmployeeApprovalInputChange = (e, setState) => {
-    const { name, value } = e.target;
-
-    if (name === "Quantity") {
-      if (value === "" || allowOnlyNumbers(value)) {
-        setState((prev) => ({ ...prev, quantity: value }));
-      }
-      return;
+      setEmployeePortfolioSearch(resetPayload);
     }
 
-    setState((prev) => ({
-      ...prev,
-      [name]: removeFirstSpace(value),
-    }));
+    setLocalState(INITIAL_LOCAL_STATE);
+    setClear(false); // Reset external clear flag
+    setVisible(false);
   };
 
   return (
@@ -129,19 +175,8 @@ export const EmployeePortfolioFilter = ({
           <TextField
             label="Instrument Name"
             name="instrumentName"
-            value={
-              activeTab === "pending"
-                ? employeePendingApprovalSearch.instrumentName
-                : employeePortfolioSearch.instrumentName
-            }
-            onChange={(e) =>
-              handleEmployeeApprovalInputChange(
-                e,
-                activeTab === "pending"
-                  ? setEmployeePendingApprovalSearch
-                  : setEmployeePortfolioSearch
-              )
-            }
+            value={localState.instrumentName}
+            onChange={handleInputChange}
             placeholder="Instrument Name"
             size="medium"
             classNames="Search-Field"
@@ -150,26 +185,13 @@ export const EmployeePortfolioFilter = ({
         <Col xs={24} sm={24} md={12} lg={12}>
           <TextField
             label="Quantity"
-            name="Quantity"
+            name="quantity" // 👈 should be lowercase to match handler
             value={
-              activeTab === "pending"
-                ? employeePendingApprovalSearch.quantity === 0 ||
-                  employeePendingApprovalSearch.quantity === "0"
-                  ? ""
-                  : employeePendingApprovalSearch.quantity
-                : employeePortfolioSearch.quantity === 0 ||
-                  employeePortfolioSearch.quantity === "0"
-                ? ""
-                : employeePortfolioSearch.quantity
+              localState.quantity
+                ? Number(localState.quantity).toLocaleString("en-US")
+                : ""
             }
-            onChange={(e) =>
-              handleEmployeeApprovalInputChange(
-                e,
-                activeTab === "pending"
-                  ? setEmployeePendingApprovalSearch
-                  : setEmployeePortfolioSearch
-              )
-            }
+            onChange={handleInputChange}
             placeholder="Quantity"
             size="medium"
             classNames="Search-Field"
@@ -183,12 +205,8 @@ export const EmployeePortfolioFilter = ({
           <label className={styles.instrumentLabel}>Brokers</label>
           <Select
             mode="multiple"
-            placeholder="Select"
-            value={
-              activeTab === "pending"
-                ? employeePendingApprovalSearch?.broker
-                : employeePortfolioSearch?.broker
-            }
+            placeholder="Select Brokers"
+            value={localState.brokerIDs}
             onChange={handleBrokerChange}
             options={brokerOptions}
             maxTagCount={0}
@@ -197,15 +215,18 @@ export const EmployeePortfolioFilter = ({
             }
             prefixCls="EquitiesBrokerSelectPrefix"
             optionLabelProp="label"
+            disabled={!brokerOptions || brokerOptions.length === 0}
+            showSearch
+            filterOption={(input, option) =>
+              option?.label?.toLowerCase().includes(input.toLowerCase()) ||
+              option?.raw?.psxCode?.toLowerCase().includes(input.toLowerCase())
+            }
             optionRender={(option) => (
               <div style={{ display: "flex", alignItems: "center" }}>
                 <Checkbox
-                  className="custom-broker-option"
-                  checked={(activeTab === "pending"
-                    ? employeePendingApprovalSearch?.broker
-                    : employeePortfolioSearch?.broker
-                  )?.includes(option.value)}
+                  checked={localState.brokerIDs.includes(option.value)}
                   style={{ marginRight: 8 }}
+                  className="custom-broker-option"
                 />
                 {option.data.raw.brokerName}
               </div>
@@ -217,49 +238,9 @@ export const EmployeePortfolioFilter = ({
           <DateRangePicker
             label="Date Range"
             size="medium"
-            value={
-              activeTab === "pending"
-                ? employeePendingApprovalSearch.startDate &&
-                  employeePendingApprovalSearch.endDate
-                  ? [
-                      employeePendingApprovalSearch.startDate,
-                      employeePendingApprovalSearch.endDate,
-                    ]
-                  : null
-                : employeePortfolioSearch.startDate &&
-                  employeePortfolioSearch.endDate
-                ? [
-                    employeePortfolioSearch.startDate,
-                    employeePortfolioSearch.endDate,
-                  ]
-                : null
-            }
-            onChange={(dates) =>
-              activeTab === "pending"
-                ? setEmployeePendingApprovalSearch((prev) => ({
-                    ...prev,
-                    startDate: dates?.[0] || null,
-                    endDate: dates?.[1] || null,
-                  }))
-                : setEmployeePortfolioSearch((prev) => ({
-                    ...prev,
-                    startDate: dates?.[0] || null,
-                    endDate: dates?.[1] || null,
-                  }))
-            }
-            onClear={() =>
-              activeTab === "pending"
-                ? setEmployeePendingApprovalSearch((prev) => ({
-                    ...prev,
-                    startDate: null,
-                    endDate: null,
-                  }))
-                : setEmployeePortfolioSearch((prev) => ({
-                    ...prev,
-                    startDate: null,
-                    endDate: null,
-                  }))
-            }
+            value={[localState.startDate, localState.endDate]}
+            onChange={handleDateChange}
+            onClear={handleClearDates}
           />
         </Col>
       </Row>
@@ -274,7 +255,7 @@ export const EmployeePortfolioFilter = ({
               onClick={handleResetClick}
             />
             <Button
-              onClick={handleSearch}
+              onClick={handleSearchClick}
               text={"Search"}
               className="big-dark-button"
             />

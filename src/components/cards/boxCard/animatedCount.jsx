@@ -20,7 +20,6 @@ const AnimatedCount = ({ value, className = "", style = {} }) => {
               style={{ transform: `translateY(-${digit * 10}%)` }}
             >
               {Array.from({ length: 10 }, (_, n) => {
-                console.log("Rendering digit:", n);
                 return (
                   <div key={n} className={className} style={style}>
                     {n}

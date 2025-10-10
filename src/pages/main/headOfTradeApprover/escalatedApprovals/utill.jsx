@@ -10,10 +10,12 @@ import ArrowDown from "../../../../assets/img/arrow-down-dark.png";
 import EscalatedIcon from "../../../../assets/img/escalated.png";
 
 // Helpers
-import { formatApiDateTime } from "../../../../commen/funtions/rejex";
+import { formatApiDateTime, toYYMMDD } from "../../../../common/funtions/rejex";
 import TypeColumnTitle from "../../../../components/dropdowns/filters/typeColumnTitle";
 import StatusColumnTitle from "../../../../components/dropdowns/filters/statusColumnTitle";
 import { useGlobalModal } from "../../../../context/GlobalModalContext";
+import { getTradeTypeById } from "../../../../common/funtions/type";
+import { mapBuySellToIds, mapStatusToIds } from "../../../../components/dropdowns/filters/utils";
 
 // ===========================================================================
 // 🎯 CONSTANTS & CONFIGURATION
@@ -30,30 +32,32 @@ const COLUMN_CONFIG = {
   ACTIONS: { minWidth: 110, maxWidth: 130 },
 };
 
-// ===========================================================================
-// 🎯 UTILITY FUNCTIONS
-// ===========================================================================
-
-/* ------------------------------------------------------------------ */
-/* 🔹 Trade Type Resolver */
-/* ------------------------------------------------------------------ */
 /**
- * Resolves trade type label by matching the given `tradeType` ID
- * with the API-provided `assetTypeData`.
+ * Build API request payload for Escalated Trade Approval.
  *
- * @param {Object} assetTypeData - Asset type API response object.
- * @param {Array<Object>} assetTypeData.items - Array of trade approval types.
- * @param {Object} tradeType - Trade type object (with typeID).
- * @param {string|number} tradeType.typeID - Trade type ID.
- * @returns {string} The trade type label (e.g., "Buy", "Sell") or "—".
+ * @param {Object} searchState - Current filter/search state
+ * @param {Object} assetTypeListingData - Asset type listing data (from API)
+ * @returns {Object} API request payload
  */
-export const getTradeTypeById = (assetTypeData, tradeType) => {
-  console.log("getTradeTypeById", assetTypeData);
-  if (!Array.isArray(assetTypeData?.items)) return "—";
-  return (
-    assetTypeData.items.find((i) => i.tradeApprovalTypeID === tradeType.typeID)
-      ?.type || "—"
-  );
+export const buildApiRequest = (
+  searchState = {},
+  assetTypeListingData
+) => {
+  const formatDate = (date) => (date ? toYYMMDD(date) : "");
+
+  return {
+    RequesterName: searchState.requesterName || "",
+    LineManagerName: searchState.lineManagerName || "",
+    InstrumentName: searchState.instrumentName || "",
+    RequestDateFrom: formatDate(searchState.requestDateFrom),
+    RequestDateTo: formatDate(searchState.requestDateTo),
+    EscalatedDateFrom: formatDate(searchState.escalatedDateFrom),
+    EscalatedDateTo: formatDate(searchState.escalatedDateTo),
+    StatusIds: mapStatusToIds(searchState.status) || [],
+    TypeIds: mapBuySellToIds(searchState.type, assetTypeListingData?.Equities) || [],
+    PageNumber: Number(searchState.pageNumber) || 0,
+    Length: Number(searchState.pageSize) || 10,
+  };
 };
 
 /* ------------------------------------------------------------------ */

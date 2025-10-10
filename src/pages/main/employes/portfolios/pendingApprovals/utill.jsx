@@ -16,9 +16,37 @@ import StatusColumnTitle from "../../../../../components/dropdowns/filters/statu
 import {
   formatApiDateTime,
   formatCode,
-} from "../../../../../commen/funtions/rejex";
+  toYYMMDD,
+} from "../../../../../common/funtions/rejex";
+import {
+  mapBuySellToIds,
+  mapStatusToIds,
+} from "../../../../../components/dropdowns/filters/utils";
+import { getTradeTypeById } from "../../../../../common/funtions/type";
 
 const { Text } = Typography;
+/**
+ * Build API request payload for portfolio listing
+ *
+ * @param {Object} searchState - Current search/filter state
+ * @param {Object} assetTypeListingData - Extra request metadata
+ * @param {String} assetType - Asset type key (e.g., "Equities")
+ * @returns {Object} API-ready payload
+ */
+export const buildApiRequest = (
+  searchState = {},
+  assetTypeListingData
+) => ({
+  InstrumentName: searchState.instrumentName || "",
+  Quantity: searchState.quantity ? Number(searchState.quantity) : 0,
+  StartDate: searchState.startDate ? toYYMMDD(searchState.startDate) : "",
+  StatusIds: mapStatusToIds(searchState.status),
+  TypeIds: mapBuySellToIds(searchState.type, assetTypeListingData?.Equities),
+  EndDate: searchState.endDate ? toYYMMDD(searchState.endDate) : "",
+  BrokerIds: Array.isArray(searchState.brokerIDs) ? searchState.brokerIDs : [],
+  PageNumber: Number(searchState.pageNumber) || 0,
+  Length: Number(searchState.pageSize) || 10,
+});
 
 /**
  * Returns the correct sorting icon based on the current sort state.
@@ -82,6 +110,7 @@ export const getBorderlessTableColumns = (
         Instrument {getSortIcon("instrument", sortedInfo)}
       </div>
     ),
+    
     dataIndex: "instrument",
     key: "instrument",
     ellipsis: true,
@@ -319,26 +348,6 @@ export const formatBrokerOptions = (brokers = []) => {
     brokerID: brokerID ?? "",
     brokerName: brokerName || "Unnamed Broker",
   }));
-};
-
-/**
- * Transforms raw API response into AntD Table row format.
- *
- * @param {Array<Object>} list - API response data.
- * @param {Array<Object>} brokerOptions - Preformatted broker options (from `formatBrokerOptions`).
- * @returns {Array<Object>} Table row objects ready for rendering.
- */
-export const getTradeTypeById = (assetTypeData, tradeTypeID) => {
-  console.log("assetTypeData", assetTypeData);
-  if (!assetTypeData?.items || !Array.isArray(assetTypeData.items)) {
-    return "";
-  }
-
-  const match = assetTypeData.items.find(
-    (item) => item.tradeApprovalTypeID === tradeTypeID
-  );
-
-  return match?.type || "";
 };
 
 export const mapToTableRows = (assetTypeData, list = [], brokerOptions = []) =>

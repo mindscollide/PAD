@@ -8,7 +8,7 @@ import copyIcon from "../../../assets/img/copy-dark.png";
 import {
   allowOnlyNumbers,
   formatNumberWithCommas,
-} from "../../../commen/funtions/rejex";
+} from "../../../common/funtions/rejex";
 
 const TradeAndPortfolioModal = ({
   visible,
