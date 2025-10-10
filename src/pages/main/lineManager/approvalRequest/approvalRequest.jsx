@@ -1,6 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { Col, Row } from "antd";
-import { Button } from "../../../../components";
 import BorderlessTable from "../../../../components/tables/borderlessTable/borderlessTable";
 import {
   buildApprovalRequest,
@@ -20,7 +19,6 @@ import ApprovedLineManagerModal from "./modal/approvedLineManagerModal/ApprovedL
 import DeclinedLineManagerModal from "./modal/declinedLineManagerModal/DeclinedLineManagerModal";
 import ViewCommentLineManagerModal from "./modal/viewCommentLineManagerModal/ViewCommentLineManagerModal";
 import { useNotification } from "../../../../components/NotificationProvider/NotificationProvider";
-import { useSidebarContext } from "../../../../context/sidebarContaxt";
 import { useGlobalLoader } from "../../../../context/LoaderContext";
 import { useApi } from "../../../../context/ApiContext";
 import { useMyApproval } from "../../../../context/myApprovalContaxt";
@@ -29,13 +27,8 @@ import {
   SearchApprovalRequestLineManager,
 } from "../../../../api/myApprovalApi";
 import { useNavigate } from "react-router-dom";
-import {
-  mapBuySellToIds,
-  mapStatusToIds,
-} from "../../../../components/dropdowns/filters/utils";
 import { useDashboardContext } from "../../../../context/dashboardContaxt";
-import { toYYMMDD } from "../../../../commen/funtions/rejex";
-import { useTableScrollBottom } from "../../../../commen/funtions/scroll";
+import { useTableScrollBottom } from "../../../../common/funtions/scroll";
 
 const ApprovalRequest = () => {
   const navigate = useNavigate();
@@ -92,7 +85,6 @@ const ApprovalRequest = () => {
   const assetType = "Equities";
   /** 🔹 Build API request payload */
 
-
   /**
    * Fetches approval data from API on component mount
    */
@@ -114,13 +106,11 @@ const ApprovalRequest = () => {
         const lineApprovals = Array.isArray(response?.lineApprovals)
           ? response.lineApprovals
           : [];
-        console.log("lineApprovals", lineApprovals);
         // // map data according to used in table
         const mappedData = mapEscalatedApprovalsToTableRows(
           addApprovalRequestData?.Equities,
           lineApprovals
         );
-        console.log("lineApprovals", mappedData);
 
         setLineManagerApproval({
           lineApprovals: mappedData,
@@ -128,6 +118,20 @@ const ApprovalRequest = () => {
           apiCall: true,
           replace: replace,
         });
+
+        // this work has to be done here
+        //   setEmployeeMyApprovalSearch((prev) => {
+        //   const next = {
+        //     ...prev,
+        //     pageNumber: replace ? mapped.length : prev.pageNumber + mapped.length,
+        //   };
+
+        //   if (prev.filterTrigger) {
+        //     next.filterTrigger = false;
+        //   }
+
+        //   return next;
+        // });
       } catch (error) {
         showNotification({
           type: "error",
@@ -180,21 +184,18 @@ const ApprovalRequest = () => {
     }));
   }, [lineManagerApproval?.apiCall]);
 
-
   /**
    * Syncs filters on `filterTrigger` from context
    */
   useEffect(() => {
     if (lineManagerApprovalSearch.filterTrigger) {
-      console.log("lineManagerApprovalSearch filterTrigger")
+      console.log("lineManagerApprovalSearch filterTrigger");
       // requestData, replace , mainLoader
-      const requestData = buildApprovalRequest(lineManagerApprovalSearch,addApprovalRequestData?.[assetType]);
+      const requestData = buildApprovalRequest(
+        lineManagerApprovalSearch,
+        addApprovalRequestData?.[assetType]
+      );
       fetchApiCall(requestData, true, true);
-
-      setLineManagerApprovalSearch((prev) => ({
-        ...prev,
-        filterTrigger: false,
-      }));
     }
   }, [lineManagerApprovalSearch.filterTrigger]);
 

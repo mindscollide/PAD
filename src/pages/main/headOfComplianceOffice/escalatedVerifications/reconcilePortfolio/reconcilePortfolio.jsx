@@ -26,7 +26,7 @@ import { usePortfolioContext } from "../../../../../context/portfolioContax";
 import { useNotification } from "../../../../../components/NotificationProvider/NotificationProvider";
 
 // 🔹 Helper imports
-import { toYYMMDD } from "../../../../../commen/funtions/rejex";
+import { toYYMMDD } from "../../../../../common/funtions/rejex";
 
 // 🔹 Modal imports
 import {
@@ -42,7 +42,7 @@ import ViewReconcilePortfolioComment from "./modals/viewEscalatedPortfolioCommen
 import NoteHeadOfCompliancePortfolioModal from "./modals/noteHeadOfCompliancePortfolioModal/NoteHeadOfCompliancePortfolioModal";
 import ApproveHeadOfCompliancePortfolioModal from "./modals/approveHeadOfCompliancePortfolioModal/ApproveHeadOfCompliancePortfolioModal";
 import DeclinedHeadOfCompliancePortfolioModal from "./modals/declinedHeadOfCompliancePortfolioModal/DeclinedHeadOfCompliancePortfolioModal";
-import { useTableScrollBottom } from "../../../../../commen/funtions/scroll";
+import { useTableScrollBottom } from "../../../../../common/funtions/scroll";
 
 // 🔹 API imports (uncomment when ready)
 // import {

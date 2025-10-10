@@ -15,9 +15,9 @@ import {
   dashBetweenApprovalAssets,
   formatApiDateTime,
   toYYMMDD,
-} from "../../../../commen/funtions/rejex";
-import { getTradeTypeById } from "../../headOfTradeApprover/escalatedApprovals/utill";
+} from "../../../../common/funtions/rejex";
 import { mapBuySellToIds, mapStatusToIds } from "../../../../components/dropdowns/filters/utils";
+import { getTradeTypeById } from "../../../../common/funtions/type";
 // import TypeColumnTitle from "./typeFilter";
 
 /**

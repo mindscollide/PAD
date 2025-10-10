@@ -5,11 +5,11 @@ import { useSearchBarContext } from "../../../context/SearchBarContaxt";
 import {
   allowOnlyNumbers,
   removeFirstSpace,
-} from "../../../commen/funtions/rejex";
+} from "../../../common/funtions/rejex";
 import { useDashboardContext } from "../../../context/dashboardContaxt";
 import styles from "./SearchWithPopoverOnly.module.css";
 import { usePortfolioContext } from "../../../context/portfolioContax";
-import { buildBrokerOptions } from "../../../commen/funtions/brokersList";
+import { buildBrokerOptions } from "../../../common/funtions/brokersList";
 
 // 🔹 Initial state
 const INITIAL_LOCAL_STATE = {

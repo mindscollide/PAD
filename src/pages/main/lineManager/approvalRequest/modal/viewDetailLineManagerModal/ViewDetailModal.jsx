@@ -16,7 +16,7 @@ import {
   dashBetweenApprovalAssets,
   formatApiDateTime,
   formatNumberWithCommas,
-} from "../../../../../../commen/funtions/rejex";
+} from "../../../../../../common/funtions/rejex";
 import {
   GetAllLineManagerViewDetailRequest,
   UpdateApprovalRequestStatusLineManager,

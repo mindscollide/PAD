@@ -119,6 +119,7 @@ const StatusFilterDropdown = ({
   const handleOk = async () => {
   switch (selectedKey) {
     case "1":
+    case "2":
     case "4":
     case "6":
     case "9":
@@ -168,6 +169,7 @@ const StatusFilterDropdown = ({
  const handleReset = async () => {
   switch (selectedKey) {
     case "1":
+    case "2":
     case "4":
     case "6":
     case "9":

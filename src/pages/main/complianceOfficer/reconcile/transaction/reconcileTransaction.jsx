@@ -31,7 +31,7 @@ import {
   mapBuySellToIds,
   mapStatusToIds,
 } from "../../../../../components/dropdowns/filters/utils";
-import { toYYMMDD } from "../../../../../commen/funtions/rejex";
+import { toYYMMDD } from "../../../../../common/funtions/rejex";
 import { SearchComplianceOfficerReconcileTransactionRequest } from "../../../../../api/reconsile";
 import { useGlobalModal } from "../../../../../context/GlobalModalContext";
 import { GetAllTransactionViewDetails } from "../../../../../api/myTransactionsApi";
@@ -44,7 +44,7 @@ import NonCompliantDeclineModal from "./modals/nonCompliantDeclineModal/nonCompl
 import ViewReconcileTransactionComment from "./modals/viewReconcileTransactionComment/ViewReconcileTransactionComment";
 import ViewTicketReconcileModal from "./modals/viewTicketReconcileModal/viewTicketReconcileModal";
 import UploadReconcileTicketModal from "./modals/uploadReconcileTicketModal/UploadReconcileTicketModal";
-import { useTableScrollBottom } from "../../../../../commen/funtions/scroll";
+import { useTableScrollBottom } from "../../../../../common/funtions/scroll";
 
 /**
  * 📌 ReconcileTransaction

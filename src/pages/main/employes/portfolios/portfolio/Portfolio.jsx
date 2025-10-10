@@ -23,7 +23,7 @@ import {
   formatApiDateTime,
   formatCode,
   toYYMMDD,
-} from "../../../../../commen/funtions/rejex";
+} from "../../../../../common/funtions/rejex";
 import UploadIcon from "../../../../../assets/img/upload-icon.png";
 import { getEmployeePortfolioColumns } from "./utils";
 import { formatBrokerOptions } from "../pendingApprovals/utill";

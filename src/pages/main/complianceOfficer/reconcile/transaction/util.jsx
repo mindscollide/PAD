@@ -10,32 +10,14 @@ import ArrowDown from "../../../../../assets/img/arrow-down-dark.png";
 import EscalatedIcon from "../../../../../assets/img/escalated.png";
 
 // Helpers
-import { formatApiDateTime } from "../../../../../commen/funtions/rejex";
+import { formatApiDateTime } from "../../../../../common/funtions/rejex";
 import TypeColumnTitle from "../../../../../components/dropdowns/filters/typeColumnTitle";
 import StatusColumnTitle from "../../../../../components/dropdowns/filters/statusColumnTitle";
 import { useGlobalModal } from "../../../../../context/GlobalModalContext";
 import { useReconcileContext } from "../../../../../context/reconsileContax";
+import { getTradeTypeById } from "../../../../../common/funtions/type";
 
-/* ------------------------------------------------------------------ */
-/* 🔹 Trade Type Resolver */
-/* ------------------------------------------------------------------ */
-/**
- * Resolves trade type label by matching the given `tradeType` ID
- * with the API-provided `assetTypeData`.
- *
- * @param {Object} assetTypeData - Asset type API response object.
- * @param {Array<Object>} assetTypeData.items - Array of trade approval types.
- * @param {Object} tradeType - Trade type object (with typeID).
- * @param {string|number} tradeType.typeID - Trade type ID.
- * @returns {string} The trade type label (e.g., "Buy", "Sell") or "—".
- */
-export const getTradeTypeById = (assetTypeData, tradeType) => {
-  if (!Array.isArray(assetTypeData?.items)) return "—";
-  return (
-    assetTypeData.items.find((i) => i.tradeApprovalTypeID === tradeType.typeID)
-      ?.type || "—"
-  );
-};
+
 
 /* ------------------------------------------------------------------ */
 /* 🔹 Sort Icon Helper */

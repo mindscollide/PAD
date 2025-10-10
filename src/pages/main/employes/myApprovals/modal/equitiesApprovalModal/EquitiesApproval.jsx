@@ -18,7 +18,7 @@ import { useNavigate } from "react-router-dom";
 import {
   allowOnlyNumbers,
   formatNumberWithCommas,
-} from "../../../../../../commen/funtions/rejex";
+} from "../../../../../../common/funtions/rejex";
 import CopyToClipboard from "../../../../../../hooks/useClipboard";
 
 const EquitiesApproval = () => {

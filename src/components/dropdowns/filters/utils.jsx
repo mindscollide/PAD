@@ -6,7 +6,7 @@ import {
   SearchTadeApprovals,
 } from "../../../api/myApprovalApi";
 import { SearchEmployeeTransactionsDetails } from "../../../api/myTransactionsApi";
-import { toYYMMDD } from "../../../commen/funtions/rejex";
+import { toYYMMDD } from "../../../common/funtions/rejex";
 
 // -----------------------------------------------------------------------------
 // 📌 Constants
@@ -75,9 +75,11 @@ export const getTypeOptions = (addApprovalRequestData) => {
  * @returns {number[]} Array of tradeApprovalTypeIDs.
  */
 export const mapBuySellToIds = (selectedLabels = [], options = {}) => {
+  console.log("mapBuySellToIds", selectedLabels);
+  console.log("mapBuySellToIds", options);
   const items = Array.isArray(options.items) ? options.items : [];
   if (!selectedLabels.length || !items.length) return [];
-
+  console.log("mapBuySellToIds", items);
   return selectedLabels
     .map((label) => {
       const match = items.find((item) => item.type === label);

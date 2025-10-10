@@ -1,4 +1,3 @@
-import React, { useEffect, useMemo, useRef } from "react";
 import { Col, Row, Tag } from "antd";
 import { useGlobalModal } from "../../../../../../../context/GlobalModalContext";
 import { BrokerList, GlobalModal } from "../../../../../../../components";
@@ -7,22 +6,17 @@ import { Stepper, Step } from "react-form-stepper";
 import CustomButton from "../../../../../../../components/buttons/button";
 import CheckIcon from "../../../../../../../assets/img/Check.png";
 import EllipsesIcon from "../../../../../../../assets/img/Ellipses.png";
-import copyIcon from "../../../../../../../assets/img/copy-dark.png";
 import { useDashboardContext } from "../../../../../../../context/dashboardContaxt";
 import {
   dashBetweenApprovalAssets,
   formatApiDateTime,
   formatNumberWithCommas,
-} from "../../../../../../../commen/funtions/rejex";
+} from "../../../../../../../common/funtions/rejex";
 import { useReconcileContext } from "../../../../../../../context/reconsileContax";
-import { useGlobalLoader } from "../../../../../../../context/LoaderContext";
-import { useNotification } from "../../../../../../../components/NotificationProvider/NotificationProvider";
-import { useApi } from "../../../../../../../context/ApiContext";
-import { useNavigate } from "react-router-dom";
+
 import { usePortfolioContext } from "../../../../../../../context/portfolioContax";
 
 const ViewDetailHeadOfComplianceReconcilePortfolio = () => {
-  const navigate = useNavigate();
 
   // This is Global State for modal which is create in ContextApi
   const {

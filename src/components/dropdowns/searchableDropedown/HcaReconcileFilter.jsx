@@ -7,7 +7,7 @@ import { useSearchBarContext } from "../../../context/SearchBarContaxt";
 import {
   allowOnlyNumbers,
   removeFirstSpace,
-} from "../../../commen/funtions/rejex";
+} from "../../../common/funtions/rejex";
 
 export const HcaReconcileFilter = ({ handleSearch, activeTab, setVisible }) => {
   // Local state (for inputs before pushing into context)

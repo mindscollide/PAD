@@ -21,7 +21,7 @@ import { useSidebarContext } from "../../../context/sidebarContaxt";
 import { useSearchBarContext } from "../../../context/SearchBarContaxt";
 import { usePortfolioContext } from "../../../context/portfolioContax";
 import { useReconcileContext } from "../../../context/reconsileContax";
-import { removeFirstSpace } from "../../../commen/funtions/rejex";
+import { removeFirstSpace } from "../../../common/funtions/rejex";
 
 /**
  * 🔎 SearchWithPopoverOnly

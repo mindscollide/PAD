@@ -14,7 +14,7 @@ import {
   dashBetweenApprovalAssets,
   formatApiDateTime,
   formatNumberWithCommas,
-} from "../../../../../../../commen/funtions/rejex";
+} from "../../../../../../../common/funtions/rejex";
 import { useReconcileContext } from "../../../../../../../context/reconsileContax";
 import { usePortfolioContext } from "../../../../../../../context/portfolioContax";
 

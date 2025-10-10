@@ -23,7 +23,7 @@ import { useReconcileContext } from "../../../../../context/reconsileContax";
 import { useNotification } from "../../../../../components/NotificationProvider/NotificationProvider";
 
 // 🔹 Helpers
-import { toYYMMDD } from "../../../../../commen/funtions/rejex";
+import { toYYMMDD } from "../../../../../common/funtions/rejex";
 import {
   GetAllReconcilePortfolioTransactionRequest,
   SearchComplianceOfficerReconcilePortfolioRequest,
@@ -40,7 +40,7 @@ import {
   mapBuySellToIds,
   mapStatusToIds,
 } from "../../../../../components/dropdowns/filters/utils";
-import { useTableScrollBottom } from "../../../../../commen/funtions/scroll";
+import { useTableScrollBottom } from "../../../../../common/funtions/scroll";
 
 /**
  * 📌 ReconcilePortfolio

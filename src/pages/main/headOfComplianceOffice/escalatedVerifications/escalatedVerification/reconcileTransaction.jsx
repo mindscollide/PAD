@@ -37,14 +37,14 @@ import {
   mapBuySellToIds,
   mapStatusToIds,
 } from "../../../../../components/dropdowns/filters/utils";
-import { toYYMMDD } from "../../../../../commen/funtions/rejex";
+import { toYYMMDD } from "../../../../../common/funtions/rejex";
 import ViewDetailHeadOfComplianceReconcileTransaction from "./modals/viewDetailHeadOfComplianceReconcileTransactions/ViewDetailHeadOfComplianceReconcileTransaction";
 import UploadHeadOfComplianceTicketModal from "./modals/uploadHeadOfComplianceTicketModal/UploadHeadOfComplianceTicketModal";
 import NoteHeadOfComplianceModal from "./modals/noteHeadOfComplianceModal/NoteHeadOfComplianceModal";
 import ApproveHeadOfComplianceModal from "./modals/approveHeadOfComplianceModal/ApproveHeadOfComplianceModal";
 import DeclinedHeadOfComplianceModal from "./modals/declinedHeadOfComplianceModal/DeclinedHeadOfComplianceModal";
 import ViewTicketEscalatedModal from "./modals/viewTicketEscalatedModal/ViewTicketEscalatedModal";
-import { useTableScrollBottom } from "../../../../../commen/funtions/scroll";
+import { useTableScrollBottom } from "../../../../../common/funtions/scroll";
 
 // 🔹 Modal imports
 // =============================================================================

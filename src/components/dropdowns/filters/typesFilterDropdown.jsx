@@ -48,8 +48,9 @@ const TypeFilterDropdown = ({
     switch (selectedKey) {
       // 🔹 Keys that only update state with filterTrigger = true
       case "1":
-      case "6":
+      case "2":
       case "4":
+      case "6":
       case "9":
       case "12":
       case "15":
@@ -95,8 +96,9 @@ const TypeFilterDropdown = ({
     switch (selectedKey) {
       // 🔹 Cases where we just reset state
       case "1":
-      case "6":
+      case "2":
       case "4":
+      case "6":
       case "9":
       case "12":
       case "15":

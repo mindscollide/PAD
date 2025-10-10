@@ -7,7 +7,7 @@ import { useSearchBarContext } from "../../../context/SearchBarContaxt";
 import {
   allowOnlyAlphabets,
   removeFirstSpace,
-} from "../../../commen/funtions/rejex";
+} from "../../../common/funtions/rejex";
 
 // 🔹 Initial default state
 const INITIAL_LOCAL_STATE = {

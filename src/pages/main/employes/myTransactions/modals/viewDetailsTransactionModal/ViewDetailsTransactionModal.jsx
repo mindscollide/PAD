@@ -36,7 +36,7 @@ import {
   dashBetweenApprovalAssets,
   formatApiDateTime,
   formatNumberWithCommas,
-} from "../../../../../../commen/funtions/rejex";
+} from "../../../../../../common/funtions/rejex";
 import { getStatusConfig } from "./util";
 import {
   GetAnnotationOfFilesAttachementAPI,

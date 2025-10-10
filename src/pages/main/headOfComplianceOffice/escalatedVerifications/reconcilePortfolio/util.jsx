@@ -13,9 +13,10 @@ import TypeColumnTitle from "../../../../../components/dropdowns/filters/typeCol
 import StatusColumnTitle from "../../../../../components/dropdowns/filters/statusColumnTitle";
 
 // Helpers
-import { formatApiDateTime } from "../../../../../commen/funtions/rejex";
+import { formatApiDateTime } from "../../../../../common/funtions/rejex";
 import { useGlobalModal } from "../../../../../context/GlobalModalContext";
 import { usePortfolioContext } from "../../../../../context/portfolioContax";
+import { getTradeTypeById } from "../../../../../common/funtions/type";
 
 const { Text } = Typography;
 
@@ -49,22 +50,6 @@ const getSortIcon = (columnKey, sortedInfo) => {
       alt={isAsc ? "Asc" : "Desc"}
       className="custom-sort-icon"
     />
-  );
-};
-
-/**
- * Resolves trade type label by ID from asset type data.
- *
- * @param {Object} assetTypeData - Asset type API response.
- * @param {Array<Object>} assetTypeData.items - List of trade approval types.
- * @param {string|number} tradeTypeID - Trade type ID to match.
- * @returns {string} Trade type label or "—".
- */
-export const getTradeTypeById = (assetTypeData, tradeType) => {
-  if (!Array.isArray(assetTypeData?.items)) return "—";
-  return (
-    assetTypeData.items.find((i) => i.tradeApprovalTypeID === tradeType.typeID)
-      ?.type || "—"
   );
 };
 

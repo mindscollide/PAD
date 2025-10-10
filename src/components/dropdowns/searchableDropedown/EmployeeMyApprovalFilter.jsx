@@ -5,7 +5,7 @@ import { useSearchBarContext } from "../../../context/SearchBarContaxt";
 import {
   allowOnlyNumbers,
   removeFirstSpace,
-} from "../../../commen/funtions/rejex";
+} from "../../../common/funtions/rejex";
 
 // 🔹 Initial default state for local filters
 const INITIAL_LOCAL_STATE = {

@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef, useCallback } from "react";
 import { Col, Row } from "antd";
 import { useNavigate } from "react-router-dom";
 import moment from "moment";
@@ -12,7 +12,11 @@ import ViewTransactionCommentModal from "./modals/viewTransactionCommentModal/Vi
 import ViewTicketTransactionModal from "./modals/viewTicketTransactionModal/ViewTicketTransactionModal";
 
 // 🔹 Table Config
-import { getBorderlessTableColumns } from "./utill";
+import {
+  buildApiRequest,
+  getBorderlessTableColumns,
+  mapEmployeeTransactions,
+} from "./utill";
 import { approvalStatusMap } from "../../../../components/tables/borderlessTable/utill";
 
 // 🔹 Contexts
@@ -30,17 +34,10 @@ import {
   SearchEmployeeTransactionsDetails,
 } from "../../../../api/myTransactionsApi";
 
-// 🔹 Utils
-import {
-  mapBuySellToIds,
-  mapStatusToIds,
-} from "../../../../components/dropdowns/filters/utils";
-import { toYYMMDD } from "../../../../commen/funtions/rejex";
-
 // 🔹 Styles
 import style from "./myTransaction.module.css";
-import { useTableScrollBottom } from "../../../../commen/funtions/scroll";
-import { buildBrokerOptions } from "../../../../commen/funtions/brokersList";
+import { buildBrokerOptions } from "../../../../common/funtions/brokersList";
+import { useTableScrollBottom } from "../../../../common/funtions/scroll";
 
 /**
  * 📄 MyTransaction Component
@@ -58,18 +55,22 @@ import { buildBrokerOptions } from "../../../../commen/funtions/brokersList";
 const MyTransaction = () => {
   const navigate = useNavigate();
   const hasFetched = useRef(false);
+  const tableScrollEmployeeTransaction = useRef(null);
 
   // -------------------- Contexts --------------------
   const { callApi } = useApi();
   const { showNotification } = useNotification();
   const { showLoader } = useGlobalLoader();
+
   const { addApprovalRequestData, employeeBasedBrokersData } =
     useDashboardContext();
+
   const {
     employeeMyTransactionSearch,
     setEmployeeMyTransactionSearch,
     resetEmployeeMyTransactionSearch,
   } = useSearchBarContext();
+
   const {
     employeeTransactionsData,
     setEmployeeTransactionsData,
@@ -77,6 +78,7 @@ const MyTransaction = () => {
     setEmployeeTransactionsTableDataMqtt,
     setEmployeeTransactionViewDetailData,
   } = useTransaction();
+
   const {
     viewDetailTransactionModal,
     setViewDetailTransactionModal,
@@ -86,45 +88,68 @@ const MyTransaction = () => {
 
   // -------------------- Local State --------------------
   const [sortedInfo, setSortedInfo] = useState({});
-  const [myTransactionData, setMyTransactionData] = useState([]);
   const [loadingMore, setLoadingMore] = useState(false);
 
   // -------------------- Helpers --------------------
-
 
   /**
    * Fetches transactions from API.
    * @param {boolean} flag - whether to show loader
    */
-  const fetchApprovals = async (flag) => {
-    if (flag) await showLoader(true);
+  const fetchApiCall = useCallback(
+    async (requestData, replace = false, showLoaderFlag = true) => {
+      if (!requestData || typeof requestData !== "object") return;
+      if (showLoaderFlag) showLoader(true);
 
-    const requestdata = {
-      InstrumentName: employeeMyTransactionSearch.instrumentName,
-      Quantity: employeeMyTransactionSearch.quantity || 0,
-      StartDate: employeeMyTransactionSearch.startDate
-        ? toYYMMDD(employeeMyTransactionSearch.startDate)
-        : "",
-      EndDate: employeeMyTransactionSearch.endDate
-        ? toYYMMDD(employeeMyTransactionSearch.endDate)
-        : "",
-      BrokerIDs: employeeMyTransactionSearch.brokerIDs || [],
-      StatusIds: employeeMyTransactionSearch.status || [],
-      TypeIds: employeeMyTransactionSearch.type || [],
-      PageNumber: 0,
-      Length: employeeMyTransactionSearch.pageSize || 10,
-    };
-    console.log("requestdata", requestdata);
-    const data = await SearchEmployeeTransactionsDetails({
+      const res = await SearchEmployeeTransactionsDetails({
+        callApi,
+        showNotification,
+        showLoader,
+        requestdata: requestData,
+        navigate,
+      });
+      const transactions = Array.isArray(res?.transactions)
+        ? res.transactions
+        : [];
+      const mapped = mapEmployeeTransactions(
+        addApprovalRequestData?.Equities,
+        transactions
+      );
+      if (!mapped || typeof mapped !== "object") return;
+
+      setEmployeeTransactionsData((prev) => ({
+        transactions: replace
+          ? mapped
+          : [...(prev?.transactions || []), ...mapped],
+        // this is for to run lazy loading its data comming from database of total data in db
+        totalRecordsDataBase: res?.totalRecords,
+        // this is for to know how mush dta currently fetch from  db
+        totalRecordsTable: replace
+          ? mapped.length
+          : employeeTransactionsData.totalRecordsTable + mapped.length,
+      }));
+      setEmployeeMyTransactionSearch((prev) => {
+        const next = {
+          ...prev,
+          pageNumber: replace ? mapped.length : prev.pageNumber + mapped.length,
+        };
+
+        if (prev.filterTrigger) {
+          next.filterTrigger = false;
+        }
+
+        return next;
+      });
+    },
+    [
+      addApprovalRequestData,
       callApi,
-      showNotification,
-      showLoader,
-      requestdata,
       navigate,
-    });
-
-    setEmployeeTransactionsData(data);
-  };
+      setEmployeeMyTransactionSearch,
+      showLoader,
+      showNotification,
+    ]
+  );
 
   /**
    * Fetches detailed view for a transaction.
@@ -156,158 +181,59 @@ const MyTransaction = () => {
   useEffect(() => {
     if (hasFetched.current) return;
     hasFetched.current = true;
-
-    fetchApprovals(true);
+    const requestData = buildApiRequest(
+      employeeMyTransactionSearch,
+      addApprovalRequestData
+    );
+    fetchApiCall(requestData, true, true);
 
     // Reset search state for fresh load
     resetEmployeeMyTransactionSearch();
-    setEmployeeMyTransactionSearch({
-      instrumentName: "",
-      quantity: 0,
-      startDate: null,
-      endDate: null,
-      mainInstrumentName: "",
-      type: [],
-      status: [],
-      brokerIDs: [],
-      pageSize: "",
-      pageNumber: 0,
-      filterTrigger: false,
-      tableFilterTrigger: false,
-    });
   }, []);
 
   // 🔹 call api on search
   useEffect(() => {
     if (employeeMyTransactionSearch.filterTrigger) {
-      fetchApprovals(true);
-      setEmployeeMyTransactionSearch((prev) => ({
-        ...prev,
-        filterTrigger: false,
-      }));
+      const requestData = buildApiRequest(
+        employeeMyTransactionSearch,
+        addApprovalRequestData
+      );
+      fetchApiCall(requestData, true, true);
     }
   }, [employeeMyTransactionSearch.filterTrigger]);
 
   // 🔹 Refresh on MQTT update
   useEffect(() => {
     if (employeeTransactionsTableDataMqtt) {
-      fetchApprovals(false);
+      const requestData = buildApiRequest(
+        employeeMyTransactionSearch,
+        addApprovalRequestData
+      );
+      fetchApiCall(requestData, true, true);
       setEmployeeTransactionsTableDataMqtt(false);
     }
   }, [employeeTransactionsTableDataMqtt]);
-
-  // 🔹 Normalize API data → table rows
-  useEffect(() => {
-    try {
-      if (Array.isArray(employeeTransactionsData?.transactions)) {
-        const mappedData = employeeTransactionsData.transactions.map(
-          (item) => ({
-            key: item.workFlowID,
-            workFlowID: item.workFlowID || null,
-            title: `ConductTransactionRequest-${item.workFlowID || ""}-${
-              item.requestDate || ""
-            } ${item.requestTime || ""}`,
-            description: item.description || "",
-            instrumentShortCode: item.instrumentShortCode || "",
-            instrumentName: item.instrumentName || "",
-            quantity: item.quantity || 0,
-            tradeApprovalID: item.tradeApprovalID || "",
-            tradeApprovalTypeID: item.tradeApprovalTypeID || null,
-            tradeType: item.tradeType || "",
-            workFlowStatusID: item.workFlowStatusID || null,
-            workFlowStatus: item.workFlowStatus || "",
-            assetTypeID: item.assetTypeID || null,
-            assetType: item.assetType || "",
-            assetShortCode: item.assetShortCode || "",
-            transactionConductedDate: item.transactionConductedDate || "",
-            transactionConductedTime: item.transactionConductedTime || "",
-            deadlineDate: item.deadlineDate || "",
-            deadlineTime: item.deadlineTime || "",
-            broker: item.broker || "Multiple Brokers",
-          })
-        );
-
-        setMyTransactionData(mappedData);
-
-        // Sync total records
-        setEmployeeMyTransactionSearch((prev) => ({
-          ...prev,
-          totalRecords:
-            prev.totalRecords !== employeeTransactionsData.totalRecords
-              ? employeeTransactionsData.totalRecords
-              : prev.totalRecords,
-          pageNumber: mappedData.length,
-        }));
-      } else {
-        setMyTransactionData([]);
-      }
-    } catch (error) {
-      console.error("Error processing employee approvals:", error);
-    } finally {
-      setLoadingMore(false);
-    }
-  }, [employeeTransactionsData]);
 
   // 🔹 Infinite Scroll (lazy loading)
   useTableScrollBottom(
     async () => {
       if (
-        employeeTransactionsData?.totalRecords !== myTransactionData?.length
-      ) {
-        try {
-          setLoadingMore(true);
+        employeeTransactionsData?.totalRecordsDataBase ===
+        employeeTransactionsData?.totalRecordsTable
+      )
+        return;
 
-          const assetKey =
-            employeeMyTransactionSearch.assetType ||
-            Object.keys(addApprovalRequestData || {})[0] ||
-            "Equities";
-
-          const assetData = addApprovalRequestData?.[assetKey] || { items: [] };
-          const TypeIds = mapBuySellToIds(
-            employeeMyTransactionSearch.type || [],
-            assetData
-          );
-
-          const requestdata = {
-            InstrumentName:
-              employeeMyTransactionSearch.instrumentName ||
-              employeeMyTransactionSearch.mainInstrumentName,
-            Quantity: employeeMyTransactionSearch.quantity || 0,
-            StartDate: employeeMyTransactionSearch.startDate
-              ? toYYMMDD(employeeMyTransactionSearch.startDate)
-              : "",
-            EndDate: employeeMyTransactionSearch.endDate
-              ? toYYMMDD(employeeMyTransactionSearch.endDate)
-              : "",
-            BrokerIDs: employeeMyTransactionSearch.brokerIDs || [],
-            StatusIds: mapStatusToIds(employeeMyTransactionSearch.status),
-            TypeIds,
-            PageNumber: employeeMyTransactionSearch.pageNumber || 0,
-            Length: employeeMyTransactionSearch.pageSize || 10,
-          };
-
-          const data = await SearchEmployeeTransactionsDetails({
-            callApi,
-            showNotification,
-            showLoader,
-            requestdata,
-            navigate,
-          });
-
-          if (!data) return;
-
-          setEmployeeTransactionsData((prevState) => ({
-            transactions: [
-              ...(prevState?.transactions || []),
-              ...(data?.transactions || []),
-            ],
-            totalRecords: data?.totalRecords ?? prevState?.totalRecords,
-          }));
-        } catch (error) {
-          console.error("Error loading more transactions:", error);
-        } finally {
-          setLoadingMore(false);
-        }
+      try {
+        setLoadingMore(true);
+        const requestData = buildApiRequest(
+          employeeMyTransactionSearch,
+          addApprovalRequestData
+        );
+        await fetchApiCall(requestData, false, false);
+      } catch (err) {
+        console.error("Error loading more approvals:", err);
+      } finally {
+        setLoadingMore(false);
       }
     },
     0,
@@ -430,8 +356,11 @@ const MyTransaction = () => {
       )}
 
       {/* 🔹 Transactions Table */}
-      <PageLayout background="white" style={{ marginTop: "10px" }}
-       className={activeFilters.length > 0 && "changeHeight"}>
+      <PageLayout
+        background="white"
+        style={{ marginTop: "10px" }}
+        className={activeFilters.length > 0 && "changeHeight"}
+      >
         <div className="px-4 md:px-6 lg:px-8 ">
           <Row>
             <Col>
@@ -439,11 +368,11 @@ const MyTransaction = () => {
             </Col>
           </Row>
           <BorderlessTable
-            rows={myTransactionData}
+            rows={employeeTransactionsData.transactions}
             columns={columns}
             classNameTable="border-less-table-blue"
             scroll={
-              myTransactionData?.length
+              employeeTransactionsData.transactions?.length
                 ? {
                     x: "max-content",
                     y: activeFilters.length > 0 ? 450 : 500,
@@ -452,6 +381,7 @@ const MyTransaction = () => {
             }
             onChange={(pagination, filters, sorter) => setSortedInfo(sorter)}
             loading={loadingMore}
+            ref={tableScrollEmployeeTransaction}
           />
         </div>
       </PageLayout>

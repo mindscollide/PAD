@@ -14,8 +14,10 @@ import { useGlobalModal } from "../../../../context/GlobalModalContext";
 import {
   dashBetweenApprovalAssets,
   formatApiDateTime,
-} from "../../../../commen/funtions/rejex";
-import { getTradeTypeById } from "../../headOfComplianceOffice/escalatedVerifications/escalatedVerification/util";
+  toYYMMDD,
+} from "../../../../common/funtions/rejex";
+import { mapBuySellToIds, mapStatusToIds } from "../../../../components/dropdowns/filters/utils";
+import { getTradeTypeById } from "../../../../common/funtions/type";
 
 // 🔹 CONSTANTS
 const COLUMN_CONFIG = {
@@ -39,6 +41,25 @@ const COLUMN_CONFIG = {
     NOT_TRADED: "Not-Traded",
   },
 };
+
+/**
+ * Utility: Build API request payload for approval listing
+ *
+ * @param {Object} searchState - Current search/filter state
+ * @param {Object} addApprovalRequestData - Extra request metadata (optional)
+ * @returns {Object} API-ready payload
+ */
+export const buildApiRequest = (searchState = {}, addApprovalRequestData) => ({
+  InstrumentName: searchState.instrumentName || "",
+  Quantity: searchState.quantity ? Number(searchState.quantity) : 0,
+  StartDate: searchState.startDate ? toYYMMDD(searchState.startDate) : "",
+  EndDate: searchState.endDate ? toYYMMDD(searchState.endDate) : "",
+  StatusIds: mapStatusToIds?.(searchState.status) || [],
+  TypeIds:
+    mapBuySellToIds?.(searchState.type, addApprovalRequestData?.Equities) || [],
+  PageNumber: Number(searchState.pageNumber) || 0,
+  Length: Number(searchState.pageSize) || 10,
+});
 
 /**
  * Maps raw employee approval API data to table-ready format

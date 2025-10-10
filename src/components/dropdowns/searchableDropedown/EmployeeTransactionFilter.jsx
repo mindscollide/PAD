@@ -5,10 +5,10 @@ import { useSearchBarContext } from "../../../context/SearchBarContaxt";
 import {
   allowOnlyNumbers,
   removeFirstSpace,
-} from "../../../commen/funtions/rejex";
+} from "../../../common/funtions/rejex";
 import styles from "./SearchWithPopoverOnly.module.css";
 import { useDashboardContext } from "../../../context/dashboardContaxt";
-import { buildBrokerOptions } from "../../../commen/funtions/brokersList";
+import { buildBrokerOptions } from "../../../common/funtions/brokersList";
 
 // 🔹 Initial default state
 const INITIAL_LOCAL_STATE = {

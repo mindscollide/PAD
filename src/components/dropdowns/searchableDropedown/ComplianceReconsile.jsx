@@ -8,7 +8,7 @@ import {
   allowOnlyAlphabets,
   allowOnlyNumbers,
   removeFirstSpace,
-} from "../../../commen/funtions/rejex";
+} from "../../../common/funtions/rejex";
 import { useReconcileContext } from "../../../context/reconsileContax";
 
 // 🔹 Initial state

@@ -24,14 +24,12 @@ import {
   SearchTadeApprovals,
 } from "../../../../api/myApprovalApi";
 
-// 🔹 Utils
 import {
-  mapBuySellToIds,
-  mapStatusToIds,
-} from "../../../../components/dropdowns/filters/utils";
-import { getBorderlessTableColumns, mapEmployeeMyApprovalData } from "./utils";
+  buildApiRequest,
+  getBorderlessTableColumns,
+  mapEmployeeMyApprovalData,
+} from "./utils";
 import { approvalStatusMap } from "../../../../components/tables/borderlessTable/utill";
-import { toYYMMDD } from "../../../../commen/funtions/rejex";
 
 // 🔹 Modals
 import EquitiesApproval from "./modal/equitiesApprovalModal/EquitiesApproval";
@@ -44,11 +42,12 @@ import ConductTransaction from "./modal/conductTransaction/ConductTransaction";
 
 // 🔹 Styles
 import style from "./approval.module.css";
-import { useTableScrollBottom } from "../../../../commen/funtions/scroll";
+import { useTableScrollBottom } from "../../../../common/funtions/scroll";
 
 const Approval = () => {
   const navigate = useNavigate();
   const hasFetched = useRef(false);
+  const tableScrollEmployeeApproval = useRef(null);
 
   // ----------------- Contexts -----------------
   const { addApprovalRequestData } = useDashboardContext();
@@ -83,11 +82,6 @@ const Approval = () => {
     isConductedTransaction,
     setSelectedAssetTypeId,
   } = useGlobalModal();
-
-  console.log(
-    addApprovalRequestData,
-    "addApprovalRequestDataaddApprovalRequestData"
-  );
 
   // ----------------- Local State -----------------
   const [sortedInfo, setSortedInfo] = useState({});
@@ -132,33 +126,17 @@ const Approval = () => {
 
   // ----------------- Helpers -----------------
 
-  /** 🔹 Build API request payload */
-  const buildApiRequest = useCallback(
-    (searchState = {}) => ({
-      InstrumentName:searchState.instrumentName || "",
-      Quantity: searchState.quantity ? Number(searchState.quantity) : 0,
-      StartDate: searchState.startDate ? toYYMMDD(searchState.startDate) : "",
-      EndDate: searchState.endDate ? toYYMMDD(searchState.endDate) : "",
-      StatusIds: mapStatusToIds(searchState.status) || [],
-      TypeIds:
-        mapBuySellToIds(searchState.type, addApprovalRequestData?.Equities) ||
-        [],
-      PageNumber: Number(searchState.pageNumber) || 0,
-      Length: Number(searchState.pageSize) || 10,
-    }),
-    [addApprovalRequestData]
-  );
-
   /** 🔹 Fetch approvals from API */
-  const fetchApprovals = useCallback(
-    async (requestdata, { loader = false, lazy = false } = {}) => {
-      if (loader) await showLoader(true);
+  const fetchApiCall = useCallback(
+    async (requestData, replace = false, showLoaderFlag = true) => {
+      if (!requestData || typeof requestData !== "object") return;
+      if (showLoaderFlag) showLoader(true);
 
       const res = await SearchTadeApprovals({
         callApi,
         showNotification,
         showLoader,
-        requestdata,
+        requestdata: requestData,
         navigate,
       });
 
@@ -170,14 +148,27 @@ const Approval = () => {
       );
 
       setIsEmployeeMyApproval((prev) => ({
-        approvals: lazy ? [...(prev?.approvals || []), ...mapped] : mapped,
-        totalRecords: res?.totalRecords ?? mapped.length,
+        approvals: replace ? mapped : [...(prev?.approvals || []), ...mapped],
+        // this is for to run lazy loading its data comming from database of total data in db
+        totalRecordsDataBase: res.totalRecords,
+        // this is for to know how mush dta currently fetch from  db
+        totalRecordsTable: replace
+          ? mapped.length
+          : employeeMyApproval.totalRecordsTable + mapped.length,
       }));
 
-      setEmployeeMyApprovalSearch((prev) => ({
-        ...prev,
-        pageNumber: lazy ? prev.pageNumber + mapped.length : mapped.length,
-      }));
+      setEmployeeMyApprovalSearch((prev) => {
+        const next = {
+          ...prev,
+          pageNumber: replace ? mapped.length : prev.pageNumber + mapped.length,
+        };
+
+        if (prev.filterTrigger) {
+          next.filterTrigger = false;
+        }
+
+        return next;
+      });
     },
     [
       addApprovalRequestData,
@@ -204,6 +195,15 @@ const Approval = () => {
       setIsViewDetail(true);
     }
   };
+
+  const columns = getBorderlessTableColumns({
+    approvalStatusMap,
+    sortedInfo,
+    employeeMyApprovalSearch,
+    setEmployeeMyApprovalSearch,
+    setIsViewDetail,
+    onViewDetail: handleViewDetails,
+  });
 
   /** 🔹 Handle removing individual filter */
   const handleRemoveFilter = (key) => {
@@ -266,11 +266,14 @@ const Approval = () => {
   useEffect(() => {
     if (!hasFetched.current) {
       hasFetched.current = true;
-      fetchApprovals(buildApiRequest(employeeMyApprovalSearch), {
-        loader: true,
-      });
+      const requestData = buildApiRequest(
+        employeeMyApprovalSearch,
+        addApprovalRequestData
+      );
+
+      fetchApiCall(requestData, true, true);
     }
-  }, [buildApiRequest, employeeMyApprovalSearch, fetchApprovals]);
+  }, [buildApiRequest, employeeMyApprovalSearch, fetchApiCall]);
 
   // Reset on Unmount
   useEffect(() => {
@@ -283,14 +286,12 @@ const Approval = () => {
   // Fetch on Filter Trigger
   useEffect(() => {
     if (employeeMyApprovalSearch.filterTrigger) {
-      fetchApprovals(buildApiRequest(employeeMyApprovalSearch), {
-        loader: true,
-      });
+      const requestData = buildApiRequest(
+        employeeMyApprovalSearch,
+        addApprovalRequestData
+      );
 
-      setEmployeeMyApprovalSearch((prev) => ({
-        ...prev,
-        filterTrigger: false,
-      }));
+      fetchApiCall(requestData, true, true);
     }
   }, [employeeMyApprovalSearch.filterTrigger]);
 
@@ -308,10 +309,12 @@ const Approval = () => {
   useEffect(() => {
     if (employeeMyApprovalMqtt) {
       setIsEmployeeMyApprovalMqtt(false);
-      fetchApprovals(
-        { ...buildApiRequest(employeeMyApprovalSearch), PageNumber: 0 },
-        {}
+      const requestData = buildApiRequest(
+        employeeMyApprovalSearch,
+        addApprovalRequestData
       );
+
+      fetchApiCall(requestData, true, true);
     }
   }, [employeeMyApprovalMqtt]);
 
@@ -319,20 +322,18 @@ const Approval = () => {
   useTableScrollBottom(
     async () => {
       if (
-        employeeMyApproval?.totalRecords ===
-        employeeMyApproval?.approvals?.length
+        employeeMyApproval?.totalRecordsDataBase ===
+        employeeMyApproval?.totalRecordsTable
       )
         return;
 
       try {
         setLoadingMore(true);
-        await fetchApprovals(
-          {
-            ...buildApiRequest(employeeMyApprovalSearch),
-            PageNumber: employeeMyApprovalSearch.pageNumber || 0,
-          },
-          { lazy: true }
+        const requestData = buildApiRequest(
+          employeeMyApprovalSearch,
+          addApprovalRequestData
         );
+        await fetchApiCall(requestData, false, false);
       } catch (err) {
         console.error("Error loading more approvals:", err);
       } finally {
@@ -400,14 +401,7 @@ const Approval = () => {
           {/* Table */}
           <BorderlessTable
             rows={employeeMyApproval?.approvals || []}
-            columns={getBorderlessTableColumns({
-              approvalStatusMap,
-              sortedInfo,
-              employeeMyApprovalSearch,
-              setEmployeeMyApprovalSearch,
-              setIsViewDetail,
-              onViewDetail: handleViewDetails,
-            })}
+            columns={columns}
             scroll={
               employeeMyApproval?.approvals?.length
                 ? { x: "max-content", y: activeFilters.length > 0 ? 450 : 500 }
@@ -416,6 +410,7 @@ const Approval = () => {
             classNameTable="border-less-table-orange"
             onChange={(pagination, filters, sorter) => setSortedInfo(sorter)}
             loading={loadingMore}
+            ref={tableScrollEmployeeApproval}
           />
         </div>
       </PageLayout>

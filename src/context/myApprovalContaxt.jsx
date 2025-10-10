@@ -5,9 +5,8 @@ const MyapprovalContext = createContext();
 export const MyApprovalProvider = ({ children }) => {
   const [employeeMyApproval, setIsEmployeeMyApproval] = useState({
     approvals: [],
-    totalRecords: 0,
-    apiCall: false,
-    replace: false,
+    totalRecordsDataBase: 0,
+    totalRecordsTable: 0,
   });
   const [employeeMyApprovalMqtt, setIsEmployeeMyApprovalMqtt] = useState(false);
   // Context STate to extract data from get All View Trade Approval which is show by click on View Detail
@@ -22,9 +21,8 @@ export const MyApprovalProvider = ({ children }) => {
   const resetMyApprovalContextState = () => {
     setIsEmployeeMyApproval({
       approvals: [],
-      totalRecords: 0,
-      apiCall: false,
-      replace: false,
+      totalRecordsDataBase: 0,
+      totalRecordsTable: 0,
     });
     setViewDetailsModalData({
       assetTypes: [],

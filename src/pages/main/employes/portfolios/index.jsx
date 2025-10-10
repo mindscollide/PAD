@@ -9,7 +9,7 @@ import { usePortfolioContext } from "../../../../context/portfolioContax";
 import { useSearchBarContext } from "../../../../context/SearchBarContaxt";
 import UploadPortfolioModal from "./modal/uploadPortfolioModal/UploadPortfolioModal";
 import { useGlobalModal } from "../../../../context/GlobalModalContext";
-import { buildBrokerOptions } from "../../../../commen/funtions/brokersList";
+import { buildBrokerOptions } from "../../../../common/funtions/brokersList";
 import { useDashboardContext } from "../../../../context/dashboardContaxt";
 
 const { Title } = Typography;

@@ -28,7 +28,7 @@ import {
   mapStatusToIds,
 } from "../../../../components/dropdowns/filters/utils";
 
-import { toYYMMDD } from "../../../../commen/funtions/rejex";
+import { toYYMMDD } from "../../../../common/funtions/rejex";
 
 // API
 import {
@@ -45,7 +45,7 @@ import ViewCommentHeadOfApprovalModal from "./modals/viewCommentHeadOfApprovalMo
 
 // Styles
 import style from "./escalatedApprovals.module.css";
-import { useTableScrollBottom } from "../../../../commen/funtions/scroll";
+import { useTableScrollBottom } from "../../../../common/funtions/scroll";
 
 const EscalatedApprovals = () => {
   const navigate = useNavigate();

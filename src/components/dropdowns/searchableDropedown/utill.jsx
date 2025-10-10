@@ -3,7 +3,7 @@ import {
   SearchTadeApprovals,
 } from "../../../api/myApprovalApi";
 import { SearchEmployeeTransactionsDetails } from "../../../api/myTransactionsApi";
-import { toYYMMDD } from "../../../commen/funtions/rejex";
+import { toYYMMDD } from "../../../common/funtions/rejex";
 import {
   mapBuySellToIds,
   mapStatusToIds,
