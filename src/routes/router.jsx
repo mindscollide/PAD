@@ -27,6 +27,7 @@ import {
   ApprovalRequest,
   ReconcileIndex,
   EscalatedTransactionsIndex,
+  Brokers,
 } from "../pages";
 import RoleBasedRoute from "./RoleBasedRoute";
 import EscalatedApprovals from "../pages/main/headOfTradeApprover/escalatedApprovals/escalatedApprovals";
