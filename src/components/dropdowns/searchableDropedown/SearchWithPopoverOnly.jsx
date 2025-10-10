@@ -61,7 +61,7 @@ const SearchWithPopoverOnly = () => {
   // Reset on selectedKey change
   useEffect(() => {
     setSearchMain("");
-  }, [selectedKey, activeTab]);
+  }, [selectedKey, activeTab, reconcileActiveTab, activeTabHCO]);
 
   // ----------------------------------------------------------------
   // 🔧 HELPERS
