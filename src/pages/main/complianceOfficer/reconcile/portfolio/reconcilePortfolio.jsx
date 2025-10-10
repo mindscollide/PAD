@@ -3,14 +3,16 @@
 import React, { useEffect, useState, useCallback, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 
-// 📦 Third-party
-import moment from "moment";
 
 // 🔹 Components
 import BorderlessTable from "../../../../../components/tables/borderlessTable/borderlessTable";
 
 // 🔹 Utils (Portfolio-specific)
-import { getBorderlessTableColumns, mapToTableRows } from "./util";
+import {
+  buildApiRequest,
+  getBorderlessTableColumns,
+  mapToTableRows,
+} from "./util";
 import { approvalStatusMap } from "../../../../../components/tables/borderlessTable/utill";
 
 // 🔹 Contexts
@@ -23,7 +25,6 @@ import { useReconcileContext } from "../../../../../context/reconsileContax";
 import { useNotification } from "../../../../../components/NotificationProvider/NotificationProvider";
 
 // 🔹 Helpers
-import { toYYMMDD } from "../../../../../common/funtions/rejex";
 import {
   GetAllReconcilePortfolioTransactionRequest,
   SearchComplianceOfficerReconcilePortfolioRequest,
@@ -36,10 +37,7 @@ import NotePortfolioComplianceOfficerModal from "./modals/notePortfolioComplianc
 import ViewReconcilePortfolioComment from "./modals/viewReconcilePortfolioComment/ViewReconcilePortfolioComment";
 import CompliantPortfolioApproveModal from "./modals/compliantPortfolioApproveModal/CompliantPortfolioApproveModal";
 import NonCompliantPortdolioDeclineModal from "./modals/nonCompliantPortdolioDeclineModal/nonCompliantPortdolioDeclineModal";
-import {
-  mapBuySellToIds,
-  mapStatusToIds,
-} from "../../../../../components/dropdowns/filters/utils";
+
 import { useTableScrollBottom } from "../../../../../common/funtions/scroll";
 
 /**
@@ -65,6 +63,16 @@ const ReconcilePortfolio = ({ activeFilters }) => {
   const { callApi } = useApi();
   const { showNotification } = useNotification();
   const { showLoader } = useGlobalLoader();
+  // Prevent duplicate API calls (StrictMode safeguard)
+  const didFetchRef = useRef(false);
+  const tableScrollCOReconcilePortfolio = useRef(null);
+
+  // -------------------------
+  // ✅ Local state
+  // -------------------------
+  const [sortedInfo, setSortedInfo] = useState({});
+  const [loadingMore, setLoadingMore] = useState(false);
+
   const {
     viewDetailPortfolioTransaction,
     noteGlobalModal,
@@ -79,10 +87,7 @@ const ReconcilePortfolio = ({ activeFilters }) => {
     resetComplianceOfficerReconcilePortfoliosSearch,
   } = useSearchBarContext();
 
-  const {
-    reconcilePortfolioViewDetailData,
-    setReconcilePortfolioViewDetailData,
-  } = usePortfolioContext();
+  const { setReconcilePortfolioViewDetailData } = usePortfolioContext();
 
   const {
     setComplianceOfficerReconcilePortfolioData,
@@ -91,12 +96,6 @@ const ReconcilePortfolio = ({ activeFilters }) => {
     complianceOfficerReconcilePortfolioDataMqtt,
   } = useReconcileContext();
   const { assetTypeListingData } = useDashboardContext();
-  // -------------------------
-  // ✅ Local state
-  // -------------------------
-  const [sortedInfo, setSortedInfo] = useState({});
-  const [tableData, setTableData] = useState({ rows: [], totalRecords: 0 });
-  const [loadingMore, setLoadingMore] = useState(false);
 
   // This Api is for the getAllViewDetailModal For myTransaction in Emp role
   // GETALLVIEWDETAIL OF Transaction API FUNCTION
@@ -128,40 +127,6 @@ const ReconcilePortfolio = ({ activeFilters }) => {
     handleViewDetailsForReconcileTransaction,
   });
 
-  // Prevent duplicate API calls (StrictMode safeguard)
-  const didFetchRef = useRef(false);
-
-  // ----------------------------------------------------------------
-  // 🔧 HELPERS
-  // ----------------------------------------------------------------
-
-  /**
-   * Build API request payload from search/filter state.
-   */
-  const buildPortfolioRequest = (searchState = {}) => {
-    const startDate = searchState.startDate
-      ? toYYMMDD(searchState.startDate)
-      : "";
-    const endDate = searchState.endDate ? toYYMMDD(searchState.endDate) : "";
-    const TypeIds = mapBuySellToIds(
-      searchState.type,
-      assetTypeListingData?.Equities
-    );
-    const statusIds = mapStatusToIds(searchState.status);
-    return {
-      RequesterName: searchState.requesterName || "",
-      InstrumentName:
-        searchState.mainInstrumentName || searchState.instrumentName || "",
-      Quantity: searchState.quantity ? Number(searchState.quantity) : 0,
-      StartDate: startDate,
-      EndDate: endDate,
-      StatusIds: statusIds || [],
-      TypeIds: TypeIds || [],
-      PageNumber: Number(searchState.pageNumber) || 0,
-      Length: Number(searchState.pageSize) || 10,
-    };
-  };
-
   /**
    * Merge new rows into existing table data.
    * Ensures no duplicate rows by `key`.
@@ -175,10 +140,10 @@ const ReconcilePortfolio = ({ activeFilters }) => {
   // ----------------------------------------------------------------
   // 🔹 API CALL: Fetch reconcile portfolios
   // ----------------------------------------------------------------
-  const fetchPortfolios = useCallback(
+  const fetchApiCall = useCallback(
     async (requestData, replace = false, loader = false) => {
       if (!requestData || typeof requestData !== "object") return;
-      if (!loader) showLoader(true);
+      if (loader) showLoader(true);
       try {
         const res = await SearchComplianceOfficerReconcilePortfolioRequest({
           callApi,
@@ -187,17 +152,41 @@ const ReconcilePortfolio = ({ activeFilters }) => {
           requestdata: requestData,
           navigate,
         });
-        const portfolios = Array.isArray(res?.portfolios) ? res.portfolios : [];
+        const reconsilePortfolios = Array.isArray(res?.portfolios)
+          ? res.portfolios
+          : [];
         const mapped = mapToTableRows(
           assetTypeListingData?.Equities,
-          portfolios
+          reconsilePortfolios
         );
 
-        setComplianceOfficerReconcilePortfolioData({
-          data: mapped,
-          totalRecords: res?.totalRecords ?? mapped.length,
-          Apicall: true,
-          replace,
+        setComplianceOfficerReconcilePortfolioData((prev) => ({
+          reconsilePortfolios: replace
+            ? mapped
+            : [...(prev?.reconsilePortfolios || []), ...mapped],
+          // this is for to run lazy loading its data comming from database of total data in db
+          totalRecordsDataBase: res?.totalRecords,
+          // this is for to know how mush dta currently fetch from  db
+          totalRecordsTable: replace
+            ? mapped.length
+            : complianceOfficerReconcilePortfolioData.totalRecordsTable +
+              mapped.length,
+        }));
+
+        setComplianceOfficerReconcilePortfolioSearch((prev) => {
+          const next = {
+            ...prev,
+            pageNumber: replace
+              ? mapped.length
+              : prev.pageNumber + mapped.length,
+          };
+
+          // this is for check if filter value get true only on that it will false
+          if (prev.filterTrigger) {
+            next.filterTrigger = false;
+          }
+
+          return next;
         });
       } catch (error) {
         console.error("❌ Error fetching reconcile portfolios:", error);
@@ -209,39 +198,27 @@ const ReconcilePortfolio = ({ activeFilters }) => {
   );
 
   // ----------------------------------------------------------------
-  // 🔄 SYNC: Global → Local table data
+  // 🔄 INITIAL LOAD (on mount)
   // ----------------------------------------------------------------
   useEffect(() => {
-    if (!complianceOfficerReconcilePortfolioData?.Apicall) return;
-    console.log("requestData", complianceOfficerReconcilePortfolioData.replace);
-    setTableData((prev) => {
-      const {
-        data = [],
-        totalRecords = 0,
-        replace = false,
-      } = complianceOfficerReconcilePortfolioData;
+    if (didFetchRef.current) return;
+    didFetchRef.current = true;
 
-      return {
-        rows: replace ? data : [...prev.rows, ...data],
-        totalRecords,
-      };
-    });
+    const requestData = buildApiRequest(
+      complianceOfficerReconcilePortfolioSearch,
+      assetTypeListingData
+    );
+    fetchApiCall(requestData, true, true);
 
-    setComplianceOfficerReconcilePortfolioSearch((prev) => ({
-      ...prev,
-      totalRecords:
-        complianceOfficerReconcilePortfolioData.totalRecords ??
-        complianceOfficerReconcilePortfolioData.data.length,
-      pageNumber: complianceOfficerReconcilePortfolioData.replace
-        ? 10
-        : prev.pageNumber + complianceOfficerReconcilePortfolioData.data.length,
-    }));
-
-    setComplianceOfficerReconcilePortfolioData((prev) => ({
-      ...prev,
-      Apicall: false,
-    }));
-  }, [complianceOfficerReconcilePortfolioData?.Apicall]);
+    try {
+      const navigationEntries = performance.getEntriesByType("navigation");
+      if (navigationEntries?.[0]?.type === "reload") {
+        resetComplianceOfficerReconcilePortfoliosSearch();
+      }
+    } catch (error) {
+      console.error("❌ Error detecting page reload:", error);
+    }
+  }, [fetchApiCall, resetComplianceOfficerReconcilePortfoliosSearch]);
 
   // ----------------------------------------------------------------
   // 🔄 REAL-TIME: Handle new MQTT rows
@@ -275,41 +252,30 @@ const ReconcilePortfolio = ({ activeFilters }) => {
   //     mqtt: false,
   //   });
   // }, [complianceOfficerReconcilePortfolioDataMqtt?.mqtt]);
+
   useEffect(() => {
     if (!complianceOfficerReconcilePortfolioDataMqtt) return;
-    const requestData = {
-      ...buildPortfolioRequest(complianceOfficerReconcilePortfolioSearch),
-      PageNumber: 0,
-    };
-
-    fetchPortfolios(requestData, true);
-    setComplianceOfficerReconcilePortfolioSearch((prev) => ({
-      ...prev,
-      PageNumber: 0,
-    }));
-
+    const requestData = buildApiRequest(
+      complianceOfficerReconcilePortfolioSearch,
+      assetTypeListingData
+    );
+    fetchApiCall(requestData, true, true);
     setComplianceOfficerReconcilePortfolioDataMqtt(false);
   }, [complianceOfficerReconcilePortfolioDataMqtt]);
+
   // ----------------------------------------------------------------
   // 🔄 On search/filter trigger
   // ----------------------------------------------------------------
-
   useEffect(() => {
     if (complianceOfficerReconcilePortfolioSearch?.filterTrigger) {
-      const data = buildPortfolioRequest(
-        complianceOfficerReconcilePortfolioSearch
+      const requestData = buildApiRequest(
+        complianceOfficerReconcilePortfolioSearch,
+        assetTypeListingData
       );
 
-      fetchPortfolios(data, true);
-      setComplianceOfficerReconcilePortfolioSearch((prev) => ({
-        ...prev,
-        filterTrigger: false,
-      }));
+      fetchApiCall(requestData, true, true);
     }
-  }, [
-    complianceOfficerReconcilePortfolioSearch?.filterTrigger,
-    fetchPortfolios,
-  ]);
+  }, [complianceOfficerReconcilePortfolioSearch?.filterTrigger, fetchApiCall]);
 
   // ----------------------------------------------------------------
   // 🔄 INFINITE SCROLL
@@ -317,24 +283,19 @@ const ReconcilePortfolio = ({ activeFilters }) => {
 
   useTableScrollBottom(
     async () => {
-      if (
-        complianceOfficerReconcilePortfolioSearch?.totalRecords <=
-        tableData?.rows?.length
+     if (
+        complianceOfficerReconcilePortfolioData?.totalRecordsDataBase <=
+        complianceOfficerReconcilePortfolioData?.totalRecordsTable
       )
         return;
 
       try {
         setLoadingMore(true);
-        const requestData = {
-          ...buildPortfolioRequest(complianceOfficerReconcilePortfolioSearch),
-          PageNumber: complianceOfficerReconcilePortfolioSearch.pageNumber || 0,
-          Length: 10,
-        };
-        await fetchPortfolios(requestData, false, true); // append mode
-        // setComplianceOfficerReconcilePortfolioSearch((prev) => ({
-        //   ...prev,
-        //   pageNumber: (prev.pageNumber || 0) + 10,
-        // }));
+        const requestData = buildApiRequest(
+          complianceOfficerReconcilePortfolioSearch,
+          assetTypeListingData
+        );
+        await fetchApiCall(requestData, false, false); // append mode
       } catch (error) {
         console.error("❌ Error loading more approvals:", error);
       } finally {
@@ -344,26 +305,6 @@ const ReconcilePortfolio = ({ activeFilters }) => {
     0,
     "border-less-table-blue"
   );
-  // ----------------------------------------------------------------
-  // 🔄 INITIAL LOAD (on mount)
-  // ----------------------------------------------------------------
-  useEffect(() => {
-    if (didFetchRef.current) return;
-    didFetchRef.current = true;
-
-    const requestData = buildPortfolioRequest({ PageNumber: 0, Length: 10 });
-    console.log("resetComplianceOfficerReconcilePortfoliosSearch");
-    fetchPortfolios(requestData, true);
-
-    try {
-      const navigationEntries = performance.getEntriesByType("navigation");
-      if (navigationEntries?.[0]?.type === "reload") {
-        resetComplianceOfficerReconcilePortfoliosSearch();
-      }
-    } catch (error) {
-      console.error("❌ Error detecting page reload:", error);
-    }
-  }, [fetchPortfolios, resetComplianceOfficerReconcilePortfoliosSearch]);
 
   // ----------------------------------------------------------------
   // 🔄 CLEANUP (on unmount)
@@ -371,13 +312,12 @@ const ReconcilePortfolio = ({ activeFilters }) => {
   useEffect(() => {
     return () => {
       setSortedInfo({});
-      setTableData({ rows: [], totalRecords: 0 });
       setLoadingMore(false);
       resetComplianceOfficerReconcilePortfoliosSearch();
       setComplianceOfficerReconcilePortfolioData({
-        data: [],
-        totalRecords: 0,
-        Apicall: false,
+        reconsilePortfolios: [],
+        totalRecordsDataBase: 0,
+        totalRecordsTable: 0,
       });
     };
   }, []);
@@ -388,16 +328,17 @@ const ReconcilePortfolio = ({ activeFilters }) => {
   return (
     <>
       <BorderlessTable
-        rows={tableData?.rows || []}
+        rows={complianceOfficerReconcilePortfolioData?.reconsilePortfolios || []}
         columns={columns}
         classNameTable="border-less-table-blue"
         scroll={
-          tableData?.rows?.length
+          complianceOfficerReconcilePortfolioData?.reconsilePortfolios?.length
             ? { x: "max-content", y: activeFilters.length > 0 ? 450 : 500 }
             : undefined
         }
         onChange={(_, __, sorter) => setSortedInfo(sorter || {})}
         loading={loadingMore}
+        ref={tableScrollCOReconcilePortfolio}
       />
 
       {/* To show view Detail Modal while click on View Detail Btn */}

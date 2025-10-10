@@ -62,7 +62,11 @@ export const ReconcileProvider = ({ children }) => {
   const [
     complianceOfficerReconcileTransactionData,
     setComplianceOfficerReconcileTransactionData,
-  ] = useState({ data: [], totalRecords: 0, apiCall: false });
+  ] = useState({
+    reconsileTransaction: [],
+    totalRecordsDataBase: 0,
+    totalRecordsTable: 0,
+  });
 
   /** Stores the latest MQTT update for Compliance Officer Transactions. */
   const [
@@ -74,7 +78,13 @@ export const ReconcileProvider = ({ children }) => {
   const [
     complianceOfficerReconcilePortfolioData,
     setComplianceOfficerReconcilePortfolioData,
-  ] = useState({ data: [], totalRecords: 0, apiCall: false });
+  ] = useState({
+    reconsilePortfolios: [],
+    // this is for to run lazy loading its data comming from database of total data in db
+    totalRecordsDataBase: 0,
+    // this is for to know how mush dta currently fetch from  db
+    totalRecordsTable: 0,
+  });
 
   /** Stores the latest MQTT update for Compliance Officer Portfolio. */
   const [
@@ -154,9 +164,9 @@ export const ReconcileProvider = ({ children }) => {
   const resetComplianceOfficerReconcilePortfolioTab = () => {
     setActiveTab("Transactions");
     setComplianceOfficerReconcilePortfolioData({
-      data: [],
-      totalRecords: 0,
-      apiCall: false,
+      reconsilePortfolios: [],
+      totalRecordsDataBase: 0,
+      totalRecordsTable: 0,
     });
     setComplianceOfficerReconcilePortfolioDataMqtt(false);
     setAggregateTotalQuantity(0);
@@ -166,9 +176,9 @@ export const ReconcileProvider = ({ children }) => {
   const resetComplianceOfficerReconcileTransactionTab = () => {
     setActiveTab("Transactions");
     setComplianceOfficerReconcileTransactionData({
-      data: [],
-      totalRecords: 0,
-      apiCall: false,
+      reconsileTransaction: [],
+      totalRecordsDataBase: 0,
+      totalRecordsTable: 0,
     });
     setComplianceOfficerReconcileTransactionDataMqtt(false);
   };

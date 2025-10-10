@@ -10,14 +10,52 @@ import ArrowDown from "../../../../../assets/img/arrow-down-dark.png";
 import EscalatedIcon from "../../../../../assets/img/escalated.png";
 
 // Helpers
-import { formatApiDateTime } from "../../../../../common/funtions/rejex";
+import {
+  formatApiDateTime,
+  toYYMMDD,
+} from "../../../../../common/funtions/rejex";
 import TypeColumnTitle from "../../../../../components/dropdowns/filters/typeColumnTitle";
 import StatusColumnTitle from "../../../../../components/dropdowns/filters/statusColumnTitle";
 import { useGlobalModal } from "../../../../../context/GlobalModalContext";
 import { useReconcileContext } from "../../../../../context/reconsileContax";
 import { getTradeTypeById } from "../../../../../common/funtions/type";
+import {
+  mapBuySellToIds,
+  mapStatusToIds,
+} from "../../../../../components/dropdowns/filters/utils";
 
+/**
+ * Build API request payload from search/filter state.
+ *
+ * @param {Object} searchState - Current filter/search state
+ * @param {Object} assetTypeListingData - Asset type data (from API)
+ * @param {string} assetType - Asset type key (e.g., "Equities")
+ * @returns {Object} API request payload
+ */
+export const buildApiRequest = (
+  searchState = {},
+  assetTypeListingData,
+) => {
+  const startDate = searchState.startDate
+    ? toYYMMDD(searchState.startDate)
+    : "";
+  const endDate = searchState.endDate ? toYYMMDD(searchState.endDate) : "";
 
+  return {
+    RequesterName: searchState.requesterName || "",
+    InstrumentName: searchState.instrumentName || "",
+    Quantity: searchState.quantity ? Number(searchState.quantity) : 0,
+    StartDate: startDate,
+    EndDate: endDate,
+    StatusIds: mapStatusToIds(searchState.status),
+    TypeIds: mapBuySellToIds(
+      searchState.type,
+      assetTypeListingData?.Equities
+    ),
+    PageNumber: Number(searchState.pageNumber) || 0,
+    Length: Number(searchState.pageSize) || 10,
+  };
+};
 
 /* ------------------------------------------------------------------ */
 /* 🔹 Sort Icon Helper */

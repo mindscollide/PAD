@@ -13,12 +13,42 @@ import TypeColumnTitle from "../../../../../components/dropdowns/filters/typeCol
 import StatusColumnTitle from "../../../../../components/dropdowns/filters/statusColumnTitle";
 
 // Helpers
-import { formatApiDateTime } from "../../../../../common/funtions/rejex";
+import { formatApiDateTime, toYYMMDD } from "../../../../../common/funtions/rejex";
 import { useGlobalModal } from "../../../../../context/GlobalModalContext";
 import { usePortfolioContext } from "../../../../../context/portfolioContax";
 import { getTradeTypeById } from "../../../../../common/funtions/type";
+import { mapBuySellToIds, mapStatusToIds } from "../../../../../components/dropdowns/filters/utils";
 
 const { Text } = Typography;
+
+
+/**
+ * Build API request payload from search/filter state.
+ *
+ * @param {Object} searchState - The current filter/search state
+ * @param {Object} assetTypeListingData - Asset type data for mapping buy/sell
+ * @returns {Object} - API request payload
+ */
+export const buildApiRequest = (searchState = {}, assetTypeListingData) => {
+  const startDate = searchState.startDate ? toYYMMDD(searchState.startDate) : "";
+  const endDate = searchState.endDate ? toYYMMDD(searchState.endDate) : "";
+
+  const typeIds = mapBuySellToIds(searchState.type, assetTypeListingData?.Equities);
+  const statusIds = mapStatusToIds(searchState.status);
+
+  return {
+    RequesterName: searchState.requesterName || "",
+    InstrumentName:
+      searchState.mainInstrumentName || searchState.instrumentName || "",
+    Quantity: searchState.quantity ? Number(searchState.quantity) : 0,
+    StartDate: startDate,
+    EndDate: endDate,
+    StatusIds: statusIds || [],
+    TypeIds: typeIds || [],
+    PageNumber: Number(searchState.pageNumber) || 0,
+    Length: Number(searchState.pageSize) || 10,
+  };
+};
 
 /* ------------------------------------------------------------------ */
 /* 🔹 Utility Functions */

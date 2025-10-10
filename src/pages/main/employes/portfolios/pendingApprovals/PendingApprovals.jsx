@@ -145,8 +145,6 @@ const PendingApprovals = ({ activeFilters }) => {
       assetTypeListingData,
     ]
   );
-  console.log("employeePendingApprovalsData", employeePendingApprovalSearch);
-  console.log("111employeePendingApprovalsData", employeePendingApprovalsData);
 
   // ----------------------------------------------------------------
   // 🔄 INITIAL LOAD (on mount)
@@ -243,11 +241,6 @@ const PendingApprovals = ({ activeFilters }) => {
           employeePendingApprovalSearch,
           assetTypeListingData
         );
-        console.log(
-          "employeePendingApprovalsData",
-          employeePendingApprovalsData
-        );
-        console.log("employeePendingApprovalsData", requestData);
 
         await fetchApiCall(requestData, false, false);
       } catch (err) {
