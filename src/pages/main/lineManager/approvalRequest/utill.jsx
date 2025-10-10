@@ -24,11 +24,11 @@ import { getTradeTypeById } from "../../../../common/funtions/type";
  * Utility: Build API request payload for approval listing.
  *
  * @param {Object} searchState - Current search/filter state
- * @param {Object} addApprovalRequestData - Extra request metadata (optional)
+ * @param {Object} assetTypeListingData - Extra request metadata (optional)
  *
  * @returns {Object} API-ready payload
  */
-export const buildApiRequest = (searchState = {}, addApprovalRequestData) => {
+export const buildApiRequest = (searchState = {}, assetTypeListingData) => {
   const {
     instrumentName = "",
     requesterName = "",
@@ -48,7 +48,7 @@ export const buildApiRequest = (searchState = {}, addApprovalRequestData) => {
     StartDate: startDate ? toYYMMDD(startDate) : "",
     EndDate: endDate ? toYYMMDD(endDate) : "",
     StatusIds: mapStatusToIds?.(status) || [],
-    TypeIds: mapBuySellToIds?.(type, addApprovalRequestData?.Equities) || [],
+    TypeIds: mapBuySellToIds?.(type, assetTypeListingData?.Equities) || [],
     PageNumber: Number(pageNumber) || 0,
     Length: Number(pageSize) || 10,
   };

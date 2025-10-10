@@ -79,7 +79,7 @@ const ReconcileTransaction = ({ activeFilters }) => {
     isViewTicketTransactionModal,
     uploadComplianceModal,
   } = useGlobalModal();
-  const { addApprovalRequestData } = useDashboardContext();
+  const { assetTypeListingData } = useDashboardContext();
 
   const {
     complianceOfficerReconcileTransactionsSearch,
@@ -166,7 +166,7 @@ const ReconcileTransaction = ({ activeFilters }) => {
       StatusIds: mapStatusToIds(searchState.status),
       TypeIds: mapBuySellToIds(
         searchState.type,
-        addApprovalRequestData?.[assetType]
+        assetTypeListingData?.[assetType]
       ),
       PageNumber: Number(searchState.pageNumber) || 0,
       Length: Number(searchState.pageSize) || 10,
@@ -204,7 +204,7 @@ const ReconcileTransaction = ({ activeFilters }) => {
           : [];
 
         const mapped = mapToTableRows(
-          addApprovalRequestData?.Equities,
+          assetTypeListingData?.Equities,
           transactions
         );
         console.log("fetchPendingApprovals", mapped);
@@ -221,7 +221,7 @@ const ReconcileTransaction = ({ activeFilters }) => {
         if (!loader) showLoader(false);
       }
     },
-    [callApi, showNotification, showLoader, navigate, addApprovalRequestData]
+    [callApi, showNotification, showLoader, navigate, assetTypeListingData]
   );
 
   // ----------------------------------------------------------------

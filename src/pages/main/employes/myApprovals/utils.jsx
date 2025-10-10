@@ -46,17 +46,17 @@ const COLUMN_CONFIG = {
  * Utility: Build API request payload for approval listing
  *
  * @param {Object} searchState - Current search/filter state
- * @param {Object} addApprovalRequestData - Extra request metadata (optional)
+ * @param {Object} assetTypeListingData - Extra request metadata (optional)
  * @returns {Object} API-ready payload
  */
-export const buildApiRequest = (searchState = {}, addApprovalRequestData) => ({
+export const buildApiRequest = (searchState = {}, assetTypeListingData) => ({
   InstrumentName: searchState.instrumentName || "",
   Quantity: searchState.quantity ? Number(searchState.quantity) : 0,
   StartDate: searchState.startDate ? toYYMMDD(searchState.startDate) : "",
   EndDate: searchState.endDate ? toYYMMDD(searchState.endDate) : "",
   StatusIds: mapStatusToIds?.(searchState.status) || [],
   TypeIds:
-    mapBuySellToIds?.(searchState.type, addApprovalRequestData?.Equities) || [],
+    mapBuySellToIds?.(searchState.type, assetTypeListingData?.Equities) || [],
   PageNumber: Number(searchState.pageNumber) || 0,
   Length: Number(searchState.pageSize) || 10,
 });

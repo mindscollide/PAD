@@ -47,7 +47,7 @@ const ApprovalRequest = () => {
   } = useGlobalModal();
 
   const { showNotification } = useNotification();
-  const { addApprovalRequestData } = useDashboardContext();
+  const { assetTypeListingData } = useDashboardContext();
   const { showLoader } = useGlobalLoader();
   const { callApi } = useApi();
 
@@ -96,14 +96,14 @@ const ApprovalRequest = () => {
           : [];
         // // map data according to used in table
         const mapped = mapEscalatedApprovalsToTableRows(
-          addApprovalRequestData?.Equities,
+          assetTypeListingData?.Equities,
           lineApprovals
         );
 
         setLineManagerApproval((prev) => ({
           lineApprovals: replace
             ? mapped
-            : [...(prev?.approvals || []), ...mapped],
+            : [...(prev?.lineApprovals || []), ...mapped],
           // this is for to run lazy loading its data comming from database of total data in db
           totalRecordsDataBase: res.totalRecords,
           // this is for to know how mush dta currently fetch from  db
@@ -135,7 +135,7 @@ const ApprovalRequest = () => {
         if (showLoaderFlag) showLoader(false);
       }
     },
-    [callApi, showNotification, showLoader, navigate, addApprovalRequestData]
+    [callApi, showNotification, showLoader, navigate, assetTypeListingData]
   );
 
   /**
@@ -146,7 +146,7 @@ const ApprovalRequest = () => {
     hasFetched.current = true;
     const requestData = buildApiRequest(
       lineManagerApprovalSearch,
-      addApprovalRequestData
+      assetTypeListingData
     );
 
     fetchApiCall(requestData, true, true);
@@ -162,7 +162,7 @@ const ApprovalRequest = () => {
       // requestData, replace , mainLoader
       const requestData = buildApiRequest(
         lineManagerApprovalSearch,
-        addApprovalRequestData
+        assetTypeListingData
       );
       fetchApiCall(requestData, true, true);
     }
@@ -172,7 +172,7 @@ const ApprovalRequest = () => {
     if (!lineManagerApprovalMqtt) return;
     const requestData = buildApiRequest(
       lineManagerApprovalSearch,
-      addApprovalRequestData
+      assetTypeListingData
     );
     fetchApiCall(requestData, true, true);
     setLineManagerApprovalMQtt(false);
@@ -304,7 +304,7 @@ const ApprovalRequest = () => {
         setLoadingMore(true);
         const requestData = buildApiRequest(
           lineManagerApprovalSearch,
-          addApprovalRequestData
+          assetTypeListingData
         );
 
         await fetchApiCall(requestData, false, false); // append mode

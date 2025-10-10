@@ -40,7 +40,7 @@ const PendingApprovals = ({ activeFilters }) => {
   const { callApi } = useApi();
   const { showNotification } = useNotification();
   const { showLoader } = useGlobalLoader();
-  const { employeeBasedBrokersData, addApprovalRequestData } =
+  const { employeeBasedBrokersData, assetTypeListingData } =
     useDashboardContext();
 
   const {
@@ -93,13 +93,13 @@ const PendingApprovals = ({ activeFilters }) => {
           navigate,
         });
 
-        const portfolios = Array.isArray(res?.pendingPortfolios)
+        const pendingPortfolios = Array.isArray(res?.pendingPortfolios)
           ? res.pendingPortfolios
           : [];
 
         const mapped = mapToTableRows(
-          addApprovalRequestData?.Equities,
-          portfolios,
+          assetTypeListingData?.Equities,
+          pendingPortfolios,
           brokerOptions
         );
 
@@ -142,7 +142,7 @@ const PendingApprovals = ({ activeFilters }) => {
       showLoader,
       navigate,
       brokerOptions,
-      addApprovalRequestData,
+      assetTypeListingData,
     ]
   );
   console.log("employeePendingApprovalsData", employeePendingApprovalSearch);
@@ -157,7 +157,7 @@ const PendingApprovals = ({ activeFilters }) => {
 
     const requestData = buildApiRequest(
       employeePendingApprovalSearch,
-      addApprovalRequestData
+      assetTypeListingData
     );
     fetchApiCall(requestData, true, true);
 
@@ -178,14 +178,14 @@ const PendingApprovals = ({ activeFilters }) => {
     if (employeePendingApprovalsDataMqtt) {
       const requestData = buildApiRequest(
         employeePendingApprovalSearch,
-        addApprovalRequestData
+        assetTypeListingData
       );
       fetchApiCall(requestData, true, true);
       setEmployeePendingApprovalsDataMqtt(false);
     }
 
     // const newRows = mapToTableRows(
-    //   addApprovalRequestData?.Equities,
+    //   assetTypeListingData?.Equities,
     //   Array.isArray(employeePendingApprovalsDataMqtt?.mqttRecivedData)
     //     ? employeePendingApprovalsDataMqtt.mqttRecivedData
     //     : [employeePendingApprovalsDataMqtt.mqttRecivedData],
@@ -219,7 +219,7 @@ const PendingApprovals = ({ activeFilters }) => {
     if (employeePendingApprovalSearch?.filterTrigger) {
       const requestData = buildApiRequest(
         employeePendingApprovalSearch,
-        addApprovalRequestData
+        assetTypeListingData
       );
       fetchApiCall(requestData, true, true);
     }
@@ -241,7 +241,7 @@ const PendingApprovals = ({ activeFilters }) => {
         setLoadingMore(true);
         const requestData = buildApiRequest(
           employeePendingApprovalSearch,
-          addApprovalRequestData
+          assetTypeListingData
         );
         console.log(
           "employeePendingApprovalsData",

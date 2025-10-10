@@ -62,7 +62,7 @@ const MyTransaction = () => {
   const { showNotification } = useNotification();
   const { showLoader } = useGlobalLoader();
 
-  const { addApprovalRequestData, employeeBasedBrokersData } =
+  const { assetTypeListingData, employeeBasedBrokersData } =
     useDashboardContext();
 
   const {
@@ -112,7 +112,7 @@ const MyTransaction = () => {
         ? res.transactions
         : [];
       const mapped = mapEmployeeTransactions(
-        addApprovalRequestData?.Equities,
+        assetTypeListingData?.Equities,
         transactions
       );
       if (!mapped || typeof mapped !== "object") return;
@@ -143,7 +143,7 @@ const MyTransaction = () => {
       });
     },
     [
-      addApprovalRequestData,
+      assetTypeListingData,
       callApi,
       navigate,
       setEmployeeMyTransactionSearch,
@@ -184,7 +184,7 @@ const MyTransaction = () => {
     hasFetched.current = true;
     const requestData = buildApiRequest(
       employeeMyTransactionSearch,
-      addApprovalRequestData
+      assetTypeListingData
     );
     fetchApiCall(requestData, true, true);
 
@@ -197,7 +197,7 @@ const MyTransaction = () => {
     if (employeeMyTransactionSearch.filterTrigger) {
       const requestData = buildApiRequest(
         employeeMyTransactionSearch,
-        addApprovalRequestData
+        assetTypeListingData
       );
       fetchApiCall(requestData, true, true);
     }
@@ -208,7 +208,7 @@ const MyTransaction = () => {
     if (employeeTransactionsTableDataMqtt) {
       const requestData = buildApiRequest(
         employeeMyTransactionSearch,
-        addApprovalRequestData
+        assetTypeListingData
       );
       fetchApiCall(requestData, true, true);
       setEmployeeTransactionsTableDataMqtt(false);
@@ -228,7 +228,7 @@ const MyTransaction = () => {
         setLoadingMore(true);
         const requestData = buildApiRequest(
           employeeMyTransactionSearch,
-          addApprovalRequestData
+          assetTypeListingData
         );
         await fetchApiCall(requestData, false, false);
       } catch (err) {

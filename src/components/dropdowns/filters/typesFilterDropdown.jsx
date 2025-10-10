@@ -25,7 +25,7 @@ const TypeFilterDropdown = ({
 }) => {
   const navigate = useNavigate();
   const { selectedKey } = useSidebarContext();
-  const { addApprovalRequestData } = useDashboardContext();
+  const { assetTypeListingData } = useDashboardContext();
   const { showLoader } = useGlobalLoader();
   const { showNotification } = useNotification();
   const { setIsEmployeeMyApproval, setLineManagerApproval } = useMyApproval();
@@ -33,7 +33,7 @@ const TypeFilterDropdown = ({
   const { setEmployeeTransactionsData } = useTransaction();
 
   const { callApi } = useApi();
-  const typeOptions = getTypeOptions(addApprovalRequestData);
+  const typeOptions = getTypeOptions(assetTypeListingData);
   const toggleSelection = (type) => {
     setTempSelected((prev) =>
       prev.includes(type)
@@ -73,7 +73,7 @@ const TypeFilterDropdown = ({
         await apiCallType({
           selectedKey,
           newdata,
-          addApprovalRequestData,
+          assetTypeListingData,
           state,
           callApi,
           showNotification,
@@ -115,7 +115,7 @@ const TypeFilterDropdown = ({
         await apiCallType({
           selectedKey,
           newdata,
-          addApprovalRequestData,
+          assetTypeListingData,
           state,
           callApi,
           showNotification,

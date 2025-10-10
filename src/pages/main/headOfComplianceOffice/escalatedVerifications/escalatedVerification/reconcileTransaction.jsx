@@ -96,7 +96,7 @@ const EscalatedTransactionVerifications = () => {
     nonCompliantDeclineModal,
     isViewTicketTransactionModal,
   } = useGlobalModal();
-  const { addApprovalRequestData } = useDashboardContext();
+  const { assetTypeListingData } = useDashboardContext();
 
   // Search & Filter Contexts
   const {
@@ -209,7 +209,7 @@ const EscalatedTransactionVerifications = () => {
       EscalatedDateTo: EscalatedDateTo,
       StatusIds: mapStatusToIds(searchState.status) || [],
       TypeIds:
-        mapBuySellToIds(searchState.type, addApprovalRequestData?.Equities) ||
+        mapBuySellToIds(searchState.type, assetTypeListingData?.Equities) ||
         [],
 
       PageNumber: Number(searchState.pageNumber) || 0,
@@ -264,7 +264,7 @@ const EscalatedTransactionVerifications = () => {
           : [];
 
         const mapped = mapToTableRows(
-          addApprovalRequestData?.Equities,
+          assetTypeListingData?.Equities,
           transactions
         );
 
@@ -286,7 +286,7 @@ const EscalatedTransactionVerifications = () => {
         if (!loader) showLoader(false);
       }
     },
-    [callApi, showNotification, showLoader, navigate, addApprovalRequestData]
+    [callApi, showNotification, showLoader, navigate, assetTypeListingData]
   );
 
   // ===========================================================================

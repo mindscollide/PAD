@@ -29,19 +29,19 @@ const { Text } = Typography;
  * Build API request payload for portfolio listing
  *
  * @param {Object} searchState - Current search/filter state
- * @param {Object} addApprovalRequestData - Extra request metadata
+ * @param {Object} assetTypeListingData - Extra request metadata
  * @param {String} assetType - Asset type key (e.g., "Equities")
  * @returns {Object} API-ready payload
  */
 export const buildApiRequest = (
   searchState = {},
-  addApprovalRequestData
+  assetTypeListingData
 ) => ({
   InstrumentName: searchState.instrumentName || "",
   Quantity: searchState.quantity ? Number(searchState.quantity) : 0,
   StartDate: searchState.startDate ? toYYMMDD(searchState.startDate) : "",
   StatusIds: mapStatusToIds(searchState.status),
-  TypeIds: mapBuySellToIds(searchState.type, addApprovalRequestData?.Equities),
+  TypeIds: mapBuySellToIds(searchState.type, assetTypeListingData?.Equities),
   EndDate: searchState.endDate ? toYYMMDD(searchState.endDate) : "",
   BrokerIds: Array.isArray(searchState.brokerIDs) ? searchState.brokerIDs : [],
   PageNumber: Number(searchState.pageNumber) || 0,

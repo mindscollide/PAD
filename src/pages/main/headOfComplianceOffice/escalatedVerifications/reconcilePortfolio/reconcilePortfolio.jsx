@@ -97,7 +97,7 @@ const ReconcilePortfolioHCO = () => {
     nonCompliantDeclineModal,
     noteGlobalModal,
   } = useGlobalModal();
-  const { addApprovalRequestData } = useDashboardContext();
+  const { assetTypeListingData } = useDashboardContext();
 
   // Search & Filter Contexts
   const {
@@ -211,7 +211,7 @@ const ReconcilePortfolioHCO = () => {
       EscalatedDateTo: EscalatedDateTo,
       StatusIds: mapStatusToIds(searchState.status) || [],
       TypeIds:
-        mapBuySellToIds(searchState.type, addApprovalRequestData?.Equities) ||
+        mapBuySellToIds(searchState.type, assetTypeListingData?.Equities) ||
         [],
       PageNumber: Number(searchState.pageNumber) || 0,
       Length:
@@ -264,7 +264,7 @@ const ReconcilePortfolioHCO = () => {
           ? res.transactions
           : [];
         const mapped = mapToTableRows(
-          addApprovalRequestData?.Equities,
+          assetTypeListingData?.Equities,
           portfolios
         );
         console.log("res", mapped);
@@ -287,7 +287,7 @@ const ReconcilePortfolioHCO = () => {
         if (!loader) showLoader(false);
       }
     },
-    [callApi, showNotification, showLoader, navigate, addApprovalRequestData]
+    [callApi, showNotification, showLoader, navigate, assetTypeListingData]
   );
 
   // ===========================================================================

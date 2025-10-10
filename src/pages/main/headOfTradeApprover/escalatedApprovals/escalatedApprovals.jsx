@@ -56,7 +56,7 @@ const EscalatedApprovals = () => {
   const { showNotification } = useNotification();
   const { showLoader } = useGlobalLoader();
   const { callApi } = useApi();
-  const { addApprovalRequestData } = useDashboardContext();
+  const { assetTypeListingData } = useDashboardContext();
 
   const {
     viewDetailsHeadOfApprovalModal,
@@ -103,7 +103,7 @@ const EscalatedApprovals = () => {
       EscalatedDateTo: formatDate(searchState.escalatedDateTo),
       StatusIds: mapStatusToIds(searchState.status) || [],
       TypeIds:
-        mapBuySellToIds(searchState.type, addApprovalRequestData?.Equities) ||
+        mapBuySellToIds(searchState.type, assetTypeListingData?.Equities) ||
         [],
       PageNumber: Number(searchState.pageNumber) || 0,
       Length: Number(searchState.pageSize) || 10,
@@ -140,7 +140,7 @@ const EscalatedApprovals = () => {
           : [];
 
         const mappedData = mapEscalatedApprovalsToTableRows(
-          addApprovalRequestData?.Equities,
+          assetTypeListingData?.Equities,
           transactions
         );
 
@@ -160,7 +160,7 @@ const EscalatedApprovals = () => {
         if (showLoaderFlag) showLoader(false);
       }
     },
-    [callApi, showNotification, showLoader, navigate, addApprovalRequestData]
+    [callApi, showNotification, showLoader, navigate, assetTypeListingData]
   );
 
   // ===========================================================================

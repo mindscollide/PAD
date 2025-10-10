@@ -90,7 +90,7 @@ const ReconcilePortfolio = ({ activeFilters }) => {
     setComplianceOfficerReconcilePortfolioDataMqtt,
     complianceOfficerReconcilePortfolioDataMqtt,
   } = useReconcileContext();
-  const { addApprovalRequestData } = useDashboardContext();
+  const { assetTypeListingData } = useDashboardContext();
   // -------------------------
   // ✅ Local state
   // -------------------------
@@ -145,7 +145,7 @@ const ReconcilePortfolio = ({ activeFilters }) => {
     const endDate = searchState.endDate ? toYYMMDD(searchState.endDate) : "";
     const TypeIds = mapBuySellToIds(
       searchState.type,
-      addApprovalRequestData?.Equities
+      assetTypeListingData?.Equities
     );
     const statusIds = mapStatusToIds(searchState.status);
     return {
@@ -189,7 +189,7 @@ const ReconcilePortfolio = ({ activeFilters }) => {
         });
         const portfolios = Array.isArray(res?.portfolios) ? res.portfolios : [];
         const mapped = mapToTableRows(
-          addApprovalRequestData?.Equities,
+          assetTypeListingData?.Equities,
           portfolios
         );
 
@@ -250,7 +250,7 @@ const ReconcilePortfolio = ({ activeFilters }) => {
   //   if (!complianceOfficerReconcilePortfolioDataMqtt?.mqtt) return;
 
   //   const newRows = mapToTableRows(
-  //     addApprovalRequestData?.Equities,
+  //     assetTypeListingData?.Equities,
   //     Array.isArray(complianceOfficerReconcilePortfolioDataMqtt?.data)
   //       ? complianceOfficerReconcilePortfolioDataMqtt.data
   //       : [complianceOfficerReconcilePortfolioDataMqtt.data]

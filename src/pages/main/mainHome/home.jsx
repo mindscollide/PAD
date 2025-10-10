@@ -37,7 +37,7 @@ const Home = () => {
     setDashboardData,
     setEmployeeBasedBrokersData,
     setAllInstrumentsData,
-    setAddApprovalRequestData,
+    setAssetTypeListingData,
     setGetAllPredefineReasonData,
   } = useDashboardContext();
   const { setWebNotificationData } = useWebNotification();
@@ -115,7 +115,7 @@ const Home = () => {
           callApi,
           setEmployeeBasedBrokersData,
           setAllInstrumentsData,
-          setAddApprovalRequestData,
+          setAssetTypeListingData,
           setGetAllPredefineReasonData,
           setWebNotificationData,
           showNotification,

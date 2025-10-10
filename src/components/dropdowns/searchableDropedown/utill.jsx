@@ -419,7 +419,7 @@ export const apiCallSearch = async ({
   selectedKey,
   employeeMyApprovalSearch,
   employeeMyTransactionSearch,
-  addApprovalRequestData,
+  assetTypeListingData,
   callApi,
   showNotification,
   showLoader,
@@ -433,7 +433,7 @@ export const apiCallSearch = async ({
       case "1": {
         const TypeIds = mapBuySellToIds(
           employeeMyApprovalSearch.type,
-          addApprovalRequestData?.Equities
+          assetTypeListingData?.Equities
         );
 
         const statusIds = mapStatusToIds(employeeMyApprovalSearch.status);
@@ -467,7 +467,7 @@ export const apiCallSearch = async ({
           // Add case 2 logic here when needed
           const TypeIds = mapBuySellToIds(
             employeeMyTransactionSearch.type,
-            addApprovalRequestData?.Equities
+            assetTypeListingData?.Equities
           );
 
           const statusIds = mapStatusToIds(employeeMyTransactionSearch.status);

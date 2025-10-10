@@ -34,7 +34,7 @@ const EquitiesApproval = () => {
   const {
     employeeBasedBrokersData,
     allInstrumentsData,
-    addApprovalRequestData,
+    assetTypeListingData,
   } = useDashboardContext();
 
   const { showNotification } = useNotification();
@@ -74,8 +74,8 @@ const EquitiesApproval = () => {
   }, []);
 
   //the types should come dynamicallyy like it should be Equities, FixedIncome
-  const assetTypeKey = Object.keys(addApprovalRequestData || {})[0]; // e.g., "Equities"
-  const assetTypeData = addApprovalRequestData?.[assetTypeKey];
+  const assetTypeKey = Object.keys(assetTypeListingData || {})[0]; // e.g., "Equities"
+  const assetTypeData = assetTypeListingData?.[assetTypeKey];
 
   // this is how I extract data fro the AllInstrumentsData which is stored in dashboardContextApi
   const formattedInstruments = (allInstrumentsData || []).map((item) => ({
@@ -101,7 +101,7 @@ const EquitiesApproval = () => {
     raw: broker, // keep full broker data for later use
   }));
 
-  // Format type options from addApprovalRequestData show data in type Select
+  // Format type options from assetTypeListingData show data in type Select
   const typeOptions = Array.isArray(assetTypeData?.items)
     ? assetTypeData?.items.map((item) => ({
         label: item.type,

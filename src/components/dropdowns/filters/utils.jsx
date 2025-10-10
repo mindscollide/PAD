@@ -42,17 +42,17 @@ export const emtStatusOptionsForPendingApproval = ["Pending", "Non-Compliant"];
 // -----------------------------------------------------------------------------
 
 /**
- * Extracts "Type" options from addApprovalRequestData for dropdowns.
+ * Extracts "Type" options from assetTypeListingData for dropdowns.
  *
- * @param {Object} addApprovalRequestData - Data containing asset type information.
+ * @param {Object} assetTypeListingData - Data containing asset type information.
  * @returns {Array<{label: string, value: number, assetTypeID: number}>}
  */
-export const getTypeOptions = (addApprovalRequestData) => {
-  if (!addApprovalRequestData || typeof addApprovalRequestData !== "object")
+export const getTypeOptions = (assetTypeListingData) => {
+  if (!assetTypeListingData || typeof assetTypeListingData !== "object")
     return [];
 
-  const assetKey = Object.keys(addApprovalRequestData)[0]; // e.g., "Equities"
-  const assetData = addApprovalRequestData[assetKey];
+  const assetKey = Object.keys(assetTypeListingData)[0]; // e.g., "Equities"
+  const assetData = assetTypeListingData[assetKey];
 
   if (!Array.isArray(assetData?.items)) return [];
 
@@ -205,7 +205,7 @@ const buildTransactionRequestData = ({ state, statusIds, typeIds }) => {
  * @param {Object} params - Parameters.
  * @param {string} params.selectedKey - Selected tab key ("1", "2", "3", "6").
  * @param {string[]} params.newdata - Selected type values.
- * @param {Object} params.addApprovalRequestData - Asset type data.
+ * @param {Object} params.assetTypeListingData - Asset type data.
  * @param {Object} params.state - Current state (filters, pagination, etc.).
  * @param {Function} params.callApi - API caller.
  * @param {Function} params.showNotification - Notification handler.
@@ -218,7 +218,7 @@ const buildTransactionRequestData = ({ state, statusIds, typeIds }) => {
 export const apiCallType = async ({
   selectedKey,
   newdata,
-  addApprovalRequestData,
+  assetTypeListingData,
   state,
   callApi,
   showNotification,
@@ -229,7 +229,7 @@ export const apiCallType = async ({
   setEmployeeTransactionsData,
 }) => {
   const assetType = state.assetType || "Equities";
-  const typeIds = mapBuySellToIds(newdata, addApprovalRequestData?.[assetType]);
+  const typeIds = mapBuySellToIds(newdata, assetTypeListingData?.[assetType]);
   const statusIds = mapStatusToIds(state.status);
 
   let requestdata, data;
@@ -294,7 +294,7 @@ export const apiCallType = async ({
  * @param {string} params.selectedKey - Selected tab key ("1", "2", "3", "6").
  * @param {string[]} params.newdata - Selected status values.
  * @param {Object} params.state - Current state (filters, pagination, etc.).
- * @param {Object} params.addApprovalRequestData - Asset type data.
+ * @param {Object} params.assetTypeListingData - Asset type data.
  * @param {Function} params.callApi - API caller.
  * @param {Function} params.showNotification - Notification handler.
  * @param {Function} params.showLoader - Loader toggle function.
@@ -307,7 +307,7 @@ export const apiCallStatus = async ({
   selectedKey,
   newdata,
   state,
-  addApprovalRequestData,
+  assetTypeListingData,
   callApi,
   showNotification,
   showLoader,
@@ -316,7 +316,7 @@ export const apiCallStatus = async ({
   setEmployeeTransactionsData,
   setLineManagerApproval,
 }) => {
-  const typeIds = mapBuySellToIds(state.type, addApprovalRequestData?.Equities);
+  const typeIds = mapBuySellToIds(state.type, assetTypeListingData?.Equities);
 
   let statusIds, requestdata, data;
 

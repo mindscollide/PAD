@@ -53,7 +53,7 @@ const StatusFilterDropdown = ({
   const navigate = useNavigate();
   const location = useLocation();
   const { selectedKey } = useSidebarContext();
-  const { addApprovalRequestData } = useDashboardContext();
+  const { assetTypeListingData } = useDashboardContext();
   const { callApi } = useApi();
   const { showLoader } = useGlobalLoader();
   const { showNotification } = useNotification();
@@ -145,7 +145,7 @@ const StatusFilterDropdown = ({
         selectedKey,
         newdata: tempSelected,
         state,
-        addApprovalRequestData,
+        assetTypeListingData,
         callApi,
         showNotification,
         showLoader,
@@ -188,7 +188,7 @@ const StatusFilterDropdown = ({
         selectedKey,
         newdata: [],
         state,
-        addApprovalRequestData,
+        assetTypeListingData,
         callApi,
         showNotification,
         showLoader,

@@ -50,7 +50,7 @@ const Approval = () => {
   const tableScrollEmployeeApproval = useRef(null);
 
   // ----------------- Contexts -----------------
-  const { addApprovalRequestData } = useDashboardContext();
+  const { assetTypeListingData } = useDashboardContext();
   const { showNotification } = useNotification();
   const { showLoader } = useGlobalLoader();
   const { callApi } = useApi();
@@ -94,7 +94,7 @@ const Approval = () => {
   // from the add Approval Request in Approval list to send that selected assetType Id into AssetTypeID in
   // AddTradeApprovalRequest Api
 
-  const menuItems = Object.entries(addApprovalRequestData || {}).reduce(
+  const menuItems = Object.entries(assetTypeListingData || {}).reduce(
     (acc, [categoryLabel, categoryData]) => {
       const items = categoryData?.items || [];
 
@@ -143,7 +143,7 @@ const Approval = () => {
       const approvals = Array.isArray(res?.approvals) ? res.approvals : [];
 
       const mapped = mapEmployeeMyApprovalData(
-        addApprovalRequestData?.Equities,
+        assetTypeListingData?.Equities,
         approvals
       );
 
@@ -172,7 +172,7 @@ const Approval = () => {
       });
     },
     [
-      addApprovalRequestData,
+      assetTypeListingData,
       callApi,
       navigate,
       setIsEmployeeMyApproval,
@@ -269,7 +269,7 @@ const Approval = () => {
       hasFetched.current = true;
       const requestData = buildApiRequest(
         employeeMyApprovalSearch,
-        addApprovalRequestData
+        assetTypeListingData
       );
 
       fetchApiCall(requestData, true, true);
@@ -289,7 +289,7 @@ const Approval = () => {
     if (employeeMyApprovalSearch.filterTrigger) {
       const requestData = buildApiRequest(
         employeeMyApprovalSearch,
-        addApprovalRequestData
+        assetTypeListingData
       );
 
       fetchApiCall(requestData, true, true);
@@ -312,7 +312,7 @@ const Approval = () => {
       setIsEmployeeMyApprovalMqtt(false);
       const requestData = buildApiRequest(
         employeeMyApprovalSearch,
-        addApprovalRequestData
+        assetTypeListingData
       );
 
       fetchApiCall(requestData, true, true);
@@ -332,7 +332,7 @@ const Approval = () => {
         setLoadingMore(true);
         const requestData = buildApiRequest(
           employeeMyApprovalSearch,
-          addApprovalRequestData
+          assetTypeListingData
         );
         await fetchApiCall(requestData, false, false);
       } catch (err) {
