@@ -1,12 +1,10 @@
 import React, { useEffect, useState, useRef, useCallback } from "react";
 import { Col, Row } from "antd";
 import { useNavigate } from "react-router-dom";
-import moment from "moment";
 
 // 🔹 Components
 import BorderlessTable from "../../../../components/tables/borderlessTable/borderlessTable";
 import PageLayout from "../../../../components/pageContainer/pageContainer";
-import EmptyState from "../../../../components/emptyStates/empty-states";
 import ViewDetailsTransactionModal from "./modals/viewDetailsTransactionModal/ViewDetailsTransactionModal";
 import ViewTransactionCommentModal from "./modals/viewTransactionCommentModal/ViewTransactionCommentModal";
 import ViewTicketTransactionModal from "./modals/viewTicketTransactionModal/ViewTicketTransactionModal";
@@ -38,6 +36,7 @@ import {
 import style from "./myTransaction.module.css";
 import { buildBrokerOptions } from "../../../../common/funtions/brokersList";
 import { useTableScrollBottom } from "../../../../common/funtions/scroll";
+import { getSafeAssetTypeData } from "../../../../common/funtions/assetTypesList";
 
 /**
  * 📄 MyTransaction Component
@@ -62,8 +61,11 @@ const MyTransaction = () => {
   const { showNotification } = useNotification();
   const { showLoader } = useGlobalLoader();
 
-  const { assetTypeListingData, employeeBasedBrokersData } =
-    useDashboardContext();
+  const {
+    assetTypeListingData,
+    setAssetTypeListingData,
+    employeeBasedBrokersData,
+  } = useDashboardContext();
 
   const {
     employeeMyTransactionSearch,
@@ -108,11 +110,19 @@ const MyTransaction = () => {
         requestdata: requestData,
         navigate,
       });
+
+      // ✅ Always get the freshest version (from memory or session)
+      const currentAssetTypeData = getSafeAssetTypeData(
+        assetTypeListingData,
+        setAssetTypeListingData
+      );
+
       const transactions = Array.isArray(res?.transactions)
         ? res.transactions
         : [];
+        
       const mapped = mapEmployeeTransactions(
-        assetTypeListingData?.Equities,
+        currentAssetTypeData?.Equities,
         transactions
       );
       if (!mapped || typeof mapped !== "object") return;
@@ -122,7 +132,7 @@ const MyTransaction = () => {
           ? mapped
           : [...(prev?.transactions || []), ...mapped],
         // this is for to run lazy loading its data comming from database of total data in db
-        totalRecordsDataBase: res?.totalRecords,
+        totalRecordsDataBase: res?.totalRecords || 0,
         // this is for to know how mush dta currently fetch from  db
         totalRecordsTable: replace
           ? mapped.length
@@ -134,7 +144,7 @@ const MyTransaction = () => {
           pageNumber: replace ? mapped.length : prev.pageNumber + mapped.length,
         };
 
-          // this is for check if filter value get true only on that it will false
+        // this is for check if filter value get true only on that it will false
         if (prev.filterTrigger) {
           next.filterTrigger = false;
         }
@@ -219,7 +229,7 @@ const MyTransaction = () => {
   useTableScrollBottom(
     async () => {
       if (
-        employeeTransactionsData?.totalRecordsDataBase ===
+        employeeTransactionsData?.totalRecordsDataBase <=
         employeeTransactionsData?.totalRecordsTable
       )
         return;

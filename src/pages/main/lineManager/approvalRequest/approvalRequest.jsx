@@ -8,7 +8,6 @@ import {
 } from "./utill";
 import { approvalStatusMap } from "../../../../components/tables/borderlessTable/utill";
 import PageLayout from "../../../../components/pageContainer/pageContainer";
-import EmptyState from "../../../../components/emptyStates/empty-states";
 import style from "./approvalRequest.module.css";
 import { useSearchBarContext } from "../../../../context/SearchBarContaxt";
 import { useGlobalModal } from "../../../../context/GlobalModalContext";
@@ -28,6 +27,7 @@ import {
 import { useNavigate } from "react-router-dom";
 import { useDashboardContext } from "../../../../context/dashboardContaxt";
 import { useTableScrollBottom } from "../../../../common/funtions/scroll";
+import { getSafeAssetTypeData } from "../../../../common/funtions/assetTypesList";
 
 const ApprovalRequest = () => {
   const navigate = useNavigate();
@@ -46,7 +46,8 @@ const ApprovalRequest = () => {
   } = useGlobalModal();
 
   const { showNotification } = useNotification();
-  const { assetTypeListingData } = useDashboardContext();
+  const { assetTypeListingData, setAssetTypeListingData } =
+    useDashboardContext();
   const { showLoader } = useGlobalLoader();
   const { callApi } = useApi();
 
@@ -90,12 +91,18 @@ const ApprovalRequest = () => {
           navigate,
         });
 
+        // ✅ Always get the freshest version (from memory or session)
+        const currentAssetTypeData = getSafeAssetTypeData(
+          assetTypeListingData,
+          setAssetTypeListingData
+        );
+
         const lineApprovals = Array.isArray(res?.lineApprovals)
           ? res.lineApprovals
           : [];
         // // map data according to used in table
         const mapped = mapEscalatedApprovalsToTableRows(
-          assetTypeListingData?.Equities,
+          currentAssetTypeData?.Equities,
           lineApprovals
         );
 
@@ -104,7 +111,7 @@ const ApprovalRequest = () => {
             ? mapped
             : [...(prev?.lineApprovals || []), ...mapped],
           // this is for to run lazy loading its data comming from database of total data in db
-          totalRecordsDataBase: res.totalRecords,
+          totalRecordsDataBase: res.totalRecords || 0,
           // this is for to know how mush dta currently fetch from  db
           totalRecordsTable: replace
             ? mapped.length
@@ -294,7 +301,7 @@ const ApprovalRequest = () => {
   useTableScrollBottom(
     async () => {
       if (
-        lineManagerApproval?.totalRecordsDataBase ===
+        lineManagerApproval?.totalRecordsDataBase <=
         lineManagerApproval?.totalRecordsTable
       )
         return;

@@ -3,9 +3,6 @@
 import React, { useEffect, useState, useCallback, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 
-// 📦 Third-party imports
-import moment from "moment";
-
 // 🔹 Component imports
 import BorderlessTable from "../../../../../components/tables/borderlessTable/borderlessTable";
 
@@ -29,19 +26,12 @@ import { useGlobalModal } from "../../../../../context/GlobalModalContext";
 import { useNotification } from "../../../../../components/NotificationProvider/NotificationProvider";
 
 // 🔹 API imports
-import { SearchEmployeePendingUploadedPortFolio } from "../../../../../api/protFolioApi";
-import { GetAllTransactionViewDetails } from "../../../../../api/myTransactionsApi";
 import {
   GetAllComplianceOfficerReconcileTransactionAndPortfolioRequest,
   SearchHeadOfComplianceEscalatedTransactionsAPI,
 } from "../../../../../api/reconsile";
 
 // 🔹 Helper imports
-import {
-  mapBuySellToIds,
-  mapStatusToIds,
-} from "../../../../../components/dropdowns/filters/utils";
-import { toYYMMDD } from "../../../../../common/funtions/rejex";
 import ViewDetailHeadOfComplianceReconcileTransaction from "./modals/viewDetailHeadOfComplianceReconcileTransactions/ViewDetailHeadOfComplianceReconcileTransaction";
 import UploadHeadOfComplianceTicketModal from "./modals/uploadHeadOfComplianceTicketModal/UploadHeadOfComplianceTicketModal";
 import NoteHeadOfComplianceModal from "./modals/noteHeadOfComplianceModal/NoteHeadOfComplianceModal";
@@ -49,21 +39,7 @@ import ApproveHeadOfComplianceModal from "./modals/approveHeadOfComplianceModal/
 import DeclinedHeadOfComplianceModal from "./modals/declinedHeadOfComplianceModal/DeclinedHeadOfComplianceModal";
 import ViewTicketEscalatedModal from "./modals/viewTicketEscalatedModal/ViewTicketEscalatedModal";
 import { useTableScrollBottom } from "../../../../../common/funtions/scroll";
-
-// 🔹 Modal imports
-// =============================================================================
-// 🎯 CONSTANTS & CONFIGURATION
-// =============================================================================
-
-/**
- * Configuration constants for the component
- */
-const COMPONENT_CONFIG = {
-  ASSET_TYPE: "Equities",
-  DEFAULT_PAGE_SIZE: 10,
-  TABLE_SCROLL_Y: 550,
-  TABLE_CLASS_NAME: "border-less-table-blue",
-};
+import { getSafeAssetTypeData } from "../../../../../common/funtions/assetTypesList";
 
 // =============================================================================
 // 🎯 MAIN COMPONENT
@@ -87,7 +63,6 @@ const EscalatedTransactionVerifications = ({ activeFilters }) => {
   // ===========================================================================
 
   const [sortedInfo, setSortedInfo] = useState({});
-  const [tableData, setTableData] = useState({ rows: [], totalRecords: 0 });
   const [loadingMore, setLoadingMore] = useState(false);
 
   // Prevent duplicate API calls in StrictMode
@@ -111,7 +86,8 @@ const EscalatedTransactionVerifications = ({ activeFilters }) => {
     nonCompliantDeclineModal,
     isViewTicketTransactionModal,
   } = useGlobalModal();
-  const { assetTypeListingData } = useDashboardContext();
+  const { assetTypeListingData, setAssetTypeListingData } =
+    useDashboardContext();
 
   // Search & Filter Contexts
   const {
@@ -200,12 +176,18 @@ const EscalatedTransactionVerifications = ({ activeFilters }) => {
           navigate,
         });
 
+        // ✅ Always get the freshest version (from memory or session)
+        const currentAssetTypeData = getSafeAssetTypeData(
+          assetTypeListingData,
+          setAssetTypeListingData
+        );
+
         const escalatedVerification = Array.isArray(res?.transactions)
           ? res.transactions
           : [];
 
         const mapped = mapToTableRows(
-          assetTypeListingData?.Equities,
+          currentAssetTypeData?.Equities,
           escalatedVerification
         );
 
@@ -291,7 +273,7 @@ const EscalatedTransactionVerifications = ({ activeFilters }) => {
   useTableScrollBottom(
     async () => {
       if (
-        headOfComplianceApprovalEscalatedVerificationsData?.totalRecordsDataBase ===
+        headOfComplianceApprovalEscalatedVerificationsData?.totalRecordsDataBase <=
         headOfComplianceApprovalEscalatedVerificationsData?.totalRecordsTable
       ) {
         return;

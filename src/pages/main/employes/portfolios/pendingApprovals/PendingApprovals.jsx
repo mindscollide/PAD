@@ -2,7 +2,6 @@
 
 import React, { useEffect, useState, useCallback, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import moment from "moment";
 
 // Components
 import BorderlessTable from "../../../../../components/tables/borderlessTable/borderlessTable";
@@ -29,6 +28,7 @@ import { useNotification } from "../../../../../components/NotificationProvider/
 // API
 import { SearchEmployeePendingUploadedPortFolio } from "../../../../../api/protFolioApi";
 import { useTableScrollBottom } from "../../../../../common/funtions/scroll";
+import { getSafeAssetTypeData } from "../../../../../common/funtions/assetTypesList";
 
 const PendingApprovals = ({ activeFilters }) => {
   const navigate = useNavigate();
@@ -40,8 +40,11 @@ const PendingApprovals = ({ activeFilters }) => {
   const { callApi } = useApi();
   const { showNotification } = useNotification();
   const { showLoader } = useGlobalLoader();
-  const { employeeBasedBrokersData, assetTypeListingData } =
-    useDashboardContext();
+  const {
+    employeeBasedBrokersData,
+    assetTypeListingData,
+    setAssetTypeListingData,
+  } = useDashboardContext();
 
   const {
     employeePendingApprovalSearch,
@@ -92,13 +95,19 @@ const PendingApprovals = ({ activeFilters }) => {
           requestdata: requestData,
           navigate,
         });
+        
+        // ✅ Always get the freshest version (from memory or session)
+        const currentAssetTypeData = getSafeAssetTypeData(
+          assetTypeListingData,
+          setAssetTypeListingData
+        );
 
         const pendingPortfolios = Array.isArray(res?.pendingPortfolios)
           ? res.pendingPortfolios
           : [];
 
         const mapped = mapToTableRows(
-          assetTypeListingData?.Equities,
+          currentAssetTypeData?.Equities,
           pendingPortfolios,
           brokerOptions
         );
@@ -108,7 +117,7 @@ const PendingApprovals = ({ activeFilters }) => {
             ? mapped
             : [...(prev?.pendingApprovalsData || []), ...mapped],
           // this is for to run lazy loading its data comming from database of total data in db
-          totalRecordsDataBase: res?.totalRecords,
+          totalRecordsDataBase: res?.totalRecords || 0,
           // this is for to know how mush dta currently fetch from  db
           totalRecordsTable: replace
             ? mapped.length

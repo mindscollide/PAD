@@ -77,7 +77,9 @@ const SideBar = () => {
             setEmployeeBasedBrokersData
           );
           restoreAndRemove("allInstrumentsData", setAllInstrumentsData);
-          restoreAndRemove("assetTypeListingData", setAssetTypeListingData);
+          if (lastSelectedKey === "0") {
+            restoreAndRemove("assetTypeListingData", setAssetTypeListingData);
+          }
           restoreAndRemove(
             "getAllPredefineReasonData",
             setGetAllPredefineReasonData
