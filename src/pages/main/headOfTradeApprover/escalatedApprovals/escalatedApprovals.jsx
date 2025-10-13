@@ -40,6 +40,7 @@ import ViewCommentHeadOfApprovalModal from "./modals/viewCommentHeadOfApprovalMo
 // Styles
 import style from "./escalatedApprovals.module.css";
 import { useTableScrollBottom } from "../../../../common/funtions/scroll";
+import { getSafeAssetTypeData } from "../../../../common/funtions/assetTypesList";
 
 const EscalatedApprovals = () => {
   const navigate = useNavigate();
@@ -54,7 +55,8 @@ const EscalatedApprovals = () => {
   const { showNotification } = useNotification();
   const { showLoader } = useGlobalLoader();
   const { callApi } = useApi();
-  const { assetTypeListingData } = useDashboardContext();
+  const { assetTypeListingData, setAssetTypeListingData } =
+    useDashboardContext();
   const {
     viewDetailsHeadOfApprovalModal,
     setViewDetailsHeadOfApprovalModal,
@@ -95,12 +97,18 @@ const EscalatedApprovals = () => {
           navigate,
         });
 
+        // ✅ Always get the freshest version (from memory or session)
+        const currentAssetTypeData = getSafeAssetTypeData(
+          assetTypeListingData,
+          setAssetTypeListingData
+        );
+
         const htaEscalatedApprovals = Array.isArray(res?.htaEscalatedApprovals)
           ? res.htaEscalatedApprovals
           : [];
 
         const mapped = mapEscalatedApprovalsToTableRows(
-          assetTypeListingData?.Equities,
+          currentAssetTypeData?.Equities,
           htaEscalatedApprovals
         );
 
@@ -109,7 +117,7 @@ const EscalatedApprovals = () => {
             ? mapped
             : [...(prev?.htaEscalatedApprovalsList || []), ...mapped],
           // this is for to run lazy loading its data comming from database of total data in db
-          totalRecordsDataBase: res?.totalRecords,
+          totalRecordsDataBase: res?.totalRecords || 0,
           // this is for to know how mush dta currently fetch from  db
           totalRecordsTable: replace
             ? mapped.length

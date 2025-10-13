@@ -38,6 +38,7 @@ import NoteHeadOfCompliancePortfolioModal from "./modals/noteHeadOfCompliancePor
 import ApproveHeadOfCompliancePortfolioModal from "./modals/approveHeadOfCompliancePortfolioModal/ApproveHeadOfCompliancePortfolioModal";
 import DeclinedHeadOfCompliancePortfolioModal from "./modals/declinedHeadOfCompliancePortfolioModal/DeclinedHeadOfCompliancePortfolioModal";
 import { useTableScrollBottom } from "../../../../../common/funtions/scroll";
+import { getSafeAssetTypeData } from "../../../../../common/funtions/assetTypesList";
 
 // 🔹 API imports (uncomment when ready)
 // import {
@@ -78,7 +79,8 @@ const ReconcilePortfolioHCO = ({ activeFilters }) => {
     nonCompliantDeclineModal,
     noteGlobalModal,
   } = useGlobalModal();
-  const { assetTypeListingData } = useDashboardContext();
+  const { assetTypeListingData, setAssetTypeListingData } =
+    useDashboardContext();
 
   // Search & Filter Contexts
   const {
@@ -180,11 +182,19 @@ const ReconcilePortfolioHCO = ({ activeFilters }) => {
           requestdata: requestData,
           navigate,
         });
+
+        // ✅ Always get the freshest version (from memory or session)
+        const currentAssetTypeData = getSafeAssetTypeData(
+          assetTypeListingData,
+          setAssetTypeListingData
+        );
+
         const escalatedPortfolio = Array.isArray(res?.transactions)
           ? res.transactions
           : [];
+
         const mapped = mapToTableRows(
-          assetTypeListingData?.Equities,
+          currentAssetTypeData?.Equities,
           escalatedPortfolio
         );
         console.log("res", mapped);
@@ -194,7 +204,7 @@ const ReconcilePortfolioHCO = ({ activeFilters }) => {
             ? mapped
             : [...(prev?.escalatedPortfolio || []), ...mapped],
           // this is for to run lazy loading its data comming from database of total data in db
-          totalRecordsDataBase: res.totalRecords,
+          totalRecordsDataBase: res.totalRecords || 0,
           // this is for to know how mush dta currently fetch from  db
           totalRecordsTable: replace
             ? mapped.length
@@ -297,7 +307,7 @@ const ReconcilePortfolioHCO = ({ activeFilters }) => {
   useTableScrollBottom(
     async () => {
       if (
-        headOfComplianceApprovalPortfolioData?.totalRecordsDataBase ===
+        headOfComplianceApprovalPortfolioData?.totalRecordsDataBase <=
         headOfComplianceApprovalPortfolioData?.totalRecordsTable
       ) {
         return;

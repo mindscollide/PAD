@@ -34,6 +34,7 @@ import ViewReconcileTransactionComment from "./modals/viewReconcileTransactionCo
 import ViewTicketReconcileModal from "./modals/viewTicketReconcileModal/viewTicketReconcileModal";
 import UploadReconcileTicketModal from "./modals/uploadReconcileTicketModal/UploadReconcileTicketModal";
 import { useTableScrollBottom } from "../../../../../common/funtions/scroll";
+import { getSafeAssetTypeData } from "../../../../../common/funtions/assetTypesList";
 
 /**
  * 📌 ReconcileTransaction
@@ -76,7 +77,8 @@ const ReconcileTransaction = ({ activeFilters }) => {
     isViewTicketTransactionModal,
     uploadComplianceModal,
   } = useGlobalModal();
-  const { assetTypeListingData } = useDashboardContext();
+  const { assetTypeListingData, setAssetTypeListingData } =
+    useDashboardContext();
 
   const {
     complianceOfficerReconcileTransactionsSearch,
@@ -108,12 +110,18 @@ const ReconcileTransaction = ({ activeFilters }) => {
           navigate,
         });
 
+        // ✅ Always get the freshest version (from memory or session)
+        const currentAssetTypeData = getSafeAssetTypeData(
+          assetTypeListingData,
+          setAssetTypeListingData
+        );
+
         const reconsileTransactions = Array.isArray(res?.transactions)
           ? res.transactions
           : [];
 
         const mapped = mapToTableRows(
-          assetTypeListingData?.Equities,
+          currentAssetTypeData?.Equities,
           reconsileTransactions
         );
 
@@ -122,7 +130,7 @@ const ReconcileTransaction = ({ activeFilters }) => {
             ? mapped
             : [...(prev?.reconsileTransaction || []), ...mapped],
           // this is for to run lazy loading its data comming from database of total data in db
-          totalRecordsDataBase: res?.totalRecords,
+          totalRecordsDataBase: res?.totalRecords || 0,
           // this is for to know how mush dta currently fetch from  db
           totalRecordsTable: replace
             ? mapped.length
@@ -295,7 +303,8 @@ const ReconcileTransaction = ({ activeFilters }) => {
         columns={columns}
         classNameTable="border-less-table-blue"
         scroll={
-          complianceOfficerReconcileTransactionData?.reconsileTransaction?.length
+          complianceOfficerReconcileTransactionData?.reconsileTransaction
+            ?.length
             ? { x: "max-content", y: activeFilters.length > 0 ? 450 : 500 }
             : undefined
         }
