@@ -8,7 +8,13 @@ import {
   LoginOutlined,
 } from "@ant-design/icons";
 
-export const getMenuItems = (hasAdmin, hasEmployee, style, handleLogout) => {
+export const getMenuItems = (
+  hasAdmin,
+  hasEmployee,
+  style,
+  handleLogout,
+  navigate
+) => {
   const baseItems = [
     {
       key: "1",
@@ -65,12 +71,27 @@ export const getMenuItems = (hasAdmin, hasEmployee, style, handleLogout) => {
     baseItems.push({
       key: "5",
       label: (
-        <Link to="/Admin" className={style["dropdown-menu-item"]}>
+        // <Link to="/Admin" className={style["dropdown-menu-item"]}>
+        //   <SwapOutlined className={style["dropdown-menu-icon"]} />
+        //   <span className={style["dropdown-menu-options-title"]}>
+        //     Switch to Admin
+        //   </span>
+        // </Link>
+        <div
+          className={style["dropdown-menu-item"]}
+          onClick={() => {
+            // 🧠 You can add custom logic here before navigation
+            console.log("Switching to Admin...");
+            sessionStorage.setItem("activeRole", "admin");
+            navigate("/Admin");
+          }}
+          style={{ cursor: "pointer" }}
+        >
           <SwapOutlined className={style["dropdown-menu-icon"]} />
           <span className={style["dropdown-menu-options-title"]}>
             Switch to Admin
           </span>
-        </Link>
+        </div>
       ),
     });
   }

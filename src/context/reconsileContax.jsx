@@ -58,7 +58,7 @@ export const ReconcileProvider = ({ children }) => {
     setComplianceOfficerReconcilePortfolioModal,
   ] = useState(false);
 
-  /** API + MQTT data for Compliance Officer Transactions. */
+  /** API  for Compliance Officer Transactions. */
   const [
     complianceOfficerReconcileTransactionData,
     setComplianceOfficerReconcileTransactionData,
@@ -74,7 +74,7 @@ export const ReconcileProvider = ({ children }) => {
     setComplianceOfficerReconcileTransactionDataMqtt,
   ] = useState(false);
 
-  /** API + MQTT data for Compliance Officer Portfolio. */
+  /** API data for Compliance Officer Portfolio. */
   const [
     complianceOfficerReconcilePortfolioData,
     setComplianceOfficerReconcilePortfolioData,
@@ -174,7 +174,7 @@ export const ReconcileProvider = ({ children }) => {
 
   /** Reset the Compliance Officer Portfolio tab (API + MQTT + totals). */
   const resetComplianceOfficerReconcilePortfolioTab = () => {
-    setActiveTab("Transactions");
+    setActiveTab("transactions");
     setComplianceOfficerReconcilePortfolioData({
       reconsilePortfolios: [],
       totalRecordsDataBase: 0,
@@ -186,7 +186,7 @@ export const ReconcileProvider = ({ children }) => {
 
   /** Reset the Compliance Officer Transactions tab (API + MQTT). */
   const resetComplianceOfficerReconcileTransactionTab = () => {
-    setActiveTab("Transactions");
+    setActiveTab("transactions");
     setComplianceOfficerReconcileTransactionData({
       reconsileTransaction: [],
       totalRecordsDataBase: 0,
