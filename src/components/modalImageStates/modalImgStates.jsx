@@ -4,6 +4,7 @@ import ApprovalsIcon from "../../assets/img/approval-icon.png";
 import Restricted from "../../assets/img/Restricted.png";
 import DelcinedImg from "../../assets/img/DelcinedImg.png";
 import ApprovedImg from "../../assets/img/ApprovedImg.png";
+import AddBroker from "../../assets/img/AddBroker.png";
 
 const config = {
   Submitted: {
@@ -62,6 +63,11 @@ const config = {
     heading: "Declined",
     subheading: "You have declined this request.",
     image: DelcinedImg,
+  },
+  addBroker: {
+    heading: "Great!",
+    subheading: "The broker has been added successfully.",
+    image: AddBroker,
   },
 };
 

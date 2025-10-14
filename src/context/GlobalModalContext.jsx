@@ -183,6 +183,21 @@ export const GlobalModalProvider = ({ children }) => {
    * Global States For Head Of Compliance (HOC) Modals End here
    */
 
+  /**
+   * Global States For Admin Role Modals Start here
+   */
+
+  const [addNewBrokerModal, setAddNewBrokerModal] = useState(false);
+  const [editBrokerModal, setEditBrokerModal] = useState(false);
+
+  const [editModalData, setEditModalData] = useState(null);
+
+  const [addBrokerConfirmationModal, setAddBrokerConfirmationModal] =
+    useState(false);
+  /**
+   * Global States For Admin Role Modals End here
+   */
+
   //  Main resetDashboardContext  reset State to call in dashboard
   // The reset function — inline resetting all states
   const resetModalContextState = () => {
@@ -368,6 +383,25 @@ export const GlobalModalProvider = ({ children }) => {
 
         /**
          * Global States For Head Of Compliance Officer Modals End here
+         */
+
+        /**
+         * Global States For Admin Role Modals Start here
+         */
+
+        addNewBrokerModal,
+        setAddNewBrokerModal,
+
+        editBrokerModal,
+        setEditBrokerModal,
+
+        editModalData,
+        setEditModalData,
+
+        addBrokerConfirmationModal,
+        setAddBrokerConfirmationModal,
+        /**
+         * Global States For Admin Role Modals End here
          */
 
         resetModalContextState,

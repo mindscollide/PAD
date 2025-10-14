@@ -233,6 +233,14 @@ export const SearchBarProvider = ({ children }) => {
     filterTrigger: false,
   });
 
+  // Admin Broker Search filter
+  const [adminBrokerSearch, setAdminBrokerSearch] = useState({
+    brokersName: "",
+    psxCode: "",
+    pageNumber: 0,
+    length: 10,
+  });
+
   // ===============================
   // Sync Refs (Always-Latest Values)
   // ===============================
@@ -556,6 +564,10 @@ export const SearchBarProvider = ({ children }) => {
         headOfTradeEscalatedApprovalsSearch,
         setHeadOfTradeEscalatedApprovalsSearch,
         resetHeadOfTradeApprovalEscalatedApprovalsSearch,
+
+        // Admin Broker Search filter
+        adminBrokerSearch,
+        setAdminBrokerSearch,
 
         // Always-latest refs
         employeeMyApprovalSearchRef,

@@ -26,6 +26,7 @@ import { Loader } from "./components";
 import { ReconcileProvider } from "./context/reconsileContax";
 import { MyEscalatedApprovalsProvider } from "./context/escalatedApprovalContext";
 import { MyNotificationProvider } from "./context/notificationContext";
+import { MyAdminProvider } from "./context/AdminContext";
 
 /**
  * 🌍 RootComponent
@@ -83,14 +84,16 @@ const RootComponent = () => {
                     <ReconcileProvider>
                       <MyEscalatedApprovalsProvider>
                         <MyNotificationProvider>
-                          <SidebarProvider>
-                            <SearchBarProvider>
-                              {/* 🔹 Main App Router */}
-                              <RouterProvider router={router} />
-                              {/* 🔹 Global Loader Component */}
-                              <Loader />
-                            </SearchBarProvider>
-                          </SidebarProvider>
+                          <MyAdminProvider>
+                            <SidebarProvider>
+                              <SearchBarProvider>
+                                {/* 🔹 Main App Router */}
+                                <RouterProvider router={router} />
+                                {/* 🔹 Global Loader Component */}
+                                <Loader />
+                              </SearchBarProvider>
+                            </SidebarProvider>
+                          </MyAdminProvider>
                         </MyNotificationProvider>
                       </MyEscalatedApprovalsProvider>
                     </ReconcileProvider>

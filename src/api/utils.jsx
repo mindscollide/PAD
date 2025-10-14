@@ -325,6 +325,24 @@ export const responseMessages = {
     "Invalid Request Data",
   Settings_SettingsServiceManager_MarkNotificationsAsRead_03: "UnSuccessfull",
   Settings_SettingsServiceManager_MarkNotificationsAsRead_04: "Exception",
+
+  // ==============================
+  // Brokers  (Admin Role)
+  // ==============================
+
+  PAD_Admin_GetBrokers_01: "Data found",
+  PAD_Admin_GetBrokers_02: "No data found",
+  PAD_Admin_GetBrokers_03: "Exception occurred",
+
+  PAD_Admin_AddBroker_01: "Invalid input",
+  PAD_Admin_AddBroker_02: "Successfully inserted all",
+  PAD_Admin_AddBroker_03: "Insert failed",
+  PAD_Admin_AddBroker_04: "Exception occurred",
+
+  PAD_Admin_UpdateBroker_01: "Invalid input",
+  PAD_Admin_UpdateBroker_02: "Successfully updated",
+  PAD_Admin_UpdateBroker_03: " Update failed",
+  PAD_Admin_UpdateBroker_04: "Exception occurred",
 };
 
 /**

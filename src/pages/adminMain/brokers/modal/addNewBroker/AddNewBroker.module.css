@@ -1,0 +1,145 @@
+.modalContainer {
+  height: 550px;
+  overflow: hidden;
+  padding: 0px 20px;
+}
+
+.Brokertitle {
+  font-size: 26px;
+  font-weight: 700;
+  font-family: "Switzer Variable";
+  color: #30426a;
+}
+
+.addBrokerorPSXtext {
+  font-size: 14px;
+  font-weight: 700;
+  font-family: "Switzer Variable";
+  color: #30426a;
+}
+
+.addButtonCol {
+  margin-top: -13px;
+  display: flex;
+  align-items: center;
+  justify-content: end;
+}
+
+.counterTextAddBroker {
+  font-size: 14px;
+  font-weight: 700;
+  font-family: "Switzer Variable";
+  color: #424242;
+  position: absolute;
+  right: 0px;
+  bottom: -10px;
+}
+
+.inputContainer {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  margin-bottom: 24px;
+}
+
+.inputContainer label {
+  font-size: 14px;
+  margin-bottom: 5px;
+}
+
+.inputContainer input {
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  width: 250px;
+}
+
+.charCount {
+  position: absolute;
+  right: 10px;
+  bottom: -18px;
+  font-size: 10px;
+  color: #999;
+}
+
+.addButton {
+  background-color: #1a2f6f;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  height: 35px;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.addButton:hover {
+  background-color: #163063;
+}
+
+.tableHeader {
+  display: grid;
+  grid-template-columns: 60% 40%;
+  justify-content: space-between;
+  padding: 10px 0;
+}
+
+.brokerHeaderName {
+  font-weight: 500;
+  font-family: "Switzer Variable";
+  font-size: 14px;
+  color: #30426a;
+}
+
+.brokerList {
+  display: flex;
+  flex-direction: column;
+  gap: 16px; /* Controls vertical space between rows */
+  max-height: 280px;
+  overflow-y: auto;
+  margin-bottom: 20px;
+}
+
+.brokerRow {
+  display: grid;
+  grid-template-columns: 55% 28% 5%;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 10px;
+  border-radius: 8px;
+  border: 1px solid #717171;
+}
+
+.brokerRowtext {
+  font-weight: 500;
+  font-family: "Switzer Variable";
+  font-size: 16px;
+  color: #30426a;
+  width: auto;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.deleteButton {
+  display: flex;
+  justify-content: end;
+  cursor: pointer;
+}
+
+.saveContainer {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.saveButton {
+  background-color: #1a2f6f;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.saveButton:hover {
+  background-color: #163063;
+}
