@@ -1,5 +1,6 @@
 // src/api/loginApi.js
 
+import { hasOnlyAdminRole } from "../common/funtions/adminChecks";
 import { getMessage } from "./utils";
 
 export const login = async ({
@@ -42,8 +43,6 @@ export const login = async ({
     } = res.result;
     const message = getMessage(res.result.responseMessage);
     const responseCodeKey = res.result.responseMessage;
-    console.log("msg", message);
-    console.log("msg", responseCodeKey);
     if (responseCodeKey === "ERM_Auth_AuthServiceManager_Login_01") {
       sessionStorage.setItem("auth_token", userToken.token);
       sessionStorage.setItem("refresh_token", userToken.refreshToken);
@@ -65,7 +64,12 @@ export const login = async ({
         "user_mqtt_ip_Address",
         JSON.stringify(mqtt?.mqttipAddress)
       );
-      navigate("/PAD");
+      if (hasOnlyAdminRole(userAssignedRoles)) {
+        sessionStorage.setItem("user_is_admin", JSON.stringify(true));
+        navigate("/PAD/Admin");
+      } else {
+        navigate("/PAD");
+      }
 
       //Yaha success pa true rakha hai takay GetUserDashBoardStats ki API ka response anay tak loader chalay
       showLoader(true);
