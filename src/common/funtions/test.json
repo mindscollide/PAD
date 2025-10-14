@@ -1,31 +1,21 @@
 {
-  "action": "New Trade Approval Request",
-  "senderID": 0,
-  "dateTime": "20250826095200",
+  "action": "WEBNOTIFICATION",
+  "senderID": 1,
+  "dateTime": "20250827090340",
   "receiverID": [1, 6],
+  "roleIDs": null,
   "payload": {
-    "approvalID": 38,
-    "instrument": {
-      "instrumentID": 6,
-      "instrumentName": "",
-      "instrumentCode": ""
-    },
-    "quantity": 3333,
-    "tradeApprovalID": "REQ036",
-    "tradeType": { "typeID": 1, "typeName": "" },
-    "approvalStatus": {
-      "approvalStatusID": 1,
-      "approvalStatusName": "PENDING"
-    },
-    "assetType": {
-      "assetTypeID": 1,
-      "assetTypeName": "",
-      "assetTypeShortCode": ""
-    },
-    "requestDate": "26-08-2025",
-    "requestTime": "095200",
-    "timeRemainingToTrade": ""
+    "message": "Web_Notification",
+    "notificationData": {
+      "notificationID": 41,
+      "notificationActionID": 1,
+      "notificationActionName": "Trade_Approval_Request",
+      "description": "Your request for the trade of 5000 shares of HUB Power Limited is sent for approval to Muhammad",
+      "payloadData": "{\"Quantity\":5000,\"InstrumentName\":\"HUB Power Limited\",\"LineManager\":\"Muhammad\"}",
+      "isRead": false,
+      "sentDateTime": "20250827090340"
+    }
   },
-  "message": "NEW_TRADE_APPROVAL_REQUEST",
-  "viewable": true
+  "message": "",
+  "viewable": false
 }

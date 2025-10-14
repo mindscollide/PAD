@@ -43,6 +43,7 @@ import ConductTransaction from "./modal/conductTransaction/ConductTransaction";
 // 🔹 Styles
 import style from "./approval.module.css";
 import { useTableScrollBottom } from "../../../../common/funtions/scroll";
+import { getSafeAssetTypeData } from "../../../../common/funtions/assetTypesList";
 
 const Approval = () => {
   const navigate = useNavigate();
@@ -50,11 +51,11 @@ const Approval = () => {
   const tableScrollEmployeeApproval = useRef(null);
 
   // ----------------- Contexts -----------------
-  const { assetTypeListingData } = useDashboardContext();
+  const { assetTypeListingData, setAssetTypeListingData } =
+    useDashboardContext();
   const { showNotification } = useNotification();
   const { showLoader } = useGlobalLoader();
   const { callApi } = useApi();
-
   const {
     employeeMyApproval,
     setIsEmployeeMyApproval,
@@ -140,17 +141,22 @@ const Approval = () => {
         navigate,
       });
 
-      const approvals = Array.isArray(res?.approvals) ? res.approvals : [];
+      // ✅ Always get the freshest version (from memory or session)
+      const currentAssetTypeData = getSafeAssetTypeData(
+        assetTypeListingData,
+        setAssetTypeListingData
+      );
 
+      const approvals = Array.isArray(res?.approvals) ? res.approvals : [];
       const mapped = mapEmployeeMyApprovalData(
-        assetTypeListingData?.Equities,
+        currentAssetTypeData?.Equities,
         approvals
       );
 
       setIsEmployeeMyApproval((prev) => ({
         approvals: replace ? mapped : [...(prev?.approvals || []), ...mapped],
         // this is for to run lazy loading its data comming from database of total data in db
-        totalRecordsDataBase: res.totalRecords,
+        totalRecordsDataBase: res?.totalRecords || 0,
         // this is for to know how mush dta currently fetch from  db
         totalRecordsTable: replace
           ? mapped.length
@@ -323,7 +329,7 @@ const Approval = () => {
   useTableScrollBottom(
     async () => {
       if (
-        employeeMyApproval?.totalRecordsDataBase ===
+        employeeMyApproval?.totalRecordsDataBase <=
         employeeMyApproval?.totalRecordsTable
       )
         return;

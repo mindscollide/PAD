@@ -3,7 +3,7 @@ import { Layout } from "antd";
 import SideBar from "../sidebar/sidebar";
 import "./dashboard_module.css";
 import Headers from "../header/header";
-import { Outlet, useLocation } from "react-router-dom";
+import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import { useEffect, useMemo, useRef } from "react"; // Added useRef
 
 // Contexts
@@ -14,12 +14,7 @@ import { usePortfolioContext } from "../../../context/portfolioContax";
 import { useTransaction } from "../../../context/myTransaction";
 import { useReconcileContext } from "../../../context/reconsileContax";
 import { useSidebarContext } from "../../../context/sidebarContaxt";
-import { useSearchBarContext } from "../../../context/SearchBarContaxt";
-import {
-  handleEmployeeApprovalUpdate,
-  handleLineManagerApprovalNewTrade,
-} from "./utils";
-
+import { useEscalatedApprovals } from "../../../context/escalatedApprovalContext";
 const { Content } = Layout;
 
 const Dashboard = () => {
@@ -27,34 +22,30 @@ const Dashboard = () => {
   const connectionAttemptedRef = useRef(false); // ✅ Track connection attempts
 
   // Context hooks
-  const {
-    setIsEmployeeMyApproval,
-    setLineManagerApproval,
-    lineManagerApprovalMqtt,
-    setLineManagerApprovalMQtt,
-    setIsEmployeeMyApprovalMqtt,
-  } = useMyApproval();
-  const {
-    employeeMyApprovalSearchRef,
-    employeeMyTransactionSearchRef,
-    employeePortfolioSearchRef,
-    employeePendingApprovalSearchRef,
-    employeeMyHistorySearchRef,
-    lineManagerApprovalSearchRef,
-    complianceOfficerReconcileTransactionsSearchRef,
-    complianceOfficerReconcilePortfolioSearchRef,
-  } = useSearchBarContext();
+  const { setLineManagerApprovalMQtt, setIsEmployeeMyApprovalMqtt } =
+    useMyApproval();
+  const { setHtaEscalatedApprovalDataMqtt } = useEscalatedApprovals();
   const { setEmployeePendingApprovalsDataMqtt, activeTabRef } =
     usePortfolioContext();
+
   const {
     setComplianceOfficerReconcileTransactionDataMqtt,
     setComplianceOfficerReconcilePortfolioDataMqtt,
+    setHeadOfComplianceApprovalEscalatedVerificationsMqtt,
+    setHeadOfComplianceApprovalEscalatedVerificationsData,
     activeTabRef: reconcileActiveTab,
+    activeTabHCORef,
   } = useReconcileContext();
-  const { setDashboardData } = useDashboardContext();
-  const { setEmployeeTransactionsData, setEmployeeTransactionsTableDataMqtt } =
-    useTransaction();
+  const {
+    setDashboardData,
+    currentRoleIsAdmin,
+    roleChanegFlag,
+    setRoleChanegFlag,
+    currentRoleIsAdminRef,
+  } = useDashboardContext();
+  const { setEmployeeTransactionsTableDataMqtt } = useTransaction();
   const { selectedKeyRef } = useSidebarContext();
+  const navigate = useNavigate();
 
   // User info from session storage
   const userProfileData = JSON.parse(
@@ -96,12 +87,22 @@ const Dashboard = () => {
         const currentKey = selectedKeyRef.current;
         const currentreconcileActiveTab = reconcileActiveTab.current;
         const currentactiveTabRef = activeTabRef.current;
+        const currentactiveHCOEscalatedTabRef = activeTabHCORef.current;
+        const currentRoleIsAdminRefLocal = currentRoleIsAdminRef.current;
 
-        const { message, payload, roleIDs } = data;
+        const { message, payload, roleIDs, action } = data;
 
         if (!payload) return;
-
+        if (action === "WEBNOTIFICATION") {
+        }
         if (hasUserRole(Number(roleIDs))) {
+          if (currentRoleIsAdminRefLocal) {
+            // admin mqtt
+            if (roleIDs !== "1") {
+              // not admin MQTT → ignore completely
+              return;
+            }
+          }
           switch (roleIDs) {
             // Employee mqtt
             case "2": {
@@ -126,26 +127,14 @@ const Dashboard = () => {
                   }
                   break;
                 }
-                case "EMPLOYEE_TRADE_APPROVAL_REQUEST_APPROVED": {
-                  if (currentKey === "1") {
-                    setIsEmployeeMyApprovalMqtt(true);
-
-                    // setIsEmployeeMyApproval((prev) => {
-                    //   const approvals = prev.approvals || [];
-                    //   const existingIndex = approvals.findIndex(
-                    //     (item) => item.approvalID === payload.approvalID
-                    //   );
-
-                    //   if (existingIndex === -1) return prev;
-
-                    //   const updatedApprovals = [...approvals];
-                    //   updatedApprovals[existingIndex] = payload;
-
-                    //   return {
-                    //     ...prev,
-                    //     approvals: updatedApprovals,
-                    //   };
-                    // });
+                case "EMPLOYEE_CONDUCTED_TRANSACTION": {
+                  if (currentKey === "2") {
+                    setEmployeeTransactionsTableDataMqtt(true);
+                    // setEmployeeTransactionsData((prev) => ({
+                    //   ...prev,
+                    //   data: [payload, ...(prev.data || [])],
+                    //   totalRecords: (prev.totalRecords || 0) + 1,
+                    // }));
                   }
                   break;
                 }
@@ -178,19 +167,36 @@ const Dashboard = () => {
                     //   mqttRecivedData: payload,
                     //   mqttRecived: true,
                     // });
-                    console.log("employeePendingApprovalsData");
                     setEmployeePendingApprovalsDataMqtt(true);
                   }
                   break;
                 }
-                case "EMPLOYEE_CONDUCTED_TRANSACTION": {
-                  if (currentKey === "2") {
-                    setEmployeeTransactionsTableDataMqtt(true);
-                    // setEmployeeTransactionsData((prev) => ({
-                    //   ...prev,
-                    //   data: [payload, ...(prev.data || [])],
-                    //   totalRecords: (prev.totalRecords || 0) + 1,
-                    // }));
+                case "EMPLOYEE_TRADE_APPROVAL_REQUEST_APPROVED": {
+                  if (currentKey === "1") {
+                    setIsEmployeeMyApprovalMqtt(true);
+
+                    // setIsEmployeeMyApproval((prev) => {
+                    //   const approvals = prev.approvals || [];
+                    //   const existingIndex = approvals.findIndex(
+                    //     (item) => item.approvalID === payload.approvalID
+                    //   );
+
+                    //   if (existingIndex === -1) return prev;
+
+                    //   const updatedApprovals = [...approvals];
+                    //   updatedApprovals[existingIndex] = payload;
+
+                    //   return {
+                    //     ...prev,
+                    //     approvals: updatedApprovals,
+                    //   };
+                    // });
+                  }
+                  break;
+                }
+                case "EMPLOYEE_TRADE_APPROVAL_REQUEST_DECLINED": {
+                  if (currentKey === "1") {
+                    setIsEmployeeMyApprovalMqtt(true);
                   }
                   break;
                 }
@@ -202,6 +208,35 @@ const Dashboard = () => {
                     //   data: [payload, ...(prev.data || [])],
                     //   totalRecords: (prev.totalRecords || 0) + 1,
                     // }));
+                  }
+                  break;
+                }
+                case "EMPLOYEE_TRANSACTION_APPROVAL_REQUEST_DECLINED": {
+                  if (currentKey === "2") {
+                    setEmployeeTransactionsTableDataMqtt(true);
+                  }
+                  break;
+                }
+                case "EMPLOYEE_NEW_TRADE_APPROVAL_REQUEST_RESUBMITTED": {
+                  if (currentKey === "1") {
+                    setIsEmployeeMyApprovalMqtt(true);
+                  }
+                  break;
+                }
+                case "WORKFLOW_ESCALATED_FROM_HTA": {
+                  if (currentKey === "1") {
+                    setIsEmployeeMyApprovalMqtt(true);
+                  }
+                  break;
+                }
+                case "WORKFLOW_ESCALATED_FROM_HOC": {
+                  if (currentKey === "2") {
+                    setEmployeeTransactionsTableDataMqtt(true);
+                  } else if (
+                    currentKey === "4" &&
+                    currentactiveTabRef === "pending"
+                  ) {
+                    setEmployeePendingApprovalsDataMqtt(true);
                   }
                   break;
                 }
@@ -261,11 +296,30 @@ const Dashboard = () => {
                   }
                   break;
                 }
+                case "LINE_MANAGER_TRADE_APPROVAL_REQUEST_DECLINED": {
+                  if (currentKey === "6") {
+                    setLineManagerApprovalMQtt(true);
+                  }
+                  break;
+                }
+                case "LINE_MANAGER_NEW_TRADE_APPROVAL_REQUEST_RESUBMITTED": {
+                  if (currentKey === "6") {
+                    setLineManagerApprovalMQtt(true);
+                  }
+                  break;
+                }
+                case "YOUR_REQUEST_ESCALATED_TO_HTA": {
+                  if (currentKey === "6") {
+                    setLineManagerApprovalMQtt(true);
+                  }
+                  break;
+                }
                 default:
                   console.warn("MQTT: No handler for message →", message);
               }
               break;
             }
+
             // Compliance officer mqtt
             case "4": {
               switch (message) {
@@ -297,9 +351,6 @@ const Dashboard = () => {
                     currentKey === "9" &&
                     currentreconcileActiveTab === "transactions"
                   ) {
-                    console.log(
-                      "complianceOfficerReconcileTransactionDataMqtt"
-                    );
                     setComplianceOfficerReconcileTransactionDataMqtt(true);
                   }
                   break;
@@ -309,14 +360,83 @@ const Dashboard = () => {
                     currentKey === "9" &&
                     currentreconcileActiveTab === "transactions"
                   ) {
-                    console.log(
-                      "complianceOfficerReconcileTransactionDataMqtt"
-                    );
                     setComplianceOfficerReconcileTransactionDataMqtt(true);
+                  } else if (
+                    currentKey === "9" &&
+                    currentreconcileActiveTab === "portfolio"
+                  ) {
+                    setComplianceOfficerReconcilePortfolioDataMqtt(true);
                   }
                   break;
                 }
-
+                case "COMPLIANCE_OFFICER_TRANSACTION_APPROVAL_REQUEST_DECLINED": {
+                  if (
+                    currentKey === "9" &&
+                    currentreconcileActiveTab === "transactions"
+                  ) {
+                    setComplianceOfficerReconcileTransactionDataMqtt(true);
+                  } else if (
+                    currentKey === "9" &&
+                    currentreconcileActiveTab === "portfolio"
+                  ) {
+                    setComplianceOfficerReconcilePortfolioDataMqtt(true);
+                  }
+                  break;
+                }
+                case "YOUR_REQUEST_ESCALATED_TO_HOC": {
+                  if (
+                    currentKey === "9" &&
+                    currentreconcileActiveTab === "transactions"
+                  ) {
+                    setComplianceOfficerReconcileTransactionDataMqtt(true);
+                  } else if (
+                    currentKey === "9" &&
+                    currentreconcileActiveTab === "portfolio"
+                  ) {
+                    setComplianceOfficerReconcilePortfolioDataMqtt(true);
+                  }
+                  break;
+                }
+                default:
+                  console.warn("MQTT: No handler for message →", message);
+              }
+              break;
+            }
+            // HTA mqtt
+            case "5": {
+              // missing dashboard
+              switch (message) {
+                case "REQUEST_ESCALATED_TO_HTA": {
+                  if (currentKey === "12") {
+                    setHtaEscalatedApprovalDataMqtt(true);
+                  }
+                  break;
+                }
+                default:
+                  console.warn("MQTT: No handler for message →", message);
+              }
+              break;
+            }
+            // HOC mqtt
+            case "6": {
+              // missing dashboard
+              switch (message) {
+                case "REQUEST_ESCALATED_TO_HOC": {
+                  if (currentKey === "15") {
+                    if (currentactiveHCOEscalatedTabRef === "escalated") {
+                      setHeadOfComplianceApprovalEscalatedVerificationsMqtt(
+                        true
+                      );
+                    } else if (
+                      currentactiveHCOEscalatedTabRef === "portfolio"
+                    ) {
+                      setHeadOfComplianceApprovalEscalatedVerificationsData(
+                        true
+                      );
+                    }
+                  }
+                  break;
+                }
                 default:
                   console.warn("MQTT: No handler for message →", message);
               }
@@ -349,6 +469,14 @@ const Dashboard = () => {
   const getContentClass = () => {
     return location.pathname === "/PAD" ? "pad_content" : "pad_content";
   };
+
+  useEffect(() => {
+    // Redirect only if user just became admin
+    if (roleChanegFlag && location.pathname !== "/PAD") {
+      navigate("/PAD", { replace: true });
+      setRoleChanegFlag(false);
+    }
+  }, [currentRoleIsAdmin]); // Runs only when admin state changes
 
   return (
     <Layout style={{ minHeight: "100vh", maxHeight: "100vh" }}>

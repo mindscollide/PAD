@@ -188,10 +188,19 @@
   white-space: normal;
   overflow-wrap: break-word;
 }
-
+.smallShareHomeCardlabel2 {
+  font-family: Switzer Variable;
+  font-weight: 700;
+  font-size: 18px;
+  line-height: 100%;
+  text-transform: uppercase;
+  word-break: break-word;
+  white-space: normal;
+  overflow-wrap: break-word;
+}
 /* medium card */
 .mediumHomeCard {
-  height: 241px;
+  height: 251px;
   background: #fff;
   border-radius: 13.89px;
   padding: 0px;
@@ -433,7 +442,7 @@
 .countWrapper {
   display: flex;
   justify-content: center; /* centers horizontally */
-  align-items: center;     /* centers vertically if height > content */
+  align-items: center; /* centers vertically if height > content */
   width: 100%;
 }
 .digitWrapper {
@@ -442,5 +451,5 @@
 
 .nonDigit {
   display: inline-block; /* override for commas, dots */
-  width: auto;           /* don't take full width */
+  width: auto; /* don't take full width */
 }

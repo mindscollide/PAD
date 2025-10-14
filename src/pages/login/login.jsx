@@ -42,7 +42,8 @@ const Login = () => {
   const { callApi } = useApi();
 
   // 🔄 Context state resetters (to clear app state on login page mount)
-  const { resetDashboardContextState } = useDashboardContext();
+  const { resetDashboardContextState, setCurrentRoleIsAdmin } =
+    useDashboardContext();
   const {
     resetModalContextState,
     resetForLineManagerModal,
@@ -92,7 +93,7 @@ const Login = () => {
     resetSearchBarContextState();
     resetApprovalRequestContextState();
     resetSidebarState();
-
+    setCurrentRoleIsAdmin(false);
     //Reset LM states
     resetForLineManagerModal();
 
@@ -126,6 +127,7 @@ const Login = () => {
     setDisableClick(true);
     try {
       await login({
+        setCurrentRoleIsAdmin,
         username: values.username,
         password: values.password,
         navigate,

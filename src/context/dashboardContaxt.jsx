@@ -1,4 +1,10 @@
-import React, { createContext, useContext, useState } from "react";
+import React, {
+  createContext,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 
 // 1. Create the Context
 export const DashboardContext = createContext();
@@ -47,9 +53,22 @@ export const DashboardProvider = ({ children }) => {
   const [getAllPredefineReasonData, setGetAllPredefineReasonData] = useState(
     []
   );
-
+  const [currentRoleIsAdmin, setCurrentRoleIsAdmin] = useState(false);
+  const [roleChanegFlag, setRoleChanegFlag] = useState(false);
+  const currentRoleIsAdminRef = useRef(currentRoleIsAdmin);
   // Main resetDashboardContext State
   // ✅ This will reset all states to initial (inline - no separate function)
+  useEffect(() => {
+    const storedAdminStatus = sessionStorage.getItem("current_role_is_admin");
+    if (storedAdminStatus !== null) {
+      setCurrentRoleIsAdmin(JSON.parse(storedAdminStatus));
+    }
+  }, []);
+
+  useEffect(() => {
+    currentRoleIsAdminRef.current = currentRoleIsAdmin; // keep ref updated with latest tab
+  }, [currentRoleIsAdmin]);
+
   const resetDashboardContextState = () => {
     setDashboardData({
       title: "",
@@ -87,6 +106,11 @@ export const DashboardProvider = ({ children }) => {
         getAllPredefineReasonData,
         setGetAllPredefineReasonData,
         resetDashboardContextState,
+        currentRoleIsAdmin,
+        setCurrentRoleIsAdmin,
+        roleChanegFlag,
+        setRoleChanegFlag,
+        currentRoleIsAdminRef,
       }}
     >
       {children}

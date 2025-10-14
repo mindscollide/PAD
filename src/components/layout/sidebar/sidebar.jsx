@@ -38,6 +38,7 @@ const SideBar = () => {
     setAssetTypeListingData,
     getAllPredefineReasonData,
     setGetAllPredefineReasonData,
+    currentRoleIsAdmin,
   } = useDashboardContext();
 
   // Roles
@@ -77,7 +78,9 @@ const SideBar = () => {
             setEmployeeBasedBrokersData
           );
           restoreAndRemove("allInstrumentsData", setAllInstrumentsData);
-          restoreAndRemove("assetTypeListingData", setAssetTypeListingData);
+          if (lastSelectedKey === "0") {
+            restoreAndRemove("assetTypeListingData", setAssetTypeListingData);
+          }
           restoreAndRemove(
             "getAllPredefineReasonData",
             setGetAllPredefineReasonData
@@ -151,6 +154,8 @@ const SideBar = () => {
     if (currentKey !== selectedKey) setSelectedKey(currentKey);
   }, [location.pathname, selectedKey, setSelectedKey, pathToKey]);
 
+  // useEffect(() => {}, [currentRoleIsAdmin]);
+
   return (
     <Sider
       collapsedWidth={66}
@@ -196,7 +201,7 @@ const SideBar = () => {
             const path = routeMap[key];
             if (path) navigate(path);
           }}
-          items={sidebarItems(collapsed, allRoleIDs, selectedKey)}
+          items={sidebarItems(collapsed, allRoleIDs, selectedKey,currentRoleIsAdmin)}
           inlineCollapsed={collapsed}
           inlineIndent={20}
           prefixCls="custom-menu"

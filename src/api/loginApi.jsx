@@ -1,8 +1,10 @@
 // src/api/loginApi.js
 
+import { hasAdminRole, hasOnlyAdminRole } from "../common/funtions/adminChecks";
 import { getMessage } from "./utils";
 
 export const login = async ({
+  setCurrentRoleIsAdmin,
   username,
   password,
   navigate,
@@ -42,8 +44,6 @@ export const login = async ({
     } = res.result;
     const message = getMessage(res.result.responseMessage);
     const responseCodeKey = res.result.responseMessage;
-    console.log("msg", message);
-    console.log("msg", responseCodeKey);
     if (responseCodeKey === "ERM_Auth_AuthServiceManager_Login_01") {
       sessionStorage.setItem("auth_token", userToken.token);
       sessionStorage.setItem("refresh_token", userToken.refreshToken);
@@ -65,6 +65,34 @@ export const login = async ({
         "user_mqtt_ip_Address",
         JSON.stringify(mqtt?.mqttipAddress)
       );
+      // Handle Admin logic
+      if (hasOnlyAdminRole(userAssignedRoles)) {
+        // this check is used for currently selected role if admin role assing to user
+        sessionStorage.setItem("current_role_is_admin", true);
+        // this check is used for user only have  role of admin
+        sessionStorage.setItem("user_has_admin_only", true);
+        // this check is used for user eployees and admin   role
+        sessionStorage.setItem("user_has_admin_and_employees_role", false);
+        setCurrentRoleIsAdmin(true);
+      } else if (hasAdminRole(userAssignedRoles)) {
+        // Multi-role: Default to user dashboard but allow toggle
+        // this check is used for currently selected role if admin role assing to user
+        sessionStorage.setItem("current_role_is_admin", false);
+        // this check is used for user only have  role of admin
+        sessionStorage.setItem("user_has_admin_only", false);
+        // this check is used for user eployees and admin   role
+        sessionStorage.setItem("user_has_admin_and_employees_role", true);
+        setCurrentRoleIsAdmin(false);
+      } else {
+        // No admin role
+        // this check is used for currently selected role if admin role assing to user
+        sessionStorage.setItem("current_role_is_admin", false);
+        // this check is used for user only have  role of admin
+        sessionStorage.setItem("user_has_admin_only", false);
+        // this check is used for user eployees and admin   role
+        sessionStorage.setItem("user_has_admin_and_employees_role", false);
+        setCurrentRoleIsAdmin(false);
+      }
       navigate("/PAD");
 
       //Yaha success pa true rakha hai takay GetUserDashBoardStats ki API ka response anay tak loader chalay

@@ -93,6 +93,57 @@ export const typeColorMap = {
     textCountColor: "#F67F29",
     textAlign: "center",
   },
+  // admin
+  unrestricted: {
+    bgColor: "#C5FFC7",
+    textLableColor: "#00640A",
+    textCountColor: "#00640A",
+    textAlign: "center",
+  },
+  restricted: {
+    bgColor: "#FFDBDB",
+    textLableColor: "#A50000",
+    textCountColor: "#A50000",
+    textAlign: "center",
+  },
+
+  active_instruments: {
+    bgColor: "#C5FFC7",
+    textLableColor: "#00640A",
+    textCountColor: "#00640A",
+    textAlign: "center",
+  },
+  inactive_instruments: {
+    bgColor: "#FFDBDB",
+    textLableColor: "#A50000",
+    textCountColor: "#A50000",
+    textAlign: "center",
+  },
+  active_brokers: {
+    bgColor: "#C5FFC7",
+    textLableColor: "#00640A",
+    textCountColor: "#00640A",
+    textAlign: "center",
+  },
+  inactive_brokers: {
+    bgColor: "#FFDBDB",
+    textLableColor: "#A50000",
+    textCountColor: "#A50000",
+    textAlign: "center",
+  },
+
+  groups: {
+    bgColor: "#C5FFC7",
+    textLableColor: "#00640A",
+    textCountColor: "#00640A",
+    textAlign: "center",
+  },
+  total_users: {
+    bgColor: "#EDF3FF",
+    textLableColor: "#30426A",
+    textCountColor: "#30426A",
+    textAlign: "center",
+  },
 };
 
 // ============================

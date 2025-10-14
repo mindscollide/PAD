@@ -9,17 +9,23 @@ import { logoutRequest } from "../../../api/logoutApi";
 import { useApi } from "../../../context/ApiContext";
 import { useNotification } from "../../NotificationProvider/NotificationProvider";
 import { useGlobalLoader } from "../../../context/LoaderContext";
+import { useDashboardContext } from "../../../context/dashboardContaxt";
 
 const ProfileDropdown = () => {
   const { callApi } = useApi();
   const { showNotification } = useNotification();
   const { showLoader } = useGlobalLoader();
+  const { setCurrentRoleIsAdmin, setRoleChanegFlag } = useDashboardContext();
+
   const navigate = useNavigate();
   // Get user roles from sessionStorage
   let roles = JSON.parse(sessionStorage.getItem("user_assigned_roles"));
-  const hasAdmin = roles?.length > 0 && roles.some((role) => role.roleID === 1);
+  const showSwitchOption = JSON.parse(
+    sessionStorage.getItem("user_has_admin_and_employees_role")
+  );
   const hasEmployee =
     roles?.length > 0 && roles.some((role) => role.roleID === 2);
+  const [isOpen, setIsOpen] = useState(false);
 
   // Get user profile data safely
   const profile = useMemo(() => {
@@ -38,7 +44,6 @@ const ProfileDropdown = () => {
     return [profile.firstName, profile.lastName].filter(Boolean).join(" ");
   }, [profile]);
 
-  const [isOpen, setIsOpen] = useState(false);
   // ✅ handle logout
   const handleLogout = async () => {
     const success = await logoutRequest({
@@ -48,13 +53,20 @@ const ProfileDropdown = () => {
       navigate,
     });
 
-        console.log("logoutRequest",success)
+    console.log("logoutRequest", success);
     if (success) {
       navigate("/"); // redirect to login/home
     }
   };
   // Get menu items passing correct styles object
-  const menuItems = getMenuItems(hasAdmin, hasEmployee, style,handleLogout);
+  const menuItems = getMenuItems(
+    setRoleChanegFlag,
+    showSwitchOption,
+    hasEmployee,
+    style,
+    handleLogout,
+    setCurrentRoleIsAdmin
+  );
 
   return (
     <Dropdown

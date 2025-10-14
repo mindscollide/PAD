@@ -3,7 +3,6 @@
 import React, { useEffect, useState, useCallback, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 
-
 // 🔹 Components
 import BorderlessTable from "../../../../../components/tables/borderlessTable/borderlessTable";
 
@@ -39,6 +38,7 @@ import CompliantPortfolioApproveModal from "./modals/compliantPortfolioApproveMo
 import NonCompliantPortdolioDeclineModal from "./modals/nonCompliantPortdolioDeclineModal/nonCompliantPortdolioDeclineModal";
 
 import { useTableScrollBottom } from "../../../../../common/funtions/scroll";
+import { getSafeAssetTypeData } from "../../../../../common/funtions/assetTypesList";
 
 /**
  * 📌 ReconcilePortfolio
@@ -95,7 +95,8 @@ const ReconcilePortfolio = ({ activeFilters }) => {
     setComplianceOfficerReconcilePortfolioDataMqtt,
     complianceOfficerReconcilePortfolioDataMqtt,
   } = useReconcileContext();
-  const { assetTypeListingData } = useDashboardContext();
+  const { assetTypeListingData, setAssetTypeListingData } =
+    useDashboardContext();
 
   // This Api is for the getAllViewDetailModal For myTransaction in Emp role
   // GETALLVIEWDETAIL OF Transaction API FUNCTION
@@ -152,11 +153,17 @@ const ReconcilePortfolio = ({ activeFilters }) => {
           requestdata: requestData,
           navigate,
         });
+        // ✅ Always get the freshest version (from memory or session)
+        const currentAssetTypeData = getSafeAssetTypeData(
+          assetTypeListingData,
+          setAssetTypeListingData
+        );
+
         const reconsilePortfolios = Array.isArray(res?.portfolios)
           ? res.portfolios
           : [];
         const mapped = mapToTableRows(
-          assetTypeListingData?.Equities,
+          currentAssetTypeData?.Equities,
           reconsilePortfolios
         );
 
@@ -165,7 +172,7 @@ const ReconcilePortfolio = ({ activeFilters }) => {
             ? mapped
             : [...(prev?.reconsilePortfolios || []), ...mapped],
           // this is for to run lazy loading its data comming from database of total data in db
-          totalRecordsDataBase: res?.totalRecords,
+          totalRecordsDataBase: res?.totalRecords || 0,
           // this is for to know how mush dta currently fetch from  db
           totalRecordsTable: replace
             ? mapped.length
@@ -283,7 +290,7 @@ const ReconcilePortfolio = ({ activeFilters }) => {
 
   useTableScrollBottom(
     async () => {
-     if (
+      if (
         complianceOfficerReconcilePortfolioData?.totalRecordsDataBase <=
         complianceOfficerReconcilePortfolioData?.totalRecordsTable
       )
@@ -328,7 +335,9 @@ const ReconcilePortfolio = ({ activeFilters }) => {
   return (
     <>
       <BorderlessTable
-        rows={complianceOfficerReconcilePortfolioData?.reconsilePortfolios || []}
+        rows={
+          complianceOfficerReconcilePortfolioData?.reconsilePortfolios || []
+        }
         columns={columns}
         classNameTable="border-less-table-blue"
         scroll={
