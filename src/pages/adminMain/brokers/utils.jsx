@@ -26,7 +26,11 @@ const getSortIcon = (columnKey, sortedInfo) => {
   }
   return <ArrowsAltOutlined className="custom-sort-icon" />;
 };
-export const getBrokerTableColumns = (sortedInfo) => [
+export const getBrokerTableColumns = (
+  sortedInfo,
+  setEditBrokerModal,
+  setEditModalData
+) => [
   {
     title: (
       <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
@@ -48,12 +52,7 @@ export const getBrokerTableColumns = (sortedInfo) => [
     ),
   },
   {
-    title: (
-      <StatusColumnTitle
-        state={""}
-        setState={""}
-      />
-    ),
+    title: <StatusColumnTitle state={""} setState={""} />,
     dataIndex: "status",
     key: "status",
     render: (status, record) => (
@@ -91,7 +90,15 @@ export const getBrokerTableColumns = (sortedInfo) => [
     title: "",
     key: "action",
     render: (_, record) => (
-      <Button className="Edit-small-dark-button" text={"Edit"} />
+      <Button
+        className="Edit-small-dark-button"
+        text={"Edit"}
+        onClick={() => {
+          console.log(record, "recordrecordrecord");
+          setEditBrokerModal(true); // Open modal
+          setEditModalData(record); // Set selected row data
+        }}
+      />
     ),
   },
 ];

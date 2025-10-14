@@ -10,7 +10,11 @@ const AddNewBroker = () => {
   const [brokerName, setBrokerName] = useState("");
   const [psxCode, setPsxCode] = useState("");
   const [brokers, setBrokers] = useState([]);
-  const { addNewBrokerModal, setAddNewBrokerModal } = useGlobalModal();
+  const {
+    addNewBrokerModal,
+    setAddNewBrokerModal,
+    setAddBrokerConfirmationModal,
+  } = useGlobalModal();
 
   const handleAddBroker = () => {
     if (brokerName && psxCode) {
@@ -75,6 +79,7 @@ const AddNewBroker = () => {
                 <CustomButton
                   text={"Add"}
                   className={"addBroker-small-dark-button"}
+                  disabled={!brokerName || !psxCode}
                   onClick={handleAddBroker}
                 />
               </Col>
@@ -106,7 +111,10 @@ const AddNewBroker = () => {
             <CustomButton
               text={"Save"}
               className={"big-dark-button"}
-              disabled={!brokerName || !psxCode}
+              onClick={() => {
+                setAddNewBrokerModal(false);
+                setAddBrokerConfirmationModal(true);
+              }}
             />
           </div>
         </>

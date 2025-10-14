@@ -188,7 +188,12 @@ export const GlobalModalProvider = ({ children }) => {
    */
 
   const [addNewBrokerModal, setAddNewBrokerModal] = useState(false);
+  const [editBrokerModal, setEditBrokerModal] = useState(false);
 
+  const [editModalData, setEditModalData] = useState(null);
+
+  const [addBrokerConfirmationModal, setAddBrokerConfirmationModal] =
+    useState(false);
   /**
    * Global States For Admin Role Modals End here
    */
@@ -386,6 +391,15 @@ export const GlobalModalProvider = ({ children }) => {
 
         addNewBrokerModal,
         setAddNewBrokerModal,
+
+        editBrokerModal,
+        setEditBrokerModal,
+
+        editModalData,
+        setEditModalData,
+
+        addBrokerConfirmationModal,
+        setAddBrokerConfirmationModal,
         /**
          * Global States For Admin Role Modals End here
          */

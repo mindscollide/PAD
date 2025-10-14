@@ -16,9 +16,18 @@ import PDF from "../../../assets/img/pdf.png";
 import Excel from "../../../assets/img/xls.png";
 import CustomButton from "../../../components/buttons/button";
 import AddNewBroker from "./modal/addNewBroker/AddNewBroker";
+import EditBroker from "./modal/editBroker/EditBroker";
+import AddBrokerConfirmationModal from "./modal/addBrokerConfimationModal/AddBrokerConfirmationModal";
 
 const Brokers = () => {
-  const { addNewBrokerModal, setAddNewBrokerModal } = useGlobalModal();
+  const {
+    addNewBrokerModal,
+    setAddNewBrokerModal,
+    editBrokerModal,
+    setEditBrokerModal,
+    setEditModalData,
+    addBrokerConfirmationModal,
+  } = useGlobalModal();
 
   const [sortedInfo, setSortedInfo] = useState({});
 
@@ -74,7 +83,11 @@ const Brokers = () => {
     },
   ];
 
-  const columns = getBrokerTableColumns(sortedInfo);
+  const columns = getBrokerTableColumns(
+    sortedInfo,
+    setEditBrokerModal,
+    setEditModalData
+  );
 
   return (
     <>
@@ -128,13 +141,17 @@ const Brokers = () => {
               }}
             />
           ) : (
-            <EmptyState type="request" />
+            <EmptyState type="broker" />
           )}
         </div>
       </PageLayout>
 
       {/* To Open Add Modal While click on Add Broker */}
       {addNewBrokerModal && <AddNewBroker />}
+
+      {editBrokerModal && <EditBroker />}
+
+      {addBrokerConfirmationModal && <AddBrokerConfirmationModal />}
     </>
   );
 };
