@@ -69,6 +69,7 @@ const BoxCard = ({
   userRole = "",
   route,
   warningFlag = false,
+  changeTextSize=false,
 }) => {
   const base = mainClassName || "smallShareHomeCard"; // fallback class name if none provided
   const navigate = useNavigate();
@@ -244,7 +245,7 @@ const BoxCard = ({
                         </div>
 
                         <Text
-                          className={styles[`${base}label`]}
+                          className={styles[`${base}${changeTextSize ? 'label2' : 'label'}`]}
                           style={{ color: textLableColor }}
                         >
                           {box.label}

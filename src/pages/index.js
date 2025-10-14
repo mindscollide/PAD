@@ -1,5 +1,5 @@
 export { default as Login } from "./login/login";
-export { default as Home } from "./main/mainHome/home";
+export { default as Home } from "./mainHome/home";
 export { default as Faqs } from "./faqs/faqs";
 export { default as EmployeApproval } from "./main/employes/myApprovals/approval";
 export { default as EmployeProtfolio } from "./main/employes/portfolios/index";
