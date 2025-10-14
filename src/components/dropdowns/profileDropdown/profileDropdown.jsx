@@ -48,13 +48,13 @@ const ProfileDropdown = () => {
       navigate,
     });
 
-        console.log("logoutRequest",success)
+    console.log("logoutRequest", success);
     if (success) {
       navigate("/"); // redirect to login/home
     }
   };
   // Get menu items passing correct styles object
-  const menuItems = getMenuItems(hasAdmin, hasEmployee, style,handleLogout);
+  const menuItems = getMenuItems(hasAdmin, hasEmployee, style, handleLogout,navigate);
 
   return (
     <Dropdown
