@@ -3,7 +3,7 @@ import { Layout } from "antd";
 import SideBar from "../sidebar/sidebar";
 import "./dashboard_module.css";
 import Headers from "../header/header";
-import { Outlet, useLocation } from "react-router-dom";
+import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import { useEffect, useMemo, useRef } from "react"; // Added useRef
 
 // Contexts
@@ -36,9 +36,16 @@ const Dashboard = () => {
     activeTabRef: reconcileActiveTab,
     activeTabHCORef,
   } = useReconcileContext();
-  const { setDashboardData } = useDashboardContext();
+  const {
+    setDashboardData,
+    currentRoleIsAdmin,
+    roleChanegFlag,
+    setRoleChanegFlag,
+    currentRoleIsAdminRef,
+  } = useDashboardContext();
   const { setEmployeeTransactionsTableDataMqtt } = useTransaction();
   const { selectedKeyRef } = useSidebarContext();
+  const navigate = useNavigate();
 
   // User info from session storage
   const userProfileData = JSON.parse(
@@ -81,12 +88,20 @@ const Dashboard = () => {
         const currentreconcileActiveTab = reconcileActiveTab.current;
         const currentactiveTabRef = activeTabRef.current;
         const currentactiveHCOEscalatedTabRef = activeTabHCORef.current;
+        const currentRoleIsAdminRefLocal = currentRoleIsAdminRef.current;
 
         const { message, payload, roleIDs } = data;
 
         if (!payload) return;
 
         if (hasUserRole(Number(roleIDs))) {
+          if (currentRoleIsAdminRefLocal) {
+            // admin mqtt
+            if (roleIDs !== "1") {
+              // not admin MQTT → ignore completely
+              return;
+            }
+          }
           switch (roleIDs) {
             // Employee mqtt
             case "2": {
@@ -453,6 +468,14 @@ const Dashboard = () => {
   const getContentClass = () => {
     return location.pathname === "/PAD" ? "pad_content" : "pad_content";
   };
+
+  useEffect(() => {
+    // Redirect only if user just became admin
+    if (roleChanegFlag && location.pathname !== "/PAD") {
+      navigate("/PAD", { replace: true });
+      setRoleChanegFlag(false);
+    }
+  }, [currentRoleIsAdmin]); // Runs only when admin state changes
 
   return (
     <Layout style={{ minHeight: "100vh", maxHeight: "100vh" }}>
