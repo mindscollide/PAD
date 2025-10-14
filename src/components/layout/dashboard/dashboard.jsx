@@ -90,10 +90,11 @@ const Dashboard = () => {
         const currentactiveHCOEscalatedTabRef = activeTabHCORef.current;
         const currentRoleIsAdminRefLocal = currentRoleIsAdminRef.current;
 
-        const { message, payload, roleIDs } = data;
+        const { message, payload, roleIDs, action } = data;
 
         if (!payload) return;
-
+        if (action === "WEBNOTIFICATION") {
+        }
         if (hasUserRole(Number(roleIDs))) {
           if (currentRoleIsAdminRefLocal) {
             // admin mqtt
