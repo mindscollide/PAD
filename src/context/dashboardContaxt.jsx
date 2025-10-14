@@ -41,7 +41,7 @@ export const DashboardProvider = ({ children }) => {
   const [allInstrumentsData, setAllInstrumentsData] = useState([]);
 
   //This state is for the addApproval Request on Approval listing page
-  const [addApprovalRequestData, setAddApprovalRequestData] = useState([]);
+  const [assetTypeListingData, setAssetTypeListingData] = useState([]);
 
   // This state is for the Predefinr Request Reason on Resubmit
   const [getAllPredefineReasonData, setGetAllPredefineReasonData] = useState(
@@ -69,7 +69,7 @@ export const DashboardProvider = ({ children }) => {
 
     setEmployeeBasedBrokersData([]);
     setAllInstrumentsData([]);
-    setAddApprovalRequestData([]);
+    setAssetTypeListingData([]);
     setGetAllPredefineReasonData([]);
   };
 
@@ -82,8 +82,8 @@ export const DashboardProvider = ({ children }) => {
         setEmployeeBasedBrokersData,
         allInstrumentsData,
         setAllInstrumentsData,
-        addApprovalRequestData,
-        setAddApprovalRequestData,
+        assetTypeListingData,
+        setAssetTypeListingData,
         getAllPredefineReasonData,
         setGetAllPredefineReasonData,
         resetDashboardContextState,

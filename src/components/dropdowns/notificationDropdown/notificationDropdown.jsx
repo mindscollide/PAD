@@ -25,7 +25,7 @@ import {
   formatApiDateTime,
   getCurrentDateTimeMarkAsReadNotification,
   toYYMMDD,
-} from "../../../commen/funtions/rejex";
+} from "../../../common/funtions/rejex";
 
 /**
  * NotificationDropdown Component

@@ -23,7 +23,7 @@ import {
   formatApiDateTime,
   formatCode,
   toYYMMDD,
-} from "../../../../../commen/funtions/rejex";
+} from "../../../../../common/funtions/rejex";
 import UploadIcon from "../../../../../assets/img/upload-icon.png";
 import { getEmployeePortfolioColumns } from "./utils";
 import { formatBrokerOptions } from "../pendingApprovals/utill";
@@ -32,9 +32,8 @@ import { useNavigate } from "react-router-dom";
 const { Panel } = Collapse;
 const { Text } = Typography;
 
-const Portfolio = ({ className }) => {
+const Portfolio = ({ className ,activeFilters}) => {
   const [activeKey, setActiveKey] = useState([]);
-  const [instrumentData, setInstrumentData] = useState([]);
   const [hasMore, setHasMore] = useState(true); // ✅ track if more data exists
   const [loadingMore, setLoadingMore] = useState(false);
 
@@ -79,7 +78,7 @@ const Portfolio = ({ className }) => {
       Quantity: searchState.quantity ? Number(searchState.quantity) : 0,
       StartDate: startDate,
       EndDate: endDate,
-      BrokerIds: Array.isArray(searchState.broker) ? searchState.broker : [],
+      BrokerIds: Array.isArray(searchState.brokerIDs) ? searchState.brokerIDs : [],
       PageNumber: Number(searchState.pageNumber) || 0,
       Length: Number(searchState.pageSize) || 10,
     };
@@ -104,22 +103,10 @@ const Portfolio = ({ className }) => {
         const instruments = Array.isArray(res?.instruments)
           ? res.instruments
           : [];
-        // let data;
-        // if (replace) {
-        //   data = instruments;
-        // } else {
-        //   data = [...instrumentData, ...instruments]; // or use functional update
-        // }
-        // setInstrumentData(data);
-        // // ✅ Save totalRecords from API
-        // const total = Number(res?.totalRecords || 0);
-
-        // // ✅ Disable scrolling if we've loaded everything
-        // setHasMore(requestData.PageNumber + data.length < total);
         if (replace) {
-          setInstrumentData(instruments);
+          setEmployeePortfolioData(instruments);
         } else {
-          setInstrumentData((prev) => [...prev, ...instruments]);
+          setEmployeePortfolioData((prev) => [...prev, ...instruments]);
         }
 
         // ✅ Save totalRecords from API
@@ -127,9 +114,6 @@ const Portfolio = ({ className }) => {
 
         // ✅ Disable scrolling if we've loaded everything
         setHasMore(requestData.PageNumber + instruments.length < total);
-        console.log("hasMorehasMore", total);
-        console.log("hasMorehasMore", requestData.PageNumber);
-        console.log("hasMorehasMore", instruments.length);
         setAggregateTotalQuantity(res?.aggregateTotalQuantity);
       } catch (err) {
         console.error("❌ Error fetching portfolio:", err);
@@ -157,8 +141,7 @@ const Portfolio = ({ className }) => {
       console.error("❌ Error detecting reload:", err);
     }
   }, [fetchPortfolio, resetEmployeePortfolioSearch]);
-  console.log("hasMorehasMore", hasMore);
-  // ✅ Scroll handler for pagination
+
   // ✅ Scroll handler for pagination
   const handleScroll = () => {
     if (!listRef.current || loadingMore || !hasMore) return;
@@ -192,12 +175,24 @@ const Portfolio = ({ className }) => {
     return () => node.removeEventListener("scroll", handleScroll);
   });
 
+  useEffect(() => {
+    if (employeePortfolioSearch.filterTrigger) {
+      const req = buildPortfolioRequest(employeePortfolioSearch);
+
+      fetchPortfolio(req, true);
+      setEmployeePortfolioSearch((prev) => ({
+        ...prev,
+        filterTrigger: false,
+      }));
+    }
+  }, [employeePortfolioSearch.filterTrigger]);
+
   return (
     <div
       ref={listRef}
       style={{ height: "80vh", overflowY: "auto" }} // ✅ scroll container
     >
-      {instrumentData.length > 0 ? (
+      {employeePortfolioData.length > 0 ? (
         <Collapse
           activeKey={activeKey}
           onChange={(keys) => setActiveKey(keys)}
@@ -212,7 +207,7 @@ const Portfolio = ({ className }) => {
           )}
           expandIconPosition="end"
         >
-          {instrumentData.map((instrument, idx) => {
+          {employeePortfolioData.map((instrument, idx) => {
             const panelKey = instrument.instrumentId || idx.toString();
             const isPositive = instrument.totalQuantity >= 0;
 
@@ -242,7 +237,7 @@ const Portfolio = ({ className }) => {
                 key={panelKey}
               >
                 <BorderlessTable
-                  rows={instrument.transactions || []}
+                  rows={instrument?.transactions || []}
                   columns={columns}
                   pagination={false}
                   rowKey="transactionId"

@@ -2,7 +2,6 @@
 
 import React, { useEffect, useState } from "react";
 import { Typography, Row, Col } from "antd";
-import { useNavigate } from "react-router-dom";
 
 // 🔹 Styles & Components
 import styles from "./styles.module.css";
@@ -35,15 +34,16 @@ const { Title } = Typography;
  * @returns {JSX.Element} ReconcileIndex page component
  */
 const ReconcileIndex = () => {
-  const navigate = useNavigate();
-
   // ─── Context Hooks ─────────────────────────────────────────────
-  const { activeTab, setActiveTab, aggregateTotalQuantity } =
-    useReconcileContext();
+  const { activeTab, setActiveTab } = useReconcileContext();
 
   const {
     resetComplianceOfficerReconcileTransactionsSearch,
     resetComplianceOfficerReconcilePortfoliosSearch,
+    setComplianceOfficerReconcileTransactionsSearch,
+    complianceOfficerReconcileTransactionsSearch,
+    setComplianceOfficerReconcilePortfolioSearch,
+    complianceOfficerReconcilePortfolioSearch,
   } = useSearchBarContext();
 
   const { isSubmit } = useGlobalModal();
@@ -91,10 +91,130 @@ const ReconcileIndex = () => {
     resetComplianceOfficerReconcileTransactionsSearch();
   };
 
+  /** 🔹 Handle removing individual filter */
+  const handleRemoveFilter = (key) => {
+    const resetMap = {
+      instrumentName: { instrumentName: "" },
+      requesterName: { requesterName: "" },
+      dateRange: { startDate: null, endDate: null },
+      quantity: { quantity: 0 },
+    };
+    if (isTransactions) {
+      setComplianceOfficerReconcileTransactionsSearch((prev) => ({
+        ...prev,
+        ...resetMap[key],
+        pageNumber: 0,
+        filterTrigger: true,
+      }));
+    } else {
+      setComplianceOfficerReconcilePortfolioSearch((prev) => ({
+        ...prev,
+        ...resetMap[key],
+        pageNumber: 0,
+        filterTrigger: true,
+      }));
+    }
+  };
+
+  /** 🔹 Handle removing all filters */
+  const handleRemoveAllFilters = () => {
+    if (isTransactions) {
+      setComplianceOfficerReconcileTransactionsSearch((prev) => ({
+        ...prev,
+        instrumentName: "",
+        requesterName: "",
+        startDate: null,
+        endDate: null,
+        quantity: 0,
+        pageNumber: 0,
+        filterTrigger: true,
+      }));
+    } else {
+      setComplianceOfficerReconcilePortfolioSearch((prev) => ({
+        ...prev,
+        instrumentName: "",
+        requesterName: "",
+        startDate: null,
+        endDate: null,
+        quantity: 0,
+        pageNumber: 0,
+        filterTrigger: true,
+      }));
+    }
+  };
+
+  /** 🔹 Build Active Filters */
+  const activeFilters = (() => {
+    const { instrumentName, startDate, endDate, quantity, requesterName } =
+      isTransactions
+        ? complianceOfficerReconcileTransactionsSearch || {}
+        : complianceOfficerReconcilePortfolioSearch || {};
+
+    return [
+      instrumentName && {
+        key: "instrumentName",
+        value:
+          instrumentName.length > 13
+            ? instrumentName.slice(0, 13) + "..."
+            : instrumentName,
+      },
+      requesterName && {
+        key: "requesterName",
+        value:
+          requesterName.length > 13
+            ? requesterName.slice(0, 13) + "..."
+            : requesterName,
+      },
+      startDate &&
+        endDate && {
+          key: "dateRange",
+          value: `${startDate} → ${endDate}`,
+        },
+      quantity &&
+        Number(quantity) > 0 && {
+          key: "quantity",
+          value: Number(quantity).toLocaleString("en-US"),
+        },
+    ].filter(Boolean);
+  })();
+
   // ─── Render ────────────────────────────────────────────────────
   return (
     <>
-      <PageLayout background="white">
+      {/* 🔹 Active Filter Tags */}
+      {activeFilters.length > 0 && (
+        <Row gutter={[12, 12]} className={styles["filter-tags-container"]}>
+          {activeFilters.map(({ key, value }) => (
+            <Col key={key}>
+              <div className={styles["filter-tag"]}>
+                <span>{value}</span>
+                <span
+                  className={styles["filter-tag-close"]}
+                  onClick={() => handleRemoveFilter(key)}
+                >
+                  &times;
+                </span>
+              </div>
+            </Col>
+          ))}
+
+          {/* 🔹 Show Clear All only if more than one filter */}
+          {activeFilters.length > 1 && (
+            <Col>
+              <div
+                className={`${styles["filter-tag"]} ${styles["clear-all-tag"]}`}
+                onClick={handleRemoveAllFilters}
+              >
+                <span>Clear All</span>
+              </div>
+            </Col>
+          )}
+        </Row>
+      )}
+      <PageLayout
+        background="white"
+        className={activeFilters.length > 0 && "changeHeight"}
+      >
         {/* ─── Header Section: Tabs + Totals + Actions ─────────────── */}
         <Row justify="space-between" align="middle" className={styles.header}>
           {/* ─── Tabs ───────────────────────────── */}
@@ -155,11 +275,11 @@ const ReconcileIndex = () => {
         <div className={styles.content}>
           {isTransactions ? (
             <div className={styles.placeholder}>
-              <ReconcileTransaction />
+              <ReconcileTransaction activeFilters={activeFilters}/>
             </div>
           ) : (
             <div className={styles.placeholder}>
-              <ReconcilePortfolio />
+              <ReconcilePortfolio activeFilters={activeFilters}/>
             </div>
           )}
         </div>

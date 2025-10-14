@@ -5,7 +5,8 @@ const MyapprovalContext = createContext();
 export const MyApprovalProvider = ({ children }) => {
   const [employeeMyApproval, setIsEmployeeMyApproval] = useState({
     approvals: [],
-    totalRecords: 0,
+    totalRecordsDataBase: 0,
+    totalRecordsTable: 0,
   });
   const [employeeMyApprovalMqtt, setIsEmployeeMyApprovalMqtt] = useState(false);
   // Context STate to extract data from get All View Trade Approval which is show by click on View Detail
@@ -18,7 +19,11 @@ export const MyApprovalProvider = ({ children }) => {
 
   // Reset function to set all states back to initial values
   const resetMyApprovalContextState = () => {
-    setIsEmployeeMyApproval([]);
+    setIsEmployeeMyApproval({
+      approvals: [],
+      totalRecordsDataBase: 0,
+      totalRecordsTable: 0,
+    });
     setViewDetailsModalData({
       assetTypes: [],
       details: [],
@@ -33,7 +38,8 @@ export const MyApprovalProvider = ({ children }) => {
 
   const [lineManagerApproval, setLineManagerApproval] = useState({
     lineApprovals: [],
-    totalRecords: 0,
+    totalRecordsDataBase: 0,
+    totalRecordsTable: 0,
   });
 
   const [lineManagerApprovalMqtt, setLineManagerApprovalMQtt] = useState(false);
@@ -51,7 +57,8 @@ export const MyApprovalProvider = ({ children }) => {
   const resetApprovalRequestContextState = () => {
     setLineManagerApproval({
       lineApprovals: [],
-      totalRecords: 0,
+      totalRecordsDataBase: 0,
+      totalRecordsTable: 0,
     });
     setViewDetailsLineManagerData({
       assetTypes: [],

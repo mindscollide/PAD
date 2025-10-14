@@ -15,7 +15,7 @@ import {
   dashBetweenApprovalAssets,
   formatApiDateTime,
   formatNumberWithCommas,
-} from "../../../../../../commen/funtions/rejex";
+} from "../../../../../../common/funtions/rejex";
 import { useNotification } from "../../../../../../components/NotificationProvider/NotificationProvider";
 import CopyToClipboard from "../../../../../../hooks/useClipboard";
 

@@ -37,9 +37,9 @@ export const MyTransactionsProvider = ({ children }) => {
    * - `apiCall`: Flag for tracking if API was recently called
    */
   const [employeeTransactionsData, setEmployeeTransactionsData] = useState({
-    data: [],
-    totalRecords: 0,
-    apiCall: false,
+    transactions: [],
+    totalRecordsDataBase: 0,
+    totalRecordsTable: 0,
   });
 
   // Context STate to extract data from get All View Trade Approval which is show by click on View Detail
@@ -95,9 +95,9 @@ export const MyTransactionsProvider = ({ children }) => {
       mqttRecived: false,
     });
     setEmployeeTransactionsData({
-      data: [],
-      totalRecords: 0,
-      apiCall: false,
+      transactions: [],
+      totalRecordsDataBase: 0,
+      totalRecordsTable: 0,
     });
   };
 

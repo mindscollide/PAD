@@ -10,7 +10,7 @@ import {
   AddTradeApprovalRequest,
   ResubmitApprovalRequestApi,
 } from "../../../../../../api/myApprovalApi";
-import { dashBetweenApprovalAssets } from "../../../../../../commen/funtions/rejex";
+import { dashBetweenApprovalAssets } from "../../../../../../common/funtions/rejex";
 
 const ResubmitModal = () => {
   const navigate = useNavigate();

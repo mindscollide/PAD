@@ -11,6 +11,7 @@ const BorderlessTable = ({
   rowHoverable = false,
   onChange,
   loading,
+  ref,
 }) => {
   const CustomEmpty = () => (
     <div style={{ padding: "16px" }}>
@@ -21,6 +22,7 @@ const BorderlessTable = ({
 
   return (
     <Table
+      ref={ref}
       rowHoverable={rowHoverable}
       scroll={scroll}
       dataSource={rows}
