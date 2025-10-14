@@ -169,6 +169,16 @@ const Home = () => {
   }, []);
 
   useEffect(() => {}, [dashboardData]);
+  // roles = dynamic roles array (e.g. [{ roleID: 1 }, { roleID: 3 }])
+  const userRoleIDs = roles.map((r) => r.roleID);
+
+  // remove role 1 if present
+  const filteredRoles = userRoleIDs.filter((id) => id !== 1);
+
+  // find the first valid matched role (ignoring 1)
+  const firstMatchedRole = filteredRoles.find((roleId) =>
+    checkRoleMatch(roles, roleId)
+  );
   return (
     <>
       <div style={{ padding: " 16px 24px 0px 24px " }}>
@@ -321,18 +331,20 @@ const Home = () => {
             {checkRoleMatch(roles, 2) && (
               <>
                 <Row gutter={[16, 16]}>
-                  <Col xs={24} md={12} lg={16}>
-                    <TextCard
-                      className="smallCard"
-                      title={
-                        <>
-                          <span id="greeting-text">Hi</span>{" "}
-                          <span id="user-name">{dashboardData?.title}</span>,
-                        </>
-                      }
-                      subtitle="Good Morning!"
-                    />
-                  </Col>
+                  {firstMatchedRole === 2 && (
+                    <Col xs={24} md={12} lg={16}>
+                      <TextCard
+                        className="smallCard"
+                        title={
+                          <>
+                            <span id="greeting-text">Hi</span>{" "}
+                            <span id="user-name">{dashboardData?.title}</span>,
+                          </>
+                        }
+                        subtitle="Good Morning!"
+                      />
+                    </Col>
+                  )}
 
                   <Col xs={24} md={12} lg={8}>
                     <MemoizedBoxCard
@@ -423,21 +435,27 @@ const Home = () => {
                 </Row>
               </>
             )}
+            <br />
             {checkRoleMatch(roles, 3) && (
               <>
                 <Row gutter={[16, 16]}>
-                  <Col xs={24} md={24} lg={24}>
-                    <TextCard
-                      className="smallCard"
-                      title={
-                        <>
-                          <span id="greeting-text-LM">Hi</span>{" "}
-                          <span id="user-name-LM">{dashboardData?.title}</span>,
-                        </>
-                      }
-                      subtitle="Good Morning!"
-                    />
-                  </Col>
+                  {firstMatchedRole === 3 && (
+                    <Col xs={24} md={24} lg={24}>
+                      <TextCard
+                        className="smallCard"
+                        title={
+                          <>
+                            <span id="greeting-text-LM">Hi</span>{" "}
+                            <span id="user-name-LM">
+                              {dashboardData?.title}
+                            </span>
+                            ,
+                          </>
+                        }
+                        subtitle="Good Morning!"
+                      />
+                    </Col>
+                  )}
                 </Row>
                 <Row gutter={[16, 16]}>
                   <Col xs={24} md={12} lg={12}>
@@ -502,21 +520,27 @@ const Home = () => {
                 </Row>
               </>
             )}
+            <br />
             {checkRoleMatch(roles, 4) && (
               <>
                 <Row gutter={[16, 16]}>
-                  <Col xs={24} md={24} lg={24}>
-                    <TextCard
-                      className="smallCard"
-                      title={
-                        <>
-                          <span id="greeting-text-LM">Hi</span>{" "}
-                          <span id="user-name-LM">{dashboardData?.title}</span>,
-                        </>
-                      }
-                      subtitle="Good Morning!"
-                    />
-                  </Col>
+                  {firstMatchedRole === 4 && (
+                    <Col xs={24} md={24} lg={24}>
+                      <TextCard
+                        className="smallCard"
+                        title={
+                          <>
+                            <span id="greeting-text-LM">Hi</span>{" "}
+                            <span id="user-name-LM">
+                              {dashboardData?.title}
+                            </span>
+                            ,
+                          </>
+                        }
+                        subtitle="Good Morning!"
+                      />
+                    </Col>
+                  )}
                 </Row>
                 <Row gutter={[16, 16]}>
                   <Col xs={24} md={12} lg={12}>
@@ -581,100 +605,27 @@ const Home = () => {
                 </Row>
               </>
             )}
-            {checkRoleMatch(roles, 6) && (
-              <>
-                <Row gutter={[16, 16]}>
-                  <Col xs={24} md={24} lg={24}>
-                    <TextCard
-                      className="smallCard"
-                      title={
-                        <>
-                          <span id="greeting-text-LM">Hi</span>{" "}
-                          <span id="user-name-LM">{dashboardData?.title}</span>,
-                        </>
-                      }
-                      subtitle="Good Morning!"
-                    />
-                  </Col>
-                </Row>
-                <Row gutter={[16, 16]}>
-                  <Col xs={24} md={12} lg={12}>
-                    <MemoizedBoxCard
-                      // warningFlag={true}
-                      locationStyle={"up"}
-                      title="Verification Requests"
-                      buttonId={"Reconcile-transactions-view-btn-hca"}
-                      mainClassName={"mediumHomeCard"}
-                      boxes={headofComplianceOfficerVerificationRequest}
-                      buttonTitle={"See More"}
-                      buttonClassName={"big-white-card-button"}
-                      userRole={"HCA"}
-                      route={"verification"}
-                    />
-                  </Col>
-
-                  <Col xs={24} md={12} lg={12}>
-                    <MemoizedBoxCard
-                      buttonId={"my-action-view-btn-hca"}
-                      locationStyle={"up"}
-                      title="My Actions"
-                      mainClassName={"mediumHomeCard"}
-                      boxes={headofComplianceOfficerMyActions}
-                      buttonTitle={"See More"}
-                      buttonClassName={"big-white-card-button"}
-                      userRole={"HCA"}
-                      route={"action"}
-                    />
-                  </Col>
-                </Row>
-                <Row gutter={[16, 16]}>
-                  <Col xs={24} md={12} lg={12}>
-                    <ReportCard
-                      mainClassName={"home-reprot-card"}
-                      title="Reports"
-                      buttonTitle={"See More"}
-                      buttonId={"Reports-view-btn-LM"}
-                      buttonClassName={"big-white-card-button"}
-                      rowButtonClassName={"small-card-light-button"}
-                      data={[
-                        {
-                          icon: <Avatar icon={<FileDoneOutlined />} />,
-                          label: "My Compliance",
-                          action: "View Report",
-                        },
-                        {
-                          icon: <Avatar icon={<BarChartOutlined />} />,
-                          label: "My Transactions",
-                          action: "View Report",
-                        },
-                        {
-                          icon: <Avatar icon={<BarChartOutlined />} />,
-                          label: "My Transactions",
-                          action: "View Report",
-                        },
-                      ]}
-                      userRole={"HCA"}
-                      route={"reports"}
-                    />
-                  </Col>
-                </Row>
-              </>
-            )}
+            <br />
             {checkRoleMatch(roles, 5) && (
               <>
                 <Row gutter={[16, 16]}>
-                  <Col xs={24} md={24} lg={24}>
-                    <TextCard
-                      className="smallCard"
-                      title={
-                        <>
-                          <span id="greeting-text-LM">Hi</span>{" "}
-                          <span id="user-name-LM">{dashboardData?.title}</span>,
-                        </>
-                      }
-                      subtitle="Good Morning!"
-                    />
-                  </Col>
+                  {firstMatchedRole === 5 && (
+                    <Col xs={24} md={24} lg={24}>
+                      <TextCard
+                        className="smallCard"
+                        title={
+                          <>
+                            <span id="greeting-text-LM">Hi</span>{" "}
+                            <span id="user-name-LM">
+                              {dashboardData?.title}
+                            </span>
+                            ,
+                          </>
+                        }
+                        subtitle="Good Morning!"
+                      />
+                    </Col>
+                  )}
                 </Row>
                 <Row gutter={[16, 16]}>
                   <Col xs={24} md={12} lg={12}>
@@ -733,6 +684,91 @@ const Home = () => {
                         },
                       ]}
                       userRole={"HTA"}
+                      route={"reports"}
+                    />
+                  </Col>
+                </Row>
+              </>
+            )}
+            <br />
+            {checkRoleMatch(roles, 6) && (
+              <>
+                <Row gutter={[16, 16]}>
+                  {firstMatchedRole === 6 && (
+                    <Col xs={24} md={24} lg={24}>
+                      <TextCard
+                        className="smallCard"
+                        title={
+                          <>
+                            <span id="greeting-text-LM">Hi</span>{" "}
+                            <span id="user-name-LM">
+                              {dashboardData?.title}
+                            </span>
+                            ,
+                          </>
+                        }
+                        subtitle="Good Morning!"
+                      />
+                    </Col>
+                  )}
+                </Row>
+                <Row gutter={[16, 16]}>
+                  <Col xs={24} md={12} lg={12}>
+                    <MemoizedBoxCard
+                      // warningFlag={true}
+                      locationStyle={"up"}
+                      title="Verification Requests"
+                      buttonId={"Reconcile-transactions-view-btn-hca"}
+                      mainClassName={"mediumHomeCard"}
+                      boxes={headofComplianceOfficerVerificationRequest}
+                      buttonTitle={"See More"}
+                      buttonClassName={"big-white-card-button"}
+                      userRole={"HCA"}
+                      route={"verification"}
+                    />
+                  </Col>
+
+                  <Col xs={24} md={12} lg={12}>
+                    <MemoizedBoxCard
+                      buttonId={"my-action-view-btn-hca"}
+                      locationStyle={"up"}
+                      title="My Actions"
+                      mainClassName={"mediumHomeCard"}
+                      boxes={headofComplianceOfficerMyActions}
+                      buttonTitle={"See More"}
+                      buttonClassName={"big-white-card-button"}
+                      userRole={"HCA"}
+                      route={"action"}
+                    />
+                  </Col>
+                </Row>
+                <Row gutter={[16, 16]}>
+                  <Col xs={24} md={12} lg={12}>
+                    <ReportCard
+                      mainClassName={"home-reprot-card"}
+                      title="Reports"
+                      buttonTitle={"See More"}
+                      buttonId={"Reports-view-btn-LM"}
+                      buttonClassName={"big-white-card-button"}
+                      rowButtonClassName={"small-card-light-button"}
+                      data={[
+                        {
+                          icon: <Avatar icon={<FileDoneOutlined />} />,
+                          label: "My Compliance",
+                          action: "View Report",
+                        },
+                        {
+                          icon: <Avatar icon={<BarChartOutlined />} />,
+                          label: "My Transactions",
+                          action: "View Report",
+                        },
+                        {
+                          icon: <Avatar icon={<BarChartOutlined />} />,
+                          label: "My Transactions",
+                          action: "View Report",
+                        },
+                      ]}
+                      userRole={"HCA"}
                       route={"reports"}
                     />
                   </Col>
