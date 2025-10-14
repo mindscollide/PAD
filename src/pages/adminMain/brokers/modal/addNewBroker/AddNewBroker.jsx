@@ -1,21 +1,41 @@
 import React, { useState } from "react";
-import { GlobalModal, TextField } from "../../../../../components";
-import styles from "./addNewBroker.module.css";
-import { useGlobalModal } from "../../../../../context/GlobalModalContext";
-import CustomButton from "../../../../../components/buttons/button";
-import BlackCrossImg from "../../../../../assets/img/BlackCross.png";
 import { Col, Row } from "antd";
+import { useApi } from "../../../../../context/ApiContext";
+import { useNavigate } from "react-router-dom";
+import { useGlobalModal } from "../../../../../context/GlobalModalContext";
+import { useGlobalLoader } from "../../../../../context/LoaderContext";
+import { useNotification } from "../../../../../components/NotificationProvider/NotificationProvider";
+import { AddBrokersRequest } from "../../../../../api/adminApi";
+import { GlobalModal, TextField } from "../../../../../components";
+import BlackCrossImg from "../../../../../assets/img/BlackCross.png";
+import CustomButton from "../../../../../components/buttons/button";
+import styles from "./addNewBroker.module.css";
 
 const AddNewBroker = () => {
-  const [brokerName, setBrokerName] = useState("");
-  const [psxCode, setPsxCode] = useState("");
-  const [brokers, setBrokers] = useState([]);
+  const navigate = useNavigate();
+  const { showNotification } = useNotification();
+  const { showLoader } = useGlobalLoader();
+  const { callApi } = useApi();
+
+  // 🔷 Modal control states from global context
   const {
     addNewBrokerModal,
     setAddNewBrokerModal,
     setAddBrokerConfirmationModal,
   } = useGlobalModal();
 
+  // 🔷 State for the broker name input
+  const [brokerName, setBrokerName] = useState("");
+
+  // 🔷 State for the PSX code input
+  const [psxCode, setPsxCode] = useState("");
+
+  // 🔷 State to hold the list of brokers added before saving
+  const [brokers, setBrokers] = useState([]);
+
+  console.log(brokers, "brokersbrokersbrokersbrokers");
+
+  // 🔷 Adds a new broker to the list if inputs are valid and clears inputs afterward
   const handleAddBroker = () => {
     if (brokerName && psxCode) {
       setBrokers([...brokers, { brokerName, psxCode }]);
@@ -24,10 +44,39 @@ const AddNewBroker = () => {
     }
   };
 
+  // 🔷 Removes a broker from the list by index
   const handleRemoveBroker = (index) => {
     const updated = [...brokers];
     updated.splice(index, 1);
     setBrokers(updated);
+  };
+
+  // 🔷 Calls the API to save the broker list
+  const fetchSaveData = async () => {
+    if (brokers.length === 0) return;
+
+    showLoader(true);
+    const requestdata = {
+      BrokerList: brokers.map(({ brokerName, psxCode }) => ({
+        BrokerName: brokerName,
+        PSXCode: psxCode,
+      })),
+    };
+
+    await AddBrokersRequest({
+      callApi,
+      showNotification,
+      showLoader,
+      requestdata,
+      setAddNewBrokerModal,
+      setAddBrokerConfirmationModal,
+      navigate,
+    });
+  };
+
+  // 🔷 Triggered when Save button is clicked to call the API function
+  const onClickOnSaveButton = () => {
+    fetchSaveData();
   };
 
   return (
@@ -111,10 +160,8 @@ const AddNewBroker = () => {
             <CustomButton
               text={"Save"}
               className={"big-dark-button"}
-              onClick={() => {
-                setAddNewBrokerModal(false);
-                setAddBrokerConfirmationModal(true);
-              }}
+              onClick={onClickOnSaveButton}
+              disabled={brokers.length === 0}
             />
           </div>
         </>

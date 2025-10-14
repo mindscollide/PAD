@@ -4,14 +4,26 @@ import styles from "./EditBroker.module.css";
 import { useGlobalModal } from "../../../../../context/GlobalModalContext";
 import CustomButton from "../../../../../components/buttons/button";
 import { Row, Col } from "antd";
+import { EditBrokersRequest } from "../../../../../api/adminApi";
+import { useNavigate } from "react-router-dom";
+import { useNotification } from "../../../../../components/NotificationProvider/NotificationProvider";
+import { useGlobalLoader } from "../../../../../context/LoaderContext";
+import { useApi } from "../../../../../context/ApiContext";
 
 const EditBroker = () => {
+  const navigate = useNavigate();
+  const { showNotification } = useNotification();
+  const { showLoader } = useGlobalLoader();
+  const { callApi } = useApi();
+
   const { editBrokerModal, setEditBrokerModal, editModalData } =
     useGlobalModal();
 
+  // 🔷 State variables to hold broker details in the form fields
   const [brokerName, setBrokerName] = useState("");
   const [psxCode, setPsxCode] = useState("");
 
+  // 🔷 Populate form fields when modal data changes (when modal opens with broker info)
   useEffect(() => {
     if (editModalData) {
       setBrokerName(editModalData.brokerName || "");
@@ -19,12 +31,34 @@ const EditBroker = () => {
     }
   }, [editModalData]);
 
+  // 🔷 Function to call the Edit Broker API
+  const fetchEditData = async () => {
+    // 🔷 Validate inputs before sending request
+    if (!brokerName || !psxCode) return;
+
+    // 🔷 Prepare request payload matching API format
+    const requestdata = {
+      BrokerID: editModalData.brokerID, // note capital B and I for API
+      BrokerName: brokerName,
+      PSXCode: psxCode,
+    };
+
+    showLoader(true); // 🔷 Show loading indicator
+
+    // 🔷 Call the EditBrokersRequest API helper
+    await EditBrokersRequest({
+      callApi,
+      showNotification,
+      showLoader,
+      requestdata,
+      setEditBrokerModal,
+      navigate,
+    });
+  };
+
+  // 🔷 Handler for Save button click
   const handleSave = () => {
-    if (brokerName && psxCode) {
-      // You can call your save logic here
-      console.log("Saving edited data:", { brokerName, psxCode });
-      setEditBrokerModal(false);
-    }
+    fetchEditData();
   };
 
   return (

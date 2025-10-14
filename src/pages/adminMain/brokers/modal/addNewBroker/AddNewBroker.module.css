@@ -114,6 +114,10 @@
   font-family: "Switzer Variable";
   font-size: 16px;
   color: #30426a;
+  width: auto;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .deleteButton {

@@ -26,15 +26,32 @@ const getSortIcon = (columnKey, sortedInfo) => {
   }
   return <ArrowsAltOutlined className="custom-sort-icon" />;
 };
+
+/**
+ * Utility: Build API request payload for approval listing
+ *
+ * @param {Object} searchState - Current search/filter state
+ * @param {Object} assetTypeListingData - Extra request metadata (optional)
+ * @returns {Object} API-ready payload
+ */
+export const buildApiRequest = (searchState = {}) => ({
+  BrokerName: searchState.brokerName || "",
+  PSXCode: searchState.psxCode || "",
+  PageNumber: Number(searchState.pageNumber) || 0,
+  Length: Number(searchState.pageSize) || 10,
+});
+
 export const getBrokerTableColumns = (
   sortedInfo,
+  adminBrokerSearch,
+  setAdminBrokerSearch,
   setEditBrokerModal,
   setEditModalData
 ) => [
   {
     title: (
       <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-        Broker Name {getSortIcon("transactionId", sortedInfo)}
+        Broker Name {getSortIcon("brokerName", sortedInfo)}
       </div>
     ),
     dataIndex: "brokerName",
@@ -52,23 +69,32 @@ export const getBrokerTableColumns = (
     ),
   },
   {
-    title: <StatusColumnTitle state={""} setState={""} />,
+    title: (
+      <StatusColumnTitle
+        state={adminBrokerSearch}
+        setState={setAdminBrokerSearch}
+      />
+    ),
     dataIndex: "status",
     key: "status",
-    render: (status, record) => (
-      <div className={styles.SwitchMainDiv}>
-        <Switch
-          checked={status}
-          onChange={(value) => onStatusChange(record.key, value)}
-          className={`${styles.switchBase} ${
-            status ? styles.switchbackground : styles.unSwitchBackground
-          }`}
-        />
-        <span className={status ? styles.activeText : styles.InActiveText}>
-          {status ? "Active" : "Inactive"}
-        </span>
-      </div>
-    ),
+    render: (status, record) => {
+      console.log(record, "recordrecord");
+      const isActive = record.brokerStatus === "Active";
+      return (
+        <div className={styles.SwitchMainDiv}>
+          <Switch
+            checked={isActive}
+            onChange={(value) => onStatusChange(record.brokerID, value)}
+            className={`${styles.switchBase} ${
+              isActive ? styles.switchbackground : styles.unSwitchBackground
+            }`}
+          />
+          <span className={isActive ? styles.activeText : styles.InActiveText}>
+            {isActive ? "Active" : "Inactive"}
+          </span>
+        </div>
+      );
+    },
   },
   {
     title: (
@@ -89,16 +115,18 @@ export const getBrokerTableColumns = (
   {
     title: "",
     key: "action",
+    align: "right", // 🔷 Align content to the right
     render: (_, record) => (
-      <Button
-        className="Edit-small-dark-button"
-        text={"Edit"}
-        onClick={() => {
-          console.log(record, "recordrecordrecord");
-          setEditBrokerModal(true); // Open modal
-          setEditModalData(record); // Set selected row data
-        }}
-      />
+      <div className={styles.viewEditClass}>
+        <Button
+          className="Edit-small-dark-button"
+          text={"Edit"}
+          onClick={() => {
+            setEditBrokerModal(true);
+            setEditModalData(record);
+          }}
+        />
+      </div>
     ),
   },
 ];
