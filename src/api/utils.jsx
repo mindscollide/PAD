@@ -343,6 +343,11 @@ export const responseMessages = {
   PAD_Admin_UpdateBroker_02: "Successfully updated",
   PAD_Admin_UpdateBroker_03: " Update failed",
   PAD_Admin_UpdateBroker_04: "Exception occurred",
+
+  PAD_Admin_UpdateBrokerStatus_01: "Invalid input",
+  PAD_Admin_UpdateBrokerStatus_02: "Successfully updated",
+  PAD_Admin_UpdateBrokerStatus_03: "Update failed or broker not found",
+  PAD_Admin_UpdateBrokerStatus_04: "Exception occurred",
 };
 
 /**

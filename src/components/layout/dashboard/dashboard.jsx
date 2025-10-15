@@ -15,6 +15,7 @@ import { useTransaction } from "../../../context/myTransaction";
 import { useReconcileContext } from "../../../context/reconsileContax";
 import { useSidebarContext } from "../../../context/sidebarContaxt";
 import { useEscalatedApprovals } from "../../../context/escalatedApprovalContext";
+import { useWebNotification } from "../../../context/notificationContext";
 const { Content } = Layout;
 
 const Dashboard = () => {
@@ -44,6 +45,7 @@ const Dashboard = () => {
     currentRoleIsAdminRef,
   } = useDashboardContext();
   const { setEmployeeTransactionsTableDataMqtt } = useTransaction();
+  const { setWebNotificationDataMqtt } = useWebNotification();
   const { selectedKeyRef } = useSidebarContext();
   const navigate = useNavigate();
 
@@ -94,6 +96,7 @@ const Dashboard = () => {
 
         if (!payload) return;
         if (action === "WEBNOTIFICATION") {
+          setWebNotificationDataMqtt;
         }
         if (hasUserRole(Number(roleIDs))) {
           if (currentRoleIsAdminRefLocal) {

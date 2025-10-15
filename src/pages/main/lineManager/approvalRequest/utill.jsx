@@ -16,7 +16,10 @@ import {
   formatApiDateTime,
   toYYMMDD,
 } from "../../../../common/funtions/rejex";
-import { mapBuySellToIds, mapStatusToIds } from "../../../../components/dropdowns/filters/utils";
+import {
+  mapBuySellToIds,
+  mapStatusToIds,
+} from "../../../../components/dropdowns/filters/utils";
 import { getTradeTypeById } from "../../../../common/funtions/type";
 // import TypeColumnTitle from "./typeFilter";
 
@@ -53,7 +56,6 @@ export const buildApiRequest = (searchState = {}, assetTypeListingData) => {
     Length: Number(pageSize) || 10,
   };
 };
-
 
 export const mapEscalatedApprovalsToTableRows = (
   assetTypeData,
@@ -193,7 +195,7 @@ export const getBorderlessLineManagerTableColumns = ({
           <span className="custom-shortCode-asset" style={{ minWidth: 30 }}>
             {assetCode?.substring(0, 2).toUpperCase()}
           </span>
-          <Tooltip title={instrumentName} placement="topLeft">
+          <Tooltip title={`${code} - ${instrumentName}`} placement="topLeft">
             <span
               className="font-medium"
               style={{

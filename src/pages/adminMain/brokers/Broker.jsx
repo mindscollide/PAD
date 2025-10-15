@@ -18,13 +18,17 @@ import AddNewBroker from "./modal/addNewBroker/AddNewBroker";
 import EditBroker from "./modal/editBroker/EditBroker";
 import AddBrokerConfirmationModal from "./modal/addBrokerConfimationModal/AddBrokerConfirmationModal";
 import { useSearchBarContext } from "../../../context/SearchBarContaxt";
-import { SearchBrokersAdminRequest } from "../../../api/adminApi";
+import {
+  SearchBrokersAdminRequest,
+  updateBrokersStatusRequest,
+} from "../../../api/adminApi";
 import { useNavigate } from "react-router-dom";
 import { useNotification } from "../../../components/NotificationProvider/NotificationProvider";
 import { useGlobalLoader } from "../../../context/LoaderContext";
 import { useApi } from "../../../context/ApiContext";
 import { useMyAdmin } from "../../../context/AdminContext";
 import { UpOutlined, DownOutlined } from "@ant-design/icons";
+import { useWebNotification } from "../../../context/notificationContext";
 
 const Brokers = () => {
   const navigate = useNavigate();
@@ -36,6 +40,9 @@ const Brokers = () => {
   const { callApi } = useApi();
   const { adminBrokerSearch, setAdminBrokerSearch } = useSearchBarContext();
   const { adminBrokerData, setAdminBrokerData } = useMyAdmin();
+  const { webNotificationDataMqtt, setWebNotificationDataMqtt } =
+    useWebNotification();
+
   const {
     addNewBrokerModal,
     setAddNewBrokerModal,
@@ -49,14 +56,32 @@ const Brokers = () => {
   const [sortedInfo, setSortedInfo] = useState({});
   const [open, setOpen] = useState(false);
 
+  // 🔷 Toggle Api Call For Active and InActive Statuses
+  const onToggleStatusApiRequest = async (brokerID, isActive) => {
+    showLoader(true);
+    const payload = {
+      BrokerID: brokerID,
+      BrokerStatusID: isActive ? 1 : 2,
+    };
+
+    await updateBrokersStatusRequest({
+      callApi,
+      showNotification,
+      showLoader,
+      requestdata: payload,
+      navigate,
+    });
+  };
+
   // 🔷 Table Columns
-  const columns = getBrokerTableColumns(
+  const columns = getBrokerTableColumns({
     sortedInfo,
     adminBrokerSearch,
     setAdminBrokerSearch,
     setEditBrokerModal,
-    setEditModalData
-  );
+    setEditModalData,
+    onStatusChange: onToggleStatusApiRequest,
+  });
 
   /** 🔹 Fetch approvals from API */
   const fetchApiCall = useCallback(
@@ -88,6 +113,16 @@ const Brokers = () => {
       fetchApiCall(requestData, true, true);
     }
   }, [buildApiRequest, adminBrokerSearch, fetchApiCall]);
+
+  // 🔷 Fetch data by hitting this API when that Mqtt is true.
+  useEffect(() => {
+    if (webNotificationDataMqtt) {
+      setWebNotificationDataMqtt(false);
+      const requestData = buildApiRequest(adminBrokerSearch);
+
+      fetchApiCall(requestData, true, false);
+    }
+  }, [webNotificationDataMqtt]);
 
   return (
     <>

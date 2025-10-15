@@ -33,15 +33,46 @@ const AddNewBroker = () => {
   // 🔷 State to hold the list of brokers added before saving
   const [brokers, setBrokers] = useState([]);
 
-  console.log(brokers, "brokersbrokersbrokersbrokers");
+  // 🔷 Error state of brokerName and psxCode while adding
+  const [brokerNameError, setBrokerNameError] = useState("");
+  const [psxCodeError, setPsxCodeError] = useState("");
 
   // 🔷 Adds a new broker to the list if inputs are valid and clears inputs afterward
   const handleAddBroker = () => {
-    if (brokerName && psxCode) {
-      setBrokers([...brokers, { brokerName, psxCode }]);
-      setBrokerName("");
-      setPsxCode("");
+    let hasError = false;
+
+    // Reset errors before validating
+    setBrokerNameError("");
+    setPsxCodeError("");
+
+    // Check for duplicate broker name
+    const nameExists = brokers.some(
+      (broker) =>
+        broker.brokerName.toLowerCase() === brokerName.trim().toLowerCase()
+    );
+
+    // Check for duplicate PSX code
+    const codeExists = brokers.some(
+      (broker) => broker.psxCode.toLowerCase() === psxCode.trim().toLowerCase()
+    );
+
+    if (nameExists) {
+      setBrokerNameError("Broker Name already exists");
+      hasError = true;
     }
+
+    if (codeExists) {
+      setPsxCodeError("PSX Code already exists");
+      hasError = true;
+    }
+
+    // If there's any duplicate, stop adding
+    if (hasError) return;
+
+    // Add if no errors
+    setBrokers([...brokers, { brokerName, psxCode }]);
+    setBrokerName("");
+    setPsxCode("");
   };
 
   // 🔷 Removes a broker from the list by index
@@ -102,6 +133,9 @@ const AddNewBroker = () => {
                     maxLength={75}
                     placeholder="Broker Name"
                   />
+                  {brokerNameError && (
+                    <span className={styles.errorText}>{brokerNameError}</span>
+                  )}
                   <span className={styles.counterTextAddBroker}>
                     {brokerName.length}/75
                   </span>
@@ -119,6 +153,9 @@ const AddNewBroker = () => {
                     maxLength={9}
                     placeholder="PSX Code"
                   />
+                  {psxCodeError && (
+                    <span className={styles.errorText}>{psxCodeError}</span>
+                  )}
                   <span className={styles.counterTextAddBroker}>
                     {psxCode.length}/9
                   </span>
