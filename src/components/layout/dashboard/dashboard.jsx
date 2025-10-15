@@ -16,6 +16,10 @@ import { useReconcileContext } from "../../../context/reconsileContax";
 import { useSidebarContext } from "../../../context/sidebarContaxt";
 import { useEscalatedApprovals } from "../../../context/escalatedApprovalContext";
 import { useWebNotification } from "../../../context/notificationContext";
+import { GetUserWebNotificationRequest } from "../../../api/notification";
+import { useNotification } from "../../NotificationProvider/NotificationProvider";
+import { useApi } from "../../../context/ApiContext";
+import { useGlobalLoader } from "../../../context/LoaderContext";
 const { Content } = Layout;
 
 const Dashboard = () => {
@@ -45,7 +49,10 @@ const Dashboard = () => {
     currentRoleIsAdminRef,
   } = useDashboardContext();
   const { setEmployeeTransactionsTableDataMqtt } = useTransaction();
-  const { setWebNotificationDataMqtt } = useWebNotification();
+  const { setWebNotificationData } = useWebNotification();
+  const { callApi } = useApi();
+  const { showNotification } = useNotification();
+  const { showLoader } = useGlobalLoader();
   const { selectedKeyRef } = useSidebarContext();
   const navigate = useNavigate();
 
@@ -75,13 +82,30 @@ const Dashboard = () => {
       roleArray.includes(Number(role.roleID))
     );
   };
-
+  const apiCallwebNotification = async () => {
+    const requestdata = { sRow: 0, eRow: 10 }; // Initial fetch data from API
+    console.log("action", requestdata);
+    const webNotificationRequest = await GetUserWebNotificationRequest({
+      callApi,
+      showNotification,
+      showLoader,
+      requestdata,
+      navigate,
+    });
+    console.log("action", webNotificationRequest);
+    await setWebNotificationData(webNotificationRequest);
+  };
   /**
    * ✅ Handle MQTT messages
    */
   const { connectToMqtt, isConnected } = useMqttClient({
     onMessageArrivedCallback: (data) => {
+      console.log("action", data);
       if (!data?.message) {
+        // tempraroy
+        if (data?.action === "WEBNOTIFICATION") {
+          apiCallwebNotification();
+        }
         console.warn("MQTT: Received invalid message", data);
         return;
       }
@@ -93,11 +117,10 @@ const Dashboard = () => {
         const currentRoleIsAdminRefLocal = currentRoleIsAdminRef.current;
 
         const { message, payload, roleIDs, action } = data;
-
         if (!payload) return;
-        if (action === "WEBNOTIFICATION") {
-          setWebNotificationDataMqtt;
-        }
+        // if (action === "WEBNOTIFICATION") {
+        //   apiCallwebNotification();
+        // }
         if (hasUserRole(Number(roleIDs))) {
           if (currentRoleIsAdminRefLocal) {
             // admin mqtt
