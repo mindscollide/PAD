@@ -53,6 +53,7 @@ export const MyApprovalProvider = ({ children }) => {
     workFlowStatus: {},
   });
 
+
   // Reset function to set all states back to initial values
   const resetApprovalRequestContextState = () => {
     setLineManagerApproval({
@@ -92,6 +93,7 @@ export const MyApprovalProvider = ({ children }) => {
         viewDetailsLineManagerData,
         setViewDetailsLineManagerData,
         resetApprovalRequestContextState,
+
       }}
     >
       {children}

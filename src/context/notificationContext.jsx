@@ -45,8 +45,8 @@ export const MyNotificationProvider = ({ children }) => {
   const [markAsReadNotificationState, setMarkAsReadNotificationState] =
     useState(false);
 
-  const [isWebNotificationDataMqtt, setIsWebNotificationDataMqtt] =
-    useState(false);
+  // when mqtt come on notification
+  const [webNotificationDataMqtt, setWebNotificationDataMqtt] = useState(false);
 
   /**
    * ♻️ Reset Context State (Table + API Data)
@@ -73,8 +73,8 @@ export const MyNotificationProvider = ({ children }) => {
         setMarkAsReadNotificationState,
         resetWebNotificationDataContextState,
 
-        isWebNotificationDataMqtt,
-        setIsWebNotificationDataMqtt,
+        webNotificationDataMqtt,
+        setWebNotificationDataMqtt,
       }}
     >
       {children}

@@ -27,6 +27,7 @@ import {
   ApprovalRequest,
   ReconcileIndex,
   EscalatedTransactionsIndex,
+  Brokers,
 } from "../pages";
 import RoleBasedRoute from "./RoleBasedRoute";
 import EscalatedApprovals from "../pages/main/headOfTradeApprover/escalatedApprovals/escalatedApprovals";
@@ -60,7 +61,7 @@ const router = createBrowserRouter(
         <Route
           path="approvals"
           element={
-            <RoleBasedRoute isAdmin={false}  allowedRoles={[2]}>
+            <RoleBasedRoute isAdmin={false} allowedRoles={[2]}>
               <EmployeApproval />
             </RoleBasedRoute>
           }
@@ -68,7 +69,7 @@ const router = createBrowserRouter(
         <Route
           path="portfolios"
           element={
-            <RoleBasedRoute isAdmin={false}  allowedRoles={[2]}>
+            <RoleBasedRoute isAdmin={false} allowedRoles={[2]}>
               <EmployeProtfolio />{" "}
             </RoleBasedRoute>
           }
@@ -76,7 +77,7 @@ const router = createBrowserRouter(
         <Route
           path="transactions"
           element={
-            <RoleBasedRoute isAdmin={false}  allowedRoles={[2]}>
+            <RoleBasedRoute isAdmin={false} allowedRoles={[2]}>
               <EmployeMyTransaction />{" "}
             </RoleBasedRoute>
           }
@@ -84,7 +85,7 @@ const router = createBrowserRouter(
         <Route
           path="history"
           element={
-            <RoleBasedRoute isAdmin={false}  allowedRoles={[2]}>
+            <RoleBasedRoute isAdmin={false} allowedRoles={[2]}>
               <EmployeMyhistory />{" "}
             </RoleBasedRoute>
           }
@@ -92,7 +93,7 @@ const router = createBrowserRouter(
         <Route
           path="reports"
           element={
-            <RoleBasedRoute isAdmin={false}  allowedRoles={[2]}>
+            <RoleBasedRoute isAdmin={false} allowedRoles={[2]}>
               <EmpolyesReportsIndex />{" "}
             </RoleBasedRoute>
           }
@@ -101,7 +102,7 @@ const router = createBrowserRouter(
         <Route
           path="lm-approval-requests"
           element={
-            <RoleBasedRoute isAdmin={false}  allowedRoles={[3]}>
+            <RoleBasedRoute isAdmin={false} allowedRoles={[3]}>
               {/* <EmployeApproval /> */}
               {<ApprovalRequest />}
             </RoleBasedRoute>
@@ -110,7 +111,7 @@ const router = createBrowserRouter(
         <Route
           path="lm-my-actions"
           element={
-            <RoleBasedRoute isAdmin={false}  allowedRoles={[3]}>
+            <RoleBasedRoute isAdmin={false} allowedRoles={[3]}>
               <EmployeMyTransaction />{" "}
             </RoleBasedRoute>
           }
@@ -118,7 +119,7 @@ const router = createBrowserRouter(
         <Route
           path="lm-reports"
           element={
-            <RoleBasedRoute isAdmin={false}  allowedRoles={[3]}>
+            <RoleBasedRoute isAdmin={false} allowedRoles={[3]}>
               <EmpolyesReportsIndex />{" "}
             </RoleBasedRoute>
           }
@@ -128,7 +129,7 @@ const router = createBrowserRouter(
         <Route
           path="hta-escalated-requests"
           element={
-            <RoleBasedRoute isAdmin={false}  allowedRoles={[5]}>
+            <RoleBasedRoute isAdmin={false} allowedRoles={[5]}>
               {/* <EmployeApproval /> */}
               {<EscalatedApprovals />}
               {/* {<ReconcileIndex />} */}
@@ -139,7 +140,7 @@ const router = createBrowserRouter(
         <Route
           path="hta-my-actions"
           element={
-            <RoleBasedRoute isAdmin={false}  allowedRoles={[5]}>
+            <RoleBasedRoute isAdmin={false} allowedRoles={[5]}>
               <EmployeMyTransaction />{" "}
             </RoleBasedRoute>
           }
@@ -148,7 +149,7 @@ const router = createBrowserRouter(
         <Route
           path="hta-reports"
           element={
-            <RoleBasedRoute isAdmin={false}  allowedRoles={[5]}>
+            <RoleBasedRoute isAdmin={false} allowedRoles={[5]}>
               <EmpolyesReportsIndex />{" "}
             </RoleBasedRoute>
           }
@@ -158,7 +159,7 @@ const router = createBrowserRouter(
         <Route
           path="co-reconcile-transactions"
           element={
-            <RoleBasedRoute isAdmin={false}  allowedRoles={[4]}>
+            <RoleBasedRoute isAdmin={false} allowedRoles={[4]}>
               {<ReconcileIndex />}
             </RoleBasedRoute>
           }
@@ -166,7 +167,7 @@ const router = createBrowserRouter(
         <Route
           path="co-my-actions"
           element={
-            <RoleBasedRoute isAdmin={false}  allowedRoles={[4]}>
+            <RoleBasedRoute isAdmin={false} allowedRoles={[4]}>
               <EmployeMyTransaction />{" "}
             </RoleBasedRoute>
           }
@@ -174,7 +175,7 @@ const router = createBrowserRouter(
         <Route
           path="co-reports"
           element={
-            <RoleBasedRoute isAdmin={false}  allowedRoles={[4]}>
+            <RoleBasedRoute isAdmin={false} allowedRoles={[4]}>
               <EmpolyesReportsIndex />{" "}
             </RoleBasedRoute>
           }
@@ -184,7 +185,7 @@ const router = createBrowserRouter(
         <Route
           path="hca-escalated-transactions-verifications"
           element={
-            <RoleBasedRoute isAdmin={false}  allowedRoles={[6]}>
+            <RoleBasedRoute isAdmin={false} allowedRoles={[6]}>
               {<EscalatedTransactionsIndex />}
             </RoleBasedRoute>
           }
@@ -192,7 +193,7 @@ const router = createBrowserRouter(
         <Route
           path="hca-my-actions"
           element={
-            <RoleBasedRoute isAdmin={false}  allowedRoles={[6]}>
+            <RoleBasedRoute isAdmin={false} allowedRoles={[6]}>
               <EmployeMyTransaction />{" "}
             </RoleBasedRoute>
           }
@@ -200,7 +201,61 @@ const router = createBrowserRouter(
         <Route
           path="hca-reports"
           element={
-            <RoleBasedRoute isAdmin={false}  allowedRoles={[6]}>
+            <RoleBasedRoute isAdmin={false} allowedRoles={[6]}>
+              <EmpolyesReportsIndex />{" "}
+            </RoleBasedRoute>
+          }
+        />
+
+        {/* For Admin Roles Start here*/}
+
+        <Route
+          path="admin-group-policies"
+          element={
+            <RoleBasedRoute isAdmin={true} allowedRoles={[1]}>
+              {<EscalatedTransactionsIndex />}
+            </RoleBasedRoute>
+          }
+        />
+        <Route
+          path="admin-brokers"
+          element={
+            <RoleBasedRoute isAdmin={true} allowedRoles={[1]}>
+              <Brokers />
+            </RoleBasedRoute>
+          }
+        />
+        <Route
+          path="admin-instruments"
+          element={
+            <RoleBasedRoute isAdmin={true} allowedRoles={[1]}>
+              <EmpolyesReportsIndex />{" "}
+            </RoleBasedRoute>
+          }
+        />
+
+        <Route
+          path="admin-users"
+          element={
+            <RoleBasedRoute isAdmin={true} allowedRoles={[1]}>
+              <EmpolyesReportsIndex />{" "}
+            </RoleBasedRoute>
+          }
+        />
+
+        <Route
+          path="admin-system-settings"
+          element={
+            <RoleBasedRoute isAdmin={true} allowedRoles={[1]}>
+              <EmpolyesReportsIndex />{" "}
+            </RoleBasedRoute>
+          }
+        />
+
+        <Route
+          path="admin-reports"
+          element={
+            <RoleBasedRoute isAdmin={true} allowedRoles={[1]}>
               <EmpolyesReportsIndex />{" "}
             </RoleBasedRoute>
           }
