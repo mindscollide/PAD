@@ -139,7 +139,6 @@ const Brokers = () => {
   // Infinite Scroll
   useTableScrollBottom(
     async () => {
-      
       if (
         adminBrokerData?.totalRecordsDataBase <=
         adminBrokerData?.totalRecordsTable
