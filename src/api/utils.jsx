@@ -136,7 +136,7 @@ export const responseMessages = {
     "Resubmission Failed",
   PAD_Trade_TradeServiceManager_ResubmitApprovalRequest_03: "Exception",
   PAD_Trade_TradeServiceManager_ResubmitApprovalRequest_04:
-    "please Select a reason for resubmitting",
+    "please Select a Notes for resubmitting",
   PAD_Trade_TradeServiceManager_ResubmitApprovalRequest_5:
     "Failed to generate ApprovalID",
 
