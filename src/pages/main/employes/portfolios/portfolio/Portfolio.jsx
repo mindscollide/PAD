@@ -32,7 +32,7 @@ import { useNavigate } from "react-router-dom";
 const { Panel } = Collapse;
 const { Text } = Typography;
 
-const Portfolio = ({ className ,activeFilters}) => {
+const Portfolio = ({ className, activeFilters }) => {
   const [activeKey, setActiveKey] = useState([]);
   const [hasMore, setHasMore] = useState(true); // ✅ track if more data exists
   const [loadingMore, setLoadingMore] = useState(false);
@@ -78,7 +78,9 @@ const Portfolio = ({ className ,activeFilters}) => {
       Quantity: searchState.quantity ? Number(searchState.quantity) : 0,
       StartDate: startDate,
       EndDate: endDate,
-      BrokerIds: Array.isArray(searchState.brokerIDs) ? searchState.brokerIDs : [],
+      BrokerIds: Array.isArray(searchState.brokerIDs)
+        ? searchState.brokerIDs
+        : [],
       PageNumber: Number(searchState.pageNumber) || 0,
       Length: Number(searchState.pageSize) || 10,
     };

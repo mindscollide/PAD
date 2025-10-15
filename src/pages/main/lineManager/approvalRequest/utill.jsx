@@ -134,9 +134,12 @@ export const getBorderlessLineManagerTableColumns = ({
       sortedInfo?.columnKey === "tradeApprovalID" ? sortedInfo.order : null,
     showSorterTooltip: false,
     sortIcon: () => null,
-    render: (tradeApprovalID) => {
+    render: (tradeApprovalID, record) => {
       return (
-        <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+        <div
+          id={`cell-${record.key}-tradeApprovalID`}
+          style={{ display: "flex", alignItems: "center", gap: "12px" }}
+        >
           <span className="font-medium">
             {dashBetweenApprovalAssets(tradeApprovalID)}
             {/* {dashBetweenApprovalAssets("REQ888888")} */}
@@ -157,11 +160,13 @@ export const getBorderlessLineManagerTableColumns = ({
       sortedInfo?.columnKey === "requesterName" ? sortedInfo.order : null,
     showSorterTooltip: false,
     sortIcon: () => null,
-    render: (text) => (
-      <div>
-        <span className="font-medium">{text}</span>
-      </div>
-    ),
+    render: (text, record) => {
+      return (
+        <div id={`cell-${record.key}-requesterName`}>
+          <span className="font-medium">{text}</span>
+        </div>
+      );
+    },
   },
   {
     title: withSortIcon("Instrument", "instrumentName", sortedInfo),
@@ -186,6 +191,7 @@ export const getBorderlessLineManagerTableColumns = ({
 
       return (
         <div
+          id={`cell-${record.key}-instrumentCode`}
           style={{
             display: "flex",
             alignItems: "center",
@@ -230,8 +236,10 @@ export const getBorderlessLineManagerTableColumns = ({
       sortedInfo?.columnKey === "requestDateTime" ? sortedInfo.order : null,
     showSorterTooltip: false,
     sortIcon: () => null,
-    render: (date) => (
-      <span className="text-gray-600">{formatApiDateTime(date)}</span>
+    render: (date, record) => (
+      <span id={`cell-${record.key}-requestDateTime`} className="text-gray-600">
+        {formatApiDateTime(date)}
+      </span>
     ),
   },
   {
@@ -249,8 +257,11 @@ export const getBorderlessLineManagerTableColumns = ({
       ? lineManagerApprovalSearch.type
       : null,
     onFilter: () => true,
-    render: (type) => (
-      <span className={type === "Buy" ? "text-green-600" : "text-red-600"}>
+    render: (type, record) => (
+      <span
+        id={`cell-${record.key}-type`}
+        className={type === "Buy" ? "text-green-600" : "text-red-600"}
+      >
         {type}
       </span>
     ),
@@ -270,24 +281,26 @@ export const getBorderlessLineManagerTableColumns = ({
       ? lineManagerApprovalSearch.status
       : null,
     onFilter: () => true,
-    render: (status) => {
+    render: (status, record) => {
       console.log(status, "checkerStateus");
       const tag = approvalStatusMap[status] || {};
       return (
-        <Tag
-          style={{
-            backgroundColor: tag.backgroundColor,
-            color: tag.textColor,
-            whiteSpace: "nowrap", // prevent wrapping
-            overflow: "hidden",
-            textOverflow: "ellipsis",
-            display: "inline-block",
-            // maxWidth: "100%", // tag respects parent cell width
-          }}
-          className="border-less-table-orange-status"
-        >
-          {tag.label}
-        </Tag>
+        <div id={`cell-${record.key}-status`}>
+          <Tag
+            style={{
+              backgroundColor: tag.backgroundColor,
+              color: tag.textColor,
+              whiteSpace: "nowrap", // prevent wrapping
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+              display: "inline-block",
+              // maxWidth: "100%", // tag respects parent cell width
+            }}
+            className="border-less-table-orange-status"
+          >
+            {tag.label}
+          </Tag>
+        </div>
       );
     },
   },
@@ -302,7 +315,11 @@ export const getBorderlessLineManagerTableColumns = ({
     sortOrder: sortedInfo?.columnKey === "quantity" ? sortedInfo.order : null,
     showSorterTooltip: false,
     sortIcon: () => null,
-    render: (q) => <span className="font-medium">{q.toLocaleString()}</span>,
+    render: (q, record) => (
+      <span id={`cell-${record.key}-quantity`} className="font-medium">
+        {q.toLocaleString()}
+      </span>
+    ),
   },
   {
     title: "",
@@ -332,6 +349,7 @@ export const getBorderlessLineManagerTableColumns = ({
       return (
         <>
           <div
+            id={`cell-${record.key}-actions`}
             style={{
               display: "flex",
               alignItems: "center",
