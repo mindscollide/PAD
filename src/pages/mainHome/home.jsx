@@ -39,7 +39,8 @@ const Home = () => {
     setAssetTypeListingData,
     setGetAllPredefineReasonData,
   } = useDashboardContext();
-  const { setWebNotificationData } = useWebNotification();
+  const { setWebNotificationData, webNotificationDataMqtt } =
+    useWebNotification();
   const { callApi } = useApi();
   const { showLoader } = useGlobalLoader();
   const roles = JSON.parse(sessionStorage.getItem("user_assigned_roles"));
@@ -142,6 +143,7 @@ const Home = () => {
           setWebNotificationData,
           showNotification,
           showLoader,
+          webNotificationDataMqtt,
           navigate,
         });
         // Handle session expiration
