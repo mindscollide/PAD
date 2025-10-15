@@ -40,8 +40,6 @@ const Brokers = () => {
   const { callApi } = useApi();
   const { adminBrokerSearch, setAdminBrokerSearch } = useSearchBarContext();
   const { adminBrokerData, setAdminBrokerData } = useMyAdmin();
-  const { webNotificationDataMqtt, setWebNotificationDataMqtt } =
-    useWebNotification();
 
   const {
     addNewBrokerModal,
@@ -113,16 +111,6 @@ const Brokers = () => {
       fetchApiCall(requestData, true, true);
     }
   }, [buildApiRequest, adminBrokerSearch, fetchApiCall]);
-
-  // 🔷 Fetch data by hitting this API when that Mqtt is true.
-  useEffect(() => {
-    if (webNotificationDataMqtt) {
-      setWebNotificationDataMqtt(false);
-      const requestData = buildApiRequest(adminBrokerSearch);
-
-      fetchApiCall(requestData, true, false);
-    }
-  }, [webNotificationDataMqtt]);
 
   return (
     <>
