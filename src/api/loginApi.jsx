@@ -41,6 +41,7 @@ export const login = async ({
       userToken,
       userProfileData,
       userHierarchy,
+      lastLoggedInDateTime,
     } = res.result;
     const message = getMessage(res.result.responseMessage);
     const responseCodeKey = res.result.responseMessage;
@@ -48,6 +49,8 @@ export const login = async ({
       sessionStorage.setItem("auth_token", userToken.token);
       sessionStorage.setItem("refresh_token", userToken.refreshToken);
       sessionStorage.setItem("token_timeout", userToken.tokenTimeOut);
+      sessionStorage.setItem("lastLoggedInDateTime", lastLoggedInDateTime);
+
       sessionStorage.setItem(
         "user_assigned_roles",
         JSON.stringify(userAssignedRoles)
@@ -128,12 +131,18 @@ export const login = async ({
 export const logout = ({ navigate, showLoader }) => {
   try {
     // Clear auth tokens and session info
-    sessionStorage.removeItem("auth_token");
     sessionStorage.removeItem("refresh_token");
     sessionStorage.removeItem("token_timeout");
     sessionStorage.removeItem("current_role_is_admin");
     sessionStorage.removeItem("user_has_admin_only");
     sessionStorage.removeItem("user_has_admin_and_employees_role");
+    sessionStorage.removeItem("auth_token");
+    sessionStorage.removeItem("lastLoggedInDateTime");
+    sessionStorage.removeItem("user_assigned_roles");
+    sessionStorage.removeItem("user_profile_data");
+    sessionStorage.removeItem("user_Hierarchy_Details");
+    sessionStorage.removeItem("user_mqtt_Port");
+    sessionStorage.removeItem("user_mqtt_ip_Address");
     // Optional: Clear entire sessionStorage if needed
     // sessionStorage.clear();
 

@@ -58,6 +58,7 @@ const TextField = ({
   height = 40,
   onPressEnter,
   autoFocus,
+  autoComplete,
   ...props
 }) => {
   // ✅ Pick size-specific class from CSS module
@@ -98,6 +99,7 @@ const TextField = ({
         disabled={disabled}
         onPressEnter={onPressEnter}
         autoFocus={autoFocus}
+        autoComplete={autoComplete}
         className={classNames(
           styles["input"], // Base input
           styles[`input-${size}`], // Size variant

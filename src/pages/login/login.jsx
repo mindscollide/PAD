@@ -163,6 +163,7 @@ const Login = () => {
                 name="login-form"
                 onFinish={handleLogin}
                 className={style["login-form"]}
+                // autoComplete="off"
               >
                 {/* 🔑 Username Field */}
                 <Form.Item
@@ -179,6 +180,7 @@ const Login = () => {
                     size="extraLarge"
                     classNames="login-form"
                     autoFocus // 👈 auto-focus on mount
+                    // autoComplete="off" // 🚫 Disable auto-suggest on input
                     onPressEnter={
                       () => form.getFieldInstance("password")?.focus() // 👈 focus password on Enter
                     }
@@ -202,6 +204,7 @@ const Login = () => {
                     error={errors.password}
                     size="extraLarge"
                     classNames="login-form"
+                    // autoComplete="new-password" // ✅ Best for password fields
                     onPressEnter={() => form.submit()} // 👈 submit on Enter
                   />
                 </Form.Item>

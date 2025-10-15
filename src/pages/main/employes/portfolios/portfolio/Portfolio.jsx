@@ -259,11 +259,11 @@ const Portfolio = ({ className, activeFilters }) => {
           Loading more...
         </div>
       )}
-      {!hasMore && (
+      {/* {!hasMore && (
         <div style={{ textAlign: "center", padding: "10px" }}>
           ✅ All records loaded
         </div>
-      )}
+      )} */}
     </div>
   );
 };

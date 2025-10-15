@@ -20,7 +20,7 @@ export const getMenuItems = (
     {
       key: "1",
       label: (
-        <Link to="/profile" className={style["dropdown-menu-item"]}>
+        <Link  className={style["dropdown-menu-item"]}>
           <UserOutlined className={style["dropdown-menu-icon"]} />
           <span className={style["dropdown-menu-options-title"]}>
             My Profile
@@ -31,7 +31,7 @@ export const getMenuItems = (
     hasEmployee && {
       key: "2",
       label: (
-        <Link to="/brokers" className={style["dropdown-menu-item"]}>
+        <Link  className={style["dropdown-menu-item"]}>
           <TeamOutlined className={style["dropdown-menu-icon"]} />
           <span className={style["dropdown-menu-options-title"]}>
             Manage Brokers
@@ -42,7 +42,7 @@ export const getMenuItems = (
     {
       key: "3",
       label: (
-        <Link to="/notifications" className={style["dropdown-menu-item"]}>
+        <Link  className={style["dropdown-menu-item"]}>
           <SettingOutlined className={style["dropdown-menu-icon"]} />
           <span className={style["dropdown-menu-options-title"]}>
             Notification Settings
