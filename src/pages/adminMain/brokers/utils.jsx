@@ -41,13 +41,14 @@ export const buildApiRequest = (searchState = {}) => ({
   Length: Number(searchState.pageSize) || 10,
 });
 
-export const getBrokerTableColumns = (
+export const getBrokerTableColumns = ({
   sortedInfo,
   adminBrokerSearch,
   setAdminBrokerSearch,
   setEditBrokerModal,
-  setEditModalData
-) => [
+  setEditModalData,
+  onStatusChange,
+}) => [
   {
     title: (
       <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
