@@ -5,6 +5,7 @@ import { Button } from "../..";
 import { navigateToPage } from "./utill";
 import { useSidebarContext } from "../../../context/sidebarContaxt";
 import { useNavigate } from "react-router-dom";
+import EmptyState from "../../emptyStates/empty-states";
 
 const { Title } = Typography;
 
@@ -41,27 +42,31 @@ const ReportCard = ({
           </div>
         )}
       </div>
-      <div className={styles.reportListWrapper}>
-        <div className={styles.reportList}>
-          {data.map((report, index) => (
-            <div key={index} className={styles[`${base}-reportItem`]}>
-              <div className={styles.left}>
-                <span className={styles.icon}>
-                  {report.icon || <span>📄</span>}
-                </span>
-                <span className={styles.label}>
-                  {report.label || "Untitled"}
-                </span>
+      {data?.length > 0 ? (
+        <div className={styles.reportListWrapper}>
+          <div className={styles.reportList}>
+            {data.map((report, index) => (
+              <div key={index} className={styles[`${base}-reportItem`]}>
+                <div className={styles.left}>
+                  <span className={styles.icon}>
+                    {report.icon || <span>📄</span>}
+                  </span>
+                  <span className={styles.label}>
+                    {report.label || "Untitled"}
+                  </span>
+                </div>
+                <Button
+                  className={rowButtonClassName}
+                  text={report.action || "View"}
+                  onClick={() => onRowButtonClick(report, index)}
+                />
               </div>
-              <Button
-                className={rowButtonClassName}
-                text={report.action || "View"}
-                onClick={() => onRowButtonClick(report, index)}
-              />
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
-      </div>
+      ) : (
+        <EmptyState style={{ display: "contents" }} type={"reports"} />
+      )}
     </Card>
   );
 };

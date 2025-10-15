@@ -25,7 +25,7 @@ const CommentModal = ({
   centered,
   title,
   submitText,
-  maxChars = 5000,
+  maxChars = 500,
   value, // 🔹 ab parent se aayega
   setValue, // 🔹 parent se setter aayega
 }) => {

@@ -181,6 +181,7 @@ const Home = () => {
   const firstMatchedRole = filteredRoles.find((roleId) =>
     checkRoleMatch(roles, roleId)
   );
+  console.log("filteredRoles",filteredRoles)
   return (
     <>
       <div style={{ padding: " 16px 24px 0px 24px " }}>
@@ -311,13 +312,14 @@ const Home = () => {
                   title="Reports"
                   buttonTitle="See More"
                   buttonClassName={"big-white-card-button"}
-                  data={[
-                    {
-                      icon: <Avatar icon={<BarChartOutlined />} />,
-                      label: "Usage Reports",
-                      action: "View Report",
-                    },
-                  ]}
+                  // data={[
+                  //   {
+                  //     icon: <Avatar icon={<BarChartOutlined />} />,
+                  //     label: "Usage Reports",
+                  //     action: "View Report",
+                  //   },
+                  // ]}
+                  data={[]}
                   buttonId={"Reports-view-btn-admin"}
                   rowButtonClassName={"small-card-light-button"}
                   userRole="Admin"
@@ -412,23 +414,24 @@ const Home = () => {
                       buttonId={"Reports-view-btn"}
                       buttonClassName={"big-white-card-button"}
                       rowButtonClassName={"small-card-light-button"}
-                      data={[
-                        {
-                          icon: <Avatar icon={<FileDoneOutlined />} />,
-                          label: "My Compliance",
-                          action: "View Report",
-                        },
-                        {
-                          icon: <Avatar icon={<BarChartOutlined />} />,
-                          label: "My Transactions",
-                          action: "View Report",
-                        },
-                        {
-                          icon: <Avatar icon={<BarChartOutlined />} />,
-                          label: "My Transactions",
-                          action: "View Report",
-                        },
-                      ]}
+                      // data={[
+                      //   {
+                      //     icon: <Avatar icon={<FileDoneOutlined />} />,
+                      //     label: "My Compliance",
+                      //     action: "View Report",
+                      //   },
+                      //   {
+                      //     icon: <Avatar icon={<BarChartOutlined />} />,
+                      //     label: "My Transactions",
+                      //     action: "View Report",
+                      //   },
+                      //   {
+                      //     icon: <Avatar icon={<BarChartOutlined />} />,
+                      //     label: "My Transactions",
+                      //     action: "View Report",
+                      //   },
+                      // ]}
+                      data={[]}
                       userRole={"employee"}
                       route={"reports"}
                     />
@@ -436,7 +439,7 @@ const Home = () => {
                 </Row>
               </>
             )}
-            <br />
+            {filteredRoles?.length > 1 && <br />}
             {checkRoleMatch(roles, 3) && (
               <>
                 <Row gutter={[16, 16]}>
@@ -497,23 +500,24 @@ const Home = () => {
                       buttonId={"Reports-view-btn-LM"}
                       buttonClassName={"big-white-card-button"}
                       rowButtonClassName={"small-card-light-button"}
-                      data={[
-                        {
-                          icon: <Avatar icon={<FileDoneOutlined />} />,
-                          label: "My Compliance",
-                          action: "View Report",
-                        },
-                        {
-                          icon: <Avatar icon={<BarChartOutlined />} />,
-                          label: "My Transactions",
-                          action: "View Report",
-                        },
-                        {
-                          icon: <Avatar icon={<BarChartOutlined />} />,
-                          label: "My Transactions",
-                          action: "View Report",
-                        },
-                      ]}
+                      // data={[
+                      //   {
+                      //     icon: <Avatar icon={<FileDoneOutlined />} />,
+                      //     label: "My Compliance",
+                      //     action: "View Report",
+                      //   },
+                      //   {
+                      //     icon: <Avatar icon={<BarChartOutlined />} />,
+                      //     label: "My Transactions",
+                      //     action: "View Report",
+                      //   },
+                      //   {
+                      //     icon: <Avatar icon={<BarChartOutlined />} />,
+                      //     label: "My Transactions",
+                      //     action: "View Report",
+                      //   },
+                      // ]}
+                      data={[]}
                       userRole={"LM"}
                       route={"reports"}
                     />
@@ -521,7 +525,7 @@ const Home = () => {
                 </Row>
               </>
             )}
-            <br />
+            {filteredRoles?.length > 1 && <br />}
             {checkRoleMatch(roles, 4) && (
               <>
                 <Row gutter={[16, 16]}>
@@ -582,23 +586,24 @@ const Home = () => {
                       buttonId={"Reports-view-btn-LM"}
                       buttonClassName={"big-white-card-button"}
                       rowButtonClassName={"small-card-light-button"}
-                      data={[
-                        {
-                          icon: <Avatar icon={<FileDoneOutlined />} />,
-                          label: "My Compliance",
-                          action: "View Report",
-                        },
-                        {
-                          icon: <Avatar icon={<BarChartOutlined />} />,
-                          label: "My Transactions",
-                          action: "View Report",
-                        },
-                        {
-                          icon: <Avatar icon={<BarChartOutlined />} />,
-                          label: "My Transactions",
-                          action: "View Report",
-                        },
-                      ]}
+                      // data={[
+                      //   {
+                      //     icon: <Avatar icon={<FileDoneOutlined />} />,
+                      //     label: "My Compliance",
+                      //     action: "View Report",
+                      //   },
+                      //   {
+                      //     icon: <Avatar icon={<BarChartOutlined />} />,
+                      //     label: "My Transactions",
+                      //     action: "View Report",
+                      //   },
+                      //   {
+                      //     icon: <Avatar icon={<BarChartOutlined />} />,
+                      //     label: "My Transactions",
+                      //     action: "View Report",
+                      //   },
+                      // ]}
+                      data={[]}
                       userRole={"LM"}
                       route={"reports"}
                     />
@@ -606,7 +611,7 @@ const Home = () => {
                 </Row>
               </>
             )}
-            <br />
+            {filteredRoles?.length > 1 && <br />}
             {checkRoleMatch(roles, 5) && (
               <>
                 <Row gutter={[16, 16]}>
@@ -667,23 +672,24 @@ const Home = () => {
                       buttonId={"Reports-view-btn-LM"}
                       buttonClassName={"big-white-card-button"}
                       rowButtonClassName={"small-card-light-button"}
-                      data={[
-                        {
-                          icon: <Avatar icon={<FileDoneOutlined />} />,
-                          label: "My Compliance",
-                          action: "View Report",
-                        },
-                        {
-                          icon: <Avatar icon={<BarChartOutlined />} />,
-                          label: "My Transactions",
-                          action: "View Report",
-                        },
-                        {
-                          icon: <Avatar icon={<BarChartOutlined />} />,
-                          label: "My Transactions",
-                          action: "View Report",
-                        },
-                      ]}
+                      // data={[
+                      //   {
+                      //     icon: <Avatar icon={<FileDoneOutlined />} />,
+                      //     label: "My Compliance",
+                      //     action: "View Report",
+                      //   },
+                      //   {
+                      //     icon: <Avatar icon={<BarChartOutlined />} />,
+                      //     label: "My Transactions",
+                      //     action: "View Report",
+                      //   },
+                      //   {
+                      //     icon: <Avatar icon={<BarChartOutlined />} />,
+                      //     label: "My Transactions",
+                      //     action: "View Report",
+                      //   },
+                      // ]}
+                      data={[]}
                       userRole={"HTA"}
                       route={"reports"}
                     />
@@ -691,7 +697,7 @@ const Home = () => {
                 </Row>
               </>
             )}
-            <br />
+            {filteredRoles?.length > 1 && <br />}
             {checkRoleMatch(roles, 6) && (
               <>
                 <Row gutter={[16, 16]}>
@@ -752,23 +758,24 @@ const Home = () => {
                       buttonId={"Reports-view-btn-LM"}
                       buttonClassName={"big-white-card-button"}
                       rowButtonClassName={"small-card-light-button"}
-                      data={[
-                        {
-                          icon: <Avatar icon={<FileDoneOutlined />} />,
-                          label: "My Compliance",
-                          action: "View Report",
-                        },
-                        {
-                          icon: <Avatar icon={<BarChartOutlined />} />,
-                          label: "My Transactions",
-                          action: "View Report",
-                        },
-                        {
-                          icon: <Avatar icon={<BarChartOutlined />} />,
-                          label: "My Transactions",
-                          action: "View Report",
-                        },
-                      ]}
+                      // data={[
+                      //   {
+                      //     icon: <Avatar icon={<FileDoneOutlined />} />,
+                      //     label: "My Compliance",
+                      //     action: "View Report",
+                      //   },
+                      //   {
+                      //     icon: <Avatar icon={<BarChartOutlined />} />,
+                      //     label: "My Transactions",
+                      //     action: "View Report",
+                      //   },
+                      //   {
+                      //     icon: <Avatar icon={<BarChartOutlined />} />,
+                      //     label: "My Transactions",
+                      //     action: "View Report",
+                      //   },
+                      // ]}
+                      data={[]}
                       userRole={"HCA"}
                       route={"reports"}
                     />

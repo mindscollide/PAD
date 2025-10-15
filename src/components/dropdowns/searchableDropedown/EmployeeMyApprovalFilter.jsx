@@ -205,20 +205,6 @@ export const EmployeeMyApprovalFilter = ({
           />
         </Col>
 
-        <Col xs={24} sm={24} md={12} lg={12} style={{ marginTop: "6px" }}>
-          <DateRangePicker
-            label="Date Range"
-            size="medium"
-            value={[localState.startDate, localState.endDate]}
-            onChange={handleDateChange}
-            onClear={handleClearDates}
-            format="YYYY-MM-DD"
-          />
-        </Col>
-      </Row>
-
-      {/* ROW 2: Quantity */}
-      <Row gutter={[12, 12]}>
         <Col xs={24} sm={24} md={12} lg={12}>
           <TextField
             label="Quantity"
@@ -232,6 +218,20 @@ export const EmployeeMyApprovalFilter = ({
             placeholder="Enter quantity"
             size="medium"
             classNames="Search-Field"
+          />
+        </Col>
+      </Row>
+
+      {/* ROW 2: Quantity */}
+      <Row gutter={[12, 12]}>
+        <Col xs={24} sm={24} md={12} lg={12}>
+          <DateRangePicker
+            label="Date Range"
+            size="medium"
+            value={[localState.startDate, localState.endDate]}
+            onChange={handleDateChange}
+            onClear={handleClearDates}
+            format="YYYY-MM-DD"
           />
         </Col>
       </Row>
