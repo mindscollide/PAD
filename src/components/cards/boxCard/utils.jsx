@@ -149,6 +149,13 @@ export const typeColorMap = {
 // ============================
 // ROUTE MAPS FOR EACH USER ROLE
 // ============================
+export const adminRouteMap = {
+  brokers: { path: "admin-brokers", key: "19" },
+  policies: { path: "admin-users", key: "21" },
+  grouppolicies: { path: "admin-group-policies", key: "20" },
+  instruments: { path: "admin-instruments", key: "18" },
+  reports: { path: "admin-reports", key: "23" },
+};
 
 export const employeRouteMap = {
   approvals: { path: "approvals", key: "1" },
@@ -201,6 +208,9 @@ export const navigateToPage = (userRole, route, setSelectedKey, navigate) => {
 
   // Determine the path map based on role
   switch (userRole) {
+    case "Admin":
+      pathInfo = adminRouteMap[route];
+      break;
     case "employee":
       pathInfo = employeRouteMap[route];
       break;

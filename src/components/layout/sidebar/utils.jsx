@@ -53,8 +53,11 @@ import VerificationsLightIcon from "../../../assets/img/verifications-light.png"
 
 // Admin Icon
 import SystemSettingLightIcon from "../../../assets/img/system-setting-light-icon.png";
+import SystemSettingDarktIcon from "../../../assets/img/system-setting-dark-icon.png";
 import UserLightIcon from "../../../assets/img/user-light-icon.png";
+import UserDarkIcon from "../../../assets/img/user-dark-icon.png";
 import GroupPoliciesLightIcon from "../../../assets/img/group-policies-light-icon.png";
+import GroupPoliciesDarkIcon from "../../../assets/img/group-policies-dark-icon.png";
 import BrokerLightIcon from "../../../assets/img/broker-light-icon.png";
 import InstrumentsLightIcon from "../../../assets/img/instruments-light-icon.png";
 
@@ -134,7 +137,7 @@ const sidebarItems = (
           icon: (
             <img
               draggable={false}
-              src={getIcon("20", GroupPoliciesLightIcon, GroupPoliciesLightIcon)}
+              src={getIcon("20", GroupPoliciesLightIcon, GroupPoliciesDarkIcon)}
               alt="Group Policies"
               className={getIconClasses()}
             />
@@ -146,7 +149,7 @@ const sidebarItems = (
           icon: (
             <img
               draggable={false}
-              src={getIcon("21", UserLightIcon, UserLightIcon)}
+              src={getIcon("21", UserLightIcon, UserDarkIcon)}
               alt="Users"
               className={getIconClasses()}
             />
@@ -158,7 +161,7 @@ const sidebarItems = (
           icon: (
             <img
               draggable={false}
-              src={getIcon("22", SystemSettingLightIcon, SystemSettingLightIcon)}
+              src={getIcon("22", SystemSettingLightIcon, SystemSettingDarktIcon)}
               alt="System Settings"
               className={getIconClasses()}
             />
