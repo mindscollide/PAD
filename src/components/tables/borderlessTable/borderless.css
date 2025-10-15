@@ -345,8 +345,15 @@ border-  bottom-bottom-right-radius: 6.94px !important;
 /* For white */
 
 /* Root Table Layout */
+
+.border-less-table-white-body {
+  overflow: hidden;
+  max-height: 500px !important;
+  overflow-y: auto !important;
+}
+
 .border-less-table-white-body table {
-  border-spacing: 0 10px; /* Space between rows */
+  border-spacing: 0 10px;
 }
 
 /* Table Row Styling */
