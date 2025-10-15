@@ -16,7 +16,10 @@ import {
   formatApiDateTime,
   toYYMMDD,
 } from "../../../../common/funtions/rejex";
-import { mapBuySellToIds, mapStatusToIds } from "../../../../components/dropdowns/filters/utils";
+import {
+  mapBuySellToIds,
+  mapStatusToIds,
+} from "../../../../components/dropdowns/filters/utils";
 import { getTradeTypeById } from "../../../../common/funtions/type";
 
 // 🔹 CONSTANTS
@@ -480,6 +483,7 @@ export const getBorderlessTableColumns = ({
     title: withSortIcon("Request Date & Time", "requestDateTime", sortedInfo),
     dataIndex: "requestDateTime",
     key: "requestDateTime",
+    width: "15%",
     ellipsis: true,
     sorter: (a, b) =>
       formatApiDateTime(a.requestDateTime).localeCompare(
