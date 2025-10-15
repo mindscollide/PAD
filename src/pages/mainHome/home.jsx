@@ -45,7 +45,6 @@ const Home = () => {
   const roles = JSON.parse(sessionStorage.getItem("user_assigned_roles"));
   // Prevent multiple fetches on mount
   const hasFetched = useRef(false);
-  console.log(dashboardData, "dashboardDatadashboardData");
 
   // Employee
   const employeeApprovals = useMemo(
@@ -121,9 +120,11 @@ const Home = () => {
     () => dashboardData?.admin?.groupPolicy?.data || [],
     [dashboardData?.admin?.groupPolicy?.data]
   );
+
   useEffect(() => {
     if (hasFetched.current) return;
     hasFetched.current = true;
+    console.log("hasFetched");
     const fetchData = async () => {
       if (!roles || roles.length === 0) {
         hasFetched.current = false;
@@ -144,7 +145,6 @@ const Home = () => {
           navigate,
         });
         // Handle session expiration
-        console.log("res", data);
         if (!data) return showLoader(false);
 
         // Filter data based on user roles
@@ -158,7 +158,7 @@ const Home = () => {
           }
         });
         showLoader(false);
-        setDashboardData(filteredData);
+        await setDashboardData(filteredData);
       } catch (error) {
         showLoader(false);
         console.error("Failed to fetch home summary", error);
@@ -168,7 +168,7 @@ const Home = () => {
     fetchData();
   }, []);
 
-  useEffect(() => {}, [dashboardData]);
+  // useEffect(() => {}, [dashboardData]);
   // roles = dynamic roles array (e.g. [{ roleID: 1 }, { roleID: 3 }])
   const userRoleIDs = roles.map((r) => r.roleID);
 
@@ -201,8 +201,7 @@ const Home = () => {
                 <MemoizedBoxCard
                   locationStyle={"up"}
                   title={"Policy Assign to the Users"}
-                  mainClassName={"smallShareHomeCard"}
-                  changeTextSize={true}
+                  mainClassName={"smallShareHomeCard2"}
                   // boxes={policyAssign}
                   boxes={[
                     {
