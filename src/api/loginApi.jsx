@@ -131,7 +131,9 @@ export const logout = ({ navigate, showLoader }) => {
     sessionStorage.removeItem("auth_token");
     sessionStorage.removeItem("refresh_token");
     sessionStorage.removeItem("token_timeout");
-
+    sessionStorage.removeItem("current_role_is_admin");
+    sessionStorage.removeItem("user_has_admin_only");
+    sessionStorage.removeItem("user_has_admin_and_employees_role");
     // Optional: Clear entire sessionStorage if needed
     // sessionStorage.clear();
 

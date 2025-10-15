@@ -102,19 +102,19 @@ export const GetUserDashBoardStats = async ({
         });
 
         if (brokers) {
-          setEmployeeBasedBrokersData(brokers);
+          await setEmployeeBasedBrokersData(brokers);
         }
         if (instrument) {
-          setAllInstrumentsData(instrument);
+          await setAllInstrumentsData(instrument);
         }
         if (addApprovalRequest) {
-          setAssetTypeListingData(addApprovalRequest);
+          await setAssetTypeListingData(addApprovalRequest);
         }
         if (getPredefineReason) {
-          setGetAllPredefineReasonData(getPredefineReason);
+          await setGetAllPredefineReasonData(getPredefineReason);
         }
         if (webNotificationRequest) {
-          setWebNotificationData(webNotificationRequest);
+          await setWebNotificationData(webNotificationRequest);
         }
 
         return userDashBoardStats;

@@ -12,6 +12,7 @@
   box-shadow: 4px 4px 6px 0px #9d6a6a !important;
   border-radius: 12px !important;
 }
+
 .warningBox {
   animation: pulseBox 1.5s infinite ease-in-out;
 }
@@ -40,6 +41,7 @@
   background-color: transparent;
   border-radius: 12px 12px 0 0;
 }
+
 .urgentText {
   font-family: "Switzer Variable", sans-serif;
   font-weight: 700;
@@ -50,6 +52,7 @@
   text-transform: uppercase;
   color: #a50000;
 }
+
 .urgentDescription {
   font-family: Switzer Variable;
   font-weight: 500;
@@ -60,6 +63,7 @@
   letter-spacing: 0%;
   color: #a50000;
 }
+
 .urgentImg {
   width: 71.7px;
   height: 69.9px;
@@ -93,6 +97,8 @@
 .mediumHomeSideCard,
 .smallShareHomeCardstatBox,
 .smallShareHomeCard,
+.smallShareHomeCard2statBox,
+.smallShareHomeCard2,
 .mediumHomeCard,
 .mediumHomeCardstatBox,
 .mediumHomeSideCardstatBox {
@@ -110,7 +116,9 @@
 .mediumHomeSideCard:hover,
 .mediumHomeCard:hover,
 .smallShareHomeCard:hover,
+.smallShareHomeCard2:hover,
 .smallShareHomeCardstatBox:hover,
+.smallShareHomeCard2statBox:hover,
 .mediumHomeCardstatBox:hover,
 .mediumHomeSideCardstatBox:hover {
   transform: scale(1.02);
@@ -188,7 +196,69 @@
   white-space: normal;
   overflow-wrap: break-word;
 }
-.smallShareHomeCardlabel2 {
+
+.smallShareHomeCard2 {
+  height: 175px;
+  background: #fff;
+  border-radius: 13.89px;
+  padding: 0px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  border: 0.87px solid #b4b4b4;
+  margin-bottom: 10px;
+}
+
+.smallShareHomeCard2cardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 8px;
+}
+
+.smallShareHomeCard2cardTitle {
+  font-family: "Switzer Variable";
+  font-weight: 700;
+  font-size: 26px;
+  color: var(--Blue-V1, #30426a);
+
+  /* ✅ ADD for wrapping */
+  word-break: break-word;
+  white-space: normal;
+  overflow-wrap: break-word;
+}
+
+.smallShareHomeCard2buttonContainer {
+  display: flex;
+  align-items: center;
+}
+
+.smallShareHomeCard2statBox {
+  padding: 5px 16px;
+  border-radius: 8px;
+  min-height: 70px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.smallShareHomeCard2count {
+  font-family: "Switzer Variable";
+  font-weight: 700;
+  font-size: 50px;
+  line-height: 99%;
+  letter-spacing: 0%;
+  font-family: "Switzer Variable";
+  font-weight: 700;
+  line-height: 100%;
+  color: var(--Blue-V1, #30426a);
+
+  /* ✅ ADD for wrapping */
+  word-break: break-word;
+  white-space: normal;
+  overflow-wrap: break-word;
+}
+.smallShareHomeCard2label {
   font-family: Switzer Variable;
   font-weight: 700;
   font-size: 18px;
@@ -197,7 +267,8 @@
   word-break: break-word;
   white-space: normal;
   overflow-wrap: break-word;
-}
+} 
+
 /* medium card */
 .mediumHomeCard {
   height: 251px;
@@ -364,7 +435,10 @@
 .mediumHomeSideCardlabel,
 .smallShareHomeCardcardTitle,
 .smallShareHomeCardcount,
-.smallShareHomeCardlabel {
+.smallShareHomeCardlabel ,
+.smallShareHomeCard2cardTitle,
+.smallShareHomeCard2count,
+.smallShareHomeCard2label{
   display: -webkit-box;
   -webkit-line-clamp: 1; /* ✅ Show only 2 lines */
   -webkit-box-orient: vertical;
