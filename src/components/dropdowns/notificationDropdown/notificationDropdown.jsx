@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Dropdown, Badge } from "antd";
+import { Dropdown, Badge, Spin } from "antd";
 import styles from "./notificationDropdown.module.css";
 
 // Notification Bell Icons
@@ -46,8 +46,8 @@ import {
  */
 const NotificationDropdown = () => {
   const navigate = useNavigate();
-  const hasFetched = useRef(false);
-
+  const containerRef = useRef(null);
+  console.log(containerRef, "Reached bottom");
   const { showNotification } = useNotification();
   const { showLoader } = useGlobalLoader();
   const {
@@ -61,12 +61,9 @@ const NotificationDropdown = () => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [hovered, setHovered] = useState(false);
 
-  console.log(dropdownOpen, "dropdownOpendropdownOpen");
-
-  console.log(
-    { webNotificationData, markAsReadNotificationState },
-    "Check Is Notification Occur Or not"
-  );
+  const [hasFetched, setHasFetched] = useState(false); // prevent duplicate fetch
+  const [hasMore, setHasMore] = useState(true); // stop when no more data
+  const [loadingMore, setLoadingMore] = useState(false); // 👈 to control Spin
 
   /**
    * Calculate the number of unread notifications
@@ -142,7 +139,6 @@ const NotificationDropdown = () => {
   };
 
   // 🔹 Mark all notifications as read when dropdown closes or user clicks anywhere
-  // 🔹 Mark all as read (triggered via context)
   const markAllAsRead = async () => {
     if (!unreadCount) return;
 
@@ -187,6 +183,67 @@ const NotificationDropdown = () => {
     }
   }, [markAsReadNotificationState]);
 
+  // 🔹 Scroll handler
+  const handleScroll = async () => {
+    if (!containerRef.current || hasFetched || !hasMore) return;
+
+    const { scrollTop, scrollHeight, clientHeight } = containerRef.current;
+
+    // 🔹 Detect if user scrolled to bottom
+    if (scrollTop + clientHeight >= scrollHeight - 10) {
+      console.log("Reached bottom of dropdown");
+
+      setHasFetched(true);
+      setLoadingMore(true); // 👈 show loader
+
+      try {
+        const currentLength = webNotificationData?.notifications?.length || 0;
+
+        // 🔹 Call your pagination API
+        const response = await GetUserWebNotificationRequest({
+          callApi,
+          showNotification,
+          showLoader,
+          requestdata: {
+            sRow: currentLength,
+            eRow: 10, // next 10 records
+          },
+          navigate,
+        });
+
+        const newData = response?.notifications || [];
+
+        // 🔹 Merge new data with old data
+        if (newData.length > 0) {
+          setWebNotificationData((prev) => ({
+            ...prev,
+            notifications: [...(prev?.notifications || []), ...newData],
+          }));
+        } else {
+          setHasMore(false); // 👈 no more records
+        }
+      } catch (error) {
+        console.error("Error fetching notifications:", error);
+      } finally {
+        setHasFetched(false);
+        setLoadingMore(false); // 👈 hide loader
+      }
+    }
+  };
+
+  // ✅ attach/detach scroll listener instantly
+  useEffect(() => {
+    if (dropdownOpen && containerRef.current) {
+      containerRef.current.addEventListener("scroll", handleScroll);
+    }
+
+    return () => {
+      if (containerRef.current) {
+        containerRef.current.removeEventListener("scroll", handleScroll);
+      }
+    };
+  }, [dropdownOpen, hasFetched, hasMore]);
+
   return (
     <Dropdown
       trigger={["click"]}
@@ -200,21 +257,53 @@ const NotificationDropdown = () => {
       overlayClassName={styles["dropdown-overlay"]}
       popupRender={(menu) => (
         <>
-          {" "}
           <div className={styles["dropdown-header"]}>Notifications</div>
-          <div className={styles["custom-dropdown-wrapper"]}>
-            {/* Dropdown Header */}
 
-            {/* Notification List */}
-            <div className={styles["notification-list"]}>
-              {notifications.map((notification) => (
-                <NotificationItem
-                  key={notification.notificationID}
-                  notification={buildNotificationObject(notification)}
-                  getNotificationIcon={getNotificationIcon}
-                />
-              ))}
-            </div>
+          {/* ✅ only ONE ref and correct scrollable div */}
+          <div
+            ref={containerRef}
+            className={
+              notifications.length === 0
+                ? `${styles["no-notifications-dropdown"]}`
+                : `${styles["custom-dropdown-wrapper"]}`
+            }
+          >
+            {notifications.length > 0 ? (
+              <>
+                {notifications.map((notification) => (
+                  <NotificationItem
+                    key={notification.notificationID}
+                    notification={buildNotificationObject(notification)}
+                    getNotificationIcon={getNotificationIcon}
+                  />
+                ))}
+
+                {loadingMore && (
+                  <div style={{ textAlign: "center", padding: "10px" }}>
+                    <Spin size="small" />
+                  </div>
+                )}
+
+                {!hasMore && (
+                  <div
+                    style={{
+                      textAlign: "center",
+                      padding: "8px",
+                      color: "#888",
+                    }}
+                  >
+                    No more notifications
+                  </div>
+                )}
+              </>
+            ) : (
+              <>
+                <img src={NotificationBellDarkIcon} width={45} height={45}/>
+                <div className={styles["no-notification-text"]}>
+                  No Notification Available
+                </div>
+              </>
+            )}
           </div>
         </>
       )}
