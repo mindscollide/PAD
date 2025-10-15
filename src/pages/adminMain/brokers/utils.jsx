@@ -16,6 +16,24 @@ import StatusColumnTitle from "../../../components/dropdowns/filters/statusColum
  * @param {object} sortedInfo - Current sort state from the table
  * @returns {JSX.Element} The sort icon
  */
+
+export const mapAdminBrokersData = (adminBrokerData = {}) => {
+  const brokers = Array.isArray(adminBrokerData?.brokers)
+    ? adminBrokerData.brokers
+    : [];
+
+  if (!brokers.length) return [];
+
+  return brokers.map((item) => ({
+    key: item.brokerID,
+    brokerID: item.brokerID,
+    brokerName: item.brokerName || "—",
+    psxCode: item.psxCode || "—",
+    brokerStatusID: item.brokerStatusID,
+    brokerStatus: item.brokerStatus || "—",
+  }));
+};
+
 const getSortIcon = (columnKey, sortedInfo) => {
   if (sortedInfo?.columnKey === columnKey) {
     return sortedInfo.order === "ascend" ? (

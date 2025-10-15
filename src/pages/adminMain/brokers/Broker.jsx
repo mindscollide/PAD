@@ -10,7 +10,11 @@ import { useGlobalModal } from "../../../context/GlobalModalContext";
 
 // 🔹 Styles
 import style from "./Broker.module.css";
-import { buildApiRequest, getBrokerTableColumns } from "./utils";
+import {
+  buildApiRequest,
+  getBrokerTableColumns,
+  mapAdminBrokersData,
+} from "./utils";
 import PDF from "../../../assets/img/pdf.png";
 import Excel from "../../../assets/img/xls.png";
 import CustomButton from "../../../components/buttons/button";
@@ -29,6 +33,7 @@ import { useApi } from "../../../context/ApiContext";
 import { useMyAdmin } from "../../../context/AdminContext";
 import { UpOutlined, DownOutlined } from "@ant-design/icons";
 import { useWebNotification } from "../../../context/notificationContext";
+import { useTableScrollBottom } from "../../../common/funtions/scroll";
 
 const Brokers = () => {
   const navigate = useNavigate();
@@ -50,9 +55,12 @@ const Brokers = () => {
     addBrokerConfirmationModal,
   } = useGlobalModal();
 
+  console.log(adminBrokerData, "adminBrokerSearchadminBrokerSearch");
+
   // 🔷 UI State
   const [sortedInfo, setSortedInfo] = useState({});
   const [open, setOpen] = useState(false);
+  const [loadingMore, setLoadingMore] = useState(false);
 
   // 🔷 Toggle Api Call For Active and InActive Statuses
   const onToggleStatusApiRequest = async (brokerID, isActive) => {
@@ -95,7 +103,23 @@ const Brokers = () => {
         navigate,
       });
 
+      const brokers = Array.isArray(res?.brokers) ? res.brokers : [];
+      const mapped = mapAdminBrokersData(brokers);
+
+      setAdminBrokerData;
+
+      setAdminBrokerData((prev) => ({
+        brokers: replace ? mapped : [...(prev?.brokers || []), ...mapped],
+        // this is for to run lazy loading its data comming from database of total data in db
+        totalRecordsDataBase: res?.totalRecords || 0,
+
+        totalRecordsTable: replace
+          ? mapped.length
+          : adminBrokerData.totalRecordsTable + mapped.length,
+      }));
+
       setAdminBrokerData(res);
+      console.log(res, "CheckecDatares");
     },
     [callApi, navigate, setAdminBrokerData, showLoader, showNotification]
   );
@@ -111,6 +135,29 @@ const Brokers = () => {
       fetchApiCall(requestData, true, true);
     }
   }, [buildApiRequest, adminBrokerSearch, fetchApiCall]);
+
+  // Infinite Scroll
+  useTableScrollBottom(
+    async () => {
+      if (
+        adminBrokerData?.totalRecordsDataBase <=
+        adminBrokerData?.totalRecordsTable
+      )
+        return;
+
+      try {
+        setLoadingMore(true);
+        const requestData = buildApiRequest(adminBrokerSearch);
+        await fetchApiCall(requestData, false, false);
+      } catch (err) {
+        console.error("Error loading more approvals:", err);
+      } finally {
+        setLoadingMore(false);
+      }
+    },
+    0,
+    "border-less-table-blue"
+  );
 
   return (
     <>
@@ -164,6 +211,7 @@ const Brokers = () => {
             classNameTable="border-less-table-blue"
             scroll={{ x: "max-content", y: 550 }}
             columns={columns}
+            loading={loadingMore}
             onChange={(pagination, filters, sorter) => {
               setSortedInfo(sorter);
             }}
