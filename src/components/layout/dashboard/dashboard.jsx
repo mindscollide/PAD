@@ -24,6 +24,7 @@ const { Content } = Layout;
 
 const Dashboard = () => {
   const location = useLocation();
+  const navigate = useNavigate();
   const connectionAttemptedRef = useRef(false); // ✅ Track connection attempts
 
   // Context hooks
@@ -54,7 +55,6 @@ const Dashboard = () => {
   const { showNotification } = useNotification();
   const { showLoader } = useGlobalLoader();
   const { selectedKeyRef } = useSidebarContext();
-  const navigate = useNavigate();
 
   // User info from session storage
   const userProfileData = JSON.parse(
@@ -69,6 +69,8 @@ const Dashboard = () => {
   const topic = useMemo(() => {
     return currentUserId ? `PAD_${currentUserId}` : null;
   }, [currentUserId]);
+
+  console.log("selectedKey", selectedKeyRef);
 
   /**
    * ✅ Utility: check if current user has required role(s)

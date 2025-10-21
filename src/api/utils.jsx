@@ -348,6 +348,10 @@ export const responseMessages = {
   PAD_Admin_UpdateBrokerStatus_02: "Successfully updated",
   PAD_Admin_UpdateBrokerStatus_03: "Update failed or broker not found",
   PAD_Admin_UpdateBrokerStatus_04: "Exception occurred",
+
+  PAD_Admin_GetInstrumentsWithClosingPeriod_01: "Data found",
+  PAD_Admin_GetInstrumentsWithClosingPeriod_02: "No data found",
+  PAD_Admin_GetInstrumentsWithClosingPeriod_03: "Exception occurred",
 };
 
 /**

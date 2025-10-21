@@ -34,7 +34,8 @@
   letter-spacing: 0% !important;
   color: var(--Blue-V1, #30426a) !important;
   display: block;
-  margin-bottom: 4px !important;
+  margin-bottom: 8px !important;
+  margin-top: 4px !important;
 }
 
 .label-small {

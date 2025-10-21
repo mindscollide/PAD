@@ -10,6 +10,7 @@ import {
   mapStatusToIdsForLineManager,
 } from "../filters/utils";
 import { AdminBrokersListFiletr } from "./AdminBrokersListFilter";
+import { AdminInstrumentsListFilter } from "./AdminInstrumentsListFilter";
 import { ComplianceReconcileFilter } from "./ComplianceReconsile";
 import { EmployeeMyApprovalFilter } from "./EmployeeMyApprovalFilter";
 import { EmployeePortfolioFilter } from "./EmployeePortfolioFilter";
@@ -28,7 +29,7 @@ export const renderFilterContent = (
   setClear
 ) => {
   switch (selectedKey) {
-    case "1":
+    case "1": // Employee → My Approval
       return (
         <EmployeeMyApprovalFilter
           setVisible={setVisible}
@@ -39,7 +40,7 @@ export const renderFilterContent = (
         />
       );
 
-    case "2":
+    case "2": // Employee → My Transaction
       return (
         <EmployeeTransactionFilter
           setVisible={setVisible}
@@ -49,7 +50,8 @@ export const renderFilterContent = (
           setMaininstrumentName={setSearchMain}
         />
       );
-    case "4":
+
+    case "4": // Employee → Portfolio / Pending
       return (
         <EmployeePortfolioFilter
           setVisible={setVisible}
@@ -60,7 +62,7 @@ export const renderFilterContent = (
         />
       );
 
-    case "6":
+    case "6": // Line Manager Approval
       return (
         <LineManagerApprovalFilter
           setVisible={setVisible}
@@ -70,7 +72,8 @@ export const renderFilterContent = (
           setMaininstrumentName={setSearchMain}
         />
       );
-    case "9":
+
+    case "9": // Compliance Officer → Reconcile
       return (
         <ComplianceReconcileFilter
           setVisible={setVisible}
@@ -80,7 +83,8 @@ export const renderFilterContent = (
           setMaininstrumentName={setSearchMain}
         />
       );
-    case "12":
+
+    case "12": // HTA Escalated
       return (
         <HeadOfTradeEscalatedFilter
           setVisible={setVisible}
@@ -90,7 +94,8 @@ export const renderFilterContent = (
           setMaininstrumentName={setSearchMain}
         />
       );
-    case "15":
+
+    case "15": // HCA Escalated
       return (
         <HcaReconcileFilter
           setVisible={setVisible}
@@ -100,7 +105,19 @@ export const renderFilterContent = (
           setMaininstrumentName={setSearchMain}
         />
       );
-    case "19":
+
+    case "18": // Admin Instrument List
+      return (
+        <AdminInstrumentsListFilter
+          setVisible={setVisible}
+          clear={clear}
+          setClear={setClear}
+          maininstrumentName={searchMain}
+          setMaininstrumentName={setSearchMain}
+        />
+      );
+
+    case "19": // Admin Brokers List
       return (
         <AdminBrokersListFiletr
           setVisible={setVisible}
@@ -110,6 +127,7 @@ export const renderFilterContent = (
           setMaininstrumentName={setSearchMain}
         />
       );
+
     // 🔧 Add more cases for keys "3" to "17" as needed below
 
     default:

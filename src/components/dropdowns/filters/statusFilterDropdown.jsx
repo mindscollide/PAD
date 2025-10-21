@@ -19,7 +19,7 @@ import { useApi } from "../../../context/ApiContext";
 import { useGlobalLoader } from "../../../context/LoaderContext";
 import { useNotification } from "../../../components/NotificationProvider/NotificationProvider";
 import { useMyApproval } from "../../../context/myApprovalContaxt";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useDashboardContext } from "../../../context/dashboardContaxt";
 import { useTransaction } from "../../../context/myTransaction";
 
@@ -52,7 +52,6 @@ const StatusFilterDropdown = ({
   setTempSelected,
 }) => {
   const navigate = useNavigate();
-  const location = useLocation();
   const { selectedKey } = useSidebarContext();
   const { assetTypeListingData } = useDashboardContext();
   const { callApi } = useApi();
@@ -83,31 +82,27 @@ const StatusFilterDropdown = ({
   /**
    * Updates available filter options based on sidebar selection.
    */
+
   useEffect(() => {
     switch (selectedKey) {
       case "1":
+      case "6":
         setFilterOptions(emaStatusOptions);
-        break;
-      case "2":
-        // setFilterOptions(emaStatusOptions);
-        setFilterOptions(emtStatusOptions);
         break;
       case "4":
         setFilterOptions(emtStatusOptionsForPendingApproval);
         break;
-      case "6":
-        setFilterOptions(emaStatusOptions);
-        break;
-      case "9":
-        setFilterOptions(emtStatusOptions);
-        break;
       case "12":
         setFilterOptions(escalated);
         break;
+      case "2":
+      case "9":
       case "15":
         setFilterOptions(emtStatusOptions);
         break;
       case "19":
+      case "18":
+        console.log("adminIntrumentListSearch");
         setFilterOptions(adminBrokersStatus);
         break;
 
@@ -115,6 +110,8 @@ const StatusFilterDropdown = ({
         setFilterOptions([]);
     }
   }, [selectedKey]);
+  console.log("adminIntrumentListSearch", state);
+
   /**
    * Handles confirmation of selected statuses.
    * Updates parent state and triggers API call.
@@ -129,6 +126,8 @@ const StatusFilterDropdown = ({
       case "12":
       case "15":
       case "19":
+      case "18":
+        console.log("adminIntrumentListSearch");
         setState((prev) => ({
           ...prev,
           status: tempSelected,
@@ -179,7 +178,9 @@ const StatusFilterDropdown = ({
       case "9":
       case "12":
       case "15":
+      case "18":
       case "19":
+        console.log("adminIntrumentListSearch");
         setState((prev) => ({
           ...prev,
           status: [],
