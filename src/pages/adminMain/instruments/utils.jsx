@@ -85,14 +85,14 @@ const getSortIcon = (columnKey, sortedInfo) => {
   );
 };
 
-export const getInstrumentTableColumns = (
+export const getInstrumentTableColumns = ({
   adminIntrumentListSearch,
   setAdminIntrumentListSearch,
   sortedInfo,
   onStatusChange,
   setEditInstrumentModal,
-  setEditModalData
-) => [
+  setEditModalData,
+}) => [
   {
     title: (
       <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
@@ -134,9 +134,9 @@ export const getInstrumentTableColumns = (
         <div className={styles.SwitchMainDiv}>
           <Switch
             checked={isActive}
-            onChange={(value) =>
-              console.log("isActive", record.instrumentID, value)
-            }
+            // onChange={(value) =>
+            //   console.log("isActive", record.instrumentID, value)
+            // }
             onChange={(value) => onStatusChange(record.instrumentID, value)}
             className={`${styles.switchBase} ${
               isActive ? styles.switchbackground : styles.unSwitchBackground

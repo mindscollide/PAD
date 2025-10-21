@@ -1,0 +1,10 @@
+.ManageUserMainDiv {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 16px;
+  align-items: "center";
+}
+
+.ManageUserSecondDiv {
+  padding: 0px 10px;
+}
