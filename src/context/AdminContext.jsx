@@ -77,11 +77,7 @@ export const MyAdminProvider = ({ children }) => {
  * 🔗 useMyAdmin
  *
  * Custom hook for accessing MyAdminContext.
- *
- * @returns {{
- *   adminBrokerData: { brokers: Array,  totalCount: number },
- *   setAdminBrokerData: Function
- * }}
+
  *
  * @example
  * const {

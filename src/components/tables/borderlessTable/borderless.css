@@ -3,12 +3,12 @@
   border-spacing: 0 10px; /* Space between rows */
 }
 
-.border-less-table-orange-body {
+/* .border-less-table-orange-body {
   margin-top: 10px !important;
   overflow-x: hidden !important;
   overflow-y: auto !important;
   scrollbar-color: #eaeaea transparent !important;
-}
+} */
 
 /* Table Row Styling */
 .border-less-table-orange-row {
@@ -34,6 +34,11 @@ td.border-less-table-orange-cell:last-child {
 td.border-less-table-orange-cell:not(:first-child):not(:last-child) {
   /* Your styles here */
   background-color: #fff1e7;
+}
+
+/* When No data is available then on hover no color change in table */
+td.border-less-table-orange-cell:hover {
+  background-color: #fff1e7 !important;
 }
 
 .border-less-table-orange-wrapper .border-less-table-orange {
@@ -180,11 +185,12 @@ border-  bottom-bottom-right-radius: 6.94px !important;
 }
 /* For blue */
 
-.border-less-table-blue-body {
-  overflow: hidden;
-  max-height: 500px !important;
+/* .border-less-table-blue-body {
+    margin-top: 10px !important;
+  overflow-x: hidden !important;
   overflow-y: auto !important;
-}
+  scrollbar-color: #eaeaea transparent !important;
+} */
 
 /* Root Table Layout */
 .border-less-table-blue-body table {
@@ -222,6 +228,11 @@ td.border-less-table-blue-cell:last-child {
 td.border-less-table-blue-cell:not(:first-child):not(:last-child) {
   /* Your styles here */
   background-color: #edf3ff;
+}
+
+/* When No data is available then on hover no color change in table */
+td.border-less-table-blue-cell:hover {
+  background-color: #edf3ff !important;
 }
 
 .border-less-table-blue-wrapper .border-less-table-blue {
@@ -346,11 +357,12 @@ border-  bottom-bottom-right-radius: 6.94px !important;
 
 /* Root Table Layout */
 
-.border-less-table-white-body {
-  overflow: hidden;
+/* .border-less-table-white-body {
+  overflow-x: hidden !important;
   max-height: 500px !important;
   overflow-y: auto !important;
-}
+} */
+
 
 .border-less-table-white-body table {
   border-spacing: 0 10px;
@@ -427,7 +439,7 @@ td.border-less-table-white-cell:not(:first-child):not(:last-child) {
   font-family: "Switzer Variable";
   font-size: 14px;
   font-weight: 500;
-  padding: 12px 8px;
+  padding: 12px 6px;
   background: transparent !important;
   border-bottom: none;
 }

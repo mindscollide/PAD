@@ -10,7 +10,11 @@ import { useGlobalModal } from "../../../context/GlobalModalContext";
 
 // 🔹 Styles
 import style from "./Broker.module.css";
-import { buildApiRequest, getBrokerTableColumns } from "./utils";
+import {
+  buildApiRequest,
+  getBrokerTableColumns,
+  mapAdminBrokersData,
+} from "./utils";
 import PDF from "../../../assets/img/pdf.png";
 import Excel from "../../../assets/img/xls.png";
 import CustomButton from "../../../components/buttons/button";
@@ -19,6 +23,7 @@ import EditBroker from "./modal/editBroker/EditBroker";
 import AddBrokerConfirmationModal from "./modal/addBrokerConfimationModal/AddBrokerConfirmationModal";
 import { useSearchBarContext } from "../../../context/SearchBarContaxt";
 import {
+  downloadBrokerReportRequest,
   SearchBrokersAdminRequest,
   updateBrokersStatusRequest,
 } from "../../../api/adminApi";
@@ -129,7 +134,14 @@ const Brokers = () => {
         return next;
       });
     },
-    [callApi, navigate, setAdminBrokerData, showLoader, showNotification]
+    [
+      callApi,
+      navigate,
+      showLoader,
+      showNotification,
+      setAdminBrokerSearch,
+      setAdminBrokerData,
+    ]
   );
 
   // ----------------- Effects -----------------
@@ -139,7 +151,6 @@ const Brokers = () => {
     if (!hasFetched.current) {
       hasFetched.current = true;
       const requestData = buildApiRequest(adminBrokerSearch);
-
       fetchApiCall(requestData, true, true);
     }
   }, [buildApiRequest, adminBrokerSearch, fetchApiCall]);
@@ -172,7 +183,6 @@ const Brokers = () => {
       try {
         setLoadingMore(true);
         const requestData = buildApiRequest(adminBrokerSearch);
-
         await fetchApiCall(requestData, false, false);
       } catch (err) {
         console.error("Error loading more approvals:", err);
@@ -183,6 +193,24 @@ const Brokers = () => {
     0,
     "border-less-table-blue"
   );
+
+  // 🔷 Excel Report download Api Hit
+  const downloadReportInExcelFormat = async () => {
+    showLoader(true);
+    const requestdata = {
+      BrokerName: "",
+      PSXCode: "",
+    };
+
+    await downloadBrokerReportRequest({
+      callApi,
+      showNotification,
+      showLoader,
+      requestdata: requestdata,
+      setOpen,
+      navigate,
+    });
+  };
 
   /** 🔹 Handle removing individual filter */
   const handleRemoveFilter = (key) => {
@@ -297,7 +325,10 @@ const Brokers = () => {
                       <img src={PDF} alt="PDF" draggable={false} />
                       <span>Export PDF</span>
                     </div>
-                    <div className={style.dropdownItem}>
+                    <div
+                      className={style.dropdownItem}
+                      onClick={downloadReportInExcelFormat}
+                    >
                       <img src={Excel} alt="Excel" draggable={false} />
                       <span>Export XLS</span>
                     </div>
@@ -309,7 +340,7 @@ const Brokers = () => {
 
           {/* 🔷 Brokers Table */}
           <BorderlessTable
-            rows={adminBrokerData?.brokers}
+            rows={adminBrokerData?.brokers || []}
             classNameTable="border-less-table-blue"
             scroll={
               adminBrokerData?.brokers?.length

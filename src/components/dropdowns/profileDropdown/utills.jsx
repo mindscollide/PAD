@@ -20,7 +20,7 @@ export const getMenuItems = (
     {
       key: "1",
       label: (
-        <Link  className={style["dropdown-menu-item"]}>
+        <Link className={style["dropdown-menu-item"]}>
           <UserOutlined className={style["dropdown-menu-icon"]} />
           <span className={style["dropdown-menu-options-title"]}>
             My Profile
@@ -31,7 +31,7 @@ export const getMenuItems = (
     hasEmployee && {
       key: "2",
       label: (
-        <Link  className={style["dropdown-menu-item"]}>
+        <Link className={style["dropdown-menu-item"]}>
           <TeamOutlined className={style["dropdown-menu-icon"]} />
           <span className={style["dropdown-menu-options-title"]}>
             Manage Brokers
@@ -42,7 +42,7 @@ export const getMenuItems = (
     {
       key: "3",
       label: (
-        <Link  className={style["dropdown-menu-item"]}>
+        <Link className={style["dropdown-menu-item"]}>
           <SettingOutlined className={style["dropdown-menu-icon"]} />
           <span className={style["dropdown-menu-options-title"]}>
             Notification Settings
@@ -102,6 +102,15 @@ export const getMenuItems = (
         </div>
       ),
     });
+
+    // ⬆️ Move "Switch" above "Logout"
+    const logoutIndex = baseItems.findIndex((item) => item.key === "4");
+    const switchIndex = baseItems.findIndex((item) => item.key === "5");
+
+    if (logoutIndex > -1 && switchIndex > -1 && switchIndex > logoutIndex) {
+      const [switchItem] = baseItems.splice(switchIndex, 1);
+      baseItems.splice(logoutIndex, 0, switchItem);
+    }
   }
 
   // Insert dividers between items

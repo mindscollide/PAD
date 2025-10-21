@@ -28,6 +28,7 @@ import {
   ReconcileIndex,
   EscalatedTransactionsIndex,
   Brokers,
+  Instruments,
 } from "../pages";
 import RoleBasedRoute from "./RoleBasedRoute";
 import EscalatedApprovals from "../pages/main/headOfTradeApprover/escalatedApprovals/escalatedApprovals";
@@ -229,7 +230,8 @@ const router = createBrowserRouter(
           path="admin-instruments"
           element={
             <RoleBasedRoute isAdmin={true} allowedRoles={[1]}>
-              <EmpolyesReportsIndex />{" "}
+              {/* <EmpolyesReportsIndex />{" "} */}
+              <Instruments />
             </RoleBasedRoute>
           }
         />

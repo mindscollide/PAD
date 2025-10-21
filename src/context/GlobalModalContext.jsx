@@ -194,6 +194,10 @@ export const GlobalModalProvider = ({ children }) => {
 
   const [addBrokerConfirmationModal, setAddBrokerConfirmationModal] =
     useState(false);
+
+  // For Edit Instrument modal
+  const [editInstrumentModal, setEditInstrumentModal] = useState(false);
+
   /**
    * Global States For Admin Role Modals End here
    */
@@ -400,6 +404,10 @@ export const GlobalModalProvider = ({ children }) => {
 
         addBrokerConfirmationModal,
         setAddBrokerConfirmationModal,
+
+        // For Edit Instrument
+        editInstrumentModal,
+        setEditInstrumentModal,
         /**
          * Global States For Admin Role Modals End here
          */

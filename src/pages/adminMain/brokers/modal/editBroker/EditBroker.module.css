@@ -140,3 +140,13 @@
 .saveButton:hover {
   background-color: #163063;
 }
+
+.errorText {
+  font-size: 12px;
+  font-weight: 700;
+  font-family: "Switzer Variable";
+  color: red;
+  position: absolute;
+  left: 0px;
+  bottom: -10px;
+}
