@@ -40,7 +40,11 @@ const Brokers = () => {
   const { showNotification } = useNotification();
   const { showLoader } = useGlobalLoader();
   const { callApi } = useApi();
-  const { adminBrokerSearch, setAdminBrokerSearch } = useSearchBarContext();
+  const {
+    adminBrokerSearch,
+    setAdminBrokerSearch,
+    resetAdminBrokersListSearch,
+  } = useSearchBarContext();
   const { adminBrokerData, setAdminBrokerData } = useMyAdmin();
   const [loadingMore, setLoadingMore] = useState(false);
 
@@ -139,6 +143,13 @@ const Brokers = () => {
       fetchApiCall(requestData, true, true);
     }
   }, [buildApiRequest, adminBrokerSearch, fetchApiCall]);
+
+  // Reset on Unmount
+  useEffect(() => {
+    return () => {
+      resetAdminBrokersListSearch();
+    };
+  }, []);
 
   // Fetch on Filter Trigger
   useEffect(() => {
