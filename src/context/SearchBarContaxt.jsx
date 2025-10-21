@@ -254,6 +254,13 @@ export const SearchBarProvider = ({ children }) => {
     pageSize: 10,
   });
 
+  // Admin Gropus And Policy Search filter
+  const [adminGropusAndPolicySearch, setAdminGropusAndPolicySearch] = useState({
+    policyName: "",
+    filterTrigger: false,
+    pageNumber: 0,
+    pageSize: 10,
+  });
   // ===============================
   // Sync Refs (Always-Latest Values)
   // ===============================
@@ -537,6 +544,15 @@ export const SearchBarProvider = ({ children }) => {
       pageSize: 10,
     });
 
+  /** Reset Admin Gropus And Policy  filters */
+  const resetAdminGropusAndPolicySearch = () =>
+    setAdminGropusAndPolicySearch({
+      policyName: "",
+      filterTrigger: false,
+      pageNumber: 0,
+      pageSize: 10,
+    });
+
   /** Reset all filters across modules */
   const resetSearchBarContextState = () => {
     resetEmployeeMyApprovalSearch();
@@ -552,6 +568,7 @@ export const SearchBarProvider = ({ children }) => {
     resetHeadOfTradeApprovalEscalatedApprovalsSearch();
     resetAdminBrokersListSearch();
     resetAdminInstrumentListSearch();
+    resetAdminGropusAndPolicySearch();
   };
 
   // ===============================
@@ -612,6 +629,11 @@ export const SearchBarProvider = ({ children }) => {
         adminBrokerSearch,
         setAdminBrokerSearch,
         resetAdminBrokersListSearch,
+
+        //Admin Gropus And Policy
+        adminGropusAndPolicySearch,
+        setAdminGropusAndPolicySearch,
+        resetAdminGropusAndPolicySearch,
 
         // Always-latest refs
         employeeMyApprovalSearchRef,

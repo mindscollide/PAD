@@ -37,7 +37,7 @@ export const MyAdminProvider = ({ children }) => {
    * - `apiCall`: Flag for tracking if API was recently called
    */
 
-  // context for admin role while getting brokers
+  // context for admin  getting brokers
   const [adminBrokerData, setAdminBrokerData] = useState({
     brokers: [],
     totalRecordsDataBase: 0,
@@ -45,13 +45,44 @@ export const MyAdminProvider = ({ children }) => {
   });
   const [adminBrokerMqtt, setAdminBrokerMqtt] = useState(false);
 
-  // context for admin role while getting Instruments
+  // context for admin  getting Instruments
   const [adminIntrumentsData, setAdminIntrumentsData] = useState({
     intruments: [],
     totalRecordsDataBase: 0,
     totalRecordsTable: 0,
   });
+
   const [adminIntrumentsMqtt, setAdminIntrumentsMqtt] = useState(false);
+
+  // context for admin  getting Gropus And Policy
+  const [adminGropusAndPolicyData, setAdminGropusAndPolicyData] = useState({
+    groupsAndPolicy: [],
+    totalRecordsDataBase: 0,
+    totalRecordsTable: 0,
+  });
+
+  const [adminGropusAndPolicyMqtt, setAdminGropusAndPolicyMqtt] =
+    useState(false);
+
+  // this is use for open new page to add create and edit
+  const [
+    openNewFormForAdminGropusAndPolicy,
+    setOpenNewFormForAdminGropusAndPolicy,
+  ] = useState(false);
+
+  // this is use for to set view of  page to add create and edit
+  // 0 create
+  // 1 edit
+  // 2 view
+  const [pageTypeForAdminGropusAndPolicy, setPageTypeForAdminGropusAndPolicy] =
+    useState(0);
+
+  // this is use for which tab is open currently
+  // 0 details
+  // 1 policy
+  // 2 user
+  const [pageTabesForAdminGropusAndPolicy, setPageTabeForAdminGropusAndPolicy] =
+    useState(0);
 
   /**
    * ♻️ Reset Context State (Table + API Data)
@@ -77,22 +108,32 @@ export const MyAdminProvider = ({ children }) => {
     });
     setAdminIntrumentsMqtt(false);
   };
+
+  const resetAdminGropusAndPolicyListContextState = () => {
+    setAdminGropusAndPolicyData({
+      groupsAndPolicy: [],
+      totalRecordsDataBase: 0,
+      totalRecordsTable: 0,
+    });
+    setAdminGropusAndPolicyMqtt(false);
+  };
+  const resetAdminGropusAndPolicyContextState = () => {
+    setOpenNewFormForAdminGropusAndPolicy(false);
+    setPageTypeForAdminGropusAndPolicy(0);
+    setPageTabeForAdminGropusAndPolicy(0);
+  };
+
   const resetAdminDataContextState = () => {
     // intruments
-    setAdminBrokerData({
-      brokers: [],
-      totalRecordsDataBase: 0,
-      totalRecordsTable: 0,
-    });
-    setAdminBrokerMqtt(false);
+    resetAdminInstrumentsContextState();
 
     // brokers
-    setAdminIntrumentsData({
-      intruments: [],
-      totalRecordsDataBase: 0,
-      totalRecordsTable: 0,
-    });
-    setAdminIntrumentsMqtt(false);
+    resetAdminBrokersDataContextState();
+
+    // Groups and Policy
+    resetAdminGropusAndPolicyListContextState();
+    // Groups and Policy new add edit view page
+    resetAdminGropusAndPolicyContextState();
   };
 
   return (
@@ -107,13 +148,28 @@ export const MyAdminProvider = ({ children }) => {
         adminIntrumentsMqtt,
         setAdminIntrumentsMqtt,
         resetAdminInstrumentsContextState,
-        
+
         // Admin Broker (API)
         adminBrokerData,
         setAdminBrokerData,
         adminBrokerMqtt,
         setAdminBrokerMqtt,
         resetAdminBrokersDataContextState,
+
+        // Group And Policy
+        adminGropusAndPolicyData,
+        setAdminGropusAndPolicyData,
+        adminGropusAndPolicyMqtt,
+        setAdminGropusAndPolicyMqtt,
+        resetAdminGropusAndPolicyListContextState,
+
+        resetAdminGropusAndPolicyContextState,
+        setOpenNewFormForAdminGropusAndPolicy,
+        openNewFormForAdminGropusAndPolicy,
+        setPageTypeForAdminGropusAndPolicy,
+        pageTypeForAdminGropusAndPolicy,
+        setPageTabeForAdminGropusAndPolicy,
+        pageTabesForAdminGropusAndPolicy,
       }}
     >
       {children}

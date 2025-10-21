@@ -1,0 +1,52 @@
+/* 🔹 Prevent scrollbars */
+.noScrollContainer {
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+/* 🔹 Breadcrumb alignment */
+.breadcrumbRow {
+  padding: 24px 32px;
+  display: flex;
+  align-items: center;
+}
+
+/* 🔹 Breadcrumb overall style */
+.customBreadcrumb {
+  font-family: "Switzer Variable", sans-serif;
+  font-weight: 700;
+  font-style: bold;
+  font-size: 26px;
+  line-height: 100%;
+  color: #30426a;
+}
+
+/* 🔹 Normal breadcrumb text */
+.breadcrumbText {
+  color: #30426a;
+}
+
+/* 🔹 Clickable link ONLY for "Group Policy" */
+.breadcrumbLink {
+  color: #30426a;
+  cursor: pointer;
+  transition: all 0.25s ease-in-out;
+}
+
+.breadcrumbLink:hover {
+  color: #213155;
+  text-shadow: 0px 2px 6px rgba(33, 49, 85, 0.4);
+  transform: scale(1.05);
+}
+
+/* 🔹 Separator “>” (static) */
+:global(.ant-breadcrumb-separator) {
+  color: #30426a !important;
+  font-family: "Switzer Variable", sans-serif;
+  font-weight: 700;
+  font-size: 26px;
+  margin: 0 8px;
+}
