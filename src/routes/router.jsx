@@ -32,6 +32,7 @@ import {
 } from "../pages";
 import RoleBasedRoute from "./RoleBasedRoute";
 import EscalatedApprovals from "../pages/main/headOfTradeApprover/escalatedApprovals/escalatedApprovals";
+import ManageUsers from "../pages/adminMain/manageUsers/ManageUsers";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -240,7 +241,8 @@ const router = createBrowserRouter(
           path="admin-users"
           element={
             <RoleBasedRoute isAdmin={true} allowedRoles={[1]}>
-              <EmpolyesReportsIndex />{" "}
+              {/* <EmpolyesReportsIndex />{" "} */}
+              <ManageUsers />
             </RoleBasedRoute>
           }
         />

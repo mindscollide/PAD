@@ -1,0 +1,71 @@
+.mainUserCarddiv {
+  display: flex;
+  align-items: center;
+  /* border: 1px solid #b4b4b4; */
+  border-radius: 8px;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.25);
+  padding: 14px 18px;
+  background-color: #fff;
+  margin-bottom: 20px;
+  transition: all 0.2s ease-in-out;
+}
+
+.mainUserCarddiv:hover {
+  transform: translateY(-2px);
+}
+
+.manageUserSection {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 120px;
+}
+
+.manageUserProfileImg {
+  width: 104px;
+  height: 100px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.manageUserName {
+  left: 20px;
+  font-size: 30px;
+  font-family: "Switzer Variable";
+  font-weight: 700;
+  color: #424242;
+}
+
+.manageUserEmail {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 18px;
+  font-family: "Switzer Variable";
+  font-weight: 500;
+  color: #424242;
+}
+
+.fordetailUserManage {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.fordetailUserManageSubDiv {
+  width: 100%;
+  margin: 0px 50px 0px 20px;
+}
+
+.moreIcon {
+  font-size: 20px;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.moreBackgroundColor {
+  padding: 0px 5px;
+  background-color: #e1e1e1 !important;
+  margin: 0;
+}
