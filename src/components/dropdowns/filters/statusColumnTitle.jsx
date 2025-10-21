@@ -35,7 +35,6 @@ const StatusColumnTitle = ({ state, setState }) => {
    * - When opened → copy current selected values into temp state.
    * - When closed → reset temp state.
    */
-  console.log("selected",selected)
   useEffect(() => {
     if (visible) {
       setTempSelected(selected);

@@ -7,6 +7,7 @@ import { Tag, Switch } from "antd";
 import styles from "./Broker.module.css";
 import StatusColumnTitle from "../../../components/dropdowns/filters/statusColumnTitle";
 import { mapStatusToIds } from "../../../components/dropdowns/filters/utils";
+import DefaultColumArrow from "../../../assets/img/default-colum-arrow.png";
 
 // import TypeColumnTitle from "./typeFilter";
 
@@ -41,7 +42,15 @@ const getSortIcon = (columnKey, sortedInfo) => {
       <img src={ArrowUP} alt="Desc" className="custom-sort-icon" />
     );
   }
-  return <ArrowsAltOutlined className="custom-sort-icon" />;
+  return (
+    <img
+      draggable={false}
+      src={DefaultColumArrow}
+      alt="Not sorted"
+      className="custom-sort-icon"
+      data-testid={`sort-icon-${columnKey}-default`}
+    />
+  );
 };
 
 /**
