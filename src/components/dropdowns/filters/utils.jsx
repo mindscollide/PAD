@@ -31,6 +31,7 @@ export const emaStatusOptions = [
  */
 export const emtStatusOptions = ["Pending", "Compliant", "Non-Compliant"];
 export const escalated = ["Pending"];
+export const adminBrokersStatus = ["Active", "Inactive"];
 
 /**
  * Status options for pending approvals (Line Manager).
@@ -109,6 +110,8 @@ export const mapStatusToIds = (arr) => {
     "Not Traded": 6,
     Compliant: 8,
     "Non-Compliant": 9,
+    Active: 1,
+    Inactive: 2,
   };
   return arr.map((s) => statusMap[s] || null).filter(Boolean);
 };
