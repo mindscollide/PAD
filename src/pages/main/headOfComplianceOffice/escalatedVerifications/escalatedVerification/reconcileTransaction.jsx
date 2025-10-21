@@ -240,10 +240,14 @@ const EscalatedTransactionVerifications = ({ activeFilters }) => {
    */
   useEffect(() => {
     if (headOfComplianceApprovalEscalatedVerificationsMqtt) {
-      const requestData = buildApiRequest(
+      let requestData = buildApiRequest(
         headOfComplianceApprovalEscalatedVerificationsSearch,
         assetTypeListingData
       );
+      requestData = {
+        ...requestData,
+        PageNumber: 0,
+      };
       fetchApiCall(requestData, true, false);
       setHeadOfComplianceApprovalEscalatedVerificationsMqtt(false);
     }

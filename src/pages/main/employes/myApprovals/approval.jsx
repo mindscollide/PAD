@@ -318,11 +318,14 @@ const Approval = () => {
   useEffect(() => {
     if (employeeMyApprovalMqtt) {
       setIsEmployeeMyApprovalMqtt(false);
-      const requestData = buildApiRequest(
+      let requestData = buildApiRequest(
         employeeMyApprovalSearch,
         assetTypeListingData
       );
-
+      requestData = {
+        ...requestData,
+        PageNumber: 0,
+      };
       fetchApiCall(requestData, true, false);
     }
   }, [employeeMyApprovalMqtt]);

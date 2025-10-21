@@ -238,10 +238,14 @@ const ReconcileTransaction = ({ activeFilters }) => {
   useEffect(() => {
     if (!complianceOfficerReconcileTransactionDataMqtt) return;
 
-    const requestData = buildApiRequest(
+    let requestData = buildApiRequest(
       complianceOfficerReconcileTransactionsSearch,
       assetTypeListingData
     );
+    requestData = {
+      ...requestData,
+      PageNumber: 0,
+    };
     fetchApiCall(requestData, true, false);
     setComplianceOfficerReconcileTransactionDataMqtt(false);
   }, [complianceOfficerReconcileTransactionDataMqtt]);

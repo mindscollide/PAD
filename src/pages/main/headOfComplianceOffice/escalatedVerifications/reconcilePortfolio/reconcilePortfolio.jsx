@@ -276,11 +276,14 @@ const ReconcilePortfolioHCO = ({ activeFilters }) => {
   useEffect(() => {
     if (!headOfComplianceApprovalPortfolioMqtt) return;
 
-    const requestData = buildApiRequest(
+    let requestData = buildApiRequest(
       headOfComplianceApprovalPortfolioSearch,
       assetTypeListingData
     );
-
+    requestData = {
+      ...requestData,
+      PageNumber: 0,
+    };
     fetchApiCall(requestData, true, false);
     // Reset MQTT trigger
     setHeadOfComplianceApprovalPortfolioMqtt(false);

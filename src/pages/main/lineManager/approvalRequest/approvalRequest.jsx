@@ -176,10 +176,14 @@ const ApprovalRequest = () => {
 
   useEffect(() => {
     if (!lineManagerApprovalMqtt) return;
-    const requestData = buildApiRequest(
+    let requestData = buildApiRequest(
       lineManagerApprovalSearch,
       assetTypeListingData
     );
+    requestData = {
+      ...requestData,
+      PageNumber: 0,
+    };
     fetchApiCall(requestData, true, false);
     setLineManagerApprovalMQtt(false);
   }, [lineManagerApprovalMqtt]);

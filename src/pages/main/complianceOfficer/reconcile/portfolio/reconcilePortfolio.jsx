@@ -262,10 +262,14 @@ const ReconcilePortfolio = ({ activeFilters }) => {
 
   useEffect(() => {
     if (!complianceOfficerReconcilePortfolioDataMqtt) return;
-    const requestData = buildApiRequest(
+    let requestData = buildApiRequest(
       complianceOfficerReconcilePortfolioSearch,
       assetTypeListingData
     );
+    requestData = {
+      ...requestData,
+      PageNumber: 0,
+    };
     fetchApiCall(requestData, true, false);
     setComplianceOfficerReconcilePortfolioDataMqtt(false);
   }, [complianceOfficerReconcilePortfolioDataMqtt]);
