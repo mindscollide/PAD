@@ -479,3 +479,71 @@ export const SearchGetInstrumentsWithClosingPeriod = async ({
     showLoader(false);
   }
 };
+
+
+//Update Instrument Status   when User Toggle Any Instrument
+export const UpdateInstrumentStatus = async ({
+  callApi,
+  showNotification,
+  showLoader,
+  requestdata,
+  navigate,
+}) => {
+  try {
+    // 🔹 API Call
+    console.log("Check APi");
+
+    const res = await callApi({
+      requestMethod: import.meta.env.VITE_ADMIN_UPDATE_INSTRUMENT_STATUS_REQUEST_METHOD,
+      endpoint: import.meta.env.VITE_API_ADMIN,
+      requestData: requestdata,
+      navigate,
+    });
+
+    //  Check Session Expiry
+    if (handleExpiredSession(res, navigate, showLoader)) return false;
+
+    // when Api send isExecuted false
+    if (!res?.result?.isExecuted) {
+      showNotification({
+        type: "error",
+        title: "Error",
+        description: "Something went wrong. Please try again.",
+      });
+      return false;
+    }
+
+    // When Api Send Success Response
+    if (res.success) {
+      const { responseMessage } = res.result;
+
+      if (responseMessage === "PAD_Admin_UpdateInstrumentStatus_02") {
+        return true;
+      } else {
+        showNotification({
+          type: "warning",
+          title: getMessage(responseMessage),
+        });
+        return false;
+      }
+    }
+
+    // When Response will be Something Went Wrong
+    showNotification({
+      type: "error",
+      title: "Request Failed",
+      description: getMessage(res.message),
+    });
+    return false;
+  } catch (error) {
+    // ❌ Exception handling
+    showNotification({
+      type: "error",
+      title: "Error",
+      description: "An unexpected error occurred.",
+    });
+    return false;
+  } finally {
+    showLoader(false);
+  }
+};

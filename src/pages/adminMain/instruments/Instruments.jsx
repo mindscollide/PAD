@@ -22,7 +22,10 @@ import { useGlobalLoader } from "../../../context/LoaderContext";
 import { useApi } from "../../../context/ApiContext";
 import { useSearchBarContext } from "../../../context/SearchBarContaxt";
 import { useMyAdmin } from "../../../context/AdminContext";
-import { SearchGetInstrumentsWithClosingPeriod } from "../../../api/adminApi";
+import {
+  SearchGetInstrumentsWithClosingPeriod,
+  UpdateInstrumentStatus,
+} from "../../../api/adminApi";
 import { useTableScrollBottom } from "../../../common/funtions/scroll";
 
 const Instruments = () => {
@@ -53,32 +56,32 @@ const Instruments = () => {
     useGlobalModal();
 
   const [sortedInfo, setSortedInfo] = useState({});
- // 🔷 Toggle Api Call For Active and InActive Statuses
-  // const onToggleStatusApiRequest = async (brokerID, isActive) => {
-  //   showLoader(true);
-  //   const payload = {
-  //     BrokerID: brokerID,
-  //     BrokerStatusID: isActive ? 1 : 2,
-  //   };
+  // 🔷 Toggle Api Call For Active and InActive Statuses
+  const onToggleStatusApiRequest = async (instrumentID, isActive) => {
+    console.log("onToggleStatusApiRequest", instrumentID, isActive);
+    showLoader(true);
+    const payload = {
+      InstrumentID: instrumentID,
+      InstrumentStatusID: isActive ? 1 : 2,
+    };
 
-  //   await updateBrokersStatusRequest({
-  //     callApi,
-  //     showNotification,
-  //     showLoader,
-  //     requestdata: payload,
-  //     navigate,
-  //   });
+    await UpdateInstrumentStatus({
+      callApi,
+      showNotification,
+      showLoader,
+      requestdata: payload,
+      navigate,
+    });
+  };
 
-  // };
-
-  const columns = getInstrumentTableColumns(
+  const columns = getInstrumentTableColumns({
     adminIntrumentListSearch,
     setAdminIntrumentListSearch,
     sortedInfo,
-    setEditModalData,
+    onStatusChange: onToggleStatusApiRequest,
     setEditInstrumentModal,
-    // onStatusChange: onToggleStatusApiRequest,
-  );
+    setEditModalData,
+  });
 
   /** 🔹 Fetch approvals from API */
   const fetchApiCall = useCallback(
@@ -133,7 +136,7 @@ const Instruments = () => {
       setAdminIntrumentsData,
     ]
   );
-
+  console.log("adminIntrumentsData", adminIntrumentsData);
   // ----------------- Effects -----------------
 
   // 🔷 Initial Data Fetch

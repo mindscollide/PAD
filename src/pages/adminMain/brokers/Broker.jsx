@@ -49,6 +49,8 @@ const Brokers = () => {
     adminBrokerData,
     setAdminBrokerData,
     resetAdminBrokersDataContextState,
+    adminBrokerMqtt,
+    setAdminBrokerMqtt,
   } = useMyAdmin();
   const [loadingMore, setLoadingMore] = useState(false);
 
@@ -170,6 +172,16 @@ const Brokers = () => {
       fetchApiCall(requestData, true, true);
     }
   }, [adminBrokerSearch.filterTrigger]);
+
+  // MQTT Updates
+  useEffect(() => {
+    if (adminBrokerMqtt) {
+      setAdminBrokerMqtt(false);
+      const requestData = buildApiRequest(adminBrokerSearch);
+
+      fetchApiCall(requestData, true, false);
+    }
+  }, [adminBrokerMqtt]);
 
   // Lazy loading
   useTableScrollBottom(

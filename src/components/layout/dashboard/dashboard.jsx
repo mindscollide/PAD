@@ -20,6 +20,7 @@ import { GetUserWebNotificationRequest } from "../../../api/notification";
 import { useNotification } from "../../NotificationProvider/NotificationProvider";
 import { useApi } from "../../../context/ApiContext";
 import { useGlobalLoader } from "../../../context/LoaderContext";
+import { useMyAdmin } from "../../../context/AdminContext";
 const { Content } = Layout;
 
 const Dashboard = () => {
@@ -30,6 +31,7 @@ const Dashboard = () => {
   // Context hooks
   const { setLineManagerApprovalMQtt, setIsEmployeeMyApprovalMqtt } =
     useMyApproval();
+  const { setAdminBrokerMqtt } = useMyAdmin();
   const { setHtaEscalatedApprovalDataMqtt } = useEscalatedApprovals();
   const { setEmployeePendingApprovalsDataMqtt, activeTabRef } =
     usePortfolioContext();
@@ -134,8 +136,17 @@ const Dashboard = () => {
           switch (roleIDs) {
             case "1": {
               switch (message) {
-                case "NEW_BROKER_ADDED": {
-                  console.log("Check its add or not");
+                case "NEW_BROKER_ADDED":
+                case "BROKER_UPDATED":
+                case "BROKER_STATUS_UPDATED": {
+                  if (currentRoleIsAdminRefLocal) {
+                    // admin mqtt
+                    if (currentKey === "19") {
+                      // not admin MQTT → ignore completely
+                      setAdminBrokerMqtt(true);
+                      return;
+                    }
+                  }
                   break;
                 }
 
@@ -483,6 +494,7 @@ const Dashboard = () => {
               }
               break;
             }
+
             default:
               console.warn("MQTT: No handler for role →", roleIDs);
           }

@@ -41,6 +41,7 @@ export const mapAdminInstrumentListData = (adminInstruments = []) => {
 
     return {
       key,
+      instrumentID: item?.instrumentID,
       instrument: item?.instrument,
       closedPeriodStartDate:
         [item?.closedPeriodStartDate, item?.closedPeriodStartTime]
@@ -83,12 +84,14 @@ const getSortIcon = (columnKey, sortedInfo) => {
     />
   );
 };
+
 export const getInstrumentTableColumns = (
   adminIntrumentListSearch,
   setAdminIntrumentListSearch,
   sortedInfo,
   onStatusChange,
-  setEditInstrumentModal
+  setEditInstrumentModal,
+  setEditModalData
 ) => [
   {
     title: (
@@ -124,20 +127,27 @@ export const getInstrumentTableColumns = (
     ),
     dataIndex: "status",
     key: "status",
-    render: (status, record) => (
-      <div className={styles.SwitchMainDiv}>
-        <Switch
-          checked={status}
-          onChange={(value) => onStatusChange(record.key, value)}
-          className={`${styles.switchBase} ${
-            status ? styles.switchbackground : styles.unSwitchBackground
-          }`}
-        />
-        <span className={status ? styles.activeText : styles.InActiveText}>
-          {status ? "Active" : "Inactive"}
-        </span>
-      </div>
-    ),
+    render: (status, record) => {
+      const isActive = status === 1;
+      console.log("isActive", isActive);
+      return (
+        <div className={styles.SwitchMainDiv}>
+          <Switch
+            checked={isActive}
+            onChange={(value) =>
+              console.log("isActive", record.instrumentID, value)
+            }
+            onChange={(value) => onStatusChange(record.instrumentID, value)}
+            className={`${styles.switchBase} ${
+              isActive ? styles.switchbackground : styles.unSwitchBackground
+            }`}
+          />
+          <span className={isActive ? styles.activeText : styles.InActiveText}>
+            {isActive ? "Active" : "Inactive"}
+          </span>
+        </div>
+      );
+    },
   },
   {
     title: (
