@@ -237,8 +237,9 @@ export const SearchBarProvider = ({ children }) => {
   const [adminBrokerSearch, setAdminBrokerSearch] = useState({
     brokersName: "",
     psxCode: "",
+    pageSize: 10,
     pageNumber: 0,
-    length: 10,
+    filterTrigger: false,
   });
 
   // ===============================

@@ -40,7 +40,8 @@ export const MyAdminProvider = ({ children }) => {
   // context for admin role while getting brokers
   const [adminBrokerData, setAdminBrokerData] = useState({
     brokers: [],
-    totalRecords: 0,
+    totalRecordsDataBase: 0,
+    totalRecordsTable: 0,
   });
 
   /**
@@ -53,7 +54,8 @@ export const MyAdminProvider = ({ children }) => {
   const resetAdminDataContextState = () => {
     setAdminBrokerData({
       brokers: [],
-      totalRecords: 0,
+      totalRecordsDataBase: 0,
+      totalRecordsTable: 0,
     });
   };
 
@@ -75,11 +77,7 @@ export const MyAdminProvider = ({ children }) => {
  * 🔗 useMyAdmin
  *
  * Custom hook for accessing MyAdminContext.
- *
- * @returns {{
- *   adminBrokerData: { brokers: Array,  totalCount: number },
- *   setAdminBrokerData: Function
- * }}
+
  *
  * @example
  * const {

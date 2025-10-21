@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Col, Row } from "antd";
 import { useApi } from "../../../../../context/ApiContext";
 import { useNavigate } from "react-router-dom";
@@ -17,72 +17,112 @@ const AddNewBroker = () => {
   const { showLoader } = useGlobalLoader();
   const { callApi } = useApi();
 
-  // 🔷 Modal control states from global context
   const {
     addNewBrokerModal,
     setAddNewBrokerModal,
     setAddBrokerConfirmationModal,
   } = useGlobalModal();
 
-  // 🔷 State for the broker name input
   const [brokerName, setBrokerName] = useState("");
-
-  // 🔷 State for the PSX code input
   const [psxCode, setPsxCode] = useState("");
-
-  // 🔷 State to hold the list of brokers added before saving
   const [brokers, setBrokers] = useState([]);
 
-  // 🔷 Error state of brokerName and psxCode while adding
   const [brokerNameError, setBrokerNameError] = useState("");
   const [psxCodeError, setPsxCodeError] = useState("");
 
-  // 🔷 Adds a new broker to the list if inputs are valid and clears inputs afterward
-  const handleAddBroker = () => {
-    let hasError = false;
-
-    // Reset errors before validating
-    setBrokerNameError("");
-    setPsxCodeError("");
-
-    // Check for duplicate broker name
-    const nameExists = brokers.some(
-      (broker) =>
-        broker.brokerName.toLowerCase() === brokerName.trim().toLowerCase()
+  // ✅ Duplicate check helpers
+  const checkDuplicateName = (name) =>
+    brokers.some(
+      (b) => b.brokerName.trim().toLowerCase() === name.trim().toLowerCase()
     );
 
-    // Check for duplicate PSX code
-    const codeExists = brokers.some(
-      (broker) => broker.psxCode.toLowerCase() === psxCode.trim().toLowerCase()
+  const checkDuplicateCode = (code) =>
+    brokers.some(
+      (b) => b.psxCode.trim().toLowerCase() === code.trim().toLowerCase()
     );
 
-    if (nameExists) {
+  // ✅ Handle broker name blur
+  const handleBrokerNameBlur = () => {
+    const trimmed = brokerName.trim();
+    if (!trimmed) return setBrokerNameError("");
+
+    if (checkDuplicateName(trimmed)) {
       setBrokerNameError("Broker Name already exists");
-      hasError = true;
+    } else {
+      setBrokerNameError("");
     }
-
-    if (codeExists) {
-      setPsxCodeError("PSX Code already exists");
-      hasError = true;
-    }
-
-    // If there's any duplicate, stop adding
-    if (hasError) return;
-
-    // Add if no errors
-    setBrokers([...brokers, { brokerName, psxCode }]);
-    setBrokerName("");
-    setPsxCode("");
   };
 
-  // 🔷 Removes a broker from the list by index
+  // ✅ Handle PSX code blur
+  const handlePsxCodeBlur = () => {
+    const trimmed = psxCode.trim();
+    if (!trimmed) return setPsxCodeError("");
+
+    if (checkDuplicateCode(trimmed)) {
+      setPsxCodeError("PSX Code already exists");
+    } else {
+      setPsxCodeError("");
+    }
+  };
+
+  // ✅ Auto-clear error text while typing if user fixes the duplicate
+  useEffect(() => {
+    if (
+      brokerName &&
+      brokerNameError &&
+      !checkDuplicateName(brokerName.trim())
+    ) {
+      setBrokerNameError("");
+    }
+  }, [brokerName, brokers]);
+
+  useEffect(() => {
+    if (psxCode && psxCodeError && !checkDuplicateCode(psxCode.trim())) {
+      setPsxCodeError("");
+    }
+  }, [psxCode, brokers]);
+
+  // ✅ Add broker
+  const handleAddBroker = () => {
+    const trimmedName = brokerName.trim();
+    const trimmedCode = psxCode.trim();
+
+    if (!trimmedName || !trimmedCode) return;
+
+    if (checkDuplicateName(trimmedName)) {
+      setBrokerNameError("Broker Name already exists");
+      return;
+    }
+
+    if (checkDuplicateCode(trimmedCode)) {
+      setPsxCodeError("PSX Code already exists");
+      return;
+    }
+
+    setBrokers([...brokers, { brokerName: trimmedName, psxCode: trimmedCode }]);
+    setBrokerName("");
+    setPsxCode("");
+    setBrokerNameError("");
+    setPsxCodeError("");
+  };
+
+  // ✅ Remove broker
   const handleRemoveBroker = (index) => {
     const updated = [...brokers];
     updated.splice(index, 1);
     setBrokers(updated);
   };
 
-  // 🔷 Calls the API to save the broker list
+  // ✅ Disable Add button if any error or duplicate exists
+  const isAddDisabled =
+    !brokerName.trim() ||
+    !psxCode.trim() ||
+    brokerNameError ||
+    psxCodeError ||
+    checkDuplicateName(brokerName.trim()) ||
+    checkDuplicateCode(psxCode.trim());
+
+  // ✅ Save to API
   const fetchSaveData = async () => {
     if (brokers.length === 0) return;
 
@@ -105,11 +145,6 @@ const AddNewBroker = () => {
     });
   };
 
-  // 🔷 Triggered when Save button is clicked to call the API function
-  const onClickOnSaveButton = () => {
-    fetchSaveData();
-  };
-
   return (
     <GlobalModal
       visible={addNewBrokerModal}
@@ -120,6 +155,7 @@ const AddNewBroker = () => {
         <>
           <div className={styles.modalContainer}>
             <h2 className={styles.Brokertitle}>Add Broker</h2>
+
             <Row gutter={[16, 16]}>
               <Col span={14}>
                 <div className={styles.inputContainer}>
@@ -130,6 +166,7 @@ const AddNewBroker = () => {
                     type="text"
                     value={brokerName}
                     onChange={(e) => setBrokerName(e.target.value)}
+                    onBlur={handleBrokerNameBlur}
                     maxLength={75}
                     placeholder="Broker Name"
                   />
@@ -141,6 +178,7 @@ const AddNewBroker = () => {
                   </span>
                 </div>
               </Col>
+
               <Col span={7}>
                 <div className={styles.inputContainer}>
                   <label className={styles.addBrokerorPSXtext}>
@@ -150,23 +188,25 @@ const AddNewBroker = () => {
                     type="text"
                     value={psxCode}
                     onChange={(e) => setPsxCode(e.target.value)}
-                    maxLength={9}
+                    onBlur={handlePsxCodeBlur}
+                    maxLength={10}
                     placeholder="PSX Code"
                   />
                   {psxCodeError && (
                     <span className={styles.errorText}>{psxCodeError}</span>
                   )}
                   <span className={styles.counterTextAddBroker}>
-                    {psxCode.length}/9
+                    {psxCode.length}/10
                   </span>
                 </div>
               </Col>
+
               <Col span={3} className={styles.addButtonCol}>
                 <CustomButton
                   text={"Add"}
                   className={"addBroker-small-dark-button"}
-                  disabled={!brokerName || !psxCode}
                   onClick={handleAddBroker}
+                  disabled={isAddDisabled}
                 />
               </Col>
             </Row>
@@ -193,11 +233,12 @@ const AddNewBroker = () => {
               ))}
             </div>
           </div>
+
           <div className={styles.saveContainer}>
             <CustomButton
               text={"Save"}
               className={"big-dark-button"}
-              onClick={onClickOnSaveButton}
+              onClick={fetchSaveData}
               disabled={brokers.length === 0}
             />
           </div>

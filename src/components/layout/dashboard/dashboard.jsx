@@ -130,6 +130,19 @@ const Dashboard = () => {
             }
           }
           switch (roleIDs) {
+            case "1": {
+              switch (message) {
+                case "NEW_BROKER_ADDED": {
+                  console.log("Check its add or not");
+                  break;
+                }
+
+                default:
+                  console.warn("MQTT: No handler for message →", message);
+              }
+              break;
+            }
+
             // Employee mqtt
             case "2": {
               switch (message) {
@@ -507,7 +520,7 @@ const Dashboard = () => {
   return (
     <Layout style={{ minHeight: "100vh", maxHeight: "100vh" }}>
       <SideBar />
-      <Layout className="layout-content-area">
+      <Layout prefixCls="layout-content-area">
         <Headers />
         <Content prefixCls={getContentClass()}>
           <Outlet />

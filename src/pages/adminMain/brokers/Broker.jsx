@@ -23,6 +23,7 @@ import EditBroker from "./modal/editBroker/EditBroker";
 import AddBrokerConfirmationModal from "./modal/addBrokerConfimationModal/AddBrokerConfirmationModal";
 import { useSearchBarContext } from "../../../context/SearchBarContaxt";
 import {
+  downloadBrokerReportRequest,
   SearchBrokersAdminRequest,
   updateBrokersStatusRequest,
 } from "../../../api/adminApi";
@@ -32,20 +33,18 @@ import { useGlobalLoader } from "../../../context/LoaderContext";
 import { useApi } from "../../../context/ApiContext";
 import { useMyAdmin } from "../../../context/AdminContext";
 import { UpOutlined, DownOutlined } from "@ant-design/icons";
-import { useWebNotification } from "../../../context/notificationContext";
 import { useTableScrollBottom } from "../../../common/funtions/scroll";
 
 const Brokers = () => {
   const navigate = useNavigate();
   const hasFetched = useRef(false);
-
+  const tableScrollBroker = useRef(null);
   // 🔷 Context Hooks
   const { showNotification } = useNotification();
   const { showLoader } = useGlobalLoader();
   const { callApi } = useApi();
   const { adminBrokerSearch, setAdminBrokerSearch } = useSearchBarContext();
   const { adminBrokerData, setAdminBrokerData } = useMyAdmin();
-
   const {
     addNewBrokerModal,
     setAddNewBrokerModal,
@@ -54,8 +53,6 @@ const Brokers = () => {
     setEditModalData,
     addBrokerConfirmationModal,
   } = useGlobalModal();
-
-  console.log(adminBrokerData, "adminBrokerSearchadminBrokerSearch");
 
   // 🔷 UI State
   const [sortedInfo, setSortedInfo] = useState({});
@@ -95,33 +92,51 @@ const Brokers = () => {
       if (!requestData || typeof requestData !== "object") return;
       if (showLoaderFlag) showLoader(true);
 
-      const res = await SearchBrokersAdminRequest({
-        callApi,
-        showNotification,
-        showLoader,
-        requestdata: requestData,
-        navigate,
-      });
+      try {
+        const res = await SearchBrokersAdminRequest({
+          callApi,
+          showNotification,
+          showLoader,
+          requestdata: requestData,
+          navigate,
+        });
 
-      const brokers = Array.isArray(res?.brokers) ? res.brokers : [];
-      const mapped = mapAdminBrokersData(brokers);
+        const brokers = Array.isArray(res?.brokers) ? res.brokers : [];
 
-      setAdminBrokerData;
+        const mapped = mapAdminBrokersData(brokers);
 
-      setAdminBrokerData((prev) => ({
-        brokers: replace ? mapped : [...(prev?.brokers || []), ...mapped],
-        // this is for to run lazy loading its data comming from database of total data in db
-        totalRecordsDataBase: res?.totalRecords || 0,
+        setAdminBrokerData((prev) => ({
+          brokers: replace ? mapped : [...(prev?.brokers || []), ...mapped],
+          // 🔷 this is for to run lazy loading its data comming from database of total data in db
+          totalRecordsDataBase: res?.totalRecords || 0,
 
-        totalRecordsTable: replace
-          ? mapped.length
-          : adminBrokerData.totalRecordsTable + mapped.length,
-      }));
+          totalRecordsTable: replace
+            ? mapped.length
+            : adminBrokerData.totalRecordsTable + mapped.length,
+        }));
 
-      setAdminBrokerData(res);
-      console.log(res, "CheckecDatares");
+        setAdminBrokerSearch((prev) => {
+          const next = {
+            ...prev,
+            pageNumber: replace
+              ? mapped.length
+              : prev.pageNumber + mapped.length,
+          };
+
+          return next;
+        });
+      } catch (error) {
+        console.log(error);
+      }
     },
-    [callApi, navigate, setAdminBrokerData, showLoader, showNotification]
+    [
+      callApi,
+      navigate,
+      showLoader,
+      showNotification,
+      setAdminBrokerSearch,
+      setAdminBrokerData,
+    ]
   );
 
   // ----------------- Effects -----------------
@@ -131,12 +146,11 @@ const Brokers = () => {
     if (!hasFetched.current) {
       hasFetched.current = true;
       const requestData = buildApiRequest(adminBrokerSearch);
-
       fetchApiCall(requestData, true, true);
     }
   }, [buildApiRequest, adminBrokerSearch, fetchApiCall]);
 
-  // Infinite Scroll
+  // 🔷 Infinite Scroll
   useTableScrollBottom(
     async () => {
       if (
@@ -158,6 +172,24 @@ const Brokers = () => {
     0,
     "border-less-table-blue"
   );
+
+  // 🔷 Excel Report download Api Hit
+  const downloadReportInExcelFormat = async () => {
+    showLoader(true);
+    const requestdata = {
+      BrokerName: "",
+      PSXCode: "",
+    };
+
+    await downloadBrokerReportRequest({
+      callApi,
+      showNotification,
+      showLoader,
+      requestdata: requestdata,
+      setOpen,
+      navigate,
+    });
+  };
 
   return (
     <>
@@ -195,7 +227,10 @@ const Brokers = () => {
                       <img src={PDF} alt="PDF" draggable={false} />
                       <span>Export PDF</span>
                     </div>
-                    <div className={style.dropdownItem}>
+                    <div
+                      className={style.dropdownItem}
+                      onClick={downloadReportInExcelFormat}
+                    >
                       <img src={Excel} alt="Excel" draggable={false} />
                       <span>Export XLS</span>
                     </div>
@@ -207,7 +242,7 @@ const Brokers = () => {
 
           {/* 🔷 Brokers Table */}
           <BorderlessTable
-            rows={adminBrokerData?.brokers}
+            rows={adminBrokerData?.brokers || []}
             classNameTable="border-less-table-blue"
             scroll={{ x: "max-content", y: 550 }}
             columns={columns}
@@ -215,6 +250,7 @@ const Brokers = () => {
             onChange={(pagination, filters, sorter) => {
               setSortedInfo(sorter);
             }}
+            ref={tableScrollBroker}
           />
         </div>
       </PageLayout>

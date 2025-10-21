@@ -31,11 +31,8 @@ const EquitiesApproval = () => {
     selectedAssetTypeId,
   } = useGlobalModal();
 
-  const {
-    employeeBasedBrokersData,
-    allInstrumentsData,
-    assetTypeListingData,
-  } = useDashboardContext();
+  const { employeeBasedBrokersData, allInstrumentsData, assetTypeListingData } =
+    useDashboardContext();
 
   const { showNotification } = useNotification();
 
@@ -46,7 +43,7 @@ const EquitiesApproval = () => {
   //For Instrument Dropdown show selected Name
   const [selectedInstrument, setSelectedInstrument] = useState(null);
 
-  console.log(selectedInstrument, "CheckInstrumentId");
+  console.log(assetTypeListingData, "assetTypeListingData");
 
   // for employeeBroker state to show data in dropdown
   const [selectedBrokers, setSelectedBrokers] = useState([]);
@@ -189,7 +186,7 @@ const EquitiesApproval = () => {
         brokerOptions={brokerOptions}
         typeOptions={typeOptions}
         mainHeading="Add Approval Request:"
-        heading=" Equities"
+        heading={assetTypeKey}
         ManagerHeading="Line Manager"
         showLineManager={lineManagerDetails}
         submitButtonText="Submit"

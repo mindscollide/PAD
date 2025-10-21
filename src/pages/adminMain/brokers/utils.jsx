@@ -18,9 +18,7 @@ import StatusColumnTitle from "../../../components/dropdowns/filters/statusColum
  */
 
 export const mapAdminBrokersData = (adminBrokerData = {}) => {
-  const brokers = Array.isArray(adminBrokerData?.brokers)
-    ? adminBrokerData.brokers
-    : [];
+  const brokers = Array.isArray(adminBrokerData) ? adminBrokerData : [];
 
   if (!brokers.length) return [];
 
