@@ -243,6 +243,17 @@ export const SearchBarProvider = ({ children }) => {
     pageSize: 10,
   });
 
+  // Admin Broker Search filter
+  const [adminIntrumentListSearch, setAdminIntrumentListSearch] = useState({
+    instrumentName: "",
+    startDate: null,
+    endDate: null,
+    status: [],
+    filterTrigger: false,
+    pageNumber: 0,
+    pageSize: 10,
+  });
+
   // ===============================
   // Sync Refs (Always-Latest Values)
   // ===============================
@@ -514,6 +525,18 @@ export const SearchBarProvider = ({ children }) => {
       filterTrigger: false,
     });
 
+  /** Reset Admin Instrument List  filters */
+  const resetAdminInstrumentListSearch = () =>
+    setAdminIntrumentListSearch({
+      instrumentName: "",
+      startDate: null,
+      endDate: null,
+      status: [],
+      filterTrigger: false,
+      pageNumber: 0,
+      pageSize: 10,
+    });
+
   /** Reset all filters across modules */
   const resetSearchBarContextState = () => {
     resetEmployeeMyApprovalSearch();
@@ -528,6 +551,7 @@ export const SearchBarProvider = ({ children }) => {
     resetHeadOfComplianceApprovalEscalatedVerificationsSearch();
     resetHeadOfTradeApprovalEscalatedApprovalsSearch();
     resetAdminBrokersListSearch();
+    resetAdminInstrumentListSearch();
   };
 
   // ===============================
@@ -578,6 +602,11 @@ export const SearchBarProvider = ({ children }) => {
         headOfTradeEscalatedApprovalsSearch,
         setHeadOfTradeEscalatedApprovalsSearch,
         resetHeadOfTradeApprovalEscalatedApprovalsSearch,
+
+        // Admin Instrument Search filter
+        adminIntrumentListSearch,
+        setAdminIntrumentListSearch,
+        resetAdminInstrumentListSearch,
 
         // Admin Broker Search filter
         adminBrokerSearch,

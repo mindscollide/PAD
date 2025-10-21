@@ -46,6 +46,7 @@ const SearchWithPopoverOnly = () => {
     setHeadOfComplianceApprovalEscalatedVerificationsSearch,
     setHeadOfTradeEscalatedApprovalsSearch,
     setAdminBrokerSearch,
+    setAdminIntrumentListSearch,
   } = useSearchBarContext();
 
   // -------------------------
@@ -218,6 +219,19 @@ const SearchWithPopoverOnly = () => {
         }
         break;
 
+      case "18": // Admin Instrument List
+        setAdminIntrumentListSearch((prev) => ({
+          ...prev,
+          instrumentName: searchMain,
+          startDate: "",
+          endDate: "",
+          pageNumber: 0,
+          pageSize: 10,
+          filterTrigger: true,
+        }));
+        setSearchMain("");
+        break;
+
       case "19": // Admin Brokers List
         setAdminBrokerSearch((prev) => ({
           ...prev,
@@ -229,6 +243,7 @@ const SearchWithPopoverOnly = () => {
         }));
         setSearchMain("");
         break;
+
       default:
         setEmployeeMyApprovalSearch((prev) => ({
           ...prev,

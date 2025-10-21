@@ -10,11 +10,7 @@ import { useGlobalModal } from "../../../context/GlobalModalContext";
 
 // 🔹 Styles
 import style from "./Broker.module.css";
-import {
-  buildApiRequest,
-  getBrokerTableColumns,
-  mapAdminBrokersData,
-} from "./utils";
+import { buildApiRequest, getBrokerTableColumns } from "./utils";
 import PDF from "../../../assets/img/pdf.png";
 import Excel from "../../../assets/img/xls.png";
 import CustomButton from "../../../components/buttons/button";
@@ -33,7 +29,6 @@ import { useGlobalLoader } from "../../../context/LoaderContext";
 import { useApi } from "../../../context/ApiContext";
 import { useMyAdmin } from "../../../context/AdminContext";
 import { UpOutlined, DownOutlined } from "@ant-design/icons";
-import { useWebNotification } from "../../../context/notificationContext";
 import { useTableScrollBottom } from "../../../common/funtions/scroll";
 
 const Brokers = () => {
@@ -50,7 +45,13 @@ const Brokers = () => {
     setAdminBrokerSearch,
     resetAdminBrokersListSearch,
   } = useSearchBarContext();
-  const { adminBrokerData, setAdminBrokerData } = useMyAdmin();
+  const {
+    adminBrokerData,
+    setAdminBrokerData,
+    resetAdminBrokersDataContextState,
+    adminBrokerMqtt,
+    setAdminBrokerMqtt,
+  } = useMyAdmin();
   const [loadingMore, setLoadingMore] = useState(false);
 
   const {
@@ -159,6 +160,7 @@ const Brokers = () => {
   useEffect(() => {
     return () => {
       resetAdminBrokersListSearch();
+      resetAdminBrokersDataContextState();
     };
   }, []);
 
@@ -170,6 +172,16 @@ const Brokers = () => {
       fetchApiCall(requestData, true, true);
     }
   }, [adminBrokerSearch.filterTrigger]);
+
+  // MQTT Updates
+  useEffect(() => {
+    if (adminBrokerMqtt) {
+      setAdminBrokerMqtt(false);
+      const requestData = buildApiRequest(adminBrokerSearch);
+
+      fetchApiCall(requestData, true, false);
+    }
+  }, [adminBrokerMqtt]);
 
   // Lazy loading
   useTableScrollBottom(

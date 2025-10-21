@@ -43,6 +43,15 @@ export const MyAdminProvider = ({ children }) => {
     totalRecordsDataBase: 0,
     totalRecordsTable: 0,
   });
+  const [adminBrokerMqtt, setAdminBrokerMqtt] = useState(false);
+
+  // context for admin role while getting Instruments
+  const [adminIntrumentsData, setAdminIntrumentsData] = useState({
+    intruments: [],
+    totalRecordsDataBase: 0,
+    totalRecordsTable: 0,
+  });
+  const [adminIntrumentsMqtt, setAdminIntrumentsMqtt] = useState(false);
 
   /**
    * ♻️ Reset Context State (Table + API Data)
@@ -51,21 +60,60 @@ export const MyAdminProvider = ({ children }) => {
    * back to initial state. Useful when navigating away from
    * Admin view or logging out.
    */
-  const resetAdminDataContextState = () => {
+  const resetAdminBrokersDataContextState = () => {
     setAdminBrokerData({
       brokers: [],
       totalRecordsDataBase: 0,
       totalRecordsTable: 0,
     });
+    setAdminBrokerMqtt(false);
+  };
+
+  const resetAdminInstrumentsContextState = () => {
+    setAdminIntrumentsData({
+      intruments: [],
+      totalRecordsDataBase: 0,
+      totalRecordsTable: 0,
+    });
+    setAdminIntrumentsMqtt(false);
+  };
+  const resetAdminDataContextState = () => {
+    // intruments
+    setAdminBrokerData({
+      brokers: [],
+      totalRecordsDataBase: 0,
+      totalRecordsTable: 0,
+    });
+    setAdminBrokerMqtt(false);
+
+    // brokers
+    setAdminIntrumentsData({
+      intruments: [],
+      totalRecordsDataBase: 0,
+      totalRecordsTable: 0,
+    });
+    setAdminIntrumentsMqtt(false);
   };
 
   return (
     <MyAdminContext.Provider
       value={{
-        // Admin data (API)
+        // this for all state reset
+        resetAdminDataContextState,
+
+        // Admin Instruments (API)
+        adminIntrumentsData,
+        setAdminIntrumentsData,
+        adminIntrumentsMqtt,
+        setAdminIntrumentsMqtt,
+        resetAdminInstrumentsContextState,
+        
+        // Admin Broker (API)
         adminBrokerData,
         setAdminBrokerData,
-        resetAdminDataContextState,
+        adminBrokerMqtt,
+        setAdminBrokerMqtt,
+        resetAdminBrokersDataContextState,
       }}
     >
       {children}

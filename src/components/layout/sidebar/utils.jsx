@@ -59,8 +59,9 @@ import UserDarkIcon from "../../../assets/img/user-dark-icon.png";
 import GroupPoliciesLightIcon from "../../../assets/img/group-policies-light-icon.png";
 import GroupPoliciesDarkIcon from "../../../assets/img/group-policies-dark-icon.png";
 import BrokerLightIcon from "../../../assets/img/broker-light-icon.png";
+import BrokerDarkIcon from "../../../assets/img/broker-dark-icon.png";
 import InstrumentsLightIcon from "../../../assets/img/instruments-light-icon.png";
-
+import InstrumentsDarkIcon from "../../../assets/img/instruments-dark-icon.png";
 // ==============================
 // UTILITY FUNCTIONS
 // ==============================
@@ -113,7 +114,7 @@ const sidebarItems = (
           icon: (
             <img
               draggable={false}
-              src={getIcon("18", InstrumentsLightIcon, InstrumentsLightIcon)}
+              src={getIcon("18", InstrumentsLightIcon, InstrumentsDarkIcon)}
               alt="Instrument"
               className={getIconClasses()}
             />
@@ -125,7 +126,7 @@ const sidebarItems = (
           icon: (
             <img
               draggable={false}
-              src={getIcon("19", BrokerLightIcon, BrokerLightIcon)}
+              src={getIcon("19", BrokerLightIcon, BrokerDarkIcon)}
               alt="Brokers"
               className={getIconClasses()}
             />
