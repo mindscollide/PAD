@@ -16,3 +16,4 @@ export { default as ReconcileIndex } from "./main/complianceOfficer/reconcile/in
 export { default as EscalatedTransactionsIndex } from "./main/headOfComplianceOffice/escalatedVerifications/index";
 
 export { default as Brokers } from "./adminMain/brokers/Broker";
+export { default as Instruments } from "./adminMain/instruments/Instruments";
