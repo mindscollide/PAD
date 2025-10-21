@@ -29,10 +29,12 @@ import { useApi } from "../../../context/ApiContext";
 import { useMyAdmin } from "../../../context/AdminContext";
 import { UpOutlined, DownOutlined } from "@ant-design/icons";
 import { useWebNotification } from "../../../context/notificationContext";
+import { useTableScrollBottom } from "../../../common/funtions/scroll";
 
 const Brokers = () => {
   const navigate = useNavigate();
   const hasFetched = useRef(false);
+  const tableScrollBrokersList = useRef(null);
 
   // 🔷 Context Hooks
   const { showNotification } = useNotification();
@@ -40,6 +42,7 @@ const Brokers = () => {
   const { callApi } = useApi();
   const { adminBrokerSearch, setAdminBrokerSearch } = useSearchBarContext();
   const { adminBrokerData, setAdminBrokerData } = useMyAdmin();
+  const [loadingMore, setLoadingMore] = useState(false);
 
   const {
     addNewBrokerModal,
@@ -94,8 +97,33 @@ const Brokers = () => {
         requestdata: requestData,
         navigate,
       });
+      const brokers = Array.isArray(res?.brokers) ? res.brokers : [];
 
-      setAdminBrokerData(res);
+      setAdminBrokerData((prev) => ({
+        brokers: replace ? brokers : [...(prev?.brokers || []), ...brokers],
+        // this is for to run lazy loading its data comming from database of total data in db
+        totalRecordsDataBase: res?.totalRecords || 0,
+        // this is for to know how mush dta currently fetch from  db
+        totalRecordsTable: replace
+          ? brokers.length
+          : adminBrokerData.totalRecordsTable + brokers.length,
+      }));
+
+      setAdminBrokerSearch((prev) => {
+        const next = {
+          ...prev,
+          pageNumber: replace
+            ? brokers.length
+            : prev.pageNumber + brokers.length,
+        };
+
+        // this is for check if filter value get true only on that it will false
+        if (prev.filterTrigger) {
+          next.filterTrigger = false;
+        }
+
+        return next;
+      });
     },
     [callApi, navigate, setAdminBrokerData, showLoader, showNotification]
   );
@@ -112,10 +140,120 @@ const Brokers = () => {
     }
   }, [buildApiRequest, adminBrokerSearch, fetchApiCall]);
 
+  // Fetch on Filter Trigger
+  useEffect(() => {
+    if (adminBrokerSearch.filterTrigger) {
+      const requestData = buildApiRequest(adminBrokerSearch);
+
+      fetchApiCall(requestData, true, true);
+    }
+  }, [adminBrokerSearch.filterTrigger]);
+
+  // Lazy loading
+  useTableScrollBottom(
+    async () => {
+      if (
+        adminBrokerData?.totalRecordsDataBase <=
+        adminBrokerData?.totalRecordsTable
+      )
+        return;
+
+      try {
+        setLoadingMore(true);
+        const requestData = buildApiRequest(adminBrokerSearch);
+
+        await fetchApiCall(requestData, false, false);
+      } catch (err) {
+        console.error("Error loading more approvals:", err);
+      } finally {
+        setLoadingMore(false);
+      }
+    },
+    0,
+    "border-less-table-blue"
+  );
+
+  /** 🔹 Handle removing individual filter */
+  const handleRemoveFilter = (key) => {
+    const resetMap = {
+      brokerName: { brokerName: "" },
+      psxCode: { psxCode: "" },
+    };
+
+    setAdminBrokerSearch((prev) => ({
+      ...prev,
+      ...resetMap[key],
+      pageNumber: 0,
+      filterTrigger: true,
+    }));
+  };
+
+  /** 🔹 Handle removing all filters */
+  const handleRemoveAllFilters = () => {
+    setAdminBrokerSearch((prev) => ({
+      ...prev,
+      brokerName: "",
+      psxCode: "",
+      pageNumber: 0,
+      filterTrigger: true,
+    }));
+  };
+
+  /** 🔹 Build Active Filters */
+  const activeFilters = (() => {
+    const { brokerName, psxCode } = adminBrokerSearch || {};
+
+    return [
+      brokerName && {
+        key: "brokerName",
+        value:
+          brokerName.length > 13 ? brokerName.slice(0, 13) + "..." : brokerName,
+      },
+      psxCode && {
+        key: "psxCode",
+        value: psxCode.length > 13 ? psxCode.slice(0, 13) + "..." : psxCode,
+      },
+    ].filter(Boolean);
+  })();
+
   return (
     <>
+      {/* 🔹 Active Filter Tags */}
+      {activeFilters.length > 0 && (
+        <Row gutter={[12, 12]} className={style["filter-tags-container"]}>
+          {activeFilters.map(({ key, value }) => (
+            <Col key={key}>
+              <div className={style["filter-tag"]}>
+                <span>{value}</span>
+                <span
+                  className={style["filter-tag-close"]}
+                  onClick={() => handleRemoveFilter(key)}
+                >
+                  &times;
+                </span>
+              </div>
+            </Col>
+          ))}
+
+          {/* 🔹 Show Clear All only if more than one filter */}
+          {activeFilters.length > 1 && (
+            <Col>
+              <div
+                className={`${style["filter-tag"]} ${style["clear-all-tag"]}`}
+                onClick={handleRemoveAllFilters}
+              >
+                <span>Clear All</span>
+              </div>
+            </Col>
+          )}
+        </Row>
+      )}
+
       {/* 🔷 Main Page Layout */}
-      <PageLayout background="white">
+      <PageLayout
+        background="white"
+        className={activeFilters.length > 0 && "changeHeight"}
+      >
         <div className="px-4 md:px-6 lg:px-8">
           {/* 🔷 Header with Add/Export buttons */}
           <Row justify="space-between" align="middle" className="mb-4">
@@ -162,11 +300,17 @@ const Brokers = () => {
           <BorderlessTable
             rows={adminBrokerData?.brokers}
             classNameTable="border-less-table-blue"
-            scroll={{ x: "max-content", y: 550 }}
+            scroll={
+              adminBrokerData?.brokers?.length
+                ? { x: "max-content", y: activeFilters.length > 0 ? 450 : 500 }
+                : undefined
+            }
             columns={columns}
             onChange={(pagination, filters, sorter) => {
               setSortedInfo(sorter);
             }}
+            loading={loadingMore}
+            ref={tableScrollBrokersList}
           />
         </div>
       </PageLayout>

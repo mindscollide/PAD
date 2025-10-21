@@ -45,6 +45,7 @@ const SearchWithPopoverOnly = () => {
     setHeadOfComplianceApprovalPortfolioSearch,
     setHeadOfComplianceApprovalEscalatedVerificationsSearch,
     setHeadOfTradeEscalatedApprovalsSearch,
+    setAdminBrokerSearch,
   } = useSearchBarContext();
 
   // -------------------------
@@ -216,6 +217,18 @@ const SearchWithPopoverOnly = () => {
           setSearchMain("");
         }
         break;
+
+      case "19": // Admin Brokers List
+        setAdminBrokerSearch((prev) => ({
+          ...prev,
+          brokerName: searchMain,
+          psxCode: "",
+          pageNumber: 0,
+          pageSize: 10,
+          filterTrigger: true,
+        }));
+        setSearchMain("");
+        break;
       default:
         setEmployeeMyApprovalSearch((prev) => ({
           ...prev,
@@ -233,7 +246,11 @@ const SearchWithPopoverOnly = () => {
     <Space.Compact className={styles.searchWrapper}>
       {/* 🔎 Main Search Input */}
       <Input
-        placeholder="Instrument name. Click the icon to view more options"
+        placeholder={
+          selectedKey === "19"
+            ? "Broker name. Click the icon to view more options"
+            : "Instrument name. Click the icon to view more options"
+        }
         allowClear
         className={
           collapsed ? styles["inputWrapperCollapsed"] : styles["inputWrapper"]
