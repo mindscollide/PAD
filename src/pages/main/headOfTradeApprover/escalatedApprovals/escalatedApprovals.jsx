@@ -183,10 +183,14 @@ const EscalatedApprovals = () => {
   useEffect(() => {
     if (!htaEscalatedApprovalDataMqtt) return;
 
-    const requestData = buildApiRequest(
+    let requestData = buildApiRequest(
       headOfTradeEscalatedApprovalsSearch,
       assetTypeListingData
     );
+    requestData = {
+      ...requestData,
+      PageNumber: 0,
+    };
     fetchApiCall(requestData, true, false);
     setHtaEscalatedApprovalDataMqtt(false);
   }, [htaEscalatedApprovalDataMqtt]);

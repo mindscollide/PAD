@@ -183,10 +183,14 @@ const PendingApprovals = ({ activeFilters }) => {
   // ----------------------------------------------------------------
   useEffect(() => {
     if (employeePendingApprovalsDataMqtt) {
-      const requestData = buildApiRequest(
+      let requestData = buildApiRequest(
         employeePendingApprovalSearch,
         assetTypeListingData
       );
+      requestData = {
+        ...requestData,
+        PageNumber: 0,
+      };
       fetchApiCall(requestData, true, false);
       setEmployeePendingApprovalsDataMqtt(false);
     }

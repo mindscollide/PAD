@@ -120,7 +120,7 @@ const MyTransaction = () => {
       const transactions = Array.isArray(res?.transactions)
         ? res.transactions
         : [];
-        
+
       const mapped = mapEmployeeTransactions(
         currentAssetTypeData?.Equities,
         transactions
@@ -216,10 +216,14 @@ const MyTransaction = () => {
   // 🔹 Refresh on MQTT update
   useEffect(() => {
     if (employeeTransactionsTableDataMqtt) {
-      const requestData = buildApiRequest(
+      let requestData = buildApiRequest(
         employeeMyTransactionSearch,
         assetTypeListingData
       );
+      requestData = {
+        ...requestData,
+        PageNumber: 0,
+      };
       fetchApiCall(requestData, true, false);
       setEmployeeTransactionsTableDataMqtt(false);
     }
