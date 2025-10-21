@@ -9,6 +9,7 @@ import {
   mapStatusToIds,
   mapStatusToIdsForLineManager,
 } from "../filters/utils";
+import { AdminBrokersListFiletr } from "./AdminBrokersListFilter";
 import { ComplianceReconcileFilter } from "./ComplianceReconsile";
 import { EmployeeMyApprovalFilter } from "./EmployeeMyApprovalFilter";
 import { EmployeePortfolioFilter } from "./EmployeePortfolioFilter";
@@ -99,8 +100,17 @@ export const renderFilterContent = (
           setMaininstrumentName={setSearchMain}
         />
       );
+    case "19":
+      return (
+        <AdminBrokersListFiletr
+          setVisible={setVisible}
+          clear={clear}
+          setClear={setClear}
+          maininstrumentName={searchMain}
+          setMaininstrumentName={setSearchMain}
+        />
+      );
     // 🔧 Add more cases for keys "3" to "17" as needed below
- 
 
     default:
       return null; // Fallback if no matching key

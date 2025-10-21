@@ -5,6 +5,7 @@ import styles from "./filter.module.css";
 import { Button, CheckBox } from "../..";
 import { Row, Col, Divider } from "antd";
 import {
+  adminBrokersStatus,
   apiCallStatus,
   emaStatusOptions,
   emtStatusOptions,
@@ -106,113 +107,117 @@ const StatusFilterDropdown = ({
       case "15":
         setFilterOptions(emtStatusOptions);
         break;
+      case "19":
+        setFilterOptions(adminBrokersStatus);
+        break;
 
       default:
         setFilterOptions([]);
     }
   }, [selectedKey]);
-  console.log("selectedKey", selectedKey);
   /**
    * Handles confirmation of selected statuses.
    * Updates parent state and triggers API call.
    */
   const handleOk = async () => {
-  switch (selectedKey) {
-    case "1":
-    case "2":
-    case "4":
-    case "6":
-    case "9":
-    case "12":
-    case "15":
-      setState((prev) => ({
-        ...prev,
-        status: tempSelected,
-        pageNumber: 0,
-        filterTrigger: true,
-      }));
-      break;
+    switch (selectedKey) {
+      case "1":
+      case "2":
+      case "4":
+      case "6":
+      case "9":
+      case "12":
+      case "15":
+      case "19":
+        setState((prev) => ({
+          ...prev,
+          status: tempSelected,
+          pageNumber: 0,
+          filterTrigger: true,
+        }));
+        break;
 
-    default:
-      setState((prev) => ({
-        ...prev,
-        status: tempSelected,
-        pageSize: 10, // Pagination: size of page
-        pageNumber: 0,
-      }));
+      default:
+        setState((prev) => ({
+          ...prev,
+          status: tempSelected,
+          pageSize: 10, // Pagination: size of page
+          pageNumber: 0,
+        }));
 
-      await apiCallStatus({
-        selectedKey,
-        newdata: tempSelected,
-        state,
-        assetTypeListingData,
-        callApi,
-        showNotification,
-        showLoader,
-        navigate,
-        setIsEmployeeMyApproval,
-        setEmployeeTransactionsData,
-        setLineManagerApproval,
-      });
-      break;
-  }
+        await apiCallStatus({
+          selectedKey,
+          newdata: tempSelected,
+          state,
+          assetTypeListingData,
+          callApi,
+          showNotification,
+          showLoader,
+          navigate,
+          setIsEmployeeMyApproval,
+          setEmployeeTransactionsData,
+          setLineManagerApproval,
+        });
+        break;
+    }
 
-  // 🔹 Common cleanup
-  setOpenState(false);
-  confirm(); // Close dropdown
-};
+    // 🔹 Common cleanup
+    setOpenState(false);
+    confirm(); // Close dropdown
+  };
 
   /**
    * Resets filter selections and clears parent state.
    * Also triggers API call with empty filter.
    */
- const handleReset = async () => {
-  switch (selectedKey) {
-    case "1":
-    case "2":
-    case "4":
-    case "6":
-    case "9":
-    case "12":
-    case "15":
-      setState((prev) => ({
-        ...prev,
-        status: [],
-        pageNumber: 0,
-        filterTrigger: true,
-      }));
-      break;
+  const handleReset = async () => {
+    switch (selectedKey) {
+      case "1":
+      case "2":
+      case "4":
+      case "6":
+      case "9":
+      case "12":
+      case "15":
+      case "19":
+        setState((prev) => ({
+          ...prev,
+          status: [],
+          pageNumber: 0,
+          filterTrigger: true,
+        }));
+        break;
 
-    default:
-      await apiCallStatus({
-        selectedKey,
-        newdata: [],
-        state,
-        assetTypeListingData,
-        callApi,
-        showNotification,
-        showLoader,
-        navigate,
-        setIsEmployeeMyApproval,
-        setEmployeeTransactionsData,
-        setLineManagerApproval,
-      });
+      default:
+        await apiCallStatus({
+          selectedKey,
+          newdata: [],
+          state,
+          assetTypeListingData,
+          callApi,
+          showNotification,
+          showLoader,
+          navigate,
+          setIsEmployeeMyApproval,
+          setEmployeeTransactionsData,
+          setLineManagerApproval,
+        });
 
-      setState((prev) => ({
-        ...prev,
-        status: [],
-        pageSize: 10,
-        pageNumber: 0,
-      }));
-      break;
-  }
+        setState((prev) => ({
+          ...prev,
+          status: [],
+          pageSize: 10,
+          pageNumber: 0,
+        }));
+        break;
+    }
 
-  // 🔹 Common cleanup
-  setTempSelected([]);
-  clearFilters?.();
-  setOpenState(false);
-  confirm(); // Close dropdown
-};
+    // 🔹 Common cleanup
+    setTempSelected([]);
+    clearFilters?.();
+    setOpenState(false);
+    confirm(); // Close dropdown
+  };
 
   return (
     <div className={styles.dropdownContainer}>

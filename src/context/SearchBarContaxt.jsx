@@ -235,11 +235,12 @@ export const SearchBarProvider = ({ children }) => {
 
   // Admin Broker Search filter
   const [adminBrokerSearch, setAdminBrokerSearch] = useState({
-    brokersName: "",
+    brokerName: "",
     psxCode: "",
-    pageSize: 10,
-    pageNumber: 0,
+    status: [],
     filterTrigger: false,
+    pageNumber: 0,
+    pageSize: 10,
   });
 
   // ===============================
@@ -502,6 +503,17 @@ export const SearchBarProvider = ({ children }) => {
       filterTrigger: false,
     });
 
+  /** Reset Admin Brokers List  filters */
+  const resetAdminBrokersListSearch = () =>
+    setAdminBrokerSearch({
+      brokersName: "",
+      psxCode: "",
+      status: [],
+      pageNumber: 0,
+      pageSize: 10,
+      filterTrigger: false,
+    });
+
   /** Reset all filters across modules */
   const resetSearchBarContextState = () => {
     resetEmployeeMyApprovalSearch();
@@ -515,6 +527,7 @@ export const SearchBarProvider = ({ children }) => {
     resetHeadOfComplianceApprovalPortfolioSearch();
     resetHeadOfComplianceApprovalEscalatedVerificationsSearch();
     resetHeadOfTradeApprovalEscalatedApprovalsSearch();
+    resetAdminBrokersListSearch();
   };
 
   // ===============================
@@ -569,6 +582,7 @@ export const SearchBarProvider = ({ children }) => {
         // Admin Broker Search filter
         adminBrokerSearch,
         setAdminBrokerSearch,
+        resetAdminBrokersListSearch,
 
         // Always-latest refs
         employeeMyApprovalSearchRef,

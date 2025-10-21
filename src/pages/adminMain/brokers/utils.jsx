@@ -6,6 +6,7 @@ import { ArrowsAltOutlined } from "@ant-design/icons";
 import { Tag, Switch } from "antd";
 import styles from "./Broker.module.css";
 import StatusColumnTitle from "../../../components/dropdowns/filters/statusColumnTitle";
+import { mapStatusToIds } from "../../../components/dropdowns/filters/utils";
 
 // import TypeColumnTitle from "./typeFilter";
 
@@ -53,6 +54,7 @@ const getSortIcon = (columnKey, sortedInfo) => {
 export const buildApiRequest = (searchState = {}) => ({
   BrokerName: searchState.brokerName || "",
   PSXCode: searchState.psxCode || "",
+  StatusIds: mapStatusToIds?.(searchState.status) || [],
   PageNumber: Number(searchState.pageNumber) || 0,
   Length: Number(searchState.pageSize) || 10,
 });
@@ -95,7 +97,6 @@ export const getBrokerTableColumns = ({
     dataIndex: "status",
     key: "status",
     render: (status, record) => {
-      console.log(record, "recordrecord");
       const isActive = record.brokerStatus === "Active";
       return (
         <div className={styles.SwitchMainDiv}>
