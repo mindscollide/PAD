@@ -165,6 +165,19 @@ const Instruments = () => {
     }
   }, [adminIntrumentListSearch.filterTrigger]);
 
+  // MQTT Updates
+  useEffect(() => {
+    if (adminIntrumentsMqtt) {
+      setAdminIntrumentsMqtt(false);
+      let requestData = buildApiRequest(adminIntrumentListSearch);
+      requestData = {
+        ...requestData,
+        PageNumber: 0,
+      };
+      fetchApiCall(requestData, true, false);
+    }
+  }, [adminIntrumentsMqtt]);
+
   // Lazy Loading
   useTableScrollBottom(
     async () => {

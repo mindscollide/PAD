@@ -177,8 +177,11 @@ const Brokers = () => {
   useEffect(() => {
     if (adminBrokerMqtt) {
       setAdminBrokerMqtt(false);
-      const requestData = buildApiRequest(adminBrokerSearch);
-
+      let requestData = buildApiRequest(adminBrokerSearch);
+      requestData = {
+        ...requestData,
+        PageNumber: 0,
+      };
       fetchApiCall(requestData, true, false);
     }
   }, [adminBrokerMqtt]);
