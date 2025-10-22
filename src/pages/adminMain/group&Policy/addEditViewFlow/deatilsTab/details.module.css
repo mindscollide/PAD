@@ -1,0 +1,59 @@
+.detailsContainer {
+  padding: 24px;
+}
+
+.label {
+  display: block;
+  font-family: "Switzer Variable", sans-serif;
+  font-weight: 600;
+  color: #30426a;
+  font-size: 16px;
+  margin-bottom: 8px;
+}
+
+.inputField,
+.textareaField {
+  width: 100%;
+  font-size: 15px;
+  border-radius: 8px;
+  padding: 10px 12px;
+  border: 1px solid #717171 !important;
+  resize: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.inputField:focus,
+.textareaField:focus {
+  border-color: #1677ff;
+  box-shadow: 0 0 0 2px rgba(22, 119, 255, 0.2);
+  outline: none;
+}
+
+/* 🔴 Error Border */
+.errorBorder {
+  border-color: #a50000 !important;
+}
+
+/* 🟢 Success Border */
+.successBorder {
+  border-color: #52c41a !important;
+}
+
+.counter {
+  text-align: right;
+  color: #8c8c8c;
+  font-size: 13px;
+  margin-top: 4px;
+}
+
+/* 🔴 Error Counter */
+.errorCounter {
+  color: #a50000 !important;
+}
+
+.errorMessage {
+  color: #a50000;
+  font-size: 13px;
+  margin-top: -16px;
+  font-weight: 500;
+}

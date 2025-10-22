@@ -7,13 +7,19 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { useSidebarContext } from "../../../context/sidebarContaxt";
 import SearchWithFilter from "../../dropdowns/searchableDropedown/SearchWithPopoverOnly";
 import { useSearchBarContext } from "../../../context/SearchBarContaxt";
+import { useMyAdmin } from "../../../context/AdminContext";
 
 const { Header } = Layout;
 
 const Headers = () => {
   const navigate = useNavigate();
-  const { collapsed, setCollapsed, selectedKey, setSelectedKey } =
+  const { collapsed, setCollapsed, selectedKeyRef, setSelectedKey } =
     useSidebarContext();
+  const {
+    openNewFormForAdminGropusAndPolicy,
+    pageTypeForAdminGropusAndPolicy,
+    pageTabesForAdminGropusAndPolicy,
+  } = useMyAdmin();
   const location = useLocation();
   const { resetEmployeeMyApprovalSearch, resetLineManagerApprovalSearch } =
     useSearchBarContext();
@@ -43,8 +49,19 @@ const Headers = () => {
         <Col xs={24} sm={24} md={24} lg={20}>
           <Row gutter={[16, 16]}>
             <Col xs={24} sm={24} md={24} lg={16}>
-              {location.pathname !== "/PAD" &&
-                location.pathname !== "/PAD/faq" && <SearchWithFilter />}
+              {selectedKeyRef.current !== "0" &&
+              selectedKeyRef.current !== "50" &&
+              selectedKeyRef.current !== "20" ? (
+                <SearchWithFilter />
+              ) : selectedKeyRef.current === "20" &&
+                !openNewFormForAdminGropusAndPolicy ? (
+                <SearchWithFilter />
+              ) : (
+                selectedKeyRef.current === "20" &&
+                openNewFormForAdminGropusAndPolicy &&
+                pageTypeForAdminGropusAndPolicy !== 2 &&
+                pageTabesForAdminGropusAndPolicy !== 0 && <SearchWithFilter />
+              )}
             </Col>
             <Col xs={24} sm={10} md={2} lg={2}>
               <NotificationDropdown />

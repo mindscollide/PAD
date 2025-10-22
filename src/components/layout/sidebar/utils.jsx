@@ -454,7 +454,7 @@ const sidebarItems = (
 
   // Add FAQ item
   resultItems.push({
-    key: "faq",
+    key: "50",
     icon: (
       <img
         draggable={false}
@@ -499,5 +499,5 @@ export const routeMap = {
   22: "/PAD/admin-system-settings",
   23: "/PAD/admin-reports",
 
-  faq: "/PAD/faq",
+  50: "/PAD/faq",
 };

@@ -50,3 +50,66 @@
   font-size: 26px;
   margin: 0 8px;
 }
+
+/* Tab buttons container */
+.tabWrapper {
+  position: relative;
+  width: fit-content;
+}
+
+.tabButtons {
+  display: flex;
+  position: relative;
+  background: transparent;
+  gap: 32px;
+}
+
+/* Individual tab */
+.tabButton {
+  position: relative;
+  cursor: pointer;
+  text-align: center;
+}
+
+/* Animated underline for Details tab */
+.underlineDetails {
+  position: absolute;
+  bottom: -2px;
+  left: 15px;
+  width: 88px;
+  height: 4px;
+  background-color: #001848;
+  border-radius: 4.34px;
+  transition: transform 0.3s ease;
+  pointer-events: none;
+}
+
+/* Animated underline for Policies tab */
+.underlinePolicies {
+  position: absolute;
+  bottom: -2px;
+  left: 60px;
+  width: 98px;
+  height: 4px;
+  background-color: #001848;
+  border-radius: 4.34px;
+  transition: transform 0.3s ease;
+  pointer-events: none;
+}
+
+/* Animated underline for Users tab */
+.underlineUsers {
+  position: absolute;
+  bottom: -2px;
+  left: 162px;
+  width: 76px;
+  height: 4px;
+  background-color: #001848;
+  border-radius: 4.34px;
+  transition: transform 0.3s ease;
+  pointer-events: none;
+}
+
+.allbuttons {
+  margin-top: 10px !important;
+}

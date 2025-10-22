@@ -352,6 +352,10 @@ export const responseMessages = {
   PAD_Admin_GetInstrumentsWithClosingPeriod_01: "Data found",
   PAD_Admin_GetInstrumentsWithClosingPeriod_02: "No data found",
   PAD_Admin_GetInstrumentsWithClosingPeriod_03: "Exception occurred",
+
+  PAD_Admin_CheckGroupTitleExists_01: "Exist",
+  PAD_Admin_CheckGroupTitleExists_02: "Not Exist",
+  PAD_Admin_CheckGroupTitleExists_03: "Exception occurred",
 };
 
 /**
@@ -362,7 +366,12 @@ export const responseMessages = {
  */
 export const getMessage = (code) => {
   const msg = responseMessages[code];
-  if (msg === "Data Available" || msg === "No data available") {
+  if (
+    msg === "Data Available" ||
+    msg === "No data available" ||
+    msg === "Exist" ||
+    msg === "Not Exist"
+  ) {
     return "";
   }
   return msg || "Something went wrong. Please try again.";

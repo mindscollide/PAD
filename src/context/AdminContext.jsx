@@ -84,6 +84,18 @@ export const MyAdminProvider = ({ children }) => {
   const [pageTabesForAdminGropusAndPolicy, setPageTabeForAdminGropusAndPolicy] =
     useState(0);
 
+  // All tabs data
+  const [
+    tabesFormDataofAdminGropusAndPolicy,
+    setTabesFormDataofAdminGropusAndPolicy,
+  ] = useState({
+    details: {
+      groupTitle: "",
+      groupDiscription: "",
+    },
+    policies: {},
+    users: {},
+  });
   /**
    * ♻️ Reset Context State (Table + API Data)
    *
@@ -117,10 +129,19 @@ export const MyAdminProvider = ({ children }) => {
     });
     setAdminGropusAndPolicyMqtt(false);
   };
+
   const resetAdminGropusAndPolicyContextState = () => {
     setOpenNewFormForAdminGropusAndPolicy(false);
     setPageTypeForAdminGropusAndPolicy(0);
     setPageTabeForAdminGropusAndPolicy(0);
+    setTabesFormDataofAdminGropusAndPolicy({
+      details: {
+        groupTitle: "",
+        groupDiscription: "",
+      },
+      policies: {},
+      users: {},
+    });
   };
 
   const resetAdminDataContextState = () => {
@@ -170,6 +191,10 @@ export const MyAdminProvider = ({ children }) => {
         pageTypeForAdminGropusAndPolicy,
         setPageTabeForAdminGropusAndPolicy,
         pageTabesForAdminGropusAndPolicy,
+
+        // All tabs Data of Group and Policy
+        tabesFormDataofAdminGropusAndPolicy,
+        setTabesFormDataofAdminGropusAndPolicy,
       }}
     >
       {children}

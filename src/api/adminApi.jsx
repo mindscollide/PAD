@@ -393,7 +393,6 @@ export const downloadBrokerReportRequest = async ({
   }
 };
 
-
 export const SearchGetInstrumentsWithClosingPeriod = async ({
   callApi,
   showNotification,
@@ -406,7 +405,8 @@ export const SearchGetInstrumentsWithClosingPeriod = async ({
 
     // 🔹 API Call
     const res = await callApi({
-      requestMethod: import.meta.env.VITE_ADMIN_GET_INSTRUMENTS_CLOSING_PERIOD_REQUEST_METHOD, // 🔑 must be defined in .env
+      requestMethod: import.meta.env
+        .VITE_ADMIN_GET_INSTRUMENTS_CLOSING_PERIOD_REQUEST_METHOD, // 🔑 must be defined in .env
       endpoint: import.meta.env.VITE_API_ADMIN,
       requestData: requestdata,
       navigate,
@@ -480,7 +480,6 @@ export const SearchGetInstrumentsWithClosingPeriod = async ({
   }
 };
 
-
 //Update Instrument Status   when User Toggle Any Instrument
 export const UpdateInstrumentStatus = async ({
   callApi,
@@ -494,7 +493,8 @@ export const UpdateInstrumentStatus = async ({
     console.log("Check APi");
 
     const res = await callApi({
-      requestMethod: import.meta.env.VITE_ADMIN_UPDATE_INSTRUMENT_STATUS_REQUEST_METHOD,
+      requestMethod: import.meta.env
+        .VITE_ADMIN_UPDATE_INSTRUMENT_STATUS_REQUEST_METHOD,
       endpoint: import.meta.env.VITE_API_ADMIN,
       requestData: requestdata,
       navigate,
@@ -544,6 +544,89 @@ export const UpdateInstrumentStatus = async ({
     });
     return false;
   } finally {
+    showLoader(false);
+  }
+};
+
+// check for group title uniq or not
+export const CheckGroupTitleExists = async ({
+  callApi,
+  showNotification,
+  showLoader,
+  requestdata,
+  navigate,
+}) => {
+  try {
+    console.log("🔍 Request Data (Transactions):", requestdata);
+
+    // 🔹 API Call
+    const res = await callApi({
+      requestMethod: import.meta.env
+        .VITE_ADMIN_CHECK_GROUP_TITLE_EXISTS_REQUEST_METHOD, // 🔑 must be defined in .env
+      endpoint: import.meta.env.VITE_API_ADMIN,
+      requestData: requestdata,
+      navigate,
+    });
+
+    // 🔹 Handle session expiry
+    if (handleExpiredSession(res, navigate, showLoader)) return null;
+
+    // 🔹 Validate execution
+    if (!res?.result?.isExecuted) {
+      showNotification({
+        type: "error",
+        title: "Error",
+        description:
+          "Something went wrong while fetching employee transactions.",
+      });
+      return null;
+    }
+
+    // 🔹 Handle success
+    if (res.success) {
+      const { responseMessage } = res.result;
+      const message = getMessage(responseMessage);
+    console.log("isUnique",responseMessage)
+
+      // Case 1 → Data available
+      if (responseMessage === "PAD_Admin_CheckGroupTitleExists_01") {
+        return false;
+      }
+
+      // Case 2 → No data
+      if (responseMessage === "PAD_Admin_CheckGroupTitleExists_02") {
+        return true;
+      }
+
+      // Case 3 → Custom server messages
+      if (message) {
+        showNotification({
+          type: "warning",
+          title: message,
+          description: "No transactions found for this employee.",
+        });
+      }
+
+      return null;
+    }
+
+    // 🔹 Handle failure
+    showNotification({
+      type: "error",
+      title: "Fetch Failed",
+      description: getMessage(res.message),
+    });
+    return null;
+  } catch (error) {
+    // 🔹 Exception handling
+    showNotification({
+      type: "error",
+      title: "Error",
+      description: "An unexpected error occurred while fetching transactions.",
+    });
+    return null;
+  } finally {
+    // 🔹 Always hide loader
     showLoader(false);
   }
 };

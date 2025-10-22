@@ -5,6 +5,8 @@ import Restricted from "../../assets/img/Restricted.png";
 import DelcinedImg from "../../assets/img/DelcinedImg.png";
 import ApprovedImg from "../../assets/img/ApprovedImg.png";
 import AddBroker from "../../assets/img/AddBroker.png";
+import GropusICanclImg from "../../assets/img/Group-creation-cancle.png";
+import GropusISucessImg from "../../assets/img/Group-created.png";
 
 const config = {
   Submitted: {
@@ -68,6 +70,17 @@ const config = {
     heading: "Great!",
     subheading: "The broker has been added successfully.",
     image: AddBroker,
+  },
+  Cancelgroupcreation: {
+    heading: "Cancel Group Creation",
+    subheading:
+      "If you cancel now, all selected policies and entered details for this policy group will be lost. Are you sure you want to cancel?",
+    image: GropusICanclImg,
+  },
+  GroupCreatedSuccess: {
+    heading: "Created!",
+    subheading: "Your group has been created successfully.",
+    image: GropusISucessImg,
   },
 };
 

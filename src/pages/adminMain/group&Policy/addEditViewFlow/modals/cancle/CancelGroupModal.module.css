@@ -1,0 +1,13 @@
+/* modal class */
+.SubmittedCenteralized {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 30px 10px; /* Optional spacing */
+}
+
+.mainButtonDiv {
+  margin-top: 30px !important;
+}

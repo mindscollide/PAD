@@ -31,6 +31,8 @@
 }
 .bg-blue {
   background-color: #EDF3FF;
+  margin-top: 0px !important;
+
 }
 
 .bg-transparent {
