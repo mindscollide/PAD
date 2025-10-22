@@ -9,6 +9,7 @@ import Details from "./deatilsTab/details";
 import { useApi } from "../../../../context/ApiContext";
 import { useGlobalLoader } from "../../../../context/LoaderContext";
 import { useNotification } from "../../../../components/NotificationProvider/NotificationProvider";
+import Policies from "./policiesTab/policies";
 
 /**
  * 🔹 GroupAndPolicyAddViewEdit
@@ -250,6 +251,7 @@ const GroupAndPolicyAddViewEdit = () => {
             setErrorDeatilsTabSwitch={setErrorDeatilsTabSwitch}
           />
         )}
+        {pageTabesForAdminGropusAndPolicy === 1 && <Policies />}
       </PageLayout>
 
       {/* 🔹 Cancel Confirmation Modal */}

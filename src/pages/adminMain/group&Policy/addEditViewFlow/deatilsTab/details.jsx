@@ -7,6 +7,7 @@ import { useNotification } from "../../../../../components/NotificationProvider/
 import { useGlobalLoader } from "../../../../../context/LoaderContext";
 import { useApi } from "../../../../../context/ApiContext";
 import { CheckGroupTitleExists } from "../../../../../api/adminApi";
+import { useNavigate } from "react-router-dom";
 const { TextArea } = Input;
 
 const Details = ({ errorDeatilsTabSwitch, setErrorDeatilsTabSwitch }) => {
@@ -15,6 +16,7 @@ const Details = ({ errorDeatilsTabSwitch, setErrorDeatilsTabSwitch }) => {
     setTabesFormDataofAdminGropusAndPolicy,
   } = useMyAdmin();
   // 🔷 Context Hooks
+  const navigate = useNavigate();
   const { showNotification } = useNotification();
   const { showLoader } = useGlobalLoader();
   const { callApi } = useApi();
@@ -39,6 +41,7 @@ const Details = ({ errorDeatilsTabSwitch, setErrorDeatilsTabSwitch }) => {
       showNotification,
       showLoader,
       requestdata: requestData,
+      navigate
     });
 
     return res;

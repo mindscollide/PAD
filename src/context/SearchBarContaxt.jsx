@@ -261,6 +261,20 @@ export const SearchBarProvider = ({ children }) => {
     pageNumber: 0,
     pageSize: 10,
   });
+
+  // Admin Gropus And Policy Search filter for policy tab
+  const [
+    adminGropusAndPolicyPoliciesTabSearch,
+    setAdminGropusAndPolicyPoliciesTabSearch,
+  ] = useState({
+    policyID: "",
+    scenario: "",
+    duration: "",
+    consequence: "",
+    filterTrigger: false,
+    pageNumber: 0,
+    pageSize: 10,
+  });
   // ===============================
   // Sync Refs (Always-Latest Values)
   // ===============================
@@ -553,6 +567,19 @@ export const SearchBarProvider = ({ children }) => {
       pageSize: 10,
     });
 
+  /** Reset Admin Gropus And Policy  filters */
+  const resetAdminGropusAndPolicyPoliciesTabSearch = () =>
+    setAdminGropusAndPolicyPoliciesTabSearch({
+      policyID: "",
+      scenario: "",
+      duration: "",
+      consequence: "",
+      filterTrigger: false,
+      pageNumber: 0,
+      pageSize: 10,
+    });
+
+  // ================================================================================ //
   /** Reset all filters across modules */
   const resetSearchBarContextState = () => {
     resetEmployeeMyApprovalSearch();
@@ -635,6 +662,10 @@ export const SearchBarProvider = ({ children }) => {
         setAdminGropusAndPolicySearch,
         resetAdminGropusAndPolicySearch,
 
+        //Admin Gropus And Policy policies Tabc
+        resetAdminGropusAndPolicyPoliciesTabSearch,
+        adminGropusAndPolicyPoliciesTabSearch,
+        setAdminGropusAndPolicyPoliciesTabSearch,
         // Always-latest refs
         employeeMyApprovalSearchRef,
         employeeMyTransactionSearchRef,

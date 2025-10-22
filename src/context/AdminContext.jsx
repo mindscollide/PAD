@@ -96,6 +96,16 @@ export const MyAdminProvider = ({ children }) => {
     policies: {},
     users: {},
   });
+
+  // set all policies list on policies tab data
+  const [
+    adminGroupeAndPoliciesPoliciesTabData,
+    setAdminGroupeAndPoliciesPoliciesTabData,
+  ] = useState({
+    groupPolicies: [],
+    totalRecordsDataBase: 0,
+    totalRecordsTable: 0,
+  });
   /**
    * ♻️ Reset Context State (Table + API Data)
    *
@@ -120,7 +130,7 @@ export const MyAdminProvider = ({ children }) => {
     });
     setAdminIntrumentsMqtt(false);
   };
-
+  // its rest all data of groupe list page
   const resetAdminGropusAndPolicyListContextState = () => {
     setAdminGropusAndPolicyData({
       groupsAndPolicy: [],
@@ -130,6 +140,7 @@ export const MyAdminProvider = ({ children }) => {
     setAdminGropusAndPolicyMqtt(false);
   };
 
+  // its for view edit and create data comming from get or seting data init
   const resetAdminGropusAndPolicyContextState = () => {
     setOpenNewFormForAdminGropusAndPolicy(false);
     setPageTypeForAdminGropusAndPolicy(0);
@@ -144,6 +155,14 @@ export const MyAdminProvider = ({ children }) => {
     });
   };
 
+  const resetAdminGroupeAndPoliciesPoliciesTabDataState = () => {
+    setAdminGroupeAndPoliciesPoliciesTabData({
+      groupPolicies: [],
+      totalRecordsDataBase: 0,
+      totalRecordsTable: 0,
+    });
+  };
+
   const resetAdminDataContextState = () => {
     // intruments
     resetAdminInstrumentsContextState();
@@ -155,6 +174,8 @@ export const MyAdminProvider = ({ children }) => {
     resetAdminGropusAndPolicyListContextState();
     // Groups and Policy new add edit view page
     resetAdminGropusAndPolicyContextState();
+    resetAdminGroupeAndPoliciesPoliciesTabDataState();
+    //
   };
 
   return (
@@ -195,6 +216,10 @@ export const MyAdminProvider = ({ children }) => {
         // All tabs Data of Group and Policy
         tabesFormDataofAdminGropusAndPolicy,
         setTabesFormDataofAdminGropusAndPolicy,
+
+        resetAdminGroupeAndPoliciesPoliciesTabDataState,
+        adminGroupeAndPoliciesPoliciesTabData,
+        setAdminGroupeAndPoliciesPoliciesTabData,
       }}
     >
       {children}

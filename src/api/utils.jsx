@@ -356,6 +356,11 @@ export const responseMessages = {
   PAD_Admin_CheckGroupTitleExists_01: "Exist",
   PAD_Admin_CheckGroupTitleExists_02: "Not Exist",
   PAD_Admin_CheckGroupTitleExists_03: "Exception occurred",
+
+  Admin_AdminServiceManager_GetPoliciesForGroupPolicyPanel_01: "Data found",
+  Admin_AdminServiceManager_GetPoliciesForGroupPolicyPanel_02: "No data found",
+  Admin_AdminServiceManager_GetPoliciesForGroupPolicyPanel_03:
+    "Exception occurred",
 };
 
 /**
@@ -369,6 +374,10 @@ export const getMessage = (code) => {
   if (
     msg === "Data Available" ||
     msg === "No data available" ||
+    msg === "Data found" ||
+    msg === "No data found" ||
+    msg === "Successfully updated" ||
+    msg === "Successfully inserted all" ||
     msg === "Exist" ||
     msg === "Not Exist"
   ) {
