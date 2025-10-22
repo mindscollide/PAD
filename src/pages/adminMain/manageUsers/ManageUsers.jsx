@@ -8,8 +8,20 @@ import Profile3 from "../../../assets/img/Profile3.png";
 import Profile4 from "../../../assets/img/Profile4.png";
 import Profile5 from "../../../assets/img/Profile5.png";
 import Profile6 from "../../../assets/img/Profile6.png";
+import { useGlobalModal } from "../../../context/GlobalModalContext";
+import ViewDetailManageUserModal from "./modal/viewDetailManageUserModal/ViewDetailmanageUserModal";
+import RolesAndPoliciesModal from "./modal/rolesAndPoliciesModal/RolesAndPoliciesModal";
+import EditRoleAndPoliciesModal from "./modal/editRoleAndPoliciesModal/EditRoleAndPoliciesModal";
+import UnSaveChangesModal from "./modal/unSaveChangesModal/UnSaveChangesModal";
 
 const ManageUsers = () => {
+  const {
+    viewDetailManageUser,
+    rolesAndPoliciesManageUser,
+    editrolesAndPoliciesUser,
+    unSavedChangesPoliciesModal,
+  } = useGlobalModal();
+
   const [activeTab, setActiveTab] = useState("1");
 
   const usersData = [
@@ -18,55 +30,68 @@ const ManageUsers = () => {
       name: "John O'Connor",
       email: "john.oconnor@gmail.com",
       id: "U003",
+      file: true,
     },
     {
       profile: Profile3,
       name: "Sarah Johnson",
       email: "sarah.johnson@gmail.com",
       id: "U004",
+      file: false,
     },
     {
       profile: Profile4,
       name: "James Williams",
       email: "james.williams@gmail.com",
       id: "U005",
+      file: true,
     },
     {
       profile: Profile6,
       name: "Jameel Khan",
       email: "Jameel.khan@gmail.com",
       id: "U006",
+      file: false,
     },
     {
       profile: Profile4,
       name: "James Williams",
       email: "james.williams@gmail.com",
       id: "U005",
+      file: false,
     },
     {
       profile: Profile5,
       name: "Zahid Khan",
       email: "Zahid.khan@gmail.com",
       id: "U006",
+      file: true,
     },
   ];
+
+  const tabStyle = (key) => ({
+    fontSize: activeTab === key ? "26px" : "26px",
+    fontWeight: activeTab === key ? "700" : "400",
+    fontFamily: "Switzer Variable",
+    color: activeTab === key ? "#30426A" : "#30426A",
+  });
 
   const items = [
     {
       key: "1",
-      label: "Users",
+      label: <span style={tabStyle("1")}>Users</span>,
     },
     {
       key: "2",
       label: (
-        <span>
+        <span style={tabStyle("2")}>
           Pending Requests <span style={{ color: "#30426A" }}>(02)</span>
         </span>
       ),
     },
     {
       key: "3",
-      label: "Rejected Requests",
+      label: <span style={tabStyle("3")}>Rejected Requests</span>,
     },
   ];
 
@@ -82,7 +107,9 @@ const ManageUsers = () => {
               className={styles.customTabs}
             />
 
-            <CustomButton text={"Export"} className="big-dark-button" />
+            <div className={styles.ExportButtonClass}>
+              <CustomButton text={"Export"} className="big-dark-button" />
+            </div>
           </div>
 
           <div className={styles.ManageUserSecondDiv}>
@@ -97,6 +124,7 @@ const ManageUsers = () => {
                         name={user.name}
                         email={user.email}
                         id={user.id}
+                        file={user.file}
                       />
                     </Col>
                   ))}
@@ -109,6 +137,18 @@ const ManageUsers = () => {
           </div>
         </div>
       </PageLayout>
+
+      {/* For Open View Detail Modal */}
+      {viewDetailManageUser && <ViewDetailManageUserModal />}
+
+      {/* For Open Roles & Policies Modal */}
+      {rolesAndPoliciesManageUser && <RolesAndPoliciesModal />}
+
+      {/* For Edit ROle and Polices Modal */}
+      {editrolesAndPoliciesUser && <EditRoleAndPoliciesModal />}
+
+      {/* For unSaved changes ROle and Polices Modal */}
+      {unSavedChangesPoliciesModal && <UnSaveChangesModal />}
     </>
   );
 };

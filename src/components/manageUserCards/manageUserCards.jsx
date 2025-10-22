@@ -2,23 +2,37 @@ import React, { useState } from "react";
 import { Dropdown, Flex, Menu } from "antd";
 import { EllipsisOutlined } from "@ant-design/icons";
 import styles from "./manageUserCards.module.css";
+import { useGlobalModal } from "../../context/GlobalModalContext";
+import GroupPolicies from "../../assets/img/GroupPeople.png";
 
-const ManageUsersCard = ({ profile, name, email, id }) => {
+const ManageUsersCard = ({ profile, name, email, id, file }) => {
+  const { setViewDetailManageUser } = useGlobalModal();
+
   const [menuVisible, setMenuVisible] = useState(false);
-  console.log(menuVisible, "menuVisiblemenuVisible");
 
   const items = [
     {
       key: "1",
-      label: "View Details",
+      label: (
+        <span
+          onClick={() => {
+            setViewDetailManageUser(true);
+          }}
+          className={styles.dropdownClass}
+        >
+          View Details
+        </span>
+      ),
     },
     {
       key: "2",
-      label: "Session wise activity",
+      label: (
+        <span className={styles.dropdownClass}>Session wise activity</span>
+      ),
     },
     {
       key: "3",
-      label: "Roles & Policies",
+      label: <span className={styles.dropdownClass}>Roles & Policies</span>,
     },
   ];
 
@@ -33,7 +47,12 @@ const ManageUsersCard = ({ profile, name, email, id }) => {
       <div className={styles.fordetailUserManage}>
         <div className={styles.fordetailUserManageSubDiv}>
           <div className={styles.manageUserName}>
-            <h5 style={{ margin: 0 }}>{name}</h5>
+            <h5 style={{ margin: 0 }}>
+              {name}{" "}
+              <span className={styles.fileImgClass}>
+                {file ? <img src={GroupPolicies} /> : null}
+              </span>
+            </h5>
           </div>
 
           <div className={styles.manageUserEmail}>
@@ -44,14 +63,22 @@ const ManageUsersCard = ({ profile, name, email, id }) => {
         <Dropdown
           menu={{ items }}
           trigger={["click"]}
+          placement="bottomRight"
           onOpenChange={(flag) => setMenuVisible(flag)}
         >
-          <div className={styles.moreBackgroundColor}>
+          <div
+            className={
+              menuVisible
+                ? styles.moreBackgroundColorActive
+                : styles.moreBackgroundColor
+            }
+          >
             <EllipsisOutlined
-              className={styles.moreIcon}
-              style={{
-                color: menuVisible ? "#30426A" : "#000",
-              }}
+              className={
+                menuVisible
+                  ? styles.backgroundcolorMoreIconActive
+                  : styles.backgroundcolorMoreIcon
+              }
             />
           </div>
         </Dropdown>

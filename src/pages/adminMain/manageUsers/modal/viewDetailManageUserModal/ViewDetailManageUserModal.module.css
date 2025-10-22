@@ -1,0 +1,187 @@
+.viewManageUserDetailHeading {
+  font-size: 26px;
+  font-family: "Switzer Variable";
+  font-weight: 700;
+  color: #30426a;
+}
+
+.backgrounColorOfDetail {
+  background-color: #edf3ff !important;
+  padding: 10px 20px;
+  display: flex;
+  flex-direction: column !important;
+}
+
+.backgrounColorOfApprovedDetail {
+  background-color: #edf3ff !important;
+  padding: 10px 20px;
+  display: flex;
+  flex-direction: column !important;
+}
+
+.backgrounColorOfBrokerDetail {
+  background-color: #edf3ff !important;
+  padding: 10px 20px;
+  display: flex;
+  flex-direction: column !important;
+}
+
+.backgroundColorOfInstrumentDetailApproved {
+  background-color: #edf3ff !important;
+  padding: 10px 20px;
+  display: flex;
+  align-items: center; /* centers image and text vertically */
+  gap: 12px; /* space between image and text */
+}
+
+.nameContainer {
+  display: flex;
+  flex-direction: column;
+}
+
+.viewDetailMainLabels {
+  font-size: 14px !important;
+  color: #30426a !important;
+  font-weight: 700;
+  font-family: "Switzer Variable";
+}
+
+.viewDetailSubLabels {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 20px !important;
+  color: #424242 !important;
+  font-weight: 500;
+  font-family: "Switzer Variable";
+}
+
+.viewDetailSubLabelsForInstrument {
+  flex: 1; /* let it shrink inside flex */
+  max-width: 250px; /* 👈 critical inside flex */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 20px !important;
+  color: #424242 !important;
+  font-weight: 500;
+  font-family: "Switzer Variable";
+  cursor: pointer;
+}
+
+.modalBodyWrapper {
+  padding: 0px 50px; /* or any padding you want */
+  height: 690px !important;
+}
+
+.tagContainer {
+  display: flex;
+  gap: 10px;
+  padding-bottom: 10px;
+  cursor: pointer !important;
+  overflow-x: auto;
+  white-space: nowrap;
+  flex-wrap: nowrap; /* keep single line */
+  scrollbar-width: thin; /* Firefox */
+  scrollbar-color: #bfbfbf transparent;
+}
+
+.tagClasses {
+  font-size: 16px !important;
+  font-weight: 400 !important;
+  font-family: "Switzer Variable" !important;
+  color: #30426a !important;
+  border: none !important;
+  background-color: #ffffff !important;
+  border-radius: 7px !important;
+  padding: 5px 10px !important;
+  display: inline-flex !important;
+  align-items: center;
+}
+
+.complianceCard {
+  border-radius: 6px;
+}
+
+.cardTitle {
+  font-size: 14px;
+  font-weight: 700;
+  color: #30426a;
+  margin-bottom: 10px;
+  font-family: "Switzer Variable", sans-serif;
+}
+
+.cardContent {
+  background-color: #edf3ff;
+  border-radius: 6px;
+  padding: 14px 18px;
+}
+
+.LMcardContent {
+  background-color: #fff1e7;
+  border-radius: 6px;
+  padding: 14px 18px;
+}
+
+.infoBlock {
+  display: flex;
+  flex-direction: column;
+}
+
+.infoLabel {
+  font-family: "Switzer Variable";
+  font-size: 20px;
+  font-weight: 500;
+  color: #424242;
+  margin-bottom: 4px;
+}
+
+.infoSubLabel {
+  font-family: "Switzer Variable";
+  font-weight: 500;
+  font-size: 14px;
+  color: #424242;
+}
+
+.iconCol {
+  display: flex;
+  justify-content: flex-end;
+  align-items: flex-start;
+  font-size: 18px;
+  color: #30426a;
+  cursor: pointer;
+}
+
+.mainButtonDivClose {
+  display: flex;
+  justify-content: end !important;
+  margin-top: 25px;
+  gap: 20px;
+}
+
+.selectinstrumentclass :global(.ant-select-selector) {
+  height: 56px !important;
+  cursor: pointer !important;
+  width: 100% !important;
+  border-radius: 6.95px !important;
+  border: 0.87px solid #717171 !important;
+  display: flex;
+  align-items: center;
+}
+
+.selectinstrumentclass :hover {
+  background: var(--White-Hover, #f3f3f3) !important;
+}
+
+.instrumentLabel {
+  font-family: "Switzer Variable" !important;
+  color: #30426a !important;
+  font-size: 14px !important;
+  font-weight: 700 !important;
+}
+
+.editMainDiv {
+  border: 1px solid #d4d4d4;
+  border-radius: 8px;
+  padding: 20px 30px;
+}
