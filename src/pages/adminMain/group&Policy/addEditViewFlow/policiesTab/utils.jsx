@@ -5,20 +5,28 @@ const { Option } = Select;
 export const policyColumns = ({
   onSelectChange,
   onDurationChange,
+  selectedPolicies = [], // 👈 pass selected array
   loadingPolicyId,
 }) => [
   {
     title: "Select",
-    dataIndex: "isSelected",
-    key: "select",
+    dataIndex: "policyID",
+    key: "policyID",
     align: "center",
     width: 80,
-    render: (checked, record) => (
-      <Checkbox
-        checked={checked}
-        onChange={(e) => onSelectChange(record, e.target.checked)}
-      />
-    ),
+    render: (_, record) => {
+      // const isChecked = selectedPolicies.some(
+      //   (p) => p.policyID === record.policyId
+      // );
+
+      return (
+        <Checkbox
+          // checked={isChecked}
+          onChange={(e) => onSelectChange(record, e.target.checked)}
+          className="custom-broker-option"
+        />
+      );
+    },
   },
   {
     title: "",
@@ -100,7 +108,7 @@ export const policyColumns = ({
 ];
 
 export const buildApiRequest = (searchState = {}) => ({
-  PolicyID: searchState.policyID || "",
+  PolicyID: searchState.policyID || null,
   Scenario: searchState.scenario || "",
   Duration: searchState.duration || "",
   Consequence: searchState.consequence || "",

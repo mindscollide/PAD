@@ -12,6 +12,7 @@ import { buildApiRequest, policyColumns } from "./utils";
 import EmptyState from "../../../../../components/emptyStates/empty-states";
 import { BorderlessTable } from "../../../../../components";
 import { CaretDownOutlined } from "@ant-design/icons";
+import AccordianArrowIcon from "../../../../../assets/img/accordian_arrow.png";
 
 /**
  * 🔹 Policies Component
@@ -117,17 +118,17 @@ const Policies = ({ className, activeFilters }) => {
           navigate,
         });
 
-        const groupPolicies = Array.isArray(res?.groupPolicies)
-          ? res.groupPolicies
+        const policyCategories = Array.isArray(res?.policyCategories)
+          ? res.policyCategories
           : [];
-        //   const mapped = mappedDataList(groupPolicies);
-        console.log("groupPolicies", res);
+        //   const mapped = mappedDataList(policyCategories);
+        console.log("policyCategories", res);
         if (replace) {
-          setAdminGroupeAndPoliciesPoliciesTabData(groupPolicies);
+          setAdminGroupeAndPoliciesPoliciesTabData(policyCategories);
         } else {
           setAdminGroupeAndPoliciesPoliciesTabData((prev) => [
             ...prev,
-            ...groupPolicies,
+            ...policyCategories,
           ]);
         }
 
@@ -135,7 +136,7 @@ const Policies = ({ className, activeFilters }) => {
         const total = Number(res?.totalRecords || 0);
 
         // ✅ Disable scrolling if we've loaded everything
-        setHasMore(requestData.PageNumber + groupPolicies.length < total);
+        setHasMore(requestData.PageNumber + policyCategories.length < total);
         setAggregateTotalQuantity(res?.aggregateTotalQuantity);
       } catch (err) {
         console.error("❌ Error fetching portfolio:", err);
@@ -171,17 +172,47 @@ const Policies = ({ className, activeFilters }) => {
       console.error("❌ Error detecting reload:", err);
     }
   }, [fetchApiCall, resetAdminGropusAndPolicyPoliciesTabSearch]);
+
   const [policies, setPolicies] = useState([]);
 
   const handleSelectChange = (record, checked) => {
-    setPolicies((prev) =>
-      prev.map((item) =>
-        item.policyId === record.policyId
-          ? { ...item, isSelected: checked }
-          : item
-      )
-    );
+    // 2️⃣ Update tabesFormDataofAdminGropusAndPolicy.policies
+    setTabesFormDataofAdminGropusAndPolicy((prev) => {
+      const currentPolicies = Array.isArray(prev.policies) ? prev.policies : [];
+
+      let updatedPolicies;
+
+      if (checked) {
+        // Add new policy (avoid duplicates)
+        const exists = currentPolicies.some(
+          (p) => p.policyID === record.policyId
+        );
+        if (!exists) {
+          updatedPolicies = [
+            ...currentPolicies,
+            {
+              policyID: record.policyId,
+              threshold: record.duration || "30 days",
+            },
+          ];
+        } else {
+          updatedPolicies = currentPolicies;
+        }
+      } else {
+        // Remove unchecked policy
+        updatedPolicies = currentPolicies.filter(
+          (p) => p.policyID !== record.policyId
+        );
+      }
+
+      return {
+        ...prev,
+        policies: updatedPolicies,
+      };
+    });
   };
+
+  console.log("groupPolicies", tabesFormDataofAdminGropusAndPolicy);
 
   const handleDurationChange = (record, value) => {
     setPolicies((prev) =>
@@ -192,10 +223,48 @@ const Policies = ({ className, activeFilters }) => {
       )
     );
   };
+  // ✅ Scroll handler for pagination
+  const handleScroll = () => {
+    if (!listRef.current || loadingMore || !hasMore) return;
+
+    const { scrollTop, scrollHeight, clientHeight } = listRef.current;
+
+    if (scrollTop + clientHeight >= scrollHeight - 10) {
+      // ⬆️ Stop if we’ve reached totalRecords
+      if (!hasMore) return;
+      // ⬆️ User scrolled to bottom → call API with pageNumber + 10
+      const nextPage =
+        (adminGropusAndPolicyPoliciesTabSearch.pageNumber || 0) + 10;
+
+      const req = buildApiRequest({
+        ...adminGropusAndPolicyPoliciesTabSearch,
+        pageNumber: nextPage,
+      });
+
+      fetchApiCall(req, false);
+
+      setAdminGropusAndPolicyPoliciesTabSearch((prev) => ({
+        ...prev,
+        pageNumber: nextPage,
+      }));
+    }
+  };
+
+  useEffect(() => {
+    const node = listRef.current;
+    if (!node) return;
+    node.addEventListener("scroll", handleScroll);
+    return () => node.removeEventListener("scroll", handleScroll);
+  });
   return (
     <div
       ref={listRef}
-      style={{ height: "80vh", overflowY: "auto" }} // ✅ scroll container
+      s
+      style={{
+        maxHeight: "420px",
+        overflowY: "overlay",
+        overflowX: "hidden",
+      }}
     >
       {adminGroupeAndPoliciesPoliciesTabData?.length > 0 ? (
         <Collapse
@@ -208,54 +277,68 @@ const Policies = ({ className, activeFilters }) => {
             border: "none",
             height: "100%",
             overflow: "hidden",
+            // marginBottom: "-20px",
           }}
           expandIcon={({ isActive }) => (
-            <CaretDownOutlined
-              style={{ fontSize: "14px", transition: "transform 0.3s" }}
-              rotate={isActive ? 180 : 0}
+            <img
+              src={AccordianArrowIcon} // 👈 your image paths
+              draggable={false}
+              alt="expand"
+              style={{
+                width: 18,
+                height: 12,
+                transition: "transform 0.3s",
+                transform: `rotate(${isActive ? 180 : 0}deg)`, // 👈 rotate smoothly
+              }}
             />
           )}
           expandIconPosition="end"
         >
-          {adminGroupeAndPoliciesPoliciesTabData.map((groupPolicies, idx) => {
-            const panelKey = groupPolicies.groupPolicyID || idx.toString();
-            return (
-              <Panel
-                className={styles.Panel}
-                header={
-                  <div className={styles.panelHeader}>
-                    <span className={styles.shortName}>
-                      {groupPolicies.groupPolicyName}
-                    </span>
-                  </div>
-                }
-                key={panelKey}
-              >
-                {/* ✅ FIXED HEIGHT SCROLL CONTAINER */}
-                <div
-                  style={{
-                    maxHeight: "420px",
-                    overflowY: "auto",
-                    overflowX: "hidden", // or 'auto' if you want x-scroll too
-                    paddingRight: "8px",
-                  }}
+          {adminGroupeAndPoliciesPoliciesTabData.map(
+            (policyCategories, idx) => {
+              const panelKey =
+                policyCategories.policyCategoryID || idx.toString();
+              return (
+                <Panel
+                  className={styles.Panel}
+                  headerClass={styles.customHeader}
+                  header={
+                    <div className={styles.panelHeader}>
+                      <span className={styles.shortName}>
+                        {policyCategories.categoryName}
+                      </span>
+                    </div>
+                  }
+                  key={panelKey}
                 >
-                  <BorderlessTable
-                    rows={groupPolicies?.policies || []}
-                    columns={policyColumns({
-                      onSelectChange: handleSelectChange,
-                      onDurationChange: handleDurationChange,
-                    })}
-                    pagination={false}
-                    rowKey="transactionId"
-                    classNameTable="border-less-table-white-2"
-                    scroll={{ y: 400 }} // ✅ internal scroll, not page scroll
-                    style={{ width: "100%" }}
-                  />
-                </div>
-              </Panel>
-            );
-          })}
+                  {/* ✅ FIXED HEIGHT SCROLL CONTAINER */}
+                  <div
+                    style={{
+                      maxHeight: "420px",
+                      overflowY: "auto",
+                      overflowX: "hidden", // or 'auto' if you want x-scroll too
+                      paddingRight: "0px",
+                    }}
+                  >
+                    <BorderlessTable
+                      rows={policyCategories?.policies || []}
+                      columns={policyColumns({
+                        onSelectChange: handleSelectChange,
+                        onDurationChange: handleDurationChange,
+                        selectedPolicies:
+                          tabesFormDataofAdminGropusAndPolicy.policies,
+                      })}
+                      pagination={false}
+                      rowKey="transactionId"
+                      classNameTable="border-less-table-white-2"
+                      scroll={{ y: 400 }} // ✅ internal scroll, not page scroll
+                      style={{ width: "100%" }}
+                    />
+                  </div>
+                </Panel>
+              );
+            }
+          )}
         </Collapse>
       ) : (
         <EmptyState type="portfolio" />
@@ -266,11 +349,6 @@ const Policies = ({ className, activeFilters }) => {
           Loading more...
         </div>
       )}
-      {/* {!hasMore && (
-        <div style={{ textAlign: "center", padding: "10px" }}>
-          ✅ All records loaded
-        </div>
-      )} */}
     </div>
   );
 };

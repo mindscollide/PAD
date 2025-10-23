@@ -537,6 +537,7 @@ td.border-less-table-white-2-cell:first-child {
   word-wrap: break-word;
   /* Example: add padding, border, etc. */
 }
+
 td.border-less-table-white-2-cell:last-child {
   /* Your styles here */
   background-color: #fff;
@@ -555,13 +556,14 @@ td.border-less-table-white-2-cell:not(:first-child):not(:last-child) {
   background: transparent !important;
   /* height: 588px !important; */
 }
+
 /* Cell Styling */
 .border-less-table-white-2-wrapper .border-less-table-white-2-tbody > tr > td {
   padding: 0px 6px;
   color: #424242;
   font-family: "Switzer Variable";
   font-weight: 500;
-  font-size: 16px;
+  font-size: 14px;
   line-height: 100%;
   vertical-align: middle;
 }
@@ -593,8 +595,8 @@ td.border-less-table-white-2-cell:not(:first-child):not(:last-child) {
 .border-less-table-white-2-wrapper .border-less-table-white-2-thead > tr > th {
   color: #30426a;
   font-family: "Switzer Variable";
-  font-size: 14px;
-  font-weight: 500;
+  font-weight: 700;
+  font-style: bold;
   padding: 12px 6px;
   background: transparent !important;
   border-bottom: none;
@@ -607,7 +609,9 @@ td.border-less-table-white-2-cell:not(:first-child):not(:last-child) {
   z-index: 1;
   background-color: #fff;
 }
-
+.border-less-table-white-2-header {
+  margin-bottom: -20px;
+}
 /* Responsive Adjustments */
 @media (max-width: 768px) {
   .border-less-table-white-2-wrapper
@@ -698,7 +702,7 @@ td.border-less-table-white-2-cell:first-child::after {
 /* Target the first and last <td> inside each <tr> */
 /* 🎯 Second column (Policy ID) */
 td.border-less-table-white-2-cell:nth-child(2) {
- background-color: #EDF3FF !important;
+  background-color: #edf3ff !important;
 }
 td.border-less-table-white-2-cell:nth-child(3) {
   /* Your styles here */

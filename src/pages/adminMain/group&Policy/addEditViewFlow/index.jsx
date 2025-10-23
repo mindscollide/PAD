@@ -135,7 +135,7 @@ const GroupAndPolicyAddViewEdit = () => {
       </Row>
 
       {/* 🔹 Page Layout with Tabs and Actions */}
-      <PageLayout background="blue">
+      <PageLayout background="blue" className={styles.pageLayoutNoScroll}>
         <Row justify="space-between" align="middle" className={styles.header}>
           {/* 🔸 Tabs: Details / Policies / Users */}
           <Col>

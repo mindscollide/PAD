@@ -666,13 +666,13 @@ export const SearchPoliciesForGroupPolicyPanel = async ({
 
     // 🔹 Handle success
     if (res.success) {
-      const { responseMessage, groupPolicies, totalRecords } = res.result;
+      const { responseMessage, policyCategories, totalRecords } = res.result;
       const message = getMessage(responseMessage);
 
       // Case 1 → Data available
       if (responseMessage === "Admin_AdminServiceManager_GetPoliciesForGroupPolicyPanel_01") {
         return {
-          groupPolicies: groupPolicies || [],
+          policyCategories: policyCategories || [],
           totalRecords: totalRecords || 0,
         };
       }
@@ -680,7 +680,7 @@ export const SearchPoliciesForGroupPolicyPanel = async ({
       // Case 2 → No data
       if (responseMessage === "Admin_AdminServiceManager_GetPoliciesForGroupPolicyPanel_02") {
         return {
-          groupPolicies: [],
+          policyCategories: [],
           totalRecords: 0,
         };
       }
