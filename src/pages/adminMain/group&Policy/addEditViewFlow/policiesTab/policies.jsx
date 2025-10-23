@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import { Row, Col, Checkbox, Divider, Collapse } from "antd";
+import { Collapse } from "antd";
 import styles from "./policies.module.css";
 import { useMyAdmin } from "../../../../../context/AdminContext";
 import { useNotification } from "../../../../../components/NotificationProvider/NotificationProvider";
@@ -11,25 +11,47 @@ import { useSearchBarContext } from "../../../../../context/SearchBarContaxt";
 import { buildApiRequest, policyColumns } from "./utils";
 import EmptyState from "../../../../../components/emptyStates/empty-states";
 import { BorderlessTable } from "../../../../../components";
-import { CaretDownOutlined } from "@ant-design/icons";
 import AccordianArrowIcon from "../../../../../assets/img/accordian_arrow.png";
+
+const { Panel } = Collapse;
 
 /**
  * 🔹 Policies Component
- * Allows selecting or deselecting policies for a group.
- * Data syncs directly with the global AdminContext.
+ *
+ * A component that displays policies in an accordion layout with infinite scrolling.
+ * Allows users to select/deselect policies for a group with configurable thresholds.
+ * Manages data synchronization with global AdminContext and handles lazy loading.
+ *
+ * @component
+ * @param {Object} props - Component props
+ * @param {string} props.className - Additional CSS class names
+ * @param {Object} props.activeFilters - Currently active filters for policy data
+ *
+ * @example
+ * <Policies
+ *   className="custom-class"
+ *   activeFilters={{ status: 'active' }}
+ * />
  */
 
 const Policies = ({ className, activeFilters }) => {
-  const { Panel } = Collapse;
+  // 🔹 Navigation & Refs
   const navigate = useNavigate();
-  const didFetchRef = useRef(false);
-  const listRef = useRef(null); // ✅ scroll container ref
+  const didFetchRef = useRef(false); // Prevents duplicate initial fetches
+  const listRef = useRef(null); // Scroll container reference for infinite scrolling
+
+  // 🔹 Context Hooks
   const { showNotification } = useNotification();
   const { showLoader } = useGlobalLoader();
   const { callApi } = useApi();
-  const [loadingMore, setLoadingMore] = useState(false);
 
+  // 🔹 State Management
+  const [loadingMore, setLoadingMore] = useState(false); // Loading state for pagination
+  const [hasMore, setHasMore] = useState(true); // Tracks if more data is available
+  const [aggregateTotalQuantity, setAggregateTotalQuantity] = useState(0); // Total record count
+  const [activeKey, setActiveKey] = useState([]); // Controls which accordion panels are open
+
+  // 🔹 Admin Context
   const {
     tabesFormDataofAdminGropusAndPolicy,
     setTabesFormDataofAdminGropusAndPolicy,
@@ -37,75 +59,26 @@ const Policies = ({ className, activeFilters }) => {
     adminGroupeAndPoliciesPoliciesTabData,
     setAdminGroupeAndPoliciesPoliciesTabData,
   } = useMyAdmin();
+
+  // 🔹 Search Context
   const {
     resetAdminGropusAndPolicyPoliciesTabSearch,
     adminGropusAndPolicyPoliciesTabSearch,
     setAdminGropusAndPolicyPoliciesTabSearch,
   } = useSearchBarContext();
 
-  // /** 🔹 Fetch approvals from API */
-  // const fetchApiCall = useCallback(
-  //   async (requestData, replace = false, showLoaderFlag = true) => {
-  //     if (!requestData || typeof requestData !== "object") return;
-  //     if (showLoaderFlag) showLoader(true);
-
-  //     const res = await SearchPoliciesForGroupPolicyPanel({
-  //       callApi,
-  //       showNotification,
-  //       showLoader,
-  //       requestdata: requestData,
-  //       navigate,
-  //     });
-  //     const groupPolicies = Array.isArray(res?.groupPolicies)
-  //       ? res.groupPolicies
-  //       : [];
-  //     //   const mapped = mappedDataList(groupPolicies);
-  //     const mapped = groupPolicies;
-
-  //     setAdminGroupeAndPoliciesPoliciesTabData((prev) => ({
-  //       groupPolicies: replace
-  //         ? mapped
-  //         : [...(prev?.groupPolicies || []), ...mapped],
-  //       // this is for to run lazy loading its data comming from database of total data in db
-  //       totalRecordsDataBase: res?.totalRecords || 0,
-  //       // this is for to know how mush dta currently fetch from  db
-  //       totalRecordsTable: replace
-  //         ? mapped.length
-  //         : adminGroupeAndPoliciesPoliciesTabData.totalRecordsTable +
-  //           mapped.length,
-  //     }));
-
-  //     setAdminGropusAndPolicyPoliciesTabSearch((prev) => {
-  //       const next = {
-  //         ...prev,
-  //         pageNumber: replace ? mapped.length : prev.pageNumber + mapped.length,
-  //       };
-
-  //       // this is for check if filter value get true only on that it will false
-  //       if (prev.filterTrigger) {
-  //         next.filterTrigger = false;
-  //       }
-
-  //       return next;
-  //     });
-  //   },
-  //   [
-  //     callApi,
-  //     navigate,
-  //     showLoader,
-  //     showNotification,
-  //     setAdminGropusAndPolicyPoliciesTabSearch,
-  //     setAdminGroupeAndPoliciesPoliciesTabData,
-  //   ]
-  // );
-  const [hasMore, setHasMore] = useState(true); // ✅ track if more data exists
-  const [aggregateTotalQuantity, setAggregateTotalQuantity] = useState(0);
-  const [activeKey, setActiveKey] = useState([]);
-
+  /**
+   * 🔹 Fetches policies from API with pagination support
+   *
+   * @param {Object} requestData - API request parameters
+   * @param {boolean} replace - If true, replaces existing data; otherwise appends
+   * @returns {Promise<void>}
+   */
   const fetchApiCall = useCallback(
     async (requestData, replace = false) => {
       if (!requestData || typeof requestData !== "object") return;
 
+      // Set loading states
       if (!replace) setLoadingMore(true);
       else showLoader(true);
 
@@ -121,8 +94,17 @@ const Policies = ({ className, activeFilters }) => {
         const policyCategories = Array.isArray(res?.policyCategories)
           ? res.policyCategories
           : [];
-        //   const mapped = mappedDataList(policyCategories);
-        console.log("policyCategories", res);
+        if (policyCategories?.length > 0) {
+          // create array of all indexes as strings: ["0", "1", "2", ...]
+          const allKeys = policyCategories.map(
+            (policyCategories, idx) =>
+              policyCategories.policyCategoryID
+                ? policyCategories.policyCategoryID.toString()
+                : idx.toString() // fallback to 0,1,2,...
+          );
+          setActiveKey(allKeys);
+        }
+        // Update data based on replace flag
         if (replace) {
           setAdminGroupeAndPoliciesPoliciesTabData(policyCategories);
         } else {
@@ -132,14 +114,13 @@ const Policies = ({ className, activeFilters }) => {
           ]);
         }
 
-        // ✅ Save totalRecords from API
+        // Update pagination tracking
         const total = Number(res?.totalRecords || 0);
-
-        // ✅ Disable scrolling if we've loaded everything
         setHasMore(requestData.PageNumber + policyCategories.length < total);
         setAggregateTotalQuantity(res?.aggregateTotalQuantity);
       } catch (err) {
         console.error("❌ Error fetching portfolio:", err);
+        showNotification?.("error", "Failed to load policies");
       } finally {
         showLoader(false);
         setLoadingMore(false);
@@ -153,17 +134,19 @@ const Policies = ({ className, activeFilters }) => {
       setAdminGroupeAndPoliciesPoliciesTabData,
     ]
   );
-  console.log("groupPolicies", adminGroupeAndPoliciesPoliciesTabData);
 
-  // ✅ initial load
+  /**
+   * 🔹 Initial Data Load Effect
+   * Runs once on component mount to fetch initial policy data
+   */
   useEffect(() => {
     if (didFetchRef.current) return;
     didFetchRef.current = true;
 
     const req = buildApiRequest(adminGropusAndPolicyPoliciesTabSearch);
-
     fetchApiCall(req, true);
 
+    // Reset search state on page reload
     try {
       const nav = performance.getEntriesByType("navigation");
       if (nav?.[0]?.type === "reload")
@@ -173,17 +156,20 @@ const Policies = ({ className, activeFilters }) => {
     }
   }, [fetchApiCall, resetAdminGropusAndPolicyPoliciesTabSearch]);
 
-  const [policies, setPolicies] = useState([]);
-
+  /**
+   * 🔹 Handles policy selection/deselection
+   * Updates the global form data when policies are selected or deselected
+   *
+   * @param {Object} record - The policy record being toggled
+   * @param {boolean} checked - Selection state (true = selected, false = deselected)
+   */
   const handleSelectChange = (record, checked) => {
-    // 2️⃣ Update tabesFormDataofAdminGropusAndPolicy.policies
     setTabesFormDataofAdminGropusAndPolicy((prev) => {
       const currentPolicies = Array.isArray(prev.policies) ? prev.policies : [];
-
       let updatedPolicies;
 
       if (checked) {
-        // Add new policy (avoid duplicates)
+        // Add policy if it doesn't already exist
         const exists = currentPolicies.some(
           (p) => p.policyID === record.policyId
         );
@@ -199,7 +185,7 @@ const Policies = ({ className, activeFilters }) => {
           updatedPolicies = currentPolicies;
         }
       } else {
-        // Remove unchecked policy
+        // Remove policy from selection
         updatedPolicies = currentPolicies.filter(
           (p) => p.policyID !== record.policyId
         );
@@ -212,8 +198,12 @@ const Policies = ({ className, activeFilters }) => {
     });
   };
 
-  console.log("groupPolicies", tabesFormDataofAdminGropusAndPolicy);
-
+  /**
+   * 🔹 Handles duration threshold changes for selected policies
+   *
+   * @param {Object} record - The policy record being modified
+   * @param {string} value - New duration value
+   */
   const handleDurationChange = (record, value) => {
     setPolicies((prev) =>
       prev.map((item) =>
@@ -223,16 +213,18 @@ const Policies = ({ className, activeFilters }) => {
       )
     );
   };
-  // ✅ Scroll handler for pagination
+
+  /**
+   * 🔹 Infinite Scroll Handler
+   * Detects when user scrolls near bottom and triggers next page load
+   */
   const handleScroll = () => {
     if (!listRef.current || loadingMore || !hasMore) return;
 
     const { scrollTop, scrollHeight, clientHeight } = listRef.current;
 
+    // Load more data when 10px from bottom
     if (scrollTop + clientHeight >= scrollHeight - 10) {
-      // ⬆️ Stop if we’ve reached totalRecords
-      if (!hasMore) return;
-      // ⬆️ User scrolled to bottom → call API with pageNumber + 10
       const nextPage =
         (adminGropusAndPolicyPoliciesTabSearch.pageNumber || 0) + 10;
 
@@ -250,46 +242,37 @@ const Policies = ({ className, activeFilters }) => {
     }
   };
 
+  /**
+   * 🔹 Scroll Event Listener Effect
+   * Attaches and cleans up scroll event listener
+   */
   useEffect(() => {
     const node = listRef.current;
     if (!node) return;
+
     node.addEventListener("scroll", handleScroll);
     return () => node.removeEventListener("scroll", handleScroll);
   });
+
   return (
-    <div
-      ref={listRef}
-      s
-      style={{
-        maxHeight: "420px",
-        overflowY: "overlay",
-        overflowX: "hidden",
-      }}
-    >
+    <div ref={listRef} className={`${styles.mainArea} ${className || ""}`}>
+      {/* 🔹 Policy Categories Accordion */}
       {adminGroupeAndPoliciesPoliciesTabData?.length > 0 ? (
         <Collapse
           activeKey={activeKey}
-          onChange={(keys) => setActiveKey(keys)}
-          bordered={false}
-          className={styles.accordian || ""}
-          style={{
-            background: "#fff",
-            border: "none",
-            height: "100%",
-            overflow: "hidden",
-            // marginBottom: "-20px",
+          onChange={(keys) => {
+            setActiveKey(keys);
+            console.log("setActiveKey", keys);
           }}
+          bordered={false}
+          defaultActiveKey={0}
+          className={styles.accordian}
           expandIcon={({ isActive }) => (
             <img
-              src={AccordianArrowIcon} // 👈 your image paths
+              src={AccordianArrowIcon}
               draggable={false}
               alt="expand"
-              style={{
-                width: 18,
-                height: 12,
-                transition: "transform 0.3s",
-                transform: `rotate(${isActive ? 180 : 0}deg)`, // 👈 rotate smoothly
-              }}
+              className={`${styles.icon} ${isActive ? styles.iconRotated : ""}`}
             />
           )}
           expandIconPosition="end"
@@ -298,6 +281,7 @@ const Policies = ({ className, activeFilters }) => {
             (policyCategories, idx) => {
               const panelKey =
                 policyCategories.policyCategoryID || idx.toString();
+
               return (
                 <Panel
                   className={styles.Panel}
@@ -311,15 +295,8 @@ const Policies = ({ className, activeFilters }) => {
                   }
                   key={panelKey}
                 >
-                  {/* ✅ FIXED HEIGHT SCROLL CONTAINER */}
-                  <div
-                    style={{
-                      maxHeight: "420px",
-                      overflowY: "auto",
-                      overflowX: "hidden", // or 'auto' if you want x-scroll too
-                      paddingRight: "0px",
-                    }}
-                  >
+                  {/* 🔹 Policy Table within Accordion */}
+                  <div className={styles.innerTableArea}>
                     <BorderlessTable
                       rows={policyCategories?.policies || []}
                       columns={policyColumns({
@@ -331,7 +308,7 @@ const Policies = ({ className, activeFilters }) => {
                       pagination={false}
                       rowKey="transactionId"
                       classNameTable="border-less-table-white-2"
-                      scroll={{ y: 400 }} // ✅ internal scroll, not page scroll
+                      scroll={{ y: 400 }} // Internal table scroll
                       style={{ width: "100%" }}
                     />
                   </div>
@@ -341,9 +318,11 @@ const Policies = ({ className, activeFilters }) => {
           )}
         </Collapse>
       ) : (
+        // 🔹 Empty State
         <EmptyState type="portfolio" />
       )}
 
+      {/* 🔹 Loading Indicator for Infinite Scroll */}
       {loadingMore && (
         <div style={{ textAlign: "center", padding: "10px" }}>
           Loading more...

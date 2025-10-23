@@ -408,14 +408,43 @@ li.ant-dropdown-menu-item.ant-dropdown-menu-item-only-child:focus {
   border-color: #30426a !important;
   padding: 9px 9px !important;
 }
-
 /* When the checkbox is NOT checked */
 .custom-broker-option .ant-checkbox-inner {
   background-color: #fff !important;
   border-color: #e1e1e1 !important;
   padding: 9px 9px !important;
 }
+/* Customizing checkbox in broker select dropdown */
+.custom-broker-option-group-policies .ant-checkbox-checked .ant-checkbox-inner {
+  background-color: #30426a !important;
+  border-color: #30426a !important;
+  padding: 10px 10px !important;
+  border-radius: 6.68px !important;
+}
 
+/* When the checkbox is NOT checked */
+.custom-broker-option-group-policies .ant-checkbox-inner {
+  background-color: #fff !important;
+  border-color: #e1e1e1 !important;
+  padding: 10px 10px !important;
+  border-radius: 6.68px !important;
+}
+/* Tick (✔) customization */
+.custom-broker-option-group-policies
+  .ant-checkbox-checked
+  .ant-checkbox-inner::after {
+  border: solid #fff !important; /* white tick */
+  border-width: 0 2px 2px 0 !important;
+  content: "" !important;
+  display: block;
+  height: 12px !important;
+  left: 9px !important;
+  position: absolute !important;
+  top: 4px !important;
+  transform: rotate(45deg) scale(1) !important;
+  width: 6px !important;
+  transition: all 0.2s ease-in-out;
+}
 #toolbar {
   display: none;
 }
@@ -476,7 +505,8 @@ li.ant-dropdown-menu-item.ant-dropdown-menu-item-only-child:focus {
   border-bottom: 1px solid rgba(5, 5, 5, 0.06);
 }
 
-
-:where(.css-dev-only-do-not-override-1rfzxih).ant-picker-dropdown .ant-picker-header-view >button:hover {
-    color: #213155;
+:where(.css-dev-only-do-not-override-1rfzxih).ant-picker-dropdown
+  .ant-picker-header-view
+  > button:hover {
+  color: #213155;
 }

@@ -23,7 +23,7 @@ export const policyColumns = ({
         <Checkbox
           // checked={isChecked}
           onChange={(e) => onSelectChange(record, e.target.checked)}
-          className="custom-broker-option"
+          className="custom-broker-option-group-policies"
         />
       );
     },
@@ -38,6 +38,7 @@ export const policyColumns = ({
     title: "Policy ID",
     dataIndex: "policyId",
     key: "policyId",
+    width: 100,
     render: (policyId) => (
       <Tooltip title={policyId}>
         <span style={{ fontFamily: "monospace" }}>
@@ -53,7 +54,7 @@ export const policyColumns = ({
     render: (text) => (
       <Tooltip title={text}>
         <span>
-          {text?.length > 80 ? text.slice(0, 77) + "..." : text || "-"}
+          {text?.length > 70 ? text.slice(0, 67) + "..." : text || "-"}
         </span>
       </Tooltip>
     ),
@@ -62,6 +63,7 @@ export const policyColumns = ({
     title: "Duration",
     dataIndex: "duration",
     key: "duration",
+    width: 150,
     render: (type, record) => {
       switch (type) {
         case "spinner":
@@ -100,7 +102,7 @@ export const policyColumns = ({
     render: (text) => (
       <Tooltip title={text}>
         <span>
-          {text?.length > 50 ? text.slice(0, 47) + "..." : text || "-"}
+          {text?.length > 70 ? text.slice(0, 67) + "..." : text || "-"}
         </span>
       </Tooltip>
     ),

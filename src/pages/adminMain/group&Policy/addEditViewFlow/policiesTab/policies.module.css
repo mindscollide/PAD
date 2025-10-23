@@ -1,4 +1,15 @@
-
+.mainArea {
+  max-height: 540px !important;
+  overflow-y: overlay !important;
+  overflow-x: hidden !important;
+  margin-top: 28px !important;
+}
+.innerTableArea {
+  max-height: 420px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding-right: 0px;
+}
 .sectionTitle {
   font-size: 16px;
   font-weight: 600;
@@ -24,12 +35,18 @@
 
 .accordian {
   background: #edf3ff !important;
+  /* background: "#fff"; */
+  border: "none" !important;
+  height: "100%" !important;
+  overflow: "hidden" !important;
 }
 .Panel {
   /* margin-bottom: -18px !important; */
+  min-height: 45.84px !important;
 }
 .customHeader {
   /* margin-bottom: -26px !important; */
+  min-height: 45.84px !important;
 }
 .panelHeader {
   display: flex;
@@ -49,4 +66,13 @@
   letter-spacing: 0%;
   vertical-align: middle;
   color: #30426a;
+}
+
+.icon {
+  width: 18px;
+  height: 12px;
+  transition: transform 0.3s;
+}
+.iconRotated {
+  transform: rotate(180deg);
 }
