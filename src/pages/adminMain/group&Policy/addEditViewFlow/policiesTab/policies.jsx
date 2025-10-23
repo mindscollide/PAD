@@ -142,10 +142,7 @@ const Policies = ({ className, activeFilters }) => {
     const req = buildApiRequest(adminGropusAndPolicyPoliciesTabSearch);
     fetchApiCall(req, true);
 
-    // Reset search state on page reload
-    return () => {
-      resetAdminGropusAndPolicyPoliciesTabSearch();
-    };
+
   }, [fetchApiCall, resetAdminGropusAndPolicyPoliciesTabSearch]);
 
   useEffect(() => {
