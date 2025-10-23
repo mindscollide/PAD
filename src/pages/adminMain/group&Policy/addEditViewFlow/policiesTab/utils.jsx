@@ -15,13 +15,15 @@ export const policyColumns = ({
     align: "center",
     width: 80,
     render: (_, record) => {
-      // const isChecked = selectedPolicies.some(
-      //   (p) => p.policyID === record.policyId
-      // );
+      const isChecked = Array.isArray(selectedPolicies)
+        ? selectedPolicies.some(
+            (p) => String(p.policyID) === String(record.policyID)
+          )
+        : false;
 
       return (
         <Checkbox
-          // checked={isChecked}
+          checked={isChecked}
           onChange={(e) => onSelectChange(record, e.target.checked)}
           className="custom-broker-option-group-policies"
         />
@@ -110,10 +112,9 @@ export const policyColumns = ({
 ];
 
 export const buildApiRequest = (searchState = {}) => ({
-  PolicyID: searchState.policyID || null,
+  PolicyID: searchState.policyId || null,
   Scenario: searchState.scenario || "",
-  Duration: searchState.duration || "",
   Consequence: searchState.consequence || "",
   PageNumber: Number(searchState.pageNumber) || 0,
-  Length: Number(searchState.pageSize) || 10,
+  Length: 100,
 });

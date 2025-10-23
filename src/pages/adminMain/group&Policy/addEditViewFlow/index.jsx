@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Button, PageLayout } from "../../../../components";
 import { Breadcrumb, Col, Row } from "antd";
 import { useMyAdmin } from "../../../../context/AdminContext";
@@ -10,7 +10,7 @@ import { useApi } from "../../../../context/ApiContext";
 import { useGlobalLoader } from "../../../../context/LoaderContext";
 import { useNotification } from "../../../../components/NotificationProvider/NotificationProvider";
 import Policies from "./policiesTab/policies";
-
+import { useSearchBarContext } from "../../../../context/SearchBarContaxt";
 /**
  * 🔹 GroupAndPolicyAddViewEdit
  * Handles "Create / Edit / View" pages for Group Policy module.
@@ -26,6 +26,12 @@ const GroupAndPolicyAddViewEdit = () => {
     tabesFormDataofAdminGropusAndPolicy,
     setTabesFormDataofAdminGropusAndPolicy,
   } = useMyAdmin();
+
+  const {
+    adminGropusAndPolicyPoliciesTabSearch,
+    setAdminGropusAndPolicyPoliciesTabSearch,
+    resetAdminGropusAndPolicyPoliciesTabSearch,
+  } = useSearchBarContext();
 
   /** 🔹 Local state for Cancel confirmation modal */
   const [cancelModalVisible, setCancelModalVisible] = useState(false);
@@ -103,8 +109,108 @@ const GroupAndPolicyAddViewEdit = () => {
     resetAdminGropusAndPolicyContextState();
   };
 
+  /** 🔹 Handle removing individual filter */
+  const handleRemoveFilter = (key) => {
+    const resetMap = {
+      policyId: { policyId: null },
+      scenario: { scenario: "" },
+      consequence: { consequence: "" },
+    };
+
+    setAdminGropusAndPolicyPoliciesTabSearch((prev) => ({
+      ...prev,
+      ...resetMap[key],
+      pageNumber: 0,
+      filterTrigger: true,
+    }));
+  };
+
+  /** 🔹 Handle removing all filters */
+  const handleRemoveAllFilters = () => {
+    setAdminGropusAndPolicyPoliciesTabSearch((prev) => ({
+      ...prev,
+      policyId: null,
+      scenario: "",
+      consequence: "",
+      pageNumber: 0,
+      filterTrigger: true,
+    }));
+  };
+
+  /** 🔹 Build Active Filters */
+  const activeFilters = (() => {
+    const { policyId, scenario, consequence } =
+      adminGropusAndPolicyPoliciesTabSearch || {};
+
+    const filters = [];
+
+    if (policyId)
+      filters.push({
+        key: "policyId",
+        label: "Policy ID",
+        value: `#${policyId}`,
+      });
+
+    if (scenario)
+      filters.push({
+        key: "scenario",
+        label: "Scenario",
+        value: scenario.length > 20 ? `${scenario.slice(0, 20)}...` : scenario,
+      });
+
+    if (consequence)
+      filters.push({
+        key: "consequence",
+        label: "Consequence",
+        value:
+          consequence.length > 20
+            ? `${consequence.slice(0, 20)}...`
+            : consequence,
+      });
+
+    return filters;
+  })();
+  useEffect(() => {
+    if (pageTabesForAdminGropusAndPolicy === 0) {
+      resetAdminGropusAndPolicyPoliciesTabSearch();
+    } else if (pageTabesForAdminGropusAndPolicy === 1) {
+      console.log("h");
+    } else if (pageTabesForAdminGropusAndPolicy === 2) {
+      resetAdminGropusAndPolicyPoliciesTabSearch();
+    }
+  }, [pageTabesForAdminGropusAndPolicy]);
   return (
     <div className={styles.noScrollContainer}>
+      {/* 🔹 Active Filter Tags */}
+      {activeFilters.length > 0 && (
+        <Row gutter={[12, 12]} className={styles["filter-tags-container"]}>
+          {activeFilters.map(({ key, value }) => (
+            <Col key={key}>
+              <div className={styles["filter-tag"]}>
+                <span>{value}</span>
+                <span
+                  className={styles["filter-tag-close"]}
+                  onClick={() => handleRemoveFilter(key)}
+                >
+                  &times;
+                </span>
+              </div>
+            </Col>
+          ))}
+
+          {/* 🔹 Show Clear All only if more than one filter */}
+          {activeFilters.length > 1 && (
+            <Col>
+              <div
+                className={`${styles["filter-tag"]} ${styles["clear-all-tag"]}`}
+                onClick={handleRemoveAllFilters}
+              >
+                <span>Clear All</span>
+              </div>
+            </Col>
+          )}
+        </Row>
+      )}
       {/* 🔹 Breadcrumb Section */}
       <Row justify="start" align="middle" className={styles.breadcrumbRow}>
         <Col>
@@ -135,7 +241,10 @@ const GroupAndPolicyAddViewEdit = () => {
       </Row>
 
       {/* 🔹 Page Layout with Tabs and Actions */}
-      <PageLayout background="blue" className={styles.pageLayoutNoScroll}>
+      <PageLayout
+        background="blue"
+        className={activeFilters.length > 0 && "changeHeightforPolicy"}
+      >
         <Row justify="space-between" align="middle" className={styles.header}>
           {/* 🔸 Tabs: Details / Policies / Users */}
           <Col>
@@ -251,7 +360,9 @@ const GroupAndPolicyAddViewEdit = () => {
             setErrorDeatilsTabSwitch={setErrorDeatilsTabSwitch}
           />
         )}
-        {pageTabesForAdminGropusAndPolicy === 1 && <Policies />}
+        {pageTabesForAdminGropusAndPolicy === 1 && (
+          <Policies activeFilters={activeFilters.length > 0} />
+        )}
       </PageLayout>
 
       {/* 🔹 Cancel Confirmation Modal */}

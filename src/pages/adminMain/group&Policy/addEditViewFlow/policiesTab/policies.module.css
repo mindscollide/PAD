@@ -4,6 +4,12 @@
   overflow-x: hidden !important;
   margin-top: 28px !important;
 }
+.filterMAinArea{
+ max-height: 470px !important;
+  overflow-y: overlay !important;
+  overflow-x: hidden !important;
+  margin-top: 28px !important;
+}
 .innerTableArea {
   max-height: 420px;
   overflow-y: auto;

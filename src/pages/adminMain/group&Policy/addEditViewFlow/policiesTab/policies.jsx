@@ -47,8 +47,6 @@ const Policies = ({ className, activeFilters }) => {
 
   // 🔹 State Management
   const [loadingMore, setLoadingMore] = useState(false); // Loading state for pagination
-  const [hasMore, setHasMore] = useState(true); // Tracks if more data is available
-  const [aggregateTotalQuantity, setAggregateTotalQuantity] = useState(0); // Total record count
   const [activeKey, setActiveKey] = useState([]); // Controls which accordion panels are open
 
   // 🔹 Admin Context
@@ -94,6 +92,7 @@ const Policies = ({ className, activeFilters }) => {
         const policyCategories = Array.isArray(res?.policyCategories)
           ? res.policyCategories
           : [];
+        console.log("policyCategories", policyCategories);
         if (policyCategories?.length > 0) {
           // create array of all indexes as strings: ["0", "1", "2", ...]
           const allKeys = policyCategories.map(
@@ -115,9 +114,6 @@ const Policies = ({ className, activeFilters }) => {
         }
 
         // Update pagination tracking
-        const total = Number(res?.totalRecords || 0);
-        setHasMore(requestData.PageNumber + policyCategories.length < total);
-        setAggregateTotalQuantity(res?.aggregateTotalQuantity);
       } catch (err) {
         console.error("❌ Error fetching portfolio:", err);
         showNotification?.("error", "Failed to load policies");
@@ -147,14 +143,22 @@ const Policies = ({ className, activeFilters }) => {
     fetchApiCall(req, true);
 
     // Reset search state on page reload
-    try {
-      const nav = performance.getEntriesByType("navigation");
-      if (nav?.[0]?.type === "reload")
-        resetAdminGropusAndPolicyPoliciesTabSearch();
-    } catch (err) {
-      console.error("❌ Error detecting reload:", err);
-    }
+    return () => {
+      resetAdminGropusAndPolicyPoliciesTabSearch();
+    };
   }, [fetchApiCall, resetAdminGropusAndPolicyPoliciesTabSearch]);
+
+  useEffect(() => {
+    if (adminGropusAndPolicyPoliciesTabSearch.filterTrigger) {
+      const req = buildApiRequest(adminGropusAndPolicyPoliciesTabSearch);
+
+      fetchApiCall(req, true);
+      setAdminGropusAndPolicyPoliciesTabSearch((prev) => ({
+        ...prev,
+        filterTrigger: false,
+      }));
+    }
+  }, [adminGropusAndPolicyPoliciesTabSearch.filterTrigger]);
 
   /**
    * 🔹 Handles policy selection/deselection
@@ -170,14 +174,14 @@ const Policies = ({ className, activeFilters }) => {
 
       if (checked) {
         // Add policy if it doesn't already exist
-        const exists = currentPolicies.some(
-          (p) => p.policyID === record.policyId
+        const exists = currentPolicies?.some(
+          (p) => p.policyID === record.policyID
         );
         if (!exists) {
           updatedPolicies = [
             ...currentPolicies,
             {
-              policyID: record.policyId,
+              policyID: record.policyID,
               threshold: record.duration || "30 days",
             },
           ];
@@ -187,7 +191,7 @@ const Policies = ({ className, activeFilters }) => {
       } else {
         // Remove policy from selection
         updatedPolicies = currentPolicies.filter(
-          (p) => p.policyID !== record.policyId
+          (p) => p.policyID !== record.policyID
         );
       }
 
@@ -205,57 +209,24 @@ const Policies = ({ className, activeFilters }) => {
    * @param {string} value - New duration value
    */
   const handleDurationChange = (record, value) => {
-    setPolicies((prev) =>
-      prev.map((item) =>
-        item.policyId === record.policyId
-          ? { ...item, durationValue: value }
-          : item
-      )
-    );
+    // setPolicies((prev) =>
+    //   prev.map((item) =>
+    //     item.policyId === record.policyId
+    //       ? { ...item, durationValue: value }
+    //       : item
+    //   )
+    // );
   };
-
-  /**
-   * 🔹 Infinite Scroll Handler
-   * Detects when user scrolls near bottom and triggers next page load
-   */
-  const handleScroll = () => {
-    if (!listRef.current || loadingMore || !hasMore) return;
-
-    const { scrollTop, scrollHeight, clientHeight } = listRef.current;
-
-    // Load more data when 10px from bottom
-    if (scrollTop + clientHeight >= scrollHeight - 10) {
-      const nextPage =
-        (adminGropusAndPolicyPoliciesTabSearch.pageNumber || 0) + 10;
-
-      const req = buildApiRequest({
-        ...adminGropusAndPolicyPoliciesTabSearch,
-        pageNumber: nextPage,
-      });
-
-      fetchApiCall(req, false);
-
-      setAdminGropusAndPolicyPoliciesTabSearch((prev) => ({
-        ...prev,
-        pageNumber: nextPage,
-      }));
-    }
-  };
-
-  /**
-   * 🔹 Scroll Event Listener Effect
-   * Attaches and cleans up scroll event listener
-   */
-  useEffect(() => {
-    const node = listRef.current;
-    if (!node) return;
-
-    node.addEventListener("scroll", handleScroll);
-    return () => node.removeEventListener("scroll", handleScroll);
-  });
 
   return (
-    <div ref={listRef} className={`${styles.mainArea} ${className || ""}`}>
+    <div
+      ref={listRef}
+      className={
+        activeFilters
+          ? `${styles.filterMAinArea} ${className || ""}`
+          : `${styles.mainArea} ${className || ""}`
+      }
+    >
       {/* 🔹 Policy Categories Accordion */}
       {adminGroupeAndPoliciesPoliciesTabData?.length > 0 ? (
         <Collapse
@@ -303,7 +274,9 @@ const Policies = ({ className, activeFilters }) => {
                         onSelectChange: handleSelectChange,
                         onDurationChange: handleDurationChange,
                         selectedPolicies:
-                          tabesFormDataofAdminGropusAndPolicy.policies,
+                          tabesFormDataofAdminGropusAndPolicy?.policies
+                            ? tabesFormDataofAdminGropusAndPolicy?.policies
+                            : [],
                       })}
                       pagination={false}
                       rowKey="transactionId"

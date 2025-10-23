@@ -267,9 +267,8 @@ export const SearchBarProvider = ({ children }) => {
     adminGropusAndPolicyPoliciesTabSearch,
     setAdminGropusAndPolicyPoliciesTabSearch,
   ] = useState({
-    policyID: "",
+    policyId:null,
     scenario: "",
-    duration: "",
     consequence: "",
     filterTrigger: false,
     pageNumber: 0,
@@ -570,9 +569,8 @@ export const SearchBarProvider = ({ children }) => {
   /** Reset Admin Gropus And Policy  filters */
   const resetAdminGropusAndPolicyPoliciesTabSearch = () =>
     setAdminGropusAndPolicyPoliciesTabSearch({
-      policyID: "",
+      policyId: null,
       scenario: "",
-      duration: "",
       consequence: "",
       filterTrigger: false,
       pageNumber: 0,
@@ -596,6 +594,7 @@ export const SearchBarProvider = ({ children }) => {
     resetAdminBrokersListSearch();
     resetAdminInstrumentListSearch();
     resetAdminGropusAndPolicySearch();
+    resetAdminGropusAndPolicyPoliciesTabSearch();
   };
 
   // ===============================

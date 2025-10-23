@@ -93,8 +93,8 @@ export const MyAdminProvider = ({ children }) => {
       groupTitle: "",
       groupDiscription: "",
     },
-    policies: {},
-    users: {},
+    policies: [],
+    users: [],
   });
 
   // set all policies list on policies tab data
