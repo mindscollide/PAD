@@ -24,3 +24,29 @@
   font-size: 14px;
   color: #333;
 }
+
+.accordian {
+  background: #edf3ff !important;
+}
+
+.panelHeader {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  font-weight: 500;
+  font-size: 16px;
+  gap: 16px;
+}
+
+.shortName {
+  width: 60%;
+  font-family: Switzer Variable;
+  font-weight: 500;
+  font-size: 20px;
+  line-height: 100%;
+  letter-spacing: 0%;
+  vertical-align: middle;
+  color: #30426a;
+}
+
+

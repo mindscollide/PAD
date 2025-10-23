@@ -101,11 +101,7 @@ export const MyAdminProvider = ({ children }) => {
   const [
     adminGroupeAndPoliciesPoliciesTabData,
     setAdminGroupeAndPoliciesPoliciesTabData,
-  ] = useState({
-    groupPolicies: [],
-    totalRecordsDataBase: 0,
-    totalRecordsTable: 0,
-  });
+  ] = useState([]);
   /**
    * ♻️ Reset Context State (Table + API Data)
    *
