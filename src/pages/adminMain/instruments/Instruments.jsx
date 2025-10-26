@@ -23,10 +23,13 @@ import { useApi } from "../../../context/ApiContext";
 import { useSearchBarContext } from "../../../context/SearchBarContaxt";
 import { useMyAdmin } from "../../../context/AdminContext";
 import {
+  getPreviousClosingPeriodInstrumentRequest,
+  getUpcomingClosingPeriodInstrumentRequest,
   SearchGetInstrumentsWithClosingPeriod,
   UpdateInstrumentStatus,
 } from "../../../api/adminApi";
 import { useTableScrollBottom } from "../../../common/funtions/scroll";
+import DeleteConfirmationModal from "./modal/deleteConfirmationModal/DeleteConfirmationModal";
 
 const Instruments = () => {
   const navigate = useNavigate();
@@ -48,14 +51,30 @@ const Instruments = () => {
     adminIntrumentsMqtt,
     setAdminIntrumentsMqtt,
     resetAdminInstrumentsContextState,
+    //For Upcoming Closing Data
+    setAdminInstrumentUpcomingClosingData,
+    //For Upcoming Previous Data
+    setAdminInstrumentPreviousClosingData,
+    //For Add and Delete Mqtt on Edit Modal Instrument
+    adminAddDeleteClosingInstrument,
+    setAdminAddDeleteClosingInstrument,
+    selectedInstrumentOnClick,
+    setSelectedInstrumentOnClick,
   } = useMyAdmin();
 
   const [loadingMore, setLoadingMore] = useState(false);
 
-  const { setEditModalData, editInstrumentModal, setEditInstrumentModal } =
-    useGlobalModal();
+  const {
+    setEditModalData,
+    editInstrumentModal,
+    setEditInstrumentModal,
+    deleteConfirmationEditModal,
+  } = useGlobalModal();
+
+  console.log("adminIntrumentsDataadminIntrumentsData", adminIntrumentsData);
 
   const [sortedInfo, setSortedInfo] = useState({});
+
   // 🔷 Toggle Api Call For Active and InActive Statuses
   const onToggleStatusApiRequest = async (instrumentID, isActive) => {
     console.log("onToggleStatusApiRequest", instrumentID, isActive);
@@ -74,13 +93,69 @@ const Instruments = () => {
     });
   };
 
+  // 🔷 Api Call For Edit Button API is getUpcomingClosingPeriodInstrumentRequest
+  const onEditupcomingClosingPeriodAPiRequest = async (instrumentID) => {
+    showLoader(true);
+    const payload = {
+      InstrumentID: instrumentID,
+      pageNumber: 0,
+      length: 10,
+    };
+
+    const response = await getUpcomingClosingPeriodInstrumentRequest({
+      callApi,
+      showNotification,
+      showLoader,
+      requestdata: payload,
+      navigate,
+    });
+
+    // Set Data in the Edit Modal Instrument Upcoming Closing Period Table
+    if (response) {
+      const newList = response?.closingPeriods || [];
+      setAdminInstrumentUpcomingClosingData({
+        closingPeriods: newList,
+        totalRecordsDataBase: response?.totalRecords || 0,
+        totalRecordsTable: newList.length,
+      });
+    }
+  };
+
+  // 🔷 Api Call For Edit Button API is getUpcomingClosingPeriodInstrumentRequest
+  const onEditPreviousClosingPeriodAPiRequest = async (instrumentID) => {
+    showLoader(true);
+    const payload = {
+      InstrumentID: instrumentID,
+      pageNumber: 0,
+      length: 20,
+    };
+
+    const response = await getPreviousClosingPeriodInstrumentRequest({
+      callApi,
+      showNotification,
+      showLoader,
+      requestdata: payload,
+      navigate,
+    });
+
+    // Set Data in the Edit Modal Instrument Previous Closing Period Table
+    if (response) {
+      setAdminInstrumentPreviousClosingData(response);
+    }
+  };
+
   const columns = getInstrumentTableColumns({
     adminIntrumentListSearch,
     setAdminIntrumentListSearch,
     sortedInfo,
     onStatusChange: onToggleStatusApiRequest,
+    // For Edit Upcoming Closing Preiods
+    onEditUpcomingClosing: onEditupcomingClosingPeriodAPiRequest,
+    // For Edit Previous Closing Periods
+    onEditPreviousClosing: onEditPreviousClosingPeriodAPiRequest,
     setEditInstrumentModal,
     setEditModalData,
+    setSelectedInstrumentOnClick,
   });
 
   /** 🔹 Fetch approvals from API */
@@ -165,7 +240,7 @@ const Instruments = () => {
     }
   }, [adminIntrumentListSearch.filterTrigger]);
 
-  // MQTT Updates
+  // 🔷 MQTT Updates
   useEffect(() => {
     if (adminIntrumentsMqtt) {
       setAdminIntrumentsMqtt(false);
@@ -178,7 +253,20 @@ const Instruments = () => {
     }
   }, [adminIntrumentsMqtt]);
 
-  // Lazy Loading
+  // 🔷 MQTT Updates for Add/Delete in Upcoming Closing Periods
+  useEffect(() => {
+    if (adminAddDeleteClosingInstrument) {
+      console.log(" Detected MQTT Add/Delete event for closing periods");
+
+      if (selectedInstrumentOnClick) {
+        onEditupcomingClosingPeriodAPiRequest(selectedInstrumentOnClick);
+      }
+
+      setAdminAddDeleteClosingInstrument(false);
+    }
+  }, [adminAddDeleteClosingInstrument]);
+
+  // 🔷 Lazy Loading
   useTableScrollBottom(
     async () => {
       if (
@@ -314,6 +402,9 @@ const Instruments = () => {
 
       {/* Import Edit Instrument Modal */}
       {editInstrumentModal && <EditInstrument />}
+
+      {/* Edit Delete Modal Confirmation MODal */}
+      {deleteConfirmationEditModal && <DeleteConfirmationModal />}
     </>
   );
 };

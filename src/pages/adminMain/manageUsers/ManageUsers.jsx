@@ -13,6 +13,7 @@ import ViewDetailManageUserModal from "./modal/viewDetailManageUserModal/ViewDet
 import RolesAndPoliciesModal from "./modal/rolesAndPoliciesModal/RolesAndPoliciesModal";
 import EditRoleAndPoliciesModal from "./modal/editRoleAndPoliciesModal/EditRoleAndPoliciesModal";
 import UnSaveChangesModal from "./modal/unSaveChangesModal/UnSaveChangesModal";
+import PendingRequest from "./pendingRequests/PendingRequest";
 
 const ManageUsers = () => {
   const {
@@ -20,10 +21,11 @@ const ManageUsers = () => {
     rolesAndPoliciesManageUser,
     editrolesAndPoliciesUser,
     unSavedChangesPoliciesModal,
+    activeManageUserTab,
+    setActiveManageUserTab,
   } = useGlobalModal();
 
-  const [activeTab, setActiveTab] = useState("1");
-
+  // For Users Data In Manage User
   const usersData = [
     {
       profile: Profile2,
@@ -69,11 +71,40 @@ const ManageUsers = () => {
     },
   ];
 
+  // For Pending Request Data in Manage User
+  const pendingRequestsData = [
+    {
+      PendingRequestUsername: "Muhammad Junaid Akbar Farooqui",
+      EmailId: "ali.raza@hbl.com",
+      EmployeeID: "U389",
+      DepartmentName: "Finance",
+      username: "ali.raza",
+      profileImage: Profile4,
+    },
+    {
+      PendingRequestUsername: "Faheem Arif",
+      EmailId: "faheem.arif@hbl.com",
+      EmployeeID: "U235",
+      DepartmentName: "Information Technology",
+      username: "faheem.arif",
+      profileImage: Profile3,
+    },
+
+    {
+      PendingRequestUsername: "Nadia Shah",
+      EmailId: "nadia.shah@hbl.com",
+      EmployeeID: "U517",
+      DepartmentName: "Marketing",
+      username: "nadia.shah",
+      profileImage: Profile5,
+    },
+  ];
+
   const tabStyle = (key) => ({
-    fontSize: activeTab === key ? "26px" : "26px",
-    fontWeight: activeTab === key ? "700" : "400",
+    fontSize: activeManageUserTab === key ? "26px" : "26px",
+    fontWeight: activeManageUserTab === key ? "700" : "400",
     fontFamily: "Switzer Variable",
-    color: activeTab === key ? "#30426A" : "#30426A",
+    color: activeManageUserTab === key ? "#30426A" : "#30426A",
   });
 
   const items = [
@@ -101,8 +132,8 @@ const ManageUsers = () => {
         <div className="px-4 md:px-6 lg:px-8">
           <div className={styles.ManageUserMainDiv}>
             <Tabs
-              activeKey={activeTab}
-              onChange={setActiveTab}
+              activeKey={activeManageUserTab}
+              onChange={setActiveManageUserTab}
               items={items}
               className={styles.customTabs}
             />
@@ -113,9 +144,9 @@ const ManageUsers = () => {
           </div>
 
           <div className={styles.ManageUserSecondDiv}>
+            {/* ✅ Only show user cards when Users tab is active */}
             <Row gutter={[24, 16]}>
-              {/* ✅ Only show user cards when Users tab is active */}
-              {activeTab === "1" && (
+              {activeManageUserTab === "1" && (
                 <Row gutter={[24, 16]}>
                   {usersData.map((user, index) => (
                     <Col key={index} xs={24} sm={12}>
@@ -131,8 +162,28 @@ const ManageUsers = () => {
                 </Row>
               )}
 
-              {activeTab === "2" && <div>No pending requests.</div>}
-              {activeTab === "3" && <div>No rejected requests.</div>}
+              {/* ✅ Only show PendingRequest Component when PendingRequest tab is active */}
+              {activeManageUserTab === "2" && (
+                <Row gutter={[24, 16]}>
+                  {pendingRequestsData.map((request, index) => (
+                    <Col key={index} xs={24} sm={24}>
+                      <PendingRequest
+                        PendingRequestUsername={request.PendingRequestUsername}
+                        EmailId={request.EmailId}
+                        EmployeeID={request.EmployeeID}
+                        DepartmentName={request.DepartmentName}
+                        username={request.username}
+                        profileImage={request.profileImage}
+                        onTakeAction={() =>
+                          console.log("Take Action on:", request.username)
+                        }
+                      />
+                    </Col>
+                  ))}
+                </Row>
+              )}
+
+              {activeManageUserTab === "3" && <div>No rejected requests.</div>}
             </Row>
           </div>
         </div>

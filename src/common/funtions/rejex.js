@@ -139,7 +139,18 @@ export const formatShowOnlyDate = (dateTimeStr) => {
 export const formatShowOnlyDateForDateRange = (date) => {
   if (!date) return "";
 
-  const d = new Date(date);
+  // 🧠 Handle "YYYYMMDD" → "YYYY-MM-DD"
+  let formattedDate = date;
+  if (typeof date === "string" && /^\d{8}$/.test(date)) {
+    formattedDate = `${date.slice(0, 4)}-${date.slice(4, 6)}-${date.slice(
+      6,
+      8
+    )}`;
+  }
+
+  const d = new Date(formattedDate);
+  if (isNaN(d)) return ""; // guard against invalid input
+
   const year = d.getFullYear();
   const month = String(d.getMonth() + 1).padStart(2, "0");
   const day = String(d.getDate()).padStart(2, "0");
@@ -162,4 +173,16 @@ export const getCurrentDateTimeMarkAsReadNotification = () => {
   const seconds = String(now.getSeconds()).padStart(2, "0");
 
   return `${year}${month}${day}${hours}${minutes}${seconds}`;
+};
+
+// 🔸 Shared formatting helper
+export const formatDateToUTCString = (date) => {
+  const year = date.getUTCFullYear();
+  const month = String(date.getUTCMonth() + 1).padStart(2, "0");
+  const day = String(date.getUTCDate()).padStart(2, "0");
+  const hours = String(date.getUTCHours()).padStart(2, "0");
+  const minutes = String(date.getUTCMinutes()).padStart(2, "0");
+  const seconds = String(date.getUTCSeconds()).padStart(2, "0");
+
+  return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
 };

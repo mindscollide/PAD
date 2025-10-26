@@ -69,6 +69,11 @@ const config = {
     subheading: "The broker has been added successfully.",
     image: AddBroker,
   },
+  editDelete: {
+    heading: "",
+    subheading: "Do you want to delete the closing period?",
+    image: null,
+  },
 
   unSaveChanges: {
     heading: "Unsaved Changes",

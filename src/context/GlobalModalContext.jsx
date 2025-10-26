@@ -198,6 +198,16 @@ export const GlobalModalProvider = ({ children }) => {
   // For Edit Instrument modal
   const [editInstrumentModal, setEditInstrumentModal] = useState(false);
 
+  //For Delete Edit Instrument Modal
+  const [deleteConfirmationEditModal, setDeleteConfirmationEditModal] =
+    useState(false);
+
+  //For Delete Edit Instrument Data State
+  const [deleteEditModalData, setDeleteEditModalData] = useState(null);
+
+  // For Active Tabs In Manage Users in Admin
+  const [activeManageUserTab, setActiveManageUserTab] = useState("1");
+
   // For manage user View Detail modal
   const [viewDetailManageUser, setViewDetailManageUser] = useState(false);
 
@@ -424,7 +434,15 @@ export const GlobalModalProvider = ({ children }) => {
         editInstrumentModal,
         setEditInstrumentModal,
 
+        deleteEditModalData,
+        setDeleteEditModalData,
+
+        deleteConfirmationEditModal,
+        setDeleteConfirmationEditModal,
+
         // For manage user
+        activeManageUserTab,
+        setActiveManageUserTab,
         viewDetailManageUser,
         setViewDetailManageUser,
         rolesAndPoliciesManageUser,

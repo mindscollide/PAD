@@ -13,8 +13,6 @@
   margin-bottom: 10px;
 }
 
-
-
 .sectionBox {
   border: 1px dashed #cfd3d9;
   border-radius: 6px;
@@ -72,4 +70,29 @@
 .deleteIcon:hover {
   opacity: 1;
   transform: scale(1.1);
+}
+
+.emptyWrapper {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin: 0 !important;
+}
+
+.NoUpcomingPeriodsText {
+  margin: 0 !important;
+  font-size: 26px;
+  font-weight: 700;
+  font-family: "Switzer Variable";
+  color: #30426a;
+  padding-bottom: 40px;
+}
+
+.emptyWrapperPrevious {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin-top: 80px !important;
 }
