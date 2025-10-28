@@ -14,10 +14,12 @@ export const buildApiRequest = (searchState = {}) => ({
   InstrumentName: searchState.instrumentName || "",
   StartDate: searchState.startDate ? toYYMMDD(searchState.startDate) : "",
   EndDate: searchState.endDate ? toYYMMDD(searchState.endDate) : "",
-  StatusIds: mapStatusToIds?.(searchState.status) || [],
+  StatusIDs: mapStatusToIds?.(searchState.status) || [],
   PageNumber: Number(searchState.pageNumber) || 0,
   Length: Number(searchState.pageSize) || 10,
 });
+
+
 
 export const mapAdminInstrumentListData = (adminInstruments = []) => {
   const instruments = Array.isArray(adminInstruments)
@@ -90,8 +92,13 @@ export const getInstrumentTableColumns = ({
   setAdminIntrumentListSearch,
   sortedInfo,
   onStatusChange,
+  //For Upcoming Closing Period
+  onEditUpcomingClosing,
+  // For Previous Closing Period
+  onEditPreviousClosing,
   setEditInstrumentModal,
   setEditModalData,
+  setSelectedInstrumentOnClick,
 }) => [
   {
     title: (
@@ -208,12 +215,21 @@ export const getInstrumentTableColumns = ({
     title: "",
     key: "action",
     align: "right",
-    render: (_, record) => (
-      <Button
-        className="Edit-small-dark-button"
-        text="Edit Closed Period Date"
-        onClick={() => setEditInstrumentModal(true)}
-      />
-    ),
+    render: (record) => {
+      return (
+        <Button
+          className="Edit-small-dark-button"
+          text="Edit Closed Period Date"
+          onClick={() => {
+            //For Previous CLosing Period
+            onEditUpcomingClosing(record.instrumentID);
+            //For Upcoming Closing Period
+            onEditPreviousClosing(record.instrumentID);
+            setEditInstrumentModal(true);
+            setSelectedInstrumentOnClick(record.instrumentID);
+          }}
+        />
+      );
+    },
   },
 ];

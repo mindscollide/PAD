@@ -352,6 +352,27 @@ export const responseMessages = {
   PAD_Admin_GetInstrumentsWithClosingPeriod_01: "Data found",
   PAD_Admin_GetInstrumentsWithClosingPeriod_02: "No data found",
   PAD_Admin_GetInstrumentsWithClosingPeriod_03: "Exception occurred",
+
+  PAD_Admin_AddInstrumentClosingPeriod_01: "Invalid input",
+  PAD_Admin_AddInstrumentClosingPeriod_02: "Successfully inserted",
+  PAD_Admin_AddInstrumentClosingPeriod_03: "Insert failed",
+  PAD_Admin_AddInstrumentClosingPeriod_04: "Exception occurred",
+
+  PAD_Admin_GetUpcomingClosingPeriods_01: "Data found",
+  PAD_Admin_GetUpcomingClosingPeriods_02: "No data found",
+  PAD_Admin_GetUpcomingClosingPeriods_03: "Exception occurred",
+  PAD_Admin_GetUpcomingClosingPeriods_04: "Invalid input",
+
+  PAD_Admin_DeleteInstrumentClosingPeriod_01: "Invalid input",
+  PAD_Admin_DeleteInstrumentClosingPeriod_02: "Successfully deleted",
+  PAD_Admin_DeleteInstrumentClosingPeriod_03:
+    "Deletion failed or record not found",
+  PAD_Admin_DeleteInstrumentClosingPeriod_04: "Exception occurred",
+
+  PAD_Admin_GetPreviousClosingPeriods_01: "Data found",
+  PAD_Admin_GetPreviousClosingPeriods_02: "No data found",
+  PAD_Admin_GetPreviousClosingPeriods_03: "Exception occurred",
+  PAD_Admin_GetPreviousClosingPeriods_04: "Invalid input",
 };
 
 /**

@@ -69,6 +69,23 @@ const config = {
     subheading: "The broker has been added successfully.",
     image: AddBroker,
   },
+  editDelete: {
+    heading: "",
+    subheading: "Do you want to delete the closing period?",
+    image: null,
+  },
+
+  unSaveChanges: {
+    heading: "Unsaved Changes",
+    subheading: (
+      <>
+        You have unsaved changes. Are you sure you want to leave without saving?{" "}
+        <br />
+        All unsaved changes will be lost.
+      </>
+    ),
+    image: null,
+  },
 };
 
 const ModalImgStates = ({
@@ -86,7 +103,7 @@ const ModalImgStates = ({
 
   return (
     <div className={`${styles.container} ${containerClassName}`} style={style}>
-      <img draggable={false} src={image} alt={type} />
+      {image && <img draggable={false} src={image} alt={type} />}
       <div className={`${styles.heading} ${headingClassName}`}>{heading}</div>
       <div className={`${styles.subheading} ${subheadingClassName}`}>
         {subheading}

@@ -28,7 +28,11 @@ const getSortIcon = (columnKey, sortedInfo) => {
   return <ArrowsAltOutlined className="custom-sort-icon" />;
 };
 
-export const upcomingClosedPeriodsTable = (sortedInfo, handleDelete) => [
+export const upcomingClosedPeriodsTable = ({
+  sortedInfo,
+  setDeleteConfirmationEditModal,
+  setDeleteEditModalData,
+}) => [
   {
     title: (
       <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
@@ -37,13 +41,12 @@ export const upcomingClosedPeriodsTable = (sortedInfo, handleDelete) => [
     ),
     dataIndex: "dateRange",
     key: "dateRange",
-    width: "60%",
-    sorter: (a, b) => a.start.localeCompare(b.start),
+    sorter: (a, b) => a.dateRange.localeCompare(b.dateRange), // ✅ fixed sorter
     sortDirections: ["ascend", "descend"],
     sortOrder: sortedInfo?.columnKey === "dateRange" ? sortedInfo.order : null,
     showSorterTooltip: false,
     sortIcon: () => null,
-    render: (text, record) => <span className="font-medium">{text}</span>,
+    render: (date, record) => <span className="font-medium">{date}</span>,
   },
   {
     title: (
@@ -53,7 +56,10 @@ export const upcomingClosedPeriodsTable = (sortedInfo, handleDelete) => [
     ),
     dataIndex: "duration",
     key: "duration",
-    sorter: (a, b) => parseInt(a.duration) - parseInt(b.duration),
+    sorter: (a, b) => {
+      const getDays = (value) => parseInt(value.replace(/\D/g, ""), 10) || 0; // safely extract number from "7 Days"
+      return getDays(a.duration) - getDays(b.duration);
+    },
     sortDirections: ["ascend", "descend"],
     sortOrder: sortedInfo?.columnKey === "duration" ? sortedInfo.order : null,
     showSorterTooltip: false,
@@ -64,19 +70,25 @@ export const upcomingClosedPeriodsTable = (sortedInfo, handleDelete) => [
     title: "",
     key: "action",
     align: "center",
-    render: (_, record) => (
-      <img
-        src={Trash}
-        alt="delete"
-        className={styles.deleteIcon}
-        onClick={() => handleDelete(record.key)}
-        style={{ cursor: "pointer" }}
-      />
-    ),
+    render: (record) => {
+      console.log(record, "RecordRecordRecord");
+      return (
+        <img
+          src={Trash}
+          alt="delete"
+          className={styles.deleteIcon}
+          style={{ cursor: "pointer" }}
+          onClick={() => {
+            setDeleteEditModalData(record);
+            setDeleteConfirmationEditModal(true);
+          }}
+        />
+      );
+    },
   },
 ];
 
-export const previousClosedPeriodsTable = (sortedInfo, handleDelete) => [
+export const previousClosedPeriodsTable = (sortedInfo) => [
   {
     title: (
       <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
@@ -85,12 +97,12 @@ export const previousClosedPeriodsTable = (sortedInfo, handleDelete) => [
     ),
     dataIndex: "dateRange1",
     key: "dateRange1",
-    sortOrder: sortedInfo?.columnKey === "dateRange1" ? sortedInfo.order : null,
-    sorter: (a, b) => a.dateRange1.localeCompare(b.dateRange1),
+    sorter: (a, b) => a.dateRange1?.localeCompare(b.dateRange1),
     sortDirections: ["ascend", "descend"],
+    sortOrder: sortedInfo?.columnKey === "dateRange1" ? sortedInfo.order : null,
     showSorterTooltip: false,
     sortIcon: () => null,
-    render: (text) => <span className="font-medium">{text}</span>,
+    render: (text) => <span className="font-medium">{text || "-"}</span>,
   },
   {
     title: (
@@ -100,12 +112,22 @@ export const previousClosedPeriodsTable = (sortedInfo, handleDelete) => [
     ),
     dataIndex: "duration1",
     key: "duration1",
-    render: (text) => <span className="font-medium">{text}</span>,
-    sorter: (a, b) => parseInt(a.duration1) - parseInt(b.duration1),
     sortIcon: () => null,
-    showSorterTooltip: false,
+    sorter: (a, b) =>
+      (parseInt(a.duration1) || 0) - (parseInt(b.duration1) || 0),
     sortOrder: sortedInfo?.columnKey === "duration1" ? sortedInfo.order : null,
+    showSorterTooltip: false,
+    render: (text) => <span className="font-medium">{text || "-"}</span>,
   },
+  // Spacer column (optional visual gap between left and right sides)
+  {
+    title: "",
+    key: "spacer",
+    dataIndex: "spacer",
+    width: "30px",
+    render: () => null,
+  },
+
   {
     title: (
       <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
@@ -114,11 +136,11 @@ export const previousClosedPeriodsTable = (sortedInfo, handleDelete) => [
     ),
     dataIndex: "dateRange2",
     key: "dateRange2",
-    render: (text) => <span className="font-medium">{text}</span>,
-    sorter: (a, b) => a.dateRange2.localeCompare(b.dateRange2),
     sortIcon: () => null,
-    showSorterTooltip: false,
+    sorter: (a, b) => a.dateRange2?.localeCompare(b.dateRange2),
     sortOrder: sortedInfo?.columnKey === "dateRange2" ? sortedInfo.order : null,
+    showSorterTooltip: false,
+    render: (text) => <span className="font-medium">{text || "-"}</span>,
   },
   {
     title: (
@@ -128,10 +150,11 @@ export const previousClosedPeriodsTable = (sortedInfo, handleDelete) => [
     ),
     dataIndex: "duration2",
     key: "duration2",
-    render: (text) => <span className="font-medium">{text}</span>,
-    sorter: (a, b) => parseInt(a.duration2) - parseInt(b.duration2),
     sortIcon: () => null,
-    showSorterTooltip: false,
+    sorter: (a, b) =>
+      (parseInt(a.duration2) || 0) - (parseInt(b.duration2) || 0),
     sortOrder: sortedInfo?.columnKey === "duration2" ? sortedInfo.order : null,
+    showSorterTooltip: false,
+    render: (text) => <span className="font-medium">{text || "-"}</span>,
   },
 ];

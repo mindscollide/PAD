@@ -38,6 +38,7 @@ const iconComponents = {
   audit: AuditIcon,
   users: UsersIcon,
   underdevelopment: HistoryRecordIcon,
+  closingUpcoming: HistoryRecordIcon,
 };
 
 /**
@@ -57,6 +58,7 @@ const defaultMessages = {
   audit: "No Audit Records",
   users: "No Users Found",
   underdevelopment: "Currently under development",
+  closingUpcoming: "Upcoming Instrument",
 };
 
 /**
