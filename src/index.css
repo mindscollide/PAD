@@ -510,3 +510,93 @@ li.ant-dropdown-menu-item.ant-dropdown-menu-item-only-child:focus {
   > button:hover {
   color: #213155;
 }
+
+:where(.css-dev-only-do-not-override-1rfzxih).ant-notification
+  .ant-notification-notice-wrapper
+  .ant-notification-notice-icon {
+  width: 40px;
+  height: 40px;
+  padding: 5px 0px !important;
+  border-radius: 8px;
+  background: transparent !important;
+}
+
+:where(.css-dev-only-do-not-override-1rfzxih).ant-input-outlined:focus,
+:where(.css-dev-only-do-not-override-1rfzxih).ant-input-outlined:focus-within {
+  border-color: transparent !important;
+  box-shadow: none;
+  outline: 0;
+  background-color: #ffffff;
+}
+
+:where(.css-dev-only-do-not-override-1rfzxih).ant-select-outlined:not(
+    .ant-select-disabled
+  ):not(.ant-select-customize-input):not(.ant-pagination-size-changer):hover
+  .ant-select-selector {
+  border-color: #717171 !important;
+}
+.ant-select-focused:where(
+    .css-dev-only-do-not-override-1rfzxih
+  ).ant-select-outlined:not(.ant-select-disabled):not(
+    .ant-select-customize-input
+  ):not(.ant-pagination-size-changer)
+  .ant-select-selector {
+  border-color: #717171 !important;
+}
+/* Hide the default tick mark for selected items in antd Select */
+:where(.css-dev-only-do-not-override-1rfzxih).ant-select-dropdown
+  .ant-select-item-option-state {
+  display: none;
+}
+
+/*ingle select */
+:where(.css-dev-only-do-not-override-1rfzxih).ant-select-outlined:not(
+    .ant-select-customize-input
+  )
+  .ant-select-selector {
+  border: none !important;
+  background: #ffffff;
+}
+
+:where(
+    .css-dev-only-do-not-override-1rfzxih
+  ).ant-select-outlined.ant-select-multiple
+  .ant-select-selection-item {
+  margin: 6px !important;
+}
+
+:where(.css-dev-only-do-not-override-1rfzxih).ant-btn-variant-solid {
+  color: #fff;
+  background: #2a3c65;
+  font-family: "Switzer Variable" !important;
+}
+a.ant-picker-now-btn {
+  color: #2a3c65;
+  font-family: "Switzer Variable" !important;
+}
+:where(.css-dev-only-do-not-override-1rfzxih).ant-picker-dropdown
+  .ant-picker-time-panel-column
+  > li.ant-picker-time-panel-cell-selected
+  .ant-picker-time-panel-cell-inner {
+  background: #edf3ff;
+  font-family: "Switzer Variable" !important;
+}
+
+:where(.css-dev-only-do-not-override-1rfzxih).ant-btn-variant-solid:not(
+    :disabled
+  ):not(.ant-btn-disabled):hover {
+  background: #213155;
+  color: #fff;
+  box-shadow: 4px 4px 6px 0px #00000033 !important;
+}
+:where(.css-dev-only-do-not-override-1rfzxih).ant-select-multiple
+  .ant-select-selection-placeholder {
+  margin: 4px !important;
+}
+.ant-select-show-search:where(
+    .css-dev-only-do-not-override-1rfzxih
+  ).ant-select:not(.ant-select-customize-input)
+  .ant-select-selector
+  input {
+  margin-top: 3px !important;
+}

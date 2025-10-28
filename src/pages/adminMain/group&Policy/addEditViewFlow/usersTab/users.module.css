@@ -1,0 +1,8 @@
+.table-header-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 6px; /* 👈 small space between label and icon */
+}
+.userTableContainer{
+    margin-top: 10px ;
+}

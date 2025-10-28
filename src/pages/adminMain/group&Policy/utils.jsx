@@ -1,13 +1,6 @@
-import { Button } from "../../../components";
-
-import ArrowUP from "../../../assets/img/arrow-up-dark.png";
-import ArrowDown from "../../../assets/img/arrow-down-dark.png";
-import { ArrowsAltOutlined } from "@ant-design/icons";
-import { Tag, Switch } from "antd";
+import { Tag, Switch, Tooltip } from "antd";
 import styles from "./groups_and_policy.module.css";
-import StatusColumnTitle from "../../../components/dropdowns/filters/statusColumnTitle";
-import { mapStatusToIds } from "../../../components/dropdowns/filters/utils";
-import DefaultColumArrow from "../../../assets/img/default-colum-arrow.png";
+import { Button } from "../../../components";
 
 // import TypeColumnTitle from "./typeFilter";
 
@@ -34,25 +27,6 @@ export const mapAdminGroupAndPolicyData = (adminBrokerData = {}) => {
   }));
 };
 
-const getSortIcon = (columnKey, sortedInfo) => {
-  if (sortedInfo?.columnKey === columnKey) {
-    return sortedInfo.order === "ascend" ? (
-      <img src={ArrowDown} alt="Asc" className="custom-sort-icon" />
-    ) : (
-      <img src={ArrowUP} alt="Desc" className="custom-sort-icon" />
-    );
-  }
-  return (
-    <img
-      draggable={false}
-      src={DefaultColumArrow}
-      alt="Not sorted"
-      className="custom-sort-icon"
-      data-testid={`sort-icon-${columnKey}-default`}
-    />
-  );
-};
-
 /**
  * Utility: Build API request payload for approval listing
  *
@@ -61,73 +35,104 @@ const getSortIcon = (columnKey, sortedInfo) => {
  * @returns {Object} API-ready payload
  */
 export const buildApiRequest = (searchState = {}) => ({
-  BrokerName: searchState.brokerName || "",
-  PSXCode: searchState.psxCode || "",
-  StatusIds: mapStatusToIds?.(searchState.status) || [],
+  GroupPolicyName: searchState.policyName || "",
   PageNumber: Number(searchState.pageNumber) || 0,
   Length: Number(searchState.pageSize) || 10,
 });
 
-export const getTableColumns = ({
-  sortedInfo,
-  //   adminBrokerSearch,
-  //   setAdminBrokerSearch,
-  //   setEditBrokerModal,
-  //   setEditModalData,
-  //   onStatusChange,
-}) => [
+/**
+ * 🔹 Table Columns for Group Policy Listing (No Sorting)
+ */
+export const getGroupPolicyColumns = ({ onViewDetails, onEdit }) => [
   {
-    title: (
-      <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-        Broker Name {getSortIcon("brokerName", sortedInfo)}
-      </div>
-    ),
-    dataIndex: "brokerName",
-    key: "brokerName",
-    ellipsis: true,
-    sorter: (a, b) => a.brokerName.localeCompare(b.brokerName),
-    sortDirections: ["ascend", "descend"],
-    sortOrder: sortedInfo.columnKey === "brokerName" ? sortedInfo.order : null,
-    showSorterTooltip: false,
-    sortIcon: () => null,
-    render: (text) => (
-      <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-        <span className="font-medium">{text}</span>
-      </div>
-    ),
+    title: "Group Policy Name",
+    dataIndex: "groupTitle",
+    key: "groupTitle",
+    width: "20%",
+    render: (text) => {
+      const truncated = text?.length > 50 ? text.slice(0, 50) + "…" : text;
+      return (
+        <Tooltip title={text}>
+          <span className={styles.groupPolicyName}>{truncated}</span>
+        </Tooltip>
+      );
+    },
   },
-
   {
-    title: (
-      <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-        PSX Code {getSortIcon("psxCode", sortedInfo)}
-      </div>
-    ),
-    dataIndex: "psxCode",
-    key: "psxCode",
-    ellipsis: true,
-    sorter: (a, b) => a.psxCode - b.psxCode,
-    sortDirections: ["ascend", "descend"],
-    sortOrder: sortedInfo?.columnKey === "psxCode" ? sortedInfo.order : null,
-    showSorterTooltip: false,
-    sortIcon: () => null,
-    render: (q) => <span className="font-medium">{q.toLocaleString()}</span>,
+    title: "Policy Count",
+    dataIndex: "policyCount",
+    key: "policyCount",
+    align: "center",
+    width: "10%",
+    render: (policyCount) => <span>{policyCount}</span>,
+  },
+  {
+    title: "Policy Count",
+    dataIndex: "policyCount",
+    key: "policyCount",
+    align: "center",
+    width: "8%",
+    render: (policyCount) => <span>{policyCount}</span>,
+  },
+  {
+    title: "Users",
+    dataIndex: "assignedUsers",
+    key: "assignedUsers",
+    width: "30%",
+    render: (assignedUsers = "") => {
+      if (!assignedUsers?.trim()) return <span>-</span>;
+
+      // ✅ Split by both comma (,) and plus (+)
+      const parts = assignedUsers
+        .split(/,|\+/) // split by comma OR plus
+        .map((s) => s.trim())
+        .filter(Boolean); // remove empty strings
+
+      return (
+        <div className={styles.userList}>
+          {parts.map((part, index) => {
+            const isMore = /\b\d+\s*more\b/i.test(part); // detect "X more"
+            return (
+              <div
+                key={index}
+                className={isMore ? styles.moreUsers : styles.userChip}
+              >
+                {isMore ? `+ ${part.replace(/more/i, "").trim()} more` : part}
+              </div>
+            );
+          })}
+        </div>
+      );
+    },
   },
   {
     title: "",
-    key: "action",
-    align: "right", // 🔷 Align content to the right
+    key: "viewDetails",
+    align: "right",
+    width: "8%",
     render: (_, record) => (
-      <div className={styles.viewEditClass}>
-        <Button
-          className="Edit-small-dark-button"
-          text={"Edit"}
-          onClick={() => {
-            // setEditBrokerModal(true);
-            // setEditModalData(record);
-          }}
-        />
-      </div>
+      <Button
+        type="primary"
+        className="small-light-button"
+        id={"view-group-policies-Details-" + record.groupPolicyID}
+        text={"View Details"}
+        onClick={() => onViewDetails(record)}
+      />
+    ),
+  },
+  {
+    title: "",
+    key: "edit",
+    align: "right",
+    width: "8%",
+    render: (_, record) => (
+      <Button
+        type="primary"
+        className="small-light-button"
+        id={"edit-group-policies-Details-" + record.groupPolicyID}
+        text={"Edit"}
+        onClick={() => onEdit(record)}
+      />
     ),
   },
 ];

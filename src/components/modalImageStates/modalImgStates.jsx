@@ -82,6 +82,11 @@ const config = {
     subheading: "Your group has been created successfully.",
     image: GropusISucessImg,
   },
+   GroupUpdateSuccess: {
+    heading: "Updated!",
+    subheading: "Your group has been updated successfully.",
+    image: GropusISucessImg,
+  },
 };
 
 const ModalImgStates = ({

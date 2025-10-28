@@ -102,6 +102,17 @@ export const MyAdminProvider = ({ children }) => {
     adminGroupeAndPoliciesPoliciesTabData,
     setAdminGroupeAndPoliciesPoliciesTabData,
   ] = useState([]);
+
+  // set all policies list on policies tab data
+  const [
+    adminGroupeAndPoliciesUsersTabData,
+    setAdminGroupeAndPoliciesUsersTabData,
+  ] = useState({
+    employees: [],
+    totalRecordsDataBase: 0,
+    totalRecordsTable: 0,
+  });
+
   /**
    * ♻️ Reset Context State (Table + API Data)
    *
@@ -136,6 +147,17 @@ export const MyAdminProvider = ({ children }) => {
     setAdminGropusAndPolicyMqtt(false);
   };
 
+  const resetAdminGroupeAndPoliciesPoliciesTabDataState = () => {
+    setAdminGroupeAndPoliciesPoliciesTabData([]);
+  };
+  const resetAdminGroupeAndPoliciesUsersTabDataState = () => {
+    setAdminGroupeAndPoliciesUsersTabData({
+      employees: [],
+      totalRecordsDataBase: 0,
+      totalRecordsTable: 0,
+    });
+  };
+
   // its for view edit and create data comming from get or seting data init
   const resetAdminGropusAndPolicyContextState = () => {
     setOpenNewFormForAdminGropusAndPolicy(false);
@@ -146,17 +168,11 @@ export const MyAdminProvider = ({ children }) => {
         groupTitle: "",
         groupDiscription: "",
       },
-      policies: {},
-      users: {},
+      policies: [],
+      users: [],
     });
-  };
-
-  const resetAdminGroupeAndPoliciesPoliciesTabDataState = () => {
-    setAdminGroupeAndPoliciesPoliciesTabData({
-      groupPolicies: [],
-      totalRecordsDataBase: 0,
-      totalRecordsTable: 0,
-    });
+    setAdminGroupeAndPoliciesPoliciesTabData();
+    resetAdminGroupeAndPoliciesUsersTabDataState();
   };
 
   const resetAdminDataContextState = () => {
@@ -170,6 +186,7 @@ export const MyAdminProvider = ({ children }) => {
     resetAdminGropusAndPolicyListContextState();
     // Groups and Policy new add edit view page
     resetAdminGropusAndPolicyContextState();
+
     resetAdminGroupeAndPoliciesPoliciesTabDataState();
     //
   };
@@ -216,6 +233,10 @@ export const MyAdminProvider = ({ children }) => {
         resetAdminGroupeAndPoliciesPoliciesTabDataState,
         adminGroupeAndPoliciesPoliciesTabData,
         setAdminGroupeAndPoliciesPoliciesTabData,
+
+        resetAdminGroupeAndPoliciesUsersTabDataState,
+        adminGroupeAndPoliciesUsersTabData,
+        setAdminGroupeAndPoliciesUsersTabData,
       }}
     >
       {children}

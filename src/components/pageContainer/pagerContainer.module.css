@@ -29,16 +29,24 @@
 .bg-gray {
   background-color: #f5f5f5;
 }
+
+.bg-gray-2 {
+  background-color: #f5f5f5;
+  border: none;
+  box-shadow:none;
+
+}
+
 .bg-blue {
   background-color: #edf3ff;
   margin-top: 0px !important;
-  min-height: 632px ;
+  min-height: 632px;
   max-width: 96% !important;
 }
 /* When changeheight = true */
 .changeHeightforPolicy {
   min-height: 592px !important;
-  max-height: 592px!important; ;
+  max-height: 592px !important;
 }
 .bg-transparent {
   background-color: transparent;

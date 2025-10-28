@@ -14,14 +14,14 @@ import { useDashboardContext } from "../../../context/dashboardContaxt";
 
 // 🔹 Styles
 import style from "./groups_and_policy.module.css";
-import { getSafeAssetTypeData } from "../../../common/funtions/assetTypesList";
 import { BorderlessTable, Button, PageLayout } from "../../../components";
 import { useMyAdmin } from "../../../context/AdminContext";
 import { useSearchBarContext } from "../../../context/SearchBarContaxt";
-import { buildApiRequest, getTableColumns } from "./utils";
+import { buildApiRequest, getGroupPolicyColumns } from "./utils";
 import { useNotification } from "../../../components/NotificationProvider/NotificationProvider";
 import { useTableScrollBottom } from "../../../common/funtions/scroll";
 import GroupAndPolicyAddViewEdit from "./addEditViewFlow";
+import { SearchGroupPoliciesList } from "../../../api/adminApi";
 
 const GroupsAndPolicy = () => {
   const navigate = useNavigate();
@@ -29,8 +29,6 @@ const GroupsAndPolicy = () => {
   const tableScrollAdminGroupsAndPolicyList = useRef(null);
 
   // ----------------- Contexts -----------------
-  const { assetTypeListingData, setAssetTypeListingData } =
-    useDashboardContext();
   const { showNotification } = useNotification();
   const { showLoader } = useGlobalLoader();
   const { callApi } = useApi();
@@ -55,23 +53,9 @@ const GroupsAndPolicy = () => {
     resetAdminGropusAndPolicySearch,
   } = useSearchBarContext();
 
-  const {
-    isEquitiesModalVisible,
-    setIsEquitiesModalVisible,
-    isSubmit,
-    isTradeRequestRestricted,
-    isViewDetail,
-    setIsViewDetail,
-    isViewComments,
-    isResubmitted,
-    resubmitIntimation,
-    isConductedTransaction,
-    setSelectedAssetTypeId,
-  } = useGlobalModal();
-
   // ----------------- Local State -----------------
-  const [sortedInfo, setSortedInfo] = useState({});
   const [loadingMore, setLoadingMore] = useState(false);
+  const [currentPolicyID, setCurrentPolicyID] = useState(null);
 
   // ----------------- Helpers -----------------
 
@@ -79,48 +63,39 @@ const GroupsAndPolicy = () => {
   const fetchApiCall = useCallback(
     async (requestData, replace = false, showLoaderFlag = true) => {
       if (!requestData || typeof requestData !== "object") return;
-      // if (showLoaderFlag) showLoader(true);
+      if (showLoaderFlag) showLoader(true);
 
-      // const res = await SearchTadeApprovals({
-      //   callApi,
-      //   showNotification,
-      //   showLoader,
-      //   requestdata: requestData,
-      //   navigate,
-      // });
+      const res = await SearchGroupPoliciesList({
+        callApi,
+        showNotification,
+        showLoader,
+        requestdata: requestData,
+        navigate,
+      });
 
-      // // ✅ Always get the freshest version (from memory or session)
-      // const currentAssetTypeData = getSafeAssetTypeData(
-      //   assetTypeListingData,
-      //   setAssetTypeListingData
-      // );
-
-      // const approvals = Array.isArray(res?.groupsAndPolicy)
-      //   ? res.groupsAndPolicy
-      //   : [];
-      // const mapped = mapEmployeeMyApprovalData(
-      //   currentAssetTypeData?.Equities,
-      //   approvals
-      // );
-      const mapped = [];
+      const groupPolicies = Array.isArray(res?.groupPolicies)
+        ? res.groupPolicies
+        : [];
       setAdminGropusAndPolicyData((prev) => ({
         groupsAndPolicy: replace
-          ? mapped
-          : [...(prev?.groupsAndPolicy || []), ...mapped],
+          ? groupPolicies
+          : [...(prev?.groupsAndPolicy || []), ...groupPolicies],
         // this is for to run lazy loading its data comming from database of total data in db
         // totalRecordsDataBase: res?.totalRecords || 0,
         totalRecordsDataBase: 0,
 
         // this is for to know how mush dta currently fetch from  db
         totalRecordsTable: replace
-          ? mapped.length
-          : adminGropusAndPolicyData.totalRecordsTable + mapped.length,
+          ? groupPolicies.length
+          : adminGropusAndPolicyData.totalRecordsTable + groupPolicies.length,
       }));
 
       setAdminGropusAndPolicySearch((prev) => {
         const next = {
           ...prev,
-          pageNumber: replace ? mapped.length : prev.pageNumber + mapped.length,
+          pageNumber: replace
+            ? groupPolicies.length
+            : prev.pageNumber + groupPolicies.length,
         };
 
         // this is for check if filter value get true only on that it will false
@@ -132,7 +107,6 @@ const GroupsAndPolicy = () => {
       });
     },
     [
-      assetTypeListingData,
       callApi,
       navigate,
       setAdminGropusAndPolicyData,
@@ -142,13 +116,42 @@ const GroupsAndPolicy = () => {
   );
 
   /** 🔹 Handle "View Details" modal */
-  const handleViewDetails = async () => {};
+  const handleOpenCreateGroup = () => {
+    // Step 1 & 2 — reset values
+    setPageTypeForAdminGropusAndPolicy(0);
+    setPageTabeForAdminGropusAndPolicy(0);
 
-  const columns = getTableColumns({
-    sortedInfo,
-    // setEditBrokerModal,
-    // setEditModalData,
-    // onViewDetail: handleViewDetails,
+    // Step 3 — open the new form
+    setOpenNewFormForAdminGropusAndPolicy(true);
+  };
+
+  /** 🔹 Handle "Edit Details" modal */
+  const handleOpenEditGroup = async (record) => {
+    console.log("handleOpenEditGroup", record);
+    await setCurrentPolicyID(record.groupPolicyID);
+    // // Step 1 & 2 — reset values
+    await setPageTypeForAdminGropusAndPolicy(1);
+    await setPageTabeForAdminGropusAndPolicy(0);
+
+    // // Step 3 — open the new form
+    await setOpenNewFormForAdminGropusAndPolicy(true);
+  };
+
+  /** 🔹 Handle "View Details" modal */
+  const handleViewDetails = async (record) => {
+    console.log("handleViewDetails", record);
+    setCurrentPolicyID(record.groupPolicyID);
+    // Step 1 & 2 — reset values
+    setPageTypeForAdminGropusAndPolicy(3);
+    setPageTabeForAdminGropusAndPolicy(0);
+
+    // Step 3 — open the new form
+    setOpenNewFormForAdminGropusAndPolicy(true);
+  };
+
+  const columns = getGroupPolicyColumns({
+    onViewDetails: (record) => handleViewDetails(record),
+    onEdit: (record) => handleOpenEditGroup(record),
   });
 
   /** 🔹 Handle removing individual filter */
@@ -258,17 +261,8 @@ const GroupsAndPolicy = () => {
       }
     },
     0,
-    "border-less-table-blue"
+    "border-less-table-white-3"
   );
-
-  const handleOpenCreateGroup = () => {
-    // Step 1 & 2 — reset values
-    setPageTypeForAdminGropusAndPolicy(0);
-    setPageTabeForAdminGropusAndPolicy(0);
-
-    // Step 3 — open the new form
-    setOpenNewFormForAdminGropusAndPolicy(true);
-  };
 
   // ----------------- Render -----------------
   return (
@@ -296,7 +290,7 @@ const GroupsAndPolicy = () => {
 
           {/* 🔹 Page Layout */}
           <PageLayout
-            background="white"
+            background="gray-2"
             className={activeFilters.length > 0 && "changeHeight"}
           >
             <div className="px-4 md:px-6 lg:px-8">
@@ -310,6 +304,7 @@ const GroupsAndPolicy = () => {
                     type="text"
                     className={"small-dark-button"}
                     text="Create Group"
+                    id={"create-group-and-policies"}
                     onClick={handleOpenCreateGroup}
                   />
                 </Col>
@@ -317,7 +312,7 @@ const GroupsAndPolicy = () => {
 
               {/* Table */}
               <BorderlessTable
-                rows={adminGropusAndPolicyData?.approvals || []}
+                rows={adminGropusAndPolicyData?.groupsAndPolicy || []}
                 columns={columns}
                 scroll={
                   adminGropusAndPolicyData?.approvals?.length
@@ -327,10 +322,7 @@ const GroupsAndPolicy = () => {
                       }
                     : undefined
                 }
-                classNameTable="border-less-table-blue"
-                onChange={(pagination, filters, sorter) =>
-                  setSortedInfo(sorter)
-                }
+                classNameTable="border-less-table-white-3"
                 loading={loadingMore}
                 ref={tableScrollAdminGroupsAndPolicyList}
               />
@@ -338,7 +330,7 @@ const GroupsAndPolicy = () => {
           </PageLayout>
         </>
       ) : (
-        <GroupAndPolicyAddViewEdit />
+        <GroupAndPolicyAddViewEdit currentPolicyID={currentPolicyID} />
       )}
     </>
   );

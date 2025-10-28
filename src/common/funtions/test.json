@@ -1,21 +1,17 @@
 {
-  "action": "WEBNOTIFICATION",
-  "senderID": 1,
-  "dateTime": "20250827090340",
-  "receiverID": [1, 6],
-  "roleIDs": null,
-  "payload": {
-    "message": "Web_Notification",
-    "notificationData": {
-      "notificationID": 41,
-      "notificationActionID": 1,
-      "notificationActionName": "Trade_Approval_Request",
-      "description": "Your request for the trade of 5000 shares of HUB Power Limited is sent for approval to Muhammad",
-      "payloadData": "{\"Quantity\":5000,\"InstrumentName\":\"HUB Power Limited\",\"LineManager\":\"Muhammad\"}",
-      "isRead": false,
-      "sentDateTime": "20250827090340"
-    }
-  },
-  "message": "",
-  "viewable": false
+  "GroupTitle": "testing 2",
+  "GroupDescription": "Admin can create new group policy through this option. System will display a screen with 3 tabs; Details, Policies, Users. Create Group will be a 3-step workflow. By default, the Details tab will appear selected. The Policies and Users tab will also be enabled.",
+  "Policies": [
+    { "policyID": 4, "threshold": "2" },
+    { "policyID": 5, "threshold": "20251030" },
+    { "policyID": 2, "threshold": "4" },
+    { "policyID": 3, "threshold": "7" },
+    { "policyID": 7, "threshold": "Yes" },
+    { "policyID": 1, "threshold": "100006" },
+    { "policyID": 6, "threshold": "hello" },
+    { "policyID": 8, "threshold": "CFO,Head of Compliane Approval" },
+    { "policyID": 9, "threshold": "112700" },
+    { "policyID": 10, "threshold": "20251108030800" }
+  ],
+  "UserIDs": [24]
 }

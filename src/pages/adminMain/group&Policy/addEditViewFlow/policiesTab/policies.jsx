@@ -12,7 +12,7 @@ import { buildApiRequest, policyColumns } from "./utils";
 import EmptyState from "../../../../../components/emptyStates/empty-states";
 import { BorderlessTable } from "../../../../../components";
 import AccordianArrowIcon from "../../../../../assets/img/accordian_arrow.png";
-
+import dayjs from "dayjs";
 const { Panel } = Collapse;
 
 /**
@@ -53,7 +53,6 @@ const Policies = ({ className, activeFilters }) => {
   const {
     tabesFormDataofAdminGropusAndPolicy,
     setTabesFormDataofAdminGropusAndPolicy,
-    resetAdminGroupeAndPoliciesPoliciesTabDataState,
     adminGroupeAndPoliciesPoliciesTabData,
     setAdminGroupeAndPoliciesPoliciesTabData,
   } = useMyAdmin();
@@ -89,10 +88,34 @@ const Policies = ({ className, activeFilters }) => {
           navigate,
         });
 
-        const policyCategories = Array.isArray(res?.policyCategories)
+        let policyCategories = Array.isArray(res?.policyCategories)
           ? res.policyCategories
           : [];
         console.log("policyCategories", policyCategories);
+        // ✅ Replace duration with threshold where policyID matches
+        const savedPolicies =
+          tabesFormDataofAdminGropusAndPolicy?.policies || [];
+
+        if (savedPolicies.length > 0) {
+          policyCategories = policyCategories.map((category) => {
+            if (!Array.isArray(category.policies)) return category;
+
+            const updatedPolicies = category.policies.map((policy) => {
+              const match = savedPolicies.find(
+                (p) => p.policyID === policy.policyID
+              );
+              return match
+                ? {
+                    ...policy,
+                    duration: match.threshold, // ✅ replace duration with threshold value
+                  }
+                : policy;
+            });
+
+            return { ...category, policies: updatedPolicies };
+          });
+        }
+
         if (policyCategories?.length > 0) {
           // create array of all indexes as strings: ["0", "1", "2", ...]
           const allKeys = policyCategories.map(
@@ -104,12 +127,86 @@ const Policies = ({ className, activeFilters }) => {
           setActiveKey(allKeys);
         }
         // Update data based on replace flag
+        // Update data based on replace flag
+        const processedCategories = (policyCategories || []).map(
+          (category) => ({
+            ...category,
+            policies: (category.policies || []).map((policy) => {
+              const { dataTypeID, duration } = policy;
+
+              // ✅ Multi-select (dataTypeID = 7) → convert comma string → array
+              if (
+                dataTypeID === 7 &&
+                typeof duration === "string" &&
+                duration.trim() !== ""
+              ) {
+                return {
+                  ...policy,
+                  duration: duration
+                    .split(",")
+                    .map((v) => v.trim())
+                    .filter(Boolean),
+                };
+              }
+
+              // ✅ Date only (dataTypeID = 2) → convert "YYYYMMDD" → "YYYY-MM-DD"
+              if (
+                dataTypeID === 2 &&
+                typeof duration === "string" &&
+                /^\d{8}$/.test(duration)
+              ) {
+                const formattedDate = dayjs(duration, "YYYYMMDD").format(
+                  "YYYY-MM-DD"
+                );
+                return {
+                  ...policy,
+                  duration: formattedDate,
+                };
+              }
+
+              // ✅ Time only (dataTypeID = 3) → convert "HHmmss" → "HH:mm:ss"
+              if (
+                dataTypeID === 3 &&
+                typeof duration === "string" &&
+                /^\d{6}$/.test(duration)
+              ) {
+                const formattedTime = dayjs(duration, "HHmmss").format(
+                  "HH:mm:ss"
+                );
+                return {
+                  ...policy,
+                  duration: formattedTime,
+                };
+              }
+
+              // ✅ Date + Time (dataTypeID = 4) → convert "YYYYMMDDHHmmss" → "YYYY-MM-DD HH:mm:ss"
+              if (
+                dataTypeID === 4 &&
+                typeof duration === "string" &&
+                /^\d{14}$/.test(duration)
+              ) {
+                const formattedDateTime = dayjs(
+                  duration,
+                  "YYYYMMDDHHmmss"
+                ).format("YYYY-MM-DD HH:mm:ss");
+                return {
+                  ...policy,
+                  duration: formattedDateTime,
+                };
+              }
+
+              // ✅ Otherwise return as-is
+              return policy;
+            }),
+          })
+        );
+        // Update data based on replace flag
         if (replace) {
-          setAdminGroupeAndPoliciesPoliciesTabData(policyCategories);
+          setAdminGroupeAndPoliciesPoliciesTabData(processedCategories);
         } else {
           setAdminGroupeAndPoliciesPoliciesTabData((prev) => [
             ...prev,
-            ...policyCategories,
+            ...processedCategories,
           ]);
         }
 
@@ -130,6 +227,8 @@ const Policies = ({ className, activeFilters }) => {
       setAdminGroupeAndPoliciesPoliciesTabData,
     ]
   );
+  console.log("policyCategories", adminGroupeAndPoliciesPoliciesTabData);
+  console.log("policyCategories", tabesFormDataofAdminGropusAndPolicy);
 
   /**
    * 🔹 Initial Data Load Effect
@@ -138,11 +237,8 @@ const Policies = ({ className, activeFilters }) => {
   useEffect(() => {
     if (didFetchRef.current) return;
     didFetchRef.current = true;
-
     const req = buildApiRequest(adminGropusAndPolicyPoliciesTabSearch);
     fetchApiCall(req, true);
-
-
   }, [fetchApiCall, resetAdminGropusAndPolicyPoliciesTabSearch]);
 
   useEffect(() => {
@@ -179,7 +275,8 @@ const Policies = ({ className, activeFilters }) => {
             ...currentPolicies,
             {
               policyID: record.policyID,
-              threshold: record.duration || "30 days",
+              threshold: record.duration,
+              dataTypeID: record.dataTypeID,
             },
           ];
         } else {
@@ -206,13 +303,37 @@ const Policies = ({ className, activeFilters }) => {
    * @param {string} value - New duration value
    */
   const handleDurationChange = (record, value) => {
-    // setPolicies((prev) =>
-    //   prev.map((item) =>
-    //     item.policyId === record.policyId
-    //       ? { ...item, durationValue: value }
-    //       : item
-    //   )
-    // );
+    const { policyID } = record;
+    setAdminGroupeAndPoliciesPoliciesTabData((prevData) =>
+      prevData.map((category) => ({
+        ...category,
+        policies: category.policies.map((policy) => {
+          console.log("policyCategories", policy.policyID === policyID);
+          return policy.policyID === policyID
+            ? { ...policy, duration: value } // ✅ update only matching policy
+            : policy;
+        }),
+      }))
+    );
+    setTabesFormDataofAdminGropusAndPolicy((prevData) => {
+      // check if policyID exists inside the policies array
+      const policyExists = prevData?.policies?.some(
+        (p) => p.policyID === policyID
+      );
+
+      // if exists, update threshold value
+      if (policyExists) {
+        return {
+          ...prevData,
+          policies: prevData.policies.map((p) =>
+            p.policyID === policyID ? { ...p, threshold: value } : p
+          ),
+        };
+      }
+
+      // otherwise return unchanged
+      return prevData;
+    });
   };
 
   return (

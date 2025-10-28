@@ -267,9 +267,24 @@ export const SearchBarProvider = ({ children }) => {
     adminGropusAndPolicyPoliciesTabSearch,
     setAdminGropusAndPolicyPoliciesTabSearch,
   ] = useState({
-    policyId:null,
+    policyId: null,
     scenario: "",
     consequence: "",
+    filterTrigger: false,
+    pageNumber: 0,
+    pageSize: 10,
+  });
+
+  //Admin Gropus And Policy users Tab
+  const [
+    adminGropusAndPolicyUsersTabSearch,
+    setAdminGropusAndPolicyUsersTabSearch,
+  ] = useState({
+    employeeName: "",
+    emailAddress: "",
+    designation: "",
+    departmentName: "",
+    employeeID: 0,
     filterTrigger: false,
     pageNumber: 0,
     pageSize: 10,
@@ -577,6 +592,19 @@ export const SearchBarProvider = ({ children }) => {
       pageSize: 10,
     });
 
+  // Admin reset Gropus And Policy Search filter for users tab
+  const resetAdminGropusAndPolicyUsersTabSearch = () =>
+    setAdminGropusAndPolicyUsersTabSearch({
+      employeeName: "",
+      emailAddress: "",
+      designation: "",
+      departmentName: "",
+      employeeID: 0,
+      filterTrigger: false,
+      pageNumber: 0,
+      pageSize: 10,
+    });
+
   // ================================================================================ //
   /** Reset all filters across modules */
   const resetSearchBarContextState = () => {
@@ -595,6 +623,7 @@ export const SearchBarProvider = ({ children }) => {
     resetAdminInstrumentListSearch();
     resetAdminGropusAndPolicySearch();
     resetAdminGropusAndPolicyPoliciesTabSearch();
+    resetAdminGropusAndPolicyUsersTabSearch();
   };
 
   // ===============================
@@ -661,10 +690,16 @@ export const SearchBarProvider = ({ children }) => {
         setAdminGropusAndPolicySearch,
         resetAdminGropusAndPolicySearch,
 
-        //Admin Gropus And Policy policies Tabc
+        //Admin Gropus And Policy policies Tab
         resetAdminGropusAndPolicyPoliciesTabSearch,
         adminGropusAndPolicyPoliciesTabSearch,
         setAdminGropusAndPolicyPoliciesTabSearch,
+
+        //Admin Gropus And Policy users Tab
+        resetAdminGropusAndPolicyUsersTabSearch,
+        adminGropusAndPolicyUsersTabSearch,
+        setAdminGropusAndPolicyUsersTabSearch,
+
         // Always-latest refs
         employeeMyApprovalSearchRef,
         employeeMyTransactionSearchRef,

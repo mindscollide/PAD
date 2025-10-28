@@ -50,6 +50,7 @@ const SearchWithPopoverOnly = () => {
     setAdminIntrumentListSearch,
     setAdminGropusAndPolicySearch,
     setAdminGropusAndPolicyPoliciesTabSearch,
+    setAdminGropusAndPolicyUsersTabSearch,
   } = useSearchBarContext();
   const {
     pageTypeForAdminGropusAndPolicy,
@@ -257,8 +258,7 @@ const SearchWithPopoverOnly = () => {
           pageTypeForAdminGropusAndPolicy === 0 &&
           pageTabesForAdminGropusAndPolicy === 1
         ) {
-          console.log("policyId", searchMain);
-
+          console.log("searchMain", searchMain);
           setAdminGropusAndPolicyPoliciesTabSearch((prev) => ({
             ...prev,
             policyId: searchMain,
@@ -268,6 +268,22 @@ const SearchWithPopoverOnly = () => {
             pageNumber: 0,
             pageSize: 10,
             filterTrigger: true,
+          }));
+        } else if (
+          pageTypeForAdminGropusAndPolicy === 0 &&
+          pageTabesForAdminGropusAndPolicy === 2
+        ) {
+          console.log("searchMain", searchMain);
+          setAdminGropusAndPolicyUsersTabSearch((prev) => ({
+            ...prev,
+            employeeName: searchMain,
+            emailAddress: "",
+            designation: "",
+            departmentName: "",
+            employeeID: 0,
+            filterTrigger: true,
+            pageNumber: 0,
+            pageSize: 10,
           }));
         } else {
           setAdminGropusAndPolicySearch((prev) => ({
@@ -306,6 +322,10 @@ const SearchWithPopoverOnly = () => {
               pageTypeForAdminGropusAndPolicy === 0 &&
               pageTabesForAdminGropusAndPolicy === 1
             ? "Search Scenario. Click the icon to view more options"
+            : selectedKey === "20" &&
+              pageTypeForAdminGropusAndPolicy === 0 &&
+              pageTabesForAdminGropusAndPolicy === 2
+            ? "Employee name. Click the icon to view more options"
             : selectedKey === "20"
             ? "Policy Name. Click the icon to view more options"
             : "Instrument name. Click the icon to view more options"
@@ -354,7 +374,9 @@ const SearchWithPopoverOnly = () => {
             searchMain,
             setSearchMain,
             clear,
-            setClear
+            setClear,
+            pageTypeForAdminGropusAndPolicy,
+            pageTabesForAdminGropusAndPolicy
           )}
           trigger="click"
           open={visible}

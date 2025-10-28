@@ -1,6 +1,6 @@
 /* Root Table Layout */
 .border-less-table-orange-body table {
-  border-spacing: 0 10px; /* Space between rows */
+  border-spacing: 0px 10px; /* Space between rows */
 }
 
 /* .border-less-table-orange-body {
@@ -71,7 +71,6 @@ td.border-less-table-orange-cell:hover {
 
 .custom-shortCode-asset {
   display: inline-block;
-  width: 38px;
   align-items: center !important;
   height: 22px;
   line-height: 22px;
@@ -194,7 +193,7 @@ border-  bottom-bottom-right-radius: 6.94px !important;
 
 /* Root Table Layout */
 .border-less-table-blue-body table {
-  border-spacing: 0 10px; /* Space between rows */
+  border-spacing: 0px 10px; /* Space between rows */
 }
 
 /* Table Row Styling */
@@ -357,6 +356,176 @@ border-  bottom-bottom-right-radius: 6.94px !important;
 
 /* Root Table Layout */
 
+/* .border-less-table-white-3-body {
+  overflow-x: hidden !important;
+  max-height: 500px !important;
+  overflow-y: auto !important;
+} */
+
+.border-less-table-white-3-body table {
+  border-spacing: 0px 10px !important;
+}
+:where(.css-dev-only-do-not-override-1rfzxih).border-less-table-white-3-wrapper
+  table {
+  border-spacing: 0px 10px !important;
+}
+/* Table Row Styling */
+.border-less-table-white-3-row {
+  height: 53.82px;
+}
+
+/* Target the first and last <td> inside each <tr> */
+td.border-less-table-white-3-cell:first-child {
+  /* Your styles here */
+  background-color: #fff;
+  border-bottom-left-radius: 6.94px;
+  border-top-left-radius: 6.94px;
+  table-layout: fixed; /* Ensures columns auto-fit container */
+  word-wrap: break-word;
+  border-left: 1px solid #b4b4b4 !important;
+
+  /* Example: add padding, border, etc. */
+}
+td.border-less-table-white-3-cell:last-child {
+  /* Your styles here */
+  background-color: #fff;
+  border: #424242;
+  border-bottom-right-radius: 6.94px;
+  border-top-right-radius: 6.94px;
+  border-right: 1px solid #b4b4b4 !important;
+  /* Example: add padding, border, etc. */
+}
+
+/* Middle columns (excluding first and last) */
+td.border-less-table-white-3-cell:not(:first-child):not(:last-child) {
+  /* Your styles here */
+  background-color: #fff;
+}
+
+.border-less-table-white-3-wrapper .border-less-table-white-3 {
+  background: transparent !important;
+  /* height: 588px !important; */
+}
+/* Cell Styling */
+.border-less-table-white-3-wrapper .border-less-table-white-3-tbody > tr > td {
+  padding: 0px 6px;
+  color: #424242;
+  font-family: "Switzer Variable";
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 100%;
+  vertical-align: middle;
+}
+
+/* Instrument Badge */
+.border-less-table-white-3-instrumentBadge {
+  background-color: #1c2d5a;
+  color: white;
+  padding: 4px 8px;
+  border-radius: 4px;
+  min-width: 28px;
+  text-align: center;
+  font-family: "Switzer Variable";
+  font-weight: 500;
+  font-size: 13.89px;
+}
+
+/* Tag Styling */
+.border-less-table-white-3-status {
+  border: none !important;
+  border-radius: 3.47px;
+  padding: 6px 10px;
+  font-family: "Switzer Variable";
+  font-size: 16px;
+  font-weight: 400;
+}
+
+/* Header Styling */
+.border-less-table-white-3-wrapper .border-less-table-white-3-thead > tr > th {
+  color: #30426a;
+  font-family: "Switzer Variable";
+  font-size: 14px;
+  font-weight: 500;
+  padding: 12px 6px;
+  background: transparent !important;
+}
+
+/* Optional Sticky Header */
+.border-less-table-white-3 .ant-table-header {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background-color: #fff;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+  .border-less-table-white-3-wrapper
+    .border-less-table-white-3-tbody
+    > tr
+    > td {
+    padding: 6px;
+    font-size: 14px;
+  }
+
+  .border-less-table-white-3-instrumentBadge {
+    font-size: 12px;
+    padding: 3px 6px;
+  }
+
+  .border-less-table-white-3-status {
+    font-size: 14px;
+    padding: 5px 8px;
+  }
+
+  .border-less-table-white-3-wrapper
+    .border-less-table-white-3-thead
+    > tr
+    > th {
+    font-size: 13px;
+    padding: 10px;
+  }
+}
+
+.border-less-table-white-3-wrapper
+  .border-less-table-white-3-thead
+  > tr
+  > th:not(:last-child):not(.border-less-table-white-3-selection-column):not(
+    .border-less-table-white-3-row-expand-icon-cell
+  ):not([colspan])::before {
+  display: none;
+}
+
+:where(.css-dev-only-do-not-override-1rfzxih).border-less-table-white-3-wrapper
+  .border-less-table-white-3-tbody
+  > tr
+  > th,
+:where(.css-dev-only-do-not-override-1rfzxih).border-less-table-white-3-wrapper
+  .border-less-table-white-3-tbody
+  > tr
+  > td {
+  border-top: 1px solid #b4b4b4 !important;
+  border-bottom: 1px solid #b4b4b4 !important;
+}
+
+/* border-top-right-radius: 6.94px !important;
+  border-top-left-radius: 6.94px !important;
+border-  bottom-bottom-right-radius: 6.94px !important;
+  border-bottom-left-radius: 6.94px !important; */
+/* Hide scrollbars in the wrapper */
+
+:where(.css-dev-only-do-not-override-1rfzxih).border-less-table-white-3-wrapper
+  .border-less-table-white-3 {
+  scrollbar-width: thin;
+  scrollbar-color: #eaeaea transparent;
+  scrollbar-gutter: stable;
+}
+
+:where(.css-dev-only-do-not-override-1rfzxih).border-less-table-white-3-wrapper
+  .border-less-table-white-3-column-title {
+  z-index: 0 !important;
+}
+
 /* .border-less-table-white-body {
   overflow-x: hidden !important;
   max-height: 500px !important;
@@ -364,9 +533,12 @@ border-  bottom-bottom-right-radius: 6.94px !important;
 } */
 
 .border-less-table-white-body table {
-  border-spacing: 0 10px;
+  border-spacing: 0px 10px !important;
 }
-
+:where(.css-dev-only-do-not-override-1rfzxih).border-less-table-white-wrapper
+  table {
+  border-spacing: 0px 10px !important;
+}
 /* Table Row Styling */
 .border-less-table-white-row {
   height: 53.82px;
@@ -378,7 +550,6 @@ td.border-less-table-white-cell:first-child {
   background-color: #fff;
   border-bottom-left-radius: 6.94px;
   border-top-left-radius: 6.94px;
-  width: 100%;
   table-layout: fixed; /* Ensures columns auto-fit container */
   word-wrap: break-word;
   /* Example: add padding, border, etc. */
@@ -518,7 +689,7 @@ border-  bottom-bottom-right-radius: 6.94px !important;
 /* for groups policies */
 
 .border-less-table-white-2-body table {
-  border-spacing: 0 10px;
+  border-spacing: 0px 10px;
 }
 
 /* Table Row Styling */
@@ -532,7 +703,6 @@ td.border-less-table-white-2-cell:first-child {
   background-color: #fff;
   border-bottom-left-radius: 6.94px;
   border-top-left-radius: 6.94px;
-  width: 100%;
   table-layout: fixed; /* Ensures columns auto-fit container */
   word-wrap: break-word;
   /* Example: add padding, border, etc. */
@@ -696,7 +866,6 @@ td.border-less-table-white-2-cell:first-child::after {
   right: -10px; /* width of the gap */
   top: 0;
   bottom: 0;
-  width: 10px; /* size of gap */
   background: transparent;
 }
 /* Target the first and last <td> inside each <tr> */

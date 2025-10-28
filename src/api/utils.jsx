@@ -361,6 +361,31 @@ export const responseMessages = {
   Admin_AdminServiceManager_GetPoliciesForGroupPolicyPanel_02: "No data found",
   Admin_AdminServiceManager_GetPoliciesForGroupPolicyPanel_03:
     "Exception occurred",
+
+  PAD_GroupPolicyServiceManager_AddGroupPolicy_01: "Invalid or missing input",
+  PAD_GroupPolicyServiceManager_AddGroupPolicy_02: "Success",
+  PAD_GroupPolicyServiceManager_AddGroupPolicy_03:
+    "Failed to create Group Policy",
+  PAD_GroupPolicyServiceManager_AddGroupPolicy_04: "Exception occurred",
+  PAD_GroupPolicyServiceManager_AddGroupPolicy_05:
+    "UnauthorizedUser (Not Admin)",
+
+  PAD_Admin_GetGroupPoliciesList_01: "Exist",
+  PAD_Admin_GetGroupPoliciesList_02: "Not Exist",
+  PAD_Admin_GetGroupPoliciesList_03: "Exception occurred",
+
+  Admin_AdminServiceManager_GetGroupPolicyDetails_01: "Exist",
+  Admin_AdminServiceManager_GetGroupPolicyDetails_02: "Not Exist",
+  Admin_AdminServiceManager_GetGroupPolicyDetails_03: "Exception occurred",
+
+  PAD_GroupPolicyServiceManager_UpdateGroupPolicy_01:
+    "Invalid or missing input",
+  PAD_GroupPolicyServiceManager_UpdateGroupPolicy_02: "Success",
+  PAD_GroupPolicyServiceManager_UpdateGroupPolicy_03:
+    "Failed to Update Group Policy",
+  PAD_GroupPolicyServiceManager_UpdateGroupPolicy_05: "Exception",
+  PAD_GroupPolicyServiceManager_UpdateGroupPolicy_06:
+    "UnauthorizedUser (Not Admin)",
 };
 
 /**
@@ -379,7 +404,8 @@ export const getMessage = (code) => {
     msg === "Successfully updated" ||
     msg === "Successfully inserted all" ||
     msg === "Exist" ||
-    msg === "Not Exist"
+    msg === "Not Exist" ||
+    msg === "Success"
   ) {
     return "";
   }

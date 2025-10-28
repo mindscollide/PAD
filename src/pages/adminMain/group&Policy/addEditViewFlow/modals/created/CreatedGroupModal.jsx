@@ -3,8 +3,10 @@ import { Row, Col } from "antd";
 import CustomButton from "../../../../../../components/buttons/button";
 import { GlobalModal, ModalImgStates } from "../../../../../../components";
 import styles from "./CreatedGroupModal.module.css";
+import { useMyAdmin } from "../../../../../../context/AdminContext";
 
 const CreatedGroupModal = ({ visible, onClose }) => {
+  const { pageTypeForAdminGropusAndPolicy } = useMyAdmin();
   return (
     <GlobalModal
       visible={visible}
@@ -17,7 +19,13 @@ const CreatedGroupModal = ({ visible, onClose }) => {
           <Row>
             <Col>
               {/* ✅ Use your modal image type for success */}
-              <ModalImgStates type="GroupCreatedSuccess" />
+              <ModalImgStates
+                type={
+                  pageTypeForAdminGropusAndPolicy === 0
+                    ? "GroupCreatedSuccess"
+                    : "GroupUpdateSuccess"
+                }
+              />
             </Col>
           </Row>
 

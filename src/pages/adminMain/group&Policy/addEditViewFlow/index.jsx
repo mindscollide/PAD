@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { Button, PageLayout } from "../../../../components";
 import { Breadcrumb, Col, Row } from "antd";
 import { useMyAdmin } from "../../../../context/AdminContext";
@@ -11,13 +11,27 @@ import { useGlobalLoader } from "../../../../context/LoaderContext";
 import { useNotification } from "../../../../components/NotificationProvider/NotificationProvider";
 import Policies from "./policiesTab/policies";
 import { useSearchBarContext } from "../../../../context/SearchBarContaxt";
+import { BorderTopOutlined } from "@ant-design/icons";
+import { notification } from "antd";
+import ErrorIcon from "../../../../assets/img/error-red-icon.png";
+import Users from "./usersTab/users";
+import {
+  AddGroupPolicy,
+  UpdateGroupPolicy,
+  ViewGroupPolicyDetails,
+} from "../../../../api/adminApi";
+import { buildApiRequest, mapGroupPolicyResponse } from "./utils";
+import { useNavigate } from "react-router-dom";
+import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
+dayjs.extend(utc);
 /**
  * 🔹 GroupAndPolicyAddViewEdit
  * Handles "Create / Edit / View" pages for Group Policy module.
  * Provides breadcrumb navigation, tab-based content switching,
  * and form control actions (Cancel, Previous, Next, Create).
  */
-const GroupAndPolicyAddViewEdit = () => {
+const GroupAndPolicyAddViewEdit = ({ currentPolicyID }) => {
   const {
     resetAdminGropusAndPolicyContextState,
     pageTypeForAdminGropusAndPolicy,
@@ -25,18 +39,109 @@ const GroupAndPolicyAddViewEdit = () => {
     setPageTabeForAdminGropusAndPolicy,
     tabesFormDataofAdminGropusAndPolicy,
     setTabesFormDataofAdminGropusAndPolicy,
+    setAdminGropusAndPolicyMqtt,
   } = useMyAdmin();
+  const navigate = useNavigate();
+  const hasFetched = useRef(false);
+
+  // 🔹 Context Hooks
+  const { showNotification } = useNotification();
+  const { showLoader } = useGlobalLoader();
+  const { callApi } = useApi();
+
+  const [api, contextHolder] = notification.useNotification();
+  /** 🔹 Notification for validation */
+  const openNotification = (placement) => {
+    api.open({
+      message: (
+        <div style={{ fontWeight: 600, color: "#A50000", fontSize: 16 }}>
+          Policy Selection Required
+        </div>
+      ),
+      description: (
+        <div style={{ color: "#000000", fontSize: 14 }}>
+          Please select at least one policy before proceeding.
+        </div>
+      ),
+      placement,
+
+      icon: (
+        <img
+          src={ErrorIcon}
+          alt="error"
+          style={{
+            width: 30,
+            height: 30,
+          }}
+        />
+      ),
+      style: {
+        width: 473.02,
+        height: 59.71,
+        top: 54,
+        left: 563,
+        borderRadius: 10,
+        border: "1px solid #A50000",
+        padding: "10px 20px",
+        display: "flex",
+        alignItems: "center",
+        background: "#fff",
+        boxShadow: "0px 4px 10px rgba(0,0,0,0.05)",
+      },
+      duration: 3,
+    });
+  };
 
   const {
     adminGropusAndPolicyPoliciesTabSearch,
     setAdminGropusAndPolicyPoliciesTabSearch,
     resetAdminGropusAndPolicyPoliciesTabSearch,
+    adminGropusAndPolicyUsersTabSearch,
+    setAdminGropusAndPolicyUsersTabSearch,
+    resetAdminGropusAndPolicyUsersTabSearch,
   } = useSearchBarContext();
 
   /** 🔹 Local state for Cancel confirmation modal */
   const [cancelModalVisible, setCancelModalVisible] = useState(false);
   const [createdModalVisible, setCreatedModalVisible] = useState(false);
   const [errorDeatilsTabSwitch, setErrorDeatilsTabSwitch] = useState(false);
+
+  const fetchApiCall = useCallback(
+    async (requestData, replace = false, showLoaderFlag = true) => {
+      if (!requestData || typeof requestData !== "object") return;
+      if (showLoaderFlag) showLoader(true);
+
+      const res = await ViewGroupPolicyDetails({
+        callApi,
+        showNotification,
+        showLoader,
+        requestdata: requestData,
+        navigate,
+      });
+
+      if (res) {
+        console.log("groupPolicies", res);
+        let data = mapGroupPolicyResponse(res);
+        setTabesFormDataofAdminGropusAndPolicy(data);
+        console.log("groupPolicies", data);
+      }
+    },
+    [callApi, navigate, showLoader, showNotification]
+  );
+  console.log("groupPolicies", tabesFormDataofAdminGropusAndPolicy);
+
+  // Initial Fetch
+  useEffect(() => {
+    if (!hasFetched.current && pageTypeForAdminGropusAndPolicy === 1) {
+      hasFetched.current = true;
+      const requestData = {
+        GroupPolicyID: currentPolicyID,
+      };
+
+      fetchApiCall(requestData, true, true);
+    }
+  }, [fetchApiCall]);
+
   /** 🔹 Dynamic breadcrumb title */
   const getTitleByType = () => {
     switch (pageTypeForAdminGropusAndPolicy) {
@@ -71,9 +176,74 @@ const GroupAndPolicyAddViewEdit = () => {
     return true;
   };
 
+  /** 🔹 Validation for Policies tab */
+  const validatePoliciesTab = () => {
+    const selectedPolicies =
+      tabesFormDataofAdminGropusAndPolicy?.policies || [];
+
+    if (!selectedPolicies.length) {
+      openNotification("top");
+      return false;
+    }
+    return true;
+  };
+
+  /** 🔹 Validation for Users tab */
+  const validateUsersTab = () => {
+    const users = tabesFormDataofAdminGropusAndPolicy?.users || [];
+
+    if (!users.length) {
+      api.open({
+        message: (
+          <div style={{ fontWeight: 600, color: "#A50000", fontSize: 16 }}>
+            User Selection Required
+          </div>
+        ),
+        description: (
+          <div style={{ color: "#000000", fontSize: 14 }}>
+            Ensure at least one user is added.
+          </div>
+        ),
+        placement: "top",
+        icon: (
+          <img src={ErrorIcon} alt="error" style={{ width: 30, height: 30 }} />
+        ),
+        style: {
+          width: 473.02,
+          height: 59.71,
+          top: 54,
+          left: 563,
+          borderRadius: 10,
+          border: "1px solid #A50000",
+          padding: "10px 20px",
+          display: "flex",
+          alignItems: "center",
+          background: "#fff",
+          boxShadow: "0px 4px 10px rgba(0,0,0,0.05)",
+        },
+        duration: 3,
+      });
+      return false;
+    }
+
+    return true;
+  };
+
   /** 🔹 Tab switching */
   const handleTabSwitch = (index) => {
-    if (pageTabesForAdminGropusAndPolicy === 0 && !validateDetailsTab()) return;
+    if (
+      pageTabesForAdminGropusAndPolicy === 0 &&
+      index > 0 &&
+      !validateDetailsTab()
+    )
+      return;
+    // Validate Policies tab before moving forward
+    if (
+      pageTabesForAdminGropusAndPolicy === 1 &&
+      index > 1 &&
+      !validatePoliciesTab()
+    )
+      return;
     setPageTabeForAdminGropusAndPolicy(index);
   };
 
@@ -92,11 +262,116 @@ const GroupAndPolicyAddViewEdit = () => {
     if (pageTabesForAdminGropusAndPolicy < 2)
       if (pageTabesForAdminGropusAndPolicy === 0 && !validateDetailsTab())
         return;
+    if (pageTabesForAdminGropusAndPolicy === 1 && !validatePoliciesTab())
+      return;
+
     setPageTabeForAdminGropusAndPolicy(pageTabesForAdminGropusAndPolicy + 1);
   };
 
-  const handleCreate = () => {
-    setCreatedModalVisible(true); // ✅ Open modal
+  const handleCreate = async () => {
+    // ✅ Validate Users before allowing creation
+    if (!validateUsersTab()) return;
+    // ✅ Deep clone state to avoid mutating
+    const formData = JSON.parse(
+      JSON.stringify(tabesFormDataofAdminGropusAndPolicy)
+    );
+
+    // ✅ Convert threshold for only date/time/datetime
+    const convertedPolicies = formData?.policies?.map((policy) => {
+      const { dataTypeID, threshold } = policy;
+
+      if (threshold === undefined || threshold === null) return policy;
+
+      let convertedThreshold = threshold;
+
+      try {
+        const dateFormat = "YYYYMMDD";
+        const timeFormat = "HHmmss";
+        const dateTimeFormat = "YYYYMMDDHHmmss";
+
+        if (dataTypeID === 2) {
+          // ✅ Date Only (e.g. "2025-10-28")
+          const now = dayjs();
+          const combined = dayjs(
+            `${threshold} ${now.format("HH:mm:ss")}`,
+            "YYYY-MM-DD HH:mm:ss"
+          );
+          convertedThreshold = combined.utc().format(dateFormat);
+        } else if (dataTypeID === 3) {
+          // ✅ Time Only (e.g. "08:15")
+          const today = dayjs().format("YYYY-MM-DD");
+          const combined = dayjs(`${today} ${threshold}`, "YYYY-MM-DD HH:mm");
+          convertedThreshold = combined.utc().format(timeFormat);
+        } else if (dataTypeID === 4) {
+          // ✅ Date + Time (e.g. "2025-10-28 08:15")
+          const parsed = dayjs(threshold, "YYYY-MM-DD HH:mm");
+          convertedThreshold = parsed.utc().format(dateTimeFormat);
+        } else if (dataTypeID === 7) {
+          // ✅ Multi-Select (convert array to comma-separated string)
+          if (Array.isArray(threshold)) {
+            convertedThreshold = threshold.join(",");
+          }
+        } else {
+          // ✅ Convert all remaining types to string
+          convertedThreshold = String(threshold);
+        }
+      } catch (e) {
+        console.warn("⚠️ Conversion failed for policy:", policy.policyID, e);
+      }
+
+      return {
+        ...policy,
+        threshold: convertedThreshold,
+      };
+    });
+
+    // ✅ Remove `dataTypeID` from final payload
+    const cleanedPolicies = convertedPolicies.map(
+      ({ dataTypeID, ...rest }) => rest
+    );
+    let requestData = buildApiRequest({
+      ...tabesFormDataofAdminGropusAndPolicy,
+      policies: cleanedPolicies,
+    });
+
+    if (pageTypeForAdminGropusAndPolicy === 1) {
+      // 🟠 Update existing → add GroupPolicyID
+      requestData = {
+        ...requestData,
+        GroupPolicyID: currentPolicyID, // 👈 use your stored policy ID
+      };
+    }
+    if (pageTypeForAdminGropusAndPolicy === 0) {
+      showLoader(true);
+      const res = await AddGroupPolicy({
+        callApi,
+        showNotification,
+        showLoader,
+        requestdata: requestData,
+        navigate,
+      });
+      if (res) {
+        setCreatedModalVisible(true); // ✅ Open modal
+      } else {
+        console.log("failed");
+      }
+    } else {
+      showLoader(true);
+      const res = await UpdateGroupPolicy({
+        callApi,
+        showNotification,
+        showLoader,
+        requestdata: requestData,
+        navigate,
+      });
+      if (res) {
+        setCreatedModalVisible(true); // ✅ Open modal
+      } else {
+        console.log("failed");
+      }
+
+      console.log("requestData", requestData);
+    }
   };
 
   /** 🔹 Cancel Modal Actions */
@@ -111,76 +386,156 @@ const GroupAndPolicyAddViewEdit = () => {
 
   /** 🔹 Handle removing individual filter */
   const handleRemoveFilter = (key) => {
-    const resetMap = {
-      policyId: { policyId: null },
-      scenario: { scenario: "" },
-      consequence: { consequence: "" },
-    };
+    if (pageTabesForAdminGropusAndPolicy === 1) {
+      // Policies Tab Filters
+      const resetMap = {
+        policyId: { policyId: null },
+        scenario: { scenario: "" },
+        consequence: { consequence: "" },
+      };
 
-    setAdminGropusAndPolicyPoliciesTabSearch((prev) => ({
-      ...prev,
-      ...resetMap[key],
-      pageNumber: 0,
-      filterTrigger: true,
-    }));
+      setAdminGropusAndPolicyPoliciesTabSearch((prev) => ({
+        ...prev,
+        ...resetMap[key],
+        pageNumber: 0,
+        filterTrigger: true,
+      }));
+    } else if (pageTabesForAdminGropusAndPolicy === 2) {
+      // Users Tab Filters
+      const resetMap = {
+        employeeName: { employeeName: "" },
+        designation: { designation: "" },
+        departmentName: { departmentName: "" },
+        emailAddress: { emailAddress: "" },
+      };
+
+      setAdminGropusAndPolicyUsersTabSearch((prev) => ({
+        ...prev,
+        ...resetMap[key],
+        pageNumber: 0,
+        filterTrigger: true,
+      }));
+    }
   };
 
   /** 🔹 Handle removing all filters */
   const handleRemoveAllFilters = () => {
-    setAdminGropusAndPolicyPoliciesTabSearch((prev) => ({
-      ...prev,
-      policyId: null,
-      scenario: "",
-      consequence: "",
-      pageNumber: 0,
-      filterTrigger: true,
-    }));
+    if (pageTabesForAdminGropusAndPolicy === 1) {
+      // Policies tab
+      setAdminGropusAndPolicyPoliciesTabSearch((prev) => ({
+        ...prev,
+        policyId: null,
+        scenario: "",
+        consequence: "",
+        pageNumber: 0,
+        filterTrigger: true,
+      }));
+    } else if (pageTabesForAdminGropusAndPolicy === 2) {
+      // Users tab
+      setAdminGropusAndPolicyUsersTabSearch((prev) => ({
+        ...prev,
+        employeeName: "",
+        emailAddress: "",
+        designation: "",
+        departmentName: "",
+        pageNumber: 0,
+        filterTrigger: true,
+      }));
+    }
   };
 
   /** 🔹 Build Active Filters */
   const activeFilters = (() => {
-    const { policyId, scenario, consequence } =
-      adminGropusAndPolicyPoliciesTabSearch || {};
+    if (pageTabesForAdminGropusAndPolicy === 1) {
+      // 🔸 Policy Filters
+      const { policyId, scenario, consequence } =
+        adminGropusAndPolicyPoliciesTabSearch || {};
 
-    const filters = [];
+      const filters = [];
 
-    if (policyId)
-      filters.push({
-        key: "policyId",
-        label: "Policy ID",
-        value: `#${policyId}`,
-      });
+      if (policyId)
+        filters.push({
+          key: "policyId",
+          label: "Policy ID",
+          value: `#${policyId}`,
+        });
 
-    if (scenario)
-      filters.push({
-        key: "scenario",
-        label: "Scenario",
-        value: scenario.length > 20 ? `${scenario.slice(0, 20)}...` : scenario,
-      });
+      if (scenario)
+        filters.push({
+          key: "scenario",
+          label: "Scenario",
+          value:
+            scenario.length > 20 ? `${scenario.slice(0, 20)}...` : scenario,
+        });
 
-    if (consequence)
-      filters.push({
-        key: "consequence",
-        label: "Consequence",
-        value:
-          consequence.length > 20
-            ? `${consequence.slice(0, 20)}...`
-            : consequence,
-      });
+      if (consequence)
+        filters.push({
+          key: "consequence",
+          label: "Consequence",
+          value:
+            consequence.length > 20
+              ? `${consequence.slice(0, 20)}...`
+              : consequence,
+        });
 
-    return filters;
+      return filters;
+    }
+
+    if (pageTabesForAdminGropusAndPolicy === 2) {
+      // 🔸 User Filters
+      const { employeeName, designation, departmentName, emailAddress } =
+        adminGropusAndPolicyUsersTabSearch || {};
+
+      const filters = [];
+
+      if (employeeName)
+        filters.push({
+          key: "employeeName",
+          label: "Employee Name",
+          value: employeeName,
+        });
+
+      if (designation)
+        filters.push({
+          key: "designation",
+          label: "Designation",
+          value: designation,
+        });
+
+      if (departmentName)
+        filters.push({
+          key: "departmentName",
+          label: "Department",
+          value: departmentName,
+        });
+
+      if (emailAddress)
+        filters.push({
+          key: "emailAddress",
+          label: "Email",
+          value: emailAddress,
+        });
+
+      return filters;
+    }
+
+    return [];
   })();
+
   useEffect(() => {
     if (pageTabesForAdminGropusAndPolicy === 0) {
       resetAdminGropusAndPolicyPoliciesTabSearch();
+      resetAdminGropusAndPolicyUsersTabSearch();
     } else if (pageTabesForAdminGropusAndPolicy === 1) {
-      console.log("h");
+      resetAdminGropusAndPolicyUsersTabSearch();
     } else if (pageTabesForAdminGropusAndPolicy === 2) {
       resetAdminGropusAndPolicyPoliciesTabSearch();
     }
   }, [pageTabesForAdminGropusAndPolicy]);
+
   return (
     <div className={styles.noScrollContainer}>
+      {contextHolder}
       {/* 🔹 Active Filter Tags */}
       {activeFilters.length > 0 && (
         <Row gutter={[12, 12]} className={styles["filter-tags-container"]}>
@@ -343,7 +698,11 @@ const GroupAndPolicyAddViewEdit = () => {
                       <Col>
                         <Button
                           className="small-dark-button"
-                          text="Create"
+                          text={
+                            pageTypeForAdminGropusAndPolicy === 0
+                              ? "Create"
+                              : "Update"
+                          }
                           onClick={handleCreate}
                         />
                       </Col>
@@ -363,6 +722,9 @@ const GroupAndPolicyAddViewEdit = () => {
         {pageTabesForAdminGropusAndPolicy === 1 && (
           <Policies activeFilters={activeFilters.length > 0} />
         )}
+        {pageTabesForAdminGropusAndPolicy === 2 && (
+          <Users activeFilters={activeFilters.length > 0} />
+        )}
       </PageLayout>
 
       {/* 🔹 Cancel Confirmation Modal */}
@@ -376,8 +738,9 @@ const GroupAndPolicyAddViewEdit = () => {
       <CreatedGroupModal
         visible={createdModalVisible}
         onClose={() => {
-          setCreatedModalVisible(false);
           resetAdminGropusAndPolicyContextState(); // Optional → go back to list
+          setCreatedModalVisible(false);
+          setAdminGropusAndPolicyMqtt(true);
         }}
       />
     </div>
