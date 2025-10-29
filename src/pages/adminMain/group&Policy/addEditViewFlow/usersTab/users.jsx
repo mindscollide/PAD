@@ -12,7 +12,7 @@ import { useSearchBarContext } from "../../../../../context/SearchBarContaxt";
 import { buildApiRequest, getUserColumns } from "./utils";
 import { useTableScrollBottom } from "../../../../../common/funtions/scroll";
 
-const Users = ({ className, activeFilters }) => {
+const Users = ({ className, activeFilters,currentPolicyID }) => {
   // 🔹 Navigation & Refs
   const navigate = useNavigate();
   const hasFetched = useRef(false); // Prevents duplicate initial fetches
@@ -122,17 +122,13 @@ const Users = ({ className, activeFilters }) => {
     });
   };
 
-  console.log(
-    "tabesFormDataofAdminGropusAndPolicy",
-    tabesFormDataofAdminGropusAndPolicy
-  );
-
   const handleChange = (_, __, sorter) => setSortedInfo(sorter);
 
   const columns = getUserColumns({
     sortedInfo,
     handleSelectChange,
     tabesFormDataofAdminGropusAndPolicy,
+    currentPolicyID
   });
   // Fetch on Filter Trigger
   useEffect(() => {

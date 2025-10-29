@@ -73,6 +73,7 @@ export const getUserColumns = ({
   sortedInfo = {},
   handleSelectChange,
   tabesFormDataofAdminGropusAndPolicy = [],
+  currentPolicyID = -1,
 }) => [
   {
     title: "",
@@ -80,12 +81,25 @@ export const getUserColumns = ({
     key: "employeeID",
     width: "8%",
     render: (_, record) => {
-      const isDisabled = record?.isDisable;
+      const isDisabled =
+        currentPolicyID !== -1
+          ? record?.isDisable
+            ? currentPolicyID === record?.groupPolicyID
+              ? false
+              : true
+            : false
+          : record?.isDisable;
       const tooltipTitle = isDisabled
-        ? record?.assignedPolicyName
-          ? `"${record.assignedPolicyName} "Already assigned to this user `
+        ? record?.groupPolicyTitle
+          ? `"${record.groupPolicyTitle} "Already assigned to this user `
           : "Already assigned to a group policy"
         : "";
+
+      console.log("isDisabled", isDisabled);
+      console.log("isDisabled", record?.isDisable);
+      console.log("isDisabled", record?.groupPolicyID);
+      console.log("isDisabled", currentPolicyID);
+      console.log("isDisabled", tabesFormDataofAdminGropusAndPolicy);
       return (
         <Tooltip title={tooltipTitle} placement="topLeft">
           <Checkbox
@@ -110,10 +124,18 @@ export const getUserColumns = ({
     showSorterTooltip: false,
     sortIcon: () => null,
     render: (text, record) => {
-      const isDisabled = record?.isDisable;
+      const isDisabled =
+        currentPolicyID !== -1
+          ? record?.isDisable
+            ? currentPolicyID === record?.groupPolicyID
+              ? false
+              : true
+            : false
+          : record?.isDisable;
+
       const tooltipTitle = isDisabled
-        ? record?.assignedPolicyName
-          ? `"${record.assignedPolicyName} "Already assigned to this user `
+        ? record?.groupPolicyTitle
+          ? `"${record.groupPolicyTitle} "Already assigned to this user `
           : "Already assigned to a group policy"
         : "";
 
@@ -147,10 +169,17 @@ export const getUserColumns = ({
     showSorterTooltip: false,
     sortIcon: () => null,
     render: (text, record) => {
-      const isDisabled = record?.isDisable;
+      const isDisabled =
+        currentPolicyID !== -1
+          ? record?.isDisable
+            ? currentPolicyID === record?.groupPolicyID
+              ? false
+              : true
+            : false
+          : record?.isDisable;
       const tooltipTitle = isDisabled
-        ? record?.assignedPolicyName
-          ? `"${record.assignedPolicyName} "Already assigned to this user `
+        ? record?.groupPolicyTitle
+          ? `"${record.groupPolicyTitle} "Already assigned to this user `
           : "Already assigned to a group policy"
         : "";
 
@@ -179,10 +208,18 @@ export const getUserColumns = ({
     showSorterTooltip: false,
     sortIcon: () => null,
     render: (text, record) => {
-      const isDisabled = record?.isDisable;
+      const isDisabled =
+        currentPolicyID !== -1
+          ? record?.isDisable
+            ? currentPolicyID === record?.groupPolicyID
+              ? false
+              : true
+            : false
+          : record?.isDisable;
+
       const tooltipTitle = isDisabled
-        ? record?.assignedPolicyName
-          ? `"${record.assignedPolicyName} "Already assigned to this user `
+        ? record?.groupPolicyTitle
+          ? `"${record.groupPolicyTitle} "Already assigned to this user `
           : "Already assigned to a group policy"
         : "";
 
@@ -211,10 +248,18 @@ export const getUserColumns = ({
     showSorterTooltip: false,
     sortIcon: () => null,
     render: (text, record) => {
-      const isDisabled = record?.isDisable;
+      const isDisabled =
+        currentPolicyID !== -1
+          ? record?.isDisable
+            ? currentPolicyID === record?.groupPolicyID
+              ? false
+              : true
+            : false
+          : record?.isDisable;
+
       const tooltipTitle = isDisabled
-        ? record?.assignedPolicyName
-          ? `"${record.assignedPolicyName} "Already assigned to this user `
+        ? record?.groupPolicyTitle
+          ? `"${record.groupPolicyTitle} "Already assigned to this user `
           : "Already assigned to a group policy"
         : "";
 
@@ -237,10 +282,18 @@ export const getUserColumns = ({
     dataIndex: "policyAssignedDate",
     key: "policyAssignedDate",
     render: (date, record) => {
-      const isDisabled = record?.isDisable;
+      const isDisabled =
+        currentPolicyID !== -1
+          ? record?.isDisable
+            ? currentPolicyID === record?.groupPolicyID
+              ? false
+              : true
+            : false
+          : record?.isDisable;
+
       const tooltipTitle = isDisabled
-        ? record?.assignedPolicyName
-          ? `"${record.assignedPolicyName} "Already assigned to this user `
+        ? record?.groupPolicyTitle
+          ? `"${record.groupPolicyTitle} "Already assigned to this user `
           : "Already assigned to a group policy"
         : "";
       const dateandtime =

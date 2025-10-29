@@ -29,6 +29,6 @@ export const mapGroupPolicyResponse = (res) => {
       threshold: p.thresholdValue || "",
       dataTypeID: p.dataTypeID || null, // will be null if backend doesn't send it
     })),
-    users: assignedUsers.map((u) => String(u.userID)), // convert all to string
+    users: assignedUsers.map((u) => Number(u.userID)), // convert all to string
   };
 };

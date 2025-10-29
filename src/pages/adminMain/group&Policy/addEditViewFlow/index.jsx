@@ -31,7 +31,7 @@ dayjs.extend(utc);
  * Provides breadcrumb navigation, tab-based content switching,
  * and form control actions (Cancel, Previous, Next, Create).
  */
-const GroupAndPolicyAddViewEdit = ({ currentPolicyID }) => {
+const GroupAndPolicyAddViewEdit = ({ currentPolicyID, setCurrentPolicyID }) => {
   const {
     resetAdminGropusAndPolicyContextState,
     pageTypeForAdminGropusAndPolicy,
@@ -128,7 +128,6 @@ const GroupAndPolicyAddViewEdit = ({ currentPolicyID }) => {
     },
     [callApi, navigate, showLoader, showNotification]
   );
-  console.log("groupPolicies", tabesFormDataofAdminGropusAndPolicy);
 
   // Initial Fetch
   useEffect(() => {
@@ -329,6 +328,7 @@ const GroupAndPolicyAddViewEdit = ({ currentPolicyID }) => {
     const cleanedPolicies = convertedPolicies.map(
       ({ dataTypeID, ...rest }) => rest
     );
+
     let requestData = buildApiRequest({
       ...tabesFormDataofAdminGropusAndPolicy,
       policies: cleanedPolicies,
@@ -341,6 +341,7 @@ const GroupAndPolicyAddViewEdit = ({ currentPolicyID }) => {
         GroupPolicyID: currentPolicyID, // 👈 use your stored policy ID
       };
     }
+
     if (pageTypeForAdminGropusAndPolicy === 0) {
       showLoader(true);
       const res = await AddGroupPolicy({
@@ -533,6 +534,13 @@ const GroupAndPolicyAddViewEdit = ({ currentPolicyID }) => {
     }
   }, [pageTabesForAdminGropusAndPolicy]);
 
+  useEffect(() => {
+    // 🧹 Cleanup on unmount
+    return () => {
+      setCurrentPolicyID(-1);
+    };
+  }, []);
+
   return (
     <div className={styles.noScrollContainer}>
       {contextHolder}
@@ -723,7 +731,10 @@ const GroupAndPolicyAddViewEdit = ({ currentPolicyID }) => {
           <Policies activeFilters={activeFilters.length > 0} />
         )}
         {pageTabesForAdminGropusAndPolicy === 2 && (
-          <Users activeFilters={activeFilters.length > 0} />
+          <Users
+            activeFilters={activeFilters.length > 0}
+            currentPolicyID={currentPolicyID}
+          />
         )}
       </PageLayout>
 

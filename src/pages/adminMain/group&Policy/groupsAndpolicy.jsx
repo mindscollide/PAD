@@ -55,7 +55,7 @@ const GroupsAndPolicy = () => {
 
   // ----------------- Local State -----------------
   const [loadingMore, setLoadingMore] = useState(false);
-  const [currentPolicyID, setCurrentPolicyID] = useState(null);
+  const [currentPolicyID, setCurrentPolicyID] = useState(-1);
 
   // ----------------- Helpers -----------------
 
@@ -188,6 +188,7 @@ const GroupsAndPolicy = () => {
     if (!hasFetched.current) {
       hasFetched.current = true;
       const requestData = buildApiRequest(adminGropusAndPolicySearch);
+      setCurrentPolicyID(-1);
 
       fetchApiCall(requestData, true, true);
     }
@@ -330,7 +331,7 @@ const GroupsAndPolicy = () => {
           </PageLayout>
         </>
       ) : (
-        <GroupAndPolicyAddViewEdit currentPolicyID={currentPolicyID} />
+        <GroupAndPolicyAddViewEdit currentPolicyID={currentPolicyID} setCurrentPolicyID={setCurrentPolicyID}/>
       )}
     </>
   );
