@@ -7,12 +7,15 @@ import { useNavigate } from "react-router-dom";
 import { useNotification } from "../../../../../components/NotificationProvider/NotificationProvider";
 import { useGlobalLoader } from "../../../../../context/LoaderContext";
 import { useApi } from "../../../../../context/ApiContext";
-import { SearchAllEmployeesWithAssignedPolicies } from "../../../../../api/adminApi";
+import {
+  SearchAllEmployeesWithAssignedPolicies,
+  SearchUsersByGroupPolicyID,
+} from "../../../../../api/adminApi";
 import { useSearchBarContext } from "../../../../../context/SearchBarContaxt";
 import { buildApiRequest, getUserColumns } from "./utils";
 import { useTableScrollBottom } from "../../../../../common/funtions/scroll";
 
-const Users = ({ className, activeFilters,currentPolicyID }) => {
+const Users = ({ className, activeFilters, currentPolicyID }) => {
   // 🔹 Navigation & Refs
   const navigate = useNavigate();
   const hasFetched = useRef(false); // Prevents duplicate initial fetches
@@ -34,6 +37,7 @@ const Users = ({ className, activeFilters,currentPolicyID }) => {
     resetAdminGroupeAndPoliciesUsersTabDataState,
     adminGroupeAndPoliciesUsersTabData,
     setAdminGroupeAndPoliciesUsersTabData,
+    pageTypeForAdminGropusAndPolicy,
   } = useMyAdmin();
 
   // 🔹 Search Context
@@ -48,15 +52,24 @@ const Users = ({ className, activeFilters,currentPolicyID }) => {
     async (requestData, replace = false, showLoaderFlag = true) => {
       if (!requestData || typeof requestData !== "object") return;
       if (showLoaderFlag) showLoader(true);
-
-      const res = await SearchAllEmployeesWithAssignedPolicies({
-        callApi,
-        showNotification,
-        showLoader,
-        requestdata: requestData,
-        navigate,
-      });
-
+      let res = [];
+      if (pageTypeForAdminGropusAndPolicy === 2) {
+        res = await SearchUsersByGroupPolicyID({
+          callApi,
+          showNotification,
+          showLoader,
+          requestdata: requestData,
+          navigate,
+        });
+      } else {
+        res = await SearchAllEmployeesWithAssignedPolicies({
+          callApi,
+          showNotification,
+          showLoader,
+          requestdata: requestData,
+          navigate,
+        });
+      }
       const employees = Array.isArray(res?.employees) ? res.employees : [];
       const mapped = employees;
       //   const mapped = manage(employees);
@@ -101,8 +114,14 @@ const Users = ({ className, activeFilters,currentPolicyID }) => {
   useEffect(() => {
     if (!hasFetched.current) {
       hasFetched.current = true;
-      const requestData = buildApiRequest(adminGropusAndPolicyUsersTabSearch);
-
+      let requestData = buildApiRequest(adminGropusAndPolicyUsersTabSearch);
+      if (pageTypeForAdminGropusAndPolicy === 2) {
+        // 🟠 Update existing → add GroupPolicyID
+        requestData = {
+          ...requestData,
+          GroupPolicyID: currentPolicyID, // 👈 use your stored policy ID
+        };
+      }
       fetchApiCall(requestData, true, true);
     }
   }, [buildApiRequest, adminGropusAndPolicyUsersTabSearch, fetchApiCall]);
@@ -128,12 +147,19 @@ const Users = ({ className, activeFilters,currentPolicyID }) => {
     sortedInfo,
     handleSelectChange,
     tabesFormDataofAdminGropusAndPolicy,
-    currentPolicyID
+    currentPolicyID,
   });
   // Fetch on Filter Trigger
   useEffect(() => {
     if (adminGropusAndPolicyUsersTabSearch.filterTrigger) {
-      const requestData = buildApiRequest(adminGropusAndPolicyUsersTabSearch);
+      let requestData = buildApiRequest(adminGropusAndPolicyUsersTabSearch);
+      if (pageTypeForAdminGropusAndPolicy === 2) {
+        // 🟠 Update existing → add GroupPolicyID
+        requestData = {
+          ...requestData,
+          GroupPolicyID: currentPolicyID, // 👈 use your stored policy ID
+        };
+      }
 
       fetchApiCall(requestData, true, true);
     }

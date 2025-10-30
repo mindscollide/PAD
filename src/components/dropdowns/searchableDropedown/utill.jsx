@@ -29,7 +29,7 @@ export const renderFilterContent = (
   setSearchMain,
   clear,
   setClear,
-  pageTypeForAdminGropusAndPolicy,
+  openNewFormForAdminGropusAndPolicy,
   pageTabesForAdminGropusAndPolicy
 ) => {
   switch (selectedKey) {
@@ -136,7 +136,7 @@ export const renderFilterContent = (
       console.log("AdminPoliciesFilter");
 
       if (
-        pageTypeForAdminGropusAndPolicy === 0 &&
+        openNewFormForAdminGropusAndPolicy &&
         pageTabesForAdminGropusAndPolicy === 1
       ) {
         return (
@@ -149,7 +149,7 @@ export const renderFilterContent = (
           />
         );
       } else if (
-        pageTypeForAdminGropusAndPolicy === 0 &&
+        openNewFormForAdminGropusAndPolicy &&
         pageTabesForAdminGropusAndPolicy === 2
       ) {
         return (

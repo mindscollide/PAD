@@ -386,6 +386,15 @@ export const responseMessages = {
   PAD_GroupPolicyServiceManager_UpdateGroupPolicy_05: "Exception",
   PAD_GroupPolicyServiceManager_UpdateGroupPolicy_06:
     "UnauthorizedUser (Not Admin)",
+
+  Admin_AdminServiceManager_SearchPoliciesByGroupPolicyID_01: "Data found",
+  Admin_AdminServiceManager_SearchPoliciesByGroupPolicyID_02: "No data found",
+  Admin_AdminServiceManager_SearchPoliciesByGroupPolicyID_03:
+    "Exception occurred",
+
+  Admin_AdminServiceManager_SearchUsersByGroupPolicyID_01: "Data found",
+  Admin_AdminServiceManager_SearchUsersByGroupPolicyID_02: "No data found",
+  Admin_AdminServiceManager_SearchUsersByGroupPolicyID_03: "Exception occurred",
 };
 
 /**

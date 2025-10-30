@@ -127,7 +127,6 @@ const GroupsAndPolicy = () => {
 
   /** 🔹 Handle "Edit Details" modal */
   const handleOpenEditGroup = async (record) => {
-    console.log("handleOpenEditGroup", record);
     await setCurrentPolicyID(record.groupPolicyID);
     // // Step 1 & 2 — reset values
     await setPageTypeForAdminGropusAndPolicy(1);
@@ -139,14 +138,14 @@ const GroupsAndPolicy = () => {
 
   /** 🔹 Handle "View Details" modal */
   const handleViewDetails = async (record) => {
-    console.log("handleViewDetails", record);
-    setCurrentPolicyID(record.groupPolicyID);
+    console.log("handleViewDetails", handleViewDetails);
+    await setCurrentPolicyID(record.groupPolicyID);
     // Step 1 & 2 — reset values
-    setPageTypeForAdminGropusAndPolicy(3);
-    setPageTabeForAdminGropusAndPolicy(0);
+    await setPageTypeForAdminGropusAndPolicy(2);
+    await setPageTabeForAdminGropusAndPolicy(0);
 
     // Step 3 — open the new form
-    setOpenNewFormForAdminGropusAndPolicy(true);
+    await setOpenNewFormForAdminGropusAndPolicy(true);
   };
 
   const columns = getGroupPolicyColumns({
@@ -238,11 +237,18 @@ const GroupsAndPolicy = () => {
   }, [adminGropusAndPolicyMqtt]);
 
   useEffect(() => {
+    if (openNewFormForAdminGropusAndPolicy && currentPolicyID !== -1) {
+      setCurrentPolicyID(-1);
+    }
     return () => {
       resetAdminGropusAndPolicyContextState();
     };
   }, []);
-
+  useEffect(() => {
+    if (!openNewFormForAdminGropusAndPolicy && currentPolicyID !== -1) {
+      setCurrentPolicyID(-1);
+    }
+  }, [openNewFormForAdminGropusAndPolicy]);
   // Infinite Scroll
   useTableScrollBottom(
     async () => {
@@ -331,7 +337,10 @@ const GroupsAndPolicy = () => {
           </PageLayout>
         </>
       ) : (
-        <GroupAndPolicyAddViewEdit currentPolicyID={currentPolicyID} setCurrentPolicyID={setCurrentPolicyID}/>
+        <GroupAndPolicyAddViewEdit
+          currentPolicyID={currentPolicyID}
+          setCurrentPolicyID={setCurrentPolicyID}
+        />
       )}
     </>
   );

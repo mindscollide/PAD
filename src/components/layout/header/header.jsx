@@ -59,7 +59,6 @@ const Headers = () => {
               ) : (
                 selectedKeyRef.current === "20" &&
                 openNewFormForAdminGropusAndPolicy &&
-                pageTypeForAdminGropusAndPolicy !== 2 &&
                 pageTabesForAdminGropusAndPolicy !== 0 && <SearchWithFilter />
               )}
             </Col>

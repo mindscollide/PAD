@@ -8,12 +8,14 @@ import { useGlobalLoader } from "../../../../../context/LoaderContext";
 import { useApi } from "../../../../../context/ApiContext";
 import { CheckGroupTitleExists } from "../../../../../api/adminApi";
 import { useNavigate } from "react-router-dom";
+import Paragraph from "antd/es/skeleton/Paragraph";
 const { TextArea } = Input;
 
 const Details = ({ errorDeatilsTabSwitch, setErrorDeatilsTabSwitch }) => {
   const {
     tabesFormDataofAdminGropusAndPolicy,
     setTabesFormDataofAdminGropusAndPolicy,
+    pageTypeForAdminGropusAndPolicy,
   } = useMyAdmin();
   // 🔷 Context Hooks
   const navigate = useNavigate();
@@ -27,8 +29,10 @@ const Details = ({ errorDeatilsTabSwitch, setErrorDeatilsTabSwitch }) => {
   const [isCheckingTitle, setIsCheckingTitle] = useState(false);
 
   const groupTitle = tabesFormDataofAdminGropusAndPolicy.details.groupTitle;
+  console.log("groupDescription", groupTitle);
   const groupDescription =
     tabesFormDataofAdminGropusAndPolicy.details.groupDiscription;
+  console.log("groupDescription", groupDescription);
 
   // 🔹 Simulate async uniqueness check (replace with API later)
   const checkGroupTitleUnique = async () => {
@@ -41,7 +45,7 @@ const Details = ({ errorDeatilsTabSwitch, setErrorDeatilsTabSwitch }) => {
       showNotification,
       showLoader,
       requestdata: requestData,
-      navigate
+      navigate,
     });
 
     return res;
@@ -129,78 +133,97 @@ const Details = ({ errorDeatilsTabSwitch, setErrorDeatilsTabSwitch }) => {
         {/* 🔹 Group Title */}
         <Col span={24}>
           <label className={styles.label}>Group Title</label>
-          <Input
-            value={groupTitle}
-            onChange={(e) =>
-              e.target.value.length <= 100 &&
-              handleChange("groupTitle", e.target.value)
-            }
-            onBlur={handleTitleBlur}
-            placeholder="Enter group title"
-            maxLength={100}
-            className={`${styles.inputField} ${
-              isTitleValid === false
-                ? styles.errorBorder
-                : isTitleValid === true
-                ? styles.successBorder
-                : ""
-            }`}
-          />
-          <div
-            className={`${styles.counter} ${
-              isTitleValid === false ? styles.errorCounter : ""
-            }`}
-          >
-            {groupTitle.length}/100
-          </div>
-          {titleError ? (
-            <div
-              className={styles.errorMessage}
-              style={{ display: "flex", alignItems: "center", gap: "6px" }}
-            >
-              <span>{titleError}</span>
-              {isCheckingTitle && (
-                <Spin
-                  indicator={<LoadingOutlined spin />}
-                  size="small"
-                  style={{ marginTop: "-2px" }}
-                />
-              )}
-            </div>
-          ) : (
-            isCheckingTitle && (
-              <div style={{ marginTop: "-12px", marginLeft: "4px" }}>
-                <Spin indicator={<LoadingOutlined spin />} size="small" />
+          {pageTypeForAdminGropusAndPolicy !== 2 ? (
+            <>
+              <Input
+                value={groupTitle}
+                onChange={(e) =>
+                  e.target.value.length <= 100 &&
+                  handleChange("groupTitle", e.target.value)
+                }
+                onBlur={handleTitleBlur}
+                placeholder="Enter group title"
+                maxLength={100}
+                className={`${styles.inputField} ${
+                  isTitleValid === false
+                    ? styles.errorBorder
+                    : isTitleValid === true
+                    ? styles.successBorder
+                    : ""
+                }`}
+              />
+              <div
+                className={`${styles.counter} ${
+                  isTitleValid === false ? styles.errorCounter : ""
+                }`}
+              >
+                {groupTitle.length}/100
               </div>
-            )
+              {titleError ? (
+                <div
+                  className={styles.errorMessage}
+                  style={{ display: "flex", alignItems: "center", gap: "6px" }}
+                >
+                  <span>{titleError}</span>
+                  {isCheckingTitle && (
+                    <Spin
+                      indicator={<LoadingOutlined spin />}
+                      size="small"
+                      style={{ marginTop: "-2px" }}
+                    />
+                  )}
+                </div>
+              ) : (
+                isCheckingTitle && (
+                  <div style={{ marginTop: "-12px", marginLeft: "4px" }}>
+                    <Spin indicator={<LoadingOutlined spin />} size="small" />
+                  </div>
+                )
+              )}
+            </>
+          ) : (
+            <span  className={styles.viewtitle}>
+              {groupTitle}
+            </span>
           )}
         </Col>
 
         {/* 🔹 Group Description */}
         <Col span={24}>
           <label className={styles.label}>Group Description</label>
-          <TextArea
-            rows={4}
-            value={groupDescription}
-            onChange={(e) =>
-              e.target.value.length <= 500 &&
-              handleChange("groupDiscription", e.target.value)
-            }
-            onBlur={handleDescriptionBlur}
-            placeholder="Enter group description"
-            maxLength={500}
-            className={`${styles.textareaField} ${
-              isDescValid === false ? styles.errorBorder : ""
-            }`}
-          />
-          <div
-            className={`${styles.counter} ${
-              isDescValid === false ? styles.errorCounter : ""
-            }`}
-          >
-            {groupDescription.length}/500
-          </div>
-          {descError && <div className={styles.errorMessage}>{descError}</div>}
+          {pageTypeForAdminGropusAndPolicy !== 2 ? (
+            <>
+              {" "}
+              <TextArea
+                rows={4}
+                value={groupDescription}
+                onChange={(e) =>
+                  e.target.value.length <= 500 &&
+                  handleChange("groupDiscription", e.target.value)
+                }
+                onBlur={handleDescriptionBlur}
+                placeholder="Enter group description"
+                maxLength={500}
+                className={`${styles.textareaField} ${
+                  isDescValid === false ? styles.errorBorder : ""
+                }`}
+              />
+              <div
+                className={`${styles.counter} ${
+                  isDescValid === false ? styles.errorCounter : ""
+                }`}
+              >
+                {groupDescription.length}/500
+              </div>
+              {descError && (
+                <div className={styles.errorMessage}>{descError}</div>
+              )}
+            </>
+          ) : (
+            <span className={styles.viewdiscription}>
+              {groupDescription}
+            </span>
+          )}
         </Col>
       </Row>
     </div>

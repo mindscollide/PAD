@@ -878,3 +878,182 @@ td.border-less-table-white-2-cell:nth-child(3) {
   border-bottom-left-radius: 6.94px;
   border-top-left-radius: 6.94px;
 }
+
+/* ================== */
+
+
+.border-less-table-white-4-body table {
+  border-spacing: 0px 10px;
+}
+
+/* Table Row Styling */
+.border-less-table-white-4-row {
+  height: 53.82px;
+}
+
+/* Target the first and last <td> inside each <tr> */
+td.border-less-table-white-4-cell:first-child {
+  /* Your styles here */
+  background-color: #fff;
+  border-bottom-left-radius: 6.94px;
+  border-top-left-radius: 6.94px;
+  table-layout: fixed; /* Ensures columns auto-fit container */
+  word-wrap: break-word;
+  /* Example: add padding, border, etc. */
+}
+
+td.border-less-table-white-4-cell:last-child {
+  /* Your styles here */
+  background-color: #fff;
+  border-bottom-right-radius: 6.94px;
+  border-top-right-radius: 6.94px;
+  /* Example: add padding, border, etc. */
+}
+
+/* Middle columns (excluding first and last) */
+td.border-less-table-white-4-cell:not(:first-child):not(:last-child) {
+  /* Your styles here */
+  background-color: #fff;
+}
+
+.border-less-table-white-4-wrapper .border-less-table-white-4 {
+  background: transparent !important;
+  /* height: 588px !important; */
+}
+
+/* Cell Styling */
+.border-less-table-white-4-wrapper .border-less-table-white-4-tbody > tr > td {
+  padding: 0px 6px;
+  color: #424242;
+  font-family: "Switzer Variable";
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 100%;
+  vertical-align: middle;
+}
+
+/* Instrument Badge */
+.border-less-table-white-4-instrumentBadge {
+  background-color: #1c2d5a;
+  color: white;
+  padding: 4px 8px;
+  border-radius: 4px;
+  min-width: 28px;
+  text-align: center;
+  font-family: "Switzer Variable";
+  font-weight: 500;
+  font-size: 13.89px;
+}
+
+/* Tag Styling */
+.border-less-table-white-4-status {
+  border: none !important;
+  border-radius: 3.47px;
+  padding: 6px 10px;
+  font-family: "Switzer Variable";
+  font-size: 16px;
+  font-weight: 400;
+}
+
+/* Header Styling */
+.border-less-table-white-4-wrapper .border-less-table-white-4-thead > tr > th {
+  color: #30426a;
+  font-family: "Switzer Variable";
+  font-weight: 700;
+  font-style: bold;
+  padding: 12px 6px;
+  background: transparent !important;
+  border-bottom: none;
+}
+
+/* Optional Sticky Header */
+.border-less-table-white-4 .ant-table-header {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background-color: #fff;
+}
+.border-less-table-white-4-header {
+  margin-bottom: -20px;
+}
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+  .border-less-table-white-4-wrapper
+    .border-less-table-white-4-tbody
+    > tr
+    > td {
+    padding: 6px;
+    font-size: 14px;
+  }
+
+  .border-less-table-white-4-instrumentBadge {
+    font-size: 12px;
+    padding: 3px 6px;
+  }
+
+  .border-less-table-white-4-status {
+    font-size: 14px;
+    padding: 5px 8px;
+  }
+
+  .border-less-table-white-4-wrapper
+    .border-less-table-white-4-thead
+    > tr
+    > th {
+    font-size: 13px;
+    padding: 10px;
+  }
+}
+
+.border-less-table-white-4-wrapper
+  .border-less-table-white-4-thead
+  > tr
+  > th:not(:last-child):not(.border-less-table-white-4-selection-column):not(
+    .border-less-table-white-4-row-expand-icon-cell
+  ):not([colspan])::before {
+  display: none;
+}
+
+:where(.css-dev-only-do-not-override-1rfzxih).border-less-table-white-4-wrapper
+  .border-less-table-white-4-tbody
+  > tr
+  > th,
+:where(.css-dev-only-do-not-override-1rfzxih).border-less-table-white-4-wrapper
+  .border-less-table-white-4-tbody
+  > tr
+  > td {
+  border-bottom: none !important;
+}
+
+:where(.css-dev-only-do-not-override-1rfzxih).border-less-table-white-4-wrapper
+  .border-less-table-white-4 {
+  scrollbar-width: thin;
+  scrollbar-color: #eaeaea transparent;
+  scrollbar-gutter: stable;
+}
+
+:where(.css-dev-only-do-not-override-1rfzxih).border-less-table-white-4-wrapper
+  .border-less-table-white-4-column-title {
+  z-index: 0 !important;
+}
+
+/* Target the first and last <td> inside each <tr> */
+td.border-less-table-white-4-cell:first-child {
+  /* Your styles here */
+  border-bottom-right-radius: 6.94px;
+  border-top-right-radius: 6.94px;
+  padding-left: 12px; /* add space inside the first column */
+  padding-right: 16px; /* optional: add space to the right */
+  position: relative;
+  padding-right: 20px; /* creates visual gap to 2nd column */
+}
+
+td.border-less-table-white-4-cell:first-child::after {
+  content: "";
+  position: absolute;
+  right: -10px; /* width of the gap */
+  top: 0;
+  bottom: 0;
+  background: transparent;
+}
+

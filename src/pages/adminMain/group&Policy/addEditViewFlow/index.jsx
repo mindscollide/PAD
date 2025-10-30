@@ -32,6 +32,7 @@ dayjs.extend(utc);
  * and form control actions (Cancel, Previous, Next, Create).
  */
 const GroupAndPolicyAddViewEdit = ({ currentPolicyID, setCurrentPolicyID }) => {
+
   const {
     resetAdminGropusAndPolicyContextState,
     pageTypeForAdminGropusAndPolicy,
@@ -40,6 +41,7 @@ const GroupAndPolicyAddViewEdit = ({ currentPolicyID, setCurrentPolicyID }) => {
     tabesFormDataofAdminGropusAndPolicy,
     setTabesFormDataofAdminGropusAndPolicy,
     setAdminGropusAndPolicyMqtt,
+    setPageTypeForAdminGropusAndPolicy,
   } = useMyAdmin();
   const navigate = useNavigate();
   const hasFetched = useRef(false);
@@ -105,6 +107,7 @@ const GroupAndPolicyAddViewEdit = ({ currentPolicyID, setCurrentPolicyID }) => {
   const [cancelModalVisible, setCancelModalVisible] = useState(false);
   const [createdModalVisible, setCreatedModalVisible] = useState(false);
   const [errorDeatilsTabSwitch, setErrorDeatilsTabSwitch] = useState(false);
+  console.log("currentPolicyID", currentPolicyID);
 
   const fetchApiCall = useCallback(
     async (requestData, replace = false, showLoaderFlag = true) => {
@@ -131,12 +134,15 @@ const GroupAndPolicyAddViewEdit = ({ currentPolicyID, setCurrentPolicyID }) => {
 
   // Initial Fetch
   useEffect(() => {
-    if (!hasFetched.current && pageTypeForAdminGropusAndPolicy === 1) {
+    if (
+      !hasFetched.current &&
+      (pageTypeForAdminGropusAndPolicy === 1 ||
+        pageTypeForAdminGropusAndPolicy === 2)
+    ) {
       hasFetched.current = true;
       const requestData = {
         GroupPolicyID: currentPolicyID,
       };
-
       fetchApiCall(requestData, true, true);
     }
   }, [fetchApiCall]);
@@ -230,20 +236,24 @@ const GroupAndPolicyAddViewEdit = ({ currentPolicyID, setCurrentPolicyID }) => {
 
   /** 🔹 Tab switching */
   const handleTabSwitch = (index) => {
-    if (
-      pageTabesForAdminGropusAndPolicy === 0 &&
-      index > 0 &&
-      !validateDetailsTab()
-    )
-      return;
-    // Validate Policies tab before moving forward
-    if (
-      pageTabesForAdminGropusAndPolicy === 1 &&
-      index > 1 &&
-      !validatePoliciesTab()
-    )
-      return;
-    setPageTabeForAdminGropusAndPolicy(index);
+    if (pageTypeForAdminGropusAndPolicy < 2) {
+      if (
+        pageTabesForAdminGropusAndPolicy === 0 &&
+        index > 0 &&
+        !validateDetailsTab()
+      )
+        return;
+      // Validate Policies tab before moving forward
+      if (
+        pageTabesForAdminGropusAndPolicy === 1 &&
+        index > 1 &&
+        !validatePoliciesTab()
+      )
+        return;
+      setPageTabeForAdminGropusAndPolicy(index);
+    } else {
+      setPageTabeForAdminGropusAndPolicy(index);
+    }
   };
 
   /** 🔹 Action Handlers */
@@ -523,6 +533,12 @@ const GroupAndPolicyAddViewEdit = ({ currentPolicyID, setCurrentPolicyID }) => {
     return [];
   })();
 
+  /** 🔹 Handle "Edit Details" modal */
+  const handleEditFromView = async () => {
+    // // Step 1 & 2 — reset values
+    await setPageTypeForAdminGropusAndPolicy(1);
+  };
+
   useEffect(() => {
     if (pageTabesForAdminGropusAndPolicy === 0) {
       resetAdminGropusAndPolicyPoliciesTabSearch();
@@ -534,12 +550,6 @@ const GroupAndPolicyAddViewEdit = ({ currentPolicyID, setCurrentPolicyID }) => {
     }
   }, [pageTabesForAdminGropusAndPolicy]);
 
-  useEffect(() => {
-    // 🧹 Cleanup on unmount
-    return () => {
-      setCurrentPolicyID(-1);
-    };
-  }, []);
 
   return (
     <div className={styles.noScrollContainer}>
@@ -719,16 +729,35 @@ const GroupAndPolicyAddViewEdit = ({ currentPolicyID, setCurrentPolicyID }) => {
                 </Row>
               </Col>
             )}
+            {pageTypeForAdminGropusAndPolicy === 2 && (
+              <Col>
+                <Button
+                  className="small-dark-button"
+                  text={
+                    pageTabesForAdminGropusAndPolicy === 0
+                      ? "Edit Deatils"
+                      : pageTabesForAdminGropusAndPolicy === 1
+                      ? "Edit Ploicies"
+                      : "Edit Users"
+                  }
+                  onClick={handleEditFromView}
+                />
+              </Col>
+            )}
           </div>
         </Row>
         {pageTabesForAdminGropusAndPolicy === 0 && (
           <Details
             errorDeatilsTabSwitch={errorDeatilsTabSwitch}
             setErrorDeatilsTabSwitch={setErrorDeatilsTabSwitch}
+            currentPolicyID={currentPolicyID}
           />
         )}
         {pageTabesForAdminGropusAndPolicy === 1 && (
-          <Policies activeFilters={activeFilters.length > 0} />
+          <Policies
+            activeFilters={activeFilters.length > 0}
+            currentPolicyID={currentPolicyID}
+          />
         )}
         {pageTabesForAdminGropusAndPolicy === 2 && (
           <Users

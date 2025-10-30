@@ -163,3 +163,25 @@ export const getCurrentDateTimeMarkAsReadNotification = () => {
 
   return `${year}${month}${day}${hours}${minutes}${seconds}`;
 };
+
+
+// this for time display convert utc to current time zone 
+export const convertUTCToLocalTime = (utcTimeStr) => {
+  if (!utcTimeStr || utcTimeStr.length !== 6) return null;
+
+  // Extract hours, minutes, seconds
+  const hours = parseInt(utcTimeStr.slice(0, 2), 10);
+  const minutes = parseInt(utcTimeStr.slice(2, 4), 10);
+  const seconds = parseInt(utcTimeStr.slice(4, 6), 10);
+
+  // Create a UTC-based date
+  const utcDate = new Date(Date.UTC(1970, 0, 1, hours, minutes, seconds));
+
+  // Convert to local time (24-hour format)
+  const localTime = utcDate.toLocaleTimeString("en-GB", {
+    hour12: false,
+    timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+  });
+
+  return localTime; // Format: HH:mm:ss
+};

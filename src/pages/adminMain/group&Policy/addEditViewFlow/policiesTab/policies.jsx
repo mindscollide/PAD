@@ -6,7 +6,10 @@ import { useNotification } from "../../../../../components/NotificationProvider/
 import { useGlobalLoader } from "../../../../../context/LoaderContext";
 import { useApi } from "../../../../../context/ApiContext";
 import { useNavigate } from "react-router-dom";
-import { SearchPoliciesForGroupPolicyPanel } from "../../../../../api/adminApi";
+import {
+  SearchPoliciesByGroupPolicyID,
+  SearchPoliciesForGroupPolicyPanel,
+} from "../../../../../api/adminApi";
 import { useSearchBarContext } from "../../../../../context/SearchBarContaxt";
 import { buildApiRequest, policyColumns } from "./utils";
 import EmptyState from "../../../../../components/emptyStates/empty-states";
@@ -34,7 +37,7 @@ const { Panel } = Collapse;
  * />
  */
 
-const Policies = ({ className, activeFilters }) => {
+const Policies = ({ activeFilters, currentPolicyID }) => {
   // 🔹 Navigation & Refs
   const navigate = useNavigate();
   const didFetchRef = useRef(false); // Prevents duplicate initial fetches
@@ -55,6 +58,7 @@ const Policies = ({ className, activeFilters }) => {
     setTabesFormDataofAdminGropusAndPolicy,
     adminGroupeAndPoliciesPoliciesTabData,
     setAdminGroupeAndPoliciesPoliciesTabData,
+    pageTypeForAdminGropusAndPolicy,
   } = useMyAdmin();
 
   // 🔹 Search Context
@@ -80,14 +84,26 @@ const Policies = ({ className, activeFilters }) => {
       else showLoader(true);
 
       try {
-        const res = await SearchPoliciesForGroupPolicyPanel({
-          callApi,
-          showNotification,
-          showLoader,
-          requestdata: requestData,
-          navigate,
-        });
+        let res = [];
+        if (pageTypeForAdminGropusAndPolicy === 2) {
+          res = await SearchPoliciesByGroupPolicyID({
+            callApi,
+            showNotification,
+            showLoader,
+            requestdata: requestData,
+            navigate,
+          });
+        } else {
+          res = await SearchPoliciesForGroupPolicyPanel({
+            callApi,
+            showNotification,
+            showLoader,
+            requestdata: requestData,
+            navigate,
+          });
+        }
 
+        console.log("policyCategories", res);
         let policyCategories = Array.isArray(res?.policyCategories)
           ? res.policyCategories
           : [];
@@ -227,8 +243,6 @@ const Policies = ({ className, activeFilters }) => {
       setAdminGroupeAndPoliciesPoliciesTabData,
     ]
   );
-  console.log("policyCategories", adminGroupeAndPoliciesPoliciesTabData);
-  console.log("policyCategories", tabesFormDataofAdminGropusAndPolicy);
 
   /**
    * 🔹 Initial Data Load Effect
@@ -237,15 +251,29 @@ const Policies = ({ className, activeFilters }) => {
   useEffect(() => {
     if (didFetchRef.current) return;
     didFetchRef.current = true;
-    const req = buildApiRequest(adminGropusAndPolicyPoliciesTabSearch);
-    fetchApiCall(req, true);
+
+    let requestData = buildApiRequest(adminGropusAndPolicyPoliciesTabSearch);
+    if (pageTypeForAdminGropusAndPolicy === 2) {
+      // 🟠 Update existing → add GroupPolicyID
+      requestData = {
+        ...requestData,
+        GroupPolicyID: currentPolicyID, // 👈 use your stored policy ID
+      };
+    }
+    fetchApiCall(requestData, true);
   }, [fetchApiCall, resetAdminGropusAndPolicyPoliciesTabSearch]);
 
   useEffect(() => {
     if (adminGropusAndPolicyPoliciesTabSearch.filterTrigger) {
-      const req = buildApiRequest(adminGropusAndPolicyPoliciesTabSearch);
-
-      fetchApiCall(req, true);
+      let requestData = buildApiRequest(adminGropusAndPolicyPoliciesTabSearch);
+      if (pageTypeForAdminGropusAndPolicy === 2) {
+        // 🟠 Update existing → add GroupPolicyID
+        requestData = {
+          ...requestData,
+          GroupPolicyID: currentPolicyID, // 👈 use your stored policy ID
+        };
+      }
+      fetchApiCall(requestData, true);
       setAdminGropusAndPolicyPoliciesTabSearch((prev) => ({
         ...prev,
         filterTrigger: false,
@@ -264,7 +292,6 @@ const Policies = ({ className, activeFilters }) => {
     setTabesFormDataofAdminGropusAndPolicy((prev) => {
       const currentPolicies = Array.isArray(prev.policies) ? prev.policies : [];
       let updatedPolicies;
-
       if (checked) {
         // Add policy if it doesn't already exist
         const exists = currentPolicies?.some(
@@ -340,9 +367,7 @@ const Policies = ({ className, activeFilters }) => {
     <div
       ref={listRef}
       className={
-        activeFilters
-          ? `${styles.filterMAinArea} ${className || ""}`
-          : `${styles.mainArea} ${className || ""}`
+        activeFilters ? `${styles.filterMAinArea} ` : `${styles.mainArea} `
       }
     >
       {/* 🔹 Policy Categories Accordion */}
@@ -391,6 +416,7 @@ const Policies = ({ className, activeFilters }) => {
                       columns={policyColumns({
                         onSelectChange: handleSelectChange,
                         onDurationChange: handleDurationChange,
+                        viewFlag: pageTypeForAdminGropusAndPolicy === 2,
                         selectedPolicies:
                           tabesFormDataofAdminGropusAndPolicy?.policies
                             ? tabesFormDataofAdminGropusAndPolicy?.policies
@@ -398,7 +424,7 @@ const Policies = ({ className, activeFilters }) => {
                       })}
                       pagination={false}
                       rowKey="transactionId"
-                      classNameTable="border-less-table-white-2"
+                      classNameTable="border-less-table-white-4"
                       scroll={{ y: 400 }} // Internal table scroll
                       style={{ width: "100%" }}
                     />
@@ -410,7 +436,7 @@ const Policies = ({ className, activeFilters }) => {
         </Collapse>
       ) : (
         // 🔹 Empty State
-        <EmptyState type="portfolio" />
+        <EmptyState type="policiestab" />
       )}
 
       {/* 🔹 Loading Indicator for Infinite Scroll */}

@@ -255,7 +255,7 @@ const SearchWithPopoverOnly = () => {
 
       case "20": // Admin groupe creat and  List
         if (
-          pageTypeForAdminGropusAndPolicy === 0 &&
+          openNewFormForAdminGropusAndPolicy &&
           pageTabesForAdminGropusAndPolicy === 1
         ) {
           console.log("searchMain", searchMain);
@@ -270,7 +270,7 @@ const SearchWithPopoverOnly = () => {
             filterTrigger: true,
           }));
         } else if (
-          pageTypeForAdminGropusAndPolicy === 0 &&
+          openNewFormForAdminGropusAndPolicy &&
           pageTabesForAdminGropusAndPolicy === 2
         ) {
           console.log("searchMain", searchMain);
@@ -375,7 +375,7 @@ const SearchWithPopoverOnly = () => {
             setSearchMain,
             clear,
             setClear,
-            pageTypeForAdminGropusAndPolicy,
+            openNewFormForAdminGropusAndPolicy,
             pageTabesForAdminGropusAndPolicy
           )}
           trigger="click"
