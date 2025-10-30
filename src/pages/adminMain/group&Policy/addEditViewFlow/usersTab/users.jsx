@@ -15,7 +15,12 @@ import { useSearchBarContext } from "../../../../../context/SearchBarContaxt";
 import { buildApiRequest, getUserColumns } from "./utils";
 import { useTableScrollBottom } from "../../../../../common/funtions/scroll";
 
-const Users = ({ className, activeFilters, currentPolicyID }) => {
+const Users = ({
+  activeFilters,
+  currentPolicyID,
+  clickEditFromView,
+  setClickEditFromView,
+}) => {
   // 🔹 Navigation & Refs
   const navigate = useNavigate();
   const hasFetched = useRef(false); // Prevents duplicate initial fetches
@@ -38,6 +43,7 @@ const Users = ({ className, activeFilters, currentPolicyID }) => {
     adminGroupeAndPoliciesUsersTabData,
     setAdminGroupeAndPoliciesUsersTabData,
     pageTypeForAdminGropusAndPolicy,
+    setPageTypeForAdminGropusAndPolicy,
   } = useMyAdmin();
 
   // 🔹 Search Context
@@ -49,11 +55,11 @@ const Users = ({ className, activeFilters, currentPolicyID }) => {
 
   /** 🔹 Fetch approvals from API */
   const fetchApiCall = useCallback(
-    async (requestData, replace = false, showLoaderFlag = true) => {
+    async (requestData, replace = false, showLoaderFlag = true, type) => {
       if (!requestData || typeof requestData !== "object") return;
       if (showLoaderFlag) showLoader(true);
       let res = [];
-      if (pageTypeForAdminGropusAndPolicy === 2) {
+      if (type === 2) {
         res = await SearchUsersByGroupPolicyID({
           callApi,
           showNotification,
@@ -110,6 +116,21 @@ const Users = ({ className, activeFilters, currentPolicyID }) => {
     ]
   );
 
+  const handleNewCall = async () => {
+    await setPageTypeForAdminGropusAndPolicy(1);
+
+    let requestData = buildApiRequest(adminGropusAndPolicyUsersTabSearch);
+    // 🟠 Update existing → add GroupPolicyID
+    fetchApiCall(requestData, true, true, 1);
+    setClickEditFromView(false);
+  };
+
+  useEffect(() => {
+    if (clickEditFromView) {
+      handleNewCall();
+    }
+  }, [clickEditFromView]);
+
   // Initial Fetch
   useEffect(() => {
     if (!hasFetched.current) {
@@ -122,7 +143,7 @@ const Users = ({ className, activeFilters, currentPolicyID }) => {
           GroupPolicyID: currentPolicyID, // 👈 use your stored policy ID
         };
       }
-      fetchApiCall(requestData, true, true);
+      fetchApiCall(requestData, true, true, pageTypeForAdminGropusAndPolicy);
     }
   }, [buildApiRequest, adminGropusAndPolicyUsersTabSearch, fetchApiCall]);
 
@@ -176,7 +197,12 @@ const Users = ({ className, activeFilters, currentPolicyID }) => {
       try {
         setLoadingMore(true);
         const requestData = buildApiRequest(adminGropusAndPolicyUsersTabSearch);
-        await fetchApiCall(requestData, false, false);
+        await fetchApiCall(
+          requestData,
+          false,
+          false,
+          pageTypeForAdminGropusAndPolicy
+        );
       } catch (err) {
         console.error("Error loading more approvals:", err);
       } finally {

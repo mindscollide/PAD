@@ -37,7 +37,12 @@ const { Panel } = Collapse;
  * />
  */
 
-const Policies = ({ activeFilters, currentPolicyID }) => {
+const Policies = ({
+  activeFilters,
+  currentPolicyID,
+  clickEditFromView,
+  setClickEditFromView,
+}) => {
   // 🔹 Navigation & Refs
   const navigate = useNavigate();
   const didFetchRef = useRef(false); // Prevents duplicate initial fetches
@@ -59,6 +64,7 @@ const Policies = ({ activeFilters, currentPolicyID }) => {
     adminGroupeAndPoliciesPoliciesTabData,
     setAdminGroupeAndPoliciesPoliciesTabData,
     pageTypeForAdminGropusAndPolicy,
+    setPageTypeForAdminGropusAndPolicy,
   } = useMyAdmin();
 
   // 🔹 Search Context
@@ -76,7 +82,7 @@ const Policies = ({ activeFilters, currentPolicyID }) => {
    * @returns {Promise<void>}
    */
   const fetchApiCall = useCallback(
-    async (requestData, replace = false) => {
+    async (requestData, replace = false, type) => {
       if (!requestData || typeof requestData !== "object") return;
 
       // Set loading states
@@ -85,7 +91,7 @@ const Policies = ({ activeFilters, currentPolicyID }) => {
 
       try {
         let res = [];
-        if (pageTypeForAdminGropusAndPolicy === 2) {
+        if (type === 2) {
           res = await SearchPoliciesByGroupPolicyID({
             callApi,
             showNotification,
@@ -103,11 +109,9 @@ const Policies = ({ activeFilters, currentPolicyID }) => {
           });
         }
 
-        console.log("policyCategories", res);
         let policyCategories = Array.isArray(res?.policyCategories)
           ? res.policyCategories
           : [];
-        console.log("policyCategories", policyCategories);
         // ✅ Replace duration with threshold where policyID matches
         const savedPolicies =
           tabesFormDataofAdminGropusAndPolicy?.policies || [];
@@ -248,6 +252,21 @@ const Policies = ({ activeFilters, currentPolicyID }) => {
    * 🔹 Initial Data Load Effect
    * Runs once on component mount to fetch initial policy data
    */
+  const handleNewCall = async () => {
+    await setPageTypeForAdminGropusAndPolicy(1);
+
+    let requestData = buildApiRequest(adminGropusAndPolicyPoliciesTabSearch);
+    // 🟠 Update existing → add GroupPolicyID
+    fetchApiCall(requestData, true, 1);
+    setClickEditFromView(false);
+  };
+
+  useEffect(() => {
+    if (clickEditFromView) {
+      handleNewCall();
+    }
+  }, [clickEditFromView]);
+
   useEffect(() => {
     if (didFetchRef.current) return;
     didFetchRef.current = true;
@@ -260,7 +279,7 @@ const Policies = ({ activeFilters, currentPolicyID }) => {
         GroupPolicyID: currentPolicyID, // 👈 use your stored policy ID
       };
     }
-    fetchApiCall(requestData, true);
+    fetchApiCall(requestData, true, pageTypeForAdminGropusAndPolicy);
   }, [fetchApiCall, resetAdminGropusAndPolicyPoliciesTabSearch]);
 
   useEffect(() => {
@@ -273,7 +292,7 @@ const Policies = ({ activeFilters, currentPolicyID }) => {
           GroupPolicyID: currentPolicyID, // 👈 use your stored policy ID
         };
       }
-      fetchApiCall(requestData, true);
+      fetchApiCall(requestData, true, pageTypeForAdminGropusAndPolicy);
       setAdminGropusAndPolicyPoliciesTabSearch((prev) => ({
         ...prev,
         filterTrigger: false,

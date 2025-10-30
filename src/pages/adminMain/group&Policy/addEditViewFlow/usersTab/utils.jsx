@@ -94,12 +94,6 @@ export const getUserColumns = ({
           ? `"${record.groupPolicyTitle} "Already assigned to this user `
           : "Already assigned to a group policy"
         : "";
-
-      console.log("isDisabled", isDisabled);
-      console.log("isDisabled", record?.isDisable);
-      console.log("isDisabled", record?.groupPolicyID);
-      console.log("isDisabled", currentPolicyID);
-      console.log("isDisabled", tabesFormDataofAdminGropusAndPolicy);
       return (
         <Tooltip title={tooltipTitle} placement="topLeft">
           <Checkbox

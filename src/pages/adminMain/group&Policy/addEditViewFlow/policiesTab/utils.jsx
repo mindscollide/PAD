@@ -18,52 +18,63 @@ dayjs.extend(utc);
 dayjs.extend(timezone);
 // Helper to normalize duration into array of strings
 const getDurationParts = (duration) => {
-  if (!duration && duration !== 0) return []; // null/undefined -> empty
-
-  // If already an array (e.g. ["CFO", "Head..."])
-  if (Array.isArray(duration)) {
-    return duration.map((s) => String(s).trim()).filter(Boolean);
-  }
-
-  // If it's an object with a value field (adapt if your API uses other keys)
-  if (typeof duration === "object") {
-    // try common fields, otherwise stringify
-    const maybe =
-      duration.value ??
-      duration.name ??
-      duration.title ??
-      JSON.stringify(duration);
-    return String(maybe)
-      .split(/[,+|;]+/) // split on comma, plus, pipe or semicolon
+  try {
+    if (!duration && duration !== 0) return [];
+    if (Array.isArray(duration)) {
+      return duration.map((s) => String(s).trim()).filter(Boolean);
+    }
+    if (typeof duration === "object") {
+      const val =
+        duration.value ||
+        duration.name ||
+        duration.title ||
+        JSON.stringify(duration);
+      return String(val)
+        .split(/[,+|;]+/)
+        .map((s) => s.trim())
+        .filter(Boolean);
+    }
+    return String(duration)
+      .split(/[,+|;]+/)
       .map((s) => s.trim())
       .filter(Boolean);
+  } catch (error) {
+    console.error("Error parsing duration:", error);
+    return [];
   }
-
-  // If it's a number, convert to string
-  const str = String(duration);
-
-  // Split by comma, plus, pipe, semicolon (handles "CFO,Head" and "A + B" etc.)
-  return str
-    .split(/[,+|;]+/)
-    .map((s) => s.trim())
-    .filter(Boolean);
 };
+
+// ✅ Safe formatter for numeric min-max strings
+const parseMinMax = (minMaxStr) => {
+  try {
+    const matches = minMaxStr?.match(/\d[\d,]*/g);
+    if (!matches || matches.length < 2) return [null, null];
+    return [
+      Number(matches[0].replace(/,/g, "")),
+      Number(matches[1].replace(/,/g, "")),
+    ];
+  } catch (error) {
+    console.error("Error parsing minMax:", error);
+    return [null, null];
+  }
+};
+
 export const policyColumns = ({
   onSelectChange,
   onDurationChange,
   viewFlag,
-  selectedPolicies = [], // 👈 pass selected array
+  selectedPolicies = [],
   loadingPolicyId,
 }) => {
   const columns = [
-    // 🟢 Only include this column if NOT view mode
+    // 🟢 Checkbox (only in edit mode)
     !viewFlag && {
       title: "Select",
       dataIndex: "policyID",
       key: "policyID",
       align: "center",
       width: 80,
-      render: (_, record) => {
+      render: (_, record = {}) => {
         const isChecked = Array.isArray(selectedPolicies)
           ? selectedPolicies.some(
               (p) => String(p.policyID) === String(record.policyID)
@@ -73,7 +84,9 @@ export const policyColumns = ({
         return (
           <Checkbox
             checked={isChecked}
-            onChange={(e) => onSelectChange(record, e.target.checked)}
+            onChange={(e) =>
+              onSelectChange?.(record, e?.target?.checked ?? false)
+            }
             className="custom-broker-option-group-policies"
           />
         );
@@ -83,9 +96,11 @@ export const policyColumns = ({
     !viewFlag && {
       title: "",
       dataIndex: "spacer",
-      render: () => null,
       width: 10,
+      render: () => null,
     },
+
+    // 🧩 Policy ID
     {
       title: "Policy ID",
       dataIndex: "policyId",
@@ -99,6 +114,8 @@ export const policyColumns = ({
         </Tooltip>
       ),
     },
+
+    // 🧩 Scenario
     {
       title: "Scenario",
       dataIndex: "scenario",
@@ -106,314 +123,169 @@ export const policyColumns = ({
       render: (text) => (
         <Tooltip title={text}>
           <span>
-            {text?.length > 70 ? text.slice(0, 67) + "..." : text || "-"}
+            {text ? (text.length > 70 ? text.slice(0, 67) + "..." : text) : "—"}
           </span>
         </Tooltip>
       ),
     },
-    !viewFlag && {
+
+    // 🧩 Duration (editable or view-only)
+    {
       title: "Duration",
       dataIndex: "duration",
       key: "duration",
-      width: 200,
-      render: (_, record) => {
+      width: 220,
+      render: (_, record = {}) => {
         const { dataTypeID, minMax, duration, applicableValues } = record;
 
-        // Handle loading
-        if (record.policyID === loadingPolicyId) return <Spin size="small" />;
+        if (!dataTypeID) return <span>—</span>;
 
-        // Case-by-case rendering based on dataTypeID
-        switch (dataTypeID) {
-          case 1: {
-            const matches = record.minMax.match(/\d[\d,]*/g);
+        try {
+          if (record.policyID === loadingPolicyId) return <Spin size="small" />;
 
-            if (!matches || matches.length < 2) return [null, null];
+          // ✅ Editable Mode
+          if (!viewFlag) {
+            switch (dataTypeID) {
+              case 1: {
+                const [min, max] = parseMinMax(minMax);
+                const valueUnit = record.valueUnit?.trim?.() || "";
 
-            // Remove commas and convert to numbers
-            const min = Number(matches[0].replace(/,/g, ""));
-            const max = Number(matches[1].replace(/,/g, ""));
+                const handleChange = (e) => {
+                  const val = Number(e.target.value);
+                  if (isNaN(val)) return;
+                  if ((min && val < min) || (max && val > max)) return;
+                  onDurationChange?.(record, val);
+                };
 
-            const valueUnit = record.valueUnit ? record.valueUnit.trim() : "";
-            const handleChange = (e) => {
-              const val = Number(e.target.value);
-
-              // Enforce min and max boundaries
-              if ((min && val < min) || (max && val > max)) return;
-
-              onDurationChange(record, val);
-            };
-
-            return (
-              <div
-                style={{ display: "flex", alignItems: "center", gap: "8px" }}
-              >
-                <Input
-                  type="number"
-                  min={min || 1}
-                  max={max || 100}
-                  step={1}
-                  value={Number(record.duration)}
-                  placeholder="Enter number"
-                  onChange={handleChange}
-                  className={styles.inputDuration}
-                  style={{
-                    width: "150px",
-                    height: "40px",
-                    borderRadius: 6,
-                    textAlign: "center",
-                  }}
-                />
-                {valueUnit && (
-                  <span
+                return (
+                  <div
                     style={{
-                      color: "#666",
-                      fontSize: 13,
-                      whiteSpace: "nowrap",
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "8px",
                     }}
                   >
-                    {"(" + valueUnit + ")"}
-                  </span>
-                )}
-              </div>
-            );
-          }
-          case 2: {
-            // Date Selector
-            const dateandtime =
-              [record?.createdOnDate, record?.createdOnTime]
-                .filter(Boolean)
-                .join(" ") || "—";
-            const minDateandTime = formatApiDateTime(dateandtime);
-            const handleDateChange = (val) => {
-              onDurationChange(record, val); // pass formatted date (YYYY-MM-DD)
-            };
+                    <Input
+                      type="number"
+                      min={min || 1}
+                      max={max || 100}
+                      value={Number(record.duration) || ""}
+                      placeholder="Enter number"
+                      onChange={handleChange}
+                      className={styles.inputDuration}
+                      style={{ width: "150px", textAlign: "center" }}
+                    />
+                    {valueUnit && (
+                      <span style={{ color: "#666", fontSize: 13 }}>
+                        {"(" + valueUnit + ")"}
+                      </span>
+                    )}
+                  </div>
+                );
+              }
 
-            const handleClearDate = () => {
-              onDurationChange(record, null);
-            };
-            return (
-              <CustomDatePicker
-                size="small"
-                minDate={minDateandTime}
-                value={record.duration} // ✅ shows selected date if already set
-                onChange={handleDateChange} // ✅ update duration on change
-                onClear={handleClearDate} // ✅ clear selection
-                format="YYYY-MM-DD"
-                modeType="date"
-              />
-            );
-          }
+              case 2:
+              case 3:
+              case 4: {
+                // Reuse CustomDatePicker safely
+                const handleChange = (val) => onDurationChange?.(record, val);
+                return (
+                  <CustomDatePicker
+                    value={record.duration || ""}
+                    onChange={handleChange}
+                    modeType={
+                      dataTypeID === 2
+                        ? "date"
+                        : dataTypeID === 3
+                        ? "time"
+                        : "datetime"
+                    }
+                    minDate={minMax || null}
+                  />
+                );
+              }
 
-          case 3: {
-            // Time Selector
-            let minTimeLocal = null;
+              case 5:
+                return (
+                  <Input
+                    value={duration || ""}
+                    placeholder="Enter text"
+                    onChange={(e) => onDurationChange?.(record, e.target.value)}
+                    className={styles.inputDuration}
+                  />
+                );
 
-            if (minMax) {
-              // Example: "08:22:18" (UTC) → convert to local time
-              const utcTime = dayjs.utc(minMax, "HH:mm:ss");
-              minTimeLocal = utcTime.local().format("HH:mm:ss"); // convert to local
-            }
-            const handleDateChange = (val) => {
-              onDurationChange(record, val); // pass formatted date (YYYY-MM-DD)
-            };
-            return (
-              <CustomDatePicker
-                value={record.duration || ""}
-                onChange={handleDateChange}
-                modeType="time"
-                minDate={minTimeLocal}
-              />
-            );
-          }
-
-          case 4: {
-            // Date + Time
-            // Parse and convert UTC -> local time using dayjs
-            const minDateLocal = minMax
-              ? dayjs.utc(minMax, "YYYY-MM-DD HH:mm:ss").local()
-              : null;
-
-            const handleDateChange = (val) => {
-              onDurationChange(record, val); // pass formatted date (YYYY-MM-DD)
-            };
-
-            return (
-              <CustomDatePicker
-                value={record.duration || ""}
-                onChange={handleDateChange}
-                modeType="datetime"
-                minDate={
-                  minDateLocal
-                    ? minDateLocal.format("YYYY-MM-DD HH:mm:ss")
-                    : null
-                }
-              />
-            );
-          }
-
-          case 5: // Text Input
-            return (
-              <Input
-                value={duration}
-                placeholder="Enter value"
-                onChange={(e) => onDurationChange(record, e.target.value)}
-                className={styles.inputDuration}
-              />
-            );
-
-          case 6: {
-            // Single Select
-            const handleSelectChange = (val) => {
-              onDurationChange(record, val);
-            };
-
-            return (
-              <Select
-                value={record.duration || undefined}
-                placeholder="Select"
-                className={styles.select}
-                onChange={handleSelectChange}
-              >
-                {(applicableValues?.split("|") || []).map((val) => (
-                  <Option key={val.trim()} value={val.trim()}>
-                    {val.trim()}
-                  </Option>
-                ))}
-              </Select>
-            );
-          }
-
-          case 7: {
-            // Parse applicableValues → array
-            const applicableValuesArray = applicableValues
-              ?.split("|")
-              .map((val) => val.trim())
-              .filter((val) => val);
-
-            // Convert into {label, value} objects
-            const options = applicableValuesArray.map((val) => ({
-              label: val,
-              value: val,
-            }));
-            const handleMultiSelectChange = (vals) => {
-              onDurationChange(record, vals);
-            };
-            return (
-              <Select
-                mode="multiple"
-                placeholder="Select option(s)..."
-                className={styles.multiselect}
-                value={record.duration || []} // ✅ controlled value
-                onChange={handleMultiSelectChange}
-                options={options}
-                maxTagCount="responsive"
-                optionRender={(option) => (
-                  <Tooltip title={option.label} placement="right">
-                    <div className={styles.selectOption}>
-                      <input
-                        type="checkbox"
-                        checked={(record.duration || []).includes(option.value)}
-                        readOnly
-                        className={styles.selectedOption}
-                      />
-                      <span className={styles.optionLabel}>{option.label}</span>
-                    </div>
-                  </Tooltip>
-                )}
-                maxTagPlaceholder={(omittedValues) => (
-                  <Tooltip
-                    title={omittedValues.map(({ label }) => label).join(", ")}
+              case 6:
+              case 7: {
+                const values =
+                  applicableValues
+                    ?.split("|")
+                    .map((v) => v.trim())
+                    .filter(Boolean) || [];
+                const multiple = dataTypeID === 7;
+                return (
+                  <Select
+                    mode={multiple ? "multiple" : undefined}
+                    placeholder="Select option(s)"
+                    value={record.duration || (multiple ? [] : undefined)}
+                    onChange={(val) => onDurationChange?.(record, val)}
+                    className={multiple ? styles.multiselect : styles.select}
                   >
-                    <span style={{ color: "#555", fontSize: "12px" }}>
-                      +{omittedValues.length} more
-                    </span>
-                  </Tooltip>
-                )}
-              />
-            );
+                    {values.map((val) => (
+                      <Option key={val} value={val}>
+                        {val}
+                      </Option>
+                    ))}
+                  </Select>
+                );
+              }
+
+              default:
+                return <span>—</span>;
+            }
           }
 
-          default:
-            return <span>{duration || "-"}</span>;
+          // ✅ View Mode
+          switch (dataTypeID) {
+            case 1:
+              return <span>{Number(duration) || "-"} Number</span>;
+
+            case 2:
+            case 3:
+            case 4:
+              return <span>{duration || "—"}</span>;
+
+            case 5:
+              return <span>{duration || "—"}</span>;
+
+            case 6:
+            case 7: {
+              const parts = getDurationParts(duration);
+              return (
+                <div className={styles.userList}>
+                  <div className={styles.userChip}>
+                    {parts[0] || "—"}
+                    {parts.length > 1 && (
+                      <span className={styles.moreCount}>
+                        +{parts.length - 1}
+                      </span>
+                    )}
+                  </div>
+                </div>
+              );
+            }
+
+            default:
+              return <span>{duration || "—"}</span>;
+          }
+        } catch (error) {
+          console.error("Error rendering duration cell:", error, record);
+          return <span style={{ color: "red" }}>Invalid Data</span>;
         }
       },
     },
-    viewFlag && {
-      title: "Duration",
-      dataIndex: "duration",
-      key: "duration",
-      width: 200,
-      render: (_, record) => {
-        const { dataTypeID, dataType, duration } = record;
 
-        // Handle loading
-        if (record.policyID === loadingPolicyId) return <Spin size="small" />;
-
-        // Case-by-case rendering based on dataTypeID
-        switch (dataTypeID) {
-          case 1: {
-            // number
-            return <span>{record.duration + " Number"}</span>;
-          }
-          case 2: {
-            // Date Selector
-            console.log("toYYMMDD", record.duration);
-            return record.duration;
-          }
-
-          case 3: {
-            // Time Selector
-            return record.duration;
-          }
-
-          case 4: {
-            // Date + Time
-            // Parse and convert UTC -> local time using dayjs
-            return record.duration;
-          }
-
-          case 5: // Text Input
-            return record.duration;
-
-          case 6: {
-            // Single Select
-            const parts = getDurationParts(record?.duration);
-            return (
-              <div className={styles.userList}>
-                <div className={styles.userChip}>
-                  {parts[0]}{" "}
-                  {parts.length > 1 && (
-                    <span className={styles.moreCount}>
-                      +{parts.length - 1}
-                    </span>
-                  )}
-                </div>
-              </div>
-            );
-          }
-
-          case 7: {
-            // Parse applicableValues → array
-            const parts = getDurationParts(record?.duration);
-            return (
-              <div className={styles.userList}>
-                <div className={styles.userChip}>
-                  {parts[0]}{" "}
-                  {parts.length > 1 && (
-                    <span className={styles.moreCount}>
-                      +{parts.length - 1}
-                    </span>
-                  )}
-                </div>
-              </div>
-            );
-          }
-
-          default:
-            return <span>{duration || "-"}</span>;
-        }
-      },
-    },
+    // 🧩 Consequence
     {
       title: "Consequence",
       dataIndex: "consequence",
@@ -421,14 +293,13 @@ export const policyColumns = ({
       render: (text) => (
         <Tooltip title={text}>
           <span>
-            {text?.length > 70 ? text.slice(0, 67) + "..." : text || "-"}
+            {text ? (text.length > 70 ? text.slice(0, 67) + "..." : text) : "—"}
           </span>
         </Tooltip>
       ),
     },
   ];
 
-  // 🧹 Filter out false values (when viewFlag hides the first column)
   return columns.filter(Boolean);
 };
 

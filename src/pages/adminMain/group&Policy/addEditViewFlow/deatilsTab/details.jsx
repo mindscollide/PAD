@@ -11,7 +11,12 @@ import { useNavigate } from "react-router-dom";
 import Paragraph from "antd/es/skeleton/Paragraph";
 const { TextArea } = Input;
 
-const Details = ({ errorDeatilsTabSwitch, setErrorDeatilsTabSwitch }) => {
+const Details = ({
+  errorDeatilsTabSwitch,
+  setErrorDeatilsTabSwitch,
+  clickEditFromView,
+  setClickEditFromView,
+}) => {
   const {
     tabesFormDataofAdminGropusAndPolicy,
     setTabesFormDataofAdminGropusAndPolicy,
@@ -182,9 +187,7 @@ const Details = ({ errorDeatilsTabSwitch, setErrorDeatilsTabSwitch }) => {
               )}
             </>
           ) : (
-            <span  className={styles.viewtitle}>
-              {groupTitle}
-            </span>
+            <span className={styles.viewtitle}>{groupTitle}</span>
           )}
         </Col>
 
@@ -220,9 +223,7 @@ const Details = ({ errorDeatilsTabSwitch, setErrorDeatilsTabSwitch }) => {
               )}
             </>
           ) : (
-            <span className={styles.viewdiscription}>
-              {groupDescription}
-            </span>
+            <span className={styles.viewdiscription}>{groupDescription}</span>
           )}
         </Col>
       </Row>

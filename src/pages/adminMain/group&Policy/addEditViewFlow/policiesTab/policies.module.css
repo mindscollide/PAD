@@ -12,7 +12,7 @@
 }
 .innerTableArea {
   max-height: 420px;
-  overflow-y: auto;
+  overflow-y: hidden;
   overflow-x: hidden;
   padding-right: 0px;
 }

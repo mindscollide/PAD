@@ -32,7 +32,6 @@ dayjs.extend(utc);
  * and form control actions (Cancel, Previous, Next, Create).
  */
 const GroupAndPolicyAddViewEdit = ({ currentPolicyID, setCurrentPolicyID }) => {
-
   const {
     resetAdminGropusAndPolicyContextState,
     pageTypeForAdminGropusAndPolicy,
@@ -107,7 +106,7 @@ const GroupAndPolicyAddViewEdit = ({ currentPolicyID, setCurrentPolicyID }) => {
   const [cancelModalVisible, setCancelModalVisible] = useState(false);
   const [createdModalVisible, setCreatedModalVisible] = useState(false);
   const [errorDeatilsTabSwitch, setErrorDeatilsTabSwitch] = useState(false);
-  console.log("currentPolicyID", currentPolicyID);
+  const [clickEditFromView, setClickEditFromView] = useState(false); // Controls which accordion panels are open
 
   const fetchApiCall = useCallback(
     async (requestData, replace = false, showLoaderFlag = true) => {
@@ -536,7 +535,7 @@ const GroupAndPolicyAddViewEdit = ({ currentPolicyID, setCurrentPolicyID }) => {
   /** 🔹 Handle "Edit Details" modal */
   const handleEditFromView = async () => {
     // // Step 1 & 2 — reset values
-    await setPageTypeForAdminGropusAndPolicy(1);
+    setClickEditFromView(true);
   };
 
   useEffect(() => {
@@ -549,7 +548,6 @@ const GroupAndPolicyAddViewEdit = ({ currentPolicyID, setCurrentPolicyID }) => {
       resetAdminGropusAndPolicyPoliciesTabSearch();
     }
   }, [pageTabesForAdminGropusAndPolicy]);
-
 
   return (
     <div className={styles.noScrollContainer}>
@@ -751,18 +749,24 @@ const GroupAndPolicyAddViewEdit = ({ currentPolicyID, setCurrentPolicyID }) => {
             errorDeatilsTabSwitch={errorDeatilsTabSwitch}
             setErrorDeatilsTabSwitch={setErrorDeatilsTabSwitch}
             currentPolicyID={currentPolicyID}
+            clickEditFromView={clickEditFromView}
+            setClickEditFromView={setClickEditFromView}
           />
         )}
         {pageTabesForAdminGropusAndPolicy === 1 && (
           <Policies
             activeFilters={activeFilters.length > 0}
             currentPolicyID={currentPolicyID}
+            clickEditFromView={clickEditFromView}
+            setClickEditFromView={setClickEditFromView}
           />
         )}
         {pageTabesForAdminGropusAndPolicy === 2 && (
           <Users
             activeFilters={activeFilters.length > 0}
             currentPolicyID={currentPolicyID}
+            clickEditFromView={clickEditFromView}
+            setClickEditFromView={setClickEditFromView}
           />
         )}
       </PageLayout>
