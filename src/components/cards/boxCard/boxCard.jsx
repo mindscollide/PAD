@@ -69,13 +69,16 @@ const BoxCard = ({
   userRole = "",
   route,
   warningFlag = false,
-  changeTextSize=false,
+  changeTextSize = false,
+  setUrgentAlert,
 }) => {
   const base = mainClassName || "smallShareHomeCard"; // fallback class name if none provided
   const navigate = useNavigate();
   const { setSelectedKey } = useSidebarContext();
   const [sortedInfo, setSortedInfo] = useState({});
-
+  const roles = JSON.parse(sessionStorage.getItem("user_assigned_roles"));
+  // Prevent multiple fetches on mount
+  const userRoleIDs = roles.map((r) => r.roleID);
   // Normalize boxes input (always an array)
   const normalizedBoxes = Array.isArray(boxes) ? boxes : boxes ? [boxes] : [];
   console.log("normalizedBoxes", normalizedBoxes);
@@ -85,6 +88,15 @@ const BoxCard = ({
    */
   const handleClick = () => {
     navigateToPage(userRole, route, setSelectedKey, navigate);
+  };
+  const handleClosedWarning = () => {
+    if (userRoleIDs === 2) {
+      const urgent_flag = JSON.parse(sessionStorage.getItem("urgent_flag"));
+      if (urgent_flag) {
+        sessionStorage.setItem("urgent_flag", false);
+        setUrgentAlert(false);
+      }
+    }
   };
 
   return (
@@ -127,10 +139,6 @@ const BoxCard = ({
                 textCountColor: "#000",
                 textAlign: "center",
               };
-            console.log("textLableColor", box);
-            console.log("textLableColor", box.type?.toLowerCase().replace(/[\s-]+/g, "_"));
-            console.log("textLableColor", textLableColor);
-            console.log("textLableColor", bgColor);
             // Split label into first word + remaining text (used in "left" layout)
             const [firstWord, ...rest] = box.label.split(" ");
             const secondPart = rest.join(" ");
@@ -160,7 +168,7 @@ const BoxCard = ({
                         fontWeight: "bold",
                         cursor: "pointer",
                       }}
-                      onClick={() => console.log("Close clicked")} // replace with close action
+                      onClick={() => handleClosedWarning()} // replace with close action
                     >
                       ✕
                     </span>
@@ -245,7 +253,11 @@ const BoxCard = ({
                         </div>
 
                         <Text
-                          className={styles[`${base}${changeTextSize ? 'label2' : 'label'}`]}
+                          className={
+                            styles[
+                              `${base}${changeTextSize ? "label2" : "label"}`
+                            ]
+                          }
                           style={{ color: textLableColor }}
                         >
                           {box.label}

@@ -89,7 +89,7 @@ export const mapEmployeeMyApprovalData = (
     assetTypeShortCode: item?.assetType?.assetTypeShortCode || "—",
     requestDateTime:
       [item?.requestDate, item?.requestTime].filter(Boolean).join(" ") || "—",
-    isEscalated: false,
+    isEscalated: item.isEscalated,
     type: getTradeTypeById(assetTypeData, item?.tradeType) || "-",
     status: item.approvalStatus?.approvalStatusName || "",
     quantity: item.quantity || 0,

@@ -124,6 +124,7 @@ export function getEmployeePortfolioColumns({
       title: "Quantity",
       dataIndex: "quantity",
       key: "quantity",
+      width: 150,
       render: (value, record) => (
         <Text
           style={{ color: record.tradeType === "Buy" ? "#00640A" : "#A50000" }}

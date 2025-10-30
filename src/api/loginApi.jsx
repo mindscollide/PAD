@@ -42,6 +42,7 @@ export const login = async ({
       userProfileData,
       userHierarchy,
       lastLoggedInDateTime,
+      urgentApprovals,
     } = res.result;
     const message = getMessage(res.result.responseMessage);
     const responseCodeKey = res.result.responseMessage;
@@ -50,6 +51,17 @@ export const login = async ({
       sessionStorage.setItem("refresh_token", userToken.refreshToken);
       sessionStorage.setItem("token_timeout", userToken.tokenTimeOut);
       sessionStorage.setItem("lastLoggedInDateTime", lastLoggedInDateTime);
+      if (userProfileData.userID === 2) {
+        sessionStorage.setItem(
+          "urgentApprovals",
+          JSON.stringify(urgentApprovals)
+        );
+        if (urgentApprovals.count > 0) {
+          sessionStorage.setItem("urgent_flag", true);
+        } else {
+          sessionStorage.setItem("urgent_flag", false);
+        }
+      }
 
       sessionStorage.setItem(
         "user_assigned_roles",

@@ -64,6 +64,7 @@ export const mapEmployeeTransactions = (assetTypeData,employeeTransactionsData =
     tradeApprovalID: item.tradeApprovalID || "",
     tradeApprovalTypeID: item.tradeApprovalTypeID || null,
     tradeType:getTradeTypeById(assetTypeData, item?.tradeType) || "-" ,
+    isEscalated:item.isEscalated,
     workFlowStatusID: item.workFlowStatusID || null,
     workFlowStatus: item.workFlowStatus || "",
     assetTypeID: item.assetTypeID || null,

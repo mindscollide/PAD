@@ -197,11 +197,15 @@ const MyTransaction = () => {
       assetTypeListingData
     );
     fetchApiCall(requestData, true, true);
-
-    // Reset search state for fresh load
-    resetEmployeeMyTransactionSearch();
   }, []);
-
+  
+  // Reset on Unmount
+  useEffect(() => {
+    return () => {
+      // Reset search state for fresh load
+      resetEmployeeMyTransactionSearch();
+    };
+  }, []);
   // 🔹 call api on search
   useEffect(() => {
     if (employeeMyTransactionSearch.filterTrigger) {

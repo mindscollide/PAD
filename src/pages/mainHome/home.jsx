@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useMemo } from "react";
+import React, { useEffect, useRef, useMemo, useState } from "react";
 import { Avatar, Col, Row } from "antd";
 import { BarChartOutlined, FileDoneOutlined } from "@ant-design/icons";
 
@@ -30,6 +30,7 @@ const MemoizedReportCard = React.memo(ReportCard);
 const Home = () => {
   const { showNotification } = useNotification();
   const navigate = useNavigate();
+  const [urgentAlert, setUrgentAlert] = useState(false); // Controls which accordion panels are open
 
   const {
     dashboardData,
@@ -46,7 +47,15 @@ const Home = () => {
   const roles = JSON.parse(sessionStorage.getItem("user_assigned_roles"));
   // Prevent multiple fetches on mount
   const hasFetched = useRef(false);
+  const userRoleIDs = roles.map((r) => r.roleID);
 
+  // remove role 1 if present
+  const filteredRoles = userRoleIDs.filter((id) => id !== 1);
+
+  // find the first valid matched role (ignoring 1)
+  const firstMatchedRole = filteredRoles.find((roleId) =>
+    checkRoleMatch(roles, roleId)
+  );
   // Employee
   const employeeApprovals = useMemo(
     () => dashboardData?.employee?.myApprovals?.data || [],
@@ -123,6 +132,15 @@ const Home = () => {
   );
 
   useEffect(() => {
+    if (userRoleIDs === 2) {
+      const urgent_flag = JSON.parse(sessionStorage.getItem("urgent_flag"));
+      if (urgent_flag) {
+        setUrgentAlert(true);
+      } else {
+        setUrgentAlert(false);
+      }
+    }
+
     if (hasFetched.current) return;
     hasFetched.current = true;
     console.log("hasFetched");
@@ -172,16 +190,7 @@ const Home = () => {
 
   // useEffect(() => {}, [dashboardData]);
   // roles = dynamic roles array (e.g. [{ roleID: 1 }, { roleID: 3 }])
-  const userRoleIDs = roles.map((r) => r.roleID);
 
-  // remove role 1 if present
-  const filteredRoles = userRoleIDs.filter((id) => id !== 1);
-
-  // find the first valid matched role (ignoring 1)
-  const firstMatchedRole = filteredRoles.find((roleId) =>
-    checkRoleMatch(roles, roleId)
-  );
-  console.log("filteredRoles",filteredRoles)
   return (
     <>
       <div style={{ padding: " 16px 24px 0px 24px " }}>
@@ -464,7 +473,8 @@ const Home = () => {
                 <Row gutter={[16, 16]}>
                   <Col xs={24} md={12} lg={12}>
                     <MemoizedBoxCard
-                      // warningFlag={true}
+                      setUrgentAlert={setUrgentAlert}
+                      warningFlag={urgentAlert}
                       locationStyle={"up"}
                       title="Approval Requests"
                       buttonId={"Approvals-view-btn-LM"}

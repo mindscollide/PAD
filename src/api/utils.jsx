@@ -37,7 +37,7 @@ export const responseMessages = {
   // 🔐 Login API (loginApi.jsx)
   // ==============================
   ERM_Auth_AuthServiceManager_Login_01: "Login Successful",
-  ERM_Auth_AuthServiceManager_Login_02: "Login Failed",
+  ERM_Auth_AuthServiceManager_Login_02: "Username could not be verified",
   ERM_Auth_AuthServiceManager_Login_03:
     "User is temporarily disabled and cannot login",
   ERM_Auth_AuthServiceManager_Login_04: "Account permanently closed",

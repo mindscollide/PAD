@@ -1,17 +1,1 @@
-{
-  "GroupTitle": "group test 1",
-  "GroupDescription": "Admin can create new group policy through this option. System will display a screen with 3 tabs; Details, Policies, Users. Create Group will be a 3-step workflow. By default, the Details tab will appear selected. The Policies and Users tab will also be enabled.Admin can create new group policy through this option. System will display a screen with 3 tabs; Details, Policies, Users. Create Group will be a 3-step workflow. By default, the Details tab will appear selected. The Policies and Users tab",
-  "Policies": [
-    { "policyID": 10, "threshold": "20251030190000" },
-    { "policyID": 9, "threshold": "020700" },
-    { "policyID": 8, "threshold": "CFO,Head of Compliane Approval" },
-    { "policyID": 6, "threshold": "helloo" },
-    { "policyID": 1, "threshold": "100003" },
-    { "policyID": 7, "threshold": "No" },
-    { "policyID": 3, "threshold": "2" },
-    { "policyID": 2, "threshold": "3" },
-    { "policyID": 5, "threshold": "20251029" },
-    { "policyID": 4, "threshold": "2" }
-  ],
-  "UserIDs": [24]
-}
+Message received: {"action":"Urgent Approval Alert","senderID":0,"dateTime":"20251030133431","receiverID":[2],"roleIDs":"3","payload":{"label":"URGENT","count":0},"message":"YOU_HAVE_URGENT_ACTION_WHICH_REQUIRE_URGENT_ACTION","viewable":true,"workFlowStatus":null}

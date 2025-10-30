@@ -161,6 +161,7 @@ const Dashboard = () => {
                       return;
                     }
                   }
+                  break;
                 }
 
                 case "NEW_BROKER_ADDED":
@@ -339,6 +340,15 @@ const Dashboard = () => {
                       return { ...prev, lineManager: updatedLineManager };
                     });
                   }
+                  break;
+                }
+                case "YOU_HAVE_URGENT_ACTION_WHICH_REQUIRE_URGENT_ACTIO": {
+                  // Prevent multiple fetches on mount
+                  sessionStorage.setItem(
+                    "urgentApprovals",
+                    JSON.stringify(payload)
+                  );
+                  sessionStorage.setItem("urgent_flag", true);
                   break;
                 }
                 case "LINE_MANAGER_NEW_TRADE_APPROVAL_REQUEST": {

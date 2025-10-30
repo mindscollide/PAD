@@ -77,6 +77,8 @@
   width: 100%;
   height: 56px;
   cursor: pointer !important;
+  border-radius: 6.95px !important;
+  border: 1px solid #717171 !important;
 }
 
 /* Fully override Select hover/focus/active/open styles */
