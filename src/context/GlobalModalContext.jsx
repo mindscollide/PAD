@@ -198,6 +198,31 @@ export const GlobalModalProvider = ({ children }) => {
   // For Edit Instrument modal
   const [editInstrumentModal, setEditInstrumentModal] = useState(false);
 
+  //For Delete Edit Instrument Modal
+  const [deleteConfirmationEditModal, setDeleteConfirmationEditModal] =
+    useState(false);
+
+  //For Delete Edit Instrument Data State
+  const [deleteEditModalData, setDeleteEditModalData] = useState(null);
+
+  // For Active Tabs In Manage Users in Admin
+  const [activeManageUserTab, setActiveManageUserTab] = useState("1");
+
+  // For manage user View Detail modal
+  const [viewDetailManageUser, setViewDetailManageUser] = useState(false);
+
+  // For manage user Roles And Policies modal
+  const [rolesAndPoliciesManageUser, setRolesAndPoliciesManageUser] =
+    useState(false);
+
+  // For Edit ROle and Policies Modal
+  const [editrolesAndPoliciesUser, setEditrolesAndPoliciesUser] =
+    useState(false);
+
+  // For unSaved Changes Modal
+  const [unSavedChangesPoliciesModal, setUnSavedChangesPoliciesModal] =
+    useState(false);
+
   /**
    * Global States For Admin Role Modals End here
    */
@@ -408,6 +433,25 @@ export const GlobalModalProvider = ({ children }) => {
         // For Edit Instrument
         editInstrumentModal,
         setEditInstrumentModal,
+
+        deleteEditModalData,
+        setDeleteEditModalData,
+
+        deleteConfirmationEditModal,
+        setDeleteConfirmationEditModal,
+
+        // For manage user
+        activeManageUserTab,
+        setActiveManageUserTab,
+        viewDetailManageUser,
+        setViewDetailManageUser,
+        rolesAndPoliciesManageUser,
+        setRolesAndPoliciesManageUser,
+        editrolesAndPoliciesUser,
+        setEditrolesAndPoliciesUser,
+        unSavedChangesPoliciesModal,
+        setUnSavedChangesPoliciesModal,
+
         /**
          * Global States For Admin Role Modals End here
          */

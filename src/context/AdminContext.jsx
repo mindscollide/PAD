@@ -112,6 +112,32 @@ export const MyAdminProvider = ({ children }) => {
     totalRecordsDataBase: 0,
     totalRecordsTable: 0,
   });
+  // For add and Delete Mqtt when User add in Edit Modal or Delete in Edit Instrument Modal
+  const [adminAddDeleteClosingInstrument, setAdminAddDeleteClosingInstrument] =
+    useState(false);
+
+  // context for admin role while edit button hit for upcoming Closing Data
+  const [
+    adminInstrumentUpcomingClosingData,
+    setAdminInstrumentUpcomingClosingData,
+  ] = useState({
+    closingPeriods: [],
+    totalRecordsDataBase: 0,
+    totalRecordsTable: 0,
+  });
+
+  // context for admin role while edit button hit for Previous Closing Data
+  const [
+    adminInstrumentPreviousClosingData,
+    setAdminInstrumentPreviousClosingData,
+  ] = useState({
+    closingPeriods: [],
+    totalRecordsDataBase: 0,
+    totalRecordsTable: 0,
+  });
+
+  const [selectedInstrumentOnClick, setSelectedInstrumentOnClick] =
+    useState(null);
 
   /**
    * ♻️ Reset Context State (Table + API Data)
@@ -203,6 +229,18 @@ export const MyAdminProvider = ({ children }) => {
         adminIntrumentsMqtt,
         setAdminIntrumentsMqtt,
         resetAdminInstrumentsContextState,
+        //For Upcoming Closing Data
+        adminInstrumentUpcomingClosingData,
+        setAdminInstrumentUpcomingClosingData,
+        //For Previous Closing Data
+        adminInstrumentPreviousClosingData,
+        setAdminInstrumentPreviousClosingData,
+        selectedInstrumentOnClick,
+        setSelectedInstrumentOnClick,
+
+        // Add and Delete Mqtt on Edit Modal of Instrument
+        adminAddDeleteClosingInstrument,
+        setAdminAddDeleteClosingInstrument,
 
         // Admin Broker (API)
         adminBrokerData,

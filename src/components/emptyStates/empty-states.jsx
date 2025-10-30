@@ -40,6 +40,7 @@ const iconComponents = {
   users: UsersIcon,
   underdevelopment: HistoryRecordIcon,
   policiestab: PoliciesTabIcon,
+  closingUpcoming: HistoryRecordIcon,
 };
 
 /**
@@ -60,6 +61,7 @@ const defaultMessages = {
   users: "No Users Found",
   underdevelopment: "Currently under development",
   policiestab: "No Policies Found",
+  closingUpcoming: "Upcoming Instrument",
 };
 
 /**

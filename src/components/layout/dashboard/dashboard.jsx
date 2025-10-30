@@ -31,7 +31,11 @@ const Dashboard = () => {
   // Context hooks
   const { setLineManagerApprovalMQtt, setIsEmployeeMyApprovalMqtt } =
     useMyApproval();
-  const { setAdminBrokerMqtt, setAdminIntrumentsMqtt } = useMyAdmin();
+  const {
+    setAdminBrokerMqtt,
+    setAdminIntrumentsMqtt,
+    setAdminAddDeleteClosingInstrument,
+  } = useMyAdmin();
   const { setHtaEscalatedApprovalDataMqtt } = useEscalatedApprovals();
   const { setEmployeePendingApprovalsDataMqtt, activeTabRef } =
     usePortfolioContext();
@@ -136,8 +140,6 @@ const Dashboard = () => {
           switch (roleIDs) {
             case "1": {
               switch (message) {
-                case "NEW_INSTRUMENT_CLOSING_PERIOD_ADDED":
-                case "INSTRUMENT_CLOSING_PERIOD_DELETED":
                 case "INSTRUMENT_STATUS_UPDATED": {
                   if (currentRoleIsAdminRefLocal) {
                     // admin mqtt
@@ -148,6 +150,17 @@ const Dashboard = () => {
                     }
                   }
                   break;
+                }
+
+                case "NEW_INSTRUMENT_CLOSING_PERIOD_ADDED":
+                case "INSTRUMENT_CLOSING_PERIOD_DELETED": {
+                  if (currentRoleIsAdminRefLocal) {
+                    //admin Edit Modal Add and Delete Mqtt
+                    if (currentKey === "18") {
+                      setAdminAddDeleteClosingInstrument(true);
+                      return;
+                    }
+                  }
                 }
 
                 case "NEW_BROKER_ADDED":

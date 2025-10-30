@@ -1155,7 +1155,6 @@ export const UpdateGroupPolicy = async ({
   }
 };
 
-
 // Search get all Policies For Group Policy Panel for view only
 export const SearchPoliciesByGroupPolicyID = async ({
   callApi,
@@ -1334,6 +1333,276 @@ export const SearchUsersByGroupPolicyID = async ({
     return null;
   } finally {
     // 🔹 Always hide loader
+    showLoader(false);
+  }
+};
+
+//AddInstrumentClosingPeriodRequest when user add instruemnt in closing period on upcoming in edit Modal
+export const AddInstrumentClosingPeriodRequest = async ({
+  callApi,
+  showNotification,
+  showLoader,
+  requestdata,
+  navigate,
+}) => {
+  try {
+    // 🔹 API Call
+    const res = await callApi({
+      requestMethod: import.meta.env
+        .VITE_ADD_INSTRUMENT_CLOSING_PERIOD_REQEUST_METHOD, // <-- Add Trade Approval method
+      endpoint: import.meta.env.VITE_API_ADMIN,
+      requestData: requestdata,
+      navigate,
+    });
+
+    //  Check Session Expiry
+    if (handleExpiredSession(res, navigate, showLoader)) return false;
+
+    // when Api send isExecuted false
+    if (!res?.result?.isExecuted) {
+      showNotification({
+        type: "error",
+        title: "Error",
+        description: "Something went wrong. Please try again.",
+      });
+      return false;
+    }
+
+    // When Api Send Success Response
+    if (res.success) {
+      const { responseMessage } = res.result;
+
+      if (responseMessage === "PAD_Admin_AddInstrumentClosingPeriod_02") {
+        return true;
+      } else {
+        showNotification({
+          type: "warning",
+          title: getMessage(responseMessage),
+        });
+        return false;
+      }
+    }
+
+    return false;
+  } catch (error) {
+    // ❌ Exception handling
+
+    return false;
+  } finally {
+    showLoader(false);
+  }
+};
+
+//GetUpcomingClosingPeriodsByInstrumentID when user click on edit modal
+export const getUpcomingClosingPeriodInstrumentRequest = async ({
+  callApi,
+  showNotification,
+  showLoader,
+  requestdata,
+  navigate,
+}) => {
+  try {
+    // 🔹 API Call
+    const res = await callApi({
+      requestMethod: import.meta.env
+        .VITE_GET_UPCOMING_CLOSING_PERIODS_BY_INSTRUMENT_REQUEST_METHOD, // 🔑 must be defined in .env
+      endpoint: import.meta.env.VITE_API_ADMIN,
+      requestData: requestdata,
+      navigate,
+    });
+
+    // 🔹 Handle session expiry
+    if (handleExpiredSession(res, navigate, showLoader)) return null;
+
+    // 🔹 Validate execution
+    if (!res?.result?.isExecuted) {
+      showNotification({
+        type: "error",
+        title: "Error",
+        description:
+          "Something went wrong while fetching employee transactions.",
+      });
+      return null;
+    }
+
+    // 🔹 Handle success
+    if (res.success) {
+      const { responseMessage, closingPeriods, totalRecords } = res.result;
+      const message = getMessage(responseMessage);
+
+      // Case 1 → Data available
+      if (responseMessage === "PAD_Admin_GetUpcomingClosingPeriods_01") {
+        return {
+          closingPeriods: closingPeriods || [],
+          totalRecords: totalRecords || 0,
+        };
+      }
+
+      // Case 2 → No data
+      if (responseMessage === "PAD_Admin_GetUpcomingClosingPeriods_02") {
+        return {
+          closingPeriods: closingPeriods || [],
+          totalRecords: totalRecords || 0,
+        };
+      }
+
+      // Case 3 → Custom server messages
+      if (message) {
+        showNotification({
+          type: "warning",
+          title: message,
+          description: "No transactions found for this employee.",
+        });
+      }
+
+      return null;
+    }
+
+    // 🔹 Handle failure
+
+    return null;
+  } catch (error) {
+    // 🔹 Exception handling
+
+    return null;
+  } finally {
+    // 🔹 Always hide loader
+    showLoader(false);
+  }
+};
+
+//GetPreviousClosingPeriodsByInstrumentID when user click on edit modal
+export const getPreviousClosingPeriodInstrumentRequest = async ({
+  callApi,
+  showNotification,
+  showLoader,
+  requestdata,
+  navigate,
+}) => {
+  try {
+    // 🔹 API Call
+    const res = await callApi({
+      requestMethod: import.meta.env
+        .VITE_GET_PREVIOUS_CLOSING_PERIODS_BY_INSTRUMENT_REQUEST_METHOD, // 🔑 must be defined in .env
+      endpoint: import.meta.env.VITE_API_ADMIN,
+      requestData: requestdata,
+      navigate,
+    });
+
+    // 🔹 Handle session expiry
+    if (handleExpiredSession(res, navigate, showLoader)) return null;
+
+    // 🔹 Validate execution
+    if (!res?.result?.isExecuted) {
+      showNotification({
+        type: "error",
+        title: "Error",
+        description:
+          "Something went wrong while fetching employee transactions.",
+      });
+      return null;
+    }
+
+    // 🔹 Handle success
+    if (res.success) {
+      const { responseMessage, closingPeriods, totalRecords } = res.result;
+      const message = getMessage(responseMessage);
+
+      // Case 1 → Data available
+      if (responseMessage === "PAD_Admin_GetPreviousClosingPeriods_01") {
+        return {
+          closingPeriods: closingPeriods || [],
+          totalRecords: totalRecords || 0,
+        };
+      }
+
+      // Case 2 → No data
+      if (responseMessage === "PAD_Admin_GetPreviousClosingPeriods_02") {
+        return {
+          closingPeriods: closingPeriods || [],
+          totalRecords: totalRecords || 0,
+        };
+      }
+
+      // Case 3 → Custom server messages
+      if (message) {
+        showNotification({
+          type: "warning",
+          title: message,
+          description: "No transactions found for this employee.",
+        });
+      }
+
+      return null;
+    }
+
+    // 🔹 Handle failure
+
+    return null;
+  } catch (error) {
+    // 🔹 Exception handling
+
+    return null;
+  } finally {
+    // 🔹 Always hide loader
+    showLoader(false);
+  }
+};
+
+//DeleteInstrumentClosingPeriod when user click on DELETE
+export const DeleteUpcomingInstrumentCosingPeriodRequest = async ({
+  callApi,
+  showNotification,
+  showLoader,
+  requestdata,
+  setDeleteConfirmationEditModal,
+  navigate,
+}) => {
+  try {
+    // 🔹 API Call
+    const res = await callApi({
+      requestMethod: import.meta.env
+        .VITE_DELETE_INSTRUMENT_CLOSING_PERIOD_REQUEST_METHOD, // <-- Delete Upcoming Closing Period
+      endpoint: import.meta.env.VITE_API_ADMIN,
+      requestData: requestdata,
+      navigate,
+    });
+
+    //  Check Session Expiry
+    if (handleExpiredSession(res, navigate, showLoader)) return false;
+
+    // when Api send isExecuted false
+    if (!res?.result?.isExecuted) {
+      showNotification({
+        type: "error",
+        title: "Error",
+        description: "Something went wrong. Please try again.",
+      });
+      return false;
+    }
+
+    // When Api Send Success Response
+    if (res.success) {
+      const { responseMessage } = res.result;
+
+      if (responseMessage === "PAD_Admin_DeleteInstrumentClosingPeriod_02") {
+        setDeleteConfirmationEditModal(false);
+        return true;
+      } else {
+        showNotification({
+          type: "warning",
+          title: getMessage(responseMessage),
+        });
+        return false;
+      }
+    }
+
+    return false;
+  } catch (error) {
+    // ❌ Exception handling
+
+    return false;
+  } finally {
     showLoader(false);
   }
 };
