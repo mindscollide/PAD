@@ -113,9 +113,9 @@ const Dashboard = () => {
       console.log("action", data);
       if (!data?.message) {
         // tempraroy
-        if (data?.action === "WEBNOTIFICATION") {
-          apiCallwebNotification();
-        }
+        // if (data?.action === "WEBNOTIFICATION") {
+        //   apiCallwebNotification();
+        // }
         console.warn("MQTT: Received invalid message", data);
         return;
       }
@@ -137,6 +137,19 @@ const Dashboard = () => {
             if (roleIDs !== "1") {
               // not admin MQTT → ignore completely
               return;
+            } else {
+              if (action === "WEBNOTIFICATION") {
+                apiCallwebNotification();
+              }
+            }
+          } else {
+            if (roleIDs !== "1") {
+              if (action === "WEBNOTIFICATION") {
+                apiCallwebNotification();
+              }
+              return;
+            } else {
+              // its admin MQTT → ignore completely
             }
           }
           switch (roleIDs) {

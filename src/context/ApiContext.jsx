@@ -110,7 +110,7 @@ export const ApiProvider = ({ children }) => {
             isFileUpload, // keep upload flag
           });
         }
-        // logout(navigate, showLoader);
+        logout(navigate, showLoader);
         return { success: false, expired: true };
       }
 

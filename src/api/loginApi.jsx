@@ -158,8 +158,11 @@ export const logout = ({ navigate, showLoader }) => {
     sessionStorage.removeItem("user_Hierarchy_Details");
     sessionStorage.removeItem("user_mqtt_Port");
     sessionStorage.removeItem("user_mqtt_ip_Address");
+    sessionStorage.removeItem("urgentApprovals");
+    sessionStorage.removeItem("urgent_flag");
+    sessionStorage.removeItem("user_mqtt_ip_Address");
     // Optional: Clear entire sessionStorage if needed
-    // sessionStorage.clear();
+    sessionStorage.clear();
 
     console.log("User logged out");
 
