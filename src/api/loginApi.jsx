@@ -4,6 +4,7 @@ import { hasAdminRole, hasOnlyAdminRole } from "../common/funtions/adminChecks";
 import { getMessage } from "./utils";
 
 export const login = async ({
+  setUrgentAlert,
   setCurrentRoleIsAdmin,
   username,
   password,
@@ -51,15 +52,17 @@ export const login = async ({
       sessionStorage.setItem("refresh_token", userToken.refreshToken);
       sessionStorage.setItem("token_timeout", userToken.tokenTimeOut);
       sessionStorage.setItem("lastLoggedInDateTime", lastLoggedInDateTime);
-      if (userProfileData.userID === 2) {
+        if (userAssignedRoles.some((role) => role.roleID === 3)) {
         sessionStorage.setItem(
           "urgentApprovals",
-          JSON.stringify(urgentApprovals)
+          JSON.stringify(urgentApprovals[0])
         );
-        if (urgentApprovals.count > 0) {
+        if (urgentApprovals[0].count > 0) {
           sessionStorage.setItem("urgent_flag", true);
+          setUrgentAlert(true);
         } else {
           sessionStorage.setItem("urgent_flag", false);
+          setUrgentAlert(false);
         }
       }
 

@@ -175,8 +175,7 @@ export const getCurrentDateTimeMarkAsReadNotification = () => {
   return `${year}${month}${day}${hours}${minutes}${seconds}`;
 };
 
-
-// this for time display convert utc to current time zone 
+// this for time display convert utc to current time zone
 export const convertUTCToLocalTime = (utcTimeStr) => {
   if (!utcTimeStr || utcTimeStr.length !== 6) return null;
 
@@ -206,4 +205,16 @@ export const formatDateToUTCString = (date) => {
   const seconds = String(date.getUTCSeconds()).padStart(2, "0");
 
   return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+};
+
+// Got it ✅ — you want an exportable function that:
+
+// Adds a hyphen after the first letter (whatever it is).
+
+// Works for any prefix (not just P).
+
+// Keeps the rest of the string unchanged.
+export const formatTransactionId = (id) => {
+  if (!id) return "";
+  return id.replace(/^([A-Za-z])(?!-)/, "$1-");
 };

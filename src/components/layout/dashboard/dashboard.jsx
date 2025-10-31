@@ -54,6 +54,8 @@ const Dashboard = () => {
     roleChanegFlag,
     setRoleChanegFlag,
     currentRoleIsAdminRef,
+    urgentAlert,
+    setUrgentAlert,
   } = useDashboardContext();
   const { setEmployeeTransactionsTableDataMqtt } = useTransaction();
   const { setWebNotificationData } = useWebNotification();
@@ -342,13 +344,23 @@ const Dashboard = () => {
                   }
                   break;
                 }
-                case "YOU_HAVE_URGENT_ACTION_WHICH_REQUIRE_URGENT_ACTIO": {
+                case "YOU_HAVE_URGENT_ACTION_WHICH_REQUIRE_URGENT_ACTION": {
                   // Prevent multiple fetches on mount
                   sessionStorage.setItem(
                     "urgentApprovals",
                     JSON.stringify(payload)
                   );
-                  sessionStorage.setItem("urgent_flag", true);
+                  console.log("urgentApprovals", payload);
+                  if (payload.count > 0) {
+                    sessionStorage.setItem("urgent_flag", true);
+                    setUrgentAlert(true);
+                    console.log("urgentApprovals", payload);
+                  } else {
+                    sessionStorage.setItem("urgent_flag", false);
+                    setUrgentAlert(false);
+                    console.log("urgentApprovals", payload);
+                  }
+
                   break;
                 }
                 case "LINE_MANAGER_NEW_TRADE_APPROVAL_REQUEST": {

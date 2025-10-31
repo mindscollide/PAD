@@ -89,10 +89,16 @@ const BoxCard = ({
   const handleClick = () => {
     navigateToPage(userRole, route, setSelectedKey, navigate);
   };
+
   const handleClosedWarning = () => {
-    if (userRoleIDs === 2) {
+    console.log("urgentApprovals");
+    console.log("urgentApprovals", userRoleIDs);
+    if (userRoleIDs.includes(3)) {
+      console.log("urgentApprovals");
       const urgent_flag = JSON.parse(sessionStorage.getItem("urgent_flag"));
+      console.log("urgentApprovals", urgent_flag);
       if (urgent_flag) {
+        console.log("urgentApprovals");
         sessionStorage.setItem("urgent_flag", false);
         setUrgentAlert(false);
       }

@@ -30,7 +30,6 @@ const MemoizedReportCard = React.memo(ReportCard);
 const Home = () => {
   const { showNotification } = useNotification();
   const navigate = useNavigate();
-  const [urgentAlert, setUrgentAlert] = useState(false); // Controls which accordion panels are open
 
   const {
     dashboardData,
@@ -39,6 +38,8 @@ const Home = () => {
     setAllInstrumentsData,
     setAssetTypeListingData,
     setGetAllPredefineReasonData,
+    urgentAlert,
+    setUrgentAlert,
   } = useDashboardContext();
   const { setWebNotificationData, webNotificationDataMqtt } =
     useWebNotification();
@@ -132,18 +133,17 @@ const Home = () => {
   );
 
   useEffect(() => {
-    if (userRoleIDs === 2) {
+    if (hasFetched.current) return;
+    hasFetched.current = true;
+    if (userRoleIDs.includes(3)) {
       const urgent_flag = JSON.parse(sessionStorage.getItem("urgent_flag"));
+
       if (urgent_flag) {
         setUrgentAlert(true);
       } else {
         setUrgentAlert(false);
       }
     }
-
-    if (hasFetched.current) return;
-    hasFetched.current = true;
-    console.log("hasFetched");
     const fetchData = async () => {
       if (!roles || roles.length === 0) {
         hasFetched.current = false;
@@ -177,6 +177,7 @@ const Home = () => {
             filteredData[roleKey] = data[roleKey];
           }
         });
+
         showLoader(false);
         await setDashboardData(filteredData);
       } catch (error) {

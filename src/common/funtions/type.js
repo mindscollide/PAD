@@ -13,6 +13,7 @@
  */
 export const getTradeTypeById = (assetTypeData, tradeType) => {
   console.log("assetTypeListingData", assetTypeData);
+  console.log("assetTypeListingData", tradeType);
   if (!Array.isArray(assetTypeData?.items)) return "—";
   return (
     assetTypeData.items.find((i) => i.tradeApprovalTypeID === tradeType.typeID)

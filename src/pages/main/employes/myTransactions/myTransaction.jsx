@@ -120,7 +120,7 @@ const MyTransaction = () => {
       const transactions = Array.isArray(res?.transactions)
         ? res.transactions
         : [];
-
+      console.log("transactions");
       const mapped = mapEmployeeTransactions(
         currentAssetTypeData?.Equities,
         transactions
@@ -198,7 +198,7 @@ const MyTransaction = () => {
     );
     fetchApiCall(requestData, true, true);
   }, []);
-  
+
   // Reset on Unmount
   useEffect(() => {
     return () => {
