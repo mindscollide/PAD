@@ -63,7 +63,7 @@ export const mapEmployeeTransactions = (assetTypeData,employeeTransactionsData =
     quantity: item.quantity || 0,
     tradeApprovalID: item.tradeApprovalID || "",
     tradeApprovalTypeID: item.tradeApprovalTypeID || null,
-    tradeType:getTradeTypeById(assetTypeData, item?.tradeType) || "-" ,
+    tradeType:getTradeTypeById(assetTypeData, item?.tradeApproval) || "-" ,
     isEscalated:item.isEscalated,
     workFlowStatusID: item.workFlowStatusID || null,
     workFlowStatus: item.workFlowStatus || "",

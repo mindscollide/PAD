@@ -120,12 +120,13 @@ const MyTransaction = () => {
       const transactions = Array.isArray(res?.transactions)
         ? res.transactions
         : [];
-      console.log("transactions");
+      console.log("transactions", transactions);
       const mapped = mapEmployeeTransactions(
         currentAssetTypeData?.Equities,
         transactions
       );
       if (!mapped || typeof mapped !== "object") return;
+      console.log("transactions", mapped);
 
       setEmployeeTransactionsData((prev) => ({
         transactions: replace
