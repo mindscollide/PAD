@@ -7,6 +7,7 @@ import { ArrowsAltOutlined } from "@ant-design/icons";
 import { Tag, Switch } from "antd";
 import styles from "./EditInstrument.module.css";
 import StatusColumnTitle from "../../../../../components/dropdowns/filters/statusColumnTitle";
+import { useTableScrollBottom } from "../../../../../common/funtions/scroll";
 
 // import TypeColumnTitle from "./typeFilter";
 
@@ -158,3 +159,11 @@ export const previousClosedPeriodsTable = (sortedInfo) => [
     render: (text) => <span className="font-medium">{text || "-"}</span>,
   },
 ];
+
+// ✅ Wrapper to register multiple scroll callbacks in one go
+export const useMultiTableScrollBottom = (configs) => {
+  configs.forEach(({ callback, offset = 0, className }) => {
+    // reuse your existing hook
+    useTableScrollBottom(callback, offset, className);
+  });
+};

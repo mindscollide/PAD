@@ -140,7 +140,12 @@ const Instruments = () => {
 
     // Set Data in the Edit Modal Instrument Previous Closing Period Table
     if (response) {
-      setAdminInstrumentPreviousClosingData(response);
+      const newList = response?.closingPeriods || [];
+      setAdminInstrumentPreviousClosingData({
+        closingPeriods: newList,
+        totalRecordsDataBase: response?.totalRecords || 0,
+        totalRecordsTable: newList.length,
+      });
     }
   };
 

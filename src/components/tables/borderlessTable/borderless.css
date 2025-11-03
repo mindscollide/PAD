@@ -881,7 +881,6 @@ td.border-less-table-white-2-cell:nth-child(3) {
 
 /* ================== */
 
-
 .border-less-table-white-4-body table {
   border-spacing: 0px 10px;
 }
@@ -1238,5 +1237,189 @@ border-  bottom-bottom-right-radius: 6.94px !important;
     .css-dev-only-do-not-override-1rfzxih
   ).border-less-table-upcomingTable-wrapper
   .border-less-table-upcomingTable-column-title {
+  z-index: 0 !important;
+}
+
+/* Root Table Layout */
+/* Previous Table */
+.border-less-table-previousTable-body table {
+  border-spacing: 0 10px; /* Space between rows */
+}
+
+/* Table Row Styling */
+.border-less-table-previousTable-row {
+  height: 53.82px;
+}
+
+/* Target the first and last <td> inside each <tr> */
+td.border-less-table-previousTable-cell:first-child {
+  /* Your styles here */
+  background-color: #edf3ff;
+  border-bottom-left-radius: 6.94px;
+  border-top-left-radius: 6.94px;
+  /* Example: add padding, border, etc. */
+}
+td.border-less-table-previousTable-cell:last-child {
+  /* Your styles here */
+  background-color: #edf3ff;
+  border-bottom-right-radius: 6.94px;
+  border-top-right-radius: 6.94px;
+  /* Example: add padding, border, etc. */
+}
+
+.border-less-table-previousTable .ant-table-body {
+  overflow-x: hidden !important; /* kill horizontal scrollbar */
+  overflow-y: auto !important; /* keep vertical scroll for lazy loading */
+  max-height: 550px; /* same height you passed */
+}
+
+/* Middle columns (excluding first and last) */
+td.border-less-table-previousTable-cell:not(:first-child):not(:last-child) {
+  /* Your styles here */
+  background-color: #edf3ff;
+}
+
+/* When No data is available then on hover no color change in table */
+td.border-less-table-previousTable-cell:hover {
+  background-color: #edf3ff !important;
+}
+
+.border-less-table-previousTable-wrapper .border-less-table-previousTable {
+  background: transparent !important;
+  /* height: 588px !important; */
+}
+/* Cell Styling */
+.border-less-table-previousTable-wrapper
+  .border-less-table-previousTable-tbody
+  > tr
+  > td {
+  padding: 0px 6px;
+  color: #424242;
+  font-family: "Switzer Variable";
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 100%;
+  vertical-align: middle;
+}
+
+/* Instrument Badge */
+.border-less-table-previousTable-instrumentBadge {
+  background-color: #1c2d5a;
+  color: white;
+  padding: 4px 8px;
+  border-radius: 4px;
+  min-width: 28px;
+  text-align: center;
+  font-family: "Switzer Variable";
+  font-weight: 500;
+  font-size: 13.89px;
+}
+
+/* Tag Styling */
+.border-less-table-previousTable-status {
+  border: none !important;
+  border-radius: 3.47px;
+  padding: 6px 10px;
+  font-family: "Switzer Variable";
+  font-size: 16px;
+  font-weight: 400;
+}
+
+/* Header Styling */
+.border-less-table-previousTable-wrapper
+  .border-less-table-previousTable-thead
+  > tr
+  > th {
+  color: #30426a;
+  font-family: "Switzer Variable";
+  font-size: 14px;
+  font-weight: 500;
+  padding: 12px 8px;
+  background: transparent !important;
+  border-bottom: none;
+}
+
+/* Optional Sticky Header */
+.border-less-table-previousTable .ant-table-header {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background-color: #fff;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+  .border-less-table-previousTable-wrapper
+    .border-less-table-previousTable-tbody
+    > tr
+    > td {
+    padding: 6px;
+    font-size: 14px;
+  }
+
+  .border-less-table-previousTable-instrumentBadge {
+    font-size: 12px;
+    padding: 3px 6px;
+  }
+
+  .border-less-table-previousTable-status {
+    font-size: 14px;
+    padding: 5px 8px;
+  }
+
+  .border-less-table-previousTable-wrapper
+    .border-less-table-previousTable-thead
+    > tr
+    > th {
+    font-size: 13px;
+    padding: 10px;
+  }
+}
+
+.border-less-table-previousTable-wrapper
+  .border-less-table-previousTable-thead
+  > tr
+  > th:not(:last-child):not(
+    .border-less-table-previousTable-selection-column
+  ):not(.border-less-table-previousTable-row-expand-icon-cell):not(
+    [colspan]
+  )::before {
+  display: none;
+}
+
+:where(
+    .css-dev-only-do-not-override-1rfzxih
+  ).border-less-table-previousTable-wrapper
+  .border-less-table-previousTable-tbody
+  > tr
+  > th,
+:where(
+    .css-dev-only-do-not-override-1rfzxih
+  ).border-less-table-previousTable-wrapper
+  .border-less-table-previousTable-tbody
+  > tr
+  > td {
+  border-bottom: none !important;
+}
+
+/* border-top-right-radius: 6.94px !important;
+  border-top-left-radius: 6.94px !important;
+border-  bottom-bottom-right-radius: 6.94px !important;
+  border-bottom-left-radius: 6.94px !important; */
+/* Hide scrollbars in the wrapper */
+
+:where(
+    .css-dev-only-do-not-override-1rfzxih
+  ).border-less-table-previousTable-wrapper
+  .border-less-table-previousTable {
+  scrollbar-width: thin;
+  scrollbar-color: #eaeaea transparent;
+  scrollbar-gutter: stable;
+}
+
+:where(
+    .css-dev-only-do-not-override-1rfzxih
+  ).border-less-table-previousTable-wrapper
+  .border-less-table-previousTable-column-title {
   z-index: 0 !important;
 }
