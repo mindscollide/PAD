@@ -455,7 +455,7 @@ const Policies = ({
         </Collapse>
       ) : (
         // 🔹 Empty State
-        <EmptyState type="policiestab" />
+        <EmptyState type="policiestab" style={{ minHeight: "55vh" }} />
       )}
 
       {/* 🔹 Loading Indicator for Infinite Scroll */}

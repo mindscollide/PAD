@@ -456,6 +456,11 @@ const GroupAndPolicyAddViewEdit = ({ currentPolicyID, setCurrentPolicyID }) => {
 
   /** 🔹 Build Active Filters */
   const activeFilters = (() => {
+    const truncate = (text) =>
+      typeof text === "string" && text.length > 13
+        ? `${text.slice(0, 13)}...`
+        : text;
+
     if (pageTabesForAdminGropusAndPolicy === 1) {
       // 🔸 Policy Filters
       const { policyId, scenario, consequence } =
@@ -467,25 +472,21 @@ const GroupAndPolicyAddViewEdit = ({ currentPolicyID, setCurrentPolicyID }) => {
         filters.push({
           key: "policyId",
           label: "Policy ID",
-          value: `#${policyId}`,
+          value: truncate(policyId), // ✅ removed '#'
         });
 
       if (scenario)
         filters.push({
           key: "scenario",
           label: "Scenario",
-          value:
-            scenario.length > 20 ? `${scenario.slice(0, 20)}...` : scenario,
+          value: truncate(scenario),
         });
 
       if (consequence)
         filters.push({
           key: "consequence",
           label: "Consequence",
-          value:
-            consequence.length > 20
-              ? `${consequence.slice(0, 20)}...`
-              : consequence,
+          value: truncate(consequence),
         });
 
       return filters;
@@ -502,28 +503,28 @@ const GroupAndPolicyAddViewEdit = ({ currentPolicyID, setCurrentPolicyID }) => {
         filters.push({
           key: "employeeName",
           label: "Employee Name",
-          value: employeeName,
+          value: truncate(employeeName),
         });
 
       if (designation)
         filters.push({
           key: "designation",
           label: "Designation",
-          value: designation,
+          value: truncate(designation),
         });
 
       if (departmentName)
         filters.push({
           key: "departmentName",
           label: "Department",
-          value: departmentName,
+          value: truncate(departmentName),
         });
 
       if (emailAddress)
         filters.push({
           key: "emailAddress",
           label: "Email",
-          value: emailAddress,
+          value: truncate(emailAddress),
         });
 
       return filters;
@@ -614,7 +615,9 @@ const GroupAndPolicyAddViewEdit = ({ currentPolicyID, setCurrentPolicyID }) => {
       {/* 🔹 Page Layout with Tabs and Actions */}
       <PageLayout
         background="blue"
-        className={activeFilters.length > 0 && "changeHeightforPolicy"}
+        className={
+          activeFilters.length > 0 ? "changeHeightforPolicy" : "grouppolicy"
+        }
       >
         <Row justify="space-between" align="middle" className={styles.header}>
           {/* 🔸 Tabs: Details / Policies / Users */}
