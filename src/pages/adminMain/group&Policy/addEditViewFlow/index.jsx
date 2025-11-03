@@ -738,7 +738,7 @@ const GroupAndPolicyAddViewEdit = ({ currentPolicyID, setCurrentPolicyID }) => {
                     pageTabesForAdminGropusAndPolicy === 0
                       ? "Edit Deatils"
                       : pageTabesForAdminGropusAndPolicy === 1
-                      ? "Edit Ploicies"
+                      ? "Edit Policies"
                       : "Edit Users"
                   }
                   onClick={handleEditFromView}
