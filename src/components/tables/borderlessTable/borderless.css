@@ -365,6 +365,11 @@ border-  bottom-bottom-right-radius: 6.94px !important;
 .border-less-table-white-3-body table {
   border-spacing: 0px 10px !important;
 }
+
+.border-less-table-white-3-wrapper table {
+  border-spacing: 0px 10px !important;
+}
+
 :where(.css-dev-only-do-not-override-1rfzxih).border-less-table-white-3-wrapper
   table {
   border-spacing: 0px 10px !important;
@@ -496,14 +501,7 @@ td.border-less-table-white-3-cell:not(:first-child):not(:last-child) {
   display: none;
 }
 
-:where(.css-dev-only-do-not-override-1rfzxih).border-less-table-white-3-wrapper
-  .border-less-table-white-3-tbody
-  > tr
-  > th,
-:where(.css-dev-only-do-not-override-1rfzxih).border-less-table-white-3-wrapper
-  .border-less-table-white-3-tbody
-  > tr
-  > td {
+.border-less-table-white-3-wrapper .border-less-table-white-3-tbody > tr > td {
   border-top: 1px solid #b4b4b4 !important;
   border-bottom: 1px solid #b4b4b4 !important;
 }
