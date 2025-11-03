@@ -21,6 +21,7 @@ const Details = ({
     tabesFormDataofAdminGropusAndPolicy,
     setTabesFormDataofAdminGropusAndPolicy,
     pageTypeForAdminGropusAndPolicy,
+    setPageTypeForAdminGropusAndPolicy,
   } = useMyAdmin();
   // 🔷 Context Hooks
   const navigate = useNavigate();
@@ -33,10 +34,10 @@ const Details = ({
   const [isDescValid, setIsDescValid] = useState(null);
   const [isCheckingTitle, setIsCheckingTitle] = useState(false);
 
-  const groupTitle = tabesFormDataofAdminGropusAndPolicy.details.groupTitle;
+  const groupTitle = tabesFormDataofAdminGropusAndPolicy?.details?.groupTitle;
   console.log("groupDescription", groupTitle);
   const groupDescription =
-    tabesFormDataofAdminGropusAndPolicy.details.groupDiscription;
+    tabesFormDataofAdminGropusAndPolicy?.details?.groupDiscription;
   console.log("groupDescription", groupDescription);
 
   // 🔹 Simulate async uniqueness check (replace with API later)
@@ -61,7 +62,7 @@ const Details = ({
     const trimmedTitle = groupTitle.trim();
 
     if (!trimmedTitle) {
-      setTitleError("Please provide a name.");
+      setTitleError("Group Tiltle is required.");
       setIsTitleValid(false);
       return;
     }
@@ -69,7 +70,7 @@ const Details = ({
     const isUnique = await checkGroupTitleUnique(trimmedTitle);
     setIsCheckingTitle(false);
     if (!isUnique) {
-      setTitleError("This name is already in use.");
+      setTitleError("This Group Tiltle is already in use.");
       setIsTitleValid(false);
     } else {
       setTitleError("");
@@ -81,7 +82,7 @@ const Details = ({
   const handleDescriptionBlur = () => {
     const trimmedDesc = groupDescription.trim();
     if (!trimmedDesc) {
-      setDescError("Please provide a description.");
+      setDescError("Description is required.");
       setIsDescValid(false);
     } else {
       setDescError("");
@@ -99,14 +100,18 @@ const Details = ({
       },
     }));
   };
-
+  useEffect(() => {
+    if (clickEditFromView) {
+      setPageTypeForAdminGropusAndPolicy(1);
+    }
+  }, [clickEditFromView]);
   // 🔹 Watch for validation trigger from parent
   useEffect(() => {
     if (errorDeatilsTabSwitch) {
       let hasError = false;
 
       if (!groupTitle.trim()) {
-        setTitleError("Please provide a name.");
+        setTitleError("Group Tiltle is required.");
         setIsTitleValid(false); // ⬅️ Add this
         hasError = true;
       } else {
@@ -115,7 +120,7 @@ const Details = ({
       }
 
       if (!groupDescription.trim()) {
-        setDescError("Please provide a description.");
+        setDescError("Description is required.");
         setIsDescValid(false); // ⬅️ Add this
         hasError = true;
       } else {
@@ -143,12 +148,12 @@ const Details = ({
               <Input
                 value={groupTitle}
                 onChange={(e) =>
-                  e.target.value.length <= 100 &&
+                  e.target.value.length <= 50 &&
                   handleChange("groupTitle", e.target.value)
                 }
                 onBlur={handleTitleBlur}
                 placeholder="Enter group title"
-                maxLength={100}
+                maxLength={50}
                 className={`${styles.inputField} ${
                   isTitleValid === false
                     ? styles.errorBorder
@@ -162,7 +167,7 @@ const Details = ({
                   isTitleValid === false ? styles.errorCounter : ""
                 }`}
               >
-                {groupTitle.length}/100
+                {groupTitle.length}/50
               </div>
               {titleError ? (
                 <div
