@@ -147,9 +147,9 @@ const ReconcileTransaction = ({ activeFilters }) => {
           };
 
           // this is for check if filter value get true only on that it will false
-          if (prev.filterTrigger) {
-            next.filterTrigger = false;
-          }
+          // if (prev.filterTrigger) {
+          //   next.filterTrigger = false;
+          // }
 
           return next;
         });
@@ -259,7 +259,10 @@ const ReconcileTransaction = ({ activeFilters }) => {
         complianceOfficerReconcileTransactionsSearch,
         assetTypeListingData
       );
-
+      setComplianceOfficerReconcileTransactionsSearch((prev) => ({
+        ...prev,
+        filterTrigger: false,
+      }));
       fetchApiCall(requestData, true, true); // replace mode
     }
   }, [
