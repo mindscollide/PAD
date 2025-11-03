@@ -13,14 +13,19 @@ import TypeColumnTitle from "../../../../../components/dropdowns/filters/typeCol
 import StatusColumnTitle from "../../../../../components/dropdowns/filters/statusColumnTitle";
 
 // Helpers
-import { formatApiDateTime, toYYMMDD } from "../../../../../common/funtions/rejex";
+import {
+  formatApiDateTime,
+  toYYMMDD,
+} from "../../../../../common/funtions/rejex";
 import { useGlobalModal } from "../../../../../context/GlobalModalContext";
 import { usePortfolioContext } from "../../../../../context/portfolioContax";
 import { getTradeTypeById } from "../../../../../common/funtions/type";
-import { mapBuySellToIds, mapStatusToIds } from "../../../../../components/dropdowns/filters/utils";
+import {
+  mapBuySellToIds,
+  mapStatusToIds,
+} from "../../../../../components/dropdowns/filters/utils";
 
 const { Text } = Typography;
-
 
 /**
  * Build API request payload from search/filter state.
@@ -30,10 +35,15 @@ const { Text } = Typography;
  * @returns {Object} - API request payload
  */
 export const buildApiRequest = (searchState = {}, assetTypeListingData) => {
-  const startDate = searchState.startDate ? toYYMMDD(searchState.startDate) : "";
+  const startDate = searchState.startDate
+    ? toYYMMDD(searchState.startDate)
+    : "";
   const endDate = searchState.endDate ? toYYMMDD(searchState.endDate) : "";
 
-  const typeIds = mapBuySellToIds(searchState.type, assetTypeListingData?.Equities);
+  const typeIds = mapBuySellToIds(
+    searchState.type,
+    assetTypeListingData?.Equities
+  );
   const statusIds = mapStatusToIds(searchState.status);
 
   return {
@@ -82,8 +92,6 @@ const getSortIcon = (columnKey, sortedInfo) => {
     />
   );
 };
-
-
 
 /**
  * Maps API data list into AntD table rows.
@@ -165,6 +173,7 @@ export const getBorderlessTableColumns = ({
       sortedInfo?.columnKey === "requesterName" ? sortedInfo.order : null,
     showSorterTooltip: false,
     sortIcon: () => null,
+    width: 150,
     render: (text) => (
       <span className="font-medium" title={text || "—"}>
         {text || "—"}

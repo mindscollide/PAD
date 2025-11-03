@@ -68,6 +68,8 @@ export const DashboardProvider = ({ children }) => {
   useEffect(() => {
     currentRoleIsAdminRef.current = currentRoleIsAdmin; // keep ref updated with latest tab
   }, [currentRoleIsAdmin]);
+  // for line manager urgent action required flag
+  const [urgentAlert, setUrgentAlert] = useState(false); // Controls which accordion panels are open
 
   const resetDashboardContextState = () => {
     setDashboardData({
@@ -111,6 +113,8 @@ export const DashboardProvider = ({ children }) => {
         roleChanegFlag,
         setRoleChanegFlag,
         currentRoleIsAdminRef,
+        urgentAlert,
+        setUrgentAlert,
       }}
     >
       {children}

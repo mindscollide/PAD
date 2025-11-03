@@ -254,6 +254,41 @@ export const SearchBarProvider = ({ children }) => {
     pageSize: 10,
   });
 
+  // Admin Gropus And Policy Search filter
+  const [adminGropusAndPolicySearch, setAdminGropusAndPolicySearch] = useState({
+    policyName: "",
+    filterTrigger: false,
+    pageNumber: 0,
+    pageSize: 10,
+  });
+
+  // Admin Gropus And Policy Search filter for policy tab
+  const [
+    adminGropusAndPolicyPoliciesTabSearch,
+    setAdminGropusAndPolicyPoliciesTabSearch,
+  ] = useState({
+    policyId: null,
+    scenario: "",
+    consequence: "",
+    filterTrigger: false,
+    pageNumber: 0,
+    pageSize: 10,
+  });
+
+  //Admin Gropus And Policy users Tab
+  const [
+    adminGropusAndPolicyUsersTabSearch,
+    setAdminGropusAndPolicyUsersTabSearch,
+  ] = useState({
+    employeeName: "",
+    emailAddress: "",
+    designation: "",
+    departmentName: "",
+    employeeID: 0,
+    filterTrigger: false,
+    pageNumber: 0,
+    pageSize: 10,
+  });
   // ===============================
   // Sync Refs (Always-Latest Values)
   // ===============================
@@ -537,6 +572,40 @@ export const SearchBarProvider = ({ children }) => {
       pageSize: 10,
     });
 
+  /** Reset Admin Gropus And Policy  filters */
+  const resetAdminGropusAndPolicySearch = () =>
+    setAdminGropusAndPolicySearch({
+      policyName: "",
+      filterTrigger: false,
+      pageNumber: 0,
+      pageSize: 10,
+    });
+
+  /** Reset Admin Gropus And Policy  filters */
+  const resetAdminGropusAndPolicyPoliciesTabSearch = () =>
+    setAdminGropusAndPolicyPoliciesTabSearch({
+      policyId: null,
+      scenario: "",
+      consequence: "",
+      filterTrigger: false,
+      pageNumber: 0,
+      pageSize: 10,
+    });
+
+  // Admin reset Gropus And Policy Search filter for users tab
+  const resetAdminGropusAndPolicyUsersTabSearch = () =>
+    setAdminGropusAndPolicyUsersTabSearch({
+      employeeName: "",
+      emailAddress: "",
+      designation: "",
+      departmentName: "",
+      employeeID: 0,
+      filterTrigger: false,
+      pageNumber: 0,
+      pageSize: 10,
+    });
+
+  // ================================================================================ //
   /** Reset all filters across modules */
   const resetSearchBarContextState = () => {
     resetEmployeeMyApprovalSearch();
@@ -552,6 +621,9 @@ export const SearchBarProvider = ({ children }) => {
     resetHeadOfTradeApprovalEscalatedApprovalsSearch();
     resetAdminBrokersListSearch();
     resetAdminInstrumentListSearch();
+    resetAdminGropusAndPolicySearch();
+    resetAdminGropusAndPolicyPoliciesTabSearch();
+    resetAdminGropusAndPolicyUsersTabSearch();
   };
 
   // ===============================
@@ -612,6 +684,21 @@ export const SearchBarProvider = ({ children }) => {
         adminBrokerSearch,
         setAdminBrokerSearch,
         resetAdminBrokersListSearch,
+
+        //Admin Gropus And Policy
+        adminGropusAndPolicySearch,
+        setAdminGropusAndPolicySearch,
+        resetAdminGropusAndPolicySearch,
+
+        //Admin Gropus And Policy policies Tab
+        resetAdminGropusAndPolicyPoliciesTabSearch,
+        adminGropusAndPolicyPoliciesTabSearch,
+        setAdminGropusAndPolicyPoliciesTabSearch,
+
+        //Admin Gropus And Policy users Tab
+        resetAdminGropusAndPolicyUsersTabSearch,
+        adminGropusAndPolicyUsersTabSearch,
+        setAdminGropusAndPolicyUsersTabSearch,
 
         // Always-latest refs
         employeeMyApprovalSearchRef,

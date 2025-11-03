@@ -62,13 +62,19 @@ export const typeColorMap = {
     textCountColor: "#F67F29",
     textAlign: "center",
   },
-  total_pending_approval: {
+  total_pending_approvals: {
     bgColor: "#C5FFC7",
     textLableColor: "#00640A",
     textCountColor: "#00640A",
     textAlign: "center",
   },
   urgent_action: {
+    bgColor: "#FFDBDB",
+    textLableColor: "#A50000",
+    textCountColor: "#A50000",
+    textAlign: "center",
+  },
+  approval_require_urgent_action: {
     bgColor: "#FFDBDB",
     textLableColor: "#A50000",
     textCountColor: "#A50000",

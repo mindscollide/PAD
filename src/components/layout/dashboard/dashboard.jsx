@@ -54,6 +54,8 @@ const Dashboard = () => {
     roleChanegFlag,
     setRoleChanegFlag,
     currentRoleIsAdminRef,
+    urgentAlert,
+    setUrgentAlert,
   } = useDashboardContext();
   const { setEmployeeTransactionsTableDataMqtt } = useTransaction();
   const { setWebNotificationData } = useWebNotification();
@@ -111,9 +113,9 @@ const Dashboard = () => {
       console.log("action", data);
       if (!data?.message) {
         // tempraroy
-        if (data?.action === "WEBNOTIFICATION") {
-          apiCallwebNotification();
-        }
+        // if (data?.action === "WEBNOTIFICATION") {
+        //   apiCallwebNotification();
+        // }
         console.warn("MQTT: Received invalid message", data);
         return;
       }
@@ -135,6 +137,19 @@ const Dashboard = () => {
             if (roleIDs !== "1") {
               // not admin MQTT → ignore completely
               return;
+            } else {
+              if (action === "WEBNOTIFICATION") {
+                apiCallwebNotification();
+              }
+            }
+          } else {
+            if (roleIDs !== "1") {
+              if (action === "WEBNOTIFICATION") {
+                apiCallwebNotification();
+              }
+              return;
+            } else {
+              // its admin MQTT → ignore completely
             }
           }
           switch (roleIDs) {
@@ -161,6 +176,7 @@ const Dashboard = () => {
                       return;
                     }
                   }
+                  break;
                 }
 
                 case "NEW_BROKER_ADDED":
@@ -339,6 +355,25 @@ const Dashboard = () => {
                       return { ...prev, lineManager: updatedLineManager };
                     });
                   }
+                  break;
+                }
+                case "YOU_HAVE_URGENT_ACTION_WHICH_REQUIRE_URGENT_ACTION": {
+                  // Prevent multiple fetches on mount
+                  sessionStorage.setItem(
+                    "urgentApprovals",
+                    JSON.stringify(payload)
+                  );
+                  console.log("urgentApprovals", payload);
+                  if (payload.count > 0) {
+                    sessionStorage.setItem("urgent_flag", true);
+                    setUrgentAlert(true);
+                    console.log("urgentApprovals", payload);
+                  } else {
+                    sessionStorage.setItem("urgent_flag", false);
+                    setUrgentAlert(false);
+                    console.log("urgentApprovals", payload);
+                  }
+
                   break;
                 }
                 case "LINE_MANAGER_NEW_TRADE_APPROVAL_REQUEST": {

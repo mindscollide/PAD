@@ -37,7 +37,7 @@ export const responseMessages = {
   // 🔐 Login API (loginApi.jsx)
   // ==============================
   ERM_Auth_AuthServiceManager_Login_01: "Login Successful",
-  ERM_Auth_AuthServiceManager_Login_02: "Login Failed",
+  ERM_Auth_AuthServiceManager_Login_02: "Username could not be verified",
   ERM_Auth_AuthServiceManager_Login_03:
     "User is temporarily disabled and cannot login",
   ERM_Auth_AuthServiceManager_Login_04: "Account permanently closed",
@@ -353,6 +353,48 @@ export const responseMessages = {
   PAD_Admin_GetInstrumentsWithClosingPeriod_02: "No data found",
   PAD_Admin_GetInstrumentsWithClosingPeriod_03: "Exception occurred",
 
+  PAD_Admin_CheckGroupTitleExists_01: "Exist",
+  PAD_Admin_CheckGroupTitleExists_02: "Not Exist",
+  PAD_Admin_CheckGroupTitleExists_03: "Exception occurred",
+
+  Admin_AdminServiceManager_GetPoliciesForGroupPolicyPanel_01: "Data found",
+  Admin_AdminServiceManager_GetPoliciesForGroupPolicyPanel_02: "No data found",
+  Admin_AdminServiceManager_GetPoliciesForGroupPolicyPanel_03:
+    "Exception occurred",
+
+  PAD_GroupPolicyServiceManager_AddGroupPolicy_01: "Invalid or missing input",
+  PAD_GroupPolicyServiceManager_AddGroupPolicy_02: "Success",
+  PAD_GroupPolicyServiceManager_AddGroupPolicy_03:
+    "Failed to create Group Policy",
+  PAD_GroupPolicyServiceManager_AddGroupPolicy_04: "Exception occurred",
+  PAD_GroupPolicyServiceManager_AddGroupPolicy_05:
+    "UnauthorizedUser (Not Admin)",
+
+  PAD_Admin_GetGroupPoliciesList_01: "Exist",
+  PAD_Admin_GetGroupPoliciesList_02: "Not Exist",
+  PAD_Admin_GetGroupPoliciesList_03: "Exception occurred",
+
+  Admin_AdminServiceManager_GetGroupPolicyDetails_01: "Exist",
+  Admin_AdminServiceManager_GetGroupPolicyDetails_02: "Not Exist",
+  Admin_AdminServiceManager_GetGroupPolicyDetails_03: "Exception occurred",
+
+  PAD_GroupPolicyServiceManager_UpdateGroupPolicy_01:
+    "Invalid or missing input",
+  PAD_GroupPolicyServiceManager_UpdateGroupPolicy_02: "Success",
+  PAD_GroupPolicyServiceManager_UpdateGroupPolicy_03:
+    "Failed to Update Group Policy",
+  PAD_GroupPolicyServiceManager_UpdateGroupPolicy_05: "Exception",
+  PAD_GroupPolicyServiceManager_UpdateGroupPolicy_06:
+    "UnauthorizedUser (Not Admin)",
+
+  Admin_AdminServiceManager_SearchPoliciesByGroupPolicyID_01: "Data found",
+  Admin_AdminServiceManager_SearchPoliciesByGroupPolicyID_02: "No data found",
+  Admin_AdminServiceManager_SearchPoliciesByGroupPolicyID_03:
+    "Exception occurred",
+
+  Admin_AdminServiceManager_SearchUsersByGroupPolicyID_01: "Data found",
+  Admin_AdminServiceManager_SearchUsersByGroupPolicyID_02: "No data found",
+  Admin_AdminServiceManager_SearchUsersByGroupPolicyID_03: "Exception occurred",
   PAD_Admin_AddInstrumentClosingPeriod_01: "Invalid input",
   PAD_Admin_AddInstrumentClosingPeriod_02: "Successfully inserted",
   PAD_Admin_AddInstrumentClosingPeriod_03: "Insert failed",
@@ -383,7 +425,17 @@ export const responseMessages = {
  */
 export const getMessage = (code) => {
   const msg = responseMessages[code];
-  if (msg === "Data Available" || msg === "No data available") {
+  if (
+    msg === "Data Available" ||
+    msg === "No data available" ||
+    msg === "Data found" ||
+    msg === "No data found" ||
+    msg === "Successfully updated" ||
+    msg === "Successfully inserted all" ||
+    msg === "Exist" ||
+    msg === "Not Exist" ||
+    msg === "Success"
+  ) {
     return "";
   }
   return msg || "Something went wrong. Please try again.";

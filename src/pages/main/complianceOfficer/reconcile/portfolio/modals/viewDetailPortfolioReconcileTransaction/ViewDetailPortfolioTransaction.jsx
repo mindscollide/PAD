@@ -14,6 +14,7 @@ import {
   dashBetweenApprovalAssets,
   formatApiDateTime,
   formatNumberWithCommas,
+  formatTransactionId,
 } from "../../../../../../../common/funtions/rejex";
 import { useReconcileContext } from "../../../../../../../context/reconsileContax";
 import { usePortfolioContext } from "../../../../../../../context/portfolioContax";
@@ -197,7 +198,7 @@ const ViewDetailPortfolioTransaction = () => {
                         Portfolio ID
                       </label>
                       <label className={styles.viewDetailSubLabels}>
-                        {dashBetweenApprovalAssets(
+                        {formatTransactionId(
                           reconcilePortfolioViewDetailData?.details?.[0]
                             ?.tradeApprovalID
                         )}

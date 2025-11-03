@@ -211,7 +211,6 @@ const Instruments = () => {
       setAdminIntrumentsData,
     ]
   );
-  console.log("adminIntrumentsData", adminIntrumentsData);
   // ----------------- Effects -----------------
 
   // 🔷 Initial Data Fetch

@@ -4,6 +4,7 @@ import { hasAdminRole, hasOnlyAdminRole } from "../common/funtions/adminChecks";
 import { getMessage } from "./utils";
 
 export const login = async ({
+  setUrgentAlert,
   setCurrentRoleIsAdmin,
   username,
   password,
@@ -42,6 +43,7 @@ export const login = async ({
       userProfileData,
       userHierarchy,
       lastLoggedInDateTime,
+      urgentApprovals,
     } = res.result;
     const message = getMessage(res.result.responseMessage);
     const responseCodeKey = res.result.responseMessage;
@@ -50,6 +52,19 @@ export const login = async ({
       sessionStorage.setItem("refresh_token", userToken.refreshToken);
       sessionStorage.setItem("token_timeout", userToken.tokenTimeOut);
       sessionStorage.setItem("lastLoggedInDateTime", lastLoggedInDateTime);
+        if (userAssignedRoles.some((role) => role.roleID === 3)) {
+        sessionStorage.setItem(
+          "urgentApprovals",
+          JSON.stringify(urgentApprovals[0])
+        );
+        if (urgentApprovals[0].count > 0) {
+          sessionStorage.setItem("urgent_flag", true);
+          setUrgentAlert(true);
+        } else {
+          sessionStorage.setItem("urgent_flag", false);
+          setUrgentAlert(false);
+        }
+      }
 
       sessionStorage.setItem(
         "user_assigned_roles",
@@ -143,8 +158,11 @@ export const logout = ({ navigate, showLoader }) => {
     sessionStorage.removeItem("user_Hierarchy_Details");
     sessionStorage.removeItem("user_mqtt_Port");
     sessionStorage.removeItem("user_mqtt_ip_Address");
+    sessionStorage.removeItem("urgentApprovals");
+    sessionStorage.removeItem("urgent_flag");
+    sessionStorage.removeItem("user_mqtt_ip_Address");
     // Optional: Clear entire sessionStorage if needed
-    // sessionStorage.clear();
+    sessionStorage.clear();
 
     console.log("User logged out");
 

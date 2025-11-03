@@ -175,6 +175,26 @@ export const getCurrentDateTimeMarkAsReadNotification = () => {
   return `${year}${month}${day}${hours}${minutes}${seconds}`;
 };
 
+// this for time display convert utc to current time zone
+export const convertUTCToLocalTime = (utcTimeStr) => {
+  if (!utcTimeStr || utcTimeStr.length !== 6) return null;
+
+  // Extract hours, minutes, seconds
+  const hours = parseInt(utcTimeStr.slice(0, 2), 10);
+  const minutes = parseInt(utcTimeStr.slice(2, 4), 10);
+  const seconds = parseInt(utcTimeStr.slice(4, 6), 10);
+
+  // Create a UTC-based date
+  const utcDate = new Date(Date.UTC(1970, 0, 1, hours, minutes, seconds));
+
+  // Convert to local time (24-hour format)
+  const localTime = utcDate.toLocaleTimeString("en-GB", {
+    hour12: false,
+    timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+  });
+
+  return localTime; // Format: HH:mm:ss
+};
 // 🔸 Shared formatting helper
 export const formatDateToUTCString = (date) => {
   const year = date.getUTCFullYear();
@@ -185,4 +205,16 @@ export const formatDateToUTCString = (date) => {
   const seconds = String(date.getUTCSeconds()).padStart(2, "0");
 
   return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+};
+
+// Got it ✅ — you want an exportable function that:
+
+// Adds a hyphen after the first letter (whatever it is).
+
+// Works for any prefix (not just P).
+
+// Keeps the rest of the string unchanged.
+export const formatTransactionId = (id) => {
+  if (!id) return "";
+  return id.replace(/^([A-Za-z])(?!-)/, "$1-");
 };

@@ -29,6 +29,7 @@ import {
   EscalatedTransactionsIndex,
   Brokers,
   Instruments,
+  GroupsAndPolicy,
 } from "../pages";
 import RoleBasedRoute from "./RoleBasedRoute";
 import EscalatedApprovals from "../pages/main/headOfTradeApprover/escalatedApprovals/escalatedApprovals";
@@ -215,7 +216,7 @@ const router = createBrowserRouter(
           path="admin-group-policies"
           element={
             <RoleBasedRoute isAdmin={true} allowedRoles={[1]}>
-              {<EscalatedTransactionsIndex />}
+              {<GroupsAndPolicy />}
             </RoleBasedRoute>
           }
         />
@@ -231,7 +232,6 @@ const router = createBrowserRouter(
           path="admin-instruments"
           element={
             <RoleBasedRoute isAdmin={true} allowedRoles={[1]}>
-              {/* <EmpolyesReportsIndex />{" "} */}
               <Instruments />
             </RoleBasedRoute>
           }
@@ -241,7 +241,6 @@ const router = createBrowserRouter(
           path="admin-users"
           element={
             <RoleBasedRoute isAdmin={true} allowedRoles={[1]}>
-              {/* <EmpolyesReportsIndex />{" "} */}
               <ManageUsers />
             </RoleBasedRoute>
           }

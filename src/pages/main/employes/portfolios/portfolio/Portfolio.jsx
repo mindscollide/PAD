@@ -192,7 +192,7 @@ const Portfolio = ({ className, activeFilters }) => {
   return (
     <div
       ref={listRef}
-      style={{ height: "80vh", overflowY: "auto" }} // ✅ scroll container
+      style={{ height: employeePortfolioData.length > 0?"540px":"80vh", overflowY: "auto" }} // ✅ scroll container
     >
       {employeePortfolioData.length > 0 ? (
         <Collapse

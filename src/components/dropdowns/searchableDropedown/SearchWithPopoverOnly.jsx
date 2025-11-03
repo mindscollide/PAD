@@ -1,7 +1,7 @@
 // components/SearchWithPopoverOnly.jsx
 import React, { useEffect, useState } from "react";
 import { Input, Popover, Space } from "antd";
-
+import { SearchOutlined } from "@ant-design/icons";
 // Assets
 import SearchFilterIcon from "../../../assets/img/search-filter-icon.png";
 
@@ -16,6 +16,7 @@ import { useSidebarContext } from "../../../context/sidebarContaxt";
 import { useSearchBarContext } from "../../../context/SearchBarContaxt";
 import { usePortfolioContext } from "../../../context/portfolioContax";
 import { useReconcileContext } from "../../../context/reconsileContax";
+import { useMyAdmin } from "../../../context/AdminContext";
 
 /**
  * 🔎 SearchWithPopoverOnly
@@ -47,7 +48,15 @@ const SearchWithPopoverOnly = () => {
     setHeadOfTradeEscalatedApprovalsSearch,
     setAdminBrokerSearch,
     setAdminIntrumentListSearch,
+    setAdminGropusAndPolicySearch,
+    setAdminGropusAndPolicyPoliciesTabSearch,
+    setAdminGropusAndPolicyUsersTabSearch,
   } = useSearchBarContext();
+  const {
+    pageTypeForAdminGropusAndPolicy,
+    pageTabesForAdminGropusAndPolicy,
+    openNewFormForAdminGropusAndPolicy,
+  } = useMyAdmin();
 
   // -------------------------
   // ✅ Local state
@@ -244,6 +253,51 @@ const SearchWithPopoverOnly = () => {
         setSearchMain("");
         break;
 
+      case "20": // Admin groupe creat and  List
+        if (
+          openNewFormForAdminGropusAndPolicy &&
+          pageTabesForAdminGropusAndPolicy === 1
+        ) {
+          console.log("searchMain", searchMain);
+          setAdminGropusAndPolicyPoliciesTabSearch((prev) => ({
+            ...prev,
+            policyId: searchMain,
+            scenario: "",
+            duration: "",
+            consequence: "",
+            pageNumber: 0,
+            pageSize: 10,
+            filterTrigger: true,
+          }));
+        } else if (
+          openNewFormForAdminGropusAndPolicy &&
+          pageTabesForAdminGropusAndPolicy === 2
+        ) {
+          console.log("searchMain", searchMain);
+          setAdminGropusAndPolicyUsersTabSearch((prev) => ({
+            ...prev,
+            employeeName: searchMain,
+            emailAddress: "",
+            designation: "",
+            departmentName: "",
+            employeeID: 0,
+            filterTrigger: true,
+            pageNumber: 0,
+            pageSize: 10,
+          }));
+        } else {
+          setAdminGropusAndPolicySearch((prev) => ({
+            ...prev,
+            policyName: searchMain,
+            pageNumber: 0,
+            pageSize: 10,
+            filterTrigger: true,
+          }));
+        }
+
+        setSearchMain("");
+        break;
+
       default:
         setEmployeeMyApprovalSearch((prev) => ({
           ...prev,
@@ -264,6 +318,16 @@ const SearchWithPopoverOnly = () => {
         placeholder={
           selectedKey === "19"
             ? "Broker name. Click the icon to view more options"
+            : selectedKey === "20" &&
+              pageTypeForAdminGropusAndPolicy === 0 &&
+              pageTabesForAdminGropusAndPolicy === 1
+            ? "Search Scenario. Click the icon to view more options"
+            : selectedKey === "20" &&
+              pageTypeForAdminGropusAndPolicy === 0 &&
+              pageTabesForAdminGropusAndPolicy === 2
+            ? "Employee name. Click the icon to view more options"
+            : selectedKey === "20"
+            ? "Policy Name. Click the icon to view more options"
             : "Instrument name. Click the icon to view more options"
         }
         allowClear
@@ -283,38 +347,57 @@ const SearchWithPopoverOnly = () => {
           }
         }}
       />
-
-      {/* 🎛️ Popover Filter */}
-      <Popover
-        overlayClassName={
-          collapsed ? styles.popoverContenCollapsed : styles.popoverContent
-        }
-        content={renderFilterContent(
-          selectedKey,
-          setVisible,
-          searchMain,
-          setSearchMain,
-          clear,
-          setClear
-        )}
-        trigger="click"
-        open={visible}
-        onOpenChange={(newVisible) => {
-          setVisible(newVisible);
-          setClear(newVisible);
-        }}
-        placement="bottomRight"
-        getPopupContainer={(triggerNode) =>
-          triggerNode.parentElement || document.body
-        }
-      >
-        <img
-          draggable={false}
-          src={SearchFilterIcon}
-          alt="filter"
+      {/* 🎛️ Popover Filter OR Simple Search Icon */}
+      {!openNewFormForAdminGropusAndPolicy && selectedKey === "20" ? (
+        // 🔹 Just a clickable search icon (no popover)
+        <SearchOutlined
+          onClick={handleSearchMain}
           className={styles.filterIcon}
+          style={{
+            fontSize: 40, // Increased from 20 → 28 for a noticeable size bump
+            color: "#424242",
+            cursor: "pointer",
+            padding: "0px", // Slightly more padding
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
         />
-      </Popover>
+      ) : (
+        <Popover
+          overlayClassName={
+            collapsed ? styles.popoverContenCollapsed : styles.popoverContent
+          }
+          content={renderFilterContent(
+            selectedKey,
+            setVisible,
+            searchMain,
+            setSearchMain,
+            clear,
+            setClear,
+            openNewFormForAdminGropusAndPolicy,
+            pageTabesForAdminGropusAndPolicy
+          )}
+          trigger="click"
+          open={visible}
+          onOpenChange={(newVisible) => {
+            console.log("AdminPoliciesFilter");
+            setVisible(newVisible);
+            setClear(newVisible);
+          }}
+          placement="bottomRight"
+          getPopupContainer={(triggerNode) =>
+            triggerNode.parentElement || document.body
+          }
+        >
+          <img
+            draggable={false}
+            src={SearchFilterIcon}
+            alt="filter"
+            className={styles.filterIcon}
+          />
+        </Popover>
+      )}
     </Space.Compact>
   );
 };

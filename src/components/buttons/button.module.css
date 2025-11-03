@@ -1167,6 +1167,17 @@ span.ant-btn-icon {
   color: #717171 !important;
   background-color: transparent !important;
 }
+.only-tex-not-selected-groups{
+    font-family: Switzer Variable !important;
+  font-weight: 400 !important;
+  font-style: Regular !important;
+  font-size: 26px !important;
+  leading-trim: NONE !important;
+  line-height: 100% !important;
+  letter-spacing: 0% !important;
+  color: #30426A !important;
+  background-color: transparent !important;
+}
 .only-tex-selected {
   font-family: Switzer Variable !important;
   font-weight: 700 !important;

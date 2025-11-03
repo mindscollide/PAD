@@ -88,7 +88,7 @@ export const ApiProvider = ({ children }) => {
           responseMessage,
         };
       }
-
+      console.log("heloo log", retryOnExpire);
       if ((responseCode === 417 || responseCode === 401) && retryOnExpire) {
         const refreshed = await refreshToken(callApi, navigate, {
           showNotification,
@@ -110,7 +110,7 @@ export const ApiProvider = ({ children }) => {
             isFileUpload, // keep upload flag
           });
         }
-        // logout(navigate, showLoader);
+        logout(navigate, showLoader);
         return { success: false, expired: true };
       }
 

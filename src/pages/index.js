@@ -17,3 +17,4 @@ export { default as EscalatedTransactionsIndex } from "./main/headOfComplianceOf
 
 export { default as Brokers } from "./adminMain/brokers/Broker";
 export { default as Instruments } from "./adminMain/instruments/Instruments";
+export { default as GroupsAndPolicy } from "./adminMain/group&Policy/groupsAndpolicy";

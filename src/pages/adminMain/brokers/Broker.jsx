@@ -19,9 +19,9 @@ import EditBroker from "./modal/editBroker/EditBroker";
 import AddBrokerConfirmationModal from "./modal/addBrokerConfimationModal/AddBrokerConfirmationModal";
 import { useSearchBarContext } from "../../../context/SearchBarContaxt";
 import {
-  downloadBrokerReportRequest,
+  DownloadBrokerReportRequest,
   SearchBrokersAdminRequest,
-  updateBrokersStatusRequest,
+  UpdateBrokersStatusRequest,
 } from "../../../api/adminApi";
 import { useNavigate } from "react-router-dom";
 import { useNotification } from "../../../components/NotificationProvider/NotificationProvider";
@@ -75,7 +75,7 @@ const Brokers = () => {
       BrokerStatusID: isActive ? 1 : 2,
     };
 
-    await updateBrokersStatusRequest({
+    await UpdateBrokersStatusRequest({
       callApi,
       showNotification,
       showLoader,
@@ -217,7 +217,7 @@ const Brokers = () => {
       PSXCode: "",
     };
 
-    await downloadBrokerReportRequest({
+    await DownloadBrokerReportRequest({
       callApi,
       showNotification,
       showLoader,

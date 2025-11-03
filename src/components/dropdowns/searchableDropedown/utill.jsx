@@ -11,6 +11,8 @@ import {
 } from "../filters/utils";
 import { AdminBrokersListFiletr } from "./AdminBrokersListFilter";
 import { AdminInstrumentsListFilter } from "./AdminInstrumentsListFilter";
+import { AdminPoliciesAndGroupUsersTabFilter } from "./AdminPoliciesAndGroupUsersTabFilter";
+import { AdminPoliciesFilter } from "./AdminPoliciesFilter";
 import { ComplianceReconcileFilter } from "./ComplianceReconsile";
 import { EmployeeMyApprovalFilter } from "./EmployeeMyApprovalFilter";
 import { EmployeePortfolioFilter } from "./EmployeePortfolioFilter";
@@ -26,7 +28,9 @@ export const renderFilterContent = (
   searchMain,
   setSearchMain,
   clear,
-  setClear
+  setClear,
+  openNewFormForAdminGropusAndPolicy,
+  pageTabesForAdminGropusAndPolicy
 ) => {
   switch (selectedKey) {
     case "1": // Employee → My Approval
@@ -127,6 +131,37 @@ export const renderFilterContent = (
           setMaininstrumentName={setSearchMain}
         />
       );
+
+    case "20": // groupe listing create edit and view
+      console.log("AdminPoliciesFilter");
+
+      if (
+        openNewFormForAdminGropusAndPolicy &&
+        pageTabesForAdminGropusAndPolicy === 1
+      ) {
+        return (
+          <AdminPoliciesFilter
+            setVisible={setVisible}
+            clear={clear}
+            setClear={setClear}
+            maininstrumentName={searchMain}
+            setMaininstrumentName={setSearchMain}
+          />
+        );
+      } else if (
+        openNewFormForAdminGropusAndPolicy &&
+        pageTabesForAdminGropusAndPolicy === 2
+      ) {
+        return (
+          <AdminPoliciesAndGroupUsersTabFilter
+            setVisible={setVisible}
+            clear={clear}
+            setClear={setClear}
+            maininstrumentName={searchMain}
+            setMaininstrumentName={setSearchMain}
+          />
+        );
+      }
 
     // 🔧 Add more cases for keys "3" to "17" as needed below
 
