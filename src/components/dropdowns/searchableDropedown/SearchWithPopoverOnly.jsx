@@ -318,13 +318,9 @@ const SearchWithPopoverOnly = () => {
         placeholder={
           selectedKey === "19"
             ? "Broker name. Click the icon to view more options"
-            : selectedKey === "20" &&
-              pageTypeForAdminGropusAndPolicy === 0 &&
-              pageTabesForAdminGropusAndPolicy === 1
+            : selectedKey === "20" && pageTabesForAdminGropusAndPolicy === 1
             ? "Search Scenario. Click the icon to view more options"
-            : selectedKey === "20" &&
-              pageTypeForAdminGropusAndPolicy === 0 &&
-              pageTabesForAdminGropusAndPolicy === 2
+            : selectedKey === "20" && pageTabesForAdminGropusAndPolicy === 2
             ? "Employee name. Click the icon to view more options"
             : selectedKey === "20"
             ? "Policy Name. Click the icon to view more options"
