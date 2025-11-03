@@ -21,6 +21,7 @@ const Details = ({
     tabesFormDataofAdminGropusAndPolicy,
     setTabesFormDataofAdminGropusAndPolicy,
     pageTypeForAdminGropusAndPolicy,
+    setPageTypeForAdminGropusAndPolicy,
   } = useMyAdmin();
   // 🔷 Context Hooks
   const navigate = useNavigate();
@@ -33,10 +34,10 @@ const Details = ({
   const [isDescValid, setIsDescValid] = useState(null);
   const [isCheckingTitle, setIsCheckingTitle] = useState(false);
 
-  const groupTitle = tabesFormDataofAdminGropusAndPolicy.details.groupTitle;
+  const groupTitle = tabesFormDataofAdminGropusAndPolicy?.details?.groupTitle;
   console.log("groupDescription", groupTitle);
   const groupDescription =
-    tabesFormDataofAdminGropusAndPolicy.details.groupDiscription;
+    tabesFormDataofAdminGropusAndPolicy?.details?.groupDiscription;
   console.log("groupDescription", groupDescription);
 
   // 🔹 Simulate async uniqueness check (replace with API later)
@@ -99,7 +100,11 @@ const Details = ({
       },
     }));
   };
-
+  useEffect(() => {
+    if (clickEditFromView) {
+      setPageTypeForAdminGropusAndPolicy(1);
+    }
+  }, [clickEditFromView]);
   // 🔹 Watch for validation trigger from parent
   useEffect(() => {
     if (errorDeatilsTabSwitch) {
