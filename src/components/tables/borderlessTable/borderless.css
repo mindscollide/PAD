@@ -1040,8 +1040,8 @@ td.border-less-table-white-4-cell:not(:first-child):not(:last-child) {
 /* Target the first and last <td> inside each <tr> */
 td.border-less-table-white-4-cell:first-child {
   /* Your styles here */
-  border-bottom-right-radius: 6.94px;
-  border-top-right-radius: 6.94px;
+  /* border-bottom-right-radius: 6.94px; */
+  /* border-top-right-radius: 6.94px; */
   padding-left: 12px; /* add space inside the first column */
   padding-right: 16px; /* optional: add space to the right */
   position: relative;
