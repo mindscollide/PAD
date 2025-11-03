@@ -225,15 +225,16 @@ export const policyColumns = ({
                 const multiple = dataTypeID === 7;
                 return (
                   <Select
-                    mode={"multiple"}
+                    mode={multiple ? "multiple" : undefined}
                     placeholder="Select option(s)"
-                    value={record.duration || []}
+                    value={record.duration || (multiple ? [] : undefined)}
                     onChange={(val) => onDurationChange?.(record, val)}
-                    className={styles.multiselect}
-                    maxTagCount="responsive" // ✅ Automatically collapse tags into “+N…”
-                    maxTagPlaceholder={(omittedValues) =>
-                      `+${omittedValues.length} more`
-                    } // optional customization
+                    className={multiple ? styles.multiselect : styles.select}
+                    {...(multiple && {
+                      maxTagCount: "responsive", // ✅ Automatically collapse tags into “+N…”
+                      maxTagPlaceholder: (omittedValues) =>
+                        `+${omittedValues.length} more`, // optional customization
+                    })}
                   >
                     {values.map((val) => (
                       <Option key={val} value={val}>
