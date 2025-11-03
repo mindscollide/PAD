@@ -334,12 +334,14 @@ const Instruments = () => {
         },
     ].filter(Boolean);
   })();
-
+  console.log("activeFilters", activeFilters);
   return (
     <>
       {/* 🔹 Active Filter Tags */}
       {activeFilters.length > 0 && (
         <Row gutter={[12, 12]} className={style["filter-tags-container"]}>
+          {console.log("activeFilters", activeFilters)}
+
           {activeFilters.map(({ key, value }) => (
             <Col key={key}>
               <div className={style["filter-tag"]}>
