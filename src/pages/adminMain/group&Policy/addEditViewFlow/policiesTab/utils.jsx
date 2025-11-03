@@ -191,7 +191,13 @@ export const policyColumns = ({
                 const handleChange = (val) => onDurationChange?.(record, val);
                 return (
                   <CustomDatePicker
-                    value={record.duration || ""}
+                    value={
+                      record.duration === "Invalid Date"
+                        ? null
+                        : record.duration !== "Invalid Date"
+                        ? record.duration
+                        : null
+                    }
                     onChange={handleChange}
                     modeType={
                       dataTypeID === 2
