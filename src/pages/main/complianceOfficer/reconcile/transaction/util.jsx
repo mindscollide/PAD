@@ -32,10 +32,7 @@ import {
  * @param {string} assetType - Asset type key (e.g., "Equities")
  * @returns {Object} API request payload
  */
-export const buildApiRequest = (
-  searchState = {},
-  assetTypeListingData,
-) => {
+export const buildApiRequest = (searchState = {}, assetTypeListingData) => {
   const startDate = searchState.startDate
     ? toYYMMDD(searchState.startDate)
     : "";
@@ -48,10 +45,7 @@ export const buildApiRequest = (
     StartDate: startDate,
     EndDate: endDate,
     StatusIds: mapStatusToIds(searchState.status),
-    TypeIds: mapBuySellToIds(
-      searchState.type,
-      assetTypeListingData?.Equities
-    ),
+    TypeIds: mapBuySellToIds(searchState.type, assetTypeListingData?.Equities),
     PageNumber: Number(searchState.pageNumber) || 0,
     Length: Number(searchState.pageSize) || 10,
   };
@@ -162,6 +156,7 @@ export const getBorderlessTableColumns = ({
     dataIndex: "requesterName",
     key: "requesterName",
     ellipsis: true,
+    width: 150,
     sorter: (a, b) =>
       (a?.requesterName || "").localeCompare(b?.requesterName || ""),
     sortOrder:
