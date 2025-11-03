@@ -463,25 +463,6 @@ li.ant-dropdown-menu-item.ant-dropdown-menu-item-only-child:focus {
   vertical-align: middle;
 }
 
-/* Change selected date color */
-:where(.css-dev-only-do-not-override-1rfzxih).ant-picker-dropdown
-  .ant-picker-cell-in-view.ant-picker-cell-selected:not(
-    .ant-picker-cell-disabled
-  )
-  .ant-picker-cell-inner,
-:where(.css-dev-only-do-not-override-1rfzxih).ant-picker-dropdown
-  .ant-picker-cell-in-view.ant-picker-cell-range-start:not(
-    .ant-picker-cell-disabled
-  )
-  .ant-picker-cell-inner,
-:where(.css-dev-only-do-not-override-1rfzxih).ant-picker-dropdown
-  .ant-picker-cell-in-view.ant-picker-cell-range-end:not(
-    .ant-picker-cell-disabled
-  )
-  .ant-picker-cell-inner {
-  background-color: #2a3c65 !important; /* your custom color */
-}
-
 :where(.css-dev-only-do-not-override-1rfzxih).ant-picker-dropdown
   .ant-picker-cell-in-view.ant-picker-cell-in-range:not(
     .ant-picker-cell-disabled
@@ -599,4 +580,8 @@ a.ant-picker-now-btn {
   .ant-select-selector
   input {
   margin-top: 3px !important;
+}
+
+.ant-picker-cell-selected .ant-picker-cell-inner {
+  background-color: #30426a !important; /* your custom color */
 }
