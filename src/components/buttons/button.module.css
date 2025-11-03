@@ -833,7 +833,6 @@ span.ant-btn-icon {
   cursor: not-allowed !important;
 }
 
-
 .large-dark-button-2 {
   padding: 0px 40px !important;
 
@@ -1168,6 +1167,17 @@ span.ant-btn-icon {
   color: #717171 !important;
   background-color: transparent !important;
 }
+.only-tex-not-selected-groups{
+    font-family: Switzer Variable !important;
+  font-weight: 400 !important;
+  font-style: Regular !important;
+  font-size: 26px !important;
+  leading-trim: NONE !important;
+  line-height: 100% !important;
+  letter-spacing: 0% !important;
+  color: #30426A !important;
+  background-color: transparent !important;
+}
 .only-tex-selected {
   font-family: Switzer Variable !important;
   font-weight: 700 !important;
@@ -1339,7 +1349,88 @@ span.ant-btn-icon {
 
 .big-ViewTicket-dark-button:disabled {
   background: #d9d9d9 !important;
-  border: 1px solid #B4B4B4 !important;
+  border: 1px solid #b4b4b4 !important;
+  color: #ffffff !important;
+  cursor: not-allowed !important;
+}
+
+/* For Edit Button inn Admin Role */
+.Edit-small-dark-button {
+  /* width: 120px !important; */
+  padding: 0px 30px !important;
+  height: 38px !important;
+  background: var(--Blue-V1, #30426a) !important;
+  border: 1px solid var(--Blue-V1, #30426a) !important;
+  color: #ffffff !important;
+  border-radius: 6.95px !important;
+  font-family: "Switzer Variable" !important;
+  font-weight: 500 !important;
+  font-size: 14px !important;
+  line-height: 100% !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease !important;
+}
+
+.Edit-small-dark-button:not(:disabled):hover {
+  box-shadow: 4px 4px 6px 0px #00000033 !important;
+}
+
+.Edit-small-dark-button:disabled {
+  background: #d9d9d9 !important;
+  border: 1px solid #d9d9d9 !important;
+  color: #ffffff !important;
+  cursor: not-allowed !important;
+}
+
+.addBroker-small-dark-button {
+  padding: 0px 40px !important;
+  height: 57px !important;
+  background: var(--Blue-V1, #30426a) !important;
+  border: 1px solid var(--Blue-V1, #30426a) !important;
+  color: #ffffff !important;
+  border-radius: 6.95px !important;
+  font-family: "Switzer Variable" !important;
+  font-weight: 500 !important;
+  font-size: 14px !important;
+  line-height: 100% !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease !important;
+}
+
+.addBroker-small-dark-button:not(:disabled):hover {
+  box-shadow: 4px 4px 6px 0px #00000033 !important;
+}
+
+.addBroker-small-dark-button:disabled {
+  background: #d9d9d9 !important;
+  border: 1px solid #d9d9d9 !important;
+  color: #ffffff !important;
+  cursor: not-allowed !important;
+}
+
+.takeAction-small-dark-button {
+  padding: 0px 40px !important;
+  width: 280px !important;
+  height: 46px !important;
+  background: var(--Blue-V1, #edf3ff) !important;
+  border: 1px solid var(--Blue-V1, #edf3ff) !important;
+  color: #2a3c65 !important;
+  border-radius: 6.95px !important;
+  font-family: "Switzer Variable" !important;
+  font-weight: 500 !important;
+  font-size: 20px !important;
+  line-height: 100% !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease !important;
+}
+
+.takeAction-small-dark-button:not(:disabled):hover {
+  box-shadow: 4px 4px 6px 0px #00000033 !important;
+}
+
+.takeAction-small-dark-button:disabled {
+  background: #d9d9d9 !important;
+  border: 1px solid #d9d9d9 !important;
   color: #ffffff !important;
   cursor: not-allowed !important;
 }

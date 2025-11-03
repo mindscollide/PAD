@@ -40,14 +40,12 @@ export const SearchBarProvider = ({ children }) => {
     instrumentName: "",
     quantity: "",
     startDate: null,
-    mainInstrumentName: "",
+    endtDate: null,
     type: [],
     status: [],
-    pageSize: 0,
+    pageSize: 10,
     pageNumber: 0,
-    totalRecords: 0,
     filterTrigger: false,
-    tableFilterTrigger: false,
   });
 
   /** 🔍 Employee My Transaction table filters */
@@ -57,14 +55,12 @@ export const SearchBarProvider = ({ children }) => {
       quantity: 0,
       startDate: null,
       endDate: null,
-      mainInstrumentName: "",
       type: [],
       status: [],
       brokerIDs: [],
-      pageSize: "",
+      pageSize: 10,
       pageNumber: 0,
       filterTrigger: false,
-      tableFilterTrigger: false,
     });
 
   /** 🔍 Employee Portfolio table filters */
@@ -73,13 +69,11 @@ export const SearchBarProvider = ({ children }) => {
     quantity: "",
     startDate: null,
     endDate: null,
-    mainInstrumentName: "",
     type: [],
-    broker: [],
-    pageSize: "",
+    brokerIDs: [],
+    pageSize: 10,
     pageNumber: 0,
     filterTrigger: false,
-    tableFilterTrigger: false,
   });
 
   /** 🔍 Employee Pending Approval table filters */
@@ -89,14 +83,12 @@ export const SearchBarProvider = ({ children }) => {
       quantity: "",
       startDate: null,
       endDate: null,
-      mainInstrumentName: "",
       type: [],
       status: [],
-      broker: [],
-      pageSize: "",
+      brokerIDs: [],
+      pageSize: 10,
       pageNumber: 0,
       filterTrigger: false,
-      tableFilterTrigger: false,
     });
 
   /** 🔍 Employee My History table filters */
@@ -110,10 +102,9 @@ export const SearchBarProvider = ({ children }) => {
     type: [],
     nature: [],
     status: [],
-    pageSize: 0,
+    pageSize: 10,
     pageNumber: 0,
     filterTrigger: false,
-    tableFilterTrigger: false,
   });
 
   // ===============================
@@ -125,15 +116,36 @@ export const SearchBarProvider = ({ children }) => {
     instrumentName: "",
     requesterName: "",
     quantity: 0,
-    date: null,
-    mainInstrumentName: "",
+    startDate: null,
+    endDate: null,
     type: [],
     status: [],
-    pageSize: 0,
+    pageSize: 10,
     pageNumber: 0,
-    totalRecords: 0,
     filterTrigger: false,
-    tableFilterTrigger: false,
+  });
+
+  // ===============================
+  // Head Of Trade Approvals
+  // ===============================
+  /**  Head Of Trade Approvals Escalated Approvals Filters*/
+
+  const [
+    headOfTradeEscalatedApprovalsSearch,
+    setHeadOfTradeEscalatedApprovalsSearch,
+  ] = useState({
+    instrumentName: "",
+    requesterName: "",
+    lineManagerName: "",
+    requestDateFrom: null,
+    requestDateTo: null,
+    escalatedDateFrom: null,
+    escalatedDateTo: null,
+    status: [],
+    type: [],
+    pageNumber: 0,
+    pageSize: 10,
+    filterTrigger: false,
   });
 
   // ===============================
@@ -146,18 +158,16 @@ export const SearchBarProvider = ({ children }) => {
     setComplianceOfficerReconcileTransactionsSearch,
   ] = useState({
     requesterName: "",
-    mainInstrumentName: "",
     instrumentName: "",
     quantity: 0,
     startDate: null,
     endDate: null,
     type: [],
     status: [],
-    pageSize: 0,
+    pageSize: 10,
     pageNumber: 0,
     totalRecords: 0,
     filterTrigger: false,
-    tableFilterTrigger: false,
   });
 
   /** 🔍 Compliance Officer Reconcile Portfolio filters */
@@ -173,11 +183,10 @@ export const SearchBarProvider = ({ children }) => {
     endDate: null,
     type: [],
     status: [],
-    pageSize: 0,
+    pageSize: 10,
     pageNumber: 0,
     totalRecords: 0,
     filterTrigger: false,
-    tableFilterTrigger: false,
   });
 
   // ===============================
@@ -191,7 +200,6 @@ export const SearchBarProvider = ({ children }) => {
   ] = useState({
     requesterName: "",
     instrumentName: "",
-    mainInstrumentName: "",
     quantity: 0,
     requestDateFrom: null,
     requestDateTo: null,
@@ -199,11 +207,10 @@ export const SearchBarProvider = ({ children }) => {
     escalatedDateTo: null,
     type: [],
     status: [],
-    pageSize: 0,
+    pageSize: 10,
     pageNumber: 0,
     totalRecords: 0,
     filterTrigger: false,
-    tableFilterTrigger: false,
   });
 
   /** 🔍 HCA Escalated Verifications filters */
@@ -213,7 +220,6 @@ export const SearchBarProvider = ({ children }) => {
   ] = useState({
     requesterName: "",
     instrumentName: "",
-    mainInstrumentName: "",
     quantity: 0,
     requestDateFrom: null,
     requestDateTo: null,
@@ -221,35 +227,68 @@ export const SearchBarProvider = ({ children }) => {
     escalatedDateTo: null,
     type: [],
     status: [],
-    pageSize: 0,
+    pageSize: 10,
     pageNumber: 0,
     totalRecords: 0,
     filterTrigger: false,
-    tableFilterTrigger: false,
   });
 
-  /**  Head Of Trade Approvals Escalated Approvals Filters*/
-
-  const [
-    headOfTradeEscalatedApprovalsSearch,
-    setHeadOfTradeEscalatedApprovalsSearch,
-  ] = useState({
-    instrumentName: "",
-    quantity: "",
-    requestDateFrom: "",
-    requestDateTo: "",
-    escalatedDateFrom: "",
-    escalatedDateTo: "",
+  // Admin Broker Search filter
+  const [adminBrokerSearch, setAdminBrokerSearch] = useState({
+    brokerName: "",
+    psxCode: "",
     status: [],
-    type: [],
-    requesterName: "",
-    lineManagerName: "",
-    pageNumber: 0,
-    length: 10,
     filterTrigger: false,
-    tableFilterTrigger: false,
+    pageNumber: 0,
+    pageSize: 10,
   });
 
+  // Admin Broker Search filter
+  const [adminIntrumentListSearch, setAdminIntrumentListSearch] = useState({
+    instrumentName: "",
+    startDate: null,
+    endDate: null,
+    status: [],
+    filterTrigger: false,
+    pageNumber: 0,
+    pageSize: 10,
+  });
+
+  // Admin Gropus And Policy Search filter
+  const [adminGropusAndPolicySearch, setAdminGropusAndPolicySearch] = useState({
+    policyName: "",
+    filterTrigger: false,
+    pageNumber: 0,
+    pageSize: 10,
+  });
+
+  // Admin Gropus And Policy Search filter for policy tab
+  const [
+    adminGropusAndPolicyPoliciesTabSearch,
+    setAdminGropusAndPolicyPoliciesTabSearch,
+  ] = useState({
+    policyId: null,
+    scenario: "",
+    consequence: "",
+    filterTrigger: false,
+    pageNumber: 0,
+    pageSize: 10,
+  });
+
+  //Admin Gropus And Policy users Tab
+  const [
+    adminGropusAndPolicyUsersTabSearch,
+    setAdminGropusAndPolicyUsersTabSearch,
+  ] = useState({
+    employeeName: "",
+    emailAddress: "",
+    designation: "",
+    departmentName: "",
+    employeeID: 0,
+    filterTrigger: false,
+    pageNumber: 0,
+    pageSize: 10,
+  });
   // ===============================
   // Sync Refs (Always-Latest Values)
   // ===============================
@@ -340,14 +379,12 @@ export const SearchBarProvider = ({ children }) => {
       instrumentName: "",
       quantity: 0,
       startDate: null,
-      mainInstrumentName: "",
+      endtDate: null,
       type: [],
       status: [],
-      pageSize: 0,
+      pageSize: 10,
       pageNumber: 0,
-      totalRecords: 0,
-      filterTrigger: true,
-      tableFilterTrigger: false,
+      filterTrigger: false,
     });
 
   /** Reset Employee My Transaction filters */
@@ -357,14 +394,12 @@ export const SearchBarProvider = ({ children }) => {
       quantity: "",
       startDate: null,
       endDate: null,
-      mainInstrumentName: "",
       type: [],
       status: [],
       brokerIDs: [],
-      pageSize: "",
+      pageSize: 10,
       pageNumber: 0,
-      filterTrigger: true,
-      tableFilterTrigger: false,
+      filterTrigger: false,
     });
 
   /** Reset Employee Portfolio filters */
@@ -376,11 +411,10 @@ export const SearchBarProvider = ({ children }) => {
       endDate: null,
       mainInstrumentName: "",
       type: [],
-      broker: [],
-      pageSize: "",
+      brokerIDs: [],
+      pageSize: 10,
       pageNumber: 0,
       filterTrigger: false,
-      tableFilterTrigger: false,
     });
 
   /** Reset Employee Pending Approval filters */
@@ -393,11 +427,10 @@ export const SearchBarProvider = ({ children }) => {
       mainInstrumentName: "",
       type: [],
       status: [],
-      broker: [],
-      pageSize: "",
+      brokerIDs: [],
+      pageSize: 10,
       pageNumber: 0,
       filterTrigger: false,
-      tableFilterTrigger: false,
     });
 
   /** Reset Employee My History filters */
@@ -415,7 +448,6 @@ export const SearchBarProvider = ({ children }) => {
       pageSize: "",
       pageNumber: 0,
       filterTrigger: true,
-      tableFilterTrigger: false,
     });
 
   /** Reset Line Manager Approval filters */
@@ -423,16 +455,14 @@ export const SearchBarProvider = ({ children }) => {
     setLineManagerApprovalSearch({
       instrumentName: "",
       requesterName: "",
-      date: null,
-      mainInstrumentName: "",
+      quantity: 0,
+      startDate: null,
+      endDate: null,
       type: [],
       status: [],
       pageSize: 10,
       pageNumber: 0,
-      quantity: 0,
-      totalRecords: 0,
-      filterTrigger: true,
-      tableFilterTrigger: false,
+      filterTrigger: false,
     });
 
   /** Reset Compliance Officer Reconcile Transactions filters */
@@ -440,17 +470,15 @@ export const SearchBarProvider = ({ children }) => {
     setComplianceOfficerReconcileTransactionsSearch({
       requesterName: "",
       instrumentName: "",
-      mainInstrumentName: "",
       quantity: 0,
       startDate: null,
       endDate: null,
       type: [],
       status: [],
-      pageSize: 0,
+      pageSize: 10,
       pageNumber: 0,
       totalRecords: 0,
       filterTrigger: false,
-      tableFilterTrigger: false,
     });
 
   /** Reset Compliance Officer Reconcile Portfolio filters */
@@ -464,11 +492,10 @@ export const SearchBarProvider = ({ children }) => {
       quantity: 0,
       type: [],
       status: [],
-      pageSize: 0,
+      pageSize: 10,
       pageNumber: 0,
       totalRecords: 0,
       filterTrigger: false,
-      tableFilterTrigger: false,
     });
 
   /** Reset HCA Portfolio filters */
@@ -476,7 +503,6 @@ export const SearchBarProvider = ({ children }) => {
     setHeadOfComplianceApprovalPortfolioSearch({
       requesterName: "",
       instrumentName: "",
-      mainInstrumentName: "",
       quantity: 0,
       requestDateFrom: null,
       requestDateTo: null,
@@ -484,11 +510,9 @@ export const SearchBarProvider = ({ children }) => {
       escalatedDateTo: null,
       type: [],
       status: [],
-      pageSize: 0,
+      pageSize: 10,
       pageNumber: 0,
-      totalRecords: 0,
       filterTrigger: false,
-      tableFilterTrigger: false,
     });
 
   /** Reset HCA Escalated Verifications filters */
@@ -496,7 +520,6 @@ export const SearchBarProvider = ({ children }) => {
     setHeadOfComplianceApprovalEscalatedVerificationsSearch({
       requesterName: "",
       instrumentName: "",
-      mainInstrumentName: "",
       quantity: 0,
       requestDateFrom: null,
       requestDateTo: null,
@@ -504,32 +527,85 @@ export const SearchBarProvider = ({ children }) => {
       escalatedDateTo: null,
       type: [],
       status: [],
-      pageSize: 0,
+      pageSize: 10,
       pageNumber: 0,
-      totalRecords: 0,
       filterTrigger: false,
-      tableFilterTrigger: false,
     });
 
   /** Reset HTA Escalated Approval filters */
   const resetHeadOfTradeApprovalEscalatedApprovalsSearch = () =>
     setHeadOfTradeEscalatedApprovalsSearch({
       instrumentName: "",
-      quantity: "",
-      requestDateFrom: "",
-      requestDateTo: "",
-      escalatedDateFrom: "",
-      escalatedDateTo: "",
-      status: [],
-      type: [],
       requesterName: "",
       lineManagerName: "",
+      requestDateFrom: null,
+      requestDateTo: null,
+      escalatedDateFrom: null,
+      escalatedDateTo: null,
+      status: [],
+      type: [],
       pageNumber: 0,
-      length: 10,
+      pageSize: 10,
       filterTrigger: false,
-      tableFilterTrigger: false,
     });
 
+  /** Reset Admin Brokers List  filters */
+  const resetAdminBrokersListSearch = () =>
+    setAdminBrokerSearch({
+      brokersName: "",
+      psxCode: "",
+      status: [],
+      pageNumber: 0,
+      pageSize: 10,
+      filterTrigger: false,
+    });
+
+  /** Reset Admin Instrument List  filters */
+  const resetAdminInstrumentListSearch = () =>
+    setAdminIntrumentListSearch({
+      instrumentName: "",
+      startDate: null,
+      endDate: null,
+      status: [],
+      filterTrigger: false,
+      pageNumber: 0,
+      pageSize: 10,
+    });
+
+  /** Reset Admin Gropus And Policy  filters */
+  const resetAdminGropusAndPolicySearch = () =>
+    setAdminGropusAndPolicySearch({
+      policyName: "",
+      filterTrigger: false,
+      pageNumber: 0,
+      pageSize: 10,
+    });
+
+  /** Reset Admin Gropus And Policy  filters */
+  const resetAdminGropusAndPolicyPoliciesTabSearch = () =>
+    setAdminGropusAndPolicyPoliciesTabSearch({
+      policyId: null,
+      scenario: "",
+      consequence: "",
+      filterTrigger: false,
+      pageNumber: 0,
+      pageSize: 10,
+    });
+
+  // Admin reset Gropus And Policy Search filter for users tab
+  const resetAdminGropusAndPolicyUsersTabSearch = () =>
+    setAdminGropusAndPolicyUsersTabSearch({
+      employeeName: "",
+      emailAddress: "",
+      designation: "",
+      departmentName: "",
+      employeeID: 0,
+      filterTrigger: false,
+      pageNumber: 0,
+      pageSize: 10,
+    });
+
+  // ================================================================================ //
   /** Reset all filters across modules */
   const resetSearchBarContextState = () => {
     resetEmployeeMyApprovalSearch();
@@ -543,6 +619,11 @@ export const SearchBarProvider = ({ children }) => {
     resetHeadOfComplianceApprovalPortfolioSearch();
     resetHeadOfComplianceApprovalEscalatedVerificationsSearch();
     resetHeadOfTradeApprovalEscalatedApprovalsSearch();
+    resetAdminBrokersListSearch();
+    resetAdminInstrumentListSearch();
+    resetAdminGropusAndPolicySearch();
+    resetAdminGropusAndPolicyPoliciesTabSearch();
+    resetAdminGropusAndPolicyUsersTabSearch();
   };
 
   // ===============================
@@ -593,6 +674,31 @@ export const SearchBarProvider = ({ children }) => {
         headOfTradeEscalatedApprovalsSearch,
         setHeadOfTradeEscalatedApprovalsSearch,
         resetHeadOfTradeApprovalEscalatedApprovalsSearch,
+
+        // Admin Instrument Search filter
+        adminIntrumentListSearch,
+        setAdminIntrumentListSearch,
+        resetAdminInstrumentListSearch,
+
+        // Admin Broker Search filter
+        adminBrokerSearch,
+        setAdminBrokerSearch,
+        resetAdminBrokersListSearch,
+
+        //Admin Gropus And Policy
+        adminGropusAndPolicySearch,
+        setAdminGropusAndPolicySearch,
+        resetAdminGropusAndPolicySearch,
+
+        //Admin Gropus And Policy policies Tab
+        resetAdminGropusAndPolicyPoliciesTabSearch,
+        adminGropusAndPolicyPoliciesTabSearch,
+        setAdminGropusAndPolicyPoliciesTabSearch,
+
+        //Admin Gropus And Policy users Tab
+        resetAdminGropusAndPolicyUsersTabSearch,
+        adminGropusAndPolicyUsersTabSearch,
+        setAdminGropusAndPolicyUsersTabSearch,
 
         // Always-latest refs
         employeeMyApprovalSearchRef,

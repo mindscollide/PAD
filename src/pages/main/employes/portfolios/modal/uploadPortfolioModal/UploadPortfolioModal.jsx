@@ -20,6 +20,7 @@ import { UploadPortFolioRequest } from "../../../../../../api/protFolioApi";
 
 // Styles
 import styles from "./UploadPortfolioModal.module.css";
+import CopyToClipboard from "../../../../../../hooks/useClipboard";
 
 /**
  * 📌 UploadPortfolioModal
@@ -53,7 +54,7 @@ const UploadPortfolioModal = () => {
   const {
     employeeBasedBrokersData,
     allInstrumentsData,
-    addApprovalRequestData,
+    assetTypeListingData,
   } = useDashboardContext();
 
   /**
@@ -84,11 +85,11 @@ const UploadPortfolioModal = () => {
 
   /**
    * 🔹 Asset type key → e.g., "Equities", "FixedIncome"
-   * Data comes from `addApprovalRequestData` in DashboardContext.
+   * Data comes from `assetTypeListingData` in DashboardContext.
    */
-  const assetTypeKey = Object.keys(addApprovalRequestData || {})[0];
-  const assetTypeData = addApprovalRequestData?.[assetTypeKey];
-  console.log("typeOptions", addApprovalRequestData);
+  const assetTypeKey = Object.keys(assetTypeListingData || {})[0];
+  const assetTypeData = assetTypeListingData?.[assetTypeKey];
+  console.log("typeOptions", assetTypeListingData);
   /**
    * 🔹 Format instruments for dropdown
    * Pulls instruments from DashboardContext and maps to {id, shortCode, name, description}.
@@ -118,7 +119,7 @@ const UploadPortfolioModal = () => {
 
   /**
    * 🔹 Format type options (e.g., Buy, Sell)
-   * Derived from `addApprovalRequestData`.
+   * Derived from `assetTypeListingData`.
    */
   const typeOptions = Array.isArray(assetTypeData?.items)
     ? assetTypeData.items.map((item) => ({
@@ -197,10 +198,21 @@ const UploadPortfolioModal = () => {
     }
   };
 
-  const handleCopyEmailOfComplianceOfficer = () => {
+  const handleCopyEmailOfComplianceOfficer = async () => {
     const emailToCopy =
       ComplianceOfficerDetails?.managerEmail || "compliance@horizoncapital.com";
-    navigator.clipboard.writeText(emailToCopy);
+
+    try {
+      await CopyToClipboard(emailToCopy); // ✅ Use your utility function here
+      showNotification({
+        type: "success",
+        title: "Copied",
+        description: "Email copied to clipboard.",
+        placement: "bottomLeft",
+      });
+    } catch (error) {
+      console.error("Email Not Copied:", error);
+    }
   };
 
   return (

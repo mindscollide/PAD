@@ -259,7 +259,7 @@ export const SearchEmployeeApprovedUploadedPortFolio = async ({
         responseMessage,
         instruments,
         aggregateTotalQuantity,
-        totalRecords,
+        totalInstrumentCount,
       } = res.result;
       const message = getMessage(responseMessage);
 
@@ -273,7 +273,7 @@ export const SearchEmployeeApprovedUploadedPortFolio = async ({
         return {
           aggregateTotalQuantity: aggregateTotalQuantity,
           instruments: instruments || [],
-          totalRecords: totalRecords || 0,
+          totalRecords: totalInstrumentCount || 0,
         };
       }
 

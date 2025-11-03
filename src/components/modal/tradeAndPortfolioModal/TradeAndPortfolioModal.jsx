@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from "react";
-import { Row, Col, Select, Checkbox } from "antd";
+import { Row, Col, Select, Checkbox, Tooltip } from "antd";
 import { GlobalModal, InstrumentSelect, TextField } from "../../../components";
 import styles from "./TradeAndPortfolioModal.module.css";
 import CustomButton from "../../../components/buttons/button";
@@ -8,7 +8,7 @@ import copyIcon from "../../../assets/img/copy-dark.png";
 import {
   allowOnlyNumbers,
   formatNumberWithCommas,
-} from "../../../commen/funtions/rejex";
+} from "../../../common/funtions/rejex";
 
 const TradeAndPortfolioModal = ({
   visible,
@@ -71,12 +71,24 @@ const TradeAndPortfolioModal = ({
   };
 
   // Handler For quantity
+  // Handler For Quantity
   const handleQuantityChange = (e) => {
     let { value } = e.target;
     const rawValue = value.replace(/,/g, "");
+
+    // Block 0 and leading zeros
+    if (rawValue === "0") {
+      return; // ignore if exactly 0
+    }
+    if (/^0\d+/.test(rawValue)) {
+      value = rawValue.replace(/^0+/, ""); // trim leading zeros
+    }
+
     if (rawValue === "" || allowOnlyNumbers(rawValue)) {
       if (rawValue.length <= 20) {
-        const formattedValue = rawValue ? formatNumberWithCommas(rawValue) : "";
+        const formattedValue = rawValue
+          ? formatNumberWithCommas(rawValue.replace(/^0+/, "")) // trim leading zeros before formatting
+          : "";
         setQuantity(formattedValue);
       }
     }
@@ -208,9 +220,16 @@ const TradeAndPortfolioModal = ({
                 onChange={handleBrokerChange}
                 options={brokerOptions}
                 maxTagCount={0}
-                maxTagPlaceholder={(omittedValues) =>
-                  `${omittedValues.length} selected`
-                }
+                maxTagPlaceholder={(omittedValues) => {
+                  return (
+                    <Tooltip
+                      title={`${omittedValues.length} selected`}
+                      placement="topRight"
+                    >
+                      <span>{`${omittedValues.length} selected`}</span>
+                    </Tooltip>
+                  );
+                }}
                 prefixCls="EquitiesBrokerSelectPrefix"
                 optionLabelProp="label"
                 optionRender={(option) => (
@@ -262,12 +281,11 @@ const TradeAndPortfolioModal = ({
                           </p>
                         </Col>
                         <Col span={3}>
-                          <div className={styles.copyEmailConductMainClass}>
-                            <img
-                              draggable={false}
-                              src={copyIcon}
-                              onClick={copyEmail}
-                            />
+                          <div
+                            className={styles.copyEmailConductMainClass}
+                            onClick={copyEmail}
+                          >
+                            <img draggable={false} src={copyIcon} />
                           </div>
                         </Col>
                       </>

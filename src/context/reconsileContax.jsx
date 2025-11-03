@@ -58,11 +58,15 @@ export const ReconcileProvider = ({ children }) => {
     setComplianceOfficerReconcilePortfolioModal,
   ] = useState(false);
 
-  /** API + MQTT data for Compliance Officer Transactions. */
+  /** API  for Compliance Officer Transactions. */
   const [
     complianceOfficerReconcileTransactionData,
     setComplianceOfficerReconcileTransactionData,
-  ] = useState({ data: [], totalRecords: 0, apiCall: false });
+  ] = useState({
+    reconsileTransaction: [],
+    totalRecordsDataBase: 0,
+    totalRecordsTable: 0,
+  });
 
   /** Stores the latest MQTT update for Compliance Officer Transactions. */
   const [
@@ -70,11 +74,17 @@ export const ReconcileProvider = ({ children }) => {
     setComplianceOfficerReconcileTransactionDataMqtt,
   ] = useState(false);
 
-  /** API + MQTT data for Compliance Officer Portfolio. */
+  /** API data for Compliance Officer Portfolio. */
   const [
     complianceOfficerReconcilePortfolioData,
     setComplianceOfficerReconcilePortfolioData,
-  ] = useState({ data: [], totalRecords: 0, apiCall: false });
+  ] = useState({
+    reconsilePortfolios: [],
+    // this is for to run lazy loading its data comming from database of total data in db
+    totalRecordsDataBase: 0,
+    // this is for to know how mush dta currently fetch from  db
+    totalRecordsTable: 0,
+  });
 
   /** Stores the latest MQTT update for Compliance Officer Portfolio. */
   const [
@@ -126,7 +136,13 @@ export const ReconcileProvider = ({ children }) => {
   const [
     headOfComplianceApprovalPortfolioData,
     setHeadOfComplianceApprovalPortfolioData,
-  ] = useState({ data: [], totalRecords: 0, apiCall: false });
+  ] = useState({
+    escalatedPortfolio: [],
+    // this is for to run lazy loading its data comming from database of total data in db
+    totalRecordsDataBase: 0,
+    // this is for to know how mush dta currently fetch from  db
+    totalRecordsTable: 0,
+  });
 
   /** Stores the latest MQTT update for HCO portfolio approvals. */
   const [
@@ -138,7 +154,13 @@ export const ReconcileProvider = ({ children }) => {
   const [
     headOfComplianceApprovalEscalatedVerificationsData,
     setHeadOfComplianceApprovalEscalatedVerificationsData,
-  ] = useState({ data: [], totalRecords: 0, apiCall: false });
+  ] = useState({
+    escalatedVerification: [],
+    // this is for to run lazy loading its data comming from database of total data in db
+    totalRecordsDataBase: 0,
+    // this is for to know how mush dta currently fetch from  db
+    totalRecordsTable: 0,
+  });
 
   /** Stores the latest MQTT update for HCO escalated verifications. */
   const [
@@ -152,11 +174,11 @@ export const ReconcileProvider = ({ children }) => {
 
   /** Reset the Compliance Officer Portfolio tab (API + MQTT + totals). */
   const resetComplianceOfficerReconcilePortfolioTab = () => {
-    setActiveTab("Transactions");
+    setActiveTab("transactions");
     setComplianceOfficerReconcilePortfolioData({
-      data: [],
-      totalRecords: 0,
-      apiCall: false,
+      reconsilePortfolios: [],
+      totalRecordsDataBase: 0,
+      totalRecordsTable: 0,
     });
     setComplianceOfficerReconcilePortfolioDataMqtt(false);
     setAggregateTotalQuantity(0);
@@ -164,11 +186,11 @@ export const ReconcileProvider = ({ children }) => {
 
   /** Reset the Compliance Officer Transactions tab (API + MQTT). */
   const resetComplianceOfficerReconcileTransactionTab = () => {
-    setActiveTab("Transactions");
+    setActiveTab("transactions");
     setComplianceOfficerReconcileTransactionData({
-      data: [],
-      totalRecords: 0,
-      apiCall: false,
+      reconsileTransaction: [],
+      totalRecordsDataBase: 0,
+      totalRecordsTable: 0,
     });
     setComplianceOfficerReconcileTransactionDataMqtt(false);
   };
@@ -177,20 +199,43 @@ export const ReconcileProvider = ({ children }) => {
   const resetHeadOfComplianceApprovalPortfolioTab = () => {
     setActiveTabHCO("portfolio");
     setHeadOfComplianceApprovalPortfolioData({
-      data: [],
-      totalRecords: 0,
-      apiCall: false,
+      escalatedPortfolio: [],
+      totalRecordsDataBase: 0,
+      totalRecordsTable: 0,
     });
     setHeadOfComplianceApprovalPortfolioMqtt(false);
   };
+
+  // Head Of Compliance (HOC) view detail data state Start here
+  const [
+    isEscalatedHeadOfComplianceViewDetailData,
+    setIsEscalatedHeadOfComplianceViewDetailData,
+  ] = useState({
+    details: [],
+    assetTypes: [],
+    hierarchyDetails: [],
+    workFlowStatus: {},
+    tradedWorkFlowRequests: [],
+    ticketUploaded: false,
+    requesterName: "",
+    escalations: [],
+  });
+
+  //To get the selected data by clicking on View Detail of reconcile Transaction
+  const [
+    selectedEscalatedHeadOfComplianceData,
+    setSelectedEscalatedHeadOfComplianceData,
+  ] = useState(null);
+
+  // Head Of Compliance (HOC) view detail data state End here
 
   /** Reset the HCO Escalated Verifications tab (API + MQTT). */
   const resetHeadOfComplianceApprovalEscalatedVerificationsTab = () => {
     setActiveTabHCO("escalated");
     setHeadOfComplianceApprovalEscalatedVerificationsData({
-      data: [],
-      totalRecords: 0,
-      apiCall: false,
+      escalatedVerification: [],
+      totalRecordsDataBase: 0,
+      totalRecordsTable: 0,
     });
     setHeadOfComplianceApprovalEscalatedVerificationsMqtt(false);
   };
@@ -248,6 +293,13 @@ export const ReconcileProvider = ({ children }) => {
 
         selectedReconcileTransactionData,
         setSelectedReconcileTransactionData,
+
+        // Head Of Compliance (HOC) States
+        isEscalatedHeadOfComplianceViewDetailData,
+        setIsEscalatedHeadOfComplianceViewDetailData,
+
+        selectedEscalatedHeadOfComplianceData,
+        setSelectedEscalatedHeadOfComplianceData,
       }}
     >
       {children}

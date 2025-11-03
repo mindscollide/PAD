@@ -42,7 +42,49 @@
 .smallCardSubtitle {
   font-weight: 700;
 }
+.smallCardAdmin {
+  background-color: #edf3ff;
+  /* border: 0.87px solid #b4b4b4; */
+  border-radius: 13.89px;
+  display: flex;
+  align-items: center;
+  /* padding: 20px; */
+  transition: all 0.3s ease;
+  width: 100%;
+  height: 175px;
+  box-sizing: border-box;
+  margin-bottom: 10px;
+}
 
+.smallCardAdminCollapsed {
+  max-width: 100%;
+}
+.smallCardAdminExpanded {
+  max-width: 100%;
+}
+
+.smallCardAdminContent {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.smallCardAdminTitle,
+.smallCardAdminSubtitle {
+  font-family: "Switzer Variable";
+  font-weight: 400;
+  font-size: 36px;
+  line-height: 1.2em;
+  color: #30426a;
+  margin: 0;
+  display: block;
+  white-space: normal;
+  word-break: break-word;
+}
+
+.smallCardAdminSubtitle {
+  font-weight: 700;
+}
 /* --- Big Card (was lineManagerWelcomeCard) --- */
 .bigCard {
   border: 0.87px solid #b4b4b4;
@@ -104,6 +146,8 @@
 } */
 /* --- Responsive Font for Both Cards --- */
 @media (min-width: 768px) {
+  .smallCardAdminTitle,
+  .smallCardAdminSubtitle,
   .smallCardTitle,
   .smallCardSubtitle,
   .bigCardTitle,
@@ -113,6 +157,8 @@
 }
 
 @media (min-width: 1200px) {
+  .smallCardAdminTitle,
+  .smallCardAdminSubtitle,
   .smallCardTitle,
   .smallCardSubtitle,
   .bigCardTitle,

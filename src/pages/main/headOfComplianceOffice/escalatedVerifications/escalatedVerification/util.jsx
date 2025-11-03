@@ -10,33 +10,41 @@ import ArrowDown from "../../../../../assets/img/arrow-down-dark.png";
 import EscalatedIcon from "../../../../../assets/img/escalated.png";
 
 // Helpers
-import { formatApiDateTime } from "../../../../../commen/funtions/rejex";
+import { formatApiDateTime, toYYMMDD } from "../../../../../common/funtions/rejex";
 import TypeColumnTitle from "../../../../../components/dropdowns/filters/typeColumnTitle";
 import StatusColumnTitle from "../../../../../components/dropdowns/filters/statusColumnTitle";
 import { useGlobalModal } from "../../../../../context/GlobalModalContext";
+import { useReconcileContext } from "../../../../../context/reconsileContax";
 
-/* ------------------------------------------------------------------ */
-/* 🔹 Trade Type Resolver */
-/* ------------------------------------------------------------------ */
+import { getTradeTypeById } from "../../../../../common/funtions/type";
+import { mapBuySellToIds, mapStatusToIds } from "../../../../../components/dropdowns/filters/utils";
+
+
 /**
- * Resolves trade type label by matching the given `tradeType` ID
- * with the API-provided `assetTypeData`.
+ * Builds API request payload from search/filter state
  *
- * @param {Object} assetTypeData - Asset type API response object.
- * @param {Array<Object>} assetTypeData.items - Array of trade approval types.
- * @param {Object} tradeType - Trade type object (with typeID).
- * @param {string|number} tradeType.typeID - Trade type ID.
- * @returns {string} The trade type label (e.g., "Buy", "Sell") or "—".
+ * @param {Object} searchState - Current search and filter state
+ * @param {Object} assetTypeListingData - Asset type listing data (optional)
+ * @returns {Object} Formatted request payload for API
  */
-export const getTradeTypeById = (assetTypeData, tradeType) => {
-  console.log("getTradeTypeById", assetTypeData);
-  if (!Array.isArray(assetTypeData?.items)) return "—";
-  return (
-    assetTypeData.items.find((i) => i.tradeApprovalTypeID === tradeType.typeID)
-      ?.type || "—"
-  );
-};
-
+export function buildApiRequest(searchState = {}, assetTypeListingData) {
+  const formatDate = (date) => (date ? toYYMMDD(date) : "");
+  return {
+    RequesterName: searchState.requesterName || "",
+    InstrumentName:
+      searchState.mainInstrumentName || searchState.instrumentName || "",
+    Quantity: searchState.quantity ? Number(searchState.quantity) : 0,
+    RequestDateFrom: formatDate(searchState.requestDateFrom),
+    RequestDateTo: formatDate(searchState.requestDateTo),
+    EscalatedDateFrom: formatDate(searchState.escalatedDateFrom),
+    EscalatedDateTo: formatDate(searchState.escalatedDateTo),
+    StatusIds: mapStatusToIds(searchState.status) || [],
+    TypeIds:
+      mapBuySellToIds(searchState.type, assetTypeListingData?.Equities) || [],
+    PageNumber: Number(searchState.pageNumber) || 0,
+    Length: Number(searchState.pageSize) || 10,
+  };
+}
 /* ------------------------------------------------------------------ */
 /* 🔹 Sort Icon Helper */
 /* ------------------------------------------------------------------ */
@@ -83,7 +91,7 @@ export const mapToTableRows = (assetTypeData, list = []) =>
   (Array.isArray(list) ? list : []).map((item = {}) => ({
     requesterName: item?.requesterName,
     complianceOfficerName: item?.complianceOfficerName,
-    approvalID: item?.approvalID,
+    workflowID: item?.workflowID,
     instrumentCode: item?.instrument?.instrumentCode || "—",
     instrumentName: item?.instrument?.instrumentName || "—",
     assetTypeShortCode: item?.assetType?.assetTypeShortCode || "—",
@@ -135,7 +143,7 @@ export const getBorderlessTableColumns = ({
   sortedInfo = {},
   headOfComplianceApprovalEscalatedVerificationsSearch = {},
   setHeadOfComplianceApprovalEscalatedVerificationsSearch = () => {},
-  handleViewDetailsForReconcileTransaction,
+  onViewDetail,
 }) => [
   /* --------------------- Requester Name --------------------- */
   {
@@ -309,7 +317,8 @@ export const getBorderlessTableColumns = ({
     key: "type",
     ellipsis: true,
     width: 100,
-    filteredValue: headOfComplianceApprovalEscalatedVerificationsSearch?.type?.length
+    filteredValue: headOfComplianceApprovalEscalatedVerificationsSearch?.type
+      ?.length
       ? headOfComplianceApprovalEscalatedVerificationsSearch.type
       : null,
     onFilter: () => true,
@@ -330,7 +339,8 @@ export const getBorderlessTableColumns = ({
     key: "status",
     ellipsis: true,
     width: 140,
-    filteredValue: headOfComplianceApprovalEscalatedVerificationsSearch?.status?.length
+    filteredValue: headOfComplianceApprovalEscalatedVerificationsSearch?.status
+      ?.length
       ? headOfComplianceApprovalEscalatedVerificationsSearch.status
       : null,
     onFilter: () => true,
@@ -396,8 +406,10 @@ export const getBorderlessTableColumns = ({
     width: 120,
     fixed: "right",
     render: (text, record) => {
+      console.log(record, "checkReconsicle najsva sas");
+      const { setSelectedEscalatedHeadOfComplianceData } =
+        useReconcileContext();
       // Note: Using hook inside render might cause issues, consider moving this logic
-      const { setViewDetailReconcileTransaction } = useGlobalModal();
       return (
         <Button
           className="big-blue-button"
@@ -409,8 +421,8 @@ export const getBorderlessTableColumns = ({
             whiteSpace: "nowrap",
           }}
           onClick={() => {
-            handleViewDetailsForReconcileTransaction(record?.approvalID);
-            setViewDetailReconcileTransaction(true);
+            onViewDetail(record?.workflowID);
+            setSelectedEscalatedHeadOfComplianceData(record);
           }}
         />
       );

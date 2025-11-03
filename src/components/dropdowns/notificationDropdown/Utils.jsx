@@ -2,6 +2,7 @@ import React from "react";
 import styles from "./notificationDropdown.module.css";
 
 const NotificationItem = ({ notification, getNotificationIcon }) => {
+  console.log(notification, "CHECKNOTIFICTAIONDAAT");
   return (
     <div key={notification.id} className={styles["notification-item"]}>
       {/* Notification Icon */}

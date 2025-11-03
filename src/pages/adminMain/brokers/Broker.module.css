@@ -1,0 +1,187 @@
+.heading {
+  /* width: 204px; */
+  /* height: 34px; */
+  opacity: 1;
+  font-family: "Switzer Variable";
+  font-weight: 700;
+  font-style: Bold;
+  font-size: 26px;
+  line-height: 100%;
+  letter-spacing: 0%;
+  color: var(--Blue-V1, #30426a);
+}
+
+.filter-tags-container {
+  padding: 0 23px;
+  position: relative;
+  top: 20px;
+  /* margin-bottom: 12px !important; */
+  /* margin-top: 14px; */
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.filter-tag {
+  display: flex;
+  align-items: center;
+  max-width: 240px;
+  height: 35px;
+  padding: 8px 12px;
+  background: #30426a;
+  color: white;
+  border-radius: 7.09px;
+  font-size: 14px;
+  margin-top: 7px;
+  gap: 10px;
+}
+
+.filter-tag-text {
+  flex: 1 1 auto !important;
+  min-width: 0 !important; /* 🔑 allows ellipsis */
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+}
+
+.filter-tag-close {
+  cursor: pointer;
+  flex-shrink: 0;
+  font-size: 16px;
+  line-height: 1;
+  z-index: 1 !important;
+}
+
+.clear-all-tag {
+  cursor: pointer !important;
+}
+
+.SwitchMainDiv {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+/* Base switch style */
+.switchBase {
+  width: 64px !important;
+  height: 32px !important;
+}
+
+/* Customize handle (dot) color for UNCHECKED state */
+/* Unchecked: target the dot inside .unSwitchBackground */
+.unSwitchBackground :global(.ant-switch-handle::before) {
+  background-color: #30426a !important;
+  top: 3px;
+  left: 4px !important;
+  width: 19px;
+  height: 19px;
+}
+
+/* Checked: target the dot inside .switchbackground */
+.switchbackground :global(.ant-switch-handle::before) {
+  background-color: #fff !important;
+  top: 3px !important;
+  left: calc(100% - 22px) !important;
+  width: 19px;
+  height: 19px;
+}
+
+/* Optional: customize track color */
+.unSwitchBackground {
+  background-color: transparent !important;
+  border: 1px solid #b4b4b4;
+}
+
+.switchbackground {
+  background-color: #30426a !important;
+  border: 1px solid #b4b4b4;
+}
+
+.activeText {
+  font-size: 16px;
+  font-weight: 600;
+  color: #30426a;
+  font-family: "Switzer Variable";
+}
+
+.InActiveText {
+  font-size: 16px;
+  font-weight: 600;
+  color: #717171;
+  font-family: "Switzer Variable";
+}
+
+.mainDivForAddorExportBtn {
+  display: flex;
+  justify-content: end;
+  align-items: center;
+  gap: 20px;
+}
+
+.dropdownExport {
+  position: absolute;
+  top: 100%; /* appears below the button */
+  right: 0;
+  margin-top: 6px;
+
+  width: 168px;
+  border-radius: 8px;
+  border: 1px solid #b4b4b4;
+  background: #fff;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+  z-index: 1000; /* keep above table */
+  padding: 8px 0;
+}
+
+.dropdownItem {
+  padding: 8px 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 16px;
+  font-family: "Switzer Variable";
+  font-weight: 500;
+  color: #424242;
+  cursor: pointer;
+  transition: background 0.2s;
+  position: relative; /* required for ::after */
+}
+.dropdownItem img {
+  width: 20px;
+  height: 20px;
+  pointer-events: none;
+}
+
+.dropdownItem:not(:last-child)::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 12px; /* 👈 inset from left */
+  right: 12px; /* 👈 inset from right */
+  height: 1px;
+  background-color: #e0e0e0;
+}
+
+.dropdownItem:hover {
+  background: #f5f5f5;
+}
+
+.viewEditClass {
+  display: flex;
+  justify-content: end;
+  margin-right: 20px;
+}
+
+.exportButtonText {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.iconContainer {
+  display: flex;
+  align-items: center;
+  font-size: 14px; /* Adjust size as needed */
+  transition: transform 0.3s ease;
+}

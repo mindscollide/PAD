@@ -3,14 +3,15 @@
 import React, { useEffect, useState, useCallback, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 
-// 📦 Third-party imports
-import moment from "moment";
-
 // 🔹 Component imports
 import BorderlessTable from "../../../../../components/tables/borderlessTable/borderlessTable";
 
 // 🔹 Utility imports
-import { getBorderlessTableColumns, mapToTableRows } from "./util";
+import {
+  buildApiRequest,
+  getBorderlessTableColumns,
+  mapToTableRows,
+} from "./util";
 import { approvalStatusMap } from "../../../../../components/tables/borderlessTable/utill";
 
 // 🔹 Context imports
@@ -24,38 +25,26 @@ import { usePortfolioContext } from "../../../../../context/portfolioContax";
 
 // 🔹 Hook imports
 import { useNotification } from "../../../../../components/NotificationProvider/NotificationProvider";
-import { useTableScrollBottom } from "../../../employes/myApprovals/utill";
-
-// 🔹 Helper imports
-import { toYYMMDD } from "../../../../../commen/funtions/rejex";
 
 // 🔹 Modal imports
-import ViewDetailPortfolioTransaction from "./modals/viewDetailReconcileTransaction.jsx/ViewDetailPortfolioTransaction";
-import { SearchHeadOfComplianceEscalatedPortfolioAPI } from "../../../../../api/reconsile";
 import {
-  mapBuySellToIds,
-  mapStatusToIds,
-} from "../../../../../components/dropdowns/filters/utils";
+  GetAllComplianceOfficerReconcileTransactionAndPortfolioRequest,
+  SearchHeadOfComplianceEscalatedPortfolioAPI,
+} from "../../../../../api/reconsile";
+
+import ViewDetailHeadOfComplianceReconcilePortfolio from "./modals/viewDetailHeadOfComplianceReconcilePortfolio/ViewDetailHeadOfComplianceReconcilePortfolio";
+import ViewReconcilePortfolioComment from "./modals/viewEscalatedPortfolioComment/ViewReconcilePortfolioComment";
+import NoteHeadOfCompliancePortfolioModal from "./modals/noteHeadOfCompliancePortfolioModal/NoteHeadOfCompliancePortfolioModal";
+import ApproveHeadOfCompliancePortfolioModal from "./modals/approveHeadOfCompliancePortfolioModal/ApproveHeadOfCompliancePortfolioModal";
+import DeclinedHeadOfCompliancePortfolioModal from "./modals/declinedHeadOfCompliancePortfolioModal/DeclinedHeadOfCompliancePortfolioModal";
+import { useTableScrollBottom } from "../../../../../common/funtions/scroll";
+import { getSafeAssetTypeData } from "../../../../../common/funtions/assetTypesList";
 
 // 🔹 API imports (uncomment when ready)
 // import {
 //   GetAllReconcilePortfolioTransactionRequest,
 //   SearchHeadOfComplianceReconcilePortfolioRequest,
 // } from "../../../../../api/reconsile";
-
-// =============================================================================
-// 🎯 CONSTANTS & CONFIGURATION
-// =============================================================================
-
-/**
- * Configuration constants for the component
- */
-const COMPONENT_CONFIG = {
-  DEFAULT_PAGE_SIZE: 10,
-  TABLE_SCROLL_Y: 550,
-  TABLE_CLASS_NAME: "border-less-table-blue",
-  ASSET_TYPE: "Equities",
-};
 
 // =============================================================================
 // 🎯 MAIN COMPONENT
@@ -71,7 +60,7 @@ const COMPONENT_CONFIG = {
  * @component
  * @returns {JSX.Element} BorderlessTable with HCO reconcile portfolios
  */
-const ReconcilePortfolioHCO = () => {
+const ReconcilePortfolioHCO = ({ activeFilters }) => {
   const navigate = useNavigate();
 
   // ===========================================================================
@@ -82,8 +71,16 @@ const ReconcilePortfolioHCO = () => {
   const { callApi } = useApi();
   const { showNotification } = useNotification();
   const { showLoader } = useGlobalLoader();
-  const { viewDetailPortfolioTransaction } = useGlobalModal();
-  const { addApprovalRequestData } = useDashboardContext();
+  const {
+    viewDetailHeadOfComplianceEscalatedPortfolio,
+    setViewDetailHeadOfComplianceEscalatedPortfolio,
+    viewCommentPortfolioModal,
+    compliantApproveModal,
+    nonCompliantDeclineModal,
+    noteGlobalModal,
+  } = useGlobalModal();
+  const { assetTypeListingData, setAssetTypeListingData } =
+    useDashboardContext();
 
   // Search & Filter Contexts
   const {
@@ -93,10 +90,8 @@ const ReconcilePortfolioHCO = () => {
   } = useSearchBarContext();
 
   // Portfolio Data Contexts
-  const {
-    reconcilePortfolioViewDetailData,
-    setReconcilePortfolioViewDetailData,
-  } = usePortfolioContext();
+  const { setIsEscalatedPortfolioHeadOfComplianceViewDetailData } =
+    usePortfolioContext();
 
   // Reconcile Data Contexts
   const {
@@ -111,36 +106,40 @@ const ReconcilePortfolioHCO = () => {
   // ===========================================================================
 
   const [sortedInfo, setSortedInfo] = useState({});
-  const [tableData, setTableData] = useState({ rows: [], totalRecords: 0 });
   const [loadingMore, setLoadingMore] = useState(false);
 
   // Prevent duplicate API calls in StrictMode
   const didFetchRef = useRef(false);
+  const tableScrollHCAEcalatedVerification = useRef(null);
+
   // ===========================================================================
   // 🎯 API FUNCTIONS
   // ===========================================================================
 
   /**
-   * Fetches detailed portfolio transaction view for the modal
+   * Fetches transaction view details for the reconcile modal
    *
-   * @param {string} workFlowID - The workflow ID of the portfolio transaction to view
+   * @param {string} workFlowID - The workflow ID of the transaction to view
    */
-  const handleViewDetailsForReconcileTransaction = async (workFlowID) => {
+  const handleViewDetailsHeadOfComplianceForPortfolioTransaction = async (
+    workFlowID
+  ) => {
     await showLoader(true);
     const requestdata = { TradeApprovalID: workFlowID };
 
-    // 🔹 Uncomment when API is ready
-    // const responseData = await GetAllReconcilePortfolioTransactionRequest({
-    //   callApi,
-    //   showNotification,
-    //   showLoader,
-    //   requestdata,
-    //   navigate,
-    // });
+    const responseData =
+      await GetAllComplianceOfficerReconcileTransactionAndPortfolioRequest({
+        callApi,
+        showNotification,
+        showLoader,
+        requestdata,
+        navigate,
+      });
 
-    // if (responseData) {
-    //   setReconcilePortfolioViewDetailData(responseData);
-    // }
+    if (responseData) {
+      setIsEscalatedPortfolioHeadOfComplianceViewDetailData(responseData);
+      setViewDetailHeadOfComplianceEscalatedPortfolio(true);
+    }
   };
   // ===========================================================================
   // 🎯 DERIVED VALUES & MEMOIZATIONS
@@ -154,64 +153,8 @@ const ReconcilePortfolioHCO = () => {
     sortedInfo,
     headOfComplianceApprovalPortfolioSearch,
     setHeadOfComplianceApprovalPortfolioSearch,
-    handleViewDetailsForReconcileTransaction,
+    onViewDetail: handleViewDetailsHeadOfComplianceForPortfolioTransaction,
   });
-
-  // ===========================================================================
-  // 🎯 UTILITY FUNCTIONS
-  // ===========================================================================
-
-  /**
-   * Builds API request payload from search/filter state
-   *
-   * @param {Object} searchState - Current search and filter state
-   * @returns {Object} Formatted request payload for API
-   */
-  const buildPortfolioRequest = (searchState = {}) => {
-    const RequestDateFrom = searchState.requestDateFrom
-      ? toYYMMDD(searchState.requestDateFrom)
-      : "";
-    const RequestDateTo = searchState.requestDateTo
-      ? toYYMMDD(searchState.requestDateTo)
-      : "";
-    const EscalatedDateFrom = searchState.escalatedDateFrom
-      ? toYYMMDD(searchState.escalatedDateFrom)
-      : "";
-    const EscalatedDateTo = searchState.escalatedDateTo
-      ? toYYMMDD(searchState.escalatedDateTo)
-      : "";
-    return {
-      RequesterName: searchState.requesterName || "",
-      InstrumentName:
-        searchState.mainInstrumentName || searchState.instrumentName || "",
-      Quantity: searchState.quantity ? Number(searchState.quantity) : 0,
-      RequestDateFrom: RequestDateFrom,
-      RequestDateTo: RequestDateTo,
-      EscalatedDateFrom: EscalatedDateFrom,
-      EscalatedDateTo: EscalatedDateTo,
-      StatusIds: mapStatusToIds(searchState.status) || [],
-      TypeIds:
-        mapBuySellToIds(searchState.type, addApprovalRequestData?.Equities) ||
-        [],
-      PageNumber: Number(searchState.pageNumber) || 0,
-      Length:
-        Number(searchState.pageSize) || COMPONENT_CONFIG.DEFAULT_PAGE_SIZE,
-    };
-  };
-
-  /**
-   * Merges new rows into existing table data, ensuring no duplicates
-   *
-   * @param {Array} prevRows - Previous table rows
-   * @param {Array} newRows - New rows to merge
-   * @param {boolean} replace - Whether to replace existing rows
-   * @returns {Array} Merged rows array
-   */
-  const mergeRows = (prevRows, newRows, replace = false) => {
-    if (replace) return newRows;
-    const ids = new Set(prevRows.map((r) => r.key));
-    return [...prevRows, ...newRows.filter((r) => !ids.has(r.key))];
-  };
 
   // ===========================================================================
   // 🎯 DATA FETCHING FUNCTIONS
@@ -224,11 +167,11 @@ const ReconcilePortfolioHCO = () => {
    * @param {boolean} replace - Whether to replace existing data
    * @param {boolean} loader - Whether to show loader during fetch
    */
-  const fetchPortfolios = useCallback(
-    async (requestData, replace = false, loader = false) => {
+  const fetchApiCall = useCallback(
+    async (requestData, replace = false, showLoaderFlag = true) => {
       if (!requestData || typeof requestData !== "object") return;
 
-      if (!loader) showLoader(true);
+      if (showLoaderFlag) showLoader(true);
 
       try {
         // 🔹 Uncomment when API is ready
@@ -239,150 +182,61 @@ const ReconcilePortfolioHCO = () => {
           requestdata: requestData,
           navigate,
         });
-        console.log("res", res);
-        const portfolios = Array.isArray(res?.transactions)
+
+        // ✅ Always get the freshest version (from memory or session)
+        const currentAssetTypeData = getSafeAssetTypeData(
+          assetTypeListingData,
+          setAssetTypeListingData
+        );
+
+        const escalatedPortfolio = Array.isArray(res?.transactions)
           ? res.transactions
           : [];
+
         const mapped = mapToTableRows(
-          addApprovalRequestData?.Equities,
-          portfolios
+          currentAssetTypeData?.Equities,
+          escalatedPortfolio
         );
         console.log("res", mapped);
 
-        setHeadOfComplianceApprovalPortfolioData({
-          data: mapped,
-          totalRecords: res?.totalRecords ?? mapped.length,
-          Apicall: true,
-          replace,
-        });
+        setHeadOfComplianceApprovalPortfolioData((prev) => ({
+          escalatedPortfolio: replace
+            ? mapped
+            : [...(prev?.escalatedPortfolio || []), ...mapped],
+          // this is for to run lazy loading its data comming from database of total data in db
+          totalRecordsDataBase: res.totalRecords || 0,
+          // this is for to know how mush dta currently fetch from  db
+          totalRecordsTable: replace
+            ? mapped.length
+            : headOfComplianceApprovalPortfolioData.totalRecordsTable +
+              mapped.length,
+        }));
 
-        console.log("📊 Fetching HCO portfolios with:", requestData);
+        setHeadOfComplianceApprovalPortfolioSearch((prev) => {
+          const next = {
+            ...prev,
+            pageNumber: replace
+              ? mapped.length
+              : prev.pageNumber + mapped.length,
+          };
+          // this is for check if filter value get true only on that it will false
+          if (prev.filterTrigger) {
+            next.filterTrigger = false;
+          }
+
+          return next;
+        });
       } catch (error) {
         console.error("❌ Error fetching HCO reconcile portfolios:", error);
         showNotification({
           type: "error",
-          message: "Failed to fetch portfolio data",
+          message: "Failed to fetch escalated portfolio data",
         });
       } finally {
-        if (!loader) showLoader(false);
+        if (showLoaderFlag) showLoader(false);
       }
     },
-    [callApi, showNotification, showLoader, navigate, addApprovalRequestData]
-  );
-
-  // ===========================================================================
-  // 🎯 EFFECTS - DATA SYNCING
-  // ===========================================================================
-
-  /**
-   * Sync global portfolio data to local table state
-   */
-  useEffect(() => {
-    if (!headOfComplianceApprovalPortfolioData?.Apicall) return;
-
-    setTableData((prev) => ({
-      rows: mergeRows(
-        prev.rows || [],
-        headOfComplianceApprovalPortfolioData.data,
-        headOfComplianceApprovalPortfolioData.replace
-      ),
-      totalRecords: headOfComplianceApprovalPortfolioData.totalRecords || 0,
-    }));
-
-    // Sync pagination info with search context
-    setHeadOfComplianceApprovalPortfolioSearch((prev) => ({
-      ...prev,
-      totalRecords:
-        headOfComplianceApprovalPortfolioData.totalRecords ??
-        headOfComplianceApprovalPortfolioData.data.length,
-      pageNumber: headOfComplianceApprovalPortfolioData.replace
-        ? COMPONENT_CONFIG.DEFAULT_PAGE_SIZE
-        : prev.pageNumber,
-    }));
-
-    // Reset API trigger flag
-    setHeadOfComplianceApprovalPortfolioData((prev) => ({
-      ...prev,
-      Apicall: false,
-    }));
-  }, [headOfComplianceApprovalPortfolioData?.Apicall]);
-
-  /**
-   * Handle real-time MQTT data updates
-   */
-  useEffect(() => {
-    if (!headOfComplianceApprovalPortfolioMqtt) return;
-
-    const requestData = {
-      ...buildPortfolioRequest(headOfComplianceApprovalPortfolioSearch),
-      PageNumber: 0,
-    };
-
-    fetchPortfolios(requestData, true);
-    setHeadOfComplianceApprovalPortfolioSearch((prev) => ({
-      ...prev,
-      PageNumber: 0,
-    }));
-
-    // Reset MQTT trigger
-    setHeadOfComplianceApprovalPortfolioMqtt(false);
-  }, [headOfComplianceApprovalPortfolioMqtt]);
-
-  /**
-   * Handle search/filter triggers
-   */
-  useEffect(() => {
-    if (headOfComplianceApprovalPortfolioSearch?.filterTrigger) {
-      const data = buildPortfolioRequest(
-        headOfComplianceApprovalPortfolioSearch
-      );
-
-      fetchPortfolios(data, true); // replace mode
-      setHeadOfComplianceApprovalPortfolioSearch((prev) => ({
-        ...prev,
-        filterTrigger: false,
-      }));
-    }
-  }, [headOfComplianceApprovalPortfolioSearch?.filterTrigger, fetchPortfolios]);
-
-  // ===========================================================================
-  // 🎯 INFINITE SCROLL
-  // ===========================================================================
-
-  useTableScrollBottom(
-    async () => {
-      if (
-        headOfComplianceApprovalPortfolioSearch?.totalRecords <=
-        tableData?.rows?.length
-      ) {
-        return;
-      }
-
-      try {
-        setLoadingMore(true);
-        const requestData = {
-          ...buildPortfolioRequest(headOfComplianceApprovalPortfolioSearch),
-          PageNumber: headOfComplianceApprovalPortfolioSearch.pageNumber || 0,
-        };
-
-        await fetchPortfolios(requestData, false, true); // append mode
-        setHeadOfComplianceApprovalPortfolioSearch((prev) => ({
-          ...prev,
-          pageNumber:
-            (prev.pageNumber || 0) + COMPONENT_CONFIG.DEFAULT_PAGE_SIZE,
-        }));
-      } catch (error) {
-        console.error("❌ Error loading more HCO portfolios:", error);
-        showNotification({
-          type: "error",
-          message: "Failed to load more portfolio data",
-        });
-      } finally {
-        setLoadingMore(false);
-      }
-    },
-    0,
-    COMPONENT_CONFIG.TABLE_CLASS_NAME
+    [callApi, showNotification, showLoader, navigate, assetTypeListingData]
   );
 
   // ===========================================================================
@@ -396,10 +250,11 @@ const ReconcilePortfolioHCO = () => {
     if (didFetchRef.current) return;
     didFetchRef.current = true;
 
-    const requestData = buildPortfolioRequest({
-      PageNumber: 0,
-    });
-    fetchPortfolios(requestData, true);
+    const requestData = buildApiRequest(
+      headOfComplianceApprovalPortfolioSearch,
+      assetTypeListingData
+    );
+    fetchApiCall(requestData, true, true);
 
     // Reset search state on page reload
     try {
@@ -410,7 +265,78 @@ const ReconcilePortfolioHCO = () => {
     } catch (error) {
       console.error("❌ Error detecting page reload:", error);
     }
-  }, [fetchPortfolios, resetHeadOfComplianceApprovalPortfolioSearch]);
+  }, [fetchApiCall, resetHeadOfComplianceApprovalPortfolioSearch]);
+
+  // ===========================================================================
+  // 🎯 EFFECTS - DATA SYNCING
+  // ===========================================================================
+  /**
+   * Handle real-time MQTT data updates
+   */
+  useEffect(() => {
+    if (!headOfComplianceApprovalPortfolioMqtt) return;
+
+    let requestData = buildApiRequest(
+      headOfComplianceApprovalPortfolioSearch,
+      assetTypeListingData
+    );
+    requestData = {
+      ...requestData,
+      PageNumber: 0,
+    };
+    fetchApiCall(requestData, true, false);
+    // Reset MQTT trigger
+    setHeadOfComplianceApprovalPortfolioMqtt(false);
+  }, [headOfComplianceApprovalPortfolioMqtt]);
+
+  /**
+   * Handle search/filter triggers
+   */
+  useEffect(() => {
+    if (headOfComplianceApprovalPortfolioSearch?.filterTrigger) {
+      const requestData = buildApiRequest(
+        headOfComplianceApprovalPortfolioSearch,
+        assetTypeListingData
+      );
+
+      fetchApiCall(requestData, true, true); // replace mode
+    }
+  }, [headOfComplianceApprovalPortfolioSearch?.filterTrigger, fetchApiCall]);
+
+  // ===========================================================================
+  // 🎯 INFINITE SCROLL
+  // ===========================================================================
+
+  useTableScrollBottom(
+    async () => {
+      if (
+        headOfComplianceApprovalPortfolioData?.totalRecordsDataBase <=
+        headOfComplianceApprovalPortfolioData?.totalRecordsTable
+      ) {
+        return;
+      }
+
+      try {
+        setLoadingMore(true);
+        const requestData = buildApiRequest(
+          headOfComplianceApprovalPortfolioSearch,
+          assetTypeListingData
+        );
+
+        await fetchApiCall(requestData, false, false); // append mode
+      } catch (error) {
+        console.error("❌ Error loading more HCO portfolios:", error);
+        showNotification({
+          type: "error",
+          message: "Failed to load more portfolio data",
+        });
+      } finally {
+        setLoadingMore(false);
+      }
+    },
+    0,
+    "border-less-table-blue"
+  );
 
   /**
    * Cleanup on component unmount
@@ -418,13 +344,12 @@ const ReconcilePortfolioHCO = () => {
   useEffect(() => {
     return () => {
       setSortedInfo({});
-      setTableData({ rows: [], totalRecords: 0 });
       setLoadingMore(false);
       resetHeadOfComplianceApprovalPortfolioSearch();
       setHeadOfComplianceApprovalPortfolioData({
-        data: [],
-        totalRecords: 0,
-        Apicall: false,
+        escalatedPortfolio: [],
+        totalRecordsDataBase: 0,
+        totalRecordsTable: 0,
       });
     };
   }, []);
@@ -436,20 +361,38 @@ const ReconcilePortfolioHCO = () => {
   return (
     <>
       <BorderlessTable
-        rows={tableData?.rows || []}
+        rows={headOfComplianceApprovalPortfolioData?.escalatedPortfolio || []}
         columns={columns}
-        classNameTable={COMPONENT_CONFIG.TABLE_CLASS_NAME}
+        classNameTable={"border-less-table-blue"}
         scroll={
-          tableData?.rows?.length
-            ? { x: "max-content", y: COMPONENT_CONFIG.TABLE_SCROLL_Y }
+          headOfComplianceApprovalPortfolioData?.escalatedPortfolio?.length
+            ? {
+                x: "max-content",
+                y: activeFilters.length > 0 ? 450 : 500,
+              }
             : undefined
         }
         onChange={(_, __, sorter) => setSortedInfo(sorter || {})}
         loading={loadingMore}
+        ref={tableScrollHCAEcalatedVerification}
       />
 
       {/* View Detail Modal */}
-      {viewDetailPortfolioTransaction && <ViewDetailPortfolioTransaction />}
+      {viewDetailHeadOfComplianceEscalatedPortfolio && (
+        <ViewDetailHeadOfComplianceReconcilePortfolio />
+      )}
+
+      {/* To Show Note Modal when Click on Note from the Escalated Portfolio */}
+      {noteGlobalModal && <NoteHeadOfCompliancePortfolioModal />}
+
+      {/* View Comment Modal Open When Click On Portfolio View Comment */}
+      {viewCommentPortfolioModal && <ViewReconcilePortfolioComment />}
+
+      {/* To SHow Approved Compliant Modal WHen APi is succes */}
+      {compliantApproveModal && <ApproveHeadOfCompliancePortfolioModal />}
+
+      {/* To SHow Approved Non-Compliant Modal WHen APi is succes */}
+      {nonCompliantDeclineModal && <DeclinedHeadOfCompliancePortfolioModal />}
     </>
   );
 };

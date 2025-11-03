@@ -18,19 +18,21 @@ import { useNavigate } from "react-router-dom";
 import {
   allowOnlyNumbers,
   formatNumberWithCommas,
-} from "../../../../../../commen/funtions/rejex";
+} from "../../../../../../common/funtions/rejex";
+import CopyToClipboard from "../../../../../../hooks/useClipboard";
 
 const EquitiesApproval = () => {
   const navigate = useNavigate();
 
-  const { isEquitiesModalVisible, setIsEquitiesModalVisible, setIsSubmit } =
-    useGlobalModal();
-
   const {
-    employeeBasedBrokersData,
-    allInstrumentsData,
-    addApprovalRequestData,
-  } = useDashboardContext();
+    isEquitiesModalVisible,
+    setIsEquitiesModalVisible,
+    setIsSubmit,
+    selectedAssetTypeId,
+  } = useGlobalModal();
+
+  const { employeeBasedBrokersData, allInstrumentsData, assetTypeListingData } =
+    useDashboardContext();
 
   const { showNotification } = useNotification();
 
@@ -41,7 +43,7 @@ const EquitiesApproval = () => {
   //For Instrument Dropdown show selected Name
   const [selectedInstrument, setSelectedInstrument] = useState(null);
 
-  console.log(selectedInstrument, "CheckInstrumentId");
+  console.log(assetTypeListingData, "assetTypeListingData");
 
   // for employeeBroker state to show data in dropdown
   const [selectedBrokers, setSelectedBrokers] = useState([]);
@@ -69,8 +71,8 @@ const EquitiesApproval = () => {
   }, []);
 
   //the types should come dynamicallyy like it should be Equities, FixedIncome
-  const assetTypeKey = Object.keys(addApprovalRequestData || {})[0]; // e.g., "Equities"
-  const assetTypeData = addApprovalRequestData?.[assetTypeKey];
+  const assetTypeKey = Object.keys(assetTypeListingData || {})[0]; // e.g., "Equities"
+  const assetTypeData = assetTypeListingData?.[assetTypeKey];
 
   // this is how I extract data fro the AllInstrumentsData which is stored in dashboardContextApi
   const formattedInstruments = (allInstrumentsData || []).map((item) => ({
@@ -96,7 +98,7 @@ const EquitiesApproval = () => {
     raw: broker, // keep full broker data for later use
   }));
 
-  // Format type options from addApprovalRequestData show data in type Select
+  // Format type options from assetTypeListingData show data in type Select
   const typeOptions = Array.isArray(assetTypeData?.items)
     ? assetTypeData?.items.map((item) => ({
         label: item.type,
@@ -117,7 +119,7 @@ const EquitiesApproval = () => {
       TradeApprovalID: 0,
       InstrumentID: formData.selectedInstrument?.id || null,
       InstrumentName: formData.selectedInstrument?.description || "",
-      AssetTypeID: formData.selectedAssetTypeID,
+      AssetTypeID: selectedAssetTypeId || 0,
       ApprovalTypeID: formData.selectedTradeApprovalType,
       Quantity: quantityNumber,
       InstrumentShortCode: formData.selectedInstrument?.name || "",
@@ -151,10 +153,21 @@ const EquitiesApproval = () => {
     fetchAddApprovalsRequest(formData);
   };
 
-  const handleCopyEmailOfLineManager = () => {
+  const handleCopyEmailOfLineManager = async () => {
     const emailToCopy =
       lineManagerDetails?.managerEmail || "LineManager@horizoncapital.com";
-    navigator.clipboard.writeText(emailToCopy);
+
+    try {
+      await CopyToClipboard(emailToCopy); // ✅ Use your utility function here
+      showNotification({
+        type: "success",
+        title: "Copied",
+        description: "Email copied to clipboard.",
+        placement: "bottomLeft",
+      });
+    } catch (error) {
+      console.error("Email Not Copied:", error);
+    }
   };
 
   // Close handler
@@ -173,7 +186,7 @@ const EquitiesApproval = () => {
         brokerOptions={brokerOptions}
         typeOptions={typeOptions}
         mainHeading="Add Approval Request:"
-        heading="Equities"
+        heading={assetTypeKey}
         ManagerHeading="Line Manager"
         showLineManager={lineManagerDetails}
         submitButtonText="Submit"

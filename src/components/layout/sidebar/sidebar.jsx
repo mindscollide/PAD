@@ -34,10 +34,11 @@ const SideBar = () => {
     setEmployeeBasedBrokersData,
     allInstrumentsData,
     setAllInstrumentsData,
-    addApprovalRequestData,
-    setAddApprovalRequestData,
+    assetTypeListingData,
+    setAssetTypeListingData,
     getAllPredefineReasonData,
     setGetAllPredefineReasonData,
+    currentRoleIsAdmin,
   } = useDashboardContext();
 
   // Roles
@@ -77,7 +78,9 @@ const SideBar = () => {
             setEmployeeBasedBrokersData
           );
           restoreAndRemove("allInstrumentsData", setAllInstrumentsData);
-          restoreAndRemove("addApprovalRequestData", setAddApprovalRequestData);
+          if (lastSelectedKey === "0") {
+            restoreAndRemove("assetTypeListingData", setAssetTypeListingData);
+          }
           restoreAndRemove(
             "getAllPredefineReasonData",
             setGetAllPredefineReasonData
@@ -93,7 +96,7 @@ const SideBar = () => {
     setSelectedKey,
     setEmployeeBasedBrokersData,
     setAllInstrumentsData,
-    setAddApprovalRequestData,
+    setAssetTypeListingData,
     setGetAllPredefineReasonData,
   ]);
 
@@ -118,8 +121,8 @@ const SideBar = () => {
           JSON.stringify(allInstrumentsData)
         );
         sessionStorage.setItem(
-          "addApprovalRequestData",
-          JSON.stringify(addApprovalRequestData)
+          "assetTypeListingData",
+          JSON.stringify(assetTypeListingData)
         );
         sessionStorage.setItem(
           "getAllPredefineReasonData",
@@ -134,7 +137,7 @@ const SideBar = () => {
     selectedKey,
     employeeBasedBrokersData,
     allInstrumentsData,
-    addApprovalRequestData,
+    assetTypeListingData,
     getAllPredefineReasonData,
   ]);
 
@@ -150,6 +153,8 @@ const SideBar = () => {
     const currentKey = pathToKey[location.pathname] || ROOT_KEY;
     if (currentKey !== selectedKey) setSelectedKey(currentKey);
   }, [location.pathname, selectedKey, setSelectedKey, pathToKey]);
+
+  // useEffect(() => {}, [currentRoleIsAdmin]);
 
   return (
     <Sider
@@ -196,7 +201,7 @@ const SideBar = () => {
             const path = routeMap[key];
             if (path) navigate(path);
           }}
-          items={sidebarItems(collapsed, allRoleIDs, selectedKey)}
+          items={sidebarItems(collapsed, allRoleIDs, selectedKey,currentRoleIsAdmin)}
           inlineCollapsed={collapsed}
           inlineIndent={20}
           prefixCls="custom-menu"

@@ -12,6 +12,8 @@
   "dependencies": {
     "antd": "^5.26.3",
     "axios": "^1.11.0",
+    "copy-to-clipboard": "^3.3.3",
+    "dayjs": "^1.11.18",
     "lodash": "^4.17.21",
     "moment": "^2.30.1",
     "paho-mqtt": "^1.1.0",

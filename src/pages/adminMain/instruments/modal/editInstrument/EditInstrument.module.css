@@ -1,0 +1,98 @@
+.modalContainer {
+  height: 650px;
+  overflow: hidden;
+  padding: 0px 20px;
+}
+
+.modalTitle {
+  font-size: 26px;
+  font-family: "Switzer Variable";
+  font-weight: 500;
+  color: #30426a;
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+.sectionBox {
+  border: 1px dashed #cfd3d9;
+  border-radius: 6px;
+  padding: 5px 16px;
+  background-color: #fff;
+}
+.sectionBoxPrevious {
+  border-radius: 6px;
+  padding: 16px;
+  background-color: #fff;
+}
+.label {
+  font-size: 14px;
+  font-family: "Switzer Variable";
+  font-weight: 700;
+  color: #30426a;
+  display: block;
+  margin-bottom: 4px;
+}
+
+.datePicker {
+  width: 100%;
+  margin-bottom: 10px;
+  height: 46px !important;
+  border: 1px solid #717171 !important;
+}
+
+.sectionTitle {
+  font-size: 20px;
+  font-weight: 700;
+  margin-top: 16px;
+  font-family: "Switzer Variable";
+  margin-bottom: 8px;
+  color: #30426a;
+}
+
+.tableContainer {
+  max-height: 240px;
+  overflow-y: auto;
+}
+
+.buttonRightAligned {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 10px;
+}
+
+.deleteIcon {
+  width: 16px;
+  height: 16px;
+  opacity: 0.8;
+  transition: 0.2s;
+}
+
+.deleteIcon:hover {
+  opacity: 1;
+  transform: scale(1.1);
+}
+
+.emptyWrapper {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin: 0 !important;
+}
+
+.NoUpcomingPeriodsText {
+  margin: 0 !important;
+  font-size: 26px;
+  font-weight: 700;
+  font-family: "Switzer Variable";
+  color: #30426a;
+  padding-bottom: 40px;
+}
+
+.emptyWrapperPrevious {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin-top: 80px !important;
+}

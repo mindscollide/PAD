@@ -14,7 +14,8 @@ import {
   dashBetweenApprovalAssets,
   formatApiDateTime,
   formatNumberWithCommas,
-} from "../../../../../../../commen/funtions/rejex";
+  formatTransactionId,
+} from "../../../../../../../common/funtions/rejex";
 import { useReconcileContext } from "../../../../../../../context/reconsileContax";
 import { usePortfolioContext } from "../../../../../../../context/portfolioContax";
 
@@ -179,8 +180,10 @@ const ViewDetailPortfolioTransaction = () => {
                       </label>
                       <label className={styles.viewDetailSubLabels}>
                         <span className={styles.customTag}>
-                          {reconcilePortfolioViewDetailData?.details?.[0]
-                            ?.assetTypeID === "1" && <span>EQ</span>}
+                          {
+                            reconcilePortfolioViewDetailData?.assetTypes?.[0]
+                              ?.shortCode
+                          }
                         </span>{" "}
                         {selectedInstrument?.instrumentCode}
                       </label>
@@ -195,7 +198,7 @@ const ViewDetailPortfolioTransaction = () => {
                         Portfolio ID
                       </label>
                       <label className={styles.viewDetailSubLabels}>
-                        {dashBetweenApprovalAssets(
+                        {formatTransactionId(
                           reconcilePortfolioViewDetailData?.details?.[0]
                             ?.tradeApprovalID
                         )}
@@ -266,8 +269,10 @@ const ViewDetailPortfolioTransaction = () => {
                         Asset Class
                       </label>
                       <label className={styles.viewDetailSubLabels}>
-                        {reconcilePortfolioViewDetailData?.details?.[0]
-                          ?.assetTypeID === "1" && <span>Equity</span>}
+                        {
+                          reconcilePortfolioViewDetailData?.assetTypes?.[0]
+                            ?.title
+                        }
                       </label>
                     </div>
                   </Col>
@@ -296,17 +301,8 @@ const ViewDetailPortfolioTransaction = () => {
                       <Stepper
                         activeStep={Math.max(
                           0,
-                          Array.isArray(
-                            reconcilePortfolioViewDetailData?.hierarchyDetails
-                          )
-                            ? (reconcilePortfolioViewDetailData
-                                ?.hierarchyDetails.length > 1
-                                ? reconcilePortfolioViewDetailData?.hierarchyDetails.filter(
-                                    (person) => person.userID !== loggedInUserID
-                                  )
-                                : reconcilePortfolioViewDetailData?.hierarchyDetails
-                              ).length - 1 // 🔥 fix here
-                            : 0
+                          (reconcilePortfolioViewDetailData?.hierarchyDetails
+                            ?.length || 1) - 1
                         )}
                         connectorStyleConfig={{
                           activeColor: "#00640A",
@@ -324,43 +320,42 @@ const ViewDetailPortfolioTransaction = () => {
                         {Array.isArray(
                           reconcilePortfolioViewDetailData?.hierarchyDetails
                         ) &&
-                          (reconcilePortfolioViewDetailData?.hierarchyDetails
-                            .length > 1
-                            ? reconcilePortfolioViewDetailData?.hierarchyDetails.filter(
-                                (person) => person.userID !== loggedInUserID
-                              )
-                            : reconcilePortfolioViewDetailData?.hierarchyDetails
-                          ) // 🔥 fix here
-                            .map((person, index) => {
+                          reconcilePortfolioViewDetailData.hierarchyDetails.map(
+                            (person, index) => {
                               const {
                                 fullName,
                                 bundleStatusID,
                                 modifiedDate,
                                 modifiedTime,
+                                userID,
                               } = person;
 
                               const formattedDateTime = formatApiDateTime(
                                 `${modifiedDate} ${modifiedTime}`
                               );
 
-                              // Decide icon and text based on status
+                              // Decide icon and label
                               let iconSrc;
                               let displayText;
+                              let isApprovedOrDeclined = false;
 
-                              switch (bundleStatusID) {
-                                case 2: // ✅ Compliant
-                                  iconSrc = CheckIcon;
-                                  displayText = "You marked this as compliant";
-                                  break;
-                                case 3: // ❌ Non-Compliant
-                                  iconSrc = CrossIcon;
-                                  displayText =
-                                    "You marked this as non-compliant";
-                                  break;
-                                case 1: // ⏳ Pending
-                                default:
-                                  iconSrc = EllipsesIcon;
-                                  displayText = fullName;
+                              if (bundleStatusID === 2) {
+                                iconSrc = CheckIcon;
+                                displayText =
+                                  loggedInUserID === userID
+                                    ? "You marked this as compliant"
+                                    : `${fullName} `;
+                                isApprovedOrDeclined = true;
+                              } else if (bundleStatusID === 3) {
+                                iconSrc = CrossIcon;
+                                displayText =
+                                  loggedInUserID === userID
+                                    ? "You marked this as non-compliant"
+                                    : `${fullName}`;
+                                isApprovedOrDeclined = true;
+                              } else {
+                                iconSrc = EllipsesIcon;
+                                displayText = fullName;
                               }
 
                               return (
@@ -369,7 +364,7 @@ const ViewDetailPortfolioTransaction = () => {
                                   label={
                                     <div
                                       className={`${styles.customlabel} ${
-                                        bundleStatusID === 2 || 3
+                                        isApprovedOrDeclined
                                           ? styles.centerAlignLabel
                                           : ""
                                       }`}
@@ -379,7 +374,7 @@ const ViewDetailPortfolioTransaction = () => {
                                       </div>
                                       <div
                                         className={`${styles.customdesc} ${
-                                          bundleStatusID === 2 || 3
+                                          isApprovedOrDeclined
                                             ? styles.centerAlignText
                                             : ""
                                         }`}
@@ -389,19 +384,19 @@ const ViewDetailPortfolioTransaction = () => {
                                       </div>
                                     </div>
                                   }
-                                  children={
-                                    <div className={styles.stepCircle}>
-                                      <img
-                                        draggable={false}
-                                        src={iconSrc}
-                                        alt="status-icon"
-                                        className={styles.circleImg}
-                                      />
-                                    </div>
-                                  }
-                                />
+                                >
+                                  <div className={styles.stepCircle}>
+                                    <img
+                                      draggable={false}
+                                      src={iconSrc}
+                                      alt="status-icon"
+                                      className={styles.circleImg}
+                                    />
+                                  </div>
+                                </Step>
                               );
-                            })}
+                            }
+                          )}
                       </Stepper>
                     </div>
                   </div>

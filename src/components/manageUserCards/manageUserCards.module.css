@@ -1,0 +1,119 @@
+.mainUserCarddiv {
+  display: flex;
+  align-items: center;
+  /* border: 1px solid #b4b4b4; */
+  border-radius: 8px;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.25);
+  padding: 14px 18px;
+  background-color: #fff;
+  margin-bottom: 20px;
+  /* transition: all 0.2s ease-in-out; */
+}
+
+.mainUserCarddiv:hover {
+  /* transform: translateY(-2px); */
+}
+
+.manageUserSection {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 120px;
+}
+
+.manageUserProfileImg {
+  width: 104px;
+  height: 100px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.manageUserName {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 30px;
+  font-family: "Switzer Variable";
+  font-weight: 700;
+  color: #424242;
+}
+
+.manageUserName h5 {
+  display: flex;
+  align-items: center; /* centers image vertically with text */
+  gap: 16px; /* spacing between name and image */
+}
+
+.fileImgClass img {
+  height: 38px; /* adjust to match text size */
+  width: 38px;
+  object-fit: contain;
+  margin-top: 5px;
+}
+
+.manageUserEmail {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 18px;
+  font-family: "Switzer Variable";
+  font-weight: 500;
+  color: #424242;
+}
+
+.fordetailUserManage {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.fordetailUserManageSubDiv {
+  width: 100%;
+  margin: 0px 50px 0px 20px;
+}
+
+.moreIcon {
+  font-size: 20px;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.moreBackgroundColor {
+  padding: 0px 5px;
+  background-color: #e1e1e1 !important;
+  cursor: pointer;
+  margin-top: -40px;
+}
+
+.moreBackgroundColorActive {
+  padding: 0px 5px;
+  background-color: #30426a !important;
+  cursor: pointer;
+  margin-top: -40px;
+}
+
+.backgroundcolorMoreIconActive {
+  color: #fff;
+  font-size: 26px !important;
+}
+
+.backgroundcolorMoreIcon {
+  color: #000;
+  font-size: 26px !important;
+}
+
+.dropdownClass {
+  display: block; /* 👈 this is the fix */
+  font-size: 16px;
+  font-family: "Switzer Variable";
+  font-weight: 500;
+  color: #424242;
+  border-bottom: 1px solid #d4d4d4;
+  padding: 8px 0px;
+  transition: background 0.3s ease;
+}
+
+.dropdownClass:hover {
+  background-color: #f5f5f5;
+}

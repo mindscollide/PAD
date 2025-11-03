@@ -42,9 +42,17 @@ const Login = () => {
   const { callApi } = useApi();
 
   // 🔄 Context state resetters (to clear app state on login page mount)
-  const { resetDashboardContextState } = useDashboardContext();
-  const { resetModalContextState, resetForLineManagerModal } = useGlobalModal();
-  const { resetMyApprovalContextState } = useMyApproval();
+  const { resetDashboardContextState, setCurrentRoleIsAdmin, setUrgentAlert } =
+    useDashboardContext();
+  const {
+    resetModalContextState,
+    resetForLineManagerModal,
+    resetStateForComplianceOfficer,
+    resetStateForHeadOfApproval,
+    resetStateForHeadOfCompliance,
+  } = useGlobalModal();
+  const { resetMyApprovalContextState, resetApprovalRequestContextState } =
+    useMyApproval();
   const { resetPortfolioTab } = usePortfolioContext();
   const { resetSearchBarContextState } = useSearchBarContext();
   const { resetSidebarState, setSelectedKey, setCollapsed } =
@@ -83,10 +91,20 @@ const Login = () => {
     resetMyApprovalContextState();
     resetPortfolioTab();
     resetSearchBarContextState();
+    resetApprovalRequestContextState();
     resetSidebarState();
-
+    setCurrentRoleIsAdmin(false);
     //Reset LM states
     resetForLineManagerModal();
+
+    //Reset For Compliance Officer
+    resetStateForComplianceOfficer();
+
+    //Reset For HTA
+    resetStateForHeadOfApproval();
+
+    //Reset For HOC
+    resetStateForHeadOfCompliance();
   }, []);
 
   /**
@@ -109,6 +127,8 @@ const Login = () => {
     setDisableClick(true);
     try {
       await login({
+        setUrgentAlert,
+        setCurrentRoleIsAdmin,
         username: values.username,
         password: values.password,
         navigate,
@@ -144,6 +164,7 @@ const Login = () => {
                 name="login-form"
                 onFinish={handleLogin}
                 className={style["login-form"]}
+                // autoComplete="off"
               >
                 {/* 🔑 Username Field */}
                 <Form.Item
@@ -160,6 +181,7 @@ const Login = () => {
                     size="extraLarge"
                     classNames="login-form"
                     autoFocus // 👈 auto-focus on mount
+                    // autoComplete="off" // 🚫 Disable auto-suggest on input
                     onPressEnter={
                       () => form.getFieldInstance("password")?.focus() // 👈 focus password on Enter
                     }
@@ -183,6 +205,7 @@ const Login = () => {
                     error={errors.password}
                     size="extraLarge"
                     classNames="login-form"
+                    // autoComplete="new-password" // ✅ Best for password fields
                     onPressEnter={() => form.submit()} // 👈 submit on Enter
                   />
                 </Form.Item>

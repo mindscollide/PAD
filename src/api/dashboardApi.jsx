@@ -1,3 +1,4 @@
+import { GetUserWebNotificationRequest } from "./notification";
 import { getMessage, handleExpiredSession } from "./utils";
 
 /**
@@ -33,8 +34,9 @@ export const GetUserDashBoardStats = async ({
   callApi,
   setEmployeeBasedBrokersData,
   setAllInstrumentsData,
-  setAddApprovalRequestData,
+  setAssetTypeListingData,
   setGetAllPredefineReasonData,
+  setWebNotificationData,
   showNotification,
   showLoader,
   navigate,
@@ -89,17 +91,30 @@ export const GetUserDashBoardStats = async ({
           navigate,
         });
 
+        //For Web Notification Api response
+        const requestdata = { sRow: 0, eRow: 10 }; // Initial fetch data from API
+        const webNotificationRequest = await GetUserWebNotificationRequest({
+          callApi,
+          showNotification,
+          showLoader,
+          requestdata,
+          navigate,
+        });
+
         if (brokers) {
-          setEmployeeBasedBrokersData(brokers);
+          await setEmployeeBasedBrokersData(brokers);
         }
         if (instrument) {
-          setAllInstrumentsData(instrument);
+          await setAllInstrumentsData(instrument);
         }
         if (addApprovalRequest) {
-          setAddApprovalRequestData(addApprovalRequest);
+          await setAssetTypeListingData(addApprovalRequest);
         }
         if (getPredefineReason) {
-          setGetAllPredefineReasonData(getPredefineReason);
+          await setGetAllPredefineReasonData(getPredefineReason);
+        }
+        if (webNotificationRequest) {
+          await setWebNotificationData(webNotificationRequest);
         }
 
         return userDashBoardStats;

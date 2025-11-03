@@ -1,4 +1,10 @@
-import React, { createContext, useContext, useState } from "react";
+import React, {
+  createContext,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 
 // 1. Create the Context
 export const DashboardContext = createContext();
@@ -41,15 +47,30 @@ export const DashboardProvider = ({ children }) => {
   const [allInstrumentsData, setAllInstrumentsData] = useState([]);
 
   //This state is for the addApproval Request on Approval listing page
-  const [addApprovalRequestData, setAddApprovalRequestData] = useState([]);
+  const [assetTypeListingData, setAssetTypeListingData] = useState([]);
 
   // This state is for the Predefinr Request Reason on Resubmit
   const [getAllPredefineReasonData, setGetAllPredefineReasonData] = useState(
     []
   );
-
+  const [currentRoleIsAdmin, setCurrentRoleIsAdmin] = useState(false);
+  const [roleChanegFlag, setRoleChanegFlag] = useState(false);
+  const currentRoleIsAdminRef = useRef(currentRoleIsAdmin);
   // Main resetDashboardContext State
   // ✅ This will reset all states to initial (inline - no separate function)
+  useEffect(() => {
+    const storedAdminStatus = sessionStorage.getItem("current_role_is_admin");
+    if (storedAdminStatus !== null) {
+      setCurrentRoleIsAdmin(JSON.parse(storedAdminStatus));
+    }
+  }, []);
+
+  useEffect(() => {
+    currentRoleIsAdminRef.current = currentRoleIsAdmin; // keep ref updated with latest tab
+  }, [currentRoleIsAdmin]);
+  // for line manager urgent action required flag
+  const [urgentAlert, setUrgentAlert] = useState(false); // Controls which accordion panels are open
+
   const resetDashboardContextState = () => {
     setDashboardData({
       title: "",
@@ -69,7 +90,7 @@ export const DashboardProvider = ({ children }) => {
 
     setEmployeeBasedBrokersData([]);
     setAllInstrumentsData([]);
-    setAddApprovalRequestData([]);
+    setAssetTypeListingData([]);
     setGetAllPredefineReasonData([]);
   };
 
@@ -82,11 +103,18 @@ export const DashboardProvider = ({ children }) => {
         setEmployeeBasedBrokersData,
         allInstrumentsData,
         setAllInstrumentsData,
-        addApprovalRequestData,
-        setAddApprovalRequestData,
+        assetTypeListingData,
+        setAssetTypeListingData,
         getAllPredefineReasonData,
         setGetAllPredefineReasonData,
         resetDashboardContextState,
+        currentRoleIsAdmin,
+        setCurrentRoleIsAdmin,
+        roleChanegFlag,
+        setRoleChanegFlag,
+        currentRoleIsAdminRef,
+        urgentAlert,
+        setUrgentAlert,
       }}
     >
       {children}

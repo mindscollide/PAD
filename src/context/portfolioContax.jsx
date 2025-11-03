@@ -54,9 +54,9 @@ export const PortfolioProvider = ({ children }) => {
    */
   const [employeePendingApprovalsData, setEmployeePendingApprovalsData] =
     useState({
-      data: [],
-      totalRecords: 0,
-      apiCall: false,
+      pendingApprovalsData: [],
+      totalRecordsDataBase: 0,
+      totalRecordsTable: 0,
     });
 
   /**
@@ -115,6 +115,27 @@ export const PortfolioProvider = ({ children }) => {
     workFlowStatus: {},
   });
 
+  // Head Of Compliance (HOC) view detail data state Start here
+  const [
+    isEscalatedPortfolioHeadOfComplianceViewDetailData,
+    setIsEscalatedPortfolioHeadOfComplianceViewDetailData,
+  ] = useState({
+    details: [],
+    assetTypes: [],
+    hierarchyDetails: [],
+    workFlowStatus: {},
+    tradedWorkFlowRequests: [],
+    ticketUploaded: false,
+    requesterName: "",
+    escalations: [],
+  });
+
+  //To get the selected data by clicking on View Detail of reconcile Transaction
+  const [
+    selectedEscalatedPortfolioHeadOfComplianceData,
+    setSelectedEscalatedPortfolioHeadOfComplianceData,
+  ] = useState(null);
+
   //To get the selected data by clicking on View Detail of reconcile Transaction
   const [
     selectedPortfolioTransactionData,
@@ -144,14 +165,11 @@ export const PortfolioProvider = ({ children }) => {
   const resetPendingApprovalTab = () => {
     setActiveTab("portfolio");
     setEmployeePendingApprovalsData({
-      data: [],
-      totalRecords: 0,
-      apiCall: false,
+      pendingApprovalsData: [],
+      totalRecordsDataBase: 0,
+      totalRecordsTable: 0,
     });
-    setEmployeePendingApprovalsDataMqtt({
-      data: [],
-      mqtt: false,
-    });
+    setEmployeePendingApprovalsDataMqtt(false);
   };
 
   return (
@@ -178,6 +196,12 @@ export const PortfolioProvider = ({ children }) => {
         setReconcilePortfolioViewDetailData,
         selectedPortfolioTransactionData,
         setSelectedPortfolioTransactionData,
+
+        // Head Of Compliance (HOC) States
+        isEscalatedPortfolioHeadOfComplianceViewDetailData,
+        setIsEscalatedPortfolioHeadOfComplianceViewDetailData,
+        selectedEscalatedPortfolioHeadOfComplianceData,
+        setSelectedEscalatedPortfolioHeadOfComplianceData,
       }}
     >
       {children}

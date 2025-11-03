@@ -1,0 +1,19 @@
+.ManageUserMainDiv {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 16px;
+  align-items: "center" !important;
+}
+
+.ManageUserSecondDiv {
+  padding: 0px 10px;
+}
+
+/* Changes active tab underline (ink bar) color */
+.customTabs :global(.ant-tabs-ink-bar) {
+  background-color: #30426a !important; /* Your custom color */
+}
+
+.ExportButtonClass {
+  margin-top: 10px;
+}

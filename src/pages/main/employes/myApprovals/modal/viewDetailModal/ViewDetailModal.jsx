@@ -1,5 +1,5 @@
-import React, { useEffect, useMemo, useRef } from "react";
-import { Col, Row, Tag } from "antd";
+import React, { useMemo } from "react";
+import { Col, Row } from "antd";
 import { useGlobalModal } from "../../../../../../context/GlobalModalContext";
 import { BrokerList, GlobalModal } from "../../../../../../components";
 import styles from "./ViewDetailModal.module.css";
@@ -9,30 +9,17 @@ import CheckIcon from "../../../../../../assets/img/Check.png";
 import EllipsesIcon from "../../../../../../assets/img/Ellipses.png";
 import CrossIcon from "../../../../../../assets/img/Cross.png";
 import copyIcon from "../../../../../../assets/img/copy-dark.png";
-import { useNavigate } from "react-router-dom";
-import { useNotification } from "../../../../../../components/NotificationProvider/NotificationProvider";
-import { useGlobalLoader } from "../../../../../../context/LoaderContext";
-import { useApi } from "../../../../../../context/ApiContext";
-import { GetAllViewDetailsByTradeApprovalID } from "../../../../../../api/myApprovalApi";
 import { useMyApproval } from "../../../../../../context/myApprovalContaxt";
 import { useDashboardContext } from "../../../../../../context/dashboardContaxt";
 import {
   dashBetweenApprovalAssets,
   formatApiDateTime,
   formatNumberWithCommas,
-  formatShowOnlyDate,
-} from "../../../../../../commen/funtions/rejex";
+} from "../../../../../../common/funtions/rejex";
+import { useNotification } from "../../../../../../components/NotificationProvider/NotificationProvider";
+import CopyToClipboard from "../../../../../../hooks/useClipboard";
 
 const ViewDetailModal = () => {
-  const navigate = useNavigate();
-  const hasFetched = useRef(false);
-
-  const { showNotification } = useNotification();
-
-  const { showLoader } = useGlobalLoader();
-
-  const { callApi } = useApi();
-
   // This is Global State for modal which is create in ContextApi
   const {
     isViewDetail,
@@ -42,6 +29,7 @@ const ViewDetailModal = () => {
     setIsConductedTransaction,
     setIsResubmitted,
   } = useGlobalModal();
+  const { showNotification } = useNotification();
 
   // get data from sessionStorage
   const userProfileData = JSON.parse(
@@ -50,20 +38,11 @@ const ViewDetailModal = () => {
   const loggedInUserID = userProfileData?.userID;
 
   //This is the Global state of Context Api
-  const { setViewDetailsModalData, viewDetailsModalData } = useMyApproval();
+  const { viewDetailsModalData } = useMyApproval();
 
-  const { allInstrumentsData, employeeBasedBrokersData } =
-    useDashboardContext();
-  console.log(isViewDetail, "isViewDetail");
+  console.log(viewDetailsModalData, "viewDetailsModalData");
 
-  console.log(viewDetailsModalData, "viewDetailsModalData555");
-
-  console.log(setViewDetailsModalData, "setViewDetailsModalData");
-
-  console.log(employeeBasedBrokersData, "employeeBasedBrokersDataData555");
-
-  console.log("hierarchyDetails:", viewDetailsModalData?.hierarchyDetails);
-  console.log("Type:", typeof viewDetailsModalData?.hierarchyDetails);
+  const { allInstrumentsData } = useDashboardContext();
 
   // Refactor sessionStorage read with useMemo for performance & error handling
   const complianceOfficerDetails = useMemo(() => {
@@ -143,8 +122,6 @@ const ViewDetailModal = () => {
     String(viewDetailsModalData?.workFlowStatus?.workFlowStatusID)
   );
 
-  console.log(statusData, "statusDatastatusData121");
-
   // Extarct and Instrument from viewDetailsModalData context Api
   const instrumentId = Number(viewDetailsModalData?.details?.[0]?.instrumentID);
 
@@ -152,19 +129,6 @@ const ViewDetailModal = () => {
   const selectedInstrument = allInstrumentsData?.find(
     (item) => item.instrumentID === instrumentId
   );
-
-  console.log(selectedInstrument, "selectedInstrument");
-
-  // Extract an brokerName from viewDetailsModalData context Api
-  const details = viewDetailsModalData?.details?.[0];
-  const selectedBrokers = details?.brokers || [];
-
-  // Match that selected broker Id in viewDetailsModalData and match them with employeeBasedBrokersData context State
-  const matchedBrokers = employeeBasedBrokersData.filter(
-    (broker) => selectedBrokers.includes(String(broker.brokerID)) // convert brokerID to string
-  );
-
-  console.log(matchedBrokers, "CheckceeeerrStatusbroker");
 
   // To Show View Comments Modal and Closed Declined Modal
   const onClickViewModal = () => {
@@ -190,11 +154,21 @@ const ViewDetailModal = () => {
   };
 
   //This the Copy Functionality where user can copy email by click on COpyIcon
-  const handleCopyEmail = () => {
+  const handleCopyEmail = async () => {
     const emailToCopy =
       complianceOfficerDetails?.managerEmail || "compliance@horizoncapital.com";
-    navigator.clipboard.writeText(emailToCopy);
-    message.success("Email copied to clipboard!");
+
+    try {
+      await CopyToClipboard(emailToCopy); // ✅ Use your utility function here
+      showNotification({
+        type: "success",
+        title: "Copied",
+        description: "Email copied to clipboard.",
+        placement: "bottomLeft",
+      });
+    } catch (error) {
+      console.error("Email Not Copied:", error);
+    }
   };
 
   return (
@@ -234,8 +208,7 @@ const ViewDetailModal = () => {
                         </label>
                         <label className={styles.viewDetailSubLabels}>
                           <span className={styles.customTag}>
-                            {viewDetailsModalData?.details?.[0]?.assetTypeID ===
-                              "1" && <span>EQ</span>}
+                            {viewDetailsModalData?.assetTypes?.[0]?.shortCode}
                           </span>{" "}
                           {selectedInstrument?.instrumentCode}
                         </label>
@@ -295,8 +268,7 @@ const ViewDetailModal = () => {
                         <>
                           <span className={styles.customTag}>
                             {/* Extract an assetTypeID id which is 1 then show Equity(EQ) */}
-                            {viewDetailsModalData?.details?.[0]?.assetTypeID ===
-                              "1" && <span>EQ</span>}
+                            {viewDetailsModalData?.assetTypes?.[0]?.shortCode}
                           </span>
                           <span
                             className={styles.viewDetailSubLabelsForInstrument}
@@ -328,7 +300,9 @@ const ViewDetailModal = () => {
                           Approval ID
                         </label>
                         <label className={styles.viewDetailSubLabels}>
-                          REQ-001
+                          {dashBetweenApprovalAssets(
+                            viewDetailsModalData?.details?.[0]?.tradeApprovalID
+                          )}
                         </label>
                       </div>
                     </Col>
@@ -348,7 +322,12 @@ const ViewDetailModal = () => {
                           Tracking ID
                         </label>
                         <label className={styles.viewDetailSubLabels}>
-                          <u>REQ-002</u>
+                          <u>
+                            {dashBetweenApprovalAssets(
+                              viewDetailsModalData?.details?.[0]
+                                ?.resubmitRequestTrackingID
+                            )}
+                          </u>
                         </label>
                       </div>
                     </Col>
@@ -452,8 +431,7 @@ const ViewDetailModal = () => {
                       Asset Class
                     </label>
                     <label className={styles.viewDetailSubLabels}>
-                      {viewDetailsModalData?.details?.[0]?.assetTypeID ===
-                        "1" && <span>Equity</span>}
+                      {viewDetailsModalData?.assetTypes?.[0]?.title}
                     </label>
                   </div>
                 </Col>
@@ -580,6 +558,9 @@ const ViewDetailModal = () => {
                                   case 2:
                                     iconSrc = CheckIcon;
                                     break;
+                                  case 3:
+                                    iconSrc = CrossIcon;
+                                    break;
                                   default:
                                     iconSrc = EllipsesIcon;
                                 }
@@ -661,6 +642,7 @@ const ViewDetailModal = () => {
                         />
                         <CustomButton
                           text={"Close"}
+                          onClick={onClickPendingClose}
                           className="big-light-button"
                         />
                       </div>
@@ -671,19 +653,14 @@ const ViewDetailModal = () => {
                       className="big-light-button"
                       onClick={onClickPendingClose}
                     />
-                  ) : statusData.label === "Resubmitted" ? (
+                  ) : statusData.label === "Resubmitted" ||
+                    statusData.label === "Traded" ? (
                     <CustomButton
                       text={"Close"}
                       className="big-light-button"
                       onClick={onClickPendingClose}
                     />
-                  ) : (
-                    <CustomButton
-                      text={"Close"}
-                      className="big-light-button"
-                      onClick={onClickViewModal}
-                    />
-                  )}
+                  ) : null}
                 </Col>
               </Row>
             </div>

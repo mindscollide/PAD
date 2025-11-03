@@ -10,6 +10,7 @@ export const refreshToken = async (
 
     const refreshToken = sessionStorage.getItem("refresh_token");
     const token = sessionStorage.getItem("auth_token");
+    const lastLoggedInDateTime = JSON.parse(sessionStorage.getItem("lastLoggedInDateTime"));
 
     const res = await callApi({
       requestMethod: import.meta.env.VITE_REFRESH_TOKEN_REQUEST_METHOD,
@@ -17,7 +18,7 @@ export const refreshToken = async (
       requestData: {
         RefreshToken: refreshToken,
         Token: token,
-        LastLoginDateTime: new Date().toISOString(),
+        LastLoginDateTime: lastLoggedInDateTime,
       },
       navigate,
       withAuth: false,

@@ -5,6 +5,7 @@ import styles from "./filter.module.css";
 import { Button, CheckBox } from "../..";
 import { Row, Col, Divider } from "antd";
 import {
+  adminBrokersStatus,
   apiCallStatus,
   emaStatusOptions,
   emtStatusOptions,
@@ -18,7 +19,7 @@ import { useApi } from "../../../context/ApiContext";
 import { useGlobalLoader } from "../../../context/LoaderContext";
 import { useNotification } from "../../../components/NotificationProvider/NotificationProvider";
 import { useMyApproval } from "../../../context/myApprovalContaxt";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useDashboardContext } from "../../../context/dashboardContaxt";
 import { useTransaction } from "../../../context/myTransaction";
 
@@ -51,9 +52,8 @@ const StatusFilterDropdown = ({
   setTempSelected,
 }) => {
   const navigate = useNavigate();
-  const location = useLocation();
   const { selectedKey } = useSidebarContext();
-  const { addApprovalRequestData } = useDashboardContext();
+  const { assetTypeListingData } = useDashboardContext();
   const { callApi } = useApi();
   const { showLoader } = useGlobalLoader();
   const { showNotification } = useNotification();
@@ -82,92 +82,85 @@ const StatusFilterDropdown = ({
   /**
    * Updates available filter options based on sidebar selection.
    */
+
   useEffect(() => {
     switch (selectedKey) {
       case "1":
+      case "6":
         setFilterOptions(emaStatusOptions);
-        break;
-      case "2":
-        // setFilterOptions(emaStatusOptions);
-        setFilterOptions(emtStatusOptions);
         break;
       case "4":
         setFilterOptions(emtStatusOptionsForPendingApproval);
         break;
-      case "6":
-        setFilterOptions(emaStatusOptions);
-        break;
-      case "9":
-        setFilterOptions(emtStatusOptions);
-        break;
       case "12":
         setFilterOptions(escalated);
         break;
+      case "2":
+      case "9":
       case "15":
         setFilterOptions(emtStatusOptions);
+        break;
+      case "19":
+      case "18":
+        console.log("adminIntrumentListSearch");
+        setFilterOptions(adminBrokersStatus);
         break;
 
       default:
         setFilterOptions([]);
     }
   }, [selectedKey]);
-  console.log("selectedKey", selectedKey);
+  console.log("adminIntrumentListSearch", state);
+
   /**
    * Handles confirmation of selected statuses.
    * Updates parent state and triggers API call.
    */
   const handleOk = async () => {
-    // we handle employe profolio from here
-    if (selectedKey === "4") {
-      setState((prev) => ({
-        ...prev,
-        status: tempSelected,
-        pageNumber: 0,
-        filterTrigger: true,
-      }));
-    } else if (selectedKey === "9") {
-      setState((prev) => ({
-        ...prev,
-        status: tempSelected,
-        pageNumber: 0,
-        filterTrigger: true,
-      }));
-    } else if (selectedKey === "12") {
-      setState((prev) => ({
-        ...prev,
-        status: tempSelected,
-        pageNumber: 0,
-        filterTrigger: true,
-      }));
-    } else if (selectedKey === "15") {
-      setState((prev) => ({
-        ...prev,
-        status: tempSelected,
-        pageNumber: 0,
-        filterTrigger: true,
-      }));
-    } else {
-      setState((prev) => ({
-        ...prev,
-        status: tempSelected,
-        pageSize: 10, // Pagination: size of page
-        pageNumber: 0,
-      }));
+    switch (selectedKey) {
+      case "1":
+      case "2":
+      case "4":
+      case "6":
+      case "9":
+      case "12":
+      case "15":
+      case "19":
+      case "18":
+        console.log("adminIntrumentListSearch");
+        setState((prev) => ({
+          ...prev,
+          status: tempSelected,
+          pageNumber: 0,
+          filterTrigger: true,
+        }));
+        break;
 
-      await apiCallStatus({
-        selectedKey,
-        newdata: tempSelected,
-        state,
-        addApprovalRequestData,
-        callApi,
-        showNotification,
-        showLoader,
-        navigate,
-        setIsEmployeeMyApproval,
-        setEmployeeTransactionsData,
-        setLineManagerApproval,
-      });
+      default:
+        setState((prev) => ({
+          ...prev,
+          status: tempSelected,
+          pageSize: 10, // Pagination: size of page
+          pageNumber: 0,
+        }));
+
+        await apiCallStatus({
+          selectedKey,
+          newdata: tempSelected,
+          state,
+          assetTypeListingData,
+          callApi,
+          showNotification,
+          showLoader,
+          navigate,
+          setIsEmployeeMyApproval,
+          setEmployeeTransactionsData,
+          setLineManagerApproval,
+        });
+        break;
     }
+
+    // 🔹 Common cleanup
     setOpenState(false);
     confirm(); // Close dropdown
   };
@@ -177,57 +170,50 @@ const StatusFilterDropdown = ({
    * Also triggers API call with empty filter.
    */
   const handleReset = async () => {
-    // we handle employe profolio from here
-    if (selectedKey === "4") {
-      setState((prev) => ({
-        ...prev,
-        status: [],
-        pageNumber: 0,
-        filterTrigger: true,
-      }));
-    } else if (selectedKey === "9") {
-      setState((prev) => ({
-        ...prev,
-        status: [],
-        pageNumber: 0,
-        filterTrigger: true,
-      }));
-    } else if (selectedKey === "12") {
-      setState((prev) => ({
-        ...prev,
-        status: [],
-        pageNumber: 0,
-        filterTrigger: true,
-      }));
-    } else if (selectedKey === "15") {
-      setState((prev) => ({
-        ...prev,
-        status: [],
-        pageNumber: 0,
-        filterTrigger: true,
-      }));
-    } else {
-      await apiCallStatus({
-        selectedKey,
-        newdata: [],
-        state,
-        addApprovalRequestData,
-        callApi,
-        showNotification,
-        showLoader,
-        navigate,
-        setIsEmployeeMyApproval,
-        setEmployeeTransactionsData,
-        setLineManagerApproval,
-      });
+    switch (selectedKey) {
+      case "1":
+      case "2":
+      case "4":
+      case "6":
+      case "9":
+      case "12":
+      case "15":
+      case "18":
+      case "19":
+        console.log("adminIntrumentListSearch");
+        setState((prev) => ({
+          ...prev,
+          status: [],
+          pageNumber: 0,
+          filterTrigger: true,
+        }));
+        break;
 
-      setState((prev) => ({
-        ...prev,
-        status: [],
-        pageSize: 10,
-        pageNumber: 0,
-      }));
+      default:
+        await apiCallStatus({
+          selectedKey,
+          newdata: [],
+          state,
+          assetTypeListingData,
+          callApi,
+          showNotification,
+          showLoader,
+          navigate,
+          setIsEmployeeMyApproval,
+          setEmployeeTransactionsData,
+          setLineManagerApproval,
+        });
+
+        setState((prev) => ({
+          ...prev,
+          status: [],
+          pageSize: 10,
+          pageNumber: 0,
+        }));
+        break;
     }
+
+    // 🔹 Common cleanup
     setTempSelected([]);
     clearFilters?.();
     setOpenState(false);

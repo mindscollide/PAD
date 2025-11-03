@@ -18,6 +18,7 @@ import ReconcileIcon from "../../assets/img/reconcile-icon.png";
 import ReportsIcon from "../../assets/img/reports-icon.png";
 import RequestPendingIcon from "../../assets/img/request-pendinding-icon.png";
 import TransactionsIcon from "../../assets/img/transactions-icon.png";
+import PoliciesTabIcon from "../../assets/img/Group-creation-cancle.png";
 
 const { Text } = Typography;
 
@@ -38,6 +39,8 @@ const iconComponents = {
   audit: AuditIcon,
   users: UsersIcon,
   underdevelopment: HistoryRecordIcon,
+  policiestab: PoliciesTabIcon,
+  closingUpcoming: HistoryRecordIcon,
 };
 
 /**
@@ -57,6 +60,8 @@ const defaultMessages = {
   audit: "No Audit Records",
   users: "No Users Found",
   underdevelopment: "Currently under development",
+  policiestab: "No Policies Found",
+  closingUpcoming: "Upcoming Instrument",
 };
 
 /**

@@ -1,5 +1,5 @@
 export { default as Login } from "./login/login";
-export { default as Home } from "./main/mainHome/home";
+export { default as Home } from "./mainHome/home";
 export { default as Faqs } from "./faqs/faqs";
 export { default as EmployeApproval } from "./main/employes/myApprovals/approval";
 export { default as EmployeProtfolio } from "./main/employes/portfolios/index";
@@ -14,3 +14,7 @@ export { default as ApprovalRequest } from "./main/lineManager/approvalRequest/a
 // Export For compliance officer
 export { default as ReconcileIndex } from "./main/complianceOfficer/reconcile/index";
 export { default as EscalatedTransactionsIndex } from "./main/headOfComplianceOffice/escalatedVerifications/index";
+
+export { default as Brokers } from "./adminMain/brokers/Broker";
+export { default as Instruments } from "./adminMain/instruments/Instruments";
+export { default as GroupsAndPolicy } from "./adminMain/group&Policy/groupsAndpolicy";

@@ -51,6 +51,9 @@ export const GlobalModalProvider = ({ children }) => {
   const [isViewTicketTransactionModal, setIsViewTicketTransactionModal] =
     useState(false);
 
+  // Set assetTypeId when I click on addtrade approval dropdown
+  const [selectedAssetTypeId, setSelectedAssetTypeId] = useState(null);
+
   /**
    * Global States For Employee Modals End here
    */
@@ -131,7 +134,7 @@ export const GlobalModalProvider = ({ children }) => {
    */
 
   /**
-   * Global States For Head Od Approval (HTA) Modals Start here
+   * Global States For Head Of Approval (HTA) Modals Start here
    */
 
   // To show Data inView Detail Modal
@@ -154,6 +157,76 @@ export const GlobalModalProvider = ({ children }) => {
    * Global States For Head Od Approval (HTA) Modals End here
    */
 
+  /**
+   * Global States For Head Of Compliance (HOC) Modals Start here
+   */
+
+  // To show View Detail Modal of HOC in Escalated Verification
+  const [
+    viewDetailHeadOfComplianceEscalated,
+    setViewDetailHeadOfComplianceEscalated,
+  ] = useState(false);
+
+  // To show View Detail Modal of HOC in Escalated Portfolio
+  const [
+    viewDetailHeadOfComplianceEscalatedPortfolio,
+    setViewDetailHeadOfComplianceEscalatedPortfolio,
+  ] = useState(false);
+
+  // To set Selected Data by click on View Detail Button of HOC in Escalated Verification
+  const [
+    isSelectedViewDetailOfHeadOfComplianceData,
+    setIsSelectedViewDetailOfHeadOfComplianceData,
+  ] = useState(null);
+
+  /**
+   * Global States For Head Of Compliance (HOC) Modals End here
+   */
+
+  /**
+   * Global States For Admin Role Modals Start here
+   */
+
+  const [addNewBrokerModal, setAddNewBrokerModal] = useState(false);
+  const [editBrokerModal, setEditBrokerModal] = useState(false);
+
+  const [editModalData, setEditModalData] = useState(null);
+
+  const [addBrokerConfirmationModal, setAddBrokerConfirmationModal] =
+    useState(false);
+
+  // For Edit Instrument modal
+  const [editInstrumentModal, setEditInstrumentModal] = useState(false);
+
+  //For Delete Edit Instrument Modal
+  const [deleteConfirmationEditModal, setDeleteConfirmationEditModal] =
+    useState(false);
+
+  //For Delete Edit Instrument Data State
+  const [deleteEditModalData, setDeleteEditModalData] = useState(null);
+
+  // For Active Tabs In Manage Users in Admin
+  const [activeManageUserTab, setActiveManageUserTab] = useState("1");
+
+  // For manage user View Detail modal
+  const [viewDetailManageUser, setViewDetailManageUser] = useState(false);
+
+  // For manage user Roles And Policies modal
+  const [rolesAndPoliciesManageUser, setRolesAndPoliciesManageUser] =
+    useState(false);
+
+  // For Edit ROle and Policies Modal
+  const [editrolesAndPoliciesUser, setEditrolesAndPoliciesUser] =
+    useState(false);
+
+  // For unSaved Changes Modal
+  const [unSavedChangesPoliciesModal, setUnSavedChangesPoliciesModal] =
+    useState(false);
+
+  /**
+   * Global States For Admin Role Modals End here
+   */
+
   //  Main resetDashboardContext  reset State to call in dashboard
   // The reset function — inline resetting all states
   const resetModalContextState = () => {
@@ -163,6 +236,10 @@ export const GlobalModalProvider = ({ children }) => {
     setIsViewDetail(false);
     setSelectedViewDetail(null);
     setIsViewComments(false);
+    setViewDetailTransactionModal(false);
+    setViewCommentTransactionModal(false);
+    setSelectedViewDetailOfTransaction(null);
+    setIsViewTicketTransactionModal(false);
     setIsResubmitted(false);
     setResubmitIntimation(false);
     setIsConductedTransaction(false);
@@ -180,6 +257,30 @@ export const GlobalModalProvider = ({ children }) => {
     setViewDetailLineManagerModal(false);
     setNoteGlobalModal({ visible: false, action: null });
     setApprovedGlobalModal(false);
+  };
+
+  const resetStateForComplianceOfficer = () => {
+    setViewDetailPortfolioTransaction(false);
+    setCompliantApproveModal(false);
+    setNonCompliantDeclineModal(false);
+    setViewCommentReconcileModal(false);
+    setUploadattAchmentsFiles([]);
+    setViewCommentPortfolioModal(false);
+    setCompliantPortfolioApproveModal(false);
+    setNonCompliantPortfolioDeclineModal(false);
+  };
+
+  const resetStateForHeadOfApproval = () => {
+    setViewDetailsHeadOfApprovalModal(false);
+    setIsSelectedViewDetailHeadOfApproval(null);
+    setHeadApprovalNoteModal(false);
+    setHeadDeclineNoteModal(false);
+  };
+
+  const resetStateForHeadOfCompliance = () => {
+    setViewDetailHeadOfComplianceEscalated(false);
+    setIsSelectedViewDetailOfHeadOfComplianceData(null);
+    setViewDetailHeadOfComplianceEscalatedPortfolio(false);
   };
 
   return (
@@ -211,6 +312,9 @@ export const GlobalModalProvider = ({ children }) => {
         setViewCommentTransactionModal,
         isViewTicketTransactionModal,
         setIsViewTicketTransactionModal,
+
+        selectedAssetTypeId,
+        setSelectedAssetTypeId,
 
         /**
          * Global States For Line Manager Modals
@@ -262,6 +366,8 @@ export const GlobalModalProvider = ({ children }) => {
         nonCompliantPortfolioDeclineModal,
         setNonCompliantPortfolioDeclineModal,
 
+        resetStateForComplianceOfficer,
+
         /**
          * Global States For Compliance Officer Modals End here
          */
@@ -284,8 +390,70 @@ export const GlobalModalProvider = ({ children }) => {
         headDeclineNoteModal,
         setHeadDeclineNoteModal,
 
+        resetStateForHeadOfApproval,
+
         /**
          * Global States For Head Of Approval Modals End here
+         */
+
+        /**
+         * Global States For Head Of Compliance Officer Modals Start here
+         */
+        viewDetailHeadOfComplianceEscalated,
+        setViewDetailHeadOfComplianceEscalated,
+
+        isSelectedViewDetailOfHeadOfComplianceData,
+        setIsSelectedViewDetailOfHeadOfComplianceData,
+
+        viewDetailHeadOfComplianceEscalatedPortfolio,
+        setViewDetailHeadOfComplianceEscalatedPortfolio,
+
+        resetStateForHeadOfCompliance,
+
+        /**
+         * Global States For Head Of Compliance Officer Modals End here
+         */
+
+        /**
+         * Global States For Admin Role Modals Start here
+         */
+
+        addNewBrokerModal,
+        setAddNewBrokerModal,
+
+        editBrokerModal,
+        setEditBrokerModal,
+
+        editModalData,
+        setEditModalData,
+
+        addBrokerConfirmationModal,
+        setAddBrokerConfirmationModal,
+
+        // For Edit Instrument
+        editInstrumentModal,
+        setEditInstrumentModal,
+
+        deleteEditModalData,
+        setDeleteEditModalData,
+
+        deleteConfirmationEditModal,
+        setDeleteConfirmationEditModal,
+
+        // For manage user
+        activeManageUserTab,
+        setActiveManageUserTab,
+        viewDetailManageUser,
+        setViewDetailManageUser,
+        rolesAndPoliciesManageUser,
+        setRolesAndPoliciesManageUser,
+        editrolesAndPoliciesUser,
+        setEditrolesAndPoliciesUser,
+        unSavedChangesPoliciesModal,
+        setUnSavedChangesPoliciesModal,
+
+        /**
+         * Global States For Admin Role Modals End here
          */
 
         resetModalContextState,

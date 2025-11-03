@@ -4,6 +4,9 @@ import ApprovalsIcon from "../../assets/img/approval-icon.png";
 import Restricted from "../../assets/img/Restricted.png";
 import DelcinedImg from "../../assets/img/DelcinedImg.png";
 import ApprovedImg from "../../assets/img/ApprovedImg.png";
+import AddBroker from "../../assets/img/AddBroker.png";
+import GropusICanclImg from "../../assets/img/Group-creation-cancle.png";
+import GropusISucessImg from "../../assets/img/Group-created.png";
 
 const config = {
   Submitted: {
@@ -63,6 +66,44 @@ const config = {
     subheading: "You have declined this request.",
     image: DelcinedImg,
   },
+  addBroker: {
+    heading: "Great!",
+    subheading: "The broker has been added successfully.",
+    image: AddBroker,
+  },
+  Cancelgroupcreation: {
+    heading: "Cancel Group Creation",
+    subheading:
+      "If you cancel now, all selected policies and entered details for this policy group will be lost. Are you sure you want to cancel?",
+    image: GropusICanclImg,
+  },
+  GroupCreatedSuccess: {
+    heading: "Created!",
+    subheading: "Your group has been created successfully.",
+    image: GropusISucessImg,
+  },
+  GroupUpdateSuccess: {
+    heading: "Updated!",
+    subheading: "Your group has been updated successfully.",
+    image: GropusISucessImg,
+  },
+  editDelete: {
+    heading: "",
+    subheading: "Do you want to delete the closing period?",
+    image: null,
+  },
+
+  unSaveChanges: {
+    heading: "Unsaved Changes",
+    subheading: (
+      <>
+        You have unsaved changes. Are you sure you want to leave without saving?{" "}
+        <br />
+        All unsaved changes will be lost.
+      </>
+    ),
+    image: null,
+  },
 };
 
 const ModalImgStates = ({
@@ -80,7 +121,7 @@ const ModalImgStates = ({
 
   return (
     <div className={`${styles.container} ${containerClassName}`} style={style}>
-      <img draggable={false} src={image} alt={type} />
+      {image && <img draggable={false} src={image} alt={type} />}
       <div className={`${styles.heading} ${headingClassName}`}>{heading}</div>
       <div className={`${styles.subheading} ${subheadingClassName}`}>
         {subheading}

@@ -3,14 +3,15 @@
 import React, { useEffect, useState, useCallback, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 
-// 📦 Third-party imports
-import moment from "moment";
-
 // 🔹 Component imports
 import BorderlessTable from "../../../../../components/tables/borderlessTable/borderlessTable";
 
 // 🔹 Utility imports
-import { getBorderlessTableColumns, mapToTableRows } from "./util";
+import {
+  buildApiRequest,
+  getBorderlessTableColumns,
+  mapToTableRows,
+} from "./util";
 import { approvalStatusMap } from "../../../../../components/tables/borderlessTable/utill";
 
 // 🔹 Context imports
@@ -23,36 +24,22 @@ import { useGlobalModal } from "../../../../../context/GlobalModalContext";
 
 // 🔹 Hook imports
 import { useNotification } from "../../../../../components/NotificationProvider/NotificationProvider";
-import { useTableScrollBottom } from "../../../employes/myApprovals/utill";
 
 // 🔹 API imports
-import { SearchEmployeePendingUploadedPortFolio } from "../../../../../api/protFolioApi";
-import { GetAllTransactionViewDetails } from "../../../../../api/myTransactionsApi";
-import { SearchHeadOfComplianceEscalatedTransactionsAPI } from "../../../../../api/reconsile";
+import {
+  GetAllComplianceOfficerReconcileTransactionAndPortfolioRequest,
+  SearchHeadOfComplianceEscalatedTransactionsAPI,
+} from "../../../../../api/reconsile";
 
 // 🔹 Helper imports
-import {
-  mapBuySellToIds,
-  mapStatusToIds,
-} from "../../../../../components/dropdowns/filters/utils";
-import { toYYMMDD } from "../../../../../commen/funtions/rejex";
-
-// 🔹 Modal imports
-import ViewDetailReconcileTransaction from "./modals/viewDetailReconcileTransaction.jsx/ViewDetailReconcileTransaction";
-
-// =============================================================================
-// 🎯 CONSTANTS & CONFIGURATION
-// =============================================================================
-
-/**
- * Configuration constants for the component
- */
-const COMPONENT_CONFIG = {
-  ASSET_TYPE: "Equities",
-  DEFAULT_PAGE_SIZE: 10,
-  TABLE_SCROLL_Y: 550,
-  TABLE_CLASS_NAME: "border-less-table-blue",
-};
+import ViewDetailHeadOfComplianceReconcileTransaction from "./modals/viewDetailHeadOfComplianceReconcileTransactions/ViewDetailHeadOfComplianceReconcileTransaction";
+import UploadHeadOfComplianceTicketModal from "./modals/uploadHeadOfComplianceTicketModal/UploadHeadOfComplianceTicketModal";
+import NoteHeadOfComplianceModal from "./modals/noteHeadOfComplianceModal/NoteHeadOfComplianceModal";
+import ApproveHeadOfComplianceModal from "./modals/approveHeadOfComplianceModal/ApproveHeadOfComplianceModal";
+import DeclinedHeadOfComplianceModal from "./modals/declinedHeadOfComplianceModal/DeclinedHeadOfComplianceModal";
+import ViewTicketEscalatedModal from "./modals/viewTicketEscalatedModal/ViewTicketEscalatedModal";
+import { useTableScrollBottom } from "../../../../../common/funtions/scroll";
+import { getSafeAssetTypeData } from "../../../../../common/funtions/assetTypesList";
 
 // =============================================================================
 // 🎯 MAIN COMPONENT
@@ -69,8 +56,18 @@ const COMPONENT_CONFIG = {
  * @component
  * @returns {JSX.Element} Rendered component with transaction table and modals
  */
-const EscalatedTransactionVerifications = () => {
+const EscalatedTransactionVerifications = ({ activeFilters }) => {
   const navigate = useNavigate();
+  // ===========================================================================
+  // 🎯 STATE MANAGEMENT
+  // ===========================================================================
+
+  const [sortedInfo, setSortedInfo] = useState({});
+  const [loadingMore, setLoadingMore] = useState(false);
+
+  // Prevent duplicate API calls in StrictMode
+  const didFetchRef = useRef(false);
+  const tableScrollHCAEcalatedPortfolio = useRef(null);
 
   // ===========================================================================
   // 🎯 HOOKS & CONTEXTS
@@ -80,8 +77,17 @@ const EscalatedTransactionVerifications = () => {
   const { callApi } = useApi();
   const { showNotification } = useNotification();
   const { showLoader } = useGlobalLoader();
-  const { viewDetailReconcileTransaction } = useGlobalModal();
-  const { addApprovalRequestData } = useDashboardContext();
+  const {
+    viewDetailHeadOfComplianceEscalated,
+    setViewDetailHeadOfComplianceEscalated,
+    uploadComplianceModal,
+    noteGlobalModal,
+    compliantApproveModal,
+    nonCompliantDeclineModal,
+    isViewTicketTransactionModal,
+  } = useGlobalModal();
+  const { assetTypeListingData, setAssetTypeListingData } =
+    useDashboardContext();
 
   // Search & Filter Contexts
   const {
@@ -96,19 +102,9 @@ const EscalatedTransactionVerifications = () => {
     headOfComplianceApprovalEscalatedVerificationsData,
     setHeadOfComplianceApprovalEscalatedVerificationsMqtt,
     headOfComplianceApprovalEscalatedVerificationsMqtt,
-    setReconcileTransactionViewDetailData,
+    setIsEscalatedHeadOfComplianceViewDetailData,
   } = useReconcileContext();
 
-  // ===========================================================================
-  // 🎯 STATE MANAGEMENT
-  // ===========================================================================
-
-  const [sortedInfo, setSortedInfo] = useState({});
-  const [tableData, setTableData] = useState({ rows: [], totalRecords: 0 });
-  const [loadingMore, setLoadingMore] = useState(false);
-
-  // Prevent duplicate API calls in StrictMode
-  const didFetchRef = useRef(false);
   // ===========================================================================
   // 🎯 API FUNCTIONS
   // ===========================================================================
@@ -118,20 +114,25 @@ const EscalatedTransactionVerifications = () => {
    *
    * @param {string} workFlowID - The workflow ID of the transaction to view
    */
-  const handleViewDetailsForReconcileTransaction = async (workFlowID) => {
+  const handleViewDetailsHeadOfComplianceForReconcileTransaction = async (
+    workFlowID
+  ) => {
+    console.log("handleViewDetailsHeadOfComplianceForReconcileTransaction");
     await showLoader(true);
     const requestdata = { TradeApprovalID: workFlowID };
 
-    const responseData = await GetAllTransactionViewDetails({
-      callApi,
-      showNotification,
-      showLoader,
-      requestdata,
-      navigate,
-    });
+    const responseData =
+      await GetAllComplianceOfficerReconcileTransactionAndPortfolioRequest({
+        callApi,
+        showNotification,
+        showLoader,
+        requestdata,
+        navigate,
+      });
 
     if (responseData) {
-      setReconcileTransactionViewDetailData(responseData);
+      setIsEscalatedHeadOfComplianceViewDetailData(responseData);
+      setViewDetailHeadOfComplianceEscalated(true);
     }
   };
   // ===========================================================================
@@ -146,66 +147,8 @@ const EscalatedTransactionVerifications = () => {
     sortedInfo,
     headOfComplianceApprovalEscalatedVerificationsSearch,
     setHeadOfComplianceApprovalEscalatedVerificationsSearch,
-    handleViewDetailsForReconcileTransaction,
+    onViewDetail: handleViewDetailsHeadOfComplianceForReconcileTransaction,
   });
-
-  // ===========================================================================
-  // 🎯 UTILITY FUNCTIONS
-  // ===========================================================================
-
-  /**
-   * Builds API request payload from search/filter state
-   *
-   * @param {Object} searchState - Current search and filter state
-   * @returns {Object} Formatted request payload for API
-   */
-  const buildPortfolioRequest = (searchState = {}) => {
-    const RequestDateFrom = searchState.requestDateFrom
-      ? toYYMMDD(searchState.requestDateFrom)
-      : "";
-    const RequestDateTo = searchState.requestDateTo
-      ? toYYMMDD(searchState.requestDateTo)
-      : "";
-    const EscalatedDateFrom = searchState.escalatedDateFrom
-      ? toYYMMDD(searchState.escalatedDateFrom)
-      : "";
-    const EscalatedDateTo = searchState.escalatedDateTo
-      ? toYYMMDD(searchState.escalatedDateTo)
-      : "";
-
-    return {
-      RequesterName: searchState.requesterName || "",
-      InstrumentName:
-        searchState.mainInstrumentName || searchState.instrumentName || "",
-      Quantity: searchState.quantity ? Number(searchState.quantity) : 0,
-      RequestDateFrom: RequestDateFrom,
-      RequestDateTo: RequestDateTo,
-      EscalatedDateFrom: EscalatedDateFrom,
-      EscalatedDateTo: EscalatedDateTo,
-      StatusIds: mapStatusToIds(searchState.status)||[],
-      TypeIds:
-        mapBuySellToIds(searchState.type, addApprovalRequestData?.Equities) ||
-        [],
-
-      PageNumber: Number(searchState.pageNumber) || 0,
-      Length:
-        Number(searchState.pageSize) || 10,
-    };
-  };
-
-  /**
-   * Merges new rows into existing table data, ensuring no duplicates
-   *
-   * @param {Array} prevRows - Previous table rows
-   * @param {Array} newRows - New rows to merge
-   * @param {boolean} replace - Whether to replace existing rows
-   * @returns {Array} Merged rows array
-   */
-  const mergeRows = (prevRows, newRows, replace = false) => {
-    if (replace) return newRows;
-    const ids = new Set(prevRows.map((r) => r.key));
-    return [...prevRows, ...newRows.filter((r) => !ids.has(r.key))];
-  };
 
   // ===========================================================================
   // 🎯 DATA FETCHING FUNCTIONS
@@ -218,11 +161,11 @@ const EscalatedTransactionVerifications = () => {
    * @param {boolean} replace - Whether to replace existing data
    * @param {boolean} loader - Whether to show loader during fetch
    */
-  const fetchPendingApprovals = useCallback(
-    async (requestData, replace = false, loader = false) => {
+  const fetchApiCall = useCallback(
+    async (requestData, replace = false, showLoaderFlag = true) => {
       if (!requestData || typeof requestData !== "object") return;
 
-      if (!loader) showLoader(true);
+      if (showLoaderFlag) showLoader(true);
 
       try {
         const res = await SearchHeadOfComplianceEscalatedTransactionsAPI({
@@ -233,24 +176,47 @@ const EscalatedTransactionVerifications = () => {
           navigate,
         });
 
-        console.log("fetchPendingApprovals API Response:", res);
+        // ✅ Always get the freshest version (from memory or session)
+        const currentAssetTypeData = getSafeAssetTypeData(
+          assetTypeListingData,
+          setAssetTypeListingData
+        );
 
-        const transactions = Array.isArray(res?.transactions)
+        const escalatedVerification = Array.isArray(res?.transactions)
           ? res.transactions
           : [];
 
         const mapped = mapToTableRows(
-          addApprovalRequestData?.Equities,
-          transactions
+          currentAssetTypeData?.Equities,
+          escalatedVerification
         );
 
-        console.log("Mapped table data:", mapped);
+        setHeadOfComplianceApprovalEscalatedVerificationsData((prev) => ({
+          escalatedVerification: replace
+            ? mapped
+            : [...(prev?.escalatedPortfolio || []), ...mapped],
+          // this is for to run lazy loading its data comming from database of total data in db
+          totalRecordsDataBase: res.totalRecords,
+          // this is for to know how mush dta currently fetch from  db
+          totalRecordsTable: replace
+            ? mapped.length
+            : headOfComplianceApprovalEscalatedVerificationsData.totalRecordsTable +
+              mapped.length,
+        }));
 
-        setHeadOfComplianceApprovalEscalatedVerificationsData({
-          data: mapped,
-          totalRecords: res?.totalRecords ?? mapped.length,
-          Apicall: true,
-          replace,
+        setHeadOfComplianceApprovalEscalatedVerificationsSearch((prev) => {
+          const next = {
+            ...prev,
+            pageNumber: replace
+              ? mapped.length
+              : prev.pageNumber + mapped.length,
+          };
+          // this is for check if filter value get true only on that it will false
+          if (prev.filterTrigger) {
+            next.filterTrigger = false;
+          }
+
+          return next;
         });
       } catch (error) {
         console.error("❌ Error fetching pending approvals:", error);
@@ -259,10 +225,10 @@ const EscalatedTransactionVerifications = () => {
           message: "Failed to fetch transactions",
         });
       } finally {
-        if (!loader) showLoader(false);
+        if (showLoaderFlag) showLoader(false);
       }
     },
-    [callApi, showNotification, showLoader, navigate, addApprovalRequestData]
+    [callApi, showNotification, showLoader, navigate, assetTypeListingData]
   );
 
   // ===========================================================================
@@ -270,56 +236,19 @@ const EscalatedTransactionVerifications = () => {
   // ===========================================================================
 
   /**
-   * Sync global transaction data to local table state
-   */
-  useEffect(() => {
-    if (!headOfComplianceApprovalEscalatedVerificationsData?.Apicall) return;
-
-    setTableData((prev) => ({
-      rows: mergeRows(
-        prev.rows || [],
-        headOfComplianceApprovalEscalatedVerificationsData.data,
-        headOfComplianceApprovalEscalatedVerificationsData.replace
-      ),
-      totalRecords:
-        headOfComplianceApprovalEscalatedVerificationsData.totalRecords || 0,
-    }));
-
-    // Sync pagination info with search context
-    setHeadOfComplianceApprovalEscalatedVerificationsSearch((prev) => ({
-      ...prev,
-      totalRecords:
-        headOfComplianceApprovalEscalatedVerificationsData.totalRecords ??
-        headOfComplianceApprovalEscalatedVerificationsData.data.length,
-      pageNumber: headOfComplianceApprovalEscalatedVerificationsData.replace
-        ? COMPONENT_CONFIG.DEFAULT_PAGE_SIZE
-        : prev.pageNumber,
-    }));
-
-    // Reset API trigger flag
-    setHeadOfComplianceApprovalEscalatedVerificationsData((prev) => ({
-      ...prev,
-      Apicall: false,
-    }));
-  }, [headOfComplianceApprovalEscalatedVerificationsData?.Apicall]);
-
-  /**
    * Handle real-time MQTT data updates
    */
   useEffect(() => {
     if (headOfComplianceApprovalEscalatedVerificationsMqtt) {
-      const requestData = {
-        ...buildPortfolioRequest(
-          headOfComplianceApprovalEscalatedVerificationsSearch
-        ),
+      let requestData = buildApiRequest(
+        headOfComplianceApprovalEscalatedVerificationsSearch,
+        assetTypeListingData
+      );
+      requestData = {
+        ...requestData,
         PageNumber: 0,
       };
-
-      fetchPendingApprovals(requestData, true);
-      setHeadOfComplianceApprovalEscalatedVerificationsSearch((prev) => ({
-        ...prev,
-        PageNumber: 0,
-      }));
+      fetchApiCall(requestData, true, false);
       setHeadOfComplianceApprovalEscalatedVerificationsMqtt(false);
     }
   }, [headOfComplianceApprovalEscalatedVerificationsMqtt]);
@@ -329,19 +258,16 @@ const EscalatedTransactionVerifications = () => {
    */
   useEffect(() => {
     if (headOfComplianceApprovalEscalatedVerificationsSearch?.filterTrigger) {
-      const data = buildPortfolioRequest(
-        headOfComplianceApprovalEscalatedVerificationsSearch
+      const requestData = buildApiRequest(
+        headOfComplianceApprovalEscalatedVerificationsSearch,
+        assetTypeListingData
       );
 
-      fetchPendingApprovals(data, true); // replace mode
-      setHeadOfComplianceApprovalEscalatedVerificationsSearch((prev) => ({
-        ...prev,
-        filterTrigger: false,
-      }));
+      fetchApiCall(requestData, true, true); // replace mode
     }
   }, [
     headOfComplianceApprovalEscalatedVerificationsSearch?.filterTrigger,
-    fetchPendingApprovals,
+    fetchApiCall,
   ]);
 
   // ===========================================================================
@@ -351,30 +277,20 @@ const EscalatedTransactionVerifications = () => {
   useTableScrollBottom(
     async () => {
       if (
-        headOfComplianceApprovalEscalatedVerificationsSearch?.totalRecords <=
-        tableData?.rows?.length
+        headOfComplianceApprovalEscalatedVerificationsData?.totalRecordsDataBase <=
+        headOfComplianceApprovalEscalatedVerificationsData?.totalRecordsTable
       ) {
         return;
       }
 
       try {
         setLoadingMore(true);
-        const requestData = {
-          ...buildPortfolioRequest(
-            headOfComplianceApprovalEscalatedVerificationsSearch
-          ),
-          PageNumber:
-            headOfComplianceApprovalEscalatedVerificationsSearch.pageNumber ||
-            0,
-          Length: COMPONENT_CONFIG.DEFAULT_PAGE_SIZE,
-        };
+        const requestData = buildApiRequest(
+          headOfComplianceApprovalEscalatedVerificationsSearch,
+          assetTypeListingData
+        );
 
-        await fetchPendingApprovals(requestData, false, true); // append mode
-        setHeadOfComplianceApprovalEscalatedVerificationsSearch((prev) => ({
-          ...prev,
-          pageNumber:
-            (prev.pageNumber || 0) + COMPONENT_CONFIG.DEFAULT_PAGE_SIZE,
-        }));
+        await fetchApiCall(requestData, false, true); // append mode
       } catch (error) {
         console.error("❌ Error loading more approvals:", error);
         showNotification({
@@ -386,7 +302,7 @@ const EscalatedTransactionVerifications = () => {
       }
     },
     0,
-    COMPONENT_CONFIG.TABLE_CLASS_NAME
+    "border-less-table-blue"
   );
 
   // ===========================================================================
@@ -400,10 +316,11 @@ const EscalatedTransactionVerifications = () => {
     if (didFetchRef.current) return;
     didFetchRef.current = true;
 
-    const requestData = buildPortfolioRequest(
-      headOfComplianceApprovalEscalatedVerificationsSearch
+    const requestData = buildApiRequest(
+      headOfComplianceApprovalEscalatedVerificationsSearch,
+      assetTypeListingData
     );
-    fetchPendingApprovals(requestData, true);
+    fetchApiCall(requestData, true, true);
 
     // Reset search state on page reload
     try {
@@ -414,10 +331,7 @@ const EscalatedTransactionVerifications = () => {
     } catch (error) {
       console.error("❌ Error detecting page reload:", error);
     }
-  }, [
-    fetchPendingApprovals,
-    resetHeadOfComplianceApprovalEscalatedVerificationsSearch,
-  ]);
+  }, [fetchApiCall, resetHeadOfComplianceApprovalEscalatedVerificationsSearch]);
 
   /**
    * Cleanup on component unmount
@@ -425,13 +339,12 @@ const EscalatedTransactionVerifications = () => {
   useEffect(() => {
     return () => {
       setSortedInfo({});
-      setTableData({ rows: [], totalRecords: 0 });
       setLoadingMore(false);
       resetHeadOfComplianceApprovalEscalatedVerificationsSearch();
       setHeadOfComplianceApprovalEscalatedVerificationsData({
-        data: [],
-        totalRecords: 0,
-        Apicall: false,
+        escalatedVerification: [],
+        totalRecordsDataBase: 0,
+        totalRecordsTable: 0,
       });
       setHeadOfComplianceApprovalEscalatedVerificationsMqtt(false);
     };
@@ -444,20 +357,43 @@ const EscalatedTransactionVerifications = () => {
   return (
     <>
       <BorderlessTable
-        rows={tableData?.rows || []}
+        rows={
+          headOfComplianceApprovalEscalatedVerificationsData?.escalatedVerification ||
+          []
+        }
         columns={columns}
-        classNameTable={COMPONENT_CONFIG.TABLE_CLASS_NAME}
+        classNameTable={"border-less-table-blue"}
         scroll={
-          tableData?.rows?.length
-            ? { x: "max-content", y: COMPONENT_CONFIG.TABLE_SCROLL_Y }
+          headOfComplianceApprovalEscalatedVerificationsData
+            ?.escalatedVerification?.length
+            ? {
+                x: "max-content",
+                y: activeFilters.length > 0 ? 450 : 500,
+              }
             : undefined
         }
         onChange={(_, __, sorter) => setSortedInfo(sorter || {})}
         loading={loadingMore}
+        ref={tableScrollHCAEcalatedPortfolio}
       />
-
       {/* View Detail Modal */}
-      {viewDetailReconcileTransaction && <ViewDetailReconcileTransaction />}
+      {viewDetailHeadOfComplianceEscalated && (
+        <ViewDetailHeadOfComplianceReconcileTransaction />
+      )}
+
+      {/* To SHow Upload Modal While click on Add Tocket Button */}
+      {uploadComplianceModal && <UploadHeadOfComplianceTicketModal />}
+
+      {/* To show Note Modal When Click on Compliant btn to open Note Modal */}
+      {noteGlobalModal && <NoteHeadOfComplianceModal />}
+
+      {/* To SHow Compliant Modal When note Modal APi is success */}
+      {compliantApproveModal && <ApproveHeadOfComplianceModal />}
+
+      {/* To Show Non Compliant Modal WHen Note Modal Api is Success */}
+      {nonCompliantDeclineModal && <DeclinedHeadOfComplianceModal />}
+
+      {isViewTicketTransactionModal && <ViewTicketEscalatedModal />}
     </>
   );
 };

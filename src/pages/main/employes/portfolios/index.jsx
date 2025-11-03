@@ -7,16 +7,15 @@ import PendingApprovals from "./pendingApprovals/PendingApprovals";
 import Portfolio from "./portfolio/Portfolio";
 import { usePortfolioContext } from "../../../../context/portfolioContax";
 import { useSearchBarContext } from "../../../../context/SearchBarContaxt";
-import moment from "moment";
 import UploadPortfolioModal from "./modal/uploadPortfolioModal/UploadPortfolioModal";
-import { useNavigate } from "react-router-dom";
 import { useGlobalModal } from "../../../../context/GlobalModalContext";
+import { buildBrokerOptions } from "../../../../common/funtions/brokersList";
+import { useDashboardContext } from "../../../../context/dashboardContaxt";
 
 const { Title } = Typography;
 
 const PortfolioIndex = () => {
-  const navigate = useNavigate();
-
+  const { employeeBasedBrokersData } = useDashboardContext();
   // Contexts
   const {
     activeTab,
@@ -28,17 +27,16 @@ const PortfolioIndex = () => {
 
   const {
     setEmployeePortfolioSearch,
+    employeePortfolioSearch,
     resetEmployeePortfolioSearch,
     setEmployeePendingApprovalSearch,
+    employeePendingApprovalSearch,
     resetEmployeePendingApprovalSearch,
   } = useSearchBarContext();
 
   const { isSubmit } = useGlobalModal();
 
   const isPortfolio = activeTab === "portfolio";
-
-  // State to hold currently applied filters
-  const [submittedFilters, setSubmittedFilters] = useState([]);
 
   // ✅ Cleanup all states + locals when page unmounts
   useEffect(() => {
@@ -47,7 +45,6 @@ const PortfolioIndex = () => {
       resetEmployeePendingApprovalSearch();
       setActiveTab("portfolio"); // default back to portfolio
       setUploadPortfolioModal(false);
-      setSubmittedFilters([]);
 
       // clear locals
       localStorage.removeItem("employeePortfolioSearch");
@@ -75,9 +72,140 @@ const PortfolioIndex = () => {
     setActiveTab("pending");
   };
 
+  /** 🔹 Handle removing individual filter */
+  const handleRemoveFilter = (key) => {
+    const resetMap = {
+      instrumentName: { instrumentName: "" },
+      dateRange: { startDate: null, endDate: null },
+      quantity: { quantity: 0 },
+      brokerIDs: { brokerIDs: [] }, // ✅ both have brokerIDs
+    };
+    if (isPortfolio) {
+      setEmployeePortfolioSearch((prev) => ({
+        ...prev,
+        ...resetMap[key],
+        pageNumber: 0,
+        filterTrigger: true,
+      }));
+    } else {
+      setEmployeePendingApprovalSearch((prev) => ({
+        ...prev,
+        ...resetMap[key],
+        pageNumber: 0,
+        filterTrigger: true,
+      }));
+    }
+  };
+
+  /** 🔹 Handle removing all filters */
+  const handleRemoveAllFilters = () => {
+    if (isPortfolio) {
+      setEmployeePortfolioSearch((prev) => ({
+        ...prev,
+        instrumentName: "",
+        startDate: null,
+        endDate: null,
+        quantity: 0,
+        brokerIDs: [], // ✅ clear brokerIDs for both
+        pageNumber: 0,
+        filterTrigger: true,
+      }));
+    } else {
+      setEmployeePendingApprovalSearch((prev) => ({
+        ...prev,
+        instrumentName: "",
+        startDate: null,
+        endDate: null,
+        quantity: 0,
+        brokerIDs: [], // ✅ clear brokerIDs for both
+        pageNumber: 0,
+        filterTrigger: true,
+      }));
+    }
+  };
+
+  // 🔹 Broker options are needed for displaying broker labels
+  const brokerOptions = buildBrokerOptions(employeeBasedBrokersData);
+
+  /** 🔹 Build Active Filters */
+  const activeFilters = (() => {
+    const { instrumentName, startDate, endDate, quantity, brokerIDs } =
+      isPortfolio
+        ? employeePortfolioSearch || {}
+        : employeePendingApprovalSearch || {};
+
+    return [
+      instrumentName && {
+        key: "instrumentName",
+        value:
+          instrumentName.length > 13
+            ? instrumentName.slice(0, 13) + "..."
+            : instrumentName,
+      },
+      startDate &&
+        endDate && {
+          key: "dateRange",
+          value: `${startDate} → ${endDate}`,
+        },
+      quantity &&
+        Number(quantity) > 0 && {
+          key: "quantity",
+          value: Number(quantity).toLocaleString("en-US"),
+        },
+      brokerIDs?.length > 0 && {
+        key: "brokerIDs",
+        value:
+          brokerIDs.length === 1
+            ? (() => {
+                const broker = brokerOptions.find(
+                  (b) => b.value === brokerIDs[0]
+                );
+                if (!broker) return "";
+                return broker.label.length > 13
+                  ? broker.label.slice(0, 13) + "..."
+                  : broker.label;
+              })()
+            : "Multiple",
+      },
+    ].filter(Boolean);
+  })();
+
   return (
     <>
-      <PageLayout background="white">
+      {/* 🔹 Active Filter Tags */}
+      {activeFilters.length > 0 && (
+        <Row gutter={[12, 12]} className={styles["filter-tags-container"]}>
+          {activeFilters.map(({ key, value }) => (
+            <Col key={key}>
+              <div className={styles["filter-tag"]}>
+                <span>{value}</span>
+                <span
+                  className={styles["filter-tag-close"]}
+                  onClick={() => handleRemoveFilter(key)}
+                >
+                  &times;
+                </span>
+              </div>
+            </Col>
+          ))}
+
+          {/* 🔹 Show Clear All only if more than one filter */}
+          {activeFilters.length > 1 && (
+            <Col>
+              <div
+                className={`${styles["filter-tag"]} ${styles["clear-all-tag"]}`}
+                onClick={handleRemoveAllFilters}
+              >
+                <span>Clear All</span>
+              </div>
+            </Col>
+          )}
+        </Row>
+      )}
+      <PageLayout
+        background="white"
+        className={activeFilters.length > 0 && "changeHeight"}
+      >
         {/* Header section with tab switcher and action buttons */}
         <Row justify="space-between" align="middle" className={styles.header}>
           {/* Tabs for Portfolio and Pending */}
@@ -132,7 +260,7 @@ const PortfolioIndex = () => {
             <div className={styles.actions}>
               <div className={styles.totalWrapper}>
                 <Title level={5} className={styles.total}>
-                  <span className={styles.totaltext}>Total:{" "}</span>
+                  <span className={styles.totaltext}>Total: </span>
                   <span
                     className={styles.totalAmount}
                     style={{ color: totalColor }}
@@ -153,9 +281,9 @@ const PortfolioIndex = () => {
         {/* Tab Content Area */}
         <div className={styles.content}>
           {isPortfolio ? (
-            <Portfolio className={"profolio-employee-accordian"} />
+            <Portfolio className={"profolio-employee-accordian"} activeFilters={activeFilters}/>
           ) : (
-            <PendingApprovals />
+            <PendingApprovals activeFilters={activeFilters}/>
           )}
         </div>
 

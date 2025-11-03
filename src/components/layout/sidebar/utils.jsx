@@ -51,6 +51,17 @@ import TransactionLightIcon from "../../../assets/img/transaction-arrow-light.pn
 import VerificationsDarkIcon from "../../../assets/img/verifications-dark.png";
 import VerificationsLightIcon from "../../../assets/img/verifications-light.png";
 
+// Admin Icon
+import SystemSettingLightIcon from "../../../assets/img/system-setting-light-icon.png";
+import SystemSettingDarktIcon from "../../../assets/img/system-setting-dark-icon.png";
+import UserLightIcon from "../../../assets/img/user-light-icon.png";
+import UserDarkIcon from "../../../assets/img/user-dark-icon.png";
+import GroupPoliciesLightIcon from "../../../assets/img/group-policies-light-icon.png";
+import GroupPoliciesDarkIcon from "../../../assets/img/group-policies-dark-icon.png";
+import BrokerLightIcon from "../../../assets/img/broker-light-icon.png";
+import BrokerDarkIcon from "../../../assets/img/broker-dark-icon.png";
+import InstrumentsLightIcon from "../../../assets/img/instruments-light-icon.png";
+import InstrumentsDarkIcon from "../../../assets/img/instruments-dark-icon.png";
 // ==============================
 // UTILITY FUNCTIONS
 // ==============================
@@ -63,7 +74,12 @@ import VerificationsLightIcon from "../../../assets/img/verifications-light.png"
  * @returns {string} The icon path to use
  */
 
-const sidebarItems = (collapsed, userRoles = [], selectedKey) => {
+const sidebarItems = (
+  collapsed,
+  userRoles = [],
+  selectedKey,
+  currentRoleIsAdmin = false
+) => {
   // Helper to get appropriate icon based on selection
   const getIcon = (key, defaultIcon, selectedIcon) =>
     selectedKey === key ? selectedIcon : defaultIcon;
@@ -90,6 +106,83 @@ const sidebarItems = (collapsed, userRoles = [], selectedKey) => {
    * - Head of Compliance
    */
   const roleSections = {
+    1: {
+      title: "Admin",
+      items: [
+        {
+          key: "18",
+          icon: (
+            <img
+              draggable={false}
+              src={getIcon("18", InstrumentsLightIcon, InstrumentsDarkIcon)}
+              alt="Instrument"
+              className={getIconClasses()}
+            />
+          ),
+          label: "Instrument",
+        },
+        {
+          key: "19",
+          icon: (
+            <img
+              draggable={false}
+              src={getIcon("19", BrokerLightIcon, BrokerDarkIcon)}
+              alt="Brokers"
+              className={getIconClasses()}
+            />
+          ),
+          label: "Brokers",
+        },
+        {
+          key: "20",
+          icon: (
+            <img
+              draggable={false}
+              src={getIcon("20", GroupPoliciesLightIcon, GroupPoliciesDarkIcon)}
+              alt="Group Policies"
+              className={getIconClasses()}
+            />
+          ),
+          label: "Group Policies",
+        },
+        {
+          key: "21",
+          icon: (
+            <img
+              draggable={false}
+              src={getIcon("21", UserLightIcon, UserDarkIcon)}
+              alt="Users"
+              className={getIconClasses()}
+            />
+          ),
+          label: "Users",
+        },
+        {
+          key: "22",
+          icon: (
+            <img
+              draggable={false}
+              src={getIcon("22", SystemSettingLightIcon, SystemSettingDarktIcon)}
+              alt="System Settings"
+              className={getIconClasses()}
+            />
+          ),
+          label: "System Settings",
+        },
+        {
+          key: "23",
+          icon: (
+            <img
+              draggable={false}
+              src={getIcon("23", ReportsLightIcon, ReportsDarkIcon)}
+              alt="Reports"
+              className={getIconClasses()}
+            />
+          ),
+          label: "Reports",
+        },
+      ],
+    },
     2: {
       title: "Employee",
       items: [
@@ -326,9 +419,19 @@ const sidebarItems = (collapsed, userRoles = [], selectedKey) => {
   };
 
   // Filter sections based on user roles
-  const visibleSections = Object.entries(roleSections)
-    .filter(([role]) => userRoles.includes(Number(role))) // ✅ Fix applied here
-    .map(([_, section]) => section);
+  let visibleSections;
+
+  if (currentRoleIsAdmin) {
+    // ✅ Admin only — show only Admin role section
+    visibleSections = [roleSections[1]];
+  } else {
+    // ✅ Regular user — exclude Admin (role 1)
+    visibleSections = Object.entries(roleSections)
+      .filter(
+        ([role]) => userRoles.includes(Number(role)) && Number(role) !== 1
+      )
+      .map(([_, section]) => section);
+  }
 
   // Build final items array
   const resultItems = [];
@@ -351,7 +454,7 @@ const sidebarItems = (collapsed, userRoles = [], selectedKey) => {
 
   // Add FAQ item
   resultItems.push({
-    key: "faq",
+    key: "50",
     icon: (
       <img
         draggable={false}
@@ -389,5 +492,12 @@ export const routeMap = {
   15: "/PAD/hca-escalated-transactions-verifications",
   16: "/PAD/hca-my-actions",
   17: "/PAD/hca-reports",
-  faq: "/PAD/faq",
+  18: "/PAD/admin-instruments",
+  19: "/PAD/admin-brokers",
+  20: "/PAD/admin-group-policies",
+  21: "/PAD/admin-users",
+  22: "/PAD/admin-system-settings",
+  23: "/PAD/admin-reports",
+
+  50: "/PAD/faq",
 };

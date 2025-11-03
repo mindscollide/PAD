@@ -1,9 +1,6 @@
-// src/pages/employee/portfolio/Portfolio.jsx
-
 import React, { useEffect, useState, useCallback, useRef } from "react";
 import { Collapse, Typography, Tooltip } from "antd";
 import { CaretDownOutlined, CaretUpOutlined } from "@ant-design/icons";
-import moment from "moment";
 import styles from "../styles.module.css";
 
 // Components
@@ -26,7 +23,7 @@ import {
   formatApiDateTime,
   formatCode,
   toYYMMDD,
-} from "../../../../../commen/funtions/rejex";
+} from "../../../../../common/funtions/rejex";
 import UploadIcon from "../../../../../assets/img/upload-icon.png";
 import { getEmployeePortfolioColumns } from "./utils";
 import { formatBrokerOptions } from "../pendingApprovals/utill";
@@ -35,36 +32,15 @@ import { useNavigate } from "react-router-dom";
 const { Panel } = Collapse;
 const { Text } = Typography;
 
-/**
- * Portfolio Component
- *
- * Renders the employee’s approved uploaded portfolio.
- * Each instrument expands into a collapsible panel showing its transactions in a table.
- *
- * ✅ Features:
- * - Fetches portfolio data from API
- * - Collapsible panels per instrument
- * - Conditional formatting (Buy/Sell colors, uploaded icon)
- * - Supports reload handling and search state sync
- * - Gracefully handles empty state
- *
- * @component
- * @param {Object} props
- * @param {string} [props.className] - Optional custom className for wrapper.
- * @returns {JSX.Element} Portfolio component with collapsible instrument panels.
- */
-const Portfolio = ({ className }) => {
-  /** Tracks open/closed collapse panels */
+const Portfolio = ({ className, activeFilters }) => {
   const [activeKey, setActiveKey] = useState([]);
-  const navigate = useNavigate();
+  const [hasMore, setHasMore] = useState(true); // ✅ track if more data exists
+  const [loadingMore, setLoadingMore] = useState(false);
 
-  /** Local state for instruments list */
-  const [instrumentData, setInstrumentData] = useState([]);
-
-  /** Prevents multiple first-load API calls */
   const didFetchRef = useRef(false);
+  const listRef = useRef(null); // ✅ scroll container ref
 
-  // ✅ Contexts
+  const navigate = useNavigate();
   const {
     resetEmployeePortfolioSearch,
     setEmployeePortfolioSearch,
@@ -80,12 +56,16 @@ const Portfolio = ({ className }) => {
   } = usePortfolioContext();
   const { employeeBasedBrokersData } = useDashboardContext();
 
-  /**
-   * Builds request payload for portfolio API from search state.
-   *
-   * @param {Object} [searchState={}] - Current search/filter state
-   * @returns {Object} API request payload
-   */
+  const brokerOptions = formatBrokerOptions(employeeBasedBrokersData || []);
+
+  const columns = getEmployeePortfolioColumns({
+    formatCode,
+    formatApiDateTime,
+    UploadIcon,
+    brokerOptions,
+    Text,
+  });
+
   const buildPortfolioRequest = (searchState = {}) => {
     const startDate = searchState.startDate
       ? toYYMMDD(searchState.startDate)
@@ -98,36 +78,21 @@ const Portfolio = ({ className }) => {
       Quantity: searchState.quantity ? Number(searchState.quantity) : 0,
       StartDate: startDate,
       EndDate: endDate,
-      BrokerIds: Array.isArray(searchState.broker) ? searchState.broker : [],
+      BrokerIds: Array.isArray(searchState.brokerIDs)
+        ? searchState.brokerIDs
+        : [],
       PageNumber: Number(searchState.pageNumber) || 0,
       Length: Number(searchState.pageSize) || 10,
     };
   };
 
-  /** Broker dropdown options */
-  const brokerOptions = formatBrokerOptions(employeeBasedBrokersData || []);
-
-  /** Table column definitions for transactions */
-  const columns = getEmployeePortfolioColumns({
-    formatCode,
-    formatApiDateTime,
-    UploadIcon,
-    brokerOptions,
-    Text,
-  });
-
-  /**
-   * Fetches portfolio data from API.
-   *
-   * @async
-   * @param {Object} requestData - API request payload
-   * @param {boolean} [replace=false] - Replace or append existing state
-   */
   const fetchPortfolio = useCallback(
     async (requestData, replace = false) => {
       if (!requestData || typeof requestData !== "object") return;
 
-      showLoader(true);
+      if (!replace) setLoadingMore(true);
+      else showLoader(true);
+
       try {
         const res = await SearchEmployeeApprovedUploadedPortFolio({
           callApi,
@@ -140,51 +105,35 @@ const Portfolio = ({ className }) => {
         const instruments = Array.isArray(res?.instruments)
           ? res.instruments
           : [];
+        if (replace) {
+          setEmployeePortfolioData(instruments);
+        } else {
+          setEmployeePortfolioData((prev) => [...prev, ...instruments]);
+        }
 
-        setEmployeePortfolioData({
-          data: instruments,
-          totalRecords: res?.totalRecords ?? instruments.length,
-          Apicall: true,
-          replace,
-        });
+        // ✅ Save totalRecords from API
+        const total = Number(res?.totalRecords || 0);
 
+        // ✅ Disable scrolling if we've loaded everything
+        setHasMore(requestData.PageNumber + instruments.length < total);
         setAggregateTotalQuantity(res?.aggregateTotalQuantity);
       } catch (err) {
         console.error("❌ Error fetching portfolio:", err);
       } finally {
         showLoader(false);
+        setLoadingMore(false);
       }
     },
-    [callApi, showNotification, showLoader, setEmployeePortfolioData]
+    [callApi, showNotification, showLoader, navigate, setAggregateTotalQuantity]
   );
 
-  /**
-   * Sync context → local state when API updates data.
-   */
-  useEffect(() => {
-    if (!employeePortfolioData?.Apicall) return;
-
-    setInstrumentData(employeePortfolioData.data || []);
-
-    setEmployeePortfolioSearch((prev) => ({
-      ...prev,
-      totalRecords: employeePortfolioData.totalRecords,
-      pageNumber: employeePortfolioData.replace ? 10 : prev.pageNumber,
-    }));
-
-    setEmployeePortfolioData((prev) => ({ ...prev, Apicall: false }));
-  }, [employeePortfolioData?.Apicall]);
-
-  /**
-   * Initial load:
-   * - Fetches first page of portfolio
-   * - Resets search state on page reload
-   */
+  // ✅ initial load
   useEffect(() => {
     if (didFetchRef.current) return;
     didFetchRef.current = true;
 
-    const req = buildPortfolioRequest({ PageNumber: 0, Length: 10 });
+    const req = buildPortfolioRequest(employeePortfolioSearch);
+
     fetchPortfolio(req, true);
 
     try {
@@ -195,35 +144,57 @@ const Portfolio = ({ className }) => {
     }
   }, [fetchPortfolio, resetEmployeePortfolioSearch]);
 
-  /**
-   * Run search whenever filterTrigger flips true
-   */
+  // ✅ Scroll handler for pagination
+  const handleScroll = () => {
+    if (!listRef.current || loadingMore || !hasMore) return;
+
+    const { scrollTop, scrollHeight, clientHeight } = listRef.current;
+
+    if (scrollTop + clientHeight >= scrollHeight - 10) {
+      // ⬆️ Stop if we’ve reached totalRecords
+      if (!hasMore) return;
+      // ⬆️ User scrolled to bottom → call API with pageNumber + 10
+      const nextPage = (employeePortfolioSearch.pageNumber || 0) + 10;
+
+      const req = buildPortfolioRequest({
+        ...employeePortfolioSearch,
+        pageNumber: nextPage,
+      });
+
+      fetchPortfolio(req, false);
+
+      setEmployeePortfolioSearch((prev) => ({
+        ...prev,
+        pageNumber: nextPage,
+      }));
+    }
+  };
+
+  useEffect(() => {
+    const node = listRef.current;
+    if (!node) return;
+    node.addEventListener("scroll", handleScroll);
+    return () => node.removeEventListener("scroll", handleScroll);
+  });
+
   useEffect(() => {
     if (employeePortfolioSearch.filterTrigger) {
       const req = buildPortfolioRequest(employeePortfolioSearch);
-      fetchPortfolio(req, true);
 
-      // Reset trigger
+      fetchPortfolio(req, true);
       setEmployeePortfolioSearch((prev) => ({
         ...prev,
         filterTrigger: false,
       }));
     }
-  }, [
-    employeePortfolioSearch.filterTrigger,
-    fetchPortfolio,
-    setEmployeePortfolioSearch,
-  ]);
-
-  /**
-   * Custom collapse icon toggle
-   */
-  const toggleIcon = (panelKey) =>
-    activeKey.includes(panelKey) ? <CaretUpOutlined /> : <CaretDownOutlined />;
+  }, [employeePortfolioSearch.filterTrigger]);
 
   return (
-    <>
-      {instrumentData.length > 0 ? (
+    <div
+      ref={listRef}
+      style={{ height: employeePortfolioData.length > 0?"540px":"80vh", overflowY: "auto" }} // ✅ scroll container
+    >
+      {employeePortfolioData.length > 0 ? (
         <Collapse
           activeKey={activeKey}
           onChange={(keys) => setActiveKey(keys)}
@@ -233,12 +204,12 @@ const Portfolio = ({ className }) => {
           expandIcon={({ isActive }) => (
             <CaretDownOutlined
               style={{ fontSize: "14px", transition: "transform 0.3s" }}
-              rotate={isActive ? 180 : 0} // 🔄 rotate when active
+              rotate={isActive ? 180 : 0}
             />
           )}
           expandIconPosition="end"
         >
-          {instrumentData.map((instrument, idx) => {
+          {employeePortfolioData.map((instrument, idx) => {
             const panelKey = instrument.instrumentId || idx.toString();
             const isPositive = instrument.totalQuantity >= 0;
 
@@ -263,19 +234,17 @@ const Portfolio = ({ className }) => {
                     >
                       {instrument.totalQuantity?.toLocaleString()}
                     </span>
-                    {/* <span className={styles.icon}>{toggleIcon(panelKey)}</span> */}
                   </div>
                 }
                 key={panelKey}
-                // showArrow={false}
               >
                 <BorderlessTable
-                  rows={instrument.transactions || []}
+                  rows={instrument?.transactions || []}
                   columns={columns}
                   pagination={false}
                   rowKey="transactionId"
                   classNameTable="border-less-table-white"
-                  scroll={{ x: "max-content", y: 450 }} // ✅ horizontal scroll only when needed
+                  scroll={{ x: "max-content", y: 450 }}
                 />
               </Panel>
             );
@@ -284,7 +253,18 @@ const Portfolio = ({ className }) => {
       ) : (
         <EmptyState type="portfolio" />
       )}
-    </>
+
+      {loadingMore && (
+        <div style={{ textAlign: "center", padding: "10px" }}>
+          Loading more...
+        </div>
+      )}
+      {/* {!hasMore && (
+        <div style={{ textAlign: "center", padding: "10px" }}>
+          ✅ All records loaded
+        </div>
+      )} */}
+    </div>
   );
 };
 

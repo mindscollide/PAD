@@ -64,10 +64,11 @@
  * - Custom border radius and shadow
  * - Clean white background
  */
+
 .dropdown-overlay {
   width: 439.324px;
   max-height: 626.697px;
-  opacity: 1;
+  /* opacity: 1; */
   transform: rotate(0deg);
   border-radius: 12px;
   overflow-y: auto;
@@ -80,10 +81,29 @@
 /* Wrapper for dropdown content */
 .custom-dropdown-wrapper {
   width: 440px;
-  max-height: 600px;
+  max-height: 500px;
   overflow-y: auto;
   overflow-x: hidden !important;
   padding: 0; /* Remove default padding */
+}
+
+.no-notifications-dropdown {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  width: 440px;
+  height: 500px;
+}
+
+/* Message styling */
+.no-notification-text {
+  text-align: center;
+  color: #30426a;
+  font-size: 16px;
+  font-family: "Switzer Variable";
+  font-weight: 500;
+  margin-top: 15px;
 }
 
 /* ============================================ */
@@ -167,7 +187,7 @@
 
 /* Notification title */
 .notification-title {
-  width: 152px;
+  width: 205px;
   height: 24px;
   color: #30426a;
   font-family: "Switzer Variable";
@@ -182,7 +202,7 @@
 
 /* Notification timestamp */
 .notification-time {
-  width: 86px;
+  width: 100px;
   height: 16px;
   color: #30426a;
   font-family: "Switzer Variable";
@@ -190,8 +210,9 @@
   font-size: 12px;
   line-height: 100%;
   letter-spacing: 0%;
-  text-align: right;
+  /* text-align: right; */
   white-space: nowrap;
+  margin-right: 15px;
   align-self: flex-end;
 }
 
@@ -237,7 +258,7 @@
 /* === 🔧 SCROLLBAR CUSTOMIZATION (Only show thumb, hide background) === */
 /* Limit the height of the notification list and enable scroll */
 .notification-list {
-  max-height: 70vh; /* Or any height you prefer */
+  max-height: 400px; /* Or any height you prefer */
   overflow-y: auto;
   padding-right: 4px; /* Slight padding to prevent content under scrollbar */
 }

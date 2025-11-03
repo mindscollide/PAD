@@ -25,6 +25,7 @@ export const ApiProvider = ({ children }) => {
     withAuth = true,
     retryOnExpire = true,
     isFileUpload = false, // 🔹 NEW FLAG
+    responseType = "",
   }) => {
     try {
       // showLoader(true);
@@ -57,9 +58,25 @@ export const ApiProvider = ({ children }) => {
         headers: {
           ...(withAuth && token ? { _token: token } : {}),
         },
+        responseType,
       };
 
       const res = await axios(config);
+      if (
+        responseType !== "" &&
+        (responseType === "arraybuffer" || responseType === "blob")
+      ) {
+        const { status: responseCode, data } = res;
+
+        return {
+          success: responseCode === 200 ? true : false,
+          responseMessage: "Successfull Downloaded",
+          result: {
+            isExecuted: responseCode === 200 ? true : false,
+            fileData: data,
+          },
+        };
+      }
       const { responseCode, responseMessage, responseResult } = res.data;
 
       // showLoader(false);
@@ -71,7 +88,7 @@ export const ApiProvider = ({ children }) => {
           responseMessage,
         };
       }
-
+      console.log("heloo log", retryOnExpire);
       if ((responseCode === 417 || responseCode === 401) && retryOnExpire) {
         const refreshed = await refreshToken(callApi, navigate, {
           showNotification,
@@ -93,7 +110,7 @@ export const ApiProvider = ({ children }) => {
             isFileUpload, // keep upload flag
           });
         }
-        // logout(navigate, showLoader);
+        logout(navigate, showLoader);
         return { success: false, expired: true };
       }
 

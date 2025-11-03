@@ -37,7 +37,7 @@ export const responseMessages = {
   // 🔐 Login API (loginApi.jsx)
   // ==============================
   ERM_Auth_AuthServiceManager_Login_01: "Login Successful",
-  ERM_Auth_AuthServiceManager_Login_02: "Login Failed",
+  ERM_Auth_AuthServiceManager_Login_02: "Username could not be verified",
   ERM_Auth_AuthServiceManager_Login_03:
     "User is temporarily disabled and cannot login",
   ERM_Auth_AuthServiceManager_Login_04: "Account permanently closed",
@@ -136,7 +136,7 @@ export const responseMessages = {
     "Resubmission Failed",
   PAD_Trade_TradeServiceManager_ResubmitApprovalRequest_03: "Exception",
   PAD_Trade_TradeServiceManager_ResubmitApprovalRequest_04:
-    "please Select a reason for resubmitting",
+    "please Select a Notes for resubmitting",
   PAD_Trade_TradeServiceManager_ResubmitApprovalRequest_5:
     "Failed to generate ApprovalID",
 
@@ -282,6 +282,10 @@ export const responseMessages = {
   PAD_Trade_TradeServiceManager_GetHTAViewDetailsByTradeApprovalID_03:
     "Exception",
 
+  // ==============================
+  // 📂Escalated Verification and Portfolio (Head Of Compliance (HOC))
+  // ==============================
+
   // SearchHeadOfComplianceEscalatedTransactions
   PAD_Trade_TradeServiceManager_SearchHeadOfComplianceEscalatedTransactions_01:
     "Data Available",
@@ -297,6 +301,120 @@ export const responseMessages = {
     "No data available",
   PAD_Trade_TradeServiceManager_SearchHeadOfComplianceEscalatedPortfolio_03:
     "Exception",
+
+  // GetAllViewDetailsEscalatedTransactionsAndPortFolioByTradeApprovalID
+  PAD_Trade_TradeServiceManager_GetAllViewDetailsEscalatedTransactionsAndPortFolioByTradeApprovalID_01:
+    "Data Available",
+  PAD_Trade_TradeServiceManager_GetAllViewDetailsEscalatedTransactionsAndPortFolioByTradeApprovalID_02:
+    "No data available",
+  PAD_Trade_TradeServiceManager_GetAllViewDetailsEscalatedTransactionsAndPortFolioByTradeApprovalID_03:
+    "Exception",
+
+  // ==============================
+  // 📂Web Notification  (Employee Role)
+  // ==============================
+
+  Settings_SettingsServiceManager_GetUserWebNotifications_01: "Data Available",
+  Settings_SettingsServiceManager_GetUserWebNotifications_02:
+    "No data available",
+  Settings_SettingsServiceManager_GetUserWebNotifications_03: "Exception",
+
+  //Mark As Read Notification Api
+  Settings_SettingsServiceManager_MarkNotificationsAsRead_01: "Successfull",
+  Settings_SettingsServiceManager_MarkNotificationsAsRead_02:
+    "Invalid Request Data",
+  Settings_SettingsServiceManager_MarkNotificationsAsRead_03: "UnSuccessfull",
+  Settings_SettingsServiceManager_MarkNotificationsAsRead_04: "Exception",
+
+  // ==============================
+  // Brokers  (Admin Role)
+  // ==============================
+
+  PAD_Admin_GetBrokers_01: "Data found",
+  PAD_Admin_GetBrokers_02: "No data found",
+  PAD_Admin_GetBrokers_03: "Exception occurred",
+
+  PAD_Admin_AddBroker_01: "Invalid input",
+  PAD_Admin_AddBroker_02: "Successfully inserted all",
+  PAD_Admin_AddBroker_03: "Insert failed",
+  PAD_Admin_AddBroker_04: "Exception occurred",
+
+  PAD_Admin_UpdateBroker_01: "Invalid input",
+  PAD_Admin_UpdateBroker_02: "Successfully updated",
+  PAD_Admin_UpdateBroker_03: " Update failed",
+  PAD_Admin_UpdateBroker_04: "Exception occurred",
+
+  PAD_Admin_UpdateBrokerStatus_01: "Invalid input",
+  PAD_Admin_UpdateBrokerStatus_02: "Successfully updated",
+  PAD_Admin_UpdateBrokerStatus_03: "Update failed or broker not found",
+  PAD_Admin_UpdateBrokerStatus_04: "Exception occurred",
+
+  PAD_Admin_GetInstrumentsWithClosingPeriod_01: "Data found",
+  PAD_Admin_GetInstrumentsWithClosingPeriod_02: "No data found",
+  PAD_Admin_GetInstrumentsWithClosingPeriod_03: "Exception occurred",
+
+  PAD_Admin_CheckGroupTitleExists_01: "Exist",
+  PAD_Admin_CheckGroupTitleExists_02: "Not Exist",
+  PAD_Admin_CheckGroupTitleExists_03: "Exception occurred",
+
+  Admin_AdminServiceManager_GetPoliciesForGroupPolicyPanel_01: "Data found",
+  Admin_AdminServiceManager_GetPoliciesForGroupPolicyPanel_02: "No data found",
+  Admin_AdminServiceManager_GetPoliciesForGroupPolicyPanel_03:
+    "Exception occurred",
+
+  PAD_GroupPolicyServiceManager_AddGroupPolicy_01: "Invalid or missing input",
+  PAD_GroupPolicyServiceManager_AddGroupPolicy_02: "Success",
+  PAD_GroupPolicyServiceManager_AddGroupPolicy_03:
+    "Failed to create Group Policy",
+  PAD_GroupPolicyServiceManager_AddGroupPolicy_04: "Exception occurred",
+  PAD_GroupPolicyServiceManager_AddGroupPolicy_05:
+    "UnauthorizedUser (Not Admin)",
+
+  PAD_Admin_GetGroupPoliciesList_01: "Exist",
+  PAD_Admin_GetGroupPoliciesList_02: "Not Exist",
+  PAD_Admin_GetGroupPoliciesList_03: "Exception occurred",
+
+  Admin_AdminServiceManager_GetGroupPolicyDetails_01: "Exist",
+  Admin_AdminServiceManager_GetGroupPolicyDetails_02: "Not Exist",
+  Admin_AdminServiceManager_GetGroupPolicyDetails_03: "Exception occurred",
+
+  PAD_GroupPolicyServiceManager_UpdateGroupPolicy_01:
+    "Invalid or missing input",
+  PAD_GroupPolicyServiceManager_UpdateGroupPolicy_02: "Success",
+  PAD_GroupPolicyServiceManager_UpdateGroupPolicy_03:
+    "Failed to Update Group Policy",
+  PAD_GroupPolicyServiceManager_UpdateGroupPolicy_05: "Exception",
+  PAD_GroupPolicyServiceManager_UpdateGroupPolicy_06:
+    "UnauthorizedUser (Not Admin)",
+
+  Admin_AdminServiceManager_SearchPoliciesByGroupPolicyID_01: "Data found",
+  Admin_AdminServiceManager_SearchPoliciesByGroupPolicyID_02: "No data found",
+  Admin_AdminServiceManager_SearchPoliciesByGroupPolicyID_03:
+    "Exception occurred",
+
+  Admin_AdminServiceManager_SearchUsersByGroupPolicyID_01: "Data found",
+  Admin_AdminServiceManager_SearchUsersByGroupPolicyID_02: "No data found",
+  Admin_AdminServiceManager_SearchUsersByGroupPolicyID_03: "Exception occurred",
+  PAD_Admin_AddInstrumentClosingPeriod_01: "Invalid input",
+  PAD_Admin_AddInstrumentClosingPeriod_02: "Successfully inserted",
+  PAD_Admin_AddInstrumentClosingPeriod_03: "Insert failed",
+  PAD_Admin_AddInstrumentClosingPeriod_04: "Exception occurred",
+
+  PAD_Admin_GetUpcomingClosingPeriods_01: "Data found",
+  PAD_Admin_GetUpcomingClosingPeriods_02: "No data found",
+  PAD_Admin_GetUpcomingClosingPeriods_03: "Exception occurred",
+  PAD_Admin_GetUpcomingClosingPeriods_04: "Invalid input",
+
+  PAD_Admin_DeleteInstrumentClosingPeriod_01: "Invalid input",
+  PAD_Admin_DeleteInstrumentClosingPeriod_02: "Successfully deleted",
+  PAD_Admin_DeleteInstrumentClosingPeriod_03:
+    "Deletion failed or record not found",
+  PAD_Admin_DeleteInstrumentClosingPeriod_04: "Exception occurred",
+
+  PAD_Admin_GetPreviousClosingPeriods_01: "Data found",
+  PAD_Admin_GetPreviousClosingPeriods_02: "No data found",
+  PAD_Admin_GetPreviousClosingPeriods_03: "Exception occurred",
+  PAD_Admin_GetPreviousClosingPeriods_04: "Invalid input",
 };
 
 /**
@@ -307,7 +425,17 @@ export const responseMessages = {
  */
 export const getMessage = (code) => {
   const msg = responseMessages[code];
-  if (msg === "Data Available" || msg === "No data available") {
+  if (
+    msg === "Data Available" ||
+    msg === "No data available" ||
+    msg === "Data found" ||
+    msg === "No data found" ||
+    msg === "Successfully updated" ||
+    msg === "Successfully inserted all" ||
+    msg === "Exist" ||
+    msg === "Not Exist" ||
+    msg === "Success"
+  ) {
     return "";
   }
   return msg || "Something went wrong. Please try again.";

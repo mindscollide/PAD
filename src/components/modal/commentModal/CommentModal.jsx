@@ -25,7 +25,7 @@ const CommentModal = ({
   centered,
   title,
   submitText,
-  maxChars = 5000,
+  maxChars = 500,
   value, // 🔹 ab parent se aayega
   setValue, // 🔹 parent se setter aayega
 }) => {
@@ -49,12 +49,16 @@ const CommentModal = ({
     setHeadDeclineNoteModal,
   } = useGlobalModal();
 
-  console.log(noteGlobalModal, "noteGlobalModalnoteGlobalModal");
-
   //This is the Global state of Context Api
-  const { selectedReconcileTransactionData } = useReconcileContext();
+  const {
+    selectedReconcileTransactionData,
+    selectedEscalatedHeadOfComplianceData,
+  } = useReconcileContext();
 
-  const { selectedPortfolioTransactionData } = usePortfolioContext();
+  const {
+    selectedEscalatedPortfolioHeadOfComplianceData,
+    selectedPortfolioTransactionData,
+  } = usePortfolioContext();
 
   // State to get option reason while selecting any reason
   const [selectedOption, setSelectedOption] = useState(null);
@@ -188,6 +192,41 @@ const CommentModal = ({
     });
   };
 
+  // For Head Of Compliance Note Api Start here
+  const updateHeadOfCompliancePortfolioRequestData = async () => {
+    showLoader(true);
+    const requestdata = {
+      TradeApprovalID: String(
+        selectedEscalatedHeadOfComplianceData?.workflowID ||
+          selectedEscalatedPortfolioHeadOfComplianceData?.workflowID
+      ),
+      StatusID:
+        submitText === "HOC-Non-Compliant" ||
+        submitText === "HOC-Portfolio-Non-Compliant"
+          ? 3
+          : 2, //Approved Status
+      Comment: value,
+    };
+
+    console.log(requestdata, "Checkechecevjcvecvhejv");
+
+    await UpdatedComplianceOfficerTransactionRequest({
+      callApi,
+      showNotification,
+      showLoader,
+      requestdata,
+      setNoteGlobalModal,
+      setCompliantApproveModal,
+      setNonCompliantDeclineModal,
+      setCompliantPortfolioApproveModal,
+      setNonCompliantPortfolioDeclineModal,
+      submitText,
+      setValue,
+      navigate,
+    });
+  };
+  // For Head Of Compliance Note Api End here
+
   return (
     <GlobalModal
       visible={visible}
@@ -211,7 +250,7 @@ const CommentModal = ({
                 value={value}
                 onChange={handleChange}
                 className={styles.textAreaStyle}
-                placeholder="Enter a reason"
+                placeholder="Enter a Notes"
               />
               <div className={styles.maxCharacterClass}>
                 <Text type={charCount > maxChars ? "danger" : "secondary"}>
@@ -269,6 +308,16 @@ const CommentModal = ({
                       fetchHeadOfApprovalsRequest();
                     } else if (submitText === "HTA-Decline") {
                       fetchHeadOfApprovalsRequest();
+                    } else if (
+                      submitText === "HOC-Compliant" ||
+                      submitText === "HOC-Portfolio-Compliant"
+                    ) {
+                      updateHeadOfCompliancePortfolioRequestData();
+                    } else if (
+                      submitText === "HOC-Non-Compliant" ||
+                      submitText === "HOC-Portfolio-Non-Compliant"
+                    ) {
+                      updateHeadOfCompliancePortfolioRequestData();
                     } else if (submitText === "Compliant") {
                       updateCompliantRequestData();
                     } else if (submitText === "Non-Compliant") {

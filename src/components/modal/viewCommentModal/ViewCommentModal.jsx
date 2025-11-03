@@ -18,11 +18,10 @@ const ViewCommentModal = ({
       visible={visible}
       width={width}
       height={height}
-      centered
       modalHeader={<></>}
       onCancel={onClose}
       modalBody={
-        <div className={styles.mainDivComment}>
+        <>
           <Row>
             <Col span={24}>
               <label className={styles.ViewCommentHeading}>
@@ -30,13 +29,13 @@ const ViewCommentModal = ({
               </label>
             </Col>
           </Row>
-
-          <Row>
-            <Col span={24}>
-              <p className={styles.ViewCommentParagraph}>{commentText}</p>
-            </Col>
-          </Row>
-
+          <div className={styles.mainDivComment}>
+            <Row>
+              <Col span={24}>
+                <p className={styles.ViewCommentParagraph}>{commentText}</p>
+              </Col>
+            </Row>
+          </div>
           <Row>
             <Col span={24}>
               <div className={styles.CommentsButtonClass}>
@@ -55,7 +54,7 @@ const ViewCommentModal = ({
               </div>
             </Col>
           </Row>
-        </div>
+        </>
       }
     />
   );
