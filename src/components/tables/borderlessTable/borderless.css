@@ -184,12 +184,10 @@ border-  bottom-bottom-right-radius: 6.94px !important;
 }
 /* For blue */
 
-/* .border-less-table-blue-body {
-    margin-top: 10px !important;
+.border-less-table-blue-body {
   overflow-x: hidden !important;
   overflow-y: auto !important;
-  scrollbar-color: #eaeaea transparent !important;
-} */
+}
 
 /* Root Table Layout */
 .border-less-table-blue-body table {
@@ -1065,6 +1063,11 @@ td.border-less-table-white-4-cell:first-child::after {
   height: 53.82px;
 }
 
+.border-less-table-upcomingTable-body {
+  overflow-x: hidden !important;
+  overflow-y: auto !important;
+}
+
 /* Target the first and last <td> inside each <tr> */
 td.border-less-table-upcomingTable-cell:first-child {
   /* Your styles here */
@@ -1242,6 +1245,11 @@ border-  bottom-bottom-right-radius: 6.94px !important;
 /* Previous Table */
 .border-less-table-previousTable-body table {
   border-spacing: 0 10px; /* Space between rows */
+}
+
+.border-less-table-previousTable-body {
+  overflow-x: hidden !important;
+  overflow-y: auto !important;
 }
 
 /* Table Row Styling */
