@@ -17,6 +17,7 @@ import PendingRequest from "./pendingRequestsTab/PendingRequest";
 import { useMyAdmin } from "../../../context/AdminContext";
 import UsersTab from "./usersTab/ManageUsers";
 import RequestApprovedRejeectedModal from "./modal/requestApprovedrejectModal/requestApprovedrejectModal";
+import RejectedRequestTab from "./rejectedRequestTab/rejectedRequestTab";
 
 const ManageUsers = () => {
   const {
@@ -98,7 +99,7 @@ const ManageUsers = () => {
       resetmanageUsersContextState();
     };
   }, []);
-  
+
   useEffect(() => {
     if (!modaPendingRequestModalOpenAction) {
       setTypeofAction(-1);
@@ -162,7 +163,7 @@ const ManageUsers = () => {
                 />
               )}
 
-              {manageUsersTab === "2" && <div>No rejected requests.</div>}
+              {manageUsersTab === "2" && <RejectedRequestTab />}
             </Row>
           </div>
         </div>
