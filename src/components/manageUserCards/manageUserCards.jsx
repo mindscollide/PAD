@@ -4,6 +4,7 @@ import { EllipsisOutlined } from "@ant-design/icons";
 import styles from "./manageUserCards.module.css";
 import { useGlobalModal } from "../../context/GlobalModalContext";
 import GroupPolicies from "../../assets/img/GroupPeople.png";
+import Profile2 from "../../assets/img/user.png";
 
 const ManageUsersCard = ({ profile, name, email, id, file }) => {
   const { setViewDetailManageUser } = useGlobalModal();
@@ -41,7 +42,11 @@ const ManageUsersCard = ({ profile, name, email, id, file }) => {
       {/* Left Section - Profile */}
       {/* For Profile Picture */}
       <div className={styles.manageUserSection}>
-        <img src={profile} alt={name} className={styles.manageUserProfileImg} />
+        <img
+          src={profile && profile.trim() !== "" ? profile : Profile2}
+          alt={name}
+          className={styles.manageUserProfileImg}
+        />
       </div>
       {/* Fpr Details and dropdown icon */}
       <div className={styles.fordetailUserManage}>

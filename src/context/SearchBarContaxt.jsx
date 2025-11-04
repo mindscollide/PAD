@@ -289,6 +289,19 @@ export const SearchBarProvider = ({ children }) => {
     pageNumber: 0,
     pageSize: 10,
   });
+
+  //Admin Manage User Users Tab Search
+  const [adminManageUserUsersTabSearch, setAdminManageUserUsersTabSearch] =
+    useState({
+      employeeID: 0,
+      employeeName: "",
+      emailAddress: "",
+      departmentName: "",
+      filterTrigger: false,
+      pageNumber: 0,
+      pageSize: 10,
+    });
+
   // ===============================
   // Sync Refs (Always-Latest Values)
   // ===============================
@@ -605,6 +618,17 @@ export const SearchBarProvider = ({ children }) => {
       pageSize: 10,
     });
 
+  const resetAdminManageUserUsersTabSearch = () =>
+    setAdminManageUserUsersTabSearch({
+      employeeID: 0,
+      employeeName: "",
+      emailAddress: "",
+      departmentName: "",
+      filterTrigger: false,
+      pageNumber: 0,
+      pageSize: 10,
+    });
+
   // ================================================================================ //
   /** Reset all filters across modules */
   const resetSearchBarContextState = () => {
@@ -624,6 +648,7 @@ export const SearchBarProvider = ({ children }) => {
     resetAdminGropusAndPolicySearch();
     resetAdminGropusAndPolicyPoliciesTabSearch();
     resetAdminGropusAndPolicyUsersTabSearch();
+    resetAdminManageUserUsersTabSearch();
   };
 
   // ===============================
@@ -699,6 +724,11 @@ export const SearchBarProvider = ({ children }) => {
         resetAdminGropusAndPolicyUsersTabSearch,
         adminGropusAndPolicyUsersTabSearch,
         setAdminGropusAndPolicyUsersTabSearch,
+
+        //Admin Manage User Users Tab Search
+        resetAdminManageUserUsersTabSearch,
+        adminManageUserUsersTabSearch,
+        setAdminManageUserUsersTabSearch,
 
         // Always-latest refs
         employeeMyApprovalSearchRef,

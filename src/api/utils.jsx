@@ -415,6 +415,14 @@ export const responseMessages = {
   PAD_Admin_GetPreviousClosingPeriods_02: "No data found",
   PAD_Admin_GetPreviousClosingPeriods_03: "Exception occurred",
   PAD_Admin_GetPreviousClosingPeriods_04: "Invalid input",
+
+  //For Manage User UsersTab listing messages
+  Admin_AdminServiceManager_GetAllEmployeesWithAssignedManageUsersUserTabPolicies_01:
+    "Data found",
+  Admin_AdminServiceManager_GetAllEmployeesWithAssignedManageUsersUserTabPolicies_01:
+    "No data found",
+  Admin_AdminServiceManager_GetAllEmployeesWithAssignedManageUsersUserTabPolicies_01:
+    "Exception occurred",
 };
 
 /**

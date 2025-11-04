@@ -136,6 +136,13 @@ export const MyAdminProvider = ({ children }) => {
     totalRecordsTable: 0,
   });
 
+  // context for Manage User Users Tab Search criteria
+  const [adminManageUserTabData, setAdminManageUserTabData] = useState({
+    employees: [],
+    totalRecordsDataBase: 0,
+    totalRecordsTable: 0,
+  });
+
   const [selectedInstrumentOnClick, setSelectedInstrumentOnClick] =
     useState(null);
 
@@ -275,6 +282,10 @@ export const MyAdminProvider = ({ children }) => {
         resetAdminGroupeAndPoliciesUsersTabDataState,
         adminGroupeAndPoliciesUsersTabData,
         setAdminGroupeAndPoliciesUsersTabData,
+
+        // context for Manage User Users Tab Search criteria
+        adminManageUserTabData,
+        setAdminManageUserTabData,
       }}
     >
       {children}

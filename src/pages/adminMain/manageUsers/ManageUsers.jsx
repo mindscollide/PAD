@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { Tabs, Row, Col } from "antd";
 import { ManageUsersCard, PageLayout } from "../../../components";
 import styles from "./ManageUsers.module.css";
@@ -14,8 +14,31 @@ import RolesAndPoliciesModal from "./modal/rolesAndPoliciesModal/RolesAndPolicie
 import EditRoleAndPoliciesModal from "./modal/editRoleAndPoliciesModal/EditRoleAndPoliciesModal";
 import UnSaveChangesModal from "./modal/unSaveChangesModal/UnSaveChangesModal";
 import PendingRequest from "./pendingRequests/PendingRequest";
+import { useNavigate } from "react-router-dom";
+import { useNotification } from "../../../components/NotificationProvider/NotificationProvider";
+import { useGlobalLoader } from "../../../context/LoaderContext";
+import { useApi } from "../../../context/ApiContext";
+import { useSearchBarContext } from "../../../context/SearchBarContaxt";
+import { SearchManageUserListRequest } from "../../../api/adminApi";
+import { useMyAdmin } from "../../../context/AdminContext";
+import { buildManageUserUseraTabApiRequest } from "./Utils";
 
 const ManageUsers = () => {
+  const navigate = useNavigate();
+  const hasFetched = useRef(false);
+
+  // ----------------- Contexts -----------------
+
+  const { showNotification } = useNotification();
+  const { showLoader } = useGlobalLoader();
+  const { callApi } = useApi();
+
+  const {
+    resetAdminManageUserUsersTabSearch,
+    adminManageUserUsersTabSearch,
+    setAdminManageUserUsersTabSearch,
+  } = useSearchBarContext();
+
   const {
     viewDetailManageUser,
     rolesAndPoliciesManageUser,
@@ -24,6 +47,52 @@ const ManageUsers = () => {
     activeManageUserTab,
     setActiveManageUserTab,
   } = useGlobalModal();
+
+  const { adminManageUserTabData, setAdminManageUserTabData } = useMyAdmin();
+
+  console.log(
+    adminManageUserTabData,
+    "adminManageUserTabDataadminManageUserTabData"
+  );
+
+  // ----------------- Helpers -----------------
+
+  /** 🔹 Fetch approvals from API */
+  const fetchApiCall = useCallback(
+    async (requestData, replace = false, showLoaderFlag = true) => {
+      if (!requestData || typeof requestData !== "object") return;
+      if (showLoaderFlag) showLoader(true);
+
+      const res = await SearchManageUserListRequest({
+        callApi,
+        showNotification,
+        showLoader,
+        requestdata: requestData,
+        navigate,
+      });
+
+      if (res) {
+        setAdminManageUserTabData(res);
+      }
+    },
+    [callApi, navigate, showLoader, showNotification]
+  );
+
+  // Initial Fetch
+  useEffect(() => {
+    if (!hasFetched.current) {
+      hasFetched.current = true;
+      const requestData = buildManageUserUseraTabApiRequest(
+        adminManageUserUsersTabSearch
+      );
+
+      fetchApiCall(requestData, true, true);
+    }
+  }, [
+    buildManageUserUseraTabApiRequest,
+    adminManageUserUsersTabSearch,
+    fetchApiCall,
+  ]);
 
   // For Users Data In Manage User
   const usersData = [
@@ -148,14 +217,14 @@ const ManageUsers = () => {
             <Row gutter={[24, 16]}>
               {activeManageUserTab === "1" && (
                 <Row gutter={[24, 16]}>
-                  {usersData.map((user, index) => (
+                  {adminManageUserTabData?.employees?.map((user, index) => (
                     <Col key={index} xs={24} sm={12}>
                       <ManageUsersCard
-                        profile={user.profile}
-                        name={user.name}
-                        email={user.email}
-                        id={user.id}
-                        file={user.file}
+                        profile={user.profilePicture}
+                        name={user.employeeName}
+                        email={user.emailAddress}
+                        id={user.employeeID}
+                        file={user.isDisable}
                       />
                     </Col>
                   ))}
