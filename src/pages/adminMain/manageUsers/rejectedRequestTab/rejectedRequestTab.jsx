@@ -20,7 +20,7 @@ import { useApi } from "../../../../context/ApiContext";
 import { useTableScrollBottom } from "../../../../common/funtions/scroll";
 import { SearchBrokersAdminRequest } from "../../../../api/adminApi";
 
-const RejectedRequestTab = ({activeFilters}) => {
+const RejectedRequestTab = ({ activeFilters }) => {
   const navigate = useNavigate();
   const hasFetched = useRef(false);
   const tableScrollBrokersList = useRef(null);
@@ -30,19 +30,19 @@ const RejectedRequestTab = ({activeFilters}) => {
   const { showLoader } = useGlobalLoader();
   const { callApi } = useApi();
   const {
-    adminBrokerSearch,
-    setAdminBrokerSearch,
-    resetAdminBrokersListSearch,
+    rejectedRequestsTabSearch,
+    setRejectedRequestsTabSearch,
+    resetRejectedRequestsTabSearch,
   } = useSearchBarContext();
 
   const {
-    adminBrokerData,
-    setAdminBrokerData,
-    resetAdminBrokersDataContextState,
-    adminBrokerMqtt,
-    setAdminBrokerMqtt,
+    manageUsersRejectedRequestTabData,
+    setManageUsersRejectedRequestTabData,
+    resetManageUsersRejectedRequestTabData,
+    manageUsersRejectedRequestTabMQTT,
+    setManageUsersRejectedRequestTabMQTT,
   } = useMyAdmin();
-  
+
   const [loadingMore, setLoadingMore] = useState(false);
 
   // 🔷 UI State
@@ -53,7 +53,7 @@ const RejectedRequestTab = ({activeFilters}) => {
   //   const columns = getBrokerTableColumns({
   //     sortedInfo,
   //     adminBrokerSearch,
-  //     setAdminBrokerSearch,
+  //     setRejectedRequestsTabSearch,
   //     setEditBrokerModal,
   //     setEditModalData,
   //     onStatusChange: onToggleStatusApiRequest,
@@ -73,24 +73,29 @@ const RejectedRequestTab = ({activeFilters}) => {
         requestdata: requestData,
         navigate,
       });
-      const brokers = Array.isArray(res?.brokers) ? res.brokers : [];
+      const rejectedRequests = Array.isArray(res?.rejectedRequests)
+        ? res.rejectedRequests
+        : [];
 
-      setAdminBrokerData((prev) => ({
-        brokers: replace ? brokers : [...(prev?.brokers || []), ...brokers],
+      setManageUsersRejectedRequestTabData((prev) => ({
+        brokers: replace
+          ? rejectedRequests
+          : [...(prev?.rejectedRequests || []), ...rejectedRequests],
         // this is for to run lazy loading its data comming from database of total data in db
         totalRecordsDataBase: res?.totalRecords || 0,
         // this is for to know how mush dta currently fetch from  db
         totalRecordsTable: replace
-          ? brokers.length
-          : adminBrokerData.totalRecordsTable + brokers.length,
+          ? rejectedRequests.length
+          : manageUsersRejectedRequestTabData.totalRecordsTable +
+            rejectedRequests.length,
       }));
 
-      setAdminBrokerSearch((prev) => {
+      setRejectedRequestsTabSearch((prev) => {
         const next = {
           ...prev,
           pageNumber: replace
-            ? brokers.length
-            : prev.pageNumber + brokers.length,
+            ? rejectedRequests.length
+            : prev.pageNumber + rejectedRequests.length,
         };
 
         // this is for check if filter value get true only on that it will false
@@ -106,8 +111,8 @@ const RejectedRequestTab = ({activeFilters}) => {
       navigate,
       showLoader,
       showNotification,
-      setAdminBrokerSearch,
-      setAdminBrokerData,
+      setRejectedRequestsTabSearch,
+      setManageUsersRejectedRequestTabData,
     ]
   );
 
@@ -117,53 +122,53 @@ const RejectedRequestTab = ({activeFilters}) => {
   useEffect(() => {
     if (!hasFetched.current) {
       hasFetched.current = true;
-      const requestData = buildApiRequest(adminBrokerSearch);
+      const requestData = buildApiRequest(rejectedRequestsTabSearch);
       fetchApiCall(requestData, true, true);
     }
-  }, [buildApiRequest, adminBrokerSearch, fetchApiCall]);
+  }, [buildApiRequest, rejectedRequestsTabSearch, fetchApiCall]);
 
   // Reset on Unmount
   useEffect(() => {
     return () => {
-      resetAdminBrokersListSearch();
-      resetAdminBrokersDataContextState();
+      resetRejectedRequestsTabSearch();
+      resetManageUsersRejectedRequestTabData();
     };
   }, []);
 
   // Fetch on Filter Trigger
   useEffect(() => {
-    if (adminBrokerSearch.filterTrigger) {
-      const requestData = buildApiRequest(adminBrokerSearch);
+    if (rejectedRequestsTabSearch.filterTrigger) {
+      const requestData = buildApiRequest(rejectedRequestsTabSearch);
 
       fetchApiCall(requestData, true, true);
     }
-  }, [adminBrokerSearch.filterTrigger]);
+  }, [rejectedRequestsTabSearch.filterTrigger]);
 
   // MQTT Updates
   useEffect(() => {
-    if (adminBrokerMqtt) {
-      setAdminBrokerMqtt(false);
-      let requestData = buildApiRequest(adminBrokerSearch);
+    if (manageUsersRejectedRequestTabMQTT) {
+      setManageUsersRejectedRequestTabMQTT(false);
+      let requestData = buildApiRequest(rejectedRequestsTabSearch);
       requestData = {
         ...requestData,
         PageNumber: 0,
       };
       fetchApiCall(requestData, true, false);
     }
-  }, [adminBrokerMqtt]);
+  }, [manageUsersRejectedRequestTabMQTT]);
 
   // Lazy loading
   useTableScrollBottom(
     async () => {
       if (
-        adminBrokerData?.totalRecordsDataBase <=
-        adminBrokerData?.totalRecordsTable
+        manageUsersRejectedRequestTabData?.totalRecordsDataBase <=
+        manageUsersRejectedRequestTabData?.totalRecordsTable
       )
         return;
 
       try {
         setLoadingMore(true);
-        const requestData = buildApiRequest(adminBrokerSearch);
+        const requestData = buildApiRequest(rejectedRequestsTabSearch);
         await fetchApiCall(requestData, false, false);
       } catch (err) {
         console.error("Error loading more approvals:", err);
@@ -180,10 +185,10 @@ const RejectedRequestTab = ({activeFilters}) => {
       <div className="px-4 md:px-6 lg:px-8">
         {/* 🔷 Brokers Table */}
         <BorderlessTable
-          // rows={adminBrokerData?.brokers || []}
+          rows={manageUsersRejectedRequestTabData?.rejectedRequests || []}
           classNameTable="border-less-table-blue"
           scroll={
-            adminBrokerData?.brokers?.length
+            manageUsersRejectedRequestTabData?.rejectedRequests?.length
               ? { x: "max-content", y: activeFilters.length > 0 ? 450 : 500 }
               : undefined
           }

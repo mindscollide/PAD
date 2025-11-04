@@ -190,6 +190,23 @@ export const MyAdminProvider = ({ children }) => {
   //  1 bulk
   // 2 single
   const [typeofAction, setTypeofAction] = useState(-1);
+
+  // rejected request list data
+  const [
+    manageUsersRejectedRequestTabData,
+    setManageUsersRejectedRequestTabData,
+  ] = useState({
+    rejectedRequests: [],
+    totalRecordsDataBase: 0,
+    totalRecordsTable: 0,
+  });
+
+  // rejected request list data
+  const [
+    manageUsersRejectedRequestTabMQTT,
+    setManageUsersRejectedRequestTabMQTT,
+  ] = useState(false);
+
   /**
    * ♻️ Reset Context State (Table + API Data)
    *
@@ -264,11 +281,21 @@ export const MyAdminProvider = ({ children }) => {
     setTypeofAction(-1);
   };
 
+  // reset ManageUsers Rejected Request Tab Data
+  const resetManageUsersRejectedRequestTabData = () => {
+    setManageUsersRejectedRequestTabData({
+      rejectedRequests: [],
+      totalRecordsDataBase: 0,
+      totalRecordsTable: 0,
+    });
+  };
+
   // rest Contaxt of manager tab data
   const resetmanageUsersContextState = () => {
     setManageUsersTab("0");
     resetManageUsersPendingTabDataState();
     resetModalStateBulkAction();
+    resetManageUsersRejectedRequestTabData();
   };
 
   const resetAdminDataContextState = () => {
@@ -380,6 +407,13 @@ export const MyAdminProvider = ({ children }) => {
 
         typeofAction,
         setTypeofAction,
+
+        // rejected request list data
+        resetManageUsersRejectedRequestTabData,
+        manageUsersRejectedRequestTabData,
+        setManageUsersRejectedRequestTabData,
+        manageUsersRejectedRequestTabMQTT,
+        setManageUsersRejectedRequestTabMQTT,
       }}
     >
       {children}
