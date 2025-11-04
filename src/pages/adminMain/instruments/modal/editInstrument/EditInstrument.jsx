@@ -19,8 +19,8 @@ import { useNavigate } from "react-router-dom";
 import {
   AddInstrumentClosingPeriodRequest,
   DeleteUpcomingInstrumentCosingPeriodRequest,
-  getPreviousClosingPeriodInstrumentRequest,
-  getUpcomingClosingPeriodInstrumentRequest,
+  GetPreviousClosingPeriodInstrumentRequest,
+  GetUpcomingClosingPeriodInstrumentRequest,
 } from "../../../../../api/adminApi";
 import {
   formatDateToUTCString,
@@ -180,7 +180,7 @@ const EditInstrument = () => {
         length: 10,
       };
 
-      const response = await getUpcomingClosingPeriodInstrumentRequest({
+      const response = await GetUpcomingClosingPeriodInstrumentRequest({
         callApi,
         showNotification,
         showLoader,
@@ -223,7 +223,7 @@ const EditInstrument = () => {
         length: 20,
       };
 
-      const response = await getPreviousClosingPeriodInstrumentRequest({
+      const response = await GetPreviousClosingPeriodInstrumentRequest({
         callApi,
         showNotification,
         showLoader,

@@ -23,8 +23,8 @@ import { useApi } from "../../../context/ApiContext";
 import { useSearchBarContext } from "../../../context/SearchBarContaxt";
 import { useMyAdmin } from "../../../context/AdminContext";
 import {
-  getPreviousClosingPeriodInstrumentRequest,
-  getUpcomingClosingPeriodInstrumentRequest,
+  GetPreviousClosingPeriodInstrumentRequest,
+  GetUpcomingClosingPeriodInstrumentRequest,
   SearchGetInstrumentsWithClosingPeriod,
   UpdateInstrumentStatus,
 } from "../../../api/adminApi";
@@ -102,7 +102,7 @@ const Instruments = () => {
       length: 10,
     };
 
-    const response = await getUpcomingClosingPeriodInstrumentRequest({
+    const response = await GetUpcomingClosingPeriodInstrumentRequest({
       callApi,
       showNotification,
       showLoader,
@@ -130,7 +130,7 @@ const Instruments = () => {
       length: 20,
     };
 
-    const response = await getPreviousClosingPeriodInstrumentRequest({
+    const response = await GetPreviousClosingPeriodInstrumentRequest({
       callApi,
       showNotification,
       showLoader,
