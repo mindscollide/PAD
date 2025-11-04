@@ -139,6 +139,12 @@ export const MyAdminProvider = ({ children }) => {
   const [selectedInstrumentOnClick, setSelectedInstrumentOnClick] =
     useState(null);
 
+  // this state for setOpen tab of manage users
+  // 0 users tab
+  // 1 pending Request
+  // 2 rejected request
+  const [manageUsersTab, setManageUsersTab] = useState("0");
+
   /**
    * ♻️ Reset Context State (Table + API Data)
    *
@@ -176,6 +182,7 @@ export const MyAdminProvider = ({ children }) => {
   const resetAdminGroupeAndPoliciesPoliciesTabDataState = () => {
     setAdminGroupeAndPoliciesPoliciesTabData([]);
   };
+
   const resetAdminGroupeAndPoliciesUsersTabDataState = () => {
     setAdminGroupeAndPoliciesUsersTabData({
       employees: [],
@@ -201,6 +208,10 @@ export const MyAdminProvider = ({ children }) => {
     resetAdminGroupeAndPoliciesUsersTabDataState();
   };
 
+  const resetmanageUsersContextState = () => {
+    setManageUsersTab("0");
+  };
+
   const resetAdminDataContextState = () => {
     // intruments
     resetAdminInstrumentsContextState();
@@ -214,6 +225,9 @@ export const MyAdminProvider = ({ children }) => {
     resetAdminGropusAndPolicyContextState();
 
     resetAdminGroupeAndPoliciesPoliciesTabDataState();
+
+    // manageUsers tab
+    resetmanageUsersContextState();
     //
   };
 
@@ -275,6 +289,11 @@ export const MyAdminProvider = ({ children }) => {
         resetAdminGroupeAndPoliciesUsersTabDataState,
         adminGroupeAndPoliciesUsersTabData,
         setAdminGroupeAndPoliciesUsersTabData,
+
+        // manageUsers tab
+        manageUsersTab,
+        setManageUsersTab,
+        resetmanageUsersContextState,
       }}
     >
       {children}

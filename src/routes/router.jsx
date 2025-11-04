@@ -30,10 +30,10 @@ import {
   Brokers,
   Instruments,
   GroupsAndPolicy,
+  ManageUsers,
 } from "../pages";
 import RoleBasedRoute from "./RoleBasedRoute";
 import EscalatedApprovals from "../pages/main/headOfTradeApprover/escalatedApprovals/escalatedApprovals";
-import ManageUsers from "../pages/adminMain/manageUsers/ManageUsers";
 
 const router = createBrowserRouter(
   createRoutesFromElements(

@@ -51,11 +51,22 @@ const SearchWithPopoverOnly = () => {
     setAdminGropusAndPolicySearch,
     setAdminGropusAndPolicyPoliciesTabSearch,
     setAdminGropusAndPolicyUsersTabSearch,
+    //
+    usersTabSearch,
+    setUsersTabSearch,
+    resetUsersTabSearch,
+    pendingRequestsTabSearch,
+    setPendingRequestsTabSearch,
+    resetPendingRequestsTabSearch,
+    rejectedRequestsTabSearch,
+    setRejectedRequestsTabSearch,
+    resetRejectedRequestsTabSearch,
   } = useSearchBarContext();
   const {
     pageTypeForAdminGropusAndPolicy,
     pageTabesForAdminGropusAndPolicy,
     openNewFormForAdminGropusAndPolicy,
+    manageUsersTab,
   } = useMyAdmin();
 
   // -------------------------
@@ -297,7 +308,45 @@ const SearchWithPopoverOnly = () => {
 
         setSearchMain("");
         break;
-
+      
+        case "21": // Admin Manage Users 
+        if (manageUsersTab === "0") {
+          setUsersTabSearch((prev) => ({
+            ...prev,
+            employeeName: searchMain,
+            employeeID: 0,
+            emailAddress: "",
+            departmentName: "",
+            filterTrigger: true,
+            pageNumber: 0,
+            pageSize: 10,
+          }));
+        } else if (manageUsersTab === "1") {
+          setPendingRequestsTabSearch((prev) => ({
+            ...prev,
+            employeeName: searchMain,
+            employeeID: 0,
+            emailAddress: "",
+            departmentName: "",
+            startDate: null,
+            endDate: null,
+            filterTrigger: true,
+            pageNumber: 0,
+            pageSize: 10,
+          }));
+        } else {
+          setRejectedRequestsTabSearch((prev) => ({
+            ...prev,
+            employeeName: searchMain,
+            emailAddress: "",
+            departmentName: "",
+            filterTrigger: true,
+            pageNumber: 0,
+            pageSize: 10,
+          }));
+        }
+        setSearchMain("");
+        break;
       default:
         setEmployeeMyApprovalSearch((prev) => ({
           ...prev,
@@ -324,6 +373,8 @@ const SearchWithPopoverOnly = () => {
             ? "Employee name. Click the icon to view more options"
             : selectedKey === "20"
             ? "Policy Name. Click the icon to view more options"
+            : selectedKey === "21"
+            ? "employee name. Click the icon to view more options"
             : "Instrument name. Click the icon to view more options"
         }
         allowClear
