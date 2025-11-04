@@ -13,7 +13,7 @@ import { AdminBrokersListFiletr } from "./AdminBrokersListFilter";
 import { AdminInstrumentsListFilter } from "./AdminInstrumentsListFilter";
 import { AdminPoliciesAndGroupUsersTabFilter } from "./AdminPoliciesAndGroupUsersTabFilter";
 import { AdminPoliciesFilter } from "./AdminPoliciesFilter";
-import { AdminUsersTabFilter } from "./AdminUsersTabFilter";
+import { AdminUsersTabFilter } from "./AdminMnageUsersTabFilter";
 import { ComplianceReconcileFilter } from "./ComplianceReconsile";
 import { EmployeeMyApprovalFilter } from "./EmployeeMyApprovalFilter";
 import { EmployeePortfolioFilter } from "./EmployeePortfolioFilter";
