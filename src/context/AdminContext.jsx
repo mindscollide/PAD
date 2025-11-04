@@ -213,14 +213,14 @@ export const MyAdminProvider = ({ children }) => {
   };
 
   // reset manage user tab data
-  const resetmanageUsersPendingTabDataState = () => {
+  const resetManageUsersPendingTabDataState = () => {
     setManageUsersPendingTabData([]);
   };
 
   // rest Contaxt of manager tab data
   const resetmanageUsersContextState = () => {
     setManageUsersTab("0");
-    resetmanageUsersPendingTabDataState();
+    resetManageUsersPendingTabDataState();
   };
 
   const resetAdminDataContextState = () => {
@@ -309,7 +309,7 @@ export const MyAdminProvider = ({ children }) => {
         // manage users pending data tab
         manageUsersPendingTabData,
         setManageUsersPendingTabData,
-        resetmanageUsersPendingTabDataState,
+        resetManageUsersPendingTabDataState,
       }}
     >
       {children}
