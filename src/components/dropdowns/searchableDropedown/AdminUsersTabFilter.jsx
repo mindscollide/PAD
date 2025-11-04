@@ -13,15 +13,9 @@ const INITIAL_LOCAL_STATE = {
   dateRange: null,
 };
 
-export const AdminUsersTabFilter = ({
-  setVisible,
-  clear,
-  setClear,
-}) => {
+export const AdminUsersTabFilter = ({ setVisible, clear, setClear }) => {
   const { setAdminUserSearch, adminUserSearch } = useSearchBarContext();
-  const {
-    manageUsersTab,
-  } = useMyAdmin();
+  const { manageUsersTab } = useMyAdmin();
 
   const [localState, setLocalState] = useState(INITIAL_LOCAL_STATE);
 
@@ -125,6 +119,17 @@ export const AdminUsersTabFilter = ({
                 value={localState.emailAddress}
                 onChange={handleInputChange}
                 placeholder="Email Address"
+                size="medium"
+                classNames="Search-Field"
+              />
+            </Col>
+            <Col xs={24} md={12}>
+              <TextField
+                label="Department Name"
+                name="departmentName"
+                value={localState.departmentName}
+                onChange={handleInputChange}
+                placeholder="Department Name"
                 size="medium"
                 classNames="Search-Field"
               />

@@ -16,26 +16,9 @@ import UnSaveChangesModal from "./modal/unSaveChangesModal/UnSaveChangesModal";
 import PendingRequest from "./pendingRequestsTab/PendingRequest";
 import { useMyAdmin } from "../../../context/AdminContext";
 import UsersTab from "./usersTab/ManageUsers";
-import { useNotification } from "../../../components/NotificationProvider/NotificationProvider";
-import { useNavigate } from "react-router-dom";
-import { useGlobalLoader } from "../../../context/LoaderContext";
-import { useApi } from "../../../context/ApiContext";
 
 const ManageUsers = () => {
-  const navigate = useNavigate();
-  const hasFetched = useRef(false);
-
   // ----------------- Contexts -----------------
-
-  const { showNotification } = useNotification();
-  const { showLoader } = useGlobalLoader();
-  const { callApi } = useApi();
-
-  const {
-    resetAdminManageUserUsersTabSearch,
-    adminManageUserUsersTabSearch,
-    setAdminManageUserUsersTabSearch,
-  } = useSearchBarContext();
 
   const {
     viewDetailManageUser,
