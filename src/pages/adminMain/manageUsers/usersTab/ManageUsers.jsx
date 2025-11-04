@@ -66,11 +66,15 @@ const UsersTab = () => {
   // Fetch on Filter Trigger
   useEffect(() => {
     if (usersTabSearch.filterTrigger) {
-      const requestData = buildManageUserUseraTabApiRequest(
-        adminIntrumentListSearch
-      );
+      const requestData = buildManageUserUseraTabApiRequest(usersTabSearch);
 
       fetchApiCall(requestData, true, true);
+
+      // ✅ Reset filterTrigger to false after API call so it can be triggered again later
+      setUsersTabSearch((prev) => ({
+        ...prev,
+        filterTrigger: false,
+      }));
     }
   }, [usersTabSearch.filterTrigger]);
 
@@ -83,7 +87,7 @@ const UsersTab = () => {
       departmentName: { departmentName: "" },
     };
 
-    setAdminIntrumentListSearch((prev) => ({
+    setUsersTabSearch((prev) => ({
       ...prev,
       ...resetMap[key],
       pageNumber: 0,
@@ -93,11 +97,12 @@ const UsersTab = () => {
 
   /** 🔹 Handle removing all filters */
   const handleRemoveAllFilters = () => {
-    setAdminIntrumentListSearch((prev) => ({
+    setUsersTabSearch((prev) => ({
       ...prev,
-      instrumentName: "",
-      startDate: null,
-      endDate: null,
+      employeeName: "",
+      employeeID: 0,
+      emailAddress: "",
+      departmentName: "",
       pageNumber: 0,
       filterTrigger: true,
     }));
@@ -105,43 +110,88 @@ const UsersTab = () => {
 
   /** 🔹 Build Active Filters */
   const activeFilters = (() => {
-    const { instrumentName, startDate, endDate } =
-      adminIntrumentListSearch || {};
+    const { employeeName, employeeID, emailAddress, departmentName } =
+      usersTabSearch || {};
 
     return [
-      instrumentName && {
-        key: "instrumentName",
+      employeeName && {
+        key: "employeeName",
         value:
-          instrumentName.length > 13
-            ? instrumentName.slice(0, 13) + "..."
-            : instrumentName,
+          employeeName.length > 13
+            ? employeeName.slice(0, 13) + "..."
+            : employeeName,
       },
-      startDate &&
-        endDate && {
-          key: "dateRange",
-          value: `${startDate} → ${endDate}`,
-        },
+      employeeID && {
+        key: "employeeID",
+        value:
+          employeeID.length > 13 ? employeeID.slice(0, 13) + "..." : employeeID,
+      },
+      emailAddress && {
+        key: "emailAddress",
+        value:
+          emailAddress.length > 13
+            ? emailAddress.slice(0, 13) + "..."
+            : emailAddress,
+      },
+      departmentName && {
+        key: "departmentName",
+        value:
+          departmentName.length > 13
+            ? departmentName.slice(0, 13) + "..."
+            : departmentName,
+      },
     ].filter(Boolean);
   })();
 
   return (
     <>
+      {/* 🔹 Active Filter Tags */}
+      {activeFilters.length > 0 && (
+        <Row gutter={[12, 12]} className={styles["filter-tags-container"]}>
+          {console.log("activeFilters", activeFilters)}
+
+          {activeFilters.map(({ key, value }) => (
+            <Col key={key}>
+              <div className={styles["filter-tag"]}>
+                <span>{value}</span>
+                <span
+                  className={styles["filter-tag-close"]}
+                  onClick={() => handleRemoveFilter(key)}
+                >
+                  &times;
+                </span>
+              </div>
+            </Col>
+          ))}
+
+          {/* 🔹 Show Clear All only if more than one filter */}
+          {activeFilters.length > 1 && (
+            <Col>
+              <div
+                className={`${styles["filter-tag"]} ${styles["clear-all-tag"]}`}
+                onClick={handleRemoveAllFilters}
+              >
+                <span>Clear All</span>
+              </div>
+            </Col>
+          )}
+        </Row>
+      )}
+
       <div className={styles.ManageUserSecondDiv}>
         {/* ✅ Only show user cards when Users tab is active */}
         <Row gutter={[24, 16]}>
-          <Row gutter={[24, 16]}>
-            {adminManageUserTabData?.employees?.map((user, index) => (
-              <Col key={index} xs={24} sm={12}>
-                <ManageUsersCard
-                  profile={user.profilePicture}
-                  name={user.employeeName}
-                  email={user.emailAddress}
-                  id={user.employeeID}
-                  file={user.isDisable}
-                />
-              </Col>
-            ))}
-          </Row>
+          {adminManageUserTabData?.employees?.map((user, index) => (
+            <Col key={index} xs={24} sm={12}>
+              <ManageUsersCard
+                profile={user.profilePicture}
+                name={user.employeeName}
+                email={user.emailAddress}
+                id={user.employeeID}
+                file={user.isDisable}
+              />
+            </Col>
+          ))}
         </Row>
       </div>
     </>

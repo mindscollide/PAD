@@ -56,6 +56,7 @@ const ManageUsers = () => {
       label: <span style={tabStyle("2")}>Rejected Requests</span>,
     },
   ];
+
   const pendingRequestsData = [
     {
       PendingRequestUsername: "Muhammad Junaid Akbar Farooqui",
@@ -83,6 +84,7 @@ const ManageUsers = () => {
       profileImage: Profile5,
     },
   ];
+
   useEffect(() => {
     console.log("Component mounted");
 

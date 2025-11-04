@@ -1800,3 +1800,236 @@ export const SearchManageUserListRequest = async ({
     showLoader(false);
   }
 };
+
+// Manage User Users Tab  View Detail Modal Request in Admin
+export const ViewDetailManageUserUserTabRequest = async ({
+  callApi,
+  showNotification,
+  showLoader,
+  requestdata,
+  navigate,
+}) => {
+  try {
+    // 🔹 API Call
+    const res = await callApi({
+      requestMethod: import.meta.env
+        .VITE_MANAGE_USERS_USER_TAB_VIEW_DETAIL_MODAL_REQUEST_METHOD, // 🔑 must be defined in .env
+      endpoint: import.meta.env.VITE_API_ADMIN,
+      requestData: requestdata,
+      navigate,
+    });
+
+    // 🔹 Handle session expiry
+    if (handleExpiredSession(res, navigate, showLoader)) return null;
+
+    // 🔹 Validate execution
+    if (!res?.result?.isExecuted) {
+      showNotification({
+        type: "error",
+        title: "Error",
+        description: "Something went wrong while fetching Group Policies List.",
+      });
+      return null;
+    }
+
+    // 🔹 Handle success
+    if (res.success) {
+      const { responseMessage, userAssignedRoles, userDetails, userHierarchy } =
+        res.result;
+      const message = getMessage(responseMessage);
+
+      // Case 1 → Data available
+      if (
+        responseMessage ===
+        "Admin_AdminServiceManager_GetUserFullDetailsByEmployeeID_01"
+      ) {
+        return {
+          userAssignedRoles: userAssignedRoles || [],
+          userDetails: userDetails || {},
+          userHierarchy: userHierarchy || [],
+        };
+      }
+
+      // Case 2 → No data
+      if (
+        responseMessage ===
+        "Admin_AdminServiceManager_GetUserFullDetailsByEmployeeID_02"
+      ) {
+        return {
+          userAssignedRoles: [],
+          userDetails: {},
+          userHierarchy: [],
+        };
+      }
+
+      // Case 3 → Custom server messages
+      if (message) {
+      }
+
+      return null;
+    }
+
+    // 🔹 Handle failure
+    showNotification({
+      type: "error",
+      title: "Fetch Failed",
+      description: getMessage(res.message),
+    });
+    return null;
+  } catch (error) {
+    return null;
+  } finally {
+    // 🔹 Always hide loader
+    showLoader(false);
+  }
+};
+
+// Get Line Manager View Detail on Manage User UsersTab request in Admin
+export const GetLineManagerOnViewDetailUserTabRequest = async ({
+  callApi,
+  showNotification,
+  showLoader,
+  navigate,
+}) => {
+  try {
+    // 🔹 API Call
+    const res = await callApi({
+      requestMethod: import.meta.env
+        .VITE_GET_LINE_MANAGER_MANAGE_USER_TAB_REQEUST_METHOD, // 🔑 must be defined in .env
+      endpoint: import.meta.env.VITE_API_ADMIN,
+      navigate,
+    });
+
+    // 🔹 Handle session expiry
+    if (handleExpiredSession(res, navigate, showLoader)) return null;
+
+    // 🔹 Validate execution
+    if (!res?.result?.isExecuted) {
+      showNotification({
+        type: "error",
+        title: "Error",
+        description: "Something went wrong while fetching Group Policies List.",
+      });
+      return null;
+    }
+
+    // 🔹 Handle success
+    if (res.success) {
+      const { responseMessage, lineManagers } = res.result;
+      const message = getMessage(responseMessage);
+
+      // Case 1 → Data available
+      if (
+        responseMessage === "Admin_AdminServiceManager_GetAllLineManagers_01"
+      ) {
+        return {
+          lineManagers: lineManagers || [],
+        };
+      }
+
+      // Case 2 → No data
+      if (
+        responseMessage === "Admin_AdminServiceManager_GetAllLineManagers_02"
+      ) {
+        return {
+          lineManagers: [],
+        };
+      }
+
+      // Case 3 → Custom server messages
+      if (message) {
+      }
+
+      return null;
+    }
+
+    // 🔹 Handle failure
+    showNotification({
+      type: "error",
+      title: "Fetch Failed",
+      description: getMessage(res.message),
+    });
+    return null;
+  } catch (error) {
+    return null;
+  } finally {
+    // 🔹 Always hide loader
+    showLoader(false);
+  }
+};
+
+// Get Compliance Officer View Detail on Manage User UsersTab request in Admin
+export const GetComplianceOfficerOnViewDetailUserTabRequest = async ({
+  callApi,
+  showNotification,
+  showLoader,
+  navigate,
+}) => {
+  try {
+    // 🔹 API Call
+    const res = await callApi({
+      requestMethod: import.meta.env
+        .VITE_GET_COMPLIANCE_OFFICER_MANAGE_USER_TAB_REQEUST_METHOD, // 🔑 must be defined in .env
+      endpoint: import.meta.env.VITE_API_ADMIN,
+      navigate,
+    });
+
+    // 🔹 Handle session expiry
+    if (handleExpiredSession(res, navigate, showLoader)) return null;
+
+    // 🔹 Validate execution
+    if (!res?.result?.isExecuted) {
+      showNotification({
+        type: "error",
+        title: "Error",
+        description: "Something went wrong while fetching Group Policies List.",
+      });
+      return null;
+    }
+
+    // 🔹 Handle success
+    if (res.success) {
+      const { responseMessage, lineManagers } = res.result;
+      const message = getMessage(responseMessage);
+
+      // Case 1 → Data available
+      if (
+        responseMessage ===
+        "Admin_AdminServiceManager_GetAllComplianceOfficer_01"
+      ) {
+        return {
+          lineManagers: lineManagers || [],
+        };
+      }
+
+      // Case 2 → No data
+      if (
+        responseMessage ===
+        "Admin_AdminServiceManager_GetAllComplianceOfficer_02"
+      ) {
+        return {
+          lineManagers: [],
+        };
+      }
+
+      // Case 3 → Custom server messages
+      if (message) {
+      }
+
+      return null;
+    }
+
+    // 🔹 Handle failure
+    showNotification({
+      type: "error",
+      title: "Fetch Failed",
+      description: getMessage(res.message),
+    });
+    return null;
+  } catch (error) {
+    return null;
+  } finally {
+    // 🔹 Always hide loader
+    showLoader(false);
+  }
+};

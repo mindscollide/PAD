@@ -156,6 +156,30 @@ export const MyAdminProvider = ({ children }) => {
     []
   );
 
+  // Manage User View Detail Modal State
+  const [manageUsersViewDetailModalData, setManageUsersViewDetailModalData] =
+    useState({
+      userAssignedRoles: [],
+      userDetails: {},
+      userHierarchy: [],
+    });
+
+  // line Manager Dropdown data in View Detail Modal in Context State
+  const [
+    lineManagerViewDetailDropdownData,
+    setLineManagerViewDetailDropdownData,
+  ] = useState({
+    lineManagers: [],
+  });
+
+  // Compliance Officer Dropdown data in View Detail Modal in Context State
+  const [
+    complianceOfficerViewDetailDropdownData,
+    setComplianceOfficerViewDetailDropdownData,
+  ] = useState({
+    lineManagers: [],
+  });
+
   /**
    * ♻️ Reset Context State (Table + API Data)
    *
@@ -320,6 +344,18 @@ export const MyAdminProvider = ({ children }) => {
         manageUsersPendingTabData,
         setManageUsersPendingTabData,
         resetManageUsersPendingTabDataState,
+
+        //Manage Users View Detail Modal
+        manageUsersViewDetailModalData,
+        setManageUsersViewDetailModalData,
+
+        //Line Manager Dropdown Data in View Detail Modal in Manage User in UsersTab
+        lineManagerViewDetailDropdownData,
+        setLineManagerViewDetailDropdownData,
+
+        //Compliance Officer Dropdown Data in View Detail Modal in Manage User in UsersTab
+        complianceOfficerViewDetailDropdownData,
+        setComplianceOfficerViewDetailDropdownData,
       }}
     >
       {children}

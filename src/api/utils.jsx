@@ -419,10 +419,28 @@ export const responseMessages = {
   //For Manage User UsersTab listing messages
   Admin_AdminServiceManager_GetAllEmployeesWithAssignedManageUsersUserTabPolicies_01:
     "Data found",
-  Admin_AdminServiceManager_GetAllEmployeesWithAssignedManageUsersUserTabPolicies_01:
+  Admin_AdminServiceManager_GetAllEmployeesWithAssignedManageUsersUserTabPolicies_02:
     "No data found",
-  Admin_AdminServiceManager_GetAllEmployeesWithAssignedManageUsersUserTabPolicies_01:
+  Admin_AdminServiceManager_GetAllEmployeesWithAssignedManageUsersUserTabPolicies_03:
     "Exception occurred",
+
+  //For Manage User UserTab View Detail Messages
+  Admin_AdminServiceManager_GetUserFullDetailsByEmployeeID_01: "Data found",
+  Admin_AdminServiceManager_GetUserFullDetailsByEmployeeID_02: "No data found",
+  Admin_AdminServiceManager_GetUserFullDetailsByEmployeeID_03:
+    "Exception occurred",
+  Admin_AdminServiceManager_GetUserFullDetailsByEmployeeID_04:
+    "Invalid Request",
+
+  // For Line Manager in ManageUser Users Tab in View Detail Modal on Drop Down
+  Admin_AdminServiceManager_GetAllLineManagers_01: "Data found",
+  Admin_AdminServiceManager_GetAllLineManagers_02: "No data found",
+  Admin_AdminServiceManager_GetAllLineManagers_03: "Exception occurred",
+
+  // For Compliance Officer in ManageUser Users Tab in View Detail Modal on Drop Down
+  Admin_AdminServiceManager_GetAllComplianceOfficer_01: "Data found",
+  Admin_AdminServiceManager_GetAllComplianceOfficer_02: "Data found",
+  Admin_AdminServiceManager_GetAllComplianceOfficer_03: "Data found",
 };
 
 /**
