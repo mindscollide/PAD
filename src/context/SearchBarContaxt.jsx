@@ -290,18 +290,38 @@ export const SearchBarProvider = ({ children }) => {
     pageSize: 10,
   });
 
-  //Admin Manage User Users Tab Search
-  const [adminManageUserUsersTabSearch, setAdminManageUserUsersTabSearch] =
-    useState({
-      employeeID: 0,
-      employeeName: "",
-      emailAddress: "",
-      departmentName: "",
-      filterTrigger: false,
-      pageNumber: 0,
-      pageSize: 10,
-    });
+  //Admin manageusers users Tab
+  const [usersTabSearch, setUsersTabSearch] = useState({
+    employeeName: "",
+    employeeID: 0,
+    emailAddress: "",
+    departmentName: "",
+    filterTrigger: false,
+    pageNumber: 0,
+    pageSize: 10,
+  });
 
+  //Admin manageusers Pending Requests Tab
+  const [pendingRequestsTabSearch, setPendingRequestsTabSearch] = useState({
+    employeeName: "",
+    employeeID: 0,
+    emailAddress: "",
+    departmentName: "",
+    startDate: null,
+    endDate: null,
+    filterTrigger: false,
+    pageNumber: 0,
+    pageSize: 10,
+  });
+  //Admin manageusers Rejected Requests Tab
+  const [rejectedRequestsTabSearch, setRejectedRequestsTabSearch] = useState({
+    employeeName: "",
+    emailAddress: "",
+    departmentName: "",
+    filterTrigger: false,
+    pageNumber: 0,
+    pageSize: 10,
+  });
   // ===============================
   // Sync Refs (Always-Latest Values)
   // ===============================
@@ -618,9 +638,35 @@ export const SearchBarProvider = ({ children }) => {
       pageSize: 10,
     });
 
-  const resetAdminManageUserUsersTabSearch = () =>
-    setAdminManageUserUsersTabSearch({
+  // Admin reset Users Tab Search
+  const resetUsersTabSearch = () =>
+    setUsersTabSearch({
+      employeeName: "",
       employeeID: 0,
+      emailAddress: "",
+      departmentName: "",
+      filterTrigger: false,
+      pageNumber: 0,
+      pageSize: 10,
+    });
+
+  // Admin reset Gropus And Policy Search filter for users tab
+  const resetPendingRequestsTabSearch = () =>
+    setPendingRequestsTabSearch({
+      employeeName: "",
+      employeeID: 0,
+      emailAddress: "",
+      departmentName: "",
+      startDate: null,
+      endDate: null,
+      filterTrigger: false,
+      pageNumber: 0,
+      pageSize: 10,
+    });
+
+  // Admin reset Rejected Requests Tab Search
+  const resetRejectedRequestsTabSearch = () =>
+    setRejectedRequestsTabSearch({
       employeeName: "",
       emailAddress: "",
       departmentName: "",
@@ -648,7 +694,9 @@ export const SearchBarProvider = ({ children }) => {
     resetAdminGropusAndPolicySearch();
     resetAdminGropusAndPolicyPoliciesTabSearch();
     resetAdminGropusAndPolicyUsersTabSearch();
-    resetAdminManageUserUsersTabSearch();
+    resetUsersTabSearch();
+    resetPendingRequestsTabSearch();
+    resetRejectedRequestsTabSearch();
   };
 
   // ===============================
@@ -725,11 +773,16 @@ export const SearchBarProvider = ({ children }) => {
         adminGropusAndPolicyUsersTabSearch,
         setAdminGropusAndPolicyUsersTabSearch,
 
-        //Admin Manage User Users Tab Search
-        resetAdminManageUserUsersTabSearch,
-        adminManageUserUsersTabSearch,
-        setAdminManageUserUsersTabSearch,
-
+        // Manage Users page
+        usersTabSearch,
+        setUsersTabSearch,
+        resetUsersTabSearch,
+        pendingRequestsTabSearch,
+        setPendingRequestsTabSearch,
+        resetPendingRequestsTabSearch,
+        rejectedRequestsTabSearch,
+        setRejectedRequestsTabSearch,
+        resetRejectedRequestsTabSearch,
         // Always-latest refs
         employeeMyApprovalSearchRef,
         employeeMyTransactionSearchRef,
