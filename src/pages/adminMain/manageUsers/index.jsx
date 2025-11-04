@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Tabs, Row, Col } from "antd";
 import { ManageUsersCard, PageLayout } from "../../../components";
 import styles from "./ManageUsers.module.css";
@@ -13,7 +13,9 @@ import ViewDetailManageUserModal from "./modal/viewDetailManageUserModal/ViewDet
 import RolesAndPoliciesModal from "./modal/rolesAndPoliciesModal/RolesAndPoliciesModal";
 import EditRoleAndPoliciesModal from "./modal/editRoleAndPoliciesModal/EditRoleAndPoliciesModal";
 import UnSaveChangesModal from "./modal/unSaveChangesModal/UnSaveChangesModal";
-import PendingRequest from "./pendingRequests/PendingRequest";
+import PendingRequest from "./pendingRequestsTab/PendingRequest";
+import { useMyAdmin } from "../../../context/AdminContext";
+import UsersTab from "./usersTab/ManageUsers";
 
 const ManageUsers = () => {
   const {
@@ -24,54 +26,34 @@ const ManageUsers = () => {
     activeManageUserTab,
     setActiveManageUserTab,
   } = useGlobalModal();
+  const { manageUsersTab, setManageUsersTab, resetmanageUsersContextState } =
+    useMyAdmin();
 
-  // For Users Data In Manage User
-  const usersData = [
+  const tabStyle = (key) => ({
+    fontSize: manageUsersTab === key ? "26px" : "26px",
+    fontWeight: manageUsersTab === key ? "700" : "400",
+    fontFamily: "Switzer Variable",
+    color: manageUsersTab === key ? "#30426A" : "#30426A",
+  });
+
+  const items = [
     {
-      profile: Profile2,
-      name: "John O'Connor",
-      email: "john.oconnor@gmail.com",
-      id: "U003",
-      file: true,
+      key: "0",
+      label: <span style={tabStyle("0")}>Users</span>,
     },
     {
-      profile: Profile3,
-      name: "Sarah Johnson",
-      email: "sarah.johnson@gmail.com",
-      id: "U004",
-      file: false,
+      key: "1",
+      label: (
+        <span style={tabStyle("1")}>
+          Pending Requests <span style={{ color: "#30426A" }}>(02)</span>
+        </span>
+      ),
     },
     {
-      profile: Profile4,
-      name: "James Williams",
-      email: "james.williams@gmail.com",
-      id: "U005",
-      file: true,
-    },
-    {
-      profile: Profile6,
-      name: "Jameel Khan",
-      email: "Jameel.khan@gmail.com",
-      id: "U006",
-      file: false,
-    },
-    {
-      profile: Profile4,
-      name: "James Williams",
-      email: "james.williams@gmail.com",
-      id: "U005",
-      file: false,
-    },
-    {
-      profile: Profile5,
-      name: "Zahid Khan",
-      email: "Zahid.khan@gmail.com",
-      id: "U006",
-      file: true,
+      key: "2",
+      label: <span style={tabStyle("2")}>Rejected Requests</span>,
     },
   ];
-
-  // For Pending Request Data in Manage User
   const pendingRequestsData = [
     {
       PendingRequestUsername: "Muhammad Junaid Akbar Farooqui",
@@ -99,71 +81,46 @@ const ManageUsers = () => {
       profileImage: Profile5,
     },
   ];
+  useEffect(() => {
+    console.log("Component mounted");
 
-  const tabStyle = (key) => ({
-    fontSize: activeManageUserTab === key ? "26px" : "26px",
-    fontWeight: activeManageUserTab === key ? "700" : "400",
-    fontFamily: "Switzer Variable",
-    color: activeManageUserTab === key ? "#30426A" : "#30426A",
-  });
-
-  const items = [
-    {
-      key: "1",
-      label: <span style={tabStyle("1")}>Users</span>,
-    },
-    {
-      key: "2",
-      label: (
-        <span style={tabStyle("2")}>
-          Pending Requests <span style={{ color: "#30426A" }}>(02)</span>
-        </span>
-      ),
-    },
-    {
-      key: "3",
-      label: <span style={tabStyle("3")}>Rejected Requests</span>,
-    },
-  ];
-
+    return () => {
+      resetmanageUsersContextState();
+    };
+  }, []);
   return (
     <>
       <PageLayout background="white">
         <div className="px-4 md:px-6 lg:px-8">
           <div className={styles.ManageUserMainDiv}>
             <Tabs
-              activeKey={activeManageUserTab}
-              onChange={setActiveManageUserTab}
+              activeKey={manageUsersTab}
+              onChange={setManageUsersTab}
               items={items}
               className={styles.customTabs}
             />
 
             <div className={styles.ExportButtonClass}>
-              <CustomButton text={"Export"} className="big-dark-button" />
+              {manageUsersTab === "0" && (
+                <CustomButton text="Export" className="big-dark-button" />
+              )}
+              {manageUsersTab === "1" && (
+                <CustomButton text="Bulk Action" className="big-dark-button" />
+              )}
             </div>
           </div>
 
           <div className={styles.ManageUserSecondDiv}>
             {/* ✅ Only show user cards when Users tab is active */}
             <Row gutter={[24, 16]}>
-              {activeManageUserTab === "1" && (
+              {manageUsersTab === "0" && (
                 <Row gutter={[24, 16]}>
-                  {usersData.map((user, index) => (
-                    <Col key={index} xs={24} sm={12}>
-                      <ManageUsersCard
-                        profile={user.profile}
-                        name={user.name}
-                        email={user.email}
-                        id={user.id}
-                        file={user.file}
-                      />
-                    </Col>
-                  ))}
+                  <UsersTab />
                 </Row>
               )}
 
               {/* ✅ Only show PendingRequest Component when PendingRequest tab is active */}
-              {activeManageUserTab === "2" && (
+              {manageUsersTab === "1" && (
                 <Row gutter={[24, 16]}>
                   {pendingRequestsData.map((request, index) => (
                     <Col key={index} xs={24} sm={24}>
@@ -183,7 +140,7 @@ const ManageUsers = () => {
                 </Row>
               )}
 
-              {activeManageUserTab === "3" && <div>No rejected requests.</div>}
+              {manageUsersTab === "2" && <div>No rejected requests.</div>}
             </Row>
           </div>
         </div>
