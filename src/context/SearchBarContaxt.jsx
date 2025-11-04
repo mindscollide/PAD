@@ -322,6 +322,7 @@ export const SearchBarProvider = ({ children }) => {
     pageNumber: 0,
     pageSize: 10,
   });
+
   // ===============================
   // Sync Refs (Always-Latest Values)
   // ===============================
