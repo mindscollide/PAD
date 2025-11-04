@@ -415,6 +415,10 @@ export const responseMessages = {
   PAD_Admin_GetPreviousClosingPeriods_02: "No data found",
   PAD_Admin_GetPreviousClosingPeriods_03: "Exception occurred",
   PAD_Admin_GetPreviousClosingPeriods_04: "Invalid input",
+
+  Admin_AdminServiceManager_GetPendingUserRegistrationRequests_01:"Data found",
+  Admin_AdminServiceManager_GetPendingUserRegistrationRequests_02:"No data found",
+  Admin_AdminServiceManager_GetPendingUserRegistrationRequests_03:"Exception occurred",
 };
 
 /**

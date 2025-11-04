@@ -1,0 +1,117 @@
+.modalBodyWrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* keep content centered horizontally overall */
+  justify-content: center;
+  text-align: left; /* 👈 ensures headings align left */
+  padding: 24px;
+  gap: 8px;
+}
+
+/* Limit text width so headings align nicely with textarea */
+.modalBodyWrapper > * {
+  width: 100%;
+  max-width: 837px;
+}
+
+/* Headings */
+.heading {
+  font-family: "Switzer Variable", sans-serif;
+  font-weight: 700;
+  font-style: normal;
+  font-size: 26px;
+  letter-spacing: 0;
+  color: #30426a;
+  line-height: 120%;
+  margin-bottom: 12px;
+  text-align: left; /* 👈 align heading to start */
+}
+
+.subHeading {
+  font-family: "Switzer Variable", sans-serif;
+  font-weight: 700;
+  font-style: normal;
+  font-size: 20px; /* slightly smaller for hierarchy */
+  line-height: 100%;
+  letter-spacing: 0;
+  color: #30426a;
+  margin-bottom: 4px;
+  text-align: left; /* 👈 align subheading to start */
+}
+
+.required {
+  color: #a50000;
+}
+
+/* Text area */
+.inputField,
+.textareaField {
+  width: 837px;
+  height: 153px;
+  font-size: 15px;
+  border-radius: 8px;
+  padding: 10px 12px;
+  border: 1px solid #717171 !important;
+  resize: none !important;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.inputField:focus,
+.textareaField:focus {
+  border-color: #717171 !important;
+  resize: none;
+  box-shadow: 0 0 0 2px rgba(22, 119, 255, 0.2);
+  outline: none;
+}
+
+/* Buttons */
+.mainButtonDivClose {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.detailsOfUser {
+  width: 837px;
+  height: 137px;
+  border-radius: 6.67px;
+  padding: 10px 20px;
+  background-color: #edf3ff; /* optional */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  box-shadow: 0px 1px 3px rgba(0, 0, 0, 0.05); /* optional for subtle elevation */
+  opacity: 1;
+}
+
+.InitialHeading {
+  font-family: "Switzer Variable", sans-serif;
+  font-weight: 500;
+  font-style: normal;
+  font-size: 16px;
+  line-height: 100%;
+  letter-spacing: 0;
+  color: #30426A;
+}
+.mainTextType {
+  font-family: "Switzer Variable", sans-serif;
+  font-weight: 500;
+  font-style: normal;
+  font-size: 16px;
+  line-height: 100%;
+  letter-spacing: 0;
+  color: #424242;
+}
+
+.icon {
+  width: 22px;
+  height: 22px;
+  object-fit: contain;
+}
+
+.infoItem {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}

@@ -16,6 +16,7 @@ import UnSaveChangesModal from "./modal/unSaveChangesModal/UnSaveChangesModal";
 import PendingRequest from "./pendingRequestsTab/PendingRequest";
 import { useMyAdmin } from "../../../context/AdminContext";
 import UsersTab from "./usersTab/ManageUsers";
+import RequestApprovedRejeectedModal from "./modal/requestApprovedrejectModal/requestApprovedrejectModal";
 
 const ManageUsers = () => {
   const {
@@ -26,8 +27,17 @@ const ManageUsers = () => {
     activeManageUserTab,
     setActiveManageUserTab,
   } = useGlobalModal();
-  const { manageUsersTab, setManageUsersTab, resetmanageUsersContextState } =
-    useMyAdmin();
+
+  const {
+    manageUsersTab,
+    setManageUsersTab,
+    resetmanageUsersContextState,
+    modaPendingRequestModalOpenAction,
+    setModaPendingRequestModalOpenAction,
+    resetModalStateBulkAction,
+    setTypeofAction,
+  } = useMyAdmin();
+  const [currentUserData, setCurrentUserData] = useState([]);
 
   const tabStyle = (key) => ({
     fontSize: manageUsersTab === key ? "26px" : "26px",
@@ -88,6 +98,27 @@ const ManageUsers = () => {
       resetmanageUsersContextState();
     };
   }, []);
+  
+  useEffect(() => {
+    if (!modaPendingRequestModalOpenAction) {
+      setTypeofAction(-1);
+      setCurrentUserData([]);
+    }
+  }, [modaPendingRequestModalOpenAction]);
+  // take bulk action on pending request
+  const handleBulkAction = () => {
+    try {
+      // your async logic here
+      console.log("Performing bulk action...");
+      setTypeofAction(1);
+      setModaPendingRequestModalOpenAction(true);
+      // Example: await an API call
+      // await someAsyncFunction();
+    } catch (error) {
+      console.error("Error performing bulk action:", error);
+    }
+  };
+
   return (
     <>
       <PageLayout background="white">
@@ -105,7 +136,11 @@ const ManageUsers = () => {
                 <CustomButton text="Export" className="big-dark-button" />
               )}
               {manageUsersTab === "1" && (
-                <CustomButton text="Bulk Action" className="big-dark-button" />
+                <CustomButton
+                  text="Bulk Action"
+                  className="big-dark-button"
+                  onClick={handleBulkAction}
+                />
               )}
             </div>
           </div>
@@ -121,23 +156,10 @@ const ManageUsers = () => {
 
               {/* ✅ Only show PendingRequest Component when PendingRequest tab is active */}
               {manageUsersTab === "1" && (
-                <Row gutter={[24, 16]}>
-                  {pendingRequestsData.map((request, index) => (
-                    <Col key={index} xs={24} sm={24}>
-                      <PendingRequest
-                        PendingRequestUsername={request.PendingRequestUsername}
-                        EmailId={request.EmailId}
-                        EmployeeID={request.EmployeeID}
-                        DepartmentName={request.DepartmentName}
-                        username={request.username}
-                        profileImage={request.profileImage}
-                        onTakeAction={() =>
-                          console.log("Take Action on:", request.username)
-                        }
-                      />
-                    </Col>
-                  ))}
-                </Row>
+                <PendingRequest
+                  currentUserData={currentUserData}
+                  setCurrentUserData={setCurrentUserData}
+                />
               )}
 
               {manageUsersTab === "2" && <div>No rejected requests.</div>}
@@ -157,6 +179,14 @@ const ManageUsers = () => {
 
       {/* For unSaved changes ROle and Polices Modal */}
       {unSavedChangesPoliciesModal && <UnSaveChangesModal />}
+
+      {/* For take bulk action   */}
+      {modaPendingRequestModalOpenAction && (
+        <RequestApprovedRejeectedModal
+          currentUserData={currentUserData}
+          setCurrentUserData={setCurrentUserData}
+        />
+      )}
     </>
   );
 };
