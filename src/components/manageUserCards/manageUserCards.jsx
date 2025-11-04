@@ -4,11 +4,45 @@ import { EllipsisOutlined } from "@ant-design/icons";
 import styles from "./manageUserCards.module.css";
 import { useGlobalModal } from "../../context/GlobalModalContext";
 import GroupPolicies from "../../assets/img/GroupPeople.png";
+import Profile2 from "../../assets/img/user.png";
+import { useNotification } from "../NotificationProvider/NotificationProvider";
+import { useGlobalLoader } from "../../context/LoaderContext";
+import { useApi } from "../../context/ApiContext";
+import { useNavigate } from "react-router-dom";
+import { ViewDetailManageUserUserTabRequest } from "../../api/adminApi";
+import { useMyAdmin } from "../../context/AdminContext";
 
 const ManageUsersCard = ({ profile, name, email, id, file }) => {
+  const navigate = useNavigate();
+
+  // 🔷 Context Hooks
+  const { showNotification } = useNotification();
+  const { showLoader } = useGlobalLoader();
+  const { callApi } = useApi();
   const { setViewDetailManageUser } = useGlobalModal();
+  const { setManageUsersViewDetailModalData } = useMyAdmin();
 
   const [menuVisible, setMenuVisible] = useState(false);
+
+  /** 🔹 on Manage User When you Click On dropdown then ViewDetail button show API Function*/
+  const onClickOfViewDetailApiFunction = async () => {
+    showLoader(true);
+    const payload = {
+      EmployeeID: Number(id),
+    };
+
+    let res = await ViewDetailManageUserUserTabRequest({
+      callApi,
+      showNotification,
+      showLoader,
+      requestdata: payload,
+      navigate,
+    });
+
+    if (res) {
+      setManageUsersViewDetailModalData(res);
+    }
+  };
 
   const items = [
     {
@@ -17,6 +51,7 @@ const ManageUsersCard = ({ profile, name, email, id, file }) => {
         <span
           onClick={() => {
             setViewDetailManageUser(true);
+            onClickOfViewDetailApiFunction();
           }}
           className={styles.dropdownClass}
         >
@@ -41,7 +76,11 @@ const ManageUsersCard = ({ profile, name, email, id, file }) => {
       {/* Left Section - Profile */}
       {/* For Profile Picture */}
       <div className={styles.manageUserSection}>
-        <img src={profile} alt={name} className={styles.manageUserProfileImg} />
+        <img
+          src={profile && profile.trim() !== "" ? profile : Profile2}
+          alt={name}
+          className={styles.manageUserProfileImg}
+        />
       </div>
       {/* Fpr Details and dropdown icon */}
       <div className={styles.fordetailUserManage}>

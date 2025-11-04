@@ -416,9 +416,37 @@ export const responseMessages = {
   PAD_Admin_GetPreviousClosingPeriods_03: "Exception occurred",
   PAD_Admin_GetPreviousClosingPeriods_04: "Invalid input",
 
-  Admin_AdminServiceManager_GetPendingUserRegistrationRequests_01:"Data found",
-  Admin_AdminServiceManager_GetPendingUserRegistrationRequests_02:"No data found",
-  Admin_AdminServiceManager_GetPendingUserRegistrationRequests_03:"Exception occurred",
+  //For Manage User UsersTab listing messages
+  Admin_AdminServiceManager_GetAllEmployeesWithAssignedManageUsersUserTabPolicies_01:
+    "Data found",
+  Admin_AdminServiceManager_GetAllEmployeesWithAssignedManageUsersUserTabPolicies_02:
+    "No data found",
+  Admin_AdminServiceManager_GetAllEmployeesWithAssignedManageUsersUserTabPolicies_03:
+    "Exception occurred",
+
+  //For Manage User UserTab View Detail Messages
+  Admin_AdminServiceManager_GetUserFullDetailsByEmployeeID_01: "Data found",
+  Admin_AdminServiceManager_GetUserFullDetailsByEmployeeID_02: "No data found",
+  Admin_AdminServiceManager_GetUserFullDetailsByEmployeeID_03:
+    "Exception occurred",
+  Admin_AdminServiceManager_GetUserFullDetailsByEmployeeID_04:
+    "Invalid Request",
+
+  // For Line Manager in ManageUser Users Tab in View Detail Modal on Drop Down
+  Admin_AdminServiceManager_GetAllLineManagers_01: "Data found",
+  Admin_AdminServiceManager_GetAllLineManagers_02: "No data found",
+  Admin_AdminServiceManager_GetAllLineManagers_03: "Exception occurred",
+
+  // For Compliance Officer in ManageUser Users Tab in View Detail Modal on Drop Down
+  Admin_AdminServiceManager_GetAllComplianceOfficer_01: "Data found",
+  Admin_AdminServiceManager_GetAllComplianceOfficer_02: "Data found",
+  Admin_AdminServiceManager_GetAllComplianceOfficer_03: "Data found",
+
+  Admin_AdminServiceManager_GetPendingUserRegistrationRequests_01: "Data found",
+  Admin_AdminServiceManager_GetPendingUserRegistrationRequests_02:
+    "No data found",
+  Admin_AdminServiceManager_GetPendingUserRegistrationRequests_03:
+    "Exception occurred",
 };
 
 /**

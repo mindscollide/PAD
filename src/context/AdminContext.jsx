@@ -136,6 +136,13 @@ export const MyAdminProvider = ({ children }) => {
     totalRecordsTable: 0,
   });
 
+  // context for Manage User Users Tab Search criteria
+  const [adminManageUserTabData, setAdminManageUserTabData] = useState({
+    employees: [],
+    totalRecordsDataBase: 0,
+    totalRecordsTable: 0,
+  });
+
   const [selectedInstrumentOnClick, setSelectedInstrumentOnClick] =
     useState(null);
 
@@ -149,6 +156,31 @@ export const MyAdminProvider = ({ children }) => {
   const [manageUsersPendingTabData, setManageUsersPendingTabData] = useState(
     []
   );
+
+  // Manage User View Detail Modal State
+  const [manageUsersViewDetailModalData, setManageUsersViewDetailModalData] =
+    useState({
+      userAssignedRoles: [],
+      userDetails: {},
+      userHierarchy: [],
+    });
+
+  // line Manager Dropdown data in View Detail Modal in Context State
+  const [
+    lineManagerViewDetailDropdownData,
+    setLineManagerViewDetailDropdownData,
+  ] = useState({
+    lineManagers: [],
+  });
+
+  // Compliance Officer Dropdown data in View Detail Modal in Context State
+  const [
+    complianceOfficerViewDetailDropdownData,
+    setComplianceOfficerViewDetailDropdownData,
+  ] = useState({
+    lineManagers: [],
+  });
+
   // manage user pending tab data
   const [
     modaPendingRequestModalOpenAction,
@@ -344,6 +376,9 @@ export const MyAdminProvider = ({ children }) => {
         adminGroupeAndPoliciesUsersTabData,
         setAdminGroupeAndPoliciesUsersTabData,
 
+        // context for Manage User Users Tab Search criteria
+        adminManageUserTabData,
+        setAdminManageUserTabData,
         // manageUsers tab
         manageUsersTab,
         setManageUsersTab,
@@ -354,6 +389,17 @@ export const MyAdminProvider = ({ children }) => {
         setManageUsersPendingTabData,
         resetManageUsersPendingTabDataState,
 
+        //Manage Users View Detail Modal
+        manageUsersViewDetailModalData,
+        setManageUsersViewDetailModalData,
+
+        //Line Manager Dropdown Data in View Detail Modal in Manage User in UsersTab
+        lineManagerViewDetailDropdownData,
+        setLineManagerViewDetailDropdownData,
+
+        //Compliance Officer Dropdown Data in View Detail Modal in Manage User in UsersTab
+        complianceOfficerViewDetailDropdownData,
+        setComplianceOfficerViewDetailDropdownData,
         // manage user pending tab data
         modaPendingRequestModalOpenAction,
         setModaPendingRequestModalOpenAction,
