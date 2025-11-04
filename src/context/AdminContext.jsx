@@ -144,11 +144,20 @@ export const MyAdminProvider = ({ children }) => {
   // 1 pending Request
   // 2 rejected request
   const [manageUsersTab, setManageUsersTab] = useState("0");
+
   // manage user pending tab data
   const [manageUsersPendingTabData, setManageUsersPendingTabData] = useState(
     []
   );
-
+  // manage user pending tab data
+  const [
+    modaPendingRequestModalOpenAction,
+    setModaPendingRequestModalOpenAction,
+  ] = useState(false);
+  // manage user pending request action type
+  //  1 bulk
+  // 2 single
+  const [typeofAction, setTypeofAction] = useState(-1);
   /**
    * ♻️ Reset Context State (Table + API Data)
    *
@@ -217,10 +226,17 @@ export const MyAdminProvider = ({ children }) => {
     setManageUsersPendingTabData([]);
   };
 
+  // reset manage user tab data
+  const resetModalStateBulkAction = () => {
+    setModaPendingRequestModalOpenAction(false);
+    setTypeofAction(-1);
+  };
+
   // rest Contaxt of manager tab data
   const resetmanageUsersContextState = () => {
     setManageUsersTab("0");
     resetManageUsersPendingTabDataState();
+    resetModalStateBulkAction();
   };
 
   const resetAdminDataContextState = () => {
@@ -310,6 +326,14 @@ export const MyAdminProvider = ({ children }) => {
         manageUsersPendingTabData,
         setManageUsersPendingTabData,
         resetManageUsersPendingTabDataState,
+
+        // manage user pending tab data
+        modaPendingRequestModalOpenAction,
+        setModaPendingRequestModalOpenAction,
+        resetModalStateBulkAction,
+
+        typeofAction,
+        setTypeofAction,
       }}
     >
       {children}

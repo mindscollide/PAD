@@ -1622,7 +1622,7 @@ export const SearchPendingUserRegistrationRequests = async ({
     const res = await callApi({
       requestMethod: import.meta.env
         .VITE_GET_PENDING_USER_REGISTRATION_REQUESTS_REQUEST_METHOD, // ✅ update env var
-      endpoint: import.meta.env.VITE_API_TRADE,
+      endpoint: import.meta.env.VITE_API_ADMIN,
       requestData: requestdata,
       navigate,
     });
@@ -1643,12 +1643,7 @@ export const SearchPendingUserRegistrationRequests = async ({
     // 🔹 Handle successful execution
     if (res.success) {
       console.log("🔹 Approved Portfolio response:", res);
-      const {
-        responseMessage,
-        instruments,
-        aggregateTotalQuantity,
-        totalInstrumentCount,
-      } = res.result;
+      const { responseMessage, pendingRequests, totalRecords } = res.result;
       const message = getMessage(responseMessage);
 
       // ✅ Case 1 → Data Available
@@ -1656,22 +1651,19 @@ export const SearchPendingUserRegistrationRequests = async ({
         responseMessage ===
         "Admin_AdminServiceManager_GetPendingUserRegistrationRequests_01" // TODO: confirm exact code
       ) {
-        console.log("🔹 Approved portfolios found:", aggregateTotalQuantity);
-
         return {
-          aggregateTotalQuantity: aggregateTotalQuantity,
-          instruments: instruments || [],
-          totalRecords: totalInstrumentCount || 0,
+          pendingRequests: pendingRequests || [],
+          totalRecords: totalRecords || 0,
         };
       }
 
       // ✅ Case 2 → No Data Available
       if (
         responseMessage ===
-        "Admin_AdminServiceManager_GetPendingUserRegistrationRequests_01" // TODO: confirm exact code
+        "Admin_AdminServiceManager_GetPendingUserRegistrationRequests_02" // TODO: confirm exact code
       ) {
         return {
-          instruments: [],
+          pendingRequests: [],
           totalRecords: 0,
         };
       }
@@ -1697,10 +1689,7 @@ export const SearchPendingUserRegistrationRequests = async ({
     return null;
   } catch (error) {
     // 🔹 Unexpected exception handler
-    console.error(
-      "❌ Error in GetPendingUserRegistrationRequests:",
-      error
-    );
+    console.error("❌ Error in GetPendingUserRegistrationRequests:", error);
     showNotification({
       type: "error",
       title: "Error",
@@ -1709,6 +1698,73 @@ export const SearchPendingUserRegistrationRequests = async ({
     return null;
   } finally {
     // 🔹 Always stop loader
+    showLoader(false);
+  }
+};
+
+// 🔹 Process User Registration Request
+export const ProcessUserRegistrationRequest = async ({
+  callApi,
+  showNotification,
+  showLoader,
+  requestdata,
+  navigate,
+}) => {
+  try {
+    console.log("Approved:", requestdata);
+
+    // Start Loader
+    showLoader(true);
+
+    // 🔹 API Call
+    const res = await callApi({
+      requestMethod: import.meta.env
+        .VITE_PROCESS_USER_REGISTRATION_REQUEST_METHOD, // e.g. "ServiceManager.ProcessUserRegistrationRequest"
+      endpoint: import.meta.env.VITE_API_ADMIN, // e.g. http://192.168.18.241:14003/Admin
+      requestData: requestdata,
+      navigate,
+    });
+
+    console.log("📥 ProcessUserRegistrationRequest Response:", res);
+
+    // 🔹 Handle session expiry
+    if (handleExpiredSession(res, navigate, showLoader)) return false;
+
+    // 🔹 Validate response
+    if (!res?.result?.isExecuted) {
+      showNotification({
+        type: "error",
+        title: "Failed",
+        description: "Unable to process user registration request.",
+      });
+      return false;
+    }
+
+    // 🔹 Success Case
+    if (
+      res.result.responseMessage ===
+      "Admin_AdminServiceManager_UserRegistration_ProcessRequest_02"
+    ) {
+      return true;
+    }
+
+    // 🔹 Other Message Case
+    showNotification({
+      type: "warning",
+      title: "Notice",
+      description:
+        "The request was processed but returned an unexpected message.",
+    });
+    return false;
+  } catch (error) {
+    console.error("❌ Error in ProcessUserRegistrationRequest:", error);
+    showNotification({
+      type: "error",
+      title: "Error",
+      description: "An unexpected error occurred while processing the request.",
+    });
+    return false;
+  } finally {
     showLoader(false);
   }
 };

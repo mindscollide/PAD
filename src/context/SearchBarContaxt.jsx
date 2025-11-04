@@ -304,7 +304,7 @@ export const SearchBarProvider = ({ children }) => {
   //Admin manageusers Pending Requests Tab
   const [pendingRequestsTabSearch, setPendingRequestsTabSearch] = useState({
     employeeName: "",
-    employeeID: 0,
+    employeeID: "",
     emailAddress: "",
     departmentName: "",
     startDate: null,
@@ -654,7 +654,7 @@ export const SearchBarProvider = ({ children }) => {
   const resetPendingRequestsTabSearch = () =>
     setPendingRequestsTabSearch({
       employeeName: "",
-      employeeID: 0,
+      employeeID: "",
       emailAddress: "",
       departmentName: "",
       startDate: null,
