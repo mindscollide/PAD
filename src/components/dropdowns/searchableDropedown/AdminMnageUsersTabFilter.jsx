@@ -5,30 +5,93 @@ import { useSearchBarContext } from "../../../context/SearchBarContaxt";
 import { removeFirstSpace } from "../../../common/funtions/rejex";
 import { useMyAdmin } from "../../../context/AdminContext";
 
-const INITIAL_LOCAL_STATE = {
+// -----------------------------------------------------
+// 🔹 INITIAL STATES
+// -----------------------------------------------------
+const INITIAL_LOCAL_USER_STATE = {
   employeeName: "",
   employeeID: "",
   emailAddress: "",
   departmentName: "",
-  dateRange: null,
 };
 
-export const AdminUsersTabFilter = ({ setVisible, clear, setClear }) => {
-  const { setAdminUserSearch, adminUserSearch } = useSearchBarContext();
+const INITIAL_LOCAL_PENDING_STATE = {
+  employeeName: "",
+  employeeID: "",
+  emailAddress: "",
+  departmentName: "",
+  startDate: null,
+  endDate: null,
+};
+
+const INITIAL_LOCAL_REJECTED_STATE = {
+  employeeName: "",
+  emailAddress: "",
+  departmentName: "",
+};
+
+export const AdminUsersTabFilter = ({
+  setVisible,
+  maininstrumentName,
+  setMaininstrumentName,
+  clear,
+  setClear,
+}) => {
+  const {
+    usersTabSearch,
+    setUsersTabSearch,
+    resetUsersTabSearch,
+    pendingRequestsTabSearch,
+    setPendingRequestsTabSearch,
+    resetPendingRequestsTabSearch,
+    rejectedRequestsTabSearch,
+    setRejectedRequestsTabSearch,
+    resetRejectedRequestsTabSearch,
+  } = useSearchBarContext();
+
   const { manageUsersTab } = useMyAdmin();
 
-  const [localState, setLocalState] = useState(INITIAL_LOCAL_STATE);
+  // -----------------------------------------------------
+  // 🔹 PICK INITIAL STATE BASED ON TAB
+  // -----------------------------------------------------
+  const getInitialState = () => {
+    switch (manageUsersTab) {
+      case "0":
+        return INITIAL_LOCAL_USER_STATE;
+      case "1":
+        return INITIAL_LOCAL_PENDING_STATE;
+      case "2":
+        return INITIAL_LOCAL_REJECTED_STATE;
+      default:
+        return INITIAL_LOCAL_USER_STATE;
+    }
+  };
+
+  const [localState, setLocalState] = useState(getInitialState());
 
   // -----------------------------------------------------
   // 🔹 EFFECTS
   // -----------------------------------------------------
-
   useEffect(() => {
-    if (clear) {
-      setLocalState(INITIAL_LOCAL_STATE);
+    if (maininstrumentName) {
+      setLocalState((prev) => ({
+        ...prev,
+        employeeName: maininstrumentName, // ✅ was brokerName before
+      }));
       setClear(false);
+      setMaininstrumentName("");
     }
-  }, [clear]);
+  }, [maininstrumentName]);
+
+  /**
+   * Reset filters if `clear` flag is triggered externally.
+   */
+  useEffect(() => {
+    if (clear && maininstrumentName === "") {
+      setLocalState(getInitialState());
+      setClear(false); // Reset external clear flag
+    }
+  }, [clear, manageUsersTab]);
 
   // -----------------------------------------------------
   // 🔹 HELPERS
@@ -47,36 +110,24 @@ export const AdminUsersTabFilter = ({ setVisible, clear, setClear }) => {
   // -----------------------------------------------------
   const handleSearchClick = () => {
     const payload = {
-      ...adminUserSearch,
-      employeeName: localState.employeeName?.trim() || "",
-      employeeID: localState.employeeID?.trim() || "",
-      emailAddress: localState.emailAddress?.trim() || "",
-      departmentName: localState.departmentName?.trim() || "",
-      dateRange: localState.dateRange || null,
+      ...localState,
       pageNumber: 0,
       filterTrigger: true,
     };
 
-    setAdminUserSearch(payload);
-    setLocalState(INITIAL_LOCAL_STATE);
-    setClear(false);
+    if (manageUsersTab === "0") setUsersTabSearch(payload);
+    else if (manageUsersTab === "1") setPendingRequestsTabSearch(payload);
+    else if (manageUsersTab === "2") setRejectedRequestsTabSearch(payload);
+
     setVisible(false);
   };
 
   const handleResetClick = () => {
-    const resetPayload = {
-      ...adminUserSearch,
-      employeeName: "",
-      employeeID: "",
-      emailAddress: "",
-      departmentName: "",
-      dateRange: null,
-      pageNumber: 0,
-      filterTrigger: true,
-    };
+    if (manageUsersTab === "0") resetUsersTabSearch();
+    else if (manageUsersTab === "1") resetPendingRequestsTabSearch();
+    else if (manageUsersTab === "2") resetRejectedRequestsTabSearch();
 
-    setAdminUserSearch(resetPayload);
-    setLocalState(INITIAL_LOCAL_STATE);
+    setLocalState(getInitialState());
     setClear(false);
     setVisible(false);
   };
@@ -87,7 +138,6 @@ export const AdminUsersTabFilter = ({ setVisible, clear, setClear }) => {
   const renderFields = () => {
     switch (manageUsersTab) {
       case "0":
-        // Employee Name, Employee ID, Email Address
         return (
           <>
             <Col xs={24} md={12}>
@@ -97,7 +147,6 @@ export const AdminUsersTabFilter = ({ setVisible, clear, setClear }) => {
                 value={localState.employeeName}
                 onChange={handleInputChange}
                 placeholder="Employee Name"
-                size="medium"
                 classNames="Search-Field"
               />
             </Col>
@@ -108,7 +157,6 @@ export const AdminUsersTabFilter = ({ setVisible, clear, setClear }) => {
                 value={localState.employeeID}
                 onChange={handleInputChange}
                 placeholder="Employee ID"
-                size="medium"
                 classNames="Search-Field"
               />
             </Col>
@@ -119,7 +167,6 @@ export const AdminUsersTabFilter = ({ setVisible, clear, setClear }) => {
                 value={localState.emailAddress}
                 onChange={handleInputChange}
                 placeholder="Email Address"
-                size="medium"
                 classNames="Search-Field"
               />
             </Col>
@@ -138,7 +185,6 @@ export const AdminUsersTabFilter = ({ setVisible, clear, setClear }) => {
         );
 
       case "1":
-        // Employee Name, Employee ID, Email Address, Department Name, Date Range
         return (
           <>
             <Col xs={24} md={12}>
@@ -148,7 +194,6 @@ export const AdminUsersTabFilter = ({ setVisible, clear, setClear }) => {
                 value={localState.employeeName}
                 onChange={handleInputChange}
                 placeholder="Employee Name"
-                size="medium"
                 classNames="Search-Field"
               />
             </Col>
@@ -159,7 +204,6 @@ export const AdminUsersTabFilter = ({ setVisible, clear, setClear }) => {
                 value={localState.employeeID}
                 onChange={handleInputChange}
                 placeholder="Employee ID"
-                size="medium"
                 classNames="Search-Field"
               />
             </Col>
@@ -170,7 +214,6 @@ export const AdminUsersTabFilter = ({ setVisible, clear, setClear }) => {
                 value={localState.emailAddress}
                 onChange={handleInputChange}
                 placeholder="Email Address"
-                size="medium"
                 classNames="Search-Field"
               />
             </Col>
@@ -181,15 +224,20 @@ export const AdminUsersTabFilter = ({ setVisible, clear, setClear }) => {
                 value={localState.departmentName}
                 onChange={handleInputChange}
                 placeholder="Department Name"
-                size="medium"
                 classNames="Search-Field"
               />
             </Col>
             <Col xs={24} md={12}>
               <DateRangePicker
                 label="Date Range"
-                value={localState.dateRange}
-                onChange={(val) => setFieldValue("dateRange", val)}
+                value={[localState.startDate, localState.endDate]}
+                onChange={(dates) =>
+                  setLocalState((prev) => ({
+                    ...prev,
+                    startDate: dates?.[0] || null,
+                    endDate: dates?.[1] || null,
+                  }))
+                }
                 classNames="Search-Field"
               />
             </Col>
@@ -197,7 +245,6 @@ export const AdminUsersTabFilter = ({ setVisible, clear, setClear }) => {
         );
 
       case "2":
-        // Employee Name, Email Address, Department Name
         return (
           <>
             <Col xs={24} md={12}>
@@ -207,7 +254,6 @@ export const AdminUsersTabFilter = ({ setVisible, clear, setClear }) => {
                 value={localState.employeeName}
                 onChange={handleInputChange}
                 placeholder="Employee Name"
-                size="medium"
                 classNames="Search-Field"
               />
             </Col>
@@ -218,7 +264,6 @@ export const AdminUsersTabFilter = ({ setVisible, clear, setClear }) => {
                 value={localState.emailAddress}
                 onChange={handleInputChange}
                 placeholder="Email Address"
-                size="medium"
                 classNames="Search-Field"
               />
             </Col>
@@ -229,7 +274,6 @@ export const AdminUsersTabFilter = ({ setVisible, clear, setClear }) => {
                 value={localState.departmentName}
                 onChange={handleInputChange}
                 placeholder="Department Name"
-                size="medium"
                 classNames="Search-Field"
               />
             </Col>

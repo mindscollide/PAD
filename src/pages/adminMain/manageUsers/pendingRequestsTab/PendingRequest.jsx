@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import CustomButton from "../../../../components/buttons/button";
 import styles from "./PendingRequest.module.css";
 
@@ -8,6 +8,14 @@ import EmailIcon from "../../../../assets/img/Email.png";
 import EmployeeIdIcon from "../../../../assets/img/EmployeeId.png";
 import DepartmentIcon from "../../../../assets/img/user-dark-icon.png"; // Add this if you have it
 import { Col, Row } from "antd";
+import { buildApiRequest } from "../../../main/headOfComplianceOffice/escalatedVerifications/escalatedVerification/util";
+import { useGlobalLoader } from "../../../../context/LoaderContext";
+import { SearchPendingUserRegistrationRequests } from "../../../../api/adminApi";
+import { useApi } from "../../../../context/ApiContext";
+import { useNotification } from "../../../../components/NotificationProvider/NotificationProvider";
+import { useNavigate } from "react-router-dom";
+import { useMyAdmin } from "../../../../context/AdminContext";
+import { useSearchBarContext } from "../../../../context/SearchBarContaxt";
 
 const PendingRequest = ({
   PendingRequestUsername,
@@ -17,6 +25,83 @@ const PendingRequest = ({
   username,
   onTakeAction,
 }) => {
+  const { callApi } = useApi();
+  const { showLoader } = useGlobalLoader();
+  const { showNotification } = useNotification();
+  const navigate = useNavigate();
+
+  const [hasMore, setHasMore] = useState(true); // ✅ track if more data exists
+  const [loadingMore, setLoadingMore] = useState(false);
+
+  const didFetchRef = useRef(false);
+  const listRef = useRef(null); // ✅ scroll container ref
+  const {
+    manageUsersPendingTabData,
+    setManageUsersPendingTabData,
+    resetManageUsersPendingTabDataState,
+  } = useMyAdmin();
+
+  const { pendingRequestsTabSearch, setPendingRequestsTabSearch } =
+    useSearchBarContext();
+
+  const fetchApiCall = useCallback(
+    async (requestData, replace = false) => {
+      if (!requestData || typeof requestData !== "object") return;
+
+      if (!replace) setLoadingMore(true);
+      else showLoader(true);
+
+      try {
+        const res = await SearchPendingUserRegistrationRequests({
+          callApi,
+          showNotification,
+          showLoader,
+          requestdata: requestData,
+          navigate,
+        });
+
+        const instruments = Array.isArray(res?.instruments)
+          ? res.instruments
+          : [];
+        if (replace) {
+          setManageUsersPendingTabData(instruments);
+        } else {
+          setManageUsersPendingTabData((prev) => [...prev, ...instruments]);
+        }
+
+        // ✅ Save totalRecords from API
+        const total = Number(res?.totalRecords || 0);
+
+        // ✅ Disable scrolling if we've loaded everything
+        setHasMore(requestData.PageNumber + instruments.length < total);
+      } catch (err) {
+        console.error("❌ Error fetching portfolio:", err);
+      } finally {
+        showLoader(false);
+        setLoadingMore(false);
+      }
+    },
+    [callApi, showNotification, showLoader, navigate]
+  );
+
+  // ✅ initial load
+  useEffect(() => {
+    if (didFetchRef.current) return;
+    didFetchRef.current = true;
+
+    const req = buildApiRequest(pendingRequestsTabSearch);
+
+    fetchApiCall(req, true);
+  }, [fetchApiCall]);
+
+  useEffect(() => {
+    console.log("Component mounted");
+
+    return () => {
+      resetManageUsersPendingTabDataState();
+    };
+  }, []);
+
   return (
     <div className={styles.mainPendingRequestDiv}>
       {/* Left Side: User Details */}

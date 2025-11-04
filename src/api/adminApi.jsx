@@ -1394,7 +1394,7 @@ export const AddInstrumentClosingPeriodRequest = async ({
 };
 
 //GetUpcomingClosingPeriodsByInstrumentID when user click on edit modal
-export const getUpcomingClosingPeriodInstrumentRequest = async ({
+export const GetUpcomingClosingPeriodInstrumentRequest = async ({
   callApi,
   showNotification,
   showLoader,
@@ -1472,7 +1472,7 @@ export const getUpcomingClosingPeriodInstrumentRequest = async ({
 };
 
 //GetPreviousClosingPeriodsByInstrumentID when user click on edit modal
-export const getPreviousClosingPeriodInstrumentRequest = async ({
+export const GetPreviousClosingPeriodInstrumentRequest = async ({
   callApi,
   showNotification,
   showLoader,
@@ -1603,6 +1603,109 @@ export const DeleteUpcomingInstrumentCosingPeriodRequest = async ({
 
     return false;
   } finally {
+    showLoader(false);
+  }
+};
+
+// GetPendingUserRegistrationRequests
+export const SearchPendingUserRegistrationRequests = async ({
+  callApi,
+  showNotification,
+  showLoader,
+  requestdata,
+  navigate,
+}) => {
+  try {
+    console.log("🔹 Approved Portfolio requestdata:", requestdata);
+
+    // 🔹 API Call
+    const res = await callApi({
+      requestMethod: import.meta.env
+        .VITE_GET_PENDING_USER_REGISTRATION_REQUESTS_REQUEST_METHOD, // ✅ update env var
+      endpoint: import.meta.env.VITE_API_TRADE,
+      requestData: requestdata,
+      navigate,
+    });
+
+    // 🔹 Handle session expiry
+    if (handleExpiredSession(res, navigate, showLoader)) return null;
+
+    // 🔹 Validate API execution
+    if (!res?.result?.isExecuted) {
+      showNotification({
+        type: "error",
+        title: "Error",
+        description: "Something went wrong. Please try again.",
+      });
+      return null;
+    }
+
+    // 🔹 Handle successful execution
+    if (res.success) {
+      console.log("🔹 Approved Portfolio response:", res);
+      const {
+        responseMessage,
+        instruments,
+        aggregateTotalQuantity,
+        totalInstrumentCount,
+      } = res.result;
+      const message = getMessage(responseMessage);
+
+      // ✅ Case 1 → Data Available
+      if (
+        responseMessage ===
+        "Admin_AdminServiceManager_GetPendingUserRegistrationRequests_01" // TODO: confirm exact code
+      ) {
+        console.log("🔹 Approved portfolios found:", aggregateTotalQuantity);
+
+        return {
+          aggregateTotalQuantity: aggregateTotalQuantity,
+          instruments: instruments || [],
+          totalRecords: totalInstrumentCount || 0,
+        };
+      }
+
+      // ✅ Case 2 → No Data Available
+      if (
+        responseMessage ===
+        "Admin_AdminServiceManager_GetPendingUserRegistrationRequests_01" // TODO: confirm exact code
+      ) {
+        return {
+          instruments: [],
+          totalRecords: 0,
+        };
+      }
+
+      // ✅ Case 3 → Other server messages
+      if (message) {
+        showNotification({
+          type: "warning",
+          title: message,
+          description: "No Data found.",
+        });
+      }
+
+      return null;
+    }
+
+    // 🔹 Handle failure (res.success === false)
+    showNotification({
+      type: "error",
+      title: "Fetch Failed",
+      description: getMessage(res.message),
+    });
+    return null;
+  } catch (error) {
+    // 🔹 Unexpected exception handler
+    console.error("❌ Error in GetPendingUserRegistrationRequests:", error);
+    showNotification({
+      type: "error",
+      title: "Error",
+      description: "An unexpected error occurred.",
+    });
+    return null;
+  } finally {
+    // 🔹 Always stop loader
     showLoader(false);
   }
 };
