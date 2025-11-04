@@ -6,9 +6,8 @@ import styles from "./PendingRequest.module.css";
 import UsernameIcon from "../../../../assets/img/username.png";
 import EmailIcon from "../../../../assets/img/Email.png";
 import EmployeeIdIcon from "../../../../assets/img/EmployeeId.png";
-import DepartmentIcon from "../../../../assets/img/user-dark-icon.png"; // Add this if you have it
+import DepartmentIcon from "../../../../assets/img/user-dark-icon.png";
 import { Col, Row } from "antd";
-import { buildApiRequest } from "../../../main/headOfComplianceOffice/escalatedVerifications/escalatedVerification/util";
 import { useGlobalLoader } from "../../../../context/LoaderContext";
 import { SearchPendingUserRegistrationRequests } from "../../../../api/adminApi";
 import { useApi } from "../../../../context/ApiContext";
@@ -16,29 +15,21 @@ import { useNotification } from "../../../../components/NotificationProvider/Not
 import { useNavigate } from "react-router-dom";
 import { useMyAdmin } from "../../../../context/AdminContext";
 import { useSearchBarContext } from "../../../../context/SearchBarContaxt";
+import { buildApiRequest } from "./utils";
+import EmptyState from "../../../../components/emptyStates/empty-states";
 
-const PendingRequest = ({
-  PendingRequestUsername,
-  EmailId,
-  EmployeeID,
-  DepartmentName,
-  username,
-  onTakeAction,
-}) => {
+const PendingRequest = ({ currentUserData, setCurrentUserData }) => {
   const { callApi } = useApi();
   const { showLoader } = useGlobalLoader();
   const { showNotification } = useNotification();
+  const hasFetched = useRef(false);
   const navigate = useNavigate();
-
-  const [hasMore, setHasMore] = useState(true); // ✅ track if more data exists
-  const [loadingMore, setLoadingMore] = useState(false);
-
-  const didFetchRef = useRef(false);
-  const listRef = useRef(null); // ✅ scroll container ref
   const {
     manageUsersPendingTabData,
     setManageUsersPendingTabData,
     resetManageUsersPendingTabDataState,
+    setModaPendingRequestModalOpenAction,
+    setTypeofAction,
   } = useMyAdmin();
 
   const { pendingRequestsTabSearch, setPendingRequestsTabSearch } =
@@ -60,20 +51,14 @@ const PendingRequest = ({
           navigate,
         });
 
-        const instruments = Array.isArray(res?.instruments)
-          ? res.instruments
+        const pendingRequests = Array.isArray(res?.pendingRequests)
+          ? res.pendingRequests
           : [];
         if (replace) {
-          setManageUsersPendingTabData(instruments);
+          setManageUsersPendingTabData(pendingRequests);
         } else {
-          setManageUsersPendingTabData((prev) => [...prev, ...instruments]);
+          setManageUsersPendingTabData((prev) => [...prev, ...pendingRequests]);
         }
-
-        // ✅ Save totalRecords from API
-        const total = Number(res?.totalRecords || 0);
-
-        // ✅ Disable scrolling if we've loaded everything
-        setHasMore(requestData.PageNumber + instruments.length < total);
       } catch (err) {
         console.error("❌ Error fetching portfolio:", err);
       } finally {
@@ -83,16 +68,15 @@ const PendingRequest = ({
     },
     [callApi, showNotification, showLoader, navigate]
   );
-
-  // ✅ initial load
+  console.log("Component mounted", manageUsersPendingTabData);
+  // Initial Fetch
   useEffect(() => {
-    if (didFetchRef.current) return;
-    didFetchRef.current = true;
-
-    const req = buildApiRequest(pendingRequestsTabSearch);
-
-    fetchApiCall(req, true);
-  }, [fetchApiCall]);
+    if (!hasFetched.current) {
+      hasFetched.current = true;
+      const requestData = buildApiRequest(pendingRequestsTabSearch);
+      fetchApiCall(requestData, true, true);
+    }
+  }, [buildApiRequest, pendingRequestsTabSearch, fetchApiCall]);
 
   useEffect(() => {
     console.log("Component mounted");
@@ -102,79 +86,122 @@ const PendingRequest = ({
     };
   }, []);
 
+  const onTakeAction = async (data) => {
+    try {
+      // your async logic here
+      await setCurrentUserData(data);
+      setTypeofAction(2);
+      setModaPendingRequestModalOpenAction(true);
+      // Example: await an API call
+      // await someAsyncFunction();
+    } catch (error) {
+      console.error("Error performing bulk action:", error);
+    }
+  };
+    useEffect(() => {
+      if (pendingRequestsTabSearch.filterTrigger) {
+        const req = buildApiRequest(pendingRequestsTabSearch);
+  
+        fetchApiCall(req, true);
+        setPendingRequestsTabSearch((prev) => ({
+          ...prev,
+          filterTrigger: false,
+        }));
+      }
+    }, [pendingRequestsTabSearch.filterTrigger]);
   return (
-    <div className={styles.mainPendingRequestDiv}>
-      {/* Left Side: User Details */}
-      <div className={styles.detailsContainer}>
-        <Row style={{ marginBottom: "20px" }}>
-          <Col span={16}>
-            {/* Name */}
-            <h4 className={styles.userName}>{PendingRequestUsername}</h4>
-          </Col>
-          <Col span={8}>
-            <div className={styles.infoItem}>
-              <img src={UsernameIcon} alt="Username" className={styles.icon} />
-              <span className={styles.text}>
-                <span className={styles.InitialName}>Username:</span> {username}
-              </span>
-            </div>
-          </Col>
-        </Row>
+    <>
+      {manageUsersPendingTabData?.length > 0 ? (
+        manageUsersPendingTabData.map((data, index) => (
+          <Col span={24}>
+            <div key={index} className={styles.mainPendingRequestDiv}>
+              {/* Left Side: User Details */}
+              <div className={styles.detailsContainer}>
+                <Row style={{ marginBottom: "20px" }}>
+                  <Col span={16}>
+                    <h4 className={styles.userName}>{data.fullName}</h4>
+                  </Col>
+                  <Col span={8}>
+                    <div className={styles.infoItem}>
+                      <img
+                        draggable={false}
+                        src={UsernameIcon}
+                        alt="Username"
+                        className={styles.icon}
+                      />
+                      <span className={styles.text}>
+                        <span className={styles.InitialName}>Username:</span>{" "}
+                        {data.loginID}
+                      </span>
+                    </div>
+                  </Col>
+                </Row>
 
-        <Row>
-          <Col span={8}>
-            {/* Email*/}
-            <div className={styles.infoItem}>
-              <img src={EmailIcon} alt="Email" className={styles.icon} />
-              <span className={styles.text}>
-                {" "}
-                <span className={styles.InitialName}>Email ID:</span> {EmailId}
-              </span>
-            </div>
-          </Col>
-          <Col span={8}>
-            {/*  Employee ID */}
-            <div className={styles.infoRow}>
-              <div className={styles.infoItem}>
-                <img
-                  src={EmployeeIdIcon}
-                  alt="Employee ID"
-                  className={styles.icon}
+                <Row>
+                  <Col span={8}>
+                    <div className={styles.infoItem}>
+                      <img
+                        draggable={false}
+                        src={EmailIcon}
+                        alt="Email"
+                        className={styles.icon}
+                      />
+                      <span className={styles.text}>
+                        <span className={styles.InitialName}>Email ID:</span>{" "}
+                        {data.email}
+                      </span>
+                    </div>
+                  </Col>
+
+                  <Col span={8}>
+                    <div className={styles.infoItem}>
+                      <img
+                        draggable={false}
+                        src={EmployeeIdIcon}
+                        alt="Employee ID"
+                        className={styles.icon}
+                      />
+                      <span className={styles.text}>
+                        <span className={styles.InitialName}>Employee ID:</span>{" "}
+                        {data.userRegistrationRequestID}
+                      </span>
+                    </div>
+                  </Col>
+
+                  <Col span={8}>
+                    <div className={styles.infoItem}>
+                      <img
+                        draggable={false}
+                        src={DepartmentIcon}
+                        alt="Department"
+                        className={styles.icon}
+                      />
+                      <span className={styles.text}>
+                        <span className={styles.InitialName}>Department:</span>{" "}
+                        {data.departmentName}
+                      </span>
+                    </div>
+                  </Col>
+                </Row>
+              </div>
+
+              {/* Right Side: Action Button */}
+              <div className={styles.actionSection}>
+                <CustomButton
+                  text="Take Action"
+                  className="takeAction-small-dark-button"
+                  onClick={() => onTakeAction(data)}
                 />
-                <span className={styles.text}>
-                  <span className={styles.InitialName}>Employee ID:</span>{" "}
-                  {EmployeeID}
-                </span>
               </div>
             </div>
           </Col>
-
-          <Col span={8}>
-            <div className={styles.infoItem}>
-              <img
-                src={DepartmentIcon}
-                alt="Department"
-                className={styles.icon}
-              />
-              <span className={styles.text}>
-                {" "}
-                <span className={styles.InitialName}>Department:</span>{" "}
-                {DepartmentName}
-              </span>
-            </div>
-          </Col>
-        </Row>
-      </div>
-
-      {/* Right Side: Action Button */}
-      <div className={styles.actionSection}>
-        <CustomButton
-          text="Take Action"
-          className="takeAction-small-dark-button"
-          onClick={onTakeAction}
-        />
-      </div>
-    </div>
+        ))
+      ) : (
+        <div className={styles.emptyState}>
+          <EmptyState type={"pending"} />
+        </div>
+      )}
+    </>
   );
 };
 

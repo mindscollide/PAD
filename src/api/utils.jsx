@@ -441,6 +441,12 @@ export const responseMessages = {
   Admin_AdminServiceManager_GetAllComplianceOfficer_01: "Data found",
   Admin_AdminServiceManager_GetAllComplianceOfficer_02: "Data found",
   Admin_AdminServiceManager_GetAllComplianceOfficer_03: "Data found",
+
+  Admin_AdminServiceManager_GetPendingUserRegistrationRequests_01: "Data found",
+  Admin_AdminServiceManager_GetPendingUserRegistrationRequests_02:
+    "No data found",
+  Admin_AdminServiceManager_GetPendingUserRegistrationRequests_03:
+    "Exception occurred",
 };
 
 /**
