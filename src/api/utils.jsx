@@ -460,6 +460,11 @@ export const responseMessages = {
     "No data found",
   Admin_AdminServiceManager_GetRejectedUserRegistrationRequests_03:
     "Exception occurred",
+
+  Admin_AdminServiceManager_GetPredefinedReasonsByAdmin_01: "Data found",
+  Admin_AdminServiceManager_GetPredefinedReasonsByAdmin_02: "No data found",
+  Admin_AdminServiceManager_GetPredefinedReasonsByAdmin_03:
+    "Exception occurred",
 };
 
 /**
