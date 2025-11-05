@@ -127,49 +127,47 @@ const ManageUsers = () => {
   return (
     <>
       <PageLayout background="white">
-        <div className="px-4 md:px-6 lg:px-8">
-          <div className={styles.ManageUserMainDiv}>
-            <Tabs
-              activeKey={manageUsersTab}
-              onChange={setManageUsersTab}
-              items={items}
-              className={styles.customTabs}
-            />
+        <div className={styles.ManageUserMainDiv}>
+          <Tabs
+            activeKey={manageUsersTab}
+            onChange={setManageUsersTab}
+            items={items}
+            className={styles.customTabs}
+          />
 
-            <div className={styles.ExportButtonClass}>
-              {manageUsersTab === "0" && (
-                <CustomButton text="Export" className="big-dark-button" />
-              )}
-              {manageUsersTab === "1" && (
-                <CustomButton
-                  text="Bulk Action"
-                  className="big-dark-button"
-                  onClick={handleBulkAction}
-                />
-              )}
-            </div>
+          <div className={styles.ExportButtonClass}>
+            {manageUsersTab === "0" && (
+              <CustomButton text="Export" className="big-dark-button" />
+            )}
+            {manageUsersTab === "1" && (
+              <CustomButton
+                text="Bulk Action"
+                className="big-dark-button"
+                onClick={handleBulkAction}
+              />
+            )}
           </div>
+        </div>
 
-          <div className={styles.ManageUserSecondDiv}>
-            {/* ✅ Only show user cards when Users tab is active */}
+        <div className={styles.ManageUserSecondDiv}>
+          {/* ✅ Only show user cards when Users tab is active */}
+          {/* <Row gutter={[24, 16]}> */}
+          {manageUsersTab === "0" && (
             <Row gutter={[24, 16]}>
-              {manageUsersTab === "0" && (
-                <Row gutter={[24, 16]}>
-                  <UsersTab />
-                </Row>
-              )}
-
-              {/* ✅ Only show PendingRequest Component when PendingRequest tab is active */}
-              {manageUsersTab === "1" && (
-                <PendingRequest
-                  currentUserData={currentUserData}
-                  setCurrentUserData={setCurrentUserData}
-                />
-              )}
-
-              {manageUsersTab === "2" && <RejectedRequestTab />}
+              <UsersTab />
             </Row>
-          </div>
+          )}
+
+          {/* ✅ Only show PendingRequest Component when PendingRequest tab is active */}
+          {manageUsersTab === "1" && (
+            <PendingRequest
+              currentUserData={currentUserData}
+              setCurrentUserData={setCurrentUserData}
+            />
+          )}
+
+          {manageUsersTab === "2" && <RejectedRequestTab />}
+          {/* </Row> */}
         </div>
       </PageLayout>
 
