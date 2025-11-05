@@ -17,6 +17,7 @@ import { formatShowOnlyDate } from "../../../../../common/funtions/rejex";
 import {
   GetComplianceOfficerOnViewDetailUserTabRequest,
   GetLineManagerOnViewDetailUserTabRequest,
+  GetViewDetailsUserRoleAndPoliciesRequests,
   UpdateEmployeeManagerManageUserTab,
 } from "../../../../../api/adminApi";
 import { useNavigate } from "react-router-dom";
@@ -44,6 +45,7 @@ const ViewDetailManageUserModal = () => {
     setLineManagerViewDetailDropdownData,
     complianceOfficerViewDetailDropdownData,
     setComplianceOfficerViewDetailDropdownData,
+    setRoleAndPolicyViewDetailData,
   } = useMyAdmin();
 
   //🔹 Separate edit flags for each role section and Local States
@@ -83,6 +85,30 @@ const ViewDetailManageUserModal = () => {
 
     if (res) {
       setComplianceOfficerViewDetailDropdownData(res);
+    }
+  };
+
+  /** 🔹 on Click Role And Policies API Hit to get User Details Data in view detail modal of manage User users Tab*/
+  const onClickRoleAndPolicy = async () => {
+    showLoader(true);
+    let payload = {
+      UserID: manageUsersViewDetailModalData?.userAssignedRoles[0]?.employeeID,
+    };
+
+    console.log(payload, "CheckDataDaatat");
+
+    let res = await GetViewDetailsUserRoleAndPoliciesRequests({
+      callApi,
+      showNotification,
+      showLoader,
+      requestdata: payload,
+      setViewDetailManageUser,
+      setRolesAndPoliciesManageUser,
+      navigate,
+    });
+
+    if (res) {
+      setRoleAndPolicyViewDetailData(res);
     }
   };
 
@@ -553,10 +579,7 @@ const ViewDetailManageUserModal = () => {
                   <CustomButton
                     text={"Roles & Policies"}
                     className="big-light-button"
-                    onClick={() => {
-                      setViewDetailManageUser(false);
-                      setRolesAndPoliciesManageUser(true);
-                    }}
+                    onClick={onClickRoleAndPolicy}
                   />
                   <CustomButton
                     text={"Close"}

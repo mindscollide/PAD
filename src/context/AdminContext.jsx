@@ -190,6 +190,7 @@ export const MyAdminProvider = ({ children }) => {
     modaPendingRequestModalOpenAction,
     setModaPendingRequestModalOpenAction,
   ] = useState(false);
+
   // manage user pending request action type
   //  1 bulk
   // 2 single
@@ -204,6 +205,13 @@ export const MyAdminProvider = ({ children }) => {
     totalRecordsDataBase: 0,
     totalRecordsTable: 0,
   });
+
+  // Role And Policy On View Detail Modal in Manager User Users Tab context State
+  const [roleAndPolicyViewDetailData, setRoleAndPolicyViewDetailData] =
+    useState({
+      userDetails: {},
+      assignedGroupPolicies: [],
+    });
 
   // rejected request list data
   const [
@@ -413,6 +421,10 @@ export const MyAdminProvider = ({ children }) => {
         modaPendingRequestModalOpenAction,
         setModaPendingRequestModalOpenAction,
         resetModalStateBulkAction,
+
+        //Role And Policy on View Detail State
+        roleAndPolicyViewDetailData,
+        setRoleAndPolicyViewDetailData,
 
         typeofAction,
         setTypeofAction,
