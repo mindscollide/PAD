@@ -12,6 +12,7 @@ import DarkCrossImg from "../../../../../assets/img/DarkCrossImg.png";
 
 // 🔹 Styles
 import styles from "./EditRoleAndPoliciesModal.module.css";
+import { useMyAdmin } from "../../../../../context/AdminContext";
 
 const EditRoleAndPoliciesModal = () => {
   const {
@@ -19,6 +20,11 @@ const EditRoleAndPoliciesModal = () => {
     setEditrolesAndPoliciesUser,
     setUnSavedChangesPoliciesModal,
   } = useGlobalModal();
+
+  // 🔹  Context State of View Detail Modal in which All data store
+  const { roleAndPolicyViewDetailData } = useMyAdmin();
+
+  console.log(roleAndPolicyViewDetailData, "roleAndPolicyViewDetailData");
 
   const [selectedRoles, setSelectedRoles] = useState(["Compliance Officer"]);
   const [userStatus, setUserStatus] = useState("Active");

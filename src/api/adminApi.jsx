@@ -2420,3 +2420,83 @@ export const GetViewDetailsUserRoleAndPoliciesRequests = async ({
     showLoader(false);
   }
 };
+
+// GetAllExistingGroupPolicies TO show group policies in dropdown of Edit Roles And Policies
+export const GetAllExistingGroupDataRequest = async ({
+  callApi,
+  showNotification,
+  showLoader,
+  setRolesAndPoliciesManageUser,
+  setEditrolesAndPoliciesUser,
+  navigate,
+}) => {
+  try {
+    // 🔹 API Call
+    const res = await callApi({
+      requestMethod: import.meta.env
+        .VITE_GET_All_EXISTING_GROUP_POLICIES_REQUEST_METHOD, // 🔑 must be defined in .env
+      endpoint: import.meta.env.VITE_API_ADMIN,
+      navigate,
+    });
+
+    // 🔹 Handle session expiry
+    if (handleExpiredSession(res, navigate, showLoader)) return null;
+
+    // 🔹 Validate execution
+    if (!res?.result?.isExecuted) {
+      showNotification({
+        type: "error",
+        title: "Error",
+        description: "Something went wrong while fetching Group Policies List.",
+      });
+      return null;
+    }
+
+    // 🔹 Handle success
+    if (res.success) {
+      const { responseMessage, groupPolicies } = res.result;
+      const message = getMessage(responseMessage);
+
+      // Case 1 → Data available
+      if (
+        responseMessage ===
+        "Admin_AdminServiceManager_GetAllExistingGroupPolicies_01"
+      ) {
+        setRolesAndPoliciesManageUser(false);
+        setEditrolesAndPoliciesUser(true);
+        return {
+          groupPolicies: groupPolicies || [],
+        };
+      }
+
+      // Case 2 → No data
+      if (
+        responseMessage ===
+        "Admin_AdminServiceManager_GetAllExistingGroupPolicies_02"
+      ) {
+        return {
+          groupPolicies: [],
+        };
+      }
+
+      // Case 3 → Custom server messages
+      if (message) {
+      }
+
+      return null;
+    }
+
+    // 🔹 Handle failure
+    showNotification({
+      type: "error",
+      title: "Fetch Failed",
+      description: getMessage(res.message),
+    });
+    return null;
+  } catch (error) {
+    return null;
+  } finally {
+    // 🔹 Always hide loader
+    showLoader(false);
+  }
+};

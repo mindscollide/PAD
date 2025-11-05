@@ -213,6 +213,14 @@ export const MyAdminProvider = ({ children }) => {
       assignedGroupPolicies: [],
     });
 
+  // Edit Role And Policy Group And Policy Dropdown State
+  const [
+    editRoleAndPolicyGroupDropdownData,
+    setEditRoleAndPolicyGroupDropdownData,
+  ] = useState({
+    groupPolicies: [],
+  });
+
   // rejected request list data
   const [
     manageUsersRejectedRequestTabMQTT,
@@ -425,6 +433,10 @@ export const MyAdminProvider = ({ children }) => {
         //Role And Policy on View Detail State
         roleAndPolicyViewDetailData,
         setRoleAndPolicyViewDetailData,
+
+        // Edit Role And Policy Group And Policy Dropdown State
+        editRoleAndPolicyGroupDropdownData,
+        setEditRoleAndPolicyGroupDropdownData,
 
         typeofAction,
         setTypeofAction,

@@ -78,12 +78,7 @@ const ViewDetailsOfRejectedRequestModal = () => {
                 {rejectionList.map((item, index) => (
                   <div key={index}>
                     {/* Profile Image + Connector */}
-                    <div>
-                      {index !== rejectionList.length - 1 && (
-                        <div className={styles.verticalLine}></div>
-                      )}
-                    </div>
-
+                   
                     {/* Content */}
                     <div>
                       <Row>

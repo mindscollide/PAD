@@ -470,6 +470,12 @@ export const responseMessages = {
   Admin_AdminServiceManager_GetPredefinedReasonsByAdmin_02: "No data found",
   Admin_AdminServiceManager_GetPredefinedReasonsByAdmin_03:
     "Exception occurred",
+
+  // GetAllExistingGroupPolicies TO show group policies in dropdown of Edit Roles And Policies
+  Admin_AdminServiceManager_GetAllExistingGroupPolicies_01: "Data found",
+  Admin_AdminServiceManager_GetAllExistingGroupPolicies_02: "No data found",
+  Admin_AdminServiceManager_GetAllExistingGroupPolicies_03:
+    "Exception occurred",
 };
 
 /**

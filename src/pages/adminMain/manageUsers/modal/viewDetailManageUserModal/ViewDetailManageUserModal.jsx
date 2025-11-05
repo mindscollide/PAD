@@ -13,7 +13,10 @@ import EditIcon from "../../../../../assets/img/EditIcon.png";
 import styles from "./ViewDetailManageUserModal.module.css";
 import CustomButton from "../../../../../components/buttons/button";
 import { useMyAdmin } from "../../../../../context/AdminContext";
-import { formatShowOnlyDate } from "../../../../../common/funtions/rejex";
+import {
+  formatApiDateTime,
+  formatShowOnlyDate,
+} from "../../../../../common/funtions/rejex";
 import {
   GetComplianceOfficerOnViewDetailUserTabRequest,
   GetLineManagerOnViewDetailUserTabRequest,
@@ -268,7 +271,15 @@ const ViewDetailManageUserModal = () => {
                   Last Loging
                 </label>
                 <label className={styles.viewDetailSubLabels}>
-                  2024-10-15 | 09:46 pm
+                  {formatApiDateTime(
+                    `${
+                      manageUsersViewDetailModalData?.userDetails
+                        ?.lastLoginDate || ""
+                    } ${
+                      manageUsersViewDetailModalData?.userDetails
+                        ?.lastLoginTime || ""
+                    }`
+                  ) || "—"}
                 </label>
               </div>
             </Col>
