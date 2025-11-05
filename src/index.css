@@ -604,3 +604,10 @@ a.ant-picker-now-btn {
 .ant-picker-cell-selected .ant-picker-cell-inner {
   background-color: #30426a !important; /* your custom color */
 }
+
+
+/* :where(.css-dev-only-do-not-override-1rfzxih).border-less-table-blue-wrapper table
+Specificity: (0,1,1)
+ {
+    width: 100%;
+} */

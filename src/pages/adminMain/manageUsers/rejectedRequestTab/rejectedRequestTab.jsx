@@ -1,34 +1,55 @@
+/**
+ * @file RejectedRequestTab.jsx
+ * @description Displays the "Rejected Requests" tab in the Admin Panel. 
+ * It supports pagination, lazy loading, filtering, and MQTT-based real-time updates.
+ */
+
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { Col, Row } from "antd";
-
-// 🔹 Components
-
-// 🔹 Contexts
+import { UpOutlined, DownOutlined } from "@ant-design/icons";
+import { useNavigate } from "react-router-dom";
 
 // 🔹 Styles
 import styles from "./rejectedRequestTab.module.css";
-import { buildApiRequest } from "./utils";
 
-import { useNavigate } from "react-router-dom";
-import { UpOutlined, DownOutlined } from "@ant-design/icons";
+// 🔹 Components
 import { BorderlessTable } from "../../../../components";
+
+// 🔹 Contexts
 import { useMyAdmin } from "../../../../context/AdminContext";
 import { useSearchBarContext } from "../../../../context/SearchBarContaxt";
 import { useGlobalLoader } from "../../../../context/LoaderContext";
 import { useNotification } from "../../../../components/NotificationProvider/NotificationProvider";
 import { useApi } from "../../../../context/ApiContext";
-import { useTableScrollBottom } from "../../../../common/funtions/scroll";
-import { SearchBrokersAdminRequest } from "../../../../api/adminApi";
 
+// 🔹 Utilities & Hooks
+import { useTableScrollBottom } from "../../../../common/funtions/scroll";
+import {
+  SearchRejectedUserRegistrationRequests,
+} from "../../../../api/adminApi";
+import { buildApiRequest, getPendingUserColumns } from "./utils";
+
+/**
+ * @component RejectedRequestTab
+ * @description Displays the list of rejected user registration requests with support for:
+ * - Lazy loading (infinite scroll)
+ * - Filters (from SearchBar context)
+ * - MQTT updates
+ * - Sorting
+ * 
+ * @param {Object} props
+ * @param {Array} props.activeFilters - Active filter array passed from parent
+ */
 const RejectedRequestTab = ({ activeFilters }) => {
   const navigate = useNavigate();
   const hasFetched = useRef(false);
-  const tableScrollBrokersList = useRef(null);
+  const rejectedRequestsTable = useRef(null);
 
-  // 🔷 Context Hooks
+  // 🔹 Context Hooks
   const { showNotification } = useNotification();
   const { showLoader } = useGlobalLoader();
   const { callApi } = useApi();
+
   const {
     rejectedRequestsTabSearch,
     setRejectedRequestsTabSearch,
@@ -43,53 +64,55 @@ const RejectedRequestTab = ({ activeFilters }) => {
     setManageUsersRejectedRequestTabMQTT,
   } = useMyAdmin();
 
+  // 🔹 Local State
   const [loadingMore, setLoadingMore] = useState(false);
-
-  // 🔷 UI State
   const [sortedInfo, setSortedInfo] = useState({});
-  const [open, setOpen] = useState(false);
+  const [viewModal, setViewModal] = useState(false);
 
-  // 🔷 Table Columns
-  //   const columns = getBrokerTableColumns({
-  //     sortedInfo,
-  //     adminBrokerSearch,
-  //     setRejectedRequestsTabSearch,
-  //     setEditBrokerModal,
-  //     setEditModalData,
-  //     onStatusChange: onToggleStatusApiRequest,
-  //   });
-  // 🔷 Table Columns
-  const columns = [];
-  /** 🔹 Fetch approvals from API */
+  // 🔹 Table Columns
+  const columns = getPendingUserColumns({ sortedInfo, setViewModal });
+
+  /**
+   * @function fetchApiCall
+   * @description Fetches rejected user registration requests from the backend.
+   * Handles both initial load and lazy loading (pagination).
+   * 
+   * @param {Object} requestData - The payload for API request.
+   * @param {boolean} [replace=false] - If true, replaces table data. If false, appends data.
+   * @param {boolean} [showLoaderFlag=true] - Whether to show the global loader during fetch.
+   */
   const fetchApiCall = useCallback(
     async (requestData, replace = false, showLoaderFlag = true) => {
       if (!requestData || typeof requestData !== "object") return;
+
       if (showLoaderFlag) showLoader(true);
 
-      const res = await SearchBrokersAdminRequest({
+      const res = await SearchRejectedUserRegistrationRequests({
         callApi,
         showNotification,
         showLoader,
         requestdata: requestData,
         navigate,
       });
+
       const rejectedRequests = Array.isArray(res?.rejectedRequests)
         ? res.rejectedRequests
         : [];
 
+      console.log("Fetched Rejected Requests:", rejectedRequests);
+
+      // 🔹 Update context state for table data
       setManageUsersRejectedRequestTabData((prev) => ({
-        brokers: replace
+        rejectedRequests: replace
           ? rejectedRequests
           : [...(prev?.rejectedRequests || []), ...rejectedRequests],
-        // this is for to run lazy loading its data comming from database of total data in db
         totalRecordsDataBase: res?.totalRecords || 0,
-        // this is for to know how mush dta currently fetch from  db
         totalRecordsTable: replace
           ? rejectedRequests.length
-          : manageUsersRejectedRequestTabData.totalRecordsTable +
-            rejectedRequests.length,
+          : (prev?.totalRecordsTable || 0) + rejectedRequests.length,
       }));
 
+      // 🔹 Update search state for pagination
       setRejectedRequestsTabSearch((prev) => {
         const next = {
           ...prev,
@@ -98,11 +121,10 @@ const RejectedRequestTab = ({ activeFilters }) => {
             : prev.pageNumber + rejectedRequests.length,
         };
 
-        // this is for check if filter value get true only on that it will false
+        // Reset filter trigger after fetch
         if (prev.filterTrigger) {
           next.filterTrigger = false;
         }
-
         return next;
       });
     },
@@ -116,9 +138,13 @@ const RejectedRequestTab = ({ activeFilters }) => {
     ]
   );
 
-  // ----------------- Effects -----------------
+  // -------------------------------
+  // 🔷 Effects
+  // -------------------------------
 
-  // 🔷 Initial Data Fetch
+  /**
+   * 🔸 Initial Fetch (on mount)
+   */
   useEffect(() => {
     if (!hasFetched.current) {
       hasFetched.current = true;
@@ -127,7 +153,9 @@ const RejectedRequestTab = ({ activeFilters }) => {
     }
   }, [buildApiRequest, rejectedRequestsTabSearch, fetchApiCall]);
 
-  // Reset on Unmount
+  /**
+   * 🔸 Cleanup (on unmount)
+   */
   useEffect(() => {
     return () => {
       resetRejectedRequestsTabSearch();
@@ -135,43 +163,46 @@ const RejectedRequestTab = ({ activeFilters }) => {
     };
   }, []);
 
-  // Fetch on Filter Trigger
+  /**
+   * 🔸 Re-fetch on Filter Trigger
+   */
   useEffect(() => {
     if (rejectedRequestsTabSearch.filterTrigger) {
       const requestData = buildApiRequest(rejectedRequestsTabSearch);
-
       fetchApiCall(requestData, true, true);
     }
   }, [rejectedRequestsTabSearch.filterTrigger]);
 
-  // MQTT Updates
+  /**
+   * 🔸 MQTT Updates
+   * Refresh table data when MQTT flag is triggered.
+   */
   useEffect(() => {
     if (manageUsersRejectedRequestTabMQTT) {
       setManageUsersRejectedRequestTabMQTT(false);
       let requestData = buildApiRequest(rejectedRequestsTabSearch);
-      requestData = {
-        ...requestData,
-        PageNumber: 0,
-      };
+      requestData = { ...requestData, PageNumber: 0 };
       fetchApiCall(requestData, true, false);
     }
   }, [manageUsersRejectedRequestTabMQTT]);
 
-  // Lazy loading
+  /**
+   * 🔸 Lazy Loading
+   * Triggers when user scrolls to bottom of table.
+   */
   useTableScrollBottom(
     async () => {
-      if (
-        manageUsersRejectedRequestTabData?.totalRecordsDataBase <=
-        manageUsersRejectedRequestTabData?.totalRecordsTable
-      )
-        return;
+      const { totalRecordsDataBase, totalRecordsTable } =
+        manageUsersRejectedRequestTabData || {};
+
+      if (totalRecordsDataBase <= totalRecordsTable) return;
 
       try {
         setLoadingMore(true);
         const requestData = buildApiRequest(rejectedRequestsTabSearch);
         await fetchApiCall(requestData, false, false);
       } catch (err) {
-        console.error("Error loading more approvals:", err);
+        console.error("Error loading more rejected requests:", err);
       } finally {
         setLoadingMore(false);
       }
@@ -180,27 +211,31 @@ const RejectedRequestTab = ({ activeFilters }) => {
     "border-less-table-blue"
   );
 
+  /**
+   * @function handleChange
+   * @description Handles sorting change for table columns.
+   */
+  const handleChange = (_, __, sorter) => setSortedInfo(sorter);
+
+  // -------------------------------
+  // 🔷 Render
+  // -------------------------------
   return (
-    <>
-      <div className="px-4 md:px-6 lg:px-8">
-        {/* 🔷 Brokers Table */}
-        <BorderlessTable
-          rows={manageUsersRejectedRequestTabData?.rejectedRequests || []}
-          classNameTable="border-less-table-blue"
-          scroll={
-            manageUsersRejectedRequestTabData?.rejectedRequests?.length
-              ? { x: "max-content", y: activeFilters.length > 0 ? 450 : 500 }
-              : undefined
-          }
-          columns={columns}
-          onChange={(pagination, filters, sorter) => {
-            setSortedInfo(sorter);
-          }}
-          loading={loadingMore}
-          ref={tableScrollBrokersList}
-        />
-      </div>
-    </>
+    <div className={styles.userTableContainer}>
+      <BorderlessTable
+        rows={manageUsersRejectedRequestTabData?.rejectedRequests}
+        columns={columns}
+        classNameTable="border-less-table-blue"
+        onChange={handleChange}
+        loading={loadingMore}
+        scroll={
+          manageUsersRejectedRequestTabData?.rejectedRequests?.length
+            ? { y: activeFilters ? 450 : 500 }
+            : undefined
+        }
+        ref={rejectedRequestsTable}
+      />
+    </div>
   );
 };
 

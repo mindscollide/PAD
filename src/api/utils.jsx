@@ -453,6 +453,13 @@ export const responseMessages = {
   Admin_AdminServiceManager_UpdateEmployeeManager_02: "Success",
   Admin_AdminServiceManager_UpdateEmployeeManager_03: "Failed to Update",
   Admin_AdminServiceManager_UpdateEmployeeManager_04: "Exception",
+
+  Admin_AdminServiceManager_GetRejectedUserRegistrationRequests_01:
+    "Data found",
+  Admin_AdminServiceManager_GetRejectedUserRegistrationRequests_02:
+    "No data found",
+  Admin_AdminServiceManager_GetRejectedUserRegistrationRequests_03:
+    "Exception occurred",
 };
 
 /**
