@@ -447,6 +447,12 @@ export const responseMessages = {
     "No data found",
   Admin_AdminServiceManager_GetPendingUserRegistrationRequests_03:
     "Exception occurred",
+
+  // For Update Employee Manager in Manage User Users Tab  View Detail Modal Request in Admin on Save
+  Admin_AdminServiceManager_UpdateEmployeeManager_01: "Invalid Request",
+  Admin_AdminServiceManager_UpdateEmployeeManager_02: "Success",
+  Admin_AdminServiceManager_UpdateEmployeeManager_03: "Failed to Update",
+  Admin_AdminServiceManager_UpdateEmployeeManager_04: "Exception",
 };
 
 /**

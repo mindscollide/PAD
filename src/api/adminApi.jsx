@@ -2092,3 +2092,68 @@ export const ProcessUserRegistrationRequest = async ({
     showLoader(false);
   }
 };
+
+// For Update Employee Manager in Manage User Users Tab  View Detail Modal Request in Admin on Save
+export const UpdateEmployeeManagerManageUserTab = async ({
+  callApi,
+  showNotification,
+  showLoader,
+  requestdata,
+  navigate,
+}) => {
+  try {
+    // 🔹 API Call
+    const res = await callApi({
+      requestMethod: import.meta.env
+        .VITE_UPDATE_EMPLOYEE_MANAGER_FOR_LM_OR_CO_REQUEST_METHOD, // 🔑 must be defined in .env
+      endpoint: import.meta.env.VITE_API_ADMIN,
+      requestData: requestdata,
+      navigate,
+    });
+
+    // 🔹 Handle session expiry
+    if (handleExpiredSession(res, navigate, showLoader)) return false;
+
+    // 🔹 Validate execution
+    if (!res?.result?.isExecuted) {
+      showNotification({
+        type: "error",
+        title: "Error",
+        description: "Something went wrong while fetching Group Policies List.",
+      });
+      return false;
+    }
+
+    // 🔹 Handle success
+    if (res.success) {
+      const { responseMessage } = res.result;
+      const message = getMessage(responseMessage);
+
+      // Case 1 → Data available
+      if (
+        responseMessage === "Admin_AdminServiceManager_UpdateEmployeeManager_02"
+      ) {
+        return true;
+      }
+
+      // Case 3 → Custom server messages
+      if (message) {
+      }
+
+      return false;
+    }
+
+    // 🔹 Handle failure
+    showNotification({
+      type: "error",
+      title: "Fetch Failed",
+      description: getMessage(res.message),
+    });
+    return false;
+  } catch (error) {
+    return false;
+  } finally {
+    // 🔹 Always hide loader
+    showLoader(false);
+  }
+};
