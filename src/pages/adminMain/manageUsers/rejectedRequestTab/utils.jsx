@@ -328,7 +328,7 @@ export const getPendingUserColumns = ({
           justifyContent: "center",
         }}
       >
-        Action
+        Rejection Notes
       </div>
     ),
     key: "action",
