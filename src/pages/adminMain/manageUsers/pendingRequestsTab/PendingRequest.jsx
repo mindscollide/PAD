@@ -128,7 +128,9 @@ const PendingRequest = ({ currentUserData, setCurrentUserData }) => {
   }, [manageUsersPendingTabMqtt]);
 
   return (
-    <>
+    <div
+      className={styles.scrollContainer}
+    >
       {manageUsersPendingTabData?.length > 0 ? (
         manageUsersPendingTabData.map((data, index) => (
           <Col span={24}>
@@ -219,7 +221,7 @@ const PendingRequest = ({ currentUserData, setCurrentUserData }) => {
           <EmptyState type={"pending"} />
         </div>
       )}
-    </>
+    </div>
   );
 };
 

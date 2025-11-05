@@ -62,6 +62,7 @@ const RejectedRequestTab = ({ activeFilters }) => {
     manageUsersRejectedRequestTabMQTT,
     setManageUsersRejectedRequestTabMQTT,
     setCurrentID,
+
   } = useMyAdmin();
 
   const { setViewDetailRejectedModal } = useGlobalModal();
