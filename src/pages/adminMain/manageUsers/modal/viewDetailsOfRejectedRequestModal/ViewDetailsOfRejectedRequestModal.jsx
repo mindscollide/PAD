@@ -124,7 +124,11 @@ const ViewDetailsOfRejectedRequestModal = () => {
 
           <Row>
             <Col span={24} className={styles.mainButtonSpan}>
-              <CustomButton text={"Close"} className="big-light-button" />
+              <CustomButton
+                text={"Close"}
+                className="big-light-button"
+                onClick={() => setViewDetailRejectedModal(false)}
+              />
             </Col>
           </Row>
         </>

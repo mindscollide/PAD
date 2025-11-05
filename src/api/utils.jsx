@@ -460,6 +460,12 @@ export const responseMessages = {
     "No data found",
   Admin_AdminServiceManager_GetRejectedUserRegistrationRequests_03:
     "Exception occurred",
+
+  //For Roles & Policies while standing on view Detail Modal on manage user Users Tab
+
+  Admin_AdminServiceManager_GetUserDetailsWithRoles_01: "Data found",
+  Admin_AdminServiceManager_GetUserDetailsWithRoles_02: "No data found",
+  Admin_AdminServiceManager_GetUserDetailsWithRoles_03: "Exception occurred",
 };
 
 /**

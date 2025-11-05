@@ -2251,3 +2251,88 @@ export const SearchRejectedUserRegistrationRequests = async ({
     showLoader(false);
   }
 };
+
+//For Roles & Policies while standing on view Detail Modal on manage user Users Tab
+export const GetViewDetailsUserRoleAndPoliciesRequests = async ({
+  callApi,
+  showNotification,
+  showLoader,
+  requestdata,
+  setViewDetailManageUser,
+  setRolesAndPoliciesManageUser,
+  navigate,
+}) => {
+  try {
+    // 🔹 API Call
+    const res = await callApi({
+      requestMethod: import.meta.env
+        .VITE_GET_USER_DETAIL_ON_ROLES_AND_POLICIES_REQEUST_METHOD, // 🔑 must be defined in .env
+      endpoint: import.meta.env.VITE_API_ADMIN,
+      requestData: requestdata,
+      navigate,
+    });
+
+    // 🔹 Handle session expiry
+    if (handleExpiredSession(res, navigate, showLoader)) return null;
+
+    // 🔹 Validate execution
+    if (!res?.result?.isExecuted) {
+      showNotification({
+        type: "error",
+        title: "Error",
+        description: "Something went wrong while fetching Group Policies List.",
+      });
+      return null;
+    }
+
+    // 🔹 Handle success
+    if (res.success) {
+      const { responseMessage, userDetails, assignedGroupPolicies } =
+        res.result;
+      const message = getMessage(responseMessage);
+
+      // Case 1 → Data available
+      if (
+        responseMessage ===
+        "Admin_AdminServiceManager_GetUserDetailsWithRoles_01"
+      ) {
+        setViewDetailManageUser(false);
+        setRolesAndPoliciesManageUser(true);
+        return {
+          userDetails: userDetails || {},
+          assignedGroupPolicies: assignedGroupPolicies || [],
+        };
+      }
+
+      // Case 2 → No data
+      if (
+        responseMessage ===
+        "Admin_AdminServiceManager_GetUserDetailsWithRoles_02"
+      ) {
+        return {
+          userDetails: {},
+          assignedGroupPolicies: [],
+        };
+      }
+
+      // Case 3 → Custom server messages
+      if (message) {
+      }
+
+      return null;
+    }
+
+    // 🔹 Handle failure
+    showNotification({
+      type: "error",
+      title: "Fetch Failed",
+      description: getMessage(res.message),
+    });
+    return null;
+  } catch (error) {
+    return null;
+  } finally {
+    // 🔹 Always hide loader
+    showLoader(false);
+  }
+};
