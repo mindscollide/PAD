@@ -35,6 +35,7 @@ const Dashboard = () => {
     setAdminBrokerMqtt,
     setAdminIntrumentsMqtt,
     setAdminAddDeleteClosingInstrument,
+    setManageUsersPendingTabMqtt,
   } = useMyAdmin();
   const { setHtaEscalatedApprovalDataMqtt } = useEscalatedApprovals();
   const { setEmployeePendingApprovalsDataMqtt, activeTabRef } =
@@ -57,6 +58,7 @@ const Dashboard = () => {
     urgentAlert,
     setUrgentAlert,
   } = useDashboardContext();
+
   const { setEmployeeTransactionsTableDataMqtt } = useTransaction();
   const { setWebNotificationData } = useWebNotification();
   const { callApi } = useApi();
@@ -166,7 +168,17 @@ const Dashboard = () => {
                   }
                   break;
                 }
-
+                case "USER_REGISTRATION_ACCEPTED": {
+                  if (currentRoleIsAdminRefLocal) {
+                    // admin mqtt
+                    if (currentKey === "21") {
+                      // not admin MQTT → ignore completely
+                      setManageUsersPendingTabMqtt(true);
+                      return;
+                    }
+                  }
+                  break;
+                }
                 case "NEW_INSTRUMENT_CLOSING_PERIOD_ADDED":
                 case "INSTRUMENT_CLOSING_PERIOD_DELETED": {
                   if (currentRoleIsAdminRefLocal) {

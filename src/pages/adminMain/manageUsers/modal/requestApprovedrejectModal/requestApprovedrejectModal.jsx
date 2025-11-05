@@ -128,14 +128,12 @@ const RequestApprovedRejeectedModal = ({ currentUserData = [] }) => {
       showLoader,
       navigate,
     });
-
-    console.log("Fetched Rejected Requests:", res);
     const reasons = Array.isArray(res?.reasons)
       ? res?.reasons.map((item) => item.reason)
       : [];
     setReasons(reasons);
-    console.log("Fetched Rejected Requests:", reasons);
   }, [callApi, navigate, showLoader, showNotification]);
+
   useEffect(() => {
     if (!hasFetched.current) {
       hasFetched.current = true;
