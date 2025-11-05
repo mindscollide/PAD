@@ -70,11 +70,14 @@ const RejectedRequestTab = ({ activeFilters }) => {
   const [sortedInfo, setSortedInfo] = useState({});
   const [viewModal, setViewModal] = useState(false);
 
+  const handleViewNoteDetail = (record) => {
+    setViewDetailRejectedModal(true);
+  };
+
   // 🔹 Table Columns
   const columns = getPendingUserColumns({
     sortedInfo,
-    setViewModal,
-    setViewDetailRejectedModal,
+    handleViewNoteDetail,
   });
 
   /**
