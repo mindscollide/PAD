@@ -101,7 +101,15 @@ const RejectedRequestTab = ({ activeFilters }) => {
       });
 
       const rejectedRequests = Array.isArray(res?.rejectedRequests)
-        ? res.rejectedRequests
+        ? res.rejectedRequests.map((item) => ({
+            ...item,
+            lastReqeustedDateandtime: `${item.lastReqeustedDate || ""} ${
+              item.lastReqeustedTime || ""
+            }`.trim(),
+            lastRejectionDateandtime: `${item.lastRejectionDate || ""} ${
+              item.lastRejectionTime || ""
+            }`.trim(),
+          }))
         : [];
 
       console.log("Fetched Rejected Requests:", rejectedRequests);

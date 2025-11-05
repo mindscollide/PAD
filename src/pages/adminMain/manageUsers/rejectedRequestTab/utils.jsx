@@ -4,13 +4,15 @@
  * in the Admin "Manage Users" module.
  */
 
-import { Button, Tooltip } from "antd";
+import { Tooltip } from "antd";
 import moment from "moment";
 
 // 🔹 Assets (sort icons)
 import ArrowDown from "../../../../assets/img/arrow-down-dark.png";
 import ArrowUp from "../../../../assets/img/arrow-up-dark.png";
 import DefaultColumnArrow from "../../../../assets/img/default-colum-arrow.png";
+import { formatApiDateTime } from "../../../../common/funtions/rejex";
+import { Button } from "../../../../components";
 
 /* -------------------------------------------------------------------------------------------------
  * 🔹 buildApiRequest
@@ -47,15 +49,9 @@ export const buildApiRequest = (searchState = {}) => ({
 
 /**
  * Renders the appropriate sort icon based on column sorting state.
- *
- * @function getSortIcon
- * @param {string} columnKey - The key of the column being sorted.
- * @param {Object} sortedInfo - The current sorter information from Ant Design Table.
- * @returns {JSX.Element} Sort icon image element.
  */
 const getSortIcon = (columnKey, sortedInfo) => {
   if (sortedInfo?.columnKey === columnKey) {
-    // 🔸 Active sorted column
     return sortedInfo.order === "ascend" ? (
       <img
         draggable={false}
@@ -72,8 +68,6 @@ const getSortIcon = (columnKey, sortedInfo) => {
       />
     );
   }
-
-  // 🔸 Default (unsorted) column
   return (
     <img
       draggable={false}
@@ -84,28 +78,14 @@ const getSortIcon = (columnKey, sortedInfo) => {
   );
 };
 
-/* -------------------------------------------------------------------------------------------------
- * 🔹 getPendingUserColumns
- * -------------------------------------------------------------------------------------------------
- */
-
 /**
- * Defines column configuration for the "Rejected Requests" Ant Design table.
- *
- * @function getPendingUserColumns
- * @param {Object} params
- * @param {Object} [params.sortedInfo={}] - Current sorter info to control UI icons and order.
- * @param {Function} params.setViewModal - Function to open the "View Details" modal with record data.
- * @returns {Array<Object>} Column configuration array for Ant Design Table.
+ * Defines columns for the "Rejected Requests" table.
  */
 export const getPendingUserColumns = ({
   sortedInfo = {},
-  setViewModal,
-  setViewDetailRejectedModal,
+  handleViewNoteDetail,
 }) => [
-  /**
-   * 🧱 Employee ID Column
-   */
+  // 🧱 Employee ID
   {
     title: (
       <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
@@ -114,9 +94,10 @@ export const getPendingUserColumns = ({
     ),
     dataIndex: "userRegistrationRequestID",
     key: "userRegistrationRequestID",
-    width: 120,
+    width: 100,
     ellipsis: true,
-    sorter: (a, b) => a.userRegistrationRequestID - b.userRegistrationRequestID,
+    sorter: (a, b) =>
+      (a.userRegistrationRequestID || 0) - (b.userRegistrationRequestID || 0),
     sortDirections: ["ascend", "descend"],
     sortOrder:
       sortedInfo.columnKey === "userRegistrationRequestID"
@@ -124,16 +105,10 @@ export const getPendingUserColumns = ({
         : null,
     showSorterTooltip: false,
     sortIcon: () => null,
-    render: (text) => (
-      <Tooltip title={text}>
-        <span>{text || "—"}</span>
-      </Tooltip>
-    ),
+    render: (text) => <Tooltip title={text || "—"}>{text || "—"}</Tooltip>,
   },
 
-  /**
-   * 🧱 Employee Name Column
-   */
+  // 🧱 Employee Name
   {
     title: (
       <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
@@ -142,20 +117,17 @@ export const getPendingUserColumns = ({
     ),
     dataIndex: "fullName",
     key: "fullName",
-    width: 180,
+    width: 120,
     ellipsis: true,
-    defaultSortOrder: "ascend",
-    sorter: (a, b) => a.fullName.localeCompare(b.fullName),
+    sorter: (a, b) => (a.fullName || "").localeCompare(b.fullName || ""),
     sortDirections: ["ascend", "descend"],
-    sortOrder:
-      sortedInfo.columnKey === "fullName" ? sortedInfo.order : "ascend",
+    sortOrder: sortedInfo.columnKey === "fullName" ? sortedInfo.order : null,
     showSorterTooltip: false,
     sortIcon: () => null,
+    render: (text) => <Tooltip title={text || "—"}>{text || "—"}</Tooltip>,
   },
 
-  /**
-   * 🧱 Email Address Column
-   */
+  // 🧱 Email Address
   {
     title: (
       <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
@@ -164,18 +136,17 @@ export const getPendingUserColumns = ({
     ),
     dataIndex: "email",
     key: "email",
-    width: 220,
+    width: 120,
     ellipsis: true,
-    sorter: (a, b) => a.email.localeCompare(b.email),
+    sorter: (a, b) => (a.email || "").localeCompare(b.email || ""),
     sortDirections: ["ascend", "descend"],
     sortOrder: sortedInfo.columnKey === "email" ? sortedInfo.order : null,
     showSorterTooltip: false,
     sortIcon: () => null,
+    render: (text) => <Tooltip title={text || "—"}>{text || "—"}</Tooltip>,
   },
 
-  /**
-   * 🧱 Department Column
-   */
+  // 🧱 Department
   {
     title: (
       <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
@@ -186,99 +157,193 @@ export const getPendingUserColumns = ({
     key: "departmentName",
     width: 160,
     ellipsis: true,
-    sorter: (a, b) => a.departmentName.localeCompare(b.departmentName),
+    sorter: (a, b) =>
+      (a.departmentName || "").localeCompare(b.departmentName || ""),
     sortDirections: ["ascend", "descend"],
     sortOrder:
       sortedInfo.columnKey === "departmentName" ? sortedInfo.order : null,
     showSorterTooltip: false,
     sortIcon: () => null,
+    render: (text) => <Tooltip title={text || "—"}>{text || "—"}</Tooltip>,
   },
 
-  /**
-   * 🧱 Last Request Date Column
-   */
+  // 🧱 Last Request Date
   {
     title: (
-      <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-        Last Request Date {getSortIcon("lastRequestDate", sortedInfo)}
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          gap: 8,
+        }}
+      >
+        Last Request Date {getSortIcon("lastReqeustedDateandtime", sortedInfo)}
       </div>
     ),
-    dataIndex: "lastRequestDate",
-    key: "lastRequestDate",
-    width: 150,
-    ellipsis: true,
-    render: (date) => (date ? moment(date).format("YYYY-MM-DD") : "—"),
-    sorter: (a, b) => new Date(a.lastRequestDate) - new Date(b.lastRequestDate),
-    sortDirections: ["ascend", "descend"],
-    sortOrder:
-      sortedInfo.columnKey === "lastRequestDate" ? sortedInfo.order : null,
-    showSorterTooltip: false,
-    sortIcon: () => null,
-  },
-
-  /**
-   * 🧱 Last Rejection Date Column
-   */
-  {
-    title: (
-      <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-        Last Rejection Date {getSortIcon("lastRejectionDate", sortedInfo)}
-      </div>
-    ),
-    dataIndex: "lastRejectionDate",
-    key: "lastRejectionDate",
+    dataIndex: "lastReqeustedDateandtime",
+    key: "lastReqeustedDateandtime",
     width: 160,
+    align: "center",
     ellipsis: true,
-    render: (date) => (date ? moment(date).format("YYYY-MM-DD") : "—"),
-    sorter: (a, b) =>
-      new Date(a.lastRejectionDate) - new Date(b.lastRejectionDate),
+    sorter: (a, b) => {
+      const parseToDate = (val) => {
+        if (!val) return new Date(0);
+        const datePart = val.slice(0, 8);
+        const timePart = val.slice(9).replace(/\s/g, "");
+        if (datePart.length !== 8 || timePart.length !== 6) return new Date(0);
+
+        const isoString = `${datePart.slice(0, 4)}-${datePart.slice(
+          4,
+          6
+        )}-${datePart.slice(6, 8)}T${timePart.slice(0, 2)}:${timePart.slice(
+          2,
+          4
+        )}:${timePart.slice(4, 6)}`;
+        return new Date(isoString);
+      };
+      return (
+        parseToDate(a.lastReqeustedDateandtime) -
+        parseToDate(b.lastReqeustedDateandtime)
+      );
+    },
     sortDirections: ["ascend", "descend"],
     sortOrder:
-      sortedInfo.columnKey === "lastRejectionDate" ? sortedInfo.order : null,
+      sortedInfo.columnKey === "lastReqeustedDateandtime"
+        ? sortedInfo.order
+        : null,
     showSorterTooltip: false,
     sortIcon: () => null,
+    render: (_, record) => {
+      const formatted = formatApiDateTime(record.lastReqeustedDateandtime);
+      return (
+        <Tooltip title={formatted}>
+          <div style={{ textAlign: "center" }}>{formatted || "—"}</div>
+        </Tooltip>
+      );
+    },
   },
 
-  /**
-   * 🧱 Rejection Count Column
-   */
+  // 🧱 Last Rejection Date
   {
     title: (
-      <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          gap: 8,
+        }}
+      >
+        Last Rejection Date{" "}
+        {getSortIcon("lastRejectionDateandtime", sortedInfo)}
+      </div>
+    ),
+    dataIndex: "lastRejectionDateandtime",
+    key: "lastRejectionDateandtime",
+    width: 160,
+    align: "center",
+    ellipsis: true,
+    sorter: (a, b) => {
+      const parseToDate = (val) => {
+        if (!val) return new Date(0);
+        const datePart = val.slice(0, 8);
+        const timePart = val.slice(9).replace(/\s/g, "");
+        if (datePart.length !== 8 || timePart.length !== 6) return new Date(0);
+
+        const isoString = `${datePart.slice(0, 4)}-${datePart.slice(
+          4,
+          6
+        )}-${datePart.slice(6, 8)}T${timePart.slice(0, 2)}:${timePart.slice(
+          2,
+          4
+        )}:${timePart.slice(4, 6)}`;
+        return new Date(isoString);
+      };
+      return (
+        parseToDate(a.lastRejectionDateandtime) -
+        parseToDate(b.lastRejectionDateandtime)
+      );
+    },
+    sortDirections: ["ascend", "descend"],
+    sortOrder:
+      sortedInfo.columnKey === "lastRejectionDateandtime"
+        ? sortedInfo.order
+        : null,
+    showSorterTooltip: false,
+    sortIcon: () => null,
+    render: (_, record) => {
+      const formatted = formatApiDateTime(record.lastRejectionDateandtime);
+      return (
+        <Tooltip title={formatted}>
+          <div style={{ textAlign: "center" }}>{formatted || "—"}</div>
+        </Tooltip>
+      );
+    },
+  },
+
+  // 🧱 Rejection Count
+  {
+    title: (
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          gap: 8,
+        }}
+      >
         Rejection Count {getSortIcon("rejectedCount", sortedInfo)}
       </div>
     ),
     dataIndex: "rejectedCount",
     key: "rejectedCount",
-    width: 150,
+    width: 120,
+    align: "center",
     ellipsis: true,
-    sorter: (a, b) => a.rejectedCount - b.rejectedCount,
+    sorter: (a, b) => (a.rejectedCount || 0) - (b.rejectedCount || 0),
     sortDirections: ["ascend", "descend"],
     sortOrder:
       sortedInfo.columnKey === "rejectedCount" ? sortedInfo.order : null,
     showSorterTooltip: false,
     sortIcon: () => null,
+    render: (text) => {
+      const value =
+        typeof text === "number" ? String(text).padStart(2, "0") : text ?? "—";
+      return (
+        <Tooltip title={value}>
+          <div style={{ textAlign: "center" }}>{value}</div>
+        </Tooltip>
+      );
+    },
   },
 
-  /**
-   * 🧱 Action Column
-   */
+  // 🧱 Action
   {
-    title: "Action",
+    title: (
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
+        Action
+      </div>
+    ),
     key: "action",
-    width: 120,
+    dataIndex: "action",
+    width: 150,
+    align: "center", // ✅ centers the cell content
     fixed: "right",
     render: (_, record) => (
-      <Button
-        type="link"
-        onClick={() => {
-          setViewModal(record);
-          setViewDetailRejectedModal(true);
-        }}
-        style={{ padding: 0 }}
-      >
-        View Details
-      </Button>
+      <div style={{ textAlign: "center" }}>
+        <Button
+          className="small-light-button"
+          text="View Notes"
+          onClick={() => handleViewNoteDetail(record)}
+        />
+      </div>
     ),
   },
 ];
