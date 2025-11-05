@@ -61,6 +61,7 @@ const RejectedRequestTab = ({ activeFilters }) => {
     resetManageUsersRejectedRequestTabData,
     manageUsersRejectedRequestTabMQTT,
     setManageUsersRejectedRequestTabMQTT,
+    setCurrentID,
   } = useMyAdmin();
 
   const { setViewDetailRejectedModal } = useGlobalModal();
@@ -68,10 +69,13 @@ const RejectedRequestTab = ({ activeFilters }) => {
   // 🔹 Local State
   const [loadingMore, setLoadingMore] = useState(false);
   const [sortedInfo, setSortedInfo] = useState({});
-  const [viewModal, setViewModal] = useState(false);
 
   const handleViewNoteDetail = (record) => {
-    setViewDetailRejectedModal(true);
+    console.log("handleViewNoteDetail", record);
+    if (record) {
+      setCurrentID(record.loginID);
+      setViewDetailRejectedModal(true);
+    }
   };
 
   // 🔹 Table Columns

@@ -2420,3 +2420,94 @@ export const GetViewDetailsUserRoleAndPoliciesRequests = async ({
     showLoader(false);
   }
 };
+
+// Get User Registration History By LoginID
+export const GetUserRegistrationHistoryByLoginID = async ({
+  callApi,
+  showNotification,
+  showLoader,
+  requestdata,
+  navigate,
+}) => {
+  try {
+    // 🔹 API Call
+    const res = await callApi({
+      requestMethod: import.meta.env
+        .VITE_GE_USER_REGISTRATION_HISTORY_BY_LOGIN_ID_REQUEST_METHOD, // 🔑 must be defined in .env
+      endpoint: import.meta.env.VITE_API_ADMIN,
+      requestData: requestdata,
+      navigate,
+    });
+
+    // 🔹 Handle session expiry
+    if (handleExpiredSession(res, navigate, showLoader)) return null;
+
+    // 🔹 Validate execution
+    if (!res?.result?.isExecuted) {
+      showNotification({
+        type: "error",
+        title: "Error",
+        description:
+          "Something went wrong while fetching registration History.",
+      });
+      return null;
+    }
+    console.log("reasonsArray", res);
+
+    // 🔹 Handle success
+    if (res.success) {
+      const { responseMessage, registrationHistory, employeeName } = res.result;
+      const message = getMessage(responseMessage);
+
+      // Case 1 → Data available
+      if (
+        responseMessage ===
+        "Admin_AdminServiceManager_GetUserRegistrationHistoryByLoginID_01"
+      ) {
+        return {
+          registrationHistory: registrationHistory,
+          employeeName: employeeName || "",
+        };
+      }
+
+      // Case 2 → No data
+      if (
+        responseMessage ===
+        "Admin_AdminServiceManager_GetUserRegistrationHistoryByLoginID_02"
+      ) {
+        return { registrationHistory: [], employeeName: "" };
+      }
+
+      // Case 3 → Custom server messages
+      if (message) {
+        showNotification({
+          type: "warning",
+          title: message,
+          description: "No registration History found.",
+        });
+      }
+
+      return null;
+    }
+
+    // 🔹 Handle failure
+    showNotification({
+      type: "error",
+      title: "Fetch Failed",
+      description: getMessage(res.message),
+    });
+    return null;
+  } catch (error) {
+    // 🔹 Exception handling
+    showNotification({
+      type: "error",
+      title: "Error",
+      description:
+        "An unexpected error occurred while request registration History.",
+    });
+    return null;
+  } finally {
+    // 🔹 Always hide loader
+    showLoader(false);
+  }
+};
