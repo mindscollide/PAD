@@ -236,6 +236,10 @@ td.border-less-table-blue-cell:hover {
   background: transparent !important;
   /* height: 588px !important; */
 }
+.border-less-table-blue-wrapper table {
+  width: 99% !important; 
+}
+
 /* Cell Styling */
 .border-less-table-blue-wrapper .border-less-table-blue-tbody > tr > td {
   padding: 0px 6px;
