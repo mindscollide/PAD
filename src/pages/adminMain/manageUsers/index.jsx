@@ -18,6 +18,7 @@ import { useMyAdmin } from "../../../context/AdminContext";
 import UsersTab from "./usersTab/ManageUsers";
 import RequestApprovedRejeectedModal from "./modal/requestApprovedrejectModal/requestApprovedrejectModal";
 import RejectedRequestTab from "./rejectedRequestTab/rejectedRequestTab";
+import ViewDetailsOfRejectedRequestModal from "./modal/viewDetailsOfRejectedRequestModal/ViewDetailsOfRejectedRequestModal";
 import { useSearchBarContext } from "../../../context/SearchBarContaxt";
 
 const ManageUsers = () => {
@@ -30,6 +31,7 @@ const ManageUsers = () => {
     unSavedChangesPoliciesModal,
     activeManageUserTab,
     setActiveManageUserTab,
+    viewDetailRejectedModal,
   } = useGlobalModal();
 
   const {
@@ -376,6 +378,9 @@ const ManageUsers = () => {
           setCurrentUserData={setCurrentUserData}
         />
       )}
+
+      {/* For View Detail Of Rejected Request Modal */}
+      {viewDetailRejectedModal && <ViewDetailsOfRejectedRequestModal />}
     </>
   );
 };

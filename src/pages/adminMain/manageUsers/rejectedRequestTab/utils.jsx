@@ -81,7 +81,10 @@ const getSortIcon = (columnKey, sortedInfo) => {
 /**
  * Defines columns for the "Rejected Requests" table.
  */
-export const getPendingUserColumns = ({ sortedInfo = {}, handleCancel }) => [
+export const getPendingUserColumns = ({
+  sortedInfo = {},
+  handleViewNoteDetail,
+}) => [
   // 🧱 Employee ID
   {
     title: (
@@ -338,7 +341,7 @@ export const getPendingUserColumns = ({ sortedInfo = {}, handleCancel }) => [
         <Button
           className="small-light-button"
           text="View Notes"
-          onClick={() => handleCancel(record)}
+          onClick={() => handleViewNoteDetail(record)}
         />
       </div>
     ),

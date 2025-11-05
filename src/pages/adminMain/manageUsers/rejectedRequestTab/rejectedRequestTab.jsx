@@ -26,6 +26,7 @@ import { useApi } from "../../../../context/ApiContext";
 import { useTableScrollBottom } from "../../../../common/funtions/scroll";
 import { SearchRejectedUserRegistrationRequests } from "../../../../api/adminApi";
 import { buildApiRequest, getPendingUserColumns } from "./utils";
+import { useGlobalModal } from "../../../../context/GlobalModalContext";
 
 /**
  * @component RejectedRequestTab
@@ -62,13 +63,22 @@ const RejectedRequestTab = ({ activeFilters }) => {
     setManageUsersRejectedRequestTabMQTT,
   } = useMyAdmin();
 
+  const { setViewDetailRejectedModal } = useGlobalModal();
+
   // 🔹 Local State
   const [loadingMore, setLoadingMore] = useState(false);
   const [sortedInfo, setSortedInfo] = useState({});
   const [viewModal, setViewModal] = useState(false);
 
+  const handleViewNoteDetail = (record) => {
+    setViewDetailRejectedModal(true);
+  };
+
   // 🔹 Table Columns
-  const columns = getPendingUserColumns({ sortedInfo, setViewModal });
+  const columns = getPendingUserColumns({
+    sortedInfo,
+    handleViewNoteDetail,
+  });
 
   /**
    * @function fetchApiCall

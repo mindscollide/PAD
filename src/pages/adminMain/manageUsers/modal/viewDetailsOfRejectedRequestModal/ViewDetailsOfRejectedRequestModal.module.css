@@ -1,0 +1,82 @@
+.modalBodyWrapper {
+  padding: 0px 50px; /* or any padding you want */
+  height: 600px !important;
+}
+
+.viewManageUserDetailHeading {
+  font-size: 26px;
+  font-family: "Switzer Variable";
+  font-weight: 700;
+  color: #30426a;
+}
+
+.RejectedHeading {
+  font-size: 18px;
+  font-family: "Switzer Variable";
+  font-weight: 400;
+  color: #424242;
+}
+
+.fullNameHeadingText {
+  font-size: 18px;
+  font-family: "Switzer Variable";
+  font-weight: 700;
+  color: #424242;
+}
+
+.insideColoredDiv {
+  width: auto;
+  height: 122px;
+  background-color: #edf3ff;
+  border-radius: 8px;
+  padding: 20px 35px;
+  margin-top: 10px;
+  margin-left: 60px;
+}
+
+.requestedDateText {
+  font-size: 18px;
+  font-family: "Switzer Variable";
+  font-weight: 700;
+  color: #30426a;
+}
+
+.subMainText {
+  font-size: 18px;
+  font-family: "Switzer Variable";
+  font-weight: 400;
+  color: #424242;
+  margin-top: 25px;
+}
+
+.headerImgText {
+  display: flex;
+  justify-content: start;
+  align-items: center !important;
+  gap: 10px !important;
+}
+
+.mainButtonSpan {
+  display: flex;
+  justify-content: end;
+}
+
+.lineConnector {
+  position: relative;
+  display: block;
+}
+
+.lineConnector::before {
+  content: "";
+  position: absolute;
+  left: 15px;
+  height: 100%;
+  width: 1px; /* line thickness */
+  background-image: repeating-linear-gradient(
+    to bottom,
+    #717171,
+    #717171 5px,
+    /* dash length */ transparent 5px,
+    transparent 10px /* gap size */
+  );
+}

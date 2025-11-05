@@ -4,7 +4,7 @@ import { EllipsisOutlined } from "@ant-design/icons";
 import styles from "./manageUserCards.module.css";
 import { useGlobalModal } from "../../context/GlobalModalContext";
 import GroupPolicies from "../../assets/img/GroupPeople.png";
-import Profile2 from "../../assets/img/user.png";
+import Profile2 from "../../assets/img/Profile2.png";
 import { useNotification } from "../NotificationProvider/NotificationProvider";
 import { useGlobalLoader } from "../../context/LoaderContext";
 import { useApi } from "../../context/ApiContext";

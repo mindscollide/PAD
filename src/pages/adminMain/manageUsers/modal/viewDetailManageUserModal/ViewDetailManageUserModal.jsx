@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Col, Row, Tag, Select } from "antd";
 
 // 🔹 Components & Contexts
-import { GlobalModal, InstrumentSelect } from "../../../../../components";
+import { GlobalModal } from "../../../../../components";
 import { useGlobalModal } from "../../../../../context/GlobalModalContext";
 
 // 🔹 Utils & APIs
@@ -13,13 +13,11 @@ import EditIcon from "../../../../../assets/img/EditIcon.png";
 import styles from "./ViewDetailManageUserModal.module.css";
 import CustomButton from "../../../../../components/buttons/button";
 import { useMyAdmin } from "../../../../../context/AdminContext";
-import {
-  formatApiDateTime,
-  formatShowOnlyDate,
-} from "../../../../../common/funtions/rejex";
+import { formatShowOnlyDate } from "../../../../../common/funtions/rejex";
 import {
   GetComplianceOfficerOnViewDetailUserTabRequest,
   GetLineManagerOnViewDetailUserTabRequest,
+  UpdateEmployeeManagerManageUserTab,
 } from "../../../../../api/adminApi";
 import { useNavigate } from "react-router-dom";
 import { useNotification } from "../../../../../components/NotificationProvider/NotificationProvider";
@@ -48,14 +46,15 @@ const ViewDetailManageUserModal = () => {
     setComplianceOfficerViewDetailDropdownData,
   } = useMyAdmin();
 
-  console.log(manageUsersViewDetailModalData, "manageUsersViewDetailModalData");
-
-  // 🔹 Separate edit flags for each role section
+  //🔹 Separate edit flags for each role section and Local States
   const [isLineManagerEditOpen, setIsLineManagerEditOpen] = useState(false);
   const [isComplianceOfficerEditOpen, setIsComplianceOfficerEditOpen] =
     useState(false);
-
-  console.log(isLineManagerEditOpen, "isLineManagerEditOpen");
+  //🔹 For selected Manager User Id From LM
+  const [selectedLineManagerID, setSelectedLineManagerID] = useState(null);
+  //🔹 For selected Manager User Id From Compliance Offier
+  const [selectedComplianceOfficerID, setSelectedComplianceOfficerID] =
+    useState(null);
 
   /** 🔹 on Click On Edit Button In LineManager Dropdown in view detail modal of manage User users Tab*/
   const onClickOfEditButtonLineMangerDropdown = async () => {
@@ -88,13 +87,37 @@ const ViewDetailManageUserModal = () => {
   };
 
   // You might want Save handlers here, I just simulate closing edit mode
-  const saveLineManager = () => {
-    // TODO: call save API with selectedLineManager
+  const saveLineManager = async () => {
+    showLoader(true);
+    let payload = {
+      EmployeeID: manageUsersViewDetailModalData?.userDetails?.employeeID,
+      EntityTypeID: 1, // for line manager 1 for compliance officer 2
+      ManagerID: selectedLineManagerID,
+    };
+    await UpdateEmployeeManagerManageUserTab({
+      callApi,
+      showNotification,
+      requestdata: payload,
+      showLoader,
+      navigate,
+    });
     setIsLineManagerEditOpen(false);
   };
 
-  const saveComplianceOfficer = () => {
-    // TODO: call save API with selectedComplianceOfficer
+  const saveComplianceOfficer = async () => {
+    showLoader(true);
+    let payload = {
+      EmployeeID: manageUsersViewDetailModalData?.userDetails?.employeeID,
+      EntityTypeID: 2, // for line manager 1 for compliance officer 2
+      ManagerID: selectedComplianceOfficerID,
+    };
+    await UpdateEmployeeManagerManageUserTab({
+      callApi,
+      showNotification,
+      requestdata: payload,
+      showLoader,
+      navigate,
+    });
     setIsComplianceOfficerEditOpen(false);
   };
 
@@ -279,7 +302,7 @@ const ViewDetailManageUserModal = () => {
                           className={styles.SelectDropdownClass}
                           placeholder="Select a Line Manager"
                           onChange={(value) => {
-                            console.log("Selected UserID:", value);
+                            setSelectedLineManagerID(value);
                           }}
                         >
                           {lineManagerViewDetailDropdownData?.lineManagers?.map(
@@ -325,6 +348,7 @@ const ViewDetailManageUserModal = () => {
                           />
                           <CustomButton
                             text="Save"
+                            onClick={saveLineManager}
                             className="big-dark-button"
                           />
                         </div>
@@ -407,7 +431,7 @@ const ViewDetailManageUserModal = () => {
                           className={styles.SelectDropdownClass}
                           placeholder="Select a Compliance Officer"
                           onChange={(value) =>
-                            console.log("Selected UserID:", value)
+                            setSelectedComplianceOfficerID(value)
                           }
                         >
                           {complianceOfficerViewDetailDropdownData?.lineManagers?.map(
@@ -455,6 +479,7 @@ const ViewDetailManageUserModal = () => {
                           />
                           <CustomButton
                             text="Save"
+                            onClick={saveComplianceOfficer}
                             className="big-dark-button"
                           />
                         </div>
@@ -521,7 +546,6 @@ const ViewDetailManageUserModal = () => {
               )}
             </Row>
 
-            {/* 🔹 Bottom Buttons */}
             {/* 🔹 Bottom Buttons */}
             {!isLineManagerEditOpen && !isComplianceOfficerEditOpen && (
               <Row>
