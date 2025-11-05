@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { Col, Row } from "antd";
 
 // 🔹 Components & Contexts
@@ -10,48 +10,91 @@ import styles from "./ViewDetailsOfRejectedRequestModal.module.css";
 import CustomButton from "../../../../../components/buttons/button";
 import { useMyAdmin } from "../../../../../context/AdminContext";
 import Profile2 from "../../../../../assets/img/Profile2.png";
+import { useNavigate } from "react-router-dom";
+import { useNotification } from "../../../../../components/NotificationProvider/NotificationProvider";
+import { useGlobalLoader } from "../../../../../context/LoaderContext";
+import { useApi } from "../../../../../context/ApiContext";
+import { GetUserRegistrationHistoryByLoginID } from "../../../../../api/adminApi";
+import { formatApiDateTime } from "../../../../../common/funtions/rejex";
 
 const ViewDetailsOfRejectedRequestModal = () => {
   // 🔷 Context Hooks
+  const navigate = useNavigate();
+  const hasFetched = useRef(false);
 
+  // 🔹 Context Hooks
+  const { showNotification } = useNotification();
+  const { showLoader } = useGlobalLoader();
+  const { callApi } = useApi();
   const { viewDetailRejectedModal, setViewDetailRejectedModal } =
     useGlobalModal();
 
   // 🔹  Context State of View Detail Modal in which All data store
-  const { manageUsersViewDetailModalData } = useMyAdmin();
+  const {
+    manageUsersViewDetailModalData,
+    currentID,
+    setCurrentID,
+    resetIDofUserRejectedViewDetails,
+  } = useMyAdmin();
+  const [detailsData, setDetailsData] = useState([]);
 
-  // 🔹 Example data (replace with your real data)
-  const rejectionList = [
-    {
-      rejectedBy: "Syed Muhammad Ali Shah",
-      requestDate: "06-10-22",
-      rejectedDate: "06-10-22",
-      message:
-        "After reviewing your information, we were unable to verify the details provided. Unfortunately, this means we cannot approve your sign-up request at this time. Please check your information and try again.",
-    },
-    {
-      rejectedBy: "Usman Tariq Qureshi",
-      requestDate: "06-09-22",
-      rejectedDate: "16-09-22",
-      message:
-        "It appears that an account with your information already exists in our system. To avoid duplicates, we are unable to approve a new sign-up request.",
-    },
-    {
-      rejectedBy: "Usman Tariq Qureshi",
-      requestDate: "06-09-22",
-      rejectedDate: "16-09-22",
-      message:
-        "It appears that an account with your information already exists in our system. To avoid duplicates, we are unable to approve a new sign-up request.",
-    },
-    {
-      rejectedBy: "Usman Tariq Qureshi",
-      requestDate: "06-09-22",
-      rejectedDate: "16-09-22",
-      message:
-        "It appears that an account with your information already exists in our system. To avoid duplicates, we are unable to approve a new sign-up request.",
-    },
-  ];
+  const fetchApiCall = useCallback(
+    async (requestdata) => {
+      if (!requestdata || typeof requestdata !== "object") return;
 
+      try {
+        showLoader(true);
+
+        const res = await GetUserRegistrationHistoryByLoginID({
+          callApi,
+          showNotification,
+          showLoader,
+          requestdata,
+          navigate,
+        });
+
+        // ✅ Fix: Corrected typo and safely extract reasons
+        console.log("reasonsArray", res);
+        const reasonsArray = Array.isArray(res?.registrationHistory) ? res : [];
+        console.log("reasonsArray", reasonsArray);
+        // 🔹 Set to state (if you have `setReasons`)
+        setDetailsData(reasonsArray);
+      } catch (error) {
+        console.error("Error fetching registration history:", error);
+        showNotification("error", "Failed to fetch registration history");
+      } finally {
+        showLoader(false);
+      }
+    },
+    [callApi, navigate, showLoader, showNotification]
+  );
+
+  useEffect(() => {
+    if (!hasFetched.current) {
+      if (currentID) {
+        hasFetched.current = true;
+        const requestdata = {
+          LoginID: currentID,
+        };
+        fetchApiCall(requestdata);
+      }
+    }
+  }, [fetchApiCall, currentID]);
+
+  useEffect(() => {
+    // 🔹 Mount logic (runs when component loads)
+    console.log("Component mounted");
+
+    return () => {
+      // 🔹 Unmount logic (runs when component is removed)
+      console.log("Component unmounted");
+
+      // Example cleanup:
+      // setDetailsData([]);
+      // setCurrentID(-1);
+      // setViewDetailRejectedModal(false);
+    };
+  }, []);
   // -----------------------
   // 🔹 Render
   // -----------------------
@@ -68,22 +111,15 @@ const ViewDetailsOfRejectedRequestModal = () => {
             <Row>
               <Col span={24}>
                 <h5 className={styles.viewManageUserDetailHeading}>
-                  Review Notes (Faheem Arif)
+                  Review Notes ({detailsData?.employeeName})
                 </h5>
               </Col>
             </Row>
 
             <div className={styles.reviewNotesChildContainer}>
               <div className={styles.lineConnector}>
-                {rejectionList.map((item, index) => (
+                {detailsData?.registrationHistory?.map((item, index) => (
                   <div key={index}>
-                    {/* Profile Image + Connector */}
-                    <div>
-                      {index !== rejectionList.length - 1 && (
-                        <div className={styles.verticalLine}></div>
-                      )}
-                    </div>
-
                     {/* Content */}
                     <div>
                       <Row>
@@ -94,7 +130,7 @@ const ViewDetailsOfRejectedRequestModal = () => {
                             Rejected by:{" "}
                           </span>
                           <span className={styles.fullNameHeadingText}>
-                            {item.rejectedBy}
+                            {item.adminFullName}
                           </span>
                         </Col>
                       </Row>
@@ -102,16 +138,26 @@ const ViewDetailsOfRejectedRequestModal = () => {
                       <div className={styles.insideColoredDiv}>
                         <Row>
                           <Col span={12} className={styles.requestedDateText}>
-                            Request Date: {item.requestDate}
+                            Request Date:{" "}
+                            {formatApiDateTime(
+                              `${item?.requestedDate || ""} ${
+                                item?.requestedTime || ""
+                              }`
+                            ) || "—"}
                           </Col>
                           <Col span={12} className={styles.requestedDateText}>
-                            Rejected Date: {item.rejectedDate}
+                            Rejected Date:{" "}
+                            {formatApiDateTime(
+                              `${item?.rejectedDate || ""} ${
+                                item?.rejectedTime || ""
+                              }`
+                            ) || "—"}
                           </Col>
                         </Row>
 
                         <Row>
                           <Col span={24} className={styles.subMainText}>
-                            {item.message}
+                            {item.comments}
                           </Col>
                         </Row>
                       </div>
@@ -127,7 +173,11 @@ const ViewDetailsOfRejectedRequestModal = () => {
               <CustomButton
                 text={"Close"}
                 className="big-light-button"
-                onClick={() => setViewDetailRejectedModal(false)}
+                onClick={() => {
+                  setViewDetailRejectedModal(false);
+                  setDetailsData([]);
+                  setCurrentID(-1);
+                }}
               />
             </Col>
           </Row>

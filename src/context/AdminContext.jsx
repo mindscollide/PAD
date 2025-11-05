@@ -1,4 +1,10 @@
-import React, { createContext, useContext, useState } from "react";
+import React, {
+  createContext,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 
 /**
  * 📌 MyAdminContext
@@ -151,7 +157,11 @@ export const MyAdminProvider = ({ children }) => {
   // 1 pending Request
   // 2 rejected request
   const [manageUsersTab, setManageUsersTab] = useState("0");
-
+  const manageUsersTabRef = useRef(manageUsersTab);
+  // 🔄 Keep refs in sync with latest state
+  useEffect(() => {
+    manageUsersTabRef.current = manageUsersTab;
+  }, [manageUsersTab]);
   // manage user pending tab data
   const [manageUsersPendingTabData, setManageUsersPendingTabData] = useState(
     []
@@ -206,6 +216,15 @@ export const MyAdminProvider = ({ children }) => {
     totalRecordsTable: 0,
   });
 
+  // rejected request list data
+  const [
+    manageUsersRejectedRequestTabMQTT,
+    setManageUsersRejectedRequestTabMQTT,
+  ] = useState(false);
+
+  // rejected request user data view id set in this
+  const [currentID, setCurrentID] = useState(-1);
+
   // Role And Policy On View Detail Modal in Manager User Users Tab context State
   const [roleAndPolicyViewDetailData, setRoleAndPolicyViewDetailData] =
     useState({
@@ -213,11 +232,6 @@ export const MyAdminProvider = ({ children }) => {
       assignedGroupPolicies: [],
     });
 
-  // rejected request list data
-  const [
-    manageUsersRejectedRequestTabMQTT,
-    setManageUsersRejectedRequestTabMQTT,
-  ] = useState(false);
 
   /**
    * ♻️ Reset Context State (Table + API Data)
@@ -301,14 +315,18 @@ export const MyAdminProvider = ({ children }) => {
       totalRecordsDataBase: 0,
       totalRecordsTable: 0,
     });
+    setManageUsersRejectedRequestTabMQTT(false);
   };
-
+  const resetIDofUserRejectedViewDetails = () => {
+    setCurrentID(-1);
+  };
   // rest Contaxt of manager tab data
   const resetmanageUsersContextState = () => {
     setManageUsersTab("0");
     resetManageUsersPendingTabDataState();
     resetModalStateBulkAction();
     resetManageUsersRejectedRequestTabData();
+    resetIDofUserRejectedViewDetails();
   };
 
   const resetAdminDataContextState = () => {
@@ -396,7 +414,8 @@ export const MyAdminProvider = ({ children }) => {
         manageUsersTab,
         setManageUsersTab,
         resetmanageUsersContextState,
-
+        // current
+        manageUsersTabRef,
         // manage users pending data tab
         manageUsersPendingTabData,
         setManageUsersPendingTabData,
@@ -435,6 +454,10 @@ export const MyAdminProvider = ({ children }) => {
         setManageUsersRejectedRequestTabData,
         manageUsersRejectedRequestTabMQTT,
         setManageUsersRejectedRequestTabMQTT,
+
+        setCurrentID,
+        currentID,
+        resetIDofUserRejectedViewDetails,
       }}
     >
       {children}

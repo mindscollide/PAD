@@ -36,6 +36,8 @@ const Dashboard = () => {
     setAdminIntrumentsMqtt,
     setAdminAddDeleteClosingInstrument,
     setManageUsersPendingTabMqtt,
+    setManageUsersRejectedRequestTabMQTT,
+    manageUsersTabRef,
   } = useMyAdmin();
   const { setHtaEscalatedApprovalDataMqtt } = useEscalatedApprovals();
   const { setEmployeePendingApprovalsDataMqtt, activeTabRef } =
@@ -127,6 +129,7 @@ const Dashboard = () => {
         const currentactiveTabRef = activeTabRef.current;
         const currentactiveHCOEscalatedTabRef = activeTabHCORef.current;
         const currentRoleIsAdminRefLocal = currentRoleIsAdminRef.current;
+        const currentmanageUsersTabRef = manageUsersTabRef.current;
 
         const { message, payload, roleIDs, action } = data;
         if (!payload) return;
@@ -171,7 +174,7 @@ const Dashboard = () => {
                 case "USER_REGISTRATION_ACCEPTED": {
                   if (currentRoleIsAdminRefLocal) {
                     // admin mqtt
-                    if (currentKey === "21") {
+                    if (currentKey === "21" && currentmanageUsersTabRef === "1") {
                       // not admin MQTT → ignore completely
                       setManageUsersPendingTabMqtt(true);
                       return;
@@ -179,6 +182,22 @@ const Dashboard = () => {
                   }
                   break;
                 }
+                case "USER_REGISTRATION_REJECTED": {
+                  if (currentRoleIsAdminRefLocal) {
+                    // admin mqtt
+                    if (currentKey === "21") {
+                      if (currentmanageUsersTabRef === "1") {
+                        setManageUsersPendingTabMqtt(true);
+                      }
+                      if (currentmanageUsersTabRef === "2") {
+                        setManageUsersRejectedRequestTabMQTT(true);
+                      }
+                      return;
+                    }
+                  }
+                  break;
+                }
+
                 case "NEW_INSTRUMENT_CLOSING_PERIOD_ADDED":
                 case "INSTRUMENT_CLOSING_PERIOD_DELETED": {
                   if (currentRoleIsAdminRefLocal) {
