@@ -95,7 +95,7 @@ const RequestApprovedRejeectedModal = ({ currentUserData = [] }) => {
     try {
       showLoader(true);
       const requestdata = {
-        UserRegistrationRequestID: [currentUserData.userRegistrationRequestID],
+        UserRegistrationRequestIDs: [currentUserData.userRegistrationRequestID],
         Comment: writeNote,
         FK_UserStatusID: 7, // ✅ Rejected
       };
