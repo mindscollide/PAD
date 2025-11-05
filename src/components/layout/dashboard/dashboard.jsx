@@ -130,7 +130,7 @@ const Dashboard = () => {
         const currentactiveHCOEscalatedTabRef = activeTabHCORef.current;
         const currentRoleIsAdminRefLocal = currentRoleIsAdminRef.current;
         const currentmanageUsersTabRef = manageUsersTabRef.current;
-
+        console.log("currentmanageUsersTabRef", currentmanageUsersTabRef);
         const { message, payload, roleIDs, action } = data;
         if (!payload) return;
         // if (action === "WEBNOTIFICATION") {
@@ -174,7 +174,10 @@ const Dashboard = () => {
                 case "USER_REGISTRATION_ACCEPTED": {
                   if (currentRoleIsAdminRefLocal) {
                     // admin mqtt
-                    if (currentKey === "21" && currentmanageUsersTabRef === "1") {
+                    if (
+                      currentKey === "21" &&
+                      currentmanageUsersTabRef === "1"
+                    ) {
                       // not admin MQTT → ignore completely
                       setManageUsersPendingTabMqtt(true);
                       return;
@@ -190,6 +193,7 @@ const Dashboard = () => {
                         setManageUsersPendingTabMqtt(true);
                       }
                       if (currentmanageUsersTabRef === "2") {
+                        alert("h", currentmanageUsersTabRef);
                         setManageUsersRejectedRequestTabMQTT(true);
                       }
                       return;
