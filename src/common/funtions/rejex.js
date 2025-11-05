@@ -49,6 +49,7 @@ export const removeFirstSpace = (value) => {
  */
 export function formatApiDateTime(apiDateTime) {
   if (!apiDateTime || typeof apiDateTime !== "string") return "";
+      {console.log("record apiDateTime",apiDateTime)}
 
   const [datePart, timePart] = apiDateTime.trim().split(" ");
   if (!datePart || !timePart) return apiDateTime;
