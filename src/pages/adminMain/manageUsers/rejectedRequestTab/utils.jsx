@@ -317,16 +317,30 @@ export const getPendingUserColumns = ({ sortedInfo = {}, handleCancel }) => [
 
   // 🧱 Action
   {
-    title: "Action",
+    title: (
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
+        Action
+      </div>
+    ),
     key: "action",
+    dataIndex: "action",
     width: 150,
+    align: "center", // ✅ centers the cell content
     fixed: "right",
     render: (_, record) => (
-      <Button
-        className="small-light-button"
-        text="View Notes"
-        onClick={() => handleCancel(record)}
-      />
+      <div style={{ textAlign: "center" }}>
+        <Button
+          className="small-light-button"
+          text="View Notes"
+          onClick={() => handleCancel(record)}
+        />
+      </div>
     ),
   },
 ];
