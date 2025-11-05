@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Col, Row, Tag, Select } from "antd";
 
 // 🔹 Components & Contexts
-import { GlobalModal, InstrumentSelect } from "../../../../../components";
+import { GlobalModal } from "../../../../../components";
 import { useGlobalModal } from "../../../../../context/GlobalModalContext";
 
 // 🔹 Utils & APIs
@@ -13,10 +13,7 @@ import EditIcon from "../../../../../assets/img/EditIcon.png";
 import styles from "./ViewDetailManageUserModal.module.css";
 import CustomButton from "../../../../../components/buttons/button";
 import { useMyAdmin } from "../../../../../context/AdminContext";
-import {
-  formatApiDateTime,
-  formatShowOnlyDate,
-} from "../../../../../common/funtions/rejex";
+import { formatShowOnlyDate } from "../../../../../common/funtions/rejex";
 import {
   GetComplianceOfficerOnViewDetailUserTabRequest,
   GetLineManagerOnViewDetailUserTabRequest,
@@ -49,24 +46,15 @@ const ViewDetailManageUserModal = () => {
     setComplianceOfficerViewDetailDropdownData,
   } = useMyAdmin();
 
-  console.log(manageUsersViewDetailModalData, "manageUsersViewDetailModalData");
-
-  console.log(
-    lineManagerViewDetailDropdownData,
-    "lineManagerViewDetailDropdownData"
-  );
-
-  // 🔹 Separate edit flags for each role section and Local States
+  //🔹 Separate edit flags for each role section and Local States
   const [isLineManagerEditOpen, setIsLineManagerEditOpen] = useState(false);
   const [isComplianceOfficerEditOpen, setIsComplianceOfficerEditOpen] =
     useState(false);
-  // For selected Manager User Id From LM
+  //🔹 For selected Manager User Id From LM
   const [selectedLineManagerID, setSelectedLineManagerID] = useState(null);
-  // For selected Manager User Id From Compliance Offier
+  //🔹 For selected Manager User Id From Compliance Offier
   const [selectedComplianceOfficerID, setSelectedComplianceOfficerID] =
     useState(null);
-
-  console.log(isLineManagerEditOpen, "isLineManagerEditOpen");
 
   /** 🔹 on Click On Edit Button In LineManager Dropdown in view detail modal of manage User users Tab*/
   const onClickOfEditButtonLineMangerDropdown = async () => {
@@ -106,7 +94,6 @@ const ViewDetailManageUserModal = () => {
       EntityTypeID: 1, // for line manager 1 for compliance officer 2
       ManagerID: selectedLineManagerID,
     };
-    console.log(payload, "CheckCheckCHeckHCekc");
     await UpdateEmployeeManagerManageUserTab({
       callApi,
       showNotification,
@@ -118,20 +105,19 @@ const ViewDetailManageUserModal = () => {
   };
 
   const saveComplianceOfficer = async () => {
-    // showLoader(true);
+    showLoader(true);
     let payload = {
       EmployeeID: manageUsersViewDetailModalData?.userDetails?.employeeID,
       EntityTypeID: 2, // for line manager 1 for compliance officer 2
       ManagerID: selectedComplianceOfficerID,
     };
-    console.log(payload, "CheckCheckCHeckHCekc");
-    // await UpdateEmployeeManagerManageUserTab({
-    //   callApi,
-    //   showNotification,
-    //   requestdata: payload,
-    //   showLoader,
-    //   navigate,
-    // });
+    await UpdateEmployeeManagerManageUserTab({
+      callApi,
+      showNotification,
+      requestdata: payload,
+      showLoader,
+      navigate,
+    });
     setIsComplianceOfficerEditOpen(false);
   };
 

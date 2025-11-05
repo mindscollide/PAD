@@ -98,7 +98,11 @@ const getSortIcon = (columnKey, sortedInfo) => {
  * @param {Function} params.setViewModal - Function to open the "View Details" modal with record data.
  * @returns {Array<Object>} Column configuration array for Ant Design Table.
  */
-export const getPendingUserColumns = ({ sortedInfo = {}, setViewModal }) => [
+export const getPendingUserColumns = ({
+  sortedInfo = {},
+  setViewModal,
+  setViewDetailRejectedModal,
+}) => [
   /**
    * 🧱 Employee ID Column
    */
@@ -267,7 +271,10 @@ export const getPendingUserColumns = ({ sortedInfo = {}, setViewModal }) => [
     render: (_, record) => (
       <Button
         type="link"
-        onClick={() => setViewModal(record)}
+        onClick={() => {
+          setViewModal(record);
+          setViewDetailRejectedModal(true);
+        }}
         style={{ padding: 0 }}
       >
         View Details

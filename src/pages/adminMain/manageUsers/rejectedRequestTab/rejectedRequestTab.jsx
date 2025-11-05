@@ -1,6 +1,6 @@
 /**
  * @file RejectedRequestTab.jsx
- * @description Displays the "Rejected Requests" tab in the Admin Panel. 
+ * @description Displays the "Rejected Requests" tab in the Admin Panel.
  * It supports pagination, lazy loading, filtering, and MQTT-based real-time updates.
  */
 
@@ -24,10 +24,9 @@ import { useApi } from "../../../../context/ApiContext";
 
 // 🔹 Utilities & Hooks
 import { useTableScrollBottom } from "../../../../common/funtions/scroll";
-import {
-  SearchRejectedUserRegistrationRequests,
-} from "../../../../api/adminApi";
+import { SearchRejectedUserRegistrationRequests } from "../../../../api/adminApi";
 import { buildApiRequest, getPendingUserColumns } from "./utils";
+import { useGlobalModal } from "../../../../context/GlobalModalContext";
 
 /**
  * @component RejectedRequestTab
@@ -36,7 +35,7 @@ import { buildApiRequest, getPendingUserColumns } from "./utils";
  * - Filters (from SearchBar context)
  * - MQTT updates
  * - Sorting
- * 
+ *
  * @param {Object} props
  * @param {Array} props.activeFilters - Active filter array passed from parent
  */
@@ -64,19 +63,25 @@ const RejectedRequestTab = ({ activeFilters }) => {
     setManageUsersRejectedRequestTabMQTT,
   } = useMyAdmin();
 
+  const { setViewDetailRejectedModal } = useGlobalModal();
+
   // 🔹 Local State
   const [loadingMore, setLoadingMore] = useState(false);
   const [sortedInfo, setSortedInfo] = useState({});
   const [viewModal, setViewModal] = useState(false);
 
   // 🔹 Table Columns
-  const columns = getPendingUserColumns({ sortedInfo, setViewModal });
+  const columns = getPendingUserColumns({
+    sortedInfo,
+    setViewModal,
+    setViewDetailRejectedModal,
+  });
 
   /**
    * @function fetchApiCall
    * @description Fetches rejected user registration requests from the backend.
    * Handles both initial load and lazy loading (pagination).
-   * 
+   *
    * @param {Object} requestData - The payload for API request.
    * @param {boolean} [replace=false] - If true, replaces table data. If false, appends data.
    * @param {boolean} [showLoaderFlag=true] - Whether to show the global loader during fetch.

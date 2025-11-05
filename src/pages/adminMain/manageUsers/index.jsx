@@ -18,6 +18,7 @@ import { useMyAdmin } from "../../../context/AdminContext";
 import UsersTab from "./usersTab/ManageUsers";
 import RequestApprovedRejeectedModal from "./modal/requestApprovedrejectModal/requestApprovedrejectModal";
 import RejectedRequestTab from "./rejectedRequestTab/rejectedRequestTab";
+import ViewDetailsOfRejectedRequestModal from "./modal/viewDetailsOfRejectedRequestModal/ViewDetailsOfRejectedRequestModal";
 
 const ManageUsers = () => {
   // ----------------- Contexts -----------------
@@ -29,6 +30,7 @@ const ManageUsers = () => {
     unSavedChangesPoliciesModal,
     activeManageUserTab,
     setActiveManageUserTab,
+    viewDetailRejectedModal,
   } = useGlobalModal();
 
   const {
@@ -192,6 +194,9 @@ const ManageUsers = () => {
           setCurrentUserData={setCurrentUserData}
         />
       )}
+
+      {/* For View Detail Of Rejected Request Modal */}
+      {viewDetailRejectedModal && <ViewDetailsOfRejectedRequestModal />}
     </>
   );
 };
