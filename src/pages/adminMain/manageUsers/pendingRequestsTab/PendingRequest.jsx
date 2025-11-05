@@ -98,17 +98,18 @@ const PendingRequest = ({ currentUserData, setCurrentUserData }) => {
       console.error("Error performing bulk action:", error);
     }
   };
-    useEffect(() => {
-      if (pendingRequestsTabSearch.filterTrigger) {
-        const req = buildApiRequest(pendingRequestsTabSearch);
-  
-        fetchApiCall(req, true);
-        setPendingRequestsTabSearch((prev) => ({
-          ...prev,
-          filterTrigger: false,
-        }));
-      }
-    }, [pendingRequestsTabSearch.filterTrigger]);
+  useEffect(() => {
+    if (pendingRequestsTabSearch.filterTrigger) {
+      const req = buildApiRequest(pendingRequestsTabSearch);
+
+      fetchApiCall(req, true);
+      setPendingRequestsTabSearch((prev) => ({
+        ...prev,
+        filterTrigger: false,
+      }));
+    }
+  }, [pendingRequestsTabSearch.filterTrigger]);
+
   return (
     <>
       {manageUsersPendingTabData?.length > 0 ? (
