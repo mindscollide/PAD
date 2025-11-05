@@ -18,6 +18,7 @@ import { useMyAdmin } from "../../../context/AdminContext";
 import UsersTab from "./usersTab/ManageUsers";
 import RequestApprovedRejeectedModal from "./modal/requestApprovedrejectModal/requestApprovedrejectModal";
 import RejectedRequestTab from "./rejectedRequestTab/rejectedRequestTab";
+import { useSearchBarContext } from "../../../context/SearchBarContaxt";
 
 const ManageUsers = () => {
   // ----------------- Contexts -----------------
@@ -40,6 +41,19 @@ const ManageUsers = () => {
     resetModalStateBulkAction,
     setTypeofAction,
   } = useMyAdmin();
+
+  const {
+    usersTabSearch,
+    setUsersTabSearch,
+    resetUsersTabSearch,
+    pendingRequestsTabSearch,
+    setPendingRequestsTabSearch,
+    resetPendingRequestsTabSearch,
+    rejectedRequestsTabSearch,
+    setRejectedRequestsTabSearch,
+    resetRejectedRequestsTabSearch,
+  } = useSearchBarContext();
+
   const [currentUserData, setCurrentUserData] = useState([]);
 
   const tabStyle = (key) => ({
@@ -68,37 +82,7 @@ const ManageUsers = () => {
     },
   ];
 
-  const pendingRequestsData = [
-    {
-      PendingRequestUsername: "Muhammad Junaid Akbar Farooqui",
-      EmailId: "ali.raza@hbl.com",
-      EmployeeID: "U389",
-      DepartmentName: "Finance",
-      username: "ali.raza",
-      profileImage: Profile4,
-    },
-    {
-      PendingRequestUsername: "Faheem Arif",
-      EmailId: "faheem.arif@hbl.com",
-      EmployeeID: "U235",
-      DepartmentName: "Information Technology",
-      username: "faheem.arif",
-      profileImage: Profile3,
-    },
-
-    {
-      PendingRequestUsername: "Nadia Shah",
-      EmailId: "nadia.shah@hbl.com",
-      EmployeeID: "U517",
-      DepartmentName: "Marketing",
-      username: "nadia.shah",
-      profileImage: Profile5,
-    },
-  ];
-
   useEffect(() => {
-    console.log("Component mounted");
-
     return () => {
       resetmanageUsersContextState();
     };
@@ -123,14 +107,218 @@ const ManageUsers = () => {
       console.error("Error performing bulk action:", error);
     }
   };
+  /** 🔹 Handle removing individual filter */
+  const handleRemoveFilter = (key) => {
+    const resetCommon = {
+      employeeName: "",
+      emailAddress: "",
+      departmentName: "",
+    };
+
+    if (manageUsersTab === "0") {
+      // 🟢 Users Tab
+      const resetMap = {
+        ...resetCommon,
+        employeeID: 0,
+      };
+
+      setUsersTabSearch((prev) => ({
+        ...prev,
+        [key]: resetMap[key],
+        pageNumber: 0,
+        filterTrigger: true,
+      }));
+    } else if (manageUsersTab === "1") {
+      // 🟡 Pending Requests Tab
+      const resetMap = {
+        ...resetCommon,
+        employeeID: "",
+        startDate: null,
+        endDate: null,
+      };
+
+      setPendingRequestsTabSearch((prev) => ({
+        ...prev,
+        [key]: resetMap[key],
+        pageNumber: 0,
+        filterTrigger: true,
+      }));
+    } else if (manageUsersTab === "2") {
+      // 🔴 Rejected Requests Tab
+      const resetMap = {
+        ...resetCommon,
+      };
+
+      setRejectedRequestsTabSearch((prev) => ({
+        ...prev,
+        [key]: resetMap[key],
+        pageNumber: 0,
+        filterTrigger: true,
+      }));
+    }
+  };
+
+  /** 🔹 Handle removing all filters */
+  const handleRemoveAllFilters = () => {
+    if (manageUsersTab === "0") {
+      setUsersTabSearch((prev) => ({
+        ...prev,
+        employeeName: "",
+        employeeID: 0,
+        emailAddress: "",
+        departmentName: "",
+        pageNumber: 0,
+        filterTrigger: true,
+      }));
+    } else if (manageUsersTab === "1") {
+      setPendingRequestsTabSearch((prev) => ({
+        ...prev,
+        employeeName: "",
+        employeeID: "",
+        emailAddress: "",
+        departmentName: "",
+        startDate: null,
+        endDate: null,
+        pageNumber: 0,
+        filterTrigger: true,
+      }));
+    } else if (manageUsersTab === "2") {
+      setRejectedRequestsTabSearch((prev) => ({
+        ...prev,
+        employeeName: "",
+        emailAddress: "",
+        departmentName: "",
+        pageNumber: 0,
+        filterTrigger: true,
+      }));
+    }
+  };
+
+  /** 🔹 Build Active Filters */
+  const activeFilters = (() => {
+    const truncate = (text) =>
+      typeof text === "string" && text.length > 13
+        ? `${text.slice(0, 13)}...`
+        : text;
+
+    let searchState = {};
+
+    if (manageUsersTab === "0") {
+      searchState = usersTabSearch;
+    } else if (manageUsersTab === "1") {
+      searchState = pendingRequestsTabSearch;
+    } else if (manageUsersTab === "2") {
+      searchState = rejectedRequestsTabSearch;
+    }
+
+    const {
+      employeeName,
+      employeeID,
+      emailAddress,
+      departmentName,
+      startDate,
+      endDate,
+    } = searchState || {};
+
+    const filters = [];
+
+    if (employeeName)
+      filters.push({
+        key: "employeeName",
+        label: "Employee Name",
+        value: truncate(employeeName),
+      });
+
+    if (employeeID && employeeID !== 0)
+      filters.push({
+        key: "employeeID",
+        label: "Employee ID",
+        value: String(employeeID),
+      });
+
+    if (emailAddress)
+      filters.push({
+        key: "emailAddress",
+        label: "Email",
+        value: truncate(emailAddress),
+      });
+
+    if (departmentName)
+      filters.push({
+        key: "departmentName",
+        label: "Department",
+        value: truncate(departmentName),
+      });
+
+    if (startDate)
+      filters.push({
+        key: "startDate",
+        label: "Start Date",
+        value: new Date(startDate).toLocaleDateString(),
+      });
+
+    if (endDate)
+      filters.push({
+        key: "endDate",
+        label: "End Date",
+        value: new Date(endDate).toLocaleDateString(),
+      });
+
+    return filters;
+  })();
 
   return (
     <>
-      <PageLayout background="white">
+      {/* 🔹 Active Filter Tags */}
+      {activeFilters.length > 0 && (
+        <Row gutter={[12, 12]} className={styles["filter-tags-container"]}>
+          {activeFilters.map(({ key, value }) => (
+            <Col key={key}>
+              <div className={styles["filter-tag"]}>
+                <span>{value}</span>
+                <span
+                  className={styles["filter-tag-close"]}
+                  onClick={() => handleRemoveFilter(key)}
+                >
+                  &times;
+                </span>
+              </div>
+            </Col>
+          ))}
+
+          {/* 🔹 Show Clear All only if more than one filter */}
+          {activeFilters.length > 1 && (
+            <Col>
+              <div
+                className={`${styles["filter-tag"]} ${styles["clear-all-tag"]}`}
+                onClick={handleRemoveAllFilters}
+              >
+                <span>Clear All</span>
+              </div>
+            </Col>
+          )}
+        </Row>
+      )}
+      <PageLayout
+        background="white"
+        className={activeFilters.length > 0 && "changeHeight"}
+      >
         <div className={styles.ManageUserMainDiv}>
           <Tabs
             activeKey={manageUsersTab}
-            onChange={setManageUsersTab}
+            onChange={(key) => {
+              // 🔹 Reset search state for previous tab before switching
+              if (manageUsersTab === "0") {
+                resetUsersTabSearch();
+              } else if (manageUsersTab === "1") {
+                resetPendingRequestsTabSearch();
+              } else if (manageUsersTab === "2") {
+                resetRejectedRequestsTabSearch();
+              }
+
+              // 🔹 Set new active tab
+              setManageUsersTab(key);
+            }}
             items={items}
             className={styles.customTabs}
           />
@@ -151,7 +339,6 @@ const ManageUsers = () => {
 
         <div className={styles.ManageUserSecondDiv}>
           {/* ✅ Only show user cards when Users tab is active */}
-          {/* <Row gutter={[24, 16]}> */}
           {manageUsersTab === "0" && (
             <Row gutter={[24, 16]}>
               <UsersTab />
@@ -167,7 +354,6 @@ const ManageUsers = () => {
           )}
 
           {manageUsersTab === "2" && <RejectedRequestTab />}
-          {/* </Row> */}
         </div>
       </PageLayout>
 
