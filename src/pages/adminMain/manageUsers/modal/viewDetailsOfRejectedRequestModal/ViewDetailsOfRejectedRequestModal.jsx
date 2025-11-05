@@ -36,6 +36,20 @@ const ViewDetailsOfRejectedRequestModal = () => {
       message:
         "It appears that an account with your information already exists in our system. To avoid duplicates, we are unable to approve a new sign-up request.",
     },
+    {
+      rejectedBy: "Usman Tariq Qureshi",
+      requestDate: "06-09-22",
+      rejectedDate: "16-09-22",
+      message:
+        "It appears that an account with your information already exists in our system. To avoid duplicates, we are unable to approve a new sign-up request.",
+    },
+    {
+      rejectedBy: "Usman Tariq Qureshi",
+      requestDate: "06-09-22",
+      rejectedDate: "16-09-22",
+      message:
+        "It appears that an account with your information already exists in our system. To avoid duplicates, we are unable to approve a new sign-up request.",
+    },
   ];
 
   // -----------------------
@@ -59,56 +73,62 @@ const ViewDetailsOfRejectedRequestModal = () => {
               </Col>
             </Row>
 
-            <div className={styles.lineConnector}>
-              {rejectionList.map((item, index) => (
-                <div key={index}>
-                  {/* Profile Image + Connector */}
-                  <div>
-                    {index !== rejectionList.length - 1 && (
-                      <div className={styles.verticalLine}></div>
-                    )}
-                  </div>
+            <div className={styles.reviewNotesChildContainer}>
+              <div className={styles.lineConnector}>
+                {rejectionList.map((item, index) => (
+                  <div key={index}>
+                    {/* Profile Image + Connector */}
+                    <div>
+                      {index !== rejectionList.length - 1 && (
+                        <div className={styles.verticalLine}></div>
+                      )}
+                    </div>
 
-                  {/* Content */}
-                  <div>
-                    <Row>
-                      <Col span={24} className={styles.headerImgText}>
-                        <img src={Profile2} width="30" height="30" />
-
-                        <span className={styles.RejectedHeading}>
-                          Rejected by:{" "}
-                        </span>
-                        <span className={styles.fullNameHeadingText}>
-                          {item.rejectedBy}
-                        </span>
-                      </Col>
-                    </Row>
-
-                    <div className={styles.insideColoredDiv}>
+                    {/* Content */}
+                    <div>
                       <Row>
-                        <Col span={12} className={styles.requestedDateText}>
-                          Request Date: {item.requestDate}
-                        </Col>
-                        <Col span={12} className={styles.requestedDateText}>
-                          Rejected Date: {item.rejectedDate}
+                        <Col span={24} className={styles.headerImgText}>
+                          <img src={Profile2} width="30" height="30" />
+
+                          <span className={styles.RejectedHeading}>
+                            Rejected by:{" "}
+                          </span>
+                          <span className={styles.fullNameHeadingText}>
+                            {item.rejectedBy}
+                          </span>
                         </Col>
                       </Row>
 
-                      <Row>
-                        <Col span={24} className={styles.subMainText}>
-                          {item.message}
-                        </Col>
-                      </Row>
+                      <div className={styles.insideColoredDiv}>
+                        <Row>
+                          <Col span={12} className={styles.requestedDateText}>
+                            Request Date: {item.requestDate}
+                          </Col>
+                          <Col span={12} className={styles.requestedDateText}>
+                            Rejected Date: {item.rejectedDate}
+                          </Col>
+                        </Row>
+
+                        <Row>
+                          <Col span={24} className={styles.subMainText}>
+                            {item.message}
+                          </Col>
+                        </Row>
+                      </div>
                     </div>
                   </div>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
           </div>
 
           <Row>
             <Col span={24} className={styles.mainButtonSpan}>
-              <CustomButton text={"Close"} className="big-light-button" />
+              <CustomButton
+                text={"Close"}
+                className="big-light-button"
+                onClick={() => setViewDetailRejectedModal(false)}
+              />
             </Col>
           </Row>
         </>

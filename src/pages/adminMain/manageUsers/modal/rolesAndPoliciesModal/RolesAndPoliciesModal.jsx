@@ -11,8 +11,12 @@ import Profile2 from "../../../../../assets/img/Profile2.png";
 // 🔹 Styles
 import styles from "./RolesAndPoliciesModal.module.css";
 import CustomButton from "../../../../../components/buttons/button";
+import { useMyAdmin } from "../../../../../context/AdminContext";
 
 const RolesAndPoliciesModal = () => {
+  // 🔹  Context State of View Detail Modal in which All data store
+  const { roleAndPolicyViewDetailData } = useMyAdmin();
+  console.log(roleAndPolicyViewDetailData, "roleAndPolicyViewDetailData");
   const {
     rolesAndPoliciesManageUser,
     setRolesAndPoliciesManageUser,
@@ -49,12 +53,33 @@ const RolesAndPoliciesModal = () => {
                       <img src={Profile2} height={95} width={95} />
                       <div className={styles.nameContainer}>
                         <label className={styles.FullUserName}>
-                          Sarah Johnson
+                          {roleAndPolicyViewDetailData?.userDetails?.fullName}
                         </label>
                         <label className={styles.UserStatusesClass}>
                           User Status:{" "}
                           <span className={styles.userStatusActive}>
-                            Active
+                            {roleAndPolicyViewDetailData?.userDetails
+                              ?.userStatusID === 1
+                              ? "Active"
+                              : roleAndPolicyViewDetailData?.userDetails
+                                  ?.userStatusID === 2
+                              ? "Disabled"
+                              : roleAndPolicyViewDetailData?.userDetails
+                                  ?.userStatusID === 3
+                              ? "Closed"
+                              : roleAndPolicyViewDetailData?.userDetails
+                                  ?.userStatusID === 4
+                              ? "Dormant"
+                              : roleAndPolicyViewDetailData?.userDetails
+                                  ?.userStatusID === 5
+                              ? "Registration request pending"
+                              : roleAndPolicyViewDetailData?.userDetails
+                                  ?.userStatusID === 6
+                              ? "Registration request accepted"
+                              : roleAndPolicyViewDetailData?.userDetails
+                                  ?.userStatusID === 7
+                              ? "Registration request rejected"
+                              : "NonActive"}
                           </span>
                         </label>
                       </div>
