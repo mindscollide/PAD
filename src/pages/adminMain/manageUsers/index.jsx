@@ -42,6 +42,7 @@ const ManageUsers = () => {
     setModaPendingRequestModalOpenAction,
     resetModalStateBulkAction,
     setTypeofAction,
+    manageUsersPendingTabData,
   } = useMyAdmin();
 
   const {
@@ -97,14 +98,29 @@ const ManageUsers = () => {
     }
   }, [modaPendingRequestModalOpenAction]);
   // take bulk action on pending request
-  const handleBulkAction = () => {
+  const handleBulkAction = async () => {
     try {
-      // your async logic here
-      console.log("Performing bulk action...");
+      if (
+        !Array.isArray(manageUsersPendingTabData) ||
+        manageUsersPendingTabData.length === 0
+      ) {
+        console.warn("No valid data found for bulk action.");
+        return;
+      }
+
+      // 🔹 Extract all userRegistrationRequestID values
+      const userIDs = manageUsersPendingTabData
+        .map((item) => item?.userRegistrationRequestID)
+        .filter((id) => id != null); // remove null or undefined values
+
+      console.log("Performing bulk action for IDs:", userIDs);
+
+      // 🔹 Set in state
+      setCurrentUserData(userIDs);
+
+      // Example: trigger modal or other actions
       setTypeofAction(1);
       setModaPendingRequestModalOpenAction(true);
-      // Example: await an API call
-      // await someAsyncFunction();
     } catch (error) {
       console.error("Error performing bulk action:", error);
     }

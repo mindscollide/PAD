@@ -157,6 +157,10 @@ export const MyAdminProvider = ({ children }) => {
     []
   );
 
+  // manage user pending tab Mqtt Msg arived
+  const [manageUsersPendingTabMqtt, setManageUsersPendingTabMqtt] =
+    useState(false);
+
   // Manage User View Detail Modal State
   const [manageUsersViewDetailModalData, setManageUsersViewDetailModalData] =
     useState({
@@ -273,6 +277,7 @@ export const MyAdminProvider = ({ children }) => {
   // reset manage user tab data
   const resetManageUsersPendingTabDataState = () => {
     setManageUsersPendingTabData([]);
+    setManageUsersPendingTabMqtt(false);
   };
 
   // reset manage user tab data
@@ -388,6 +393,10 @@ export const MyAdminProvider = ({ children }) => {
         manageUsersPendingTabData,
         setManageUsersPendingTabData,
         resetManageUsersPendingTabDataState,
+
+        // manage users pending Mqtt tab
+        manageUsersPendingTabMqtt,
+        setManageUsersPendingTabMqtt,
 
         //Manage Users View Detail Modal
         manageUsersViewDetailModalData,

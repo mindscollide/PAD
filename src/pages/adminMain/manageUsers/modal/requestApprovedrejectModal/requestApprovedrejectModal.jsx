@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { Col, Row } from "antd";
 
 // 🔹 Components & Contexts
@@ -16,7 +16,10 @@ import AvatarIcon from "../../../../../assets/img/avatar-half-name-icon.png";
 import styles from "./requestApprovedRejeectedModal.module.css";
 import CustomButton from "../../../../../components/buttons/button";
 import TextArea from "antd/es/input/TextArea";
-import { ProcessUserRegistrationRequest } from "../../../../../api/adminApi";
+import {
+  GetPredefinedReasonsByAdmin,
+  ProcessUserRegistrationRequest,
+} from "../../../../../api/adminApi";
 import { useApi } from "../../../../../context/ApiContext";
 import { useGlobalLoader } from "../../../../../context/LoaderContext";
 import { useNotification } from "../../../../../components/NotificationProvider/NotificationProvider";
@@ -26,6 +29,7 @@ const RequestApprovedRejeectedModal = ({ currentUserData = [] }) => {
   const { callApi } = useApi();
   const { showLoader } = useGlobalLoader();
   const { showNotification } = useNotification();
+  const hasFetched = useRef(false);
   const navigate = useNavigate();
 
   const {
@@ -35,6 +39,7 @@ const RequestApprovedRejeectedModal = ({ currentUserData = [] }) => {
   } = useMyAdmin();
 
   const [writeNote, setWriteNote] = useState("");
+  const [reasons, setReasons] = useState([]);
 
   // 🔹 Handle textarea input (limit to 500 chars)
   const handleNoteChange = (e) => {
@@ -42,12 +47,20 @@ const RequestApprovedRejeectedModal = ({ currentUserData = [] }) => {
     if (value.length <= 500) setWriteNote(value);
   };
 
+  // 🔹 When clicking a reason tag, append it to textarea
+  const handleReasonClick = (reason) => {
+    setWriteNote((prev) => (prev ? `${prev} ${reason}` : reason));
+  };
+
   // 🔹 Approve action
   const handleApprove = async () => {
     try {
       showLoader(true);
       const requestdata = {
-        UserRegistrationRequestID: [currentUserData.userRegistrationRequestID],
+        UserRegistrationRequestIDs:
+          typeofAction === 1
+            ? currentUserData
+            : [currentUserData.userRegistrationRequestID],
         Comment: writeNote,
         FK_UserStatusID: 6, // ✅ Accepted
       };
@@ -106,6 +119,27 @@ const RequestApprovedRejeectedModal = ({ currentUserData = [] }) => {
     }
   };
 
+  const fetchApiCall = useCallback(async () => {
+    showLoader(true);
+
+    const res = await GetPredefinedReasonsByAdmin({
+      callApi,
+      showNotification,
+      showLoader,
+      navigate,
+    });
+    const reasons = Array.isArray(res?.reasons)
+      ? res?.reasons.map((item) => item.reason)
+      : [];
+    setReasons(reasons);
+  }, [callApi, navigate, showLoader, showNotification]);
+
+  useEffect(() => {
+    if (!hasFetched.current) {
+      hasFetched.current = true;
+      fetchApiCall(true, true);
+    }
+  }, [fetchApiCall]);
   // -----------------------
   // 🔹 Render
   // -----------------------
@@ -122,7 +156,7 @@ const RequestApprovedRejeectedModal = ({ currentUserData = [] }) => {
           {typeofAction === 1 ? (
             <Col span={24}>
               <h5 className={styles.heading}>
-                3 users have requested to sign up on PAD
+                {currentUserData.length} users have requested to sign up on PAD
               </h5>
             </Col>
           ) : (
@@ -272,7 +306,25 @@ const RequestApprovedRejeectedModal = ({ currentUserData = [] }) => {
               className={styles.textareaField}
             />
           </Col>
-
+          <Col
+            span={24}
+            style={{
+              marginTop: 12,
+              display: "flex",
+              flexWrap: "wrap",
+              gap: "8px",
+            }}
+          >
+            {reasons?.map((reason, index) => (
+              <div
+                key={index}
+                onClick={() => handleReasonClick(reason)}
+                className={styles.reasonTag}
+              >
+                {reason}
+              </div>
+            ))}
+          </Col>
           <Row gutter={[10, 10]}>
             <Col span={24} className={styles.mainButtonDivClose}>
               <CustomButton

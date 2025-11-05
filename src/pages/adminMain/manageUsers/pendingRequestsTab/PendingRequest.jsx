@@ -29,11 +29,15 @@ const PendingRequest = ({ currentUserData, setCurrentUserData }) => {
     setManageUsersPendingTabData,
     resetManageUsersPendingTabDataState,
     setModaPendingRequestModalOpenAction,
+    manageUsersPendingTabMqtt,
+    setManageUsersPendingTabMqtt,
     setTypeofAction,
   } = useMyAdmin();
 
   const { pendingRequestsTabSearch, setPendingRequestsTabSearch } =
     useSearchBarContext();
+
+  const [loadingMore, setLoadingMore] = useState(false); // 👈 to control Spin
 
   const fetchApiCall = useCallback(
     async (requestData, replace = false) => {
@@ -68,7 +72,6 @@ const PendingRequest = ({ currentUserData, setCurrentUserData }) => {
     },
     [callApi, showNotification, showLoader, navigate]
   );
-  console.log("Component mounted", manageUsersPendingTabData);
   // Initial Fetch
   useEffect(() => {
     if (!hasFetched.current) {
@@ -98,17 +101,32 @@ const PendingRequest = ({ currentUserData, setCurrentUserData }) => {
       console.error("Error performing bulk action:", error);
     }
   };
-    useEffect(() => {
-      if (pendingRequestsTabSearch.filterTrigger) {
-        const req = buildApiRequest(pendingRequestsTabSearch);
-  
-        fetchApiCall(req, true);
-        setPendingRequestsTabSearch((prev) => ({
-          ...prev,
-          filterTrigger: false,
-        }));
-      }
-    }, [pendingRequestsTabSearch.filterTrigger]);
+
+  useEffect(() => {
+    if (pendingRequestsTabSearch.filterTrigger) {
+      const req = buildApiRequest(pendingRequestsTabSearch);
+
+      fetchApiCall(req, true);
+      setPendingRequestsTabSearch((prev) => ({
+        ...prev,
+        filterTrigger: false,
+      }));
+    }
+  }, [pendingRequestsTabSearch.filterTrigger]);
+
+  useEffect(() => {
+    if (manageUsersPendingTabMqtt) {
+      const req = buildApiRequest(pendingRequestsTabSearch);
+
+      fetchApiCall(req, false);
+      setPendingRequestsTabSearch((prev) => ({
+        ...prev,
+        filterTrigger: false,
+      }));
+      setManageUsersPendingTabMqtt(false);
+    }
+  }, [manageUsersPendingTabMqtt]);
+
   return (
     <>
       {manageUsersPendingTabData?.length > 0 ? (

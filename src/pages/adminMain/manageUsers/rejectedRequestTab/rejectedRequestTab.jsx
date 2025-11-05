@@ -115,8 +115,6 @@ const RejectedRequestTab = ({ activeFilters }) => {
           }))
         : [];
 
-      console.log("Fetched Rejected Requests:", rejectedRequests);
-
       // 🔹 Update context state for table data
       setManageUsersRejectedRequestTabData((prev) => ({
         rejectedRequests: replace
