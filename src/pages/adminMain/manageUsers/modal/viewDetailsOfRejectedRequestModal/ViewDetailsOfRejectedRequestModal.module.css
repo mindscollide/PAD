@@ -61,9 +61,14 @@
   justify-content: end;
 }
 
+.reviewNotesChildContainer {
+  max-height: 450px;
+  overflow-y: auto;
+}
+
 .lineConnector {
   position: relative;
-  display: block;
+  height: 100%;
 }
 
 .lineConnector::before {
