@@ -2158,6 +2158,7 @@ export const UpdateEmployeeManagerManageUserTab = async ({
   }
 };
 
+// Searc hRejected User Registration Requests
 export const SearchRejectedUserRegistrationRequests = async ({
   callApi,
   showNotification,
@@ -2244,6 +2245,89 @@ export const SearchRejectedUserRegistrationRequests = async ({
       title: "Error",
       description:
         "An unexpected error occurred while request Rejected Users List.",
+    });
+    return null;
+  } finally {
+    // 🔹 Always hide loader
+    showLoader(false);
+  }
+};
+
+// Get Predefined Reasons By Admin
+export const GetPredefinedReasonsByAdmin = async ({
+  callApi,
+  showNotification,
+  showLoader,
+  navigate,
+}) => {
+  try {
+    // 🔹 API Call
+    const res = await callApi({
+      requestMethod: import.meta.env
+        .VITE_GET_PRE_DEFINED_REASONS_BY_ADMIN_REQUEST_METHOD, // 🔑 must be defined in .env
+      endpoint: import.meta.env.VITE_API_ADMIN,
+      navigate,
+    });
+
+    // 🔹 Handle session expiry
+    if (handleExpiredSession(res, navigate, showLoader)) return null;
+
+    // 🔹 Validate execution
+    if (!res?.result?.isExecuted) {
+      showNotification({
+        type: "error",
+        title: "Error",
+        description: "Something went wrong while fetching reason.",
+      });
+      return null;
+    }
+
+    // 🔹 Handle success
+    if (res.success) {
+      const { responseMessage, reasons } = res.result;
+      const message = getMessage(responseMessage);
+
+      // Case 1 → Data available
+      if (
+        responseMessage ===
+        "Admin_AdminServiceManager_GetPredefinedReasonsByAdmin_01"
+      ) {
+        return { reasons: reasons };
+      }
+
+      // Case 2 → No data
+      if (
+        responseMessage ===
+        "Admin_AdminServiceManager_GetPredefinedReasonsByAdmin_02"
+      ) {
+        return { reasons: [] };
+      }
+
+      // Case 3 → Custom server messages
+      if (message) {
+        showNotification({
+          type: "warning",
+          title: message,
+          description: "No reason found.",
+        });
+      }
+
+      return null;
+    }
+
+    // 🔹 Handle failure
+    showNotification({
+      type: "error",
+      title: "Fetch Failed",
+      description: getMessage(res.message),
+    });
+    return null;
+  } catch (error) {
+    // 🔹 Exception handling
+    showNotification({
+      type: "error",
+      title: "Error",
+      description: "An unexpected error occurred while request reason.",
     });
     return null;
   } finally {

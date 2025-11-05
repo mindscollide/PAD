@@ -115,3 +115,23 @@
   align-items: center;
   gap: 8px;
 }
+
+.reasonTag {
+  width: 199px;
+  height: 38px;
+  border-radius: 6.95px;
+  padding: 2px 0px;
+  background-color: #edf3ff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #1a1a1a;
+  font-weight: 500;
+  cursor: pointer;
+   transition: box-shadow 0.2s ease;
+}
+
+.reasonTag:hover {
+  background-color: #dbe7ff;
+  box-shadow: 4px 4px 6px 0px #00000033 !important;
+}
