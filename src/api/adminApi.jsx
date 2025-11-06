@@ -2071,6 +2071,12 @@ export const ProcessUserRegistrationRequest = async ({
     ) {
       return true;
     }
+     if (
+      res.result.responseMessage ===
+      "Admin_AdminServiceManager_UserRegistration_ProcessRequest_03"
+    ) {
+      return true;
+    }
 
     // 🔹 Other Message Case
     showNotification({

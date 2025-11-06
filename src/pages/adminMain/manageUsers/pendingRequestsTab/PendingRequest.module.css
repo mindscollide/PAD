@@ -111,3 +111,8 @@
   height: 100%; /* or a fixed height like 100vh / 400px */
   width: 100%;
 }
+.scrollContainer {
+  max-height: 65vh;
+  overflow-y: auto;
+  padding-right: 8px;
+}
