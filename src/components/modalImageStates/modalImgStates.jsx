@@ -104,6 +104,22 @@ const config = {
     ),
     image: null,
   },
+  Discard: {
+    heading: "Discard Changes",
+    subheading: (
+      <>
+        All the changes you've made will be lost. Are you sure you <br />
+        want to discard them?
+      </>
+    ),
+    image: GropusICanclImg,
+  },
+   SystemConfigurationSaved: {
+    heading: "Changes Saved",
+    subheading:
+      "You changes have been saved sucessfully.",
+    image: ApprovedImg,
+  },
 };
 
 const ModalImgStates = ({

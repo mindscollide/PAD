@@ -1,0 +1,19 @@
+.SubmittedCenteralized {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  text-align: center;
+}
+
+.mainButtonDiv {
+  margin-top: 40px;
+  display: flex;
+  justify-content: center;
+  gap: 20px; /* adds space between buttons */
+}
+
+.nonCOmpliantcolor {
+  color: #333;
+}
