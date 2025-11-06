@@ -49,6 +49,7 @@ const SystemConfigurations = () => {
   const [formValues, setFormValues] = useState({}); // Input field values
   const [typeOfModal, setTypeOfModal] = useState(false); // Modal type toggle
   const [openModal, setOpenModal] = useState(false); // Modal visibility toggle
+  const [buttonDisable, setButtonDisable] = useState(false); // Modal visibility toggle
 
   // ------------------------------------------------
   // 🔹 Handlers
@@ -78,6 +79,7 @@ const SystemConfigurations = () => {
    * Handles cancel action by opening confirmation modal.
    */
   const handleCancel = () => {
+    setButtonDisable(true);
     if (typeOfModal) {
       setTypeOfModal(false);
     }
@@ -107,7 +109,9 @@ const SystemConfigurations = () => {
     // Close modal and reset modal type
     setTypeOfModal(false);
     setOpenModal(false);
+    setButtonDisable(false);
   };
+
   const onClickCloseSubmit = () => {
     if (typeOfModal) {
       // 🔹 Convert formValues into updated data format
@@ -128,12 +132,15 @@ const SystemConfigurations = () => {
     } else {
       setOpenModal(false);
     }
+    setButtonDisable(false);
   };
   /**
    * Handles saving of updated configuration values.
    * Logs updated data and shows success notification.
    */
   const handleSave = async () => {
+    setButtonDisable(true);
+
     // Check if any field is empty (null, undefined, or empty string)
     const hasEmptyFields = formValues.some(
       (item) =>
@@ -147,25 +154,35 @@ const SystemConfigurations = () => {
         type: "warning",
         title: "Please fill in all configuration values before saving.",
       });
+      setButtonDisable(false);
 
       return;
     } else {
-      // 🔹 Transform keys to match API structure
-      const requestdata = formValues.map((item) => ({
-        ConfigurationID: item.configurationID,
-        ConfigValue: item.configValue,
-      }));
-      const res = await UpdateSystemConfiguration({
-        callApi,
-        showNotification,
-        showLoader,
-        requestdata,
-        navigate,
-      });
-      if (res) {
-        setTypeOfModal(true);
-        setOpenModal(true);
+      showLoader(true);
+
+      try {
+        // 🔹 Transform keys to match API structure
+        const requestdata = formValues.map((item) => ({
+          ConfigurationID: item.configurationID,
+          ConfigValue: item.configValue,
+        }));
+        const res = await UpdateSystemConfiguration({
+          callApi,
+          showNotification,
+          showLoader,
+          requestdata,
+          navigate,
+        });
+        if (res) {
+          setTypeOfModal(true);
+          setOpenModal(true);
+        }
+      } catch (error) {
+        showNotification("Failed to fetch system configurations", "error");
+      } finally {
+        showLoader(false);
       }
+
       console.log("Updated Configurations:", formValues);
     }
   };
@@ -341,6 +358,7 @@ const SystemConfigurations = () => {
           <Row justify="end" gutter={12} style={{ marginTop: "24px" }}>
             <Col>
               <Button
+                disabled={buttonDisable}
                 type="text"
                 className="small-light-button"
                 text="Cancel"
@@ -350,6 +368,7 @@ const SystemConfigurations = () => {
             </Col>
             <Col>
               <Button
+                disabled={buttonDisable}
                 type="text"
                 className="small-dark-button"
                 text="Save Changes"
