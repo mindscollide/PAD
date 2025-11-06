@@ -1,5 +1,6 @@
 .modalWrapper {
   padding: 20px 30px;
+  height: 520px;
   background-color: #ffffff;
 }
 
@@ -33,7 +34,8 @@
   margin-top: 20px;
   background-color: #edf3ff;
   border-radius: 8px;
-  padding: 30px 25px;
+  padding: 20px 25px;
+  height: 400px;
 }
 
 .rolesWrapper {
@@ -121,7 +123,7 @@
   color: #424242 !important;
 }
 .assignedGroupMainDiv {
-  height: 280px;
+  height: 300px;
   margin: 0 !important;
   padding: 5px 30px;
   border: 1px solid #424242;
@@ -161,4 +163,16 @@
   font-family: "Switzer Variable" !important;
   color: #424242 !important;
   margin-bottom: 20px !important;
+}
+
+.noGroupedPolicyAssigned {
+  margin-top: 20px;
+  font-size: 20px !important;
+  font-weight: 700 !important;
+  font-family: "Switzer Variable" !important;
+  color: #30426a !important;
+}
+
+.UserStatusDropdown :global(.ant-select-selector) {
+  border: 1px solid #717171 !important;
 }
