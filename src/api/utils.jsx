@@ -471,12 +471,23 @@ export const responseMessages = {
   Admin_AdminServiceManager_GetPredefinedReasonsByAdmin_03:
     "Exception occurred",
 
+  // GetAllExistingGroupPolicies TO show group policies in dropdown of Edit Roles And Policies
+  Admin_AdminServiceManager_GetAllExistingGroupPolicies_01: "Data found",
+  Admin_AdminServiceManager_GetAllExistingGroupPolicies_02: "No data found",
+  Admin_AdminServiceManager_GetAllExistingGroupPolicies_03:
+    "Exception occurred",
+
   Admin_AdminServiceManager_GetUserRegistrationHistoryByLoginID_01:
     "Data found",
   Admin_AdminServiceManager_GetUserRegistrationHistoryByLoginID_02:
     "No data found",
   Admin_AdminServiceManager_GetUserRegistrationHistoryByLoginID_03:
     "Exception occurred",
+
+  // GetAllUserRoles TO ROLES IN CHECKBOX of Edit Roles And Policies
+  Admin_GetAllUserRoles_01: "Records found",
+  Admin_GetAllUserRoles_02: "No Records found",
+  Admin_GetAllUserRoles_03: "Exception occurred",
 };
 
 /**

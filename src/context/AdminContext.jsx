@@ -232,6 +232,21 @@ export const MyAdminProvider = ({ children }) => {
       assignedGroupPolicies: [],
     });
 
+  // Edit Role And Policy Group And Policy Dropdown State
+  const [
+    editRoleAndPolicyGroupDropdownData,
+    setEditRoleAndPolicyGroupDropdownData,
+  ] = useState({
+    groupPolicies: [],
+  });
+
+  // GetAllUserRoles FOR ROLES IN CHECKBOX of Edit Roles And Policies
+  const [
+    allUserRolesForEditRolePolicyData,
+    setAllUserRolesForEditRolePolicyData,
+  ] = useState({
+    userRoles: [],
+  });
 
   /**
    * ♻️ Reset Context State (Table + API Data)
@@ -444,6 +459,14 @@ export const MyAdminProvider = ({ children }) => {
         //Role And Policy on View Detail State
         roleAndPolicyViewDetailData,
         setRoleAndPolicyViewDetailData,
+
+        // Edit Role And Policy Group And Policy Dropdown State
+        editRoleAndPolicyGroupDropdownData,
+        setEditRoleAndPolicyGroupDropdownData,
+
+        // GetAllUserRoles FOR ROLES IN CHECKBOX of Edit Roles And Policies
+        allUserRolesForEditRolePolicyData,
+        setAllUserRolesForEditRolePolicyData,
 
         typeofAction,
         setTypeofAction,
