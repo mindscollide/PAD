@@ -9,9 +9,13 @@
   padding: 0px 10px;
   height: 550px;
   overflow: hidden !important;
+}
+.ManageUserSecondDivPending {
+  padding: 0px 10px;
+  height: 550px;
+  overflow: hidden !important;
   overflow-y: auto !important;
 }
-
 /* Changes active tab underline (ink bar) color */
 .customTabs :global(.ant-tabs-ink-bar) {
   background-color: #30426a !important; /* Your custom color */
