@@ -31,6 +31,7 @@ import {
   Instruments,
   GroupsAndPolicy,
   ManageUsers,
+  SystemConfigurations,
 } from "../pages";
 import RoleBasedRoute from "./RoleBasedRoute";
 import EscalatedApprovals from "../pages/main/headOfTradeApprover/escalatedApprovals/escalatedApprovals";
@@ -250,7 +251,7 @@ const router = createBrowserRouter(
           path="admin-system-settings"
           element={
             <RoleBasedRoute isAdmin={true} allowedRoles={[1]}>
-              <EmpolyesReportsIndex />{" "}
+              <SystemConfigurations />{" "}
             </RoleBasedRoute>
           }
         />

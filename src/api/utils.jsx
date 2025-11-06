@@ -488,6 +488,16 @@ export const responseMessages = {
   Admin_GetAllUserRoles_01: "Records found",
   Admin_GetAllUserRoles_02: "No Records found",
   Admin_GetAllUserRoles_03: "Exception occurred",
+
+  // GetAllSystemConfigurations
+  Admin_AdminServiceManager_GetAllSystemConfigurations: "Data found",
+  Admin_AdminServiceManager_GetAllSystemConfigurations_02: "No data found",
+  Admin_AdminServiceManager_GetAllSystemConfigurations_03: "Exception occurred",
+
+  PAD_Admin_UpdateSystemConfiguration_01: "  Invalid input",
+  PAD_Admin_UpdateSystemConfiguration_02: "Successfully updated",
+  PAD_Admin_UpdateSystemConfiguration_03: "No rows updated",
+  PAD_Admin_UpdateSystemConfiguration_04: "Exception occurred",
 };
 
 /**

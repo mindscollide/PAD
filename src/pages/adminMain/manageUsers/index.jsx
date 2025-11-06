@@ -355,24 +355,29 @@ const ManageUsers = () => {
           </div>
         </div>
 
-        <div className={styles.ManageUserSecondDiv}>
-          {/* ✅ Only show user cards when Users tab is active */}
-          {manageUsersTab === "0" && (
+        {/* ✅ Only show user cards when Users tab is active */}
+        {manageUsersTab === "0" && (
+          <div className={styles.ManageUserSecondDiv}>
             <Row gutter={[24, 16]}>
               <UsersTab />
             </Row>
-          )}
+          </div>
+        )}
 
-          {/* ✅ Only show PendingRequest Component when PendingRequest tab is active */}
-          {manageUsersTab === "1" && (
+        {/* ✅ Only show PendingRequest Component when PendingRequest tab is active */}
+        {manageUsersTab === "1" && (
+          <div className={styles.ManageUserSecondDivPending}>
             <PendingRequest
               currentUserData={currentUserData}
               setCurrentUserData={setCurrentUserData}
             />
-          )}
-
-          {manageUsersTab === "2" && <RejectedRequestTab />}
-        </div>
+          </div>
+        )}
+        {manageUsersTab === "2" && (
+          <div className={styles.ManageUserSecondDiv}>
+            <RejectedRequestTab />
+          </div>
+        )}
       </PageLayout>
 
       {/* For Open View Detail Modal */}
