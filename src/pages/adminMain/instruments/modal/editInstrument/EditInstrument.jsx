@@ -8,8 +8,8 @@ import styles from "./EditInstrument.module.css";
 import {
   previousClosedPeriodsTable,
   upcomingClosedPeriodsTable,
+  useMultiTableScrollBottom,
 } from "./utils";
-import EmptyState from "../../../../../components/emptyStates/empty-states";
 import { useMyAdmin } from "../../../../../context/AdminContext";
 import dayjs from "dayjs";
 import { useNotification } from "../../../../../components/NotificationProvider/NotificationProvider";
@@ -19,7 +19,8 @@ import { useNavigate } from "react-router-dom";
 import {
   AddInstrumentClosingPeriodRequest,
   DeleteUpcomingInstrumentCosingPeriodRequest,
-  getUpcomingClosingPeriodInstrumentRequest,
+  GetPreviousClosingPeriodInstrumentRequest,
+  GetUpcomingClosingPeriodInstrumentRequest,
 } from "../../../../../api/adminApi";
 import {
   formatDateToUTCString,
@@ -40,6 +41,7 @@ const EditInstrument = () => {
     setAdminInstrumentUpcomingClosingData,
     // For Previous Closing Periods
     adminInstrumentPreviousClosingData,
+    setAdminInstrumentPreviousClosingData,
     selectedInstrumentOnClick,
   } = useMyAdmin();
 
@@ -55,10 +57,11 @@ const EditInstrument = () => {
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
   const [loadingMore, setLoadingMore] = useState(false);
+  const [previousLoadingMore, setPreviousLoadingMore] = useState(false);
 
   console.log(
-    adminInstrumentUpcomingClosingData,
-    "adminInstrumentUpcomingClosingData"
+    adminInstrumentPreviousClosingData,
+    "adminInstrumentPreviousClosingData"
   );
 
   /**
@@ -160,53 +163,111 @@ const EditInstrument = () => {
   };
 
   // 🔹 useTableScrollBottom in which I add another class of borderless because it make an impact in other class also
-  useTableScrollBottom(
-    async () => {
-      const { totalRecordsDataBase, totalRecordsTable } =
-        adminInstrumentUpcomingClosingData;
+  // ✅ Upcoming Lazy Loader
+  const loadUpcoming = async () => {
+    console.log("check Its occuring");
+    const { totalRecordsDataBase, totalRecordsTable } =
+      adminInstrumentUpcomingClosingData;
 
-      // ✅ Stop if all records are already loaded
-      if (totalRecordsTable >= totalRecordsDataBase) return;
+    if (totalRecordsTable >= totalRecordsDataBase) return;
 
-      try {
-        setLoadingMore(true);
-        const payload = {
-          InstrumentID: selectedInstrumentOnClick,
-          pageNumber: totalRecordsTable, // current offset
-          length: 10,
-        };
+    try {
+      console.log(totalRecordsTable, "check Its occuring");
+      setLoadingMore(true);
+      const payload = {
+        InstrumentID: selectedInstrumentOnClick,
+        pageNumber: totalRecordsTable,
+        length: 10,
+      };
 
-        const response = await getUpcomingClosingPeriodInstrumentRequest({
-          callApi,
-          showNotification,
-          showLoader,
-          requestdata: payload,
-          navigate,
-        });
+      const response = await GetUpcomingClosingPeriodInstrumentRequest({
+        callApi,
+        showNotification,
+        showLoader,
+        requestdata: payload,
+        navigate,
+      });
 
-        if (response) {
-          const newList = response?.closingPeriods || [];
-
-          setAdminInstrumentUpcomingClosingData((prev) => ({
-            closingPeriods: [...prev.closingPeriods, ...newList],
-            totalRecordsDataBase:
-              response?.totalRecords || prev.totalRecordsDataBase,
-            totalRecordsTable: prev.totalRecordsTable + newList.length,
-          }));
-        }
-      } catch (error) {
-        console.error("Lazy loading error (Upcoming Closing Periods):", error);
-      } finally {
-        setLoadingMore(false);
+      if (response) {
+        const newList = response?.closingPeriods || [];
+        setAdminInstrumentUpcomingClosingData((prev) => ({
+          closingPeriods: [...prev.closingPeriods, ...newList],
+          totalRecordsDataBase:
+            response?.totalRecords || prev.totalRecordsDataBase,
+          totalRecordsTable: prev.totalRecordsTable + newList.length,
+        }));
       }
+    } catch (error) {
+      console.error("Lazy loading error (Upcoming Closing Periods):", error);
+    } finally {
+      setLoadingMore(false);
+    }
+  };
+
+  // ✅ Previous Lazy Loader
+  const loadPrevious = async () => {
+    console.log("check Its occuring");
+    const { totalRecordsDataBase, totalRecordsTable } =
+      adminInstrumentPreviousClosingData;
+    if (totalRecordsTable >= totalRecordsDataBase) return;
+
+    try {
+      setPreviousLoadingMore(true);
+      console.log(
+        { totalRecordsTable, totalRecordsDataBase },
+        "check Its occuring"
+      );
+      const payload = {
+        InstrumentID: selectedInstrumentOnClick,
+        pageNumber: totalRecordsTable,
+        length: 20,
+      };
+
+      const response = await GetPreviousClosingPeriodInstrumentRequest({
+        callApi,
+        showNotification,
+        showLoader,
+        requestdata: payload,
+        navigate,
+      });
+
+      if (response) {
+        const newList = response?.closingPeriods || [];
+        setAdminInstrumentPreviousClosingData((prev) => ({
+          closingPeriods: [...prev.closingPeriods, ...newList],
+          totalRecordsDataBase:
+            response?.totalRecords || prev.totalRecordsDataBase,
+          totalRecordsTable: prev.totalRecordsTable + newList.length,
+        }));
+      }
+    } catch (error) {
+      console.error("Lazy loading error (Previous Closing Periods):", error);
+    } finally {
+      setPreviousLoadingMore(false);
+    }
+  };
+
+  useMultiTableScrollBottom([
+    {
+      callback: loadUpcoming,
+      offset: 0,
+      className: "border-less-table-upcomingTable",
     },
-    0,
-    "border-less-table-upcomingTable"
-  );
+    {
+      callback: loadPrevious,
+      offset: 0,
+      className: "border-less-table-previousTable",
+    },
+  ]);
 
   useEffect(() => {
     if (!editInstrumentModal) {
       setAdminInstrumentUpcomingClosingData({
+        closingPeriods: [],
+        totalRecordsDataBase: 0,
+        totalRecordsTable: 0,
+      });
+      setAdminInstrumentPreviousClosingData({
         closingPeriods: [],
         totalRecordsDataBase: 0,
         totalRecordsTable: 0,
@@ -300,7 +361,8 @@ const EditInstrument = () => {
                         rows={mergedPreviousClosedPeriods}
                         pagination={false}
                         size="small"
-                        classNameTable="border-less-table-upcomingTable"
+                        classNameTable="border-less-table-previousTable"
+                        loading={previousLoadingMore}
                         onChange={(pagination, filters, sorter) => {
                           setSortedInfo(sorter);
                         }}

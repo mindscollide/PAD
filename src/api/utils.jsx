@@ -415,6 +415,89 @@ export const responseMessages = {
   PAD_Admin_GetPreviousClosingPeriods_02: "No data found",
   PAD_Admin_GetPreviousClosingPeriods_03: "Exception occurred",
   PAD_Admin_GetPreviousClosingPeriods_04: "Invalid input",
+
+  //For Manage User UsersTab listing messages
+  Admin_AdminServiceManager_GetAllEmployeesWithAssignedManageUsersUserTabPolicies_01:
+    "Data found",
+  Admin_AdminServiceManager_GetAllEmployeesWithAssignedManageUsersUserTabPolicies_02:
+    "No data found",
+  Admin_AdminServiceManager_GetAllEmployeesWithAssignedManageUsersUserTabPolicies_03:
+    "Exception occurred",
+
+  //For Manage User UserTab View Detail Messages
+  Admin_AdminServiceManager_GetUserFullDetailsByEmployeeID_01: "Data found",
+  Admin_AdminServiceManager_GetUserFullDetailsByEmployeeID_02: "No data found",
+  Admin_AdminServiceManager_GetUserFullDetailsByEmployeeID_03:
+    "Exception occurred",
+  Admin_AdminServiceManager_GetUserFullDetailsByEmployeeID_04:
+    "Invalid Request",
+
+  // For Line Manager in ManageUser Users Tab in View Detail Modal on Drop Down
+  Admin_AdminServiceManager_GetAllLineManagers_01: "Data found",
+  Admin_AdminServiceManager_GetAllLineManagers_02: "No data found",
+  Admin_AdminServiceManager_GetAllLineManagers_03: "Exception occurred",
+
+  // For Compliance Officer in ManageUser Users Tab in View Detail Modal on Drop Down
+  Admin_AdminServiceManager_GetAllComplianceOfficer_01: "Data found",
+  Admin_AdminServiceManager_GetAllComplianceOfficer_02: "Data found",
+  Admin_AdminServiceManager_GetAllComplianceOfficer_03: "Data found",
+
+  Admin_AdminServiceManager_GetPendingUserRegistrationRequests_01: "Data found",
+  Admin_AdminServiceManager_GetPendingUserRegistrationRequests_02:
+    "No data found",
+  Admin_AdminServiceManager_GetPendingUserRegistrationRequests_03:
+    "Exception occurred",
+
+  // For Update Employee Manager in Manage User Users Tab  View Detail Modal Request in Admin on Save
+  Admin_AdminServiceManager_UpdateEmployeeManager_01: "Invalid Request",
+  Admin_AdminServiceManager_UpdateEmployeeManager_02: "Success",
+  Admin_AdminServiceManager_UpdateEmployeeManager_03: "Failed to Update",
+  Admin_AdminServiceManager_UpdateEmployeeManager_04: "Exception",
+
+  Admin_AdminServiceManager_GetRejectedUserRegistrationRequests_01:
+    "Data found",
+  Admin_AdminServiceManager_GetRejectedUserRegistrationRequests_02:
+    "No data found",
+  Admin_AdminServiceManager_GetRejectedUserRegistrationRequests_03:
+    "Exception occurred",
+
+  //For Roles & Policies while standing on view Detail Modal on manage user Users Tab
+  Admin_AdminServiceManager_GetUserDetailsWithRoles_01: "Data found",
+  Admin_AdminServiceManager_GetUserDetailsWithRoles_02: "No data found",
+  Admin_AdminServiceManager_GetUserDetailsWithRoles_03: "Exception occurred",
+
+  Admin_AdminServiceManager_GetPredefinedReasonsByAdmin_01: "Data found",
+  Admin_AdminServiceManager_GetPredefinedReasonsByAdmin_02: "No data found",
+  Admin_AdminServiceManager_GetPredefinedReasonsByAdmin_03:
+    "Exception occurred",
+
+  // GetAllExistingGroupPolicies TO show group policies in dropdown of Edit Roles And Policies
+  Admin_AdminServiceManager_GetAllExistingGroupPolicies_01: "Data found",
+  Admin_AdminServiceManager_GetAllExistingGroupPolicies_02: "No data found",
+  Admin_AdminServiceManager_GetAllExistingGroupPolicies_03:
+    "Exception occurred",
+
+  Admin_AdminServiceManager_GetUserRegistrationHistoryByLoginID_01:
+    "Data found",
+  Admin_AdminServiceManager_GetUserRegistrationHistoryByLoginID_02:
+    "No data found",
+  Admin_AdminServiceManager_GetUserRegistrationHistoryByLoginID_03:
+    "Exception occurred",
+
+  // GetAllUserRoles TO ROLES IN CHECKBOX of Edit Roles And Policies
+  Admin_GetAllUserRoles_01: "Records found",
+  Admin_GetAllUserRoles_02: "No Records found",
+  Admin_GetAllUserRoles_03: "Exception occurred",
+
+  // GetAllSystemConfigurations
+  Admin_AdminServiceManager_GetAllSystemConfigurations: "Data found",
+  Admin_AdminServiceManager_GetAllSystemConfigurations_02: "No data found",
+  Admin_AdminServiceManager_GetAllSystemConfigurations_03: "Exception occurred",
+
+  PAD_Admin_UpdateSystemConfiguration_01: "  Invalid input",
+  PAD_Admin_UpdateSystemConfiguration_02: "Successfully updated",
+  PAD_Admin_UpdateSystemConfiguration_03: "No rows updated",
+  PAD_Admin_UpdateSystemConfiguration_04: "Exception occurred",
 };
 
 /**

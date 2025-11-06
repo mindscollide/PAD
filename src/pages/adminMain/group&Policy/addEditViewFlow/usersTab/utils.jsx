@@ -69,243 +69,398 @@ export const withSortIcon = (label, columnKey, sortedInfo) => (
  * @param {Function} params.handleSelectChange - checkbox selection handler
  * @param {Array} params.tabesFormDataofAdminGropusAndPolicy - selected employee IDs
  */
+// export const getUserColumns = ({
+//   sortedInfo = {},
+//   handleSelectChange,
+//   tabesFormDataofAdminGropusAndPolicy = [],
+//   pageTypeForAdminGropusAndPolicy,
+//   currentPolicyID = -1,
+// }) => [
+//   {
+//     title: "",
+//     dataIndex: "employeeID",
+//     key: "employeeID",
+//     width: "8%",
+//     render: (_, record) => {
+//       const isDisabled =
+//         currentPolicyID !== -1
+//           ? record?.isDisable
+//             ? currentPolicyID === record?.groupPolicyID
+//               ? false
+//               : true
+//             : false
+//           : record?.isDisable;
+//       const tooltipTitle = isDisabled
+//         ? record?.groupPolicyTitle
+//           ? `"${record.groupPolicyTitle} "Already assigned to this user `
+//           : "Already assigned to a group policy"
+//         : "";
+//       return (
+//         <Tooltip title={tooltipTitle} placement="topLeft">
+//           <Checkbox
+//             checked={tabesFormDataofAdminGropusAndPolicy?.users.includes(
+//               record.employeeID
+//             )}
+//             disabled={isDisabled}
+//             onChange={(e) => handleSelectChange(e, record)}
+//             className="custom-broker-option-group-policies"
+//           />
+//         </Tooltip>
+//       );
+//     },
+//   },
+//   {
+//     title: withSortIcon("Employee ID", "employeeID", sortedInfo),
+//     dataIndex: "employeeID",
+//     key: "employeeID",
+//     sorter: (a, b) => a.employeeID - b.employeeID,
+//     sortOrder: sortedInfo?.columnKey === "employeeID" ? sortedInfo.order : null,
+//     sortDirections: ["ascend", "descend"],
+//     showSorterTooltip: false,
+//     sortIcon: () => null,
+//     render: (text, record) => {
+//       const isDisabled =
+//         currentPolicyID !== -1
+//           ? record?.isDisable
+//             ? currentPolicyID === record?.groupPolicyID
+//               ? false
+//               : true
+//             : false
+//           : record?.isDisable;
+
+//       const tooltipTitle = isDisabled
+//         ? record?.groupPolicyTitle
+//           ? `"${record.groupPolicyTitle} "Already assigned to this user `
+//           : "Already assigned to a group policy"
+//         : "";
+
+//       return (
+//         <Tooltip
+//           title={tooltipTitle}
+//           placement="topLeft"
+//           mouseEnterDelay={0.3}
+//           overlayStyle={{ whiteSpace: "pre-line" }}
+//         >
+//           <span
+//             style={{
+//               opacity: isDisabled ? 0.6 : 1,
+//               cursor: isDisabled ? "not-allowed" : "default",
+//             }}
+//           >
+//             {text}
+//           </span>
+//         </Tooltip>
+//       );
+//     },
+//   },
+//   {
+//     title: withSortIcon("Employee Name", "employeeName", sortedInfo),
+//     dataIndex: "employeeName",
+//     key: "employeeName",
+//     sorter: (a, b) => a.employeeName.localeCompare(b.employeeName),
+//     sortOrder:
+//       sortedInfo?.columnKey === "employeeName" ? sortedInfo.order : null,
+//     sortDirections: ["ascend", "descend"],
+//     showSorterTooltip: false,
+//     sortIcon: () => null,
+//     render: (text, record) => {
+//       const isDisabled =
+//         currentPolicyID !== -1
+//           ? record?.isDisable
+//             ? currentPolicyID === record?.groupPolicyID
+//               ? false
+//               : true
+//             : false
+//           : record?.isDisable;
+//       const tooltipTitle = isDisabled
+//         ? record?.groupPolicyTitle
+//           ? `"${record.groupPolicyTitle} "Already assigned to this user `
+//           : "Already assigned to a group policy"
+//         : "";
+
+//       return (
+//         <Tooltip title={tooltipTitle} placement="topLeft" mouseEnterDelay={0.3}>
+//           <span
+//             style={{
+//               opacity: isDisabled ? 0.6 : 1,
+//               cursor: isDisabled ? "not-allowed" : "default",
+//             }}
+//           >
+//             {text}
+//           </span>
+//         </Tooltip>
+//       );
+//     },
+//   },
+//   {
+//     title: withSortIcon("Designation", "designation", sortedInfo),
+//     dataIndex: "designation",
+//     key: "designation",
+//     sorter: (a, b) => a.designation.localeCompare(b.designation),
+//     sortOrder:
+//       sortedInfo?.columnKey === "designation" ? sortedInfo.order : null,
+//     sortDirections: ["ascend", "descend"],
+//     showSorterTooltip: false,
+//     sortIcon: () => null,
+//     render: (text, record) => {
+//       const isDisabled =
+//         currentPolicyID !== -1
+//           ? record?.isDisable
+//             ? currentPolicyID === record?.groupPolicyID
+//               ? false
+//               : true
+//             : false
+//           : record?.isDisable;
+
+//       const tooltipTitle = isDisabled
+//         ? record?.groupPolicyTitle
+//           ? `"${record.groupPolicyTitle} "Already assigned to this user `
+//           : "Already assigned to a group policy"
+//         : "";
+
+//       return (
+//         <Tooltip title={tooltipTitle} placement="topLeft" mouseEnterDelay={0.3}>
+//           <span
+//             style={{
+//               opacity: isDisabled ? 0.6 : 1,
+//               cursor: isDisabled ? "not-allowed" : "default",
+//             }}
+//           >
+//             {text}
+//           </span>
+//         </Tooltip>
+//       );
+//     },
+//   },
+//   {
+//     title: withSortIcon("Email Address", "emailAddress", sortedInfo),
+//     dataIndex: "emailAddress",
+//     key: "emailAddress",
+//     sorter: (a, b) => a.emailAddress.localeCompare(b.emailAddress),
+//     sortOrder:
+//       sortedInfo?.columnKey === "emailAddress" ? sortedInfo.order : null,
+//     sortDirections: ["ascend", "descend"],
+//     showSorterTooltip: false,
+//     sortIcon: () => null,
+//     render: (text, record) => {
+//       const isDisabled =
+//         currentPolicyID !== -1
+//           ? record?.isDisable
+//             ? currentPolicyID === record?.groupPolicyID
+//               ? false
+//               : true
+//             : false
+//           : record?.isDisable;
+
+//       const tooltipTitle = isDisabled
+//         ? record?.groupPolicyTitle
+//           ? `"${record.groupPolicyTitle} "Already assigned to this user `
+//           : "Already assigned to a group policy"
+//         : "";
+
+//       return (
+//         <Tooltip title={tooltipTitle} placement="topLeft" mouseEnterDelay={0.3}>
+//           <span
+//             style={{
+//               opacity: isDisabled ? 0.6 : 1,
+//               cursor: isDisabled ? "not-allowed" : "default",
+//             }}
+//           >
+//             {text}
+//           </span>
+//         </Tooltip>
+//       );
+//     },
+//   },
+//   {
+//     title: "Policy Assigned Date",
+//     dataIndex: "policyAssignedDate",
+//     key: "policyAssignedDate",
+//     render: (date, record) => {
+//       const isDisabled =
+//         currentPolicyID !== -1
+//           ? record?.isDisable
+//             ? currentPolicyID === record?.groupPolicyID
+//               ? false
+//               : true
+//             : false
+//           : record?.isDisable;
+
+//       const tooltipTitle = isDisabled
+//         ? record?.groupPolicyTitle
+//           ? `"${record.groupPolicyTitle} "Already assigned to this user `
+//           : "Already assigned to a group policy"
+//         : "";
+//       const dateandtime =
+//         [record?.policyAssignedDate, record?.policyAssignedTime]
+//           .filter(Boolean)
+//           .join(" ") || "—";
+//       return (
+//         <Tooltip title={tooltipTitle} placement="topLeft" mouseEnterDelay={0.3}>
+//           <span
+//             style={{
+//               opacity: isDisabled ? 0.6 : 1,
+//               cursor: isDisabled ? "not-allowed" : "default",
+//             }}
+//           >
+//             {formatApiDateTime(dateandtime)}
+//           </span>
+//         </Tooltip>
+//       );
+//     },
+//   },
+// ];
+
 export const getUserColumns = ({
   sortedInfo = {},
   handleSelectChange,
   tabesFormDataofAdminGropusAndPolicy = [],
+  pageTypeForAdminGropusAndPolicy,
   currentPolicyID = -1,
-}) => [
-  {
-    title: "",
-    dataIndex: "employeeID",
-    key: "employeeID",
-    width: "8%",
-    render: (_, record) => {
-      const isDisabled =
-        currentPolicyID !== -1
-          ? record?.isDisable
-            ? currentPolicyID === record?.groupPolicyID
-              ? false
-              : true
-            : false
-          : record?.isDisable;
-      const tooltipTitle = isDisabled
-        ? record?.groupPolicyTitle
-          ? `"${record.groupPolicyTitle} "Already assigned to this user `
-          : "Already assigned to a group policy"
-        : "";
-      return (
-        <Tooltip title={tooltipTitle} placement="topLeft">
-          <Checkbox
-            checked={tabesFormDataofAdminGropusAndPolicy?.users.includes(
-              record.employeeID
-            )}
-            disabled={isDisabled}
-            onChange={(e) => handleSelectChange(e, record)}
-            className="custom-broker-option-group-policies"
-          />
-        </Tooltip>
-      );
+}) => {
+  const columns = [];
+
+  // ✅ Only add checkbox column if not pageType 2
+  if (pageTypeForAdminGropusAndPolicy !== 2) {
+    columns.push({
+      title: "",
+      dataIndex: "employeeID",
+      key: "employeeID",
+      width: "8%",
+      render: (_, record) => {
+        const isDisabled =
+          currentPolicyID !== -1
+            ? record?.isDisable
+              ? currentPolicyID === record?.groupPolicyID
+                ? false
+                : true
+              : false
+            : record?.isDisable;
+
+        const tooltipTitle = isDisabled
+          ? record?.groupPolicyTitle
+            ? `"${record.groupPolicyTitle}" already assigned to this user`
+            : "Already assigned to a group policy"
+          : "";
+
+        return (
+          <Tooltip title={tooltipTitle} placement="topLeft">
+            <Checkbox
+              checked={tabesFormDataofAdminGropusAndPolicy?.users.includes(
+                record.employeeID
+              )}
+              disabled={isDisabled}
+              onChange={(e) => handleSelectChange(e, record)}
+              className="custom-broker-option-group-policies"
+            />
+          </Tooltip>
+        );
+      },
+    });
+  }
+
+  // ✅ Then push the rest of your columns normally
+  columns.push(
+    {
+      title: withSortIcon("Employee ID", "employeeID", sortedInfo),
+      dataIndex: "employeeID",
+      key: "employeeID",
+      sorter: (a, b) => a.employeeID - b.employeeID,
+      sortOrder:
+        sortedInfo?.columnKey === "employeeID" ? sortedInfo.order : null,
+      sortDirections: ["ascend", "descend"],
+      showSorterTooltip: false,
+      sortIcon: () => null,
+      render: (text, record) =>
+        renderWithTooltip(text, record, currentPolicyID),
     },
-  },
-  {
-    title: withSortIcon("Employee ID", "employeeID", sortedInfo),
-    dataIndex: "employeeID",
-    key: "employeeID",
-    sorter: (a, b) => a.employeeID - b.employeeID,
-    sortOrder: sortedInfo?.columnKey === "employeeID" ? sortedInfo.order : null,
-    sortDirections: ["ascend", "descend"],
-    showSorterTooltip: false,
-    sortIcon: () => null,
-    render: (text, record) => {
-      const isDisabled =
-        currentPolicyID !== -1
-          ? record?.isDisable
-            ? currentPolicyID === record?.groupPolicyID
-              ? false
-              : true
-            : false
-          : record?.isDisable;
-
-      const tooltipTitle = isDisabled
-        ? record?.groupPolicyTitle
-          ? `"${record.groupPolicyTitle} "Already assigned to this user `
-          : "Already assigned to a group policy"
-        : "";
-
-      return (
-        <Tooltip
-          title={tooltipTitle}
-          placement="topLeft"
-          mouseEnterDelay={0.3}
-          overlayStyle={{ whiteSpace: "pre-line" }}
-        >
-          <span
-            style={{
-              opacity: isDisabled ? 0.6 : 1,
-              cursor: isDisabled ? "not-allowed" : "default",
-            }}
-          >
-            {text}
-          </span>
-        </Tooltip>
-      );
+    {
+      title: withSortIcon("Employee Name", "employeeName", sortedInfo),
+      dataIndex: "employeeName",
+      key: "employeeName",
+      sorter: (a, b) => a.employeeName.localeCompare(b.employeeName),
+      sortOrder:
+        sortedInfo?.columnKey === "employeeName" ? sortedInfo.order : null,
+      sortDirections: ["ascend", "descend"],
+      showSorterTooltip: false,
+      sortIcon: () => null,
+      render: (text, record) =>
+        renderWithTooltip(text, record, currentPolicyID),
     },
-  },
-  {
-    title: withSortIcon("Employee Name", "employeeName", sortedInfo),
-    dataIndex: "employeeName",
-    key: "employeeName",
-    sorter: (a, b) => a.employeeName.localeCompare(b.employeeName),
-    sortOrder:
-      sortedInfo?.columnKey === "employeeName" ? sortedInfo.order : null,
-    sortDirections: ["ascend", "descend"],
-    showSorterTooltip: false,
-    sortIcon: () => null,
-    render: (text, record) => {
-      const isDisabled =
-        currentPolicyID !== -1
-          ? record?.isDisable
-            ? currentPolicyID === record?.groupPolicyID
-              ? false
-              : true
-            : false
-          : record?.isDisable;
-      const tooltipTitle = isDisabled
-        ? record?.groupPolicyTitle
-          ? `"${record.groupPolicyTitle} "Already assigned to this user `
-          : "Already assigned to a group policy"
-        : "";
-
-      return (
-        <Tooltip title={tooltipTitle} placement="topLeft" mouseEnterDelay={0.3}>
-          <span
-            style={{
-              opacity: isDisabled ? 0.6 : 1,
-              cursor: isDisabled ? "not-allowed" : "default",
-            }}
-          >
-            {text}
-          </span>
-        </Tooltip>
-      );
+    {
+      title: withSortIcon("Designation", "designation", sortedInfo),
+      dataIndex: "designation",
+      key: "designation",
+      sorter: (a, b) => a.designation.localeCompare(b.designation),
+      sortOrder:
+        sortedInfo?.columnKey === "designation" ? sortedInfo.order : null,
+      sortDirections: ["ascend", "descend"],
+      showSorterTooltip: false,
+      sortIcon: () => null,
+      render: (text, record) =>
+        renderWithTooltip(text, record, currentPolicyID),
     },
-  },
-  {
-    title: withSortIcon("Designation", "designation", sortedInfo),
-    dataIndex: "designation",
-    key: "designation",
-    sorter: (a, b) => a.designation.localeCompare(b.designation),
-    sortOrder:
-      sortedInfo?.columnKey === "designation" ? sortedInfo.order : null,
-    sortDirections: ["ascend", "descend"],
-    showSorterTooltip: false,
-    sortIcon: () => null,
-    render: (text, record) => {
-      const isDisabled =
-        currentPolicyID !== -1
-          ? record?.isDisable
-            ? currentPolicyID === record?.groupPolicyID
-              ? false
-              : true
-            : false
-          : record?.isDisable;
-
-      const tooltipTitle = isDisabled
-        ? record?.groupPolicyTitle
-          ? `"${record.groupPolicyTitle} "Already assigned to this user `
-          : "Already assigned to a group policy"
-        : "";
-
-      return (
-        <Tooltip title={tooltipTitle} placement="topLeft" mouseEnterDelay={0.3}>
-          <span
-            style={{
-              opacity: isDisabled ? 0.6 : 1,
-              cursor: isDisabled ? "not-allowed" : "default",
-            }}
-          >
-            {text}
-          </span>
-        </Tooltip>
-      );
+    {
+      title: withSortIcon("Email Address", "emailAddress", sortedInfo),
+      dataIndex: "emailAddress",
+      key: "emailAddress",
+      sorter: (a, b) => a.emailAddress.localeCompare(b.emailAddress),
+      sortOrder:
+        sortedInfo?.columnKey === "emailAddress" ? sortedInfo.order : null,
+      sortDirections: ["ascend", "descend"],
+      showSorterTooltip: false,
+      sortIcon: () => null,
+      render: (text, record) =>
+        renderWithTooltip(text, record, currentPolicyID),
     },
-  },
-  {
-    title: withSortIcon("Email Address", "emailAddress", sortedInfo),
-    dataIndex: "emailAddress",
-    key: "emailAddress",
-    sorter: (a, b) => a.emailAddress.localeCompare(b.emailAddress),
-    sortOrder:
-      sortedInfo?.columnKey === "emailAddress" ? sortedInfo.order : null,
-    sortDirections: ["ascend", "descend"],
-    showSorterTooltip: false,
-    sortIcon: () => null,
-    render: (text, record) => {
-      const isDisabled =
-        currentPolicyID !== -1
-          ? record?.isDisable
-            ? currentPolicyID === record?.groupPolicyID
-              ? false
-              : true
-            : false
-          : record?.isDisable;
+    {
+      title: "Policy Assigned Date",
+      dataIndex: "policyAssignedDate",
+      key: "policyAssignedDate",
+      render: (date, record) => {
+        const dateAndTime =
+          [record?.policyAssignedDate, record?.policyAssignedTime]
+            .filter(Boolean)
+            .join(" ") || "—";
+        return renderWithTooltip(
+          formatApiDateTime(dateAndTime),
+          record,
+          currentPolicyID
+        );
+      },
+    }
+  );
 
-      const tooltipTitle = isDisabled
-        ? record?.groupPolicyTitle
-          ? `"${record.groupPolicyTitle} "Already assigned to this user `
-          : "Already assigned to a group policy"
-        : "";
+  return columns;
+};
 
-      return (
-        <Tooltip title={tooltipTitle} placement="topLeft" mouseEnterDelay={0.3}>
-          <span
-            style={{
-              opacity: isDisabled ? 0.6 : 1,
-              cursor: isDisabled ? "not-allowed" : "default",
-            }}
-          >
-            {text}
-          </span>
-        </Tooltip>
-      );
-    },
-  },
-  {
-    title: "Policy Assigned Date",
-    dataIndex: "policyAssignedDate",
-    key: "policyAssignedDate",
-    render: (date, record) => {
-      const isDisabled =
-        currentPolicyID !== -1
-          ? record?.isDisable
-            ? currentPolicyID === record?.groupPolicyID
-              ? false
-              : true
-            : false
-          : record?.isDisable;
+// 🧩 Reusable helper to simplify tooltip logic
+const renderWithTooltip = (text, record, currentPolicyID) => {
+  const isDisabled =
+    currentPolicyID !== -1
+      ? record?.isDisable
+        ? currentPolicyID === record?.groupPolicyID
+          ? false
+          : true
+        : false
+      : record?.isDisable;
 
-      const tooltipTitle = isDisabled
-        ? record?.groupPolicyTitle
-          ? `"${record.groupPolicyTitle} "Already assigned to this user `
-          : "Already assigned to a group policy"
-        : "";
-      const dateandtime =
-        [record?.policyAssignedDate, record?.policyAssignedTime]
-          .filter(Boolean)
-          .join(" ") || "—";
-      return (
-        <Tooltip title={tooltipTitle} placement="topLeft" mouseEnterDelay={0.3}>
-          <span
-            style={{
-              opacity: isDisabled ? 0.6 : 1,
-              cursor: isDisabled ? "not-allowed" : "default",
-            }}
-          >
-            {formatApiDateTime(dateandtime)}
-          </span>
-        </Tooltip>
-      );
-    },
-  },
-];
+  const tooltipTitle = isDisabled
+    ? record?.groupPolicyTitle
+      ? `"${record.groupPolicyTitle}" already assigned to this user`
+      : "Already assigned to a group policy"
+    : "";
+
+  return (
+    <Tooltip title={tooltipTitle} placement="topLeft" mouseEnterDelay={0.3}>
+      <span
+        style={{
+          opacity: isDisabled ? 0.6 : 1,
+          cursor: isDisabled ? "not-allowed" : "default",
+        }}
+      >
+        {text}
+      </span>
+    </Tooltip>
+  );
+};

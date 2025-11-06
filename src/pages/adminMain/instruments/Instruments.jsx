@@ -23,8 +23,8 @@ import { useApi } from "../../../context/ApiContext";
 import { useSearchBarContext } from "../../../context/SearchBarContaxt";
 import { useMyAdmin } from "../../../context/AdminContext";
 import {
-  getPreviousClosingPeriodInstrumentRequest,
-  getUpcomingClosingPeriodInstrumentRequest,
+  GetPreviousClosingPeriodInstrumentRequest,
+  GetUpcomingClosingPeriodInstrumentRequest,
   SearchGetInstrumentsWithClosingPeriod,
   UpdateInstrumentStatus,
 } from "../../../api/adminApi";
@@ -102,7 +102,7 @@ const Instruments = () => {
       length: 10,
     };
 
-    const response = await getUpcomingClosingPeriodInstrumentRequest({
+    const response = await GetUpcomingClosingPeriodInstrumentRequest({
       callApi,
       showNotification,
       showLoader,
@@ -130,7 +130,7 @@ const Instruments = () => {
       length: 20,
     };
 
-    const response = await getPreviousClosingPeriodInstrumentRequest({
+    const response = await GetPreviousClosingPeriodInstrumentRequest({
       callApi,
       showNotification,
       showLoader,
@@ -140,7 +140,12 @@ const Instruments = () => {
 
     // Set Data in the Edit Modal Instrument Previous Closing Period Table
     if (response) {
-      setAdminInstrumentPreviousClosingData(response);
+      const newList = response?.closingPeriods || [];
+      setAdminInstrumentPreviousClosingData({
+        closingPeriods: newList,
+        totalRecordsDataBase: response?.totalRecords || 0,
+        totalRecordsTable: newList.length,
+      });
     }
   };
 
@@ -334,12 +339,14 @@ const Instruments = () => {
         },
     ].filter(Boolean);
   })();
-
+  console.log("activeFilters", activeFilters);
   return (
     <>
       {/* 🔹 Active Filter Tags */}
       {activeFilters.length > 0 && (
         <Row gutter={[12, 12]} className={style["filter-tags-container"]}>
+          {console.log("activeFilters", activeFilters)}
+
           {activeFilters.map(({ key, value }) => (
             <Col key={key}>
               <div className={style["filter-tag"]}>

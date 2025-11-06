@@ -1,4 +1,10 @@
-import React, { createContext, useContext, useState } from "react";
+import React, {
+  createContext,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 
 /**
  * 📌 MyAdminContext
@@ -136,8 +142,111 @@ export const MyAdminProvider = ({ children }) => {
     totalRecordsTable: 0,
   });
 
+  // context for Manage User Users Tab Search criteria
+  const [adminManageUserTabData, setAdminManageUserTabData] = useState({
+    employees: [],
+    totalRecordsDataBase: 0,
+    totalRecordsTable: 0,
+  });
+
   const [selectedInstrumentOnClick, setSelectedInstrumentOnClick] =
     useState(null);
+
+  // this state for setOpen tab of manage users
+  // 0 users tab
+  // 1 pending Request
+  // 2 rejected request
+  const [manageUsersTab, setManageUsersTab] = useState("0");
+  const manageUsersTabRef = useRef(manageUsersTab);
+  // 🔄 Keep refs in sync with latest state
+  useEffect(() => {
+    manageUsersTabRef.current = manageUsersTab;
+  }, [manageUsersTab]);
+  // manage user pending tab data
+  const [manageUsersPendingTabData, setManageUsersPendingTabData] = useState(
+    []
+  );
+
+  // manage user pending tab Mqtt Msg arived
+  const [manageUsersPendingTabMqtt, setManageUsersPendingTabMqtt] =
+    useState(false);
+
+  // Manage User View Detail Modal State
+  const [manageUsersViewDetailModalData, setManageUsersViewDetailModalData] =
+    useState({
+      userAssignedRoles: [],
+      userDetails: {},
+      userHierarchy: [],
+    });
+
+  // line Manager Dropdown data in View Detail Modal in Context State
+  const [
+    lineManagerViewDetailDropdownData,
+    setLineManagerViewDetailDropdownData,
+  ] = useState({
+    lineManagers: [],
+  });
+
+  // Compliance Officer Dropdown data in View Detail Modal in Context State
+  const [
+    complianceOfficerViewDetailDropdownData,
+    setComplianceOfficerViewDetailDropdownData,
+  ] = useState({
+    lineManagers: [],
+  });
+
+  // manage user pending tab data
+  const [
+    modaPendingRequestModalOpenAction,
+    setModaPendingRequestModalOpenAction,
+  ] = useState(false);
+
+  // manage user pending request action type
+  //  1 bulk
+  // 2 single
+  const [typeofAction, setTypeofAction] = useState(-1);
+
+  // rejected request list data
+  const [
+    manageUsersRejectedRequestTabData,
+    setManageUsersRejectedRequestTabData,
+  ] = useState({
+    rejectedRequests: [],
+    totalRecordsDataBase: 0,
+    totalRecordsTable: 0,
+  });
+
+  // rejected request list data
+  const [
+    manageUsersRejectedRequestTabMQTT,
+    setManageUsersRejectedRequestTabMQTT,
+  ] = useState(false);
+
+  // rejected request user data view id set in this
+  const [currentID, setCurrentID] = useState(-1);
+
+  // Role And Policy On View Detail Modal in Manager User Users Tab context State
+  const [roleAndPolicyViewDetailData, setRoleAndPolicyViewDetailData] =
+    useState({
+      userDetails: {},
+      assignedGroupPolicies: [],
+    });
+
+  // Edit Role And Policy Group And Policy Dropdown State
+  const [
+    editRoleAndPolicyGroupDropdownData,
+    setEditRoleAndPolicyGroupDropdownData,
+  ] = useState({
+    groupPolicies: [],
+  });
+
+  // GetAllUserRoles FOR ROLES IN CHECKBOX of Edit Roles And Policies
+  const [
+    allUserRolesForEditRolePolicyData,
+    setAllUserRolesForEditRolePolicyData,
+  ] = useState({
+    userRoles: [],
+  });
 
   /**
    * ♻️ Reset Context State (Table + API Data)
@@ -176,6 +285,7 @@ export const MyAdminProvider = ({ children }) => {
   const resetAdminGroupeAndPoliciesPoliciesTabDataState = () => {
     setAdminGroupeAndPoliciesPoliciesTabData([]);
   };
+
   const resetAdminGroupeAndPoliciesUsersTabDataState = () => {
     setAdminGroupeAndPoliciesUsersTabData({
       employees: [],
@@ -201,6 +311,39 @@ export const MyAdminProvider = ({ children }) => {
     resetAdminGroupeAndPoliciesUsersTabDataState();
   };
 
+  // reset manage user tab data
+  const resetManageUsersPendingTabDataState = () => {
+    setManageUsersPendingTabData([]);
+    setManageUsersPendingTabMqtt(false);
+  };
+
+  // reset manage user tab data
+  const resetModalStateBulkAction = () => {
+    setModaPendingRequestModalOpenAction(false);
+    setTypeofAction(-1);
+  };
+
+  // reset ManageUsers Rejected Request Tab Data
+  const resetManageUsersRejectedRequestTabData = () => {
+    setManageUsersRejectedRequestTabData({
+      rejectedRequests: [],
+      totalRecordsDataBase: 0,
+      totalRecordsTable: 0,
+    });
+    setManageUsersRejectedRequestTabMQTT(false);
+  };
+  const resetIDofUserRejectedViewDetails = () => {
+    setCurrentID(-1);
+  };
+  // rest Contaxt of manager tab data
+  const resetmanageUsersContextState = () => {
+    setManageUsersTab("0");
+    resetManageUsersPendingTabDataState();
+    resetModalStateBulkAction();
+    resetManageUsersRejectedRequestTabData();
+    resetIDofUserRejectedViewDetails();
+  };
+
   const resetAdminDataContextState = () => {
     // intruments
     resetAdminInstrumentsContextState();
@@ -214,6 +357,9 @@ export const MyAdminProvider = ({ children }) => {
     resetAdminGropusAndPolicyContextState();
 
     resetAdminGroupeAndPoliciesPoliciesTabDataState();
+
+    // manageUsers tab
+    resetmanageUsersContextState();
     //
   };
 
@@ -275,6 +421,66 @@ export const MyAdminProvider = ({ children }) => {
         resetAdminGroupeAndPoliciesUsersTabDataState,
         adminGroupeAndPoliciesUsersTabData,
         setAdminGroupeAndPoliciesUsersTabData,
+
+        // context for Manage User Users Tab Search criteria
+        adminManageUserTabData,
+        setAdminManageUserTabData,
+        // manageUsers tab
+        manageUsersTab,
+        setManageUsersTab,
+        resetmanageUsersContextState,
+        // current
+        manageUsersTabRef,
+        // manage users pending data tab
+        manageUsersPendingTabData,
+        setManageUsersPendingTabData,
+        resetManageUsersPendingTabDataState,
+
+        // manage users pending Mqtt tab
+        manageUsersPendingTabMqtt,
+        setManageUsersPendingTabMqtt,
+
+        //Manage Users View Detail Modal
+        manageUsersViewDetailModalData,
+        setManageUsersViewDetailModalData,
+
+        //Line Manager Dropdown Data in View Detail Modal in Manage User in UsersTab
+        lineManagerViewDetailDropdownData,
+        setLineManagerViewDetailDropdownData,
+
+        //Compliance Officer Dropdown Data in View Detail Modal in Manage User in UsersTab
+        complianceOfficerViewDetailDropdownData,
+        setComplianceOfficerViewDetailDropdownData,
+        // manage user pending tab data
+        modaPendingRequestModalOpenAction,
+        setModaPendingRequestModalOpenAction,
+        resetModalStateBulkAction,
+
+        //Role And Policy on View Detail State
+        roleAndPolicyViewDetailData,
+        setRoleAndPolicyViewDetailData,
+
+        // Edit Role And Policy Group And Policy Dropdown State
+        editRoleAndPolicyGroupDropdownData,
+        setEditRoleAndPolicyGroupDropdownData,
+
+        // GetAllUserRoles FOR ROLES IN CHECKBOX of Edit Roles And Policies
+        allUserRolesForEditRolePolicyData,
+        setAllUserRolesForEditRolePolicyData,
+
+        typeofAction,
+        setTypeofAction,
+
+        // rejected request list data
+        resetManageUsersRejectedRequestTabData,
+        manageUsersRejectedRequestTabData,
+        setManageUsersRejectedRequestTabData,
+        manageUsersRejectedRequestTabMQTT,
+        setManageUsersRejectedRequestTabMQTT,
+
+        setCurrentID,
+        currentID,
+        resetIDofUserRejectedViewDetails,
       }}
     >
       {children}

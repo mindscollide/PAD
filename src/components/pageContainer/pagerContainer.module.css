@@ -62,11 +62,17 @@
 .changeHeightforPolicy {
   min-height: 592px !important;
   max-height: 592px !important;
+  top: 180px !important;
 }
 .bg-transparent {
   background-color: transparent;
 }
 /* Add this new class */
 .changeHeight {
-  min-height: 82vh !important;
+  height: 80vh !important;
+  top: 131px !important;
+}
+.grouppolicy {
+  top: 126px !important;
+  height: 80px;
 }

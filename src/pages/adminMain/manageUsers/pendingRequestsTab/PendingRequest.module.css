@@ -4,9 +4,17 @@
   align-items: center;
   background-color: #ffffff;
   border-radius: 8px;
-  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.15);
+  box-shadow: none; /* ✅ no shadow by default */
   padding: 20px 24px;
   margin-bottom: 20px;
+  transition: box-shadow 0.3s ease; /* smooth hover animation */
+ border: 1px solid #B4B4B4; 
+ /* cursor: pointer; */
+}
+
+/* ✅ show shadow on hover */
+.mainPendingRequestDiv:hover {
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.15);
 }
 
 .detailsContainer {
@@ -94,4 +102,17 @@
   font-family: "Switzer Variable";
   font-weight: 500;
   color: #30426a;
+}
+
+.emptyState {
+  display: flex;
+  justify-content: center; /* centers horizontally */
+  align-items: center; /* centers vertically */
+  height: 100%; /* or a fixed height like 100vh / 400px */
+  width: 100%;
+}
+.scrollContainer {
+  max-height: 65vh;
+  overflow-y: auto;
+  padding-right: 8px;
 }

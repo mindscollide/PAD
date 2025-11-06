@@ -191,7 +191,13 @@ export const policyColumns = ({
                 const handleChange = (val) => onDurationChange?.(record, val);
                 return (
                   <CustomDatePicker
-                    value={record.duration || ""}
+                    value={
+                      record.duration === "Invalid Date"
+                        ? null
+                        : record.duration !== "Invalid Date"
+                        ? record.duration
+                        : null
+                    }
                     onChange={handleChange}
                     modeType={
                       dataTypeID === 2
@@ -230,6 +236,11 @@ export const policyColumns = ({
                     value={record.duration || (multiple ? [] : undefined)}
                     onChange={(val) => onDurationChange?.(record, val)}
                     className={multiple ? styles.multiselect : styles.select}
+                    {...(multiple && {
+                      maxTagCount: "responsive", // ✅ Automatically collapse tags into “+N…”
+                      maxTagPlaceholder: (omittedValues) =>
+                        `+${omittedValues.length} more`, // optional customization
+                    })}
                   >
                     {values.map((val) => (
                       <Option key={val} value={val}>

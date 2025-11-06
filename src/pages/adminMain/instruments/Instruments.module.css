@@ -43,7 +43,6 @@
   overflow: hidden !important;
   text-overflow: ellipsis !important;
 }
-
 .filter-tag-close {
   cursor: pointer;
   flex-shrink: 0;
@@ -51,7 +50,6 @@
   line-height: 1;
   z-index: 1 !important;
 }
-
 .clear-all-tag {
   cursor: pointer !important;
 }

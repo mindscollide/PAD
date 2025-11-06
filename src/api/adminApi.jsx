@@ -1394,7 +1394,7 @@ export const AddInstrumentClosingPeriodRequest = async ({
 };
 
 //GetUpcomingClosingPeriodsByInstrumentID when user click on edit modal
-export const getUpcomingClosingPeriodInstrumentRequest = async ({
+export const GetUpcomingClosingPeriodInstrumentRequest = async ({
   callApi,
   showNotification,
   showLoader,
@@ -1472,7 +1472,7 @@ export const getUpcomingClosingPeriodInstrumentRequest = async ({
 };
 
 //GetPreviousClosingPeriodsByInstrumentID when user click on edit modal
-export const getPreviousClosingPeriodInstrumentRequest = async ({
+export const GetPreviousClosingPeriodInstrumentRequest = async ({
   callApi,
   showNotification,
   showLoader,
@@ -1603,6 +1603,1212 @@ export const DeleteUpcomingInstrumentCosingPeriodRequest = async ({
 
     return false;
   } finally {
+    showLoader(false);
+  }
+};
+
+// GetPendingUserRegistrationRequests
+export const SearchPendingUserRegistrationRequests = async ({
+  callApi,
+  showNotification,
+  showLoader,
+  requestdata,
+  navigate,
+}) => {
+  try {
+    console.log("🔹 Approved Portfolio requestdata:", requestdata);
+
+    // 🔹 API Call
+    const res = await callApi({
+      requestMethod: import.meta.env
+        .VITE_GET_PENDING_USER_REGISTRATION_REQUESTS_REQUEST_METHOD, // ✅ update env var
+      endpoint: import.meta.env.VITE_API_ADMIN,
+      requestData: requestdata,
+      navigate,
+    });
+
+    // 🔹 Handle session expiry
+    if (handleExpiredSession(res, navigate, showLoader)) return null;
+
+    // 🔹 Validate API execution
+    if (!res?.result?.isExecuted) {
+      showNotification({
+        type: "error",
+        title: "Error",
+        description: "Something went wrong. Please try again.",
+      });
+      return null;
+    }
+
+    // 🔹 Handle successful execution
+    if (res.success) {
+      console.log("🔹 Approved Portfolio response:", res);
+      const { responseMessage, pendingRequests, totalRecords } = res.result;
+      const message = getMessage(responseMessage);
+
+      // ✅ Case 1 → Data Available
+      if (
+        responseMessage ===
+        "Admin_AdminServiceManager_GetPendingUserRegistrationRequests_01" // TODO: confirm exact code
+      ) {
+        return {
+          pendingRequests: pendingRequests || [],
+          totalRecords: totalRecords || 0,
+        };
+      }
+
+      // ✅ Case 2 → No Data Available
+      if (
+        responseMessage ===
+        "Admin_AdminServiceManager_GetPendingUserRegistrationRequests_02" // TODO: confirm exact code
+      ) {
+        return {
+          pendingRequests: [],
+          totalRecords: 0,
+        };
+      }
+
+      // ✅ Case 3 → Other server messages
+      if (message) {
+        showNotification({
+          type: "warning",
+          title: message,
+          description: "No Data found.",
+        });
+      }
+
+      return null;
+    }
+
+    // 🔹 Handle failure (res.success === false)
+    showNotification({
+      type: "error",
+      title: "Fetch Failed",
+      description: getMessage(res.message),
+    });
+    return null;
+  } catch (error) {
+    // 🔹 Unexpected exception handler
+    console.error("❌ Error in GetPendingUserRegistrationRequests:", error);
+    showNotification({
+      type: "error",
+      title: "Error",
+      description: "An unexpected error occurred.",
+    });
+    return null;
+  } finally {
+    // 🔹 Always stop loader
+    showLoader(false);
+  }
+};
+
+// Search Manage User Users Tab Api Request in Admin
+export const SearchManageUserListRequest = async ({
+  callApi,
+  showNotification,
+  showLoader,
+  requestdata,
+  navigate,
+}) => {
+  try {
+    // 🔹 API Call
+    const res = await callApi({
+      requestMethod: import.meta.env
+        .VITE_MANAGE_USERS_USER_TAB_POLICIES_REQUEST_METHOD, // 🔑 must be defined in .env
+      endpoint: import.meta.env.VITE_API_ADMIN,
+      requestData: requestdata,
+      navigate,
+    });
+
+    // 🔹 Handle session expiry
+    if (handleExpiredSession(res, navigate, showLoader)) return null;
+
+    // 🔹 Validate execution
+    if (!res?.result?.isExecuted) {
+      showNotification({
+        type: "error",
+        title: "Error",
+        description: "Something went wrong while fetching Group Policies List.",
+      });
+      return null;
+    }
+
+    // 🔹 Handle success
+    if (res.success) {
+      const { responseMessage, employees, totalRecords } = res.result;
+      const message = getMessage(responseMessage);
+
+      // Case 1 → Data available
+      if (
+        responseMessage ===
+        "Admin_AdminServiceManager_GetAllEmployeesWithAssignedManageUsersUserTabPolicies_01"
+      ) {
+        return {
+          employees: employees || [],
+          totalRecords: totalRecords || 0,
+        };
+      }
+
+      // Case 2 → No data
+      if (
+        responseMessage ===
+        "Admin_AdminServiceManager_GetAllEmployeesWithAssignedManageUsersUserTabPolicies_02"
+      ) {
+        return {
+          employees: [],
+          totalRecords: 0,
+        };
+      }
+
+      // Case 3 → Custom server messages
+      if (message) {
+        showNotification({
+          type: "warning",
+          title: message,
+          description: "No Group Policies found.",
+        });
+      }
+
+      return null;
+    }
+
+    // 🔹 Handle failure
+    showNotification({
+      type: "error",
+      title: "Fetch Failed",
+      description: getMessage(res.message),
+    });
+    return null;
+  } catch (error) {
+    // 🔹 Exception handling
+    showNotification({
+      type: "error",
+      title: "Error",
+      description: "An unexpected error occurred  while fetching Policies..",
+    });
+    return null;
+  } finally {
+    // 🔹 Always hide loader
+    showLoader(false);
+  }
+};
+
+// Manage User Users Tab  View Detail Modal Request in Admin
+export const ViewDetailManageUserUserTabRequest = async ({
+  callApi,
+  showNotification,
+  showLoader,
+  requestdata,
+  navigate,
+}) => {
+  try {
+    // 🔹 API Call
+    const res = await callApi({
+      requestMethod: import.meta.env
+        .VITE_MANAGE_USERS_USER_TAB_VIEW_DETAIL_MODAL_REQUEST_METHOD, // 🔑 must be defined in .env
+      endpoint: import.meta.env.VITE_API_ADMIN,
+      requestData: requestdata,
+      navigate,
+    });
+
+    // 🔹 Handle session expiry
+    if (handleExpiredSession(res, navigate, showLoader)) return null;
+
+    // 🔹 Validate execution
+    if (!res?.result?.isExecuted) {
+      showNotification({
+        type: "error",
+        title: "Error",
+        description: "Something went wrong while fetching Group Policies List.",
+      });
+      return null;
+    }
+
+    // 🔹 Handle success
+    if (res.success) {
+      const { responseMessage, userAssignedRoles, userDetails, userHierarchy } =
+        res.result;
+      const message = getMessage(responseMessage);
+
+      // Case 1 → Data available
+      if (
+        responseMessage ===
+        "Admin_AdminServiceManager_GetUserFullDetailsByEmployeeID_01"
+      ) {
+        return {
+          userAssignedRoles: userAssignedRoles || [],
+          userDetails: userDetails || {},
+          userHierarchy: userHierarchy || [],
+        };
+      }
+
+      // Case 2 → No data
+      if (
+        responseMessage ===
+        "Admin_AdminServiceManager_GetUserFullDetailsByEmployeeID_02"
+      ) {
+        return {
+          userAssignedRoles: [],
+          userDetails: {},
+          userHierarchy: [],
+        };
+      }
+
+      // Case 3 → Custom server messages
+      if (message) {
+      }
+
+      return null;
+    }
+
+    // 🔹 Handle failure
+    showNotification({
+      type: "error",
+      title: "Fetch Failed",
+      description: getMessage(res.message),
+    });
+    return null;
+  } catch (error) {
+    return null;
+  } finally {
+    // 🔹 Always hide loader
+    showLoader(false);
+  }
+};
+
+// Get Line Manager View Detail on Manage User UsersTab request in Admin
+export const GetLineManagerOnViewDetailUserTabRequest = async ({
+  callApi,
+  showNotification,
+  showLoader,
+  navigate,
+}) => {
+  try {
+    // 🔹 API Call
+    const res = await callApi({
+      requestMethod: import.meta.env
+        .VITE_GET_LINE_MANAGER_MANAGE_USER_TAB_REQEUST_METHOD, // 🔑 must be defined in .env
+      endpoint: import.meta.env.VITE_API_ADMIN,
+      navigate,
+    });
+
+    // 🔹 Handle session expiry
+    if (handleExpiredSession(res, navigate, showLoader)) return null;
+
+    // 🔹 Validate execution
+    if (!res?.result?.isExecuted) {
+      showNotification({
+        type: "error",
+        title: "Error",
+        description: "Something went wrong while fetching Group Policies List.",
+      });
+      return null;
+    }
+
+    // 🔹 Handle success
+    if (res.success) {
+      const { responseMessage, lineManagers } = res.result;
+      const message = getMessage(responseMessage);
+
+      // Case 1 → Data available
+      if (
+        responseMessage === "Admin_AdminServiceManager_GetAllLineManagers_01"
+      ) {
+        return {
+          lineManagers: lineManagers || [],
+        };
+      }
+
+      // Case 2 → No data
+      if (
+        responseMessage === "Admin_AdminServiceManager_GetAllLineManagers_02"
+      ) {
+        return {
+          lineManagers: [],
+        };
+      }
+
+      // Case 3 → Custom server messages
+      if (message) {
+      }
+
+      return null;
+    }
+
+    // 🔹 Handle failure
+    showNotification({
+      type: "error",
+      title: "Fetch Failed",
+      description: getMessage(res.message),
+    });
+    return null;
+  } catch (error) {
+    return null;
+  } finally {
+    // 🔹 Always hide loader
+    showLoader(false);
+  }
+};
+
+// Get Compliance Officer View Detail on Manage User UsersTab request in Admin
+export const GetComplianceOfficerOnViewDetailUserTabRequest = async ({
+  callApi,
+  showNotification,
+  showLoader,
+  navigate,
+}) => {
+  try {
+    // 🔹 API Call
+    const res = await callApi({
+      requestMethod: import.meta.env
+        .VITE_GET_COMPLIANCE_OFFICER_MANAGE_USER_TAB_REQEUST_METHOD, // 🔑 must be defined in .env
+      endpoint: import.meta.env.VITE_API_ADMIN,
+      navigate,
+    });
+
+    // 🔹 Handle session expiry
+    if (handleExpiredSession(res, navigate, showLoader)) return null;
+
+    // 🔹 Validate execution
+    if (!res?.result?.isExecuted) {
+      showNotification({
+        type: "error",
+        title: "Error",
+        description: "Something went wrong while fetching Group Policies List.",
+      });
+      return null;
+    }
+
+    // 🔹 Handle success
+    if (res.success) {
+      const { responseMessage, lineManagers } = res.result;
+      const message = getMessage(responseMessage);
+
+      // Case 1 → Data available
+      if (
+        responseMessage ===
+        "Admin_AdminServiceManager_GetAllComplianceOfficer_01"
+      ) {
+        return {
+          lineManagers: lineManagers || [],
+        };
+      }
+
+      // Case 2 → No data
+      if (
+        responseMessage ===
+        "Admin_AdminServiceManager_GetAllComplianceOfficer_02"
+      ) {
+        return {
+          lineManagers: [],
+        };
+      }
+
+      // Case 3 → Custom server messages
+      if (message) {
+      }
+
+      return null;
+    }
+
+    // 🔹 Handle failure
+    showNotification({
+      type: "error",
+      title: "Fetch Failed",
+      description: getMessage(res.message),
+    });
+    return null;
+  } catch (error) {
+    return null;
+  } finally {
+    // 🔹 Always hide loader
+    showLoader(false);
+  }
+};
+
+// 🔹 Process User Registration Request
+export const ProcessUserRegistrationRequest = async ({
+  callApi,
+  showNotification,
+  showLoader,
+  requestdata,
+  navigate,
+}) => {
+  try {
+    console.log("Approved:", requestdata);
+
+    // Start Loader
+    showLoader(true);
+
+    // 🔹 API Call
+    const res = await callApi({
+      requestMethod: import.meta.env
+        .VITE_PROCESS_USER_REGISTRATION_REQUEST_METHOD, // e.g. "ServiceManager.ProcessUserRegistrationRequest"
+      endpoint: import.meta.env.VITE_API_ADMIN, // e.g. http://192.168.18.241:14003/Admin
+      requestData: requestdata,
+      navigate,
+    });
+
+    console.log("📥 ProcessUserRegistrationRequest Response:", res);
+
+    // 🔹 Handle session expiry
+    if (handleExpiredSession(res, navigate, showLoader)) return false;
+
+    // 🔹 Validate response
+    if (!res?.result?.isExecuted) {
+      showNotification({
+        type: "error",
+        title: "Failed",
+        description: "Unable to process user registration request.",
+      });
+      return false;
+    }
+
+    // 🔹 Success Case
+    if (
+      res.result.responseMessage ===
+      "Admin_AdminServiceManager_UserRegistration_ProcessRequest_02"
+    ) {
+      return true;
+    }
+    if (
+      res.result.responseMessage ===
+      "Admin_AdminServiceManager_UserRegistration_ProcessRequest_03"
+    ) {
+      return true;
+    }
+
+    // 🔹 Other Message Case
+    showNotification({
+      type: "warning",
+      title: "Notice",
+      description:
+        "The request was processed but returned an unexpected message.",
+    });
+    return false;
+  } catch (error) {
+    console.error("❌ Error in ProcessUserRegistrationRequest:", error);
+    showNotification({
+      type: "error",
+      title: "Error",
+      description: "An unexpected error occurred while processing the request.",
+    });
+    return false;
+  } finally {
+    showLoader(false);
+  }
+};
+
+// For Update Employee Manager in Manage User Users Tab  View Detail Modal Request in Admin on Save
+export const UpdateEmployeeManagerManageUserTab = async ({
+  callApi,
+  showNotification,
+  showLoader,
+  requestdata,
+  navigate,
+}) => {
+  try {
+    // 🔹 API Call
+    const res = await callApi({
+      requestMethod: import.meta.env
+        .VITE_UPDATE_EMPLOYEE_MANAGER_FOR_LM_OR_CO_REQUEST_METHOD, // 🔑 must be defined in .env
+      endpoint: import.meta.env.VITE_API_ADMIN,
+      requestData: requestdata,
+      navigate,
+    });
+
+    // 🔹 Handle session expiry
+    if (handleExpiredSession(res, navigate, showLoader)) return false;
+
+    // 🔹 Validate execution
+    if (!res?.result?.isExecuted) {
+      showNotification({
+        type: "error",
+        title: "Error",
+        description: "Something went wrong while fetching Group Policies List.",
+      });
+      return false;
+    }
+
+    // 🔹 Handle success
+    if (res.success) {
+      const { responseMessage } = res.result;
+      const message = getMessage(responseMessage);
+
+      // Case 1 → Data available
+      if (
+        responseMessage === "Admin_AdminServiceManager_UpdateEmployeeManager_02"
+      ) {
+        return true;
+      }
+
+      // Case 3 → Custom server messages
+      if (message) {
+      }
+
+      return false;
+    }
+
+    // 🔹 Handle failure
+    showNotification({
+      type: "error",
+      title: "Fetch Failed",
+      description: getMessage(res.message),
+    });
+    return false;
+  } catch (error) {
+    return false;
+  } finally {
+    // 🔹 Always hide loader
+    showLoader(false);
+  }
+};
+
+// Searc hRejected User Registration Requests
+export const SearchRejectedUserRegistrationRequests = async ({
+  callApi,
+  showNotification,
+  showLoader,
+  requestdata,
+  navigate,
+}) => {
+  try {
+    console.log("🔍 Request Data (Transactions):", requestdata);
+
+    // 🔹 API Call
+    const res = await callApi({
+      requestMethod: import.meta.env
+        .VITE_GET_REJECTED_USER_REGISTRATION_REQUEST_METHOD, // 🔑 must be defined in .env
+      endpoint: import.meta.env.VITE_API_ADMIN,
+      requestData: requestdata,
+      navigate,
+    });
+
+    // 🔹 Handle session expiry
+    if (handleExpiredSession(res, navigate, showLoader)) return null;
+
+    // 🔹 Validate execution
+    if (!res?.result?.isExecuted) {
+      showNotification({
+        type: "error",
+        title: "Error",
+        description:
+          "Something went wrong while fetching employee transactions.",
+      });
+      return null;
+    }
+
+    // 🔹 Handle success
+    if (res.success) {
+      const { responseMessage, rejectedRequests, totalRecords } = res.result;
+      const message = getMessage(responseMessage);
+
+      // Case 1 → Data available
+      if (
+        responseMessage ===
+        "Admin_AdminServiceManager_GetRejectedUserRegistrationRequests_01"
+      ) {
+        return {
+          rejectedRequests: rejectedRequests || [],
+          totalRecords: totalRecords || 0,
+        };
+      }
+
+      // Case 2 → No data
+      if (
+        responseMessage ===
+        "Admin_AdminServiceManager_GetRejectedUserRegistrationRequests_02"
+      ) {
+        return {
+          rejectedRequests: [],
+          totalRecords: 0,
+        };
+      }
+
+      // Case 3 → Custom server messages
+      if (message) {
+        showNotification({
+          type: "warning",
+          title: message,
+          description: "No Rejected request found.",
+        });
+      }
+
+      return null;
+    }
+
+    // 🔹 Handle failure
+    showNotification({
+      type: "error",
+      title: "Fetch Failed",
+      description: getMessage(res.message),
+    });
+    return null;
+  } catch (error) {
+    // 🔹 Exception handling
+    showNotification({
+      type: "error",
+      title: "Error",
+      description:
+        "An unexpected error occurred while request Rejected Users List.",
+    });
+    return null;
+  } finally {
+    // 🔹 Always hide loader
+    showLoader(false);
+  }
+};
+
+// Get Predefined Reasons By Admin
+export const GetPredefinedReasonsByAdmin = async ({
+  callApi,
+  showNotification,
+  showLoader,
+  navigate,
+}) => {
+  try {
+    // 🔹 API Call
+    const res = await callApi({
+      requestMethod: import.meta.env
+        .VITE_GET_PRE_DEFINED_REASONS_BY_ADMIN_REQUEST_METHOD, // 🔑 must be defined in .env
+      endpoint: import.meta.env.VITE_API_ADMIN,
+      navigate,
+    });
+
+    // 🔹 Handle session expiry
+    if (handleExpiredSession(res, navigate, showLoader)) return null;
+
+    // 🔹 Validate execution
+    if (!res?.result?.isExecuted) {
+      showNotification({
+        type: "error",
+        title: "Error",
+        description: "Something went wrong while fetching reason.",
+      });
+      return null;
+    }
+
+    // 🔹 Handle success
+    if (res.success) {
+      const { responseMessage, reasons } = res.result;
+      const message = getMessage(responseMessage);
+
+      // Case 1 → Data available
+      if (
+        responseMessage ===
+        "Admin_AdminServiceManager_GetPredefinedReasonsByAdmin_01"
+      ) {
+        return { reasons: reasons };
+      }
+
+      // Case 2 → No data
+      if (
+        responseMessage ===
+        "Admin_AdminServiceManager_GetPredefinedReasonsByAdmin_02"
+      ) {
+        return { reasons: [] };
+      }
+
+      // Case 3 → Custom server messages
+      if (message) {
+        showNotification({
+          type: "warning",
+          title: message,
+          description: "No reason found.",
+        });
+      }
+
+      return null;
+    }
+
+    // 🔹 Handle failure
+    showNotification({
+      type: "error",
+      title: "Fetch Failed",
+      description: getMessage(res.message),
+    });
+    return null;
+  } catch (error) {
+    // 🔹 Exception handling
+    showNotification({
+      type: "error",
+      title: "Error",
+      description: "An unexpected error occurred while request reason.",
+    });
+    return null;
+  } finally {
+    // 🔹 Always hide loader
+    showLoader(false);
+  }
+};
+
+//For Roles & Policies while standing on view Detail Modal on manage user Users Tab
+export const GetViewDetailsUserRoleAndPoliciesRequests = async ({
+  callApi,
+  showNotification,
+  showLoader,
+  requestdata,
+  setViewDetailManageUser,
+  setRolesAndPoliciesManageUser,
+  navigate,
+}) => {
+  try {
+    // 🔹 API Call
+    const res = await callApi({
+      requestMethod: import.meta.env
+        .VITE_GET_USER_DETAIL_ON_ROLES_AND_POLICIES_REQEUST_METHOD, // 🔑 must be defined in .env
+      endpoint: import.meta.env.VITE_API_ADMIN,
+      requestData: requestdata,
+      navigate,
+    });
+
+    // 🔹 Handle session expiry
+    if (handleExpiredSession(res, navigate, showLoader)) return null;
+
+    // 🔹 Validate execution
+    if (!res?.result?.isExecuted) {
+      showNotification({
+        type: "error",
+        title: "Error",
+        description: "Something went wrong while fetching Group Policies List.",
+      });
+      return null;
+    }
+
+    // 🔹 Handle success
+    if (res.success) {
+      const { responseMessage, userDetails, assignedGroupPolicies } =
+        res.result;
+      const message = getMessage(responseMessage);
+
+      // Case 1 → Data available
+      if (
+        responseMessage ===
+        "Admin_AdminServiceManager_GetUserDetailsWithRoles_01"
+      ) {
+        setViewDetailManageUser(false);
+        setRolesAndPoliciesManageUser(true);
+        return {
+          userDetails: userDetails || {},
+          assignedGroupPolicies: assignedGroupPolicies || [],
+        };
+      }
+
+      // Case 2 → No data
+      if (
+        responseMessage ===
+        "Admin_AdminServiceManager_GetUserDetailsWithRoles_02"
+      ) {
+        return {
+          userDetails: {},
+          assignedGroupPolicies: [],
+        };
+      }
+
+      // Case 3 → Custom server messages
+      if (message) {
+      }
+
+      return null;
+    }
+
+    // 🔹 Handle failure
+    showNotification({
+      type: "error",
+      title: "Fetch Failed",
+      description: getMessage(res.message),
+    });
+    return null;
+  } catch (error) {
+    return null;
+  } finally {
+    // 🔹 Always hide loader
+    showLoader(false);
+  }
+};
+
+// Get User Registration History By LoginID
+export const GetUserRegistrationHistoryByLoginID = async ({
+  callApi,
+  showNotification,
+  showLoader,
+  requestdata,
+  navigate,
+}) => {
+  try {
+    // 🔹 API Call
+    const res = await callApi({
+      requestMethod: import.meta.env
+        .VITE_GE_USER_REGISTRATION_HISTORY_BY_LOGIN_ID_REQUEST_METHOD, // 🔑 must be defined in .env
+      endpoint: import.meta.env.VITE_API_ADMIN,
+      requestData: requestdata,
+      navigate,
+    });
+
+    // 🔹 Handle session expiry
+    if (handleExpiredSession(res, navigate, showLoader)) return null;
+
+    // 🔹 Validate execution
+    if (!res?.result?.isExecuted) {
+      showNotification({
+        type: "error",
+        title: "Error",
+        description:
+          "Something went wrong while fetching registration History.",
+      });
+      return null;
+    }
+    console.log("reasonsArray", res);
+
+    // 🔹 Handle success
+    if (res.success) {
+      const { responseMessage, registrationHistory, employeeName } = res.result;
+      const message = getMessage(responseMessage);
+
+      // Case 1 → Data available
+      if (
+        responseMessage ===
+        "Admin_AdminServiceManager_GetUserRegistrationHistoryByLoginID_01"
+      ) {
+        return {
+          registrationHistory: registrationHistory,
+          employeeName: employeeName || "",
+        };
+      }
+
+      // Case 2 → No data
+      if (
+        responseMessage ===
+        "Admin_AdminServiceManager_GetUserRegistrationHistoryByLoginID_02"
+      ) {
+        return { registrationHistory: [], employeeName: "" };
+      }
+
+      // Case 3 → Custom server messages
+      if (message) {
+        showNotification({
+          type: "warning",
+          title: message,
+          description: "No registration History found.",
+        });
+      }
+
+      return null;
+    }
+
+    // 🔹 Handle failure
+    showNotification({
+      type: "error",
+      title: "Fetch Failed",
+      description: getMessage(res.message),
+    });
+    return null;
+  } catch (error) {
+    // 🔹 Exception handling
+    showNotification({
+      type: "error",
+      title: "Error",
+      description:
+        "An unexpected error occurred while request registration History.",
+    });
+    return null;
+  } finally {
+    // 🔹 Always hide loader
+    showLoader(false);
+  }
+};
+
+// GetAllExistingGroupPolicies TO show group policies in dropdown of Edit Roles And Policies
+export const GetAllExistingGroupDataRequest = async ({
+  callApi,
+  showNotification,
+  showLoader,
+  setRolesAndPoliciesManageUser,
+  setEditrolesAndPoliciesUser,
+  navigate,
+}) => {
+  try {
+    // 🔹 API Call
+    const res = await callApi({
+      requestMethod: import.meta.env
+        .VITE_GET_All_EXISTING_GROUP_POLICIES_REQUEST_METHOD, // 🔑 must be defined in .env
+      endpoint: import.meta.env.VITE_API_ADMIN,
+      navigate,
+    });
+
+    // 🔹 Handle session expiry
+    if (handleExpiredSession(res, navigate, showLoader)) return null;
+
+    // 🔹 Validate execution
+    if (!res?.result?.isExecuted) {
+      showNotification({
+        type: "error",
+        title: "Error",
+        description: "Something went wrong while fetching Group Policies List.",
+      });
+      return null;
+    }
+
+    // 🔹 Handle success
+    if (res.success) {
+      const { responseMessage, groupPolicies } = res.result;
+      const message = getMessage(responseMessage);
+
+      // Case 1 → Data available
+      if (
+        responseMessage ===
+        "Admin_AdminServiceManager_GetAllExistingGroupPolicies_01"
+      ) {
+        setRolesAndPoliciesManageUser(false);
+        setEditrolesAndPoliciesUser(true);
+        return {
+          groupPolicies: groupPolicies || [],
+        };
+      }
+
+      // Case 2 → No data
+      if (
+        responseMessage ===
+        "Admin_AdminServiceManager_GetAllExistingGroupPolicies_02"
+      ) {
+        return {
+          groupPolicies: [],
+        };
+      }
+
+      // Case 3 → Custom server messages
+      if (message) {
+      }
+
+      return null;
+    }
+
+    // 🔹 Handle failure
+    showNotification({
+      type: "error",
+      title: "Fetch Failed",
+      description: getMessage(res.message),
+    });
+    return null;
+  } catch (error) {
+    return null;
+  } finally {
+    // 🔹 Always hide loader
+    showLoader(false);
+  }
+};
+
+// GetAllUserRoles FOR ROLES IN CHECKBOX of Edit Roles And Policies
+export const GetAllUserRolesDataRequest = async ({
+  callApi,
+  showNotification,
+  showLoader,
+  setRolesAndPoliciesManageUser,
+  setEditrolesAndPoliciesUser,
+  navigate,
+}) => {
+  try {
+    // 🔹 API Call
+    const res = await callApi({
+      requestMethod: import.meta.env.VITE_GET_ALL_USER_ROLES_REQUEST_METHOD, // 🔑 must be defined in .env
+      endpoint: import.meta.env.VITE_API_ADMIN,
+      navigate,
+    });
+
+    // 🔹 Handle session expiry
+    if (handleExpiredSession(res, navigate, showLoader)) return null;
+
+    // 🔹 Validate execution
+    if (!res?.result?.isExecuted) {
+      showNotification({
+        type: "error",
+        title: "Error",
+        description: "Something went wrong while fetching Group Policies List.",
+      });
+      return null;
+    }
+
+    // 🔹 Handle success
+    if (res.success) {
+      const { responseMessage, userRoles } = res.result;
+      const message = getMessage(responseMessage);
+
+      // Case 1 → Data available
+      if (responseMessage === "Admin_GetAllUserRoles_01") {
+        setRolesAndPoliciesManageUser(false);
+        setEditrolesAndPoliciesUser(true);
+        return {
+          userRoles: userRoles || [],
+        };
+      }
+
+      // Case 2 → No data
+      if (responseMessage === "Admin_GetAllUserRoles_02") {
+        return {
+          userRoles: [],
+        };
+      }
+
+      // Case 3 → Custom server messages
+      if (message) {
+      }
+
+      return null;
+    }
+
+    // 🔹 Handle failure
+    showNotification({
+      type: "error",
+      title: "Fetch Failed",
+      description: getMessage(res.message),
+    });
+    return null;
+  } catch (error) {
+    return null;
+  } finally {
+    // 🔹 Always hide loader
+    showLoader(false);
+  }
+};
+
+// Get All System Configurations
+export const GetAllSystemConfigurations = async ({
+  callApi,
+  showNotification,
+  showLoader,
+  navigate,
+}) => {
+  try {
+    // 🔹 API Call
+    const res = await callApi({
+      requestMethod: import.meta.env
+        .VITE_GET_ALL_SYSTEM_CONFIGURATIONS_REQUEST_METHOD, // 🔑 must be defined in .env
+      endpoint: import.meta.env.VITE_API_ADMIN,
+      navigate,
+    });
+
+    // 🔹 Handle session expiry
+    if (handleExpiredSession(res, navigate, showLoader)) return null;
+
+    // 🔹 Validate execution
+    if (!res?.result?.isExecuted) {
+      showNotification({
+        type: "error",
+        title: "Error",
+        description:
+          "Something went wrong while fetching System Configurations.",
+      });
+      return null;
+    }
+
+    // 🔹 Handle success
+    if (res.success) {
+      const { responseMessage, systemConfigurations } = res.result;
+      const message = getMessage(responseMessage);
+      // Case 1 → Data available
+      if (
+        responseMessage ===
+        "Admin_AdminServiceManager_GetAllSystemConfigurations_01"
+      ) {
+        return {
+          systemConfigurations: systemConfigurations || [],
+        };
+      }
+
+      // Case 2 → No data
+      if (
+        responseMessage ===
+        "Admin_AdminServiceManager_GetAllSystemConfigurations_02"
+      ) {
+        return {
+          systemConfigurations: [],
+        };
+      }
+      return null;
+    }
+
+    // 🔹 Handle failure
+    showNotification({
+      type: "error",
+      title: "Fetch Failed",
+      description: getMessage(res.message),
+    });
+    return null;
+  } catch (error) {
+    return null;
+  } finally {
+    // 🔹 Always hide loader
+    showLoader(false);
+  }
+};
+
+// Update System Configuration
+export const UpdateSystemConfiguration = async ({
+  callApi,
+  showNotification,
+  showLoader,
+  requestdata,
+  navigate,
+}) => {
+  try {
+    // 🔹 API Call
+    const res = await callApi({
+      requestMethod: import.meta.env
+        .VITE_UPDATE_SYSTEM_CONFIGURATION_REQUEST_METHOD, // 🔑 must be defined in .env
+      endpoint: import.meta.env.VITE_API_ADMIN,
+      requestData: requestdata,
+      navigate,
+    });
+
+    // 🔹 Handle session expiry
+    if (handleExpiredSession(res, navigate, showLoader)) return null;
+
+    // 🔹 Validate execution
+    if (!res?.result?.isExecuted) {
+      showNotification({
+        type: "error",
+        title: "Error",
+        description:
+          "Something went wrong while Update System Configurations.",
+      });
+      return null;
+    }
+
+    // 🔹 Handle success
+    if (res.success) {
+      const { responseMessage } = res.result;
+      const message = getMessage(responseMessage);
+      // Case 1 → Data available
+      if (responseMessage === "PAD_Admin_UpdateSystemConfiguration_02") {
+        return true;
+      }
+
+      // Case 2 → No data
+      if (responseMessage === "PAD_Admin_UpdateSystemConfiguration_01") {
+        return false;
+      }
+      if (message) {
+        // 🔹 Handle failure
+        showNotification({
+          type: "error",
+          title: "Fetch Failed",
+          description: getMessage(res.message),
+        });
+      }
+      return false;
+    }
+    // 🔹 Handle failure
+    showNotification({
+      type: "error",
+      title: "Fetch Failed",
+      description: getMessage(res.message),
+    });
+
+    return null;
+  } catch (error) {
+    return null;
+  } finally {
+    // 🔹 Always hide loader
     showLoader(false);
   }
 };

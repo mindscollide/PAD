@@ -35,6 +35,9 @@ const Dashboard = () => {
     setAdminBrokerMqtt,
     setAdminIntrumentsMqtt,
     setAdminAddDeleteClosingInstrument,
+    setManageUsersPendingTabMqtt,
+    setManageUsersRejectedRequestTabMQTT,
+    manageUsersTabRef,
   } = useMyAdmin();
   const { setHtaEscalatedApprovalDataMqtt } = useEscalatedApprovals();
   const { setEmployeePendingApprovalsDataMqtt, activeTabRef } =
@@ -57,6 +60,7 @@ const Dashboard = () => {
     urgentAlert,
     setUrgentAlert,
   } = useDashboardContext();
+
   const { setEmployeeTransactionsTableDataMqtt } = useTransaction();
   const { setWebNotificationData } = useWebNotification();
   const { callApi } = useApi();
@@ -108,14 +112,11 @@ const Dashboard = () => {
   /**
    * ✅ Handle MQTT messages
    */
+
   const { connectToMqtt, isConnected } = useMqttClient({
     onMessageArrivedCallback: (data) => {
       console.log("action", data);
       if (!data?.message) {
-        // tempraroy
-        // if (data?.action === "WEBNOTIFICATION") {
-        //   apiCallwebNotification();
-        // }
         console.warn("MQTT: Received invalid message", data);
         return;
       }
@@ -125,12 +126,13 @@ const Dashboard = () => {
         const currentactiveTabRef = activeTabRef.current;
         const currentactiveHCOEscalatedTabRef = activeTabHCORef.current;
         const currentRoleIsAdminRefLocal = currentRoleIsAdminRef.current;
-
+        const currentmanageUsersTabRef = manageUsersTabRef.current;
         const { message, payload, roleIDs, action } = data;
         if (!payload) return;
         // if (action === "WEBNOTIFICATION") {
         //   apiCallwebNotification();
         // }
+
         if (hasUserRole(Number(roleIDs))) {
           if (currentRoleIsAdminRefLocal) {
             // admin mqtt
@@ -147,7 +149,6 @@ const Dashboard = () => {
               if (action === "WEBNOTIFICATION") {
                 apiCallwebNotification();
               }
-              return;
             } else {
               // its admin MQTT → ignore completely
             }
@@ -161,6 +162,35 @@ const Dashboard = () => {
                     if (currentKey === "18") {
                       // not admin MQTT → ignore completely
                       setAdminIntrumentsMqtt(true);
+                      return;
+                    }
+                  }
+                  break;
+                }
+                case "USER_REGISTRATION_ACCEPTED": {
+                  if (currentRoleIsAdminRefLocal) {
+                    // admin mqtt
+                    if (
+                      currentKey === "21" &&
+                      currentmanageUsersTabRef === "1"
+                    ) {
+                      // not admin MQTT → ignore completely
+                      setManageUsersPendingTabMqtt(true);
+                      return;
+                    }
+                  }
+                  break;
+                }
+                case "USER_REGISTRATION_REJECTED": {
+                  if (currentRoleIsAdminRefLocal) {
+                    // admin mqtt
+                    if (currentKey === "21") {
+                      if (currentmanageUsersTabRef === "1") {
+                        setManageUsersPendingTabMqtt(true);
+                      }
+                      if (currentmanageUsersTabRef === "2") {
+                        setManageUsersRejectedRequestTabMQTT(true);
+                      }
                       return;
                     }
                   }

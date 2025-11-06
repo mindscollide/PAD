@@ -223,6 +223,9 @@ export const GlobalModalProvider = ({ children }) => {
   const [unSavedChangesPoliciesModal, setUnSavedChangesPoliciesModal] =
     useState(false);
 
+  // For View Detail Modal For Rejected Request in Admin
+  const [viewDetailRejectedModal, setViewDetailRejectedModal] = useState(false);
+
   /**
    * Global States For Admin Role Modals End here
    */
@@ -451,6 +454,10 @@ export const GlobalModalProvider = ({ children }) => {
         setEditrolesAndPoliciesUser,
         unSavedChangesPoliciesModal,
         setUnSavedChangesPoliciesModal,
+
+        // View Detail Modal For Rejected Request in Admin
+        viewDetailRejectedModal,
+        setViewDetailRejectedModal,
 
         /**
          * Global States For Admin Role Modals End here

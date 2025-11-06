@@ -34,7 +34,6 @@ const Users = ({
   // 🔹 State Management
   const [loadingMore, setLoadingMore] = useState(false); // Loading state for pagination
   const [sortedInfo, setSortedInfo] = useState({});
-  const [selectedEmployees, setSelectedEmployees] = useState([]);
 
   const {
     tabesFormDataofAdminGropusAndPolicy,
@@ -80,7 +79,6 @@ const Users = ({
       const mapped = employees;
       //   const mapped = manage(employees);
 
-      console.log("adminGroupeAndPoliciesUsersTabData", mapped);
       setAdminGroupeAndPoliciesUsersTabData((prev) => ({
         employees: replace ? mapped : [...(prev?.employees || []), ...mapped],
         // this is for to run lazy loading its data comming from database of total data in db
@@ -120,6 +118,13 @@ const Users = ({
     await setPageTypeForAdminGropusAndPolicy(1);
 
     let requestData = buildApiRequest(adminGropusAndPolicyUsersTabSearch);
+    if (pageTypeForAdminGropusAndPolicy === 2) {
+      // 🟠 Update existing → add GroupPolicyID
+      requestData = {
+        ...requestData,
+        GroupPolicyID: currentPolicyID, // 👈 use your stored policy ID
+      };
+    }
     // 🟠 Update existing → add GroupPolicyID
     fetchApiCall(requestData, true, true, 1);
     setClickEditFromView(false);
@@ -168,6 +173,7 @@ const Users = ({
     sortedInfo,
     handleSelectChange,
     tabesFormDataofAdminGropusAndPolicy,
+    pageTypeForAdminGropusAndPolicy,
     currentPolicyID,
   });
   // Fetch on Filter Trigger
@@ -193,10 +199,16 @@ const Users = ({
         adminGroupeAndPoliciesUsersTabData?.totalRecordsTable
       )
         return;
-      console.log(adminGropusAndPolicyUsersTabSearch, "assetTypeListingData");
       try {
         setLoadingMore(true);
-        const requestData = buildApiRequest(adminGropusAndPolicyUsersTabSearch);
+        let requestData = buildApiRequest(adminGropusAndPolicyUsersTabSearch);
+        if (pageTypeForAdminGropusAndPolicy === 2) {
+          // 🟠 Update existing → add GroupPolicyID
+          requestData = {
+            ...requestData,
+            GroupPolicyID: currentPolicyID, // 👈 use your stored policy ID
+          };
+        }
         await fetchApiCall(
           requestData,
           false,

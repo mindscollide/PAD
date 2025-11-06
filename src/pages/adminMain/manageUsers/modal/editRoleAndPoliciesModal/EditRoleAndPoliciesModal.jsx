@@ -12,6 +12,7 @@ import DarkCrossImg from "../../../../../assets/img/DarkCrossImg.png";
 
 // 🔹 Styles
 import styles from "./EditRoleAndPoliciesModal.module.css";
+import { useMyAdmin } from "../../../../../context/AdminContext";
 
 const EditRoleAndPoliciesModal = () => {
   const {
@@ -20,28 +21,26 @@ const EditRoleAndPoliciesModal = () => {
     setUnSavedChangesPoliciesModal,
   } = useGlobalModal();
 
-  const [selectedRoles, setSelectedRoles] = useState(["Compliance Officer"]);
+  // 🔹  Context State of View Detail Modal in which All data store
+  const {
+    editRoleAndPolicyGroupDropdownData,
+    allUserRolesForEditRolePolicyData,
+  } = useMyAdmin();
+
+  console.log(
+    { editRoleAndPolicyGroupDropdownData, allUserRolesForEditRolePolicyData },
+    "editRoleAndPolicyGroupDropdownData"
+  );
+
+  const [selectedRoles, setSelectedRoles] = useState([]);
   const [userStatus, setUserStatus] = useState("Active");
   const [selectedPolicy, setSelectedPolicy] = useState(null);
 
-  const policyOptions = [
-    {
-      label: "Corporate Policy Exchange – Aligning Governance, Risk.",
-      value: "Corporate Policy Exchange",
-    },
-    {
-      label: "Global Policy Forum",
-      value: "Global Policy Forum",
-    },
-    {
-      label: "Policy & Compliance Alliance",
-      value: "Policy & Compliance Alliance",
-    },
-    {
-      label: "Building Effective Governance Frameworks",
-      value: "Building Effective Governance Frameworks",
-    },
-  ];
+  const groupPolicyOptions =
+    editRoleAndPolicyGroupDropdownData?.groupPolicies?.map((policy) => ({
+      label: policy.groupTitle,
+      value: policy.groupPolicyID,
+    })) || [];
 
   const roles = [
     "Employees",
@@ -52,9 +51,13 @@ const EditRoleAndPoliciesModal = () => {
     "Admin",
   ];
 
-  const toggleRole = (role) => {
+  const allRoles = allUserRolesForEditRolePolicyData?.userRoles || [];
+
+  const toggleRole = (roleId) => {
     setSelectedRoles((prev) =>
-      prev.includes(role) ? prev.filter((r) => r !== role) : [...prev, role]
+      prev.includes(roleId)
+        ? prev.filter((id) => id !== roleId)
+        : [...prev, roleId]
     );
   };
 
@@ -116,8 +119,12 @@ const EditRoleAndPoliciesModal = () => {
                       </Col>
                     </Row>
 
-                    {roles.map((role) => (
-                      <Row key={role} className={styles.roleRow} align="middle">
+                    {allRoles.map((role) => (
+                      <Row
+                        key={role.userRoleID}
+                        className={styles.roleRow}
+                        align="middle"
+                      >
                         <Col span={19}>
                           <span
                             className={
@@ -126,14 +133,14 @@ const EditRoleAndPoliciesModal = () => {
                                 : styles.roleTextInactive
                             }
                           >
-                            {role}
+                            {role.roleName}
                           </span>
                         </Col>
                         <Col span={5}>
                           <CheckBox
                             type="checkbox"
-                            checked={selectedRoles.includes(role)}
-                            onChange={() => toggleRole(role)}
+                            checked={selectedRoles.includes(role.userRoleID)}
+                            onChange={() => toggleRole(role.userRoleID)}
                           />
                         </Col>
                       </Row>
@@ -156,13 +163,21 @@ const EditRoleAndPoliciesModal = () => {
                       <label className={styles.dropdownLabel}>
                         Change Group Policy
                       </label>
-                      <Select
-                        placeholder="Search Group Policy"
-                        className={styles.policyDropdown}
-                        value={selectedPolicy}
-                        onChange={setSelectedPolicy}
-                        options={policyOptions}
-                      />
+                      {groupPolicyOptions.length > 0 ? (
+                        <Select
+                          placeholder="Search Group Policy"
+                          className={styles.policyDropdown}
+                          showSearch
+                          allowClear
+                          value={selectedPolicy}
+                          onChange={setSelectedPolicy}
+                          options={groupPolicyOptions}
+                        />
+                      ) : (
+                        <p className={styles.noPolicyText}>
+                          No Group Policies Available
+                        </p>
+                      )}
                     </div>
                   ) : (
                     <>

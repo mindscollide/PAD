@@ -1,0 +1,113 @@
+.modalBodyWrapper {
+  padding: 0px 50px; /* or any padding you want */
+  height: 600px !important;
+}
+
+.viewManageUserDetailHeading {
+  font-size: 26px;
+  font-family: "Switzer Variable";
+  font-weight: 700;
+  color: #30426a;
+}
+
+.RejectedHeading {
+  font-size: 18px;
+  font-family: "Switzer Variable";
+  font-weight: 400;
+  color: #424242;
+}
+
+.fullNameHeadingText {
+  font-size: 18px;
+  font-family: "Switzer Variable";
+  font-weight: 700;
+  color: #424242;
+}
+
+.insideColoredDiv {
+  width: auto;
+  height: 122px;
+  background-color: #edf3ff;
+  border-radius: 8px;
+  padding: 20px 35px;
+  margin-top: 10px;
+  margin-left: 60px;
+}
+
+.requestedDateText {
+  font-size: 18px;
+  font-family: "Switzer Variable";
+  font-weight: 700;
+  color: #30426a;
+}
+
+.subMainText {
+  font-size: 18px;
+  font-family: "Switzer Variable";
+  font-weight: 400;
+  color: #424242;
+  margin-top: 25px;
+}
+
+.headerImgText {
+  display: flex;
+  justify-content: start;
+  align-items: center !important;
+  gap: 10px !important;
+}
+
+.mainButtonSpan {
+  display: flex;
+  justify-content: end;
+}
+
+.reviewNotesChildContainer {
+  max-height: 450px;
+  overflow-y: auto;
+}
+
+/* wrapper for multiple items (no ::before here) */
+.lineConnector {
+  position: relative;
+  /* keep height auto so items determine height */
+}
+
+/* single item wrapper — no line at all */
+.singleItemContainer {
+  position: relative;
+}
+
+/* common for items that should show a connector below them */
+.itemWithConnector {
+  position: relative;
+  padding-left: 40px; /* space for avatar + connector; adjust if needed */
+}
+
+/* draw a vertical dashed/dotted segment for each item except last */
+.itemWithConnector::before {
+  content: "";
+  position: absolute;
+  left: 55px; /* align with avatar center (adjust) */
+  top: 40px; /* start a little below the avatar; tune as needed */
+  height: calc(
+    100% - 40px
+  ); /* go down until end of this item (connects visually to next item) */
+  width: 1px;
+  background-image: repeating-linear-gradient(
+    to bottom,
+    #717171,
+    #717171 5px,
+    transparent 5px,
+    transparent 10px
+  );
+}
+
+/* last item — no connector */
+.lastItem {
+  position: relative;
+  padding-left: 40px;
+}
+
+.lastItem::before {
+  content: none;
+}

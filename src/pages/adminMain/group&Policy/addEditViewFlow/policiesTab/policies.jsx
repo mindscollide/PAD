@@ -1,4 +1,10 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { Collapse } from "antd";
 import styles from "./policies.module.css";
 import { useMyAdmin } from "../../../../../context/AdminContext";
@@ -381,6 +387,21 @@ const Policies = ({
       return prevData;
     });
   };
+  const columns = useMemo(
+    () =>
+      policyColumns({
+        onSelectChange: handleSelectChange,
+        onDurationChange: handleDurationChange,
+        viewFlag: pageTypeForAdminGropusAndPolicy === 2,
+        selectedPolicies: tabesFormDataofAdminGropusAndPolicy?.policies || [],
+      }),
+    [
+      handleSelectChange,
+      handleDurationChange,
+      pageTypeForAdminGropusAndPolicy,
+      tabesFormDataofAdminGropusAndPolicy?.policies,
+    ]
+  );
 
   return (
     <div
@@ -432,15 +453,7 @@ const Policies = ({
                   <div className={styles.innerTableArea}>
                     <BorderlessTable
                       rows={policyCategories?.policies || []}
-                      columns={policyColumns({
-                        onSelectChange: handleSelectChange,
-                        onDurationChange: handleDurationChange,
-                        viewFlag: pageTypeForAdminGropusAndPolicy === 2,
-                        selectedPolicies:
-                          tabesFormDataofAdminGropusAndPolicy?.policies
-                            ? tabesFormDataofAdminGropusAndPolicy?.policies
-                            : [],
-                      })}
+                      columns={columns}
                       pagination={false}
                       rowKey="transactionId"
                       classNameTable="border-less-table-white-4"
@@ -455,7 +468,7 @@ const Policies = ({
         </Collapse>
       ) : (
         // 🔹 Empty State
-        <EmptyState type="policiestab" />
+        <EmptyState type="policiestab" style={{ minHeight: "55vh" }} />
       )}
 
       {/* 🔹 Loading Indicator for Infinite Scroll */}

@@ -7,8 +7,15 @@
 
 .ManageUserSecondDiv {
   padding: 0px 10px;
+  height: 550px;
+  overflow: hidden !important;
 }
-
+.ManageUserSecondDivPending {
+  padding: 0px 10px;
+  height: 550px;
+  overflow: hidden !important;
+  overflow-y: auto !important;
+}
 /* Changes active tab underline (ink bar) color */
 .customTabs :global(.ant-tabs-ink-bar) {
   background-color: #30426a !important; /* Your custom color */
@@ -16,4 +23,60 @@
 
 .ExportButtonClass {
   margin-top: 10px;
+}
+
+.filter-tags-container {
+  padding: 0 23px;
+  position: relative;
+  top: 20px;
+  /* margin-bottom: 12px !important; */
+  /* margin-top: 14px; */
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.filter-tag {
+  display: flex;
+  align-items: center;
+  max-width: 240px;
+  height: 35px;
+  padding: 8px 12px;
+  background: #30426a;
+  color: white;
+  border-radius: 7.09px;
+  font-size: 14px;
+  margin-top: 7px;
+  gap: 10px;
+}
+
+.filter-tag-text {
+  flex: 1 1 auto !important;
+  min-width: 0 !important; /* 🔑 allows ellipsis */
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+}
+.filter-tag-close {
+  cursor: pointer;
+  flex-shrink: 0;
+  font-size: 16px;
+  line-height: 1;
+  z-index: 1 !important;
+}
+.clear-all-tag {
+  cursor: pointer !important;
+}
+
+.mainArea {
+  max-height: 540px !important;
+  overflow-y: overlay !important;
+  overflow-x: hidden !important;
+  margin-top: 28px !important;
+}
+.filterMAinArea {
+  max-height: 470px !important;
+  overflow-y: overlay !important;
+  overflow-x: hidden !important;
+  margin-top: 28px !important;
 }

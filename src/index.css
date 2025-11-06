@@ -479,7 +479,7 @@ li.ant-dropdown-menu-item.ant-dropdown-menu-item-only-child:focus {
     .ant-picker-cell-disabled
   )
   .ant-picker-cell-inner {
-  background-color: #2a3c65 !important; /* your custom color */
+  background-color: #30426a !important; /* your custom color */
 }
 
 :where(.css-dev-only-do-not-override-1rfzxih).ant-picker-dropdown
@@ -600,3 +600,14 @@ a.ant-picker-now-btn {
   input {
   margin-top: 3px !important;
 }
+
+.ant-picker-cell-selected .ant-picker-cell-inner {
+  background-color: #30426a !important; /* your custom color */
+}
+
+
+/* :where(.css-dev-only-do-not-override-1rfzxih).border-less-table-blue-wrapper table
+Specificity: (0,1,1)
+ {
+    width: 100%;
+} */

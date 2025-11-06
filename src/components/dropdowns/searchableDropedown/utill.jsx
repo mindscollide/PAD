@@ -13,6 +13,7 @@ import { AdminBrokersListFiletr } from "./AdminBrokersListFilter";
 import { AdminInstrumentsListFilter } from "./AdminInstrumentsListFilter";
 import { AdminPoliciesAndGroupUsersTabFilter } from "./AdminPoliciesAndGroupUsersTabFilter";
 import { AdminPoliciesFilter } from "./AdminPoliciesFilter";
+import { AdminUsersTabFilter } from "./AdminMnageUsersTabFilter";
 import { ComplianceReconcileFilter } from "./ComplianceReconsile";
 import { EmployeeMyApprovalFilter } from "./EmployeeMyApprovalFilter";
 import { EmployeePortfolioFilter } from "./EmployeePortfolioFilter";
@@ -124,6 +125,17 @@ export const renderFilterContent = (
     case "19": // Admin Brokers List
       return (
         <AdminBrokersListFiletr
+          setVisible={setVisible}
+          clear={clear}
+          setClear={setClear}
+          maininstrumentName={searchMain}
+          setMaininstrumentName={setSearchMain}
+        />
+      );
+
+    case "21": // Admin Manage User
+      return (
+        <AdminUsersTabFilter
           setVisible={setVisible}
           clear={clear}
           setClear={setClear}
