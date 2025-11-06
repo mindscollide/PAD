@@ -112,14 +112,11 @@ const Dashboard = () => {
   /**
    * ✅ Handle MQTT messages
    */
+
   const { connectToMqtt, isConnected } = useMqttClient({
     onMessageArrivedCallback: (data) => {
       console.log("action", data);
       if (!data?.message) {
-        // tempraroy
-        // if (data?.action === "WEBNOTIFICATION") {
-        //   apiCallwebNotification();
-        // }
         console.warn("MQTT: Received invalid message", data);
         return;
       }
@@ -130,12 +127,12 @@ const Dashboard = () => {
         const currentactiveHCOEscalatedTabRef = activeTabHCORef.current;
         const currentRoleIsAdminRefLocal = currentRoleIsAdminRef.current;
         const currentmanageUsersTabRef = manageUsersTabRef.current;
-        console.log("currentmanageUsersTabRef", currentmanageUsersTabRef);
         const { message, payload, roleIDs, action } = data;
         if (!payload) return;
         // if (action === "WEBNOTIFICATION") {
         //   apiCallwebNotification();
         // }
+
         if (hasUserRole(Number(roleIDs))) {
           if (currentRoleIsAdminRefLocal) {
             // admin mqtt
@@ -152,7 +149,6 @@ const Dashboard = () => {
               if (action === "WEBNOTIFICATION") {
                 apiCallwebNotification();
               }
-              return;
             } else {
               // its admin MQTT → ignore completely
             }
@@ -193,7 +189,6 @@ const Dashboard = () => {
                         setManageUsersPendingTabMqtt(true);
                       }
                       if (currentmanageUsersTabRef === "2") {
-                        alert("h", currentmanageUsersTabRef);
                         setManageUsersRejectedRequestTabMQTT(true);
                       }
                       return;

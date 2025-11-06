@@ -1,0 +1,64 @@
+.heading {
+  font-family: "Switzer Variable", sans-serif;
+  font-weight: 700;
+  font-style: normal;
+  font-size: 26px;
+  line-height: 100%;
+  letter-spacing: 0;
+  color: #30426a;
+}
+
+.row {
+  background: #edf3ff;
+  border-radius: 6.68px;
+  height: 74px;
+  padding: 0 20px;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+}
+
+.textField {
+  width: 370px;
+  height: 56px;
+  border-radius: 6.95px;
+  border: 0.87px solid #717171 !important;
+  padding: 11px 16px;
+  background: #ffffff;
+  opacity: 1;
+}
+.textField:hover,
+.textField:focus {
+  border: 0.87px solid #717171 !important;
+  background: #ffffff;
+}
+.column {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.inputDuration {
+  border: 0.87px solid #717171 !important;
+  height: 56px !important;
+  border-radius: 7px !important;
+  width: 395px !important;
+  padding-top: 11px !important;
+  padding-right: 16px !important;
+  padding-bottom: 11px !important;
+  padding-left: 16px !important;
+  gap: 8.69px !important;
+  opacity: 1;
+}
+
+.inputDuration:focus {
+  border: 0.87px solid #717171 !important;
+  height: 56px !important;
+  border-radius: 7px !important;
+  width: 395px !important;
+  padding-top: 11px !important;
+  padding-right: 16px !important;
+  padding-bottom: 11px !important;
+  padding-left: 16px !important;
+  gap: 8.69px !important;
+  opacity: 1;
+}

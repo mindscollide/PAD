@@ -2671,6 +2671,149 @@ export const GetAllUserRolesDataRequest = async ({
   }
 };
 
+// Get All System Configurations
+export const GetAllSystemConfigurations = async ({
+  callApi,
+  showNotification,
+  showLoader,
+  navigate,
+}) => {
+  try {
+    // 🔹 API Call
+    const res = await callApi({
+      requestMethod: import.meta.env
+        .VITE_GET_ALL_SYSTEM_CONFIGURATIONS_REQUEST_METHOD, // 🔑 must be defined in .env
+      endpoint: import.meta.env.VITE_API_ADMIN,
+      navigate,
+    });
+
+    // 🔹 Handle session expiry
+    if (handleExpiredSession(res, navigate, showLoader)) return null;
+
+    // 🔹 Validate execution
+    if (!res?.result?.isExecuted) {
+      showNotification({
+        type: "error",
+        title: "Error",
+        description:
+          "Something went wrong while fetching System Configurations.",
+      });
+      return null;
+    }
+
+    // 🔹 Handle success
+    if (res.success) {
+      const { responseMessage, systemConfigurations } = res.result;
+      const message = getMessage(responseMessage);
+      // Case 1 → Data available
+      if (
+        responseMessage ===
+        "Admin_AdminServiceManager_GetAllSystemConfigurations_01"
+      ) {
+        return {
+          systemConfigurations: systemConfigurations || [],
+        };
+      }
+
+      // Case 2 → No data
+      if (
+        responseMessage ===
+        "Admin_AdminServiceManager_GetAllSystemConfigurations_02"
+      ) {
+        return {
+          systemConfigurations: [],
+        };
+      }
+      return null;
+    }
+
+    // 🔹 Handle failure
+    showNotification({
+      type: "error",
+      title: "Fetch Failed",
+      description: getMessage(res.message),
+    });
+    return null;
+  } catch (error) {
+    return null;
+  } finally {
+    // 🔹 Always hide loader
+    showLoader(false);
+  }
+};
+
+// Update System Configuration
+export const UpdateSystemConfiguration = async ({
+  callApi,
+  showNotification,
+  showLoader,
+  requestdata,
+  navigate,
+}) => {
+  try {
+    // 🔹 API Call
+    const res = await callApi({
+      requestMethod: import.meta.env
+        .VITE_UPDATE_SYSTEM_CONFIGURATION_REQUEST_METHOD, // 🔑 must be defined in .env
+      endpoint: import.meta.env.VITE_API_ADMIN,
+      requestData: requestdata,
+      navigate,
+    });
+
+    // 🔹 Handle session expiry
+    if (handleExpiredSession(res, navigate, showLoader)) return null;
+
+    // 🔹 Validate execution
+    if (!res?.result?.isExecuted) {
+      showNotification({
+        type: "error",
+        title: "Error",
+        description:
+          "Something went wrong while Update System Configurations.",
+      });
+      return null;
+    }
+
+    // 🔹 Handle success
+    if (res.success) {
+      const { responseMessage } = res.result;
+      const message = getMessage(responseMessage);
+      // Case 1 → Data available
+      if (responseMessage === "PAD_Admin_UpdateSystemConfiguration_02") {
+        return true;
+      }
+
+      // Case 2 → No data
+      if (responseMessage === "PAD_Admin_UpdateSystemConfiguration_01") {
+        return false;
+      }
+      if (message) {
+        // 🔹 Handle failure
+        showNotification({
+          type: "error",
+          title: "Fetch Failed",
+          description: getMessage(res.message),
+        });
+      }
+      return false;
+    }
+    // 🔹 Handle failure
+    showNotification({
+      type: "error",
+      title: "Fetch Failed",
+      description: getMessage(res.message),
+    });
+
+    return null;
+  } catch (error) {
+    return null;
+  } finally {
+    // 🔹 Always hide loader
+    showLoader(false);
+  }
+};
+
+
 // For Update Edit Roles And Policies on Manage User in Admin on Save
 export const UpdateEditRolesAndPoliciesRequest = async ({
   callApi,

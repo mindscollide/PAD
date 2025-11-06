@@ -499,6 +499,16 @@ export const responseMessages = {
     "Exception occurred",
   PAD_UserServiceManager_UpdateUserDetailsWithRolesAndPolicies_05:
     "Unauthorized User",
+
+  // GetAllSystemConfigurations
+  Admin_AdminServiceManager_GetAllSystemConfigurations: "Data found",
+  Admin_AdminServiceManager_GetAllSystemConfigurations_02: "No data found",
+  Admin_AdminServiceManager_GetAllSystemConfigurations_03: "Exception occurred",
+
+  PAD_Admin_UpdateSystemConfiguration_01: "  Invalid input",
+  PAD_Admin_UpdateSystemConfiguration_02: "Successfully updated",
+  PAD_Admin_UpdateSystemConfiguration_03: "No rows updated",
+  PAD_Admin_UpdateSystemConfiguration_04: "Exception occurred",
 };
 
 /**
