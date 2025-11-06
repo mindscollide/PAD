@@ -150,6 +150,10 @@ const ViewDetailManageUserModal = () => {
     setIsComplianceOfficerEditOpen(false);
   };
 
+  // When There is no data
+  const safeValue = (value, fallback) =>
+    value && value.toString().trim() !== "" ? value : fallback;
+
   // -----------------------
   // 🔹 Render
   // -----------------------
@@ -185,7 +189,10 @@ const ViewDetailManageUserModal = () => {
                     Full Name
                   </label>
                   <label className={styles.viewDetailSubLabels}>
-                    {manageUsersViewDetailModalData?.userDetails?.fullName}
+                    {safeValue(
+                      manageUsersViewDetailModalData?.userDetails?.fullName,
+                      "No Full Name"
+                    )}
                   </label>
                 </div>
               </div>
@@ -196,7 +203,10 @@ const ViewDetailManageUserModal = () => {
                   Employee ID
                 </label>
                 <label className={styles.viewDetailSubLabels}>
-                  {manageUsersViewDetailModalData?.userDetails?.employeeID}
+                  {safeValue(
+                    manageUsersViewDetailModalData?.userDetails?.employeeID,
+                    "No Employee ID"
+                  )}
                 </label>
               </div>
             </Col>
@@ -238,7 +248,10 @@ const ViewDetailManageUserModal = () => {
                 </label>
                 <label className={styles.viewDetailSubLabels}>
                   {" "}
-                  {manageUsersViewDetailModalData?.userDetails?.departmentName}
+                  {safeValue(
+                    manageUsersViewDetailModalData?.userDetails?.departmentName,
+                    "No Department Name"
+                  )}
                 </label>
               </div>
             </Col>
@@ -246,7 +259,10 @@ const ViewDetailManageUserModal = () => {
               <div className={styles.backgrounColorOfApprovedDetail}>
                 <label className={styles.viewDetailMainLabels}>Email</label>
                 <label className={styles.viewDetailSubLabels}>
-                  {manageUsersViewDetailModalData?.userDetails?.emailAddress}
+                  {safeValue(
+                    manageUsersViewDetailModalData?.userDetails?.emailAddress,
+                    "No Email Address"
+                  )}
                 </label>
               </div>
             </Col>
@@ -256,8 +272,12 @@ const ViewDetailManageUserModal = () => {
                   Member Since
                 </label>
                 <label className={styles.viewDetailSubLabels}>
-                  {formatShowOnlyDate(
-                    manageUsersViewDetailModalData?.userDetails?.memberSinceDate
+                  {safeValue(
+                    formatShowOnlyDate(
+                      manageUsersViewDetailModalData?.userDetails
+                        ?.memberSinceDate
+                    ),
+                    "No Member Since Date"
                   )}
                 </label>
               </div>
@@ -271,15 +291,18 @@ const ViewDetailManageUserModal = () => {
                   Last Loging
                 </label>
                 <label className={styles.viewDetailSubLabels}>
-                  {formatApiDateTime(
-                    `${
-                      manageUsersViewDetailModalData?.userDetails
-                        ?.lastLoginDate || ""
-                    } ${
-                      manageUsersViewDetailModalData?.userDetails
-                        ?.lastLoginTime || ""
-                    }`
-                  ) || "—"}
+                  {safeValue(
+                    formatApiDateTime(
+                      `${
+                        manageUsersViewDetailModalData?.userDetails
+                          ?.lastLoginDate || ""
+                      } ${
+                        manageUsersViewDetailModalData?.userDetails
+                          ?.lastLoginTime || ""
+                      }`
+                    ),
+                    "No Last Login"
+                  )}
                 </label>
               </div>
             </Col>
@@ -289,10 +312,11 @@ const ViewDetailManageUserModal = () => {
                   Assigned Policy Group:
                 </label>
                 <label className={styles.viewDetailSubLabels}>
-                  {
+                  {safeValue(
                     manageUsersViewDetailModalData?.userDetails
-                      ?.assignedGroupPolicies
-                  }
+                      ?.assignedGroupPolicies,
+                    "No Policy Group Assigned"
+                  )}
                 </label>
               </div>
             </Col>
