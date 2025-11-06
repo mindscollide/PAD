@@ -66,22 +66,48 @@
   overflow-y: auto;
 }
 
+/* wrapper for multiple items (no ::before here) */
 .lineConnector {
   position: relative;
-  height: 100%;
+  /* keep height auto so items determine height */
 }
 
-.lineConnector::before {
+/* single item wrapper — no line at all */
+.singleItemContainer {
+  position: relative;
+}
+
+/* common for items that should show a connector below them */
+.itemWithConnector {
+  position: relative;
+  padding-left: 40px; /* space for avatar + connector; adjust if needed */
+}
+
+/* draw a vertical dashed/dotted segment for each item except last */
+.itemWithConnector::before {
   content: "";
   position: absolute;
-  left: 15px;
-  height: 100%;
-  width: 1px; /* line thickness */
+  left: 55px; /* align with avatar center (adjust) */
+  top: 40px; /* start a little below the avatar; tune as needed */
+  height: calc(
+    100% - 40px
+  ); /* go down until end of this item (connects visually to next item) */
+  width: 1px;
   background-image: repeating-linear-gradient(
     to bottom,
     #717171,
     #717171 5px,
-    /* dash length */ transparent 5px,
-    transparent 10px /* gap size */
+    transparent 5px,
+    transparent 10px
   );
+}
+
+/* last item — no connector */
+.lastItem {
+  position: relative;
+  padding-left: 40px;
+}
+
+.lastItem::before {
+  content: none;
 }

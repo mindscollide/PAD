@@ -30,6 +30,8 @@ const UsersTab = () => {
     setAdminManageUserTabData,
   } = useMyAdmin();
 
+  console.log(adminManageUserTabData, "adminManageUserTabData");
+
   // ----------------- Helpers -----------------
 
   /** 🔹 Fetch approvals from API */
@@ -67,7 +69,6 @@ const UsersTab = () => {
   useEffect(() => {
     if (usersTabSearch.filterTrigger) {
       const requestData = buildManageUserUseraTabApiRequest(usersTabSearch);
-
       fetchApiCall(requestData, true, true);
 
       // ✅ Reset filterTrigger to false after API call so it can be triggered again later

@@ -117,15 +117,26 @@ const ViewDetailsOfRejectedRequestModal = () => {
             </Row>
 
             <div className={styles.reviewNotesChildContainer}>
-              <div className={styles.lineConnector}>
-                {detailsData?.registrationHistory?.map((item, index) => (
-                  <div key={index}>
-                    {/* Content */}
-                    <div>
+              {detailsData?.registrationHistory?.length > 0 && (
+                <div
+                  className={
+                    detailsData.registrationHistory.length === 1
+                      ? styles.singleItemContainer
+                      : styles.lineConnector /* only set lineConnector when >1 */
+                  }
+                >
+                  {detailsData.registrationHistory.map((item, index) => (
+                    <div
+                      key={index}
+                      className={
+                        index === detailsData.registrationHistory.length - 1
+                          ? styles.lastItem
+                          : styles.itemWithConnector
+                      }
+                    >
                       <Row>
                         <Col span={24} className={styles.headerImgText}>
                           <img src={Profile2} width="30" height="30" />
-
                           <span className={styles.RejectedHeading}>
                             Rejected by:{" "}
                           </span>
@@ -162,9 +173,9 @@ const ViewDetailsOfRejectedRequestModal = () => {
                         </Row>
                       </div>
                     </div>
-                  </div>
-                ))}
-              </div>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
 

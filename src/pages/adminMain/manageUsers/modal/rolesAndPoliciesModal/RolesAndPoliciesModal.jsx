@@ -12,7 +12,7 @@ import Profile2 from "../../../../../assets/img/Profile2.png";
 import styles from "./RolesAndPoliciesModal.module.css";
 import CustomButton from "../../../../../components/buttons/button";
 import { useMyAdmin } from "../../../../../context/AdminContext";
-import { GetAllExistingGroupDataRequest } from "../../../../../api/adminApi";
+import { GetAllExistingGroupDataRequest, GetAllUserRolesDataRequest } from "../../../../../api/adminApi";
 import { useNavigate } from "react-router-dom";
 import { useNotification } from "../../../../../components/NotificationProvider/NotificationProvider";
 import { useGlobalLoader } from "../../../../../context/LoaderContext";
@@ -26,8 +26,11 @@ const RolesAndPoliciesModal = () => {
   const { showLoader } = useGlobalLoader();
   const { callApi } = useApi();
   // 🔹  Context State of View Detail Modal in which All data store
-  const { roleAndPolicyViewDetailData, setEditRoleAndPolicyGroupDropdownData } =
-    useMyAdmin();
+  const {
+    roleAndPolicyViewDetailData,
+    setEditRoleAndPolicyGroupDropdownData,
+    setAllUserRolesForEditRolePolicyData,
+  } = useMyAdmin();
   console.log(roleAndPolicyViewDetailData, "roleAndPolicyViewDetailData");
   const {
     rolesAndPoliciesManageUser,
@@ -50,6 +53,20 @@ const RolesAndPoliciesModal = () => {
     if (res) {
       // Edit Role And Policy Group And Policy Dropdown State
       setEditRoleAndPolicyGroupDropdownData(res);
+    }
+
+    let res2 = await GetAllUserRolesDataRequest({
+      callApi,
+      showNotification,
+      showLoader,
+      setRolesAndPoliciesManageUser,
+      setEditrolesAndPoliciesUser,
+      navigate,
+    });
+
+    if (res2) {
+      // Edit Role And Policy Group And Policy Dropdown State
+      setAllUserRolesForEditRolePolicyData(res2);
     }
   };
 

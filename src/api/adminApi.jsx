@@ -2591,3 +2591,76 @@ export const GetAllExistingGroupDataRequest = async ({
     showLoader(false);
   }
 };
+
+// GetAllUserRoles FOR ROLES IN CHECKBOX of Edit Roles And Policies
+export const GetAllUserRolesDataRequest = async ({
+  callApi,
+  showNotification,
+  showLoader,
+  setRolesAndPoliciesManageUser,
+  setEditrolesAndPoliciesUser,
+  navigate,
+}) => {
+  try {
+    // 🔹 API Call
+    const res = await callApi({
+      requestMethod: import.meta.env.VITE_GET_ALL_USER_ROLES_REQUEST_METHOD, // 🔑 must be defined in .env
+      endpoint: import.meta.env.VITE_API_ADMIN,
+      navigate,
+    });
+
+    // 🔹 Handle session expiry
+    if (handleExpiredSession(res, navigate, showLoader)) return null;
+
+    // 🔹 Validate execution
+    if (!res?.result?.isExecuted) {
+      showNotification({
+        type: "error",
+        title: "Error",
+        description: "Something went wrong while fetching Group Policies List.",
+      });
+      return null;
+    }
+
+    // 🔹 Handle success
+    if (res.success) {
+      const { responseMessage, userRoles } = res.result;
+      const message = getMessage(responseMessage);
+
+      // Case 1 → Data available
+      if (responseMessage === "Admin_GetAllUserRoles_01") {
+        setRolesAndPoliciesManageUser(false);
+        setEditrolesAndPoliciesUser(true);
+        return {
+          userRoles: userRoles || [],
+        };
+      }
+
+      // Case 2 → No data
+      if (responseMessage === "Admin_GetAllUserRoles_02") {
+        return {
+          userRoles: [],
+        };
+      }
+
+      // Case 3 → Custom server messages
+      if (message) {
+      }
+
+      return null;
+    }
+
+    // 🔹 Handle failure
+    showNotification({
+      type: "error",
+      title: "Fetch Failed",
+      description: getMessage(res.message),
+    });
+    return null;
+  } catch (error) {
+    return null;
+  } finally {
+    // 🔹 Always hide loader
+    showLoader(false);
+  }
+};

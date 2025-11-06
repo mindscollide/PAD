@@ -483,6 +483,11 @@ export const responseMessages = {
     "No data found",
   Admin_AdminServiceManager_GetUserRegistrationHistoryByLoginID_03:
     "Exception occurred",
+
+  // GetAllUserRoles TO ROLES IN CHECKBOX of Edit Roles And Policies
+  Admin_GetAllUserRoles_01: "Records found",
+  Admin_GetAllUserRoles_02: "No Records found",
+  Admin_GetAllUserRoles_03: "Exception occurred",
 };
 
 /**
