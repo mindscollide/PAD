@@ -488,6 +488,17 @@ export const responseMessages = {
   Admin_GetAllUserRoles_01: "Records found",
   Admin_GetAllUserRoles_02: "No Records found",
   Admin_GetAllUserRoles_03: "Exception occurred",
+
+  // For Update Edit Roles And Policies on Manage User in Admin on Save
+  PAD_UserServiceManager_UpdateUserDetailsWithRolesAndPolicies_01:
+    "Invalid input",
+  PAD_UserServiceManager_UpdateUserDetailsWithRolesAndPolicies_02: "Success",
+  PAD_UserServiceManager_UpdateUserDetailsWithRolesAndPolicies_03:
+    "Update failed",
+  PAD_UserServiceManager_UpdateUserDetailsWithRolesAndPolicies_04:
+    "Exception occurred",
+  PAD_UserServiceManager_UpdateUserDetailsWithRolesAndPolicies_05:
+    "Unauthorized User",
 };
 
 /**

@@ -1,18 +1,22 @@
 .mainUserCarddiv {
   display: flex;
-  max-width: 690px;
+  /* max-width:890px; */
+  width: 100%;
+
   align-items: center;
   /* border: 1px solid #b4b4b4; */
   border-radius: 8px;
-  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.25);
   padding: 14px 18px;
   background-color: #fff;
   margin-bottom: 20px;
+  transition: box-shadow 0.3s ease;
+  border: 1px solid #b4b4b4;
   /* transition: all 0.2s ease-in-out; */
 }
 
 .mainUserCarddiv:hover {
   /* transform: translateY(-2px); */
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.25);
 }
 
 .manageUserSection {

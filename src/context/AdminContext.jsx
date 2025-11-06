@@ -248,6 +248,10 @@ export const MyAdminProvider = ({ children }) => {
     userRoles: [],
   });
 
+  // get data in below state when Close the modal on editRolesAndPolicies
+  const [storeEditRolesAndPoliciesData, setStoreEditRolesAndPoliciesData] =
+    useState(null);
+
   /**
    * ♻️ Reset Context State (Table + API Data)
    *
@@ -467,6 +471,10 @@ export const MyAdminProvider = ({ children }) => {
         // GetAllUserRoles FOR ROLES IN CHECKBOX of Edit Roles And Policies
         allUserRolesForEditRolePolicyData,
         setAllUserRolesForEditRolePolicyData,
+
+        // get data in below state when Close the modal on editRolesAndPolicies
+        storeEditRolesAndPoliciesData,
+        setStoreEditRolesAndPoliciesData,
 
         typeofAction,
         setTypeofAction,

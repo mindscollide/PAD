@@ -2071,7 +2071,7 @@ export const ProcessUserRegistrationRequest = async ({
     ) {
       return true;
     }
-     if (
+    if (
       res.result.responseMessage ===
       "Admin_AdminServiceManager_UserRegistration_ProcessRequest_03"
     ) {
@@ -2665,6 +2665,74 @@ export const GetAllUserRolesDataRequest = async ({
     return null;
   } catch (error) {
     return null;
+  } finally {
+    // 🔹 Always hide loader
+    showLoader(false);
+  }
+};
+
+// For Update Edit Roles And Policies on Manage User in Admin on Save
+export const UpdateEditRolesAndPoliciesRequest = async ({
+  callApi,
+  showNotification,
+  showLoader,
+  requestdata,
+  setEditrolesAndPoliciesUser,
+  navigate,
+}) => {
+  try {
+    // 🔹 API Call
+    const res = await callApi({
+      requestMethod: import.meta.env
+        .VITE_UPDATE_USER_DETAIL_WITH_ROLES_AND_POLICIES_REQUEST_METHOD, // 🔑 must be defined in .env
+      endpoint: import.meta.env.VITE_API_ADMIN,
+      requestData: requestdata,
+      navigate,
+    });
+
+    // 🔹 Handle session expiry
+    if (handleExpiredSession(res, navigate, showLoader)) return false;
+
+    // 🔹 Validate execution
+    if (!res?.result?.isExecuted) {
+      showNotification({
+        type: "error",
+        title: "Error",
+        description: "Something went wrong while fetching Group Policies List.",
+      });
+      return false;
+    }
+
+    // 🔹 Handle success
+    if (res.success) {
+      const { responseMessage } = res.result;
+      const message = getMessage(responseMessage);
+
+      // Case 1 → Data available
+      if (
+        responseMessage ===
+        "PAD_UserServiceManager_UpdateUserDetailsWithRolesAndPolicies_02"
+      ) {
+        setEditrolesAndPoliciesUser(false);
+        return true;
+      }
+
+      // Case 3 → Custom server messages
+      if (message) {
+      }
+
+      return false;
+    }
+
+    // 🔹 Handle failure
+    showNotification({
+      type: "error",
+      title: "Fetch Failed",
+      description: getMessage(res.message),
+    });
+    return false;
+  } catch (error) {
+    return false;
   } finally {
     // 🔹 Always hide loader
     showLoader(false);
