@@ -193,7 +193,6 @@ const Dashboard = () => {
                         setManageUsersPendingTabMqtt(true);
                       }
                       if (currentmanageUsersTabRef === "2") {
-                        alert("h", currentmanageUsersTabRef);
                         setManageUsersRejectedRequestTabMQTT(true);
                       }
                       return;
