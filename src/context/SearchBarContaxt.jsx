@@ -93,17 +93,16 @@ export const SearchBarProvider = ({ children }) => {
 
   /** 🔍 Employee My History table filters */
   const [employeeMyHistorySearch, setEmployeeMyHistorySearch] = useState({
-    transactionid: "",
+    requestID: "",
     instrumentName: "",
     quantity: 0,
     startDate: null,
     endDate: null,
-    mainInstrumentName: "",
-    type: [],
-    nature: [],
+    nature: "",
     status: [],
-    pageSize: 10,
+    type: [],
     pageNumber: 0,
+    pageSize: 10,
     filterTrigger: false,
   });
 
@@ -122,6 +121,21 @@ export const SearchBarProvider = ({ children }) => {
     status: [],
     pageSize: 10,
     pageNumber: 0,
+    filterTrigger: false,
+  });
+
+  /** 🔍 LineManager My Action table filters */
+  const [lineManagerMyActionSearch, setLineManagerMyActionSearch] = useState({
+    requestID: "",
+    instrumentName: "",
+    requesterName: "",
+    startDate: null,
+    endDate: null,
+    type: [],
+    status: [],
+    quantity: 0,
+    pageNumber: 0,
+    pageSize: 10,
     filterTrigger: false,
   });
 
@@ -470,14 +484,14 @@ export const SearchBarProvider = ({ children }) => {
   /** Reset Employee My History filters */
   const resetEmployeeMyHistorySearch = () =>
     setEmployeeMyHistorySearch({
-      transactionid: "",
+      requestID: "",
       instrumentName: "",
       quantity: 0,
       startDate: null,
       endDate: null,
       mainInstrumentName: "",
+      nature: "",
       type: [],
-      nature: [],
       status: [],
       pageSize: "",
       pageNumber: 0,
@@ -727,6 +741,8 @@ export const SearchBarProvider = ({ children }) => {
         lineManagerApprovalSearch,
         setLineManagerApprovalSearch,
         resetLineManagerApprovalSearch,
+        lineManagerMyActionSearch,
+        setLineManagerMyActionSearch,
 
         // Compliance Officer
         complianceOfficerReconcileTransactionsSearch,

@@ -17,6 +17,12 @@ export const MyApprovalProvider = ({ children }) => {
     workFlowStatus: {},
   });
 
+  // MyHistory in Employee Page context state
+  const [employeeMyHistoryData, setEmployeeMyHistoryData] = useState({
+    workFlows: [],
+    totalRecords: 0,
+  });
+
   // Reset function to set all states back to initial values
   const resetMyApprovalContextState = () => {
     setIsEmployeeMyApproval({
@@ -53,6 +59,11 @@ export const MyApprovalProvider = ({ children }) => {
     workFlowStatus: {},
   });
 
+  // LineManager on MyAtcion Page context state
+  const [myActionLineManagerData, setMyActionLineManagerData] = useState({
+    requests: [],
+    totalRecords: 0,
+  });
 
   // Reset function to set all states back to initial values
   const resetApprovalRequestContextState = () => {
@@ -84,6 +95,9 @@ export const MyApprovalProvider = ({ children }) => {
         viewDetailsModalData,
         setViewDetailsModalData,
         resetMyApprovalContextState,
+        // MyHistory in Employee Page context state
+        employeeMyHistoryData,
+        setEmployeeMyHistoryData,
 
         //Context Api States For Line Manager Start Here
         lineManagerApproval,
@@ -94,6 +108,9 @@ export const MyApprovalProvider = ({ children }) => {
         setViewDetailsLineManagerData,
         resetApprovalRequestContextState,
 
+        // MyAAction in Lne Manager Page context state
+        myActionLineManagerData,
+        setMyActionLineManagerData,
       }}
     >
       {children}

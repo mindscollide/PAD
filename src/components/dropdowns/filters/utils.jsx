@@ -3,6 +3,7 @@
 // -----------------------------------------------------------------------------
 import {
   SearchApprovalRequestLineManager,
+  SearchEmployeeHistoryDetailRequest,
   SearchTadeApprovals,
 } from "../../../api/myApprovalApi";
 import { SearchEmployeeTransactionsDetails } from "../../../api/myTransactionsApi";
@@ -198,6 +199,33 @@ const buildTransactionRequestData = ({ state, statusIds, typeIds }) => {
   };
 };
 
+/**
+ * Builds a request object for Employee History details.
+ *
+ * @param {Object} params - Input parameters.
+ * @param {Object} params.state - UI state (filters, pagination, etc.).
+ * @param {number[]} params.statusIds - Status IDs.
+ * @param {number[]} params.typeIds - Type IDs.
+ * @returns {Object} API request payload.
+ */
+const buildMyHistoryRequestData = ({ state, statusIds, typeIds }) => {
+  const startDate = state.startDate ? toYYMMDD(state.startDate) : "";
+  const endDate = state.endDate ? toYYMMDD(state.endDate) : "";
+
+  return {
+    RequestID: state.requestID || "",
+    InstrumentName: state.instrumentName || state.mainInstrumentName || "",
+    Quantity: state.quantity || 0,
+    StartDate: startDate,
+    EndDate: endDate,
+    Nature: state.nature || "", // ✅ added dynamic support
+    StatusIDs: statusIds || [],
+    TradeApprovalTypeIDs: typeIds || [],
+    PageNumber: 0,
+    Length: state.pageSize || 10,
+  };
+};
+
 // -----------------------------------------------------------------------------
 // 📌 API Call Handlers
 // -----------------------------------------------------------------------------
@@ -230,6 +258,7 @@ export const apiCallType = async ({
   setIsEmployeeMyApproval,
   setLineManagerApproval,
   setEmployeeTransactionsData,
+  setEmployeeMyHistoryData,
 }) => {
   const assetType = state.assetType || "Equities";
   const typeIds = mapBuySellToIds(newdata, assetTypeListingData?.[assetType]);
@@ -264,7 +293,18 @@ export const apiCallType = async ({
       setEmployeeTransactionsData(data);
       break;
 
-    case "3":
+    case "3": // Employee My History
+      requestdata = buildMyHistoryRequestData({ state, statusIds, typeIds });
+      showLoader(true);
+      data = await SearchEmployeeHistoryDetailRequest({
+        callApi,
+        showNotification,
+        showLoader,
+        requestdata,
+        navigate,
+      });
+      setEmployeeMyHistoryData(data);
+
     case "6": // Line Manager Approvals
       requestdata = buildApprovalRequestData({
         state,

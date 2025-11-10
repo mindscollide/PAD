@@ -28,7 +28,11 @@ const TypeFilterDropdown = ({
   const { assetTypeListingData } = useDashboardContext();
   const { showLoader } = useGlobalLoader();
   const { showNotification } = useNotification();
-  const { setIsEmployeeMyApproval, setLineManagerApproval } = useMyApproval();
+  const {
+    setIsEmployeeMyApproval,
+    setLineManagerApproval,
+    setEmployeeMyHistoryData,
+  } = useMyApproval();
 
   const { setEmployeeTransactionsData } = useTransaction();
 
@@ -49,6 +53,7 @@ const TypeFilterDropdown = ({
       // 🔹 Keys that only update state with filterTrigger = true
       case "1":
       case "2":
+      case "3":
       case "4":
       case "6":
       case "9":
@@ -82,6 +87,7 @@ const TypeFilterDropdown = ({
           setEmployeeTransactionsData,
           setIsEmployeeMyApproval,
           setLineManagerApproval,
+          setEmployeeMyHistoryData,
         });
         break;
     }
@@ -97,6 +103,7 @@ const TypeFilterDropdown = ({
       // 🔹 Cases where we just reset state
       case "1":
       case "2":
+      case "3":
       case "4":
       case "6":
       case "9":
@@ -124,6 +131,7 @@ const TypeFilterDropdown = ({
           setEmployeeTransactionsData,
           setIsEmployeeMyApproval,
           setLineManagerApproval,
+          setEmployeeMyHistoryData,
         });
 
         setState((prev) => ({
