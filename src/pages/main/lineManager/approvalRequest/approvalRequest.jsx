@@ -144,6 +144,11 @@ const ApprovalRequest = () => {
     [callApi, showNotification, showLoader, navigate, assetTypeListingData]
   );
 
+  useEffect(() => {
+    return () => {
+      resetLineManagerApprovalSearch();
+    };
+  }, []);
   /**
    * Runs only once to fetch api on initial render of a page
    */
@@ -157,7 +162,6 @@ const ApprovalRequest = () => {
 
     fetchApiCall(requestData, true, true);
     setNoteGlobalModal({ visible: false, action: null });
-    resetLineManagerApprovalSearch();
   }, []);
 
   /**

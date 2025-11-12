@@ -117,7 +117,7 @@ const config = {
    SystemConfigurationSaved: {
     heading: "Changes Saved",
     subheading:
-      "You changes have been saved sucessfully.",
+      "Your changes have been saved successfully.",
     image: ApprovedImg,
   },
 };

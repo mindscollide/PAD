@@ -74,6 +74,37 @@ export const getGroupPolicyColumns = ({ onViewDetails, onEdit }) => [
     width: "8%",
     render: (policyCount) => <span>{policyCount}</span>,
   },
+  // {
+  //   title: "Users",
+  //   dataIndex: "assignedUsers",
+  //   key: "assignedUsers",
+  //   width: "30%",
+  //   render: (assignedUsers = "") => {
+  //     if (!assignedUsers?.trim()) return <span>-</span>;
+
+  //     // ✅ Split by both comma (,) and plus (+)
+  //     const parts = assignedUsers
+  //       .split(/,|\+/) // split by comma OR plus
+  //       .map((s) => s.trim())
+  //       .filter(Boolean); // remove empty strings
+
+  //     return (
+  //       <div className={styles.userList}>
+  //         {parts.map((part, index) => {
+  //           const isMore = /\b\d+\s*more\b/i.test(part); // detect "X more"
+  //           return (
+  //             <div
+  //               key={index}
+  //               className={isMore ? styles.moreUsers : styles.userChip}
+  //             >
+  //               {isMore ? `+ ${part.replace(/more/i, "").trim()} more` : part}
+  //             </div>
+  //           );
+  //         })}
+  //       </div>
+  //     );
+  //   },
+  // },
   {
     title: "Users",
     dataIndex: "assignedUsers",
@@ -84,20 +115,27 @@ export const getGroupPolicyColumns = ({ onViewDetails, onEdit }) => [
 
       // ✅ Split by both comma (,) and plus (+)
       const parts = assignedUsers
-        .split(/,|\+/) // split by comma OR plus
+        .split(/,|\+/)
         .map((s) => s.trim())
-        .filter(Boolean); // remove empty strings
+        .filter(Boolean);
 
       return (
         <div className={styles.userList}>
           {parts.map((part, index) => {
-            const isMore = /\b\d+\s*more\b/i.test(part); // detect "X more"
+            const isMore = /\b\d+\s*more\b/i.test(part);
+            const displayName = isMore
+              ? `+ ${part.replace(/more/i, "").trim()} more`
+              : part;
+
             return (
               <div
                 key={index}
-                className={isMore ? styles.moreUsers : styles.userChip}
+                className={`${styles.userChip} ${
+                  isMore ? styles.moreUsers : ""
+                }`}
+                title={displayName} // ✅ Tooltip on hover
               >
-                {isMore ? `+ ${part.replace(/more/i, "").trim()} more` : part}
+                {displayName}
               </div>
             );
           })}
