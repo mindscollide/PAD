@@ -33,10 +33,7 @@ const { Text } = Typography;
  * @param {String} assetType - Asset type key (e.g., "Equities")
  * @returns {Object} API-ready payload
  */
-export const buildApiRequest = (
-  searchState = {},
-  assetTypeListingData
-) => ({
+export const buildApiRequest = (searchState = {}, assetTypeListingData) => ({
   InstrumentName: searchState.instrumentName || "",
   Quantity: searchState.quantity ? Number(searchState.quantity) : 0,
   StartDate: searchState.startDate ? toYYMMDD(searchState.startDate) : "",
@@ -103,29 +100,6 @@ export const getBorderlessTableColumns = (
   employeePendingApprovalSearch = {},
   setEmployeePendingApprovalSearch = () => {}
 ) => [
-  // 🔹 Instrument Column
-  {
-    title: (
-      <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-        Instrument {getSortIcon("instrument", sortedInfo)}
-      </div>
-    ),
-    
-    dataIndex: "instrument",
-    key: "instrument",
-    ellipsis: true,
-    sorter: (a, b) => (a?.instrument || "").localeCompare(b?.instrument || ""),
-    sortDirections: ["ascend", "descend"],
-    sortOrder: sortedInfo?.columnKey === "instrument" ? sortedInfo.order : null,
-    showSorterTooltip: false,
-    sortIcon: () => null,
-    render: (text) => (
-      <Tooltip title={text} placement="topLeft">
-        <span className="font-medium">{text || "—"}</span>
-      </Tooltip>
-    ),
-  },
-
   // 🔹 Transaction ID Column
   {
     title: (
@@ -149,6 +123,65 @@ export const getBorderlessTableColumns = (
         {formatCode(text) || "—"}
       </span>
     ),
+  },
+
+  // 🔹 Instrument Column
+  {
+    title: (
+      <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+        Instrument {getSortIcon("instrument", sortedInfo)}
+      </div>
+    ),
+    dataIndex: "instrument",
+    key: "instrument",
+    ellipsis: true,
+    width: "10%",
+    sorter: (a, b) =>
+      (a?.instrumentName || "").localeCompare(b?.instrumentName || ""),
+    sortDirections: ["ascend", "descend"],
+    sortOrder: sortedInfo?.columnKey === "instrument" ? sortedInfo.order : null,
+    showSorterTooltip: false,
+    sortIcon: () => null,
+
+    render: (_, record) => {
+      const { instrument, instrumentName, assetTypeShortCode } = record;
+
+      const displayText = instrument ? ` ${instrument}` : instrument || "—";
+
+      const tooltipText =
+        instrument && instrumentName
+          ? `${instrument} - ${instrumentName}`
+          : instrument || "—";
+
+      return (
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: "12px",
+          }}
+        >
+          <span className="custom-shortCode-asset" style={{ minWidth: 30 }}>
+            {assetTypeShortCode?.substring(0, 2).toUpperCase()}
+          </span>
+          <Tooltip title={tooltipText} placement="topLeft">
+            <span
+              className="font-medium"
+              style={{
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+                whiteSpace: "nowrap",
+                maxWidth: "200px",
+                display: "inline-block",
+                cursor: "pointer",
+              }}
+            >
+              {displayText}
+            </span>
+          </Tooltip>
+        </div>
+      );
+    },
   },
 
   // 🔹 Approval Request Date & Time Column
@@ -367,6 +400,8 @@ export const mapToTableRows = (assetTypeData, list = [], brokerOptions = []) =>
     return {
       key: item?.workFlowID || `row-${Math.random()}`, // fallback unique key
       instrument: item?.instrumentShortCode || "—",
+      instrumentName: item?.instrumentName || "—",
+      assetTypeShortCode: item?.assetType?.assetTypeShortCode || "—",
       tradeApprovalID: item?.tradeApprovalID || "—",
       approvalRequestDateime:
         `${item?.transactionConductedDate || ""} ${
