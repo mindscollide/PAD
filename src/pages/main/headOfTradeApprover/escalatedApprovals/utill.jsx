@@ -15,7 +15,10 @@ import TypeColumnTitle from "../../../../components/dropdowns/filters/typeColumn
 import StatusColumnTitle from "../../../../components/dropdowns/filters/statusColumnTitle";
 import { useGlobalModal } from "../../../../context/GlobalModalContext";
 import { getTradeTypeById } from "../../../../common/funtions/type";
-import { mapBuySellToIds, mapStatusToIds } from "../../../../components/dropdowns/filters/utils";
+import {
+  mapBuySellToIds,
+  mapStatusToIds,
+} from "../../../../components/dropdowns/filters/utils";
 
 // ===========================================================================
 // 🎯 CONSTANTS & CONFIGURATION
@@ -39,10 +42,7 @@ const COLUMN_CONFIG = {
  * @param {Object} assetTypeListingData - Asset type listing data (from API)
  * @returns {Object} API request payload
  */
-export const buildApiRequest = (
-  searchState = {},
-  assetTypeListingData
-) => {
+export const buildApiRequest = (searchState = {}, assetTypeListingData) => {
   const formatDate = (date) => (date ? toYYMMDD(date) : "");
 
   return {
@@ -54,7 +54,8 @@ export const buildApiRequest = (
     EscalatedDateFrom: formatDate(searchState.escalatedDateFrom),
     EscalatedDateTo: formatDate(searchState.escalatedDateTo),
     StatusIds: mapStatusToIds(searchState.status) || [],
-    TypeIds: mapBuySellToIds(searchState.type, assetTypeListingData?.Equities) || [],
+    TypeIds:
+      mapBuySellToIds(searchState.type, assetTypeListingData?.Equities) || [],
     PageNumber: Number(searchState.pageNumber) || 0,
     Length: Number(searchState.pageSize) || 10,
   };
@@ -218,7 +219,7 @@ const renderStatusCell = (status, approvalStatusMap) => {
         border: "none",
         borderRadius: "4px",
         padding: "2px 8px",
-        fontSize: "12px",
+        fontSize: "16px",
         fontWeight: "500",
       }}
       className="border-less-table-orange-status"
@@ -408,9 +409,11 @@ export const getBorderlessTableColumns = ({
     showSorterTooltip: false,
     sortIcon: () => null,
     render: (date) => (
-      <span className="text-gray-600" title={date || "—"}>
-        {formatApiDateTime(date) || "—"}
-      </span>
+      <Tooltip title={formatApiDateTime(date) || "—"}>
+        <span className="text-gray-600" title={date || "—"}>
+          {formatApiDateTime(date) || "—"}
+        </span>
+      </Tooltip>
     ),
     onHeaderCell: () =>
       nowrapCell(COLUMN_CONFIG.DATE.minWidth, COLUMN_CONFIG.DATE.maxWidth),
@@ -489,9 +492,11 @@ export const getBorderlessTableColumns = ({
     showSorterTooltip: false,
     sortIcon: () => null,
     render: (date) => (
-      <span className="text-gray-600" title={date || "—"}>
-        {formatApiDateTime(date) || "—"}
-      </span>
+      <Tooltip title={formatApiDateTime(date) || "—"}>
+        <span className="text-gray-600" title={date || "—"}>
+          {formatApiDateTime(date) || "—"}
+        </span>
+      </Tooltip>
     ),
     onHeaderCell: () =>
       nowrapCell(
@@ -548,5 +553,3 @@ export const getTotalTableWidth = () => {
   ];
   return columns.reduce((total, width) => total + width, 0);
 };
-
-

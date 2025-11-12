@@ -215,7 +215,7 @@ export const getBorderlessTableColumns = ({
           <span className="custom-shortCode-asset" style={{ minWidth: 30 }}>
             {assetCode?.substring(0, 2).toUpperCase()}
           </span>
-          <Tooltip title={name} placement="topLeft">
+          <Tooltip title={`${name} - ${code}`} placement="topLeft">
             <span
               className="font-medium"
               style={{
