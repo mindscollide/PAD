@@ -140,10 +140,28 @@
   align-items: center !important;
 }
 
+/* remove AntD overflow border */
+.statusSelectClass :global(div[class*="ant-select-selection-overflow"]) {
+  border: none !important;
+}
+
 .statusSelectClass :global(.ant-select-selector) {
   display: flex !important;
   align-items: center !important;
   height: 40px; /* match your TextField height if you use one */
+  border: none !important;
+  box-shadow: none !important;
+  outline: none !important;
+}
+
+/* Target AntD focus/active states */
+.statusSelectClass :global(.ant-select-focused .ant-select-selector),
+.statusSelectClass :global(.ant-select-selector:focus),
+.statusSelectClass :global(.ant-select-selector:active),
+.statusSelectClass :global(.ant-select-open .ant-select-selector) {
+  border: none !important;
+  box-shadow: none !important;
+  outline: none !important;
 }
 
 /* Optional: Center tags or selected text inside multiple mode */

@@ -343,6 +343,10 @@ const MyHistory = () => {
           return "Traded"; // 💵 Dollar
         case 2:
           return "Resubmit"; // 🔁 Resubmitted
+        case 3:
+          return "Approved"; // 🔁 Resubmitted
+        case 4:
+          return "Decline"; // ❌ Decline
         default:
           return "ellipsis";
       }

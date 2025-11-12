@@ -9,7 +9,10 @@ import { useNotification } from "../NotificationProvider/NotificationProvider";
 import { useGlobalLoader } from "../../context/LoaderContext";
 import { useApi } from "../../context/ApiContext";
 import { useNavigate } from "react-router-dom";
-import { ViewDetailManageUserUserTabRequest } from "../../api/adminApi";
+import {
+  GetViewDetailsUserRoleAndPoliciesRequests,
+  ViewDetailManageUserUserTabRequest,
+} from "../../api/adminApi";
 import { useMyAdmin } from "../../context/AdminContext";
 
 const ManageUsersCard = ({ profile, name, email, id, file }) => {
@@ -19,8 +22,10 @@ const ManageUsersCard = ({ profile, name, email, id, file }) => {
   const { showNotification } = useNotification();
   const { showLoader } = useGlobalLoader();
   const { callApi } = useApi();
-  const { setViewDetailManageUser } = useGlobalModal();
-  const { setManageUsersViewDetailModalData } = useMyAdmin();
+  const { setViewDetailManageUser, setRolesAndPoliciesManageUser } =
+    useGlobalModal();
+  const { setManageUsersViewDetailModalData, setRoleAndPolicyViewDetailData } =
+    useMyAdmin();
 
   const [menuVisible, setMenuVisible] = useState(false);
 
@@ -41,6 +46,30 @@ const ManageUsersCard = ({ profile, name, email, id, file }) => {
 
     if (res) {
       setManageUsersViewDetailModalData(res);
+    }
+  };
+
+  /** 🔹 on Click Role And Policies API Hit to get User Details Data in view detail modal of manage User users Tab*/
+  const onClickRoleAndPolicy = async () => {
+    showLoader(true);
+    let payload = {
+      UserID: Number(id),
+    };
+
+    console.log(payload, "CheckDataDaatat");
+
+    let res = await GetViewDetailsUserRoleAndPoliciesRequests({
+      callApi,
+      showNotification,
+      showLoader,
+      requestdata: payload,
+      setViewDetailManageUser,
+      setRolesAndPoliciesManageUser,
+      navigate,
+    });
+
+    if (res) {
+      setRoleAndPolicyViewDetailData(res);
     }
   };
 
@@ -67,7 +96,17 @@ const ManageUsersCard = ({ profile, name, email, id, file }) => {
     },
     {
       key: "3",
-      label: <span className={styles.dropdownClass}>Roles & Policies</span>,
+      label: (
+        <span
+          className={styles.dropdownClass}
+          onClick={() => {
+            setRolesAndPoliciesManageUser(true);
+            onClickRoleAndPolicy();
+          }}
+        >
+          Roles & Policies
+        </span>
+      ),
     },
   ];
 

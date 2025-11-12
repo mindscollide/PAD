@@ -359,6 +359,7 @@ const ViewDetailManageUserModal = () => {
                         <Select
                           allowClear
                           showSearch
+                          optionFilterProp="label"
                           optionLabelProp="label"
                           className={styles.SelectDropdownClass}
                           placeholder="Select a Line Manager"
@@ -488,6 +489,7 @@ const ViewDetailManageUserModal = () => {
                         <Select
                           showSearch
                           allowClear
+                          optionFilterProp="label"
                           optionLabelProp="label"
                           className={styles.SelectDropdownClass}
                           placeholder="Select a Compliance Officer"
