@@ -38,6 +38,8 @@ const SearchWithPopoverOnly = () => {
   const {
     setEmployeeMyApprovalSearch,
     setEmployeeMyTransactionSearch,
+    setEmployeeMyHistorySearch,
+    setLineManagerMyActionSearch,
     setEmployeePortfolioSearch,
     setEmployeePendingApprovalSearch,
     setLineManagerApprovalSearch,
@@ -121,6 +123,21 @@ const SearchWithPopoverOnly = () => {
         setSearchMain("");
         break;
 
+      case "3": // Employee → My History
+        setEmployeeMyHistorySearch((prev) => ({
+          ...prev,
+          instrumentName: searchMain,
+          requestID: "",
+          quantity: 0,
+          startDate: null,
+          endDate: null,
+          nature: "",
+          pageNumber: 0,
+          filterTrigger: true,
+        }));
+        setSearchMain("");
+        break;
+
       case "4": // Employee → Portfolio / Pending
         if (activeTab === "portfolio") {
           setEmployeePortfolioSearch((prev) => ({
@@ -159,6 +176,24 @@ const SearchWithPopoverOnly = () => {
           endDate: null,
           filterTrigger: true,
         }));
+        setSearchMain("");
+        break;
+
+      case "7": // LineManager → My Actions
+        setLineManagerMyActionSearch((prev) => ({
+          ...prev,
+          requestID: "",
+          instrumentName: searchMain,
+          requesterName: "",
+          startDate: null,
+          endDate: null,
+          quantity: 0,
+          pageNumber: 0,
+          type: [],
+          status: [],
+          filterTrigger: true,
+        }));
+
         setSearchMain("");
         break;
 
@@ -308,8 +343,8 @@ const SearchWithPopoverOnly = () => {
 
         setSearchMain("");
         break;
-      
-        case "21": // Admin Manage Users 
+
+      case "21": // Admin Manage Users
         if (manageUsersTab === "0") {
           setUsersTabSearch((prev) => ({
             ...prev,

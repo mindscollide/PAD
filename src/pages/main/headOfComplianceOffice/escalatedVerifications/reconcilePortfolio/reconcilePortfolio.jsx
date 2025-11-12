@@ -249,7 +249,7 @@ const ReconcilePortfolioHCO = ({ activeFilters }) => {
   useEffect(() => {
     if (didFetchRef.current) return;
     didFetchRef.current = true;
-
+    console.log("Check New Data Coming");
     const requestData = buildApiRequest(
       headOfComplianceApprovalPortfolioSearch,
       assetTypeListingData
@@ -265,7 +265,12 @@ const ReconcilePortfolioHCO = ({ activeFilters }) => {
     } catch (error) {
       console.error("❌ Error detecting page reload:", error);
     }
-  }, [fetchApiCall, resetHeadOfComplianceApprovalPortfolioSearch]);
+  }, [
+    fetchApiCall,
+    resetHeadOfComplianceApprovalPortfolioSearch,
+    headOfComplianceApprovalPortfolioSearch,
+    buildApiRequest,
+  ]);
 
   // ===========================================================================
   // 🎯 EFFECTS - DATA SYNCING
@@ -275,6 +280,7 @@ const ReconcilePortfolioHCO = ({ activeFilters }) => {
    */
   useEffect(() => {
     if (!headOfComplianceApprovalPortfolioMqtt) return;
+    console.log("Check New Data Coming");
 
     let requestData = buildApiRequest(
       headOfComplianceApprovalPortfolioSearch,
@@ -293,15 +299,18 @@ const ReconcilePortfolioHCO = ({ activeFilters }) => {
    * Handle search/filter triggers
    */
   useEffect(() => {
-    if (headOfComplianceApprovalPortfolioSearch?.filterTrigger) {
+    if (headOfComplianceApprovalPortfolioSearch.filterTrigger) {
       const requestData = buildApiRequest(
         headOfComplianceApprovalPortfolioSearch,
         assetTypeListingData
       );
-
-      fetchApiCall(requestData, true, true); // replace mode
+      fetchApiCall(requestData, true, true);
+      setHeadOfComplianceApprovalPortfolioSearch((prev) => ({
+        ...prev,
+        filterTrigger: false,
+      }));
     }
-  }, [headOfComplianceApprovalPortfolioSearch?.filterTrigger, fetchApiCall]);
+  }, [headOfComplianceApprovalPortfolioSearch.filterTrigger]);
 
   // ===========================================================================
   // 🎯 INFINITE SCROLL

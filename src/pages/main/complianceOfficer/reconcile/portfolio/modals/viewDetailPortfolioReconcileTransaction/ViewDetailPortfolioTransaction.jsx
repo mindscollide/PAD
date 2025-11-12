@@ -355,7 +355,7 @@ const ViewDetailPortfolioTransaction = () => {
                                 isApprovedOrDeclined = true;
                               } else {
                                 iconSrc = EllipsesIcon;
-                                displayText = fullName;
+                                displayText = "Awaiting for action";
                               }
 
                               return (

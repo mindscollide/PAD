@@ -207,6 +207,7 @@ const MyTransaction = () => {
       resetEmployeeMyTransactionSearch();
     };
   }, []);
+
   // 🔹 call api on search
   useEffect(() => {
     if (employeeMyTransactionSearch.filterTrigger) {

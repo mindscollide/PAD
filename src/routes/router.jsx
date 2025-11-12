@@ -35,6 +35,7 @@ import {
 } from "../pages";
 import RoleBasedRoute from "./RoleBasedRoute";
 import EscalatedApprovals from "../pages/main/headOfTradeApprover/escalatedApprovals/escalatedApprovals";
+import MyAction from "../pages/main/lineManager/myActions/myActions";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -116,7 +117,7 @@ const router = createBrowserRouter(
           path="lm-my-actions"
           element={
             <RoleBasedRoute isAdmin={false} allowedRoles={[3]}>
-              <EmployeMyTransaction />{" "}
+              <MyAction />{" "}
             </RoleBasedRoute>
           }
         />

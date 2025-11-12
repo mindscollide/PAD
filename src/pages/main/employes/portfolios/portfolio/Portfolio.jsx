@@ -192,7 +192,10 @@ const Portfolio = ({ className, activeFilters }) => {
   return (
     <div
       ref={listRef}
-      style={{ height: employeePortfolioData.length > 0?"540px":"80vh", overflowY: "auto" }} // ✅ scroll container
+      style={{
+        height: employeePortfolioData.length > 0 ? "540px" : "80vh",
+        overflowY: "auto",
+      }} // ✅ scroll container
     >
       {employeePortfolioData.length > 0 ? (
         <Collapse
@@ -218,7 +221,9 @@ const Portfolio = ({ className, activeFilters }) => {
                 className={styles.Panel}
                 header={
                   <div className={styles.panelHeader}>
-                    <Tooltip title={instrument.instrumentShortCode}>
+                    <Tooltip
+                      title={`${instrument.instrumentName} - ${instrument.instrumentShortCode} `}
+                    >
                       <span className={styles.shortName}>
                         {instrument.instrumentShortCode}
                       </span>

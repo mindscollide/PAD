@@ -158,11 +158,11 @@ const UsersTab = () => {
 
   return (
     <>
-      <div ref={containerRef} className={styles.ManageUserSecondDiv}>
+      <div ref={containerRef} className={styles.ManageUserSecondDivUsersTab}>
         {/* ✅ Only show user cards when Users tab is active */}
         <Row gutter={[24, 16]}>
           {adminManageUserTabData?.employees?.map((user, index) => (
-            <Col key={index}  md={12} lg={12}>
+            <Col key={index} md={12} lg={12}>
               <ManageUsersCard
                 profile={user.profilePicture}
                 name={user.employeeName}

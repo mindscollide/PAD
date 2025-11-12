@@ -6,7 +6,7 @@ import React from "react";
 import TypeColumnTitle from "../../../../components/dropdowns/filters/typeColumnTitle";
 import StatusColumnTitle from "../../../../components/dropdowns/filters/statusColumnTitle";
 import { Tag, Tooltip } from "antd";
-import style from "./myHistory.module.css";
+import style from "./myActions.module.css";
 import {
   dashBetweenApprovalAssets,
   formatApiDateTime,
@@ -58,48 +58,38 @@ const withSortIcon = (label, columnKey, sortedInfo) => (
  * @returns {Object} API-ready payload
  */
 
-export const buildMyHistoryApiRequest = (searchState = {}) => ({
+export const buildMyActionApiRequest = (searchState = {}) => ({
   RequestID: searchState.requestID || "",
   InstrumentName: searchState.instrumentName || "",
-  Quantity: searchState.quantity ? Number(searchState.quantity) : 0,
+  RequesterName: searchState.requesterName || "",
   StartDate: searchState.startDate ? toYYMMDD(searchState.startDate) : null,
   EndDate: searchState.endDate ? toYYMMDD(searchState.endDate) : null,
-  Nature: searchState.nature || "",
-  StatusIDs: searchState.status || [],
-  TradeApprovalTypeIDs: searchState.type || [],
+  Type: searchState.type || [],
+  Status: searchState.status || [],
+  Quantity: searchState.quantity ? Number(searchState.quantity) : 0,
   PageNumber: Number(searchState.pageNumber) || 0,
   Length: Number(searchState.pageSize) || 10,
 });
 
-export const getMyHistoryColumn = (
-  approvalStatusMap,
-  sortedInfo,
-  employeeMyHistorySearch,
-  setEmployeeMyHistorySearch
-) => [
+export const getMyActionsColumn = (approvalStatusMap, sortedInfo) => [
   {
-    title: withSortIcon(
-      "Request/Transaction ID",
-      "tradeApprovalID",
-      sortedInfo
-    ),
-    dataIndex: "tradeApprovalID",
-    key: "tradeApprovalID",
+    title: withSortIcon("Request/Transaction ID", "approvalID", sortedInfo),
+    dataIndex: "approvalID",
+    key: "approvalID",
     ellipsis: true,
-    width: "200px",
+    width: "220px",
     sorter: (a, b) =>
-      parseInt(a.tradeApprovalID.replace(/[^\d]/g, ""), 10) -
-      parseInt(b.tradeApprovalID.replace(/[^\d]/g, ""), 10),
+      parseInt(a.approvalID.replace(/[^\d]/g, ""), 10) -
+      parseInt(b.approvalID.replace(/[^\d]/g, ""), 10),
     sortDirections: ["ascend", "descend"],
-    sortOrder:
-      sortedInfo?.columnKey === "tradeApprovalID" ? sortedInfo.order : null,
+    sortOrder: sortedInfo?.columnKey === "approvalID" ? sortedInfo.order : null,
     showSorterTooltip: false,
     sortIcon: () => null,
-    render: (tradeApprovalID) => {
+    render: (approvalID) => {
       return (
         <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
           <span className="font-medium">
-            {dashBetweenApprovalAssets(tradeApprovalID)}
+            {dashBetweenApprovalAssets(approvalID)}
           </span>
         </div>
       );
@@ -158,6 +148,21 @@ export const getMyHistoryColumn = (
     },
   },
   {
+    title: withSortIcon("Requester Name", "requesterName", sortedInfo),
+    dataIndex: "requesterName",
+    key: "requesterName",
+    width: "160px",
+    align: "left",
+    ellipsis: true,
+    sorter: (a, b) => a.requesterName.localeCompare(b.requesterName),
+    sortDirections: ["ascend", "descend"],
+    sortOrder:
+      sortedInfo?.columnKey === "requesterName" ? sortedInfo.order : null,
+    showSorterTooltip: false,
+    sortIcon: () => null,
+    render: (text) => <span className="font-medium">{text}</span>,
+  },
+  {
     title: withSortIcon(
       "Date & Time of Approval Request",
       "approvalDateTime",
@@ -183,20 +188,6 @@ export const getMyHistoryColumn = (
         {formatApiDateTime(`${record.creationDate} ${record.creationTime}`)}
       </span>
     ),
-  },
-  {
-    title: withSortIcon("Nature", "nature", sortedInfo),
-    dataIndex: "nature",
-    key: "nature",
-    width: "160px",
-    align: "left",
-    ellipsis: true,
-    sorter: (a, b) => a.nature.localeCompare(b.nature),
-    sortDirections: ["ascend", "descend"],
-    sortOrder: sortedInfo?.columnKey === "nature" ? sortedInfo.order : null,
-    showSorterTooltip: false,
-    sortIcon: () => null,
-    render: (text) => <span className="font-medium">{text}</span>,
   },
   {
     title: withSortIcon("Type", "type", sortedInfo),

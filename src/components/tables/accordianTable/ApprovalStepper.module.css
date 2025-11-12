@@ -41,7 +41,11 @@
 }
 
 .stepperContainer {
-  padding: 12px;
+  padding: 16px 24px;
+  background: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  margin: 8px 0;
 }
 
 .customLabel {
@@ -67,7 +71,7 @@
   font-family: "Switzer Variable" !important;
   font-weight: 700;
   margin-top: 6px;
-  width: 180px;
+   width: 230px;
 }
 
 .stepDesc {
@@ -75,4 +79,8 @@
   color: #717171;
   font-family: "Switzer Variable" !important;
   font-weight: 500;
+}
+
+.stepTileStrongText {
+  margin-left: 5px;
 }

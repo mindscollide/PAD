@@ -15,7 +15,10 @@ import {
   formatNumberWithCommas,
 } from "../../../../../../../common/funtions/rejex";
 import { useReconcileContext } from "../../../../../../../context/reconsileContax";
-import { GetAnnotationOfFilesAttachementAPI, GetWorkFlowFilesAPI } from "../../../../../../../api/fileApi";
+import {
+  GetAnnotationOfFilesAttachementAPI,
+  GetWorkFlowFilesAPI,
+} from "../../../../../../../api/fileApi";
 import { useApi } from "../../../../../../../context/ApiContext";
 import { useNotification } from "../../../../../../../components/NotificationProvider/NotificationProvider";
 import { useGlobalLoader } from "../../../../../../../context/LoaderContext";
@@ -487,7 +490,7 @@ const ViewDetailReconcileTransaction = () => {
                               case 1: // ⏳ Pending
                               default:
                                 iconSrc = EllipsesIcon;
-                                displayText = fullName;
+                                displayText = "Awaiting for action";
                             }
 
                             return (

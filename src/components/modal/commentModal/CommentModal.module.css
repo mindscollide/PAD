@@ -74,3 +74,9 @@
 .predefineOptionText {
   font-size: 18px;
 }
+
+.predefinedReasonMainClass {
+  max-height: 230px;
+  overflow: hidden;
+  overflow-y: auto;
+}

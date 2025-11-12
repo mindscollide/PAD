@@ -463,6 +463,12 @@ li.ant-dropdown-menu-item.ant-dropdown-menu-item-only-child:focus {
   vertical-align: middle;
 }
 
+.accordian-Table-Cell-class  {
+  max-height: 500px !important;
+  overflow: hidden !important;
+  overflow-y: auto !important;
+}
+
 /* Change selected date color */
 :where(.css-dev-only-do-not-override-1rfzxih).ant-picker-dropdown
   .ant-picker-cell-in-view.ant-picker-cell-selected:not(
@@ -610,5 +616,4 @@ Specificity: (0,1,1)
  {
     width: 100%;
 } */
-
 

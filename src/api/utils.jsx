@@ -92,6 +92,10 @@ export const responseMessages = {
     "Resubmission Successful",
   PAD_Trade_TradeServiceManager_AddTradeApprovalRequest_07:
     "Resubmission Failed",
+  PAD_Trade_TradeServiceManager_AddTradeApprovalRequest_08:
+    "Failed to generate ApprovalID",
+  PAD_Trade_TradeServiceManager_AddTradeApprovalRequest_09: "Invalid Quantity",
+  PAD_Trade_TradeServiceManager_AddTradeApprovalRequest_10: "Policy Violated",
 
   PAD_Trade_TradeServiceManager_GetAllViewDetailsByTradeApprovalID_01:
     "Data Available",
@@ -310,6 +314,13 @@ export const responseMessages = {
   PAD_Trade_TradeServiceManager_GetAllViewDetailsEscalatedTransactionsAndPortFolioByTradeApprovalID_03:
     "Exception",
 
+  // For Employee History Search Api
+  PAD_Trade_TradeServiceManager_EmployeeHistoryWorkFlowDetails_01:
+    "Data Available",
+  PAD_Trade_TradeServiceManager_EmployeeHistoryWorkFlowDetails_02:
+    "No data available",
+  PAD_Trade_TradeServiceManager_EmployeeHistoryWorkFlowDetails_03: "Exception",
+
   // ==============================
   // 📂Web Notification  (Employee Role)
   // ==============================
@@ -509,6 +520,11 @@ export const responseMessages = {
   PAD_Admin_UpdateSystemConfiguration_02: "Successfully updated",
   PAD_Admin_UpdateSystemConfiguration_03: "No rows updated",
   PAD_Admin_UpdateSystemConfiguration_04: "Exception occurred",
+
+  // For Line Manager My Action Search Api
+  PAD_Trade_LineManagerActionsWorkflowDetail_01: "Data Available",
+  PAD_Trade_LineManagerActionsWorkflowDetail_02: "No data available",
+  PAD_Trade_LineManagerActionsWorkflowDetail_03: "Exception",
 };
 
 /**

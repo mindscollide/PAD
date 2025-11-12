@@ -283,7 +283,7 @@ const renderStatusTag = (status, approvalStatusMap) => {
         border: "none",
         borderRadius: "4px",
         padding: "2px 8px",
-        fontSize: "12px",
+        fontSize: "16px",
         lineHeight: "1.4",
       }}
       className="border-less-table-orange-status"

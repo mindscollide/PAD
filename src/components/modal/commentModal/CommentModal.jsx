@@ -261,32 +261,33 @@ const CommentModal = ({
           </Row>
 
           {/* Predefined Reasons (only if passed) */}
-          {predefinedReasons.length > 0 && (
-            <Row gutter={[0, 0]} style={{ margin: "20px 0" }}>
-              {predefinedReasons.map((option) => (
-                <Col
-                  span={24}
-                  key={option.predefinedReasonsID}
-                  style={{ margin: "10px 0" }}
-                >
-                  <div
-                    className={`${styles.mainDivClass} ${
-                      selectedOption?.predefinedReasonsID ===
-                      option.predefinedReasonsID
-                        ? styles.selectedOption
-                        : ""
-                    }`}
-                    onClick={() => handleOptionSelect(option)}
+          <div className={styles.predefinedReasonMainClass}>
+            {predefinedReasons.length > 0 && (
+              <Row gutter={[0, 0]} style={{ margin: "20px 0" }}>
+                {predefinedReasons.map((option) => (
+                  <Col
+                    span={24}
+                    key={option.predefinedReasonsID}
+                    style={{ margin: "10px 0" }}
                   >
-                    <div className={styles.optionClass} title={option.reason}>
-                      {option.reason}
+                    <div
+                      className={`${styles.mainDivClass} ${
+                        selectedOption?.predefinedReasonsID ===
+                        option.predefinedReasonsID
+                          ? styles.selectedOption
+                          : ""
+                      }`}
+                      onClick={() => handleOptionSelect(option)}
+                    >
+                      <div className={styles.optionClass} title={option.reason}>
+                        {option.reason}
+                      </div>
                     </div>
-                  </div>
-                </Col>
-              ))}
-            </Row>
-          )}
-
+                  </Col>
+                ))}
+              </Row>
+            )}
+          </div>
           <Row>
             <Col span={24} style={{ textAlign: "right" }}>
               <div className={styles.buttonGroup}>
