@@ -3,6 +3,7 @@ import { Row, Col, Space } from "antd";
 import { Button, TextField } from "../..";
 import { useSearchBarContext } from "../../../context/SearchBarContaxt";
 import { removeFirstSpace } from "../../../common/funtions/rejex";
+import { useNotification } from "../../NotificationProvider/NotificationProvider";
 
 // 🔹 Initial Local State
 const INITIAL_LOCAL_STATE = {
@@ -23,6 +24,7 @@ export const AdminPoliciesAndGroupUsersTabFilter = ({
     adminGropusAndPolicyUsersTabSearch,
     setAdminGropusAndPolicyUsersTabSearch,
   } = useSearchBarContext();
+  const { showNotification } = useNotification();
 
   // Local State for Inputs
   const [localState, setLocalState] = useState(INITIAL_LOCAL_STATE);
@@ -70,7 +72,18 @@ export const AdminPoliciesAndGroupUsersTabFilter = ({
   const handleSearchClick = () => {
     const { employeeName, designation, departmentName, emailAddress } =
       localState;
+    const email = emailAddress?.trim();
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
+    // ✅ If email is filled but invalid → stop search
+    if (email && !emailRegex.test(email)) {
+      showNotification({
+        type: "error",
+        title: "Error",
+        description: "Please enter a valid email address",
+      });
+      return; // ❌ stop execution
+    }
     const searchPayload = {
       ...adminGropusAndPolicyUsersTabSearch,
       employeeName: employeeName?.trim() || "",

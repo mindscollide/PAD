@@ -137,7 +137,7 @@ const ManageUsers = () => {
       // 🟢 Users Tab
       const resetMap = {
         ...resetCommon,
-        employeeID: 0,
+        employeeID: "",
       };
 
       setUsersTabSearch((prev) => ({
@@ -182,7 +182,7 @@ const ManageUsers = () => {
       setUsersTabSearch((prev) => ({
         ...prev,
         employeeName: "",
-        employeeID: 0,
+        employeeID: "",
         emailAddress: "",
         departmentName: "",
         pageNumber: 0,
@@ -247,7 +247,7 @@ const ManageUsers = () => {
         value: truncate(employeeName),
       });
 
-    if (employeeID && employeeID !== 0)
+    if (employeeID && (employeeID !== 0 || employeeID !== ""))
       filters.push({
         key: "employeeID",
         label: "Employee ID",
