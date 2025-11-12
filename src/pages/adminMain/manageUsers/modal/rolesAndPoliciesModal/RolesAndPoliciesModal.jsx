@@ -12,7 +12,10 @@ import Profile2 from "../../../../../assets/img/Profile2.png";
 import styles from "./RolesAndPoliciesModal.module.css";
 import CustomButton from "../../../../../components/buttons/button";
 import { useMyAdmin } from "../../../../../context/AdminContext";
-import { GetAllExistingGroupDataRequest, GetAllUserRolesDataRequest } from "../../../../../api/adminApi";
+import {
+  GetAllExistingGroupDataRequest,
+  GetAllUserRolesDataRequest,
+} from "../../../../../api/adminApi";
 import { useNavigate } from "react-router-dom";
 import { useNotification } from "../../../../../components/NotificationProvider/NotificationProvider";
 import { useGlobalLoader } from "../../../../../context/LoaderContext";

@@ -10,7 +10,7 @@ span.heading {
   margin-top: 26px;
 }
 .table-header-wrapper {
-  display:flex;
+  display: flex;
   align-items: center;
   max-width: 100%;
   gap: 5px;

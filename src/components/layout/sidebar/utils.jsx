@@ -162,7 +162,11 @@ const sidebarItems = (
           icon: (
             <img
               draggable={false}
-              src={getIcon("22", SystemSettingLightIcon, SystemSettingDarktIcon)}
+              src={getIcon(
+                "22",
+                SystemSettingLightIcon,
+                SystemSettingDarktIcon
+              )}
               alt="System Settings"
               className={getIconClasses()}
             />
@@ -194,6 +198,7 @@ const sidebarItems = (
               src={getIcon("1", ApprovalLightIcon, ApprovalDarkIcon)}
               alt="My Approvals"
               className={getIconClasses()}
+              data-testid="employee-my-approvals-icon"
             />
           ),
           label: "My Approvals",
@@ -206,6 +211,7 @@ const sidebarItems = (
               src={getIcon("2", TransactionLightIcon, TransactionDarkIcon)}
               alt="My Transactions"
               className={getIconClasses()}
+              data-testid="employee-my-transactions-icon"
             />
           ),
           label: "My Transactions",
@@ -218,6 +224,7 @@ const sidebarItems = (
               src={getIcon("3", HistoryLightIcon, HistoryDarkIcon)}
               alt="My History"
               className={getIconClasses()}
+              data-testid="employee-my-history-icon"
             />
           ),
           label: "My History",
@@ -230,6 +237,7 @@ const sidebarItems = (
               src={getIcon("4", PortfolioLightIcon, PortfolioDarkIcon)}
               alt="Portfolio"
               className={getIconClasses()}
+              data-testid="employee-portfolio-icon"
             />
           ),
           label: "Portfolio",
@@ -242,6 +250,7 @@ const sidebarItems = (
               src={getIcon("5", ReportsLightIcon, ReportsDarkIcon)}
               alt="Reports"
               className={getIconClasses()}
+              data-testid="employee-reports-icon"
             />
           ),
           label: "Reports",

@@ -12,24 +12,28 @@ import Decline from "../../../assets/img/Cross.png";
 import { Stepper, Step } from "react-form-stepper";
 
 const ApprovalStepper = ({ trail }) => {
+  console.log(trail, "checkTrailcheckTrail");
+
   // map type to actual <img>
   const getIcon = (type, altText) => {
     switch (type) {
-      case "check":
+      case "Compliant":
+        return <img src={CheckIcon} alt={altText} width={50} height={50} />;
+      case "Approved":
         return <img src={CheckIcon} alt={altText} width={50} height={50} />;
       case "ellipsis":
         return <img src={EllipsesIcon} alt={altText} width={50} height={50} />;
       case "cross":
         return <img src={CrossIcon} alt={altText} width={50} height={50} />;
-      case "Dollar":
+      case "Traded":
         return <img src={Dollar} alt={altText} width={50} height={50} />;
       case "Approval":
         return (
           <img src={SendForApproval} alt={altText} width={50} height={50} />
         );
-      case "Resubmitted":
+      case "Resubmit":
         return <img src={Resubmitted} alt={altText} width={50} height={50} />;
-      case "NotTraded":
+      case "Not-Traded":
         return <img src={NotTraded} alt={altText} width={50} height={50} />;
       case "EscaltedOn":
         return <img src={EscaltedOn} alt={altText} width={50} height={50} />;
@@ -65,10 +69,29 @@ const ApprovalStepper = ({ trail }) => {
                 <div className={styles.stepCircle}>
                   {getIcon(step.iconType, step.status)}
                 </div>
-                <div className={styles.stepTitle}>{step.user}</div>
-                <div className={styles.stepDesc}>
-                  {step.date} | {step.status}
+
+                {/* 🔹 Top line: status + "by" + user */}
+                <div className={styles.stepTitle}>
+                  {step.status}{" "}
+                  {step.user && (
+                    <>
+                      {" by "}{" "}
+                      <strong className={styles.stepTileStrongText}>
+                        {" "}
+                        {step.user}
+                      </strong>
+                    </>
+                  )}
                 </div>
+
+                {/* 🔹 Bottom line: date only */}
+                <div className={styles.stepDesc}>{step.date}</div>
+                {/* {For Requester ID if necesarry} */}
+                {step.status === "Resubmit" && (
+                  <div className={styles.stepDesc}>
+                    <strong>{step.requesterID}</strong>
+                  </div>
+                )}
               </div>
             }
           />

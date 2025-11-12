@@ -328,12 +328,12 @@ const ConductTransaction = () => {
                 </Col>
               </Row>
               <Row style={{ marginTop: "16px" }}>
-                <Col span={6}>
+                <Col span={7}>
                   <label className={styles.sharedandCompliance}>
                     Shares Traded
                   </label>
                 </Col>
-                <Col span={18}>
+                <Col span={17}>
                   <label className={styles.sharedandCompliance}>
                     Compliance Officer
                   </label>
@@ -344,14 +344,13 @@ const ConductTransaction = () => {
                 gutter={[20, 20]}
                 style={{ marginTop: "3px" }}
               >
-                <Col span={6}>
+                <Col span={7}>
                   <div className={styles.backgrounColorOfConduct}>
                     <label className={styles.viewDetailMainLabels}>
                       Enter Quantity
                     </label>
                     <TextField
                       placeholder={0}
-                      size="medium"
                       value={formatNumberWithCommas(quantity)}
                       onChange={handleQuantityChange}
                       className={classNames({
@@ -360,7 +359,7 @@ const ConductTransaction = () => {
                     />
                   </div>
                 </Col>
-                <Col span={18}>
+                <Col span={17}>
                   <div className={styles.backgrounColorOfConduct}>
                     <label className={styles.complianceHeading}>
                       Name:

@@ -1,32 +1,42 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { Row, Col } from "antd";
 import { DownloadOutlined } from "@ant-design/icons";
 import { AcordianTable, PageLayout } from "../../../../components";
 import CustomButton from "../../../../components/buttons/button";
-import style from "./myHistory.module.css";
+import style from "./myActions.module.css";
+import EmptyState from "../../../../components/emptyStates/empty-states";
+import CheckIcon from "../../../../assets/img/Check.png";
+import EllipsesIcon from "../../../../assets/img/Ellipses.png";
+import CrossIcon from "../../../../assets/img/Cross.png";
 import PDF from "../../../../assets/img/pdf.png";
 import Excel from "../../../../assets/img/xls.png";
-import { buildMyHistoryApiRequest, getMyHistoryColumn } from "./utils";
+import { buildMyActionApiRequest, getMyActionsColumn } from "./utils";
 import { useSearchBarContext } from "../../../../context/SearchBarContaxt";
 import { approvalStatusMap } from "../../../../components/tables/borderlessTable/utill";
 import { useMyApproval } from "../../../../context/myApprovalContaxt";
 import {
-  DownloadMyHistoryReportRequest,
-  SearchEmployeeHistoryDetailRequest,
+  DownloadMyActionsReportRequest,
+  SearchLMMyActionWorkFlowRequest,
 } from "../../../../api/myApprovalApi";
 import { useNotification } from "../../../../components/NotificationProvider/NotificationProvider";
 import { useGlobalLoader } from "../../../../context/LoaderContext";
 import { useApi } from "../../../../context/ApiContext";
 import { useNavigate } from "react-router-dom";
+import { useSidebarContext } from "../../../../context/sidebarContaxt";
 import {
   dashBetweenApprovalAssets,
   formatApiDateTime,
 } from "../../../../common/funtions/rejex";
-const MyHistory = () => {
+const MyAction = () => {
   const navigate = useNavigate();
   const hasFetched = useRef(false);
   const containerRef = useRef(null);
-
   // -------------------- Contexts --------------------
   const { callApi } = useApi();
   const { showNotification } = useNotification();
@@ -39,16 +49,17 @@ const MyHistory = () => {
   const [hasMore, setHasMore] = useState(true); // until proven otherwise
 
   const {
-    employeeMyHistorySearch,
-    setEmployeeMyHistorySearch,
+    lineManagerMyActionSearch,
+    setLineManagerMyActionSearch,
     resetEmployeeMyHistorySearch,
   } = useSearchBarContext();
 
-  const { setEmployeeMyHistoryData, employeeMyHistoryData } = useMyApproval();
+  const { setMyActionLineManagerData, myActionLineManagerData } =
+    useMyApproval();
 
   console.log(
-    employeeMyHistoryData,
-    "employeeMyHistoryDataemployeeMyHistoryData"
+    myActionLineManagerData,
+    "myActionLineManagerDatamyActionLineManagerData"
   );
 
   /**
@@ -60,7 +71,7 @@ const MyHistory = () => {
       if (!requestData || typeof requestData !== "object") return;
       if (showLoaderFlag) showLoader(true);
 
-      const res = await SearchEmployeeHistoryDetailRequest({
+      const res = await SearchLMMyActionWorkFlowRequest({
         callApi,
         showNotification,
         showLoader,
@@ -69,7 +80,7 @@ const MyHistory = () => {
       });
 
       if (res) {
-        setEmployeeMyHistoryData(res);
+        setMyActionLineManagerData(res);
       }
     },
     [callApi, navigate, showLoader, showNotification]
@@ -79,32 +90,32 @@ const MyHistory = () => {
   useEffect(() => {
     if (!hasFetched.current) {
       hasFetched.current = true;
-      const requestData = buildMyHistoryApiRequest(employeeMyHistorySearch);
+      const requestData = buildMyActionApiRequest(lineManagerMyActionSearch);
 
       fetchApiCall(requestData, true, true);
     }
-  }, [buildMyHistoryApiRequest, employeeMyHistorySearch, fetchApiCall]);
+  }, [buildMyActionApiRequest, lineManagerMyActionSearch, fetchApiCall]);
 
   /** 🔹 this useEffect is for Search Filter */
   useEffect(() => {
-    if (employeeMyHistorySearch?.filterTrigger) {
+    if (lineManagerMyActionSearch?.filterTrigger) {
       hasFetched.current = true;
-      const requestData = buildMyHistoryApiRequest(employeeMyHistorySearch);
+      const requestData = buildMyActionApiRequest(lineManagerMyActionSearch);
 
       fetchApiCall(requestData, true, true);
-      setEmployeeMyHistorySearch((prev) => ({
+      setLineManagerMyActionSearch((prev) => ({
         ...prev,
         filterTrigger: false,
       }));
     }
-  }, [buildMyHistoryApiRequest, employeeMyHistorySearch, fetchApiCall]);
+  }, [buildMyActionApiRequest, lineManagerMyActionSearch, fetchApiCall]);
 
   // -------------------- Table Columns --------------------
-  const columns = getMyHistoryColumn(
+  const columns = getMyActionsColumn(
     approvalStatusMap,
     sortedInfo,
-    employeeMyHistorySearch,
-    setEmployeeMyHistorySearch
+    lineManagerMyActionSearch,
+    setLineManagerMyActionSearch
   );
 
   /** 🔹 Handle removing individual filter */
@@ -112,12 +123,14 @@ const MyHistory = () => {
     const resetMap = {
       requestID: { requestID: "" },
       instrumentName: { instrumentName: "" },
+      requesterName: { requesterName: "" },
       quantity: { quantity: 0 },
+      type: { type: [] },
+      status: { status: [] },
       dateRange: { startDate: null, endDate: null },
-      nature: { nature: "" },
     };
 
-    setEmployeeMyHistorySearch((prev) => ({
+    setLineManagerMyActionSearch((prev) => ({
       ...prev,
       ...resetMap[key],
       pageNumber: 0,
@@ -127,14 +140,14 @@ const MyHistory = () => {
 
   /** 🔹 Handle removing all filters */
   const handleRemoveAllFilters = () => {
-    setEmployeeMyHistorySearch((prev) => ({
+    setLineManagerMyActionSearch((prev) => ({
       ...prev,
       requestID: "",
       instrumentName: "",
+      requesterName: "",
       quantity: 0,
       startDate: null,
       endDate: null,
-      nature: "",
       type: [],
       status: [],
       pageNumber: 0,
@@ -147,14 +160,13 @@ const MyHistory = () => {
     const {
       requestID,
       instrumentName,
+      requesterName,
       startDate,
       endDate,
       quantity,
-      nature,
       type,
       status,
-    } = employeeMyHistorySearch || {};
-
+    } = lineManagerMyActionSearch || {};
     // 🔹 Mappings for display labels
     const typeMap = {
       1: "Buy",
@@ -171,7 +183,6 @@ const MyHistory = () => {
       7: "Compliant",
       8: "Non-Compliant",
     };
-
     return [
       requestID && {
         key: "requestID",
@@ -185,6 +196,13 @@ const MyHistory = () => {
             ? instrumentName.slice(0, 13) + "..."
             : instrumentName,
       },
+      requesterName && {
+        key: "requesterName",
+        value:
+          requesterName.length > 13
+            ? requesterName.slice(0, 13) + "..."
+            : requesterName,
+      },
       startDate &&
         endDate && {
           key: "dateRange",
@@ -195,10 +213,6 @@ const MyHistory = () => {
           key: "quantity",
           value: Number(quantity).toLocaleString("en-US"),
         },
-      nature && {
-        key: "nature",
-        value: nature.length > 13 ? nature.slice(0, 13) + "..." : nature,
-      },
       // 🔹 Add Type (multiple selection support)
       type?.length > 0 && {
         key: "type",
@@ -213,12 +227,12 @@ const MyHistory = () => {
     ].filter(Boolean);
   })();
 
-  // Update hasMore when employeeMyHistoryData changes
+  // Update hasMore when myActionLineManagerData changes
   useEffect(() => {
-    const total = employeeMyHistoryData?.totalRecords ?? 0;
-    const currentLen = employeeMyHistoryData?.workFlows?.length ?? 0;
+    const total = myActionLineManagerData?.totalRecords ?? 0;
+    const currentLen = myActionLineManagerData?.requests?.length ?? 0;
     setHasMore(currentLen < total);
-  }, [employeeMyHistoryData]);
+  }, [myActionLineManagerData]);
 
   // Scroll handler for lazy loading
   const handleScroll = async () => {
@@ -234,17 +248,17 @@ const MyHistory = () => {
 
       try {
         // calculate current offset (PageNumber) as current loaded employees length
-        const currentLength = employeeMyHistoryData?.workFlows?.length || 0;
+        const currentLength = myActionLineManagerData?.requests?.length || 0;
 
         // build request based on current search/filter but override pagination
-        const baseRequest = buildMyHistoryApiRequest(employeeMyHistorySearch);
+        const baseRequest = buildMyActionApiRequest(lineManagerMyActionSearch);
         const requestData = {
           ...baseRequest,
           PageNumber: currentLength, // sRow
           Length: 10, // eRow (static 10)
         };
 
-        const res = await SearchEmployeeHistoryDetailRequest({
+        const res = await SearchLMMyActionWorkFlowRequest({
           callApi,
           showNotification,
           showLoader, // you can pass showLoader or not; it won't show global loader if you manage local spinner
@@ -252,13 +266,13 @@ const MyHistory = () => {
           navigate,
         });
 
-        const newEmployees = res?.workFlows || [];
+        const newEmployees = res?.requests || [];
 
         if (newEmployees.length > 0) {
           // merge new employees into existing array and also update any other top-level response fields (e.g., totalRecords)
-          setEmployeeMyHistoryData((prev = {}) => ({
+          setMyActionLineManagerData((prev = {}) => ({
             ...res, // take latest top-level fields (totalRecords etc.) from response
-            workFlows: [...(prev.workFlows || []), ...newEmployees],
+            requests: [...(prev.requests || []), ...newEmployees],
           }));
         } else {
           // no new data => stop further fetching
@@ -275,8 +289,8 @@ const MyHistory = () => {
   // Reset on Unmount
   useEffect(() => {
     return () => {
-      setEmployeeMyHistorySearch();
-      setEmployeeMyHistoryData([]);
+      setLineManagerMyActionSearch();
+      setMyActionLineManagerData([]);
     };
   }, []);
 
@@ -292,22 +306,21 @@ const MyHistory = () => {
     return () => {
       el.removeEventListener("scroll", handleScroll);
     };
-  }, [containerRef.current, hasMore, loadingMore, employeeMyHistoryData]);
+  }, [containerRef.current, hasMore, loadingMore, myActionLineManagerData]);
 
   // 🔷 Excel Report download Api Hit
-  const downloadMyHistoryReportInExcelFormat = async () => {
+  const downloadMyActionsReportInExcelFormat = async () => {
     showLoader(true);
     const requestdata = {
-      RequestID: "",
       InstrumentName: "",
-      Quantity: 0,
+      RequesterName: "",
       StartDate: "",
       EndDate: "",
-      Nature: "",
-      StatusIDs: [],
-      TradeApprovalTypeIDs: [],
+      Type: null,
+      Status: null,
+      Quantity: 0,
     };
-    await DownloadMyHistoryReportRequest({
+    await DownloadMyActionsReportRequest({
       callApi,
       showLoader,
       requestdata: requestdata,
@@ -315,22 +328,8 @@ const MyHistory = () => {
     });
   };
 
-  const mapEmployeeHistoryData = (data) => {
-    if (!data?.workFlows) return [];
-
-    // 🔹 Map bundleStatusState to iconType
-    const getBundleIconType = (state) => {
-      switch (state) {
-        case 2:
-          return "Approved"; // ✅ CheckIcon
-        case 3:
-          return "Decline"; // ❌ Decline
-        default:
-          return "ellipsis"; // neutral
-      }
-    };
-
-    // 🔹 Map workFlowStatusID to iconType
+  const mapMyActionData = (data) => {
+    if (!data?.requests) return [];
     const getWorkFlowIconType = (id) => {
       switch (id) {
         case 8:
@@ -345,48 +344,55 @@ const MyHistory = () => {
           return "ellipsis";
       }
     };
+    const getBundleIconType = (state) => {
+      switch (state) {
+        case 2:
+          return "Approved"; // ✅ Check icon
+        case 3:
+          return "Decline"; // ❌ Cross icon
+        default:
+          return "ellipsis"; // ⏳ Pending
+      }
+    };
 
-    return data.workFlows.map((wf) => {
-      const workFlowIcon = getWorkFlowIconType(wf.workFlowStatusID);
+    return data.requests.map((req) => {
+      const workFlowIcon = getWorkFlowIconType(req.workFlowStatusID);
 
+      // Build trail (Approval timeline)
       const trail = [
-        // 🧩 Step 2: Show all bundle hierarchy steps (approvers)
-        ...(wf.bundleHierarchy?.map((b) => ({
+        ...(req.bundleHistory?.map((b) => ({
           status:
-            b.bundleStatusState === 2
+            b.bundleStatus === 2
               ? "Approved"
-              : b.bundleStatusState === 3
+              : b.bundleStatus === 3
               ? "Decline"
               : "Pending",
           user: `${b.firstName} ${b.lastName}`,
           date: formatApiDateTime(
             `${b.bundleModifiedDate} ${b.bundleModifiedTime}`
           ),
-          iconType: getBundleIconType(b.bundleStatusState),
+          iconType: getBundleIconType(b.bundleStatus),
         })) || []),
-
-        // 🟩 Step 1: Show overall workflow status (system or broker)
         {
-          status: wf.workFlowStatus,
-          // user: wf.brokerName || "System",
-          date: formatApiDateTime(`${wf.creationDate} ${wf.creationTime}`),
-          requesterID: dashBetweenApprovalAssets(wf.tradeApprovalID),
+          status: req.workFlowStatusName || req.statusState,
+          date: formatApiDateTime(`${req.requestedDate} ${req.requestedTime}`),
+          requesterID: dashBetweenApprovalAssets(req.approvalID),
           iconType: workFlowIcon,
         },
       ];
 
       return {
-        id: wf.tradeApprovalID || wf.workFlowID,
-        tradeApprovalID: wf.tradeApprovalID,
-        instrumentName: wf.instrumentName,
-        instrumentShortCode: wf.instrumentShortCode,
-        assetShortCode: wf.assetShortCode,
-        quantity: Number(wf.quantity),
-        type: wf.tradeType,
-        nature: wf.nature,
-        creationDate: wf.creationDate,
-        creationTime: wf.creationTime,
-        status: wf.workFlowStatus,
+        id: String(req.requestID),
+        approvalID: req.approvalID,
+        instrumentName: req.instrumentName,
+        instrumentShortCode: req.instrumentShortCode,
+        assetShortCode: req.assetShortCode,
+        requesterName: req.requesterName,
+        creationDate: req.requestedDate,
+        creationTime: req.requestedTime,
+        quantity: Number(req.quantity),
+        type: req.typeName || req.type,
+        status: req.workFlowStatusName || req.statusState,
         trail,
       };
     });
@@ -435,7 +441,7 @@ const MyHistory = () => {
             style={{ marginBottom: 16, marginTop: 26 }}
           >
             <Col>
-              <span className={style["heading"]}>My History</span>
+              <span className={style["heading"]}>My Actions</span>
             </Col>
             <Col style={{ position: "relative" }}>
               <CustomButton
@@ -454,7 +460,7 @@ const MyHistory = () => {
                   </div>
                   <div
                     className={style.dropdownItem}
-                    onClick={downloadMyHistoryReportInExcelFormat}
+                    onClick={downloadMyActionsReportInExcelFormat}
                   >
                     <img src={Excel} alt="Excel" draggable={false} />
                     <span>Export Excel</span>
@@ -473,7 +479,7 @@ const MyHistory = () => {
           <AcordianTable
             className={style["accordian-table-blue"]}
             columns={columns}
-            dataSource={mapEmployeeHistoryData(employeeMyHistoryData)}
+            dataSource={mapMyActionData(myActionLineManagerData)}
             onChange={(pagination, filters, sorter) => {
               setSortedInfo(sorter);
             }}
@@ -490,4 +496,4 @@ const MyHistory = () => {
   );
 };
 
-export default MyHistory;
+export default MyAction;
