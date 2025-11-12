@@ -401,16 +401,16 @@ const SearchWithPopoverOnly = () => {
       <Input
         placeholder={
           selectedKey === "19"
-            ? "Broker name. Click the icon to view more options"
+            ? "Broker name. Click the icon to view more options."
             : selectedKey === "20" && pageTabesForAdminGropusAndPolicy === 1
-            ? "Search Scenario. Click the icon to view more options"
+            ? "Search Scenario. Click the icon to view more options."
             : selectedKey === "20" && pageTabesForAdminGropusAndPolicy === 2
-            ? "Employee name. Click the icon to view more options"
+            ? "Employee name. Click the icon to view more options."
             : selectedKey === "20"
-            ? "Policy Name. Click the icon to view more options"
+            ? "Policy Name. Click the icon to view more options."
             : selectedKey === "21"
-            ? "employee name. Click the icon to view more options"
-            : "Instrument name. Click the icon to view more options"
+            ? "Employee name. Click the icon to view more options."
+            : "Instrument name. Click the icon to view more options."
         }
         allowClear
         className={

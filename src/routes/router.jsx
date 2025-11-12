@@ -249,7 +249,7 @@ const router = createBrowserRouter(
         />
 
         <Route
-          path="admin-system-settings"
+          path="admin-system-configurations"
           element={
             <RoleBasedRoute isAdmin={true} allowedRoles={[1]}>
               <SystemConfigurations />{" "}

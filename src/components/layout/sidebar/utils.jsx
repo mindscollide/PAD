@@ -171,7 +171,7 @@ const sidebarItems = (
               className={getIconClasses()}
             />
           ),
-          label: "System Settings",
+          label: "System Configurations",
         },
         {
           key: "23",
@@ -505,7 +505,7 @@ export const routeMap = {
   19: "/PAD/admin-brokers",
   20: "/PAD/admin-group-policies",
   21: "/PAD/admin-users",
-  22: "/PAD/admin-system-settings",
+  22: "/PAD/admin-system-configurations",
   23: "/PAD/admin-reports",
 
   50: "/PAD/faq",

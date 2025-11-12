@@ -142,13 +142,13 @@ export const policyColumns = ({
 
         try {
           if (record.policyID === loadingPolicyId) return <Spin size="small" />;
+          const valueUnit = record.valueUnit?.trim?.() || "";
 
           // ✅ Editable Mode
           if (!viewFlag) {
             switch (dataTypeID) {
               case 1: {
                 const [min, max] = parseMinMax(minMax);
-                const valueUnit = record.valueUnit?.trim?.() || "";
 
                 const handleChange = (e) => {
                   const val = Number(e.target.value);
@@ -259,15 +259,27 @@ export const policyColumns = ({
           // ✅ View Mode
           switch (dataTypeID) {
             case 1:
-              return <span>{Number(duration) || "-"} Number</span>;
+              return (
+                <span>
+                  {Number(duration) || "-"} {valueUnit}
+                </span>
+              );
 
             case 2:
             case 3:
             case 4:
-              return <span>{duration || "—"}</span>;
+              return (
+                <span>
+                  {duration || "—"} {valueUnit}
+                </span>
+              );
 
             case 5:
-              return <span>{duration || "—"}</span>;
+              return (
+                <span>
+                  {duration || "—"} {valueUnit}
+                </span>
+              );
 
             case 6:
             case 7: {
@@ -278,7 +290,7 @@ export const policyColumns = ({
                     {parts[0] || "—"}
                     {parts.length > 1 && (
                       <span className={styles.moreCount}>
-                        +{parts.length - 1}
+                        +{parts.length - 1} {valueUnit}
                       </span>
                     )}
                   </div>
@@ -287,7 +299,11 @@ export const policyColumns = ({
             }
 
             default:
-              return <span>{duration || "—"}</span>;
+              return (
+                <span>
+                  {duration || "—"} {valueUnit}
+                </span>
+              );
           }
         } catch (error) {
           console.error("Error rendering duration cell:", error, record);

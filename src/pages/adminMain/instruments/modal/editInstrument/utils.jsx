@@ -98,6 +98,7 @@ export const previousClosedPeriodsTable = (sortedInfo) => [
     ),
     dataIndex: "dateRange1",
     key: "dateRange1",
+    width: 300,
     sorter: (a, b) => a.dateRange1?.localeCompare(b.dateRange1),
     sortDirections: ["ascend", "descend"],
     sortOrder: sortedInfo?.columnKey === "dateRange1" ? sortedInfo.order : null,
@@ -113,6 +114,7 @@ export const previousClosedPeriodsTable = (sortedInfo) => [
     ),
     dataIndex: "duration1",
     key: "duration1",
+    width: 100,
     sortIcon: () => null,
     sorter: (a, b) =>
       (parseInt(a.duration1) || 0) - (parseInt(b.duration1) || 0),
@@ -125,7 +127,7 @@ export const previousClosedPeriodsTable = (sortedInfo) => [
     title: "",
     key: "spacer",
     dataIndex: "spacer",
-    width: "30px",
+    width: 30,
     render: () => null,
   },
 
@@ -137,6 +139,7 @@ export const previousClosedPeriodsTable = (sortedInfo) => [
     ),
     dataIndex: "dateRange2",
     key: "dateRange2",
+    width: 300,
     sortIcon: () => null,
     sorter: (a, b) => a.dateRange2?.localeCompare(b.dateRange2),
     sortOrder: sortedInfo?.columnKey === "dateRange2" ? sortedInfo.order : null,
@@ -151,6 +154,7 @@ export const previousClosedPeriodsTable = (sortedInfo) => [
     ),
     dataIndex: "duration2",
     key: "duration2",
+    width: 100,
     sortIcon: () => null,
     sorter: (a, b) =>
       (parseInt(a.duration2) || 0) - (parseInt(b.duration2) || 0),

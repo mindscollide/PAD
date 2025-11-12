@@ -8,7 +8,7 @@
   font-size: 26px !important;
   line-height: 100% !important;
   letter-spacing: 0% !important;
-  color: #30426A !important;
+  color: #30426a !important;
 }
 .main-box {
   width: 286px !important;
@@ -166,11 +166,43 @@
   border-radius: 6.67px;
   padding: 4.17px 11.68px;
   background: #edf3ff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  max-width: 150px; /* ✅ Base width */
   font-size: 13px;
   color: #1a1a1a;
   font-weight: 500;
   opacity: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.userList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+/* ✅ Adjust ellipsis width based on screen size */
+@media (max-width: 1440px) {
+  .userChip {
+    max-width: 100px;
+  }
+}
+
+@media (max-width: 1024px) {
+  .userChip {
+    max-width: 80px;
+  }
+}
+
+@media (max-width: 768px) {
+  .userChip {
+    max-width: 70px;
+  }
+}
+
+.moreUsers {
+  background-color: #e0e0e0;
+  color: #333;
+  font-weight: 500;
 }
