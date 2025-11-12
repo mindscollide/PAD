@@ -115,6 +115,8 @@ const MyHistory = () => {
       quantity: { quantity: 0 },
       dateRange: { startDate: null, endDate: null },
       nature: { nature: "" },
+      type: { type: [] },
+      status: { status: [] },
     };
 
     setEmployeeMyHistorySearch((prev) => ({

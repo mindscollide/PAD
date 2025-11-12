@@ -357,8 +357,8 @@ const ViewDetailManageUserModal = () => {
                       <div className={styles.editMainDiv}>
                         <label className={styles.instrumentLabel}>Name:</label>
                         <Select
-                          showSearch
                           allowClear
+                          showSearch
                           optionLabelProp="label"
                           className={styles.SelectDropdownClass}
                           placeholder="Select a Line Manager"
