@@ -150,7 +150,7 @@ export const getPendingUserColumns = ({
   {
     title: (
       <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-        Department {getSortIcon("departmentName", sortedInfo)}
+        Department Name{getSortIcon("departmentName", sortedInfo)}
       </div>
     ),
     dataIndex: "departmentName",
