@@ -70,11 +70,12 @@
   display: flex;
   align-items: center;
   height: 100%;
+  margin-bottom: 1em;
 }
 
 /* Total text styling */
 .total {
-  margin: 0;
+  /* margin: 0; */
   font-weight: 500;
   color: #001848;
   line-height: 1;

@@ -318,7 +318,7 @@ const SystemConfigurations = () => {
                         >
                           {item.valueUnit}
                         </span>
-                        <Input
+                        {/* <Input
                           type="number"
                           min={item.minValue ?? 1}
                           max={item.maxValue ?? 100}
@@ -335,6 +335,46 @@ const SystemConfigurations = () => {
                                 Number(value) <= (item.maxValue ?? 100))
                             ) {
                               handleChange(item.configurationID, value);
+                            }
+                          }}
+                          placeholder="Enter number"
+                          className={style.inputDuration}
+                          style={{
+                            width: "150px",
+                            textAlign: "center",
+                            color: "#1f1f1f",
+                            borderRadius: "6px",
+                          }}
+                        /> */}
+                        <Input
+                          type="number"
+                          min={item.minValue ?? 1}
+                          max={item.maxValue ?? 100}
+                          value={
+                            formValues.find(
+                              (f) => f.configurationID === item.configurationID
+                            )?.configValue || ""
+                          }
+                          onChange={(e) => {
+                            const value = e.target.value;
+                            // Allow empty or partial input (so user can type)
+                            handleChange(item.configurationID, value);
+                          }}
+                          onBlur={(e) => {
+                            const value = e.target.value;
+                            const num = Number(value);
+
+                            if (
+                              value !== "" &&
+                              (num < (item.minValue ?? 1) ||
+                                num > (item.maxValue ?? 100))
+                            ) {
+                              // Reset or clamp value if out of range
+                              const clamped = Math.min(
+                                Math.max(num, item.minValue ?? 1),
+                                item.maxValue ?? 100
+                              );
+                              handleChange(item.configurationID, clamped);
                             }
                           }}
                           placeholder="Enter number"
