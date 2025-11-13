@@ -30,6 +30,7 @@ const EditRoleAndPoliciesModal = () => {
     editrolesAndPoliciesUser,
     setEditrolesAndPoliciesUser,
     setUnSavedChangesPoliciesModal,
+    setRoleAndPoliciesIntimationModal
   } = useGlobalModal();
 
   // 🔹  Context State of View Detail Modal in which All data store
