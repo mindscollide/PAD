@@ -111,7 +111,7 @@ const ViewDetailsOfRejectedRequestModal = () => {
             <Row>
               <Col span={24}>
                 <h5 className={styles.viewManageUserDetailHeading}>
-                  Review Notes ({detailsData?.employeeName})
+                  Review Notes ({detailsData?.userFullName})
                 </h5>
               </Col>
             </Row>
