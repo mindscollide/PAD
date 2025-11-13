@@ -43,6 +43,8 @@ const ManageUsers = () => {
     resetModalStateBulkAction,
     setTypeofAction,
     manageUsersPendingTabData,
+    setManageUsersPendingTabData,
+    setAdminManageUserTabData,
   } = useMyAdmin();
 
   const {
@@ -88,6 +90,10 @@ const ManageUsers = () => {
   useEffect(() => {
     return () => {
       resetmanageUsersContextState();
+      resetUsersTabSearch();
+      setAdminManageUserTabData([]);
+      setPendingRequestsTabSearch();
+      setManageUsersPendingTabData([]);
     };
   }, []);
 

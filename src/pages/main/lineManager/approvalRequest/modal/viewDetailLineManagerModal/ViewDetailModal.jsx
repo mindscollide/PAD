@@ -75,6 +75,8 @@ const ViewDetailModal = () => {
     (item) => item.instrumentID === instrumentId
   );
 
+  console.log(selectedInstrument, "SelectedInstrumentName");
+
   // To show Note Modal when Click on Declined in ViewDetailLineManager Modal
   const onClickToOpenNoteModal = () => {
     setViewDetailLineManagerModal(false);
@@ -208,9 +210,9 @@ const ViewDetailModal = () => {
                         </span>
                         <span
                           className={styles.viewDetailSubLabelsForInstrument}
-                          title={selectedInstrument?.instrumentCode}
+                          title={`${selectedInstrument?.instrumentCode} - ${selectedInstrument?.instrumentName}`}
                         >
-                          {selectedInstrument?.instrumentCode}
+                          {`${selectedInstrument?.instrumentCode} - ${selectedInstrument?.instrumentName}`}
                         </span>
                       </>
                     </label>
