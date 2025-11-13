@@ -137,7 +137,7 @@ export const getMyHistoryColumn = (
           <span className="custom-shortCode-asset" style={{ minWidth: 30 }}>
             {assetCode?.substring(0, 2).toUpperCase()}
           </span>
-          <Tooltip title={instrumentName} placement="topLeft">
+          <Tooltip title={`${instrumentName} - ${code}`} placement="topLeft">
             <span
               className="font-medium"
               style={{
@@ -148,7 +148,6 @@ export const getMyHistoryColumn = (
                 display: "inline-block",
                 cursor: "pointer",
               }}
-              title={code}
             >
               {code}
             </span>

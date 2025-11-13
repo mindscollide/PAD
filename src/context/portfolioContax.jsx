@@ -55,6 +55,7 @@ export const PortfolioProvider = ({ children }) => {
   const [employeePendingApprovalsData, setEmployeePendingApprovalsData] =
     useState({
       pendingApprovalsData: [],
+      assetType: {},
       totalRecordsDataBase: 0,
       totalRecordsTable: 0,
     });
@@ -166,6 +167,7 @@ export const PortfolioProvider = ({ children }) => {
     setActiveTab("portfolio");
     setEmployeePendingApprovalsData({
       pendingApprovalsData: [],
+      assetType: {},
       totalRecordsDataBase: 0,
       totalRecordsTable: 0,
     });

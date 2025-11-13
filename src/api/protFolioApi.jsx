@@ -69,7 +69,8 @@ export const SearchEmployeePendingUploadedPortFolio = async ({
 
     // 🔹 Handle successful execution
     if (res.success) {
-      const { responseMessage, pendingPortfolios, totalRecords } = res.result;
+      const { responseMessage, pendingPortfolios, assetType, totalRecords } =
+        res.result;
       const message = getMessage(responseMessage);
 
       // Case 1 → Data Available
@@ -79,6 +80,7 @@ export const SearchEmployeePendingUploadedPortFolio = async ({
       ) {
         return {
           pendingPortfolios: pendingPortfolios || [],
+          assetType: assetType || {},
           totalRecords: totalRecords || 0,
         };
       }
@@ -90,6 +92,7 @@ export const SearchEmployeePendingUploadedPortFolio = async ({
       ) {
         return {
           pendingPortfolios: [],
+          assetType: {},
           totalRecords: 0,
         };
       }

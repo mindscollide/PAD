@@ -59,6 +59,8 @@ const PendingApprovals = ({ activeFilters }) => {
     setEmployeePendingApprovalsDataMqtt,
   } = usePortfolioContext();
 
+  console.log(employeePendingApprovalsData, "employeePendingApprovalsData");
+
   // -------------------------
   // ✅ Local state
   // -------------------------
@@ -95,7 +97,7 @@ const PendingApprovals = ({ activeFilters }) => {
           requestdata: requestData,
           navigate,
         });
-        
+
         // ✅ Always get the freshest version (from memory or session)
         const currentAssetTypeData = getSafeAssetTypeData(
           assetTypeListingData,

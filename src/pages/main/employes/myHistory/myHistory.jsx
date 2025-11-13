@@ -115,6 +115,8 @@ const MyHistory = () => {
       quantity: { quantity: 0 },
       dateRange: { startDate: null, endDate: null },
       nature: { nature: "" },
+      type: { type: [] },
+      status: { status: [] },
     };
 
     setEmployeeMyHistorySearch((prev) => ({
@@ -341,6 +343,10 @@ const MyHistory = () => {
           return "Traded"; // 💵 Dollar
         case 2:
           return "Resubmit"; // 🔁 Resubmitted
+        case 3:
+          return "Approved"; // 🔁 Resubmitted
+        case 4:
+          return "Decline"; // ❌ Decline
         default:
           return "ellipsis";
       }

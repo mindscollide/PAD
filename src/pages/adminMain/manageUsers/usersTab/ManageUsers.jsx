@@ -181,12 +181,6 @@ const UsersTab = () => {
           </div>
         )}
 
-        {/* no more data message */}
-        {!hasMore && (
-          <div style={{ textAlign: "center", padding: 12, color: "#888" }}>
-            No more users to load
-          </div>
-        )}
       </div>
     </>
   );
