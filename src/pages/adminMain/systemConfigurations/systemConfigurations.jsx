@@ -29,6 +29,7 @@ import {
 
 // 🔹 Styles
 import style from "./system_Configurations.module.css";
+import { stringify } from "postcss";
 
 const SystemConfigurations = () => {
   // ------------------------------------------------
@@ -140,7 +141,6 @@ const SystemConfigurations = () => {
    */
   const handleSave = async () => {
     setButtonDisable(true);
-
     // Check if any field is empty (null, undefined, or empty string)
     const hasEmptyFields = formValues.some(
       (item) =>
@@ -180,6 +180,7 @@ const SystemConfigurations = () => {
       } catch (error) {
         showNotification("Failed to fetch system configurations", "error");
       } finally {
+        setButtonDisable(false);
         showLoader(false);
       }
 
@@ -318,34 +319,6 @@ const SystemConfigurations = () => {
                         >
                           {item.valueUnit}
                         </span>
-                        {/* <Input
-                          type="number"
-                          min={item.minValue ?? 1}
-                          max={item.maxValue ?? 100}
-                          value={
-                            formValues.find(
-                              (f) => f.configurationID === item.configurationID
-                            )?.configValue || ""
-                          }
-                          onChange={(e) => {
-                            const value = e.target.value;
-                            if (
-                              value === "" ||
-                              (Number(value) >= (item.minValue ?? 1) &&
-                                Number(value) <= (item.maxValue ?? 100))
-                            ) {
-                              handleChange(item.configurationID, value);
-                            }
-                          }}
-                          placeholder="Enter number"
-                          className={style.inputDuration}
-                          style={{
-                            width: "150px",
-                            textAlign: "center",
-                            color: "#1f1f1f",
-                            borderRadius: "6px",
-                          }}
-                        /> */}
                         <Input
                           type="number"
                           min={item.minValue ?? 1}
@@ -369,12 +342,15 @@ const SystemConfigurations = () => {
                               (num < (item.minValue ?? 1) ||
                                 num > (item.maxValue ?? 100))
                             ) {
-                              // Reset or clamp value if out of range
+                              // Clamp the number, then convert back to string before setting
                               const clamped = Math.min(
                                 Math.max(num, item.minValue ?? 1),
                                 item.maxValue ?? 100
                               );
-                              handleChange(item.configurationID, clamped);
+                              handleChange(
+                                item.configurationID,
+                                String(clamped)
+                              );
                             }
                           }}
                           placeholder="Enter number"
