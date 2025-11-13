@@ -43,6 +43,7 @@ const ManageUsers = () => {
     resetModalStateBulkAction,
     setTypeofAction,
     manageUsersPendingTabData,
+    adminManageUserTabData,
   } = useMyAdmin();
 
   const {
@@ -75,7 +76,14 @@ const ManageUsers = () => {
       key: "1",
       label: (
         <span style={tabStyle("1")}>
-          Pending Requests <span style={{ color: "#30426A" }}>(02)</span>
+          Pending Requests{" "}
+          <span style={{ color: "#30426A" }}>
+            (
+            {adminManageUserTabData?.pendingReqeustCount
+              ? adminManageUserTabData?.pendingReqeustCount
+              : 0}
+            )
+          </span>
         </span>
       ),
     },

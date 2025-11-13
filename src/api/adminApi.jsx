@@ -1735,7 +1735,8 @@ export const SearchManageUserListRequest = async ({
 
     // 🔹 Handle success
     if (res.success) {
-      const { responseMessage, employees, totalRecords } = res.result;
+      const { responseMessage, employees, totalRecords, pendingReqeustCount } =
+        res.result;
       const message = getMessage(responseMessage);
 
       // Case 1 → Data available
@@ -1746,6 +1747,7 @@ export const SearchManageUserListRequest = async ({
         return {
           employees: employees || [],
           totalRecords: totalRecords || 0,
+          pendingReqeustCount: pendingReqeustCount || 0,
         };
       }
 
@@ -1757,6 +1759,7 @@ export const SearchManageUserListRequest = async ({
         return {
           employees: [],
           totalRecords: 0,
+          pendingReqeustCount: 0,
         };
       }
 
@@ -2768,8 +2771,7 @@ export const UpdateSystemConfiguration = async ({
       showNotification({
         type: "error",
         title: "Error",
-        description:
-          "Something went wrong while Update System Configurations.",
+        description: "Something went wrong while Update System Configurations.",
       });
       return null;
     }
@@ -2812,7 +2814,6 @@ export const UpdateSystemConfiguration = async ({
     showLoader(false);
   }
 };
-
 
 // For Update Edit Roles And Policies on Manage User in Admin on Save
 export const UpdateEditRolesAndPoliciesRequest = async ({
