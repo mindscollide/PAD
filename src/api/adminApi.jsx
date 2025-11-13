@@ -2462,7 +2462,7 @@ export const GetUserRegistrationHistoryByLoginID = async ({
 
     // 🔹 Handle success
     if (res.success) {
-      const { responseMessage, registrationHistory, employeeName } = res.result;
+      const { responseMessage, registrationHistory, userFullName } = res.result;
       const message = getMessage(responseMessage);
 
       // Case 1 → Data available
@@ -2472,7 +2472,7 @@ export const GetUserRegistrationHistoryByLoginID = async ({
       ) {
         return {
           registrationHistory: registrationHistory,
-          employeeName: employeeName || "",
+          userFullName: userFullName || "",
         };
       }
 
@@ -2481,7 +2481,7 @@ export const GetUserRegistrationHistoryByLoginID = async ({
         responseMessage ===
         "Admin_AdminServiceManager_GetUserRegistrationHistoryByLoginID_02"
       ) {
-        return { registrationHistory: [], employeeName: "" };
+        return { registrationHistory: [], userFullName: "" };
       }
 
       // Case 3 → Custom server messages
