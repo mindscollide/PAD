@@ -2861,8 +2861,17 @@ export const UpdateEditRolesAndPoliciesRequest = async ({
         return true;
       }
 
-      // Case 3 → Custom server messages
+      // Case 3 → Admin cannot update their own status
       if (message) {
+      }
+
+      // Case 6 → Data available
+      if (
+        responseMessage ===
+        "PAD_UserServiceManager_UpdateUserDetailsWithRolesAndPolicies_06"
+      ) {
+        // setEditrolesAndPoliciesUser(false);
+        return true;
       }
 
       return false;

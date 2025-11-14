@@ -510,6 +510,8 @@ export const responseMessages = {
     "Exception occurred",
   PAD_UserServiceManager_UpdateUserDetailsWithRolesAndPolicies_05:
     "Unauthorized User",
+  PAD_UserServiceManager_UpdateUserDetailsWithRolesAndPolicies_06:
+    "Admin cannot update their own status",
 
   // GetAllSystemConfigurations
   Admin_AdminServiceManager_GetAllSystemConfigurations: "Data found",
