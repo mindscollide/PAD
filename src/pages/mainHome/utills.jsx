@@ -1,4 +1,5 @@
 export const roleKeyMap = {
+  1: "admin",
   2: "employee",
   3: "lineManager",
   4: "complianceOfficer",
