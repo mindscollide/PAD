@@ -28,32 +28,29 @@ export const intimationEditRoleAndPoliciesTable = ({ sortedInfo }) => [
   {
     title: (
       <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-        Employee ID {getSortIcon("dateRange", sortedInfo)}
+        Employee ID {getSortIcon("employeeID", sortedInfo)}
       </div>
     ),
-    dataIndex: "dateRange",
-    key: "dateRange",
+    dataIndex: "employeeID",
+    key: "employeeID",
     width: "200px",
-    sorter: (a, b) => a.dateRange.localeCompare(b.dateRange), // ✅ fixed sorter
+    sorter: (a, b) => a.employeeID.localeCompare(b.employeeID), // ✅ fixed sorter
     sortDirections: ["ascend", "descend"],
-    sortOrder: sortedInfo?.columnKey === "dateRange" ? sortedInfo.order : null,
+    sortOrder: sortedInfo?.columnKey === "employeeID" ? sortedInfo.order : null,
     showSorterTooltip: false,
     sortIcon: () => null,
-    render: (date, record) => <span className="font-medium">{date}</span>,
+    render: (text, record) => <span className="font-medium">{text}</span>,
   },
   {
     title: (
       <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-        Employee Name {getSortIcon("duration", sortedInfo)}
+        Employee Name {getSortIcon("employeeName", sortedInfo)}
       </div>
     ),
-    dataIndex: "duration",
-    key: "duration",
+    dataIndex: "employeeName",
+    key: "employeeName",
     width: "300px",
-    sorter: (a, b) => {
-      const getDays = (value) => parseInt(value.replace(/\D/g, ""), 10) || 0; // safely extract number from "7 Days"
-      return getDays(a.duration) - getDays(b.duration);
-    },
+    sorter: (a, b) => a.employeeName.localeCompare(b.employeeName),
     sortDirections: ["ascend", "descend"],
     sortOrder: sortedInfo?.columnKey === "duration" ? sortedInfo.order : null,
     showSorterTooltip: false,

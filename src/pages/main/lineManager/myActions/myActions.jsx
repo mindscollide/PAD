@@ -330,69 +330,96 @@ const MyAction = () => {
 
   const mapMyActionData = (data) => {
     if (!data?.requests) return [];
+
+    const getBundleIconType = (state) => {
+      switch (state) {
+        case 2:
+          return "Approved";
+        case 3:
+          return "Decline";
+        default:
+          return "Pending";
+      }
+    };
+
+    // ❗ REMOVE "Compliant" and "Declined" from workflow icon mapping
     const getWorkFlowIconType = (id) => {
       switch (id) {
-        case 8:
-          return "Compliant"; // ✅ CheckIcon
         case 6:
-          return "Not-Traded"; // 🚫 NotTraded
+          return "Not-Traded";
         case 5:
-          return "Traded"; // 💵 Dollar
+          return "Traded";
         case 2:
-          return "Resubmit"; // 🔁 Resubmitted
+          return "Resubmit";
+        case 3:
+          return "Approved";
+        // case 4 (Declined) → removed
+        // case 8 (Compliant) → removed
         default:
           return "ellipsis";
       }
     };
-    const getBundleIconType = (state) => {
-      switch (state) {
-        case 2:
-          return "Approved"; // ✅ Check icon
-        case 3:
-          return "Decline"; // ❌ Cross icon
-        default:
-          return "ellipsis"; // ⏳ Pending
-      }
-    };
 
-    return data.requests.map((req) => {
-      const workFlowIcon = getWorkFlowIconType(req.workFlowStatusID);
+    return data.requests.map((wf) => {
+      // Step 0: Send For Approval
+      const sendForApprovalStep = {
+        status: "Send for Approval",
+        date: formatApiDateTime(`${wf.requestedDate} ${wf.requestedTime}`),
+        iconType: "SendForApproval",
+      };
 
-      // Build trail (Approval timeline)
-      const trail = [
-        ...(req.bundleHistory?.map((b) => ({
+      // Step 1: Bundle hierarchy
+      const bundleSteps =
+        wf.bundleHistory?.map((b) => ({
           status:
             b.bundleStatus === 2
               ? "Approved"
               : b.bundleStatus === 3
-              ? "Decline"
+              ? "Declined"
               : "Pending",
           user: `${b.firstName} ${b.lastName}`,
           date: formatApiDateTime(
             `${b.bundleModifiedDate} ${b.bundleModifiedTime}`
           ),
           iconType: getBundleIconType(b.bundleStatus),
-        })) || []),
-        {
-          status: req.workFlowStatusName || req.statusState,
-          date: formatApiDateTime(`${req.requestedDate} ${req.requestedTime}`),
-          requesterID: dashBetweenApprovalAssets(req.approvalID),
-          iconType: workFlowIcon,
-        },
+        })) || [];
+
+      // Step 2: Final workflow status
+      const finalStepStatus = wf.workFlowStatusID;
+
+      // ❗ EXCLUDE Compliant (ID 8) and Declined (ID 4)
+      const shouldAddFinalStep = ![8, 4].includes(finalStepStatus);
+
+      let finalStep = null;
+
+      if (shouldAddFinalStep) {
+        finalStep = {
+          status: wf.workFlowStatusName,
+          date: formatApiDateTime(`${wf.requestedDate} ${wf.requestedTime}`),
+          requesterID: dashBetweenApprovalAssets(wf.approvalID),
+          iconType: getWorkFlowIconType(wf.workFlowStatusID),
+        };
+      }
+
+      // 🔥 Final ordered steps
+      const trail = [
+        sendForApprovalStep,
+        ...bundleSteps,
+        ...(shouldAddFinalStep ? [finalStep] : []),
       ];
 
       return {
-        id: String(req.requestID),
-        approvalID: req.approvalID,
-        instrumentName: req.instrumentName,
-        instrumentShortCode: req.instrumentShortCode,
-        assetShortCode: req.assetShortCode,
-        requesterName: req.requesterName,
-        creationDate: req.requestedDate,
-        creationTime: req.requestedTime,
-        quantity: Number(req.quantity),
-        type: req.typeName || req.type,
-        status: req.workFlowStatusName || req.statusState,
+        id: String(wf.requestID),
+        approvalID: wf.approvalID,
+        instrumentName: wf.instrumentName,
+        instrumentShortCode: wf.instrumentShortCode,
+        assetShortCode: wf.assetShortCode,
+        requesterName: wf.requesterName,
+        creationDate: wf.requestedDate,
+        creationTime: wf.requestedTime,
+        quantity: Number(wf.quantity),
+        type: wf.typeName || wf.type,
+        status: wf.workFlowStatusName || wf.statusState,
         trail,
       };
     });

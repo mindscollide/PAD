@@ -27,7 +27,7 @@ const ApprovalStepper = ({ trail }) => {
         return <img src={CrossIcon} alt={altText} width={50} height={50} />;
       case "Traded":
         return <img src={Dollar} alt={altText} width={50} height={50} />;
-      case "Approval":
+      case "SendForApproval":
         return (
           <img src={SendForApproval} alt={altText} width={50} height={50} />
         );
@@ -75,11 +75,10 @@ const ApprovalStepper = ({ trail }) => {
                   {step.status}{" "}
                   {step.user && (
                     <>
-                      {" by "}{" "}
-                      <strong className={styles.stepTileStrongText}>
-                        {" "}
+                      {"by"}
+                      <span className={styles.stepTileStrongText}>
                         {step.user}
-                      </strong>
+                      </span>
                     </>
                   )}
                 </div>

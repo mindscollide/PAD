@@ -642,8 +642,7 @@ const ViewDetailModal = () => {
                   </>
                 )}
 
-                {statusDataLM.label === "Traded" ||
-                statusDataLM.label === "Resubmitted" ||
+                {statusDataLM.label === "Resubmitted" ||
                 statusDataLM.label === "Not Traded" ? (
                   <>
                     <Col span={[24]}>

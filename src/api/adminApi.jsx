@@ -2822,9 +2822,12 @@ export const UpdateEditRolesAndPoliciesRequest = async ({
   showLoader,
   requestdata,
   setEditrolesAndPoliciesUser,
+  setRoleAndPoliciesIntimationModal,
   navigate,
 }) => {
   try {
+    console.log("Check is this COming");
+
     // 🔹 API Call
     const res = await callApi({
       requestMethod: import.meta.env
@@ -2839,17 +2842,12 @@ export const UpdateEditRolesAndPoliciesRequest = async ({
 
     // 🔹 Validate execution
     if (!res?.result?.isExecuted) {
-      showNotification({
-        type: "error",
-        title: "Error",
-        description: "Something went wrong while fetching Group Policies List.",
-      });
       return false;
     }
 
     // 🔹 Handle success
     if (res.success) {
-      const { responseMessage } = res.result;
+      const { responseMessage, employees, hasDependency } = res.result;
       const message = getMessage(responseMessage);
 
       // Case 1 → Data available
@@ -2861,17 +2859,33 @@ export const UpdateEditRolesAndPoliciesRequest = async ({
         return true;
       }
 
-      // Case 3 → Admin cannot update their own status
-      if (message) {
-      }
-
       // Case 6 → Data available
       if (
         responseMessage ===
         "PAD_UserServiceManager_UpdateUserDetailsWithRolesAndPolicies_06"
       ) {
-        // setEditrolesAndPoliciesUser(false);
-        return true;
+        console.log("Check is this COming");
+
+        setEditrolesAndPoliciesUser(true);
+        setRoleAndPoliciesIntimationModal(true);
+        return {
+          employees: employees || [],
+          hasDependency: hasDependency || false,
+        };
+      }
+
+      if (
+        responseMessage ===
+        "PAD_UserServiceManager_UpdateUserDetailsWithRolesAndPolicies_07"
+      ) {
+        console.log("Check is this COming");
+
+        setEditrolesAndPoliciesUser(true);
+        setRoleAndPoliciesIntimationModal(true);
+        return {
+          employees: employees || [],
+          hasDependency: hasDependency || false,
+        };
       }
 
       return false;

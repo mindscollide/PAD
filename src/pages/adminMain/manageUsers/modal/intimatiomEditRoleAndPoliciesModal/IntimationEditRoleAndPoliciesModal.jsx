@@ -29,6 +29,8 @@ const IntimationEditRoleAndPoliciesModal = () => {
 
   // 🔹  Context State of View Detail Modal in which All data store
   const { storeEditRolesAndPoliciesData } = useMyAdmin();
+  console.log(storeEditRolesAndPoliciesData, "storeEditRolesAndPoliciesData");
+  const employees = storeEditRolesAndPoliciesData?.employees || [];
 
   // 🔹 intimation EditRole And Policies Table Borderless Table
   const columns = intimationEditRoleAndPoliciesTable({
@@ -56,6 +58,7 @@ const IntimationEditRoleAndPoliciesModal = () => {
               <Col>
                 <BorderlessTable
                   columns={columns}
+                  rows={employees}
                   pagination={false}
                   size="small"
                   classNameTable="border-less-table-upcomingTable"
@@ -73,7 +76,6 @@ const IntimationEditRoleAndPoliciesModal = () => {
                 className="big-light-button"
                 onClick={() => setRoleAndPoliciesIntimationModal(false)}
               />
-              <CustomButton text={"Save"} className="big-dark-button" />
             </Row>
           </div>
         </>
