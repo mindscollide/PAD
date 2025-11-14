@@ -50,7 +50,7 @@ export const getGroupPolicyColumns = ({ onViewDetails, onEdit }) => [
     key: "groupTitle",
     width: "20%",
     render: (text) => {
-      const truncated = text?.length > 50 ? text.slice(0, 50) + "…" : text;
+      const truncated = text?.length > 35 ? text.slice(0, 35) + "…" : text;
       return (
         <Tooltip title={text}>
           <span className={styles.groupPolicyName}>{truncated}</span>
