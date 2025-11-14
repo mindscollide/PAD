@@ -16,6 +16,19 @@ import timezone from "dayjs/plugin/timezone";
 // Enable plugins
 dayjs.extend(utc);
 dayjs.extend(timezone);
+
+function convertCode(code) {
+  const [prefix, number] = code.split("_"); // "PL", "00000001"
+
+  // Take first 2 digits for the middle part
+  const mid = number.slice(0, 2); // "00"
+
+  // Remaining digits for the last part
+  const last = number.slice(2); // "000001"
+
+  return `${prefix}_${mid}_${last}`;
+}
+
 // Helper to normalize duration into array of strings
 const getDurationParts = (duration) => {
   try {
@@ -103,13 +116,13 @@ export const policyColumns = ({
     // 🧩 Policy ID
     {
       title: "Policy ID",
-      dataIndex: "policyId",
-      key: "policyId",
-      width: 100,
-      render: (policyId) => (
-        <Tooltip title={policyId}>
+      dataIndex: "policyCode",
+      key: "policyCode",
+      width: 120,
+      render: (policyCode) => (
+        <Tooltip title={policyCode}>
           <span style={{ fontFamily: "monospace" }}>
-            {policyId || "PL_XX_0000"}
+            {convertCode(policyCode) || "PL_XX_0000"}
           </span>
         </Tooltip>
       ),
@@ -261,7 +274,7 @@ export const policyColumns = ({
             case 1:
               return (
                 <span>
-                  {Number(duration) || "-"} {valueUnit}
+                  {duration ? Number(duration) : "-"} {valueUnit}
                 </span>
               );
 

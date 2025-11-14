@@ -116,22 +116,63 @@ const Home = () => {
 
   // Admin
   const policyAssign = useMemo(
-    () => dashboardData?.admin?.policyAssign?.data || [],
-    [dashboardData?.admin?.policyAssign?.data]
+    () => dashboardData?.admin?.policyAssignedToUsers?.data || [],
+    [dashboardData?.admin?.policyAssignedToUsers?.data]
   );
   const instrument = useMemo(
-    () => dashboardData?.admin?.instrument?.data || [],
-    [dashboardData?.admin?.instrument?.data]
+    () => dashboardData?.admin?.instruments?.data || [],
+    [dashboardData?.admin?.instruments?.data]
   );
   const brokers = useMemo(
     () => dashboardData?.admin?.brokers?.data || [],
     [dashboardData?.admin?.brokers?.data]
   );
   const groupPolicy = useMemo(
-    () => dashboardData?.admin?.groupPolicy?.data || [],
-    [dashboardData?.admin?.groupPolicy?.data]
+    () => dashboardData?.admin?.groupPolicies?.data || [],
+    [dashboardData?.admin?.groupPolicies?.data]
   );
+  const fetchData = async () => {
+    if (!roles || roles.length === 0) {
+      hasFetched.current = false;
+      return;
+    }
 
+    try {
+      await showLoader(true);
+      const data = await GetUserDashBoardStats({
+        callApi,
+        setEmployeeBasedBrokersData,
+        setAllInstrumentsData,
+        setAssetTypeListingData,
+        setGetAllPredefineReasonData,
+        setWebNotificationData,
+        showNotification,
+        showLoader,
+        webNotificationDataMqtt,
+        navigate,
+      });
+      // Handle session expiration
+      if (!data) return showLoader(false);
+
+      // Filter data based on user roles
+      const filteredData = {
+        title: data.title, // Include title if needed
+      };
+      roles.forEach(({ roleID }) => {
+        const roleKey = roleKeyMap[roleID];
+        if (roleKey && data[roleKey]) {
+          filteredData[roleKey] = data[roleKey];
+        }
+      });
+
+      showLoader(false);
+      await setDashboardData(filteredData);
+    } catch (error) {
+      showLoader(false);
+      console.error("Failed to fetch home summary", error);
+    }
+  };
+  console.log("policyAssign", dashboardData);
   useEffect(() => {
     if (hasFetched.current) return;
     hasFetched.current = true;
@@ -144,47 +185,6 @@ const Home = () => {
         setUrgentAlert(false);
       }
     }
-    const fetchData = async () => {
-      if (!roles || roles.length === 0) {
-        hasFetched.current = false;
-        return;
-      }
-
-      try {
-        await showLoader(true);
-        const data = await GetUserDashBoardStats({
-          callApi,
-          setEmployeeBasedBrokersData,
-          setAllInstrumentsData,
-          setAssetTypeListingData,
-          setGetAllPredefineReasonData,
-          setWebNotificationData,
-          showNotification,
-          showLoader,
-          webNotificationDataMqtt,
-          navigate,
-        });
-        // Handle session expiration
-        if (!data) return showLoader(false);
-
-        // Filter data based on user roles
-        const filteredData = {
-          title: data.title, // Include title if needed
-        };
-        roles.forEach(({ roleID }) => {
-          const roleKey = roleKeyMap[roleID];
-          if (roleKey && data[roleKey]) {
-            filteredData[roleKey] = data[roleKey];
-          }
-        });
-
-        showLoader(false);
-        await setDashboardData(filteredData);
-      } catch (error) {
-        showLoader(false);
-        console.error("Failed to fetch home summary", error);
-      }
-    };
 
     fetchData();
   }, []);
@@ -215,19 +215,19 @@ const Home = () => {
                   locationStyle={"up"}
                   title={"Policy Assign to the Users"}
                   mainClassName={"smallShareHomeCard2"}
-                  // boxes={policyAssign}
-                  boxes={[
-                    {
-                      count: 13,
-                      label: "unrestricted",
-                      type: "unrestricted",
-                    },
-                    {
-                      count: 2,
-                      label: "restricted",
-                      type: "restricted",
-                    },
-                  ]}
+                  boxes={policyAssign}
+                  // boxes={[
+                  //   {
+                  //     count: 13,
+                  //     label: "unrestricted",
+                  //     type: "unrestricted",
+                  //   },
+                  //   {
+                  //     count: 2,
+                  //     label: "restricted",
+                  //     type: "restricted",
+                  //   },
+                  // ]}
                   buttonTitle={"See More"}
                   buttonId={"policy-assign-view-btn-admin"}
                   buttonClassName={"big-white-card-button"}
@@ -244,19 +244,19 @@ const Home = () => {
                   locationStyle={"up"}
                   title="Instruments"
                   mainClassName="mediumHomeCard"
-                  // boxes={instrument}
-                  boxes={[
-                    {
-                      count: 16,
-                      label: "Active instruments",
-                      type: "Active instruments",
-                    },
-                    {
-                      count: 5,
-                      label: "Inactive instruments",
-                      type: "Inactive instruments",
-                    },
-                  ]}
+                  boxes={instrument}
+                  // boxes={[
+                  //   {
+                  //     count: 16,
+                  //     label: "Active instruments",
+                  //     type: "Active instruments",
+                  //   },
+                  //   {
+                  //     count: 5,
+                  //     label: "Inactive instruments",
+                  //     type: "Inactive instruments",
+                  //   },
+                  // ]}
                   buttonTitle="See More"
                   buttonClassName={"big-white-card-button"}
                   buttonId={"instruments-view-btn-admin"}
@@ -269,19 +269,19 @@ const Home = () => {
                   locationStyle={"up"}
                   title="Brokers"
                   mainClassName="mediumHomeCard"
-                  // boxes={brokers}
-                  boxes={[
-                    {
-                      count: 13,
-                      label: "Active Brokers",
-                      type: "Active Brokers",
-                    },
-                    {
-                      count: 2,
-                      label: "Inactive Brokers",
-                      type: "Inactive Brokers",
-                    },
-                  ]}
+                  boxes={brokers}
+                  // boxes={[
+                  //   {
+                  //     count: 13,
+                  //     label: "Active Brokers",
+                  //     type: "Active Brokers",
+                  //   },
+                  //   {
+                  //     count: 2,
+                  //     label: "Inactive Brokers",
+                  //     type: "Inactive Brokers",
+                  //   },
+                  // ]}
                   buttonTitle="See More"
                   buttonClassName={"big-white-card-button"}
                   buttonId={"brokers-view-btn-admin"}
@@ -296,19 +296,19 @@ const Home = () => {
                   locationStyle={"up"}
                   title="Group Policies"
                   mainClassName="mediumHomeCard"
-                  // boxes={groupPolicy}
-                  boxes={[
-                    {
-                      count: 4,
-                      label: "Groups",
-                      type: "Groups",
-                    },
-                    {
-                      count: 32,
-                      label: "Total users",
-                      type: "Total users",
-                    },
-                  ]}
+                  boxes={groupPolicy}
+                  // boxes={[
+                  //   {
+                  //     count: 4,
+                  //     label: "Groups",
+                  //     type: "Groups",
+                  //   },
+                  //   {
+                  //     count: 32,
+                  //     label: "Total users",
+                  //     type: "Total users",
+                  //   },
+                  // ]}
                   buttonTitle="See More"
                   buttonClassName={"big-white-card-button"}
                   buttonId={"group-policy-view-btn-admin"}
