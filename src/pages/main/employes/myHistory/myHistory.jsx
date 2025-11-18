@@ -481,12 +481,6 @@ const MyHistory = () => {
                     <img src={Excel} alt="Excel" draggable={false} />
                     <span>Export Excel</span>
                   </div>
-                  <div className={style.dropdownItem}>
-                    <img src={PDF} alt="PDF" draggable={false} />
-                    <span onClick={() => setUploadComplianceModal(true)}>
-                      Export CSV
-                    </span>
-                  </div>
                 </div>
               )}
             </Col>
