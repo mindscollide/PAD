@@ -23,6 +23,7 @@ import { HeadOfTradeEscalatedFilter } from "./HeadOfTradeEscalatedFilter";
 import { LineManagerApprovalFilter } from "./LineManagerApprovalFilter";
 import { EmployeeHistoryFilter } from "./EmployeeHistoryFilter";
 import { LineManagerMyAction } from "./LineManagerMyActionFilter";
+import { EmployeeTransactionReportFilter } from "./EmployeeTransactionReportFilter";
 
 // this is used for open specific filter according to page
 export const renderFilterContent = (
@@ -80,6 +81,16 @@ export const renderFilterContent = (
         />
       );
 
+    case "5": // Employee → Report / MyTransaction
+      return (
+        <EmployeeTransactionReportFilter
+          setVisible={setVisible}
+          clear={clear}
+          setClear={setClear}
+          maininstrumentName={searchMain}
+          setMaininstrumentName={setSearchMain}
+        />
+      );
     case "6": // Line Manager Approval
       return (
         <LineManagerApprovalFilter

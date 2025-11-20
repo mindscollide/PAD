@@ -3,8 +3,6 @@ import ArrowUP from "../../../../assets/img/arrow-up-dark.png";
 import ArrowDown from "../../../../assets/img/arrow-down-dark.png";
 import DefaultColumArrow from "../../../../assets/img/default-colum-arrow.png";
 import React from "react";
-import TypeColumnTitle from "../../../../components/dropdowns/filters/typeColumnTitle";
-import StatusColumnTitle from "../../../../components/dropdowns/filters/statusColumnTitle";
 import { Tag, Tooltip } from "antd";
 import style from "./myActions.module.css";
 import {

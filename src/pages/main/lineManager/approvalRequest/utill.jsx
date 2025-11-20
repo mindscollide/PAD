@@ -7,10 +7,9 @@ import style from "./approvalRequest.module.css";
 import EscalatedIcon from "../../../../assets/img/escalated.png";
 import ArrowUP from "../../../../assets/img/arrow-up-dark.png";
 import ArrowDown from "../../../../assets/img/arrow-down-dark.png";
-import { ArrowsAltOutlined } from "@ant-design/icons";
+import DefaultColumArrow from "../../../../assets/img/default-colum-arrow.png";
 import TypeColumnTitle from "../../../../components/dropdowns/filters/typeColumnTitle";
 import StatusColumnTitle from "../../../../components/dropdowns/filters/statusColumnTitle";
-import { useGlobalModal } from "../../../../context/GlobalModalContext";
 import {
   dashBetweenApprovalAssets,
   formatApiDateTime,
@@ -99,7 +98,14 @@ const getSortIcon = (columnKey, sortedInfo) => {
       />
     );
   }
-  return <ArrowsAltOutlined className="custom-sort-icon" />;
+  return (
+    <img
+      draggable={false}
+      src={DefaultColumArrow}
+      alt="Default"
+      className="custom-sort-icon"
+    />
+  );
 };
 
 const withSortIcon = (label, columnKey, sortedInfo) => (

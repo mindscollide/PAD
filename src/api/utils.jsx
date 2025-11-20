@@ -527,6 +527,27 @@ export const responseMessages = {
   PAD_Trade_LineManagerActionsWorkflowDetail_01: "Data Available",
   PAD_Trade_LineManagerActionsWorkflowDetail_02: "No data available",
   PAD_Trade_LineManagerActionsWorkflowDetail_03: "Exception",
+
+  // ==============================
+  // My Transaction Report  (Employee Role)
+  // ==============================
+  // Report For Get Employee Transaction Request Report API
+  PAD_Trade_TradeServiceManager_GetEmployeeTransactionReqeustReports_01:
+    "Data Available",
+  PAD_Trade_TradeServiceManager_GetEmployeeTransactionReqeustReports_02:
+    "No data available",
+  PAD_Trade_TradeServiceManager_GetEmployeeTransactionReqeustReports_03:
+    "Exception",
+
+  // ==============================
+  // My Trade Approval Standing  Report  (Employee Role)
+  // ==============================
+  PAD_Trade_TradeServiceManager_GetEmployeeTradeApprovalStandingSummary_01:
+    "Data Available",
+  PAD_Trade_TradeServiceManager_GetEmployeeTradeApprovalStandingSummary_02:
+    "No data available",
+  PAD_Trade_TradeServiceManager_GetEmployeeTradeApprovalStandingSummary_03:
+    "Exception",
 };
 
 /**

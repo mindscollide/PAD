@@ -44,7 +44,6 @@ const MyAction = () => {
 
   const [sortedInfo, setSortedInfo] = useState({});
 
-  const [open, setOpen] = useState(false);
   const [loadingMore, setLoadingMore] = useState(false);
   const [hasMore, setHasMore] = useState(true); // until proven otherwise
 
@@ -469,37 +468,6 @@ const MyAction = () => {
           >
             <Col>
               <span className={style["heading"]}>My Actions</span>
-            </Col>
-            <Col style={{ position: "relative" }}>
-              <CustomButton
-                text={"Export"}
-                className="big-light-button"
-                icon={<DownloadOutlined />}
-                iconPosition="end"
-                onClick={() => setOpen((prev) => !prev)}
-              />
-
-              {open && (
-                <div className={style.dropdownExport}>
-                  <div className={style.dropdownItem}>
-                    <img src={PDF} alt="PDF" draggable={false} />
-                    <span>Export PDF</span>
-                  </div>
-                  <div
-                    className={style.dropdownItem}
-                    onClick={downloadMyActionsReportInExcelFormat}
-                  >
-                    <img src={Excel} alt="Excel" draggable={false} />
-                    <span>Export Excel</span>
-                  </div>
-                  <div className={style.dropdownItem}>
-                    <img src={PDF} alt="PDF" draggable={false} />
-                    <span onClick={() => setUploadComplianceModal(true)}>
-                      Export CSV
-                    </span>
-                  </div>
-                </div>
-              )}
             </Col>
           </Row>
           {/* Table */}
