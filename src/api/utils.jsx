@@ -525,6 +525,14 @@ export const responseMessages = {
   PAD_Trade_LineManagerActionsWorkflowDetail_01: "Data Available",
   PAD_Trade_LineManagerActionsWorkflowDetail_02: "No data available",
   PAD_Trade_LineManagerActionsWorkflowDetail_03: "Exception",
+
+  // for Get Employee Reports Dashboard StatsAPI
+  PAD_Trade_TradeServiceManager_GetEmployeeReportsDashboardStats_01:
+    "Data Available",
+  PAD_Trade_TradeServiceManager_GetEmployeeReportsDashboardStats_02:
+    "No data available",
+  PAD_Trade_TradeServiceManager_GetEmployeeReportsDashboardStats_03:
+    "Exception",
 };
 
 /**

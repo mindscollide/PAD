@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import styles from "./boxCard.module.css";
 
-const AnimatedCount = ({ value, className = "", style = {} }) => {
+const AnimatedCount = ({ value, className = "", style = {}, flag = false }) => {
   const [digits, setDigits] = useState([]);
 
   useEffect(() => {
@@ -11,7 +11,13 @@ const AnimatedCount = ({ value, className = "", style = {} }) => {
   }, [value]);
 
   return (
-    <div className={styles.counterWrapper}>
+    <div
+      className={styles.counterWrapper}
+      style={{
+        display: "flex",
+        justifyContent: flag ? "flex-end" : "flex-start",
+      }}
+    >
       {digits.map((digit, i) => (
         <div key={i} className={styles.digitWrapper}>
           {/^\d$/.test(digit) ? (

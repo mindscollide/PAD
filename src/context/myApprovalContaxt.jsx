@@ -22,7 +22,8 @@ export const MyApprovalProvider = ({ children }) => {
     workFlows: [],
     totalRecords: 0,
   });
-
+  const [employeeReportsDashboardData, setIsEmployeeReportsDashboardData] =
+    useState([]);
   // Reset function to set all states back to initial values
   const resetMyApprovalContextState = () => {
     setIsEmployeeMyApproval({
@@ -111,6 +112,10 @@ export const MyApprovalProvider = ({ children }) => {
         // MyAAction in Lne Manager Page context state
         myActionLineManagerData,
         setMyActionLineManagerData,
+
+        // Employee Reports Dashboard Data
+        employeeReportsDashboardData,
+        setIsEmployeeReportsDashboardData,
       }}
     >
       {children}
