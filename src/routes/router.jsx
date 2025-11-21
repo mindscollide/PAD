@@ -36,6 +36,7 @@ import {
 import RoleBasedRoute from "./RoleBasedRoute";
 import EscalatedApprovals from "../pages/main/headOfTradeApprover/escalatedApprovals/escalatedApprovals";
 import MyAction from "../pages/main/lineManager/myActions/myActions";
+import LineManagerReportsIndex from "../pages/main/lineManager/reports";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -125,7 +126,7 @@ const router = createBrowserRouter(
           path="lm-reports"
           element={
             <RoleBasedRoute isAdmin={false} allowedRoles={[3]}>
-              <EmpolyesReportsIndex />{" "}
+              <LineManagerReportsIndex />{" "}
             </RoleBasedRoute>
           }
         />

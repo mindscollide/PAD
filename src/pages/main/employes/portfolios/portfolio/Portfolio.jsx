@@ -25,7 +25,7 @@ import {
   toYYMMDD,
 } from "../../../../../common/funtions/rejex";
 import UploadIcon from "../../../../../assets/img/upload-icon.png";
-import { getEmployeePortfolioColumns } from "./utils";
+import { buildPortfolioRequest, getEmployeePortfolioColumns } from "./utils";
 import { formatBrokerOptions } from "../pendingApprovals/utill";
 import { useNavigate } from "react-router-dom";
 
@@ -66,25 +66,6 @@ const Portfolio = ({ className, activeFilters }) => {
     Text,
   });
 
-  const buildPortfolioRequest = (searchState = {}) => {
-    const startDate = searchState.startDate
-      ? toYYMMDD(searchState.startDate)
-      : "";
-    const endDate = searchState.endDate ? toYYMMDD(searchState.endDate) : "";
-
-    return {
-      InstrumentName:
-        searchState.mainInstrumentName || searchState.instrumentName || "",
-      Quantity: searchState.quantity ? Number(searchState.quantity) : 0,
-      StartDate: startDate,
-      EndDate: endDate,
-      BrokerIds: Array.isArray(searchState.brokerIDs)
-        ? searchState.brokerIDs
-        : [],
-      PageNumber: Number(searchState.pageNumber) || 0,
-      Length: Number(searchState.pageSize) || 10,
-    };
-  };
 
   const fetchPortfolio = useCallback(
     async (requestData, replace = false) => {
