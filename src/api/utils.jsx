@@ -533,6 +533,13 @@ export const responseMessages = {
     "No data available",
   PAD_Trade_TradeServiceManager_GetEmployeeReportsDashboardStats_03:
     "Exception",
+
+  //Get LineManager Report DashBoard
+  PAD_Trade_TradeServiceManager_LineManagerTradeApprovalCounts_01:
+    "Data Available",
+  PAD_Trade_TradeServiceManager_LineManagerTradeApprovalCounts_02:
+    "No data available",
+  PAD_Trade_TradeServiceManager_LineManagerTradeApprovalCounts_03: "Exception",
 };
 
 /**

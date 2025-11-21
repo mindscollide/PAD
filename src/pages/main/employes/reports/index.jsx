@@ -40,7 +40,7 @@ const EmpolyesReportsIndex = () => {
 
   const MemoizedBoxCard = React.memo(BoxCard);
 
-  const { employeeReportsDashboardData, setIsEmployeeReportsDashboardData } =
+  const { employeeReportsDashboardData, setEmployeeReportsDashboardData } =
     useMyApproval();
 
   /**
@@ -58,7 +58,7 @@ const EmpolyesReportsIndex = () => {
       });
 
       // Apply role-based filtering here if needed
-      await setIsEmployeeReportsDashboardData(res || []);
+      await setEmployeeReportsDashboardData(res || []);
       console.log("employeeReportsDashboardData", res);
     } catch (error) {
       console.error("Failed to fetch reports:", error);

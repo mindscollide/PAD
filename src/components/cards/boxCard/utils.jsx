@@ -168,6 +168,18 @@ export const typeColorMap = {
     textCountColor: "#A50000",
     textAlign: "center",
   },
+   pending_approvals: {
+   bgColor: "#FFF1E7",
+    textLableColor: "#F67F29", // Using var(--Blue-V1)
+    textCountColor: "#F67F29",
+    textAlign: "center",
+  },
+   user_approval_requests: {
+    bgColor: "#C5FFC7",
+    textLableColor: "#00640A",
+    textCountColor: "#00640A",
+    textAlign: "center",
+  },
 };
 
 // ============================

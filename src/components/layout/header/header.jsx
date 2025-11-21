@@ -53,7 +53,8 @@ const Headers = () => {
               selectedKeyRef.current !== "5" &&
               selectedKeyRef.current !== "50" &&
               selectedKeyRef.current !== "20" &&
-              selectedKeyRef.current !== "22" ? (
+              selectedKeyRef.current !== "22" &&
+              selectedKeyRef.current !== "8" ? (
                 <SearchWithFilter />
               ) : selectedKeyRef.current === "20" &&
                 !openNewFormForAdminGropusAndPolicy ? (

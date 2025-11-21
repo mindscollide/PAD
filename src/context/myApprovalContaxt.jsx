@@ -22,8 +22,13 @@ export const MyApprovalProvider = ({ children }) => {
     workFlows: [],
     totalRecords: 0,
   });
-  const [employeeReportsDashboardData, setIsEmployeeReportsDashboardData] =
+  // employee reports data
+  const [employeeReportsDashboardData, setEmployeeReportsDashboardData] =
     useState([]);
+  // linemanager reports data
+  const [lineManagerReportsDashboardData, setLineManagerReportsDashboardData] =
+    useState([]);
+
   // Reset function to set all states back to initial values
   const resetMyApprovalContextState = () => {
     setIsEmployeeMyApproval({
@@ -115,7 +120,11 @@ export const MyApprovalProvider = ({ children }) => {
 
         // Employee Reports Dashboard Data
         employeeReportsDashboardData,
-        setIsEmployeeReportsDashboardData,
+        setEmployeeReportsDashboardData,
+
+        // Line Manager Reports Dashboard Data
+        lineManagerReportsDashboardData,
+        setLineManagerReportsDashboardData,
       }}
     >
       {children}

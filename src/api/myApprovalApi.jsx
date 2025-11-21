@@ -986,7 +986,7 @@ export const GetEmployeeReportsDashboardStatsAPI = async ({
         type: "error",
         title: "Error",
         description:
-          "Something went wrong while fetching registration History.",
+          "Something went wrong while fetching employee Dashboard reports Api.",
       });
       return null;
     }
@@ -1020,6 +1020,103 @@ export const GetEmployeeReportsDashboardStatsAPI = async ({
       if (
         responseMessage ===
         "PAD_Trade_TradeServiceManager_GetEmployeeReportsDashboardStats_02"
+      ) {
+        return [];
+      }
+
+      // Case 3 → Custom server messages
+      if (message) {
+        showNotification({
+          type: "warning",
+          title: message,
+          description: message,
+        });
+      }
+
+      return null;
+    }
+
+    // 🔹 Handle failure
+    showNotification({
+      type: "error",
+      title: "Fetch Failed",
+      description: getMessage(res.message),
+    });
+    return null;
+  } catch (error) {
+    // 🔹 Exception handling
+    showNotification({
+      type: "error",
+      title: "Error",
+      description:
+        "An unexpected error occurred while request Employee Reports Dashboard Stats API .",
+    });
+    return null;
+  } finally {
+    // 🔹 Always hide loader
+    showLoader(false);
+  }
+};
+
+
+// Line Manager dashbord api of reports
+// GetLineManagerReportDashBoard
+export const GetLineManagerReportDashBoard = async ({
+  callApi,
+  showNotification,
+  showLoader,
+  navigate,
+}) => {
+  try {
+    // 🔹 API Call
+    const res = await callApi({
+      requestMethod: import.meta.env
+        .VITE_GET_LINEMANAGERRE_PORT_DASHBOARD_API_REQUEST_METHOD, // 🔑 must be defined in .env
+      endpoint: import.meta.env.VITE_API_TRADE,
+      navigate,
+    });
+
+    // 🔹 Handle session expiry
+    if (handleExpiredSession(res, navigate, showLoader)) return null;
+
+    // 🔹 Validate execution
+    if (!res?.result?.isExecuted) {
+      showNotification({
+        type: "error",
+        title: "Error",
+        description:
+          "Something went wrong while fetching lieManager Dashboard reports Api.",
+      });
+      return null;
+    }
+    console.log("reasonsArray", res);
+
+    // 🔹 Handle success
+    if (res.success) {
+      console.log("lineManagerReportsDashboardData", res);
+      const {
+        tradeApprovalsRequests,
+        pendingApprovals,
+      } = res.result;
+      const { responseMessage } = res.result;
+      const message = getMessage(responseMessage);
+      console.log("lineManagerReportsDashboardData", res);
+
+      // Case 1 → Data available
+      if (
+        responseMessage ===
+        "PAD_Trade_TradeServiceManager_LineManagerTradeApprovalCounts_01"
+      ) {
+        return {
+          tradeApprovalsRequests:tradeApprovalsRequests.tile,
+          pendingApprovals:pendingApprovals.tile,
+        };
+      }
+
+      // Case 2 → No data
+      if (
+        responseMessage ===
+        "PAD_Trade_TradeServiceManager_LineManagerTradeApprovalCounts_02"
       ) {
         return [];
       }

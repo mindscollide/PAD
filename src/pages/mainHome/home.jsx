@@ -197,7 +197,7 @@ const Home = () => {
       console.error("Failed to fetch home summary", error);
     }
   };
-  console.log("policyAssign", dashboardData);
+  
   useEffect(() => {
     if (hasFetched.current) return;
     hasFetched.current = true;
