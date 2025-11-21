@@ -21,6 +21,35 @@
  * @param {React.ElementType} [deps.Tag] - Optional Tag component (e.g., from Ant Design) for broker display
  * @returns {Array} Column definitions for Ant Design Table
  */
+
+import { toYYMMDD } from "../../../../../common/funtions/rejex";
+
+/**
+ * Builds the request payload for portfolio API call.
+ *
+ * @param {Object} searchState - Form or filter state object
+ * @returns {Object} Normalized request payload for backend
+ */
+export const buildPortfolioRequest = (searchState = {}) => {
+  const startDate = searchState.startDate
+    ? toYYMMDD(searchState.startDate)
+    : "";
+
+  const endDate = searchState.endDate ? toYYMMDD(searchState.endDate) : "";
+
+  return {
+    InstrumentName:
+      searchState.mainInstrumentName || searchState.instrumentName || "",
+    Quantity: searchState.quantity ? Number(searchState.quantity) : 0,
+    StartDate: startDate,
+    EndDate: endDate,
+    BrokerIds: Array.isArray(searchState.brokerIDs)
+      ? searchState.brokerIDs
+      : [],
+    PageNumber: Number(searchState.pageNumber) || 0,
+    Length: Number(searchState.pageSize) || 10,
+  };
+};
 export function getEmployeePortfolioColumns({
   formatCode,
   formatApiDateTime,
