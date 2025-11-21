@@ -524,7 +524,7 @@
   display: flex;
   justify-content: center; /* centers horizontally */
   align-items: center; /* centers vertically if height > content */
-  width: 100%;
+  max-width: 100%;
 }
 .digitWrapper {
   display: inline-block; /* already makes numbers inline */
@@ -585,8 +585,8 @@
   font-family: Switzer Variable;
   font-weight: 700;
   font-style: Bold;
-  font-size: 50px;
-  line-height: 99%;
+  font-size: 47px;
+  line-height: 103%;
   letter-spacing: 0%;
   text-align: center;
 
@@ -600,7 +600,7 @@
   font-family: Switzer Variable;
   font-weight: 700;
   font-style: Bold;
-  font-size: 16px;
+  font-size: 18px;
   line-height: 100%;
   letter-spacing: 0%;
   text-align: center;
@@ -622,4 +622,16 @@
   color: #00640a;
   margin-bottom: -4px;
   margin-left: 9px;
+}
+
+
+.ellipsisContainer {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+
+  /* FORCE digits to stay on one line */
+  white-space: nowrap;
+
+  display: block; /* important */
 }
