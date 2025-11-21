@@ -8,6 +8,7 @@ export const MyApprovalProvider = ({ children }) => {
     totalRecordsDataBase: 0,
     totalRecordsTable: 0,
   });
+
   const [employeeMyApprovalMqtt, setIsEmployeeMyApprovalMqtt] = useState(false);
   // Context STate to extract data from get All View Trade Approval which is show by click on View Detail
   const [viewDetailsModalData, setViewDetailsModalData] = useState({
@@ -43,6 +44,20 @@ export const MyApprovalProvider = ({ children }) => {
       workFlowStatus: {},
     });
   };
+
+  // Report For Get Employee Transaction Request Report API
+  const [getEmployeeTransactionReport, setGetEmployeeTransactionReport] =
+    useState({
+      transactions: [],
+      totalRecordsDataBase: 0,
+      totalRecordsTable: 0,
+    });
+
+  // Report For Get Employee Trade Approval Standing Request Report API
+  const [getEmployeeTradeApprovalReport, setGetEmployeeTradeApprovalReport] =
+    useState({
+      summary: [],
+    });
 
   /* **
    Context Api States For Line Manager Start Here
@@ -118,6 +133,13 @@ export const MyApprovalProvider = ({ children }) => {
         myActionLineManagerData,
         setMyActionLineManagerData,
 
+        //Report of My Transaction in employee
+        getEmployeeTransactionReport,
+        setGetEmployeeTransactionReport,
+
+        // Report For Get Employee Trade Approval Standing Request Report API
+        getEmployeeTradeApprovalReport,
+        setGetEmployeeTradeApprovalReport,
         // Employee Reports Dashboard Data
         employeeReportsDashboardData,
         setEmployeeReportsDashboardData,

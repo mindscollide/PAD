@@ -103,7 +103,7 @@ const PendingRequest = ({ currentUserData, setCurrentUserData }) => {
   };
 
   useEffect(() => {
-    if (pendingRequestsTabSearch.filterTrigger) {
+    if (pendingRequestsTabSearch?.filterTrigger) {
       const req = buildApiRequest(pendingRequestsTabSearch);
 
       fetchApiCall(req, true);
@@ -112,7 +112,7 @@ const PendingRequest = ({ currentUserData, setCurrentUserData }) => {
         filterTrigger: false,
       }));
     }
-  }, [pendingRequestsTabSearch.filterTrigger]);
+  }, [pendingRequestsTabSearch?.filterTrigger]);
 
   useEffect(() => {
     if (manageUsersPendingTabMqtt) {

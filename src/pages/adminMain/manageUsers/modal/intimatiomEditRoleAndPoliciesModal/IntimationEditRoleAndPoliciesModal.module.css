@@ -1,0 +1,22 @@
+.unSaveChangesModal {
+  padding: 10px 40px !important;
+}
+
+.unSaveChangeHeading {
+  font-size: 26px !important;
+  font-weight: 700;
+  color: #30426a;
+  font-family: "Switzer Variable";
+}
+
+.footerActions {
+  margin-top: 30px;
+  gap: 16px !important;
+}
+
+.listOfUserName {
+  font-size: 20px !important;
+  font-weight: 700;
+  color: #30426a;
+  font-family: "Switzer Variable";
+}

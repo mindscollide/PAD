@@ -299,14 +299,18 @@ export const policyColumns = ({
               const parts = getDurationParts(duration);
               return (
                 <div className={styles.userList}>
-                  <div className={styles.userChip}>
-                    {parts[0] || "—"}
-                    {parts.length > 1 && (
-                      <span className={styles.moreCount}>
-                        +{parts.length - 1} {valueUnit}
-                      </span>
-                    )}
-                  </div>
+                  {parts.length > 0 ? (
+                    <div className={styles.userChip}>
+                      {parts[0]}
+                      {parts.length > 1 && (
+                        <span className={styles.moreCount}>
+                          +{parts.length - 1} {valueUnit}
+                        </span>
+                      )}
+                    </div>
+                  ) : (
+                    "—"
+                  )}
                 </div>
               );
             }

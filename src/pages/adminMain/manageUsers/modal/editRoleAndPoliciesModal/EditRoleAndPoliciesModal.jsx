@@ -30,6 +30,7 @@ const EditRoleAndPoliciesModal = () => {
     editrolesAndPoliciesUser,
     setEditrolesAndPoliciesUser,
     setUnSavedChangesPoliciesModal,
+    setRoleAndPoliciesIntimationModal,
   } = useGlobalModal();
 
   // 🔹  Context State of View Detail Modal in which All data store
@@ -38,8 +39,14 @@ const EditRoleAndPoliciesModal = () => {
     allUserRolesForEditRolePolicyData,
     // this is the Context state in which I get the fullName and statuses
     roleAndPolicyViewDetailData,
+    storeEditRolesAndPoliciesData,
     setStoreEditRolesAndPoliciesData,
   } = useMyAdmin();
+
+  console.log(
+    allUserRolesForEditRolePolicyData,
+    "allUserRolesForEditRolePolicyData"
+  );
 
   // 🔹 Extract user details from context
   const userDetails = roleAndPolicyViewDetailData?.userDetails;
@@ -129,11 +136,17 @@ const EditRoleAndPoliciesModal = () => {
       showLoader,
       requestdata: payload,
       setEditrolesAndPoliciesUser,
+      setRoleAndPoliciesIntimationModal,
       navigate,
     });
 
     if (res) {
-      setStoreEditRolesAndPoliciesData(res);
+      if (res && res.hasDependency) {
+        setStoreEditRolesAndPoliciesData({
+          hasDependency: res.hasDependency,
+          employees: res.employees,
+        });
+      }
     }
   };
 

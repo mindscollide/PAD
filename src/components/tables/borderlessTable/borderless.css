@@ -11,8 +11,18 @@
 } */
 
 /* Table Row Styling */
+
+.border-less-table-orange-body {
+  overflow-x: hidden !important;
+  overflow-y: auto !important;
+}
+
 .border-less-table-orange-row {
   height: 53.82px;
+}
+
+.border-less-table-orange-row span {
+  vertical-align: middle !important;
 }
 /* Target the first and last <td> inside each <tr> */
 td.border-less-table-orange-cell:first-child {

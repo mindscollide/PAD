@@ -5,9 +5,7 @@
 /* ===========================
    1. Base table container
    =========================== */
-.accordian-table-blue {
-  background-color: transparent !important; /* Transparent container background */
-}
+
 
 /* ===========================
    2. Table header (thead)

@@ -320,65 +320,81 @@ const MyHistory = () => {
   const mapEmployeeHistoryData = (data) => {
     if (!data?.workFlows) return [];
 
-    // 🔹 Map bundleStatusState to iconType
     const getBundleIconType = (state) => {
       switch (state) {
         case 2:
-          return "Approved"; // ✅ CheckIcon
+          return "Approved";
         case 3:
-          return "Decline"; // ❌ Decline
+          return "Decline";
         default:
-          return "ellipsis"; // neutral
+          return "Pending";
       }
     };
 
-    // 🔹 Map workFlowStatusID to iconType
+    // ❗ REMOVE "Compliant" and "Declined" from workflow icon mapping
     const getWorkFlowIconType = (id) => {
       switch (id) {
-        case 8:
-          return "Compliant"; // ✅ CheckIcon
         case 6:
-          return "Not-Traded"; // 🚫 NotTraded
+          return "Not-Traded";
         case 5:
-          return "Traded"; // 💵 Dollar
+          return "Traded";
         case 2:
-          return "Resubmit"; // 🔁 Resubmitted
+          return "Resubmit";
         case 3:
-          return "Approved"; // 🔁 Resubmitted
-        case 4:
-          return "Decline"; // ❌ Decline
+          return "Approved";
+        // case 4 (Declined) → removed
+        // case 8 (Compliant) → removed
         default:
           return "ellipsis";
       }
     };
 
     return data.workFlows.map((wf) => {
-      const workFlowIcon = getWorkFlowIconType(wf.workFlowStatusID);
+      // Step 0: Send For Approval
+      const sendForApprovalStep = {
+        status: "Send for Approval",
+        date: formatApiDateTime(`${wf.creationDate} ${wf.creationTime}`),
+        iconType: "SendForApproval",
+      };
 
-      const trail = [
-        // 🧩 Step 2: Show all bundle hierarchy steps (approvers)
-        ...(wf.bundleHierarchy?.map((b) => ({
+      // Step 1: Bundle hierarchy
+      const bundleSteps =
+        wf.bundleHierarchy?.map((b) => ({
           status:
             b.bundleStatusState === 2
               ? "Approved"
               : b.bundleStatusState === 3
-              ? "Decline"
+              ? "Declined"
               : "Pending",
           user: `${b.firstName} ${b.lastName}`,
           date: formatApiDateTime(
             `${b.bundleModifiedDate} ${b.bundleModifiedTime}`
           ),
           iconType: getBundleIconType(b.bundleStatusState),
-        })) || []),
+        })) || [];
 
-        // 🟩 Step 1: Show overall workflow status (system or broker)
-        {
+      // Step 2: Final workflow status
+      const finalStepStatus = wf.workFlowStatusID;
+
+      // ❗ EXCLUDE Compliant (ID 8) and Declined (ID 4)
+      const shouldAddFinalStep = ![8, 4].includes(finalStepStatus);
+
+      let finalStep = null;
+
+      if (shouldAddFinalStep) {
+        finalStep = {
           status: wf.workFlowStatus,
-          // user: wf.brokerName || "System",
           date: formatApiDateTime(`${wf.creationDate} ${wf.creationTime}`),
           requesterID: dashBetweenApprovalAssets(wf.tradeApprovalID),
-          iconType: workFlowIcon,
-        },
+          iconType: getWorkFlowIconType(wf.workFlowStatusID),
+        };
+      }
+
+      // 🔥 Final ordered steps
+      const trail = [
+        sendForApprovalStep,
+        ...bundleSteps,
+        ...(shouldAddFinalStep ? [finalStep] : []),
       ];
 
       return {
@@ -464,12 +480,6 @@ const MyHistory = () => {
                   >
                     <img src={Excel} alt="Excel" draggable={false} />
                     <span>Export Excel</span>
-                  </div>
-                  <div className={style.dropdownItem}>
-                    <img src={PDF} alt="PDF" draggable={false} />
-                    <span onClick={() => setUploadComplianceModal(true)}>
-                      Export CSV
-                    </span>
                   </div>
                 </div>
               )}

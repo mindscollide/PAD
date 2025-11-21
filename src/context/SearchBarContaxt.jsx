@@ -106,6 +106,26 @@ export const SearchBarProvider = ({ children }) => {
     filterTrigger: false,
   });
 
+  /** 🔍 Employee My Transaction Report table filters */
+  const [
+    employeeMyTransactionReportSearch,
+    setEmployeeMyTransactionReportSearch,
+  ] = useState({
+    instrumentName: "",
+    quantity: 0,
+    startDate: null,
+    endDate: null,
+    status: [],
+    type: [],
+    broker: "",
+    actionBy: "",
+    actionStartDate: null,
+    actionEndDate: null,
+    pageNumber: 0,
+    pageSize: 10,
+    filterTrigger: false,
+  });
+
   // ===============================
   // Line Manager States
   // ===============================
@@ -495,7 +515,26 @@ export const SearchBarProvider = ({ children }) => {
       status: [],
       pageSize: "",
       pageNumber: 0,
-      filterTrigger: true,
+      filterTrigger: false,
+    });
+
+  /** Reset Employee My Transaction Report filters */
+
+  const resetEmployeeMyTransactionReportSearch = () =>
+    setEmployeeMyTransactionReportSearch({
+      instrumentName: "",
+      quantity: 0,
+      startDate: null,
+      endDate: null,
+      status: [],
+      type: [],
+      broker: "",
+      actionBy: "",
+      actionStartDate: null,
+      actionEndDate: null,
+      pageNumber: 0,
+      pageSize: 10,
+      filterTrigger: false,
     });
 
   /** Reset Line Manager Approval filters */
@@ -698,6 +737,7 @@ export const SearchBarProvider = ({ children }) => {
     resetEmployeePortfolioSearch();
     resetEmployeePendingApprovalSearch();
     resetEmployeeMyHistorySearch();
+    resetEmployeeMyTransactionReportSearch();
     resetLineManagerApprovalSearch();
     resetComplianceOfficerReconcileTransactionsSearch();
     resetComplianceOfficerReconcilePortfoliosSearch();
@@ -736,6 +776,9 @@ export const SearchBarProvider = ({ children }) => {
         employeeMyHistorySearch,
         setEmployeeMyHistorySearch,
         resetEmployeeMyHistorySearch,
+        employeeMyTransactionReportSearch,
+        setEmployeeMyTransactionReportSearch,
+        resetEmployeeMyTransactionReportSearch,
 
         // Line Manager
         lineManagerApprovalSearch,

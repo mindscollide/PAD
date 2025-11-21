@@ -72,6 +72,12 @@
   height: 80vh !important;
   top: 131px !important;
 }
+
+.changeHeightReport {
+  height: 80vh !important;
+  top: 150px !important;
+}
+
 .grouppolicy {
   top: 126px !important;
   height: 80px;

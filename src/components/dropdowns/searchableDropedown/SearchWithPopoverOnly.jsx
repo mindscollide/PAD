@@ -39,6 +39,7 @@ const SearchWithPopoverOnly = () => {
     setEmployeeMyApprovalSearch,
     setEmployeeMyTransactionSearch,
     setEmployeeMyHistorySearch,
+    setEmployeeMyTransactionReportSearch,
     setLineManagerMyActionSearch,
     setEmployeePortfolioSearch,
     setEmployeePendingApprovalSearch,
@@ -164,6 +165,25 @@ const SearchWithPopoverOnly = () => {
           }));
           setSearchMain("");
         }
+        break;
+
+      case "5": // Employee → Report / MyTransaction
+        setEmployeeMyTransactionReportSearch((prev) => ({
+          ...prev,
+          instrumentName: searchMain,
+          quantity: 0,
+          startDate: null,
+          endDate: null,
+          status: [],
+          type: [],
+          broker: "",
+          actionBy: "",
+          actionStartDate: null,
+          actionEndDate: null,
+          pageNumber: 0,
+          filterTrigger: true,
+        }));
+        setSearchMain("");
         break;
 
       case "6": // Line Manager Approval
