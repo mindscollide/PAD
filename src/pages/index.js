@@ -5,6 +5,8 @@ export { default as EmployeApproval } from "./main/employes/myApprovals/approval
 export { default as EmployeProtfolio } from "./main/employes/portfolios/index";
 export { default as EmployeMyhistory } from "./main/employes/myHistory/myHistory";
 export { default as EmployeMyTransaction } from "./main/employes/myTransactions/myTransaction";
+// employess reports
+export { default as MytradeapprovalsReport } from "./main/employes/reports/mytradeapprovals/mytradeapprovals";
 export { default as EmpolyesReportsIndex } from "./main/employes/reports/index";
 
 // Export For Line Manager

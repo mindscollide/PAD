@@ -11,7 +11,7 @@ import { BoxCard } from "../../../../components";
 import { useApi } from "../../../../context/ApiContext";
 import { useGlobalLoader } from "../../../../context/LoaderContext";
 import { useNotification } from "../../../../components/NotificationProvider/NotificationProvider";
-import { useNavigate } from "react-router-dom";
+import { Outlet, useNavigate } from "react-router-dom";
 import { GetEmployeeReportsDashboardStatsAPI } from "../../../../api/myApprovalApi";
 import style from "./employee.module.css";
 import { useMyApproval } from "../../../../context/myApprovalContaxt";
@@ -130,10 +130,9 @@ const EmpolyesReportsIndex = () => {
               buttonId="Approvals-view-btn"
               buttonClassName="big-white-card-button"
               userRole="employee"
-              route="approvals"
+              route="my-trade-approvals"
             />
           </Col>
-
           {/* ---- My Transactions ---- */}
           <Col xs={12} md={8} lg={8}>
             <MemoizedBoxCard

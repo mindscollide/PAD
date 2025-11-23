@@ -42,6 +42,17 @@ export const MyTransactionsProvider = ({ children }) => {
     totalRecordsTable: 0,
   });
 
+  //  emoployee reoprts of my trade approvals
+  const [employeeMyTradeApprovalsData, setEmployeeMyTradeApprovalsData] =
+    useState({
+      myTradeApprovals: [],
+      totalRecordsDataBase: 0,
+      totalRecordsTable: 0,
+    });
+
+  const [employeeMyTradeApprovalsMqtt, setEmployeeMyTradeApprovalMqtt] =
+    useState(false);
+
   // Context STate to extract data from get All View Trade Approval which is show by click on View Detail
   const [
     employeeTransactionViewDetailData,
@@ -101,6 +112,17 @@ export const MyTransactionsProvider = ({ children }) => {
     });
   };
 
+  const resetMyTradeApprovalsState = () => {
+    const [employeeMyTradeApprovalsData, setEmployeeMyTradeApprovalsData] =
+      useState({
+        myTradeApprovals: [],
+        totalRecordsDataBase: 0,
+        totalRecordsTable: 0,
+      });
+
+    const [employeeMyTradeApprovalsMqtt, setEmployeeMyTradeApprovalMqtt] =
+      useState(false);
+  };
   /**
    * ♻️ Reset Modal Context State
    *
@@ -135,6 +157,13 @@ export const MyTransactionsProvider = ({ children }) => {
         // View Detail
         employeeTransactionViewDetailData,
         setEmployeeTransactionViewDetailData,
+
+        // emplouyee trpot my tarade approvals mqtt
+        resetMyTradeApprovalsState,
+        employeeMyTradeApprovalsData,
+        setEmployeeMyTradeApprovalsData,
+        employeeMyTradeApprovalsMqtt,
+        setEmployeeMyTradeApprovalMqtt,
       }}
     >
       {children}

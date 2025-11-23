@@ -562,6 +562,13 @@ export const responseMessages = {
   PAD_Trade_TradeServiceManager_LineManagerTradeApprovalCounts_02:
     "No data available",
   PAD_Trade_TradeServiceManager_LineManagerTradeApprovalCounts_03: "Exception",
+
+  // GetEmployeeTradeApprovalReportsAPI
+  PAD_Trade_TradeServiceManager_GetEmployeeTradeApprovalReports_01:
+    "Data Available",
+  PAD_Trade_TradeServiceManager_GetEmployeeTradeApprovalReports_02:
+    "No data available",
+  PAD_Trade_TradeServiceManager_GetEmployeeTradeApprovalReports_03: "Exception",
 };
 
 /**

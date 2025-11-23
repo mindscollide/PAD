@@ -8,6 +8,7 @@ const RoleBasedRoute = ({ allowedRoles = [], children, isAdmin }) => {
   const currentRoleIsAdmin = JSON.parse(
     sessionStorage.getItem("current_role_is_admin")
   );
+  
   // Wait until roles are loaded (to avoid false redirect)
   if (!roles || roles.length === 0) {
     return <Navigate to="/PAD" replace />;
