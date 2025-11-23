@@ -126,6 +126,21 @@ export const SearchBarProvider = ({ children }) => {
     filterTrigger: false,
   });
 
+  // /** employee my tade approvals report filters */* //
+  const [employeeMyTradeApprovalsSearch, setEmployeeMyTradeApprovalsSearch] =
+    useState({
+      instrumentName: "",
+      quantity: 0,
+      startDate: null,
+      endDate: null,
+      type: [],
+      status: [],
+      brokerIDs: [],
+      pageSize: 10,
+      pageNumber: 0,
+      filterTrigger: false,
+    });
+
   // ===============================
   // Line Manager States
   // ===============================
@@ -469,6 +484,20 @@ export const SearchBarProvider = ({ children }) => {
       pageNumber: 0,
       filterTrigger: false,
     });
+  /** Reset Employee My Trade Approvals filters */
+  const resetEmployeMyTradeApprovalsSearch = () =>
+    setEmployeeMyTradeApprovalsSearch({
+      instrumentName: "",
+      quantity: "",
+      startDate: null,
+      endDate: null,
+      type: [],
+      status: [],
+      brokerIDs: [],
+      pageSize: 10,
+      pageNumber: 0,
+      filterTrigger: false,
+    });
 
   /** Reset Employee Portfolio filters */
   const resetEmployeePortfolioSearch = () =>
@@ -752,6 +781,7 @@ export const SearchBarProvider = ({ children }) => {
     resetUsersTabSearch();
     resetPendingRequestsTabSearch();
     resetRejectedRequestsTabSearch();
+    resetEmployeMyTradeApprovalsSearch();
   };
 
   // ===============================
@@ -779,6 +809,12 @@ export const SearchBarProvider = ({ children }) => {
         employeeMyTransactionReportSearch,
         setEmployeeMyTransactionReportSearch,
         resetEmployeeMyTransactionReportSearch,
+
+        // employee Reports
+        resetEmployeMyTradeApprovalsSearch,
+        employeeMyTradeApprovalsSearch,
+        setEmployeeMyTradeApprovalsSearch,
+
 
         // Line Manager
         lineManagerApprovalSearch,

@@ -59,6 +59,7 @@ const SideBar = () => {
           // Restore sidebar key
           const lastSelectedKey = sessionStorage.getItem("selectedKey");
           if (lastSelectedKey) {
+            console.log("Navigating");
             setSelectedKey(lastSelectedKey);
             if (lastSelectedKey !== ROOT_KEY) setCollapsed(true);
             sessionStorage.removeItem("selectedKey");
@@ -151,7 +152,15 @@ const SideBar = () => {
 
   useEffect(() => {
     const currentKey = pathToKey[location.pathname] || ROOT_KEY;
-    if (currentKey !== selectedKey) setSelectedKey(currentKey);
+    if (currentKey !== selectedKey) {
+      console.log("Navigating");
+      if (
+        currentKey === "5" &&
+        location.pathname !== "/PAD/reports/my-trade-approvals"
+      ) {
+        setSelectedKey(currentKey);
+      }
+    }
   }, [location.pathname, selectedKey, setSelectedKey, pathToKey]);
 
   // useEffect(() => {}, [currentRoleIsAdmin]);
@@ -193,6 +202,7 @@ const SideBar = () => {
           mode="inline"
           selectedKeys={[selectedKey]}
           onSelect={({ key }) => {
+            console.log("Navigating");
             setSelectedKey(key);
 
             // Collapse automatically if not root
@@ -201,7 +211,12 @@ const SideBar = () => {
             const path = routeMap[key];
             if (path) navigate(path);
           }}
-          items={sidebarItems(collapsed, allRoleIDs, selectedKey,currentRoleIsAdmin)}
+          items={sidebarItems(
+            collapsed,
+            allRoleIDs,
+            selectedKey,
+            currentRoleIsAdmin
+          )}
           inlineCollapsed={collapsed}
           inlineIndent={20}
           prefixCls="custom-menu"

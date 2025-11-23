@@ -34,7 +34,7 @@ const ReportCard = ({
   };
   const onRowButtonClick = () => {};
   const reportIcons = {
-    "My Compliance": (
+    "my compliance": (
       <img
         draggable={false}
         src={MyComplianceIcon}
@@ -42,7 +42,23 @@ const ReportCard = ({
         className={styles.urgentImg}
       />
     ),
-    "My Transactions": (
+    "my trade approvals": (
+      <img
+        draggable={false}
+        src={MyComplianceIcon}
+        alt="Compliance"
+        className={styles.urgentImg}
+      />
+    ),
+    "my trade approvals standing": (
+      <img
+        draggable={false}
+        src={MyTradeApprovalIcon}
+        alt="Compliance"
+        className={styles.urgentImg}
+      />
+    ),
+    "my transactions": (
       <img
         draggable={false}
         src={MyTransactionsIcon}
@@ -50,7 +66,7 @@ const ReportCard = ({
         className={styles.urgentImg}
       />
     ),
-    "Pending Requests": (
+    "pending requests": (
       <img
         draggable={false}
         src={PendingRequestIcon}
@@ -58,7 +74,7 @@ const ReportCard = ({
         className={styles.urgentImg}
       />
     ),
-    "Trade Approval Requests": (
+    "trade approval requests": (
       <img
         draggable={false}
         src={MyTradeApprovalIcon}
@@ -66,7 +82,7 @@ const ReportCard = ({
         className={styles.urgentImg}
       />
     ),
-    "Portfolio History": (
+    "portfolio history": (
       <img
         draggable={false}
         src={MyTradeApprovalIcon}
@@ -74,7 +90,7 @@ const ReportCard = ({
         className={styles.urgentImg}
       />
     ),
-    "Date wise Transaction Report": (
+    "date-wise transaction report": (
       <img
         draggable={false}
         src={CalenderIcon}
@@ -82,7 +98,15 @@ const ReportCard = ({
         className={styles.urgentImg}
       />
     ),
-    "Transactions Summary Report": (
+     "date wise transaction report": (
+      <img
+        draggable={false}
+        src={CalenderIcon}
+        alt="Date"
+        className={styles.urgentImg}
+      />
+    ),
+    "transactions summary report": (
       <img
         draggable={false}
         src={CalenderIcon}
@@ -90,7 +114,7 @@ const ReportCard = ({
         className={styles.urgentImg}
       />
     ),
-    "Overdue Verifications": (
+    "overdue verifications": (
       <img
         draggable={false}
         src={MyComplianceIcon}
@@ -98,7 +122,7 @@ const ReportCard = ({
         className={styles.urgentImg}
       />
     ),
-    "Policy Breaches": (
+    "policy breaches": (
       <img
         draggable={false}
         src={PolicyBreachesIcon}
@@ -106,7 +130,7 @@ const ReportCard = ({
         className={styles.urgentImg}
       />
     ),
-    "TAT Request Approvals": (
+    "tat request approvals": (
       <img
         draggable={false}
         src={MyTradeApprovalIcon}
@@ -114,7 +138,7 @@ const ReportCard = ({
         className={styles.urgentImg}
       />
     ),
-    "Trades Uploaded via Portfolio": (
+    "trades uploaded via portfolio": (
       <img
         draggable={false}
         src={MyTradeApprovalIcon}
@@ -122,7 +146,7 @@ const ReportCard = ({
         className={styles.urgentImg}
       />
     ),
-      "User Activity Report": (
+    "user activity report": (
       <img
         draggable={false}
         src={ReportIcon}
@@ -130,7 +154,7 @@ const ReportCard = ({
         className={styles.urgentImg}
       />
     ),
-      "User-wise Compliance Report": (
+    "user-wise compliance report": (
       <img
         draggable={false}
         src={MyComplianceIcon}
@@ -163,7 +187,7 @@ const ReportCard = ({
                 <div className={styles.left}>
                   {console.log("datadata", data)}
                   <span className={styles.icon}>
-                    {reportIcons[report.label] || report.icon || (
+                    {reportIcons[report.label.toLowerCase()] || report.icon || (
                       <span>📄</span>
                     )}
                   </span>

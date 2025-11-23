@@ -55,6 +55,7 @@ const TypeFilterDropdown = ({
       case "2":
       case "3":
       case "4":
+      case "5":
       case "6":
       case "9":
       case "12":
@@ -105,6 +106,7 @@ const TypeFilterDropdown = ({
       case "2":
       case "3":
       case "4":
+      case "5":
       case "6":
       case "9":
       case "12":

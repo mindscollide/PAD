@@ -72,12 +72,19 @@
   height: 80vh !important;
   top: 131px !important;
 }
+.changeHeightreports {
+  height: 78vh !important;
+  top: 186px !important;
+}
 
 .changeHeightReport {
   height: 80vh !important;
   top: 150px !important;
 }
-
+.repotsHeight {
+  height: 80vh !important;
+  top: 150px !important;
+}
 .grouppolicy {
   top: 126px !important;
   height: 80px;

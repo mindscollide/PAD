@@ -39,6 +39,14 @@ export const adminBrokersStatus = ["Active", "Inactive"];
  */
 export const emtStatusOptionsForPendingApproval = ["Pending", "Non-Compliant"];
 
+export const emaStatusOptionsofReportsMyTradeApprovals = [
+  "Pending",
+  "Approved",
+  "Declined",
+  "Transaction Conducted",
+  "Not Traded",
+  "Resubmitted for Approval",
+];
 // -----------------------------------------------------------------------------
 // 📌 Utility: Extract Type Options from AddApprovalRequestData
 // -----------------------------------------------------------------------------

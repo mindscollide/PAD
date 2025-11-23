@@ -24,9 +24,11 @@ import { LineManagerApprovalFilter } from "./LineManagerApprovalFilter";
 import { EmployeeHistoryFilter } from "./EmployeeHistoryFilter";
 import { LineManagerMyAction } from "./LineManagerMyActionFilter";
 import { EmployeeTransactionReportFilter } from "./EmployeeTransactionReportFilter";
+import { EmployeeMyTradeApprovalsReportsFilter } from "./EmployeeMyTradeApprovalsreports";
 
 // this is used for open specific filter according to page
 export const renderFilterContent = (
+  currentPath,
   selectedKey,
   setVisible,
   searchMain,
@@ -81,16 +83,31 @@ export const renderFilterContent = (
         />
       );
 
-    case "5": // Employee → Report / MyTransaction
-      return (
-        <EmployeeTransactionReportFilter
-          setVisible={setVisible}
-          clear={clear}
-          setClear={setClear}
-          maininstrumentName={searchMain}
-          setMaininstrumentName={setSearchMain}
-        />
-      );
+    case "5": // Employee → Report
+      if (currentPath === "/PAD/reports/my-trade-approvals") {
+        return (
+          <EmployeeMyTradeApprovalsReportsFilter
+            setVisible={setVisible}
+            clear={clear}
+            setClear={setClear}
+            maininstrumentName={searchMain}
+            setMaininstrumentName={setSearchMain}
+          />
+        );
+      } else if (currentPath === "/PAD/reports/transaction_report") {
+        return (
+          <EmployeeTransactionReportFilter
+            setVisible={setVisible}
+            clear={clear}
+            setClear={setClear}
+            maininstrumentName={searchMain}
+            setMaininstrumentName={setSearchMain}
+          />
+        );
+      }
+
+      return null;
+
     case "6": // Line Manager Approval
       return (
         <LineManagerApprovalFilter
@@ -214,110 +231,5 @@ export const renderFilterContent = (
 
     default:
       return null; // Fallback if no matching key
-  }
-};
-
-// apiCallSearch.js
-export const apiCallSearch = async ({
-  selectedKey,
-  employeeMyApprovalSearch,
-  employeeMyTransactionSearch,
-  assetTypeListingData,
-  callApi,
-  showNotification,
-  showLoader,
-  navigate,
-  setData,
-}) => {
-  showLoader(true);
-
-  try {
-    switch (selectedKey) {
-      case "1": {
-        const TypeIds = mapBuySellToIds(
-          employeeMyApprovalSearch.type,
-          assetTypeListingData?.Equities
-        );
-
-        const statusIds = mapStatusToIds(employeeMyApprovalSearch.status);
-
-        const requestdata = {
-          InstrumentName:
-            employeeMyApprovalSearch.instrumentName ||
-            employeeMyApprovalSearch.mainInstrumentName ||
-            "",
-          Date: toYYMMDD(employeeMyApprovalSearch.startDate) || "",
-          Quantity: employeeMyApprovalSearch.quantity || 0,
-          StatusIds: statusIds || [],
-          TypeIds: TypeIds || [],
-          PageNumber: 0,
-          Length: employeeMyApprovalSearch.pageSize || 10, // Fixed page size
-        };
-        const data = await SearchTadeApprovals({
-          callApi,
-          showNotification,
-          showLoader,
-          requestdata,
-          navigate,
-        });
-
-        setData(data);
-        break;
-      }
-
-      case "2":
-        {
-          // Add case 2 logic here when needed
-          const TypeIds = mapBuySellToIds(
-            employeeMyTransactionSearch.type,
-            assetTypeListingData?.Equities
-          );
-
-          const statusIds = mapStatusToIds(employeeMyTransactionSearch.status);
-
-          const requestdata = {
-            InstrumentName:
-              employeeMyTransactionSearch.instrumentName ||
-              employeeMyTransactionSearch.mainInstrumentName ||
-              "",
-            Quantity: employeeMyTransactionSearch.quantity || 0,
-            StartDate: employeeMyTransactionSearch.startDate
-              ? toYYMMDD(employeeMyTransactionSearch.startDate)
-              : "",
-            EndDate: employeeMyTransactionSearch.endDate
-              ? toYYMMDD(employeeMyTransactionSearch.endDate)
-              : "",
-            BrokerIDs: employeeMyTransactionSearch.brokerIDs || [],
-            StatusIds: statusIds || [],
-            TypeIds: TypeIds || [],
-            PageNumber: 0,
-            Length: employeeMyTransactionSearch.pageSize || 10, // Fixed page size
-          };
-          const data = await SearchEmployeeTransactionsDetails({
-            callApi,
-            showNotification,
-            showLoader,
-            requestdata,
-            navigate,
-          });
-
-          setData(data);
-        }
-        break;
-
-      case "3":
-        // Add case 3 logic here when needed
-        break;
-
-      case "6":
-        // Add case 3 logic here when needed
-        break;
-
-      default:
-        console.warn(`No matching case for selectedKey: ${selectedKey}`);
-        break;
-    }
-  } finally {
-    showLoader(false);
   }
 };

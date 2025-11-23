@@ -21,6 +21,8 @@ const Headers = () => {
     pageTabesForAdminGropusAndPolicy,
   } = useMyAdmin();
   const location = useLocation();
+  const currentPath = location.pathname;
+
   const { resetEmployeeMyApprovalSearch, resetLineManagerApprovalSearch } =
     useSearchBarContext();
 
@@ -59,10 +61,15 @@ const Headers = () => {
               ) : selectedKeyRef.current === "20" &&
                 !openNewFormForAdminGropusAndPolicy ? (
                 <SearchWithFilter />
-              ) : (
-                selectedKeyRef.current === "20" &&
+              ) : selectedKeyRef.current === "20" &&
                 openNewFormForAdminGropusAndPolicy &&
-                pageTabesForAdminGropusAndPolicy !== 0 && <SearchWithFilter />
+                pageTabesForAdminGropusAndPolicy !== 0 ? (
+                <SearchWithFilter />
+              ) : (
+                selectedKeyRef.current === "5" &&
+                currentPath === "/PAD/reports/my-trade-approvals" && (
+                  <SearchWithFilter />
+                )
               )}
             </Col>
             <Col xs={24} sm={10} md={2} lg={2}>

@@ -17,6 +17,7 @@ import { useSearchBarContext } from "../../../context/SearchBarContaxt";
 import { usePortfolioContext } from "../../../context/portfolioContax";
 import { useReconcileContext } from "../../../context/reconsileContax";
 import { useMyAdmin } from "../../../context/AdminContext";
+import { useLocation } from "react-router-dom";
 
 /**
  * 🔎 SearchWithPopoverOnly
@@ -29,6 +30,9 @@ import { useMyAdmin } from "../../../context/AdminContext";
  * Props: none (relies on global contexts)
  */
 const SearchWithPopoverOnly = () => {
+  const location = useLocation();
+  const currentPath = location.pathname;
+
   // -------------------------
   // ✅ Context hooks
   // -------------------------
@@ -54,6 +58,7 @@ const SearchWithPopoverOnly = () => {
     setAdminGropusAndPolicySearch,
     setAdminGropusAndPolicyPoliciesTabSearch,
     setAdminGropusAndPolicyUsersTabSearch,
+    setEmployeeMyTradeApprovalsSearch,
     //
     usersTabSearch,
     setUsersTabSearch,
@@ -167,22 +172,31 @@ const SearchWithPopoverOnly = () => {
         }
         break;
 
-      case "5": // Employee → Report / MyTransaction
-        setEmployeeMyTransactionReportSearch((prev) => ({
-          ...prev,
-          instrumentName: searchMain,
-          quantity: 0,
-          startDate: null,
-          endDate: null,
-          status: [],
-          type: [],
-          broker: "",
-          actionBy: "",
-          actionStartDate: null,
-          actionEndDate: null,
-          pageNumber: 0,
-          filterTrigger: true,
-        }));
+      case "5": // Employee
+        // Employee → My Trade Approvals Report
+        if (currentPath === "/PAD/reports/my-trade-approvals") {
+          setEmployeeMyTradeApprovalsSearch((prev) => ({
+            ...prev,
+            instrumentName: searchMain,
+            quantity: 0,
+            startDate: null,
+            endDate: null,
+            brokerIDs: [],
+            pageNumber: 0,
+            filterTrigger: true,
+          }));
+        } else if (currentPath === "/PAD/reports/transaction_report") {
+          setEmployeeMyTradeApprovalsSearch((prev) => ({
+            ...prev,
+            instrumentName: searchMain,
+            quantity: 0,
+            startDate: null,
+            endDate: null,
+            brokerIDs: [],
+            pageNumber: 0,
+            filterTrigger: true,
+          }));
+        }
         setSearchMain("");
         break;
 
@@ -471,6 +485,7 @@ const SearchWithPopoverOnly = () => {
             collapsed ? styles.popoverContenCollapsed : styles.popoverContent
           }
           content={renderFilterContent(
+            currentPath,
             selectedKey,
             setVisible,
             searchMain,

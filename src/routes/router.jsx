@@ -32,11 +32,13 @@ import {
   GroupsAndPolicy,
   ManageUsers,
   SystemConfigurations,
+  MytradeapprovalsReport,
 } from "../pages";
 import RoleBasedRoute from "./RoleBasedRoute";
 import EscalatedApprovals from "../pages/main/headOfTradeApprover/escalatedApprovals/escalatedApprovals";
 import MyAction from "../pages/main/lineManager/myActions/myActions";
 import LineManagerReportsIndex from "../pages/main/lineManager/reports";
+import ReportsLayout from "./ReportsLayout";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -96,14 +98,22 @@ const router = createBrowserRouter(
             </RoleBasedRoute>
           }
         />
+
         <Route
           path="reports"
           element={
             <RoleBasedRoute isAdmin={false} allowedRoles={[2]}>
-              <EmpolyesReportsIndex />{" "}
+              <ReportsLayout />
             </RoleBasedRoute>
           }
-        />
+        >
+          <Route index element={<EmpolyesReportsIndex />} />
+          <Route
+            path="my-trade-approvals"
+            element={<MytradeapprovalsReport />}
+          />
+        </Route>
+
         {/* Line Manager */}
         <Route
           path="lm-approval-requests"
