@@ -349,7 +349,7 @@ const MytradeapprovalsReport = () => {
                     onClick={() => navigate("/PAD/reports")}
                     className={style.breadcrumbLink}
                   >
-                    Rports
+                    Reports
                   </span>
                 ),
               },

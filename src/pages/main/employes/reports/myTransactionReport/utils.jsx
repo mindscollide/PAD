@@ -407,11 +407,21 @@ export const getBorderlessTableColumns = ({
       ? employeeMyTransactionReportSearch.status
       : null,
     onFilter: () => true,
-    render: (status, record) => (
-      <div id={`cell-${record.key}-status`}>
-        {renderStatusTag(status, approvalStatusMap)}
-      </div>
-    ),
+    render: (status) => {
+      console.log(status, "statusstatusstatus");
+      const tag = approvalStatusMap[status] || {};
+      return (
+        <Tag
+          style={{
+            backgroundColor: tag.backgroundColor,
+            color: tag.textColor,
+          }}
+          className="border-less-table-orange-status"
+        >
+          {tag.label}
+        </Tag>
+      );
+    },
   },
   {
     title: withSortIcon("Action Date", "actionDateTime", sortedInfo),

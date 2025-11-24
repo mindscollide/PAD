@@ -580,6 +580,90 @@ export const GetEmployeeTradeApprovalReportRequestApi = async ({
   }
 };
 
+// Report For Get Employee Compliance Standing Request Report API
+export const GetEmployeeComplianceStandingReportRequestApi = async ({
+  callApi,
+  showNotification,
+  showLoader,
+  requestdata,
+  navigate,
+}) => {
+  try {
+    // 🔹 API Call
+    const res = await callApi({
+      requestMethod: import.meta.env
+        .VITE_EMPLOYEE_COMPLIANCE_STANDING_REPORTS_API_REQUEST_METHOD, // 🔑 must be defined in .env
+      endpoint: import.meta.env.VITE_API_TRADE,
+      requestData: requestdata,
+      navigate,
+    });
+
+    // 🔹 Handle session expiry
+    if (handleExpiredSession(res, navigate, showLoader)) return null;
+
+    // 🔹 Validate execution
+    if (!res?.result?.isExecuted) {
+      showNotification({
+        type: "error",
+        title: "Error",
+        description: "Something went wrong while fetching Group Policies List.",
+      });
+      return null;
+    }
+
+    // 🔹 Handle success
+    if (res.success) {
+      const { responseMessage, summary } = res.result;
+      const message = getMessage(responseMessage);
+
+      // Case 1 → Data available
+      if (
+        responseMessage ===
+        "PAD_Trade_TradeServiceManager_GetEmployeeTransactionSummary_01"
+      ) {
+        return {
+          summary: summary || [],
+        };
+      }
+
+      // Case 2 → No data
+      if (
+        responseMessage ===
+        "PAD_Trade_TradeServiceManager_GetEmployeeTransactionSummary_02"
+      ) {
+        return {
+          summary: [],
+        };
+      }
+
+      // Case 3 → Custom server messages
+      if (message) {
+        showNotification({
+          type: "warning",
+          title: message,
+          description: "No Group Policies found.",
+        });
+      }
+
+      return null;
+    }
+
+    // 🔹 Handle failure
+    return null;
+  } catch (error) {
+    // 🔹 Exception handling
+    showNotification({
+      type: "error",
+      title: "Error",
+      description: "An unexpected error occurred  while fetching Policies..",
+    });
+    return null;
+  } finally {
+    // 🔹 Always hide loader
+    showLoader(false);
+  }
+};
+
 /* ** 
 LINE MANAGER API'S START FROM HERE
 ** */
@@ -1238,7 +1322,6 @@ export const GetEmployeeReportsDashboardStatsAPI = async ({
   }
 };
 
-
 // Line Manager dashbord api of reports
 // GetLineManagerReportDashBoard
 export const GetLineManagerReportDashBoard = async ({
@@ -1274,10 +1357,7 @@ export const GetLineManagerReportDashBoard = async ({
     // 🔹 Handle success
     if (res.success) {
       console.log("lineManagerReportsDashboardData", res);
-      const {
-        tradeApprovalsRequests,
-        pendingApprovals,
-      } = res.result;
+      const { tradeApprovalsRequests, pendingApprovals } = res.result;
       const { responseMessage } = res.result;
       const message = getMessage(responseMessage);
       console.log("lineManagerReportsDashboardData", res);
@@ -1288,8 +1368,8 @@ export const GetLineManagerReportDashBoard = async ({
         "PAD_Trade_TradeServiceManager_LineManagerTradeApprovalCounts_01"
       ) {
         return {
-          tradeApprovalsRequests:tradeApprovalsRequests.tile,
-          pendingApprovals:pendingApprovals.tile,
+          tradeApprovalsRequests: tradeApprovalsRequests.tile,
+          pendingApprovals: pendingApprovals.tile,
         };
       }
 
@@ -1334,7 +1414,6 @@ export const GetLineManagerReportDashBoard = async ({
     showLoader(false);
   }
 };
-
 
 export const SearchMyTradeApprovalsReportsApi = async ({
   callApi,
@@ -1420,11 +1499,198 @@ export const SearchMyTradeApprovalsReportsApi = async ({
     showNotification({
       type: "error",
       title: "Error",
-      description: "An unexpected error occurred while fetching My Trade Approvals Reports.",
+      description:
+        "An unexpected error occurred while fetching My Trade Approvals Reports.",
     });
     return null;
   } finally {
     // 🔹 Always hide loader
+    showLoader(false);
+  }
+};
+
+//Download Excel Report from MY Compliance STanding Report from Employee
+export const DownloadMyComplianceStandingRequestAPI = async ({
+  callApi,
+  showLoader,
+  requestdata,
+  navigate,
+}) => {
+  try {
+    showLoader(true);
+
+    // 🔹 API Call
+    const res = await callApi({
+      requestMethod: import.meta.env
+        .VITE_EXPORT_EMPLOYEE_COMPLIANCE_STANDING_REPORT_API_REQUEST_METHOD,
+      endpoint: import.meta.env.VITE_API_REPORT,
+      requestData: requestdata,
+      navigate,
+      responseType: "arraybuffer", // ⚡ Required for file download
+      headers: {
+        "Content-Type":
+          "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      },
+    });
+
+    // 🔹 Check Session Expiry
+    if (handleExpiredSession(res, navigate, showLoader)) return false;
+    // 🔹 When API send isExecuted false
+    if (!res?.result?.isExecuted) {
+      return false;
+    }
+
+    // 🔹 When API Send Success Response
+    if (res.success) {
+      try {
+        // Create a blob and trigger download
+        const blob = new Blob([res.result?.fileData || res.data], {
+          type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        });
+
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+
+        link.setAttribute("download", "My-Compliance-Standing-Report.xlsx");
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        setOpen(false);
+        return true;
+      } catch (downloadError) {
+        return false;
+      }
+    }
+
+    return false;
+  } catch (error) {
+    return false;
+  } finally {
+    showLoader(false);
+  }
+};
+
+//Download Excel Report from MY Trade Approval Standing Report from Employee
+export const DownloadMyTradeApprovalStandingRequestAPI = async ({
+  callApi,
+  showLoader,
+  requestdata,
+  navigate,
+}) => {
+  try {
+    showLoader(true);
+
+    // 🔹 API Call
+    const res = await callApi({
+      requestMethod: import.meta.env
+        .VITE_EXPORT_EMPLOYEE_MY_TRADE_APPROVAL_STANDING_REPORT_API_REQUEST_METHOD,
+      endpoint: import.meta.env.VITE_API_REPORT,
+      requestData: requestdata,
+      navigate,
+      responseType: "arraybuffer", // ⚡ Required for file download
+      headers: {
+        "Content-Type":
+          "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      },
+    });
+
+    // 🔹 Check Session Expiry
+    if (handleExpiredSession(res, navigate, showLoader)) return false;
+    // 🔹 When API send isExecuted false
+    if (!res?.result?.isExecuted) {
+      return false;
+    }
+
+    // 🔹 When API Send Success Response
+    if (res.success) {
+      try {
+        // Create a blob and trigger download
+        const blob = new Blob([res.result?.fileData || res.data], {
+          type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        });
+
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+
+        link.setAttribute("download", "My-TradeApproval-Standing-Report.xlsx");
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        setOpen(false);
+        return true;
+      } catch (downloadError) {
+        return false;
+      }
+    }
+
+    return false;
+  } catch (error) {
+    return false;
+  } finally {
+    showLoader(false);
+  }
+};
+
+//Download My Transaction From the Employee report dashboard
+export const DownloadMyTransactionReportRequestAPI = async ({
+  callApi,
+  showLoader,
+  requestdata,
+  navigate,
+}) => {
+  try {
+    showLoader(true);
+
+    // 🔹 API Call
+    const res = await callApi({
+      requestMethod: import.meta.env
+        .VITE_EXPORT_MY_TRANSACTION_REPORT_API_REQUEST_METHOD,
+      endpoint: import.meta.env.VITE_API_REPORT,
+      requestData: requestdata,
+      navigate,
+      responseType: "arraybuffer", // ⚡ Required for file download
+      headers: {
+        "Content-Type":
+          "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      },
+    });
+
+    // 🔹 Check Session Expiry
+    if (handleExpiredSession(res, navigate, showLoader)) return false;
+    // 🔹 When API send isExecuted false
+    if (!res?.result?.isExecuted) {
+      return false;
+    }
+
+    // 🔹 When API Send Success Response
+    if (res.success) {
+      try {
+        // Create a blob and trigger download
+        const blob = new Blob([res.result?.fileData || res.data], {
+          type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        });
+
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+
+        link.setAttribute("download", "My-Transaction-Report.xlsx");
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        setOpen(false);
+        return true;
+      } catch (downloadError) {
+        return false;
+      }
+    }
+
+    return false;
+  } catch (error) {
+    return false;
+  } finally {
     showLoader(false);
   }
 };

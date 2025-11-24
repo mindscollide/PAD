@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { Row, Col, Breadcrumb } from "antd";
 import PageLayout from "../../../../../components/pageContainer/pageContainer";
-import style from "./MyTradeApprovalStandingReport.module.css";
+import style from "./MyComplianceStandingReport.module.css";
 import DonutChart from "../../../../../components/donutChart/donutChart";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
@@ -11,8 +11,8 @@ import { useGlobalLoader } from "../../../../../context/LoaderContext";
 import { useNavigate } from "react-router-dom";
 import { useMyApproval } from "../../../../../context/myApprovalContaxt";
 import {
-  DownloadMyTradeApprovalStandingRequestAPI,
-  GetEmployeeTradeApprovalReportRequestApi,
+  DownloadMyComplianceStandingRequestAPI,
+  GetEmployeeComplianceStandingReportRequestApi,
 } from "../../../../../api/myApprovalApi";
 import PDF from "../../../../../assets/img/pdf.png";
 import Excel from "../../../../../assets/img/xls.png";
@@ -22,23 +22,19 @@ import { DateRangePicker } from "../../../../../components";
 
 const statusColorMap = {
   Pending: "#717171",
-  Approved: "#00640A",
-  Declined: "#A50000",
-  Traded: "#30426A",
-  "Not-Traded": "#424242",
-  Resubmitted: "#F67F29",
-  Resubmit: "#F67F29",
+  Compliant: "#00640A",
+  "Non-Compliant": "#A50000",
 };
 
-const MyTradeApprovalStandingReport = () => {
+const MyComplianceStandingReport = () => {
   const navigate = useNavigate();
   const { callApi } = useApi();
   const { showNotification } = useNotification();
   const { showLoader } = useGlobalLoader();
-  const { getEmployeeTradeApprovalReport, setGetEmployeeTradeApprovalReport } =
+  const { getEmployeeMyComplianceReport, setGetEmployeeMyComplianceReport } =
     useMyApproval();
 
-  console.log(getEmployeeTradeApprovalReport, "getEmployeeTradeApprovalReport");
+  console.log(getEmployeeMyComplianceReport, "getEmployeeMyComplianceReport");
   const hasFetched = useRef(false);
   const componentRef = useRef(null); // Ref for PDF export
 
@@ -46,11 +42,11 @@ const MyTradeApprovalStandingReport = () => {
   const [open, setOpen] = useState(false);
 
   //Extract data from the context state and save in variable
-  const apiSummary = getEmployeeTradeApprovalReport?.summary || [];
+  const apiSummary = getEmployeeMyComplianceReport?.summary || [];
 
   // For donut chart
   const labels = apiSummary.map((i) => i.statusName);
-  const counts = apiSummary.map((i) => i.statusCount);
+  const counts = apiSummary.map((i) => i.totalCount);
   const percentages = apiSummary.map((i) => i.percentage);
   const totalCount = counts.reduce((a, b) => a + b, 0);
 
@@ -61,7 +57,7 @@ const MyTradeApprovalStandingReport = () => {
       if (showLoaderFlag) showLoader(true);
 
       try {
-        const res = await GetEmployeeTradeApprovalReportRequestApi({
+        const res = await GetEmployeeComplianceStandingReportRequestApi({
           callApi,
           showNotification,
           showLoader,
@@ -72,7 +68,7 @@ const MyTradeApprovalStandingReport = () => {
         console.log(res, "checkebhdvwcec");
 
         if (res && res.summary) {
-          setGetEmployeeTradeApprovalReport({ summary: res.summary });
+          setGetEmployeeMyComplianceReport({ summary: res.summary });
         }
       } catch (err) {
         console.error("API error:", err);
@@ -85,7 +81,7 @@ const MyTradeApprovalStandingReport = () => {
       navigate,
       showLoader,
       showNotification,
-      setGetEmployeeTradeApprovalReport,
+      setGetEmployeeMyComplianceReport,
     ]
   );
 
@@ -115,19 +111,19 @@ const MyTradeApprovalStandingReport = () => {
       const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
 
       pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
-      pdf.save("MyTrade-Approval-Report.pdf");
+      pdf.save("My-Compliance-Report.pdf");
     });
   };
 
   // 🔷 Excel Report download Api Hit
-  const downloadMyTradeApprovalReportInExcelFormat = async () => {
+  const downloadMyComplianceReportInExcelFormat = async () => {
     showLoader(true);
     const requestdata = {
       StartDate: "",
       EndDate: "",
     };
 
-    await DownloadMyTradeApprovalStandingRequestAPI({
+    await DownloadMyComplianceStandingRequestAPI({
       callApi,
       showLoader,
       requestdata: requestdata,
@@ -156,7 +152,7 @@ const MyTradeApprovalStandingReport = () => {
               {
                 title: (
                   <span className={style.breadcrumbText}>
-                    My Trade Approvals Standing
+                    My Compliance Standing
                   </span>
                 ),
               },
@@ -165,7 +161,10 @@ const MyTradeApprovalStandingReport = () => {
         </Col>
         <Col>
           <div className={style.headerActionsRow}>
-            <DateRangePicker size="medium" className={"range-picker-small"} />
+            <DateRangePicker
+              size="medium"
+              className={style.dateRangePickerClass}
+            />
 
             <CustomButton
               text={
@@ -190,7 +189,7 @@ const MyTradeApprovalStandingReport = () => {
               </div>
               <div
                 className={style.dropdownItem}
-                onClick={downloadMyTradeApprovalReportInExcelFormat}
+                onClick={downloadMyComplianceReportInExcelFormat}
               >
                 <img src={Excel} alt="Excel" draggable={false} />
                 <span>Export XLS</span>
@@ -230,7 +229,7 @@ const MyTradeApprovalStandingReport = () => {
                         </div>
                       </td>
 
-                      <td>{item.statusCount}</td>
+                      <td>{item.totalCount}</td>
                       <td>{item.percentage}%</td>
                     </tr>
                   ))}
@@ -283,4 +282,4 @@ const MyTradeApprovalStandingReport = () => {
   );
 };
 
-export default MyTradeApprovalStandingReport;
+export default MyComplianceStandingReport;

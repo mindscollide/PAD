@@ -38,6 +38,21 @@ const ReportCard = ({
     if (data?.label === "My Trade Approvals" && userRole === "employee") {
       setSelectedKey("5"); // update your menu/side bar state
       navigate("/PAD/reports/my-trade-approvals"); // route change
+    } else if (data?.label === "My Transactions" && userRole === "employee") {
+      setSelectedKey("5"); // update your menu/side bar state
+      navigate("/PAD/reports/my-transactions");
+    } else if (
+      data?.label === "My Trade Approvals Standing" &&
+      userRole === "employee"
+    ) {
+      setSelectedKey("5"); // update your menu/side bar state
+      navigate("/PAD/reports/my-trade-approvals-standing");
+    } else if (
+      data?.label === "My Compliance Standing" &&
+      userRole === "employee"
+    ) {
+      setSelectedKey("5"); // update your menu/side bar state
+      navigate("/PAD/reports/my-compliance-approvals");
     }
   };
 

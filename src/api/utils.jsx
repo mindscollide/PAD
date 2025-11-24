@@ -569,6 +569,15 @@ export const responseMessages = {
   PAD_Trade_TradeServiceManager_GetEmployeeTradeApprovalReports_02:
     "No data available",
   PAD_Trade_TradeServiceManager_GetEmployeeTradeApprovalReports_03: "Exception",
+
+  // ==============================
+  // My Compliance Standing  Report  (Employee Role)
+  // ==============================
+  PAD_Trade_TradeServiceManager_GetEmployeeTransactionSummary_01:
+    "Data Available",
+  PAD_Trade_TradeServiceManager_GetEmployeeTransactionSummary_02:
+    "No data available",
+  PAD_Trade_TradeServiceManager_GetEmployeeTransactionSummary_03: "Exception",
 };
 
 /**

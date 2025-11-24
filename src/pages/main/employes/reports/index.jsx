@@ -144,7 +144,7 @@ const EmpolyesReportsIndex = () => {
               buttonId="Transactions-view-btn"
               buttonClassName="big-white-card-button"
               userRole="employee"
-              route="transactions"
+              route="my-transactions"
             />
           </Col>
           <Col xs={12} md={8} lg={8}>
@@ -159,7 +159,7 @@ const EmpolyesReportsIndex = () => {
               buttonId="Transactions-view-btn"
               buttonClassName="big-white-card-button"
               userRole="employee"
-              route="transactions"
+              route="my-trade-approvals-standing"
             />
           </Col>
         </Row>
@@ -177,7 +177,7 @@ const EmpolyesReportsIndex = () => {
               buttonId="Transactions-view-btn"
               buttonClassName="big-white-card-button"
               userRole="employee"
-              route="transactions"
+              route="my-compliance-approvals"
             />
           </Col>
         </Row>

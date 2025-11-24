@@ -39,6 +39,9 @@ import EscalatedApprovals from "../pages/main/headOfTradeApprover/escalatedAppro
 import MyAction from "../pages/main/lineManager/myActions/myActions";
 import LineManagerReportsIndex from "../pages/main/lineManager/reports";
 import ReportsLayout from "./ReportsLayout";
+import MyTradeApprovalStandingReport from "../pages/main/employes/reports/myTradeApprovalStandingReport/MyTradeApprovalStandingReport";
+import MyComplianceStandingReport from "../pages/main/employes/reports/myComplianceStanding/MyComplianceStandingReport";
+import MyTransactionReport from "../pages/main/employes/reports/myTransactionReport/MyTransactionReport";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -111,6 +114,15 @@ const router = createBrowserRouter(
           <Route
             path="my-trade-approvals"
             element={<MytradeapprovalsReport />}
+          />
+          <Route path="my-transactions" element={<MyTransactionReport />} />
+          <Route
+            path="my-trade-approvals-standing"
+            element={<MyTradeApprovalStandingReport />}
+          />
+          <Route
+            path="my-compliance-approvals"
+            element={<MyComplianceStandingReport />}
           />
         </Route>
 

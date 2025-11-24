@@ -156,7 +156,10 @@ const SideBar = () => {
       console.log("Navigating");
       if (
         currentKey === "5" &&
-        location.pathname !== "/PAD/reports/my-trade-approvals"
+        (location.pathname !== "/PAD/reports/my-trade-approvals" ||
+          currentPath !== "/PAD/reports/my-transactions" ||
+          currentPath !== "/PAD/reports/my-trade-approvals-standing" ||
+          currentPath !== "/PAD/reports/my-compliance-approvals")
       ) {
         setSelectedKey(currentKey);
       }

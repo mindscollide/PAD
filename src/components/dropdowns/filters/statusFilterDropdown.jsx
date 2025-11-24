@@ -58,7 +58,11 @@ const StatusFilterDropdown = ({
   const { callApi } = useApi();
   const { showLoader } = useGlobalLoader();
   const { showNotification } = useNotification();
-  const { setIsEmployeeMyApproval, setLineManagerApproval } = useMyApproval();
+  const {
+    setIsEmployeeMyApproval,
+    setLineManagerApproval,
+    setGetEmployeeTransactionReport,
+  } = useMyApproval();
   const location = useLocation();
 
   const { setEmployeeTransactionsData } = useTransaction();
@@ -97,6 +101,8 @@ const StatusFilterDropdown = ({
       case "5":
         if (location.pathname === "/PAD/reports/my-trade-approvals") {
           setFilterOptions(emaStatusOptionsofReportsMyTradeApprovals);
+        } else if (location.pathname === "/PAD/reports/my-transactions") {
+          setFilterOptions(emtStatusOptions);
         }
         break;
       case "12":
@@ -166,6 +172,7 @@ const StatusFilterDropdown = ({
           setIsEmployeeMyApproval,
           setEmployeeTransactionsData,
           setLineManagerApproval,
+          setGetEmployeeTransactionReport,
         });
         break;
     }
@@ -213,6 +220,7 @@ const StatusFilterDropdown = ({
           setIsEmployeeMyApproval,
           setEmployeeTransactionsData,
           setLineManagerApproval,
+          setGetEmployeeTransactionReport,
         });
 
         setState((prev) => ({

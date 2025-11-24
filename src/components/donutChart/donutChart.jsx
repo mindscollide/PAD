@@ -15,6 +15,8 @@ const statusColorMap = {
   "Not-Traded": "#424242",
   Resubmitted: "#F67F29",
   Resubmit: "#F67F29",
+  Compliant: "#00640A",
+  "Non-Compliant": "#A50000",
 };
 
 const DonutChart = ({ labels, counts, percentages, totalCount }) => {
