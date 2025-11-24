@@ -59,6 +59,12 @@ export const MyApprovalProvider = ({ children }) => {
       summary: [],
     });
 
+  // Report For Get Employee My Compliance Standing Request Report API
+  const [getEmployeeMyComplianceReport, setGetEmployeeMyComplianceReport] =
+    useState({
+      summary: [],
+    });
+
   /* **
    Context Api States For Line Manager Start Here
    ** */
@@ -143,6 +149,10 @@ export const MyApprovalProvider = ({ children }) => {
         // Employee Reports Dashboard Data
         employeeReportsDashboardData,
         setEmployeeReportsDashboardData,
+
+        // Report For Get Employee My Compliance Standing Request Reqport
+        getEmployeeMyComplianceReport,
+        setGetEmployeeMyComplianceReport,
 
         // Line Manager Reports Dashboard Data
         lineManagerReportsDashboardData,

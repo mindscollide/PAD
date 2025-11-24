@@ -185,14 +185,17 @@ const SearchWithPopoverOnly = () => {
             pageNumber: 0,
             filterTrigger: true,
           }));
-        } else if (currentPath === "/PAD/reports/transaction_report") {
-          setEmployeeMyTradeApprovalsSearch((prev) => ({
+        } else if (currentPath === "/PAD/reports/my-transactions") {
+          setEmployeeMyTransactionReportSearch((prev) => ({
             ...prev,
             instrumentName: searchMain,
             quantity: 0,
             startDate: null,
             endDate: null,
-            brokerIDs: [],
+            broker: "",
+            actionStartDate: null,
+            actionEndDate: null,
+            actionBy: "",
             pageNumber: 0,
             filterTrigger: true,
           }));

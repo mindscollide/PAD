@@ -1451,7 +1451,7 @@ span.ant-btn-icon {
   line-height: 100% !important;
   cursor: pointer !important;
   transition: all 0.2s ease !important;
-  margin-top: 15px;
+  margin-right: 10px;
 }
 
 .small-light-button-report:not(:disabled):hover {

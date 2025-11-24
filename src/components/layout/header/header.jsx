@@ -67,7 +67,10 @@ const Headers = () => {
                 <SearchWithFilter />
               ) : (
                 selectedKeyRef.current === "5" &&
-                currentPath === "/PAD/reports/my-trade-approvals" && (
+                (currentPath === "/PAD/reports/my-trade-approvals" ||
+                  currentPath === "/PAD/reports/my-transactions" ||
+                  currentPath === "/PAD/reports/my-trade-approvals-standing" ||
+                  currentPath === "/PAD/reports/my-compliance-approvals") && (
                   <SearchWithFilter />
                 )
               )}

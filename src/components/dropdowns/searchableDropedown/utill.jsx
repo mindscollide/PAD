@@ -94,7 +94,7 @@ export const renderFilterContent = (
             setMaininstrumentName={setSearchMain}
           />
         );
-      } else if (currentPath === "/PAD/reports/transaction_report") {
+      } else if (currentPath === "/PAD/reports/my-transactions") {
         return (
           <EmployeeTransactionReportFilter
             setVisible={setVisible}

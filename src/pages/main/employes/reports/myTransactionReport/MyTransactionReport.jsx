@@ -1,6 +1,8 @@
 import React, { useEffect, useState, useRef, useCallback } from "react";
-import { Col, Row } from "antd";
-
+import { Breadcrumb, Col, Row } from "antd";
+import PDF from "../../../../../assets/img/pdf.png";
+import Excel from "../../../../../assets/img/xls.png";
+import { UpOutlined, DownOutlined } from "@ant-design/icons";
 // 🔹 Components
 import BorderlessTable from "../../../../../components/tables/borderlessTable/borderlessTable";
 import PageLayout from "../../../../../components/pageContainer/pageContainer";
@@ -19,7 +21,10 @@ import { useGlobalModal } from "../../../../../context/GlobalModalContext";
 // 🔹 Styles
 import style from "./MyTransactionReport.module.css";
 import { useMyApproval } from "../../../../../context/myApprovalContaxt";
-import { GetEmployeeTransactionReportRequestApi } from "../../../../../api/myApprovalApi";
+import {
+  DownloadMyTransactionReportRequestAPI,
+  GetEmployeeTransactionReportRequestApi,
+} from "../../../../../api/myApprovalApi";
 import { useNotification } from "../../../../../components/NotificationProvider/NotificationProvider";
 import { useApi } from "../../../../../context/ApiContext";
 import { useGlobalLoader } from "../../../../../context/LoaderContext";
@@ -28,6 +33,7 @@ import { useSearchBarContext } from "../../../../../context/SearchBarContaxt";
 import { useDashboardContext } from "../../../../../context/dashboardContaxt";
 import { getSafeAssetTypeData } from "../../../../../common/funtions/assetTypesList";
 import { useTableScrollBottom } from "../../../../../common/funtions/scroll";
+import CustomButton from "../../../../../components/buttons/button";
 
 const MyTransactionReport = () => {
   const navigate = useNavigate();
@@ -55,6 +61,7 @@ const MyTransactionReport = () => {
   // -------------------- Local State --------------------
   const [sortedInfo, setSortedInfo] = useState({});
   const [loadingMore, setLoadingMore] = useState(false);
+  const [open, setOpen] = useState(false);
 
   // -------------------- Helpers --------------------
 
@@ -277,9 +284,91 @@ const MyTransactionReport = () => {
     ].filter(Boolean);
   })();
 
+  // 🔷 Excel Report download Api Hit
+  const downloadMyTransactionInExcelFormat = async () => {
+    showLoader(true);
+    const requestdata = {
+      InstrumentName: "",
+      Quantity: 0,
+      StartDate: "",
+      EndDate: "",
+      StatusIds: [],
+      TypeIds: [],
+      Broker: "",
+      ActionBy: "",
+      ActionStartDate: "",
+      ActionEndDate: "",
+    };
+    await DownloadMyTransactionReportRequestAPI({
+      callApi,
+      showLoader,
+      requestdata: requestdata,
+      navigate,
+    });
+  };
+
   // -------------------- Render --------------------
   return (
     <>
+      <Row justify="start" align="middle" className={style.breadcrumbRow}>
+        <Col>
+          <Breadcrumb
+            separator=">"
+            className={style.customBreadcrumb}
+            items={[
+              {
+                title: (
+                  <span
+                    onClick={() => navigate("/PAD/reports")}
+                    className={style.breadcrumbLink}
+                  >
+                    Reports
+                  </span>
+                ),
+              },
+              {
+                title: (
+                  <span className={style.breadcrumbText}>My Transactions</span>
+                ),
+              },
+            ]}
+          />
+        </Col>
+
+        <Col>
+          <div className={style.headerActionsRow}>
+            <CustomButton
+              text={
+                <span className={style.exportButtonText}>
+                  Export
+                  <span className={style.iconContainer}>
+                    {open ? <UpOutlined /> : <DownOutlined />}
+                  </span>
+                </span>
+              }
+              className="small-light-button-report"
+              onClick={() => setOpen((prev) => !prev)}
+            />
+          </div>
+
+          {/* 🔷 Export Dropdown */}
+          {open && (
+            <div className={style.dropdownExport}>
+              {/* <div className={style.dropdownItem}>
+                <img src={PDF} alt="PDF" draggable={false} />
+                <span>Export PDF</span>
+              </div> */}
+              <div
+                className={style.dropdownItem}
+                onClick={downloadMyTransactionInExcelFormat}
+              >
+                <img src={Excel} alt="Excel" draggable={false} />
+                <span>Export XLS</span>
+              </div>
+            </div>
+          )}
+        </Col>
+      </Row>
       {/* 🔹 Active Filter Tags */}
       {activeFilters.length > 0 && (
         <Row gutter={[12, 12]} className={style["filter-tags-container"]}>
@@ -313,15 +402,12 @@ const MyTransactionReport = () => {
       {/* 🔹 Transactions Table */}
       <PageLayout
         background="white"
-        style={{ marginTop: "10px" }}
-        className={activeFilters.length > 0 && "changeHeight"}
+        style={{ marginTop: "3px" }}
+        className={
+          activeFilters.length > 0 ? "changeHeightreports" : "repotsHeight"
+        }
       >
         <div className="px-4 md:px-6 lg:px-8 ">
-          <Row>
-            <Col>
-              <h2 className={style["heading"]}>My Transactions</h2>
-            </Col>
-          </Row>
           <BorderlessTable
             rows={getEmployeeTransactionReport?.transactions}
             columns={columns}
@@ -330,7 +416,7 @@ const MyTransactionReport = () => {
               getEmployeeTransactionReport?.transactions?.length
                 ? {
                     x: "max-content",
-                    y: activeFilters.length > 0 ? 450 : 450,
+                    y: activeFilters.length > 0 ? 450 : 500,
                   }
                 : undefined
             }
