@@ -32,7 +32,15 @@ const ReportCard = ({
   const onHeaderButtonClick = () => {
     navigateToPage(userRole, route, setSelectedKey, navigate);
   };
-  const onRowButtonClick = () => {};
+  const onRowButtonClick = (data) => {
+    console.log("onRowButtonClick", data);
+
+    if (data?.label === "My Trade Approvals" && userRole === "employee") {
+      setSelectedKey("5"); // update your menu/side bar state
+      navigate("/PAD/reports/my-trade-approvals"); // route change
+    }
+  };
+
   const reportIcons = {
     "my compliance": (
       <img
@@ -98,7 +106,7 @@ const ReportCard = ({
         className={styles.urgentImg}
       />
     ),
-     "date wise transaction report": (
+    "date wise transaction report": (
       <img
         draggable={false}
         src={CalenderIcon}
