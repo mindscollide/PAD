@@ -155,11 +155,13 @@ const SideBar = () => {
     if (currentKey !== selectedKey) {
       console.log("Navigating");
       if (
-        currentKey === "5" &&
-        (location.pathname !== "/PAD/reports/my-trade-approvals" ||
-          currentPath !== "/PAD/reports/my-transactions" ||
-          currentPath !== "/PAD/reports/my-trade-approvals-standing" ||
-          currentPath !== "/PAD/reports/my-compliance-approvals")
+        (currentKey === "5" &&
+          (location.pathname !== "/PAD/reports/my-trade-approvals" ||
+            location.pathname !== "/PAD/reports/my-transactions" ||
+            location.pathname !== "/PAD/reports/my-trade-approvals-standing" ||
+            location.pathname !== "/PAD/reports/my-compliance-approvals")) ||
+        (currentKey === "8" &&
+          location.pathname !== "/PAD/lm-reports/lm-pending-request")
       ) {
         setSelectedKey(currentKey);
       }

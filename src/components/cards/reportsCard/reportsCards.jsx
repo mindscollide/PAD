@@ -53,6 +53,9 @@ const ReportCard = ({
     ) {
       setSelectedKey("5"); // update your menu/side bar state
       navigate("/PAD/reports/my-compliance-approvals");
+    } else if (data?.label === "Pending Requests" && userRole === "LM") {
+      setSelectedKey("8"); // update your menu/side bar state
+      navigate("/PAD/lm-reports/la-pending-request");
     }
   };
 

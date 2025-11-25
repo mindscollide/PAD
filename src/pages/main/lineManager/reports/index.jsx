@@ -120,7 +120,7 @@ const LineManagerReportsIndex = () => {
               mainClassName="reports"
               boxes={lineManagerReportsPendingRequests}
               userRole="LM"
-              route="approvals"
+              route="lm-pending-request"
             />
           </Col>
 

@@ -22,3 +22,4 @@ export { default as Instruments } from "./adminMain/instruments/Instruments";
 export { default as GroupsAndPolicy } from "./adminMain/group&Policy/groupsAndpolicy";
 export { default as ManageUsers } from "./adminMain/manageUsers/index";
 export { default as SystemConfigurations } from "./adminMain/systemConfigurations/systemConfigurations";
+export { default as PendingRequest } from "./main/lineManager/reports/pendingRequest/pendingRequest";
