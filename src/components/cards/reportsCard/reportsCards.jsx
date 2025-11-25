@@ -55,7 +55,7 @@ const ReportCard = ({
       navigate("/PAD/reports/my-compliance-approvals");
     } else if (data?.label === "Pending Requests" && userRole === "LM") {
       setSelectedKey("8"); // update your menu/side bar state
-      navigate("/PAD/lm-reports/la-pending-request");
+      navigate("/PAD/lm-reports/lm-pending-request");
     }
   };
 
