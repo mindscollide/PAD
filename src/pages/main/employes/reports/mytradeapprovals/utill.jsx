@@ -1,4 +1,3 @@
-
 import ArrowUP from "../../../../../assets/img/arrow-up-dark.png";
 import ArrowDown from "../../../../../assets/img/arrow-down-dark.png";
 import DefaultColumArrow from "../../../../../assets/img/default-colum-arrow.png";
@@ -47,7 +46,10 @@ export const buildApiRequest = (searchState = {}, assetTypeListingData) => ({
  * @param {Object} employeeTransactionsData - API response containing transactions
  * @returns {Array} Mapped transaction list
  */
-export const mapEmployeeTransactions = (assetTypeData,employeeTransactionsData = {}) => {
+export const mapEmployeeTransactions = (
+  assetTypeData,
+  employeeTransactionsData = {}
+) => {
   if (!employeeTransactionsData) return [];
   console.log("assetTypeListingData", employeeTransactionsData);
 
@@ -58,13 +60,14 @@ export const mapEmployeeTransactions = (assetTypeData,employeeTransactionsData =
       item.requestDate || ""
     } ${item.requestTime || ""}`,
     description: item.description || "",
-    instrumentShortCode: item.instrumentShortCode || "",
-    instrumentName: item.instrumentName || "",
+    instrumentCode: item?.instrument?.instrumentCode || "—",
+    instrumentName: item?.instrument?.instrumentName || "—",
     quantity: item.quantity || 0,
     tradeApprovalID: item.tradeApprovalID || "",
     tradeApprovalTypeID: item.tradeApprovalTypeID || null,
-    tradeType:getTradeTypeById(assetTypeData, item?.tradeApproval) || "-" ,
-    isEscalated:item.isEscalated,
+    type: getTradeTypeById(assetTypeData, item?.tradeType) || "-",
+    status: item.approvalStatus?.approvalStatusName || "",
+    isEscalated: item.isEscalated,
     workFlowStatusID: item.workFlowStatusID || null,
     workFlowStatus: item.workFlowStatus || "",
     assetTypeID: item.assetTypeID || null,
