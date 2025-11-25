@@ -66,16 +66,17 @@ const Headers = () => {
                 pageTabesForAdminGropusAndPolicy !== 0 ? (
                 <SearchWithFilter />
               ) : (
-                (selectedKeyRef.current === "5" &&
+                ((selectedKeyRef.current === "5" &&
                   (currentPath === "/PAD/reports/my-trade-approvals" ||
                     currentPath === "/PAD/reports/my-transactions" ||
                     currentPath ===
                       "/PAD/reports/my-trade-approvals-standing" ||
                     currentPath === "/PAD/reports/my-compliance-approvals")) ||
-                (selectedKeyRef.current === "8" &&
-                  currentPath === "/PAD/lm-reports/lm-pending-request" && (
-                    <SearchWithFilter />
-                  ))
+                  // Case 5: key = 8 and on pending request route
+                  (selectedKeyRef.current === "8" &&
+                    currentPath === "/PAD/lm-reports/lm-pending-request")) && (
+                  <SearchWithFilter />
+                )
               )}
             </Col>
             <Col xs={24} sm={10} md={2} lg={2}>
