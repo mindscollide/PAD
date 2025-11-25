@@ -23,11 +23,16 @@ import { useDashboardContext } from "../../../../../context/dashboardContaxt";
 import { useTableScrollBottom } from "../../../../../common/funtions/scroll";
 import { getSafeAssetTypeData } from "../../../../../common/funtions/assetTypesList";
 import { BorderlessTable } from "../../../../../components";
+import PDF from "../../../../../assets/img/pdf.png";
+import Excel from "../../../../../assets/img/xls.png";
+import CustomButton from "../../../../../components/buttons/button";
+import { UpOutlined, DownOutlined } from "@ant-design/icons";
 
 const PendingRequest = () => {
   const navigate = useNavigate();
   const hasFetched = useRef(false);
   const tableScrollLMApprovalRequest = useRef(null);
+  const [open, setOpen] = useState(false);
 
   const {
     setViewDetailLineManagerModal,
@@ -348,6 +353,43 @@ const PendingRequest = () => {
               },
             ]}
           />
+        </Col>
+          <Col style={{ marginLeft: "auto" }}>
+          <div className={style.headerActionsRow}>
+         
+
+            <CustomButton
+              text={
+                <span className={style.exportButtonText}>
+                  Export
+                  <span className={style.iconContainer}>
+                    {open ? <UpOutlined /> : <DownOutlined />}
+                  </span>
+                </span>
+              }
+              className="small-light-button-report"
+              // onClick={() => setOpen((prev) => !prev)}
+            />
+          </div>
+
+          {/* 🔷 Export Dropdown */}
+          {open && (
+            <div className={style.dropdownExport}>
+              <div className={style.dropdownItem} 
+              // onClick={handleExportPDF}>
+              >
+                <img src={PDF} alt="PDF" draggable={false} />
+                <span>Export PDF</span>
+              </div>
+              <div
+                className={style.dropdownItem}
+                // onClick={downloadMyComplianceReportInExcelFormat}
+              >
+                <img src={Excel} alt="Excel" draggable={false} />
+                <span>Export XLS</span>
+              </div>
+            </div>
+          )}
         </Col>
       </Row>
       {/* 🔹 Active Filter Tags */}
