@@ -174,6 +174,21 @@ export const SearchBarProvider = ({ children }) => {
     filterTrigger: false,
   });
 
+  /** 🔍 Line Manager Pending Approval Reports filters */
+  const [lMPendingApprovalReportsSearch, setLMPendingApprovalReportsSearch] =
+    useState({
+      instrumentName: "",
+      requesterName: "",
+      quantity: 0,
+      startDate: null,
+      endDate: null,
+      type: [],
+      status: [],
+      pageSize: 10,
+      pageNumber: 0,
+      filterTrigger: false,
+    });
+
   // ===============================
   // Head Of Trade Approvals
   // ===============================
@@ -581,6 +596,20 @@ export const SearchBarProvider = ({ children }) => {
       filterTrigger: false,
     });
 
+  const resetLineManagerPendingApprovalReportsSearch = () =>
+    setLMPendingApprovalReportsSearch({
+      instrumentName: "",
+      requesterName: "",
+      quantity: 0,
+      startDate: null,
+      endDate: null,
+      type: [],
+      status: [],
+      pageSize: 10,
+      pageNumber: 0,
+      filterTrigger: false,
+    });
+
   /** Reset Compliance Officer Reconcile Transactions filters */
   const resetComplianceOfficerReconcileTransactionsSearch = () =>
     setComplianceOfficerReconcileTransactionsSearch({
@@ -815,7 +844,6 @@ export const SearchBarProvider = ({ children }) => {
         employeeMyTradeApprovalsSearch,
         setEmployeeMyTradeApprovalsSearch,
 
-
         // Line Manager
         lineManagerApprovalSearch,
         setLineManagerApprovalSearch,
@@ -823,6 +851,10 @@ export const SearchBarProvider = ({ children }) => {
         lineManagerMyActionSearch,
         setLineManagerMyActionSearch,
 
+        // LM Reports
+        lMPendingApprovalReportsSearch,
+        setLMPendingApprovalReportsSearch,
+        resetLineManagerPendingApprovalReportsSearch,
         // Compliance Officer
         complianceOfficerReconcileTransactionsSearch,
         setComplianceOfficerReconcileTransactionsSearch,

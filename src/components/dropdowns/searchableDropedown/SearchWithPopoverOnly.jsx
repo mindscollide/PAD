@@ -59,6 +59,7 @@ const SearchWithPopoverOnly = () => {
     setAdminGropusAndPolicyPoliciesTabSearch,
     setAdminGropusAndPolicyUsersTabSearch,
     setEmployeeMyTradeApprovalsSearch,
+    setLMPendingApprovalReportsSearch,
     //
     usersTabSearch,
     setUsersTabSearch,
@@ -231,6 +232,24 @@ const SearchWithPopoverOnly = () => {
           filterTrigger: true,
         }));
 
+        setSearchMain("");
+        break;
+
+      case "8": // LineManager →Pending Request Reports
+        if (currentPath === "/PAD/lm-reports/lm-pending-request") {
+          setLMPendingApprovalReportsSearch((prev) => ({
+            ...prev,
+            instrumentName: searchMain,
+            requesterName: "",
+            startDate: null,
+            endDate: null,
+            quantity: 0,
+            pageNumber: 0,
+            type: [],
+            status: [],
+            filterTrigger: true,
+          }));
+        }
         setSearchMain("");
         break;
 

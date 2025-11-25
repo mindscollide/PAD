@@ -130,6 +130,21 @@ export const renderFilterContent = (
         />
       );
 
+    case "8": // LineManager → reports pending approvals
+      if (currentPath === "/PAD/lm-reports/lm-pending-request") {
+        return (
+          <LineManagerMyAction
+            setVisible={setVisible}
+            clear={clear}
+            setClear={setClear}
+            maininstrumentName={searchMain}
+            setMaininstrumentName={setSearchMain}
+          />
+        );
+      }
+
+      return null;
+
     case "9": // Compliance Officer → Reconcile
       return (
         <ComplianceReconcileFilter
