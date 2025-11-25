@@ -86,3 +86,68 @@ filter-tags-container {
 .clear-all-tag {
   cursor: pointer !important;
 }
+
+
+.exportButtonText {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.iconContainer {
+  display: flex;
+  align-items: center;
+  font-size: 14px; /* Adjust size as needed */
+  transition: transform 0.3s ease;
+}
+
+.dropdownExport {
+  position: absolute;
+  top: 100%; /* appears below the button */
+  right: 0;
+  width: 168px;
+  border-radius: 8px;
+  border: 1px solid #b4b4b4;
+  background: #fff;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+  z-index: 1000; /* keep above table */
+  padding: 8px 0;
+}
+
+.dropdownItem {
+  padding: 8px 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 16px;
+  font-family: "Switzer Variable";
+  font-weight: 500;
+  color: #424242;
+  cursor: pointer;
+  transition: background 0.2s;
+  position: relative; /* required for ::after */
+}
+.dropdownItem img {
+  width: 20px;
+  height: 20px;
+  pointer-events: none;
+}
+
+.dropdownItem:not(:last-child)::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 12px; /* 👈 inset from left */
+  right: 12px; /* 👈 inset from right */
+  height: 1px;
+  background-color: #e0e0e0;
+}
+
+.dropdownItem:hover {
+  background: #f5f5f5;
+}
+.headerActionsRow {
+  display: flex;
+  align-items: center;
+  gap: 12px; /* space between items */
+}
