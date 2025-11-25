@@ -12,7 +12,10 @@ import { useApi } from "../../../../context/ApiContext";
 import { useGlobalLoader } from "../../../../context/LoaderContext";
 import { useNotification } from "../../../../components/NotificationProvider/NotificationProvider";
 import { useNavigate } from "react-router-dom";
-import { GetEmployeeReportsDashboardStatsAPI, GetLineManagerReportDashBoard } from "../../../../api/myApprovalApi";
+import {
+  GetEmployeeReportsDashboardStatsAPI,
+  GetLineManagerReportDashBoard,
+} from "../../../../api/myApprovalApi";
 import style from "./lineManager.module.css";
 import { useMyApproval } from "../../../../context/myApprovalContaxt";
 
@@ -62,7 +65,6 @@ const LineManagerReportsIndex = () => {
       // Apply role-based filtering here if needed
       await setLineManagerReportsDashboardData(res || []);
       console.log("lineManagerReportsDashboardData", res);
-      ß;
     } catch (error) {
       console.error("Failed to fetch reports:", error);
       showNotification({
@@ -96,8 +98,10 @@ const LineManagerReportsIndex = () => {
     () => lineManagerReportsDashboardData?.tradeApprovalsRequests?.data || [],
     [lineManagerReportsDashboardData?.tradeApprovalsRequests?.data]
   );
-  console.log("lineManagerReportTradeApprovalRequests", lineManagerReportTradeApprovalRequests);
-
+  console.log(
+    "lineManagerReportTradeApprovalRequests",
+    lineManagerReportTradeApprovalRequests
+  );
 
   /**
    * 🔹 Render UI
@@ -133,7 +137,7 @@ const LineManagerReportsIndex = () => {
               mainClassName="reports"
               boxes={lineManagerReportTradeApprovalRequests}
               userRole="LM"
-              route="transactions"
+              route="lm-tradeapproval-request"
             />
           </Col>
         </Row>

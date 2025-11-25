@@ -56,6 +56,9 @@ const ReportCard = ({
     } else if (data?.label === "Pending Requests" && userRole === "LM") {
       setSelectedKey("8"); // update your menu/side bar state
       navigate("/PAD/lm-reports/lm-pending-request");
+    } else if (data?.label === "Trade Approval Requests" && userRole === "LM") {
+      setSelectedKey("8"); // update your menu/side bar state
+      navigate("/PAD/lm-reports/lm-tradeapproval-request");
     }
   };
 

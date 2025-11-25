@@ -161,7 +161,8 @@ const SideBar = () => {
             location.pathname !== "/PAD/reports/my-trade-approvals-standing" ||
             location.pathname !== "/PAD/reports/my-compliance-approvals")) ||
         (currentKey === "8" &&
-          location.pathname !== "/PAD/lm-reports/lm-pending-request")
+          (location.pathname !== "/PAD/lm-reports/lm-pending-request" ||
+            location.pathname !== "/PAD/lm-reports/lm-tradeapproval-request"))
       ) {
         setSelectedKey(currentKey);
       }

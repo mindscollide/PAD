@@ -1,6 +1,9 @@
 import React, { useEffect, useState, useRef, useCallback } from "react";
 import { Breadcrumb, Col, Row } from "antd";
 import { useNavigate } from "react-router-dom";
+import PDF from "../../../../../assets/img/pdf.png";
+import Excel from "../../../../../assets/img/xls.png";
+import { UpOutlined, DownOutlined } from "@ant-design/icons";
 
 // 🔹 Table Config
 import {
@@ -28,7 +31,11 @@ import { approvalStatusMap } from "../../../../../components/tables/borderlessTa
 import { useNotification } from "../../../../../components/NotificationProvider/NotificationProvider";
 import { GetAllTransactionViewDetails } from "../../../../../api/myTransactionsApi";
 import { useGlobalModal } from "../../../../../context/GlobalModalContext";
-import { SearchMyTradeApprovalsReportsApi } from "../../../../../api/myApprovalApi";
+import {
+  DownloadMyTradeApprovalReportRequestAPI,
+  SearchMyTradeApprovalsReportsApi,
+} from "../../../../../api/myApprovalApi";
+import CustomButton from "../../../../../components/buttons/button";
 
 /**
  * 📄 MyTransaction Component
@@ -75,7 +82,6 @@ const MytradeapprovalsReport = () => {
 
   const {
     viewDetailTransactionModal,
-    setViewDetailTransactionModal,
     viewCommentTransactionModal,
     isViewTicketTransactionModal,
   } = useGlobalModal();
@@ -83,7 +89,7 @@ const MytradeapprovalsReport = () => {
   // -------------------- Local State --------------------
   const [sortedInfo, setSortedInfo] = useState({});
   const [loadingMore, setLoadingMore] = useState(false);
-
+  const [open, setOpen] = useState(false);
   console.log(employeeMyTradeApprovalsData, "employeeMyTradeApprovalsData4455");
 
   // -------------------- Helpers --------------------
@@ -119,8 +125,8 @@ const MytradeapprovalsReport = () => {
         currentAssetTypeData?.Equities,
         myTradeApprovals
       );
-      //   if (!mapped || typeof mapped !== "object") return;
-      //   console.log("transactions", mapped);
+      if (!mapped || typeof mapped !== "object") return;
+      console.log("transactions", mapped);
 
       setEmployeeMyTradeApprovalsData((prev) => ({
         myTradeApprovals: replace
@@ -156,28 +162,6 @@ const MytradeapprovalsReport = () => {
       showNotification,
     ]
   );
-
-  /**
-   * Fetches detailed view for a transaction.
-   * @param {string} workFlowID
-   */
-  const handleViewDetailsForTransaction = async (workFlowID) => {
-    // await showLoader(true);
-    // const responseData = await GetAllTransactionViewDetails({
-    //   callApi,
-    //   showNotification,
-    //   showLoader,
-    //   requestdata: { TradeApprovalID: workFlowID },
-    //   navigate,
-    // });
-    // if (responseData) {
-    //   setEmployeeTransactionViewDetailData({
-    //     ...responseData,
-    //     TradeApprovalID: workFlowID,
-    //   });
-    //   setViewDetailTransactionModal(true);
-    // }
-  };
 
   // -------------------- Effects --------------------
 
@@ -258,9 +242,7 @@ const MytradeapprovalsReport = () => {
     approvalStatusMap,
     sortedInfo,
     employeeMyTradeApprovalsSearch,
-    setViewDetailTransactionModal,
     setEmployeeMyTradeApprovalsSearch,
-    handleViewDetailsForTransaction,
   });
 
   /** 🔹 Handle removing individual filter */
@@ -337,6 +319,26 @@ const MytradeapprovalsReport = () => {
     ].filter(Boolean);
   })();
 
+  // 🔷 Excel Report download Api Hit
+  const downloadMyTransactionInExcelFormat = async () => {
+    showLoader(true);
+    const requestdata = {
+      InstrumentName: "",
+      Quantity: 0,
+      StartDate: "",
+      EndDate: "",
+      StatusIds: [],
+      TypeIds: [],
+      Broker: "",
+    };
+    await DownloadMyTradeApprovalReportRequestAPI({
+      callApi,
+      showLoader,
+      requestdata: requestdata,
+      navigate,
+    });
+  };
+
   // -------------------- Render --------------------
   return (
     <>
@@ -367,6 +369,40 @@ const MytradeapprovalsReport = () => {
               },
             ]}
           />
+        </Col>
+
+        <Col>
+          <div className={style.headerActionsRow}>
+            <CustomButton
+              text={
+                <span className={style.exportButtonText}>
+                  Export
+                  <span className={style.iconContainer}>
+                    {open ? <UpOutlined /> : <DownOutlined />}
+                  </span>
+                </span>
+              }
+              className="small-light-button-report"
+              onClick={() => setOpen((prev) => !prev)}
+            />
+          </div>
+
+          {/* 🔷 Export Dropdown */}
+          {open && (
+            <div className={style.dropdownExport}>
+              {/* <div className={style.dropdownItem}>
+                <img src={PDF} alt="PDF" draggable={false} />
+                <span>Export PDF</span>
+              </div> */}
+              <div
+                className={style.dropdownItem}
+                onClick={downloadMyTransactionInExcelFormat}
+              >
+                <img src={Excel} alt="Excel" draggable={false} />
+                <span>Export XLS</span>
+              </div>
+            </div>
+          )}
         </Col>
       </Row>
       {activeFilters.length > 0 && (
@@ -408,11 +444,11 @@ const MytradeapprovalsReport = () => {
       >
         <div className="px-4 md:px-6 lg:px-8 ">
           <BorderlessTable
-            rows={employeeMyTradeApprovalsData?.transactions}
+            rows={employeeMyTradeApprovalsData?.myTradeApprovals}
             columns={columns}
             classNameTable="border-less-table-blue"
             scroll={
-              employeeMyTradeApprovalsData?.transactions?.length
+              employeeMyTradeApprovalsData?.myTradeApprovals?.length
                 ? {
                     x: "max-content",
                     y: activeFilters.length > 0 ? 450 : 500,

@@ -19,6 +19,7 @@ import Excel from "../../../../../assets/img/xls.png";
 import { UpOutlined, DownOutlined } from "@ant-design/icons";
 import CustomButton from "../../../../../components/buttons/button";
 import { DateRangePicker } from "../../../../../components";
+import { toYYMMDD } from "../../../../../common/funtions/rejex";
 
 const statusColorMap = {
   Pending: "#717171",
@@ -44,6 +45,10 @@ const MyTradeApprovalStandingReport = () => {
 
   //local state
   const [open, setOpen] = useState(false);
+  const [dateRange, setDateRange] = useState({
+    StartDate: "",
+    EndDate: "",
+  });
 
   //Extract data from the context state and save in variable
   const apiSummary = getEmployeeTradeApprovalReport?.summary || [];
@@ -103,6 +108,29 @@ const MyTradeApprovalStandingReport = () => {
     fetchApiCall(requestData, true, true);
   }, [fetchApiCall]);
 
+  //OnCHange of date Handler
+  const handleDateChange = (dates) => {
+    if (dates && dates.length === 2) {
+      const start = toYYMMDD(dates[0]);
+      const end = toYYMMDD(dates[1]);
+
+      setDateRange({
+        StartDate: start,
+        EndDate: end,
+      });
+
+      // Call API immediately after date change
+      fetchApiCall(
+        {
+          StartDate: start,
+          EndDate: end,
+        },
+        true,
+        true
+      );
+    }
+  };
+
   // Function to export PDF
   const handleExportPDF = () => {
     const input = componentRef.current;
@@ -122,15 +150,16 @@ const MyTradeApprovalStandingReport = () => {
   // 🔷 Excel Report download Api Hit
   const downloadMyTradeApprovalReportInExcelFormat = async () => {
     showLoader(true);
+
     const requestdata = {
-      StartDate: "",
-      EndDate: "",
+      StartDate: dateRange.StartDate,
+      EndDate: dateRange.EndDate,
     };
 
     await DownloadMyTradeApprovalStandingRequestAPI({
       callApi,
       showLoader,
-      requestdata: requestdata,
+      requestdata,
       navigate,
     });
   };
@@ -165,7 +194,11 @@ const MyTradeApprovalStandingReport = () => {
         </Col>
         <Col>
           <div className={style.headerActionsRow}>
-            <DateRangePicker size="medium" className={"range-picker-small"} />
+            <DateRangePicker
+              size="medium"
+              className={"range-picker-small"}
+              onChange={handleDateChange}
+            />
 
             <CustomButton
               text={

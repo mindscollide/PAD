@@ -19,6 +19,7 @@ import Excel from "../../../../../assets/img/xls.png";
 import { UpOutlined, DownOutlined } from "@ant-design/icons";
 import CustomButton from "../../../../../components/buttons/button";
 import { DateRangePicker } from "../../../../../components";
+import { toYYMMDD } from "../../../../../common/funtions/rejex";
 
 const statusColorMap = {
   Pending: "#717171",
@@ -40,7 +41,10 @@ const MyComplianceStandingReport = () => {
 
   //local state
   const [open, setOpen] = useState(false);
-
+  const [dateRange, setDateRange] = useState({
+    StartDate: "",
+    EndDate: "",
+  });
   //Extract data from the context state and save in variable
   const apiSummary = getEmployeeMyComplianceReport?.summary || [];
 
@@ -99,6 +103,29 @@ const MyComplianceStandingReport = () => {
     fetchApiCall(requestData, true, true);
   }, [fetchApiCall]);
 
+  //OnCHange of date Handler
+  const handleDateChange = (dates) => {
+    if (dates && dates.length === 2) {
+      const start = toYYMMDD(dates[0]);
+      const end = toYYMMDD(dates[1]);
+
+      setDateRange({
+        StartDate: start,
+        EndDate: end,
+      });
+
+      // Call API immediately after date change
+      fetchApiCall(
+        {
+          StartDate: start,
+          EndDate: end,
+        },
+        true,
+        true
+      );
+    }
+  };
+
   // Function to export PDF
   const handleExportPDF = () => {
     const input = componentRef.current;
@@ -119,8 +146,8 @@ const MyComplianceStandingReport = () => {
   const downloadMyComplianceReportInExcelFormat = async () => {
     showLoader(true);
     const requestdata = {
-      StartDate: "",
-      EndDate: "",
+      StartDate: dateRange.StartDate,
+      EndDate: dateRange.EndDate,
     };
 
     await DownloadMyComplianceStandingRequestAPI({
@@ -164,6 +191,7 @@ const MyComplianceStandingReport = () => {
             <DateRangePicker
               size="medium"
               className={style.dateRangePickerClass}
+              onChange={handleDateChange}
             />
 
             <CustomButton

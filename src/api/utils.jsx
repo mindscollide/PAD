@@ -578,6 +578,15 @@ export const responseMessages = {
   PAD_Trade_TradeServiceManager_GetEmployeeTransactionSummary_02:
     "No data available",
   PAD_Trade_TradeServiceManager_GetEmployeeTransactionSummary_03: "Exception",
+
+  // ==============================
+  // My Trade Approval Requests   (Line Manager Role)
+  // ==============================
+  PAD_Trade_TradeServiceManager_TradeApprovalRequestsReport_01:
+    "Data Available",
+  PAD_Trade_TradeServiceManager_TradeApprovalRequestsReport_02:
+    "No data available",
+  PAD_Trade_TradeServiceManager_TradeApprovalRequestsReport_03: "Exception",
 };
 
 /**

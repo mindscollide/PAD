@@ -92,6 +92,13 @@ export const MyApprovalProvider = ({ children }) => {
     totalRecords: 0,
   });
 
+  // LineManager My Trade Approval Reports context state
+  const [myTradeApprovalLineManagerData, setMyTradeApprovalLineManagerData] =
+    useState({
+      records: [],
+      totalRecordsDataBase: 0,
+      totalRecordsTable: 0,
+    });
   // Reset function to set all states back to initial values
   const resetApprovalRequestContextState = () => {
     setLineManagerApproval({
@@ -157,6 +164,10 @@ export const MyApprovalProvider = ({ children }) => {
         // Line Manager Reports Dashboard Data
         lineManagerReportsDashboardData,
         setLineManagerReportsDashboardData,
+
+        // LineManager My Trade Approval Reports context state
+        myTradeApprovalLineManagerData,
+        setMyTradeApprovalLineManagerData,
       }}
     >
       {children}

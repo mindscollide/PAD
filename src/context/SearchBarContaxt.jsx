@@ -189,6 +189,20 @@ export const SearchBarProvider = ({ children }) => {
       filterTrigger: false,
     });
 
+  /** 🔍 My Trade APproval Reqport on Line Manager table filters */
+  const [
+    myTradeApprovalReportLineManageSearch,
+    setMyTradeApprovalReportLineManageSearch,
+  ] = useState({
+    employeeName: "",
+    startDate: null,
+    endDate: null,
+    departmentName: "",
+    pageNumber: 0,
+    pageSize: 10,
+    filterTrigger: false,
+  });
+
   // ===============================
   // Head Of Trade Approvals
   // ===============================
@@ -596,6 +610,17 @@ export const SearchBarProvider = ({ children }) => {
       filterTrigger: false,
     });
 
+  const resetLineManagerMyTradeApproval = () =>
+    setMyTradeApprovalReportLineManageSearch({
+      employeeName: "",
+      startDate: null,
+      endDate: null,
+      departmentName: "",
+      pageNumber: 0,
+      pageSize: 10,
+      filterTrigger: false,
+    });
+
   const resetLineManagerPendingApprovalReportsSearch = () =>
     setLMPendingApprovalReportsSearch({
       instrumentName: "",
@@ -797,6 +822,7 @@ export const SearchBarProvider = ({ children }) => {
     resetEmployeeMyHistorySearch();
     resetEmployeeMyTransactionReportSearch();
     resetLineManagerApprovalSearch();
+    resetLineManagerMyTradeApproval();
     resetComplianceOfficerReconcileTransactionsSearch();
     resetComplianceOfficerReconcilePortfoliosSearch();
     resetHeadOfComplianceApprovalPortfolioSearch();
@@ -850,6 +876,10 @@ export const SearchBarProvider = ({ children }) => {
         resetLineManagerApprovalSearch,
         lineManagerMyActionSearch,
         setLineManagerMyActionSearch,
+        /** 🔍 My Trade Approval Reqport on Line Manager */
+        myTradeApprovalReportLineManageSearch,
+        setMyTradeApprovalReportLineManageSearch,
+        resetLineManagerMyTradeApproval,
 
         // LM Reports
         lMPendingApprovalReportsSearch,
