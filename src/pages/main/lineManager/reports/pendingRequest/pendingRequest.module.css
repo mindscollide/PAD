@@ -1,0 +1,88 @@
+/* 🔹 Breadcrumb alignment */
+.breadcrumbRow {
+  padding: 24px 32px;
+  display: flex;
+  align-items: center;
+}
+
+/* 🔹 Breadcrumb overall style */
+.customBreadcrumb {
+  font-family: "Switzer Variable", sans-serif;
+  font-weight: 700;
+  font-style: bold;
+  font-size: 26px;
+  line-height: 100%;
+  color: #30426a;
+}
+
+/* 🔹 Normal breadcrumb text */
+.breadcrumbText {
+  color: #30426a;
+}
+
+/* 🔹 Clickable link ONLY for "Group Policy" */
+.breadcrumbLink {
+  color: #30426a;
+  cursor: pointer;
+  transition: all 0.25s ease-in-out;
+}
+
+.breadcrumbLink:hover {
+  color: #213155;
+  text-shadow: 0px 2px 6px rgba(33, 49, 85, 0.4);
+  transform: scale(1.05);
+}
+
+/* 🔹 Separator “>” (static) */
+:global(.ant-breadcrumb-separator) {
+  color: #30426a !important;
+  font-family: "Switzer Variable", sans-serif;
+  font-weight: 700;
+  font-size: 26px;
+  margin: 0 8px;
+}
+
+
+filter-tags-container {
+  padding: 0 23px !important;
+  position: relative;
+  top: 20px;
+  /* margin-bottom: 12px !important; */
+  /* margin-top: 14px; */
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.filter-tag {
+  display: flex;
+  align-items: center;
+  max-width: 240px;
+  height: 35px;
+  padding: 8px 12px;
+  background: #30426a;
+  color: white;
+  border-radius: 7.09px;
+  font-size: 14px;
+  margin-top: 0px;
+  margin-left: 22px;
+  gap: 10px;
+}
+
+.filter-tag-text {
+  flex: 1 1 auto !important;
+  min-width: 0 !important; /* 🔑 allows ellipsis */
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+}
+.filter-tag-close {
+  cursor: pointer;
+  flex-shrink: 0;
+  font-size: 16px;
+  line-height: 1;
+  z-index: 1 !important;
+}
+.clear-all-tag {
+  cursor: pointer !important;
+}

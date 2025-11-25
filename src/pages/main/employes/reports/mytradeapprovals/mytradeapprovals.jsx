@@ -291,7 +291,9 @@ const MytradeapprovalsReport = () => {
       filterTrigger: true,
     }));
   };
+
   const brokerOptions = buildBrokerOptions(employeeBasedBrokersData);
+
   /** 🔹 Build Active Filters */
   const activeFilters = (() => {
     const { instrumentName, startDate, endDate, quantity, brokerIDs } =
@@ -332,6 +334,7 @@ const MytradeapprovalsReport = () => {
       },
     ].filter(Boolean);
   })();
+  
   // -------------------- Render --------------------
   return (
     <>

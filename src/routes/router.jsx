@@ -33,6 +33,7 @@ import {
   ManageUsers,
   SystemConfigurations,
   MytradeapprovalsReport,
+  PendingRequest,
 } from "../pages";
 import RoleBasedRoute from "./RoleBasedRoute";
 import EscalatedApprovals from "../pages/main/headOfTradeApprover/escalatedApprovals/escalatedApprovals";
@@ -148,10 +149,13 @@ const router = createBrowserRouter(
           path="lm-reports"
           element={
             <RoleBasedRoute isAdmin={false} allowedRoles={[3]}>
-              <LineManagerReportsIndex />{" "}
+              <ReportsLayout />
             </RoleBasedRoute>
           }
-        />
+        >
+          <Route index element={<LineManagerReportsIndex />} />
+          <Route path="lm-pending-request" element={<PendingRequest />} />
+        </Route>
 
         {/* Head Of Trade Approval */}
         <Route
