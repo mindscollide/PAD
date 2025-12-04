@@ -78,7 +78,7 @@
 }
 
 .changeHeightReport {
-  height: 80vh !important;
+  /* height: 78vh !important; */
   top: 150px !important;
 }
 .repotsHeight {

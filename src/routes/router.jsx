@@ -45,6 +45,7 @@ import ReportsLayout from "./ReportsLayout";
 import MyTradeApprovalStandingReport from "../pages/main/employes/reports/myTradeApprovalStandingReport/MyTradeApprovalStandingReport";
 import MyComplianceStandingReport from "../pages/main/employes/reports/myComplianceStanding/MyComplianceStandingReport";
 import MyTransactionReport from "../pages/main/employes/reports/myTransactionReport/MyTransactionReport";
+import TradeApprovalRequest from "../pages/main/lineManager/reports/tradeApprovalsRequest/tradeApprovalRequest";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -139,6 +140,7 @@ const router = createBrowserRouter(
             </RoleBasedRoute>
           }
         />
+
         <Route
           path="lm-my-actions"
           element={
@@ -157,6 +159,10 @@ const router = createBrowserRouter(
         >
           <Route index element={<LineManagerReportsIndex />} />
           <Route path="lm-pending-request" element={<PendingRequest />} />
+          <Route
+            path="lm-tradeapproval-request"
+            element={<TradeApprovalRequest />}
+          />
         </Route>
 
         {/* Head Of Trade Approval */}

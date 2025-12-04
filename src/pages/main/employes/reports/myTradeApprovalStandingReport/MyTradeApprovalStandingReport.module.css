@@ -248,3 +248,11 @@
 .dateRangePickerClass {
   height: 60px !important;
 }
+.hideOnScreen {
+  display: none !important;
+}
+
+/* show when exporting PDF */
+.showOnPDF {
+  display: flex !important; /* or whatever layout Row uses */
+}

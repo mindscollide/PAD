@@ -74,7 +74,9 @@ const Headers = () => {
                     currentPath === "/PAD/reports/my-compliance-approvals")) ||
                   // Case 5: key = 8 and on pending request route
                   (selectedKeyRef.current === "8" &&
-                    currentPath === "/PAD/lm-reports/lm-pending-request")) && (
+                    (currentPath === "/PAD/lm-reports/lm-pending-request" ||
+                      currentPath ===
+                        "/PAD/lm-reports/lm-tradeapproval-request"))) && (
                   <SearchWithFilter />
                 )
               )}

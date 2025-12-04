@@ -25,6 +25,7 @@ import { EmployeeHistoryFilter } from "./EmployeeHistoryFilter";
 import { LineManagerMyAction } from "./LineManagerMyActionFilter";
 import { EmployeeTransactionReportFilter } from "./EmployeeTransactionReportFilter";
 import { EmployeeMyTradeApprovalsReportsFilter } from "./EmployeeMyTradeApprovalsreports";
+import { LineManagerMyTradeApprovalsReports } from "./LineManagerMyTradeApprovalsReports";
 
 // this is used for open specific filter according to page
 export const renderFilterContent = (
@@ -141,8 +142,17 @@ export const renderFilterContent = (
             setMaininstrumentName={setSearchMain}
           />
         );
+      } else if (currentPath === "/PAD/lm-reports/lm-tradeapproval-request") {
+        return (
+          <LineManagerMyTradeApprovalsReports
+            setVisible={setVisible}
+            clear={clear}
+            setClear={setClear}
+            maininstrumentName={searchMain}
+            setMaininstrumentName={setSearchMain}
+          />
+        );
       }
-
       return null;
 
     case "9": // Compliance Officer → Reconcile

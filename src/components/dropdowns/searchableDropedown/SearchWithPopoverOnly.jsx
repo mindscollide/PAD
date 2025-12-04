@@ -60,16 +60,11 @@ const SearchWithPopoverOnly = () => {
     setAdminGropusAndPolicyUsersTabSearch,
     setEmployeeMyTradeApprovalsSearch,
     setLMPendingApprovalReportsSearch,
+    setMyTradeApprovalReportLineManageSearch,
     //
-    usersTabSearch,
     setUsersTabSearch,
-    resetUsersTabSearch,
-    pendingRequestsTabSearch,
     setPendingRequestsTabSearch,
-    resetPendingRequestsTabSearch,
-    rejectedRequestsTabSearch,
     setRejectedRequestsTabSearch,
-    resetRejectedRequestsTabSearch,
   } = useSearchBarContext();
   const {
     pageTypeForAdminGropusAndPolicy,
@@ -247,6 +242,13 @@ const SearchWithPopoverOnly = () => {
             pageNumber: 0,
             type: [],
             status: [],
+            filterTrigger: true,
+          }));
+        } else if (currentPath === "/PAD/lm-reports/lm-tradeapproval-request") {
+          setMyTradeApprovalReportLineManageSearch((prev) => ({
+            ...prev,
+            employeeName: searchMain,
+            departmentName: "",
             filterTrigger: true,
           }));
         }
@@ -446,7 +448,17 @@ const SearchWithPopoverOnly = () => {
         break;
     }
   };
-  console.log("visible", visible);
+
+  // ----------------------------------------------------------------
+  // 🚫 FINAL FIX — HIDE SEARCH BAR ON SPECIFIC ROUTE
+  // ----------------------------------------------------------------
+  if (
+    selectedKey === "5" &&
+    (currentPath === "/PAD/reports/my-compliance-approvals" ||
+      currentPath === "/PAD/reports/my-trade-approvals-standing")
+  ) {
+    return null; // ⛔ Hide entire search bar
+  }
 
   // ----------------------------------------------------------------
   // ✅ RENDER
@@ -464,7 +476,10 @@ const SearchWithPopoverOnly = () => {
             ? "Employee name. Click the icon to view more options."
             : selectedKey === "20"
             ? "Policy Name. Click the icon to view more options."
-            : selectedKey === "21"
+            : selectedKey === "21" ||
+              (selectedKey === "8" &&
+                location.pathname ===
+                  "/PAD/lm-reports/lm-tradeapproval-request")
             ? "Employee name. Click the icon to view more options."
             : "Instrument name. Click the icon to view more options."
         }
