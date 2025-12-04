@@ -1,16 +1,38 @@
 import React, { createContext, useContext, useState } from "react";
 
+/**
+ * MyapprovalContext
+ * Global context to manage:
+ * - Employee approvals
+ * - Line manager approvals
+ * - Dashboard/reporting data
+ * - View details modal data
+ * - Compliance officer reports
+ */
 const MyapprovalContext = createContext();
 
+/**
+ * MyApprovalProvider
+ * -----------------------------------------------------------
+ * Wraps the entire application and provides all approval,
+ * reporting, and dashboard-related states.
+ */
 export const MyApprovalProvider = ({ children }) => {
+  /* =========================================================
+     EMPLOYEE — My Approvals
+     ========================================================= */
+
+  /** Stores employee approval list and table record counts */
   const [employeeMyApproval, setIsEmployeeMyApproval] = useState({
     approvals: [],
     totalRecordsDataBase: 0,
     totalRecordsTable: 0,
   });
 
+  /** MQTT flag used for auto-refreshing Employee My Approval list */
   const [employeeMyApprovalMqtt, setIsEmployeeMyApprovalMqtt] = useState(false);
-  // Context STate to extract data from get All View Trade Approval which is show by click on View Detail
+
+  /** Data shown in employee's "View Detail" modal */
   const [viewDetailsModalData, setViewDetailsModalData] = useState({
     assetTypes: [],
     details: [],
@@ -18,34 +40,24 @@ export const MyApprovalProvider = ({ children }) => {
     workFlowStatus: {},
   });
 
-  // MyHistory in Employee Page context state
+  /** Employee "My History" page records */
   const [employeeMyHistoryData, setEmployeeMyHistoryData] = useState({
     workFlows: [],
     totalRecords: 0,
   });
-  // employee reports data
+
+  /** Employee dashboard report summary */
   const [employeeReportsDashboardData, setEmployeeReportsDashboardData] =
     useState([]);
-  // linemanager reports data
+
+  /** Line Manager dashboard report summary */
   const [lineManagerReportsDashboardData, setLineManagerReportsDashboardData] =
     useState([]);
 
-  // Reset function to set all states back to initial values
-  const resetMyApprovalContextState = () => {
-    setIsEmployeeMyApproval({
-      approvals: [],
-      totalRecordsDataBase: 0,
-      totalRecordsTable: 0,
-    });
-    setViewDetailsModalData({
-      assetTypes: [],
-      details: [],
-      hierarchyDetails: [],
-      workFlowStatus: {},
-    });
-  };
+  /** Compliance Officer dashboard report summary */
+  const [coReportsDashboardData, setCOReportsDashboardData] = useState([]);
 
-  // Report For Get Employee Transaction Request Report API
+  /** Employee Transaction Request Report API data */
   const [getEmployeeTransactionReport, setGetEmployeeTransactionReport] =
     useState({
       transactions: [],
@@ -53,31 +65,33 @@ export const MyApprovalProvider = ({ children }) => {
       totalRecordsTable: 0,
     });
 
-  // Report For Get Employee Trade Approval Standing Request Report API
+  /** Employee Trade Approval Standing Request Report API data */
   const [getEmployeeTradeApprovalReport, setGetEmployeeTradeApprovalReport] =
     useState({
       summary: [],
     });
 
-  // Report For Get Employee My Compliance Standing Request Report API
+  /** Employee Compliance Standing Request Report API data */
   const [getEmployeeMyComplianceReport, setGetEmployeeMyComplianceReport] =
     useState({
       summary: [],
     });
 
-  /* **
-   Context Api States For Line Manager Start Here
-   ** */
+  /* =========================================================
+     LINE MANAGER — Approvals & Reports
+     ========================================================= */
 
+  /** Line Manager approval list with record counts */
   const [lineManagerApproval, setLineManagerApproval] = useState({
     lineApprovals: [],
     totalRecordsDataBase: 0,
     totalRecordsTable: 0,
   });
 
+  /** MQTT flag for auto-refresh for Line Manager approvals */
   const [lineManagerApprovalMqtt, setLineManagerApprovalMQtt] = useState(false);
 
-  // Context STate to extract data from get All View Trade Approval which is show by click on View Detail
+  /** Line Manager "View Detail" modal data */
   const [viewDetailsLineManagerData, setViewDetailsLineManagerData] = useState({
     assetTypes: [],
     details: [],
@@ -86,7 +100,7 @@ export const MyApprovalProvider = ({ children }) => {
     workFlowStatus: {},
   });
 
-  // LineManager on MyAtcion Page context state
+  /** Line Manager My Action page data */
   const [myActionLineManagerData, setMyActionLineManagerData] = useState({
     requests: [],
     totalRecords: 0,
@@ -100,12 +114,18 @@ export const MyApprovalProvider = ({ children }) => {
       totalRecordsTable: 0,
     });
   // Reset function to set all states back to initial values
+  /* =========================================================
+     RESET FUNCTIONS
+     ========================================================= */
+
+  /** Reset Line Manager approvals & detail modal */
   const resetApprovalRequestContextState = () => {
     setLineManagerApproval({
       lineApprovals: [],
       totalRecordsDataBase: 0,
       totalRecordsTable: 0,
     });
+
     setViewDetailsLineManagerData({
       assetTypes: [],
       details: [],
@@ -115,13 +135,30 @@ export const MyApprovalProvider = ({ children }) => {
     });
   };
 
-  /* **
-   Context Api States For Line Manager End Here
-   ** */
+  /** Reset Employee My Approval + detail modal */
+  const resetMyApprovalContextState = () => {
+    setIsEmployeeMyApproval({
+      approvals: [],
+      totalRecordsDataBase: 0,
+      totalRecordsTable: 0,
+    });
+
+    setViewDetailsModalData({
+      assetTypes: [],
+      details: [],
+      hierarchyDetails: [],
+      workFlowStatus: {},
+    });
+  };
+
+  /* =========================================================
+     PROVIDER RETURN
+     ========================================================= */
 
   return (
     <MyapprovalContext.Provider
       value={{
+        /* Employee States */
         employeeMyApproval,
         setIsEmployeeMyApproval,
         employeeMyApprovalMqtt,
@@ -129,11 +166,10 @@ export const MyApprovalProvider = ({ children }) => {
         viewDetailsModalData,
         setViewDetailsModalData,
         resetMyApprovalContextState,
-        // MyHistory in Employee Page context state
         employeeMyHistoryData,
         setEmployeeMyHistoryData,
 
-        //Context Api States For Line Manager Start Here
+        /* Line Manager States */
         lineManagerApproval,
         setLineManagerApproval,
         lineManagerApprovalMqtt,
@@ -141,33 +177,28 @@ export const MyApprovalProvider = ({ children }) => {
         viewDetailsLineManagerData,
         setViewDetailsLineManagerData,
         resetApprovalRequestContextState,
-
-        // MyAAction in Lne Manager Page context state
         myActionLineManagerData,
         setMyActionLineManagerData,
 
-        //Report of My Transaction in employee
+        /* Reports */
         getEmployeeTransactionReport,
         setGetEmployeeTransactionReport,
-
-        // Report For Get Employee Trade Approval Standing Request Report API
         getEmployeeTradeApprovalReport,
         setGetEmployeeTradeApprovalReport,
-        // Employee Reports Dashboard Data
         employeeReportsDashboardData,
         setEmployeeReportsDashboardData,
-
-        // Report For Get Employee My Compliance Standing Request Reqport
         getEmployeeMyComplianceReport,
         setGetEmployeeMyComplianceReport,
 
-        // Line Manager Reports Dashboard Data
+        /* Dashboard Reports */
         lineManagerReportsDashboardData,
         setLineManagerReportsDashboardData,
 
         // LineManager My Trade Approval Reports context state
         myTradeApprovalLineManagerData,
         setMyTradeApprovalLineManagerData,
+        coReportsDashboardData,
+        setCOReportsDashboardData,
       }}
     >
       {children}
@@ -175,5 +206,8 @@ export const MyApprovalProvider = ({ children }) => {
   );
 };
 
-// ✅ Correct Hook
+/**
+ * useMyApproval
+ * Custom hook to access all approval & reporting states.
+ */
 export const useMyApproval = () => useContext(MyapprovalContext);
