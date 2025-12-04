@@ -132,19 +132,31 @@ const MyTradeApprovalStandingReport = () => {
   };
 
   // Function to export PDF
-  const handleExportPDF = () => {
+  const handleExportPDF = async () => {
     const input = componentRef.current;
-    html2canvas(input, { scale: 2 }).then((canvas) => {
-      const imgData = canvas.toDataURL("image/png");
-      const pdf = new jsPDF("p", "mm", "a4");
 
+    try {
+      const canvas = await html2canvas(input, {
+        scale: 2,
+        useCORS: true, // ✅ IMPORTANT
+        allowTaint: false, // ✅ Prevents blocked canvas
+        logging: false,
+      });
+
+      const imgData = canvas.toDataURL("image/png");
+
+      const pdf = new jsPDF("p", "mm", "a4");
       const imgProps = pdf.getImageProperties(imgData);
+
       const pdfWidth = pdf.internal.pageSize.getWidth();
       const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
 
       pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
+
       pdf.save("MyTrade-Approval-Report.pdf");
-    });
+    } catch (error) {
+      console.error("PDF Export Failed:", error);
+    }
   };
 
   // 🔷 Excel Report download Api Hit
