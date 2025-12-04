@@ -35,6 +35,7 @@ import {
   MytradeapprovalsReport,
   PendingRequest,
   ComplianceOfficerReportsIndex,
+  COMyAction,
 } from "../pages";
 import RoleBasedRoute from "./RoleBasedRoute";
 import EscalatedApprovals from "../pages/main/headOfTradeApprover/escalatedApprovals/escalatedApprovals";
@@ -201,7 +202,7 @@ const router = createBrowserRouter(
           path="co-my-actions"
           element={
             <RoleBasedRoute isAdmin={false} allowedRoles={[4]}>
-              <EmployeMyTransaction />{" "}
+              <COMyAction />{" "}
             </RoleBasedRoute>
           }
         />

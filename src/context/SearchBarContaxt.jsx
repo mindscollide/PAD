@@ -253,6 +253,21 @@ export const SearchBarProvider = ({ children }) => {
     filterTrigger: false,
   });
 
+  /** 🔍 Compliance Officeer My Action table filters */
+  const [complianceOfficerMyActionSearch, setComplianceOfficerMyActionSearch] =
+    useState({
+      requestID: "",
+      instrumentName: "",
+      requesterName: "",
+      startDate: null,
+      endDate: null,
+      type: [],
+      status: [],
+      quantity: 0,
+      pageNumber: 0,
+      pageSize: 10,
+      filterTrigger: false,
+    });
   // ===============================
   // Head of Compliance Approval (HCA) States
   // ===============================
@@ -643,6 +658,22 @@ export const SearchBarProvider = ({ children }) => {
       filterTrigger: false,
     });
 
+  /** Reset Compliance Officer Approval filters */
+  const resetComplianceOfficerMyActionSearch = () =>
+    setComplianceOfficerMyActionSearch({
+      requestID: "",
+      instrumentName: "",
+      requesterName: "",
+      startDate: null,
+      endDate: null,
+      type: [],
+      status: [],
+      quantity: 0,
+      pageNumber: 0,
+      pageSize: 10,
+      filterTrigger: false,
+    });
+
   /** Reset HCA Portfolio filters */
   const resetHeadOfComplianceApprovalPortfolioSearch = () =>
     setHeadOfComplianceApprovalPortfolioSearch({
@@ -862,6 +893,11 @@ export const SearchBarProvider = ({ children }) => {
         complianceOfficerReconcilePortfolioSearch,
         setComplianceOfficerReconcilePortfolioSearch,
         resetComplianceOfficerReconcilePortfoliosSearch,
+
+        // Compliance Officer Myaction
+        complianceOfficerMyActionSearch,
+        setComplianceOfficerMyActionSearch,
+        resetComplianceOfficerMyActionSearch,
 
         // Head of Compliance Approval
         headOfComplianceApprovalPortfolioSearch,

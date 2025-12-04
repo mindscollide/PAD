@@ -588,6 +588,13 @@ export const responseMessages = {
     "No data available",
   PAD_Trade_TradeServiceManager_GetComplianceOfficerDashboardStats_03:
     "Exception",
+
+  // ==============================
+  // Compliance Officer  My Action
+  // ==============================
+  PAD_Trade_GetComplianceOfficerMyActionsWorkflowDetail_01: "Data Available",
+  PAD_Trade_GetComplianceOfficerMyActionsWorkflowDetail_02: "No data available",
+  PAD_Trade_GetComplianceOfficerMyActionsWorkflowDetail_03: "Exception",
 };
 
 /**

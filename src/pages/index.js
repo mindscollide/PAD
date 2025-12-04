@@ -24,3 +24,4 @@ export { default as ManageUsers } from "./adminMain/manageUsers/index";
 export { default as SystemConfigurations } from "./adminMain/systemConfigurations/systemConfigurations";
 export { default as PendingRequest } from "./main/lineManager/reports/pendingRequest/pendingRequest";
 export { default as ComplianceOfficerReportsIndex } from "./main/complianceOfficer/reports/index";
+export { default as COMyAction } from "./main/complianceOfficer/myActions/index";
