@@ -1216,6 +1216,91 @@ export const DownloadMyActionsReportRequest = async ({
   }
 };
 
+//GetComplianceOfficerMyActionsWorkflowDetail FOR MyAction PAGE IN Compliance Officer
+export const GetComplianceOfficerMyActionsWorkflowDetail = async ({
+  callApi,
+  showNotification,
+  showLoader,
+  requestdata,
+  navigate,
+}) => {
+  try {
+    // 🔹 API Call
+    const res = await callApi({
+      requestMethod: import.meta.env
+        .VITE_GET_COMPLIANCE_OFFICER_MY_ACTIONS_WORKFLOW_DETAIL_API_REQUEST_METHOD, // 🔑 must be defined in .env
+      endpoint: import.meta.env.VITE_API_TRADE,
+      requestData: requestdata,
+      navigate,
+    });
+
+    // 🔹 Handle session expiry
+    if (handleExpiredSession(res, navigate, showLoader)) return null;
+
+    // 🔹 Validate execution
+    if (!res?.result?.isExecuted) {
+      showNotification({
+        type: "error",
+        title: "Error",
+        description: "Something went wrong while fetching My Actions List.",
+      });
+      return null;
+    }
+
+    // 🔹 Handle success
+    if (res.success) {
+      const { responseMessage, requests, totalRecords } = res.result;
+      const message = getMessage(responseMessage);
+
+      // Case 1 → Data available
+      if (responseMessage === "PAD_Trade_GetComplianceOfficerMyActionsWorkflowDetail_01") {
+        return {
+          requests: requests || [],
+          totalRecords: totalRecords || 0,
+        };
+      }
+
+      // Case 2 → No data
+      if (responseMessage === "PAD_Trade_GetComplianceOfficerMyActionsWorkflowDetail_02") {
+        return {
+          requests: [],
+          totalRecords: 0,
+        };
+      }
+
+      // Case 3 → Custom server messages
+      if (message) {
+        showNotification({
+          type: "warning",
+          title: message,
+          description: "No My Actions found.",
+        });
+      }
+
+      return null;
+    }
+
+    // 🔹 Handle failure
+    showNotification({
+      type: "error",
+      title: "Fetch Failed",
+      description: getMessage(res.message),
+    });
+    return null;
+  } catch (error) {
+    // 🔹 Exception handling
+    showNotification({
+      type: "error",
+      title: "Error",
+      description: "An unexpected error occurred  while fetching My Actions..",
+    });
+    return null;
+  } finally {
+    // 🔹 Always hide loader
+    showLoader(false);
+  }
+};
+
 /* ** 
 LINE MANAGER API'S END FROM HERE
 ** */
@@ -1407,6 +1492,104 @@ export const GetLineManagerReportDashBoard = async ({
       title: "Error",
       description:
         "An unexpected error occurred while request Employee Reports Dashboard Stats API .",
+    });
+    return null;
+  } finally {
+    // 🔹 Always hide loader
+    showLoader(false);
+  }
+};
+
+// Compliance oficer dashbord api of reports
+// GetComplianceOfficerReportsDashboardStatsAPI
+export const GetComplianceOfficerReportsDashboardStatsAPI = async ({
+  callApi,
+  showNotification,
+  showLoader,
+  navigate,
+}) => {
+  try {
+    // 🔹 API Call
+    const res = await callApi({
+      requestMethod: import.meta.env
+        .VITE_GET_COMPLIANCE_OFFICER_DASHBOARD_STATS_API_REQUEST_METHOD, // 🔑 must be defined in .env
+      endpoint: import.meta.env.VITE_API_TRADE,
+      navigate,
+    });
+
+    // 🔹 Handle session expiry
+    if (handleExpiredSession(res, navigate, showLoader)) return null;
+
+    // 🔹 Validate execution
+    if (!res?.result?.isExecuted) {
+      showNotification({
+        type: "error",
+        title: "Error",
+        description:
+          "Something went wrong while fetching Compliance Officer Dashboard reports Api.",
+      });
+      return null;
+    }
+    console.log("reasonsArray", res);
+
+    // 🔹 Handle success
+    if (res.success) {
+      const {
+        dateWiseTransactions,
+        transactionsSummary,
+        overdueVerifications,
+        portfolioHistory,
+      } = res.result.complianceOfficerDashboardStats;
+      const { responseMessage } = res.result;
+      const message = getMessage(responseMessage);
+
+      // Case 1 → Data available
+      if (
+        responseMessage ===
+        "PAD_Trade_TradeServiceManager_GetComplianceOfficerDashboardStats_01"
+      ) {
+        return {
+          dateWiseTransactions,
+          transactionsSummary,
+          overdueVerifications,
+          portfolioHistory,
+        };
+      }
+
+      // Case 2 → No data
+      if (
+        responseMessage ===
+        "PAD_Trade_TradeServiceManager_GetComplianceOfficerDashboardStats_02"
+      ) {
+        return [];
+      }
+
+      // Case 3 → Custom server messages
+      if (message) {
+        showNotification({
+          type: "warning",
+          title: message,
+          description: message,
+        });
+      }
+
+      return null;
+    }
+
+    // 🔹 Handle failure
+    showNotification({
+      type: "error",
+      title: "Fetch Failed",
+      description: getMessage(res.message),
+    });
+    return null;
+  } catch (error) {
+    // 🔹 Exception handling
+    showNotification({
+      type: "error",
+      title: "Error",
+      description:
+        "An unexpected error occurred while request Compliance officer Reports Dashboard Stats API .",
     });
     return null;
   } finally {

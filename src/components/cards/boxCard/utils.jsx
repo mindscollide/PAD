@@ -168,16 +168,40 @@ export const typeColorMap = {
     textCountColor: "#A50000",
     textAlign: "center",
   },
-   pending_approvals: {
-   bgColor: "#FFF1E7",
+  pending_approvals: {
+    bgColor: "#FFF1E7",
     textLableColor: "#F67F29", // Using var(--Blue-V1)
     textCountColor: "#F67F29",
     textAlign: "center",
   },
-   user_approval_requests: {
+  user_approval_requests: {
     bgColor: "#C5FFC7",
     textLableColor: "#00640A",
     textCountColor: "#00640A",
+    textAlign: "center",
+  },
+  transactions: {
+    bgColor: "#C5FFC7",
+    textLableColor: "#00640A",
+    textCountColor: "#00640A",
+    textAlign: "center",
+  },
+  employees: {
+    bgColor: "#EDF3FF",
+    textLableColor: "#30426A",
+    textCountColor: "#30426A",
+    textAlign: "center",
+  },
+  pending_verifications: {
+    bgColor: "#EDF3FF",
+    textLableColor: "#30426A",
+    textCountColor: "#30426A",
+    textAlign: "center",
+  },
+  portfolios_evaluated_by_you: {
+    bgColor: "#EDF3FF",
+    textLableColor: "#30426A",
+    textCountColor: "#30426A",
     textAlign: "center",
   },
 };

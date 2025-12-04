@@ -9,6 +9,7 @@ import Resubmitted from "../../../assets/img/Resubmitted.png";
 import NotTraded from "../../../assets/img/NotTraded.png";
 import EscaltedOn from "../../../assets/img/EscaltedOn.png";
 import Decline from "../../../assets/img/Cross.png";
+import circlecheckblue from "../../../assets/img/circle-check-blue-icon.png";
 import { Stepper, Step } from "react-form-stepper";
 
 const ApprovalStepper = ({ trail }) => {
@@ -39,6 +40,13 @@ const ApprovalStepper = ({ trail }) => {
         return <img src={EscaltedOn} alt={altText} width={50} height={50} />;
       case "Decline":
         return <img src={Decline} alt={altText} width={50} height={50} />;
+      case "co-Compliant":
+        return <img src={circlecheckblue} alt={altText} width={50} height={50} />;
+      case "co-Non-Compliant":
+        return <img src={CrossIcon} alt={altText} width={50} height={50} />;
+      case "co-Transaction Conducted":
+        return <img src={Dollar} alt={altText} width={50} height={50} />;
+
       default:
         return null;
     }

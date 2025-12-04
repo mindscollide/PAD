@@ -34,6 +34,8 @@ import {
   SystemConfigurations,
   MytradeapprovalsReport,
   PendingRequest,
+  ComplianceOfficerReportsIndex,
+  COMyAction,
 } from "../pages";
 import RoleBasedRoute from "./RoleBasedRoute";
 import EscalatedApprovals from "../pages/main/headOfTradeApprover/escalatedApprovals/escalatedApprovals";
@@ -200,18 +202,24 @@ const router = createBrowserRouter(
           path="co-my-actions"
           element={
             <RoleBasedRoute isAdmin={false} allowedRoles={[4]}>
-              <EmployeMyTransaction />{" "}
+              <COMyAction />{" "}
             </RoleBasedRoute>
           }
         />
-        <Route
+       <Route
           path="co-reports"
           element={
             <RoleBasedRoute isAdmin={false} allowedRoles={[4]}>
-              <EmpolyesReportsIndex />{" "}
+              <ReportsLayout />
             </RoleBasedRoute>
           }
-        />
+        >
+          <Route index element={<ComplianceOfficerReportsIndex />} />
+          <Route path="co-date-wise-transaction-report" element={<PendingRequest />} />
+          <Route path="co-transactions-summary-report" element={<PendingRequest />} />
+          <Route path="co-overdue-verifications" element={<PendingRequest />} />
+          <Route path="co-portfolio-history" element={<PendingRequest />} />
+        </Route>
 
         {/* Head of Compliance Approval */}
         <Route

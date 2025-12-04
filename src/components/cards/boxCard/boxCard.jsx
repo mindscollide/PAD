@@ -106,7 +106,6 @@ const BoxCard = ({
   };
   // Handle card click
   const handleCardClick = () => {
-    console.log("routerouteroute",route)
     // You can switch route based on props or conditions
     navigate(route);
   };
