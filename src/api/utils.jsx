@@ -578,6 +578,16 @@ export const responseMessages = {
   PAD_Trade_TradeServiceManager_GetEmployeeTransactionSummary_02:
     "No data available",
   PAD_Trade_TradeServiceManager_GetEmployeeTransactionSummary_03: "Exception",
+
+  // ==============================
+  // Compliance Officer  Report  Dashboard
+  // ==============================
+  PAD_Trade_TradeServiceManager_GetComplianceOfficerDashboardStats_01:
+    "Data Available",
+  PAD_Trade_TradeServiceManager_GetComplianceOfficerDashboardStats_02:
+    "No data available",
+  PAD_Trade_TradeServiceManager_GetComplianceOfficerDashboardStats_03:
+    "Exception",
 };
 
 /**
