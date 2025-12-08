@@ -76,7 +76,10 @@
   height: 78vh !important;
   top: 186px !important;
 }
-
+.changeSessionwiseHeight{
+  height: 78vh !important;
+  top: 166px !important;
+}
 .changeHeightReport {
   /* height: 78vh !important; */
   top: 150px !important;
@@ -84,6 +87,10 @@
 .repotsHeight {
   height: 80vh !important;
   top: 150px !important;
+}
+.sessionwiseHeight{
+  height: 80vh !important;
+  top: 125px !important;
 }
 .grouppolicy {
   top: 126px !important;
