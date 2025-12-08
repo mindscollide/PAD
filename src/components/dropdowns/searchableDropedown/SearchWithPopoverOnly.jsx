@@ -62,6 +62,7 @@ const SearchWithPopoverOnly = () => {
     setLMPendingApprovalReportsSearch,
     setMyTradeApprovalReportLineManageSearch,
     setCODatewiseTransactionReportSearch,
+    setAdminSessionWiseActivitySearch,
     //
     setUsersTabSearch,
     setPendingRequestsTabSearch,
@@ -82,9 +83,46 @@ const SearchWithPopoverOnly = () => {
   const [clear, setClear] = useState(false);
 
   const handleInputChange = (e) => {
-    const { value } = e.target;
+    let { value } = e.target;
+
+    if (
+      selectedKey === "21" &&
+      currentPath === "/PAD/admin-users/session-wise-activity"
+    ) {
+      // Allow only digits & dots
+      value = value.replace(/[^0-9.]/g, "");
+
+      // Prevent multiple dots together
+      value = value.replace(/\.{2,}/g, ".");
+
+      // Remove starting dot
+      if (value.startsWith(".")) value = value.substring(1);
+
+      // Split parts
+      let parts = value.split(".");
+
+      // Limit to 4 parts (IPv4)
+      if (parts.length > 4) {
+        parts = parts.slice(0, 4);
+      }
+
+      // Auto-insert a dot when block reaches 3 digits (and not last part)
+      parts = parts.map((p, index) => {
+        if (p.length > 3) p = p.substring(0, 3); // max 3 digits per block
+        return p;
+      });
+
+      // Re-join
+      value = parts.join(".");
+
+      setSearchMain(value);
+      return;
+    }
+
+    // Default behavior
     setSearchMain(value.trimStart());
   };
+
   // Reset on selectedKey change
   useEffect(() => {
     setSearchMain("");
@@ -283,6 +321,7 @@ const SearchWithPopoverOnly = () => {
           setSearchMain("");
         }
         break;
+
       case "11": // Compliance Officer
         // reports
         // date wise transaction report
@@ -302,6 +341,7 @@ const SearchWithPopoverOnly = () => {
         }
         setSearchMain("");
         break;
+
       case "12": // HTA Escalated
         setHeadOfTradeEscalatedApprovalsSearch((prev) => ({
           ...prev,
@@ -422,7 +462,18 @@ const SearchWithPopoverOnly = () => {
         break;
 
       case "21": // Admin Manage Users
-        if (manageUsersTab === "0") {
+        if (currentPath === "/PAD/admin-users/session-wise-activity") {
+          setAdminSessionWiseActivitySearch((prev) => ({
+            ...prev,
+            employeeID: 0,
+            ipAddress: searchMain,
+            startDate: null,
+            endDate: null,
+            filterTrigger: true,
+            pageNumber: 0,
+            pageSize: 10,
+          }));
+        } else if (manageUsersTab === "0") {
           setUsersTabSearch((prev) => ({
             ...prev,
             employeeName: searchMain,
@@ -495,11 +546,15 @@ const SearchWithPopoverOnly = () => {
             ? "Employee name. Click the icon to view more options."
             : selectedKey === "20"
             ? "Policy Name. Click the icon to view more options."
-            : selectedKey === "21" ||
+            : (selectedKey === "21" &&
+                currentPath !== "/PAD/admin-users/session-wise-activity") ||
               (selectedKey === "8" &&
                 location.pathname ===
                   "/PAD/lm-reports/lm-tradeapproval-request")
             ? "Employee name. Click the icon to view more options."
+            : selectedKey === "21" &&
+              currentPath === "/PAD/admin-users/session-wise-activity"
+            ? "Search"
             : "Instrument name. Click the icon to view more options."
         }
         allowClear

@@ -612,6 +612,14 @@ export const responseMessages = {
     "No data available",
   PAD_Trade_TradeServiceManager_SearchComplianceOfficerDateWiseTransactionRequest_03:
     "Exception",
+
+  // ==============================
+  // Admin User wise session activity list
+  // ==============================
+
+  Admin_GetUserSessionWiseActivity_01: "Data Available",
+  Admin_GetUserSessionWiseActivity_02: "No data available",
+  Admin_GetUserSessionWiseActivity_03: "Exception",
 };
 
 /**

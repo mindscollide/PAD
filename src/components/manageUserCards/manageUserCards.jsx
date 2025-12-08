@@ -24,8 +24,11 @@ const ManageUsersCard = ({ profile, name, email, id, file }) => {
   const { callApi } = useApi();
   const { setViewDetailManageUser, setRolesAndPoliciesManageUser } =
     useGlobalModal();
-  const { setManageUsersViewDetailModalData, setRoleAndPolicyViewDetailData } =
-    useMyAdmin();
+  const {
+    setManageUsersViewDetailModalData,
+    setRoleAndPolicyViewDetailData,
+    setAdminSessionWiseActivityListData,
+  } = useMyAdmin();
 
   const [menuVisible, setMenuVisible] = useState(false);
 
@@ -91,7 +94,24 @@ const ManageUsersCard = ({ profile, name, email, id, file }) => {
     {
       key: "2",
       label: (
-        <span className={styles.dropdownClass}>Session wise activity</span>
+        <span
+          className={styles.dropdownClass}
+          onClick={() => {
+            // Update employeeName in state
+            setAdminSessionWiseActivityListData((prev) => ({
+              ...prev,
+              employeeName: name,
+            }));
+
+            // Call your API function
+            onClickOfViewDetailApiFunction();
+
+            // Navigate to the route
+            navigate("/PAD/admin-users/session-wise-activity");
+          }}
+        >
+          Session wise activity
+        </span>
       ),
     },
     {

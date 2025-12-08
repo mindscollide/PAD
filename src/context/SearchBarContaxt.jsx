@@ -434,6 +434,16 @@ export const SearchBarProvider = ({ children }) => {
     pageSize: 10,
   });
 
+  const [adminSessionWiseActivitySearch, setAdminSessionWiseActivitySearch] =
+    useState({
+      employeeID:0,
+      ipAddress: 0,
+      startDate: null,
+      endDate: null,
+      pageNumber: 0,
+      pageSize: 10,
+      filterTrigger: false,
+    });
   // ===============================
   // Sync Refs (Always-Latest Values)
   // ===============================
@@ -877,6 +887,18 @@ export const SearchBarProvider = ({ children }) => {
       pageSize: 10,
     });
 
+  // Admin reset session wise activity Search
+  const resetAdminSessionWiseActivitySearch = () =>
+    setAdminSessionWiseActivitySearch({
+      employeeID:0,
+      ipAddress: 0,
+      startDate: null,
+      endDate: null,
+      pageNumber: 0,
+      pageSize: 10,
+      filterTrigger: false,
+    });
+
   // ================================================================================ //
   /** Reset all filters across modules */
   const resetSearchBarContextState = () => {
@@ -1013,6 +1035,12 @@ export const SearchBarProvider = ({ children }) => {
         rejectedRequestsTabSearch,
         setRejectedRequestsTabSearch,
         resetRejectedRequestsTabSearch,
+
+        // session Wise Activity
+        resetAdminSessionWiseActivitySearch,
+        adminSessionWiseActivitySearch,
+        setAdminSessionWiseActivitySearch,
+
         // Always-latest refs
         employeeMyApprovalSearchRef,
         employeeMyTransactionSearchRef,

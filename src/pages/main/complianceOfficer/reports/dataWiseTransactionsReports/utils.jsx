@@ -68,14 +68,16 @@ export const mappingDateWiseTransactionReport = (
     assetTypeShortCode: item?.assetType?.assetTypeShortCode || "—",
     transactionDate:
       `${item?.requestDate || ""} ${item?.requestTime || ""}`.trim() || "—",
-    department: item.department,
+    department: item.departmentName,
     type: getTradeTypeById(assetTypeData, item?.tradeType) || "-",
     status: item.approvalStatus?.approvalStatusName || "",
     quantity: item.quantity || 0,
     timeRemainingToTrade: item.timeRemainingToTrade || "",
     assetType: item.assetType?.assetTypeName || "",
     assetTypeID: item.assetType?.assetTypeID || 0,
-    employeeName: item.employeeName || "",
+    employeeName: item.requesterName || "",
+    employeeID: item.employeeID || "",
+    
   }));
 };
 
@@ -286,8 +288,8 @@ export const getBorderlessTableColumns = ({
     title: withSortIcon("Department Name", "department", sortedInfo),
     dataIndex: "department",
     key: "department",
-    width: "160px",
     align: "left",
+    width: 180,
     ellipsis: true,
     sorter: (a, b) => a.department.localeCompare(b.department),
     sortDirections: ["ascend", "descend"],
@@ -313,8 +315,8 @@ export const getBorderlessTableColumns = ({
     showSorterTooltip: false,
     sortIcon: () => null,
     render: (instrument, record) => {
-      const assetCode = record?.assetShortCode;
-      const code = record?.instrumentShortCode || "";
+      const assetCode = record?.assetTypeShortCode;
+      const code = record?.instrumentCode || "";
       const instrumentName = record?.instrumentName || "";
 
       return (
@@ -379,6 +381,7 @@ export const getBorderlessTableColumns = ({
       />
     )),
     dataIndex: "type",
+    width: 100,
     key: "type",
     ellipsis: true,
     filteredValue: coDatewiseTransactionReportSearch.type?.length
@@ -433,6 +436,23 @@ export const getBorderlessTableColumns = ({
     render: (status, record) => (
       <div id={`cell-${record.key}-status`}>
         {renderStatusTag(status, approvalStatusMap)}
+      </div>
+    ),
+  },
+  {
+    title: "",
+    key: "action",
+    align: "right", // 🔷 Align content to the right
+    render: (_, record) => (
+      <div className={style.viewEditClass}>
+        <Button
+          className="small-light-button"
+          text={"View Comment"}
+          onClick={() => {
+            // setEditBrokerModal(true);
+            // setEditModalData(record);
+          }}
+        />
       </div>
     ),
   },

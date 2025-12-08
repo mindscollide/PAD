@@ -252,6 +252,17 @@ export const MyAdminProvider = ({ children }) => {
   const [storeEditRolesAndPoliciesData, setStoreEditRolesAndPoliciesData] =
     useState(null);
 
+  // user wise session Wise Activity List Data
+  const [
+    adminSessionWiseActivityListData,
+    setAdminSessionWiseActivityListData,
+  ] = useState({
+    sessions: [],
+    employeeName:"",
+    totalRecordsDataBase: 0,
+    totalRecordsTable: 0,
+  });
+
   /**
    * ♻️ Reset Context State (Table + API Data)
    *
@@ -336,6 +347,15 @@ export const MyAdminProvider = ({ children }) => {
     });
     setManageUsersRejectedRequestTabMQTT(false);
   };
+  // user wise session Wise Activity Reset List Data
+  const resetAdminSessionWiseActivityListData = () => {
+    setAdminSessionWiseActivityListData({
+      sessions: [],
+      totalRecordsDataBase: 0,
+      totalRecordsTable: 0,
+    });
+  };
+
   const resetIDofUserRejectedViewDetails = () => {
     setCurrentID(-1);
   };
@@ -478,6 +498,10 @@ export const MyAdminProvider = ({ children }) => {
 
         typeofAction,
         setTypeofAction,
+        // session wise user data
+        resetAdminSessionWiseActivityListData,
+        adminSessionWiseActivityListData,
+        setAdminSessionWiseActivityListData,
 
         // rejected request list data
         resetManageUsersRejectedRequestTabData,
