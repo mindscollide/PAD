@@ -36,6 +36,7 @@ import {
   PendingRequest,
   ComplianceOfficerReportsIndex,
   COMyAction,
+  COdataWiseTransactionsReports,
 } from "../pages";
 import RoleBasedRoute from "./RoleBasedRoute";
 import EscalatedApprovals from "../pages/main/headOfTradeApprover/escalatedApprovals/escalatedApprovals";
@@ -221,7 +222,7 @@ const router = createBrowserRouter(
           }
         >
           <Route index element={<ComplianceOfficerReportsIndex />} />
-          <Route path="co-date-wise-transaction-report" element={<PendingRequest />} />
+          <Route path="co-date-wise-transaction-report" element={<COdataWiseTransactionsReports />} />
           <Route path="co-transactions-summary-report" element={<PendingRequest />} />
           <Route path="co-overdue-verifications" element={<PendingRequest />} />
           <Route path="co-portfolio-history" element={<PendingRequest />} />

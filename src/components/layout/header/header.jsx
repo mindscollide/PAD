@@ -56,7 +56,8 @@ const Headers = () => {
               selectedKeyRef.current !== "50" &&
               selectedKeyRef.current !== "20" &&
               selectedKeyRef.current !== "22" &&
-              selectedKeyRef.current !== "8" ? (
+              selectedKeyRef.current !== "8" &&
+              selectedKeyRef.current !== "11" ? (
                 <SearchWithFilter />
               ) : selectedKeyRef.current === "20" &&
                 !openNewFormForAdminGropusAndPolicy ? (
@@ -75,6 +76,11 @@ const Headers = () => {
                   // Case 5: key = 8 and on pending request route
                   (selectedKeyRef.current === "8" &&
                     (currentPath === "/PAD/lm-reports/lm-pending-request" ||
+                      currentPath ===
+                        "/PAD/lm-reports/lm-tradeapproval-request")) ||
+                  (selectedKeyRef.current === "11" &&
+                    (currentPath ===
+                      "/PAD/co-reports/co-date-wise-transaction-report" ||
                       currentPath ===
                         "/PAD/lm-reports/lm-tradeapproval-request"))) && (
                   <SearchWithFilter />

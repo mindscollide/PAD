@@ -26,6 +26,7 @@ import { LineManagerMyAction } from "./LineManagerMyActionFilter";
 import { EmployeeTransactionReportFilter } from "./EmployeeTransactionReportFilter";
 import { EmployeeMyTradeApprovalsReportsFilter } from "./EmployeeMyTradeApprovalsreports";
 import { LineManagerMyTradeApprovalsReports } from "./LineManagerMyTradeApprovalsReports";
+import { CODateWiseTransactionReportFilter } from "./CODateWiseTransactionReportFilter";
 
 // this is used for open specific filter according to page
 export const renderFilterContent = (
@@ -165,6 +166,19 @@ export const renderFilterContent = (
           setMaininstrumentName={setSearchMain}
         />
       );
+    case "11": // LineManager → reports pending approvals
+      if (currentPath === "/PAD/co-reports/co-date-wise-transaction-report") {
+        return (
+          <CODateWiseTransactionReportFilter
+            setVisible={setVisible}
+            clear={clear}
+            setClear={setClear}
+            maininstrumentName={searchMain}
+            setMaininstrumentName={setSearchMain}
+          />
+        );
+      }
+      return null;
 
     case "12": // HTA Escalated
       return (

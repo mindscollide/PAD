@@ -40,7 +40,7 @@ export const SearchBarProvider = ({ children }) => {
     instrumentName: "",
     quantity: "",
     startDate: null,
-    endtDate: null,
+    endDate: null,
     type: [],
     status: [],
     pageSize: 10,
@@ -282,6 +282,24 @@ export const SearchBarProvider = ({ children }) => {
       pageSize: 10,
       filterTrigger: false,
     });
+
+  const [
+    coDatewiseTransactionReportSearch,
+    setCODatewiseTransactionReportSearch,
+  ] = useState({
+    employeeID: 0,
+    employeeName: "",
+    departmentName: "",
+    instrumentName: "",
+    quantity: "",
+    startDate: null,
+    endDate: null,
+    type: [],
+    status: [],
+    pageNumber: 0,
+    pageSize: 10,
+    filterTrigger: false,
+  });
   // ===============================
   // Head of Compliance Approval (HCA) States
   // ===============================
@@ -506,7 +524,7 @@ export const SearchBarProvider = ({ children }) => {
       instrumentName: "",
       quantity: 0,
       startDate: null,
-      endtDate: null,
+      endDate: null,
       type: [],
       status: [],
       pageSize: 10,
@@ -663,6 +681,22 @@ export const SearchBarProvider = ({ children }) => {
       pageSize: 10,
       pageNumber: 0,
       totalRecords: 0,
+      filterTrigger: false,
+    });
+  /** Reset Compliance Officer date wise transaction report filters */
+  const resetComplianceOfficerDateWiseTransationReportSearch = () =>
+    setCODatewiseTransactionReportSearch({
+      employeeID: 0,
+      employeeName: "",
+      departmentName: "",
+      instrumentName: "",
+      quantity: "",
+      startDate: null,
+      endDate: null,
+      type: [],
+      status: [],
+      pageNumber: 0,
+      pageSize: 10,
       filterTrigger: false,
     });
 
@@ -923,7 +957,9 @@ export const SearchBarProvider = ({ children }) => {
         complianceOfficerReconcilePortfolioSearch,
         setComplianceOfficerReconcilePortfolioSearch,
         resetComplianceOfficerReconcilePortfoliosSearch,
-
+        coDatewiseTransactionReportSearch,
+        setCODatewiseTransactionReportSearch,
+        resetComplianceOfficerDateWiseTransationReportSearch,
         // Compliance Officer Myaction
         complianceOfficerMyActionSearch,
         setComplianceOfficerMyActionSearch,

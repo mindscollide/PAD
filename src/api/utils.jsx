@@ -602,6 +602,16 @@ export const responseMessages = {
   PAD_Trade_GetComplianceOfficerMyActionsWorkflowDetail_01: "Data Available",
   PAD_Trade_GetComplianceOfficerMyActionsWorkflowDetail_02: "No data available",
   PAD_Trade_GetComplianceOfficerMyActionsWorkflowDetail_03: "Exception",
+
+  // ==============================
+  // Compliance Officer  Date wise transaction report
+  // ==============================
+  PAD_Trade_TradeServiceManager_SearchComplianceOfficerDateWiseTransactionRequest_01:
+    "Data Available",
+  PAD_Trade_TradeServiceManager_SearchComplianceOfficerDateWiseTransactionRequest_02:
+    "No data available",
+  PAD_Trade_TradeServiceManager_SearchComplianceOfficerDateWiseTransactionRequest_03:
+    "Exception",
 };
 
 /**

@@ -61,6 +61,7 @@ const SearchWithPopoverOnly = () => {
     setEmployeeMyTradeApprovalsSearch,
     setLMPendingApprovalReportsSearch,
     setMyTradeApprovalReportLineManageSearch,
+    setCODatewiseTransactionReportSearch,
     //
     setUsersTabSearch,
     setPendingRequestsTabSearch,
@@ -282,7 +283,25 @@ const SearchWithPopoverOnly = () => {
           setSearchMain("");
         }
         break;
-
+      case "11": // Compliance Officer
+        // reports
+        // date wise transaction report
+        if (currentPath === "/PAD/co-reports/co-date-wise-transaction-report") {
+          setCODatewiseTransactionReportSearch((prev) => ({
+            ...prev,
+            instrumentName: searchMain,
+            quantity: 0,
+            startDate: null,
+            endDate: null,
+            employeeID: 0,
+            employeeName: "",
+            departmentName: "",
+            pageNumber: 0,
+            filterTrigger: true,
+          }));
+        }
+        setSearchMain("");
+        break;
       case "12": // HTA Escalated
         setHeadOfTradeEscalatedApprovalsSearch((prev) => ({
           ...prev,
