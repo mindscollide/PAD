@@ -27,7 +27,7 @@ import { getTradeTypeById } from "../../../../../common/funtions/type";
  * @returns {Object} API-ready payload
  */
 export const buildApiRequest = (searchState) => ({
-  EmployeeID: Number(searchState.employeeId) || 0,
+  EmployeeID: Number(searchState.employeeID) || 0,
   IPAddress: searchState.ipAddress || "",
 
   StartDate: searchState.startDate ? toYYMMDD(searchState.startDate) : "",

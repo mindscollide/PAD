@@ -14,6 +14,7 @@ import {
   ViewDetailManageUserUserTabRequest,
 } from "../../api/adminApi";
 import { useMyAdmin } from "../../context/AdminContext";
+import { useSearchBarContext } from "../../context/SearchBarContaxt";
 
 const ManageUsersCard = ({ profile, name, email, id, file }) => {
   const navigate = useNavigate();
@@ -29,7 +30,7 @@ const ManageUsersCard = ({ profile, name, email, id, file }) => {
     setRoleAndPolicyViewDetailData,
     setAdminSessionWiseActivityListData,
   } = useMyAdmin();
-
+  const { setAdminSessionWiseActivitySearch } = useSearchBarContext();
   const [menuVisible, setMenuVisible] = useState(false);
 
   /** 🔹 on Manage User When you Click On dropdown then ViewDetail button show API Function*/
@@ -75,6 +76,22 @@ const ManageUsersCard = ({ profile, name, email, id, file }) => {
       setRoleAndPolicyViewDetailData(res);
     }
   };
+  const handleOpensessionWiseActivity = async () => {
+    // Update employeeName in state
+    await setAdminSessionWiseActivityListData((prev) => ({
+      ...prev,
+      employeeName: name,
+    }));
+
+    // Call your API function
+    await setAdminSessionWiseActivitySearch((prev) => ({
+      ...prev,
+      employeeID: id,
+    }));
+
+    // Navigate to the route
+    navigate("/PAD/admin-users/session-wise-activity");
+  };
 
   const items = [
     {
@@ -96,19 +113,7 @@ const ManageUsersCard = ({ profile, name, email, id, file }) => {
       label: (
         <span
           className={styles.dropdownClass}
-          onClick={() => {
-            // Update employeeName in state
-            setAdminSessionWiseActivityListData((prev) => ({
-              ...prev,
-              employeeName: name,
-            }));
-
-            // Call your API function
-            onClickOfViewDetailApiFunction();
-
-            // Navigate to the route
-            navigate("/PAD/admin-users/session-wise-activity");
-          }}
+          onClick={() => handleOpensessionWiseActivity()}
         >
           Session wise activity
         </span>

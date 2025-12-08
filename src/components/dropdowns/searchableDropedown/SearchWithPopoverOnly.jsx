@@ -465,7 +465,6 @@ const SearchWithPopoverOnly = () => {
         if (currentPath === "/PAD/admin-users/session-wise-activity") {
           setAdminSessionWiseActivitySearch((prev) => ({
             ...prev,
-            employeeID: 0,
             ipAddress: searchMain,
             startDate: null,
             endDate: null,

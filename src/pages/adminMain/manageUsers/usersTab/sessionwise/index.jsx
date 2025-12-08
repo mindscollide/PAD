@@ -122,6 +122,7 @@ const UserSessionWiseActivity = () => {
   useEffect(() => {
     if (hasFetched.current) return;
     hasFetched.current = true;
+    console.log("adminSessionWiseActivitySearch",adminSessionWiseActivitySearch)
     const requestData = buildApiRequest(adminSessionWiseActivitySearch);
     fetchApiCall(requestData, true, true);
   }, []);
