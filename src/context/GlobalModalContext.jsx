@@ -54,6 +54,13 @@ export const GlobalModalProvider = ({ children }) => {
   // Set assetTypeId when I click on addtrade approval dropdown
   const [selectedAssetTypeId, setSelectedAssetTypeId] = useState(null);
 
+  // To  show save broker Modal on manage broker
+  const [showSavedBrokerModal, setShowSaveBrokerModal] = useState(false);
+
+  // To  Cancel or discard changes broker Modal on manage broker
+  const [discardChangesBrokerModal, setDiscardChangesBrokerModal] =
+    useState(false);
+
   /**
    * Global States For Employee Modals End here
    */
@@ -329,6 +336,12 @@ export const GlobalModalProvider = ({ children }) => {
 
         selectedAssetTypeId,
         setSelectedAssetTypeId,
+
+        showSavedBrokerModal,
+        setShowSaveBrokerModal,
+
+        discardChangesBrokerModal,
+        setDiscardChangesBrokerModal,
 
         /**
          * Global States For Line Manager Modals

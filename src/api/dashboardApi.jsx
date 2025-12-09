@@ -406,6 +406,7 @@ export const SaveUserBrokers = async ({
   showNotification,
   showLoader,
   requestData,
+  setShowSaveBrokerModal,
   navigate,
 }) => {
   try {
@@ -436,6 +437,7 @@ export const SaveUserBrokers = async ({
       if (
         responseMessage === "PAD_Trade_TradeServiceManager_SaveUserBrokers_02"
       ) {
+        setShowSaveBrokerModal(true);
         return true;
       }
 

@@ -15,6 +15,9 @@ import {
   SaveUserBrokers,
   GetAllEmployeeBrokers,
 } from "../../../../api/dashboardApi";
+import { useGlobalModal } from "../../../../context/GlobalModalContext";
+import SaveBrokerModal from "./modal/saveBrokerModal/SaveBrokerModal";
+import DiscardBrokerModal from "./modal/discardBrokerModal/DiscardBrokerModal";
 
 /**
  * ManageBrokerModal
@@ -34,6 +37,13 @@ const ManageBrokerModal = ({ open }) => {
   const { showNotification } = useNotification();
   const { showLoader } = useGlobalLoader();
   const { callApi } = useApi();
+
+  const {
+    showSavedBrokerModal,
+    setShowSaveBrokerModal,
+    discardChangesBrokerModal,
+    setDiscardChangesBrokerModal,
+  } = useGlobalModal();
 
   const {
     setEmployeeBasedBrokersData,
@@ -172,6 +182,7 @@ const ManageBrokerModal = ({ open }) => {
       showNotification,
       showLoader,
       requestData,
+      setShowSaveBrokerModal,
       navigate,
     });
 
@@ -215,105 +226,115 @@ const ManageBrokerModal = ({ open }) => {
   // ---------------------- UI ----------------------
 
   return (
-    <GlobalModal
-      visible={open}
-      width="600px"
-      centered
-      onCancel={() => setManageBrokersModalOpen(false)}
-      modalBody={
-        <div className={styles.MainClassOfApprovals}>
-          {/* Header */}
-          <Row>
-            <Col>
-              <h3 className={styles.approvalHeading}>Manage Brokers</h3>
-            </Col>
-          </Row>
+    <>
+      <GlobalModal
+        visible={open}
+        width="600px"
+        centered
+        onCancel={() => setManageBrokersModalOpen(false)}
+        modalBody={
+          <div className={styles.MainClassOfApprovals}>
+            {/* Header */}
+            <Row>
+              <Col>
+                <h3 className={styles.approvalHeading}>Manage Brokers</h3>
+              </Col>
+            </Row>
 
-          {/* Broker Search */}
-          <Row className={styles.mt1}>
-            <Col span={24}>
-              <label className={styles.instrumentLabel}>Search Broker</label>
-              <BrokersSelect
-                data={allBrokers}
-                onSelect={handleAddBroker}
-                value={null}
-                disabled={allBrokers.length === 0}
-              />
-            </Col>
-          </Row>
+            {/* Broker Search */}
+            <Row className={styles.mt1}>
+              <Col span={24}>
+                <label className={styles.instrumentLabel}>Search Broker</label>
+                <BrokersSelect
+                  data={allBrokers}
+                  onSelect={handleAddBroker}
+                  value={null}
+                  disabled={allBrokers.length === 0}
+                />
+              </Col>
+            </Row>
 
-          {/* Broker List */}
-          <Row className={localBrokers.length > 0 ? "" : styles.mt2}>
-            {localBrokers.length > 0 ? (
-              <div className={styles.brokersListContainer}>
-                <Row className={styles.subHeading}>
-                  <Col span={24}>My Brokers</Col>
-                </Row>
+            {/* Broker List */}
+            <Row className={localBrokers.length > 0 ? "" : styles.mt2}>
+              {localBrokers.length > 0 ? (
+                <div className={styles.brokersListContainer}>
+                  <Row className={styles.subHeading}>
+                    <Col span={24}>My Brokers</Col>
+                  </Row>
 
-                {localBrokers
-                  .filter((broker) => broker.isActive !== false) // hide inactive brokers
-                  .map((broker) => (
-                    <Col
-                      key={broker.brokerID}
-                      span={24}
-                      className={styles.brokerRow}
-                    >
-                      <Tooltip title={broker.brokerName}>
-                        <span className={styles.brokerName}>
-                          {broker.brokerName.length > 25
-                            ? broker.brokerName.slice(0, 25) + "…"
-                            : broker.brokerName}
-                        </span>
-                      </Tooltip>
+                  {localBrokers
+                    .filter((broker) => broker.isActive !== false) // hide inactive brokers
+                    .map((broker) => (
+                      <Col
+                        key={broker.brokerID}
+                        span={24}
+                        className={styles.brokerRow}
+                      >
+                        <Tooltip title={broker.brokerName}>
+                          <span className={styles.brokerName}>
+                            {broker.brokerName.length > 25
+                              ? broker.brokerName.slice(0, 25) + "…"
+                              : broker.brokerName}
+                          </span>
+                        </Tooltip>
 
-                      <Tooltip title={broker.psxCode}>
-                        <span className={styles.psxCode}>
-                          {broker.psxCode.length > 8
-                            ? broker.psxCode.slice(0, 8) + "…"
-                            : broker.psxCode}
-                        </span>
-                      </Tooltip>
+                        <Tooltip title={broker.psxCode}>
+                          <span className={styles.psxCode}>
+                            {broker.psxCode.length > 8
+                              ? broker.psxCode.slice(0, 8) + "…"
+                              : broker.psxCode}
+                          </span>
+                        </Tooltip>
 
-                      <img
-                        src={BlackCrossImg}
-                        className={styles.removeIcon}
-                        onClick={() => handleRemoveBroker(broker.brokerID)}
-                        draggable={false}
-                      />
-                    </Col>
-                  ))}
-              </div>
-            ) : (
-              <EmptyState
-                type="employeeBroker"
-                style={{ minHeight: "150px" }}
-              />
-            )}
-          </Row>
-        </div>
-      }
-      modalFooter={
-        <div className={styles.mainButtonDiv}>
-          {/* Cancel */}
-          <CustomButton
-            text="Cancel"
-            className="big-light-button"
-            onClick={() => setManageBrokersModalOpen(false)}
-          />
+                        <img
+                          src={BlackCrossImg}
+                          className={styles.removeIcon}
+                          onClick={() => handleRemoveBroker(broker.brokerID)}
+                          draggable={false}
+                        />
+                      </Col>
+                    ))}
+                </div>
+              ) : (
+                <EmptyState
+                  type="employeeBroker"
+                  style={{ minHeight: "150px" }}
+                />
+              )}
+            </Row>
+          </div>
+        }
+        modalFooter={
+          <div className={styles.mainButtonDiv}>
+            {/* Cancel */}
+            <CustomButton
+              text="Cancel"
+              className="big-light-button"
+              onClick={() => {
+                setManageBrokersModalOpen(false);
+                setDiscardChangesBrokerModal(true);
+              }}
+            />
 
-          {/* Save / Update */}
-          <CustomButton
-            text={employeeBasedBrokersData.length > 0 ? "Update" : "Save"}
-            className="big-dark-button"
-            onClick={handleSubmit}
-            disabled={
-              localBrokers.length === 0 ||
-              !isBrokersChanged(employeeBasedBrokersData, localBrokers)
-            }
-          />
-        </div>
-      }
-    />
+            {/* Save / Update */}
+            <CustomButton
+              text={employeeBasedBrokersData.length > 0 ? "Update" : "Save"}
+              className="big-dark-button"
+              onClick={handleSubmit}
+              disabled={
+                localBrokers.length === 0 ||
+                !isBrokersChanged(employeeBasedBrokersData, localBrokers)
+              }
+            />
+          </div>
+        }
+      />
+
+      {showSavedBrokerModal && <SaveBrokerModal />}
+
+      {/* To show Discard Modal */}
+      {discardChangesBrokerModal && <DiscardBrokerModal />}
+    </>
   );
 };
 
