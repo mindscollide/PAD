@@ -40,8 +40,8 @@ const iconComponents = {
   users: UsersIcon,
   underdevelopment: HistoryRecordIcon,
   policiestab: PoliciesTabIcon,
-  closingUpcoming: HistoryRecordIcon,
-  employeeBroker: EmptyBroker,
+  closingupcoming: HistoryRecordIcon,
+  employeebroker: EmptyBroker,
 };
 
 /**
@@ -63,7 +63,7 @@ const defaultMessages = {
   underdevelopment: "Currently under development",
   policiestab: "No Policies Found",
   closingUpcoming: "Upcoming Instrument",
-  employeeBroker: "No Brokers Added Yet",
+  employeebroker: "No Brokers Added Yet",
 };
 
 /**

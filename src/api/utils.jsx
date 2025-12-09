@@ -620,6 +620,11 @@ export const responseMessages = {
   Admin_GetUserSessionWiseActivity_01: "Data Available",
   Admin_GetUserSessionWiseActivity_02: "No data available",
   Admin_GetUserSessionWiseActivity_03: "Exception",
+
+  PAD_Trade_TradeServiceManager_SaveUserBrokers_01: "Invalid input",
+  PAD_Trade_TradeServiceManager_SaveUserBrokers_02: "Successfull",
+  PAD_Trade_TradeServiceManager_SaveUserBrokers_03: "Fail to Save",
+  PAD_Trade_TradeServiceManager_SaveUserBrokers_04: "Exception",
 };
 
 /**
@@ -638,6 +643,7 @@ export const getMessage = (code) => {
     msg === "Successfully updated" ||
     msg === "Successfully inserted all" ||
     msg === "Exist" ||
+    msg === "Successfull" ||
     msg === "Not Exist" ||
     msg === "Success"
   ) {
