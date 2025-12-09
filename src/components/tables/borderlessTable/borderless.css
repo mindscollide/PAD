@@ -1443,3 +1443,182 @@ border-  bottom-bottom-right-radius: 6.94px !important;
   .border-less-table-previousTable-column-title {
   z-index: 0 !important;
 }
+
+/* For Only Border Table */
+/* Root Table Layout */
+.border-less-table-noColorTable-body table {
+  border-spacing: 0 10px; /* Space between rows */
+}
+
+.border-less-table-noColorTable-body {
+  overflow-x: hidden !important;
+  overflow-y: auto !important;
+}
+
+/* Table Row Styling */
+.border-less-table-noColorTable-row {
+  height: 53.82px;
+}
+
+/* Target the first and last <td> inside each <tr> */
+td.border-less-table-noColorTable-cell:first-child {
+  /* Your styles here */
+  /* background-color: #edf3ff; */
+  border-bottom-left-radius: 6.94px;
+  border-top-left-radius: 6.94px;
+
+  /* Example: add padding, border, etc. */
+}
+td.border-less-table-noColorTable-cell:last-child {
+  /* Your styles here */
+  /* background-color: #edf3ff; */
+  border-bottom-right-radius: 6.94px;
+  border-top-right-radius: 6.94px;
+
+  /* Example: add padding, border, etc. */
+}
+
+.border-less-table-noColorTable .ant-table-body {
+  overflow-x: hidden !important; /* kill horizontal scrollbar */
+  overflow-y: auto !important; /* keep vertical scroll for lazy loading */
+  max-height: 550px; /* same height you passed */
+}
+
+/* Middle columns (excluding first and last) */
+td.border-less-table-noColorTable-cell:not(:first-child):not(:last-child) {
+  /* Your styles here */
+  /* background-color: #edf3ff; */
+}
+
+/* When No data is available then on hover no color change in table */
+td.border-less-table-noColorTable-cell:hover {
+  /* background-color: #edf3ff !important; */
+}
+
+.border-less-table-noColorTable-wrapper .border-less-table-noColorTable {
+  background: transparent !important;
+  /* height: 588px !important; */
+}
+/* Cell Styling */
+.border-less-table-noColorTable-wrapper
+  .border-less-table-noColorTable-tbody
+  > tr
+  > td {
+  padding: 0px 6px;
+  color: #424242;
+  font-family: "Switzer Variable";
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 100%;
+  vertical-align: middle;
+}
+
+/* Header Styling */
+.border-less-table-noColorTable-wrapper
+  .border-less-table-noColorTable-thead
+  > tr
+  > th {
+  color: #30426a;
+  font-family: "Switzer Variable";
+  font-size: 14px;
+  font-weight: 500;
+  padding: 12px 8px;
+  background: transparent !important;
+  border-bottom: none;
+}
+
+/* Optional Sticky Header */
+.border-less-table-noColorTable .ant-table-header {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background-color: #fff;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+  .border-less-table-noColorTable-wrapper
+    .border-less-table-noColorTable-tbody
+    > tr
+    > td {
+    padding: 6px;
+    font-size: 14px;
+  }
+
+  .border-less-table-noColorTable-instrumentBadge {
+    font-size: 12px;
+    padding: 3px 6px;
+  }
+
+  .border-less-table-noColorTable-status {
+    font-size: 14px;
+    padding: 5px 8px;
+  }
+
+  .border-less-table-noColorTable-wrapper
+    .border-less-table-noColorTable-thead
+    > tr
+    > th {
+    font-size: 13px;
+    padding: 10px;
+  }
+}
+
+.border-less-table-noColorTable-wrapper
+  .border-less-table-noColorTable-thead
+  > tr
+  > th:not(:last-child):not(
+    .border-less-table-noColorTable-selection-column
+  ):not(.border-less-table-noColorTable-row-expand-icon-cell):not(
+    [colspan]
+  )::before {
+  display: none;
+}
+
+:where(
+    .css-dev-only-do-not-override-1rfzxih
+  ).border-less-table-noColorTable-wrapper
+  .border-less-table-noColorTable-tbody
+  > tr
+  > th,
+:where(
+    .css-dev-only-do-not-override-1rfzxih
+  ).border-less-table-noColorTable-wrapper
+  .border-less-table-noColorTable-tbody
+  > tr
+  > td {
+  /* border-bottom: none !important; */
+  border-bottom: 1px solid #d4d4d4 !important;
+}
+
+
+
+/* border-top-right-radius: 6.94px !important;
+  border-top-left-radius: 6.94px !important;
+border-  bottom-bottom-right-radius: 6.94px !important;
+  border-bottom-left-radius: 6.94px !important; */
+/* Hide scrollbars in the wrapper */
+
+:where(
+    .css-dev-only-do-not-override-1rfzxih
+  ).border-less-table-noColorTable-wrapper
+  .border-less-table-noColorTable {
+  scrollbar-width: thin;
+  scrollbar-color: #eaeaea transparent;
+  scrollbar-gutter: stable;
+}
+
+:where(
+    .css-dev-only-do-not-override-1rfzxih
+  ).border-less-table-noColorTable-wrapper
+  .border-less-table-noColorTable-column-title {
+  z-index: 0 !important;
+}
+
+/* wrapper used via classNameTable prop */
+
+/* header inner wrapper you created */
+
+/* body rows */
+
+/* scrollbar styling is optional, but you can keep default */

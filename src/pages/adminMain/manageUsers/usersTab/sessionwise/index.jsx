@@ -32,6 +32,8 @@ import { useTableScrollBottom } from "../../../../../common/funtions/scroll";
 
 // 🔹 Styles
 import style from "./sessionWise.module.css";
+import ViewActionSessionWiseModal from "./viewActionSessionWiseModal/ViewActionSessionWiseModal";
+import { useGlobalModal } from "../../../../../context/GlobalModalContext";
 
 /**
  * -------------------------------------------------------------
@@ -73,6 +75,10 @@ const UserSessionWiseActivity = () => {
 
   const { adminSessionWiseActivitySearch, setAdminSessionWiseActivitySearch } =
     useSearchBarContext();
+
+  // For Session Wise View Action Modal in Admin Role
+  const { viewActionSessionWiseModal, setViewActionSessionWiseModal } =
+    useGlobalModal();
 
   // -------------------------------------------------------------
   //  Local state
@@ -250,7 +256,8 @@ const UserSessionWiseActivity = () => {
   // -------------------------------------------------------------
   const columns = getBorderlessTableColumns({
     sortedInfo,
-    setSessionWiseViewActionModal
+    setSessionWiseViewActionModal,
+    setViewActionSessionWiseModal,
   });
 
   // -------------------------------------------------------------
@@ -399,6 +406,9 @@ const UserSessionWiseActivity = () => {
           />
         </div>
       </PageLayout>
+
+      {/* View Action Session Wise Modal */}
+      {viewActionSessionWiseModal && <ViewActionSessionWiseModal />}
     </>
   );
 };
