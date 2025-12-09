@@ -21,6 +21,7 @@ import { useNotification } from "../../NotificationProvider/NotificationProvider
 import { useApi } from "../../../context/ApiContext";
 import { useGlobalLoader } from "../../../context/LoaderContext";
 import { useMyAdmin } from "../../../context/AdminContext";
+import { ManageBrokerModal } from "../../../pages";
 const { Content } = Layout;
 
 const Dashboard = () => {
@@ -59,6 +60,8 @@ const Dashboard = () => {
     currentRoleIsAdminRef,
     urgentAlert,
     setUrgentAlert,
+    manageBrokersModalOpen,
+    setManageBrokersModalOpen,
   } = useDashboardContext();
 
   const { setEmployeeTransactionsTableDataMqtt } = useTransaction();
@@ -632,6 +635,10 @@ const Dashboard = () => {
           <Outlet />
         </Content>
       </Layout>
+      <ManageBrokerModal
+        open={manageBrokersModalOpen}
+        onClose={() => setManageBrokersModalOpen(false)}
+      />
     </Layout>
   );
 };

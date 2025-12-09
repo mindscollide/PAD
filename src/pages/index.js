@@ -27,3 +27,4 @@ export { default as ComplianceOfficerReportsIndex } from "./main/complianceOffic
 export { default as COMyAction } from "./main/complianceOfficer/myActions/index";
 export { default as COdataWiseTransactionsReports } from "./main/complianceOfficer/reports/dataWiseTransactionsReports/index";
 export { default as UserSessionWiseActivity } from "./adminMain/manageUsers/usersTab/sessionwise/index";
+export { default as ManageBrokerModal } from "./main/employes/manageBroker/index";
