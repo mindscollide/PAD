@@ -22,6 +22,7 @@ import { useGlobalModal } from "../../../../../context/GlobalModalContext";
 import style from "./dataWiseTransactionsReports.module.css";
 import { useMyApproval } from "../../../../../context/myApprovalContaxt";
 import {
+  DownloadComplianceOfficerDateWiseTransactionReportRequestAPI,
   DownloadLineManagerMyTradeApprovalReportRequestAPI,
   DownloadMyTransactionReportRequestAPI,
   SearchComplianceOfficerDateWiseTransactionRequest,
@@ -37,6 +38,7 @@ import { getSafeAssetTypeData } from "../../../../../common/funtions/assetTypesL
 import { useTableScrollBottom } from "../../../../../common/funtions/scroll";
 import CustomButton from "../../../../../components/buttons/button";
 import { DateRangePicker } from "../../../../../components";
+import ViewComment from "./viewComment/ViewComment";
 
 const COdataWiseTransactionsReports = () => {
   const navigate = useNavigate();
@@ -52,6 +54,9 @@ const COdataWiseTransactionsReports = () => {
     setCODatewiseTransactionReportListData,
   } = useMyApproval();
 
+  const { isViewComments, setIsViewComments, setCheckTradeApprovalID } =
+    useGlobalModal();
+
   const {
     coDatewiseTransactionReportSearch,
     setCODatewiseTransactionReportSearch,
@@ -60,6 +65,11 @@ const COdataWiseTransactionsReports = () => {
 
   const { assetTypeListingData, setAssetTypeListingData } =
     useDashboardContext();
+
+  console.log(
+    coDatewiseTransactionReportListData,
+    "coDatewiseTransactionReportListData"
+  );
 
   // -------------------- Local State --------------------
   const [sortedInfo, setSortedInfo] = useState({});
@@ -203,6 +213,8 @@ const COdataWiseTransactionsReports = () => {
     sortedInfo,
     coDatewiseTransactionReportSearch,
     setCODatewiseTransactionReportSearch,
+    setIsViewComments,
+    setCheckTradeApprovalID,
   });
 
   /** 🔹 Handle removing individual filter */
@@ -311,13 +323,17 @@ const COdataWiseTransactionsReports = () => {
   const downloadMyTradeApprovalLineManagerInExcelFormat = async () => {
     showLoader(true);
     const requestdata = {
+      InstrumentName: "",
+      DepartmentName: "",
+      Quantity: 0,
+      StatusIds: [],
+      TypeIds: [],
+      RequesterName: "",
       StartDate: "",
       EndDate: "",
-      SearchEmployeeName: "",
-      SearchDepartmentName: "",
     };
 
-    await DownloadLineManagerMyTradeApprovalReportRequestAPI({
+    await DownloadComplianceOfficerDateWiseTransactionReportRequestAPI({
       callApi,
       showLoader,
       requestdata: requestdata,
@@ -449,6 +465,8 @@ const COdataWiseTransactionsReports = () => {
           />
         </div>
       </PageLayout>
+
+      {isViewComments && <ViewComment />}
     </>
   );
 };

@@ -129,6 +129,9 @@ export const GlobalModalProvider = ({ children }) => {
   const [viewCommentPortfolioModal, setViewCommentPortfolioModal] =
     useState(false);
 
+  // To check Trade Approval Id on View Modal In Compliance Officer
+  const [checkTradeApprovalID, setCheckTradeApprovalID] = useState(null);
+
   /**
    * Global States For Compliance Officer Modals End here
    */
@@ -472,6 +475,10 @@ export const GlobalModalProvider = ({ children }) => {
         // For Session Wise View Action Modal in Admin Role
         viewActionSessionWiseModal,
         setViewActionSessionWiseModal,
+
+        // To check Trade Approval Id on View Modal In Compliance Officer
+        checkTradeApprovalID,
+        setCheckTradeApprovalID,
 
         /**
          * Global States For Admin Role Modals End here

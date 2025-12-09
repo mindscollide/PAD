@@ -326,80 +326,94 @@ const COMyAction = () => {
   const mapMyActionData = (data) => {
     if (!data?.requests) return [];
 
-    const getBundleIconType = (state) => {
-      switch (state) {
-        case 2:
-          return "Approved";
-        case 3:
-          return "Decline";
-        default:
-          return "Pending";
-      }
-    };
+    const loggedUser = JSON.parse(sessionStorage.getItem("user_profile_data"));
+    const loggedUserId = loggedUser?.userID;
 
-    // ❗ REMOVE "Compliant" and "Declined" from workflow icon mapping
-    const getWorkFlowIconType = (id) => {
+    const getFinalWorkflowIcon = (id) => {
       switch (id) {
-        case 8:
-          return "co-Compliant";
         case 9:
           return "co-Non-Compliant";
-        case 5:
-          return "co-Transaction Conducted";
-        case 4:
-          return "EscaltedOn";
+        case 8:
+          return "co-Compliant";
+        case 7:
+          return "Not-Traded";
+        case 6:
+          return "Traded";
+        case 1:
+          return "Pending";
         default:
           return "ellipsis";
       }
     };
 
+    const getFinalWorkflowStatusText = (id, name) => {
+      switch (id) {
+        case 9:
+          return "Non-Compliant";
+        case 8:
+          return "Compliant";
+        case 7:
+          return "Not Traded";
+        case 6:
+          return "Traded";
+        case 1:
+          return "Pending";
+        default:
+          return name;
+      }
+    };
+
     return data.requests.map((wf) => {
-      // Step 0: Send For Approval
+      // 1️⃣ Send For Approval
       const sendForApprovalStep = {
+        stepType: "SendForApproval",
         status: "Send for Approval",
         date: formatApiDateTime(`${wf.requestedDate} ${wf.requestedTime}`),
         iconType: "SendForApproval",
       };
 
-      // Step 1: Bundle hierarchy
-      const bundleSteps =
-        wf.bundleHistory?.map((b) => ({
-          status:
-            b.bundleStatus === 9
-              ? "Non-Compliant"
-              : b.bundleStatus === 8
-              ? "Compliant"
-              : "Pending",
-          user: `${b.firstName} ${b.lastName}`,
-          date: formatApiDateTime(
-            `${b.bundleModifiedDate} ${b.bundleModifiedTime}`
-          ),
-          iconType: getBundleIconType(b.bundleStatus),
-        })) || [];
+      // 2️⃣ Bundle Steps
+      let bundleSteps = [];
 
-      // Step 2: Final workflow status
-      const finalStepStatus = wf.workFlowStatusID;
+      if (wf.bundleHistory?.length > 0) {
+        bundleSteps = wf.bundleHistory
+          .filter((b) => b.assignedToUserID === loggedUserId)
+          .map((b) => {
+            let statusText = "";
+            let iconType = "";
 
-      // ❗ EXCLUDE Compliant (ID 8) and Declined (ID 4)
-      const shouldAddFinalStep = ![8, 4].includes(finalStepStatus);
+            if (b.bundleStatus === 2) {
+              statusText = "Marked Compliant by You";
+              iconType = "co-Compliant";
+            } else if (b.bundleStatus === 3) {
+              statusText = "Marked Non-compliant by You";
+              iconType = "co-Non-Compliant";
+            } else return null;
 
-      let finalStep = null;
-
-      if (shouldAddFinalStep) {
-        finalStep = {
-          status: wf.workFlowStatusName,
-          date: formatApiDateTime(`${wf.requestedDate} ${wf.requestedTime}`),
-          requesterID: dashBetweenApprovalAssets(wf.approvalID),
-          iconType: getWorkFlowIconType(wf.workFlowStatusID),
-        };
+            return {
+              stepType: "BundleHistory",
+              status: statusText,
+              date: formatApiDateTime(
+                `${b.bundleModifiedDate} ${b.bundleModifiedTime}`
+              ),
+              iconType,
+            };
+          })
+          .filter(Boolean);
       }
 
-      // 🔥 Final ordered steps
-      const trail = [
-        sendForApprovalStep,
-        ...bundleSteps,
-        ...(shouldAddFinalStep ? [finalStep] : []),
-      ];
+      // 3️⃣ Final Workflow Status
+      const finalWorkflowStep = {
+        stepType: "WorkflowFinal",
+        status: getFinalWorkflowStatusText(
+          wf.workFlowStatusID,
+          wf.workFlowStatusName
+        ),
+        date: formatApiDateTime(`${wf.requestedDate} ${wf.requestedTime}`),
+        iconType: getFinalWorkflowIcon(wf.workFlowStatusID),
+      };
+
+      const trail = [sendForApprovalStep, ...bundleSteps, finalWorkflowStep];
 
       return {
         id: String(wf.requestID),
