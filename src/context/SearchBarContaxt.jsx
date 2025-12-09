@@ -270,7 +270,7 @@ export const SearchBarProvider = ({ children }) => {
   /** 🔍 Compliance Officeer My Action table filters */
   const [complianceOfficerMyActionSearch, setComplianceOfficerMyActionSearch] =
     useState({
-      requestID: "",
+      transactionID: 0,
       instrumentName: "",
       requesterName: "",
       startDate: null,
@@ -436,7 +436,7 @@ export const SearchBarProvider = ({ children }) => {
 
   const [adminSessionWiseActivitySearch, setAdminSessionWiseActivitySearch] =
     useState({
-      employeeID:0,
+      employeeID: 0,
       ipAddress: 0,
       startDate: null,
       endDate: null,
@@ -730,7 +730,7 @@ export const SearchBarProvider = ({ children }) => {
   /** Reset Compliance Officer Approval filters */
   const resetComplianceOfficerMyActionSearch = () =>
     setComplianceOfficerMyActionSearch({
-      requestID: "",
+      transactionID: 0,
       instrumentName: "",
       requesterName: "",
       startDate: null,
@@ -890,7 +890,7 @@ export const SearchBarProvider = ({ children }) => {
   // Admin reset session wise activity Search
   const resetAdminSessionWiseActivitySearch = () =>
     setAdminSessionWiseActivitySearch({
-      employeeID:0,
+      employeeID: 0,
       ipAddress: 0,
       startDate: null,
       endDate: null,

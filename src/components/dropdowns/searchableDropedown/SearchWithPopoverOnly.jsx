@@ -63,11 +63,13 @@ const SearchWithPopoverOnly = () => {
     setMyTradeApprovalReportLineManageSearch,
     setCODatewiseTransactionReportSearch,
     setAdminSessionWiseActivitySearch,
+    setComplianceOfficerMyActionSearch,
     //
     setUsersTabSearch,
     setPendingRequestsTabSearch,
     setRejectedRequestsTabSearch,
   } = useSearchBarContext();
+
   const {
     pageTypeForAdminGropusAndPolicy,
     pageTabesForAdminGropusAndPolicy,
@@ -320,6 +322,24 @@ const SearchWithPopoverOnly = () => {
           }));
           setSearchMain("");
         }
+        break;
+
+      case "10": // Compliance Officer → My Actions
+        setComplianceOfficerMyActionSearch((prev) => ({
+          ...prev,
+          transactionID: "",
+          instrumentName: searchMain,
+          requesterName: "",
+          startDate: null,
+          endDate: null,
+          quantity: 0,
+          pageNumber: 0,
+          type: [],
+          status: [],
+          filterTrigger: true,
+        }));
+
+        setSearchMain("");
         break;
 
       case "11": // Compliance Officer
