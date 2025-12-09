@@ -10,40 +10,56 @@ import { useNavigate } from "react-router-dom";
 import useNotification from "antd/es/notification/useNotification";
 import { useGlobalLoader } from "../../../../context/LoaderContext";
 import { useApi } from "../../../../context/ApiContext";
-import { GetAllBrokers, SaveUserBrokers } from "../../../../api/dashboardApi";
+import {
+  GetAllBrokers,
+  SaveUserBrokers,
+  GetAllEmployeeBrokers,
+} from "../../../../api/dashboardApi";
+
+/**
+ * ManageBrokerModal
+ * ------------------
+ * Allows the user to:
+ * - View their assigned brokers
+ * - Add new brokers
+ * - Remove brokers
+ * - Save updates to backend API
+ */
 
 const ManageBrokerModal = ({ open }) => {
   const navigate = useNavigate();
   const hasFetched = useRef(false);
 
-  // ----------------- Contexts -----------------
+  // ---------------------- Contexts ----------------------
   const { showNotification } = useNotification();
   const { showLoader } = useGlobalLoader();
   const { callApi } = useApi();
-  const { setEmployeeBasedBrokersData, employeeBasedBrokersData } =
-    useDashboardContext();
 
-  // ----------------- Local States -----------------
-  const [allBrokers, setAllBrokers] = useState([]); // all brokers fetched from API
-  const [localBrokers, setLocalBrokers] = useState([]); // UI state for My Brokers list
-  const [requestData, setRequestData] = useState({ Brokers: [] }); // request payload for API
+  const {
+    setEmployeeBasedBrokersData,
+    employeeBasedBrokersData,
+    setManageBrokersModalOpen,
+  } = useDashboardContext();
 
-  // ----------------- Modal Open Effect -----------------
+  // ---------------------- Local States ----------------------
+  const [allBrokers, setAllBrokers] = useState([]); // All brokers from API
+  const [localBrokers, setLocalBrokers] = useState([]); // Selected brokers in UI
+  const [requestData, setRequestData] = useState({ Brokers: [] }); // Payload for API
+
+  // ---------------------- Fetch & Initialize ----------------------
   useEffect(() => {
     if (!open) return;
 
     const fetchBrokers = async () => {
       try {
         showLoader(true);
-
         const res = await GetAllBrokers({
           callApi,
           showNotification,
           showLoader,
           navigate,
         });
-
-        if (res) setAllBrokers(res); // update all brokers
+        if (res) setAllBrokers(res);
       } catch (error) {
         console.error("Error fetching brokers", error);
       } finally {
@@ -51,21 +67,22 @@ const ManageBrokerModal = ({ open }) => {
       }
     };
 
+    // Run once per modal open
     if (!hasFetched.current) {
       hasFetched.current = true;
 
-      // Initialize localBrokers for UI
-      const initialLocalBrokers = (employeeBasedBrokersData || []).map((b) => ({
+      // Initialize local UI list
+      const initialList = (employeeBasedBrokersData || []).map((b) => ({
         brokerID: b.brokerID,
         brokerName: b.brokerName,
         psxCode: b.psxCode,
         isActive: true,
       }));
-      setLocalBrokers(initialLocalBrokers);
+      setLocalBrokers(initialList);
 
-      // Initialize requestData
+      // Initialize request payload
       setRequestData({
-        Brokers: (employeeBasedBrokersData || []).map((b) => ({
+        Brokers: initialList.map((b) => ({
           brokerid: b.brokerID,
           isActive: true,
         })),
@@ -74,20 +91,20 @@ const ManageBrokerModal = ({ open }) => {
       fetchBrokers();
     }
   }, [open]);
-  console.log("localBrokers", localBrokers);
-  // ----------------- Handlers -----------------
 
-  // Add broker to both localBrokers (UI) and requestData (API payload)
+  // ---------------------- Handlers ----------------------
+
+  /**
+   * Adds a selected broker to local list and request payload.
+   */
   const handleAddBroker = (brokerID) => {
-    // Find the full broker object from allBrokers
     const broker = allBrokers.find((b) => b.brokerID === brokerID);
-    if (!broker) return; // If broker not found, do nothing
+    if (!broker) return;
 
     setLocalBrokers((prev) => {
-      // Prevent duplicates
-      if (prev.some((b) => b.brokerID === broker.brokerID)) return prev;
+      if (prev.some((b) => b.brokerID === brokerID)) return prev;
 
-      const newLocal = [
+      const updated = [
         ...prev,
         {
           brokerID: broker.brokerID,
@@ -97,31 +114,59 @@ const ManageBrokerModal = ({ open }) => {
         },
       ];
 
-      // Also update requestData
-      setRequestData((prevRequest) => ({
+      setRequestData((prevReq) => ({
         Brokers: [
-          ...prevRequest.Brokers,
+          ...prevReq.Brokers,
           { brokerid: broker.brokerID, isActive: true },
         ],
       }));
 
-      return newLocal;
+      return updated;
     });
   };
 
-  // Remove broker from both localBrokers (UI) and requestData (API payload)
+  /**
+   * Removes selected broker from UI list & API payload.
+   */
   const handleRemoveBroker = (brokerID) => {
-    setLocalBrokers((prev) => prev.filter((b) => b.brokerID !== brokerID));
-    setRequestData((prevRequest) => ({
-      Brokers: prevRequest.Brokers.filter((b) => b.brokerid !== brokerID),
-    }));
+    const existsInOriginal = employeeBasedBrokersData.some(
+      (b) => b.brokerID === brokerID
+    );
+
+    if (existsInOriginal) {
+      // 🔹 Case 1: Broker existed originally → mark inactive
+      setLocalBrokers((prev) =>
+        prev.map((b) =>
+          b.brokerID === brokerID ? { ...b, isActive: false } : b
+        )
+      );
+
+      setRequestData((prevReq) => {
+        const updated = prevReq.Brokers.filter((b) => b.brokerid !== brokerID);
+
+        // Push updated inactive state
+        updated.push({
+          brokerid: brokerID,
+          isActive: false,
+        });
+
+        return { Brokers: updated };
+      });
+    } else {
+      // 🔹 Case 2: Broker newly added → remove completely
+      setLocalBrokers((prev) => prev.filter((b) => b.brokerID !== brokerID));
+
+      setRequestData((prevReq) => ({
+        Brokers: prevReq.Brokers.filter((b) => b.brokerid !== brokerID),
+      }));
+    }
   };
 
-  // Submit modal → update global context & send request payload
+  /**
+   * Save → API → Update context → Close Modal
+   */
   const handleSubmit = async () => {
-
-
-    console.log("handleSubmit", requestData);
+    showLoader(true);
     const res = await SaveUserBrokers({
       callApi,
       showNotification,
@@ -129,10 +174,29 @@ const ManageBrokerModal = ({ open }) => {
       requestData,
       navigate,
     });
-    console.log("handleSubmit", res);
-    setEmployeeBasedBrokersData(false);
+
+    if (res) {
+      const updatedList = await GetAllEmployeeBrokers({
+        callApi,
+        showNotification,
+        showLoader,
+        navigate,
+      });
+
+      setEmployeeBasedBrokersData(updatedList);
+      setAllBrokers([]); // All brokers from API
+      setLocalBrokers([]); // Selected brokers in UI
+      setRequestData({ Brokers: [] }); // Payload for API
+      hasFetched.current = false;
+      showLoader(false);
+      setManageBrokersModalOpen(false);
+    }
+    showLoader(false);
   };
 
+  /**
+   * Detects if brokers list has changed.
+   */
   const isBrokersChanged = (original, current) => {
     if (original.length !== current.length) return true;
 
@@ -148,73 +212,80 @@ const ManageBrokerModal = ({ open }) => {
     );
   };
 
+  // ---------------------- UI ----------------------
+
   return (
     <GlobalModal
       visible={open}
       width="600px"
       centered
-      onCancel={setEmployeeBasedBrokersData(false)}
+      onCancel={() => setManageBrokersModalOpen(false)}
       modalBody={
         <div className={styles.MainClassOfApprovals}>
-          {/* Modal Heading */}
+          {/* Header */}
           <Row>
             <Col>
               <h3 className={styles.approvalHeading}>Manage Brokers</h3>
             </Col>
           </Row>
 
-          {/* Broker Select */}
+          {/* Broker Search */}
           <Row className={styles.mt1}>
             <Col span={24}>
               <label className={styles.instrumentLabel}>Search Broker</label>
               <BrokersSelect
                 data={allBrokers}
                 onSelect={handleAddBroker}
-                value={null} // selection handled via Plus button
+                value={null}
                 disabled={allBrokers.length === 0}
               />
             </Col>
           </Row>
 
-          {/* My Brokers List */}
+          {/* Broker List */}
           <Row className={localBrokers.length > 0 ? "" : styles.mt2}>
             {localBrokers.length > 0 ? (
               <div className={styles.brokersListContainer}>
                 <Row className={styles.subHeading}>
                   <Col span={24}>My Brokers</Col>
                 </Row>
-                {localBrokers.map((broker) => (
-                  <Col
-                    key={broker.brokerID}
-                    span={24}
-                    className={styles.brokerRow}
-                  >
-                    <Tooltip title={broker.brokerName}>
-                      <span className={styles.brokerName}>
-                        {broker.brokerName.length > 25
-                          ? broker.brokerName.slice(0, 25) + "…"
-                          : broker.brokerName}
-                      </span>
-                    </Tooltip>
-                    <Tooltip title={broker.psxCode}>
-                      <span className={styles.psxCode}>
-                        {broker.psxCode.length > 8
-                          ? broker.psxCode.slice(0, 8) + "…"
-                          : broker.psxCode}
-                      </span>
-                    </Tooltip>
-                    <img
-                      src={BlackCrossImg}
-                      className={styles.removeIcon}
-                      onClick={() => handleRemoveBroker(broker.brokerID)}
-                      draggable={false}
-                    />
-                  </Col>
-                ))}
+
+                {localBrokers
+                  .filter((broker) => broker.isActive !== false) // hide inactive brokers
+                  .map((broker) => (
+                    <Col
+                      key={broker.brokerID}
+                      span={24}
+                      className={styles.brokerRow}
+                    >
+                      <Tooltip title={broker.brokerName}>
+                        <span className={styles.brokerName}>
+                          {broker.brokerName.length > 25
+                            ? broker.brokerName.slice(0, 25) + "…"
+                            : broker.brokerName}
+                        </span>
+                      </Tooltip>
+
+                      <Tooltip title={broker.psxCode}>
+                        <span className={styles.psxCode}>
+                          {broker.psxCode.length > 8
+                            ? broker.psxCode.slice(0, 8) + "…"
+                            : broker.psxCode}
+                        </span>
+                      </Tooltip>
+
+                      <img
+                        src={BlackCrossImg}
+                        className={styles.removeIcon}
+                        onClick={() => handleRemoveBroker(broker.brokerID)}
+                        draggable={false}
+                      />
+                    </Col>
+                  ))}
               </div>
             ) : (
               <EmptyState
-                type={"employeeBroker"}
+                type="employeeBroker"
                 style={{ minHeight: "150px" }}
               />
             )}
@@ -223,11 +294,14 @@ const ManageBrokerModal = ({ open }) => {
       }
       modalFooter={
         <div className={styles.mainButtonDiv}>
+          {/* Cancel */}
           <CustomButton
             text="Cancel"
             className="big-light-button"
-            onClick={setEmployeeBasedBrokersData(false)}
+            onClick={() => setManageBrokersModalOpen(false)}
           />
+
+          {/* Save / Update */}
           <CustomButton
             text={employeeBasedBrokersData.length > 0 ? "Update" : "Save"}
             className="big-dark-button"
