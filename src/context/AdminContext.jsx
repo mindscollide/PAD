@@ -157,6 +157,7 @@ export const MyAdminProvider = ({ children }) => {
   // 1 pending Request
   // 2 rejected request
   const [manageUsersTab, setManageUsersTab] = useState("0");
+
   const manageUsersTabRef = useRef(manageUsersTab);
   // 🔄 Keep refs in sync with latest state
   useEffect(() => {
@@ -258,11 +259,14 @@ export const MyAdminProvider = ({ children }) => {
     setAdminSessionWiseActivityListData,
   ] = useState({
     sessions: [],
-    employeeName:"",
+    employeeName: "",
     totalRecordsDataBase: 0,
     totalRecordsTable: 0,
   });
 
+  // user wise session Wise Activity view action modal
+  const [sessionWiseViewActionModal, setSessionWiseViewActionModal] =
+    useState(false);
   /**
    * ♻️ Reset Context State (Table + API Data)
    *
@@ -498,11 +502,16 @@ export const MyAdminProvider = ({ children }) => {
 
         typeofAction,
         setTypeofAction,
+
         // session wise user data
         resetAdminSessionWiseActivityListData,
         adminSessionWiseActivityListData,
         setAdminSessionWiseActivityListData,
 
+        // session wise activity view action
+        sessionWiseViewActionModal,
+        setSessionWiseViewActionModal,
+        
         // rejected request list data
         resetManageUsersRejectedRequestTabData,
         manageUsersRejectedRequestTabData,

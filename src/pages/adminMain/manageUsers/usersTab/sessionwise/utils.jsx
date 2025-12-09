@@ -111,7 +111,10 @@ const withSortIcon = (label, columnKey, sortedInfo) => (
   </div>
 );
 
-export const getBorderlessTableColumns = ({ sortedInfo }) => [
+export const getBorderlessTableColumns = ({
+  sortedInfo,
+  setSessionWiseViewActionModal,
+}) => [
   {
     title: withSortIcon("IP Address", "ipAddress", sortedInfo),
     dataIndex: "ipAddress",
@@ -192,7 +195,7 @@ export const getBorderlessTableColumns = ({ sortedInfo }) => [
           className="small-light-button"
           text={"View Actions"}
           onClick={() => {
-            console.log("View actions for session:", record.sessionID);
+            setSessionWiseViewActionModal(true);
           }}
         />
       </div>
