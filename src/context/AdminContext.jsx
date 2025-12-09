@@ -157,6 +157,7 @@ export const MyAdminProvider = ({ children }) => {
   // 1 pending Request
   // 2 rejected request
   const [manageUsersTab, setManageUsersTab] = useState("0");
+
   const manageUsersTabRef = useRef(manageUsersTab);
   // 🔄 Keep refs in sync with latest state
   useEffect(() => {
@@ -252,6 +253,20 @@ export const MyAdminProvider = ({ children }) => {
   const [storeEditRolesAndPoliciesData, setStoreEditRolesAndPoliciesData] =
     useState(null);
 
+  // user wise session Wise Activity List Data
+  const [
+    adminSessionWiseActivityListData,
+    setAdminSessionWiseActivityListData,
+  ] = useState({
+    sessions: [],
+    employeeName: "",
+    totalRecordsDataBase: 0,
+    totalRecordsTable: 0,
+  });
+
+  // user wise session Wise Activity view action modal
+  const [sessionWiseViewActionModal, setSessionWiseViewActionModal] =
+    useState(false);
   /**
    * ♻️ Reset Context State (Table + API Data)
    *
@@ -336,6 +351,15 @@ export const MyAdminProvider = ({ children }) => {
     });
     setManageUsersRejectedRequestTabMQTT(false);
   };
+  // user wise session Wise Activity Reset List Data
+  const resetAdminSessionWiseActivityListData = () => {
+    setAdminSessionWiseActivityListData({
+      sessions: [],
+      totalRecordsDataBase: 0,
+      totalRecordsTable: 0,
+    });
+  };
+
   const resetIDofUserRejectedViewDetails = () => {
     setCurrentID(-1);
   };
@@ -479,6 +503,15 @@ export const MyAdminProvider = ({ children }) => {
         typeofAction,
         setTypeofAction,
 
+        // session wise user data
+        resetAdminSessionWiseActivityListData,
+        adminSessionWiseActivityListData,
+        setAdminSessionWiseActivityListData,
+
+        // session wise activity view action
+        sessionWiseViewActionModal,
+        setSessionWiseViewActionModal,
+        
         // rejected request list data
         resetManageUsersRejectedRequestTabData,
         manageUsersRejectedRequestTabData,

@@ -36,6 +36,8 @@ import {
   PendingRequest,
   ComplianceOfficerReportsIndex,
   COMyAction,
+  COdataWiseTransactionsReports,
+  UserSessionWiseActivity,
 } from "../pages";
 import RoleBasedRoute from "./RoleBasedRoute";
 import EscalatedApprovals from "../pages/main/headOfTradeApprover/escalatedApprovals/escalatedApprovals";
@@ -212,7 +214,7 @@ const router = createBrowserRouter(
             </RoleBasedRoute>
           }
         />
-       <Route
+        <Route
           path="co-reports"
           element={
             <RoleBasedRoute isAdmin={false} allowedRoles={[4]}>
@@ -221,8 +223,14 @@ const router = createBrowserRouter(
           }
         >
           <Route index element={<ComplianceOfficerReportsIndex />} />
-          <Route path="co-date-wise-transaction-report" element={<PendingRequest />} />
-          <Route path="co-transactions-summary-report" element={<PendingRequest />} />
+          <Route
+            path="co-date-wise-transaction-report"
+            element={<COdataWiseTransactionsReports />}
+          />
+          <Route
+            path="co-transactions-summary-report"
+            element={<PendingRequest />}
+          />
           <Route path="co-overdue-verifications" element={<PendingRequest />} />
           <Route path="co-portfolio-history" element={<PendingRequest />} />
         </Route>
@@ -279,8 +287,24 @@ const router = createBrowserRouter(
             </RoleBasedRoute>
           }
         />
-
+        {/*  */}
         <Route
+          path="admin-users"
+          element={
+            <RoleBasedRoute isAdmin={true} allowedRoles={[1]}>
+              <ReportsLayout />
+            </RoleBasedRoute>
+          }
+        >
+          <Route index element={<ManageUsers />} />
+          <Route
+            path="session-wise-activity"
+            element={<UserSessionWiseActivity />}
+          />
+        </Route>
+
+        {/*  */}
+        {/* <Route
           path="admin-users"
           element={
             <RoleBasedRoute isAdmin={true} allowedRoles={[1]}>
@@ -288,6 +312,14 @@ const router = createBrowserRouter(
             </RoleBasedRoute>
           }
         />
+        <Route
+          path="session-wise-activity"
+          element={
+            <RoleBasedRoute isAdmin={true} allowedRoles={[1]}>
+              <UserSessionWiseActivity />
+            </RoleBasedRoute>
+          }
+        /> */}
 
         <Route
           path="admin-system-configurations"

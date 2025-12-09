@@ -25,3 +25,5 @@ export { default as SystemConfigurations } from "./adminMain/systemConfiguration
 export { default as PendingRequest } from "./main/lineManager/reports/pendingRequest/pendingRequest";
 export { default as ComplianceOfficerReportsIndex } from "./main/complianceOfficer/reports/index";
 export { default as COMyAction } from "./main/complianceOfficer/myActions/index";
+export { default as COdataWiseTransactionsReports } from "./main/complianceOfficer/reports/dataWiseTransactionsReports/index";
+export { default as UserSessionWiseActivity } from "./adminMain/manageUsers/usersTab/sessionwise/index";

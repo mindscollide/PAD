@@ -1253,7 +1253,10 @@ export const GetComplianceOfficerMyActionsWorkflowDetail = async ({
       const message = getMessage(responseMessage);
 
       // Case 1 → Data available
-      if (responseMessage === "PAD_Trade_GetComplianceOfficerMyActionsWorkflowDetail_01") {
+      if (
+        responseMessage ===
+        "PAD_Trade_GetComplianceOfficerMyActionsWorkflowDetail_01"
+      ) {
         return {
           requests: requests || [],
           totalRecords: totalRecords || 0,
@@ -1261,7 +1264,10 @@ export const GetComplianceOfficerMyActionsWorkflowDetail = async ({
       }
 
       // Case 2 → No data
-      if (responseMessage === "PAD_Trade_GetComplianceOfficerMyActionsWorkflowDetail_02") {
+      if (
+        responseMessage ===
+        "PAD_Trade_GetComplianceOfficerMyActionsWorkflowDetail_02"
+      ) {
         return {
           requests: [],
           totalRecords: 0,
@@ -2093,6 +2099,100 @@ export const DownloadLineManagerMyTradeApprovalReportRequestAPI = async ({
   } catch (error) {
     return false;
   } finally {
+    showLoader(false);
+  }
+};
+
+// SearchComplianceOfficerDateWiseTransactionRequest
+export const SearchComplianceOfficerDateWiseTransactionRequest = async ({
+  callApi,
+  showNotification,
+  showLoader,
+  navigate,
+  requestdata,
+}) => {
+  try {
+    // 🔹 API Call
+    const res = await callApi({
+      requestMethod: import.meta.env
+        .VITE_SEARCH_COMPLIANCE_OFFICER_DATE_WISE_TRANSACTION_REQUEST_API_REQUEST_METHOD, // 🔑 must be defined in .env
+      endpoint: import.meta.env.VITE_API_TRADE,
+      requestData: requestdata,
+      navigate,
+    });
+
+    // 🔹 Handle session expiry
+    if (handleExpiredSession(res, navigate, showLoader)) return null;
+
+    // 🔹 Validate execution
+    if (!res?.result?.isExecuted) {
+      showNotification({
+        type: "error",
+        title: "Error",
+        description:
+          "Something went wrong while fetching Compliance Officer date wise transaction reports Api.",
+      });
+      return null;
+    }
+
+    // 🔹 Handle success
+    if (res?.success) {
+      const { totalRecords, complianceOfficerApprovals, responseMessage } =
+        res.result;
+      const message = getMessage(responseMessage);
+
+      // Case 1 → Data available
+      if (
+        responseMessage ===
+        "PAD_Trade_TradeServiceManager_SearchComplianceOfficerDateWiseTransactionRequest_01"
+      ) {
+        return {
+          totalRecords: totalRecords,
+          complianceOfficerApprovals: complianceOfficerApprovals,
+        };
+      }
+
+      // Case 2 → No data
+      if (
+        responseMessage ===
+        "PAD_Trade_TradeServiceManager_SearchComplianceOfficerDateWiseTransactionRequest_02"
+      ) {
+        return {
+          totalRecords: 0,
+          complianceOfficerApprovals: [],
+        };
+      }
+
+      // Case 3 → Custom server messages
+      if (message) {
+        showNotification({
+          type: "warning",
+          title: message,
+          description: message,
+        });
+      }
+
+      return null;
+    }
+
+    // 🔹 Handle failure
+    showNotification({
+      type: "error",
+      title: "Fetch Failed",
+      description: getMessage(res.message),
+    });
+    return null;
+  } catch (error) {
+    // 🔹 Exception handling
+    showNotification({
+      type: "error",
+      title: "Error",
+      description:
+        "An unexpected error occurred while request Compliance officer date wise transaction reports  API .",
+    });
+    return null;
+  } finally {
+    // 🔹 Always hide loader
     showLoader(false);
   }
 };

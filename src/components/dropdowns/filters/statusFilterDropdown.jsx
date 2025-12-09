@@ -105,6 +105,11 @@ const StatusFilterDropdown = ({
           setFilterOptions(emtStatusOptions);
         }
         break;
+        case "11":
+        if (location.pathname === "/PAD/co-reports/co-date-wise-transaction-report") {
+          setFilterOptions(emtStatusOptions);
+        }
+        break;
       case "12":
         setFilterOptions(escalated);
         break;

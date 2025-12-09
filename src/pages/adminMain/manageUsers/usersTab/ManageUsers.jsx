@@ -64,7 +64,8 @@ const UsersTab = () => {
     if (!hasFetched.current) {
       hasFetched.current = true;
       const requestData = buildManageUserUseraTabApiRequest(usersTabSearch);
-
+      sessionStorage.removeItem("sessionWiseEmployeeName");
+      sessionStorage.removeItem("sessionWiseEmployeeID");
       fetchApiCall(requestData, true, true);
     }
   }, [buildManageUserUseraTabApiRequest, usersTabSearch, fetchApiCall]);

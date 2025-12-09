@@ -26,6 +26,8 @@ import { LineManagerMyAction } from "./LineManagerMyActionFilter";
 import { EmployeeTransactionReportFilter } from "./EmployeeTransactionReportFilter";
 import { EmployeeMyTradeApprovalsReportsFilter } from "./EmployeeMyTradeApprovalsreports";
 import { LineManagerMyTradeApprovalsReports } from "./LineManagerMyTradeApprovalsReports";
+import { CODateWiseTransactionReportFilter } from "./CODateWiseTransactionReportFilter";
+import { AdminSessionWiseActivityFilter } from "./AdminSessionWiseActivity";
 
 // this is used for open specific filter according to page
 export const renderFilterContent = (
@@ -165,6 +167,19 @@ export const renderFilterContent = (
           setMaininstrumentName={setSearchMain}
         />
       );
+    case "11": // LineManager → reports pending approvals
+      if (currentPath === "/PAD/co-reports/co-date-wise-transaction-report") {
+        return (
+          <CODateWiseTransactionReportFilter
+            setVisible={setVisible}
+            clear={clear}
+            setClear={setClear}
+            maininstrumentName={searchMain}
+            setMaininstrumentName={setSearchMain}
+          />
+        );
+      }
+      return null;
 
     case "12": // HTA Escalated
       return (
@@ -211,15 +226,27 @@ export const renderFilterContent = (
       );
 
     case "21": // Admin Manage User
-      return (
-        <AdminUsersTabFilter
-          setVisible={setVisible}
-          clear={clear}
-          setClear={setClear}
-          maininstrumentName={searchMain}
-          setMaininstrumentName={setSearchMain}
-        />
-      );
+      if (currentPath === "/PAD/admin-users/session-wise-activity") {
+        return (
+          <AdminSessionWiseActivityFilter
+            setVisible={setVisible}
+            clear={clear}
+            setClear={setClear}
+            maininstrumentName={searchMain}
+            setMaininstrumentName={setSearchMain}
+          />
+        );
+      } else {
+        return (
+          <AdminUsersTabFilter
+            setVisible={setVisible}
+            clear={clear}
+            setClear={setClear}
+            maininstrumentName={searchMain}
+            setMaininstrumentName={setSearchMain}
+          />
+        );
+      }
 
     case "20": // groupe listing create edit and view
       console.log("AdminPoliciesFilter");

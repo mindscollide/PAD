@@ -17,11 +17,7 @@ export const lineManagerRouteMap = {
 };
 
 export const complianceOfficerRouteMap = {
-  approvals: { path: "approvals", key: "1" },
-  transactions: { path: "transactions", key: "2" },
-  history: { path: "history", key: "3" },
-  portfolio: { path: "portfolios", key: "4" },
-  reports: { path: "reports", key: "5" },
+  reports: { path: "co-reports", key: "11" },
 };
 
 export const headOfTradeRouteMap = {
@@ -63,7 +59,7 @@ export const navigateToPage = (userRole, route, setSelectedKey, navigate) => {
     case "LM":
       pathInfo = lineManagerRouteMap[route];
       break;
-    case "complianceOfficer":
+    case "CO":
       pathInfo = complianceOfficerRouteMap[route];
       break;
     case "headOfTrade":

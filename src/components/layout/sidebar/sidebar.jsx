@@ -162,7 +162,10 @@ const SideBar = () => {
             location.pathname !== "/PAD/reports/my-compliance-approvals")) ||
         (currentKey === "8" &&
           (location.pathname !== "/PAD/lm-reports/lm-pending-request" ||
-            location.pathname !== "/PAD/lm-reports/lm-tradeapproval-request"))
+            location.pathname !==
+              "/PAD/lm-reports/lm-tradeapproval-request")) ||
+        (currentKey === "21" &&
+          location.pathname !== "PAD/admin-users/session-wise-activity")
       ) {
         setSelectedKey(currentKey);
       }

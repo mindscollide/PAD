@@ -60,6 +60,11 @@ const ReportCard = ({
       setSelectedKey("8"); // update your menu/side bar state
       navigate("/PAD/lm-reports/lm-tradeapproval-request");
     }
+    else if (data?.label === "Date-Wise Transaction Report" && userRole === "CO") {
+      setSelectedKey("11"); // update your menu/side bar state
+      navigate("/PAD/co-reports/co-date-wise-transaction-report");
+    }
+    
   };
 
   const reportIcons = {

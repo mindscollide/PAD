@@ -113,6 +113,16 @@ export const MyApprovalProvider = ({ children }) => {
       totalRecordsDataBase: 0,
       totalRecordsTable: 0,
     });
+
+  // compliance officer  date wise transaction report
+  const [
+    coDatewiseTransactionReportListData,
+    setCODatewiseTransactionReportListData,
+  ] = useState({
+    complianceOfficerApprovalsList: [],
+    totalRecordsDataBase: 0,
+    totalRecordsTable: 0,
+  });
   // Reset function to set all states back to initial values
   /* =========================================================
      RESET FUNCTIONS
@@ -199,6 +209,10 @@ export const MyApprovalProvider = ({ children }) => {
         setMyTradeApprovalLineManagerData,
         coReportsDashboardData,
         setCOReportsDashboardData,
+
+        // compliance officer  date wise transaction report
+        coDatewiseTransactionReportListData,
+        setCODatewiseTransactionReportListData,
       }}
     >
       {children}
