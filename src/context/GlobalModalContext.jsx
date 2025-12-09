@@ -230,6 +230,10 @@ export const GlobalModalProvider = ({ children }) => {
   const [roleAndPoliciesIntimationModal, setRoleAndPoliciesIntimationModal] =
     useState(false);
 
+  // For Session Wise View Action Modal in Admin Role
+  const [viewActionSessionWiseModal, setViewActionSessionWiseModal] =
+    useState(false);
+
   /**
    * Global States For Admin Role Modals End here
    */
@@ -464,6 +468,10 @@ export const GlobalModalProvider = ({ children }) => {
         // View Detail Modal For Rejected Request in Admin
         viewDetailRejectedModal,
         setViewDetailRejectedModal,
+
+        // For Session Wise View Action Modal in Admin Role
+        viewActionSessionWiseModal,
+        setViewActionSessionWiseModal,
 
         /**
          * Global States For Admin Role Modals End here
