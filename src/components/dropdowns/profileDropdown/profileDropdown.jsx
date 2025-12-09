@@ -15,7 +15,11 @@ const ProfileDropdown = () => {
   const { callApi } = useApi();
   const { showNotification } = useNotification();
   const { showLoader } = useGlobalLoader();
-  const { setCurrentRoleIsAdmin, setRoleChanegFlag } = useDashboardContext();
+  const {
+    setCurrentRoleIsAdmin,
+    setRoleChanegFlag,
+    setManageBrokersModalOpen,
+  } = useDashboardContext();
 
   const navigate = useNavigate();
   // Get user roles from sessionStorage
@@ -65,7 +69,8 @@ const ProfileDropdown = () => {
     hasEmployee,
     style,
     handleLogout,
-    setCurrentRoleIsAdmin
+    setCurrentRoleIsAdmin,
+    setManageBrokersModalOpen
   );
 
   return (

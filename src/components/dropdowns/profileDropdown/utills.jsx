@@ -14,7 +14,8 @@ export const getMenuItems = (
   hasEmployee,
   style,
   handleLogout,
-  setCurrentRoleIsAdmin
+  setCurrentRoleIsAdmin,
+  setManageBrokersModalOpen
 ) => {
   const baseItems = [
     {
@@ -31,12 +32,15 @@ export const getMenuItems = (
     hasEmployee && {
       key: "2",
       label: (
-        <Link className={style["dropdown-menu-item"]}>
+        <span
+          className={style["dropdown-menu-item"]}
+          onClick={() => setManageBrokersModalOpen(true)}
+        >
           <TeamOutlined className={style["dropdown-menu-icon"]} />
           <span className={style["dropdown-menu-options-title"]}>
             Manage Brokers
           </span>
-        </Link>
+        </span>
       ),
     },
     {

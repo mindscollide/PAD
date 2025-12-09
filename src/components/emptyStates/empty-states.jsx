@@ -19,7 +19,7 @@ import ReportsIcon from "../../assets/img/reports-icon.png";
 import RequestPendingIcon from "../../assets/img/request-pendinding-icon.png";
 import TransactionsIcon from "../../assets/img/transactions-icon.png";
 import PoliciesTabIcon from "../../assets/img/Group-creation-cancle.png";
-
+import EmptyBroker from "../../assets/img/EmptyBroker-icon.png";
 const { Text } = Typography;
 
 /**
@@ -41,6 +41,7 @@ const iconComponents = {
   underdevelopment: HistoryRecordIcon,
   policiestab: PoliciesTabIcon,
   closingUpcoming: HistoryRecordIcon,
+  employeeBroker: EmptyBroker,
 };
 
 /**
@@ -62,6 +63,7 @@ const defaultMessages = {
   underdevelopment: "Currently under development",
   policiestab: "No Policies Found",
   closingUpcoming: "Upcoming Instrument",
+  employeeBroker: "No Brokers Added Yet",
 };
 
 /**
