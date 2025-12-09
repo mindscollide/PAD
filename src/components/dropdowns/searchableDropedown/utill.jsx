@@ -28,6 +28,7 @@ import { EmployeeMyTradeApprovalsReportsFilter } from "./EmployeeMyTradeApproval
 import { LineManagerMyTradeApprovalsReports } from "./LineManagerMyTradeApprovalsReports";
 import { CODateWiseTransactionReportFilter } from "./CODateWiseTransactionReportFilter";
 import { AdminSessionWiseActivityFilter } from "./AdminSessionWiseActivity";
+import { COMyAction } from "./COMyAction";
 
 // this is used for open specific filter according to page
 export const renderFilterContent = (
@@ -160,6 +161,17 @@ export const renderFilterContent = (
     case "9": // Compliance Officer → Reconcile
       return (
         <ComplianceReconcileFilter
+          setVisible={setVisible}
+          clear={clear}
+          setClear={setClear}
+          maininstrumentName={searchMain}
+          setMaininstrumentName={setSearchMain}
+        />
+      );
+
+    case "10": // Compliance Officer → Reconcile
+      return (
+        <COMyAction
           setVisible={setVisible}
           clear={clear}
           setClear={setClear}
