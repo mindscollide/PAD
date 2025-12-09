@@ -139,6 +139,56 @@ export const GetUserDashBoardStats = async ({
     showLoader(false);
   }
 };
+/**
+ * ✅ Fetches all employee-based broker data
+ */
+export const GetAllBrokers = async ({
+  callApi,
+  showNotification,
+  showLoader,
+  navigate,
+}) => {
+  try {
+    const res = await callApi({
+      requestMethod: import.meta.env.VITE_ALL_BROKERS_DATA_REQUEST_METHOD,
+      endpoint: import.meta.env.VITE_API_TRADE,
+      requestData: {},
+      navigate,
+    });
+
+    // Handle session expiration
+    if (handleExpiredSession(res, navigate, showLoader)) return null;
+
+    if (!res?.result?.isExecuted) {
+      showErrorNotification(showNotification);
+      return null;
+    }
+
+    const { success, result } = res;
+    const { responseMessage, employeeBrokers } = result;
+
+    if (success) {
+      if (
+        responseMessage ===
+        "PAD_Trade_TradeServiceManager_GetAllEmployeeBrokers_01"
+      ) {
+        return employeeBrokers;
+      }
+      showWarningNotification(showNotification, responseMessage);
+      return null;
+    }
+
+    showErrorNotification(
+      showNotification,
+      "Fetch Failed",
+      getMessage(res.message)
+    );
+    return null;
+  } catch (error) {
+    showErrorNotification(showNotification);
+    return null;
+  }
+};
 
 /**
  * ✅ Fetches all employee-based broker data
@@ -166,14 +216,14 @@ export const GetAllEmployeeBrokers = async ({
     }
 
     const { success, result } = res;
-    const { responseMessage, employeeBrokers } = result;
+    const { responseMessage, brokers } = result;
 
     if (success) {
       if (
         responseMessage ===
-        "PAD_Trade_TradeServiceManager_GetAllEmployeeBrokers_01"
+        "PAD_Trade_TradeServiceManager_GetActiveBrokersByEmployeeAPI_01"
       ) {
-        return employeeBrokers;
+        return brokers;
       }
 
       showWarningNotification(showNotification, responseMessage);
@@ -344,6 +394,69 @@ export const GetAllPredefineReassonApi = async ({
     return null;
   } catch (error) {
     showErrorNotification(showNotification);
+    return null;
+  }
+};
+
+/**
+ * ✅ Fetches all employee-based broker data
+ */
+export const SaveUserBrokers = async ({
+  callApi,
+  showNotification,
+  showLoader,
+  requestData,
+  navigate,
+}) => {
+  try {
+    const res = await callApi({
+      requestMethod: import.meta.env
+        .VITE_SAVE_USER_BROKERS_REQUEST_API_REQUEST_METHOD,
+      endpoint: import.meta.env.VITE_API_TRADE,
+      requestData: requestData,
+      navigate,
+    });
+
+    // Handle session expiration
+    if (handleExpiredSession(res, navigate, showLoader)) return null;
+
+    if (!res?.result?.isExecuted) {
+      showNotification({
+        type: "error",
+        title: "Error",
+        description: "Something went wrong while Saving employee base brokers.",
+      });
+      return null;
+    }
+
+    const { success, result } = res;
+    const { responseMessage } = result;
+    const message = getMessage(responseMessage);
+    if (success) {
+      if (
+        responseMessage === "PAD_Trade_TradeServiceManager_SaveUserBrokers_02"
+      ) {
+        return true;
+      }
+
+      return false;
+    }
+
+    if (message) {
+      showNotification({
+        type: "warning",
+        title: message,
+        description: "No brokers saving employee.",
+      });
+    }
+    return null;
+  } catch (error) {
+    showNotification({
+      type: "error",
+      title: "Error",
+      description:
+        "An unexpected error occurred while Saving employee base brokers.",
+    });
     return null;
   }
 };

@@ -228,6 +228,7 @@ const AddNewBroker = () => {
                     src={BlackCrossImg}
                     className={styles.deleteButton}
                     onClick={() => handleRemoveBroker(index)}
+                    draggable={false}
                   />
                 </div>
               ))}
