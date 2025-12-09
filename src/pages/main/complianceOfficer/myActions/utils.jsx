@@ -71,7 +71,7 @@ export const buildMyActionApiRequest = (searchState = {}) => ({
 
 export const getMyActionsColumn = (approvalStatusMap, sortedInfo) => [
   {
-    title: withSortIcon("Request/Transaction ID", "approvalID", sortedInfo),
+    title: withSortIcon("Transaction ID", "approvalID", sortedInfo),
     dataIndex: "approvalID",
     key: "approvalID",
     ellipsis: true,
