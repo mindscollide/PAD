@@ -67,6 +67,8 @@ const UserSessionWiseActivity = () => {
   const {
     adminSessionWiseActivityListData,
     setAdminSessionWiseActivityListData,
+    sessionWiseViewActionModal,
+    setSessionWiseViewActionModal,
   } = useMyAdmin();
 
   const { adminSessionWiseActivitySearch, setAdminSessionWiseActivitySearch } =
@@ -248,6 +250,7 @@ const UserSessionWiseActivity = () => {
   // -------------------------------------------------------------
   const columns = getBorderlessTableColumns({
     sortedInfo,
+    setSessionWiseViewActionModal
   });
 
   // -------------------------------------------------------------
