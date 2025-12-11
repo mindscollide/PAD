@@ -42,8 +42,8 @@ const MyComplianceStandingReport = () => {
   //local state
   const [open, setOpen] = useState(false);
   const [dateRange, setDateRange] = useState({
-    StartDate: "",
-    EndDate: "",
+    StartDate: null,
+    EndDate: null,
   });
   //Extract data from the context state and save in variable
   const apiSummary = getEmployeeMyComplianceReport?.summary || [];
@@ -106,19 +106,35 @@ const MyComplianceStandingReport = () => {
   //OnCHange of date Handler
   const handleDateChange = (dates) => {
     if (dates && dates.length === 2) {
-      const start = toYYMMDD(dates[0]);
-      const end = toYYMMDD(dates[1]);
-
       setDateRange({
-        StartDate: start,
-        EndDate: end,
+        StartDate: dates?.[0] || null,
+        EndDate: dates?.[1] || null,
       });
 
       // Call API immediately after date change
       fetchApiCall(
         {
-          StartDate: start,
-          EndDate: end,
+          StartDate: toYYMMDD(dates[0]) || null,
+          EndDate: toYYMMDD(dates[1]) || null,
+        },
+        true,
+        true
+      );
+    }
+  };
+  const handleClearDates = (dates) => {
+    if (dates && dates.length === 2) {
+      setDateRange({
+        StartDate: null,
+        EndDate: null,
+      });
+
+      // Call API immediately after date change
+      console.log("handleClearDates")
+      fetchApiCall(
+        {
+          StartDate: "",
+          EndDate: "",
         },
         true,
         true
@@ -192,6 +208,9 @@ const MyComplianceStandingReport = () => {
               size="medium"
               className={style.dateRangePickerClass}
               onChange={handleDateChange}
+              value={[dateRange.StartDate, dateRange.EndDate]}
+              onClear={handleClearDates}
+              format="YYYY-MM-DD"
             />
 
             <CustomButton

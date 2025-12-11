@@ -244,7 +244,7 @@ const Home = () => {
                   buttonTitle={"See More"}
                   buttonId={"policy-assign-view-btn-admin"}
                   buttonClassName={"big-white-card-button"}
-                  userRole={"admin"}
+                  userRole={"Admin"}
                   route={"policies"}
                 />
               </Col>

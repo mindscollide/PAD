@@ -84,13 +84,24 @@ const Instruments = () => {
       InstrumentStatusID: isActive ? 1 : 2,
     };
 
-    await UpdateInstrumentStatus({
+    const res = await UpdateInstrumentStatus({
       callApi,
       showNotification,
       showLoader,
       requestdata: payload,
       navigate,
     });
+    if (res) {
+      console.log("adminIntrumentsData", adminIntrumentsData?.instruments);
+      setAdminIntrumentsData((prev) => ({
+        ...prev,
+        instruments: prev.instruments?.map((item) =>
+          item.instrumentID === instrumentID
+            ? { ...item, status: isActive ? 1 : 2 }
+            : item
+        ),
+      }));
+    }
   };
 
   // 🔷 Api Call For Edit Button API is getUpcomingClosingPeriodInstrumentRequest
@@ -339,7 +350,7 @@ const Instruments = () => {
         },
     ].filter(Boolean);
   })();
-  console.log("activeFilters", activeFilters);
+
   return (
     <>
       {/* 🔹 Active Filter Tags */}

@@ -32,6 +32,7 @@ const PendingRequest = ({ currentUserData, setCurrentUserData }) => {
     manageUsersPendingTabMqtt,
     setManageUsersPendingTabMqtt,
     setTypeofAction,
+    setAdminManageUserTabData,
   } = useMyAdmin();
 
   const { pendingRequestsTabSearch, setPendingRequestsTabSearch } =
@@ -60,8 +61,17 @@ const PendingRequest = ({ currentUserData, setCurrentUserData }) => {
           : [];
         if (replace) {
           setManageUsersPendingTabData(pendingRequests);
+          setAdminManageUserTabData((prev) => ({
+            ...prev,
+            pendingReqeustCount: pendingRequests.length,
+          }));
         } else {
           setManageUsersPendingTabData((prev) => [...prev, ...pendingRequests]);
+          setAdminManageUserTabData((prev) => ({
+            ...prev,
+            pendingReqeustCount:
+              prev.pendingReqeustCount + pendingRequests.length,
+          }));
         }
       } catch (err) {
         console.error("❌ Error fetching portfolio:", err);
@@ -117,8 +127,8 @@ const PendingRequest = ({ currentUserData, setCurrentUserData }) => {
   useEffect(() => {
     if (manageUsersPendingTabMqtt) {
       const req = buildApiRequest(pendingRequestsTabSearch);
-
-      fetchApiCall(req, false);
+      console.log("manageUsersPendingTabMqtt");
+      fetchApiCall(req, true);
       setPendingRequestsTabSearch((prev) => ({
         ...prev,
         filterTrigger: false,
@@ -128,9 +138,7 @@ const PendingRequest = ({ currentUserData, setCurrentUserData }) => {
   }, [manageUsersPendingTabMqtt]);
 
   return (
-    <div
-      className={styles.scrollContainer}
-    >
+    <div className={styles.scrollContainer}>
       {manageUsersPendingTabData?.length > 0 ? (
         manageUsersPendingTabData.map((data, index) => (
           <Col span={24}>

@@ -166,6 +166,7 @@ export const AddBrokersRequest = async ({
 
         return true;
       } else {
+      
         showNotification({
           type: "warning",
           title: getMessage(responseMessage),
@@ -2906,7 +2907,6 @@ export const UpdateEditRolesAndPoliciesRequest = async ({
   }
 };
 
-
 // Search Manage User Users Tab Api Request in Admin
 export const GetUserSessionWiseActivity = async ({
   callApi,
@@ -2933,7 +2933,8 @@ export const GetUserSessionWiseActivity = async ({
       showNotification({
         type: "error",
         title: "Error",
-        description: "Something went wrong while fetching session wise activity list of a user.",
+        description:
+          "Something went wrong while fetching session wise activity list of a user.",
       });
       return null;
     }
@@ -2945,10 +2946,7 @@ export const GetUserSessionWiseActivity = async ({
       const message = getMessage(responseMessage);
 
       // Case 1 → Data available
-      if (
-        responseMessage ===
-        "Admin_GetUserSessionWiseActivity_01"
-      ) {
+      if (responseMessage === "Admin_GetUserSessionWiseActivity_01") {
         return {
           sessions: sessions || [],
           totalRecords: totalRecords || 0,
@@ -2957,10 +2955,7 @@ export const GetUserSessionWiseActivity = async ({
       }
 
       // Case 2 → No data
-      if (
-        responseMessage ===
-        "Admin_GetUserSessionWiseActivity_02"
-      ) {
+      if (responseMessage === "Admin_GetUserSessionWiseActivity_02") {
         return {
           sessions: [],
           totalRecords: 0,
@@ -2992,7 +2987,8 @@ export const GetUserSessionWiseActivity = async ({
     showNotification({
       type: "error",
       title: "Error",
-      description: "An unexpected error occurred  while fetching session wise activity list of a user...",
+      description:
+        "An unexpected error occurred  while fetching session wise activity list of a user...",
     });
     return null;
   } finally {

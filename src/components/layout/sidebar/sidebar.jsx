@@ -16,6 +16,7 @@ import sidebarItems, { routeMap } from "./utils";
 
 // Styles
 import "./sidebar.css";
+import { includes } from "lodash";
 
 const { Sider } = Layout;
 const ROOT_KEY = "0"; // Default root menu key
@@ -152,8 +153,8 @@ const SideBar = () => {
 
   useEffect(() => {
     const currentKey = pathToKey[location.pathname] || ROOT_KEY;
+
     if (currentKey !== selectedKey) {
-      console.log("Navigating");
       if (
         (currentKey === "5" &&
           (location.pathname !== "/PAD/reports/my-trade-approvals" ||
@@ -167,7 +168,23 @@ const SideBar = () => {
         (currentKey === "21" &&
           location.pathname !== "PAD/admin-users/session-wise-activity")
       ) {
-        setSelectedKey(currentKey);
+     
+
+        if (currentKey === "5" && location.pathname.includes("PAD/reports")) {
+          setSelectedKey(selectedKey); // keep previous selection
+        } else if (
+          currentKey === "8" &&
+          location.pathname.includes("PAD/lm-reports")
+        ) {
+          setSelectedKey(selectedKey); // keep previous selection
+        } else if (
+          currentKey === "21" &&
+          location.pathname.includes("PAD/admin-users")
+        ) {
+          setSelectedKey(selectedKey); // keep previous selection
+        } else {
+          setSelectedKey(currentKey); // update to new key
+        }
       }
     }
   }, [location.pathname, selectedKey, setSelectedKey, pathToKey]);

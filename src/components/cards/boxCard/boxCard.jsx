@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Card, Typography, Row, Col, Progress } from "antd";
+import { Card, Typography, Row, Col, Progress, Tooltip } from "antd";
 import styles from "./boxCard.module.css";
 
 // Utility functions and mappings
@@ -114,7 +114,10 @@ const BoxCard = ({
       className={`${styles[mainClassName]} ${
         warningFlag ? styles.warning : ""
       }`}
-      style={{ padding: "10px 20px" }}
+      style={{
+        padding: "10px 20px",
+        cursor: reportsFlag ? "pointer" : "default",
+      }}
       onClick={reportsFlag ? handleCardClick : undefined}
     >
       {/* ========================
@@ -140,7 +143,13 @@ const BoxCard = ({
           Content Section
       ========================= */}
       {normalizedBoxes.length > 0 ? (
-        <Row className={styles[`${base}statBoxMain`]} gutter={[16, 16]}>
+        <Row
+          className={styles[`${base}statBoxMain`]}
+          style={{
+            cursor: reportsFlag ? "pointer" : "default",
+          }}
+          gutter={[16, 16]}
+        >
           {normalizedBoxes.map((box, index) => {
             // Resolve colors & alignment based on `type`
             const { bgColor, textLableColor, textCountColor, textAlign } =
@@ -234,14 +243,15 @@ const BoxCard = ({
                   (() => {
                     return (
                       <>
-                        <Text
-                          span={24}
-                          key={index}
-                          className={styles.percentageText}
-                        >
-                          {box.count}% {percentageText}
-                        </Text>
-
+                        <Tooltip title={`${box.count}% ${percentageText}`}>
+                          <Text
+                            span={24}
+                            key={index}
+                            className={styles.percentageText}
+                          >
+                            {box.count}% {percentageText}
+                          </Text>
+                        </Tooltip>
                         <Col span={24} key={index}>
                           <Progress
                             percent={box.count}
@@ -259,6 +269,8 @@ const BoxCard = ({
                       className={styles[`${base}statBox`]}
                       style={{
                         backgroundColor: bgColor,
+                        cursor: reportsFlag ? "pointer" : "default",
+
                         textAlign,
                         height:
                           showProgress &&
@@ -269,15 +281,17 @@ const BoxCard = ({
                       {locationStyle === "down" ? (
                         // Label on top, count below
                         <>
-                          <Text
-                            className={styles[`${base}label`]}
-                            style={{
-                              color: textLableColor,
-                              textAlign: "right",
-                            }}
-                          >
-                            {box.label}
-                          </Text>
+                          <Tooltip title={box.label}>
+                            <Text
+                              className={styles[`${base}label`]}
+                              style={{
+                                color: textLableColor,
+                                textAlign: "right",
+                              }}
+                            >
+                              {box.label}
+                            </Text>
+                          </Tooltip>
                           <AnimatedCount
                             className={styles[`${base}count`]}
                             style={{ color: textCountColor }}
@@ -302,19 +316,20 @@ const BoxCard = ({
                                     )}
                                   />
                                 </div>
-
-                                <Text
-                                  className={
-                                    styles[
-                                      `${base}${
-                                        changeTextSize ? "label2" : "label"
-                                      }`
-                                    ]
-                                  }
-                                  style={{ color: textLableColor }}
-                                >
-                                  {box.label}
-                                </Text>
+                                <Tooltip title={box.label}>
+                                  <Text
+                                    className={
+                                      styles[
+                                        `${base}${
+                                          changeTextSize ? "label2" : "label"
+                                        }`
+                                      ]
+                                    }
+                                    style={{ color: textLableColor }}
+                                  >
+                                    {box.label}
+                                  </Text>
+                                </Tooltip>
                               </>
                             )
                           ) : (
@@ -330,18 +345,20 @@ const BoxCard = ({
                                 />
                               </div>
 
-                              <Text
-                                className={
-                                  styles[
-                                    `${base}${
-                                      changeTextSize ? "label2" : "label"
-                                    }`
-                                  ]
-                                }
-                                style={{ color: textLableColor }}
-                              >
-                                {box.label}
-                              </Text>
+                              <Tooltip title={box.label}>
+                                <Text
+                                  className={
+                                    styles[
+                                      `${base}${
+                                        changeTextSize ? "label2" : "label"
+                                      }`
+                                    ]
+                                  }
+                                  style={{ color: textLableColor }}
+                                >
+                                  {box.label}
+                                </Text>
+                              </Tooltip>
                             </>
                           )}
                         </>
@@ -403,6 +420,7 @@ const BoxCard = ({
             <div
               className={styles[`${base}statBox`]}
               style={{
+                cursor: reportsFlag ? "pointer" : "default",
                 backgroundColor: "#C5FFC7",
                 textAlign: "left",
               }}

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Col, Row, Input, Typography } from "antd";
 import { GlobalModal } from "../../../components";
 import CustomButton from "../../../components/buttons/button";
@@ -226,6 +226,14 @@ const CommentModal = ({
     });
   };
   // For Head Of Compliance Note Api End here
+
+  useEffect(() => {
+    // 🔹 Clear your state here
+    if (visible) {
+      setSelectedOption(null);
+      setValue("");
+    }
+  }, [visible]);
 
   return (
     <GlobalModal

@@ -145,6 +145,7 @@ export const MyAdminProvider = ({ children }) => {
   // context for Manage User Users Tab Search criteria
   const [adminManageUserTabData, setAdminManageUserTabData] = useState({
     employees: [],
+    pendingReqeustCount: 0,
     totalRecordsDataBase: 0,
     totalRecordsTable: 0,
   });
