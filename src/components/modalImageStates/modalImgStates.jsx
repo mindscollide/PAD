@@ -114,10 +114,15 @@ const config = {
     ),
     image: GropusICanclImg,
   },
-   SystemConfigurationSaved: {
+  SystemConfigurationSaved: {
     heading: "Changes Saved",
     subheading:
       "System Level Configurations have been updated. Please login again.",
+    image: ApprovedImg,
+  },
+  savedChangesBrokers: {
+    heading: "Changes Saved",
+    subheading: "Your changes have been saved successfully.",
     image: ApprovedImg,
   },
 };

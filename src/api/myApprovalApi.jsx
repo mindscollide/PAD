@@ -2196,3 +2196,63 @@ export const SearchComplianceOfficerDateWiseTransactionRequest = async ({
     showLoader(false);
   }
 };
+
+export const DownloadComplianceOfficerDateWiseTransactionReportRequestAPI =
+  async ({ callApi, showLoader, requestdata, navigate }) => {
+    try {
+      showLoader(true);
+
+      // 🔹 API Call
+      const res = await callApi({
+        requestMethod: import.meta.env
+          .VITE_EXPORT_COMPLIANCE_OFFICER_DATEWISE_TRANSACTION_API_REQUEST_METHOD,
+        endpoint: import.meta.env.VITE_API_REPORT,
+        requestData: requestdata,
+        navigate,
+        responseType: "arraybuffer", // ⚡ Required for file download
+        headers: {
+          "Content-Type":
+            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        },
+      });
+
+      // 🔹 Check Session Expiry
+      if (handleExpiredSession(res, navigate, showLoader)) return false;
+      // 🔹 When API send isExecuted false
+      if (!res?.result?.isExecuted) {
+        return false;
+      }
+
+      // 🔹 When API Send Success Response
+      if (res.success) {
+        try {
+          // Create a blob and trigger download
+          const blob = new Blob([res.result?.fileData || res.data], {
+            type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+          });
+
+          const url = window.URL.createObjectURL(blob);
+          const link = document.createElement("a");
+          link.href = url;
+
+          link.setAttribute(
+            "download",
+            "ComplianceOfficer-DateWise-Transaction-Report.xlsx"
+          );
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+          setOpen(false);
+          return true;
+        } catch (downloadError) {
+          return false;
+        }
+      }
+
+      return false;
+    } catch (error) {
+      return false;
+    } finally {
+      showLoader(false);
+    }
+  };

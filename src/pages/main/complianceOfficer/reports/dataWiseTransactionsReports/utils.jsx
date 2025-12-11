@@ -77,7 +77,8 @@ export const mappingDateWiseTransactionReport = (
     assetTypeID: item.assetType?.assetTypeID || 0,
     employeeName: item.requesterName || "",
     employeeID: item.employeeID || "",
-    
+    approvalComment: item.approvalComment || "",
+    rejectionComment: item.rejectionComment || "",
   }));
 };
 
@@ -243,7 +244,8 @@ export const getBorderlessTableColumns = ({
   sortedInfo,
   coDatewiseTransactionReportSearch,
   setCODatewiseTransactionReportSearch,
-  setMyTradeApprovalReportLineManageSearch,
+  setIsViewComments,
+  setCheckTradeApprovalID,
 }) => [
   {
     title: withSortIcon("Employee ID", "employeeID", sortedInfo),
@@ -449,6 +451,9 @@ export const getBorderlessTableColumns = ({
           className="small-light-button"
           text={"View Comment"}
           onClick={() => {
+            console.log(record, "tradeApprovalID");
+            setIsViewComments(true);
+            setCheckTradeApprovalID(record?.approvalID);
             // setEditBrokerModal(true);
             // setEditModalData(record);
           }}

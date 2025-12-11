@@ -54,6 +54,13 @@ export const GlobalModalProvider = ({ children }) => {
   // Set assetTypeId when I click on addtrade approval dropdown
   const [selectedAssetTypeId, setSelectedAssetTypeId] = useState(null);
 
+  // To  show save broker Modal on manage broker
+  const [showSavedBrokerModal, setShowSaveBrokerModal] = useState(false);
+
+  // To  Cancel or discard changes broker Modal on manage broker
+  const [discardChangesBrokerModal, setDiscardChangesBrokerModal] =
+    useState(false);
+
   /**
    * Global States For Employee Modals End here
    */
@@ -128,6 +135,9 @@ export const GlobalModalProvider = ({ children }) => {
   // This is for View Comment When Compliant and NonCompliant modal will be open on portfolio
   const [viewCommentPortfolioModal, setViewCommentPortfolioModal] =
     useState(false);
+
+  // To check Trade Approval Id on View Modal In Compliance Officer
+  const [checkTradeApprovalID, setCheckTradeApprovalID] = useState(null);
 
   /**
    * Global States For Compliance Officer Modals End here
@@ -327,6 +337,12 @@ export const GlobalModalProvider = ({ children }) => {
         selectedAssetTypeId,
         setSelectedAssetTypeId,
 
+        showSavedBrokerModal,
+        setShowSaveBrokerModal,
+
+        discardChangesBrokerModal,
+        setDiscardChangesBrokerModal,
+
         /**
          * Global States For Line Manager Modals
          */
@@ -472,6 +488,10 @@ export const GlobalModalProvider = ({ children }) => {
         // For Session Wise View Action Modal in Admin Role
         viewActionSessionWiseModal,
         setViewActionSessionWiseModal,
+
+        // To check Trade Approval Id on View Modal In Compliance Officer
+        checkTradeApprovalID,
+        setCheckTradeApprovalID,
 
         /**
          * Global States For Admin Role Modals End here
