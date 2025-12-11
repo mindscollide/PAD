@@ -5,6 +5,7 @@ import TypeColumnTitle from "../../../../../components/dropdowns/filters/typeCol
 import StatusColumnTitle from "../../../../../components/dropdowns/filters/statusColumnTitle";
 import { Tag, Tooltip } from "antd";
 import style from "./mytradeapprovals.module.css";
+import EscalatedIcon from "../../../../../assets/img/escalated.png";
 
 import {
   dashBetweenApprovalAssets,
@@ -292,6 +293,21 @@ export const getBorderlessTableColumns = ({
     ),
   },
   {
+    title: "",
+    dataIndex: "isEscalated",
+    key: "isEscalated",
+    ellipsis: true,
+    render: (date) =>
+      date && (
+        <img
+          draggable={false}
+          src={EscalatedIcon}
+          alt="escalated"
+          className={style["escalated-icon"]}
+        />
+      ),
+  },
+  {
     title: withSortIcon("Quantity", "quantity", sortedInfo),
     dataIndex: "quantity",
     key: "quantity",
@@ -382,21 +398,38 @@ export const getBorderlessTableColumns = ({
     title: withSortIcon("Action by", "actionBy", sortedInfo),
     dataIndex: "actionBy",
     key: "actionBy",
-    ellipsis: true,
     width: "8%",
     align: "center",
-    // correct string sorting
     sorter: (a, b) => (a.actionBy || "").localeCompare(b.actionBy || ""),
     sortOrder: sortedInfo?.columnKey === "actionBy" ? sortedInfo.order : null,
     sortDirections: ["ascend", "descend"],
     showSorterTooltip: false,
     sortIcon: () => null,
 
-    // correct render
-    render: (text) => (
-      <span className="font-medium">
-        {text || "-"} {/* SHOW DASH IF EMPTY */}
-      </span>
-    ),
+    render: (text) => {
+      const value = text || "-";
+      const showTooltip = value.length > 11;
+      const displayText = showTooltip ? value.slice(0, 11) + "…" : value;
+
+      const commonStyle = {
+        whiteSpace: "nowrap",
+        overflow: "hidden",
+        textOverflow: "ellipsis",
+        display: "inline-block",
+        maxWidth: "100%",
+      };
+
+      return showTooltip ? (
+        <Tooltip title={value}>
+          <span className="font-medium" style={commonStyle}>
+            {displayText}
+          </span>
+        </Tooltip>
+      ) : (
+        <span className="font-medium" style={commonStyle}>
+          {displayText}
+        </span>
+      );
+    },
   },
 ];

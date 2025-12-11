@@ -211,8 +211,13 @@ export const GetAllEmployeeBrokers = async ({
     if (handleExpiredSession(res, navigate, showLoader)) return null;
 
     if (!res?.result?.isExecuted) {
-      showErrorNotification(showNotification);
-      return null;
+      showNotification({
+        type: "error",
+        title: "Error",
+        description:
+          "Something went wrong while fetching all Employees data. Please try again .",
+      });
+      return [];
     }
 
     const { success, result } = res;
@@ -224,21 +229,29 @@ export const GetAllEmployeeBrokers = async ({
         "PAD_Trade_TradeServiceManager_GetActiveBrokersByEmployeeAPI_01"
       ) {
         return brokers;
+      } else if (
+        responseMessage ===
+        "PAD_Trade_TradeServiceManager_GetActiveBrokersByEmployeeAPI_02"
+      ) {
+        return [];
       }
-
-      showWarningNotification(showNotification, responseMessage);
-      return null;
+      return [];
     }
 
-    showErrorNotification(
-      showNotification,
-      "Fetch Failed",
-      getMessage(res.message)
-    );
-    return null;
+    showNotification({
+      type: "error",
+      title: "Request Failed",
+      description: getMessage(res.message),
+    });
+    return [];
   } catch (error) {
-    showErrorNotification(showNotification);
-    return null;
+    showNotification({
+      type: "error",
+      title: "Error",
+      description:
+        "An unexpected error occurred while fetching all Employees data.",
+    });
+    return [];
   }
 };
 
@@ -262,7 +275,12 @@ export const GetAllInstruments = async ({
     if (handleExpiredSession(res, navigate, showLoader)) return null;
 
     if (!res?.result?.isExecuted) {
-      showErrorNotification(showNotification);
+      showNotification({
+        type: "error",
+        title: "Error",
+        description:
+          "Something went wrong while fetching  all Instrument data. Please try again .",
+      });
       return null;
     }
 
@@ -274,21 +292,28 @@ export const GetAllInstruments = async ({
         responseMessage === "PAD_Trade_TradeServiceManager_GetAllInstruments_01"
       ) {
         return instruments;
+      } else if (
+        responseMessage === "PAD_Trade_TradeServiceManager_GetAllInstruments_02"
+      ) {
+        return [];
       }
-
-      showWarningNotification(showNotification, responseMessage);
-      return null;
+      return [];
     }
 
-    showErrorNotification(
-      showNotification,
-      "Fetch Failed",
-      getMessage(res.message)
-    );
-    return null;
+    showNotification({
+      type: "error",
+      title: "Request Failed",
+      description: getMessage(res.message),
+    });
+    return [];
   } catch (error) {
-    showErrorNotification(showNotification);
-    return null;
+    showNotification({
+      type: "error",
+      title: "Error",
+      description:
+        "An unexpected error occurred while fetching  all Instrument data.",
+    });
+    return [];
   }
 };
 
@@ -314,8 +339,13 @@ export const GetAllTradeApproval = async ({
     if (handleExpiredSession(res, navigate, showLoader)) return null;
 
     if (!res?.result?.isExecuted) {
-      showErrorNotification(showNotification);
-      return null;
+      showNotification({
+        type: "error",
+        title: "Error",
+        description:
+          "Something went wrong while fetching all Trade approval. Please try again .",
+      });
+      return [];
     }
 
     const { success, result } = res;
@@ -329,8 +359,7 @@ export const GetAllTradeApproval = async ({
         return tradeApprovalTypeGrouped;
       }
 
-      showWarningNotification(showNotification, responseMessage);
-      return null;
+      return [];
     }
 
     showErrorNotification(
@@ -338,10 +367,15 @@ export const GetAllTradeApproval = async ({
       "Fetch Failed",
       getMessage(res.message)
     );
-    return null;
+    return [];
   } catch (error) {
-    showErrorNotification(showNotification);
-    return null;
+    showNotification({
+      type: "error",
+      title: "Error",
+      description:
+        "An unexpected error occurred while fetching all Trade approval.",
+    });
+    return [];
   }
 };
 
@@ -367,7 +401,12 @@ export const GetAllPredefineReassonApi = async ({
     if (handleExpiredSession(res, navigate, showLoader)) return null;
 
     if (!res?.result?.isExecuted) {
-      showErrorNotification(showNotification);
+      showNotification({
+        type: "error",
+        title: "Error",
+        description:
+          "Something went wrong while fetching all predefine reasons. Please try again .",
+      });
       return null;
     }
 
@@ -380,10 +419,14 @@ export const GetAllPredefineReassonApi = async ({
         "PAD_Trade_TradeServiceManager_GetAllPredefinedReasons_01"
       ) {
         return reasons;
+      } else if (
+        responseMessage ===
+        "PAD_Trade_TradeServiceManager_GetAllPredefinedReasons_02"
+      ) {
+        return [];
       }
 
-      showWarningNotification(showNotification, responseMessage);
-      return null;
+      return [];
     }
 
     showErrorNotification(
@@ -391,10 +434,15 @@ export const GetAllPredefineReassonApi = async ({
       "Fetch Failed",
       getMessage(res.message)
     );
-    return null;
+    return [];
   } catch (error) {
-    showErrorNotification(showNotification);
-    return null;
+    showNotification({
+      type: "error",
+      title: "Error",
+      description:
+        "An unexpected error occurred while fetching all predefine reasons.",
+    });
+    return [];
   }
 };
 

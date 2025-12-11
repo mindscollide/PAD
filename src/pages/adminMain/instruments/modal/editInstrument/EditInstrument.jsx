@@ -63,7 +63,10 @@ const EditInstrument = () => {
     adminInstrumentPreviousClosingData,
     "adminInstrumentPreviousClosingData"
   );
-
+  console.log(
+    selectedInstrumentOnClick,
+    "selectedInstrumentOnClick"
+  );
   /**
    * 🧠 Convert API data into Ant Design Table-friendly rows
    * - Uses `formatShowOnlyDateForDateRange` to format start/end dates

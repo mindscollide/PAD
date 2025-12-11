@@ -3,7 +3,7 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  min-height: 70vh; /* Full viewport height */
+  min-height: 65vh; /* Full viewport height */
   padding: 24px;
 }
 

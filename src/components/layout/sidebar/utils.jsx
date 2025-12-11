@@ -352,11 +352,11 @@ const sidebarItems = (
             <img
               draggable={false}
               src={getIcon("12", VerificationsLightIcon, VerificationsDarkIcon)}
-              alt="Escalated Trade Approval Requests"
+              alt="'Escalated Approvals"
               className={getIconClasses()}
             />
           ),
-          label: "Escalated Trade Approval Requests",
+          label: "'Escalated Approvals",
         },
         {
           key: "13",
@@ -393,11 +393,11 @@ const sidebarItems = (
             <img
               draggable={false}
               src={getIcon("15", VerificationsLightIcon, VerificationsDarkIcon)}
-              alt="Escalated Trade Approval Verifications"
+              alt="Escalated Transactions Verifications"
               className={getIconClasses()}
             />
           ),
-          label: "Escalated Trade Approval Verifications",
+          label: "Escalated Transactions Verifications",
         },
         {
           key: "16",
