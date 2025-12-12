@@ -352,11 +352,11 @@ const sidebarItems = (
             <img
               draggable={false}
               src={getIcon("12", VerificationsLightIcon, VerificationsDarkIcon)}
-              alt="'Escalated Approvals"
+              alt="Escalated Approvals"
               className={getIconClasses()}
             />
           ),
-          label: "'Escalated Approvals",
+          label: "Escalated Approvals",
         },
         {
           key: "13",

@@ -122,24 +122,23 @@ const MyComplianceStandingReport = () => {
       );
     }
   };
-  const handleClearDates = (dates) => {
-    if (dates && dates.length === 2) {
-      setDateRange({
-        StartDate: null,
-        EndDate: null,
-      });
 
-      // Call API immediately after date change
-      console.log("handleClearDates")
-      fetchApiCall(
-        {
-          StartDate: "",
-          EndDate: "",
-        },
-        true,
-        true
-      );
-    }
+  const handleClearDates = () => {
+    // Reset state
+    setDateRange({
+      StartDate: null,
+      EndDate: null,
+    });
+
+    // Call API with empty values
+    fetchApiCall(
+      {
+        StartDate: "",
+        EndDate: "",
+      },
+      true,
+      true
+    );
   };
 
   // Function to export PDF

@@ -231,7 +231,7 @@ const ReportCard = ({
                 </div>
                 <Button
                   className={rowButtonClassName}
-                  text={report.action || "View"}
+                  text={report.action || "View Report"}
                   onClick={() => onRowButtonClick(report, index)}
                 />
               </div>
