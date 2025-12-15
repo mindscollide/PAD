@@ -117,10 +117,13 @@ export const getBorderlessTableColumns = ({
   setViewActionSessionWiseModal,
 }) => [
   {
-    title: withSortIcon("IP Address", "ipAddress", sortedInfo),
+    title: (
+      <span className={style.tableHeadingSpace}>
+        {withSortIcon("IP Address", "ipAddress", sortedInfo)}
+      </span>
+    ),
     dataIndex: "ipAddress",
     key: "ipAddress",
-    width: "160px",
     ellipsis: true,
     sorter: (a, b) => a.ipAddress.localeCompare(b.ipAddress),
     sortDirections: ["ascend", "descend"],
@@ -131,10 +134,13 @@ export const getBorderlessTableColumns = ({
   },
 
   {
-    title: withSortIcon("Login Date & Time", "loginDateTime", sortedInfo),
+    title: (
+      <span className={style.tableHeadingSpace}>
+        {withSortIcon("Login Date & Time", "loginDateTime", sortedInfo)}
+      </span>
+    ),
     dataIndex: "loginDateTime",
     key: "loginDateTime",
-    width: "220px",
     ellipsis: true,
     sorter: (a, b) =>
       new Date(a.loginDateTime).getTime() - new Date(b.loginDateTime).getTime(),
@@ -152,8 +158,8 @@ export const getBorderlessTableColumns = ({
     title: withSortIcon("Total Actions", "totalActions", sortedInfo),
     dataIndex: "totalActions",
     key: "totalActions",
-    align: "center",
     width: "140px",
+    align: "center",
     ellipsis: true,
     sorter: (a, b) => a.totalActions - b.totalActions,
     sortDirections: ["ascend", "descend"],
@@ -163,12 +169,16 @@ export const getBorderlessTableColumns = ({
     sortIcon: () => null,
     render: (q) => <span className="font-medium">{q}</span>,
   },
-
+  {
+    title: "",
+    key: "action",
+    width: "140px",
+    align: "right",
+  },
   {
     title: withSortIcon("Logout Date & Time", "logoutDateTime", sortedInfo),
     dataIndex: "logoutDateTime",
     key: "logoutDateTime",
-    width: "220px",
     ellipsis: true,
     sorter: (a, b) =>
       new Date(a.logoutDateTime).getTime() -
@@ -189,7 +199,6 @@ export const getBorderlessTableColumns = ({
     title: "",
     key: "action",
     align: "right",
-    width: "150px",
     render: (_, record) => (
       <div>
         <Button
