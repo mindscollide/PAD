@@ -212,8 +212,8 @@ const AddNewBroker = () => {
             </Row>
 
             <div className={styles.tableHeader}>
-              <span className={styles.brokerHeaderName}>Broker Name ↓</span>
-              <span className={styles.brokerHeaderName}>PSX Code ↓</span>
+              <span className={styles.brokerHeaderName}>Broker Name </span>
+              <span className={styles.brokerHeaderName}>PSX Code </span>
               <span></span>
             </div>
 

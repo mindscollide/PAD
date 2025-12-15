@@ -39,6 +39,7 @@ import { useTableScrollBottom } from "../../../../../common/funtions/scroll";
 import CustomButton from "../../../../../components/buttons/button";
 import { DateRangePicker } from "../../../../../components";
 import ViewComment from "./viewComment/ViewComment";
+import { toYYMMDD } from "../../../../../common/funtions/rejex";
 
 const COdataWiseTransactionsReports = () => {
   const navigate = useNavigate();
@@ -75,6 +76,10 @@ const COdataWiseTransactionsReports = () => {
   const [sortedInfo, setSortedInfo] = useState({});
   const [loadingMore, setLoadingMore] = useState(false);
   const [open, setOpen] = useState(false);
+  const [dateRange, setDateRange] = useState({
+    StartDate: null,
+    EndDate: null,
+  });
 
   // -------------------- Helpers --------------------
 
@@ -163,12 +168,12 @@ const COdataWiseTransactionsReports = () => {
   }, []);
 
   //   // Reset on Unmount
-  //   useEffect(() => {
-  //     return () => {
-  //       // Reset search state for fresh load
-  //       resetComplianceOfficerDateWiseTransationReportSearch();
-  //     };
-  //   }, []);
+    useEffect(() => {
+      return () => {
+        // Reset search state for fresh load
+        resetComplianceOfficerDateWiseTransationReportSearch();
+      };
+    }, []);
 
   // 🔹 call api on search
   useEffect(() => {
@@ -319,6 +324,41 @@ const COdataWiseTransactionsReports = () => {
     ].filter(Boolean);
   })();
 
+  const handleDateChange = (dates) => {
+    if (!dates || dates.length !== 2) return;
+
+    const start = dates[0];
+    const end = dates[1];
+
+    setDateRange({
+      StartDate: start,
+      EndDate: end,
+    });
+
+    setCODatewiseTransactionReportSearch((prev) => ({
+      ...prev,
+      startDate: start,
+      endDate: end,
+      pageNumber: 0,
+      filterTrigger: true,
+    }));
+  };
+
+  const handleClearDates = () => {
+    setDateRange({
+      StartDate: null,
+      EndDate: null,
+    });
+
+    setCODatewiseTransactionReportSearch((prev) => ({
+      ...prev,
+      startDate: null,
+      endDate: null,
+      pageNumber: 0,
+      filterTrigger: true,
+    }));
+  };
+
   // 🔷 Excel Report download Api Hit
   const downloadMyTradeApprovalLineManagerInExcelFormat = async () => {
     showLoader(true);
@@ -373,6 +413,13 @@ const COdataWiseTransactionsReports = () => {
 
         <Col>
           <div className={style.headerActionsRow}>
+            <DateRangePicker
+              size="medium"
+              className={style.dateRangePickerClass}
+              value={[dateRange.StartDate, dateRange.EndDate]}
+              onChange={handleDateChange}
+              onClear={handleClearDates}
+            />
             <CustomButton
               text={
                 <span className={style.exportButtonText}>

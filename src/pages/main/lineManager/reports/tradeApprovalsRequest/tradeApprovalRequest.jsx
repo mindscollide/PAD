@@ -36,6 +36,7 @@ import { getSafeAssetTypeData } from "../../../../../common/funtions/assetTypesL
 import { useTableScrollBottom } from "../../../../../common/funtions/scroll";
 import CustomButton from "../../../../../components/buttons/button";
 import { DateRangePicker } from "../../../../../components";
+import { toYYMMDD } from "../../../../../common/funtions/rejex";
 
 const TradeApprovalRequest = () => {
   const navigate = useNavigate();
@@ -64,7 +65,10 @@ const TradeApprovalRequest = () => {
   const [sortedInfo, setSortedInfo] = useState({});
   const [loadingMore, setLoadingMore] = useState(false);
   const [open, setOpen] = useState(false);
-
+  const [dateRange, setDateRange] = useState({
+    StartDate: null,
+    EndDate: null,
+  });
   // -------------------- Helpers --------------------
 
   /**
@@ -268,6 +272,43 @@ const TradeApprovalRequest = () => {
     });
   };
 
+  const handleDateChange = (dates) => {
+    if (dates && dates.length === 2) {
+      setDateRange({
+        StartDate: dates?.[0] || null,
+        EndDate: dates?.[1] || null,
+      });
+
+      // Call API immediately after date change
+      fetchApiCall(
+        {
+          StartDate: toYYMMDD(dates[0]) || null,
+          EndDate: toYYMMDD(dates[1]) || null,
+        },
+        true,
+        true
+      );
+    }
+  };
+
+  const handleClearDates = () => {
+    // Reset state
+    setDateRange({
+      StartDate: null,
+      EndDate: null,
+    });
+
+    // Call API with empty values
+    fetchApiCall(
+      {
+        StartDate: "",
+        EndDate: "",
+      },
+      true,
+      true
+    );
+  };
+
   // -------------------- Render --------------------
   return (
     <>
@@ -303,6 +344,9 @@ const TradeApprovalRequest = () => {
             <DateRangePicker
               size="medium"
               className={style.dateRangePickerClass}
+              value={[dateRange.StartDate, dateRange.EndDate]}
+              onChange={handleDateChange}
+              onClear={handleClearDates}
             />
             <CustomButton
               text={

@@ -210,7 +210,12 @@ const ViewDetailModal = () => {
                           <span className={styles.customTag}>
                             {viewDetailsModalData?.assetTypes?.[0]?.shortCode}
                           </span>{" "}
-                          {selectedInstrument?.instrumentCode}
+                          <span
+                            className={styles.viewDetailSubLabelsForInstrument}
+                            title={selectedInstrument?.instrumentName}
+                          >
+                            {selectedInstrument?.instrumentCode}
+                          </span>
                         </label>
                       </div>
                     </Col>

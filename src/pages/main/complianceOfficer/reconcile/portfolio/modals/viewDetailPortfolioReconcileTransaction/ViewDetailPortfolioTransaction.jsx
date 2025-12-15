@@ -185,7 +185,12 @@ const ViewDetailPortfolioTransaction = () => {
                               ?.shortCode
                           }
                         </span>{" "}
-                        {selectedInstrument?.instrumentCode}
+                        <span
+                          className={styles.viewDetailSubLabelsForInstrument}
+                          title={selectedInstrument?.instrumentName}
+                        >
+                          {selectedInstrument?.instrumentCode}
+                        </span>
                       </label>
                     </div>
                   </Col>

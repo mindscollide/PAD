@@ -387,7 +387,7 @@ const ViewDetailHeadOfComplianceReconcileTransaction = () => {
                       <label className={styles.viewDetailSubLabels}>
                         {formatApiDateTime(
                           headOfComplianceApprovalEscalatedVerificationsData
-                            ?.data[0]?.transactionDate
+                            ?.escalatedVerification[0]?.transactionDate
                         )}
                       </label>
                     </div>
