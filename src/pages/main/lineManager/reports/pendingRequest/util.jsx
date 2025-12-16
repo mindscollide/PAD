@@ -174,9 +174,10 @@ export const getBorderlessLineManagerTableColumns = ({
     },
   },
   {
-    title: withSortIcon("Instrument", "instrumentCode", sortedInfo),
+    title: withSortIcon("Instrument Name", "instrumentCode", sortedInfo),
     dataIndex: "instrumentCode",
     key: "instrumentCode",
+    width:200,
     ellipsis: true,
     sorter: (a, b) =>
       (a?.instrumentCode || "").localeCompare(b?.instrumentCode || ""),
