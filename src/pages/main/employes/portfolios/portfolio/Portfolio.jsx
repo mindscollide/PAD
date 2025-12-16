@@ -209,11 +209,11 @@ const Portfolio = ({ className, activeFilters }) => {
                         {instrument.instrumentShortCode}
                       </span>
                     </Tooltip>
-                    <Tooltip title={instrument.instrumentName}>
+                    {/* <Tooltip title={instrument.instrumentName}> */}
                       <span className={`${styles.longName} ${styles.textWrap}`}>
                         {instrument.instrumentName}
                       </span>
-                    </Tooltip>
+                    {/* </Tooltip> */}
                     <span
                       className={styles.quantity}
                       style={{ color: isPositive ? "#00640A" : "#A50000" }}

@@ -4,15 +4,28 @@ import styles from "./DiscardBrokerModal.module.css";
 import { useGlobalModal } from "../../../../../../context/GlobalModalContext";
 import { GlobalModal, ModalImgStates } from "../../../../../../components";
 import CustomButton from "../../../../../../components/buttons/button";
+import { useSidebarContext } from "../../../../../../context/sidebarContaxt";
+import { useDashboardContext } from "../../../../../../context/dashboardContaxt";
 
 const DiscardBrokerModal = () => {
+  const { selectedKey } = useSidebarContext();
+
+
   // This is Global State for modal which is create in ContextApi
   const { discardChangesBrokerModal, setDiscardChangesBrokerModal } =
     useGlobalModal();
 
+  const { manageBrokersModalOpen, setManageBrokersModalOpen } =
+    useDashboardContext();
+
   // onClick Function on Close Button
   const onClickCloseSubmit = () => {
-    setDiscardChangesBrokerModal(false);
+    if (Number(selectedKey) === 0) {
+      setDiscardChangesBrokerModal(false);
+      setManageBrokersModalOpen(true);
+    } else {
+      setDiscardChangesBrokerModal(false);
+    }
   };
 
   return (
@@ -31,7 +44,7 @@ const DiscardBrokerModal = () => {
               </Col>
             </Row>
 
-            <Row className={styles.mainButtonDiv}>
+            <Row className={styles.mainButtonDiv} gutter={(16, 16)}>
               <Col>
                 <CustomButton
                   text={"Close"}
@@ -39,6 +52,15 @@ const DiscardBrokerModal = () => {
                   onClick={onClickCloseSubmit}
                 />
               </Col>
+              {Number(selectedKey) === 0 && (
+                <Col>
+                  <CustomButton
+                    text={"Yes"}
+                    className="big-dark-button"
+                    onClick={() => setDiscardChangesBrokerModal(false)}
+                  />
+                </Col>
+              )}
             </Row>
           </div>
         </>

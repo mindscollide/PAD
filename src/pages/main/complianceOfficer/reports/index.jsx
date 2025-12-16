@@ -147,7 +147,7 @@ const ComplianceOfficerReportsIndex = () => {
             <MemoizedBoxCard
               reportsFlag={true}
               locationStyle="up"
-              title="Date wise Transaction Report"
+              title="Date Wise Transaction Report"
               mainClassName="reports"
               boxes={coReportsComplianceDateWiseTransactions}
               buttonId="Approvals-view-btn"

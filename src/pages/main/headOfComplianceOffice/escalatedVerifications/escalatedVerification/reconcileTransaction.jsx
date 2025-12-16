@@ -105,6 +105,11 @@ const EscalatedTransactionVerifications = ({ activeFilters }) => {
     setIsEscalatedHeadOfComplianceViewDetailData,
   } = useReconcileContext();
 
+  console.log(
+    headOfComplianceApprovalEscalatedVerificationsData,
+    "headOfComplianceApprovalEscalatedVerificationsData"
+  );
+
   // ===========================================================================
   // 🎯 API FUNCTIONS
   // ===========================================================================

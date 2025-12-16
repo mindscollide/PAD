@@ -48,6 +48,7 @@ const ManageBrokerModal = ({ open }) => {
   const {
     setEmployeeBasedBrokersData,
     employeeBasedBrokersData,
+    manageBrokersModalOpen,
     setManageBrokersModalOpen,
   } = useDashboardContext();
 
@@ -56,6 +57,8 @@ const ManageBrokerModal = ({ open }) => {
   const [localBrokers, setLocalBrokers] = useState([]); // Selected brokers in UI
   const [requestData, setRequestData] = useState({ Brokers: [] }); // Payload for API
 
+  console.log(manageBrokersModalOpen, "manageBrokersModalOpen");
+
   // ---------------------- Fetch & Initialize ----------------------
   useEffect(() => {
     if (!open) return;
@@ -63,13 +66,32 @@ const ManageBrokerModal = ({ open }) => {
     const fetchBrokers = async () => {
       try {
         showLoader(true);
+
         const res = await GetAllBrokers({
           callApi,
           showNotification,
           showLoader,
           navigate,
         });
+
         if (res) setAllBrokers(res);
+
+        // Always re-initialize from latest context
+        const initialList = (employeeBasedBrokersData || []).map((b) => ({
+          brokerID: b.brokerID,
+          brokerName: b.brokerName,
+          psxCode: b.psxCode,
+          isActive: true,
+        }));
+
+        setLocalBrokers(initialList);
+
+        setRequestData({
+          Brokers: initialList.map((b) => ({
+            brokerid: b.brokerID,
+            isActive: true,
+          })),
+        });
       } catch (error) {
         console.error("Error fetching brokers", error);
       } finally {
@@ -77,30 +99,8 @@ const ManageBrokerModal = ({ open }) => {
       }
     };
 
-    // Run once per modal open
-    if (!hasFetched.current) {
-      hasFetched.current = true;
-
-      // Initialize local UI list
-      const initialList = (employeeBasedBrokersData || []).map((b) => ({
-        brokerID: b.brokerID,
-        brokerName: b.brokerName,
-        psxCode: b.psxCode,
-        isActive: true,
-      }));
-      setLocalBrokers(initialList);
-
-      // Initialize request payload
-      setRequestData({
-        Brokers: initialList.map((b) => ({
-          brokerid: b.brokerID,
-          isActive: true,
-        })),
-      });
-
-      fetchBrokers();
-    }
-  }, [open]);
+    fetchBrokers();
+  }, [open]); // 👈 EVERY TIME MODAL OPENS
 
   // ---------------------- Handlers ----------------------
 
@@ -223,6 +223,11 @@ const ManageBrokerModal = ({ open }) => {
     );
   };
 
+  const activeBrokers = localBrokers.filter(
+    (broker) => broker.isActive !== false
+  );
+
+  console.log(activeBrokers, "activeBrokersactiveBrokers");
   // ---------------------- UI ----------------------
 
   return (
@@ -256,7 +261,7 @@ const ManageBrokerModal = ({ open }) => {
 
             {/* Broker List */}
             <Row className={localBrokers.length > 0 ? "" : styles.mt2}>
-              {localBrokers.length > 0 ? (
+              {activeBrokers.length > 0 ? (
                 <div className={styles.brokersListContainer}>
                   <Row className={styles.subHeading}>
                     <Col span={24}>My Brokers</Col>
@@ -296,10 +301,14 @@ const ManageBrokerModal = ({ open }) => {
                     ))}
                 </div>
               ) : (
-                <EmptyState
-                  type="employeeBroker"
-                  style={{ minHeight: "150px" }}
-                />
+                <div className={styles.emptyBrokerImage}>
+                  <EmptyState
+                    type="employeeBroker"
+                    style={{
+                      minHeight: "300px",
+                    }}
+                  />
+                </div>
               )}
             </Row>
           </div>
@@ -323,6 +332,7 @@ const ManageBrokerModal = ({ open }) => {
               onClick={handleSubmit}
               disabled={
                 localBrokers.length === 0 ||
+                activeBrokers.length === 0 ||
                 !isBrokersChanged(employeeBasedBrokersData, localBrokers)
               }
             />

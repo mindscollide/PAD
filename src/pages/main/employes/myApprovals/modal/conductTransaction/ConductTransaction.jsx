@@ -85,6 +85,8 @@ const ConductTransaction = () => {
   //Local state to track is approved quantity is greater than current quantity
   const [approvedQuantity, setApprovedQuantity] = useState(0);
 
+  console.log({ approvedQuantity, quantity }, "CheckingQUantity");
+
   // Initialize Approved Quantity when modal data changes
   useEffect(() => {
     const approvedQty =
@@ -152,7 +154,7 @@ const ConductTransaction = () => {
       InstrumentID: Number(selectedInstrument?.instrumentID) || 0,
       AssetTypeID: Number(detail?.assetTypeID) || 0,
       ApprovalTypeID: Number(detail?.approvalTypeID) || 0,
-      Quantity: Number(detail?.quantity) || 0,
+      Quantity: Number(quantity) || 0,
       ApprovalStatusID: Number(detail?.approvalStatus) || 0,
       Comments: "",
       BrokerIds: detail?.brokers?.map((brokerID) => Number(brokerID)) || [],

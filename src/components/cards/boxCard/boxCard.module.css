@@ -525,6 +525,9 @@
   justify-content: center; /* centers horizontally */
   align-items: center; /* centers vertically if height > content */
   max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 .digitWrapper {
   display: inline-block; /* already makes numbers inline */

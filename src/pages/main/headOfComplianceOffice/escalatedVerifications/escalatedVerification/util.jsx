@@ -390,7 +390,7 @@ export const getBorderlessTableColumns = ({
     showSorterTooltip: false,
     sortIcon: () => null,
     render: (date) => (
-      <span className="text-gray-600" title={date || "—"}>
+      <span className="text-gray-600" title={formatApiDateTime(date) || "—"}>
         {formatApiDateTime(date) || "—"}
       </span>
     ),
