@@ -3,7 +3,7 @@ import { Breadcrumb, Col, Row } from "antd";
 import {
   buildApiRequest,
   getBorderlessLineManagerTableColumns,
-  mapEscalatedApprovalsToTableRows,
+  mapApiResopse,
 } from "./util";
 import { approvalStatusMap } from "../../../../../components/tables/borderlessTable/utill";
 import PageLayout from "../../../../../components/pageContainer/pageContainer";
@@ -15,8 +15,9 @@ import { useGlobalLoader } from "../../../../../context/LoaderContext";
 import { useApi } from "../../../../../context/ApiContext";
 import { useMyApproval } from "../../../../../context/myApprovalContaxt";
 import {
+  ExportLineManagerPendingTradeApprovalsExcel,
   GetAllLineManagerViewDetailRequest,
-  SearchApprovalRequestLineManager,
+  SearchLineManagerPendingApprovalsRequest,
 } from "../../../../../api/myApprovalApi";
 import { useNavigate } from "react-router-dom";
 import { useDashboardContext } from "../../../../../context/dashboardContaxt";
@@ -27,6 +28,7 @@ import PDF from "../../../../../assets/img/pdf.png";
 import Excel from "../../../../../assets/img/xls.png";
 import CustomButton from "../../../../../components/buttons/button";
 import { UpOutlined, DownOutlined } from "@ant-design/icons";
+import ViewDetailModal from "../../approvalRequest/modal/viewDetailLineManagerModal/ViewDetailModal";
 
 const PendingRequest = () => {
   const navigate = useNavigate();
@@ -35,6 +37,7 @@ const PendingRequest = () => {
   const [open, setOpen] = useState(false);
 
   const {
+    viewDetailLineManagerModal,
     setViewDetailLineManagerModal,
     setNoteGlobalModal,
     setIsSelectedViewDetailLineManager,
@@ -49,15 +52,16 @@ const PendingRequest = () => {
   // state of Search context which I'm getting from the SearchBar for Line Manager
   // Global state for filter/search values
   const {
-    lineManagerApprovalSearch,
-    setLineManagerApprovalSearch,
+    lMPendingApprovalReportsSearch,
+    setLMPendingApprovalReportsSearch,
     resetLineManagerApprovalSearch,
   } = useSearchBarContext();
 
   // state of context which I'm getting from the myApproval for Line Manager
   const {
-    lineManagerApproval,
-    setLineManagerApproval,
+    lMPendingApprovalsData,
+    setLMPendingApprovalsData,
+    resetPendingRequestReportRequestContextState,
     setViewDetailsLineManagerData,
     lineManagerApprovalMqtt,
     setLineManagerApprovalMQtt,
@@ -78,7 +82,7 @@ const PendingRequest = () => {
       if (showLoaderFlag) showLoader(true);
 
       try {
-        const res = await SearchApprovalRequestLineManager({
+        const res = await SearchLineManagerPendingApprovalsRequest({
           callApi,
           showNotification,
           showLoader,
@@ -91,29 +95,28 @@ const PendingRequest = () => {
           assetTypeListingData,
           setAssetTypeListingData
         );
-
-        const lineApprovals = Array.isArray(res?.lineApprovals)
-          ? res.lineApprovals
+        const pendingApprovals = Array.isArray(res?.pendingApprovals)
+          ? res.pendingApprovals
           : [];
         // // map data according to used in table
-        const mapped = mapEscalatedApprovalsToTableRows(
+        const mapped = mapApiResopse(
           currentAssetTypeData?.Equities,
-          lineApprovals
+          pendingApprovals
         );
 
-        setLineManagerApproval((prev) => ({
-          lineApprovals: replace
+        setLMPendingApprovalsData((prev) => ({
+          pendingApprovals: replace
             ? mapped
-            : [...(prev?.lineApprovals || []), ...mapped],
+            : [...(prev?.pendingApprovals || []), ...mapped],
           // this is for to run lazy loading its data comming from database of total data in db
           totalRecordsDataBase: res.totalRecords || 0,
           // this is for to know how mush dta currently fetch from  db
           totalRecordsTable: replace
             ? mapped.length
-            : lineManagerApproval.totalRecordsTable + mapped.length,
+            : lMPendingApprovalsData.totalRecordsTable + mapped.length,
         }));
 
-        setLineManagerApprovalSearch((prev) => {
+        setLMPendingApprovalReportsSearch((prev) => {
           const next = {
             ...prev,
             pageNumber: replace
@@ -142,6 +145,7 @@ const PendingRequest = () => {
   useEffect(() => {
     return () => {
       resetLineManagerApprovalSearch();
+      hasFetched.current = false;
     };
   }, []);
   /**
@@ -151,7 +155,7 @@ const PendingRequest = () => {
     if (hasFetched.current) return;
     hasFetched.current = true;
     const requestData = buildApiRequest(
-      lineManagerApprovalSearch,
+      lMPendingApprovalReportsSearch,
       assetTypeListingData
     );
 
@@ -163,20 +167,20 @@ const PendingRequest = () => {
    * Syncs filters on `filterTrigger` from context
    */
   useEffect(() => {
-    if (lineManagerApprovalSearch.filterTrigger) {
+    if (lMPendingApprovalReportsSearch.filterTrigger) {
       // requestData, replace , mainLoader
       const requestData = buildApiRequest(
-        lineManagerApprovalSearch,
+        lMPendingApprovalReportsSearch,
         assetTypeListingData
       );
       fetchApiCall(requestData, true, true);
     }
-  }, [lineManagerApprovalSearch.filterTrigger]);
+  }, [lMPendingApprovalReportsSearch.filterTrigger]);
 
   useEffect(() => {
     if (!lineManagerApprovalMqtt) return;
     let requestData = buildApiRequest(
-      lineManagerApprovalSearch,
+      lMPendingApprovalReportsSearch,
       assetTypeListingData
     );
     requestData = {
@@ -188,9 +192,10 @@ const PendingRequest = () => {
   }, [lineManagerApprovalMqtt]);
 
   // This Api is for the getAllViewDetailModal For LineManager
-  const handleViewDetailsForLineManager = async (approvalID) => {
+  const handleViewDetailsForLineManager = async (workFlowID) => {
     await showLoader(true);
-    const requestdata = { TradeApprovalID: approvalID };
+    const requestdata = { TradeApprovalID: workFlowID };
+    console.log("Check APi",requestdata);
 
     const responseData = await GetAllLineManagerViewDetailRequest({
       callApi,
@@ -210,8 +215,8 @@ const PendingRequest = () => {
   const columns = getBorderlessLineManagerTableColumns({
     approvalStatusMap,
     sortedInfo,
-    lineManagerApprovalSearch,
-    setLineManagerApprovalSearch,
+    lMPendingApprovalReportsSearch,
+    setLMPendingApprovalReportsSearch,
     setViewDetailLineManagerModal,
     setIsSelectedViewDetailLineManager,
     handleViewDetailsForLineManager,
@@ -226,7 +231,7 @@ const PendingRequest = () => {
       quantity: { quantity: 0 },
     };
 
-    setLineManagerApprovalSearch((prev) => ({
+    setLMPendingApprovalReportsSearch((prev) => ({
       ...prev,
       ...resetMap[key],
       pageNumber: 0,
@@ -236,7 +241,7 @@ const PendingRequest = () => {
 
   /** 🔹 Handle removing all filters */
   const handleRemoveAllFilters = () => {
-    setLineManagerApprovalSearch((prev) => ({
+    setLMPendingApprovalReportsSearch((prev) => ({
       ...prev,
       instrumentName: "",
       requesterName: "",
@@ -251,7 +256,7 @@ const PendingRequest = () => {
   /** 🔹 Build Active Filters */
   const activeFilters = (() => {
     const { instrumentName, requesterName, startDate, endDate, quantity } =
-      lineManagerApprovalSearch || {};
+      lMPendingApprovalReportsSearch || {};
 
     return [
       instrumentName && {
@@ -304,15 +309,15 @@ const PendingRequest = () => {
   useTableScrollBottom(
     async () => {
       if (
-        lineManagerApproval?.totalRecordsDataBase <=
-        lineManagerApproval?.totalRecordsTable
+        lMPendingApprovalsData?.totalRecordsDataBase <=
+        lMPendingApprovalsData?.totalRecordsTable
       )
         return;
 
       try {
         setLoadingMore(true);
         const requestData = buildApiRequest(
-          lineManagerApprovalSearch,
+          lMPendingApprovalReportsSearch,
           assetTypeListingData
         );
 
@@ -326,6 +331,30 @@ const PendingRequest = () => {
     0,
     "border-less-table-orange"
   );
+
+  //download Report Excel
+  const downloadMyComplianceReportInExcelFormat = async () => {
+    showLoader(true);
+    const requestData = buildApiRequest(
+      lMPendingApprovalReportsSearch,
+      assetTypeListingData
+    );
+    let NewRequestData = {
+      InstrumentName: requestData.InstrumentName,
+      Quantity: requestData.Quantity,
+      StartDate: requestData.StartDate,
+      EndDate: requestData.EndDate,
+      TypeIds: requestData.TypeIds,
+      StatusIds: requestData.StatusIds,
+      RequesterName: requestData.RequesterName,
+    };
+    await ExportLineManagerPendingTradeApprovalsExcel({
+      callApi,
+      showLoader,
+      requestdata: NewRequestData,
+      navigate,
+    });
+  };
   return (
     <>
       <Row justify="start" align="middle" className={style.breadcrumbRow}>
@@ -337,9 +366,7 @@ const PendingRequest = () => {
               {
                 title: (
                   <span
-                    onClick={() =>
-                      navigate("/PAD/lm-reports")
-                    }
+                    onClick={() => navigate("/PAD/lm-reports")}
                     className={style.breadcrumbLink}
                   >
                     Reports
@@ -354,10 +381,8 @@ const PendingRequest = () => {
             ]}
           />
         </Col>
-          <Col style={{ marginLeft: "auto" }}>
+        <Col style={{ marginLeft: "auto" }}>
           <div className={style.headerActionsRow}>
-         
-
             <CustomButton
               text={
                 <span className={style.exportButtonText}>
@@ -368,22 +393,23 @@ const PendingRequest = () => {
                 </span>
               }
               className="small-light-button-report"
-              // onClick={() => setOpen((prev) => !prev)}
+              onClick={() => setOpen((prev) => !prev)}
             />
           </div>
 
           {/* 🔷 Export Dropdown */}
           {open && (
             <div className={style.dropdownExport}>
-              <div className={style.dropdownItem} 
-              // onClick={handleExportPDF}>
+              {/* <div
+                className={style.dropdownItem}
+                // onClick={handleExportPDF}>
               >
                 <img src={PDF} alt="PDF" draggable={false} />
                 <span>Export PDF</span>
-              </div>
+              </div> */}
               <div
                 className={style.dropdownItem}
-                // onClick={downloadMyComplianceReportInExcelFormat}
+                onClick={downloadMyComplianceReportInExcelFormat}
               >
                 <img src={Excel} alt="Excel" draggable={false} />
                 <span>Export XLS</span>
@@ -428,16 +454,16 @@ const PendingRequest = () => {
         background="white"
         style={{ marginTop: "2px" }}
         className={
-          activeFilters.length > 0 ? "changeHeightreports" : "repotsHeight"
+          activeFilters.length > 0 ? "changeHeightlmreports" : "repotsHeight"
         }
       >
         <div className="px-4 md:px-6 lg:px-8">
           {/* Table or Empty State */}
           <BorderlessTable
-            rows={lineManagerApproval?.lineApprovals}
+            rows={lMPendingApprovalsData?.pendingApprovals}
             columns={columns}
             scroll={
-              lineManagerApproval?.lineApprovals?.length
+              lMPendingApprovalsData?.pendingApprovals?.length
                 ? {
                     x: "max-content",
                     y: activeFilters.length > 0 ? 450 : 500,
@@ -451,6 +477,8 @@ const PendingRequest = () => {
           />
         </div>
       </PageLayout>
+           {/* To Show Line Manager View Detail Modal */}
+      {viewDetailLineManagerModal && <ViewDetailModal />}
     </>
   );
 };

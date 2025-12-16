@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { Col, Row } from "antd";
 import { useApi } from "../../../../../context/ApiContext";
 import { useNavigate } from "react-router-dom";
@@ -29,7 +29,10 @@ const AddNewBroker = () => {
 
   const [brokerNameError, setBrokerNameError] = useState("");
   const [psxCodeError, setPsxCodeError] = useState("");
-
+  const [sortConfig, setSortConfig] = useState({
+    key: null, // "brokerName" | "psxCode"
+    direction: "asc",
+  });
   // ✅ Duplicate check helpers
   const checkDuplicateName = (name) =>
     brokers.some(
@@ -64,6 +67,30 @@ const AddNewBroker = () => {
       setPsxCodeError("");
     }
   };
+
+  // Sorting handler
+  const handleSort = (key) => {
+    setSortConfig((prev) => ({
+      key,
+      direction: prev.key === key && prev.direction === "asc" ? "desc" : "asc",
+    }));
+  };
+
+  // Sorted brokers list
+  const sortedBrokers = useMemo(() => {
+    if (!sortConfig.key) return brokers;
+
+    return [...brokers]
+      .map((broker, originalIndex) => ({ ...broker, originalIndex }))
+      .sort((a, b) => {
+        const aVal = a[sortConfig.key].toLowerCase();
+        const bVal = b[sortConfig.key].toLowerCase();
+
+        if (aVal < bVal) return sortConfig.direction === "asc" ? -1 : 1;
+        if (aVal > bVal) return sortConfig.direction === "asc" ? 1 : -1;
+        return 0;
+      });
+  }, [brokers, sortConfig]);
 
   // ✅ Auto-clear error text while typing if user fixes the duplicate
   useEffect(() => {
@@ -211,7 +238,7 @@ const AddNewBroker = () => {
               </Col>
             </Row>
 
-            <div className={styles.tableHeader}>
+            {/* <div className={styles.tableHeader}>
               <span className={styles.brokerHeaderName}>Broker Name ↓</span>
               <span className={styles.brokerHeaderName}>PSX Code ↓</span>
               <span></span>
@@ -228,6 +255,53 @@ const AddNewBroker = () => {
                     src={BlackCrossImg}
                     className={styles.deleteButton}
                     onClick={() => handleRemoveBroker(index)}
+                    draggable={false}
+                  />
+                </div>
+              ))}
+            </div> */}
+            <div className={styles.tableHeader}>
+              <span
+                className={styles.brokerHeaderName}
+                onClick={() => handleSort("brokerName")}
+                style={{ cursor: "pointer" }}
+              >
+                Broker Name{" "}
+                {sortConfig.key === "brokerName"
+                  ? sortConfig.direction === "asc"
+                    ? "↑"
+                    : "↓"
+                  : "↓"}
+              </span>
+
+              <span
+                className={styles.brokerHeaderName}
+                onClick={() => handleSort("psxCode")}
+                style={{ cursor: "pointer" }}
+              >
+                PSX Code{" "}
+                {sortConfig.key === "psxCode"
+                  ? sortConfig.direction === "asc"
+                    ? "↑"
+                    : "↓"
+                  : "↓"}
+              </span>
+
+              <span></span>
+            </div>
+            <div className={styles.brokerList}>
+              {sortedBrokers.map((broker) => (
+                <div className={styles.brokerRow} key={broker.originalIndex}>
+                  <span className={styles.brokerRowtext}>
+                    {broker.brokerName}
+                  </span>
+
+                  <span className={styles.brokerRowtext}>{broker.psxCode}</span>
+
+                  <img
+                    src={BlackCrossImg}
+                    className={styles.deleteButton}
+                    onClick={() => handleRemoveBroker(broker.originalIndex)}
                     draggable={false}
                   />
                 </div>

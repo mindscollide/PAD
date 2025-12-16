@@ -830,7 +830,7 @@ export const GetAllLineManagerViewDetailRequest = async ({
   navigate,
 }) => {
   try {
-    console.log("Check APi");
+    console.log("Check APi",requestdata);
     const res = await callApi({
       requestMethod: import.meta.env
         .VITE_GET_LINE_MANAGER_VIEW_DETAIL_REQUEST_METHOD,
@@ -2256,3 +2256,124 @@ export const DownloadComplianceOfficerDateWiseTransactionReportRequestAPI =
       showLoader(false);
     }
   };
+
+// LM Pending request rport
+export const SearchLineManagerPendingApprovalsRequest = async ({
+  callApi,
+  showLoader,
+  requestdata,
+  navigate,
+}) => {
+  try {
+    const res = await callApi({
+      requestMethod: import.meta.env
+        .VITE_SEARCH_LINE_MANAGER_PENDING_APPROVALS_REQUEST_API_REQUEST_METHOD,
+      endpoint: import.meta.env.VITE_API_TRADE,
+      requestData: requestdata,
+      navigate,
+    });
+
+    if (handleExpiredSession(res, navigate, showLoader)) {
+      return {
+        pendingApprovals: [],
+        totalRecords: 0,
+      };
+    }
+
+    if (!res?.result?.isExecuted) {
+      return {
+        pendingApprovals: [],
+        totalRecords: 0,
+      };
+    }
+
+    if (res.success) {
+      const { responseMessage, pendingApprovals, totalRecords } = res.result;
+
+      if (
+        responseMessage ===
+        "PAD_Trade_TradeServiceManager_SearchLineManagerPendingApprovalsRequest_01"
+      ) {
+        return {
+          pendingApprovals: pendingApprovals || [],
+          totalRecords: totalRecords ?? 0,
+        };
+      }
+    }
+
+    return {
+      pendingApprovals: [],
+      totalRecords: 0,
+    };
+  } catch (error) {
+    console.error("Error Occurred:", error);
+    return {
+      pendingApprovals: [],
+      totalRecords: 0,
+    };
+  } finally {
+    showLoader(false);
+  }
+};
+
+// Export LineManager Pending Trade Approvals Excel
+export const ExportLineManagerPendingTradeApprovalsExcel = async ({
+  callApi,
+  showLoader,
+  requestdata,
+  navigate,
+}) => {
+  try {
+    showLoader(true);
+
+    // 🔹 API Call
+    const res = await callApi({
+      requestMethod: import.meta.env
+        .VITE_EXPORT_LINE_MANAGER_PENDING_TRADE_APPROVALS_EXCEL_REQUEST_API_REQUEST_METHOD,
+      endpoint: import.meta.env.VITE_API_REPORT,
+      requestData: requestdata,
+      navigate,
+      responseType: "arraybuffer", // ⚡ Required for file download
+      headers: {
+        "Content-Type":
+          "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      },
+    });
+
+    // 🔹 Check Session Expiry
+    if (handleExpiredSession(res, navigate, showLoader)) return false;
+    // 🔹 When API send isExecuted false
+    if (!res?.result?.isExecuted) {
+      return false;
+    }
+
+    // 🔹 When API Send Success Response
+    if (res.success) {
+      try {
+        // Create a blob and trigger download
+        const blob = new Blob([res.result?.fileData || res.data], {
+          type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        });
+
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+
+        link.setAttribute("download", "Pending-Request-Report.xlsx");
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        setOpen(false);
+        return true;
+      } catch (downloadError) {
+        return false;
+      }
+    }
+
+    return false;
+  } catch (error) {
+    return false;
+  } finally {
+    showLoader(false);
+  }
+};
