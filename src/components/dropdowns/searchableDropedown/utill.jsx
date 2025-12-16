@@ -29,6 +29,7 @@ import { LineManagerMyTradeApprovalsReports } from "./LineManagerMyTradeApproval
 import { CODateWiseTransactionReportFilter } from "./CODateWiseTransactionReportFilter";
 import { AdminSessionWiseActivityFilter } from "./AdminSessionWiseActivity";
 import { COMyAction } from "./COMyAction";
+import { LMPendigRequestReportSearchFilter } from "./LMPendigRequestReportSearchFilter";
 
 // this is used for open specific filter according to page
 export const renderFilterContent = (
@@ -137,7 +138,7 @@ export const renderFilterContent = (
     case "8": // LineManager → reports pending approvals
       if (currentPath === "/PAD/lm-reports/lm-pending-request") {
         return (
-          <LineManagerMyAction
+          <LMPendigRequestReportSearchFilter
             setVisible={setVisible}
             clear={clear}
             setClear={setClear}

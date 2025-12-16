@@ -42,12 +42,11 @@
   margin: 0 8px;
 }
 
-filter-tags-container {
-  padding: 0 23px !important;
+.filter-tags-container {
+  padding: 0 30px;
   position: relative;
-  top: 20px;
   /* margin-bottom: 12px !important; */
-  /* margin-top: 14px; */
+  margin-top: -18px;
   display: flex;
   flex-wrap: wrap;
   gap: 12px;
@@ -58,13 +57,11 @@ filter-tags-container {
   align-items: center;
   max-width: 240px;
   height: 35px;
-  padding: 8px 12px;
+  padding: 0px 12px;
   background: #30426a;
   color: white;
   border-radius: 7.09px;
   font-size: 14px;
-  margin-top: 0px;
-  margin-left: 22px;
   gap: 10px;
 }
 

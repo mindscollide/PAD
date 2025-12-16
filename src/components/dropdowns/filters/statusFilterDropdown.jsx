@@ -105,12 +105,16 @@ const StatusFilterDropdown = ({
           setFilterOptions(emtStatusOptions);
         }
         break;
-        case "11":
-        if (location.pathname === "/PAD/co-reports/co-date-wise-transaction-report") {
+      case "11":
+        if (
+          location.pathname ===
+          "/PAD/co-reports/co-date-wise-transaction-report"
+        ) {
           setFilterOptions(emtStatusOptions);
         }
         break;
       case "12":
+      case "8":
         setFilterOptions(escalated);
         break;
       case "2":
@@ -143,6 +147,7 @@ const StatusFilterDropdown = ({
       case "5":
       case "6":
       case "7":
+      case "8":
       case "9":
       case "12":
       case "15":
@@ -198,6 +203,7 @@ const StatusFilterDropdown = ({
       case "4":
       case "5":
       case "6":
+      case "8":
       case "9":
       case "12":
       case "15":

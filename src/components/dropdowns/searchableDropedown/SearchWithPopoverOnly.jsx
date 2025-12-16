@@ -281,8 +281,6 @@ const SearchWithPopoverOnly = () => {
             endDate: null,
             quantity: 0,
             pageNumber: 0,
-            type: [],
-            status: [],
             filterTrigger: true,
           }));
         } else if (currentPath === "/PAD/lm-reports/lm-tradeapproval-request") {

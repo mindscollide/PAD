@@ -56,23 +56,23 @@ export const buildApiRequest = (searchState = {}, assetTypeListingData) => {
   };
 };
 
-export const mapEscalatedApprovalsToTableRows = (
-  assetTypeData,
-  approvals = []
-) =>
-  (Array.isArray(approvals) ? approvals : []).map((item = {}) => ({
-    key: item.approvalID,
-    instrument: `${item.instrument?.instrumentName || ""} - ${
-      item.instrument?.instrumentCode || ""
-    }`,
-    requestDateTime: `${item.requestDate || ""} ${item.requestTime || ""}`,
-    isEscalated: false,
-    type: getTradeTypeById(assetTypeData, item?.tradeType),
-    status: item.approvalStatus?.approvalStatusName || "",
-    quantity: item.quantity || 0,
-    timeRemaining: item.timeRemainingToTrade || "",
-    ...item,
-  }));
+export const mapApiResopse = (assetTypeData, pendingApprovals = []) =>
+  (Array.isArray(pendingApprovals) ? pendingApprovals : []).map(
+    (item = {}) => ({
+      key: item.workFlowID,
+      tradeApprovalID: item?.tradeApprovalID ?? "—",
+      requesterName: item.requesterName,
+      assetTypeShortCode: item?.assetType?.assetTypeShortCode ?? "—",
+      instrument: item?.instrument?.instrumentCode ?? "—",
+      instrumentName: item?.instrument?.instrumentName ?? "—",
+      requestDateTime: `${item.requestDate || ""} ${item.requestTime || ""}`,
+      isEscalated: item.isEscalated,
+      type: getTradeTypeById(assetTypeData, item?.tradeType),
+      status: item?.approvalStatus?.approvalStatusName ?? "—",
+
+      quantity: item.quantity || 0,
+    })
+  );
 /**
  * Returns the appropriate sort icon based on current sort state
  *
@@ -120,8 +120,8 @@ const withSortIcon = (label, columnKey, sortedInfo) => (
 export const getBorderlessLineManagerTableColumns = ({
   approvalStatusMap,
   sortedInfo,
-  lineManagerApprovalSearch,
-  setLineManagerApprovalSearch,
+  lMPendingApprovalReportsSearch,
+  setLMPendingApprovalReportsSearch,
   setViewDetailLineManagerModal,
   setIsSelectedViewDetailLineManager,
   handleViewDetailsForLineManager,
@@ -148,7 +148,6 @@ export const getBorderlessLineManagerTableColumns = ({
         >
           <span className="font-medium">
             {dashBetweenApprovalAssets(tradeApprovalID)}
-            {/* {dashBetweenApprovalAssets("REQ888888")} */}
           </span>
         </div>
       );
@@ -175,29 +174,24 @@ export const getBorderlessLineManagerTableColumns = ({
     },
   },
   {
-    title: withSortIcon("Instrument", "instrumentName", sortedInfo),
-    dataIndex: "instrument",
-    key: "instrumentName",
+    title: withSortIcon("Instrument Name", "instrumentCode", sortedInfo),
+    dataIndex: "instrumentCode",
+    key: "instrumentCode",
+    width:200,
     ellipsis: true,
-    sorter: (a, b) => {
-      const nameA = a.instrument?.instrumentCode || "";
-      const nameB = b.instrument?.instrumentCode || "";
-      return nameA.localeCompare(nameB);
-    },
-    sortDirections: ["ascend", "descend"],
+    sorter: (a, b) =>
+      (a?.instrumentCode || "").localeCompare(b?.instrumentCode || ""),
     sortOrder:
-      sortedInfo?.columnKey === "instrumentName" ? sortedInfo.order : null,
+      sortedInfo?.columnKey === "instrumentCode" ? sortedInfo.order : null,
     showSorterTooltip: false,
     sortIcon: () => null,
-    render: (instrument, record) => {
-      console.log(record, "Checkerrrrr");
-      const assetCode = record?.assetType?.assetTypeShortCode;
-      const code = instrument?.instrumentCode || "";
-      const instrumentName = instrument?.instrumentName || "";
+    render: (_, record) => {
+      const code = record?.instrument || "—";
+      const name = record?.instrumentName || "—";
+      const assetCode = record?.assetTypeShortCode || "";
 
       return (
         <div
-          id={`cell-${record.key}-instrumentCode`}
           style={{
             display: "flex",
             alignItems: "center",
@@ -207,7 +201,7 @@ export const getBorderlessLineManagerTableColumns = ({
           <span className="custom-shortCode-asset" style={{ minWidth: 30 }}>
             {assetCode?.substring(0, 2).toUpperCase()}
           </span>
-          <Tooltip title={`${code} - ${instrumentName}`} placement="topLeft">
+          <Tooltip title={`${name} - ${code}`} placement="topLeft">
             <span
               className="font-medium"
               style={{
@@ -218,7 +212,6 @@ export const getBorderlessLineManagerTableColumns = ({
                 display: "inline-block",
                 cursor: "pointer",
               }}
-              title={code}
             >
               {code}
             </span>
@@ -228,7 +221,7 @@ export const getBorderlessLineManagerTableColumns = ({
     },
   },
   {
-    title: withSortIcon("Date & Time", "requestDateTime", sortedInfo),
+    title: withSortIcon("Request date & time", "requestDateTime", sortedInfo),
     dataIndex: "requestDateTime",
     key: "requestDateTime",
 
@@ -251,16 +244,16 @@ export const getBorderlessLineManagerTableColumns = ({
   {
     title: (
       <TypeColumnTitle
-        state={lineManagerApprovalSearch}
-        setState={setLineManagerApprovalSearch}
+        state={lMPendingApprovalReportsSearch}
+        setState={setLMPendingApprovalReportsSearch}
       />
     ),
     dataIndex: "type",
     key: "type",
     width: "8%",
     ellipsis: true,
-    filteredValue: lineManagerApprovalSearch.type?.length
-      ? lineManagerApprovalSearch.type
+    filteredValue: lMPendingApprovalReportsSearch.type?.length
+      ? lMPendingApprovalReportsSearch.type
       : null,
     onFilter: () => true,
     render: (type, record) => (
@@ -275,16 +268,16 @@ export const getBorderlessLineManagerTableColumns = ({
   {
     title: (
       <StatusColumnTitle
-        state={lineManagerApprovalSearch}
-        setState={setLineManagerApprovalSearch}
+        state={lMPendingApprovalReportsSearch}
+        setState={setLMPendingApprovalReportsSearch}
       />
     ),
     dataIndex: "status",
     key: "status",
     ellipsis: true,
     align: "center",
-    filteredValue: lineManagerApprovalSearch.status?.length
-      ? lineManagerApprovalSearch.status
+    filteredValue: lMPendingApprovalReportsSearch.status?.length
+      ? lMPendingApprovalReportsSearch.status
       : null,
     onFilter: () => true,
     render: (status, record) => {
@@ -367,7 +360,7 @@ export const getBorderlessLineManagerTableColumns = ({
               className="big-orange-button"
               text="View Details"
               onClick={() => {
-                handleViewDetailsForLineManager(record?.approvalID);
+                handleViewDetailsForLineManager(record?.key);
                 setIsSelectedViewDetailLineManager(record);
                 setViewDetailLineManagerModal(true);
               }}

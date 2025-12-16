@@ -88,6 +88,13 @@ export const MyApprovalProvider = ({ children }) => {
     totalRecordsTable: 0,
   });
 
+  /** Line Manager pending request Reports */
+  const [lMPendingApprovalsData, setLMPendingApprovalsData] = useState({
+    pendingApprovals: [],
+    totalRecordsDataBase: 0,
+    totalRecordsTable: 0,
+  });
+
   /** MQTT flag for auto-refresh for Line Manager approvals */
   const [lineManagerApprovalMqtt, setLineManagerApprovalMQtt] = useState(false);
 
@@ -145,6 +152,16 @@ export const MyApprovalProvider = ({ children }) => {
     });
   };
 
+  /** Line Manager pending request Reports  Reset*/
+
+  const resetPendingRequestReportRequestContextState = () => {
+    setLMPendingApprovalsData({
+      pendingApprovals: [],
+      totalRecordsDataBase: 0,
+      totalRecordsTable: 0,
+    });
+  };
+
   /** Reset Employee My Approval + detail modal */
   const resetMyApprovalContextState = () => {
     setIsEmployeeMyApproval({
@@ -199,7 +216,10 @@ export const MyApprovalProvider = ({ children }) => {
         setEmployeeReportsDashboardData,
         getEmployeeMyComplianceReport,
         setGetEmployeeMyComplianceReport,
-
+        // pending Request LM Report
+        lMPendingApprovalsData,
+        setLMPendingApprovalsData,
+        resetPendingRequestReportRequestContextState,
         /* Dashboard Reports */
         lineManagerReportsDashboardData,
         setLineManagerReportsDashboardData,
