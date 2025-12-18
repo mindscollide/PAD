@@ -3,12 +3,6 @@ import {
   SearchTadeApprovals,
 } from "../../../api/myApprovalApi";
 import { SearchEmployeeTransactionsDetails } from "../../../api/myTransactionsApi";
-import { toYYMMDD } from "../../../common/funtions/rejex";
-import {
-  mapBuySellToIds,
-  mapStatusToIds,
-  mapStatusToIdsForLineManager,
-} from "../filters/utils";
 import { AdminBrokersListFiletr } from "./AdminBrokersListFilter";
 import { AdminInstrumentsListFilter } from "./AdminInstrumentsListFilter";
 import { AdminPoliciesAndGroupUsersTabFilter } from "./AdminPoliciesAndGroupUsersTabFilter";

@@ -345,7 +345,6 @@ export const getBorderlessLineManagerTableColumns = ({
       ) : null;
     },
   },
-
   {
     title: "",
     key: "actions",

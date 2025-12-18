@@ -74,8 +74,6 @@ export const buildMyHistoryApiRequest = (searchState = {}) => ({
 export const getMyHistoryColumn = (
   approvalStatusMap,
   sortedInfo,
-  employeeMyHistorySearch,
-  setEmployeeMyHistorySearch
 ) => [
   {
     title: withSortIcon(
