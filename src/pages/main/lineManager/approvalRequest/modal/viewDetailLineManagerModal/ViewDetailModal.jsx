@@ -139,6 +139,7 @@ const ViewDetailModal = () => {
   const statusDataLM = getStatusStyle(
     String(viewDetailsLineManagerData?.workFlowStatus?.workFlowStatusID)
   );
+  console.log("statusDataLM.label",statusDataLM.label)
   // When its already approve or ddecline by you then button should be disabled
   const hasAlreadyApprovedOrDeclined =
     viewDetailsLineManagerData?.hierarchyDetails?.some(
@@ -597,6 +598,18 @@ const ViewDetailModal = () => {
                       </div>
                     </Col>
                   </>
+                ) : statusDataLM.label === "Not Traded" ? (
+                  <>
+                    <Col span={[24]}>
+                      <div className={styles.approvedButtonClassViewComment}>
+                        <CustomButton
+                          text={"Close"}
+                          onClick={() => setViewDetailLineManagerModal(false)}
+                          className="big-light-button"
+                        />
+                      </div>
+                    </Col>
+                  </>
                 ) : (
                   <>
                     {!hasAlreadyApprovedOrDeclined && (
@@ -641,21 +654,6 @@ const ViewDetailModal = () => {
                     )}
                   </>
                 )}
-
-                {statusDataLM.label === "Resubmitted" ||
-                statusDataLM.label === "Not Traded" ? (
-                  <>
-                    <Col span={[24]}>
-                      <div className={styles.approvedButtonClassViewComment}>
-                        <CustomButton
-                          text={"Close"}
-                          onClick={() => setViewDetailLineManagerModal(false)}
-                          className="big-light-button"
-                        />
-                      </div>
-                    </Col>
-                  </>
-                ) : null}
               </Row>
             </div>
           </>
