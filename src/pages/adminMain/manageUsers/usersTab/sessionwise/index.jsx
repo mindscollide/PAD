@@ -251,13 +251,18 @@ const UserSessionWiseActivity = () => {
     "border-less-table-blue"
   );
 
+  /** viewActionModal */
+  const handleViewActionModal = (data) => {
+    console.log("handleViewActionModal",data);
+            // setViewActionSessionWiseModal(true);
+
+  };
   // -------------------------------------------------------------
   //  Table Columns
   // -------------------------------------------------------------
   const columns = getBorderlessTableColumns({
     sortedInfo,
-    setSessionWiseViewActionModal,
-    setViewActionSessionWiseModal,
+    handleViewActionModal,
   });
 
   // -------------------------------------------------------------
