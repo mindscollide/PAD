@@ -625,6 +625,10 @@ export const responseMessages = {
   PAD_Trade_TradeServiceManager_SaveUserBrokers_02: "Successfull",
   PAD_Trade_TradeServiceManager_SaveUserBrokers_03: "Fail to Save",
   PAD_Trade_TradeServiceManager_SaveUserBrokers_04: "Exception",
+
+  Admin_ViewUserSessionWiseActivity_01: "Data Available",
+  Admin_ViewUserSessionWiseActivity_02: "No data available",
+  Admin_ViewUserSessionWiseActivity_03: "Exception",
 };
 
 /**

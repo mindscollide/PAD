@@ -25,7 +25,10 @@ import { useSearchBarContext } from "../../../../../context/SearchBarContaxt";
 import { useMyAdmin } from "../../../../../context/AdminContext";
 
 // 🔹 API
-import { GetUserSessionWiseActivity } from "../../../../../api/adminApi";
+import {
+  GetUserSessionWiseActivity,
+  ViewUserSessionWiseActivity,
+} from "../../../../../api/adminApi";
 
 // 🔹 Hooks & Utils
 import { useTableScrollBottom } from "../../../../../common/funtions/scroll";
@@ -77,8 +80,11 @@ const UserSessionWiseActivity = () => {
     useSearchBarContext();
 
   // For Session Wise View Action Modal in Admin Role
-  const { viewActionSessionWiseModal, setViewActionSessionWiseModal } =
-    useGlobalModal();
+  const {
+    viewActionSessionWiseModal,
+    setViewActionSessionWiseModal,
+    setViewActionSessionWiseModalData,
+  } = useGlobalModal();
 
   // -------------------------------------------------------------
   //  Local state
@@ -187,8 +193,6 @@ const UserSessionWiseActivity = () => {
         console.log("savedName", adminSessionWiseActivitySearch);
       }
     } else {
-      console.log("savedName", adminSessionWiseActivityListData);
-      console.log("savedName", adminSessionWiseActivitySearch);
       requestData = buildApiRequest(adminSessionWiseActivitySearch);
     }
     fetchApiCall(requestData, true, true);
@@ -252,11 +256,40 @@ const UserSessionWiseActivity = () => {
   );
 
   /** viewActionModal */
-  const handleViewActionModal = (data) => {
-    console.log("handleViewActionModal",data);
-            // setViewActionSessionWiseModal(true);
-
+  const handleViewActionModal = async (data) => {
+    console.log("handleViewActionModal", data);
+    const requestData = { SessionID: data.sessionID };
+    showLoader(true);
+    const res = await ViewUserSessionWiseActivity({
+      callApi,
+      showNotification,
+      showLoader,
+      requestdata: requestData,
+      navigate,
+    });
+    if (res?.result) {
+      setViewActionSessionWiseModal(true);
+      setViewActionSessionWiseModalData(res);
+    } else {
+      setViewActionSessionWiseModalData([]);
+      setViewActionSessionWiseModal(false);
+      showNotification({
+        type: "warning",
+        title: "No records found",
+        description: "Against this session.",
+      });
+    }
   };
+  useEffect(() => {
+    try {
+      if (!viewActionSessionWiseModal) {
+        setViewActionSessionWiseModalData([]);
+      }
+    } catch (error) {
+      console.error("Reload detection failed", error);
+    }
+  }, [viewActionSessionWiseModal]);
+
   // -------------------------------------------------------------
   //  Table Columns
   // -------------------------------------------------------------
