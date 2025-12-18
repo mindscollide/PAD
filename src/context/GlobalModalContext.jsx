@@ -244,6 +244,8 @@ export const GlobalModalProvider = ({ children }) => {
   const [viewActionSessionWiseModal, setViewActionSessionWiseModal] =
     useState(false);
 
+  const [viewActionSessionWiseModalData, setViewActionSessionWiseModalData] =
+    useState([]);
   /**
    * Global States For Admin Role Modals End here
    */
@@ -272,6 +274,7 @@ export const GlobalModalProvider = ({ children }) => {
     setDeclinedGlobalModal(false);
     setViewCommentGlobalModal(false);
     setUploadattAchmentsFiles([]);
+    setViewActionSessionWiseModalData([]);
   };
 
   const resetForLineManagerModal = () => {
@@ -492,7 +495,8 @@ export const GlobalModalProvider = ({ children }) => {
         // To check Trade Approval Id on View Modal In Compliance Officer
         checkTradeApprovalID,
         setCheckTradeApprovalID,
-
+        viewActionSessionWiseModalData,
+        setViewActionSessionWiseModalData,
         /**
          * Global States For Admin Role Modals End here
          */

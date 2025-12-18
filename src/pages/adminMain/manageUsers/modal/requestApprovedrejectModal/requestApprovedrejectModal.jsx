@@ -49,7 +49,12 @@ const RequestApprovedRejeectedModal = ({ currentUserData = [] }) => {
 
   // 🔹 When clicking a reason tag, append it to textarea
   const handleReasonClick = (reason) => {
-    setWriteNote((prev) => (prev ? `${prev} ${reason}` : reason));
+    setWriteNote((prev = "") => {
+      const separator = prev ? " " : "";
+      const newText = prev + separator + reason;
+
+      return newText.length > 500 ? newText.slice(0, 500) : newText;
+    });
   };
 
   // 🔹 Approve action

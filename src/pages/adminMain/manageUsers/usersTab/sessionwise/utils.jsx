@@ -113,8 +113,7 @@ const withSortIcon = (label, columnKey, sortedInfo) => (
 
 export const getBorderlessTableColumns = ({
   sortedInfo,
-  setSessionWiseViewActionModal,
-  setViewActionSessionWiseModal,
+  handleViewActionModal,
 }) => [
   {
     title: (
@@ -170,16 +169,11 @@ export const getBorderlessTableColumns = ({
     render: (q) => <span className="font-medium">{q}</span>,
   },
   {
-    title: "",
-    key: "action",
-    width: "140px",
-    align: "right",
-  },
-  {
     title: withSortIcon("Logout Date & Time", "logoutDateTime", sortedInfo),
     dataIndex: "logoutDateTime",
     key: "logoutDateTime",
     ellipsis: true,
+    width:200,
     sorter: (a, b) =>
       new Date(a.logoutDateTime).getTime() -
       new Date(b.logoutDateTime).getTime(),
@@ -205,8 +199,7 @@ export const getBorderlessTableColumns = ({
           className="small-light-button"
           text={"View Actions"}
           onClick={() => {
-            setSessionWiseViewActionModal(true);
-            setViewActionSessionWiseModal(true);
+            handleViewActionModal(record)
           }}
         />
       </div>
