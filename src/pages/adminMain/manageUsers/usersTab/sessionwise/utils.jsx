@@ -123,6 +123,7 @@ export const getBorderlessTableColumns = ({
     ),
     dataIndex: "ipAddress",
     key: "ipAddress",
+    width: 300,
     ellipsis: true,
     sorter: (a, b) => a.ipAddress.localeCompare(b.ipAddress),
     sortDirections: ["ascend", "descend"],
@@ -141,6 +142,7 @@ export const getBorderlessTableColumns = ({
     dataIndex: "loginDateTime",
     key: "loginDateTime",
     ellipsis: true,
+    width: 300,
     sorter: (a, b) =>
       new Date(a.loginDateTime).getTime() - new Date(b.loginDateTime).getTime(),
     sortDirections: ["ascend", "descend"],
@@ -157,8 +159,8 @@ export const getBorderlessTableColumns = ({
     title: withSortIcon("Total Actions", "totalActions", sortedInfo),
     dataIndex: "totalActions",
     key: "totalActions",
-    width: "140px",
-    align: "center",
+    width: 300,
+    align: "left",
     ellipsis: true,
     sorter: (a, b) => a.totalActions - b.totalActions,
     sortDirections: ["ascend", "descend"],
@@ -173,7 +175,7 @@ export const getBorderlessTableColumns = ({
     dataIndex: "logoutDateTime",
     key: "logoutDateTime",
     ellipsis: true,
-    width:200,
+    width:300,
     sorter: (a, b) =>
       new Date(a.logoutDateTime).getTime() -
       new Date(b.logoutDateTime).getTime(),
