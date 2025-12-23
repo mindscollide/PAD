@@ -636,6 +636,12 @@ export const responseMessages = {
     "No data available",
   PAD_Trade_TradeServiceManager_GetComplianceOfficerViewTransactionSummaryAPI_03:
     "Exception",
+  // ==============================
+  // Compliance Officer OverDue report
+  // ============================== 
+  PAD_Trade_TradeServiceManager_SearchHOCOverdueVerifications_01: "Data found",
+  PAD_Trade_TradeServiceManager_SearchHOCOverdueVerifications_02: "No data available",
+  PAD_Trade_TradeServiceManager_SearchHOCOverdueVerifications_03: "Exception",
 };
 
 /**

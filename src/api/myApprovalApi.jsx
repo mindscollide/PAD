@@ -2470,3 +2470,97 @@ export const GetComplianceOfficerViewTransactionSummaryAPI = async ({
     showLoader(false);
   }
 };
+
+// SearchHOCOverdueVerificationsRequest For Compliance Officer Overdue Verification Page
+export const SearchHOCOverdueVerificationsRequestApi = async ({
+  callApi,
+  showNotification,
+  showLoader,
+  navigate,
+  requestdata,
+}) => {
+  try {
+    // 🔹 API Call
+    const res = await callApi({
+      requestMethod: import.meta.env
+        .VITE_REPORT_OVERDUE_VERIFICATION_LISTING_API_REQUEST_METHOD, // 🔑 must be defined in .env
+      endpoint: import.meta.env.VITE_API_TRADE,
+      requestData: requestdata,
+      navigate,
+    });
+
+    // 🔹 Handle session expiry
+    if (handleExpiredSession(res, navigate, showLoader)) return null;
+
+    // 🔹 Validate execution
+    if (!res?.result?.isExecuted) {
+      showNotification({
+        type: "error",
+        title: "Error",
+        description:
+          "Something went wrong while fetching Compliance Officer date wise transaction reports Api.",
+      });
+      return null;
+    }
+
+    // 🔹 Handle success
+    if (res?.success) {
+      const { totalRecords, overdueVerifications, responseMessage } =
+        res.result;
+      const message = getMessage(responseMessage);
+
+      // Case 1 → Data available
+      if (
+        responseMessage ===
+        "PAD_Trade_TradeServiceManager_SearchHOCOverdueVerifications_01"
+      ) {
+        return {
+          totalRecords: totalRecords,
+          overdueVerifications: overdueVerifications,
+        };
+      }
+
+      // Case 2 → No data
+      if (
+        responseMessage ===
+        "PAD_Trade_TradeServiceManager_SearchHOCOverdueVerifications_02"
+      ) {
+        return {
+          totalRecords: 0,
+          overdueVerifications: [],
+        };
+      }
+
+      // Case 3 → Custom server messages
+      if (message) {
+        showNotification({
+          type: "warning",
+          title: message,
+          description: message,
+        });
+      }
+
+      return null;
+    }
+
+    // 🔹 Handle failure
+    showNotification({
+      type: "error",
+      title: "Fetch Failed",
+      description: getMessage(res.message),
+    });
+    return null;
+  } catch (error) {
+    // 🔹 Exception handling
+    showNotification({
+      type: "error",
+      title: "Error",
+      description:
+        "An unexpected error occurred while request Compliance officer date wise transaction reports  API .",
+    });
+    return null;
+  } finally {
+    // 🔹 Always hide loader
+    showLoader(false);
+  }
+};
