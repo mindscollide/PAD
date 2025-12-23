@@ -410,16 +410,9 @@ const COdataWiseTransactionsReports = () => {
             ]}
           />
         </Col>
-
         <Col>
           <div className={style.headerActionsRow}>
-            <DateRangePicker
-              size="medium"
-              className={style.dateRangePickerClass}
-              value={[dateRange.StartDate, dateRange.EndDate]}
-              onChange={handleDateChange}
-              onClear={handleClearDates}
-            />
+    
             <CustomButton
               text={
                 <span className={style.exportButtonText}>
