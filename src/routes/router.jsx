@@ -38,6 +38,7 @@ import {
   COMyAction,
   COdataWiseTransactionsReports,
   UserSessionWiseActivity,
+  COTransactionsSummarysReports,
 } from "../pages";
 import RoleBasedRoute from "./RoleBasedRoute";
 import EscalatedApprovals from "../pages/main/headOfTradeApprover/escalatedApprovals/escalatedApprovals";
@@ -229,8 +230,16 @@ const router = createBrowserRouter(
           />
           <Route
             path="co-transactions-summary-report"
-            element={<PendingRequest />}
-          />
+            // element={<COTransactionsSummarysReports />}
+             element={
+            <RoleBasedRoute isAdmin={false}>
+              <ReportsLayout />
+            </RoleBasedRoute>
+          }
+          >
+          <Route index element={<COTransactionsSummarysReports />} />
+
+          </Route>
           <Route path="co-overdue-verifications" element={<PendingRequest />} />
           <Route path="co-portfolio-history" element={<PendingRequest />} />
         </Route>

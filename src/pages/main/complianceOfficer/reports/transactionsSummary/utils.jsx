@@ -6,7 +6,7 @@ import DefaultColumArrow from "../../../../../assets/img/default-colum-arrow.png
 import TypeColumnTitle from "../../../../../components/dropdowns/filters/typeColumnTitle";
 import StatusColumnTitle from "../../../../../components/dropdowns/filters/statusColumnTitle";
 import { Tag, Tooltip } from "antd";
-import style from "./dataWiseTransactionsReports.module.css";
+import style from "./transactionsSummary.module.css";
 
 import {
   dashBetweenApprovalAssets,
@@ -118,62 +118,6 @@ const getSortIcon = (columnKey, sortedInfo) => {
 };
 
 /**
- * Renders instrument cell with asset code and tooltip
- * @param {Object} record - Table row data
- * @returns {JSX.Element} Instrument cell component
- */
-const renderInstrumentCell = (record) => {
-  const code = record?.instrumentCode || "—";
-  const name = record?.instrumentName || "—";
-  const assetCode = record?.assetTypeShortCode || "";
-
-  return (
-    <div
-      style={{
-        display: "flex",
-        alignItems: "center",
-        gap: "8px",
-        minWidth: 0,
-      }}
-    >
-      <span
-        className="custom-shortCode-asset"
-        style={{
-          minWidth: 32,
-          flexShrink: 0,
-          display: "inline-flex",
-          alignItems: "center",
-          justifyContent: "center",
-        }}
-        data-testid="asset-code"
-      >
-        {assetCode?.substring(0, 2).toUpperCase()}
-      </span>
-      <Tooltip
-        title={`${code} - ${name}`}
-        placement="topLeft"
-        overlayStyle={{ maxWidth: "300px" }}
-      >
-        <span
-          className="font-medium"
-          style={{
-            overflow: "hidden",
-            textOverflow: "ellipsis",
-            whiteSpace: "nowrap",
-            minWidth: 0,
-            flex: 1,
-            cursor: "pointer",
-          }}
-          data-testid="instrument-code"
-        >
-          {code}
-        </span>
-      </Tooltip>
-    </div>
-  );
-};
-
-/**
  * Renders status tag with appropriate styling
  * @param {string} status - Approval status
  * @param {Object} approvalStatusMap - Status to style mapping
@@ -239,6 +183,7 @@ const withFilterHeader = (FilterComponent) => (
     <FilterComponent />
   </div>
 );
+
 export const getBorderlessTableColumns = ({
   approvalStatusMap,
   sortedInfo,
@@ -246,111 +191,6 @@ export const getBorderlessTableColumns = ({
   setCODatewiseTransactionReportSearch,
   handelViewDetails,
 }) => [
-  {
-    title: withSortIcon("Employee ID", "employeeID", sortedInfo),
-    dataIndex: "employeeID",
-    key: "employeeID",
-    width: "10%",
-    ellipsis: true,
-    sorter: (a, b) =>
-      parseInt(a.employeeID.replace(/[^\d]/g, ""), 10) -
-      parseInt(b.employeeID.replace(/[^\d]/g, ""), 10),
-    sortDirections: ["ascend", "descend"],
-    sortOrder: sortedInfo?.columnKey === "employeeID" ? sortedInfo.order : null,
-    showSorterTooltip: false,
-    sortIcon: () => null,
-    render: (employeeID) => {
-      return (
-        <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-          <span className="font-medium">
-            {employeeID}
-            {/* {dashBetweenApprovalAssets("REQ888888")} */}
-          </span>
-        </div>
-      );
-    },
-  },
-  {
-    title: withSortIcon("Employee Name", "employeeName", sortedInfo),
-    dataIndex: "employeeName",
-    key: "employeeName",
-    width: "160px",
-    align: "left",
-    ellipsis: true,
-    sorter: (a, b) => a.employeeName.localeCompare(b.employeeName),
-    sortDirections: ["ascend", "descend"],
-    sortOrder:
-      sortedInfo?.columnKey === "employeeName" ? sortedInfo.order : null,
-    showSorterTooltip: false,
-    sortIcon: () => null,
-    render: (text) => <span className="font-medium">{text}</span>,
-  },
-  {
-    title: withSortIcon("Department Name", "department", sortedInfo),
-    dataIndex: "department",
-    key: "department",
-    align: "left",
-    width: 180,
-    ellipsis: true,
-    sorter: (a, b) => a.department.localeCompare(b.department),
-    sortDirections: ["ascend", "descend"],
-    sortOrder: sortedInfo?.columnKey === "department" ? sortedInfo.order : null,
-    showSorterTooltip: false,
-    sortIcon: () => null,
-    render: (text) => <span className="font-medium">{text}</span>,
-  },
-  {
-    title: withSortIcon("Instrument", "instrumentName", sortedInfo),
-    dataIndex: "instrumentName",
-    key: "instrumentName",
-    width: "140px",
-    ellipsis: true,
-    sorter: (a, b) => {
-      const nameA = a?.instrumentShortCode || "";
-      const nameB = b?.instrumentShortCode || "";
-      return nameA.localeCompare(nameB);
-    },
-    sortDirections: ["ascend", "descend"],
-    sortOrder:
-      sortedInfo?.columnKey === "instrumentName" ? sortedInfo.order : null,
-    showSorterTooltip: false,
-    sortIcon: () => null,
-    render: (instrument, record) => {
-      const assetCode = record?.assetTypeShortCode;
-      const code = record?.instrumentCode || "";
-      const instrumentName = record?.instrumentName || "";
-
-      return (
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: "12px",
-          }}
-        >
-          <span className="custom-shortCode-asset" style={{ minWidth: 30 }}>
-            {assetCode?.substring(0, 2).toUpperCase()}
-          </span>
-          <Tooltip title={instrumentName} placement="topLeft">
-            <span
-              className="font-medium"
-              style={{
-                overflow: "hidden",
-                textOverflow: "ellipsis",
-                whiteSpace: "nowrap",
-                maxWidth: "200px",
-                display: "inline-block",
-                cursor: "pointer",
-              }}
-              title={code}
-            >
-              {code}
-            </span>
-          </Tooltip>
-        </div>
-      );
-    },
-  },
   {
     title: withSortIcon("Transaction Date", "transactionDate", sortedInfo),
     dataIndex: "transactionDate",
@@ -375,70 +215,106 @@ export const getBorderlessTableColumns = ({
     ),
   },
   {
-    title: withFilterHeader(() => (
-      <TypeColumnTitle
-        state={coDatewiseTransactionReportSearch}
-        setState={setCODatewiseTransactionReportSearch}
-      />
-    )),
-    dataIndex: "type",
-    width: 100,
-    key: "type",
+    title: withSortIcon("Total Employees", "totalEmployees", sortedInfo),
+    dataIndex: "totalEmployees",
+    key: "totalEmployees",
+    width: "10%",
     ellipsis: true,
-    filteredValue: coDatewiseTransactionReportSearch.type?.length
-      ? coDatewiseTransactionReportSearch.type
-      : null,
-    onFilter: () => true, // Actual filtering handled by API
-    render: (type, record) => (
-      <span
-        id={`cell-${record.key}-type`}
-        className={type === "Buy" ? "text-green-600" : "text-red-600"}
-        data-testid={`trade-type-${type}`}
-        style={{
-          display: "inline-block",
-          width: "100%",
-          overflow: "hidden",
-          textOverflow: "ellipsis",
-          whiteSpace: "nowrap",
-        }}
-      >
-        {type}
-      </span>
-    ),
-  },
-  {
-    title: withSortIcon("Quantity", "quantity", sortedInfo),
-    dataIndex: "quantity",
-    key: "quantity",
-    width: "120px",
-    ellipsis: true,
-    sorter: (a, b) => a.quantity - b.quantity,
+    sorter: (a, b) =>
+      parseInt(a.totalEmployees.replace(/[^\d]/g, ""), 10) -
+      parseInt(b.totalEmployees.replace(/[^\d]/g, ""), 10),
     sortDirections: ["ascend", "descend"],
-    sortOrder: sortedInfo?.columnKey === "quantity" ? sortedInfo.order : null,
+    sortOrder:
+      sortedInfo?.columnKey === "totalEmployees" ? sortedInfo.order : null,
     showSorterTooltip: false,
     sortIcon: () => null,
-    render: (q) => <span className="font-medium">{q.toLocaleString()}</span>,
+    render: (totalEmployees) => {
+      return (
+        <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+          <span className="font-medium">{totalEmployees}</span>
+        </div>
+      );
+    },
   },
   {
-    title: withFilterHeader(() => (
-      <StatusColumnTitle
-        state={coDatewiseTransactionReportSearch}
-        setState={setCODatewiseTransactionReportSearch}
-      />
-    )),
-    dataIndex: "status",
-    key: "status",
+    title: withSortIcon("Total Transactions", "totalTransactions", sortedInfo),
+    dataIndex: "totalTransactions",
+    key: "totalTransactions",
+    width: "10%",
     ellipsis: true,
-    filteredValue: coDatewiseTransactionReportSearch.status?.length
-      ? coDatewiseTransactionReportSearch.status
-      : null,
-    onFilter: () => true,
-    render: (status, record) => (
-      <div id={`cell-${record.key}-status`}>
-        {renderStatusTag(status, approvalStatusMap)}
-      </div>
-    ),
+    sorter: (a, b) =>
+      parseInt(a.totalTransactions.replace(/[^\d]/g, ""), 10) -
+      parseInt(b.totalTransactions.replace(/[^\d]/g, ""), 10),
+    sortDirections: ["ascend", "descend"],
+    sortOrder:
+      sortedInfo?.columnKey === "totalTransactions" ? sortedInfo.order : null,
+    showSorterTooltip: false,
+    sortIcon: () => null,
+    render: (totalTransactions) => {
+      return (
+        <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+          <span className="font-medium">{totalTransactions}</span>
+        </div>
+      );
+    },
   },
+  {
+    title: withSortIcon(
+      "Compliant Transactions",
+      "compliantTransactions",
+      sortedInfo
+    ),
+    dataIndex: "compliantTransactions",
+    key: "compliantTransactions",
+    width: "10%",
+    ellipsis: true,
+    sorter: (a, b) =>
+      parseInt(a.compliantTransactions.replace(/[^\d]/g, ""), 10) -
+      parseInt(b.compliantTransactions.replace(/[^\d]/g, ""), 10),
+    sortDirections: ["ascend", "descend"],
+    sortOrder:
+      sortedInfo?.columnKey === "compliantTransactions"
+        ? sortedInfo.order
+        : null,
+    showSorterTooltip: false,
+    sortIcon: () => null,
+    render: (compliantTransactions) => {
+      return (
+        <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+          <span className="font-medium">{compliantTransactions}</span>
+        </div>
+      );
+    },
+  },
+  {
+    title: withSortIcon(
+      "Non-Compliant Transactions",
+      "nonCompliantTransactions",
+      sortedInfo
+    ),
+    dataIndex: "nonCompliantTransactions",
+    key: "nonCompliantTransactions",
+    width: "10%",
+    ellipsis: true,
+    sorter: (a, b) =>
+      parseInt(a.nonCompliantTransactions.replace(/[^\d]/g, ""), 10) -
+      parseInt(b.nonCompliantTransactions.replace(/[^\d]/g, ""), 10),
+    sortDirections: ["ascend", "descend"],
+    sortOrder:
+      sortedInfo?.columnKey === "nonCompliantTransactions"
+        ? sortedInfo.order
+        : null,
+    showSorterTooltip: false,
+    sortIcon: () => null,
+    render: (nonCompliantTransactions) => {
+      return (
+        <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+          <span className="font-medium">{nonCompliantTransactions}</span>
+        </div>
+      );
+    },
+  },
+
   {
     title: "",
     key: "action",
@@ -450,11 +326,7 @@ export const getBorderlessTableColumns = ({
           text={"View Details"}
           onClick={() => {
             console.log(record, "tradeApprovalID");
-            handelViewDetails(record.approvalID)
-            // setIsViewComments(true);
-            // setCheckTradeApprovalID(record?.approvalID);
-            // setEditBrokerModal(true);
-            // setEditModalData(record);
+            handelViewDetails(record.approvalID);
           }}
         />
       </div>

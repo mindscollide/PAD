@@ -629,6 +629,13 @@ export const responseMessages = {
   Admin_ViewUserSessionWiseActivity_01: "Data Available",
   Admin_ViewUserSessionWiseActivity_02: "No data available",
   Admin_ViewUserSessionWiseActivity_03: "Exception",
+
+  PAD_Trade_TradeServiceManager_GetComplianceOfficerViewTransactionSummaryAPI_01:
+    "Data Available",
+  PAD_Trade_TradeServiceManager_GetComplianceOfficerViewTransactionSummaryAPI_02:
+    "No data available",
+  PAD_Trade_TradeServiceManager_GetComplianceOfficerViewTransactionSummaryAPI_03:
+    "Exception",
 };
 
 /**
