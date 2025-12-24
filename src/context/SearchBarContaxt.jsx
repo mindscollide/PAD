@@ -300,6 +300,24 @@ export const SearchBarProvider = ({ children }) => {
     pageSize: 10,
     filterTrigger: false,
   });
+
+  // Overdue Verification search filter
+  const [
+    coOverdueVerificationReportSearch,
+    setCoOverdueVerificationReportSearch,
+  ] = useState({
+    instrumentName: "",
+    requesterName: "",
+    approvedQuantity: "",
+    sharesTraded: "",
+    startDate: null,
+    endDate: null,
+    type: "",
+    pageNumber: 0,
+    pageSize: 10,
+    filterTrigger: false,
+  });
+
   // ===============================
   // Head of Compliance Approval (HCA) States
   // ===============================
@@ -710,6 +728,21 @@ export const SearchBarProvider = ({ children }) => {
       filterTrigger: false,
     });
 
+  /** Reset Compliance Officer Overdue Verification report filters */
+  const resetComplianceOfficerOverdueVerificationReportSearch = () =>
+    setCoOverdueVerificationReportSearch({
+      instrumentName: "",
+      requesterName: "",
+      approvedQuantity: "",
+      sharesTraded: "",
+      startDate: null,
+      endDate: null,
+      type: "",
+      pageNumber: 0,
+      pageSize: 10,
+      filterTrigger: false,
+    });
+
   /** Reset Compliance Officer Reconcile Portfolio filters */
   const resetComplianceOfficerReconcilePortfoliosSearch = () =>
     setComplianceOfficerReconcilePortfolioSearch({
@@ -982,6 +1015,10 @@ export const SearchBarProvider = ({ children }) => {
         coDatewiseTransactionReportSearch,
         setCODatewiseTransactionReportSearch,
         resetComplianceOfficerDateWiseTransationReportSearch,
+        //Compliance Officer Overdue Verification
+        coOverdueVerificationReportSearch,
+        setCoOverdueVerificationReportSearch,
+        resetComplianceOfficerOverdueVerificationReportSearch,
         // Compliance Officer Myaction
         complianceOfficerMyActionSearch,
         setComplianceOfficerMyActionSearch,

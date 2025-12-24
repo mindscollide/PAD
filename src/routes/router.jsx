@@ -49,6 +49,7 @@ import MyTradeApprovalStandingReport from "../pages/main/employes/reports/myTrad
 import MyComplianceStandingReport from "../pages/main/employes/reports/myComplianceStanding/MyComplianceStandingReport";
 import MyTransactionReport from "../pages/main/employes/reports/myTransactionReport/MyTransactionReport";
 import TradeApprovalRequest from "../pages/main/lineManager/reports/tradeApprovalsRequest/tradeApprovalRequest";
+import CompianceOfficerOverdueVerificationReports from "../pages/main/complianceOfficer/reports/overDueVerificationsReports";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -231,16 +232,18 @@ const router = createBrowserRouter(
           <Route
             path="co-transactions-summary-report"
             // element={<COTransactionsSummarysReports />}
-             element={
-            <RoleBasedRoute isAdmin={false}>
-              <ReportsLayout />
-            </RoleBasedRoute>
-          }
+            element={
+              <RoleBasedRoute isAdmin={false}>
+                <ReportsLayout />
+              </RoleBasedRoute>
+            }
           >
-          <Route index element={<COTransactionsSummarysReports />} />
-
+            <Route index element={<COTransactionsSummarysReports />} />
           </Route>
-          <Route path="co-overdue-verifications" element={<PendingRequest />} />
+          <Route
+            path="co-overdue-verifications"
+            element={<CompianceOfficerOverdueVerificationReports />}
+          />
           <Route path="co-portfolio-history" element={<PendingRequest />} />
         </Route>
 

@@ -82,6 +82,8 @@ const Headers = () => {
                     (currentPath ===
                       "/PAD/co-reports/co-date-wise-transaction-report" ||
                       currentPath ===
+                        "/PAD/co-reports/co-overdue-verifications" ||
+                      currentPath ===
                         "/PAD/lm-reports/lm-tradeapproval-request"))) && (
                   <SearchWithFilter />
                 )

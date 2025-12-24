@@ -130,6 +130,15 @@ export const MyApprovalProvider = ({ children }) => {
     totalRecordsDataBase: 0,
     totalRecordsTable: 0,
   });
+
+  // Compliance Officer Overdue Verification Report
+  const [coOverdueVerificationListData, setCoOverdueVerificationListData] =
+    useState({
+      overdueVerifications: [],
+      totalRecordsDataBase: 0,
+      totalRecordsTable: 0,
+    });
+
   // Reset function to set all states back to initial values
   /* =========================================================
      RESET FUNCTIONS
@@ -233,6 +242,10 @@ export const MyApprovalProvider = ({ children }) => {
         // compliance officer  date wise transaction report
         coDatewiseTransactionReportListData,
         setCODatewiseTransactionReportListData,
+
+        //Conmpliance Officer Overdue Verification Report
+        coOverdueVerificationListData,
+        setCoOverdueVerificationListData,
       }}
     >
       {children}
