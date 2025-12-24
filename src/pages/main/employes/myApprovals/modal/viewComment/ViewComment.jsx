@@ -10,24 +10,31 @@ const ViewComment = () => {
 
   //This is the Global state of Context Api
   const { viewDetailsModalData } = useMyApproval();
+  console.log(viewDetailsModalData, "CheckViewModalDataNow");
 
   // Check workflow Id it shows comment against the workFlow ID
   const workflowStatusID =
     viewDetailsModalData?.workFlowStatus?.workFlowStatusID;
   const detail = viewDetailsModalData?.details?.[0];
 
-  const approvalComment = detail?.approvalComment;
-  const rejectionComment = detail?.rejectionComment;
+  const approvalComments = detail?.approvalComments || [];
+  const rejectionComments = detail?.rejectionComment || [];
+
+  const formatComments = (commentsArray) => {
+    if (!commentsArray || commentsArray.length === 0)
+      return "No comments available.";
+
+    return commentsArray
+      .map((comment, index) => `${index + 1}) ${comment}`)
+      .join("\n");
+  };
 
   //To Show Approval or Rejection Comments
   const getCommentText = () => {
-    //For Approved Comment Show
     if (workflowStatusID === 3) {
-      return approvalComment || "No approval comment available.";
-    }
-    //For Declined Comment Show
-    else if (workflowStatusID === 4) {
-      return rejectionComment || "No rejection comment available.";
+      return formatComments(approvalComments);
+    } else if (workflowStatusID === 4) {
+      return formatComments(rejectionComments);
     } else {
       return "No comment available for this status.";
     }

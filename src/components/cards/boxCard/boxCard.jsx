@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Card, Typography, Row, Col } from "antd";
+import { Card, Typography, Row, Col, Progress, Tooltip } from "antd";
 import styles from "./boxCard.module.css";
 
 // Utility functions and mappings
@@ -59,6 +59,9 @@ const { Text } = Typography;
  * @returns {JSX.Element} Rendered BoxCard component.
  */
 const BoxCard = ({
+  reportsFlag = false,
+  showProgress = false,
+  percentageText,
   title,
   boxes = [],
   mainClassName = "",
@@ -80,8 +83,10 @@ const BoxCard = ({
   // Prevent multiple fetches on mount
   const userRoleIDs = roles.map((r) => r.roleID);
   // Normalize boxes input (always an array)
-  const normalizedBoxes = Array.isArray(boxes) ? boxes : boxes ? [boxes] : [];
+  let normalizedBoxes = Array.isArray(boxes) ? boxes : boxes ? [boxes] : [];
   console.log("normalizedBoxes", normalizedBoxes);
+  console.log("normalizedBoxes", boxes);
+
   /**
    * Handles button click → navigates to the correct route
    * using helper `navigateToPage` (handles role-based logic).
@@ -91,26 +96,29 @@ const BoxCard = ({
   };
 
   const handleClosedWarning = () => {
-    console.log("urgentApprovals");
-    console.log("urgentApprovals", userRoleIDs);
     if (userRoleIDs.includes(3)) {
-      console.log("urgentApprovals");
       const urgent_flag = JSON.parse(sessionStorage.getItem("urgent_flag"));
-      console.log("urgentApprovals", urgent_flag);
       if (urgent_flag) {
-        console.log("urgentApprovals");
         sessionStorage.setItem("urgent_flag", false);
         setUrgentAlert(false);
       }
     }
   };
-
+  // Handle card click
+  const handleCardClick = () => {
+    // You can switch route based on props or conditions
+    navigate(route);
+  };
   return (
     <Card
       className={`${styles[mainClassName]} ${
         warningFlag ? styles.warning : ""
       }`}
-      style={{ padding: "10px 20px" }}
+      style={{
+        padding: "10px 20px",
+        cursor: reportsFlag ? "pointer" : "default",
+      }}
+      onClick={reportsFlag ? handleCardClick : undefined}
     >
       {/* ========================
           Header Section
@@ -135,7 +143,13 @@ const BoxCard = ({
           Content Section
       ========================= */}
       {normalizedBoxes.length > 0 ? (
-        <Row className={styles[`${base}statBoxMain`]} gutter={[16, 16]}>
+        <Row
+          className={styles[`${base}statBoxMain`]}
+          style={{
+            cursor: reportsFlag ? "pointer" : "default",
+          }}
+          gutter={[16, 16]}
+        >
           {normalizedBoxes.map((box, index) => {
             // Resolve colors & alignment based on `type`
             const { bgColor, textLableColor, textCountColor, textAlign } =
@@ -150,10 +164,13 @@ const BoxCard = ({
             const secondPart = rest.join(" ");
 
             // Responsive column span per box
+            const itemsToRender = showProgress
+              ? normalizedBoxes.slice(0, normalizedBoxes.length - 1)
+              : normalizedBoxes;
             const totalCols = 24;
             const span =
-              normalizedBoxes.length > 0
-                ? Math.floor(totalCols / normalizedBoxes.length)
+              itemsToRender.length > 0
+                ? Math.floor(totalCols / itemsToRender.length)
                 : 24;
 
             return warningFlag && index === 1 ? (
@@ -221,99 +238,178 @@ const BoxCard = ({
                 </div>
               </Col>
             ) : (
-              !warningFlag && (
-                // 🟢 Case 2: all other boxes
-                <Col span={span} key={index}>
-                  <div
-                    className={styles[`${base}statBox`]}
-                    style={{ backgroundColor: bgColor, textAlign }}
-                  >
-                    {locationStyle === "down" ? (
-                      // Label on top, count below
+              !warningFlag &&
+                (showProgress && index === normalizedBoxes.length - 1 ? (
+                  (() => {
+                    return (
                       <>
-                        <Text
-                          className={styles[`${base}label`]}
-                          style={{ color: textLableColor }}
-                        >
-                          {box.label}
-                        </Text>
-                        <AnimatedCount
-                          className={styles[`${base}count`]}
-                          style={{ color: textCountColor }}
-                          value={convertSingleDigittoDoubble(
-                            formatNumberWithCommas(box.count)
-                          )}
-                        />
-                      </>
-                    ) : locationStyle === "up" ? (
-                      // Count on top, label below
-                      <>
-                        <div className={styles.countWrapper}>
-                          <AnimatedCount
-                            className={styles[`${base}count`]}
-                            style={{ color: textCountColor }}
-                            value={convertSingleDigittoDoubble(
-                              formatNumberWithCommas(box.count)
-                            )}
+                        <Tooltip title={`${box.count}% ${percentageText}`}>
+                          <Text
+                            span={24}
+                            key={index}
+                            className={styles.percentageText}
+                          >
+                            {box.count}% {percentageText}
+                          </Text>
+                        </Tooltip>
+                        <Col span={24} key={index}>
+                          <Progress
+                            percent={box.count}
+                            type="line"
+                            strokeColor="#00640A"
                           />
-                        </div>
+                        </Col>
+                      </>
+                    );
+                  })()
+                ) : (
+                  // 🟢 Case 2: all other boxes
+                  <Col span={span} key={index}>
+                    <div
+                      className={styles[`${base}statBox`]}
+                      style={{
+                        backgroundColor: bgColor,
+                        cursor: reportsFlag ? "pointer" : "default",
 
-                        <Text
-                          className={
-                            styles[
-                              `${base}${changeTextSize ? "label2" : "label"}`
-                            ]
-                          }
-                          style={{ color: textLableColor }}
-                        >
-                          {box.label}
-                        </Text>
-                      </>
-                    ) : (
-                      // Left-aligned style: count on left, label split on right
-                      <Row
-                        gutter={[16, 16]}
-                        align="middle"
-                        justify="space-between"
-                      >
-                        <Col>
+                        textAlign,
+                        height:
+                          showProgress &&
+                          index !== normalizedBoxes.length - 1 &&
+                          "167px",
+                      }}
+                    >
+                      {locationStyle === "down" ? (
+                        // Label on top, count below
+                        <>
+                          <Tooltip title={box.label}>
+                            <Text
+                              className={styles[`${base}label`]}
+                              style={{
+                                color: textLableColor,
+                                textAlign: "right",
+                              }}
+                            >
+                              {box.label}
+                            </Text>
+                          </Tooltip>
                           <AnimatedCount
                             className={styles[`${base}count`]}
                             style={{ color: textCountColor }}
+                            flag={true}
                             value={convertSingleDigittoDoubble(
                               formatNumberWithCommas(box.count)
                             )}
                           />
-                        </Col>
-                        <Col>
-                          <Row>
-                            <Text
-                              className={styles[`${base}label`]}
-                              style={{ color: textLableColor }}
-                            >
-                              <span
-                                style={{ fontWeight: "bold", display: "block" }}
+                        </>
+                      ) : locationStyle === "up" ? (
+                        <>
+                          {showProgress ? (
+                            index !== normalizedBoxes.length - 1 && (
+                              // Case 1: showProgress = false → NOT last → show count + label
+                              <>
+                                <div className={styles.countWrapper}>
+                                  <AnimatedCount
+                                    className={styles[`${base}count`]}
+                                    style={{ color: textCountColor }}
+                                    value={convertSingleDigittoDoubble(
+                                      formatNumberWithCommas(box.count)
+                                    )}
+                                  />
+                                </div>
+                                <Tooltip title={box.label}>
+                                  <Text
+                                    className={
+                                      styles[
+                                        `${base}${
+                                          changeTextSize ? "label2" : "label"
+                                        }`
+                                      ]
+                                    }
+                                    style={{ color: textLableColor }}
+                                  >
+                                    {box.label}
+                                  </Text>
+                                </Tooltip>
+                              </>
+                            )
+                          ) : (
+                            // Case 3: showProgress = true → ALWAYS show count + label
+                            <>
+                              <div className={styles.countWrapper}>
+                                <AnimatedCount
+                                  className={styles[`${base}count`]}
+                                  style={{ color: textCountColor }}
+                                  value={convertSingleDigittoDoubble(
+                                    formatNumberWithCommas(box.count)
+                                  )}
+                                />
+                              </div>
+
+                              <Tooltip title={box.label}>
+                                <Text
+                                  className={
+                                    styles[
+                                      `${base}${
+                                        changeTextSize ? "label2" : "label"
+                                      }`
+                                    ]
+                                  }
+                                  style={{ color: textLableColor }}
+                                >
+                                  {box.label}
+                                </Text>
+                              </Tooltip>
+                            </>
+                          )}
+                        </>
+                      ) : (
+                        // Left-aligned style: count on left, label split on right
+                        <Row
+                          gutter={[16, 16]}
+                          align="middle"
+                          justify="space-between"
+                        >
+                          <Col>
+                            <AnimatedCount
+                              className={styles[`${base}count`]}
+                              style={{ color: textCountColor }}
+                              value={convertSingleDigittoDoubble(
+                                formatNumberWithCommas(box.count)
+                              )}
+                            />
+                          </Col>
+                          <Col>
+                            <Row>
+                              <Text
+                                className={styles[`${base}label`]}
+                                style={{ color: textLableColor }}
                               >
-                                {firstWord}
-                              </span>
-                            </Text>
-                          </Row>
-                          <Row>
-                            <Text
-                              className={styles[`${base}label`]}
-                              style={{ color: textLableColor }}
-                            >
-                              <span style={{ display: "block" }}>
-                                {secondPart}
-                              </span>
-                            </Text>
-                          </Row>
-                        </Col>
-                      </Row>
-                    )}
-                  </div>
-                </Col>
-              )
+                                <span
+                                  style={{
+                                    fontWeight: "bold",
+                                    display: "block",
+                                  }}
+                                >
+                                  {firstWord}
+                                </span>
+                              </Text>
+                            </Row>
+                            <Row>
+                              <Text
+                                className={styles[`${base}label`]}
+                                style={{ color: textLableColor }}
+                              >
+                                <span style={{ display: "block" }}>
+                                  {secondPart}
+                                </span>
+                              </Text>
+                            </Row>
+                          </Col>
+                        </Row>
+                      )}
+                    </div>
+                  </Col>
+                ))
             );
           })}
         </Row>
@@ -324,6 +420,7 @@ const BoxCard = ({
             <div
               className={styles[`${base}statBox`]}
               style={{
+                cursor: reportsFlag ? "pointer" : "default",
                 backgroundColor: "#C5FFC7",
                 textAlign: "left",
               }}

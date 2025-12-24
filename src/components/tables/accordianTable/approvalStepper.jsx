@@ -9,32 +9,44 @@ import Resubmitted from "../../../assets/img/Resubmitted.png";
 import NotTraded from "../../../assets/img/NotTraded.png";
 import EscaltedOn from "../../../assets/img/EscaltedOn.png";
 import Decline from "../../../assets/img/Cross.png";
+import circlecheckblue from "../../../assets/img/circle-check-blue-icon.png";
 import { Stepper, Step } from "react-form-stepper";
 
 const ApprovalStepper = ({ trail }) => {
+  console.log(trail, "checkTrailcheckTrail");
+
   // map type to actual <img>
   const getIcon = (type, altText) => {
     switch (type) {
-      case "check":
+      case "Compliant":
+        return <img src={CheckIcon} alt={altText} width={50} height={50} />;
+      case "Approved":
         return <img src={CheckIcon} alt={altText} width={50} height={50} />;
       case "ellipsis":
         return <img src={EllipsesIcon} alt={altText} width={50} height={50} />;
       case "cross":
         return <img src={CrossIcon} alt={altText} width={50} height={50} />;
-      case "Dollar":
+      case "Traded":
         return <img src={Dollar} alt={altText} width={50} height={50} />;
-      case "Approval":
+      case "SendForApproval":
         return (
           <img src={SendForApproval} alt={altText} width={50} height={50} />
         );
-      case "Resubmitted":
+      case "Resubmit":
         return <img src={Resubmitted} alt={altText} width={50} height={50} />;
-      case "NotTraded":
+      case "Not-Traded":
         return <img src={NotTraded} alt={altText} width={50} height={50} />;
       case "EscaltedOn":
         return <img src={EscaltedOn} alt={altText} width={50} height={50} />;
       case "Decline":
         return <img src={Decline} alt={altText} width={50} height={50} />;
+      case "co-Compliant":
+        return <img src={circlecheckblue} alt={altText} width={50} height={50} />;
+      case "co-Non-Compliant":
+        return <img src={CrossIcon} alt={altText} width={50} height={50} />;
+      case "co-Transaction Conducted":
+        return <img src={Dollar} alt={altText} width={50} height={50} />;
+
       default:
         return null;
     }
@@ -65,10 +77,28 @@ const ApprovalStepper = ({ trail }) => {
                 <div className={styles.stepCircle}>
                   {getIcon(step.iconType, step.status)}
                 </div>
-                <div className={styles.stepTitle}>{step.user}</div>
-                <div className={styles.stepDesc}>
-                  {step.date} | {step.status}
+
+                {/* 🔹 Top line: status + "by" + user */}
+                <div className={styles.stepTitle}>
+                  {step.status}{" "}
+                  {step.user && (
+                    <>
+                      {"by"}
+                      <span className={styles.stepTileStrongText}>
+                        {step.user}
+                      </span>
+                    </>
+                  )}
                 </div>
+
+                {/* 🔹 Bottom line: date only */}
+                <div className={styles.stepDesc}>{step.date}</div>
+                {/* {For Requester ID if necesarry} */}
+                {step.status === "Resubmit" && (
+                  <div className={styles.stepDesc}>
+                    <strong>{step.requesterID}</strong>
+                  </div>
+                )}
               </div>
             }
           />

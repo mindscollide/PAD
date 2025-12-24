@@ -1735,7 +1735,8 @@ export const SearchManageUserListRequest = async ({
 
     // 🔹 Handle success
     if (res.success) {
-      const { responseMessage, employees, totalRecords } = res.result;
+      const { responseMessage, employees, totalRecords, pendingReqeustCount } =
+        res.result;
       const message = getMessage(responseMessage);
 
       // Case 1 → Data available
@@ -1746,6 +1747,7 @@ export const SearchManageUserListRequest = async ({
         return {
           employees: employees || [],
           totalRecords: totalRecords || 0,
+          pendingReqeustCount: pendingReqeustCount || 0,
         };
       }
 
@@ -1757,6 +1759,7 @@ export const SearchManageUserListRequest = async ({
         return {
           employees: [],
           totalRecords: 0,
+          pendingReqeustCount: 0,
         };
       }
 
@@ -2462,7 +2465,7 @@ export const GetUserRegistrationHistoryByLoginID = async ({
 
     // 🔹 Handle success
     if (res.success) {
-      const { responseMessage, registrationHistory, employeeName } = res.result;
+      const { responseMessage, registrationHistory, userFullName } = res.result;
       const message = getMessage(responseMessage);
 
       // Case 1 → Data available
@@ -2472,7 +2475,7 @@ export const GetUserRegistrationHistoryByLoginID = async ({
       ) {
         return {
           registrationHistory: registrationHistory,
-          employeeName: employeeName || "",
+          userFullName: userFullName || "",
         };
       }
 
@@ -2481,7 +2484,7 @@ export const GetUserRegistrationHistoryByLoginID = async ({
         responseMessage ===
         "Admin_AdminServiceManager_GetUserRegistrationHistoryByLoginID_02"
       ) {
-        return { registrationHistory: [], employeeName: "" };
+        return { registrationHistory: [], userFullName: "" };
       }
 
       // Case 3 → Custom server messages
@@ -2768,8 +2771,7 @@ export const UpdateSystemConfiguration = async ({
       showNotification({
         type: "error",
         title: "Error",
-        description:
-          "Something went wrong while Update System Configurations.",
+        description: "Something went wrong while Update System Configurations.",
       });
       return null;
     }
@@ -2806,6 +2808,280 @@ export const UpdateSystemConfiguration = async ({
 
     return null;
   } catch (error) {
+    return null;
+  } finally {
+    // 🔹 Always hide loader
+    showLoader(false);
+  }
+};
+
+// For Update Edit Roles And Policies on Manage User in Admin on Save
+export const UpdateEditRolesAndPoliciesRequest = async ({
+  callApi,
+  showNotification,
+  showLoader,
+  requestdata,
+  setEditrolesAndPoliciesUser,
+  setRoleAndPoliciesIntimationModal,
+  navigate,
+}) => {
+  try {
+    console.log("Check is this COming");
+
+    // 🔹 API Call
+    const res = await callApi({
+      requestMethod: import.meta.env
+        .VITE_UPDATE_USER_DETAIL_WITH_ROLES_AND_POLICIES_REQUEST_METHOD, // 🔑 must be defined in .env
+      endpoint: import.meta.env.VITE_API_ADMIN,
+      requestData: requestdata,
+      navigate,
+    });
+
+    // 🔹 Handle session expiry
+    if (handleExpiredSession(res, navigate, showLoader)) return false;
+
+    // 🔹 Validate execution
+    if (!res?.result?.isExecuted) {
+      return false;
+    }
+
+    // 🔹 Handle success
+    if (res.success) {
+      const { responseMessage, employees, hasDependency } = res.result;
+      const message = getMessage(responseMessage);
+
+      // Case 1 → Data available
+      if (
+        responseMessage ===
+        "PAD_UserServiceManager_UpdateUserDetailsWithRolesAndPolicies_02"
+      ) {
+        setEditrolesAndPoliciesUser(false);
+        return true;
+      }
+
+      // Case 6 → Data available
+      if (
+        responseMessage ===
+        "PAD_UserServiceManager_UpdateUserDetailsWithRolesAndPolicies_06"
+      ) {
+        console.log("Check is this COming");
+
+        setEditrolesAndPoliciesUser(true);
+        setRoleAndPoliciesIntimationModal(true);
+        return {
+          employees: employees || [],
+          hasDependency: hasDependency || false,
+        };
+      }
+
+      if (
+        responseMessage ===
+        "PAD_UserServiceManager_UpdateUserDetailsWithRolesAndPolicies_07"
+      ) {
+        console.log("Check is this COming");
+
+        setEditrolesAndPoliciesUser(true);
+        setRoleAndPoliciesIntimationModal(true);
+        return {
+          employees: employees || [],
+          hasDependency: hasDependency || false,
+        };
+      }
+
+      return false;
+    }
+
+    // 🔹 Handle failure
+    showNotification({
+      type: "error",
+      title: "Fetch Failed",
+      description: getMessage(res.message),
+    });
+    return false;
+  } catch (error) {
+    return false;
+  } finally {
+    // 🔹 Always hide loader
+    showLoader(false);
+  }
+};
+
+// Search Manage User Users Tab Api Request in Admin
+export const GetUserSessionWiseActivity = async ({
+  callApi,
+  showNotification,
+  showLoader,
+  requestdata,
+  navigate,
+}) => {
+  try {
+    // 🔹 API Call
+    const res = await callApi({
+      requestMethod: import.meta.env
+        .VITE_GET_USER_SESSION_WISE_ACTIVITY_REQUEST_API_REQUEST_METHOD, // 🔑 must be defined in .env
+      endpoint: import.meta.env.VITE_API_ADMIN,
+      requestData: requestdata,
+      navigate,
+    });
+
+    // 🔹 Handle session expiry
+    if (handleExpiredSession(res, navigate, showLoader)) return null;
+
+    // 🔹 Validate execution
+    if (!res?.result?.isExecuted) {
+      showNotification({
+        type: "error",
+        title: "Error",
+        description:
+          "Something went wrong while fetching session wise activity list of a user.",
+      });
+      return null;
+    }
+
+    // 🔹 Handle success
+    if (res.success) {
+      const { responseMessage, sessions, totalRecords, pendingReqeustCount } =
+        res.result;
+      const message = getMessage(responseMessage);
+
+      // Case 1 → Data available
+      if (responseMessage === "Admin_GetUserSessionWiseActivity_01") {
+        return {
+          sessions: sessions || [],
+          totalRecords: totalRecords || 0,
+          pendingReqeustCount: pendingReqeustCount || 0,
+        };
+      }
+
+      // Case 2 → No data
+      if (responseMessage === "Admin_GetUserSessionWiseActivity_02") {
+        return {
+          sessions: [],
+          totalRecords: 0,
+          pendingReqeustCount: 0,
+        };
+      }
+
+      // Case 3 → Custom server messages
+      if (message) {
+        showNotification({
+          type: "warning",
+          title: message,
+          description: "No user wise acitvity data found.",
+        });
+      }
+
+      return null;
+    }
+
+    // 🔹 Handle failure
+    showNotification({
+      type: "error",
+      title: "Fetch Failed",
+      description: getMessage(res.message),
+    });
+    return null;
+  } catch (error) {
+    // 🔹 Exception handling
+    showNotification({
+      type: "error",
+      title: "Error",
+      description:
+        "An unexpected error occurred  while fetching session wise activity list of a user...",
+    });
+    return null;
+  } finally {
+    // 🔹 Always hide loader
+    showLoader(false);
+  }
+};
+
+// View User SessionWise Activity Api Request in Admin
+export const ViewUserSessionWiseActivity = async ({
+  callApi,
+  showNotification,
+  showLoader,
+  requestdata,
+  navigate,
+}) => {
+  try {
+    // 🔹 API Call
+    const res = await callApi({
+      requestMethod: import.meta.env
+        .VITE_VIEW_USER_SESSION_WISE_ACTIVITY_REQUEST_API_REQUEST_METHOD, // 🔑 must be defined in .env
+      endpoint: import.meta.env.VITE_API_ADMIN,
+      requestData: requestdata,
+      navigate,
+    });
+
+    // 🔹 Handle session expiry
+    if (handleExpiredSession(res, navigate, showLoader)) return null;
+
+    // 🔹 Validate execution
+    if (!res?.result?.isExecuted) {
+      showNotification({
+        type: "error",
+        title: "Error",
+        description:
+          "Something went wrong while fetching session wise activity view action of a user.",
+      });
+      return null;
+    }
+
+    // 🔹 Handle success
+    if (res.success) {
+      const {
+        responseMessage,
+        userSessionActivityUserDetails,
+        userSessionActions,
+      } = res.result;
+      const message = getMessage(responseMessage);
+
+      // Case 1 → Data available
+      if (responseMessage === "Admin_ViewUserSessionWiseActivity_01") {
+        return {
+          userSessionActivityUserDetails: userSessionActivityUserDetails || [],
+          userSessionActions: userSessionActions || [],
+          result:true
+        };
+      }
+
+      // Case 2 → No data
+      if (responseMessage === "Admin_ViewUserSessionWiseActivity_02") {
+        return {
+          userSessionActivityUserDetails: [],
+          userSessionActions: [],
+          result:false
+        };
+      }
+
+      // Case 3 → Custom server messages
+      if (message) {
+        showNotification({
+          type: "warning",
+          title: message,
+          description: "No session wise acitvity of a user found.",
+        });
+      }
+
+      return null;
+    }
+
+    // 🔹 Handle failure
+    showNotification({
+      type: "error",
+      title: "Fetch Failed",
+      description: getMessage(res.message),
+    });
+    return null;
+  } catch (error) {
+    // 🔹 Exception handling
+    showNotification({
+      type: "error",
+      title: "Error",
+      description:
+        "An unexpected error occurred  while fetching session wise activity view action of a user.",
+    });
     return null;
   } finally {
     // 🔹 Always hide loader

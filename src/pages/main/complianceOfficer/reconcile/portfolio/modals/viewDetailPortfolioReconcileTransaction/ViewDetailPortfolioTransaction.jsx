@@ -185,7 +185,12 @@ const ViewDetailPortfolioTransaction = () => {
                               ?.shortCode
                           }
                         </span>{" "}
-                        {selectedInstrument?.instrumentCode}
+                        <span
+                          className={styles.viewDetailSubLabelsForInstrument}
+                          title={selectedInstrument?.instrumentName}
+                        >
+                          {selectedInstrument?.instrumentCode}
+                        </span>
                       </label>
                     </div>
                   </Col>
@@ -355,7 +360,7 @@ const ViewDetailPortfolioTransaction = () => {
                                 isApprovedOrDeclined = true;
                               } else {
                                 iconSrc = EllipsesIcon;
-                                displayText = fullName;
+                                displayText = "Awaiting for action";
                               }
 
                               return (

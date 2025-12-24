@@ -1,0 +1,17 @@
+.donutMainDiv {
+  width: 260px !important;
+  height: 260px !important;
+  position: relative !important;
+}
+
+.centerCountNumDonut {
+  position: absolute !important;
+  top: 20% !important;
+  left: 30% !important;
+  transform: "translate(-50%, -50%)" !important;
+  text-align: center !important;
+  font-size: 80px !important;
+  color: #424242 !important;
+  font-family: "Switzer Variable";
+  font-weight: 700;
+}

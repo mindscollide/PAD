@@ -17,6 +17,8 @@ import { useSearchBarContext } from "../../../context/SearchBarContaxt";
 import { usePortfolioContext } from "../../../context/portfolioContax";
 import { useReconcileContext } from "../../../context/reconsileContax";
 import { useMyAdmin } from "../../../context/AdminContext";
+import { useLocation } from "react-router-dom";
+import { useMyApproval } from "../../../context/myApprovalContaxt";
 
 /**
  * 🔎 SearchWithPopoverOnly
@@ -29,15 +31,23 @@ import { useMyAdmin } from "../../../context/AdminContext";
  * Props: none (relies on global contexts)
  */
 const SearchWithPopoverOnly = () => {
+  const location = useLocation();
+  const currentPath = location.pathname;
+
   // -------------------------
   // ✅ Context hooks
   // -------------------------
   const { collapsed, selectedKey } = useSidebarContext();
   const { activeTab } = usePortfolioContext(); // Portfolio / Pending
   const { activeTab: reconcileActiveTab, activeTabHCO } = useReconcileContext(); // Transactions / Portfolio
+  const { coTransactionSummaryReportViewDetailsFlag } = useMyApproval();
+
   const {
     setEmployeeMyApprovalSearch,
     setEmployeeMyTransactionSearch,
+    setEmployeeMyHistorySearch,
+    setEmployeeMyTransactionReportSearch,
+    setLineManagerMyActionSearch,
     setEmployeePortfolioSearch,
     setEmployeePendingApprovalSearch,
     setLineManagerApprovalSearch,
@@ -51,17 +61,19 @@ const SearchWithPopoverOnly = () => {
     setAdminGropusAndPolicySearch,
     setAdminGropusAndPolicyPoliciesTabSearch,
     setAdminGropusAndPolicyUsersTabSearch,
+    setEmployeeMyTradeApprovalsSearch,
+    setLMPendingApprovalReportsSearch,
+    setMyTradeApprovalReportLineManageSearch,
+    setCODatewiseTransactionReportSearch,
+    setCOTransactionsSummarysReportsViewDetailSearch,
+    setAdminSessionWiseActivitySearch,
+    setComplianceOfficerMyActionSearch,
     //
-    usersTabSearch,
     setUsersTabSearch,
-    resetUsersTabSearch,
-    pendingRequestsTabSearch,
     setPendingRequestsTabSearch,
-    resetPendingRequestsTabSearch,
-    rejectedRequestsTabSearch,
     setRejectedRequestsTabSearch,
-    resetRejectedRequestsTabSearch,
   } = useSearchBarContext();
+
   const {
     pageTypeForAdminGropusAndPolicy,
     pageTabesForAdminGropusAndPolicy,
@@ -77,9 +89,46 @@ const SearchWithPopoverOnly = () => {
   const [clear, setClear] = useState(false);
 
   const handleInputChange = (e) => {
-    const { value } = e.target;
+    let { value } = e.target;
+
+    if (
+      selectedKey === "21" &&
+      currentPath === "/PAD/admin-users/session-wise-activity"
+    ) {
+      // Allow only digits & dots
+      value = value.replace(/[^0-9.]/g, "");
+
+      // Prevent multiple dots together
+      value = value.replace(/\.{2,}/g, ".");
+
+      // Remove starting dot
+      if (value.startsWith(".")) value = value.substring(1);
+
+      // Split parts
+      let parts = value.split(".");
+
+      // Limit to 4 parts (IPv4)
+      if (parts.length > 4) {
+        parts = parts.slice(0, 4);
+      }
+
+      // Auto-insert a dot when block reaches 3 digits (and not last part)
+      parts = parts.map((p, index) => {
+        if (p.length > 3) p = p.substring(0, 3); // max 3 digits per block
+        return p;
+      });
+
+      // Re-join
+      value = parts.join(".");
+
+      setSearchMain(value);
+      return;
+    }
+
+    // Default behavior
     setSearchMain(value.trimStart());
   };
+
   // Reset on selectedKey change
   useEffect(() => {
     setSearchMain("");
@@ -121,6 +170,21 @@ const SearchWithPopoverOnly = () => {
         setSearchMain("");
         break;
 
+      case "3": // Employee → My History
+        setEmployeeMyHistorySearch((prev) => ({
+          ...prev,
+          instrumentName: searchMain,
+          requestID: "",
+          quantity: 0,
+          startDate: null,
+          endDate: null,
+          nature: "",
+          pageNumber: 0,
+          filterTrigger: true,
+        }));
+        setSearchMain("");
+        break;
+
       case "4": // Employee → Portfolio / Pending
         if (activeTab === "portfolio") {
           setEmployeePortfolioSearch((prev) => ({
@@ -149,6 +213,37 @@ const SearchWithPopoverOnly = () => {
         }
         break;
 
+      case "5": // Employee
+        // Employee → My Trade Approvals Report
+        if (currentPath === "/PAD/reports/my-trade-approvals") {
+          setEmployeeMyTradeApprovalsSearch((prev) => ({
+            ...prev,
+            instrumentName: searchMain,
+            quantity: 0,
+            startDate: null,
+            endDate: null,
+            brokerIDs: [],
+            pageNumber: 0,
+            filterTrigger: true,
+          }));
+        } else if (currentPath === "/PAD/reports/my-transactions") {
+          setEmployeeMyTransactionReportSearch((prev) => ({
+            ...prev,
+            instrumentName: searchMain,
+            quantity: 0,
+            startDate: null,
+            endDate: null,
+            broker: "",
+            actionStartDate: null,
+            actionEndDate: null,
+            actionBy: "",
+            pageNumber: 0,
+            filterTrigger: true,
+          }));
+        }
+        setSearchMain("");
+        break;
+
       case "6": // Line Manager Approval
         setLineManagerApprovalSearch((prev) => ({
           ...prev,
@@ -159,6 +254,47 @@ const SearchWithPopoverOnly = () => {
           endDate: null,
           filterTrigger: true,
         }));
+        setSearchMain("");
+        break;
+
+      case "7": // LineManager → My Actions
+        setLineManagerMyActionSearch((prev) => ({
+          ...prev,
+          requestID: "",
+          instrumentName: searchMain,
+          requesterName: "",
+          startDate: null,
+          endDate: null,
+          quantity: 0,
+          pageNumber: 0,
+          type: [],
+          status: [],
+          filterTrigger: true,
+        }));
+
+        setSearchMain("");
+        break;
+
+      case "8": // LineManager →Pending Request Reports
+        if (currentPath === "/PAD/lm-reports/lm-pending-request") {
+          setLMPendingApprovalReportsSearch((prev) => ({
+            ...prev,
+            instrumentName: searchMain,
+            requesterName: "",
+            startDate: null,
+            endDate: null,
+            quantity: 0,
+            pageNumber: 0,
+            filterTrigger: true,
+          }));
+        } else if (currentPath === "/PAD/lm-reports/lm-tradeapproval-request") {
+          setMyTradeApprovalReportLineManageSearch((prev) => ({
+            ...prev,
+            employeeName: searchMain,
+            departmentName: "",
+            filterTrigger: true,
+          }));
+        }
         setSearchMain("");
         break;
 
@@ -188,6 +324,53 @@ const SearchWithPopoverOnly = () => {
           }));
           setSearchMain("");
         }
+        break;
+
+      case "10": // Compliance Officer → My Actions
+        setComplianceOfficerMyActionSearch((prev) => ({
+          ...prev,
+          transactionID: "",
+          instrumentName: searchMain,
+          requesterName: "",
+          startDate: null,
+          endDate: null,
+          quantity: 0,
+          pageNumber: 0,
+          type: [],
+          status: [],
+          filterTrigger: true,
+        }));
+
+        setSearchMain("");
+        break;
+
+      case "11": // Compliance Officer
+        // reports
+        // date wise transaction report
+        if (currentPath === "/PAD/co-reports/co-date-wise-transaction-report") {
+          setCODatewiseTransactionReportSearch((prev) => ({
+            ...prev,
+            instrumentName: searchMain,
+            quantity: 0,
+            startDate: null,
+            endDate: null,
+            employeeID: 0,
+            employeeName: "",
+            departmentName: "",
+            pageNumber: 0,
+            filterTrigger: true,
+          }));
+        } else if (coTransactionSummaryReportViewDetailsFlag) {
+          setCOTransactionsSummarysReportsViewDetailSearch((prev) => ({
+            ...prev,
+            quantitySearch: "",
+            instrumentNameSearch: searchMain,
+            requesterNameSearch: "",
+            pageNumber: 0,
+            filterTrigger: true,
+          }));
+        }
+        setSearchMain("");
         break;
 
       case "12": // HTA Escalated
@@ -308,9 +491,19 @@ const SearchWithPopoverOnly = () => {
 
         setSearchMain("");
         break;
-      
-        case "21": // Admin Manage Users 
-        if (manageUsersTab === "0") {
+
+      case "21": // Admin Manage Users
+        if (currentPath === "/PAD/admin-users/session-wise-activity") {
+          setAdminSessionWiseActivitySearch((prev) => ({
+            ...prev,
+            ipAddress: searchMain,
+            startDate: null,
+            endDate: null,
+            filterTrigger: true,
+            pageNumber: 0,
+            pageSize: 10,
+          }));
+        } else if (manageUsersTab === "0") {
           setUsersTabSearch((prev) => ({
             ...prev,
             employeeName: searchMain,
@@ -355,7 +548,17 @@ const SearchWithPopoverOnly = () => {
         break;
     }
   };
-  console.log("visible", visible);
+
+  // ----------------------------------------------------------------
+  // 🚫 FINAL FIX — HIDE SEARCH BAR ON SPECIFIC ROUTE
+  // ----------------------------------------------------------------
+  if (
+    selectedKey === "5" &&
+    (currentPath === "/PAD/reports/my-compliance-approvals" ||
+      currentPath === "/PAD/reports/my-trade-approvals-standing")
+  ) {
+    return null; // ⛔ Hide entire search bar
+  }
 
   // ----------------------------------------------------------------
   // ✅ RENDER
@@ -366,16 +569,23 @@ const SearchWithPopoverOnly = () => {
       <Input
         placeholder={
           selectedKey === "19"
-            ? "Broker name. Click the icon to view more options"
+            ? "Broker name. Click the icon to view more options."
             : selectedKey === "20" && pageTabesForAdminGropusAndPolicy === 1
-            ? "Search Scenario. Click the icon to view more options"
+            ? "Search Scenario. Click the icon to view more options."
             : selectedKey === "20" && pageTabesForAdminGropusAndPolicy === 2
-            ? "Employee name. Click the icon to view more options"
+            ? "Employee name. Click the icon to view more options."
             : selectedKey === "20"
-            ? "Policy Name. Click the icon to view more options"
-            : selectedKey === "21"
-            ? "employee name. Click the icon to view more options"
-            : "Instrument name. Click the icon to view more options"
+            ? "Policy Name. Click the icon to view more options."
+            : (selectedKey === "21" &&
+                currentPath !== "/PAD/admin-users/session-wise-activity") ||
+              (selectedKey === "8" &&
+                location.pathname ===
+                  "/PAD/lm-reports/lm-tradeapproval-request")
+            ? "Employee name. Click the icon to view more options."
+            : selectedKey === "21" &&
+              currentPath === "/PAD/admin-users/session-wise-activity"
+            ? "Search"
+            : "Instrument name. Click the icon to view more options."
         }
         allowClear
         className={
@@ -416,6 +626,7 @@ const SearchWithPopoverOnly = () => {
             collapsed ? styles.popoverContenCollapsed : styles.popoverContent
           }
           content={renderFilterContent(
+            currentPath,
             selectedKey,
             setVisible,
             searchMain,
@@ -423,7 +634,8 @@ const SearchWithPopoverOnly = () => {
             clear,
             setClear,
             openNewFormForAdminGropusAndPolicy,
-            pageTabesForAdminGropusAndPolicy
+            pageTabesForAdminGropusAndPolicy,
+            coTransactionSummaryReportViewDetailsFlag
           )}
           trigger="click"
           open={visible}

@@ -16,6 +16,19 @@ import timezone from "dayjs/plugin/timezone";
 // Enable plugins
 dayjs.extend(utc);
 dayjs.extend(timezone);
+
+function convertCode(code) {
+  const [prefix, number] = code.split("_"); // "PL", "00000001"
+
+  // Take first 2 digits for the middle part
+  const mid = number.slice(0, 2); // "00"
+
+  // Remaining digits for the last part
+  const last = number.slice(2); // "000001"
+
+  return `${prefix}_${mid}_${last}`;
+}
+
 // Helper to normalize duration into array of strings
 const getDurationParts = (duration) => {
   try {
@@ -103,13 +116,13 @@ export const policyColumns = ({
     // 🧩 Policy ID
     {
       title: "Policy ID",
-      dataIndex: "policyId",
-      key: "policyId",
-      width: 100,
-      render: (policyId) => (
-        <Tooltip title={policyId}>
+      dataIndex: "policyCode",
+      key: "policyCode",
+      width: 120,
+      render: (policyCode) => (
+        <Tooltip title={policyCode}>
           <span style={{ fontFamily: "monospace" }}>
-            {policyId || "PL_XX_0000"}
+            {convertCode(policyCode) || "PL_XX_0000"}
           </span>
         </Tooltip>
       ),
@@ -142,13 +155,13 @@ export const policyColumns = ({
 
         try {
           if (record.policyID === loadingPolicyId) return <Spin size="small" />;
+          const valueUnit = record.valueUnit?.trim?.() || "";
 
           // ✅ Editable Mode
           if (!viewFlag) {
             switch (dataTypeID) {
               case 1: {
                 const [min, max] = parseMinMax(minMax);
-                const valueUnit = record.valueUnit?.trim?.() || "";
 
                 const handleChange = (e) => {
                   const val = Number(e.target.value);
@@ -259,35 +272,55 @@ export const policyColumns = ({
           // ✅ View Mode
           switch (dataTypeID) {
             case 1:
-              return <span>{Number(duration) || "-"} Number</span>;
+              return (
+                <span>
+                  {duration ? Number(duration) : "-"} {valueUnit}
+                </span>
+              );
 
             case 2:
             case 3:
             case 4:
-              return <span>{duration || "—"}</span>;
+              return (
+                <span>
+                  {duration || "—"} {valueUnit}
+                </span>
+              );
 
             case 5:
-              return <span>{duration || "—"}</span>;
+              return (
+                <span>
+                  {duration || "—"} {valueUnit}
+                </span>
+              );
 
             case 6:
             case 7: {
               const parts = getDurationParts(duration);
               return (
                 <div className={styles.userList}>
-                  <div className={styles.userChip}>
-                    {parts[0] || "—"}
-                    {parts.length > 1 && (
-                      <span className={styles.moreCount}>
-                        +{parts.length - 1}
-                      </span>
-                    )}
-                  </div>
+                  {parts.length > 0 ? (
+                    <div className={styles.userChip}>
+                      {parts[0]}
+                      {parts.length > 1 && (
+                        <span className={styles.moreCount}>
+                          +{parts.length - 1} {valueUnit}
+                        </span>
+                      )}
+                    </div>
+                  ) : (
+                    "—"
+                  )}
                 </div>
               );
             }
 
             default:
-              return <span>{duration || "—"}</span>;
+              return (
+                <span>
+                  {duration || "—"} {valueUnit}
+                </span>
+              );
           }
         } catch (error) {
           console.error("Error rendering duration cell:", error, record);

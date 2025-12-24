@@ -63,7 +63,10 @@ const EditInstrument = () => {
     adminInstrumentPreviousClosingData,
     "adminInstrumentPreviousClosingData"
   );
-
+  console.log(
+    selectedInstrumentOnClick,
+    "selectedInstrumentOnClick"
+  );
   /**
    * 🧠 Convert API data into Ant Design Table-friendly rows
    * - Uses `formatShowOnlyDateForDateRange` to format start/end dates
@@ -153,13 +156,19 @@ const EditInstrument = () => {
       InstrumentEndDate: convertEndDate,
     };
 
-    await AddInstrumentClosingPeriodRequest({
+    const response = await AddInstrumentClosingPeriodRequest({
       callApi,
       showNotification,
       showLoader,
       requestdata: payload,
       navigate,
     });
+
+    // ✅ CLEAR DATE FIELDS AFTER SUCCESS
+    if (response) {
+      setStartDate(null);
+      setEndDate(null);
+    }
   };
 
   // 🔹 useTableScrollBottom in which I add another class of borderless because it make an impact in other class also

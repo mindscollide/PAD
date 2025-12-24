@@ -32,9 +32,23 @@ import {
   GroupsAndPolicy,
   ManageUsers,
   SystemConfigurations,
+  MytradeapprovalsReport,
+  PendingRequest,
+  ComplianceOfficerReportsIndex,
+  COMyAction,
+  COdataWiseTransactionsReports,
+  UserSessionWiseActivity,
+  COTransactionsSummarysReports,
 } from "../pages";
 import RoleBasedRoute from "./RoleBasedRoute";
 import EscalatedApprovals from "../pages/main/headOfTradeApprover/escalatedApprovals/escalatedApprovals";
+import MyAction from "../pages/main/lineManager/myActions/myActions";
+import LineManagerReportsIndex from "../pages/main/lineManager/reports";
+import ReportsLayout from "./ReportsLayout";
+import MyTradeApprovalStandingReport from "../pages/main/employes/reports/myTradeApprovalStandingReport/MyTradeApprovalStandingReport";
+import MyComplianceStandingReport from "../pages/main/employes/reports/myComplianceStanding/MyComplianceStandingReport";
+import MyTransactionReport from "../pages/main/employes/reports/myTransactionReport/MyTransactionReport";
+import TradeApprovalRequest from "../pages/main/lineManager/reports/tradeApprovalsRequest/tradeApprovalRequest";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -94,14 +108,31 @@ const router = createBrowserRouter(
             </RoleBasedRoute>
           }
         />
+
         <Route
           path="reports"
           element={
             <RoleBasedRoute isAdmin={false} allowedRoles={[2]}>
-              <EmpolyesReportsIndex />{" "}
+              <ReportsLayout />
             </RoleBasedRoute>
           }
-        />
+        >
+          <Route index element={<EmpolyesReportsIndex />} />
+          <Route
+            path="my-trade-approvals"
+            element={<MytradeapprovalsReport />}
+          />
+          <Route path="my-transactions" element={<MyTransactionReport />} />
+          <Route
+            path="my-trade-approvals-standing"
+            element={<MyTradeApprovalStandingReport />}
+          />
+          <Route
+            path="my-compliance-approvals"
+            element={<MyComplianceStandingReport />}
+          />
+        </Route>
+
         {/* Line Manager */}
         <Route
           path="lm-approval-requests"
@@ -112,11 +143,12 @@ const router = createBrowserRouter(
             </RoleBasedRoute>
           }
         />
+
         <Route
           path="lm-my-actions"
           element={
             <RoleBasedRoute isAdmin={false} allowedRoles={[3]}>
-              <EmployeMyTransaction />{" "}
+              <MyAction />{" "}
             </RoleBasedRoute>
           }
         />
@@ -124,10 +156,17 @@ const router = createBrowserRouter(
           path="lm-reports"
           element={
             <RoleBasedRoute isAdmin={false} allowedRoles={[3]}>
-              <EmpolyesReportsIndex />{" "}
+              <ReportsLayout />
             </RoleBasedRoute>
           }
-        />
+        >
+          <Route index element={<LineManagerReportsIndex />} />
+          <Route path="lm-pending-request" element={<PendingRequest />} />
+          <Route
+            path="lm-tradeapproval-request"
+            element={<TradeApprovalRequest />}
+          />
+        </Route>
 
         {/* Head Of Trade Approval */}
         <Route
@@ -172,7 +211,7 @@ const router = createBrowserRouter(
           path="co-my-actions"
           element={
             <RoleBasedRoute isAdmin={false} allowedRoles={[4]}>
-              <EmployeMyTransaction />{" "}
+              <COMyAction />{" "}
             </RoleBasedRoute>
           }
         />
@@ -180,10 +219,22 @@ const router = createBrowserRouter(
           path="co-reports"
           element={
             <RoleBasedRoute isAdmin={false} allowedRoles={[4]}>
-              <EmpolyesReportsIndex />{" "}
+              <ReportsLayout />
             </RoleBasedRoute>
           }
-        />
+        >
+          <Route index element={<ComplianceOfficerReportsIndex />} />
+          <Route
+            path="co-date-wise-transaction-report"
+            element={<COdataWiseTransactionsReports />}
+          />
+          <Route
+            path="co-transactions-summary-report"
+            element={<COTransactionsSummarysReports />}
+          />
+          <Route path="co-overdue-verifications" element={<PendingRequest />} />
+          <Route path="co-portfolio-history" element={<PendingRequest />} />
+        </Route>
 
         {/* Head of Compliance Approval */}
         <Route
@@ -237,8 +288,24 @@ const router = createBrowserRouter(
             </RoleBasedRoute>
           }
         />
-
+        {/*  */}
         <Route
+          path="admin-users"
+          element={
+            <RoleBasedRoute isAdmin={true} allowedRoles={[1]}>
+              <ReportsLayout />
+            </RoleBasedRoute>
+          }
+        >
+          <Route index element={<ManageUsers />} />
+          <Route
+            path="session-wise-activity"
+            element={<UserSessionWiseActivity />}
+          />
+        </Route>
+
+        {/*  */}
+        {/* <Route
           path="admin-users"
           element={
             <RoleBasedRoute isAdmin={true} allowedRoles={[1]}>
@@ -246,9 +313,17 @@ const router = createBrowserRouter(
             </RoleBasedRoute>
           }
         />
+        <Route
+          path="session-wise-activity"
+          element={
+            <RoleBasedRoute isAdmin={true} allowedRoles={[1]}>
+              <UserSessionWiseActivity />
+            </RoleBasedRoute>
+          }
+        /> */}
 
         <Route
-          path="admin-system-settings"
+          path="admin-system-configurations"
           element={
             <RoleBasedRoute isAdmin={true} allowedRoles={[1]}>
               <SystemConfigurations />{" "}

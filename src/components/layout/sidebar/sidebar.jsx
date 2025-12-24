@@ -16,6 +16,7 @@ import sidebarItems, { routeMap } from "./utils";
 
 // Styles
 import "./sidebar.css";
+import { includes } from "lodash";
 
 const { Sider } = Layout;
 const ROOT_KEY = "0"; // Default root menu key
@@ -59,6 +60,7 @@ const SideBar = () => {
           // Restore sidebar key
           const lastSelectedKey = sessionStorage.getItem("selectedKey");
           if (lastSelectedKey) {
+            console.log("Navigating");
             setSelectedKey(lastSelectedKey);
             if (lastSelectedKey !== ROOT_KEY) setCollapsed(true);
             sessionStorage.removeItem("selectedKey");
@@ -151,7 +153,40 @@ const SideBar = () => {
 
   useEffect(() => {
     const currentKey = pathToKey[location.pathname] || ROOT_KEY;
-    if (currentKey !== selectedKey) setSelectedKey(currentKey);
+
+    if (currentKey !== selectedKey) {
+      if (
+        (currentKey === "5" &&
+          (location.pathname !== "/PAD/reports/my-trade-approvals" ||
+            location.pathname !== "/PAD/reports/my-transactions" ||
+            location.pathname !== "/PAD/reports/my-trade-approvals-standing" ||
+            location.pathname !== "/PAD/reports/my-compliance-approvals")) ||
+        (currentKey === "8" &&
+          (location.pathname !== "/PAD/lm-reports/lm-pending-request" ||
+            location.pathname !==
+              "/PAD/lm-reports/lm-tradeapproval-request")) ||
+        (currentKey === "21" &&
+          location.pathname !== "PAD/admin-users/session-wise-activity")
+      ) {
+     
+
+        if (currentKey === "5" && location.pathname.includes("PAD/reports")) {
+          setSelectedKey(selectedKey); // keep previous selection
+        } else if (
+          currentKey === "8" &&
+          location.pathname.includes("PAD/lm-reports")
+        ) {
+          setSelectedKey(selectedKey); // keep previous selection
+        } else if (
+          currentKey === "21" &&
+          location.pathname.includes("PAD/admin-users")
+        ) {
+          setSelectedKey(selectedKey); // keep previous selection
+        } else {
+          setSelectedKey(currentKey); // update to new key
+        }
+      }
+    }
   }, [location.pathname, selectedKey, setSelectedKey, pathToKey]);
 
   // useEffect(() => {}, [currentRoleIsAdmin]);
@@ -193,6 +228,7 @@ const SideBar = () => {
           mode="inline"
           selectedKeys={[selectedKey]}
           onSelect={({ key }) => {
+            console.log("Navigating");
             setSelectedKey(key);
 
             // Collapse automatically if not root
@@ -201,7 +237,12 @@ const SideBar = () => {
             const path = routeMap[key];
             if (path) navigate(path);
           }}
-          items={sidebarItems(collapsed, allRoleIDs, selectedKey,currentRoleIsAdmin)}
+          items={sidebarItems(
+            collapsed,
+            allRoleIDs,
+            selectedKey,
+            currentRoleIsAdmin
+          )}
           inlineCollapsed={collapsed}
           inlineIndent={20}
           prefixCls="custom-menu"

@@ -66,11 +66,18 @@ const Home = () => {
     () => dashboardData?.employee?.portfolio?.data || [],
     [dashboardData?.employee?.portfolio?.data]
   );
+  const employeeMyHistory = useMemo(
+    () => dashboardData?.employee?.myHistory?.data || [],
+    [dashboardData?.employee?.myHistory?.data]
+  );
   const employeeTransactions = useMemo(
     () => dashboardData?.employee?.myTransactions?.data || [],
     [dashboardData?.employee?.myTransactions?.data]
   );
-
+  const employeeReports = useMemo(
+    () => dashboardData?.employee?.reports?.data || [],
+    [dashboardData?.employee?.reports?.data]
+  );
   // Lime Manager
   const lineManagerApprovals = useMemo(
     () => dashboardData?.lineManager?.myApprovals?.data || [],
@@ -80,7 +87,10 @@ const Home = () => {
     () => dashboardData?.lineManager?.myActions?.data || [],
     [dashboardData?.lineManager?.myActions?.data]
   );
-
+  const lineManagerReports = useMemo(
+    () => dashboardData?.lineManager?.reports?.data || [],
+    [dashboardData?.lineManager?.reports?.data]
+  );
   // Compliance Officer
   const complianceOfficerMyActions = useMemo(
     () => dashboardData?.complianceOfficer?.myActions?.data || [],
@@ -90,7 +100,10 @@ const Home = () => {
     () => dashboardData?.complianceOfficer?.myApprovals?.data || [],
     [dashboardData?.complianceOfficer?.myApprovals?.data]
   );
-
+  const complianceOfficerReports = useMemo(
+    () => dashboardData?.complianceOfficer?.reports?.data || [],
+    [dashboardData?.complianceOfficer?.reports?.data]
+  );
   // head Of Compliance Approval
   const headofComplianceOfficerMyActions = useMemo(
     () => dashboardData?.headofComplianceOfficer?.myActions?.data || [],
@@ -101,7 +114,10 @@ const Home = () => {
       dashboardData?.headofComplianceOfficer?.verificationRequests?.data || [],
     [dashboardData?.headofComplianceOfficer?.verificationRequests?.data]
   );
-
+  const headofComplianceOfficerReports = useMemo(
+    () => dashboardData?.headofComplianceOfficer?.reports?.data || [],
+    [dashboardData?.headofComplianceOfficer?.reports?.data]
+  );
   // This is For HTA Dashboard
   const headofComplianceFlowMyAction = useMemo(
     () => dashboardData?.headofTradeApproval?.myActions?.data || [],
@@ -113,25 +129,75 @@ const Home = () => {
     () => dashboardData?.headofTradeApproval?.escalatedApprovals?.data || [],
     [dashboardData?.headofTradeApproval?.escalatedApprovals?.data]
   );
+  const headofApprovalReports = useMemo(
+    () => dashboardData?.headofTradeApproval?.reports?.data || [],
+    [dashboardData?.headofTradeApproval?.reports?.data]
+  );
 
   // Admin
   const policyAssign = useMemo(
-    () => dashboardData?.admin?.policyAssign?.data || [],
-    [dashboardData?.admin?.policyAssign?.data]
+    () => dashboardData?.admin?.policyAssignedToUsers?.data || [],
+    [dashboardData?.admin?.policyAssignedToUsers?.data]
   );
   const instrument = useMemo(
-    () => dashboardData?.admin?.instrument?.data || [],
-    [dashboardData?.admin?.instrument?.data]
+    () => dashboardData?.admin?.instruments?.data || [],
+    [dashboardData?.admin?.instruments?.data]
   );
   const brokers = useMemo(
     () => dashboardData?.admin?.brokers?.data || [],
     [dashboardData?.admin?.brokers?.data]
   );
   const groupPolicy = useMemo(
-    () => dashboardData?.admin?.groupPolicy?.data || [],
-    [dashboardData?.admin?.groupPolicy?.data]
+    () => dashboardData?.admin?.groupPolicies?.data || [],
+    [dashboardData?.admin?.groupPolicies?.data]
+  );
+    const reports = useMemo(
+    () => dashboardData?.admin?.reports?.data || [],
+    [dashboardData?.admin?.reports?.data]
   );
 
+  const fetchData = async () => {
+    if (!roles || roles.length === 0) {
+      hasFetched.current = false;
+      return;
+    }
+
+    try {
+      await showLoader(true);
+      const data = await GetUserDashBoardStats({
+        callApi,
+        setEmployeeBasedBrokersData,
+        setAllInstrumentsData,
+        setAssetTypeListingData,
+        setGetAllPredefineReasonData,
+        setWebNotificationData,
+        showNotification,
+        showLoader,
+        webNotificationDataMqtt,
+        navigate,
+      });
+      // Handle session expiration
+      if (!data) return showLoader(false);
+
+      // Filter data based on user roles
+      const filteredData = {
+        title: data.title, // Include title if needed
+      };
+      roles.forEach(({ roleID }) => {
+        const roleKey = roleKeyMap[roleID];
+        if (roleKey && data[roleKey]) {
+          filteredData[roleKey] = data[roleKey];
+        }
+      });
+
+      showLoader(false);
+      await setDashboardData(filteredData);
+    } catch (error) {
+      showLoader(false);
+      console.error("Failed to fetch home summary", error);
+    }
+  };
+  
   useEffect(() => {
     if (hasFetched.current) return;
     hasFetched.current = true;
@@ -144,47 +210,6 @@ const Home = () => {
         setUrgentAlert(false);
       }
     }
-    const fetchData = async () => {
-      if (!roles || roles.length === 0) {
-        hasFetched.current = false;
-        return;
-      }
-
-      try {
-        await showLoader(true);
-        const data = await GetUserDashBoardStats({
-          callApi,
-          setEmployeeBasedBrokersData,
-          setAllInstrumentsData,
-          setAssetTypeListingData,
-          setGetAllPredefineReasonData,
-          setWebNotificationData,
-          showNotification,
-          showLoader,
-          webNotificationDataMqtt,
-          navigate,
-        });
-        // Handle session expiration
-        if (!data) return showLoader(false);
-
-        // Filter data based on user roles
-        const filteredData = {
-          title: data.title, // Include title if needed
-        };
-        roles.forEach(({ roleID }) => {
-          const roleKey = roleKeyMap[roleID];
-          if (roleKey && data[roleKey]) {
-            filteredData[roleKey] = data[roleKey];
-          }
-        });
-
-        showLoader(false);
-        await setDashboardData(filteredData);
-      } catch (error) {
-        showLoader(false);
-        console.error("Failed to fetch home summary", error);
-      }
-    };
 
     fetchData();
   }, []);
@@ -215,23 +240,11 @@ const Home = () => {
                   locationStyle={"up"}
                   title={"Policy Assign to the Users"}
                   mainClassName={"smallShareHomeCard2"}
-                  // boxes={policyAssign}
-                  boxes={[
-                    {
-                      count: 13,
-                      label: "unrestricted",
-                      type: "unrestricted",
-                    },
-                    {
-                      count: 2,
-                      label: "restricted",
-                      type: "restricted",
-                    },
-                  ]}
+                  boxes={policyAssign}
                   buttonTitle={"See More"}
                   buttonId={"policy-assign-view-btn-admin"}
                   buttonClassName={"big-white-card-button"}
-                  userRole={"admin"}
+                  userRole={"Admin"}
                   route={"policies"}
                 />
               </Col>
@@ -244,19 +257,7 @@ const Home = () => {
                   locationStyle={"up"}
                   title="Instruments"
                   mainClassName="mediumHomeCard"
-                  // boxes={instrument}
-                  boxes={[
-                    {
-                      count: 16,
-                      label: "Active instruments",
-                      type: "Active instruments",
-                    },
-                    {
-                      count: 5,
-                      label: "Inactive instruments",
-                      type: "Inactive instruments",
-                    },
-                  ]}
+                  boxes={instrument}
                   buttonTitle="See More"
                   buttonClassName={"big-white-card-button"}
                   buttonId={"instruments-view-btn-admin"}
@@ -269,19 +270,7 @@ const Home = () => {
                   locationStyle={"up"}
                   title="Brokers"
                   mainClassName="mediumHomeCard"
-                  // boxes={brokers}
-                  boxes={[
-                    {
-                      count: 13,
-                      label: "Active Brokers",
-                      type: "Active Brokers",
-                    },
-                    {
-                      count: 2,
-                      label: "Inactive Brokers",
-                      type: "Inactive Brokers",
-                    },
-                  ]}
+                  boxes={brokers}
                   buttonTitle="See More"
                   buttonClassName={"big-white-card-button"}
                   buttonId={"brokers-view-btn-admin"}
@@ -296,19 +285,7 @@ const Home = () => {
                   locationStyle={"up"}
                   title="Group Policies"
                   mainClassName="mediumHomeCard"
-                  // boxes={groupPolicy}
-                  boxes={[
-                    {
-                      count: 4,
-                      label: "Groups",
-                      type: "Groups",
-                    },
-                    {
-                      count: 32,
-                      label: "Total users",
-                      type: "Total users",
-                    },
-                  ]}
+                  boxes={groupPolicy}
                   buttonTitle="See More"
                   buttonClassName={"big-white-card-button"}
                   buttonId={"group-policy-view-btn-admin"}
@@ -317,19 +294,12 @@ const Home = () => {
                 />
               </Col>
               <Col xs={24} md={12} lg={12}>
-                <ReportCard
+                <MemoizedReportCard
                   mainClassName="home-reprot-card"
                   title="Reports"
                   buttonTitle="See More"
                   buttonClassName={"big-white-card-button"}
-                  // data={[
-                  //   {
-                  //     icon: <Avatar icon={<BarChartOutlined />} />,
-                  //     label: "Usage Reports",
-                  //     action: "View Report",
-                  //   },
-                  // ]}
-                  data={[]}
+                  data={reports}
                   buttonId={"Reports-view-btn-admin"}
                   rowButtonClassName={"small-card-light-button"}
                   userRole="Admin"
@@ -404,11 +374,11 @@ const Home = () => {
                 </Row>
                 <Row gutter={[16, 16]}>
                   <Col xs={24} md={12} lg={12}>
-                    <BoxCard
+                    <MemoizedBoxCard
                       locationStyle={"side"}
                       title="My History"
                       mainClassName={"mediumHomeSideCard"}
-                      boxes={dashboardData?.employee?.myHistory?.data}
+                      boxes={employeeMyHistory}
                       buttonTitle={"See More"}
                       buttonId={"History-view-btn"}
                       buttonClassName={"big-white-card-button"}
@@ -417,31 +387,14 @@ const Home = () => {
                     />
                   </Col>
                   <Col xs={24} md={12} lg={12}>
-                    <ReportCard
+                    <MemoizedReportCard
                       mainClassName={"home-reprot-card"}
                       title="Reports"
                       buttonTitle={"See More"}
-                      buttonId={"Reports-view-btn"}
+                      buttonId={"Reports-view-btn-employee"}
                       buttonClassName={"big-white-card-button"}
                       rowButtonClassName={"small-card-light-button"}
-                      // data={[
-                      //   {
-                      //     icon: <Avatar icon={<FileDoneOutlined />} />,
-                      //     label: "My Compliance",
-                      //     action: "View Report",
-                      //   },
-                      //   {
-                      //     icon: <Avatar icon={<BarChartOutlined />} />,
-                      //     label: "My Transactions",
-                      //     action: "View Report",
-                      //   },
-                      //   {
-                      //     icon: <Avatar icon={<BarChartOutlined />} />,
-                      //     label: "My Transactions",
-                      //     action: "View Report",
-                      //   },
-                      // ]}
-                      data={[]}
+                      data={employeeReports}
                       userRole={"employee"}
                       route={"reports"}
                     />
@@ -504,31 +457,14 @@ const Home = () => {
                 </Row>
                 <Row gutter={[16, 16]}>
                   <Col xs={24} md={12} lg={12}>
-                    <ReportCard
+                    <MemoizedReportCard
                       mainClassName={"home-reprot-card"}
                       title="Reports"
                       buttonTitle={"See More"}
                       buttonId={"Reports-view-btn-LM"}
                       buttonClassName={"big-white-card-button"}
                       rowButtonClassName={"small-card-light-button"}
-                      // data={[
-                      //   {
-                      //     icon: <Avatar icon={<FileDoneOutlined />} />,
-                      //     label: "My Compliance",
-                      //     action: "View Report",
-                      //   },
-                      //   {
-                      //     icon: <Avatar icon={<BarChartOutlined />} />,
-                      //     label: "My Transactions",
-                      //     action: "View Report",
-                      //   },
-                      //   {
-                      //     icon: <Avatar icon={<BarChartOutlined />} />,
-                      //     label: "My Transactions",
-                      //     action: "View Report",
-                      //   },
-                      // ]}
-                      data={[]}
+                      data={lineManagerReports}
                       userRole={"LM"}
                       route={"reports"}
                     />
@@ -590,32 +526,15 @@ const Home = () => {
                 </Row>
                 <Row gutter={[16, 16]}>
                   <Col xs={24} md={12} lg={12}>
-                    <ReportCard
+                    <MemoizedReportCard
                       mainClassName={"home-reprot-card"}
                       title="Reports"
                       buttonTitle={"See More"}
-                      buttonId={"Reports-view-btn-LM"}
+                      buttonId={"Reports-view-btn-co"}
                       buttonClassName={"big-white-card-button"}
                       rowButtonClassName={"small-card-light-button"}
-                      // data={[
-                      //   {
-                      //     icon: <Avatar icon={<FileDoneOutlined />} />,
-                      //     label: "My Compliance",
-                      //     action: "View Report",
-                      //   },
-                      //   {
-                      //     icon: <Avatar icon={<BarChartOutlined />} />,
-                      //     label: "My Transactions",
-                      //     action: "View Report",
-                      //   },
-                      //   {
-                      //     icon: <Avatar icon={<BarChartOutlined />} />,
-                      //     label: "My Transactions",
-                      //     action: "View Report",
-                      //   },
-                      // ]}
-                      data={[]}
-                      userRole={"LM"}
+                      data={complianceOfficerReports}
+                      userRole={"CO"}
                       route={"reports"}
                     />
                   </Col>
@@ -676,31 +595,14 @@ const Home = () => {
                 </Row>
                 <Row gutter={[16, 16]}>
                   <Col xs={24} md={12} lg={12}>
-                    <ReportCard
+                    <MemoizedReportCard
                       mainClassName={"home-reprot-card"}
                       title="Reports"
                       buttonTitle={"See More"}
-                      buttonId={"Reports-view-btn-LM"}
+                      buttonId={"Reports-view-btn-hta"}
                       buttonClassName={"big-white-card-button"}
                       rowButtonClassName={"small-card-light-button"}
-                      // data={[
-                      //   {
-                      //     icon: <Avatar icon={<FileDoneOutlined />} />,
-                      //     label: "My Compliance",
-                      //     action: "View Report",
-                      //   },
-                      //   {
-                      //     icon: <Avatar icon={<BarChartOutlined />} />,
-                      //     label: "My Transactions",
-                      //     action: "View Report",
-                      //   },
-                      //   {
-                      //     icon: <Avatar icon={<BarChartOutlined />} />,
-                      //     label: "My Transactions",
-                      //     action: "View Report",
-                      //   },
-                      // ]}
-                      data={[]}
+                      data={headofApprovalReports}
                       userRole={"HTA"}
                       route={"reports"}
                     />
@@ -762,31 +664,14 @@ const Home = () => {
                 </Row>
                 <Row gutter={[16, 16]}>
                   <Col xs={24} md={12} lg={12}>
-                    <ReportCard
+                    <MemoizedReportCard
                       mainClassName={"home-reprot-card"}
                       title="Reports"
                       buttonTitle={"See More"}
-                      buttonId={"Reports-view-btn-LM"}
+                      buttonId={"Reports-view-btn-hca"}
                       buttonClassName={"big-white-card-button"}
                       rowButtonClassName={"small-card-light-button"}
-                      // data={[
-                      //   {
-                      //     icon: <Avatar icon={<FileDoneOutlined />} />,
-                      //     label: "My Compliance",
-                      //     action: "View Report",
-                      //   },
-                      //   {
-                      //     icon: <Avatar icon={<BarChartOutlined />} />,
-                      //     label: "My Transactions",
-                      //     action: "View Report",
-                      //   },
-                      //   {
-                      //     icon: <Avatar icon={<BarChartOutlined />} />,
-                      //     label: "My Transactions",
-                      //     action: "View Report",
-                      //   },
-                      // ]}
-                      data={[]}
+                      data={headofComplianceOfficerReports}
                       userRole={"HCA"}
                       route={"reports"}
                     />

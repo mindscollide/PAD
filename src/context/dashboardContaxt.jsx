@@ -6,58 +6,113 @@ import React, {
   useState,
 } from "react";
 
-// 1. Create the Context
+/**
+ * -----------------------------------------------------
+ *  Dashboard Context
+ * -----------------------------------------------------
+ * This context manages all global dashboard-related states:
+ *
+ *  - Dashboard sections (Portfolio, My Approvals, etc.)
+ *  - Employee-based broker list
+ *  - Instruments list
+ *  - Asset type listing
+ *  - Predefined reasons
+ *  - Role handling (Admin / Non-Admin)
+ *  - Urgent alert flag
+ *  - Resetting dashboard to initial state
+ *
+ * Everything inside this provider becomes available
+ * throughout the entire application wherever needed.
+ */
+
+// -----------------------------------------------------
+// 1. Create Context
+// -----------------------------------------------------
 export const DashboardContext = createContext();
 
-// 2. Create a Provider component
+/**
+ * -----------------------------------------------------
+ * 2. DashboardProvider Component
+ * -----------------------------------------------------
+ * Wraps the App and provides global data.
+ */
 export const DashboardProvider = ({ children }) => {
-  // this state is used for sider bar open and closed
+  /**
+   * --------------------------------------------
+   * Dashboard Section Data (Sidebar Tiles)
+   * --------------------------------------------
+   */
   const [dashboardData, setDashboardData] = useState({
     title: "",
     subTitle: "",
     employee: {
-      Portfolio: {
-        title: "Portfolio",
-        data: [],
-      },
-      MyApprovals: {
-        title: "My Approvals",
-        data: [],
-      },
-      MyTransactions: {
-        title: "My Transactions",
-        data: [],
-      },
-      MyHistory: {
-        title: "My History",
-        data: [],
-      },
-      Reports: {
-        title: "Reports",
-        data: [],
-      },
+      Portfolio: { title: "Portfolio", data: [] },
+      MyApprovals: { title: "My Approvals", data: [] },
+      MyTransactions: { title: "My Transactions", data: [] },
+      MyHistory: { title: "My History", data: [] },
+      Reports: { title: "Reports", data: [] },
     },
     LineManager: {},
     ComplianceOfficer: {},
     HeadofTradeApproval: {},
     HeadofComplianceOfficer: {},
   });
-  // this state is used for get list of current user allowed brokers to deal with
+
+  /**
+   * ------------------------------------------------------
+   * Employee-Specific Brokers (Allowed Broker List)
+   * ------------------------------------------------------
+   * Used mainly in Trade Approvals & Portfolio modules.
+   */
   const [employeeBasedBrokersData, setEmployeeBasedBrokersData] = useState([]);
+
+  /**
+   * ------------------------------------------------------
+   * Employee-Specific Brokers (Allowed Broker List)
+   * ------------------------------------------------------
+   * Used mainly in Trade Approvals & Portfolio modules.
+   */
+  const [manageBrokersModalOpen, setManageBrokersModalOpen] = useState(false);
+
+  /**
+   * ------------------------------------------------------
+   * Instruments List (All Tradable Instruments)
+   * ------------------------------------------------------
+   */
   const [allInstrumentsData, setAllInstrumentsData] = useState([]);
 
-  //This state is for the addApproval Request on Approval listing page
+  /**
+   * ------------------------------------------------------
+   * Asset Types for Add-Approval Request
+   * ------------------------------------------------------
+   */
   const [assetTypeListingData, setAssetTypeListingData] = useState([]);
 
-  // This state is for the Predefinr Request Reason on Resubmit
+  /**
+   * ------------------------------------------------------
+   * Predefined Reason List (Used in Re-Submit Flow)
+   * ------------------------------------------------------
+   */
   const [getAllPredefineReasonData, setGetAllPredefineReasonData] = useState(
     []
   );
+
+  /**
+   * ------------------------------------------------------
+   * Role Handling (Admin or Non-Admin)
+   * ------------------------------------------------------
+   */
   const [currentRoleIsAdmin, setCurrentRoleIsAdmin] = useState(false);
   const [roleChanegFlag, setRoleChanegFlag] = useState(false);
+
+  // Reference to store role between refreshes or navigations
   const currentRoleIsAdminRef = useRef(currentRoleIsAdmin);
-  // Main resetDashboardContext State
-  // ✅ This will reset all states to initial (inline - no separate function)
+
+  /**
+   * ------------------------------------------------------
+   * Persist Admin Role using Session Storage
+   * ------------------------------------------------------
+   */
   useEffect(() => {
     const storedAdminStatus = sessionStorage.getItem("current_role_is_admin");
     if (storedAdminStatus !== null) {
@@ -66,11 +121,22 @@ export const DashboardProvider = ({ children }) => {
   }, []);
 
   useEffect(() => {
-    currentRoleIsAdminRef.current = currentRoleIsAdmin; // keep ref updated with latest tab
+    currentRoleIsAdminRef.current = currentRoleIsAdmin;
   }, [currentRoleIsAdmin]);
-  // for line manager urgent action required flag
-  const [urgentAlert, setUrgentAlert] = useState(false); // Controls which accordion panels are open
 
+  /**
+   * ------------------------------------------------------
+   * Urgent Alerts for Line Manager
+   * (Triggers Accordion Panels)
+   * ------------------------------------------------------
+   */
+  const [urgentAlert, setUrgentAlert] = useState(false);
+
+  /**
+   * ------------------------------------------------------
+   * Reset Entire Dashboard Context to Initial State
+   * ------------------------------------------------------
+   */
   const resetDashboardContextState = () => {
     setDashboardData({
       title: "",
@@ -92,29 +158,54 @@ export const DashboardProvider = ({ children }) => {
     setAllInstrumentsData([]);
     setAssetTypeListingData([]);
     setGetAllPredefineReasonData([]);
+    setManageBrokersModalOpen(false);
   };
 
+  /**
+   * ------------------------------------------------------
+   * Provide all context values to children
+   * ------------------------------------------------------
+   */
   return (
     <DashboardContext.Provider
       value={{
+        // Dashboard Section Data
         dashboardData,
         setDashboardData,
+
+        // Employee-based Brokers
         employeeBasedBrokersData,
         setEmployeeBasedBrokersData,
+
+        // Instruments List
         allInstrumentsData,
         setAllInstrumentsData,
+
+        // Asset Types
         assetTypeListingData,
         setAssetTypeListingData,
+
+        // Predefined Reasons
         getAllPredefineReasonData,
         setGetAllPredefineReasonData,
+
+        // Reset Function
         resetDashboardContextState,
+
+        // Role Handling
         currentRoleIsAdmin,
         setCurrentRoleIsAdmin,
         roleChanegFlag,
         setRoleChanegFlag,
         currentRoleIsAdminRef,
+
+        // Urgent Alerts
         urgentAlert,
         setUrgentAlert,
+
+        // manage Broker modal
+        manageBrokersModalOpen,
+        setManageBrokersModalOpen,
       }}
     >
       {children}
@@ -122,12 +213,20 @@ export const DashboardProvider = ({ children }) => {
   );
 };
 
-// 3. Custom Hook to consume context
+/**
+ * ------------------------------------------------------
+ * 3. Custom Hook for Easy Access
+ * ------------------------------------------------------
+ * Usage:
+ *   const { dashboardData } = useDashboardContext();
+ */
 export const useDashboardContext = () => {
   const context = useContext(DashboardContext);
 
   if (!context) {
-    throw new Error("useSidebarContext must be used within a SidebarProvider");
+    throw new Error(
+      "useDashboardContext must be used within a DashboardProvider"
+    );
   }
 
   return context;

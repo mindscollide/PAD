@@ -3,12 +3,6 @@ import {
   SearchTadeApprovals,
 } from "../../../api/myApprovalApi";
 import { SearchEmployeeTransactionsDetails } from "../../../api/myTransactionsApi";
-import { toYYMMDD } from "../../../common/funtions/rejex";
-import {
-  mapBuySellToIds,
-  mapStatusToIds,
-  mapStatusToIdsForLineManager,
-} from "../filters/utils";
 import { AdminBrokersListFiletr } from "./AdminBrokersListFilter";
 import { AdminInstrumentsListFilter } from "./AdminInstrumentsListFilter";
 import { AdminPoliciesAndGroupUsersTabFilter } from "./AdminPoliciesAndGroupUsersTabFilter";
@@ -21,9 +15,20 @@ import { EmployeeTransactionFilter } from "./EmployeeTransactionFilter";
 import { HcaReconcileFilter } from "./HcaReconcileFilter";
 import { HeadOfTradeEscalatedFilter } from "./HeadOfTradeEscalatedFilter";
 import { LineManagerApprovalFilter } from "./LineManagerApprovalFilter";
+import { EmployeeHistoryFilter } from "./EmployeeHistoryFilter";
+import { LineManagerMyAction } from "./LineManagerMyActionFilter";
+import { EmployeeTransactionReportFilter } from "./EmployeeTransactionReportFilter";
+import { EmployeeMyTradeApprovalsReportsFilter } from "./EmployeeMyTradeApprovalsreports";
+import { LineManagerMyTradeApprovalsReports } from "./LineManagerMyTradeApprovalsReports";
+import { CODateWiseTransactionReportFilter } from "./CODateWiseTransactionReportFilter";
+import { AdminSessionWiseActivityFilter } from "./AdminSessionWiseActivity";
+import { COMyAction } from "./COMyAction";
+import { LMPendigRequestReportSearchFilter } from "./LMPendigRequestReportSearchFilter";
+import { COTransactionReportViewDetailsFilter } from "./COTransactionReportViewDetailsFilter";
 
 // this is used for open specific filter according to page
 export const renderFilterContent = (
+  currentPath,
   selectedKey,
   setVisible,
   searchMain,
@@ -31,7 +36,8 @@ export const renderFilterContent = (
   clear,
   setClear,
   openNewFormForAdminGropusAndPolicy,
-  pageTabesForAdminGropusAndPolicy
+  pageTabesForAdminGropusAndPolicy,
+  coTransactionSummaryReportViewDetailsFlag
 ) => {
   switch (selectedKey) {
     case "1": // Employee → My Approval
@@ -56,6 +62,17 @@ export const renderFilterContent = (
         />
       );
 
+    case "3": // Employee → My History
+      return (
+        <EmployeeHistoryFilter
+          setVisible={setVisible}
+          clear={clear}
+          setClear={setClear}
+          maininstrumentName={searchMain}
+          setMaininstrumentName={setSearchMain}
+        />
+      );
+
     case "4": // Employee → Portfolio / Pending
       return (
         <EmployeePortfolioFilter
@@ -66,6 +83,31 @@ export const renderFilterContent = (
           setMaininstrumentName={setSearchMain}
         />
       );
+
+    case "5": // Employee → Report
+      if (currentPath === "/PAD/reports/my-trade-approvals") {
+        return (
+          <EmployeeMyTradeApprovalsReportsFilter
+            setVisible={setVisible}
+            clear={clear}
+            setClear={setClear}
+            maininstrumentName={searchMain}
+            setMaininstrumentName={setSearchMain}
+          />
+        );
+      } else if (currentPath === "/PAD/reports/my-transactions") {
+        return (
+          <EmployeeTransactionReportFilter
+            setVisible={setVisible}
+            clear={clear}
+            setClear={setClear}
+            maininstrumentName={searchMain}
+            setMaininstrumentName={setSearchMain}
+          />
+        );
+      }
+
+      return null;
 
     case "6": // Line Manager Approval
       return (
@@ -78,6 +120,41 @@ export const renderFilterContent = (
         />
       );
 
+    case "7": // LineManager → My Actions
+      return (
+        <LineManagerMyAction
+          setVisible={setVisible}
+          clear={clear}
+          setClear={setClear}
+          maininstrumentName={searchMain}
+          setMaininstrumentName={setSearchMain}
+        />
+      );
+
+    case "8": // LineManager → reports pending approvals
+      if (currentPath === "/PAD/lm-reports/lm-pending-request") {
+        return (
+          <LMPendigRequestReportSearchFilter
+            setVisible={setVisible}
+            clear={clear}
+            setClear={setClear}
+            maininstrumentName={searchMain}
+            setMaininstrumentName={setSearchMain}
+          />
+        );
+      } else if (currentPath === "/PAD/lm-reports/lm-tradeapproval-request") {
+        return (
+          <LineManagerMyTradeApprovalsReports
+            setVisible={setVisible}
+            clear={clear}
+            setClear={setClear}
+            maininstrumentName={searchMain}
+            setMaininstrumentName={setSearchMain}
+          />
+        );
+      }
+      return null;
+
     case "9": // Compliance Officer → Reconcile
       return (
         <ComplianceReconcileFilter
@@ -88,6 +165,40 @@ export const renderFilterContent = (
           setMaininstrumentName={setSearchMain}
         />
       );
+
+    case "10": // Compliance Officer → Reconcile
+      return (
+        <COMyAction
+          setVisible={setVisible}
+          clear={clear}
+          setClear={setClear}
+          maininstrumentName={searchMain}
+          setMaininstrumentName={setSearchMain}
+        />
+      );
+    case "11": // LineManager → reports pending approvals
+      if (currentPath === "/PAD/co-reports/co-date-wise-transaction-report") {
+        return (
+          <CODateWiseTransactionReportFilter
+            setVisible={setVisible}
+            clear={clear}
+            setClear={setClear}
+            maininstrumentName={searchMain}
+            setMaininstrumentName={setSearchMain}
+          />
+        );
+      } else if (coTransactionSummaryReportViewDetailsFlag) {
+        return (
+          <COTransactionReportViewDetailsFilter
+            setVisible={setVisible}
+            clear={clear}
+            setClear={setClear}
+            maininstrumentName={searchMain}
+            setMaininstrumentName={setSearchMain}
+          />
+        );
+      }
+      return null;
 
     case "12": // HTA Escalated
       return (
@@ -134,15 +245,27 @@ export const renderFilterContent = (
       );
 
     case "21": // Admin Manage User
-      return (
-        <AdminUsersTabFilter
-          setVisible={setVisible}
-          clear={clear}
-          setClear={setClear}
-          maininstrumentName={searchMain}
-          setMaininstrumentName={setSearchMain}
-        />
-      );
+      if (currentPath === "/PAD/admin-users/session-wise-activity") {
+        return (
+          <AdminSessionWiseActivityFilter
+            setVisible={setVisible}
+            clear={clear}
+            setClear={setClear}
+            maininstrumentName={searchMain}
+            setMaininstrumentName={setSearchMain}
+          />
+        );
+      } else {
+        return (
+          <AdminUsersTabFilter
+            setVisible={setVisible}
+            clear={clear}
+            setClear={setClear}
+            maininstrumentName={searchMain}
+            setMaininstrumentName={setSearchMain}
+          />
+        );
+      }
 
     case "20": // groupe listing create edit and view
       console.log("AdminPoliciesFilter");
@@ -179,110 +302,5 @@ export const renderFilterContent = (
 
     default:
       return null; // Fallback if no matching key
-  }
-};
-
-// apiCallSearch.js
-export const apiCallSearch = async ({
-  selectedKey,
-  employeeMyApprovalSearch,
-  employeeMyTransactionSearch,
-  assetTypeListingData,
-  callApi,
-  showNotification,
-  showLoader,
-  navigate,
-  setData,
-}) => {
-  showLoader(true);
-
-  try {
-    switch (selectedKey) {
-      case "1": {
-        const TypeIds = mapBuySellToIds(
-          employeeMyApprovalSearch.type,
-          assetTypeListingData?.Equities
-        );
-
-        const statusIds = mapStatusToIds(employeeMyApprovalSearch.status);
-
-        const requestdata = {
-          InstrumentName:
-            employeeMyApprovalSearch.instrumentName ||
-            employeeMyApprovalSearch.mainInstrumentName ||
-            "",
-          Date: toYYMMDD(employeeMyApprovalSearch.startDate) || "",
-          Quantity: employeeMyApprovalSearch.quantity || 0,
-          StatusIds: statusIds || [],
-          TypeIds: TypeIds || [],
-          PageNumber: 0,
-          Length: employeeMyApprovalSearch.pageSize || 10, // Fixed page size
-        };
-        const data = await SearchTadeApprovals({
-          callApi,
-          showNotification,
-          showLoader,
-          requestdata,
-          navigate,
-        });
-
-        setData(data);
-        break;
-      }
-
-      case "2":
-        {
-          // Add case 2 logic here when needed
-          const TypeIds = mapBuySellToIds(
-            employeeMyTransactionSearch.type,
-            assetTypeListingData?.Equities
-          );
-
-          const statusIds = mapStatusToIds(employeeMyTransactionSearch.status);
-
-          const requestdata = {
-            InstrumentName:
-              employeeMyTransactionSearch.instrumentName ||
-              employeeMyTransactionSearch.mainInstrumentName ||
-              "",
-            Quantity: employeeMyTransactionSearch.quantity || 0,
-            StartDate: employeeMyTransactionSearch.startDate
-              ? toYYMMDD(employeeMyTransactionSearch.startDate)
-              : "",
-            EndDate: employeeMyTransactionSearch.endDate
-              ? toYYMMDD(employeeMyTransactionSearch.endDate)
-              : "",
-            BrokerIDs: employeeMyTransactionSearch.brokerIDs || [],
-            StatusIds: statusIds || [],
-            TypeIds: TypeIds || [],
-            PageNumber: 0,
-            Length: employeeMyTransactionSearch.pageSize || 10, // Fixed page size
-          };
-          const data = await SearchEmployeeTransactionsDetails({
-            callApi,
-            showNotification,
-            showLoader,
-            requestdata,
-            navigate,
-          });
-
-          setData(data);
-        }
-        break;
-
-      case "3":
-        // Add case 3 logic here when needed
-        break;
-
-      case "6":
-        // Add case 3 logic here when needed
-        break;
-
-      default:
-        console.warn(`No matching case for selectedKey: ${selectedKey}`);
-        break;
-    }
-  } finally {
-    showLoader(false);
   }
 };

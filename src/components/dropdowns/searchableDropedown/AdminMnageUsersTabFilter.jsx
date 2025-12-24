@@ -4,6 +4,7 @@ import { Button, DateRangePicker, TextField } from "../..";
 import { useSearchBarContext } from "../../../context/SearchBarContaxt";
 import { removeFirstSpace } from "../../../common/funtions/rejex";
 import { useMyAdmin } from "../../../context/AdminContext";
+import { useNotification } from "../../NotificationProvider/NotificationProvider";
 
 // -----------------------------------------------------
 // 🔹 INITIAL STATES
@@ -38,18 +39,13 @@ export const AdminUsersTabFilter = ({
   setClear,
 }) => {
   const {
-    usersTabSearch,
     setUsersTabSearch,
-    resetUsersTabSearch,
-    pendingRequestsTabSearch,
     setPendingRequestsTabSearch,
-    resetPendingRequestsTabSearch,
-    rejectedRequestsTabSearch,
     setRejectedRequestsTabSearch,
-    resetRejectedRequestsTabSearch,
   } = useSearchBarContext();
 
   const { manageUsersTab } = useMyAdmin();
+  const { showNotification } = useNotification();
 
   // -----------------------------------------------------
   // 🔹 PICK INITIAL STATE BASED ON TAB
@@ -109,6 +105,22 @@ export const AdminUsersTabFilter = ({
   // 🔹 ACTIONS
   // -----------------------------------------------------
   const handleSearchClick = () => {
+    const email = localState.emailAddress?.trim();
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    // ✅ If email is filled but invalid → stop search
+    if (email && !emailRegex.test(email)) {
+      showNotification({
+        type: "error",
+        title: "Error",
+        description: "Please enter a valid email address",
+      });
+      return; // ❌ stop execution
+    }
+
+    // ✅ Clear error if valid
+    // setEmailError("");
+
     const payload = {
       ...localState,
       pageNumber: 0,
@@ -123,9 +135,39 @@ export const AdminUsersTabFilter = ({
   };
 
   const handleResetClick = () => {
-    if (manageUsersTab === "0") resetUsersTabSearch();
-    else if (manageUsersTab === "1") resetPendingRequestsTabSearch();
-    else if (manageUsersTab === "2") resetRejectedRequestsTabSearch();
+    const payloadUsersTabSearch = {
+      employeeName: "",
+      employeeID: "",
+      emailAddress: "",
+      departmentName: "",
+      pageNumber: 0,
+      pageSize: 10,
+      filterTrigger: true,
+    };
+    const payloadPendingRequestsTabSearch = {
+      employeeName: "",
+      employeeID: "",
+      emailAddress: "",
+      departmentName: "",
+      startDate: null,
+      endDate: null,
+      pageNumber: 0,
+      pageSize: 10,
+      filterTrigger: true,
+    };
+    const payloadRejectedRequestsTabSearch = {
+      employeeName: "",
+      emailAddress: "",
+      departmentName: "",
+      pageNumber: 0,
+      pageSize: 10,
+      filterTrigger: true,
+    };
+    if (manageUsersTab === "0") setUsersTabSearch(payloadUsersTabSearch);
+    else if (manageUsersTab === "1")
+      setPendingRequestsTabSearch(payloadPendingRequestsTabSearch);
+    else if (manageUsersTab === "2")
+      setRejectedRequestsTabSearch(payloadRejectedRequestsTabSearch);
 
     setLocalState(getInitialState());
     setClear(false);

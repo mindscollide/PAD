@@ -5,9 +5,7 @@
 /* ===========================
    1. Base table container
    =========================== */
-.accordian-table-blue {
-  background-color: transparent !important; /* Transparent container background */
-}
+
 
 /* ===========================
    2. Table header (thead)
@@ -29,46 +27,58 @@
   display: none !important;
 }
 
+:global(.ant-table-thead > tr > th) {
+  position: sticky !important;
+  top: 0 !important;
+  z-index: 2 !important;
+  background-color: #fff !important; /* Match body background or set white */
+  border-bottom: none;
+}
+
 /* ===========================
    3. Table body (tbody)
    =========================== */
 
-/* Default background color for rows */
+/* Light blue row background */
 :global(.ant-table-tbody > tr) {
   background-color: #edf3ff !important;
   border-color: transparent !important;
 }
 
-/* Default bottom border for all tbody rows on collapsed */
+/* Add spacing between rows */
+:global(.ant-table-wrapper table) {
+  border-collapse: separate !important;
+  border-spacing: 0 12px !important; /* adjust 12px → increase/decrease space */
+}
+
+/* Add soft shadow and rounded corners to each row */
 :global(.ant-table-tbody > tr > td) {
-  border-bottom: 2px solid #e1e1e1 !important; /* always visible */
-}
-/* Row hover effect  on collapsed */
-:global(.ant-table-tbody > tr:hover > td) {
+  border: none !important;
   background-color: #edf3ff !important;
-  border-bottom: 2px solid #e1e1e1;
+  padding-top: 12px !important;
+  padding-bottom: 12px !important;
 }
 
-/* Remove bottom border from expanded level-0 row */
-:global(
-    .ant-table-tbody
-      > tr.ant-table-expanded-row.ant-table-expanded-row-level-0
-      > td
-  ) {
-  border-bottom: transparent !important;
+:global(.ant-table-tbody > tr > td:first-child) {
+  border-top-left-radius: 8px !important;
+  border-bottom-left-radius: 8px !important;
 }
 
-/* Apply bottom border to level-1 expanded row (the content container) */
-:global(
-    .ant-table-tbody
-      > tr.ant-table-expanded-row.ant-table-expanded-row-level-1
-      > td
-  ) {
-  border-bottom: 16px solid #fff !important;
+:global(.ant-table-tbody > tr > td:last-child) {
+  border-top-right-radius: 8px !important;
+  border-bottom-right-radius: 8px !important;
 }
 
-.expanded-content {
-  width: 100%;
+/* Expanded row styling */
+:global(.ant-table-expanded-row) > td {
+  background: #ffffff !important;
+  border-radius: 8px !important;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+
+/* Hide unwanted thick borders */
+:global(.ant-table-tbody > tr > td) {
+  border-bottom: none !important;
 }
 
 /* ===========================
@@ -139,3 +149,13 @@
   border-collapse: separate !important;
    border-spacing: 0 16px !important;  
  }  */
+
+.accordianTableMainDiv {
+  max-height: 530px !important;
+  overflow: hidden !important;
+  overflow-y: auto !important;
+}
+
+.accordianTable {
+  margin-top: 8px;
+}

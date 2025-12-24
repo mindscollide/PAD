@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Col, Row, Select } from "antd";
 
 // 🔹 Components & Contexts
@@ -13,46 +13,90 @@ import DarkCrossImg from "../../../../../assets/img/DarkCrossImg.png";
 // 🔹 Styles
 import styles from "./EditRoleAndPoliciesModal.module.css";
 import { useMyAdmin } from "../../../../../context/AdminContext";
+import { useNavigate } from "react-router-dom";
+import { useNotification } from "../../../../../components/NotificationProvider/NotificationProvider";
+import { useGlobalLoader } from "../../../../../context/LoaderContext";
+import { useApi } from "../../../../../context/ApiContext";
+import { UpdateEditRolesAndPoliciesRequest } from "../../../../../api/adminApi";
 
 const EditRoleAndPoliciesModal = () => {
+  const navigate = useNavigate();
+
+  // 🔷 Context Hooks
+  const { showNotification } = useNotification();
+  const { showLoader } = useGlobalLoader();
+  const { callApi } = useApi();
   const {
     editrolesAndPoliciesUser,
     setEditrolesAndPoliciesUser,
     setUnSavedChangesPoliciesModal,
+    setRoleAndPoliciesIntimationModal,
   } = useGlobalModal();
 
   // 🔹  Context State of View Detail Modal in which All data store
   const {
     editRoleAndPolicyGroupDropdownData,
     allUserRolesForEditRolePolicyData,
+    // this is the Context state in which I get the fullName and statuses
+    roleAndPolicyViewDetailData,
+    storeEditRolesAndPoliciesData,
+    setStoreEditRolesAndPoliciesData,
   } = useMyAdmin();
 
   console.log(
-    { editRoleAndPolicyGroupDropdownData, allUserRolesForEditRolePolicyData },
-    "editRoleAndPolicyGroupDropdownData"
+    allUserRolesForEditRolePolicyData,
+    "allUserRolesForEditRolePolicyData"
   );
 
+  // 🔹 Extract user details from context
+  const userDetails = roleAndPolicyViewDetailData?.userDetails;
+
   const [selectedRoles, setSelectedRoles] = useState([]);
-  const [userStatus, setUserStatus] = useState("Active");
+  // 🔹 Initialize state based on userStatusID
+  const [userStatus, setUserStatus] = useState(userDetails?.userStatusID || 1);
+
   const [selectedPolicy, setSelectedPolicy] = useState(null);
 
+  // get data from sessionStorage
+  const userProfileData = JSON.parse(
+    sessionStorage.getItem("user_profile_data") || "{}"
+  );
+  const loggedInUserID = userProfileData?.userID;
+
+  // 🔹 This the groupPolicyOptions data which is coming in the Change Group Policy dropdown
   const groupPolicyOptions =
     editRoleAndPolicyGroupDropdownData?.groupPolicies?.map((policy) => ({
       label: policy.groupTitle,
       value: policy.groupPolicyID,
+      description: policy.groupDescription,
     })) || [];
 
-  const roles = [
-    "Employees",
-    "Line Manager",
-    "Compliance Officer",
-    "Head of transaction approval",
-    "Head of compliance approval",
-    "Admin",
-  ];
-
+  // 🔹 This the checkbox data in which all roles will be shown
   const allRoles = allUserRolesForEditRolePolicyData?.userRoles || [];
 
+  // 🔹check if there is already roles assigned then checkbox will be enable
+  useEffect(() => {
+    if (allRoles?.length && userDetails?.assignedRoles) {
+      const assignedRolesArray = userDetails.assignedRoles
+        .split(",")
+        .map((role) => role.trim());
+
+      const preSelectedRoles = allRoles
+        .filter((role) => assignedRolesArray.includes(role.roleName))
+        .map((role) => role.userRoleID);
+
+      setSelectedRoles(preSelectedRoles);
+    }
+  }, [allRoles, userDetails]);
+
+  // 🔹 Determine if Employee roleName is selected (case-insensitive match)
+  const isEmployeeSelected = allRoles.some(
+    (role) =>
+      selectedRoles.includes(role.userRoleID) &&
+      role.roleName.toLowerCase().includes("employee")
+  );
+
+  // 🔹 This the checkbox toggle function in which you checked or unChecked them
   const toggleRole = (roleId) => {
     setSelectedRoles((prev) =>
       prev.includes(roleId)
@@ -61,12 +105,50 @@ const EditRoleAndPoliciesModal = () => {
     );
   };
 
+  // 🔹 Selected policy from the change Group Policy
+  const selectedPolicyData = groupPolicyOptions.find(
+    (p) => p.value === selectedPolicy
+  );
+
+  // 🔹 Active, Disable and other statuses
   const statusOptions = [
-    { label: "Active", value: "Active", color: "#00640a" },
-    { label: "Disabled", value: "Disabled", color: "#9ca3af" },
-    { label: "Dormant", value: "Dormant", color: "#ff4d4f" },
-    { label: "Closed", value: "Closed", color: "#000000" },
+    { label: "Active", value: 1, color: "#00640a" },
+    { label: "Disabled", value: 2, color: "#9ca3af" },
+    { label: "Dormant", value: 4, color: "#ff4d4f" },
+    { label: "Closed", value: 3, color: "#000000" },
   ];
+
+  // 🔹 onCLick Save This API Function will be hit
+  const onClickSaveOnEditRolesAndPolicies = async () => {
+    showLoader(true);
+    let payload = {
+      //Jis sy ma Edit Krraha uski User Id jaegi
+      UserID: userDetails?.userID,
+      FK_UserStatusID: userStatus,
+      Roles: selectedRoles,
+      GroupPolicies: selectedPolicy ? [selectedPolicy] : [],
+      LastUpdatedBy: loggedInUserID,
+    };
+
+    let res = await UpdateEditRolesAndPoliciesRequest({
+      callApi,
+      showNotification,
+      showLoader,
+      requestdata: payload,
+      setEditrolesAndPoliciesUser,
+      setRoleAndPoliciesIntimationModal,
+      navigate,
+    });
+
+    if (res) {
+      if (res && res.hasDependency) {
+        setStoreEditRolesAndPoliciesData({
+          hasDependency: res.hasDependency,
+          employees: res.employees,
+        });
+      }
+    }
+  };
 
   return (
     <GlobalModal
@@ -86,9 +168,12 @@ const EditRoleAndPoliciesModal = () => {
               <Col>
                 <div className={styles.userInfo}>
                   <img src={Profile2} alt="User" height={40} width={40} />
-                  <span className={styles.userName}>Sarah Johnson</span>
+                  <span className={styles.userName}>
+                    {userDetails?.fullName || "—"}
+                  </span>
                   <Select
                     value={userStatus}
+                    prefixCls={"UserStatusDropdown"}
                     onChange={setUserStatus}
                     className={styles.statusDropdown}
                     options={statusOptions.map((status) => ({
@@ -97,7 +182,7 @@ const EditRoleAndPoliciesModal = () => {
                           {status.label}
                         </span>
                       ),
-                      value: status.value,
+                      value: status.value, // numeric ID
                     }))}
                   />
                 </div>
@@ -128,7 +213,7 @@ const EditRoleAndPoliciesModal = () => {
                         <Col span={19}>
                           <span
                             className={
-                              selectedRoles.includes(role)
+                              selectedRoles.includes(role.userRoleID)
                                 ? styles.roleTextActive
                                 : styles.roleTextInactive
                             }
@@ -150,7 +235,7 @@ const EditRoleAndPoliciesModal = () => {
 
                 {/* Right: Policy Info */}
                 <Col span={13}>
-                  {selectedPolicy !== "Policy & Compliance Alliance" ? (
+                  {!selectedPolicyData ? (
                     <div className={styles.policySection}>
                       <label className={styles.policyHeading}>
                         Assigned Policy:{" "}
@@ -159,10 +244,10 @@ const EditRoleAndPoliciesModal = () => {
                           Governance, and Regulatory Best Practices
                         </span>
                       </label>
-
                       <label className={styles.dropdownLabel}>
                         Change Group Policy
                       </label>
+
                       {groupPolicyOptions.length > 0 ? (
                         <Select
                           placeholder="Search Group Policy"
@@ -172,10 +257,12 @@ const EditRoleAndPoliciesModal = () => {
                           value={selectedPolicy}
                           onChange={setSelectedPolicy}
                           options={groupPolicyOptions}
+                          optionFilterProp="label"
+                          disabled={!isEmployeeSelected} // 🔹 Disable until Employee checked
                         />
                       ) : (
-                        <p className={styles.noPolicyText}>
-                          No Group Policies Available
+                        <p className={styles.noGroupedPolicyAssigned}>
+                          This user is not assigned any Group Policy
                         </p>
                       )}
                     </div>
@@ -195,19 +282,13 @@ const EditRoleAndPoliciesModal = () => {
                           Group Title
                         </label>
                         <p className={styles.assignedGroupHeading}>
-                          Policy Management Hub – Streamlining Compliance,
-                          Governance, and Regulatory Best Practices
+                          {selectedPolicyData.label}
                         </p>
                         <label className={styles.assignedGroupLabel}>
                           Group Description
                         </label>
                         <p className={styles.assignedGroupSubHeading}>
-                          The Policy Management Hub is a dedicated platform for
-                          creating, reviewing, and maintaining organizational
-                          policies. This group brings together compliance
-                          officers, managers, and stakeholders to ensure
-                          consistent governance and adherence to regulatory
-                          standards.
+                          {selectedPolicyData.description}
                         </p>
                       </div>
                     </>
@@ -223,11 +304,25 @@ const EditRoleAndPoliciesModal = () => {
               text="Close"
               className="big-light-button"
               onClick={() => {
+                // 🔹 Store unsaved data globally
+                setStoreEditRolesAndPoliciesData({
+                  UserID: userDetails?.userID,
+                  FK_UserStatusID: userStatus,
+                  Roles: selectedRoles,
+                  GroupPolicies: selectedPolicy ? [selectedPolicy] : [],
+                  LastUpdatedBy: loggedInUserID,
+                });
+
+                // 🔹 Close current modal, open unsaved changes modal
                 setEditrolesAndPoliciesUser(false);
                 setUnSavedChangesPoliciesModal(true);
               }}
             />
-            <CustomButton text="Save Changes" className="big-dark-button" />
+            <CustomButton
+              text="Save Changes"
+              className="big-dark-button"
+              onClick={onClickSaveOnEditRolesAndPolicies}
+            />
           </Row>
         </>
       }

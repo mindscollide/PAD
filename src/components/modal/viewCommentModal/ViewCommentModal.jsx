@@ -31,7 +31,7 @@ const ViewCommentModal = ({
           </Row>
           <div className={styles.mainDivComment}>
             <Row>
-              <Col span={24}>
+              <Col span={24} style={{ whiteSpace: "pre-line" }}>
                 <p className={styles.ViewCommentParagraph}>{commentText}</p>
               </Col>
             </Row>

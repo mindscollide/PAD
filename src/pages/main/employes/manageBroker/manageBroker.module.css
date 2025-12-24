@@ -1,0 +1,101 @@
+.MainClassOfApprovals {
+  padding: 20px;
+}
+
+/* Modal Heading: Manage Brokers */
+.approvalHeading {
+  font-family: "Switzer Variable", sans-serif;
+  font-weight: 700;
+  font-style: Bold;
+  font-size: 26px;
+  line-height: 100%;
+  color: #30426a;
+  margin-bottom: 20px;
+}
+
+/* Subheading: My Brokers */
+.subHeading {
+  font-family: "Switzer Variable", sans-serif;
+  font-weight: 700;
+  font-style: Bold;
+  font-size: 14px;
+  line-height: 100%;
+  color: #424242;
+  margin: 10px 0;
+}
+.brokersListContainer {
+  max-height: 200px; /* approx height for 4 rows, adjust as needed */
+  overflow-y: auto;
+  margin-top: 8px;
+  padding-right: 4px; /* for scrollbar spacing */
+}
+
+/* Broker Row */
+.brokerRow {
+  display: grid;
+  grid-template-columns: 1fr 120px 32px;
+  font-weight: 600;
+  padding: 15px 12px;
+  margin-bottom: 8px;
+  border: 1px solid #b4b4b4;
+  border-radius: 4px;
+  transition: all 0.2s ease-in-out;
+  cursor: pointer;
+  width: 508px !important;
+  background-color: #fff;
+}
+.mt2 {
+  max-height: 234px;
+  margin-left: 86px;
+}
+/* .brokerRow:hover {
+  transform: scale(1.02);
+  box-shadow: 4px 4px 6px 0px #00000033;
+  border-color: #b4b4b4;
+} */
+
+/* Broker Name */
+.brokerName {
+  font-family: "Switzer Variable", sans-serif;
+  font-weight: 500;
+  font-size: 16px;
+  color: #30426a;
+
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* PSX Code */
+.psxCode {
+  font-family: "Switzer Variable", sans-serif;
+  font-weight: 500;
+  font-size: 16px;
+  color: #30426a;
+
+  text-align: center;
+  white-space: nowrap;
+}
+
+/* Remove Icon */
+.removeIcon {
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+  margin-left: 8px;
+}
+
+/* Footer Buttons */
+.mainButtonDiv {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.emptyBrokerImage {
+  width: 100%;
+  display: flex;
+  justify-content: center !important;
+  align-items: center !important;
+}

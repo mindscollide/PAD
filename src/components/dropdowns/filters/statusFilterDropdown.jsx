@@ -8,6 +8,7 @@ import {
   adminBrokersStatus,
   apiCallStatus,
   emaStatusOptions,
+  emaStatusOptionsofReportsMyTradeApprovals,
   emtStatusOptions,
   emtStatusOptionsForPendingApproval,
   escalated,
@@ -19,7 +20,7 @@ import { useApi } from "../../../context/ApiContext";
 import { useGlobalLoader } from "../../../context/LoaderContext";
 import { useNotification } from "../../../components/NotificationProvider/NotificationProvider";
 import { useMyApproval } from "../../../context/myApprovalContaxt";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useDashboardContext } from "../../../context/dashboardContaxt";
 import { useTransaction } from "../../../context/myTransaction";
 
@@ -57,7 +58,12 @@ const StatusFilterDropdown = ({
   const { callApi } = useApi();
   const { showLoader } = useGlobalLoader();
   const { showNotification } = useNotification();
-  const { setIsEmployeeMyApproval, setLineManagerApproval } = useMyApproval();
+  const {
+    setIsEmployeeMyApproval,
+    setLineManagerApproval,
+    setGetEmployeeTransactionReport,
+  } = useMyApproval();
+  const location = useLocation();
 
   const { setEmployeeTransactionsData } = useTransaction();
   const [filterOption, setFilterOptions] = useState([]);
@@ -92,7 +98,23 @@ const StatusFilterDropdown = ({
       case "4":
         setFilterOptions(emtStatusOptionsForPendingApproval);
         break;
+      case "5":
+        if (location.pathname === "/PAD/reports/my-trade-approvals") {
+          setFilterOptions(emaStatusOptionsofReportsMyTradeApprovals);
+        } else if (location.pathname === "/PAD/reports/my-transactions") {
+          setFilterOptions(emtStatusOptions);
+        }
+        break;
+      case "11":
+        if (
+          location.pathname ===
+          "/PAD/co-reports/co-date-wise-transaction-report"
+        ) {
+          setFilterOptions(emtStatusOptions);
+        }
+        break;
       case "12":
+      case "8":
         setFilterOptions(escalated);
         break;
       case "2":
@@ -120,9 +142,14 @@ const StatusFilterDropdown = ({
     switch (selectedKey) {
       case "1":
       case "2":
+      case "3":
       case "4":
+      case "5":
       case "6":
+      case "7":
+      case "8":
       case "9":
+      case "11":
       case "12":
       case "15":
       case "19":
@@ -156,6 +183,7 @@ const StatusFilterDropdown = ({
           setIsEmployeeMyApproval,
           setEmployeeTransactionsData,
           setLineManagerApproval,
+          setGetEmployeeTransactionReport,
         });
         break;
     }
@@ -174,8 +202,11 @@ const StatusFilterDropdown = ({
       case "1":
       case "2":
       case "4":
+      case "5":
       case "6":
+      case "8":
       case "9":
+      case "11":
       case "12":
       case "15":
       case "18":
@@ -202,6 +233,7 @@ const StatusFilterDropdown = ({
           setIsEmployeeMyApproval,
           setEmployeeTransactionsData,
           setLineManagerApproval,
+          setGetEmployeeTransactionReport,
         });
 
         setState((prev) => ({

@@ -199,7 +199,10 @@ const ViewDetailsTransactionModal = () => {
                   <span className={styles.customTag}>
                     {variableOfAssetType?.shortCode}
                   </span>
-                  <span className={styles.viewDetailSubLabelsForInstrument}>
+                  <span
+                    className={styles.viewDetailSubLabelsForInstrument}
+                    title={variableOfInstrument?.instrumentName}
+                  >
                     {variableOfInstrument?.instrumentShortCode}
                   </span>
                 </label>

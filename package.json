@@ -12,15 +12,20 @@
   "dependencies": {
     "antd": "^5.26.3",
     "axios": "^1.11.0",
+    "chart.js": "^4.5.1",
     "copy-to-clipboard": "^3.3.3",
     "dayjs": "^1.11.18",
+    "html2canvas": "^1.4.1",
+    "jspdf": "^3.0.3",
     "lodash": "^4.17.21",
     "moment": "^2.30.1",
     "paho-mqtt": "^1.1.0",
     "react": "^19.1.0",
+    "react-chartjs-2": "^5.3.1",
     "react-dom": "^19.1.0",
     "react-form-stepper": "^2.0.3",
-    "react-router-dom": "^7.6.3"
+    "react-router-dom": "^7.6.3",
+    "react-to-print": "^3.2.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.29.0",

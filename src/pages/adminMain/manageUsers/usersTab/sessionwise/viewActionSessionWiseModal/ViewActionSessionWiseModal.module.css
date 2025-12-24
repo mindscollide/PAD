@@ -1,0 +1,34 @@
+.modalContainer {
+  height: 650px;
+  overflow: hidden;
+  padding: 0px 20px;
+}
+
+.topTextLabelsStyling {
+  font-size: 18px;
+  font-weight: 700;
+  font-family: "Switzer Variable";
+  color: #30426a;
+}
+
+.subTopTextLabelStyling {
+  font-size: 18px;
+  font-weight: 500;
+  font-family: "Switzer Variable";
+  margin-left: 5px !important;
+  color: #424242;
+}
+
+.downloadAndSessionStyle {
+  display: flex;
+  justify-content: end;
+  margin-top: 10px;
+}
+
+/* table container outer box look */
+.tableContainer {
+  margin-top: 30px;
+  padding: 0px 24px ;
+  border: 1px solid #717171;
+  border-radius: 8px;
+}

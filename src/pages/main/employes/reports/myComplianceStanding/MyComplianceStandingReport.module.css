@@ -1,0 +1,250 @@
+.heading {
+  font-size: 22px;
+  font-weight: 600;
+  margin-top: 35px;
+}
+
+/* 🔹 Breadcrumb overall style */
+.customBreadcrumb {
+  font-family: "Switzer Variable", sans-serif;
+  font-weight: 700;
+  font-style: bold;
+  font-size: 26px;
+  line-height: 100%;
+  color: #30426a;
+}
+
+/* 🔹 Normal breadcrumb text */
+.breadcrumbText {
+  color: #30426a;
+}
+
+/* 🔹 Clickable link ONLY for "Group Policy" */
+.breadcrumbLink {
+  color: #30426a;
+  cursor: pointer;
+  transition: all 0.25s ease-in-out;
+}
+
+.breadcrumbLink:hover {
+  color: #213155;
+  text-shadow: 0px 2px 6px rgba(33, 49, 85, 0.4);
+  transform: scale(1.05);
+}
+
+/* 🔹 Separator “>” (static) */
+:global(.ant-breadcrumb-separator) {
+  color: #30426a !important;
+  font-family: "Switzer Variable", sans-serif;
+  font-weight: 700;
+  font-size: 26px;
+  margin: 0 8px;
+}
+
+/* 🔹 Breadcrumb alignment */
+.breadcrumbRow {
+  padding: 24px 32px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* Main grid */
+.gridContainer {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+/* Table wrapper */
+.tableContainer {
+  padding: 20px;
+  border-radius: 12px;
+  width: 100%;
+}
+
+/* Table */
+.table {
+  width: 100%;
+  border-collapse: separate;
+  padding: 10px 20px;
+}
+
+.table thead th {
+  text-align: left;
+  padding: 20px 30px;
+  font-family: "Switzer Variable";
+  font-size: 16px;
+  font-weight: 500;
+  color: #30426a;
+  background: #dbe5f9;
+}
+
+/* Rows like screenshot */
+.table tbody tr {
+  height: 48px;
+  background: #edf3ff;
+}
+
+.table tbody tr:nth-child(even) {
+  background: #dbe5f9;
+}
+
+.table td {
+  padding: 14px 30px;
+  font-size: 18px;
+  font-family: "Switzer Variable";
+  font-weight: 400;
+  color: #424242;
+}
+
+/* Status with dot */
+.statusCell {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+}
+
+/* TOTAL ROW */
+.totalRow td {
+  font-weight: 700;
+  color: #424242;
+  font-size: 26px;
+  background: transparent !important;
+  padding-top: 18px;
+}
+
+/* Chart container on right */
+.chartContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding-left: 20px;
+}
+
+.donutGraphClass {
+  background: #edf3ff;
+  height: 460px;
+  width: 678px;
+  border-radius: 14px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center; /* center vertically */
+  align-items: center; /* center horizontally */
+  padding: 20px;
+  margin-top: 30px;
+}
+
+/* Legend container */
+.customLegend {
+  display: flex;
+  flex-wrap: wrap; /* wrap to next row after 3 items */
+  justify-content: center;
+  margin-top: 20px;
+  gap: 20px 40px; /* vertical 20px, horizontal 40px spacing */
+}
+
+/* Each legend item */
+.legendItem {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+/* Bullet */
+.legendBullet {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+/* Legend text */
+.legendText {
+  display: inline-block;
+}
+
+/* .pageHeaderRow {
+  width: 1450px; 
+  margin: 0 auto; 
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+} */
+
+.exportButtonText {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.iconContainer {
+  display: flex;
+  align-items: center;
+  font-size: 14px; /* Adjust size as needed */
+  transition: transform 0.3s ease;
+}
+
+.dropdownExport {
+  position: absolute;
+  top: 100%; /* appears below the button */
+  right: 0;
+  width: 168px;
+  border-radius: 8px;
+  border: 1px solid #b4b4b4;
+  background: #fff;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+  z-index: 1000; /* keep above table */
+  padding: 8px 0;
+}
+
+.dropdownItem {
+  padding: 8px 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 16px;
+  font-family: "Switzer Variable";
+  font-weight: 500;
+  color: #424242;
+  cursor: pointer;
+  transition: background 0.2s;
+  position: relative; /* required for ::after */
+}
+.dropdownItem img {
+  width: 20px;
+  height: 20px;
+  pointer-events: none;
+}
+
+.dropdownItem:not(:last-child)::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 12px; /* 👈 inset from left */
+  right: 12px; /* 👈 inset from right */
+  height: 1px;
+  background-color: #e0e0e0;
+}
+
+.dropdownItem:hover {
+  background: #f5f5f5;
+}
+
+.headerActionsRow {
+  display: flex;
+  align-items: center;
+  gap: 12px; /* space between items */
+}
+
+.dateRangePickerClass {
+  height: 60px !important;
+}

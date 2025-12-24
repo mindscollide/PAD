@@ -169,7 +169,13 @@ const Login = () => {
                 {/* 🔑 Username Field */}
                 <Form.Item
                   name="username"
-                  rules={[{ required: true, message: "Please enter username" }]}
+                  rules={[
+                    { required: true, message: "Please enter username" },
+                    {
+                      pattern: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                      message: "Enter valid email format",
+                    },
+                  ]}
                 >
                   <TextField
                     label="Username"

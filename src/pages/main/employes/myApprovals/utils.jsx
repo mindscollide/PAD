@@ -57,7 +57,7 @@ export const buildApiRequest = (searchState = {}, assetTypeListingData) => ({
   Quantity: searchState.quantity ? Number(searchState.quantity) : 0,
   StartDate: searchState.startDate ? toYYMMDD(searchState.startDate) : "",
   EndDate: searchState.endDate ? toYYMMDD(searchState.endDate) : "",
-  StatusIds: mapStatusToIds?.(searchState.status) || [],
+  StatusIds: mapStatusToIds?.(searchState.status,2) || [],
   TypeIds:
     mapBuySellToIds?.(searchState.type, assetTypeListingData?.Equities) || [],
   PageNumber: Number(searchState.pageNumber) || 0,
@@ -283,7 +283,7 @@ const renderStatusTag = (status, approvalStatusMap) => {
         border: "none",
         borderRadius: "4px",
         padding: "2px 8px",
-        fontSize: "12px",
+        fontSize: "16px",
         lineHeight: "1.4",
       }}
       className="border-less-table-orange-status"

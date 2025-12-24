@@ -87,6 +87,7 @@
 }
 
 .icon {
+  margin-bottom: -8px;
   font-size: 16px;
   color: #5a5a5a;
 }
@@ -131,7 +132,8 @@
 }
 .reportListWrapper {
   max-height: 180px; /* Adjust as needed */
-  overflow-y: auto;
+  overflow: hidden;
+  /* overflow-y: auto; */
   overflow-x: hidden;
   padding-right: 4px; /* prevent content being cut off by scrollbar */
 }

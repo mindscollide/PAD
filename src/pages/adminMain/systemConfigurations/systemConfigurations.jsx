@@ -29,6 +29,7 @@ import {
 
 // 🔹 Styles
 import style from "./system_Configurations.module.css";
+import { stringify } from "postcss";
 
 const SystemConfigurations = () => {
   // ------------------------------------------------
@@ -140,7 +141,6 @@ const SystemConfigurations = () => {
    */
   const handleSave = async () => {
     setButtonDisable(true);
-
     // Check if any field is empty (null, undefined, or empty string)
     const hasEmptyFields = formValues.some(
       (item) =>
@@ -180,6 +180,7 @@ const SystemConfigurations = () => {
       } catch (error) {
         showNotification("Failed to fetch system configurations", "error");
       } finally {
+        setButtonDisable(false);
         showLoader(false);
       }
 
@@ -329,12 +330,27 @@ const SystemConfigurations = () => {
                           }
                           onChange={(e) => {
                             const value = e.target.value;
+                            // Allow empty or partial input (so user can type)
+                            handleChange(item.configurationID, value);
+                          }}
+                          onBlur={(e) => {
+                            const value = e.target.value;
+                            const num = Number(value);
+
                             if (
-                              value === "" ||
-                              (Number(value) >= (item.minValue ?? 1) &&
-                                Number(value) <= (item.maxValue ?? 100))
+                              value !== "" &&
+                              (num < (item.minValue ?? 1) ||
+                                num > (item.maxValue ?? 100))
                             ) {
-                              handleChange(item.configurationID, value);
+                              // Clamp the number, then convert back to string before setting
+                              const clamped = Math.min(
+                                Math.max(num, item.minValue ?? 1),
+                                item.maxValue ?? 100
+                              );
+                              handleChange(
+                                item.configurationID,
+                                String(clamped)
+                              );
                             }
                           }}
                           placeholder="Enter number"

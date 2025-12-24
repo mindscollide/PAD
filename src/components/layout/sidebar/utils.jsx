@@ -162,12 +162,16 @@ const sidebarItems = (
           icon: (
             <img
               draggable={false}
-              src={getIcon("22", SystemSettingLightIcon, SystemSettingDarktIcon)}
+              src={getIcon(
+                "22",
+                SystemSettingLightIcon,
+                SystemSettingDarktIcon
+              )}
               alt="System Settings"
               className={getIconClasses()}
             />
           ),
-          label: "System Settings",
+          label: "System Configurations",
         },
         {
           key: "23",
@@ -194,6 +198,7 @@ const sidebarItems = (
               src={getIcon("1", ApprovalLightIcon, ApprovalDarkIcon)}
               alt="My Approvals"
               className={getIconClasses()}
+              data-testid="employee-my-approvals-icon"
             />
           ),
           label: "My Approvals",
@@ -206,6 +211,7 @@ const sidebarItems = (
               src={getIcon("2", TransactionLightIcon, TransactionDarkIcon)}
               alt="My Transactions"
               className={getIconClasses()}
+              data-testid="employee-my-transactions-icon"
             />
           ),
           label: "My Transactions",
@@ -218,6 +224,7 @@ const sidebarItems = (
               src={getIcon("3", HistoryLightIcon, HistoryDarkIcon)}
               alt="My History"
               className={getIconClasses()}
+              data-testid="employee-my-history-icon"
             />
           ),
           label: "My History",
@@ -230,6 +237,7 @@ const sidebarItems = (
               src={getIcon("4", PortfolioLightIcon, PortfolioDarkIcon)}
               alt="Portfolio"
               className={getIconClasses()}
+              data-testid="employee-portfolio-icon"
             />
           ),
           label: "Portfolio",
@@ -242,6 +250,7 @@ const sidebarItems = (
               src={getIcon("5", ReportsLightIcon, ReportsDarkIcon)}
               alt="Reports"
               className={getIconClasses()}
+              data-testid="employee-reports-icon"
             />
           ),
           label: "Reports",
@@ -343,11 +352,11 @@ const sidebarItems = (
             <img
               draggable={false}
               src={getIcon("12", VerificationsLightIcon, VerificationsDarkIcon)}
-              alt="Escalated Trade Approval Requests"
+              alt="Escalated Approvals"
               className={getIconClasses()}
             />
           ),
-          label: "Escalated Trade Approval Requests",
+          label: "Escalated Approvals",
         },
         {
           key: "13",
@@ -384,11 +393,11 @@ const sidebarItems = (
             <img
               draggable={false}
               src={getIcon("15", VerificationsLightIcon, VerificationsDarkIcon)}
-              alt="Escalated Trade Approval Verifications"
+              alt="Escalated Transactions Verifications"
               className={getIconClasses()}
             />
           ),
-          label: "Escalated Trade Approval Verifications",
+          label: "Escalated Transactions Verifications",
         },
         {
           key: "16",
@@ -496,7 +505,7 @@ export const routeMap = {
   19: "/PAD/admin-brokers",
   20: "/PAD/admin-group-policies",
   21: "/PAD/admin-users",
-  22: "/PAD/admin-system-settings",
+  22: "/PAD/admin-system-configurations",
   23: "/PAD/admin-reports",
 
   50: "/PAD/faq",

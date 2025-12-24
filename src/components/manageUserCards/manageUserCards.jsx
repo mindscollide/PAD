@@ -9,8 +9,12 @@ import { useNotification } from "../NotificationProvider/NotificationProvider";
 import { useGlobalLoader } from "../../context/LoaderContext";
 import { useApi } from "../../context/ApiContext";
 import { useNavigate } from "react-router-dom";
-import { ViewDetailManageUserUserTabRequest } from "../../api/adminApi";
+import {
+  GetViewDetailsUserRoleAndPoliciesRequests,
+  ViewDetailManageUserUserTabRequest,
+} from "../../api/adminApi";
 import { useMyAdmin } from "../../context/AdminContext";
+import { useSearchBarContext } from "../../context/SearchBarContaxt";
 
 const ManageUsersCard = ({ profile, name, email, id, file }) => {
   const navigate = useNavigate();
@@ -19,9 +23,14 @@ const ManageUsersCard = ({ profile, name, email, id, file }) => {
   const { showNotification } = useNotification();
   const { showLoader } = useGlobalLoader();
   const { callApi } = useApi();
-  const { setViewDetailManageUser } = useGlobalModal();
-  const { setManageUsersViewDetailModalData } = useMyAdmin();
-
+  const { setViewDetailManageUser, setRolesAndPoliciesManageUser } =
+    useGlobalModal();
+  const {
+    setManageUsersViewDetailModalData,
+    setRoleAndPolicyViewDetailData,
+    setAdminSessionWiseActivityListData,
+  } = useMyAdmin();
+  const { setAdminSessionWiseActivitySearch } = useSearchBarContext();
   const [menuVisible, setMenuVisible] = useState(false);
 
   /** 🔹 on Manage User When you Click On dropdown then ViewDetail button show API Function*/
@@ -44,6 +53,46 @@ const ManageUsersCard = ({ profile, name, email, id, file }) => {
     }
   };
 
+  /** 🔹 on Click Role And Policies API Hit to get User Details Data in view detail modal of manage User users Tab*/
+  const onClickRoleAndPolicy = async () => {
+    showLoader(true);
+    let payload = {
+      UserID: Number(id),
+    };
+
+    console.log(payload, "CheckDataDaatat");
+
+    let res = await GetViewDetailsUserRoleAndPoliciesRequests({
+      callApi,
+      showNotification,
+      showLoader,
+      requestdata: payload,
+      setViewDetailManageUser,
+      setRolesAndPoliciesManageUser,
+      navigate,
+    });
+
+    if (res) {
+      setRoleAndPolicyViewDetailData(res);
+    }
+  };
+  const handleOpensessionWiseActivity = async () => {
+    // Update employeeName in state
+    await setAdminSessionWiseActivityListData((prev) => ({
+      ...prev,
+      employeeName: name,
+    }));
+
+    // Call your API function
+    await setAdminSessionWiseActivitySearch((prev) => ({
+      ...prev,
+      employeeID: id,
+    }));
+
+    // Navigate to the route
+    navigate("/PAD/admin-users/session-wise-activity");
+  };
+
   const items = [
     {
       key: "1",
@@ -62,12 +111,27 @@ const ManageUsersCard = ({ profile, name, email, id, file }) => {
     {
       key: "2",
       label: (
-        <span className={styles.dropdownClass}>Session wise activity</span>
+        <span
+          className={styles.dropdownClass}
+          onClick={() => handleOpensessionWiseActivity()}
+        >
+          Session wise activity
+        </span>
       ),
     },
     {
       key: "3",
-      label: <span className={styles.dropdownClass}>Roles & Policies</span>,
+      label: (
+        <span
+          className={styles.dropdownClass}
+          onClick={() => {
+            setRolesAndPoliciesManageUser(true);
+            onClickRoleAndPolicy();
+          }}
+        >
+          Roles & Policies
+        </span>
+      ),
     },
   ];
 

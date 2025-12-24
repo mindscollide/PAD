@@ -13,14 +13,19 @@ import TypeColumnTitle from "../../../../../components/dropdowns/filters/typeCol
 import StatusColumnTitle from "../../../../../components/dropdowns/filters/statusColumnTitle";
 
 // Helpers
-import { formatApiDateTime, toYYMMDD } from "../../../../../common/funtions/rejex";
+import {
+  formatApiDateTime,
+  toYYMMDD,
+} from "../../../../../common/funtions/rejex";
 import { useGlobalModal } from "../../../../../context/GlobalModalContext";
 import { usePortfolioContext } from "../../../../../context/portfolioContax";
 import { getTradeTypeById } from "../../../../../common/funtions/type";
-import { mapBuySellToIds, mapStatusToIds } from "../../../../../components/dropdowns/filters/utils";
+import {
+  mapBuySellToIds,
+  mapStatusToIds,
+} from "../../../../../components/dropdowns/filters/utils";
 
 const { Text } = Typography;
-
 
 /**
  * Builds API request payload from search/filter state
@@ -29,10 +34,7 @@ const { Text } = Typography;
  * @param {Object} assetTypeListingData - Asset type listing data (from API)
  * @returns {Object} Formatted request payload for API
  */
-export const buildApiRequest = (
-  searchState = {},
-  assetTypeListingData
-) => {
+export const buildApiRequest = (searchState = {}, assetTypeListingData) => {
   const formatDate = (date) => (date ? toYYMMDD(date) : "");
 
   return {
@@ -243,9 +245,11 @@ export const getBorderlessTableColumns = ({
     showSorterTooltip: false,
     sortIcon: () => null,
     render: (date) => (
-      <span className="text-gray-600" title={date || "—"}>
-        {formatApiDateTime(date) || "—"}
-      </span>
+      <Tooltip title={formatApiDateTime(date) || "—"}>
+        <span className="text-gray-600" title={date || "—"}>
+          {formatApiDateTime(date) || "—"}
+        </span>
+      </Tooltip>
     ),
     onHeaderCell: () => nowrapCell(120, 160),
     onCell: () => nowrapCell(120, 160),
@@ -325,7 +329,7 @@ export const getBorderlessTableColumns = ({
             border: "none",
             borderRadius: "4px",
             padding: "2px 8px",
-            fontSize: "12px",
+            fontSize: "16px",
             fontWeight: "500",
           }}
           className="border-less-table-orange-status"
@@ -356,9 +360,11 @@ export const getBorderlessTableColumns = ({
     showSorterTooltip: false,
     sortIcon: () => null,
     render: (date) => (
-      <span className="text-gray-600" title={date || "—"}>
-        {formatApiDateTime(date) || "—"}
-      </span>
+      <Tooltip title={formatApiDateTime(date) || "—"}>
+        <span className="text-gray-600" title={date || "—"}>
+          {formatApiDateTime(date) || "—"}
+        </span>
+      </Tooltip>
     ),
     onHeaderCell: () => nowrapCell(120, 160),
     onCell: () => nowrapCell(120, 160),

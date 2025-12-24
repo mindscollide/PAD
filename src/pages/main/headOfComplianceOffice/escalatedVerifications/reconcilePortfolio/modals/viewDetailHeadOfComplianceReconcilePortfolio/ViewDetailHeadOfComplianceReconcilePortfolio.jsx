@@ -17,7 +17,6 @@ import { useReconcileContext } from "../../../../../../../context/reconsileConta
 import { usePortfolioContext } from "../../../../../../../context/portfolioContax";
 
 const ViewDetailHeadOfComplianceReconcilePortfolio = () => {
-
   // This is Global State for modal which is create in ContextApi
   const {
     viewDetailHeadOfComplianceEscalatedPortfolio,
@@ -191,7 +190,12 @@ const ViewDetailHeadOfComplianceReconcilePortfolio = () => {
                             <span>EQ</span>
                           )}
                         </span>{" "}
-                        {selectedInstrument?.instrumentCode}
+                        <span
+                          className={styles.viewDetailSubLabelsForInstrument}
+                          title={selectedInstrument?.instrumentName}
+                        >
+                          {selectedInstrument?.instrumentCode}
+                        </span>
                       </label>
                     </div>
                   </Col>
@@ -201,10 +205,13 @@ const ViewDetailHeadOfComplianceReconcilePortfolio = () => {
                         Portfolio ID
                       </label>
                       <label className={styles.viewDetailSubLabels}>
-                        {dashBetweenApprovalAssets(
-                          isEscalatedPortfolioHeadOfComplianceViewDetailData
-                            ?.details?.[0]?.tradeApprovalID
-                        )}
+                        {isEscalatedPortfolioHeadOfComplianceViewDetailData
+                          ?.details?.[0]?.tradeApprovalID
+                          ? isEscalatedPortfolioHeadOfComplianceViewDetailData.details[0].tradeApprovalID.replace(
+                              /^P/,
+                              "P-"
+                            )
+                          : ""}
                       </label>
                     </div>
                   </Col>

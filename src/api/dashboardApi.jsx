@@ -139,6 +139,56 @@ export const GetUserDashBoardStats = async ({
     showLoader(false);
   }
 };
+/**
+ * ✅ Fetches all employee-based broker data
+ */
+export const GetAllBrokers = async ({
+  callApi,
+  showNotification,
+  showLoader,
+  navigate,
+}) => {
+  try {
+    const res = await callApi({
+      requestMethod: import.meta.env.VITE_ALL_BROKERS_DATA_REQUEST_METHOD,
+      endpoint: import.meta.env.VITE_API_TRADE,
+      requestData: {},
+      navigate,
+    });
+
+    // Handle session expiration
+    if (handleExpiredSession(res, navigate, showLoader)) return null;
+
+    if (!res?.result?.isExecuted) {
+      showErrorNotification(showNotification);
+      return null;
+    }
+
+    const { success, result } = res;
+    const { responseMessage, employeeBrokers } = result;
+
+    if (success) {
+      if (
+        responseMessage ===
+        "PAD_Trade_TradeServiceManager_GetAllEmployeeBrokers_01"
+      ) {
+        return employeeBrokers;
+      }
+      showWarningNotification(showNotification, responseMessage);
+      return null;
+    }
+
+    showErrorNotification(
+      showNotification,
+      "Fetch Failed",
+      getMessage(res.message)
+    );
+    return null;
+  } catch (error) {
+    showErrorNotification(showNotification);
+    return null;
+  }
+};
 
 /**
  * ✅ Fetches all employee-based broker data
@@ -161,34 +211,47 @@ export const GetAllEmployeeBrokers = async ({
     if (handleExpiredSession(res, navigate, showLoader)) return null;
 
     if (!res?.result?.isExecuted) {
-      showErrorNotification(showNotification);
-      return null;
+      showNotification({
+        type: "error",
+        title: "Error",
+        description:
+          "Something went wrong while fetching all Employees data. Please try again .",
+      });
+      return [];
     }
 
     const { success, result } = res;
-    const { responseMessage, employeeBrokers } = result;
+    const { responseMessage, brokers } = result;
 
     if (success) {
       if (
         responseMessage ===
-        "PAD_Trade_TradeServiceManager_GetAllEmployeeBrokers_01"
+        "PAD_Trade_TradeServiceManager_GetActiveBrokersByEmployeeAPI_01"
       ) {
-        return employeeBrokers;
+        return brokers;
+      } else if (
+        responseMessage ===
+        "PAD_Trade_TradeServiceManager_GetActiveBrokersByEmployeeAPI_02"
+      ) {
+        return [];
       }
-
-      showWarningNotification(showNotification, responseMessage);
-      return null;
+      return [];
     }
 
-    showErrorNotification(
-      showNotification,
-      "Fetch Failed",
-      getMessage(res.message)
-    );
-    return null;
+    showNotification({
+      type: "error",
+      title: "Request Failed",
+      description: getMessage(res.message),
+    });
+    return [];
   } catch (error) {
-    showErrorNotification(showNotification);
-    return null;
+    showNotification({
+      type: "error",
+      title: "Error",
+      description:
+        "An unexpected error occurred while fetching all Employees data.",
+    });
+    return [];
   }
 };
 
@@ -212,7 +275,12 @@ export const GetAllInstruments = async ({
     if (handleExpiredSession(res, navigate, showLoader)) return null;
 
     if (!res?.result?.isExecuted) {
-      showErrorNotification(showNotification);
+      showNotification({
+        type: "error",
+        title: "Error",
+        description:
+          "Something went wrong while fetching  all Instrument data. Please try again .",
+      });
       return null;
     }
 
@@ -224,21 +292,28 @@ export const GetAllInstruments = async ({
         responseMessage === "PAD_Trade_TradeServiceManager_GetAllInstruments_01"
       ) {
         return instruments;
+      } else if (
+        responseMessage === "PAD_Trade_TradeServiceManager_GetAllInstruments_02"
+      ) {
+        return [];
       }
-
-      showWarningNotification(showNotification, responseMessage);
-      return null;
+      return [];
     }
 
-    showErrorNotification(
-      showNotification,
-      "Fetch Failed",
-      getMessage(res.message)
-    );
-    return null;
+    showNotification({
+      type: "error",
+      title: "Request Failed",
+      description: getMessage(res.message),
+    });
+    return [];
   } catch (error) {
-    showErrorNotification(showNotification);
-    return null;
+    showNotification({
+      type: "error",
+      title: "Error",
+      description:
+        "An unexpected error occurred while fetching  all Instrument data.",
+    });
+    return [];
   }
 };
 
@@ -264,8 +339,13 @@ export const GetAllTradeApproval = async ({
     if (handleExpiredSession(res, navigate, showLoader)) return null;
 
     if (!res?.result?.isExecuted) {
-      showErrorNotification(showNotification);
-      return null;
+      showNotification({
+        type: "error",
+        title: "Error",
+        description:
+          "Something went wrong while fetching all Trade approval. Please try again .",
+      });
+      return [];
     }
 
     const { success, result } = res;
@@ -279,8 +359,7 @@ export const GetAllTradeApproval = async ({
         return tradeApprovalTypeGrouped;
       }
 
-      showWarningNotification(showNotification, responseMessage);
-      return null;
+      return [];
     }
 
     showErrorNotification(
@@ -288,10 +367,15 @@ export const GetAllTradeApproval = async ({
       "Fetch Failed",
       getMessage(res.message)
     );
-    return null;
+    return [];
   } catch (error) {
-    showErrorNotification(showNotification);
-    return null;
+    showNotification({
+      type: "error",
+      title: "Error",
+      description:
+        "An unexpected error occurred while fetching all Trade approval.",
+    });
+    return [];
   }
 };
 
@@ -317,7 +401,12 @@ export const GetAllPredefineReassonApi = async ({
     if (handleExpiredSession(res, navigate, showLoader)) return null;
 
     if (!res?.result?.isExecuted) {
-      showErrorNotification(showNotification);
+      showNotification({
+        type: "error",
+        title: "Error",
+        description:
+          "Something went wrong while fetching all predefine reasons. Please try again .",
+      });
       return null;
     }
 
@@ -330,10 +419,14 @@ export const GetAllPredefineReassonApi = async ({
         "PAD_Trade_TradeServiceManager_GetAllPredefinedReasons_01"
       ) {
         return reasons;
+      } else if (
+        responseMessage ===
+        "PAD_Trade_TradeServiceManager_GetAllPredefinedReasons_02"
+      ) {
+        return [];
       }
 
-      showWarningNotification(showNotification, responseMessage);
-      return null;
+      return [];
     }
 
     showErrorNotification(
@@ -341,9 +434,79 @@ export const GetAllPredefineReassonApi = async ({
       "Fetch Failed",
       getMessage(res.message)
     );
+    return [];
+  } catch (error) {
+    showNotification({
+      type: "error",
+      title: "Error",
+      description:
+        "An unexpected error occurred while fetching all predefine reasons.",
+    });
+    return [];
+  }
+};
+
+/**
+ * ✅ Fetches all employee-based broker data
+ */
+export const SaveUserBrokers = async ({
+  callApi,
+  showNotification,
+  showLoader,
+  requestData,
+  setShowSaveBrokerModal,
+  navigate,
+}) => {
+  try {
+    const res = await callApi({
+      requestMethod: import.meta.env
+        .VITE_SAVE_USER_BROKERS_REQUEST_API_REQUEST_METHOD,
+      endpoint: import.meta.env.VITE_API_TRADE,
+      requestData: requestData,
+      navigate,
+    });
+
+    // Handle session expiration
+    if (handleExpiredSession(res, navigate, showLoader)) return null;
+
+    if (!res?.result?.isExecuted) {
+      showNotification({
+        type: "error",
+        title: "Error",
+        description: "Something went wrong while Saving employee base brokers.",
+      });
+      return null;
+    }
+
+    const { success, result } = res;
+    const { responseMessage } = result;
+    const message = getMessage(responseMessage);
+    if (success) {
+      if (
+        responseMessage === "PAD_Trade_TradeServiceManager_SaveUserBrokers_02"
+      ) {
+        setShowSaveBrokerModal(true);
+        return true;
+      }
+
+      return false;
+    }
+
+    if (message) {
+      showNotification({
+        type: "warning",
+        title: message,
+        description: "No brokers saving employee.",
+      });
+    }
     return null;
   } catch (error) {
-    showErrorNotification(showNotification);
+    showNotification({
+      type: "error",
+      title: "Error",
+      description:
+        "An unexpected error occurred while Saving employee base brokers.",
+    });
     return null;
   }
 };

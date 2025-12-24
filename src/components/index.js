@@ -31,3 +31,5 @@ export { default as SubmittedModal } from "./modal/submittedModal/SubmittedModal
 export { default as Uploads } from "./uploads/Uploads";
 export { default as BrokerList } from "./brokerList/brokerList";
 export { default as ManageUsersCard } from "./manageUserCards/manageUserCards";
+export { default as DonutChart } from "./donutChart/donutChart";
+export { default as BrokersSelect } from "./dropdowns/brokersDropeDown/index";

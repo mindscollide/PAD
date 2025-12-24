@@ -40,7 +40,7 @@ export const SearchBarProvider = ({ children }) => {
     instrumentName: "",
     quantity: "",
     startDate: null,
-    endtDate: null,
+    endDate: null,
     type: [],
     status: [],
     pageSize: 10,
@@ -93,19 +93,53 @@ export const SearchBarProvider = ({ children }) => {
 
   /** 🔍 Employee My History table filters */
   const [employeeMyHistorySearch, setEmployeeMyHistorySearch] = useState({
-    transactionid: "",
+    requestID: "",
     instrumentName: "",
     quantity: 0,
     startDate: null,
     endDate: null,
-    mainInstrumentName: "",
-    type: [],
-    nature: [],
+    nature: "",
     status: [],
-    pageSize: 10,
+    type: [],
     pageNumber: 0,
+    pageSize: 10,
     filterTrigger: false,
   });
+
+  /** 🔍 Employee My Transaction Report table filters */
+  const [
+    employeeMyTransactionReportSearch,
+    setEmployeeMyTransactionReportSearch,
+  ] = useState({
+    instrumentName: "",
+    quantity: 0,
+    startDate: null,
+    endDate: null,
+    status: [],
+    type: [],
+    broker: "",
+    actionBy: "",
+    actionStartDate: null,
+    actionEndDate: null,
+    pageNumber: 0,
+    pageSize: 10,
+    filterTrigger: false,
+  });
+
+  // /** employee my tade approvals report filters */* //
+  const [employeeMyTradeApprovalsSearch, setEmployeeMyTradeApprovalsSearch] =
+    useState({
+      instrumentName: "",
+      quantity: 0,
+      startDate: null,
+      endDate: null,
+      type: [],
+      status: [],
+      brokerIDs: [],
+      pageSize: 10,
+      pageNumber: 0,
+      filterTrigger: false,
+    });
 
   // ===============================
   // Line Manager States
@@ -122,6 +156,50 @@ export const SearchBarProvider = ({ children }) => {
     status: [],
     pageSize: 10,
     pageNumber: 0,
+    filterTrigger: false,
+  });
+
+  /** 🔍 LineManager My Action table filters */
+  const [lineManagerMyActionSearch, setLineManagerMyActionSearch] = useState({
+    requestID: "",
+    instrumentName: "",
+    requesterName: "",
+    startDate: null,
+    endDate: null,
+    type: [],
+    status: [],
+    quantity: 0,
+    pageNumber: 0,
+    pageSize: 10,
+    filterTrigger: false,
+  });
+
+  /** 🔍 Line Manager Pending Approval Reports filters */
+  const [lMPendingApprovalReportsSearch, setLMPendingApprovalReportsSearch] =
+    useState({
+      instrumentName: "",
+      requesterName: "",
+      quantity: 0,
+      startDate: null,
+      endDate: null,
+      type: [],
+      status: [],
+      pageSize: 10,
+      pageNumber: 0,
+      filterTrigger: false,
+    });
+
+  /** 🔍 My Trade APproval Reqport on Line Manager table filters */
+  const [
+    myTradeApprovalReportLineManageSearch,
+    setMyTradeApprovalReportLineManageSearch,
+  ] = useState({
+    employeeName: "",
+    startDate: null,
+    endDate: null,
+    departmentName: "",
+    pageNumber: 0,
+    pageSize: 10,
     filterTrigger: false,
   });
 
@@ -189,6 +267,39 @@ export const SearchBarProvider = ({ children }) => {
     filterTrigger: false,
   });
 
+  /** 🔍 Compliance Officeer My Action table filters */
+  const [complianceOfficerMyActionSearch, setComplianceOfficerMyActionSearch] =
+    useState({
+      transactionID: 0,
+      instrumentName: "",
+      requesterName: "",
+      startDate: null,
+      endDate: null,
+      type: [],
+      status: [],
+      quantity: 0,
+      pageNumber: 0,
+      pageSize: 10,
+      filterTrigger: false,
+    });
+
+  const [
+    coDatewiseTransactionReportSearch,
+    setCODatewiseTransactionReportSearch,
+  ] = useState({
+    employeeID: 0,
+    employeeName: "",
+    departmentName: "",
+    instrumentName: "",
+    quantity: "",
+    startDate: null,
+    endDate: null,
+    type: [],
+    status: [],
+    pageNumber: 0,
+    pageSize: 10,
+    filterTrigger: false,
+  });
   // ===============================
   // Head of Compliance Approval (HCA) States
   // ===============================
@@ -230,6 +341,36 @@ export const SearchBarProvider = ({ children }) => {
     pageSize: 10,
     pageNumber: 0,
     totalRecords: 0,
+    filterTrigger: false,
+  });
+  // ===============================
+  //  Compliance Approval (CA) States
+  // ===============================
+  /** 🔍 CO Portfolio filters */
+  const [
+    coTransactionsSummarysReportsSearch,
+    setCOTransactionsSummarysReportsSearch,
+  ] = useState({
+    endDate: "",
+    startDate: "",
+    pageSize: 10,
+    pageNumber: 0,
+    filterTrigger: false,
+  });
+
+  /** 🔍 CO Portfolio filters */
+  const [
+    coTransactionsSummarysReportsViewDetailsSearch,
+    setCOTransactionsSummarysReportsViewDetailSearch,
+  ] = useState({
+    transactionDate: "",
+    quantitySearch: "",
+    instrumentNameSearch: "",
+    requesterNameSearch: "",
+    type: [],
+    status: [],
+    pageSize: 10,
+    pageNumber: 0,
     filterTrigger: false,
   });
 
@@ -323,6 +464,16 @@ export const SearchBarProvider = ({ children }) => {
     pageSize: 10,
   });
 
+  const [adminSessionWiseActivitySearch, setAdminSessionWiseActivitySearch] =
+    useState({
+      employeeID: 0,
+      ipAddress: 0,
+      startDate: null,
+      endDate: null,
+      pageNumber: 0,
+      pageSize: 10,
+      filterTrigger: false,
+    });
   // ===============================
   // Sync Refs (Always-Latest Values)
   // ===============================
@@ -413,7 +564,7 @@ export const SearchBarProvider = ({ children }) => {
       instrumentName: "",
       quantity: 0,
       startDate: null,
-      endtDate: null,
+      endDate: null,
       type: [],
       status: [],
       pageSize: 10,
@@ -424,6 +575,20 @@ export const SearchBarProvider = ({ children }) => {
   /** Reset Employee My Transaction filters */
   const resetEmployeeMyTransactionSearch = () =>
     setEmployeeMyTransactionSearch({
+      instrumentName: "",
+      quantity: "",
+      startDate: null,
+      endDate: null,
+      type: [],
+      status: [],
+      brokerIDs: [],
+      pageSize: 10,
+      pageNumber: 0,
+      filterTrigger: false,
+    });
+  /** Reset Employee My Trade Approvals filters */
+  const resetEmployeMyTradeApprovalsSearch = () =>
+    setEmployeeMyTradeApprovalsSearch({
       instrumentName: "",
       quantity: "",
       startDate: null,
@@ -470,23 +635,67 @@ export const SearchBarProvider = ({ children }) => {
   /** Reset Employee My History filters */
   const resetEmployeeMyHistorySearch = () =>
     setEmployeeMyHistorySearch({
-      transactionid: "",
+      requestID: "",
       instrumentName: "",
       quantity: 0,
       startDate: null,
       endDate: null,
       mainInstrumentName: "",
+      nature: "",
       type: [],
-      nature: [],
       status: [],
       pageSize: "",
       pageNumber: 0,
-      filterTrigger: true,
+      filterTrigger: false,
+    });
+
+  /** Reset Employee My Transaction Report filters */
+
+  const resetEmployeeMyTransactionReportSearch = () =>
+    setEmployeeMyTransactionReportSearch({
+      instrumentName: "",
+      quantity: 0,
+      startDate: null,
+      endDate: null,
+      status: [],
+      type: [],
+      broker: "",
+      actionBy: "",
+      actionStartDate: null,
+      actionEndDate: null,
+      pageNumber: 0,
+      pageSize: 10,
+      filterTrigger: false,
     });
 
   /** Reset Line Manager Approval filters */
   const resetLineManagerApprovalSearch = () =>
     setLineManagerApprovalSearch({
+      instrumentName: "",
+      requesterName: "",
+      quantity: 0,
+      startDate: null,
+      endDate: null,
+      type: [],
+      status: [],
+      pageSize: 10,
+      pageNumber: 0,
+      filterTrigger: false,
+    });
+
+  const resetLineManagerMyTradeApproval = () =>
+    setMyTradeApprovalReportLineManageSearch({
+      employeeName: "",
+      startDate: null,
+      endDate: null,
+      departmentName: "",
+      pageNumber: 0,
+      pageSize: 10,
+      filterTrigger: false,
+    });
+
+  const resetLineManagerPendingApprovalReportsSearch = () =>
+    setLMPendingApprovalReportsSearch({
       instrumentName: "",
       requesterName: "",
       quantity: 0,
@@ -514,6 +723,22 @@ export const SearchBarProvider = ({ children }) => {
       totalRecords: 0,
       filterTrigger: false,
     });
+  /** Reset Compliance Officer date wise transaction report filters */
+  const resetComplianceOfficerDateWiseTransationReportSearch = () =>
+    setCODatewiseTransactionReportSearch({
+      employeeID: 0,
+      employeeName: "",
+      departmentName: "",
+      instrumentName: "",
+      quantity: "",
+      startDate: null,
+      endDate: null,
+      type: [],
+      status: [],
+      pageNumber: 0,
+      pageSize: 10,
+      filterTrigger: false,
+    });
 
   /** Reset Compliance Officer Reconcile Portfolio filters */
   const resetComplianceOfficerReconcilePortfoliosSearch = () =>
@@ -529,6 +754,45 @@ export const SearchBarProvider = ({ children }) => {
       pageSize: 10,
       pageNumber: 0,
       totalRecords: 0,
+      filterTrigger: false,
+    });
+
+  /** Reset Compliance Officer Transactions Summarys Reports View Details Search filters */
+  const resetCOTransactionsSummarysReportsViewDetailsSearch = () =>
+    setCOTransactionsSummarysReportsViewDetailSearch({
+      transactionDate: "",
+      quantitySearch: "",
+      instrumentNameSearch: "",
+      requesterNameSearch: "",
+      type: [],
+      status: [],
+      pageSize: 10,
+      pageNumber: 0,
+      filterTrigger: false,
+    });
+
+  /** Reset Compliance Officer Approval filters */
+  const resetComplianceOfficerMyActionSearch = () =>
+    setComplianceOfficerMyActionSearch({
+      transactionID: 0,
+      instrumentName: "",
+      requesterName: "",
+      startDate: null,
+      endDate: null,
+      type: [],
+      status: [],
+      quantity: 0,
+      pageNumber: 0,
+      pageSize: 10,
+      filterTrigger: false,
+    });
+
+  const resetCOTransactionsSummarysReportsSearch = () =>
+    setCOTransactionsSummarysReportsSearch({
+      endDate: "",
+      startDate: "",
+      pageNumber: 0,
+      pageSize: 10,
       filterTrigger: false,
     });
 
@@ -676,6 +940,18 @@ export const SearchBarProvider = ({ children }) => {
       pageSize: 10,
     });
 
+  // Admin reset session wise activity Search
+  const resetAdminSessionWiseActivitySearch = () =>
+    setAdminSessionWiseActivitySearch({
+      employeeID: 0,
+      ipAddress: 0,
+      startDate: null,
+      endDate: null,
+      pageNumber: 0,
+      pageSize: 10,
+      filterTrigger: false,
+    });
+
   // ================================================================================ //
   /** Reset all filters across modules */
   const resetSearchBarContextState = () => {
@@ -684,7 +960,9 @@ export const SearchBarProvider = ({ children }) => {
     resetEmployeePortfolioSearch();
     resetEmployeePendingApprovalSearch();
     resetEmployeeMyHistorySearch();
+    resetEmployeeMyTransactionReportSearch();
     resetLineManagerApprovalSearch();
+    resetLineManagerMyTradeApproval();
     resetComplianceOfficerReconcileTransactionsSearch();
     resetComplianceOfficerReconcilePortfoliosSearch();
     resetHeadOfComplianceApprovalPortfolioSearch();
@@ -698,6 +976,7 @@ export const SearchBarProvider = ({ children }) => {
     resetUsersTabSearch();
     resetPendingRequestsTabSearch();
     resetRejectedRequestsTabSearch();
+    resetEmployeMyTradeApprovalsSearch();
   };
 
   // ===============================
@@ -722,12 +1001,30 @@ export const SearchBarProvider = ({ children }) => {
         employeeMyHistorySearch,
         setEmployeeMyHistorySearch,
         resetEmployeeMyHistorySearch,
+        employeeMyTransactionReportSearch,
+        setEmployeeMyTransactionReportSearch,
+        resetEmployeeMyTransactionReportSearch,
+
+        // employee Reports
+        resetEmployeMyTradeApprovalsSearch,
+        employeeMyTradeApprovalsSearch,
+        setEmployeeMyTradeApprovalsSearch,
 
         // Line Manager
         lineManagerApprovalSearch,
         setLineManagerApprovalSearch,
         resetLineManagerApprovalSearch,
+        lineManagerMyActionSearch,
+        setLineManagerMyActionSearch,
+        /** 🔍 My Trade Approval Reqport on Line Manager */
+        myTradeApprovalReportLineManageSearch,
+        setMyTradeApprovalReportLineManageSearch,
+        resetLineManagerMyTradeApproval,
 
+        // LM Reports
+        lMPendingApprovalReportsSearch,
+        setLMPendingApprovalReportsSearch,
+        resetLineManagerPendingApprovalReportsSearch,
         // Compliance Officer
         complianceOfficerReconcileTransactionsSearch,
         setComplianceOfficerReconcileTransactionsSearch,
@@ -735,7 +1032,21 @@ export const SearchBarProvider = ({ children }) => {
         complianceOfficerReconcilePortfolioSearch,
         setComplianceOfficerReconcilePortfolioSearch,
         resetComplianceOfficerReconcilePortfoliosSearch,
+        coDatewiseTransactionReportSearch,
+        setCODatewiseTransactionReportSearch,
+        resetComplianceOfficerDateWiseTransationReportSearch,
 
+        coTransactionsSummarysReportsViewDetailsSearch,
+        setCOTransactionsSummarysReportsViewDetailSearch,
+        resetCOTransactionsSummarysReportsViewDetailsSearch,
+
+        // Compliance Officer Myaction
+        complianceOfficerMyActionSearch,
+        setComplianceOfficerMyActionSearch,
+        resetComplianceOfficerMyActionSearch,
+        coTransactionsSummarysReportsSearch,
+        setCOTransactionsSummarysReportsSearch,
+        resetCOTransactionsSummarysReportsSearch,
         // Head of Compliance Approval
         headOfComplianceApprovalPortfolioSearch,
         setHeadOfComplianceApprovalPortfolioSearch,
@@ -784,6 +1095,12 @@ export const SearchBarProvider = ({ children }) => {
         rejectedRequestsTabSearch,
         setRejectedRequestsTabSearch,
         resetRejectedRequestsTabSearch,
+
+        // session Wise Activity
+        resetAdminSessionWiseActivitySearch,
+        adminSessionWiseActivitySearch,
+        setAdminSessionWiseActivitySearch,
+
         // Always-latest refs
         employeeMyApprovalSearchRef,
         employeeMyTransactionSearchRef,

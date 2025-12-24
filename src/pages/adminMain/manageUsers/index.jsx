@@ -20,6 +20,7 @@ import RequestApprovedRejeectedModal from "./modal/requestApprovedrejectModal/re
 import RejectedRequestTab from "./rejectedRequestTab/rejectedRequestTab";
 import ViewDetailsOfRejectedRequestModal from "./modal/viewDetailsOfRejectedRequestModal/ViewDetailsOfRejectedRequestModal";
 import { useSearchBarContext } from "../../../context/SearchBarContaxt";
+import IntimationEditRoleAndPoliciesModal from "./modal/intimatiomEditRoleAndPoliciesModal/IntimationEditRoleAndPoliciesModal";
 
 const ManageUsers = () => {
   // ----------------- Contexts -----------------
@@ -32,6 +33,7 @@ const ManageUsers = () => {
     activeManageUserTab,
     setActiveManageUserTab,
     viewDetailRejectedModal,
+    roleAndPoliciesIntimationModal,
   } = useGlobalModal();
 
   const {
@@ -43,6 +45,9 @@ const ManageUsers = () => {
     resetModalStateBulkAction,
     setTypeofAction,
     manageUsersPendingTabData,
+    setManageUsersPendingTabData,
+    setAdminManageUserTabData,
+    adminManageUserTabData,
   } = useMyAdmin();
 
   const {
@@ -75,7 +80,14 @@ const ManageUsers = () => {
       key: "1",
       label: (
         <span style={tabStyle("1")}>
-          Pending Requests <span style={{ color: "#30426A" }}>(02)</span>
+          Pending Requests{" "}
+          <span style={{ color: "#30426A" }}>
+            (
+            {adminManageUserTabData?.pendingReqeustCount
+              ? adminManageUserTabData?.pendingReqeustCount
+              : 0}
+            )
+          </span>
         </span>
       ),
     },
@@ -88,6 +100,10 @@ const ManageUsers = () => {
   useEffect(() => {
     return () => {
       resetmanageUsersContextState();
+      resetUsersTabSearch();
+      setAdminManageUserTabData([]);
+      setPendingRequestsTabSearch();
+      setManageUsersPendingTabData([]);
     };
   }, []);
 
@@ -137,7 +153,7 @@ const ManageUsers = () => {
       // 🟢 Users Tab
       const resetMap = {
         ...resetCommon,
-        employeeID: 0,
+        employeeID: "",
       };
 
       setUsersTabSearch((prev) => ({
@@ -182,7 +198,7 @@ const ManageUsers = () => {
       setUsersTabSearch((prev) => ({
         ...prev,
         employeeName: "",
-        employeeID: 0,
+        employeeID: "",
         emailAddress: "",
         departmentName: "",
         pageNumber: 0,
@@ -247,7 +263,7 @@ const ManageUsers = () => {
         value: truncate(employeeName),
       });
 
-    if (employeeID && employeeID !== 0)
+    if (employeeID && (employeeID !== 0 || employeeID !== ""))
       filters.push({
         key: "employeeID",
         label: "Employee ID",
@@ -402,6 +418,9 @@ const ManageUsers = () => {
 
       {/* For View Detail Of Rejected Request Modal */}
       {viewDetailRejectedModal && <ViewDetailsOfRejectedRequestModal />}
+
+      {/* Intimation Modal For Role ANd Policies */}
+      {roleAndPoliciesIntimationModal && <IntimationEditRoleAndPoliciesModal />}
     </>
   );
 };

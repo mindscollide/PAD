@@ -187,7 +187,7 @@ const ViewDetailHeadOfApprovalModal = () => {
                         </span>
                         <span
                           className={styles.viewDetailSubLabelsForInstrument}
-                          title={selectedInstrument?.instrumentCode}
+                          title={selectedInstrument?.instrumentName}
                         >
                           {selectedInstrument?.instrumentCode}
                         </span>

@@ -25,7 +25,7 @@ import {
   toYYMMDD,
 } from "../../../../../common/funtions/rejex";
 import UploadIcon from "../../../../../assets/img/upload-icon.png";
-import { getEmployeePortfolioColumns } from "./utils";
+import { buildPortfolioRequest, getEmployeePortfolioColumns } from "./utils";
 import { formatBrokerOptions } from "../pendingApprovals/utill";
 import { useNavigate } from "react-router-dom";
 
@@ -66,25 +66,6 @@ const Portfolio = ({ className, activeFilters }) => {
     Text,
   });
 
-  const buildPortfolioRequest = (searchState = {}) => {
-    const startDate = searchState.startDate
-      ? toYYMMDD(searchState.startDate)
-      : "";
-    const endDate = searchState.endDate ? toYYMMDD(searchState.endDate) : "";
-
-    return {
-      InstrumentName:
-        searchState.mainInstrumentName || searchState.instrumentName || "",
-      Quantity: searchState.quantity ? Number(searchState.quantity) : 0,
-      StartDate: startDate,
-      EndDate: endDate,
-      BrokerIds: Array.isArray(searchState.brokerIDs)
-        ? searchState.brokerIDs
-        : [],
-      PageNumber: Number(searchState.pageNumber) || 0,
-      Length: Number(searchState.pageSize) || 10,
-    };
-  };
 
   const fetchPortfolio = useCallback(
     async (requestData, replace = false) => {
@@ -192,7 +173,10 @@ const Portfolio = ({ className, activeFilters }) => {
   return (
     <div
       ref={listRef}
-      style={{ height: employeePortfolioData.length > 0?"540px":"80vh", overflowY: "auto" }} // ✅ scroll container
+      style={{
+        height: employeePortfolioData.length > 0 ? "540px" : "80vh",
+        overflowY: "auto",
+      }} // ✅ scroll container
     >
       {employeePortfolioData.length > 0 ? (
         <Collapse
@@ -218,16 +202,18 @@ const Portfolio = ({ className, activeFilters }) => {
                 className={styles.Panel}
                 header={
                   <div className={styles.panelHeader}>
-                    <Tooltip title={instrument.instrumentShortCode}>
+                    <Tooltip
+                      title={`${instrument.instrumentName} - ${instrument.instrumentShortCode} `}
+                    >
                       <span className={styles.shortName}>
                         {instrument.instrumentShortCode}
                       </span>
                     </Tooltip>
-                    <Tooltip title={instrument.instrumentName}>
+                    {/* <Tooltip title={instrument.instrumentName}> */}
                       <span className={`${styles.longName} ${styles.textWrap}`}>
                         {instrument.instrumentName}
                       </span>
-                    </Tooltip>
+                    {/* </Tooltip> */}
                     <span
                       className={styles.quantity}
                       style={{ color: isPositive ? "#00640A" : "#A50000" }}

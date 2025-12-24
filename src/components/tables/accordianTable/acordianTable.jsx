@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Table } from "antd";
+import { Spin, Table } from "antd";
 import { DownOutlined, UpOutlined } from "@ant-design/icons";
 import EmptyState from "../../emptyStates/empty-states";
 import styles from "./AcordianTable.module.css";
@@ -12,6 +12,9 @@ const AcordianTable = ({
   rowClassName,
   searchText = "",
   className = "",
+  refClass,
+  loadingMore,
+  hasMore,
 }) => {
   const [expandedRowKeys, setExpandedRowKeys] = useState([]);
 
@@ -22,11 +25,10 @@ const AcordianTable = ({
   };
 
   return (
-    <div className="accordianTableMainDiv">
+    <div className={styles.accordianTableMainDiv} ref={refClass}>
       <Table
-        className={"accordian-Table-Cell-class"}
         columns={columns}
-        dataSource={dataSource.filter(
+        dataSource={dataSource?.filter(
           (item) =>
             item.instrument?.toLowerCase().includes(searchText.toLowerCase()) ||
             item.id?.toLowerCase().includes(searchText.toLowerCase())
@@ -70,6 +72,15 @@ const AcordianTable = ({
             : baseClass;
         }}
       />
+
+      {/* loading spinner at bottom while fetching */}
+      {loadingMore && (
+        <div style={{ textAlign: "center", padding: 12 }}>
+          <Spin size="small" />
+        </div>
+      )}
+
+     
     </div>
   );
 };

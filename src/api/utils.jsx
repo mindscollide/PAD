@@ -92,6 +92,10 @@ export const responseMessages = {
     "Resubmission Successful",
   PAD_Trade_TradeServiceManager_AddTradeApprovalRequest_07:
     "Resubmission Failed",
+  PAD_Trade_TradeServiceManager_AddTradeApprovalRequest_08:
+    "Failed to generate ApprovalID",
+  PAD_Trade_TradeServiceManager_AddTradeApprovalRequest_09: "Invalid Quantity",
+  PAD_Trade_TradeServiceManager_AddTradeApprovalRequest_10: "Policy Violated",
 
   PAD_Trade_TradeServiceManager_GetAllViewDetailsByTradeApprovalID_01:
     "Data Available",
@@ -310,6 +314,13 @@ export const responseMessages = {
   PAD_Trade_TradeServiceManager_GetAllViewDetailsEscalatedTransactionsAndPortFolioByTradeApprovalID_03:
     "Exception",
 
+  // For Employee History Search Api
+  PAD_Trade_TradeServiceManager_EmployeeHistoryWorkFlowDetails_01:
+    "Data Available",
+  PAD_Trade_TradeServiceManager_EmployeeHistoryWorkFlowDetails_02:
+    "No data available",
+  PAD_Trade_TradeServiceManager_EmployeeHistoryWorkFlowDetails_03: "Exception",
+
   // ==============================
   // 📂Web Notification  (Employee Role)
   // ==============================
@@ -489,6 +500,19 @@ export const responseMessages = {
   Admin_GetAllUserRoles_02: "No Records found",
   Admin_GetAllUserRoles_03: "Exception occurred",
 
+  // For Update Edit Roles And Policies on Manage User in Admin on Save
+  PAD_UserServiceManager_UpdateUserDetailsWithRolesAndPolicies_01:
+    "Invalid input",
+  PAD_UserServiceManager_UpdateUserDetailsWithRolesAndPolicies_02: "Success",
+  PAD_UserServiceManager_UpdateUserDetailsWithRolesAndPolicies_03:
+    "Update failed",
+  PAD_UserServiceManager_UpdateUserDetailsWithRolesAndPolicies_04:
+    "Exception occurred",
+  PAD_UserServiceManager_UpdateUserDetailsWithRolesAndPolicies_05:
+    "Unauthorized User",
+  PAD_UserServiceManager_UpdateUserDetailsWithRolesAndPolicies_06:
+    "Admin cannot update their own status",
+
   // GetAllSystemConfigurations
   Admin_AdminServiceManager_GetAllSystemConfigurations: "Data found",
   Admin_AdminServiceManager_GetAllSystemConfigurations_02: "No data found",
@@ -498,6 +522,127 @@ export const responseMessages = {
   PAD_Admin_UpdateSystemConfiguration_02: "Successfully updated",
   PAD_Admin_UpdateSystemConfiguration_03: "No rows updated",
   PAD_Admin_UpdateSystemConfiguration_04: "Exception occurred",
+
+  // For Line Manager My Action Search Api
+  PAD_Trade_LineManagerActionsWorkflowDetail_01: "Data Available",
+  PAD_Trade_LineManagerActionsWorkflowDetail_02: "No data available",
+  PAD_Trade_LineManagerActionsWorkflowDetail_03: "Exception",
+
+  // ==============================
+  // My Transaction Report  (Employee Role)
+  // ==============================
+  // Report For Get Employee Transaction Request Report API
+  PAD_Trade_TradeServiceManager_GetEmployeeTransactionReqeustReports_01:
+    "Data Available",
+  PAD_Trade_TradeServiceManager_GetEmployeeTransactionReqeustReports_02:
+    "No data available",
+  PAD_Trade_TradeServiceManager_GetEmployeeTransactionReqeustReports_03:
+    "Exception",
+
+  // ==============================
+  // My Trade Approval Standing  Report  (Employee Role)
+  // ==============================
+  PAD_Trade_TradeServiceManager_GetEmployeeTradeApprovalStandingSummary_01:
+    "Data Available",
+  PAD_Trade_TradeServiceManager_GetEmployeeTradeApprovalStandingSummary_02:
+    "No data available",
+  PAD_Trade_TradeServiceManager_GetEmployeeTradeApprovalStandingSummary_03:
+    "Exception",
+  // for Get Employee Reports Dashboard StatsAPI
+  PAD_Trade_TradeServiceManager_GetEmployeeReportsDashboardStats_01:
+    "Data Available",
+  PAD_Trade_TradeServiceManager_GetEmployeeReportsDashboardStats_02:
+    "No data available",
+  PAD_Trade_TradeServiceManager_GetEmployeeReportsDashboardStats_03:
+    "Exception",
+
+  //Get LineManager Report DashBoard
+  PAD_Trade_TradeServiceManager_LineManagerTradeApprovalCounts_01:
+    "Data Available",
+  PAD_Trade_TradeServiceManager_LineManagerTradeApprovalCounts_02:
+    "No data available",
+  PAD_Trade_TradeServiceManager_LineManagerTradeApprovalCounts_03: "Exception",
+
+  // GetEmployeeTradeApprovalReportsAPI
+  PAD_Trade_TradeServiceManager_GetEmployeeTradeApprovalReports_01:
+    "Data Available",
+  PAD_Trade_TradeServiceManager_GetEmployeeTradeApprovalReports_02:
+    "No data available",
+  PAD_Trade_TradeServiceManager_GetEmployeeTradeApprovalReports_03: "Exception",
+
+  // ==============================
+  // My Compliance Standing  Report  (Employee Role)
+  // ==============================
+  PAD_Trade_TradeServiceManager_GetEmployeeTransactionSummary_01:
+    "Data Available",
+  PAD_Trade_TradeServiceManager_GetEmployeeTransactionSummary_02:
+    "No data available",
+  PAD_Trade_TradeServiceManager_GetEmployeeTransactionSummary_03: "Exception",
+
+  // ==============================
+  // My Trade Approval Requests   (Line Manager Role)
+  // ==============================
+  PAD_Trade_TradeServiceManager_TradeApprovalRequestsReport_01:
+    "Data Available",
+  PAD_Trade_TradeServiceManager_TradeApprovalRequestsReport_02:
+    "No data available",
+  PAD_Trade_TradeServiceManager_TradeApprovalRequestsReport_03: "Exception",
+  // Compliance Officer  Report  Dashboard
+  // ==============================
+  PAD_Trade_TradeServiceManager_GetComplianceOfficerDashboardStats_01:
+    "Data Available",
+  PAD_Trade_TradeServiceManager_GetComplianceOfficerDashboardStats_02:
+    "No data available",
+  PAD_Trade_TradeServiceManager_GetComplianceOfficerDashboardStats_03:
+    "Exception",
+
+  // ==============================
+  // Compliance Officer  My Action
+  // ==============================
+  PAD_Trade_GetComplianceOfficerMyActionsWorkflowDetail_01: "Data Available",
+  PAD_Trade_GetComplianceOfficerMyActionsWorkflowDetail_02: "No data available",
+  PAD_Trade_GetComplianceOfficerMyActionsWorkflowDetail_03: "Exception",
+
+  // ==============================
+  // Compliance Officer  Date wise transaction report
+  // ==============================
+  PAD_Trade_TradeServiceManager_SearchComplianceOfficerDateWiseTransactionRequest_01:
+    "Data Available",
+  PAD_Trade_TradeServiceManager_SearchComplianceOfficerDateWiseTransactionRequest_02:
+    "No data available",
+  PAD_Trade_TradeServiceManager_SearchComplianceOfficerDateWiseTransactionRequest_03:
+    "Exception",
+
+  // ==============================
+  // Admin User wise session activity list
+  // ==============================
+
+  Admin_GetUserSessionWiseActivity_01: "Data Available",
+  Admin_GetUserSessionWiseActivity_02: "No data available",
+  Admin_GetUserSessionWiseActivity_03: "Exception",
+
+  PAD_Trade_TradeServiceManager_SaveUserBrokers_01: "Invalid input",
+  PAD_Trade_TradeServiceManager_SaveUserBrokers_02: "Successfull",
+  PAD_Trade_TradeServiceManager_SaveUserBrokers_03: "Fail to Save",
+  PAD_Trade_TradeServiceManager_SaveUserBrokers_04: "Exception",
+
+  Admin_ViewUserSessionWiseActivity_01: "Data Available",
+  Admin_ViewUserSessionWiseActivity_02: "No data available",
+  Admin_ViewUserSessionWiseActivity_03: "Exception",
+
+  PAD_Trade_TradeServiceManager_SearchComplianceOfficerTransactionSummaryReportRequest_01:
+    "Data Available",
+  PAD_Trade_TradeServiceManager_SearchComplianceOfficerTransactionSummaryReportRequest_02:
+    "No data available",
+  PAD_Trade_TradeServiceManager_SearchComplianceOfficerTransactionSummaryReportRequest_03:
+    "Exception",
+
+  PAD_Trade_TradeServiceManager_DateWiseTransactionReportViewDetails_01:
+    "Data Available",
+  PAD_Trade_TradeServiceManager_DateWiseTransactionReportViewDetails_02:
+    "No data available",
+  PAD_Trade_TradeServiceManager_DateWiseTransactionReportViewDetails_03:
+    "Exception",
 };
 
 /**
@@ -516,6 +661,7 @@ export const getMessage = (code) => {
     msg === "Successfully updated" ||
     msg === "Successfully inserted all" ||
     msg === "Exist" ||
+    msg === "Successfull" ||
     msg === "Not Exist" ||
     msg === "Success"
   ) {

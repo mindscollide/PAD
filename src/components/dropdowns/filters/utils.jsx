@@ -3,6 +3,7 @@
 // -----------------------------------------------------------------------------
 import {
   SearchApprovalRequestLineManager,
+  SearchEmployeeHistoryDetailRequest,
   SearchTadeApprovals,
 } from "../../../api/myApprovalApi";
 import { SearchEmployeeTransactionsDetails } from "../../../api/myTransactionsApi";
@@ -38,6 +39,14 @@ export const adminBrokersStatus = ["Active", "Inactive"];
  */
 export const emtStatusOptionsForPendingApproval = ["Pending", "Non-Compliant"];
 
+export const emaStatusOptionsofReportsMyTradeApprovals = [
+  "Pending",
+  "Approved",
+  "Declined",
+  "Transaction Conducted",
+  "Not Traded",
+  "Resubmitted for Approval",
+];
 // -----------------------------------------------------------------------------
 // 📌 Utility: Extract Type Options from AddApprovalRequestData
 // -----------------------------------------------------------------------------
@@ -99,9 +108,10 @@ export const mapBuySellToIds = (selectedLabels = [], options = {}) => {
  * @param {string[]} arr - Status strings.
  * @returns {number[]} Status IDs.
  */
-export const mapStatusToIds = (arr) => {
+export const mapStatusToIds = (arr, type = 1) => {
   if (!arr?.length) return [];
-  const statusMap = {
+
+  const statusMapWorkflow = {
     Pending: 1,
     Resubmitted: 2,
     Approved: 3,
@@ -110,26 +120,20 @@ export const mapStatusToIds = (arr) => {
     "Not Traded": 6,
     Compliant: 8,
     "Non-Compliant": 9,
-    Active: 1,
-    Inactive: 2,
   };
-  return arr.map((s) => statusMap[s] || null).filter(Boolean);
-};
 
-/**
- * Maps Line Manager statuses to their corresponding IDs.
- *
- * @param {string[]} arr - Status strings.
- * @returns {number[]} Status IDs.
- */
-export const mapStatusToIdsForLineManager = (arr) => {
-  if (!arr?.length) return [];
-  const statusMap = {
+  const statusMapBundel = {
     Pending: 1,
-    Compliant: 2,
-    "Non-Compliant": 3,
+    Approved: 2,
+    Declined: 3,
+    Upcoming: 4,
   };
-  return arr.map((s) => statusMap[s] || null).filter(Boolean);
+
+  const statusMap = type === 1 ? statusMapBundel : statusMapWorkflow;
+
+  return arr
+    .map((status) => statusMap[status] ?? null)
+    .filter((id) => id !== null);
 };
 
 // -----------------------------------------------------------------------------
@@ -198,96 +202,31 @@ const buildTransactionRequestData = ({ state, statusIds, typeIds }) => {
   };
 };
 
-// -----------------------------------------------------------------------------
-// 📌 API Call Handlers
-// -----------------------------------------------------------------------------
-
 /**
- * Executes an API call based on selected tab (key) and type filter.
+ * Builds a request object for Employee History details.
  *
- * @param {Object} params - Parameters.
- * @param {string} params.selectedKey - Selected tab key ("1", "2", "3", "6").
- * @param {string[]} params.newdata - Selected type values.
- * @param {Object} params.assetTypeListingData - Asset type data.
- * @param {Object} params.state - Current state (filters, pagination, etc.).
- * @param {Function} params.callApi - API caller.
- * @param {Function} params.showNotification - Notification handler.
- * @param {Function} params.showLoader - Loader toggle function.
- * @param {Function} params.navigate - Navigation function.
- * @param {Function} params.setIsEmployeeMyApproval - Setter for Employee approvals.
- * @param {Function} params.setLineManagerApproval - Setter for Line Manager approvals.
- * @param {Function} params.setEmployeeTransactionsData - Setter for Employee transactions.
+ * @param {Object} params - Input parameters.
+ * @param {Object} params.state - UI state (filters, pagination, etc.).
+ * @param {number[]} params.statusIds - Status IDs.
+ * @param {number[]} params.typeIds - Type IDs.
+ * @returns {Object} API request payload.
  */
-export const apiCallType = async ({
-  selectedKey,
-  newdata,
-  assetTypeListingData,
-  state,
-  callApi,
-  showNotification,
-  showLoader,
-  navigate,
-  setIsEmployeeMyApproval,
-  setLineManagerApproval,
-  setEmployeeTransactionsData,
-}) => {
-  const assetType = state.assetType || "Equities";
-  const typeIds = mapBuySellToIds(newdata, assetTypeListingData?.[assetType]);
-  const statusIds = mapStatusToIds(state.status);
+const buildMyHistoryRequestData = ({ state, statusIds, typeIds }) => {
+  const startDate = state.startDate ? toYYMMDD(state.startDate) : "";
+  const endDate = state.endDate ? toYYMMDD(state.endDate) : "";
 
-  let requestdata, data;
-
-  switch (selectedKey) {
-    case "1": // Employee My Approvals
-      requestdata = buildApprovalRequestData({ state, statusIds, typeIds });
-      showLoader(true);
-      data = await SearchTadeApprovals({
-        callApi,
-        showNotification,
-        showLoader,
-        requestdata,
-        navigate,
-      });
-      setIsEmployeeMyApproval(data);
-      break;
-
-    case "2": // Employee Transactions
-      requestdata = buildTransactionRequestData({ state, statusIds, typeIds });
-      showLoader(true);
-      data = await SearchEmployeeTransactionsDetails({
-        callApi,
-        showNotification,
-        showLoader,
-        requestdata,
-        navigate,
-      });
-      setEmployeeTransactionsData(data);
-      break;
-
-    case "3":
-    case "6": // Line Manager Approvals
-      requestdata = buildApprovalRequestData({
-        state,
-        statusIds,
-        typeIds,
-        includeRequester: true,
-      });
-      showLoader(true);
-      data = await SearchApprovalRequestLineManager({
-        callApi,
-        showNotification,
-        showLoader,
-        requestdata,
-        navigate,
-      });
-      setLineManagerApproval(data);
-      break;
-
-    default:
-      break;
-  }
-
-  if (DEBUG) console.log({ selectedKey, requestdata, data });
+  return {
+    RequestID: state.requestID || "",
+    InstrumentName: state.instrumentName || state.mainInstrumentName || "",
+    Quantity: state.quantity || 0,
+    StartDate: startDate,
+    EndDate: endDate,
+    Nature: state.nature || "", // ✅ added dynamic support
+    StatusIDs: statusIds || [],
+    TradeApprovalTypeIDs: typeIds || [],
+    PageNumber: 0,
+    Length: state.pageSize || 10,
+  };
 };
 
 /**
