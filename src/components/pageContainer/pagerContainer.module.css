@@ -91,7 +91,7 @@
   top: 150px !important;
 }
 .repotsHeight {
-  height: 80vh !important;
+  max-height:  575px  !important;
   top: 150px !important;
 }
 .sessionwiseHeight{

@@ -10,8 +10,11 @@ import PageLayout from "../../../../../components/pageContainer/pageContainer";
 // 🔹 Table Config
 import {
   buildApiRequest,
+  buildApiRequestViewDetails,
   getBorderlessTableColumns,
+  getBorderlessTableColumnsViewDetails,
   mappingDateWiseTransactionReport,
+  mappingDateWiseTransactionviewDetailst,
 } from "./utils";
 import { approvalStatusMap } from "../../../../../components/tables/borderlessTable/utill";
 
@@ -26,6 +29,7 @@ import {
   DownloadLineManagerMyTradeApprovalReportRequestAPI,
   DownloadMyTransactionReportRequestAPI,
   GetComplianceOfficerViewTransactionSummaryAPI,
+  SearchComplianceOfficerTransactionSummaryReportRequest,
   SearchLineManagerTradeApprovalRequestApi,
 } from "../../../../../api/myApprovalApi";
 import { useNotification } from "../../../../../components/NotificationProvider/NotificationProvider";
@@ -43,33 +47,38 @@ import { DateRangePicker } from "../../../../../components";
 const COTransactionsSummarysReports = () => {
   const navigate = useNavigate();
   const hasFetched = useRef(false);
-  const tableScrollEmployeeTransaction = useRef(null);
-
+  const tableScrollTransactionSummaryReportList = useRef(null);
+  const tableScrollTransactionSummaryViewDetailsList = useRef(null);
+  const { assetTypeListingData, setAssetTypeListingData } =
+    useDashboardContext();
   // -------------------- Contexts --------------------
   const { callApi } = useApi();
   const { showNotification } = useNotification();
   const { showLoader } = useGlobalLoader();
   const {
-    coDatewiseTransactionReportListData,
-    setCODatewiseTransactionReportListData,
+    coTransactionSummaryReportListData,
+    setCOTransactionSummaryReportListData,
+    resetCOTransactionSummaryReportListData,
+
+    coTransactionSummaryReportViewDetailsFlag,
+    setCOTransactionSummaryReportViewDetailsFlag,
+    coTransactionSummaryReportViewDetailsListData,
+    setCOTransactionSummaryReportViewDetailsListData,
+    resetCOTransactionSummaryReportViewDetailsListData,
   } = useMyApproval();
 
   const { isViewComments, setIsViewComments, setCheckTradeApprovalID } =
     useGlobalModal();
 
   const {
-    coDatewiseTransactionReportSearch,
-    setCODatewiseTransactionReportSearch,
-    resetComplianceOfficerDateWiseTransationReportSearch,
+    coTransactionsSummarysReportsSearch,
+    setCOTransactionsSummarysReportsSearch,
+    resetCOTransactionsSummarysReportsSearch,
+
+    coTransactionsSummarysReportsViewDetailsSearch,
+    setCOTransactionsSummarysReportsViewDetailSearch,
+    resetCOTransactionsSummarysReportsViewDetailsSearch,
   } = useSearchBarContext();
-
-  const { assetTypeListingData, setAssetTypeListingData } =
-    useDashboardContext();
-
-  console.log(
-    coDatewiseTransactionReportListData,
-    "coDatewiseTransactionReportListData"
-  );
 
   // -------------------- Local State --------------------
   const [sortedInfo, setSortedInfo] = useState({});
@@ -90,7 +99,7 @@ const COTransactionsSummarysReports = () => {
     async (requestData, replace = false, showLoaderFlag = true) => {
       if (!requestData || typeof requestData !== "object") return;
       if (showLoaderFlag) showLoader(true);
-      const res = await GetComplianceOfficerViewTransactionSummaryAPI({
+      const res = await SearchComplianceOfficerTransactionSummaryReportRequest({
         callApi,
         showNotification,
         showLoader,
@@ -98,36 +107,26 @@ const COTransactionsSummarysReports = () => {
         navigate,
       });
 
-      // ✅ Always get the freshest version (from memory or session)
-      const currentAssetTypeData = getSafeAssetTypeData(
-        assetTypeListingData,
-        setAssetTypeListingData
-      );
-
-      const records = Array.isArray(res?.complianceOfficerApprovals)
-        ? res.complianceOfficerApprovals
+      const transactions = Array.isArray(res?.transactions)
+        ? res.transactions
         : [];
-      console.log("records", records);
-      const mapped = mappingDateWiseTransactionReport(
-        currentAssetTypeData?.Equities,
-        records
-      );
+      const mapped = mappingDateWiseTransactionReport(transactions);
       if (!mapped || typeof mapped !== "object") return;
-      console.log("records", mapped);
 
-      setCODatewiseTransactionReportListData((prev) => ({
-        complianceOfficerApprovalsList: replace
+      setCOTransactionSummaryReportListData((prev) => ({
+        transactions: replace
           ? mapped
-          : [...(prev?.complianceOfficerApprovalsList || []), ...mapped],
+          : [...(prev?.transactions || []), ...mapped],
         // this is for to run lazy loading its data comming from database of total data in db
         totalRecordsDataBase: res?.totalRecords || 0,
         // this is for to know how mush dta currently fetch from  db
         totalRecordsTable: replace
           ? mapped.length
-          : coDatewiseTransactionReportListData.totalRecordsTable +
+          : coTransactionSummaryReportListData.totalRecordsTable +
             mapped.length,
       }));
-      setCODatewiseTransactionReportSearch((prev) => {
+
+      setCOTransactionsSummarysReportsSearch((prev) => {
         const next = {
           ...prev,
           pageNumber: replace ? mapped.length : prev.pageNumber + mapped.length,
@@ -142,16 +141,65 @@ const COTransactionsSummarysReports = () => {
       });
     },
     [
-      assetTypeListingData,
       callApi,
       navigate,
-      setCODatewiseTransactionReportSearch,
+      setCOTransactionsSummarysReportsSearch,
       showLoader,
       showNotification,
     ]
   );
-  console.log("records", coDatewiseTransactionReportListData);
-  console.log("records", coDatewiseTransactionReportSearch);
+
+  const fetchApiCallViewDetails = useCallback(
+    async (requestData, replace = false, showLoaderFlag = true) => {
+      if (!requestData || typeof requestData !== "object") return;
+      if (showLoaderFlag) showLoader(true);
+      const res = await GetComplianceOfficerViewTransactionSummaryAPI({
+        callApi,
+        showNotification,
+        showLoader,
+        requestdata: requestData,
+        navigate,
+      });
+
+      const record = Array.isArray(res?.record) ? res.record : [];
+      const currentAssetTypeData = getSafeAssetTypeData(
+        assetTypeListingData,
+        setAssetTypeListingData
+      );
+      const mapped = mappingDateWiseTransactionviewDetailst(
+        currentAssetTypeData?.Equities,
+        record
+      );
+      if (!mapped || typeof mapped !== "object") return;
+
+      setCOTransactionSummaryReportViewDetailsListData((prev) => ({
+        record: replace ? mapped : [...(prev?.record || []), ...mapped],
+        // this is for to run lazy loading its data comming from database of total data in db
+        totalRecordsDataBase: res?.totalRecords || 0,
+        // this is for to know how mush dta currently fetch from  db
+        totalRecordsTable: replace
+          ? mapped.length
+          : coTransactionSummaryReportViewDetailsListData.totalRecordsTable +
+            mapped.length,
+      }));
+
+      setCOTransactionsSummarysReportsViewDetailSearch((prev) => {
+        const next = {
+          ...prev,
+          pageNumber: replace ? mapped.length : prev.pageNumber + mapped.length,
+        };
+        return next;
+      });
+      setCOTransactionSummaryReportViewDetailsFlag(true);
+    },
+    [
+      callApi,
+      navigate,
+      setCOTransactionsSummarysReportsViewDetailSearch,
+      showLoader,
+      showNotification,
+    ]
+  );
 
   // -------------------- Effects --------------------
 
@@ -159,10 +207,7 @@ const COTransactionsSummarysReports = () => {
   useEffect(() => {
     if (hasFetched.current) return;
     hasFetched.current = true;
-    const requestData = buildApiRequest(
-      coDatewiseTransactionReportSearch,
-      assetTypeListingData
-    );
+    const requestData = buildApiRequest(coTransactionsSummarysReportsSearch);
     fetchApiCall(requestData, true, true);
   }, []);
 
@@ -170,39 +215,88 @@ const COTransactionsSummarysReports = () => {
   useEffect(() => {
     return () => {
       // Reset search state for fresh load
-      resetComplianceOfficerDateWiseTransationReportSearch();
+      resetCOTransactionsSummarysReportsSearch();
+      resetCOTransactionSummaryReportListData();
+      setCOTransactionSummaryReportViewDetailsFlag(false);
+      resetCOTransactionSummaryReportViewDetailsListData();
+      resetCOTransactionsSummarysReportsViewDetailsSearch();
     };
   }, []);
 
   // 🔹 call api on search
   useEffect(() => {
-    if (coDatewiseTransactionReportSearch?.filterTrigger) {
-      const requestData = buildApiRequest(
-        coDatewiseTransactionReportSearch,
-        assetTypeListingData
-      );
+    if (coTransactionsSummarysReportsSearch?.filterTrigger) {
+      const requestData = buildApiRequest(coTransactionsSummarysReportsSearch);
       fetchApiCall(requestData, true, true);
     }
-  }, [coDatewiseTransactionReportSearch?.filterTrigger]);
+  }, [coTransactionsSummarysReportsSearch?.filterTrigger]);
+
+  useEffect(() => {
+    if (coTransactionsSummarysReportsViewDetailsSearch?.filterTrigger) {
+      setCOTransactionsSummarysReportsViewDetailSearch((prev) => ({
+        ...prev,
+        filterTrigger: false,
+      }));
+      const requestData = buildApiRequestViewDetails(
+        coTransactionsSummarysReportsViewDetailsSearch,
+        assetTypeListingData
+      );
+      fetchApiCallViewDetails(requestData, true, true);
+    }
+  }, [coTransactionsSummarysReportsViewDetailsSearch?.filterTrigger]);
 
   // 🔹 Infinite Scroll (lazy loading)
   useTableScrollBottom(
     async () => {
+      // -------------------------------
+      // CASE 1: VIEW DETAILS SCROLL
+      // -------------------------------
+      if (coTransactionSummaryReportViewDetailsFlag) {
+        if (
+          coTransactionSummaryReportViewDetailsListData?.totalRecordsDataBase <=
+          coTransactionSummaryReportViewDetailsListData?.totalRecordsTable
+        ) {
+          return;
+        }
+
+        try {
+          setLoadingMore(true);
+
+          const requestData = buildApiRequestViewDetails(
+            coTransactionsSummarysReportsViewDetailsSearch,
+            assetTypeListingData
+          );
+
+          await fetchApiCall(requestData, false, false);
+        } catch (error) {
+          console.error("Error loading view details:", error);
+        } finally {
+          setLoadingMore(false);
+        }
+
+        return; // 🔴 VERY IMPORTANT
+      }
+
+      // -------------------------------
+      // CASE 2: SUMMARY LIST SCROLL
+      // -------------------------------
       if (
-        coDatewiseTransactionReportListData?.totalRecordsDataBase <=
-        coDatewiseTransactionReportListData?.totalRecordsTable
-      )
+        coTransactionSummaryReportListData?.totalRecordsDataBase <=
+        coTransactionSummaryReportListData?.totalRecordsTable
+      ) {
         return;
+      }
 
       try {
         setLoadingMore(true);
+
         const requestData = buildApiRequest(
-          coDatewiseTransactionReportSearch,
-          assetTypeListingData
+          coTransactionsSummarysReportsSearch
         );
+
         await fetchApiCall(requestData, false, false);
-      } catch (err) {
-        console.error("Error loading more approvals:", err);
+      } catch (error) {
+        console.error("Error loading summary list:", error);
       } finally {
         setLoadingMore(false);
       }
@@ -211,14 +305,84 @@ const COTransactionsSummarysReports = () => {
     "border-less-table-blue"
   );
 
+  const handelViewDetails = async (transactionDate) => {
+    console.log("responseData", transactionDate);
+    await showLoader(true);
+    const requestData = {
+      TransactionDate: transactionDate.split(" ")[0],
+      PageNumber: 0,
+      Length: 10,
+      QuantitySearch: "",
+      InstrumentNameSearch: "",
+      RequesterNameSearch: "",
+      StatusIds: [],
+      TypeIds: [],
+    };
+    setCOTransactionsSummarysReportsViewDetailSearch((prev) => ({
+      ...prev,
+      transactionDate: transactionDate.split(" ")[0],
+    }));
+    fetchApiCallViewDetails(requestData, true, true);
+    // const res = await GetComplianceOfficerViewTransactionSummaryAPI({
+    //   callApi,
+    //   showNotification,
+    //   showLoader,
+    //   requestdata,
+    //   navigate,
+    // });
+
+    // if (res) {
+    //   const record = Array.isArray(res?.record) ? res.record : [];
+    //   const currentAssetTypeData = getSafeAssetTypeData(
+    //     assetTypeListingData,
+    //     setAssetTypeListingData
+    //   );
+    //   const mapped = mappingDateWiseTransactionviewDetailst(
+    //     currentAssetTypeData?.Equities,
+    //     record
+    //   );
+    //   console.log("responseData", mapped);
+    //   if (!mapped || typeof mapped !== "object") return;
+    //   setCOTransactionsSummarysReportsViewDetailSearch((prev) => {
+    //     const next = {
+    //       ...prev,
+    //       pageNumber: mapped.length,
+    //       transactionDate: transactionDate.split(" ")[0],
+    //     };
+
+    //     // this is for check if filter value get true only on that it will false
+    //     if (prev.filterTrigger) {
+    //       next.filterTrigger = false;
+    //     }
+
+    //     return next;
+    //   });
+
+    //   setCOTransactionSummaryReportViewDetailsListData({
+    //     record: mapped,
+    //     // this is for to run lazy loading its data comming from database of total data in db
+    //     totalRecordsDataBase: res?.totalRecords || 0,
+    //     // this is for to know how mush dta currently fetch from  db
+    //     totalRecordsTable: mapped.length,
+    //   });
+    // }
+  };
+
   // -------------------- Table Columns --------------------
-  const columns = getBorderlessTableColumns({
+  const columnsReport = getBorderlessTableColumns({
     approvalStatusMap,
     sortedInfo,
-    coDatewiseTransactionReportSearch,
-    setCODatewiseTransactionReportSearch,
-    setIsViewComments,
-    setCheckTradeApprovalID,
+    coTransactionsSummarysReportsSearch,
+    setCOTransactionsSummarysReportsSearch,
+    handelViewDetails,
+  });
+
+  const columnsViewDetails = getBorderlessTableColumnsViewDetails({
+    approvalStatusMap,
+    sortedInfo,
+    coTransactionsSummarysReportsViewDetailsSearch,
+    setCOTransactionsSummarysReportsViewDetailSearch,
+    handelViewDetails,
   });
 
   const handleDateChange = (dates) => {
@@ -232,7 +396,7 @@ const COTransactionsSummarysReports = () => {
       EndDate: end,
     });
 
-    setCODatewiseTransactionReportSearch((prev) => ({
+    setCOTransactionsSummarysReportsSearch((prev) => ({
       ...prev,
       startDate: start,
       endDate: end,
@@ -247,7 +411,7 @@ const COTransactionsSummarysReports = () => {
       EndDate: null,
     });
 
-    setCODatewiseTransactionReportSearch((prev) => ({
+    setCOTransactionsSummarysReportsSearch((prev) => ({
       ...prev,
       startDate: null,
       endDate: null,
@@ -278,6 +442,61 @@ const COTransactionsSummarysReports = () => {
     });
   };
 
+  /** 🔹 Handle removing individual filter */
+  const handleRemoveFilter = (key) => {
+    const resetMap = {
+      instrumentNameSearch: { instrumentNameSearch: "" },
+      requesterNameSearch: { requesterNameSearch: "" },
+      quantitySearch: { quantitySearch: "" },
+    };
+
+    setCOTransactionsSummarysReportsViewDetailSearch((prev) => ({
+      ...prev,
+      ...resetMap[key],
+      pageNumber: 0,
+      filterTrigger: true,
+    }));
+  };
+
+  /** 🔹 Handle removing all filters */
+  const handleRemoveAllFilters = () => {
+    setCOTransactionsSummarysReportsViewDetailSearch((prev) => ({
+      ...prev,
+      instrumentNameSearch: "",
+      requesterNameSearch: "",
+      quantitySearch: "",
+      pageNumber: 0,
+      filterTrigger: true,
+    }));
+  };
+
+  /** 🔹 Build Active Filters for display */
+  const activeFilters = (() => {
+    const { instrumentNameSearch, requesterNameSearch, quantitySearch } =
+      coTransactionsSummarysReportsViewDetailsSearch || {};
+
+    return [
+      instrumentNameSearch && {
+        key: "instrumentNameSearch",
+        value:
+          instrumentNameSearch.length > 13
+            ? instrumentNameSearch.slice(0, 13) + "..."
+            : instrumentNameSearch,
+      },
+      requesterNameSearch && {
+        key: "requesterNameSearch",
+        value:
+          requesterNameSearch.length > 13
+            ? requesterNameSearch.slice(0, 13) + "..."
+            : requesterNameSearch,
+      },
+      quantitySearch &&
+        Number(quantitySearch) > 0 && {
+          key: "quantitySearch",
+          value: Number(quantitySearch).toLocaleString("en-US"),
+        },
+    ].filter(Boolean);
+  })();
   // -------------------- Render --------------------
   return (
     <>
@@ -299,24 +518,50 @@ const COTransactionsSummarysReports = () => {
               },
               {
                 title: (
-                  <span className={style.breadcrumbText}>
+                  <span
+                    className={style.breadcrumbText}
+                    style={{
+                      cursor: coTransactionSummaryReportViewDetailsFlag
+                        ? "pointer"
+                        : "default",
+                    }}
+                    onClick={() => {
+                      coTransactionSummaryReportViewDetailsFlag &&
+                        setCOTransactionSummaryReportViewDetailsFlag(false);
+                      resetCOTransactionSummaryReportViewDetailsListData();
+                      resetCOTransactionsSummarysReportsViewDetailsSearch();
+                    }}
+                  >
                     Transactions Summary Report
                   </span>
                 ),
               },
+              ...(coTransactionSummaryReportViewDetailsFlag
+                ? [
+                    {
+                      title: (
+                        <span className={style.breadcrumbText}>
+                          View Details
+                        </span>
+                      ),
+                    },
+                  ]
+                : []),
             ]}
           />
         </Col>
 
         <Col>
           <div className={style.headerActionsRow}>
-            <DateRangePicker
-              size="medium"
-              className={style.dateRangePickerClass}
-              value={[dateRange.StartDate, dateRange.EndDate]}
-              onChange={handleDateChange}
-              onClear={handleClearDates}
-            />
+            {!coTransactionSummaryReportViewDetailsFlag && (
+              <DateRangePicker
+                size="medium"
+                className={style.dateRangePickerClass}
+                value={[dateRange.StartDate, dateRange.EndDate]}
+                onChange={handleDateChange}
+                onClear={handleClearDates}
+              />
+            )}
             <CustomButton
               text={
                 <span className={style.exportButtonText}>
@@ -349,7 +594,36 @@ const COTransactionsSummarysReports = () => {
           )}
         </Col>
       </Row>
+      {/* 🔹 Active Filter Tags */}
+      {activeFilters.length > 0 && (
+        <Row gutter={[12, 12]} className={style["filter-tags-container"]}>
+          {activeFilters.map(({ key, value }) => (
+            <Col key={key}>
+              <div className={style["filter-tag"]}>
+                <span>{value}</span>
+                <span
+                  className={style["filter-tag-close"]}
+                  onClick={() => handleRemoveFilter(key)}
+                >
+                  &times;
+                </span>
+              </div>
+            </Col>
+          ))}
 
+          {/* 🔹 Show Clear All only if more than one filter */}
+          {activeFilters.length > 1 && (
+            <Col>
+              <div
+                className={`${style["filter-tag"]} ${style["clear-all-tag"]}`}
+                onClick={handleRemoveAllFilters}
+              >
+                <span>Clear All</span>
+              </div>
+            </Col>
+          )}
+        </Row>
+      )}
       {/* 🔹 Transactions Table */}
       <PageLayout
         background="white"
@@ -361,22 +635,31 @@ const COTransactionsSummarysReports = () => {
         <div className="px-4 md:px-6 lg:px-8 ">
           <BorderlessTable
             rows={
-              coDatewiseTransactionReportListData?.complianceOfficerApprovalsList
+              coTransactionSummaryReportViewDetailsFlag
+                ? coTransactionSummaryReportViewDetailsListData.record
+                : coTransactionSummaryReportListData?.transactions
             }
-            columns={columns}
+            columns={
+              coTransactionSummaryReportViewDetailsFlag
+                ? columnsViewDetails
+                : columnsReport
+            }
             classNameTable="border-less-table-blue"
             scroll={
-              coDatewiseTransactionReportListData
-                ?.complianceOfficerApprovalsList?.length
+              coTransactionSummaryReportListData?.transactions?.length
                 ? {
                     x: "max-content",
-                    y: activeFilters.length > 0 ? 450 : 500,
+                    y: 500,
                   }
                 : undefined
             }
             onChange={(pagination, filters, sorter) => setSortedInfo(sorter)}
             loading={loadingMore}
-            ref={tableScrollEmployeeTransaction}
+            ref={
+              coTransactionSummaryReportViewDetailsFlag
+                ? tableScrollTransactionSummaryViewDetailsList
+                : tableScrollTransactionSummaryReportList
+            }
           />
         </div>
       </PageLayout>

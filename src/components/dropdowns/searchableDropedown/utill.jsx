@@ -24,6 +24,7 @@ import { CODateWiseTransactionReportFilter } from "./CODateWiseTransactionReport
 import { AdminSessionWiseActivityFilter } from "./AdminSessionWiseActivity";
 import { COMyAction } from "./COMyAction";
 import { LMPendigRequestReportSearchFilter } from "./LMPendigRequestReportSearchFilter";
+import { COTransactionReportViewDetailsFilter } from "./COTransactionReportViewDetailsFilter";
 
 // this is used for open specific filter according to page
 export const renderFilterContent = (
@@ -35,7 +36,8 @@ export const renderFilterContent = (
   clear,
   setClear,
   openNewFormForAdminGropusAndPolicy,
-  pageTabesForAdminGropusAndPolicy
+  pageTabesForAdminGropusAndPolicy,
+  coTransactionSummaryReportViewDetailsFlag
 ) => {
   switch (selectedKey) {
     case "1": // Employee → My Approval
@@ -178,6 +180,16 @@ export const renderFilterContent = (
       if (currentPath === "/PAD/co-reports/co-date-wise-transaction-report") {
         return (
           <CODateWiseTransactionReportFilter
+            setVisible={setVisible}
+            clear={clear}
+            setClear={setClear}
+            maininstrumentName={searchMain}
+            setMaininstrumentName={setSearchMain}
+          />
+        );
+      } else if (coTransactionSummaryReportViewDetailsFlag) {
+        return (
+          <COTransactionReportViewDetailsFilter
             setVisible={setVisible}
             clear={clear}
             setClear={setClear}

@@ -219,3 +219,104 @@ export const GetAllTransactionViewDetails = async ({
     showLoader(false);
   }
 };
+
+
+//Date Wise TransactionReport ViewDetails
+export const DateWiseTransactionReportViewDetails = async ({
+  callApi,
+  showNotification,
+  showLoader,
+  requestdata,
+  navigate,
+}) => {
+  try {
+    console.log("Check APi");
+    const res = await callApi({
+      requestMethod: import.meta.env
+        .VITE_DATE_WISE_TRANSACTION_REPORT_VIEW_DETAILS_METHOD,
+      endpoint: import.meta.env.VITE_API_TRADE,
+      requestData: requestdata,
+      navigate,
+    });
+    if (handleExpiredSession(res, navigate, showLoader)) return null;
+
+    if (!res?.result?.isExecuted) {
+      console.log("Check APi");
+      showNotification({
+        type: "error",
+        title: "Error",
+        description: "Something went wrong. Please try again.",
+      });
+      return null;
+    }
+
+    if (res.success) {
+      const {
+        responseMessage,
+        details,
+        assetTypes,
+        hierarchyDetails,
+        workFlowStatus,
+        tradedWorkFlowReqeust,
+        ticketUploaded,
+        requesterName,
+        complianceMappedTradeSummary,
+        mappedTradeMetaData,
+        requesterEmployeeID
+      } = res.result;
+
+      if (
+        responseMessage ===
+        "PAD_Trade_TradeServiceManager_DateWiseTransactionReportViewDetails_01"
+      ) {
+        console.log("Check APi");
+        return {
+          details: details || [],
+          assetTypes: assetTypes || [],
+          hierarchyDetails: hierarchyDetails || [],
+          workFlowStatus: workFlowStatus || {},
+          tradedWorkFlowReqeust: tradedWorkFlowReqeust || [],
+          ticketUploaded: ticketUploaded ?? false, // <-- Add this line
+          requesterName: requesterName || "",
+          requesterEmployeeID: requesterEmployeeID || "",
+          complianceMappedTradeSummary:complianceMappedTradeSummary||[],
+          mappedTradeMetaData:mappedTradeMetaData||[]
+        };
+      }
+
+      showNotification({
+        type: "warning",
+        title: getMessage(responseMessage),
+        description: "No details available for this Trade Approval ID.",
+      });
+      return {
+         details:   [],
+          assetTypes:   [],
+          hierarchyDetails:   [],
+          workFlowStatus:   {},
+          tradedWorkFlowReqeust:   [],
+          ticketUploaded:   false, // <-- Add this line
+          reqeusterName:   "",
+          requesterEmployeeID:   "",
+          complianceMappedTradeSummary:[],
+          mappedTradeMetaData:[]
+      };
+    }
+
+    showNotification({
+      type: "error",
+      title: "Fetch Failed",
+      description: getMessage(res.message),
+    });
+    return null;
+  } catch (error) {
+    showNotification({
+      type: "error",
+      title: "Error",
+      description: "An unexpected error occurred.",
+    });
+    return null;
+  } finally {
+    showLoader(false);
+  }
+};

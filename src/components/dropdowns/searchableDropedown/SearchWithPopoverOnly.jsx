@@ -18,6 +18,7 @@ import { usePortfolioContext } from "../../../context/portfolioContax";
 import { useReconcileContext } from "../../../context/reconsileContax";
 import { useMyAdmin } from "../../../context/AdminContext";
 import { useLocation } from "react-router-dom";
+import { useMyApproval } from "../../../context/myApprovalContaxt";
 
 /**
  * 🔎 SearchWithPopoverOnly
@@ -39,6 +40,8 @@ const SearchWithPopoverOnly = () => {
   const { collapsed, selectedKey } = useSidebarContext();
   const { activeTab } = usePortfolioContext(); // Portfolio / Pending
   const { activeTab: reconcileActiveTab, activeTabHCO } = useReconcileContext(); // Transactions / Portfolio
+  const { coTransactionSummaryReportViewDetailsFlag } = useMyApproval();
+
   const {
     setEmployeeMyApprovalSearch,
     setEmployeeMyTransactionSearch,
@@ -62,6 +65,7 @@ const SearchWithPopoverOnly = () => {
     setLMPendingApprovalReportsSearch,
     setMyTradeApprovalReportLineManageSearch,
     setCODatewiseTransactionReportSearch,
+    setCOTransactionsSummarysReportsViewDetailSearch,
     setAdminSessionWiseActivitySearch,
     setComplianceOfficerMyActionSearch,
     //
@@ -356,6 +360,15 @@ const SearchWithPopoverOnly = () => {
             pageNumber: 0,
             filterTrigger: true,
           }));
+        } else if (coTransactionSummaryReportViewDetailsFlag) {
+          setCOTransactionsSummarysReportsViewDetailSearch((prev) => ({
+            ...prev,
+            quantitySearch: "",
+            instrumentNameSearch: searchMain,
+            requesterNameSearch: "",
+            pageNumber: 0,
+            filterTrigger: true,
+          }));
         }
         setSearchMain("");
         break;
@@ -621,7 +634,8 @@ const SearchWithPopoverOnly = () => {
             clear,
             setClear,
             openNewFormForAdminGropusAndPolicy,
-            pageTabesForAdminGropusAndPolicy
+            pageTabesForAdminGropusAndPolicy,
+            coTransactionSummaryReportViewDetailsFlag
           )}
           trigger="click"
           open={visible}

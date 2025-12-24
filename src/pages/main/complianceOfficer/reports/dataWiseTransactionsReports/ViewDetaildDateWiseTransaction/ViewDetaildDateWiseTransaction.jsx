@@ -137,14 +137,10 @@ const ViewDetaildDateWiseTransaction = () => {
     reconcileTransactionViewDetailData?.ticketUploaded === false;
 
   /* ========================== ACTION HANDLERS ========================== */
-  const openCompliantModal = () => {
-    setNoteGlobalModal({ visible: true, action: "Compliant" });
+  const closedModal = () => {
     setIsViewComments(false);
   };
-  console.log(
-    "reconcileTransactionViewDetailData",
-    reconcileTransactionViewDetailData
-  );
+
   /* ================================================================
      RENDER
   ================================================================= */
@@ -200,8 +196,8 @@ const ViewDetaildDateWiseTransaction = () => {
                   </label>
                   <label className={styles.viewDetailSubLabels}>
                     {dashBetweenApprovalAssets(
-                      reconcileTransactionViewDetailData
-                        ?.tradedWorkFlowReqeust?.[0]?.tradeApprovalID
+                      reconcileTransactionViewDetailData?.details?.[0]
+                        ?.tradeApprovalID
                     )}
                   </label>
                 </div>
@@ -231,42 +227,82 @@ const ViewDetaildDateWiseTransaction = () => {
                 </div>
               </Col>
             </Row>
-            {/* Requester & Approval */}
+            {/* Employee Name & Employee ID */}
             <Row gutter={[4, 4]} style={{ marginTop: 3 }}>
               <Col span={12}>
                 <div className={styles.backgrounColorOfDetail}>
                   <label className={styles.viewDetailMainLabels}>
-                    Employee  Name
+                    Employee Name
                   </label>
                   <label className={styles.viewDetailSubLabels}>
-                    {reconcileTransactionViewDetailData?.reqeusterName}
-                  </label>
-                </div>
-                 <Col span={12}>
-                <div className={styles.backgrounColorOfDetail}>
-                  <label className={styles.viewDetailMainLabels}>
-                    Employee  ID
-                  </label>
-                  <label className={styles.viewDetailSubLabels}>
-                    {reconcileTransactionViewDetailData?.reqeusterName}
+                    {reconcileTransactionViewDetailData?.requesterName}
                   </label>
                 </div>
               </Col>
+              <Col span={12}>
+                <div className={styles.backgrounColorOfDetail}>
+                  <label className={styles.viewDetailMainLabels}>
+                    Employee ID
+                  </label>
+                  <label className={styles.viewDetailSubLabels}>
+                    {reconcileTransactionViewDetailData?.requesterEmployeeID}
+                  </label>
+                </div>
               </Col>
             </Row>
-
-            {/* Quantities */}
+            {/* 	Transaction Date & 	Action  Date */}
             <Row gutter={[4, 4]} style={{ marginTop: 3 }}>
               <Col span={12}>
                 <div className={styles.backgrounColorOfDetail}>
                   <label className={styles.viewDetailMainLabels}>
-                    Approved Quantity
+                    Transaction Date
                   </label>
                   <label className={styles.viewDetailSubLabels}>
-                    {formatNumberWithCommas(
-                      reconcileTransactionViewDetailData
-                        ?.tradedWorkFlowReqeust?.[0]?.quantity
+                    {formatApiDateTime(
+                      [
+                        reconcileTransactionViewDetailData?.hierarchyDetails[0]
+                          ?.requestDate,
+                        reconcileTransactionViewDetailData?.hierarchyDetails[0]
+                          ?.requestTime,
+                      ]
+                        .filter(Boolean)
+                        .join(" ")
                     )}
+                  </label>
+                </div>
+              </Col>
+              <Col span={12}>
+                <div className={styles.backgrounColorOfDetail}>
+                  <label className={styles.viewDetailMainLabels}>
+                    Action Date
+                  </label>
+                  <label className={styles.viewDetailSubLabels}>
+                    {formatApiDateTime(
+                      [
+                        reconcileTransactionViewDetailData?.hierarchyDetails[0]
+                          ?.modifiedDate,
+                        reconcileTransactionViewDetailData?.hierarchyDetails[0]
+                          ?.modifiedTime,
+                      ]
+                        .filter(Boolean)
+                        .join(" ")
+                    )}
+                  </label>
+                </div>
+              </Col>
+            </Row>
+            {/* Action by */}
+            <Row gutter={[4, 4]} style={{ marginTop: 3 }}>
+              <Col span={12}>
+                <div className={styles.backgrounColorOfDetail}>
+                  <label className={styles.viewDetailMainLabels}>
+                    Action by
+                  </label>
+                  <label className={styles.viewDetailSubLabels}>
+                    {
+                      reconcileTransactionViewDetailData?.hierarchyDetails[0]
+                        ?.fullName
+                    }
                   </label>
                 </div>
               </Col>
@@ -277,73 +313,39 @@ const ViewDetaildDateWiseTransaction = () => {
                     Shares Traded
                   </label>
                   <label className={styles.viewDetailSubLabels}>
-                    {formatNumberWithCommas(
-                      reconcileTransactionViewDetailData?.details?.[0]?.quantity
-                    )}
+                      {
+                      reconcileTransactionViewDetailData?.complianceMappedTradeSummary[0]
+                        ?.tradeWorkFlowID
+                    }
                   </label>
                 </div>
               </Col>
             </Row>
-
-            {/* ========================== BROKER LIST ========================== */}
-            <Row style={{ marginTop: 3 }}>
+            <Row gutter={[4, 4]} style={{ marginTop: 3 }}>
               <Col span={24}>
-                <BrokerList
-                  statusData={statusData}
-                  viewDetailsData={reconcileTransactionViewDetailData}
-                  variant="Blue"
-                />
-              </Col>
-            </Row>
+                <div className={styles.backgrounColorOfDetail}>
+                  <label className={styles.viewDetailMainLabels}>
+                    Notes
+                  </label>
+                  <label className={styles.viewDetailSubLabels}>
+                    {reconcileTransactionViewDetailData?.details?.[0]
+                      ?.approvalComments?.length > 0 &&
+                      reconcileTransactionViewDetailData.details[0].approvalComments.map(
+                        (comment, index) => (
+                          <div key={`approval-${index}`}>{comment}</div>
+                        )
+                      )}
 
-            {/* ========================== STEPPER ========================== */}
-            <Row>
-              <div className={styles.mainStepperContainer}>
-                <div className={styles.backgrounColorOfStepper}>
-                  <Stepper activeStep={0}>
-                    {(
-                      reconcileTransactionViewDetailData?.hierarchyDetails || []
-                    )
-                      .filter((p) => p.userID !== loggedInUserID)
-                      .map((person, index) => {
-                        const formattedDateTime = formatApiDateTime(
-                          `${person.modifiedDate} ${person.modifiedTime}`
-                        );
-
-                        const icon =
-                          person.bundleStatusID === 2
-                            ? CheckIcon
-                            : person.bundleStatusID === 3
-                            ? CrossIcon
-                            : EllipsesIcon;
-
-                        return (
-                          <Step
-                            key={index}
-                            label={
-                              <div className={styles.customlabel}>
-                                <div className={styles.customtitle}>
-                                  {person.bundleStatusID === 1
-                                    ? "Awaiting for action"
-                                    : "Action taken"}
-                                </div>
-                                {person.bundleStatusID !== 1 && (
-                                  <div className={styles.customdesc}>
-                                    {formattedDateTime}
-                                  </div>
-                                )}
-                              </div>
-                            }
-                          >
-                            <div className={styles.stepCircle}>
-                              <img src={icon} alt="status" />
-                            </div>
-                          </Step>
-                        );
-                      })}
-                  </Stepper>
+                    {reconcileTransactionViewDetailData?.details?.[0]
+                      ?.rejectionComment?.length > 0 &&
+                      reconcileTransactionViewDetailData.details[0].rejectionComment.map(
+                        (comment, index) => (
+                          <div key={`rejection-${index}`}>{comment}</div>
+                        )
+                      )}
+                  </label>
                 </div>
-              </div>
+              </Col>
             </Row>
           </div>
 
@@ -352,10 +354,9 @@ const ViewDetaildDateWiseTransaction = () => {
             <Col span={24}>
               <div className={styles.approvedButtonClass}>
                 <CustomButton
-                  text="Cancel"
-                  className="Approved-dark-button"
-                  disabled={isTicketUploaded}
-                  onClick={openCompliantModal}
+                  text="Close"
+                  className="small-light-button"
+                  onClick={closedModal}
                 />
               </div>
             </Col>

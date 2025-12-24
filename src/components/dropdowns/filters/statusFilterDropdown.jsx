@@ -149,6 +149,7 @@ const StatusFilterDropdown = ({
       case "7":
       case "8":
       case "9":
+      case "11":
       case "12":
       case "15":
       case "19":
@@ -205,6 +206,7 @@ const StatusFilterDropdown = ({
       case "6":
       case "8":
       case "9":
+      case "11":
       case "12":
       case "15":
       case "18":

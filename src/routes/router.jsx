@@ -230,16 +230,8 @@ const router = createBrowserRouter(
           />
           <Route
             path="co-transactions-summary-report"
-            // element={<COTransactionsSummarysReports />}
-             element={
-            <RoleBasedRoute isAdmin={false}>
-              <ReportsLayout />
-            </RoleBasedRoute>
-          }
-          >
-          <Route index element={<COTransactionsSummarysReports />} />
-
-          </Route>
+            element={<COTransactionsSummarysReports />}
+          />
           <Route path="co-overdue-verifications" element={<PendingRequest />} />
           <Route path="co-portfolio-history" element={<PendingRequest />} />
         </Route>

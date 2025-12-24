@@ -130,10 +130,51 @@ export const MyApprovalProvider = ({ children }) => {
     totalRecordsDataBase: 0,
     totalRecordsTable: 0,
   });
+
+  const [
+    coTransactionSummaryReportListData,
+    setCOTransactionSummaryReportListData,
+  ] = useState({
+    transactions: [],
+    totalRecordsDataBase: 0,
+    totalRecordsTable: 0,
+  });
+
+  const [
+    coTransactionSummaryReportViewDetailsListData,
+    setCOTransactionSummaryReportViewDetailsListData,
+  ] = useState({
+    record: [],
+    totalRecordsDataBase: 0,
+    totalRecordsTable: 0,
+  });
+
+  const [
+    coTransactionSummaryReportViewDetailsFlag,
+    setCOTransactionSummaryReportViewDetailsFlag,
+  ] = useState(false);
+
   // Reset function to set all states back to initial values
   /* =========================================================
      RESET FUNCTIONS
      ========================================================= */
+  /** Reset CO Transactions Summary Report */
+  const resetCOTransactionSummaryReportListData = () => {
+    setCOTransactionSummaryReportListData({
+      transactions: [],
+      totalRecordsDataBase: 0,
+      totalRecordsTable: 0,
+    });
+  };
+
+  /** Reset CO Transactions Summary view details Report */
+  const resetCOTransactionSummaryReportViewDetailsListData = () => {
+    setCOTransactionSummaryReportViewDetailsListData({
+      record: [],
+      totalRecordsDataBase: 0,
+      totalRecordsTable: 0,
+    });
+  };
 
   /** Reset Line Manager approvals & detail modal */
   const resetApprovalRequestContextState = () => {
@@ -233,6 +274,16 @@ export const MyApprovalProvider = ({ children }) => {
         // compliance officer  date wise transaction report
         coDatewiseTransactionReportListData,
         setCODatewiseTransactionReportListData,
+
+        coTransactionSummaryReportListData,
+        setCOTransactionSummaryReportListData,
+        resetCOTransactionSummaryReportListData,
+
+        coTransactionSummaryReportViewDetailsFlag,
+        setCOTransactionSummaryReportViewDetailsFlag,
+        coTransactionSummaryReportViewDetailsListData,
+        setCOTransactionSummaryReportViewDetailsListData,
+        resetCOTransactionSummaryReportViewDetailsListData,
       }}
     >
       {children}
