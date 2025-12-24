@@ -118,62 +118,6 @@ const getSortIcon = (columnKey, sortedInfo) => {
 };
 
 /**
- * Renders instrument cell with asset code and tooltip
- * @param {Object} record - Table row data
- * @returns {JSX.Element} Instrument cell component
- */
-const renderInstrumentCell = (record) => {
-  const code = record?.instrumentCode || "—";
-  const name = record?.instrumentName || "—";
-  const assetCode = record?.assetTypeShortCode || "";
-
-  return (
-    <div
-      style={{
-        display: "flex",
-        alignItems: "center",
-        gap: "8px",
-        minWidth: 0,
-      }}
-    >
-      <span
-        className="custom-shortCode-asset"
-        style={{
-          minWidth: 32,
-          flexShrink: 0,
-          display: "inline-flex",
-          alignItems: "center",
-          justifyContent: "center",
-        }}
-        data-testid="asset-code"
-      >
-        {assetCode?.substring(0, 2).toUpperCase()}
-      </span>
-      <Tooltip
-        title={`${code} - ${name}`}
-        placement="topLeft"
-        overlayStyle={{ maxWidth: "300px" }}
-      >
-        <span
-          className="font-medium"
-          style={{
-            overflow: "hidden",
-            textOverflow: "ellipsis",
-            whiteSpace: "nowrap",
-            minWidth: 0,
-            flex: 1,
-            cursor: "pointer",
-          }}
-          data-testid="instrument-code"
-        >
-          {code}
-        </span>
-      </Tooltip>
-    </div>
-  );
-};
-
-/**
  * Renders status tag with appropriate styling
  * @param {string} status - Approval status
  * @param {Object} approvalStatusMap - Status to style mapping

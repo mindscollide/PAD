@@ -8,6 +8,7 @@ import { useSidebarContext } from "../../../context/sidebarContaxt";
 import SearchWithFilter from "../../dropdowns/searchableDropedown/SearchWithPopoverOnly";
 import { useSearchBarContext } from "../../../context/SearchBarContaxt";
 import { useMyAdmin } from "../../../context/AdminContext";
+import { useMyApproval } from "../../../context/myApprovalContaxt";
 
 const { Header } = Layout;
 
@@ -15,6 +16,8 @@ const Headers = () => {
   const navigate = useNavigate();
   const { collapsed, setCollapsed, selectedKeyRef, setSelectedKey } =
     useSidebarContext();
+  const { coTransactionSummaryReportViewDetailsFlag } = useMyApproval();
+
   const {
     openNewFormForAdminGropusAndPolicy,
     pageTypeForAdminGropusAndPolicy,
@@ -84,7 +87,8 @@ const Headers = () => {
                       currentPath ===
                         "/PAD/co-reports/co-overdue-verifications" ||
                       currentPath ===
-                        "/PAD/lm-reports/lm-tradeapproval-request"))) && (
+                        "/PAD/lm-reports/lm-tradeapproval-request" ||
+                      coTransactionSummaryReportViewDetailsFlag))) && (
                   <SearchWithFilter />
                 )
               )}

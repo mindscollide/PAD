@@ -229,22 +229,15 @@ const router = createBrowserRouter(
             path="co-date-wise-transaction-report"
             element={<COdataWiseTransactionsReports />}
           />
-          <Route
-            path="co-transactions-summary-report"
-            // element={<COTransactionsSummarysReports />}
-            element={
-              <RoleBasedRoute isAdmin={false}>
-                <ReportsLayout />
-              </RoleBasedRoute>
-            }
-          >
-            <Route index element={<COTransactionsSummarysReports />} />
-          </Route>
+
           <Route
             path="co-overdue-verifications"
             element={<CompianceOfficerOverdueVerificationReports />}
           />
-          <Route path="co-portfolio-history" element={<PendingRequest />} />
+          <Route
+            path="co-transactions-summary-report"
+            element={<COTransactionsSummarysReports />}
+          />
         </Route>
 
         {/* Head of Compliance Approval */}

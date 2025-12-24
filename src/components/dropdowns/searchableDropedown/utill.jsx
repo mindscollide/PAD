@@ -25,6 +25,7 @@ import { AdminSessionWiseActivityFilter } from "./AdminSessionWiseActivity";
 import { COMyAction } from "./COMyAction";
 import { LMPendigRequestReportSearchFilter } from "./LMPendigRequestReportSearchFilter";
 import { COOverdueVerifications } from "./COOverdueVerifications";
+import { COTransactionReportViewDetailsFilter } from "./COTransactionReportViewDetailsFilter";
 
 // this is used for open specific filter according to page
 export const renderFilterContent = (
@@ -36,7 +37,8 @@ export const renderFilterContent = (
   clear,
   setClear,
   openNewFormForAdminGropusAndPolicy,
-  pageTabesForAdminGropusAndPolicy
+  pageTabesForAdminGropusAndPolicy,
+  coTransactionSummaryReportViewDetailsFlag
 ) => {
   switch (selectedKey) {
     case "1": // Employee → My Approval
@@ -186,9 +188,19 @@ export const renderFilterContent = (
             setMaininstrumentName={setSearchMain}
           />
         );
-      } else if (currentPath === "/PAD/co-reports/co-overdue-verifications") {
+      }else if (currentPath === "/PAD/co-reports/co-overdue-verifications") {
         return (
           <COOverdueVerifications
+            setVisible={setVisible}
+            clear={clear}
+            setClear={setClear}
+            maininstrumentName={searchMain}
+            setMaininstrumentName={setSearchMain}
+          />
+        );
+      } else if (coTransactionSummaryReportViewDetailsFlag) {
+        return (
+          <COTransactionReportViewDetailsFilter
             setVisible={setVisible}
             clear={clear}
             setClear={setClear}

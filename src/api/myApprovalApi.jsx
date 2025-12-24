@@ -2422,7 +2422,7 @@ export const GetComplianceOfficerViewTransactionSummaryAPI = async ({
       ) {
         return {
           totalRecords: totalRecords,
-          records: records,
+          record: records,
         };
       }
 
@@ -2433,7 +2433,100 @@ export const GetComplianceOfficerViewTransactionSummaryAPI = async ({
       ) {
         return {
           totalRecords: 0,
-          records: [],
+          record: [],
+        };
+      }
+
+      // Case 3 → Custom server messages
+      if (message) {
+        showNotification({
+          type: "warning",
+          title: message,
+          description: message,
+        });
+      }
+
+      return null;
+    }
+
+    // 🔹 Handle failure
+    showNotification({
+      type: "error",
+      title: "Fetch Failed",
+      description: getMessage(res.message),
+    });
+    return null;
+  } catch (error) {
+    // 🔹 Exception handling
+    showNotification({
+      type: "error",
+      title: "Error",
+      description:
+        "An unexpected error occurred while request Compliance Officer View Transaction Summary reports Api .",
+    });
+    return null;
+  } finally {
+    // 🔹 Always hide loader
+    showLoader(false);
+  }
+};
+
+// SearchComplianceOfficerTransactionSummaryReportRequest
+export const SearchComplianceOfficerTransactionSummaryReportRequest = async ({
+  callApi,
+  showNotification,
+  showLoader,
+  navigate,
+  requestdata,
+}) => {
+  try {
+    // 🔹 API Call
+    const res = await callApi({
+      requestMethod: import.meta.env
+        .VITE_SEARCH_COMPLIANCE_OFFICER_TRANSACTION_SUMMARY_REPORT_REQUEST_REQUEST_METHOD, // 🔑 must be defined in .env
+      endpoint: import.meta.env.VITE_API_TRADE,
+      requestData: requestdata,
+      navigate,
+    });
+
+    // 🔹 Handle session expiry
+    if (handleExpiredSession(res, navigate, showLoader)) return null;
+
+    // 🔹 Validate execution
+    if (!res?.result?.isExecuted) {
+      showNotification({
+        type: "error",
+        title: "Error",
+        description:
+          "Something went wrong while fetching Compliance Officer Search HOCTransactionSummaryReportRequest Api.",
+      });
+      return null;
+    }
+
+    // 🔹 Handle success
+    if (res?.success) {
+      const { totalRecords, transactions, responseMessage } = res.result;
+      const message = getMessage(responseMessage);
+
+      // Case 1 → Data available
+      if (
+        responseMessage ===
+        "PAD_Trade_TradeServiceManager_SearchComplianceOfficerTransactionSummaryReportRequest_01"
+      ) {
+        return {
+          totalRecords: totalRecords,
+          transactions: transactions,
+        };
+      }
+
+      // Case 2 → No data
+      if (
+        responseMessage ===
+        "PAD_Trade_TradeServiceManager_SearchComplianceOfficerTransactionSummaryReportRequest_02"
+      ) {
+        return {
+          totalRecords: 0,
+          transactions: [],
         };
       }
 

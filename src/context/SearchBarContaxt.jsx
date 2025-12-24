@@ -361,6 +361,36 @@ export const SearchBarProvider = ({ children }) => {
     totalRecords: 0,
     filterTrigger: false,
   });
+  // ===============================
+  //  Compliance Approval (CA) States
+  // ===============================
+  /** 🔍 CO Portfolio filters */
+  const [
+    coTransactionsSummarysReportsSearch,
+    setCOTransactionsSummarysReportsSearch,
+  ] = useState({
+    endDate: "",
+    startDate: "",
+    pageSize: 10,
+    pageNumber: 0,
+    filterTrigger: false,
+  });
+
+  /** 🔍 CO Portfolio filters */
+  const [
+    coTransactionsSummarysReportsViewDetailsSearch,
+    setCOTransactionsSummarysReportsViewDetailSearch,
+  ] = useState({
+    transactionDate: "",
+    quantitySearch: "",
+    instrumentNameSearch: "",
+    requesterNameSearch: "",
+    type: [],
+    status: [],
+    pageSize: 10,
+    pageNumber: 0,
+    filterTrigger: false,
+  });
 
   // Admin Broker Search filter
   const [adminBrokerSearch, setAdminBrokerSearch] = useState({
@@ -760,6 +790,20 @@ export const SearchBarProvider = ({ children }) => {
       filterTrigger: false,
     });
 
+  /** Reset Compliance Officer Transactions Summarys Reports View Details Search filters */
+  const resetCOTransactionsSummarysReportsViewDetailsSearch = () =>
+    setCOTransactionsSummarysReportsViewDetailSearch({
+      transactionDate: "",
+      quantitySearch: "",
+      instrumentNameSearch: "",
+      requesterNameSearch: "",
+      type: [],
+      status: [],
+      pageSize: 10,
+      pageNumber: 0,
+      filterTrigger: false,
+    });
+
   /** Reset Compliance Officer Approval filters */
   const resetComplianceOfficerMyActionSearch = () =>
     setComplianceOfficerMyActionSearch({
@@ -771,6 +815,15 @@ export const SearchBarProvider = ({ children }) => {
       type: [],
       status: [],
       quantity: 0,
+      pageNumber: 0,
+      pageSize: 10,
+      filterTrigger: false,
+    });
+
+  const resetCOTransactionsSummarysReportsSearch = () =>
+    setCOTransactionsSummarysReportsSearch({
+      endDate: "",
+      startDate: "",
       pageNumber: 0,
       pageSize: 10,
       filterTrigger: false,
@@ -1019,11 +1072,18 @@ export const SearchBarProvider = ({ children }) => {
         coOverdueVerificationReportSearch,
         setCoOverdueVerificationReportSearch,
         resetComplianceOfficerOverdueVerificationReportSearch,
+
+        coTransactionsSummarysReportsViewDetailsSearch,
+        setCOTransactionsSummarysReportsViewDetailSearch,
+        resetCOTransactionsSummarysReportsViewDetailsSearch,
+
         // Compliance Officer Myaction
         complianceOfficerMyActionSearch,
         setComplianceOfficerMyActionSearch,
         resetComplianceOfficerMyActionSearch,
-
+        coTransactionsSummarysReportsSearch,
+        setCOTransactionsSummarysReportsSearch,
+        resetCOTransactionsSummarysReportsSearch,
         // Head of Compliance Approval
         headOfComplianceApprovalPortfolioSearch,
         setHeadOfComplianceApprovalPortfolioSearch,

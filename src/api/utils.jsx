@@ -630,11 +630,18 @@ export const responseMessages = {
   Admin_ViewUserSessionWiseActivity_02: "No data available",
   Admin_ViewUserSessionWiseActivity_03: "Exception",
 
-  PAD_Trade_TradeServiceManager_GetComplianceOfficerViewTransactionSummaryAPI_01:
+  PAD_Trade_TradeServiceManager_SearchComplianceOfficerTransactionSummaryReportRequest_01:
     "Data Available",
-  PAD_Trade_TradeServiceManager_GetComplianceOfficerViewTransactionSummaryAPI_02:
+  PAD_Trade_TradeServiceManager_SearchComplianceOfficerTransactionSummaryReportRequest_02:
     "No data available",
-  PAD_Trade_TradeServiceManager_GetComplianceOfficerViewTransactionSummaryAPI_03:
+  PAD_Trade_TradeServiceManager_SearchComplianceOfficerTransactionSummaryReportRequest_03:
+    "Exception",
+
+  PAD_Trade_TradeServiceManager_DateWiseTransactionReportViewDetails_01:
+    "Data Available",
+  PAD_Trade_TradeServiceManager_DateWiseTransactionReportViewDetails_02:
+    "No data available",
+  PAD_Trade_TradeServiceManager_DateWiseTransactionReportViewDetails_03:
     "Exception",
   // ==============================
   // Compliance Officer OverDue report

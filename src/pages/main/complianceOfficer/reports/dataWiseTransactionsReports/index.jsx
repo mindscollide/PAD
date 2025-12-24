@@ -40,7 +40,7 @@ import CustomButton from "../../../../../components/buttons/button";
 import { DateRangePicker } from "../../../../../components";
 import ViewDetaildDateWiseTransaction from "./ViewDetaildDateWiseTransaction/ViewDetaildDateWiseTransaction";
 import { toYYMMDD } from "../../../../../common/funtions/rejex";
-import { GetAllTransactionViewDetails } from "../../../../../api/myTransactionsApi";
+import { DateWiseTransactionReportViewDetails } from "../../../../../api/myTransactionsApi";
 import { useReconcileContext } from "../../../../../context/reconsileContax";
 
 const COdataWiseTransactionsReports = () => {
@@ -146,8 +146,7 @@ const COdataWiseTransactionsReports = () => {
       showNotification,
     ]
   );
-  console.log("records", coDatewiseTransactionReportListData);
-  console.log("records", coDatewiseTransactionReportSearch);
+
 
   // -------------------- Effects --------------------
 
@@ -210,7 +209,7 @@ const COdataWiseTransactionsReports = () => {
     await showLoader(true);
     const requestdata = { TradeApprovalID: workFlowID };
 
-    const responseData = await GetAllTransactionViewDetails({
+    const responseData = await DateWiseTransactionReportViewDetails({
       callApi,
       showNotification,
       showLoader,
