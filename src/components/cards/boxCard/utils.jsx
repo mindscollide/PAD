@@ -204,6 +204,54 @@ export const typeColorMap = {
     textCountColor: "#30426A",
     textAlign: "center",
   },
+  date_wise_transaction_report: {
+    bgColor: "#C5FFC7",
+    textLableColor: "#00640A",
+    textCountColor: "#00640A",
+    textAlign: "center",
+  },
+  high_risk_alert: {
+    bgColor: "#FFDBDB",
+    textLableColor: "#A50000",
+    textCountColor: "#A50000",
+    textAlign: "center",
+  },
+  users_approval_request: {
+    bgColor: "#C5FFC7",
+    textLableColor: "#00640A",
+    textCountColor: "#00640A",
+    textAlign: "center",
+  },
+  average_approval_turnedaround_hours: {
+    bgColor: "#C5FFC7",
+    textLableColor: "#00640A",
+    textCountColor: "#00640A",
+    textAlign: "center",
+  },
+  overdue_verifications: {
+    bgColor: "#EDF3FF",
+    textLableColor: "#30426A",
+    textCountColor: "#30426A",
+    textAlign: "center",
+  },
+  hoc_employee: {
+    bgColor: "#C5FFC7",
+    textLableColor: "#00640A",
+    textCountColor: "#00640A",
+    textAlign: "center",
+  },
+  hoc_transaction: {
+    bgColor: "#EDF3FF",
+    textLableColor: "#30426A",
+    textCountColor: "#30426A",
+    textAlign: "center",
+  },
+  trades_uploaded_via_portfolio: {
+    bgColor: "#EDF3FF",
+    textLableColor: "#30426A",
+    textCountColor: "#30426A",
+    textAlign: "center",
+  },
 };
 
 // ============================
