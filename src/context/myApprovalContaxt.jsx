@@ -54,8 +54,14 @@ export const MyApprovalProvider = ({ children }) => {
   const [lineManagerReportsDashboardData, setLineManagerReportsDashboardData] =
     useState([]);
 
+  /** HTA dashboard report summary */
+  const [htaReportsDashboardData, setHTAReportsDashboardData] = useState([]);
+
   /** Compliance Officer dashboard report summary */
   const [coReportsDashboardData, setCOReportsDashboardData] = useState([]);
+
+  /** Compliance Officer dashboard report summary */
+  const [hcaReportsDashboardData, setHCAReportsDashboardData] = useState([]);
 
   /** Employee Transaction Request Report API data */
   const [getEmployeeTransactionReport, setGetEmployeeTransactionReport] =
@@ -271,6 +277,10 @@ export const MyApprovalProvider = ({ children }) => {
         coReportsDashboardData,
         setCOReportsDashboardData,
 
+        // HTA Reports
+        htaReportsDashboardData,
+        setHTAReportsDashboardData,
+
         // compliance officer  date wise transaction report
         coDatewiseTransactionReportListData,
         setCODatewiseTransactionReportListData,
@@ -284,6 +294,9 @@ export const MyApprovalProvider = ({ children }) => {
         coTransactionSummaryReportViewDetailsListData,
         setCOTransactionSummaryReportViewDetailsListData,
         resetCOTransactionSummaryReportViewDetailsListData,
+        // HCA Reports
+        hcaReportsDashboardData,
+        setHCAReportsDashboardData,
       }}
     >
       {children}

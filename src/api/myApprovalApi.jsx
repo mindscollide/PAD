@@ -2564,3 +2564,197 @@ export const SearchComplianceOfficerTransactionSummaryReportRequest = async ({
   }
 };
 
+// GetHOCReportsDashboardStatsAPI
+export const GetHOCReportsDashboardStatsAPI = async ({
+  callApi,
+  showNotification,
+  showLoader,
+  navigate,
+}) => {
+  try {
+    // 🔹 API Call
+    const res = await callApi({
+      requestMethod: import.meta.env
+        .VITE_GET_HOC_REPORTS_DASHBOARD_STATS_API_METHOD, // 🔑 must be defined in .env
+      endpoint: import.meta.env.VITE_API_TRADE,
+      navigate,
+    });
+
+    // 🔹 Handle session expiry
+    if (handleExpiredSession(res, navigate, showLoader)) return null;
+
+    // 🔹 Validate execution
+    if (!res?.result?.isExecuted) {
+      showNotification({
+        type: "error",
+        title: "Error",
+        description:
+          "Something went wrong while fetching Head of Compliance Officer Dashboard reports Api.",
+      });
+      return null;
+    }
+    console.log("reasonsArray", res);
+
+    // 🔹 Handle success
+    if (res.success) {
+      const {
+        transactionSummary,
+        dateWiseTransactionCount,
+        overDueVerificationsCount,
+        uploadedPortfolioCount,
+      } = res.result.hocReportsDashboardStats;
+      const { responseMessage } = res.result;
+      const message = getMessage(responseMessage);
+
+      // Case 1 → Data available
+      if (
+        responseMessage ===
+        "PAD_Trade_TradeServiceManager_GetHOCReportsDashboardStatsAPI_01"
+      ) {
+        return {
+          transactionSummary,
+          dateWiseTransactionCount,
+          overDueVerificationsCount,
+          uploadedPortfolioCount,
+        };
+      }
+
+      // Case 2 → No data
+      if (
+        responseMessage ===
+        "PAD_Trade_TradeServiceManager_GetHOCReportsDashboardStatsAPI_02"
+      ) {
+        return [];
+      }
+
+      // Case 3 → Custom server messages
+      if (message) {
+        showNotification({
+          type: "warning",
+          title: message,
+          description: message,
+        });
+      }
+
+      return null;
+    }
+
+    // 🔹 Handle failure
+    showNotification({
+      type: "error",
+      title: "Fetch Failed",
+      description: getMessage(res.message),
+    });
+    return null;
+  } catch (error) {
+    // 🔹 Exception handling
+    showNotification({
+      type: "error",
+      title: "Error",
+      description:
+        "An unexpected error occurred while request Head of Compliance officer Reports Dashboard Stats API .",
+    });
+    return null;
+  } finally {
+    // 🔹 Always hide loader
+    showLoader(false);
+  }
+};
+
+
+// HTA dashbord api of reports
+// GetHTAReportsDashboardStatsAPI
+export const GetHTAReportsDashboardStatsAPI = async ({
+  callApi,
+  showNotification,
+  showLoader,
+  navigate,
+}) => {
+  try {
+    // 🔹 API Call
+    const res = await callApi({
+      requestMethod: import.meta.env
+        .VITE_GET_HTA_REPORTS_DASHBOARD_STATS_API_METHOD, // 🔑 must be defined in .env
+      endpoint: import.meta.env.VITE_API_TRADE,
+      navigate,
+    });
+  // 🔹 Handle session expiry
+    if (handleExpiredSession(res, navigate, showLoader)) return null;
+
+    // 🔹 Validate execution
+    if (!res?.result?.isExecuted) {
+      showNotification({
+        type: "error",
+        title: "Error",
+        description:
+          "Something went wrong while fetching HTA Dashboard reports Api.",
+      });
+      return null;
+    }
+    console.log("reasonsArray", res);
+
+    // 🔹 Handle success
+    if (res.success) {
+      const {
+        policyBreaches,
+        tradeApprovalRequest,
+        tatRequestApprovals,
+        pendingRequest,
+      } = res.result.htaReportsDashboardStats;
+      const { responseMessage } = res.result;
+      const message = getMessage(responseMessage);
+
+      // Case 1 → Data available
+      if (
+        responseMessage ===
+        "PAD_Trade_TradeServiceManager_GetHTAReportsDashboardStats_01"
+      ) {
+        return {
+          policyBreaches,
+          tradeApprovalRequest,
+          tatRequestApprovals,
+          pendingRequest,
+        };
+      }
+
+      // Case 2 → No data
+      if (
+        responseMessage ===
+        "PAD_Trade_TradeServiceManager_GetHTAReportsDashboardStats_02"
+      ) {
+        return [];
+      }
+
+      // Case 3 → Custom server messages
+      if (message) {
+        showNotification({
+          type: "warning",
+          title: message,
+          description: message,
+        });
+      }
+
+      return null;
+    }
+
+    // 🔹 Handle failure
+    showNotification({
+      type: "error",
+      title: "Fetch Failed",
+      description: getMessage(res.message),
+    });
+    return null;
+  } catch (error) {
+    // 🔹 Exception handling
+    showNotification({
+      type: "error",
+      title: "Error",
+      description:
+        "An unexpected error occurred while request HTA Reports Dashboard Stats API .",
+    });
+    return null;
+  } finally {
+    // 🔹 Always hide loader
+    showLoader(false);
+  }
+};
