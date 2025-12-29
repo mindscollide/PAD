@@ -678,6 +678,7 @@ export const responseMessages = {
   PAD_Trade_TradeServiceManager_SearchComplianceOfficerTransactionSummaryReportRequest_02:
     "No data available",
   PAD_Trade_TradeServiceManager_SearchComplianceOfficerTransactionSummaryReportRequest_03:
+    "Exception",
   // ==============================
   // Head of Compliance Officer Date Wise Transaction report
   // ==============================
@@ -687,7 +688,7 @@ export const responseMessages = {
     "No data available",
   PAD_Trade_TradeServiceManager_SearchHOCDateWiseTransactionRequest_03:
     "Exception",
-    
+
   PAD_Trade_TradeServiceManager_GetHTATradeApprovalRequestsReport_01:
     "Data found",
   PAD_Trade_TradeServiceManager_GetHTATradeApprovalRequestsReport_02:
