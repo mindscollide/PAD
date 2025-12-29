@@ -236,6 +236,20 @@ export const renderFilterContent = (
         />
       );
 
+    case "14": // HTA → reports pending approvals
+      if (currentPath === "/PAD/hta-reports/hta-trade-approval-requests") {
+        return (
+          <LineManagerMyTradeApprovalsReports
+            setVisible={setVisible}
+            clear={clear}
+            setClear={setClear}
+            maininstrumentName={searchMain}
+            setMaininstrumentName={setSearchMain}
+          />
+        );
+      }
+      return null;
+
     case "15": // HCA Escalated
       return (
         <HcaReconcileFilter
@@ -272,6 +286,18 @@ export const renderFilterContent = (
       } else if (currentPath === "/PAD/hca-reports/hca-upload-portfolio") {
         return (
           <HCOTradeUploadedViaPortfolioFilter
+            setVisible={setVisible}
+            clear={clear}
+            setClear={setClear}
+            maininstrumentName={searchMain}
+            setMaininstrumentName={setSearchMain}
+          />
+        );
+      } else if (
+        currentPath === "/PAD/hca-reports/hca-date-wise-transaction-report"
+      ) {
+        return (
+          <CODateWiseTransactionReportFilter
             setVisible={setVisible}
             clear={clear}
             setClear={setClear}

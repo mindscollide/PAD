@@ -58,6 +58,7 @@ import HTAReportsIndex from "../pages/main/headOfTradeApprover/reports";
 import HeadCompianceOfficerOverdueVerificationReports from "../pages/main/headOfComplianceOffice/reports/overDueVerificationsReports";
 import HOCMyActionPage from "../pages/main/headOfComplianceOffice/myActions";
 import CompianceOfficerPortfolioHistoryReports from "../pages/main/complianceOfficer/reports/portfolioHistoryReports";
+import HTATradeApprovalRequest from "../pages/main/headOfTradeApprover/reports/tradeApprovalsRequest/HTATradeApprovalRequest";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -209,8 +210,8 @@ const router = createBrowserRouter(
           <Route index element={<HTAReportsIndex />} />
           <Route path="lm-pending-request" element={<PendingRequest />} />
           <Route
-            path="lm-tradeapproval-request"
-            element={<TradeApprovalRequest />}
+            path="hta-trade-approval-requests"
+            element={<HTATradeApprovalRequest />}
           />
         </Route>
         {/* Compliance Officer */}
