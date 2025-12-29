@@ -2564,21 +2564,19 @@ export const SearchComplianceOfficerTransactionSummaryReportRequest = async ({
   }
 };
 
-// SearchHOCOverdueVerificationsRequest For Compliance Officer Overdue Verification Page
-export const SearchHOCOverdueVerificationsRequestApi = async ({
+// GetHOCReportsDashboardStatsAPI
+export const GetHOCReportsDashboardStatsAPI = async ({
   callApi,
   showNotification,
   showLoader,
   navigate,
-  requestdata,
 }) => {
   try {
     // 🔹 API Call
     const res = await callApi({
       requestMethod: import.meta.env
-        .VITE_REPORT_OVERDUE_VERIFICATION_LISTING_API_REQUEST_METHOD, // 🔑 must be defined in .env
+        .VITE_GET_HOC_REPORTS_DASHBOARD_STATS_API_METHOD, // 🔑 must be defined in .env
       endpoint: import.meta.env.VITE_API_TRADE,
-      requestData: requestdata,
       navigate,
     });
 
@@ -2591,41 +2589,42 @@ export const SearchHOCOverdueVerificationsRequestApi = async ({
         type: "error",
         title: "Error",
         description:
-          "Something went wrong while fetching Compliance Officer date wise transaction reports Api.",
+          "Something went wrong while fetching Head of Compliance Officer Dashboard reports Api.",
       });
       return null;
     }
+    console.log("reasonsArray", res);
 
     // 🔹 Handle success
-    if (res?.success) {
-      const { totalRecords, overdueVerifications, responseMessage } =
-        res.result;
+    if (res.success) {
+      const {
+        transactionSummary,
+        dateWiseTransactionCount,
+        overDueVerificationsCount,
+        uploadedPortfolioCount,
+      } = res.result.hocReportsDashboardStats;
+      const { responseMessage } = res.result;
       const message = getMessage(responseMessage);
-      console.log("Check Console Rigt N0ow");
 
       // Case 1 → Data available
       if (
         responseMessage ===
-        "PAD_Trade_TradeServiceManager_SearchHOCOverdueVerifications_01"
+        "PAD_Trade_TradeServiceManager_GetHOCReportsDashboardStatsAPI_01"
       ) {
-        console.log("Check Console Rigt N0ow");
-
         return {
-          overdueVerifications: overdueVerifications,
-          totalRecords: totalRecords,
+          transactionSummary,
+          dateWiseTransactionCount,
+          overDueVerificationsCount,
+          uploadedPortfolioCount,
         };
       }
 
       // Case 2 → No data
       if (
         responseMessage ===
-        "PAD_Trade_TradeServiceManager_SearchHOCOverdueVerifications_02"
+        "PAD_Trade_TradeServiceManager_GetHOCReportsDashboardStatsAPI_02"
       ) {
-        console.log("Check Console Rigt N0ow");
-        return {
-          overdueVerifications: [],
-          totalRecords: 0,
-        };
+        return [];
       }
 
       // Case 3 → Custom server messages
@@ -2653,7 +2652,7 @@ export const SearchHOCOverdueVerificationsRequestApi = async ({
       type: "error",
       title: "Error",
       description:
-        "An unexpected error occurred while request Compliance officer date wise transaction reports  API .",
+        "An unexpected error occurred while request Head of Compliance officer Reports Dashboard Stats API .",
     });
     return null;
   } finally {
@@ -2662,64 +2661,100 @@ export const SearchHOCOverdueVerificationsRequestApi = async ({
   }
 };
 
-// Export Report For Compliance Officer Overdue Verification
-export const ExportOverdueVerificationCOExcel = async ({
+
+// HTA dashbord api of reports
+// GetHTAReportsDashboardStatsAPI
+export const GetHTAReportsDashboardStatsAPI = async ({
   callApi,
+  showNotification,
   showLoader,
-  requestdata,
   navigate,
 }) => {
   try {
-    showLoader(true);
-
     // 🔹 API Call
     const res = await callApi({
       requestMethod: import.meta.env
-        .VITE_EXPORT_REPORT_OF_CO_OVERDUE_VERIFICATION_API_REQUEST_METHOD,
-      endpoint: import.meta.env.VITE_API_REPORT,
-      requestData: requestdata,
+        .VITE_GET_HTA_REPORTS_DASHBOARD_STATS_API_METHOD, // 🔑 must be defined in .env
+      endpoint: import.meta.env.VITE_API_TRADE,
       navigate,
-      responseType: "arraybuffer", // ⚡ Required for file download
-      headers: {
-        "Content-Type":
-          "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-      },
     });
+  // 🔹 Handle session expiry
+    if (handleExpiredSession(res, navigate, showLoader)) return null;
 
-    // 🔹 Check Session Expiry
-    if (handleExpiredSession(res, navigate, showLoader)) return false;
-    // 🔹 When API send isExecuted false
+    // 🔹 Validate execution
     if (!res?.result?.isExecuted) {
-      return false;
+      showNotification({
+        type: "error",
+        title: "Error",
+        description:
+          "Something went wrong while fetching HTA Dashboard reports Api.",
+      });
+      return null;
     }
+    console.log("reasonsArray", res);
 
-    // 🔹 When API Send Success Response
+    // 🔹 Handle success
     if (res.success) {
-      try {
-        // Create a blob and trigger download
-        const blob = new Blob([res.result?.fileData || res.data], {
-          type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-        });
+      const {
+        policyBreaches,
+        tradeApprovalRequest,
+        tatRequestApprovals,
+        pendingRequest,
+      } = res.result.htaReportsDashboardStats;
+      const { responseMessage } = res.result;
+      const message = getMessage(responseMessage);
 
-        const url = window.URL.createObjectURL(blob);
-        const link = document.createElement("a");
-        link.href = url;
-
-        link.setAttribute("download", "Overdue-verification-Report.xlsx");
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        setOpen(false);
-        return true;
-      } catch (downloadError) {
-        return false;
+      // Case 1 → Data available
+      if (
+        responseMessage ===
+        "PAD_Trade_TradeServiceManager_GetHTAReportsDashboardStats_01"
+      ) {
+        return {
+          policyBreaches,
+          tradeApprovalRequest,
+          tatRequestApprovals,
+          pendingRequest,
+        };
       }
+
+      // Case 2 → No data
+      if (
+        responseMessage ===
+        "PAD_Trade_TradeServiceManager_GetHTAReportsDashboardStats_02"
+      ) {
+        return [];
+      }
+
+      // Case 3 → Custom server messages
+      if (message) {
+        showNotification({
+          type: "warning",
+          title: message,
+          description: message,
+        });
+      }
+
+      return null;
     }
 
-    return false;
+    // 🔹 Handle failure
+    showNotification({
+      type: "error",
+      title: "Fetch Failed",
+      description: getMessage(res.message),
+    });
+    return null;
   } catch (error) {
-    return false;
+    // 🔹 Exception handling
+    showNotification({
+      type: "error",
+      title: "Error",
+      description:
+        "An unexpected error occurred while request HTA Reports Dashboard Stats API .",
+    });
+    return null;
   } finally {
+    // 🔹 Always hide loader
     showLoader(false);
   }
 };
