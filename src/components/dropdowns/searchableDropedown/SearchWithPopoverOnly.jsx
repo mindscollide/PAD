@@ -71,6 +71,7 @@ const SearchWithPopoverOnly = () => {
     setCoOverdueVerificationReportSearch,
     setHeadOfComplianceMyActionSearch,
     setHCOTradesUploadViaPortfolioSearch,
+    setCoPortfolioHistoryReportSearch,
     //
     setUsersTabSearch,
     setPendingRequestsTabSearch,
@@ -372,6 +373,19 @@ const SearchWithPopoverOnly = () => {
             sharesTraded: "",
             startDate: null,
             endDate: null,
+            pageNumber: 0,
+            filterTrigger: true,
+          }));
+          setSearchMain("");
+        } else if (currentPath === "/PAD/co-reports/co-portfolio-history") {
+          setCoPortfolioHistoryReportSearch((prev) => ({
+            ...prev,
+            instrumentName: searchMain,
+            requesterName: "",
+            departmentName: "",
+            quantity: "",
+            type: [],
+            status: [],
             pageNumber: 0,
             filterTrigger: true,
           }));

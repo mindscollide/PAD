@@ -28,6 +28,7 @@ import { COOverdueVerifications } from "./COOverdueVerifications";
 import { COTransactionReportViewDetailsFilter } from "./COTransactionReportViewDetailsFilter";
 import { HOCMyAction } from "./HOCMyAction";
 import { HCOTradeUploadedViaPortfolioFilter } from "./HCOTradeUploadedViaPortfolioFilter";
+import { COPortfolioHisttory } from "./COPortfolioHistory";
 
 // this is used for open specific filter according to page
 export const renderFilterContent = (
@@ -201,6 +202,16 @@ export const renderFilterContent = (
             setMaininstrumentName={setSearchMain}
           />
         );
+      } else if (currentPath === "/PAD/co-reports/co-portfolio-history") {
+        return (
+          <COPortfolioHisttory
+            setVisible={setVisible}
+            clear={clear}
+            setClear={setClear}
+            maininstrumentName={searchMain}
+            setMaininstrumentName={setSearchMain}
+          />
+        );
       } else if (coTransactionSummaryReportViewDetailsFlag) {
         return (
           <COTransactionReportViewDetailsFilter
@@ -258,7 +269,7 @@ export const renderFilterContent = (
             setMaininstrumentName={setSearchMain}
           />
         );
-      }else   if (currentPath === "/PAD/hca-reports/hca-upload-portfolio") {
+      } else if (currentPath === "/PAD/hca-reports/hca-upload-portfolio") {
         return (
           <HCOTradeUploadedViaPortfolioFilter
             setVisible={setVisible}

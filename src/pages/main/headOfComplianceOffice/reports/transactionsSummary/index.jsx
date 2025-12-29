@@ -29,6 +29,7 @@ import {
   DownloadLineManagerMyTradeApprovalReportRequestAPI,
   DownloadMyTransactionReportRequestAPI,
   GetComplianceOfficerViewTransactionSummaryAPI,
+  GetHOCViewTransactionSummaryAPI,
   SearchComplianceOfficerTransactionSummaryReportRequest,
   SearchLineManagerTradeApprovalRequestApi,
 } from "../../../../../api/myApprovalApi";
@@ -56,9 +57,9 @@ const HCATransactionsSummarysReports = () => {
   const { showNotification } = useNotification();
   const { showLoader } = useGlobalLoader();
   const {
-    coTransactionSummaryReportListData,
-    setCOTransactionSummaryReportListData,
-    resetCOTransactionSummaryReportListData,
+    hcoTransactionSummaryReportListData,
+    setHCOTransactionSummaryReportListData,
+    resetTransactionSummaryHeadOfCompliance,
 
     coTransactionSummaryReportViewDetailsFlag,
     setCOTransactionSummaryReportViewDetailsFlag,
@@ -71,9 +72,9 @@ const HCATransactionsSummarysReports = () => {
     useGlobalModal();
 
   const {
-    coTransactionsSummarysReportsSearch,
-    setCOTransactionsSummarysReportsSearch,
-    resetCOTransactionsSummarysReportsSearch,
+    hcoTransactionsSummarysReportsSearch,
+    setHCOTransactionsSummarysReportsSearch,
+    resetHOCTransactionsSummarysReportsSearch,
 
     coTransactionsSummarysReportsViewDetailsSearch,
     setCOTransactionsSummarysReportsViewDetailSearch,
@@ -99,7 +100,7 @@ const HCATransactionsSummarysReports = () => {
     async (requestData, replace = false, showLoaderFlag = true) => {
       if (!requestData || typeof requestData !== "object") return;
       if (showLoaderFlag) showLoader(true);
-      const res = await SearchComplianceOfficerTransactionSummaryReportRequest({
+      const res = await GetHOCViewTransactionSummaryAPI({
         callApi,
         showNotification,
         showLoader,
@@ -113,7 +114,7 @@ const HCATransactionsSummarysReports = () => {
       const mapped = mappingDateWiseTransactionReport(transactions);
       if (!mapped || typeof mapped !== "object") return;
 
-      setCOTransactionSummaryReportListData((prev) => ({
+      setHCOTransactionSummaryReportListData((prev) => ({
         transactions: replace
           ? mapped
           : [...(prev?.transactions || []), ...mapped],
@@ -122,11 +123,11 @@ const HCATransactionsSummarysReports = () => {
         // this is for to know how mush dta currently fetch from  db
         totalRecordsTable: replace
           ? mapped.length
-          : coTransactionSummaryReportListData.totalRecordsTable +
+          : hcoTransactionSummaryReportListData.totalRecordsTable +
             mapped.length,
       }));
 
-      setCOTransactionsSummarysReportsSearch((prev) => {
+      setHCOTransactionsSummarysReportsSearch((prev) => {
         const next = {
           ...prev,
           pageNumber: replace ? mapped.length : prev.pageNumber + mapped.length,
@@ -143,7 +144,7 @@ const HCATransactionsSummarysReports = () => {
     [
       callApi,
       navigate,
-      setCOTransactionsSummarysReportsSearch,
+      setHCOTransactionsSummarysReportsSearch,
       showLoader,
       showNotification,
     ]
@@ -207,7 +208,7 @@ const HCATransactionsSummarysReports = () => {
   useEffect(() => {
     if (hasFetched.current) return;
     hasFetched.current = true;
-    const requestData = buildApiRequest(coTransactionsSummarysReportsSearch);
+    const requestData = buildApiRequest(hcoTransactionsSummarysReportsSearch);
     fetchApiCall(requestData, true, true);
   }, []);
 
@@ -215,8 +216,8 @@ const HCATransactionsSummarysReports = () => {
   useEffect(() => {
     return () => {
       // Reset search state for fresh load
-      resetCOTransactionsSummarysReportsSearch();
-      resetCOTransactionSummaryReportListData();
+      resetHOCTransactionsSummarysReportsSearch();
+      resetTransactionSummaryHeadOfCompliance();
       setCOTransactionSummaryReportViewDetailsFlag(false);
       resetCOTransactionSummaryReportViewDetailsListData();
       resetCOTransactionsSummarysReportsViewDetailsSearch();
@@ -225,11 +226,11 @@ const HCATransactionsSummarysReports = () => {
 
   // 🔹 call api on search
   useEffect(() => {
-    if (coTransactionsSummarysReportsSearch?.filterTrigger) {
-      const requestData = buildApiRequest(coTransactionsSummarysReportsSearch);
+    if (hcoTransactionsSummarysReportsSearch?.filterTrigger) {
+      const requestData = buildApiRequest(hcoTransactionsSummarysReportsSearch);
       fetchApiCall(requestData, true, true);
     }
-  }, [coTransactionsSummarysReportsSearch?.filterTrigger]);
+  }, [hcoTransactionsSummarysReportsSearch?.filterTrigger]);
 
   useEffect(() => {
     if (coTransactionsSummarysReportsViewDetailsSearch?.filterTrigger) {
@@ -281,8 +282,8 @@ const HCATransactionsSummarysReports = () => {
       // CASE 2: SUMMARY LIST SCROLL
       // -------------------------------
       if (
-        coTransactionSummaryReportListData?.totalRecordsDataBase <=
-        coTransactionSummaryReportListData?.totalRecordsTable
+        hcoTransactionSummaryReportListData?.totalRecordsDataBase <=
+        hcoTransactionSummaryReportListData?.totalRecordsTable
       ) {
         return;
       }
@@ -291,7 +292,7 @@ const HCATransactionsSummarysReports = () => {
         setLoadingMore(true);
 
         const requestData = buildApiRequest(
-          coTransactionsSummarysReportsSearch
+          hcoTransactionsSummarysReportsSearch
         );
 
         await fetchApiCall(requestData, false, false);
@@ -372,8 +373,8 @@ const HCATransactionsSummarysReports = () => {
   const columnsReport = getBorderlessTableColumns({
     approvalStatusMap,
     sortedInfo,
-    coTransactionsSummarysReportsSearch,
-    setCOTransactionsSummarysReportsSearch,
+    hcoTransactionsSummarysReportsSearch,
+    setHCOTransactionsSummarysReportsSearch,
     handelViewDetails,
   });
 
@@ -396,7 +397,7 @@ const HCATransactionsSummarysReports = () => {
       EndDate: end,
     });
 
-    setCOTransactionsSummarysReportsSearch((prev) => ({
+    setHCOTransactionsSummarysReportsSearch((prev) => ({
       ...prev,
       startDate: start,
       endDate: end,
@@ -411,7 +412,7 @@ const HCATransactionsSummarysReports = () => {
       EndDate: null,
     });
 
-    setCOTransactionsSummarysReportsSearch((prev) => ({
+    setHCOTransactionsSummarysReportsSearch((prev) => ({
       ...prev,
       startDate: null,
       endDate: null,
@@ -509,7 +510,7 @@ const HCATransactionsSummarysReports = () => {
               {
                 title: (
                   <span
-                    onClick={() => navigate("/PAD/co-reports")}
+                    onClick={() => navigate("/PAD/hca-reports")}
                     className={style.breadcrumbLink}
                   >
                     Reports
@@ -637,7 +638,7 @@ const HCATransactionsSummarysReports = () => {
             rows={
               coTransactionSummaryReportViewDetailsFlag
                 ? coTransactionSummaryReportViewDetailsListData.record
-                : coTransactionSummaryReportListData?.transactions
+                : hcoTransactionSummaryReportListData?.transactions
             }
             columns={
               coTransactionSummaryReportViewDetailsFlag
@@ -646,7 +647,7 @@ const HCATransactionsSummarysReports = () => {
             }
             classNameTable="border-less-table-blue"
             scroll={
-              coTransactionSummaryReportListData?.transactions?.length
+              hcoTransactionSummaryReportListData?.transactions?.length
                 ? {
                     x: "max-content",
                     y: 500,
