@@ -125,22 +125,7 @@ const HeadOFComplianceApprovalReportsIndex = () => {
     () => hcaReportsDashboardData?.uploadedPortfolioCount?.data || [],
     [hcaReportsDashboardData?.uploadedPortfolioCount?.data]
   );
-  console.log(
-    "hcaReportsComplianceDateWiseTransactions",
-    hcaReportsComplianceDateWiseTransactions
-  );
-  console.log(
-    "hcaReportsComplianceDateWiseTransactions",
-    transactionSummary
-  );
-  console.log(
-    "hcaReportsComplianceDateWiseTransactions",
-    hcaReportsOverdueVerifications
-  );
-  console.log(
-    "hcaReportsComplianceDateWiseTransactions",
-    hcaReportsPortfolioHistory
-  );
+
   /* ---------------------------------------------------------
      🔹 Render UI
      --------------------------------------------------------- */
@@ -213,7 +198,7 @@ const HeadOFComplianceApprovalReportsIndex = () => {
               buttonId="Transactions-view-btn"
               buttonClassName="big-white-card-button"
               userRole="HCA"
-              route="hca-portfolio-history"
+              route="hca-upload-portfolio"
             />
           </Col>
         </Row>

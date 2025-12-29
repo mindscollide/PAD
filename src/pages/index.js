@@ -29,3 +29,4 @@ export { default as COdataWiseTransactionsReports } from "./main/complianceOffic
 export { default as UserSessionWiseActivity } from "./adminMain/manageUsers/usersTab/sessionwise/index";
 export { default as ManageBrokerModal } from "./main/employes/manageBroker/index";
 export { default as COTransactionsSummarysReports } from "./main/complianceOfficer/reports/transactionsSummary/index";
+export { default as TradesUploadViaPortfolio } from "./main/headOfComplianceOffice/reports/tradesUploadViaPortfolio/tradesUploadViaPortfolio";

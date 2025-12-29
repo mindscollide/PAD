@@ -93,6 +93,15 @@ export const MyTransactionsProvider = ({ children }) => {
     mqttRecived: false,
   });
 
+  //  emoployee reoprts of my trade approvals
+  const [hcoUploadedPortFolioData, setHCOUploadedPortFolioData] = useState({
+    pendingPortfolios: [],
+    totalRecordsDataBase: 0,
+    totalRecordsTable: 0,
+  });
+
+  const [hcoUploadedPortFolioDataMqtt, setHCOUploadedPortFolioDataMqtt] =
+    useState(false);
   /**
    * ♻️ Reset Context State (Table + API Data)
    *
@@ -123,6 +132,17 @@ export const MyTransactionsProvider = ({ children }) => {
     const [employeeMyTradeApprovalsMqtt, setEmployeeMyTradeApprovalMqtt] =
       useState(false);
   };
+
+  // REset state of report of hco uploaded portfolio
+  const resetHCOUploadedPortFolioData = () => {
+    setHCOUploadedPortFolioData({
+      myTradeApprovals: [],
+      totalRecordsDataBase: 0,
+      totalRecordsTable: 0,
+    });
+    setHCOUploadedPortFolioDataMqtt(false);
+  };
+
   /**
    * ♻️ Reset Modal Context State
    *
@@ -164,6 +184,13 @@ export const MyTransactionsProvider = ({ children }) => {
         setEmployeeMyTradeApprovalsData,
         employeeMyTradeApprovalsMqtt,
         setEmployeeMyTradeApprovalMqtt,
+
+        // HCO  Uploaded PortFolio
+        resetHCOUploadedPortFolioData,
+        hcoUploadedPortFolioData,
+        setHCOUploadedPortFolioData,
+        hcoUploadedPortFolioDataMqtt,
+        setHCOUploadedPortFolioDataMqtt,
       }}
     >
       {children}
