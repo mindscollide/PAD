@@ -2918,7 +2918,7 @@ export const ExportOverdueVerificationCOExcel = async ({
   }
 };
 
-// 
+//
 export const SearchHOCUploadedPortFolio = async ({
   callApi,
   showNotification,
@@ -2927,7 +2927,6 @@ export const SearchHOCUploadedPortFolio = async ({
   navigate,
 }) => {
   try {
-
     // 🔹 API Call
     const res = await callApi({
       requestMethod: import.meta.env
@@ -2936,6 +2935,7 @@ export const SearchHOCUploadedPortFolio = async ({
       requestData: requestdata,
       navigate,
     });
+    console.log("SearchHOCUploadedPortFolio", res);
 
     // 🔹 Handle session expiry
     if (handleExpiredSession(res, navigate, showLoader)) return null;
@@ -2950,11 +2950,13 @@ export const SearchHOCUploadedPortFolio = async ({
       });
       return null;
     }
+    console.log("SearchHOCUploadedPortFolio", res);
 
     // 🔹 Handle success
     if (res.success) {
       const { responseMessage, pendingPortfolios, totalRecords } = res.result;
       const message = getMessage(responseMessage);
+      console.log("handleExpiredSession", res);
 
       // Case 1 → Data available
       if (
@@ -2983,7 +2985,8 @@ export const SearchHOCUploadedPortFolio = async ({
         showNotification({
           type: "warning",
           title: message,
-          description: "No reports  found while fetching hoc uploaded portfolio reports api.",
+          description:
+            "No reports  found while fetching hoc uploaded portfolio reports api.",
         });
       }
 

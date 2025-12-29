@@ -54,18 +54,15 @@ import CustomButton from "../../../../../components/buttons/button";
 const TradesUploadViaPortfolio = () => {
   const navigate = useNavigate();
   const hasFetched = useRef(false);
-  const tableScrollEmployeeTransaction = useRef(null);
+  const tableScrollTradeUploadedViaPortfolio = useRef(null);
 
   // -------------------- Contexts --------------------
   const { callApi } = useApi();
   const { showNotification } = useNotification();
   const { showLoader } = useGlobalLoader();
 
-  const {
-    assetTypeListingData,
-    setAssetTypeListingData,
-    employeeBasedBrokersData,
-  } = useDashboardContext();
+  const { assetTypeListingData, setAssetTypeListingData } =
+    useDashboardContext();
 
   const {
     hcoTradesUploadViaPortfolioSearch,
@@ -104,7 +101,7 @@ const TradesUploadViaPortfolio = () => {
         requestdata: requestData,
         navigate,
       });
-      console.log("res".res);
+      console.log("SearchHOCUploadedPortFolio", res);
       // ✅ Always get the freshest version (from memory or session)
       const currentAssetTypeData = getSafeAssetTypeData(
         assetTypeListingData,
@@ -114,11 +111,12 @@ const TradesUploadViaPortfolio = () => {
       const pendingPortfolios = Array.isArray(res?.pendingPortfolios)
         ? res.pendingPortfolios
         : [];
-      //   console.log("transactions", transactions);
+      console.log("SearchHOCUploadedPortFolio", pendingPortfolios);
       const mapped = mapEmployeeTransactions(
         currentAssetTypeData?.Equities,
         pendingPortfolios
       );
+      console.log("SearchHOCUploadedPortFolio", mapped);
       if (!mapped || typeof mapped !== "object") return;
       console.log("transactions", mapped);
 
@@ -179,9 +177,11 @@ const TradesUploadViaPortfolio = () => {
     };
   }, []);
 
+      console.log("hcoTradesUploadViaPortfolioSearch")
   // 🔹 call api on search
   useEffect(() => {
     if (hcoTradesUploadViaPortfolioSearch.filterTrigger) {
+      console.log("hcoTradesUploadViaPortfolioSearch")
       const requestData = buildApiRequest(
         hcoTradesUploadViaPortfolioSearch,
         assetTypeListingData
@@ -244,9 +244,9 @@ const TradesUploadViaPortfolio = () => {
   const handleRemoveFilter = (key) => {
     const resetMap = {
       instrumentName: { instrumentName: "" },
+      employeeName: { employeeName: "" },
       dateRange: { startDate: null, endDate: null },
-      quantity: { quantity: 0 },
-      brokerIDs: { brokerIDs: [] },
+      quantity: { quantity: "" },
     };
 
     setHCOTradesUploadViaPortfolioSearch((prev) => ({
@@ -262,20 +262,18 @@ const TradesUploadViaPortfolio = () => {
     setHCOTradesUploadViaPortfolioSearch((prev) => ({
       ...prev,
       instrumentName: "",
+      employeeName: "",
+      quantity: "",
       startDate: null,
       endDate: null,
-      quantity: 0,
-      brokerIDs: [],
       pageNumber: 0,
       filterTrigger: true,
     }));
   };
 
-  const brokerOptions = buildBrokerOptions(employeeBasedBrokersData);
-
   /** 🔹 Build Active Filters */
   const activeFilters = (() => {
-    const { instrumentName, startDate, endDate, quantity, brokerIDs } =
+    const { instrumentName, employeeName, quantity, startDate, endDate } =
       hcoTradesUploadViaPortfolioSearch || {};
 
     return [
@@ -286,31 +284,26 @@ const TradesUploadViaPortfolio = () => {
             ? instrumentName.slice(0, 13) + "..."
             : instrumentName,
       },
+
+      employeeName && {
+        key: "employeeName",
+        value:
+          employeeName.length > 13
+            ? employeeName.slice(0, 13) + "..."
+            : employeeName,
+      },
+
       startDate &&
         endDate && {
           key: "dateRange",
           value: `${startDate} → ${endDate}`,
         },
+
       quantity &&
         Number(quantity) > 0 && {
           key: "quantity",
           value: Number(quantity).toLocaleString("en-US"),
         },
-      brokerIDs?.length > 0 && {
-        key: "brokerIDs",
-        value:
-          brokerIDs.length === 1
-            ? (() => {
-                const broker = brokerOptions.find(
-                  (b) => b.value === brokerIDs[0]
-                );
-                if (!broker) return "";
-                return broker.label.length > 13
-                  ? broker.label.slice(0, 13) + "..."
-                  : broker.label;
-              })()
-            : "Multiple",
-      },
     ].filter(Boolean);
   })();
 
@@ -439,11 +432,11 @@ const TradesUploadViaPortfolio = () => {
       >
         <div className="px-4 md:px-6 lg:px-8 ">
           <BorderlessTable
-            rows={hcoUploadedPortFolioData?.myTradeApprovals}
+            rows={hcoUploadedPortFolioData?.pendingPortfolios}
             columns={columns}
             classNameTable="border-less-table-blue"
             scroll={
-              hcoUploadedPortFolioData?.myTradeApprovals?.length
+              hcoUploadedPortFolioData?.pendingPortfolios?.length
                 ? {
                     x: "max-content",
                     y: activeFilters.length > 0 ? 450 : 500,
@@ -452,7 +445,7 @@ const TradesUploadViaPortfolio = () => {
             }
             onChange={(pagination, filters, sorter) => setSortedInfo(sorter)}
             loading={loadingMore}
-            ref={tableScrollEmployeeTransaction}
+            ref={tableScrollTradeUploadedViaPortfolio}
           />
         </div>
       </PageLayout>
