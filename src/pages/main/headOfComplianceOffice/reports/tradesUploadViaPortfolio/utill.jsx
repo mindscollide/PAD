@@ -31,9 +31,9 @@ export const buildApiRequest = (searchState = {}, assetTypeListingData) => ({
   EmployeeName: searchState.quantity ? Number(searchState.employeeName) : "",
   StartDate: searchState.startDate ? toYYMMDD(searchState.startDate) : "",
   EndDate: searchState.endDate ? toYYMMDD(searchState.endDate) : "",
-  StatusIDs: mapStatusToIds?.(searchState.status) || [],
+  StatusIDs: mapStatusToIds(searchState.status,2) || [],
   TypeIds:
-    mapBuySellToIds?.(searchState.type, assetTypeListingData?.Equities) || [],
+    mapBuySellToIds(searchState.type, assetTypeListingData?.Equities) || [],
   PageNumber: Number(searchState.pageNumber) || 0,
   Length: Number(searchState.pageSize) || 10,
 });
@@ -49,34 +49,22 @@ export const mapEmployeeTransactions = (
   employeeTransactionsData = {}
 ) => {
   if (!employeeTransactionsData) return [];
-  console.log("assetTypeListingData", employeeTransactionsData);
 
   return employeeTransactionsData.map((item) => ({
-    key: item.approvalID,
-    approvalID: item.approvalID || null,
-    title: `ConductTransactionRequest-${item.approvalID || ""}-${
-      item.requestDate || ""
-    } ${item.requestTime || ""}`,
-    description: item.description || "",
-    instrumentCode: item?.instrument?.instrumentCode || "—",
-    instrumentName: item?.instrument?.instrumentName || "—",
+    key: item.workFlowID,
+    instrumentCode: item?.instrumentShortCode || "—",
+    instrumentName: item?.instrumentName || "—",
+    assetTypeShortCode: item?.assetType?.assetTypeShortCode || "—",
+    employeeID:item?.employeeID||"",
+    employeeName:item?.employeeFirstName + item?.employeeLastName||"",
     quantity: item.quantity || 0,
     tradeApprovalID: item.tradeApprovalID || "",
-    tradeApprovalTypeID: item.tradeApprovalTypeID || null,
     type: getTradeTypeById(assetTypeData, item?.tradeType) || "-",
-    status: item.approvalStatus?.approvalStatusName || "",
-    isEscalated: item.isEscalated,
+    status: item.workFlowStatus?.workFlowStatus || "",
     assetTypeID: item.assetType?.assetTypeID || 0,
-    actionBy: item?.actionBy || "",
     assetType: item.assetType || "",
-    assetTypeShortCode: item?.assetType?.assetTypeShortCode || "—",
     requestDateTime:
-      [item?.requestDate, item?.requestTime].filter(Boolean).join(" ") || "—",
-    actionDateTime:
-      [item?.actionDate, item?.actionTime].filter(Boolean).join(" ") || "—",
-    deadlineDate: item.deadlineDate || "",
-    deadlineTime: item.deadlineTime || "",
-    broker: item.broker || "Multiple Brokers",
+      [item?.transactionConductedDate, item?.transactionConductedTime].filter(Boolean).join(" ") || "—",
   }));
 };
 
@@ -180,7 +168,7 @@ export const getBorderlessTableColumns = ({
   approvalStatusMap,
   sortedInfo,
   hcoTradesUploadViaPortfolioSearch,
-  setEmployeeMyTradeApprovalsSearch,
+  setHCOTradesUploadViaPortfolioSearch,
 }) => [
   {
     title: withSortIcon("Employee ID", "employeeID", sortedInfo),
@@ -247,7 +235,7 @@ export const getBorderlessTableColumns = ({
     title: (
       <TypeColumnTitle
         state={hcoTradesUploadViaPortfolioSearch}
-        setState={setEmployeeMyTradeApprovalsSearch}
+        setState={setHCOTradesUploadViaPortfolioSearch}
       />
     ),
     dataIndex: "type",
@@ -324,7 +312,7 @@ export const getBorderlessTableColumns = ({
     title: (
       <StatusColumnTitle
         state={hcoTradesUploadViaPortfolioSearch}
-        setState={setEmployeeMyTradeApprovalsSearch}
+        setState={setHCOTradesUploadViaPortfolioSearch}
       />
     ),
     dataIndex: "status",

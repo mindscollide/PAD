@@ -26,6 +26,7 @@ import { COMyAction } from "./COMyAction";
 import { LMPendigRequestReportSearchFilter } from "./LMPendigRequestReportSearchFilter";
 import { COOverdueVerifications } from "./COOverdueVerifications";
 import { COTransactionReportViewDetailsFilter } from "./COTransactionReportViewDetailsFilter";
+import { HCOTradeUploadedViaPortfolioFilter } from "./HCOTradeUploadedViaPortfolioFilter";
 
 // this is used for open specific filter according to page
 export const renderFilterContent = (
@@ -177,6 +178,7 @@ export const renderFilterContent = (
           setMaininstrumentName={setSearchMain}
         />
       );
+
     case "11": // Compliance officer → reports pending approvals
       if (currentPath === "/PAD/co-reports/co-date-wise-transaction-report") {
         return (
@@ -237,6 +239,16 @@ export const renderFilterContent = (
       if (currentPath === "/PAD/hca-reports/hca-overdue-verifications") {
         return (
           <COOverdueVerifications
+            setVisible={setVisible}
+            clear={clear}
+            setClear={setClear}
+            maininstrumentName={searchMain}
+            setMaininstrumentName={setSearchMain}
+          />
+        );
+      }else   if (currentPath === "/PAD/hca-reports/hca-upload-portfolio") {
+        return (
+          <HCOTradeUploadedViaPortfolioFilter
             setVisible={setVisible}
             clear={clear}
             setClear={setClear}
