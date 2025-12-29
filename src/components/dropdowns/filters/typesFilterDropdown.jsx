@@ -3,13 +3,7 @@ import { Button, CheckBox } from "../..";
 import { getTypeOptions } from "./utils";
 import { Row, Col, Divider } from "antd";
 import { useSidebarContext } from "../../../context/sidebarContaxt";
-import { useNavigate } from "react-router-dom";
-import { useGlobalLoader } from "../../../context/LoaderContext";
-import { useApi } from "../../../context/ApiContext";
-import { useNotification } from "../../NotificationProvider/NotificationProvider";
-import { useMyApproval } from "../../../context/myApprovalContaxt";
 import { useDashboardContext } from "../../../context/dashboardContaxt";
-import { useTransaction } from "../../../context/myTransaction";
 
 /**
  * Dropdown for selecting types with local state management.
@@ -34,6 +28,7 @@ const TypeFilterDropdown = ({
   };
 
   const handleOk = async () => {
+      console.log("hcoTradesUploadViaPortfolioSearch")
     switch (selectedKey) {
       // 🔹 Keys that only update state with filterTrigger = true
       case "1":
@@ -46,6 +41,8 @@ const TypeFilterDropdown = ({
       case "9":
       case "12":
       case "15":
+      case "17":
+      console.log("hcoTradesUploadViaPortfolioSearch")
         setState((prev) => ({
           ...prev,
           type: tempSelected,
@@ -76,6 +73,7 @@ const TypeFilterDropdown = ({
       case "9":
       case "12":
       case "15":
+      case "17":
         setState((prev) => ({
           ...prev,
           type: [],

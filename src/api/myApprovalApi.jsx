@@ -2935,6 +2935,7 @@ export const SearchHOCUploadedPortFolio = async ({
       requestData: requestdata,
       navigate,
     });
+    console.log("SearchHOCUploadedPortFolio", res);
 
     // 🔹 Handle session expiry
     if (handleExpiredSession(res, navigate, showLoader)) return null;
@@ -2949,11 +2950,13 @@ export const SearchHOCUploadedPortFolio = async ({
       });
       return null;
     }
+    console.log("SearchHOCUploadedPortFolio", res);
 
     // 🔹 Handle success
     if (res.success) {
       const { responseMessage, pendingPortfolios, totalRecords } = res.result;
       const message = getMessage(responseMessage);
+      console.log("handleExpiredSession", res);
 
       // Case 1 → Data available
       if (
@@ -3101,4 +3104,3 @@ export const GetHOCMyActionsWorkflowDetail = async ({
     showLoader(false);
   }
 };
-

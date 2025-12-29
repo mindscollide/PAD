@@ -70,6 +70,7 @@ const SearchWithPopoverOnly = () => {
     setComplianceOfficerMyActionSearch,
     setCoOverdueVerificationReportSearch,
     setHeadOfComplianceMyActionSearch,
+    setHCOTradesUploadViaPortfolioSearch,
     //
     setUsersTabSearch,
     setPendingRequestsTabSearch,
@@ -467,8 +468,19 @@ const SearchWithPopoverOnly = () => {
             pageNumber: 0,
             filterTrigger: true,
           }));
-          setSearchMain("");
+        } else if (currentPath === "/PAD/hca-reports/hca-upload-portfolio") {
+          setHCOTradesUploadViaPortfolioSearch((prev) => ({
+            ...prev,
+            instrumentName: searchMain,
+            employeeName: "",
+            startDate: null,
+            endDate: null,
+            quantity: 0,
+            pageNumber: 0,
+            filterTrigger: true,
+          }));
         }
+        setSearchMain("");
         break;
 
       case "18": // Admin Instrument List

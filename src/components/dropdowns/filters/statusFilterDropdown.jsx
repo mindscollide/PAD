@@ -120,6 +120,7 @@ const StatusFilterDropdown = ({
       case "2":
       case "9":
       case "15":
+      case "17":
         setFilterOptions(emtStatusOptions);
         break;
       case "19":
@@ -152,8 +153,9 @@ const StatusFilterDropdown = ({
       case "11":
       case "12":
       case "15":
-      case "19":
+      case "17":
       case "18":
+      case "19":
         console.log("adminIntrumentListSearch");
         setState((prev) => ({
           ...prev,
@@ -209,6 +211,7 @@ const StatusFilterDropdown = ({
       case "11":
       case "12":
       case "15":
+      case "17":
       case "18":
       case "19":
         console.log("adminIntrumentListSearch");

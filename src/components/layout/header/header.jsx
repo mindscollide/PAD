@@ -94,6 +94,7 @@ const Headers = () => {
                   (selectedKeyRef.current === "17" &&
                     (currentPath ===
                       "/PAD/hca-reports/hca-overdue-verifications" ||
+                      currentPath === "/PAD/hca-reports/hca-upload-portfolio" ||
                       coTransactionSummaryReportViewDetailsFlag))) && (
                   <SearchWithFilter />
                 )

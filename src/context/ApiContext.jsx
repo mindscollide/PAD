@@ -82,6 +82,7 @@ export const ApiProvider = ({ children }) => {
       // showLoader(false);
 
       if (responseCode === 200) {
+      console.log("heloo log", responseResult);
         return {
           success: true,
           result: responseResult,
