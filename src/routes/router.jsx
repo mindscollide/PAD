@@ -39,6 +39,7 @@ import {
   COdataWiseTransactionsReports,
   UserSessionWiseActivity,
   COTransactionsSummarysReports,
+  TradesUploadViaPortfolio,
 } from "../pages";
 import RoleBasedRoute from "./RoleBasedRoute";
 import EscalatedApprovals from "../pages/main/headOfTradeApprover/escalatedApprovals/escalatedApprovals";
@@ -289,7 +290,7 @@ const router = createBrowserRouter(
             path="hca-overdue-verifications"
             element={<PendingRequest />}
           />
-          <Route path="hca-portfolio-history" element={<PendingRequest />} />
+          <Route path="hca-upload-portfolio" element={<TradesUploadViaPortfolio />} />
         </Route>
         {/* For Admin Roles Start here*/}
 

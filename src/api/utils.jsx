@@ -645,10 +645,19 @@ export const responseMessages = {
     "Exception",
   // ==============================
   // Compliance Officer OverDue report
-  // ============================== 
+  // ==============================
   PAD_Trade_TradeServiceManager_SearchHOCOverdueVerifications_01: "Data found",
-  PAD_Trade_TradeServiceManager_SearchHOCOverdueVerifications_02: "No data available",
+  PAD_Trade_TradeServiceManager_SearchHOCOverdueVerifications_02:
+    "No data available",
   PAD_Trade_TradeServiceManager_SearchHOCOverdueVerifications_03: "Exception",
+
+  // ==============================
+  // Head of Compliance Officer Uploaded PortFolio report
+  // ==============================
+  PAD_Trade_TradeServiceManager_SearchHOCUploadedPortFolio_01: "Data found",
+  PAD_Trade_TradeServiceManager_SearchHOCUploadedPortFolio_02:
+    "No data available",
+  PAD_Trade_TradeServiceManager_SearchHOCUploadedPortFolio_03: "Exception",
 };
 
 /**

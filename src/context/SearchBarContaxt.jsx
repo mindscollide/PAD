@@ -392,6 +392,22 @@ export const SearchBarProvider = ({ children }) => {
     filterTrigger: false,
   });
 
+  /** 🔍 HCO Trades Upload Via Portfolio filters */
+  const [
+    hcoTradesUploadViaPortfolioSearch,
+    setHCOTradesUploadViaPortfolioSearch,
+  ] = useState({
+    InstrumentName: "",
+    employeeName: "",
+    startDate: null,
+    endDate: null,
+    quantity: 0,
+    type: [],
+    status: [],
+    pageSize: 10,
+    pageNumber: 0,
+    filterTrigger: false,
+  });
   // Admin Broker Search filter
   const [adminBrokerSearch, setAdminBrokerSearch] = useState({
     brokerName: "",
@@ -985,6 +1001,21 @@ export const SearchBarProvider = ({ children }) => {
       filterTrigger: false,
     });
 
+  /** 🔍 Rest HCO Trades Upload Via Portfolio filters */
+  const resetHCOTradesUploadViaPortfolioSearch = () =>
+    setHCOTradesUploadViaPortfolioSearch({
+      InstrumentName: "",
+      employeeName: "",
+      startDate: null,
+      endDate: null,
+      quantity: 0,
+      type: [],
+      status: [],
+      pageSize: 10,
+      pageNumber: 0,
+      filterTrigger: false,
+    });
+
   // ================================================================================ //
   /** Reset all filters across modules */
   const resetSearchBarContextState = () => {
@@ -1010,6 +1041,8 @@ export const SearchBarProvider = ({ children }) => {
     resetPendingRequestsTabSearch();
     resetRejectedRequestsTabSearch();
     resetEmployeMyTradeApprovalsSearch();
+    /** 🔍 Rest HCO Trades Upload Via Portfolio filters */
+    resetHCOTradesUploadViaPortfolioSearch();
   };
 
   // ===============================
@@ -1138,6 +1171,10 @@ export const SearchBarProvider = ({ children }) => {
         adminSessionWiseActivitySearch,
         setAdminSessionWiseActivitySearch,
 
+        /** 🔍  HCO Trades Upload Via Portfolio filters */
+        resetHCOTradesUploadViaPortfolioSearch,
+        hcoTradesUploadViaPortfolioSearch,
+        setHCOTradesUploadViaPortfolioSearch,
         // Always-latest refs
         employeeMyApprovalSearchRef,
         employeeMyTransactionSearchRef,
