@@ -42,6 +42,7 @@ import { getSafeAssetTypeData } from "../../../../../common/funtions/assetTypesL
 import { useTableScrollBottom } from "../../../../../common/funtions/scroll";
 import CustomButton from "../../../../../components/buttons/button";
 import { DateRangePicker } from "../../../../../components";
+import ViewComment from "../../../employes/myApprovals/modal/viewComment/ViewComment";
 // import ViewComment from "./viewComment/ViewComment";
 
 const COTransactionsSummarysReports = () => {
@@ -664,7 +665,7 @@ const COTransactionsSummarysReports = () => {
         </div>
       </PageLayout>
 
-      {/* {isViewComments && <ViewComment />} */}
+      {isViewComments && <ViewComment />}
     </>
   );
 };

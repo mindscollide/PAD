@@ -90,6 +90,10 @@ const Headers = () => {
                         "/PAD/co-reports/co-overdue-verifications" ||
                       currentPath ===
                         "/PAD/lm-reports/lm-tradeapproval-request" ||
+                      coTransactionSummaryReportViewDetailsFlag)) ||
+                  (selectedKeyRef.current === "17" &&
+                    (currentPath ===
+                      "/PAD/hca-reports/hca-overdue-verifications" ||
                       coTransactionSummaryReportViewDetailsFlag))) && (
                   <SearchWithFilter />
                 )
