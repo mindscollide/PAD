@@ -19,11 +19,12 @@ import { approvalStatusMap } from "../../../../../components/tables/borderlessTa
 import { useGlobalModal } from "../../../../../context/GlobalModalContext";
 
 // 🔹 Styles
-import style from "./TradeApprovalRequest.module.css";
+import style from "./HTATradeApprovalRequest.module.css";
 import { useMyApproval } from "../../../../../context/myApprovalContaxt";
 import {
   DownloadLineManagerMyTradeApprovalReportRequestAPI,
   DownloadMyTransactionReportRequestAPI,
+  GetHTATradeApprovalRequestsReport,
   SearchLineManagerTradeApprovalRequestApi,
 } from "../../../../../api/myApprovalApi";
 import { useNotification } from "../../../../../components/NotificationProvider/NotificationProvider";
@@ -38,7 +39,7 @@ import CustomButton from "../../../../../components/buttons/button";
 import { DateRangePicker } from "../../../../../components";
 import { toYYMMDD } from "../../../../../common/funtions/rejex";
 
-const TradeApprovalRequest = () => {
+const HTATradeApprovalRequest = () => {
   const navigate = useNavigate();
   const hasFetched = useRef(false);
   const tableScrollEmployeeTransaction = useRef(null);
@@ -80,7 +81,7 @@ const TradeApprovalRequest = () => {
       if (!requestData || typeof requestData !== "object") return;
       if (showLoaderFlag) showLoader(true);
 
-      const res = await SearchLineManagerTradeApprovalRequestApi({
+      const res = await GetHTATradeApprovalRequestsReport({
         callApi,
         showNotification,
         showLoader,
@@ -278,10 +279,20 @@ const TradeApprovalRequest = () => {
         StartDate: dates?.[0] || null,
         EndDate: dates?.[1] || null,
       });
+      setMyTradeApprovalReportLineManageSearch((prev) => ({
+        ...prev,
+        startDate: dates?.[0] || null,
+        endDate: dates?.[1] || null,
+        pageNumber: 0,
+      }));
 
       // Call API immediately after date change
       fetchApiCall(
         {
+          EmployeeName: myTradeApprovalReportLineManageSearch.employeeName,
+          DepartmentName: myTradeApprovalReportLineManageSearch.departmentName,
+          PageNumber: 0,
+          Length: 10,
           StartDate: toYYMMDD(dates[0]) || null,
           EndDate: toYYMMDD(dates[1]) || null,
         },
@@ -297,10 +308,19 @@ const TradeApprovalRequest = () => {
       StartDate: null,
       EndDate: null,
     });
-
+    setMyTradeApprovalReportLineManageSearch((prev) => ({
+      ...prev,
+      startDate: "",
+      endDate: "",
+      pageNumber: 0,
+    }));
     // Call API with empty values
     fetchApiCall(
       {
+        EmployeeName: myTradeApprovalReportLineManageSearch.employeeName,
+        DepartmentName: myTradeApprovalReportLineManageSearch.departmentName,
+        PageNumber: 0,
+        Length: 10,
         StartDate: "",
         EndDate: "",
       },
@@ -441,4 +461,4 @@ const TradeApprovalRequest = () => {
   );
 };
 
-export default TradeApprovalRequest;
+export default HTATradeApprovalRequest;

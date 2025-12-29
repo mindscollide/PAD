@@ -91,11 +91,15 @@ const Headers = () => {
                       currentPath ===
                         "/PAD/lm-reports/lm-tradeapproval-request" ||
                       coTransactionSummaryReportViewDetailsFlag)) ||
+                  (selectedKeyRef.current === "14" &&
+                    currentPath ===
+                      "/PAD/hta-reports/hta-trade-approval-requests") ||
                   (selectedKeyRef.current === "17" &&
                     (currentPath ===
                       "/PAD/hca-reports/hca-overdue-verifications" ||
                       currentPath === "/PAD/hca-reports/hca-upload-portfolio" ||
-                      coTransactionSummaryReportViewDetailsFlag))) && (
+                      currentPath ===
+                        "/PAD/hca-reports/hca-date-wise-transaction-report"))) && (
                   <SearchWithFilter />
                 )
               )}

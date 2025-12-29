@@ -407,6 +407,19 @@ const SearchWithPopoverOnly = () => {
 
         break;
 
+      case "14": // HTA Escalated
+        if (currentPath === "/PAD/hta-reports/hta-trade-approval-requests") {
+          setMyTradeApprovalReportLineManageSearch((prev) => ({
+            ...prev,
+            employeeName: searchMain,
+            departmentName: "",
+            filterTrigger: true,
+          }));
+        }
+        setSearchMain("");
+
+        break;
+
       case "15": // HCA Escalated
         if (activeTabHCO === "escalated") {
           setHeadOfComplianceApprovalEscalatedVerificationsSearch((prev) => ({
@@ -460,6 +473,21 @@ const SearchWithPopoverOnly = () => {
             pageNumber: 0,
             filterTrigger: true,
           }));
+        } else if (
+          currentPath === "/PAD/hca-reports/hca-date-wise-transaction-report"
+        ) {
+          setCODatewiseTransactionReportSearch((prev) => ({
+            ...prev,
+            instrumentName: searchMain,
+            quantity: 0,
+            startDate: null,
+            endDate: null,
+            employeeID: 0,
+            employeeName: "",
+            departmentName: "",
+            pageNumber: 0,
+            filterTrigger: true,
+          }));
         }
         setSearchMain("");
         break;
@@ -494,7 +522,6 @@ const SearchWithPopoverOnly = () => {
           openNewFormForAdminGropusAndPolicy &&
           pageTabesForAdminGropusAndPolicy === 1
         ) {
-          console.log("searchMain", searchMain);
           setAdminGropusAndPolicyPoliciesTabSearch((prev) => ({
             ...prev,
             policyId: searchMain,

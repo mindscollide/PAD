@@ -374,7 +374,7 @@ const HeadCompianceOfficerOverdueVerificationReports = () => {
               {
                 title: (
                   <span
-                    onClick={() => navigate("/PAD/co-reports")}
+                    onClick={() => navigate("/PAD/hca-reports")}
                     className={style.breadcrumbLink}
                   >
                     Reports
