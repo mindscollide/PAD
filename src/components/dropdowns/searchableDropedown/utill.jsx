@@ -26,6 +26,7 @@ import { COMyAction } from "./COMyAction";
 import { LMPendigRequestReportSearchFilter } from "./LMPendigRequestReportSearchFilter";
 import { COOverdueVerifications } from "./COOverdueVerifications";
 import { COTransactionReportViewDetailsFilter } from "./COTransactionReportViewDetailsFilter";
+import { HOCMyAction } from "./HOCMyAction";
 
 // this is used for open specific filter according to page
 export const renderFilterContent = (
@@ -225,6 +226,17 @@ export const renderFilterContent = (
     case "15": // HCA Escalated
       return (
         <HcaReconcileFilter
+          setVisible={setVisible}
+          clear={clear}
+          setClear={setClear}
+          maininstrumentName={searchMain}
+          setMaininstrumentName={setSearchMain}
+        />
+      );
+
+    case "16": //HOC My Actions
+      return (
+        <HOCMyAction
           setVisible={setVisible}
           clear={clear}
           setClear={setClear}

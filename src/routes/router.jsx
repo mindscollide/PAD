@@ -56,6 +56,7 @@ import HCADateWiseTransactionsReports from "../pages/main/headOfComplianceOffice
 import HeadOFComplianceApprovalReportsIndex from "../pages/main/headOfComplianceOffice/reports";
 import HTAReportsIndex from "../pages/main/headOfTradeApprover/reports";
 import HeadCompianceOfficerOverdueVerificationReports from "../pages/main/headOfComplianceOffice/reports/overDueVerificationsReports";
+import HOCMyActionPage from "../pages/main/headOfComplianceOffice/myActions";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -265,7 +266,7 @@ const router = createBrowserRouter(
           path="hca-my-actions"
           element={
             <RoleBasedRoute isAdmin={false} allowedRoles={[6]}>
-              <EmployeMyTransaction />{" "}
+              <HOCMyActionPage />{" "}
             </RoleBasedRoute>
           }
         />

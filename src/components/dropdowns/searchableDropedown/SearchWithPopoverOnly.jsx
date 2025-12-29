@@ -69,6 +69,7 @@ const SearchWithPopoverOnly = () => {
     setAdminSessionWiseActivitySearch,
     setComplianceOfficerMyActionSearch,
     setCoOverdueVerificationReportSearch,
+    setHeadOfComplianceMyActionSearch,
     //
     setUsersTabSearch,
     setPendingRequestsTabSearch,
@@ -433,6 +434,24 @@ const SearchWithPopoverOnly = () => {
           }));
           setSearchMain("");
         }
+        break;
+
+      case "16":
+        setHeadOfComplianceMyActionSearch((prev) => ({
+          ...prev,
+          requestID: "",
+          instrumentName: searchMain,
+          requesterName: "",
+          startDate: null,
+          endDate: null,
+          quantity: 0,
+          pageNumber: 0,
+          type: [],
+          status: [],
+          filterTrigger: true,
+        }));
+
+        setSearchMain("");
         break;
 
       case "17": // Head of Compliance Report
