@@ -6,44 +6,43 @@ import DefaultColumArrow from "../../../../../assets/img/default-colum-arrow.png
 import TypeColumnTitle from "../../../../../components/dropdowns/filters/typeColumnTitle";
 import StatusColumnTitle from "../../../../../components/dropdowns/filters/statusColumnTitle";
 import { Tag, Tooltip } from "antd";
-import style from "./transactionsSummary.module.css";
+import style from "./dataWiseTransactionsReports.module.css";
 
 import {
+  dashBetweenApprovalAssets,
   formatApiDateTime,
   toYYMMDD,
 } from "../../../../../common/funtions/rejex";
-import { getTradeTypeById } from "../../../../../common/funtions/type";
 import {
   mapBuySellToIds,
   mapStatusToIds,
 } from "../../../../../components/dropdowns/filters/utils";
+import { getTradeTypeById } from "../../../../../common/funtions/type";
 
 /**
  * Utility: Build API request payload for approval listing
  *
  * @param {Object} searchState - Current search/filter state
+ * @param {Object} assetTypeListingData - Extra request metadata (optional)
  * @returns {Object} API-ready payload
  */
-export const buildApiRequest = (searchState = {}) => ({
-  PageNumber: Number(searchState.pageNumber) || 0,
-  Length: Number(searchState.pageSize) || 10,
-  ToDate: searchState.endDate ? toYYMMDD(searchState.endDate) : "",
-  FromDate: searchState.startDate ? toYYMMDD(searchState.startDate) : "",
-});
+export const buildApiRequest = (searchState = {}, assetTypeListingData) => ({
+  InstrumentName: searchState.instrumentName || "",
+  DepartmentName: searchState.departmentName || "",
+  Quantity: Number(searchState.quantity) || 0,
 
-export const buildApiRequestViewDetails = (
-  searchState = {},
-  assetTypeListingData
-) => ({
   PageNumber: Number(searchState.pageNumber) || 0,
   Length: Number(searchState.pageSize) || 10,
-  TransactionDate: searchState.transactionDate,
-  QuantitySearch: searchState.quantitySearch,
-  InstrumentNameSearch: searchState.instrumentNameSearch,
-  RequesterNameSearch: searchState.requesterNameSearch,
+
   StatusIds: mapStatusToIds(searchState.status),
   TypeIds: mapBuySellToIds(searchState.type, assetTypeListingData?.Equities),
+
+  RequesterName: searchState.employeeName || "",
+
+  StartDate: searchState.startDate ? toYYMMDD(searchState.startDate) : "",
+  EndDate: searchState.endDate ? toYYMMDD(searchState.endDate) : "",
 });
+
 /**
  * Maps employee transaction data into a UI-friendly format
  *
@@ -51,32 +50,6 @@ export const buildApiRequestViewDetails = (
  * @returns {Array} Mapped transaction list
  */
 export const mappingDateWiseTransactionReport = (
-  myTradeApprovalLineManagerData = []
-) => {
-  const records = Array.isArray(myTradeApprovalLineManagerData)
-    ? myTradeApprovalLineManagerData
-    : myTradeApprovalLineManagerData?.records || [];
-
-  if (!records.length) return [];
-
-  return records.map((item) => ({
-    key:
-      item.transactionDate +
-      item.totalEmployees +
-      item.compliantTransactions +
-      item.totalTransactions +
-      item.nonCompliantTransactions,
-    totalEmployees: item.totalEmployees,
-    totalTransactions: item.totalTransactions || "",
-    compliantTransactions: item.compliantTransactions || "—",
-    nonCompliantTransactions: item.nonCompliantTransactions || "—",
-    transactionDate:
-      [item?.transactionDate, item?.transactionTime]
-        .filter(Boolean)
-        .join(" ") || "—",
-  }));
-};
-export const mappingDateWiseTransactionviewDetailst = (
   assetTypeData,
   myTradeApprovalLineManagerData = []
 ) => {
@@ -87,14 +60,14 @@ export const mappingDateWiseTransactionviewDetailst = (
   if (!records.length) return [];
 
   return records.map((item) => ({
-    key: item.workFlowID,
+    key: item.tradeApprovalID,
     approvalID: item.approvalID,
     tradeApprovalID: item.tradeApprovalID || "",
-    instrumentCode: item?.instrumentShortCode || "—",
-    instrumentName: item?.instrumentName || "—",
-    assetTypeShortCode: item?.assetShortCode || "—",
+    instrumentCode: item?.instrument?.instrumentCode || "—",
+    instrumentName: item?.instrument?.instrumentName || "—",
+    assetTypeShortCode: item?.assetType?.assetTypeShortCode || "—",
     transactionDate:
-      `${item?.creationDate || ""} ${item?.creationTime || ""}`.trim() || "—",
+      `${item?.requestDate || ""} ${item?.requestTime || ""}`.trim() || "—",
     department: item.departmentName,
     type: getTradeTypeById(assetTypeData, item?.tradeType) || "-",
     status: item.approvalStatus?.approvalStatusName || "",
@@ -108,6 +81,7 @@ export const mappingDateWiseTransactionviewDetailst = (
     rejectionComment: item.rejectionComment || "",
   }));
 };
+
 /**
  * Returns the appropriate sort icon based on current sort state
  *
@@ -143,127 +117,6 @@ const getSortIcon = (columnKey, sortedInfo) => {
   );
 };
 
-// Helper for consistent column titles
-const withSortIcon = (label, columnKey, sortedInfo) => (
-  <div className={style["table-header-wrapper"]}>
-    <span className={style["table-header-text"]}>{label}</span>
-    <span className={style["table-header-icon"]}>
-      {getSortIcon(columnKey, sortedInfo)}
-    </span>
-  </div>
-);
-
-export const getBorderlessTableColumns = ({
-  sortedInfo,
-  handelViewDetails,
-}) => [
-  {
-    title: withSortIcon("Transaction Date", "transactionDate", sortedInfo),
-    dataIndex: "transactionDate",
-    key: "transactionDate",
-    width: 200,
-    ellipsis: true,
-    sorter: (a, b) =>
-      (a?.transactionDate || "").localeCompare(b?.transactionDate || ""),
-    sortOrder:
-      sortedInfo?.columnKey === "transactionDate" ? sortedInfo.order : null,
-    showSorterTooltip: false,
-    sortIcon: () => null,
-    render: (date) => (
-      <span className="text-gray-600" title={date || "—"}>
-        {formatApiDateTime(date) || "—"}
-      </span>
-    ),
-  },
-  {
-    title: withSortIcon("Total Employees", "totalEmployees", sortedInfo),
-    dataIndex: "totalEmployees",
-    key: "totalEmployees",
-    width: 200,
-    ellipsis: true,
-    align: "left",
-    sorter: (a, b) => (a?.totalEmployees ?? 0) - (b?.totalEmployees ?? 0),
-    sortOrder:
-      sortedInfo?.columnKey === "totalEmployees" ? sortedInfo.order : null,
-    showSorterTooltip: false,
-    sortIcon: () => null,
-    render: (q) => <span className="font-medium">{q.toLocaleString()}</span>,
-  },
-  {
-    title: withSortIcon("Total Transactions", "totalTransactions", sortedInfo),
-    dataIndex: "totalTransactions",
-    key: "totalTransactions",
-    width: 200,
-    ellipsis: true,
-    align: "left",
-    sorter: (a, b) => (a?.totalTransactions ?? 0) - (b?.totalTransactions ?? 0),
-    sortOrder:
-      sortedInfo?.columnKey === "totalTransactions" ? sortedInfo.order : null,
-    showSorterTooltip: false,
-    sortIcon: () => null,
-    render: (q) => <span className="font-medium">{q.toLocaleString()}</span>,
-  },
-  {
-    title: withSortIcon(
-      "Compliant Transactions",
-      "compliantTransactions",
-      sortedInfo
-    ),
-    dataIndex: "compliantTransactions",
-    key: "compliantTransactions",
-    width: 200,
-    ellipsis: true,
-    align: "left",
-    sorter: (a, b) =>
-      (a?.compliantTransactions ?? 0) - (b?.compliantTransactions ?? 0),
-    sortOrder:
-      sortedInfo?.columnKey === "compliantTransactions"
-        ? sortedInfo.order
-        : null,
-    showSorterTooltip: false,
-    sortIcon: () => null,
-    render: (q) => <span className="font-medium">{q.toLocaleString()}</span>,
-  },
-  {
-    title: withSortIcon(
-      "Non-Compliant Transactions",
-      "nonCompliantTransactions",
-      sortedInfo
-    ),
-    dataIndex: "nonCompliantTransactions",
-    key: "nonCompliantTransactions",
-    width: 200,
-    ellipsis: true,
-    align: "left",
-    sorter: (a, b) =>
-      (a?.nonCompliantTransactions ?? 0) - (b?.nonCompliantTransactions ?? 0),
-    sortOrder:
-      sortedInfo?.columnKey === "nonCompliantTransactions"
-        ? sortedInfo.order
-        : null,
-    showSorterTooltip: false,
-    sortIcon: () => null,
-    render: (q) => <span className="font-medium">{q.toLocaleString()}</span>,
-  },
-  {
-    title: "",
-    key: "action",
-    width: 200,
-    align: "right", // 🔷 Align content to the right
-    render: (_, record) => (
-      <div className={style.viewEditClass}>
-        <Button
-          className="small-light-button"
-          text={"View Details"}
-          onClick={() => {
-            console.log(record, "tradeApprovalID");
-            handelViewDetails(record.transactionDate);
-          }}
-        />
-      </div>
-    ),
-  },
-];
 /**
  * Renders status tag with appropriate styling
  * @param {string} status - Approval status
@@ -307,6 +160,16 @@ const renderStatusTag = (status, approvalStatusMap) => {
     </Tag>
   );
 };
+
+// Helper for consistent column titles
+const withSortIcon = (label, columnKey, sortedInfo) => (
+  <div className={style["table-header-wrapper"]}>
+    <span className={style["table-header-text"]}>{label}</span>
+    <span className={style["table-header-icon"]}>
+      {getSortIcon(columnKey, sortedInfo)}
+    </span>
+  </div>
+);
 const withFilterHeader = (FilterComponent) => (
   <div
     className={style["table-header-wrapper"]}
@@ -320,19 +183,18 @@ const withFilterHeader = (FilterComponent) => (
     <FilterComponent />
   </div>
 );
-
-export const getBorderlessTableColumnsViewDetails = ({
+export const getBorderlessTableColumns = ({
   approvalStatusMap,
   sortedInfo,
-  coTransactionsSummarysReportsViewDetailsSearch,
-  setCOTransactionsSummarysReportsViewDetailSearch,
+  coDatewiseTransactionReportSearch,
+  setCODatewiseTransactionReportSearch,
   handelViewDetails,
 }) => [
   {
     title: withSortIcon("Employee ID", "employeeID", sortedInfo),
     dataIndex: "employeeID",
     key: "employeeID",
-    width: 150,
+    width: "10%",
     ellipsis: true,
     sorter: (a, b) =>
       parseInt(a.employeeID.replace(/[^\d]/g, ""), 10) -
@@ -356,7 +218,7 @@ export const getBorderlessTableColumnsViewDetails = ({
     title: withSortIcon("Employee Name", "employeeName", sortedInfo),
     dataIndex: "employeeName",
     key: "employeeName",
-    width: 200,
+    width: "160px",
     align: "left",
     ellipsis: true,
     sorter: (a, b) => a.employeeName.localeCompare(b.employeeName),
@@ -368,10 +230,24 @@ export const getBorderlessTableColumnsViewDetails = ({
     render: (text) => <span className="font-medium">{text}</span>,
   },
   {
+    title: withSortIcon("Department Name", "department", sortedInfo),
+    dataIndex: "department",
+    key: "department",
+    align: "left",
+    width: 180,
+    ellipsis: true,
+    sorter: (a, b) => a.department.localeCompare(b.department),
+    sortDirections: ["ascend", "descend"],
+    sortOrder: sortedInfo?.columnKey === "department" ? sortedInfo.order : null,
+    showSorterTooltip: false,
+    sortIcon: () => null,
+    render: (text) => <span className="font-medium">{text}</span>,
+  },
+  {
     title: withSortIcon("Instrument", "instrumentName", sortedInfo),
     dataIndex: "instrumentName",
     key: "instrumentName",
-    width: 150,
+    width: "140px",
     ellipsis: true,
     sorter: (a, b) => {
       const nameA = a?.instrumentShortCode || "";
@@ -420,10 +296,10 @@ export const getBorderlessTableColumnsViewDetails = ({
     },
   },
   {
-    title: withSortIcon("Initiated at", "transactionDate", sortedInfo),
+    title: withSortIcon("Transaction Date", "transactionDate", sortedInfo),
     dataIndex: "transactionDate",
     key: "transactionDate",
-    width: 200,
+    width: "280px",
     align: "left",
     ellipsis: true,
     sorter: (a, b) => {
@@ -445,16 +321,16 @@ export const getBorderlessTableColumnsViewDetails = ({
   {
     title: withFilterHeader(() => (
       <TypeColumnTitle
-        state={coTransactionsSummarysReportsViewDetailsSearch}
-        setState={setCOTransactionsSummarysReportsViewDetailSearch}
+        state={coDatewiseTransactionReportSearch}
+        setState={setCODatewiseTransactionReportSearch}
       />
     )),
     dataIndex: "type",
-    width: 150,
+    width: 100,
     key: "type",
     ellipsis: true,
-    filteredValue: coTransactionsSummarysReportsViewDetailsSearch.type?.length
-      ? coTransactionsSummarysReportsViewDetailsSearch.type
+    filteredValue: coDatewiseTransactionReportSearch.type?.length
+      ? coDatewiseTransactionReportSearch.type
       : null,
     onFilter: () => true, // Actual filtering handled by API
     render: (type, record) => (
@@ -475,36 +351,30 @@ export const getBorderlessTableColumnsViewDetails = ({
     ),
   },
   {
-    title: (
-      <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-        Quantity {getSortIcon("quantity", sortedInfo)}
-      </div>
-    ),
+    title: withSortIcon("Quantity", "quantity", sortedInfo),
     dataIndex: "quantity",
     key: "quantity",
-    align: "left",
-    width: 100,
-    sorter: (a, b) => (a?.quantity ?? 0) - (b?.quantity ?? 0),
+    width: "120px",
+    ellipsis: true,
+    sorter: (a, b) => a.quantity - b.quantity,
+    sortDirections: ["ascend", "descend"],
     sortOrder: sortedInfo?.columnKey === "quantity" ? sortedInfo.order : null,
     showSorterTooltip: false,
     sortIcon: () => null,
-    render: (q) => (
-      <span className="font-medium">{q?.toLocaleString() || "—"}</span>
-    ),
+    render: (q) => <span className="font-medium">{q.toLocaleString()}</span>,
   },
   {
     title: withFilterHeader(() => (
       <StatusColumnTitle
-        state={coTransactionsSummarysReportsViewDetailsSearch}
-        setState={setCOTransactionsSummarysReportsViewDetailSearch}
+        state={coDatewiseTransactionReportSearch}
+        setState={setCODatewiseTransactionReportSearch}
       />
     )),
-    width: 200,
     dataIndex: "status",
     key: "status",
     ellipsis: true,
-    filteredValue: coTransactionsSummarysReportsViewDetailsSearch.status?.length
-      ? coTransactionsSummarysReportsViewDetailsSearch.status
+    filteredValue: coDatewiseTransactionReportSearch.status?.length
+      ? coDatewiseTransactionReportSearch.status
       : null,
     onFilter: () => true,
     render: (status, record) => (
@@ -516,16 +386,15 @@ export const getBorderlessTableColumnsViewDetails = ({
   {
     title: "",
     key: "action",
-    width: 150,
     align: "right", // 🔷 Align content to the right
     render: (_, record) => (
       <div className={style.viewEditClass}>
         <Button
           className="small-light-button"
-          text={"View Comments"}
+          text={"View Details"}
           onClick={() => {
             console.log(record, "tradeApprovalID");
-            handelViewDetails(record.approvalID);
+            handelViewDetails(record.approvalID)
             // setIsViewComments(true);
             // setCheckTradeApprovalID(record?.approvalID);
             // setEditBrokerModal(true);

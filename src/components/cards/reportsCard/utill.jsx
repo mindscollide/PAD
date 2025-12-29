@@ -31,7 +31,7 @@ export const headOfComplianceRouteMap = {
   transactions: { path: "transactions", key: "2" },
   history: { path: "history", key: "3" },
   portfolio: { path: "portfolios", key: "4" },
-  reports: { path: "reports", key: "5" },
+  reports: { path: "hca-reports", key: "17" },
 };
 
 // ===================================
@@ -62,10 +62,10 @@ export const navigateToPage = (userRole, route, setSelectedKey, navigate) => {
     case "CO":
       pathInfo = complianceOfficerRouteMap[route];
       break;
-    case "headOfTrade":
+    case "HTA":
       pathInfo = headOfTradeRouteMap[route];
       break;
-    case "headOfCompliance":
+    case "HCA":
       pathInfo = headOfComplianceRouteMap[route];
       break;
     default:

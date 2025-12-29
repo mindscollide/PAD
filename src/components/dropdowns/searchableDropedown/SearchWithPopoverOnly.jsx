@@ -68,6 +68,7 @@ const SearchWithPopoverOnly = () => {
     setCOTransactionsSummarysReportsViewDetailSearch,
     setAdminSessionWiseActivitySearch,
     setComplianceOfficerMyActionSearch,
+    setCoOverdueVerificationReportSearch,
     //
     setUsersTabSearch,
     setPendingRequestsTabSearch,
@@ -345,8 +346,7 @@ const SearchWithPopoverOnly = () => {
         break;
 
       case "11": // Compliance Officer
-        // reports
-        // date wise transaction report
+        // reports date wise transaction report || co-overdue-verifications
         if (currentPath === "/PAD/co-reports/co-date-wise-transaction-report") {
           setCODatewiseTransactionReportSearch((prev) => ({
             ...prev,
@@ -360,6 +360,20 @@ const SearchWithPopoverOnly = () => {
             pageNumber: 0,
             filterTrigger: true,
           }));
+          setSearchMain("");
+        } else if (currentPath === "/PAD/co-reports/co-overdue-verifications") {
+          setCoOverdueVerificationReportSearch((prev) => ({
+            ...prev,
+            instrumentName: searchMain,
+            requesterName: "",
+            approvedQuantity: "",
+            sharesTraded: "",
+            startDate: null,
+            endDate: null,
+            pageNumber: 0,
+            filterTrigger: true,
+          }));
+          setSearchMain("");
         } else if (coTransactionSummaryReportViewDetailsFlag) {
           setCOTransactionsSummarysReportsViewDetailSearch((prev) => ({
             ...prev,
@@ -370,7 +384,6 @@ const SearchWithPopoverOnly = () => {
             filterTrigger: true,
           }));
         }
-        setSearchMain("");
         break;
 
       case "12": // HTA Escalated

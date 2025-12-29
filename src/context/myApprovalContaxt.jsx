@@ -54,8 +54,14 @@ export const MyApprovalProvider = ({ children }) => {
   const [lineManagerReportsDashboardData, setLineManagerReportsDashboardData] =
     useState([]);
 
+  /** HTA dashboard report summary */
+  const [htaReportsDashboardData, setHTAReportsDashboardData] = useState([]);
+
   /** Compliance Officer dashboard report summary */
   const [coReportsDashboardData, setCOReportsDashboardData] = useState([]);
+
+  /** Compliance Officer dashboard report summary */
+  const [hcaReportsDashboardData, setHCAReportsDashboardData] = useState([]);
 
   /** Employee Transaction Request Report API data */
   const [getEmployeeTransactionReport, setGetEmployeeTransactionReport] =
@@ -131,6 +137,13 @@ export const MyApprovalProvider = ({ children }) => {
     totalRecordsTable: 0,
   });
 
+  // Compliance Officer Overdue Verification Report
+  const [coOverdueVerificationListData, setCoOverdueVerificationListData] =
+    useState({
+      overdueVerifications: [],
+      totalRecordsDataBase: 0,
+      totalRecordsTable: 0,
+    });
   const [
     coTransactionSummaryReportListData,
     setCOTransactionSummaryReportListData,
@@ -271,10 +284,17 @@ export const MyApprovalProvider = ({ children }) => {
         coReportsDashboardData,
         setCOReportsDashboardData,
 
+        // HTA Reports
+        htaReportsDashboardData,
+        setHTAReportsDashboardData,
+
         // compliance officer  date wise transaction report
         coDatewiseTransactionReportListData,
         setCODatewiseTransactionReportListData,
 
+        //Conmpliance Officer Overdue Verification Report
+        coOverdueVerificationListData,
+        setCoOverdueVerificationListData,
         coTransactionSummaryReportListData,
         setCOTransactionSummaryReportListData,
         resetCOTransactionSummaryReportListData,
@@ -284,6 +304,9 @@ export const MyApprovalProvider = ({ children }) => {
         coTransactionSummaryReportViewDetailsListData,
         setCOTransactionSummaryReportViewDetailsListData,
         resetCOTransactionSummaryReportViewDetailsListData,
+        // HCA Reports
+        hcaReportsDashboardData,
+        setHCAReportsDashboardData,
       }}
     >
       {children}

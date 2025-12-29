@@ -24,6 +24,7 @@ import { CODateWiseTransactionReportFilter } from "./CODateWiseTransactionReport
 import { AdminSessionWiseActivityFilter } from "./AdminSessionWiseActivity";
 import { COMyAction } from "./COMyAction";
 import { LMPendigRequestReportSearchFilter } from "./LMPendigRequestReportSearchFilter";
+import { COOverdueVerifications } from "./COOverdueVerifications";
 import { COTransactionReportViewDetailsFilter } from "./COTransactionReportViewDetailsFilter";
 
 // this is used for open specific filter according to page
@@ -176,10 +177,20 @@ export const renderFilterContent = (
           setMaininstrumentName={setSearchMain}
         />
       );
-    case "11": // LineManager → reports pending approvals
+    case "11": // Compliance officer → reports pending approvals
       if (currentPath === "/PAD/co-reports/co-date-wise-transaction-report") {
         return (
           <CODateWiseTransactionReportFilter
+            setVisible={setVisible}
+            clear={clear}
+            setClear={setClear}
+            maininstrumentName={searchMain}
+            setMaininstrumentName={setSearchMain}
+          />
+        );
+      }else if (currentPath === "/PAD/co-reports/co-overdue-verifications") {
+        return (
+          <COOverdueVerifications
             setVisible={setVisible}
             clear={clear}
             setClear={setClear}

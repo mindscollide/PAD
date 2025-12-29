@@ -56,11 +56,13 @@ const Headers = () => {
             <Col xs={24} sm={24} md={24} lg={16}>
               {selectedKeyRef.current !== "0" &&
               selectedKeyRef.current !== "5" &&
+              selectedKeyRef.current !== "8" &&
+              selectedKeyRef.current !== "11" &&
+              selectedKeyRef.current !== "14" &&
+              selectedKeyRef.current !== "17" &&
               selectedKeyRef.current !== "50" &&
               selectedKeyRef.current !== "20" &&
-              selectedKeyRef.current !== "22" &&
-              selectedKeyRef.current !== "8" &&
-              selectedKeyRef.current !== "11" ? (
+              selectedKeyRef.current !== "22" ? (
                 <SearchWithFilter />
               ) : selectedKeyRef.current === "20" &&
                 !openNewFormForAdminGropusAndPolicy ? (
@@ -84,6 +86,8 @@ const Headers = () => {
                   (selectedKeyRef.current === "11" &&
                     (currentPath ===
                       "/PAD/co-reports/co-date-wise-transaction-report" ||
+                      currentPath ===
+                        "/PAD/co-reports/co-overdue-verifications" ||
                       currentPath ===
                         "/PAD/lm-reports/lm-tradeapproval-request" ||
                       coTransactionSummaryReportViewDetailsFlag))) && (
