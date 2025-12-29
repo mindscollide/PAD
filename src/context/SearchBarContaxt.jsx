@@ -283,6 +283,22 @@ export const SearchBarProvider = ({ children }) => {
       filterTrigger: false,
     });
 
+  /** 🔍 Head Of Compliance Officer My Action table filters */
+  const [headOfComplianceMyActionSearch, setHeadOfComplianceMyActionSearch] =
+    useState({
+      requestID: 0,
+      instrumentName: "",
+      requesterName: "",
+      startDate: null,
+      endDate: null,
+      type: [],
+      status: [],
+      quantity: 0,
+      pageNumber: 0,
+      pageSize: 10,
+      filterTrigger: false,
+    });
+
   const [
     coDatewiseTransactionReportSearch,
     setCODatewiseTransactionReportSearch,
@@ -836,6 +852,22 @@ export const SearchBarProvider = ({ children }) => {
       filterTrigger: false,
     });
 
+  /** Reset Compliance Officer Approval filters */
+  const resetHeadOfComplianceOfficerMyActionSearch = () =>
+    setHeadOfComplianceMyActionSearch({
+      requestID: 0,
+      instrumentName: "",
+      requesterName: "",
+      startDate: null,
+      endDate: null,
+      type: [],
+      status: [],
+      quantity: 0,
+      pageNumber: 0,
+      pageSize: 10,
+      filterTrigger: false,
+    });
+
   const resetCOTransactionsSummarysReportsSearch = () =>
     setCOTransactionsSummarysReportsSearch({
       endDate: "",
@@ -1170,6 +1202,11 @@ export const SearchBarProvider = ({ children }) => {
         resetAdminSessionWiseActivitySearch,
         adminSessionWiseActivitySearch,
         setAdminSessionWiseActivitySearch,
+
+        // Head of Compliance Officer My Action
+        headOfComplianceMyActionSearch,
+        setHeadOfComplianceMyActionSearch,
+        resetHeadOfComplianceOfficerMyActionSearch,
 
         /** 🔍  HCO Trades Upload Via Portfolio filters */
         resetHCOTradesUploadViaPortfolioSearch,

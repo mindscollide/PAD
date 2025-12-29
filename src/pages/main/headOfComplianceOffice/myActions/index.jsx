@@ -1,0 +1,481 @@
+import React, { useCallback, useEffect, useRef, useState } from "react";
+import { Row, Col } from "antd";
+import { DownloadOutlined } from "@ant-design/icons";
+import { AcordianTable, PageLayout } from "../../../../components";
+import CustomButton from "../../../../components/buttons/button";
+import style from "./HOC-myActions.module.css";
+import Excel from "../../../../assets/img/xls.png";
+import { buildMyActionApiRequest, getMyActionsColumn } from "./utils";
+import { useSearchBarContext } from "../../../../context/SearchBarContaxt";
+import { approvalStatusMap } from "../../../../components/tables/borderlessTable/utill";
+import { useMyApproval } from "../../../../context/myApprovalContaxt";
+import {
+  DownloadMyActionsReportRequest,
+  GetComplianceOfficerMyActionsWorkflowDetail,
+  GetHOCMyActionsWorkflowDetail,
+  SearchLMMyActionWorkFlowRequest,
+} from "../../../../api/myApprovalApi";
+import { useNotification } from "../../../../components/NotificationProvider/NotificationProvider";
+import { useGlobalLoader } from "../../../../context/LoaderContext";
+import { useApi } from "../../../../context/ApiContext";
+import { useNavigate } from "react-router-dom";
+import { useSidebarContext } from "../../../../context/sidebarContaxt";
+import {
+  dashBetweenApprovalAssets,
+  formatApiDateTime,
+} from "../../../../common/funtions/rejex";
+const HOCMyActionPage = () => {
+  const navigate = useNavigate();
+  const hasFetched = useRef(false);
+  const containerRef = useRef(null);
+  // -------------------- Contexts --------------------
+  const { callApi } = useApi();
+  const { showNotification } = useNotification();
+  const { showLoader } = useGlobalLoader();
+  const { selectedKey } = useSidebarContext();
+
+  const [sortedInfo, setSortedInfo] = useState({});
+
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [hasMore, setHasMore] = useState(true); // until proven otherwise
+
+  const {
+    headOfComplianceMyActionSearch,
+    setHeadOfComplianceMyActionSearch,
+    resetHeadOfComplianceOfficerMyActionSearch,
+  } = useSearchBarContext();
+
+  const { myActionHOCData, setMyActionHOCData } = useMyApproval();
+  console.log(selectedKey, "selectedKey");
+
+  console.log(myActionHOCData, "myActionHOCDatamyActionHOCData");
+
+  /**
+   * Fetches transactions from API.
+   * @param {boolean} flag - whether to show loader
+   */
+  const fetchApiCall = useCallback(
+    async (requestData, replace = false, showLoaderFlag = true) => {
+      if (!requestData || typeof requestData !== "object") return;
+      if (showLoaderFlag) showLoader(true);
+
+      const res = await GetHOCMyActionsWorkflowDetail({
+        callApi,
+        showNotification,
+        showLoader,
+        requestdata: requestData,
+        navigate,
+      });
+
+      if (res) {
+        setMyActionHOCData(res);
+      }
+    },
+    [callApi, navigate, showLoader, showNotification]
+  );
+
+  // Initial Fetch
+  useEffect(() => {
+    if (!hasFetched.current) {
+      hasFetched.current = true;
+      const requestData = buildMyActionApiRequest(
+        headOfComplianceMyActionSearch
+      );
+
+      fetchApiCall(requestData, true, true);
+    }
+  }, [buildMyActionApiRequest, headOfComplianceMyActionSearch, fetchApiCall]);
+
+  /** 🔹 this useEffect is for Search Filter */
+  useEffect(() => {
+    if (headOfComplianceMyActionSearch?.filterTrigger) {
+      hasFetched.current = true;
+      const requestData = buildMyActionApiRequest(
+        headOfComplianceMyActionSearch
+      );
+
+      fetchApiCall(requestData, true, true);
+      setHeadOfComplianceMyActionSearch((prev) => ({
+        ...prev,
+        filterTrigger: false,
+      }));
+    }
+  }, [buildMyActionApiRequest, headOfComplianceMyActionSearch, fetchApiCall]);
+
+  // -------------------- Table Columns --------------------
+  const columns = getMyActionsColumn(
+    approvalStatusMap,
+    sortedInfo,
+    headOfComplianceMyActionSearch,
+    setHeadOfComplianceMyActionSearch
+  );
+
+  /** 🔹 Handle removing individual filter */
+  const handleRemoveFilter = (key) => {
+    const resetMap = {
+      requestID: { requestID: "" },
+      instrumentName: { instrumentName: "" },
+      requesterName: { requesterName: "" },
+      quantity: { quantity: 0 },
+      type: { type: [] },
+      status: { status: [] },
+      dateRange: { startDate: null, endDate: null },
+    };
+
+    setHeadOfComplianceMyActionSearch((prev) => ({
+      ...prev,
+      ...resetMap[key],
+      pageNumber: 0,
+      filterTrigger: true,
+    }));
+  };
+
+  /** 🔹 Handle removing all filters */
+  const handleRemoveAllFilters = () => {
+    setHeadOfComplianceMyActionSearch((prev) => ({
+      ...prev,
+      requestID: "",
+      instrumentName: "",
+      requesterName: "",
+      quantity: 0,
+      startDate: null,
+      endDate: null,
+      type: [],
+      status: [],
+      pageNumber: 0,
+      filterTrigger: true,
+    }));
+  };
+
+  /** 🔹 Build Active Filters */
+  const activeFilters = (() => {
+    const {
+      requestID,
+      instrumentName,
+      requesterName,
+      startDate,
+      endDate,
+      quantity,
+      type,
+      status,
+    } = headOfComplianceMyActionSearch || {};
+    // 🔹 Mappings for display labels
+    const typeMap = {
+      1: "Buy",
+      2: "Sell",
+    };
+
+    const statusMap = {
+      1: "Pending",
+      2: "Resubmit",
+      3: "Approved",
+      4: "Declined",
+      5: "Traded",
+      6: "Not-Traded",
+      7: "Compliant",
+      8: "Non-Compliant",
+    };
+    return [
+      requestID && {
+        key: "requestID",
+        value:
+          requestID.length > 13 ? requestID.slice(0, 13) + "..." : requestID,
+      },
+      instrumentName && {
+        key: "instrumentName",
+        value:
+          instrumentName.length > 13
+            ? instrumentName.slice(0, 13) + "..."
+            : instrumentName,
+      },
+      requesterName && {
+        key: "requesterName",
+        value:
+          requesterName.length > 13
+            ? requesterName.slice(0, 13) + "..."
+            : requesterName,
+      },
+      startDate &&
+        endDate && {
+          key: "dateRange",
+          value: `${startDate} → ${endDate}`,
+        },
+      quantity &&
+        Number(quantity) > 0 && {
+          key: "quantity",
+          value: Number(quantity).toLocaleString("en-US"),
+        },
+      // 🔹 Add Type (multiple selection support)
+      type?.length > 0 && {
+        key: "type",
+        value: type.map((id) => typeMap[id] || id).join(", "),
+      },
+
+      // 🔹 Add Status (multiple selection support)
+      status?.length > 0 && {
+        key: "status",
+        value: status.map((id) => statusMap[id] || id).join(", "),
+      },
+    ].filter(Boolean);
+  })();
+
+  // Update hasMore when myActionHOCData changes
+  useEffect(() => {
+    const total = myActionHOCData?.totalRecords ?? 0;
+    const currentLen = myActionHOCData?.requests?.length ?? 0;
+    setHasMore(currentLen < total);
+  }, [myActionHOCData]);
+
+  // Scroll handler for lazy loading
+  const handleScroll = async () => {
+    if (!containerRef.current) return;
+    if (loadingMore) return;
+    if (!hasMore) return;
+
+    const { scrollTop, scrollHeight, clientHeight } = containerRef.current;
+
+    // if reached bottom (small offset to be safe)
+    if (scrollTop + clientHeight >= scrollHeight - 10) {
+      setLoadingMore(true);
+
+      try {
+        // calculate current offset (PageNumber) as current loaded employees length
+        const currentLength = myActionHOCData?.requests?.length || 0;
+
+        // build request based on current search/filter but override pagination
+        const baseRequest = buildMyActionApiRequest(
+          headOfComplianceMyActionSearch
+        );
+        const requestData = {
+          ...baseRequest,
+          PageNumber: currentLength, // sRow
+          Length: 10, // eRow (static 10)
+        };
+
+        const res = await SearchLMMyActionWorkFlowRequest({
+          callApi,
+          showNotification,
+          showLoader, // you can pass showLoader or not; it won't show global loader if you manage local spinner
+          requestdata: requestData,
+          navigate,
+        });
+
+        const newEmployees = res?.requests || [];
+
+        if (newEmployees.length > 0) {
+          // merge new employees into existing array and also update any other top-level response fields (e.g., totalRecords)
+          setMyActionHOCData((prev = {}) => ({
+            ...res, // take latest top-level fields (totalRecords etc.) from response
+            requests: [...(prev.requests || []), ...newEmployees],
+          }));
+        } else {
+          // no new data => stop further fetching
+          setHasMore(false);
+        }
+      } catch (err) {
+        console.error("Error fetching more users:", err);
+      } finally {
+        setLoadingMore(false);
+      }
+    }
+  };
+
+  // Reset on Unmount
+  useEffect(() => {
+    return () => {
+      setHeadOfComplianceMyActionSearch();
+      setMyActionHOCData([]);
+    };
+  }, []);
+
+  // Attach scroll listener to the managed container
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+
+    // attach
+    el.addEventListener("scroll", handleScroll);
+
+    // cleanup
+    return () => {
+      el.removeEventListener("scroll", handleScroll);
+    };
+  }, [containerRef.current, hasMore, loadingMore, myActionHOCData]);
+
+  const mapMyActionData = (data) => {
+    if (!data?.requests) return [];
+
+    const loggedUser = JSON.parse(sessionStorage.getItem("user_profile_data"));
+    const loggedUserId = loggedUser?.userID;
+
+    const getFinalWorkflowIcon = (id) => {
+      switch (id) {
+        case 9:
+          return "co-Non-Compliant";
+        case 8:
+          return "co-Compliant";
+        case 7:
+          return "Not-Traded";
+        case 6:
+          return "Traded";
+        case 1:
+          return "Pending";
+        default:
+          return "ellipsis";
+      }
+    };
+
+    const getFinalWorkflowStatusText = (id, name) => {
+      switch (id) {
+        case 9:
+          return "Non-Compliant";
+        case 8:
+          return "Compliant";
+        case 7:
+          return "Not Traded";
+        case 6:
+          return "Traded";
+        case 1:
+          return "Pending";
+        default:
+          return name;
+      }
+    };
+
+    return data.requests.map((wf) => {
+      // 1️⃣ Send For Approval
+      const sendForApprovalStep = {
+        stepType: "SendForApproval",
+        status: "Send for Approval",
+        date: formatApiDateTime(`${wf.requestedDate} ${wf.requestedTime}`),
+        iconType: "SendForApproval",
+      };
+
+      // 2️⃣ Bundle Steps
+      let bundleSteps = [];
+
+      if (wf.bundleHistory?.length > 0) {
+        bundleSteps = wf.bundleHistory
+          .filter((b) => b.assignedToUserID === loggedUserId)
+          .map((b) => {
+            let statusText = "";
+            let iconType = "";
+
+            if (b.bundleStatus === 2) {
+              statusText = "Marked Compliant by You";
+              iconType = "co-Compliant";
+            } else if (b.bundleStatus === 3) {
+              statusText = "Marked Non-compliant by You";
+              iconType = "co-Non-Compliant";
+            } else return null;
+
+            return {
+              stepType: "BundleHistory",
+              status: statusText,
+              date: formatApiDateTime(
+                `${b.bundleModifiedDate} ${b.bundleModifiedTime}`
+              ),
+              iconType,
+            };
+          })
+          .filter(Boolean);
+      }
+
+      // 3️⃣ Final Workflow Status
+      const finalWorkflowStep = {
+        stepType: "WorkflowFinal",
+        status: getFinalWorkflowStatusText(
+          wf.workFlowStatusID,
+          wf.workFlowStatusName
+        ),
+        date: formatApiDateTime(`${wf.requestedDate} ${wf.requestedTime}`),
+        iconType: getFinalWorkflowIcon(wf.workFlowStatusID),
+      };
+
+      const trail = [sendForApprovalStep, ...bundleSteps, finalWorkflowStep];
+
+      return {
+        id: String(wf.requestID),
+        approvalID: wf.approvalID,
+        instrumentName: wf.instrumentName,
+        instrumentShortCode: wf.instrumentShortCode,
+        assetShortCode: wf.assetShortCode,
+        requesterName: wf.requesterName,
+        creationDate: wf.requestedDate,
+        creationTime: wf.requestedTime,
+        quantity: Number(wf.quantity),
+        type: wf.typeName || wf.type,
+        status: wf.workFlowStatusName || wf.statusState,
+        trail,
+      };
+    });
+  };
+
+  return (
+    <>
+      {/* 🔹 Active Filter Tags */}
+      {activeFilters.length > 0 && (
+        <Row gutter={[12, 12]} className={style["filter-tags-container"]}>
+          {activeFilters.map(({ key, value }) => (
+            <Col key={key}>
+              <div className={style["filter-tag"]}>
+                <span>{value}</span>
+                <span
+                  className={style["filter-tag-close"]}
+                  onClick={() => handleRemoveFilter(key)}
+                >
+                  &times;
+                </span>
+              </div>
+            </Col>
+          ))}
+
+          {/* 🔹 Show Clear All only if more than one filter */}
+          {activeFilters.length > 1 && (
+            <Col>
+              <div
+                className={`${style["filter-tag"]} ${style["clear-all-tag"]}`}
+                onClick={handleRemoveAllFilters}
+              >
+                <span>Clear All</span>
+              </div>
+            </Col>
+          )}
+        </Row>
+      )}
+
+      {/* 🔹 Transactions Table */}
+      <PageLayout className={activeFilters.length > 0 && "changeHeight"}>
+        <div>
+          {/* Header & Actions */}
+          <Row
+            justify="space-between"
+            align="middle"
+            style={{ marginBottom: 16, marginTop: 26 }}
+          >
+            <Col>
+              <span className={style["heading"]}>My Actions</span>
+            </Col>
+          </Row>
+          {/* Table */}
+          <AcordianTable
+            className={style["accordian-table-blue"]}
+            columns={columns}
+            dataSource={mapMyActionData(myActionHOCData)}
+            onChange={(pagination, filters, sorter) => {
+              setSortedInfo(sorter);
+            }}
+            rowClassName={(record) =>
+              record.status === "Approved" ? "approved-row" : ""
+            }
+            refClass={containerRef}
+            loadingMore={loadingMore}
+            hasMore={hasMore}
+          />
+        </div>
+      </PageLayout>
+    </>
+  );
+};
+
+export default HOCMyActionPage;

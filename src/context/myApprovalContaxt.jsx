@@ -167,6 +167,12 @@ export const MyApprovalProvider = ({ children }) => {
     setCOTransactionSummaryReportViewDetailsFlag,
   ] = useState(false);
 
+  // Head Of Compliance (HOC) My Action
+  const [myActionHOCData, setMyActionHOCData] = useState({
+    requests: [],
+    totalRecords: 0,
+  });
+
   // Reset function to set all states back to initial values
   /* =========================================================
      RESET FUNCTIONS
@@ -229,6 +235,14 @@ export const MyApprovalProvider = ({ children }) => {
       details: [],
       hierarchyDetails: [],
       workFlowStatus: {},
+    });
+  };
+
+  /** Reset Head Of Compliance My Action Page */
+  const resetMyActionHeadOfCompliance = () => {
+    setMyActionHOCData({
+      requests: [],
+      totalRecords: 0,
     });
   };
 
@@ -307,6 +321,11 @@ export const MyApprovalProvider = ({ children }) => {
         // HCA Reports
         hcaReportsDashboardData,
         setHCAReportsDashboardData,
+
+        //HOC my Action
+        myActionHOCData,
+        setMyActionHOCData,
+        resetMyActionHeadOfCompliance,
       }}
     >
       {children}

@@ -658,6 +658,10 @@ export const responseMessages = {
   PAD_Trade_TradeServiceManager_SearchHOCUploadedPortFolio_02:
     "No data available",
   PAD_Trade_TradeServiceManager_SearchHOCUploadedPortFolio_03: "Exception",
+
+  PAD_TradeServiceManager_GetHOCMyActionsWorkflowDetail_01:"Data found",
+  PAD_TradeServiceManager_GetHOCMyActionsWorkflowDetail_01:"No data available",
+  PAD_TradeServiceManager_GetHOCMyActionsWorkflowDetail_01:"Exception",
 };
 
 /**

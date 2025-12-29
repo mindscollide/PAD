@@ -22,6 +22,8 @@ const ApprovalStepper = ({ trail }) => {
         return <img src={CheckIcon} alt={altText} width={50} height={50} />;
       case "Approved":
         return <img src={CheckIcon} alt={altText} width={50} height={50} />;
+      case "Pending":
+        return <img src={EllipsesIcon} alt={altText} width={50} height={50} />;
       case "ellipsis":
         return <img src={EllipsesIcon} alt={altText} width={50} height={50} />;
       case "cross":
@@ -41,7 +43,9 @@ const ApprovalStepper = ({ trail }) => {
       case "Decline":
         return <img src={Decline} alt={altText} width={50} height={50} />;
       case "co-Compliant":
-        return <img src={circlecheckblue} alt={altText} width={50} height={50} />;
+        return (
+          <img src={circlecheckblue} alt={altText} width={50} height={50} />
+        );
       case "co-Non-Compliant":
         return <img src={CrossIcon} alt={altText} width={50} height={50} />;
       case "co-Transaction Conducted":
