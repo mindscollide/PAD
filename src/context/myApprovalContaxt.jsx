@@ -137,6 +137,13 @@ export const MyApprovalProvider = ({ children }) => {
     totalRecordsTable: 0,
   });
 
+  // Compliance Officer Overdue Verification Report
+  const [coOverdueVerificationListData, setCoOverdueVerificationListData] =
+    useState({
+      overdueVerifications: [],
+      totalRecordsDataBase: 0,
+      totalRecordsTable: 0,
+    });
   const [
     coTransactionSummaryReportListData,
     setCOTransactionSummaryReportListData,
@@ -285,6 +292,9 @@ export const MyApprovalProvider = ({ children }) => {
         coDatewiseTransactionReportListData,
         setCODatewiseTransactionReportListData,
 
+        //Conmpliance Officer Overdue Verification Report
+        coOverdueVerificationListData,
+        setCoOverdueVerificationListData,
         coTransactionSummaryReportListData,
         setCOTransactionSummaryReportListData,
         resetCOTransactionSummaryReportListData,

@@ -522,7 +522,7 @@ export const getBorderlessTableColumnsViewDetails = ({
       <div className={style.viewEditClass}>
         <Button
           className="small-light-button"
-          text={"View Details"}
+          text={"View Comments"}
           onClick={() => {
             console.log(record, "tradeApprovalID");
             handelViewDetails(record.approvalID);

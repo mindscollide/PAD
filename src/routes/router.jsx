@@ -49,6 +49,7 @@ import MyTradeApprovalStandingReport from "../pages/main/employes/reports/myTrad
 import MyComplianceStandingReport from "../pages/main/employes/reports/myComplianceStanding/MyComplianceStandingReport";
 import MyTransactionReport from "../pages/main/employes/reports/myTransactionReport/MyTransactionReport";
 import TradeApprovalRequest from "../pages/main/lineManager/reports/tradeApprovalsRequest/tradeApprovalRequest";
+import CompianceOfficerOverdueVerificationReports from "../pages/main/complianceOfficer/reports/overDueVerificationsReports";
 import HCATransactionsSummarysReports from "../pages/main/headOfComplianceOffice/reports/transactionsSummary";
 import HCADateWiseTransactionsReports from "../pages/main/headOfComplianceOffice/reports/dataWiseTransactionsReports";
 import HeadOFComplianceApprovalReportsIndex from "../pages/main/headOfComplianceOffice/reports";
@@ -238,12 +239,15 @@ const router = createBrowserRouter(
             path="co-date-wise-transaction-report"
             element={<COdataWiseTransactionsReports />}
           />
+
+          <Route
+            path="co-overdue-verifications"
+            element={<CompianceOfficerOverdueVerificationReports />}
+          />
           <Route
             path="co-transactions-summary-report"
             element={<COTransactionsSummarysReports />}
           />
-          <Route path="co-overdue-verifications" element={<PendingRequest />} />
-          <Route path="co-portfolio-history" element={<PendingRequest />} />
         </Route>
 
         {/* Head of Compliance Approval */}
