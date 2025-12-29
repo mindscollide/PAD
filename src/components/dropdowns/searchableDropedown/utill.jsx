@@ -188,7 +188,7 @@ export const renderFilterContent = (
             setMaininstrumentName={setSearchMain}
           />
         );
-      }else if (currentPath === "/PAD/co-reports/co-overdue-verifications") {
+      } else if (currentPath === "/PAD/co-reports/co-overdue-verifications") {
         return (
           <COOverdueVerifications
             setVisible={setVisible}
@@ -232,6 +232,20 @@ export const renderFilterContent = (
           setMaininstrumentName={setSearchMain}
         />
       );
+
+    case "17":
+      if (currentPath === "/PAD/hca-reports/hca-overdue-verifications") {
+        return (
+          <COOverdueVerifications
+            setVisible={setVisible}
+            clear={clear}
+            setClear={setClear}
+            maininstrumentName={searchMain}
+            setMaininstrumentName={setSearchMain}
+          />
+        );
+      }
+      break;
 
     case "18": // Admin Instrument List
       return (

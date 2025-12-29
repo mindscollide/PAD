@@ -55,6 +55,7 @@ import HCATransactionsSummarysReports from "../pages/main/headOfComplianceOffice
 import HCADateWiseTransactionsReports from "../pages/main/headOfComplianceOffice/reports/dataWiseTransactionsReports";
 import HeadOFComplianceApprovalReportsIndex from "../pages/main/headOfComplianceOffice/reports";
 import HTAReportsIndex from "../pages/main/headOfTradeApprover/reports";
+import HeadCompianceOfficerOverdueVerificationReports from "../pages/main/headOfComplianceOffice/reports/overDueVerificationsReports";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -288,9 +289,11 @@ const router = createBrowserRouter(
           />
           <Route
             path="hca-overdue-verifications"
-            element={<PendingRequest />}
+            element={<HeadCompianceOfficerOverdueVerificationReports />}
           />
           <Route path="hca-upload-portfolio" element={<TradesUploadViaPortfolio />} />
+          
+          <Route path="hca-portfolio-history" element={<PendingRequest />} />
         </Route>
         {/* For Admin Roles Start here*/}
 

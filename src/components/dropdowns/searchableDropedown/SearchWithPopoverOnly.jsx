@@ -435,6 +435,23 @@ const SearchWithPopoverOnly = () => {
         }
         break;
 
+      case "17": // Head of Compliance Report
+        if (currentPath === "/PAD/hca-reports/hca-overdue-verifications") {
+          setCoOverdueVerificationReportSearch((prev) => ({
+            ...prev,
+            instrumentName: searchMain,
+            requesterName: "",
+            approvedQuantity: "",
+            sharesTraded: "",
+            startDate: null,
+            endDate: null,
+            pageNumber: 0,
+            filterTrigger: true,
+          }));
+          setSearchMain("");
+        }
+        break;
+
       case "18": // Admin Instrument List
         setAdminIntrumentListSearch((prev) => ({
           ...prev,
