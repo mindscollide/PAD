@@ -108,9 +108,10 @@ const StatusFilterDropdown = ({
       case "11":
         if (
           location.pathname ===
-          "/PAD/co-reports/co-date-wise-transaction-report"
+            "/PAD/co-reports/co-date-wise-transaction-report" ||
+          location.pathname === "/PAD/co-reports/co-portfolio-history"
         ) {
-          setFilterOptions(emtStatusOptions);
+          setFilterOptions(emaStatusOptionsofReportsMyTradeApprovals);
         }
         break;
       case "12":

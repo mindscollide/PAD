@@ -57,6 +57,8 @@ import HeadOFComplianceApprovalReportsIndex from "../pages/main/headOfCompliance
 import HTAReportsIndex from "../pages/main/headOfTradeApprover/reports";
 import HeadCompianceOfficerOverdueVerificationReports from "../pages/main/headOfComplianceOffice/reports/overDueVerificationsReports";
 import HOCMyActionPage from "../pages/main/headOfComplianceOffice/myActions";
+import CompianceOfficerPortfolioHistoryReports from "../pages/main/complianceOfficer/reports/portfolioHistoryReports";
+import HTATradeApprovalRequest from "../pages/main/headOfTradeApprover/reports/tradeApprovalsRequest/HTATradeApprovalRequest";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -208,8 +210,8 @@ const router = createBrowserRouter(
           <Route index element={<HTAReportsIndex />} />
           <Route path="lm-pending-request" element={<PendingRequest />} />
           <Route
-            path="lm-tradeapproval-request"
-            element={<TradeApprovalRequest />}
+            path="hta-trade-approval-requests"
+            element={<HTATradeApprovalRequest />}
           />
         </Route>
         {/* Compliance Officer */}
@@ -247,6 +249,12 @@ const router = createBrowserRouter(
             path="co-overdue-verifications"
             element={<CompianceOfficerOverdueVerificationReports />}
           />
+
+          <Route
+            path="co-portfolio-history"
+            element={<CompianceOfficerPortfolioHistoryReports />}
+          />
+
           <Route
             path="co-transactions-summary-report"
             element={<COTransactionsSummarysReports />}
@@ -292,8 +300,11 @@ const router = createBrowserRouter(
             path="hca-overdue-verifications"
             element={<HeadCompianceOfficerOverdueVerificationReports />}
           />
-          <Route path="hca-upload-portfolio" element={<TradesUploadViaPortfolio />} />
-          
+          <Route
+            path="hca-upload-portfolio"
+            element={<TradesUploadViaPortfolio />}
+          />
+
           <Route path="hca-portfolio-history" element={<PendingRequest />} />
         </Route>
         {/* For Admin Roles Start here*/}

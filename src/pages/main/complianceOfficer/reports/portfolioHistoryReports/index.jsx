@@ -18,10 +18,12 @@ import {
 import { useGlobalModal } from "../../../../../context/GlobalModalContext";
 
 // 🔹 Styles
-import style from "./OverDueVerificationReports.module.css";
+import style from "./PortfolioHistoryReports.module.css";
 import { useMyApproval } from "../../../../../context/myApprovalContaxt";
 import {
   ExportOverdueVerificationCOExcel,
+  ExportPortfolioHistoryCOExcel,
+  GetComplianceOfficerPortfolioHistoryRequestApi,
   SearchHOCOverdueVerificationsRequestApi,
 } from "../../../../../api/myApprovalApi";
 import { useNotification } from "../../../../../components/NotificationProvider/NotificationProvider";
@@ -33,8 +35,10 @@ import { useDashboardContext } from "../../../../../context/dashboardContaxt";
 import { getSafeAssetTypeData } from "../../../../../common/funtions/assetTypesList";
 import { useTableScrollBottom } from "../../../../../common/funtions/scroll";
 import CustomButton from "../../../../../components/buttons/button";
+import { useSidebarContext } from "../../../../../context/sidebarContaxt";
+import { approvalStatusMap } from "../../../../../components/tables/borderlessTable/utill";
 
-const CompianceOfficerOverdueVerificationReports = () => {
+const CompianceOfficerPortfolioHistoryReports = () => {
   const navigate = useNavigate();
   const hasFetched = useRef(false);
   const tableScrollEmployeeTransaction = useRef(null);
@@ -43,17 +47,22 @@ const CompianceOfficerOverdueVerificationReports = () => {
   const { callApi } = useApi();
   const { showNotification } = useNotification();
   const { showLoader } = useGlobalLoader();
-  const { coOverdueVerificationListData, setCoOverdueVerificationListData } =
-    useMyApproval();
+  const {
+    coPortfolioHistoryListData,
+    setCoPortfolioHistoryListData,
+    resetCOPortfolioHistoryReportListData,
+  } = useMyApproval();
 
   const {
-    coOverdueVerificationReportSearch,
-    setCoOverdueVerificationReportSearch,
-    resetComplianceOfficerOverdueVerificationReportSearch,
+    coPortfolioHistoryReportSearch,
+    setCoPortfolioHistoryReportSearch,
+    resetComplianceOfficerPortfolioHistoryReportSearch,
   } = useSearchBarContext();
-  const { setViewDetailReconcileTransaction } = useGlobalModal();
 
-  console.log(coOverdueVerificationListData, "coOverdueVerificationListData");
+  const { selectedKey } = useSidebarContext();
+  console.log(selectedKey, "selectedKey");
+
+  console.log(coPortfolioHistoryListData, "coPortfolioHistoryListData");
 
   const { assetTypeListingData, setAssetTypeListingData } =
     useDashboardContext();
@@ -73,7 +82,7 @@ const CompianceOfficerOverdueVerificationReports = () => {
     async (requestData, replace = false, showLoaderFlag = true) => {
       if (!requestData || typeof requestData !== "object") return;
       if (showLoaderFlag) showLoader(true);
-      const res = await SearchHOCOverdueVerificationsRequestApi({
+      const res = await GetComplianceOfficerPortfolioHistoryRequestApi({
         callApi,
         showNotification,
         showLoader,
@@ -87,8 +96,8 @@ const CompianceOfficerOverdueVerificationReports = () => {
         setAssetTypeListingData
       );
 
-      const records = Array.isArray(res?.overdueVerifications)
-        ? res.overdueVerifications
+      const records = Array.isArray(res?.complianceOfficerPortfolioHistory)
+        ? res.complianceOfficerPortfolioHistory
         : [];
       console.log("records", records);
       const mapped = mappingDateWiseTransactionReport(
@@ -98,18 +107,18 @@ const CompianceOfficerOverdueVerificationReports = () => {
       if (!mapped || typeof mapped !== "object") return;
       console.log("records", mapped);
 
-      setCoOverdueVerificationListData((prev) => ({
-        overdueVerifications: replace
+      setCoPortfolioHistoryListData((prev) => ({
+        complianceOfficerPortfolioHistory: replace
           ? mapped
-          : [...(prev?.overdueVerifications || []), ...mapped],
+          : [...(prev?.complianceOfficerPortfolioHistory || []), ...mapped],
         // this is for to run lazy loading its data comming from database of total data in db
         totalRecordsDataBase: res?.totalRecords || 0,
         // this is for to know how mush dta currently fetch from  db
         totalRecordsTable: replace
           ? mapped.length
-          : coOverdueVerificationListData.totalRecordsTable + mapped.length,
+          : coPortfolioHistoryListData.totalRecordsTable + mapped.length,
       }));
-      setCoOverdueVerificationReportSearch((prev) => {
+      setCoPortfolioHistoryReportSearch((prev) => {
         const next = {
           ...prev,
           pageNumber: replace ? mapped.length : prev.pageNumber + mapped.length,
@@ -127,7 +136,7 @@ const CompianceOfficerOverdueVerificationReports = () => {
       assetTypeListingData,
       callApi,
       navigate,
-      setCoOverdueVerificationReportSearch,
+      setCoPortfolioHistoryReportSearch,
       showLoader,
       showNotification,
     ]
@@ -140,7 +149,7 @@ const CompianceOfficerOverdueVerificationReports = () => {
     if (hasFetched.current) return;
     hasFetched.current = true;
     const requestData = buildApiRequest(
-      coOverdueVerificationReportSearch,
+      coPortfolioHistoryReportSearch,
       assetTypeListingData
     );
     fetchApiCall(requestData, true, true);
@@ -150,34 +159,34 @@ const CompianceOfficerOverdueVerificationReports = () => {
   useEffect(() => {
     return () => {
       // Reset search state for fresh load
-      resetComplianceOfficerOverdueVerificationReportSearch();
+      resetComplianceOfficerPortfolioHistoryReportSearch();
     };
   }, []);
 
   // 🔹 call api on search
   useEffect(() => {
-    if (coOverdueVerificationReportSearch?.filterTrigger) {
+    if (coPortfolioHistoryReportSearch?.filterTrigger) {
       const requestData = buildApiRequest(
-        coOverdueVerificationReportSearch,
+        coPortfolioHistoryReportSearch,
         assetTypeListingData
       );
       fetchApiCall(requestData, true, true);
     }
-  }, [coOverdueVerificationReportSearch?.filterTrigger]);
+  }, [coPortfolioHistoryReportSearch?.filterTrigger]);
 
   // 🔹 Infinite Scroll (lazy loading)
   useTableScrollBottom(
     async () => {
       if (
-        coOverdueVerificationListData?.totalRecordsDataBase <=
-        coOverdueVerificationListData?.totalRecordsTable
+        coPortfolioHistoryListData?.totalRecordsDataBase <=
+        coPortfolioHistoryListData?.totalRecordsTable
       )
         return;
 
       try {
         setLoadingMore(true);
         const requestData = buildApiRequest(
-          coOverdueVerificationReportSearch,
+          coPortfolioHistoryReportSearch,
           assetTypeListingData
         );
         await fetchApiCall(requestData, false, false);
@@ -193,10 +202,10 @@ const CompianceOfficerOverdueVerificationReports = () => {
 
   // -------------------- Table Columns --------------------
   const columns = getBorderlessTableColumns({
+    approvalStatusMap,
     sortedInfo,
-    coOverdueVerificationReportSearch,
-    setCoOverdueVerificationReportSearch,
-    setViewDetailReconcileTransaction,
+    coPortfolioHistoryReportSearch,
+    setCoPortfolioHistoryReportSearch,
   });
 
   /** 🔹 Handle removing individual filter */
@@ -204,13 +213,12 @@ const CompianceOfficerOverdueVerificationReports = () => {
     const resetMap = {
       instrumentName: { instrumentName: "" },
       requesterName: { requesterName: "" },
-      approvedQuantity: { approvedQuantity: 0 },
-      sharesTraded: { sharesTraded: 0 },
+      departmentName: { departmentName: "" },
+      quantity: { quantity: 0 },
       // requestDate resets startDate + endDate
-      requestDate: { startDate: null, endDate: null },
     };
 
-    setCoOverdueVerificationReportSearch((prev) => ({
+    setCoPortfolioHistoryReportSearch((prev) => ({
       ...prev,
       ...resetMap[key], // reset only the clicked filter
       pageNumber: 0,
@@ -220,15 +228,14 @@ const CompianceOfficerOverdueVerificationReports = () => {
 
   /** 🔹 Handle removing all filters */
   const handleRemoveAllFilters = () => {
-    setCoOverdueVerificationReportSearch((prev) => ({
+    setCoPortfolioHistoryReportSearch((prev) => ({
       ...prev,
       instrumentName: "",
       requesterName: "",
-      approvedQuantity: 0,
-      sharesTraded: 0,
-      startDate: null,
-      endDate: null,
-      type: "",
+      departmentName: "",
+      quantity: 0,
+      type: [],
+      status: [],
       pageNumber: 0,
       filterTrigger: true,
     }));
@@ -236,70 +243,42 @@ const CompianceOfficerOverdueVerificationReports = () => {
 
   /** 🔹 Build Active Filters */
   const activeFilters = (() => {
-    const {
-      instrumentName,
-      requesterName,
-      approvedQuantity,
-      sharesTraded,
-      startDate,
-      endDate,
-    } = coOverdueVerificationReportSearch || {};
+    const { instrumentName, requesterName, departmentName, quantity } =
+      coPortfolioHistoryReportSearch || {};
 
     const truncate = (val) =>
       val.length > 13 ? val.slice(0, 13) + "..." : val;
-
-    const formatDate = (date) =>
-      date ? new Date(date).toISOString().split("T")[0] : null;
-
-    const formatArray = (arr) => (arr?.length ? arr.join(", ") : null);
-
-    const formattedStart = formatDate(startDate);
-    const formattedEnd = formatDate(endDate);
-
-    // 🔹 Combine into requestDate
-    let requestDate = null;
-    if (formattedStart && formattedEnd) {
-      requestDate = `${formattedStart} to ${formattedEnd}`;
-    } else if (formattedStart) {
-      requestDate = `From ${formattedStart}`;
-    } else if (formattedEnd) {
-      requestDate = `Till ${formattedEnd}`;
-    }
 
     return [
       instrumentName
         ? { key: "instrumentName", value: truncate(instrumentName) }
         : null,
 
+      departmentName
+        ? { key: "departmentName", value: truncate(departmentName) }
+        : null,
+
       requesterName
         ? { key: "requesterName", value: truncate(requesterName) }
         : null,
 
-      approvedQuantity
-        ? { key: "approvedQuantity", value: approvedQuantity }
-        : null,
-
-      sharesTraded ? { key: "sharesTraded", value: sharesTraded } : null,
-
-      requestDate ? { key: "requestDate", value: requestDate } : null,
+      quantity ? { key: "quantity", value: quantity } : null,
     ].filter(Boolean);
   })();
 
   // 🔷 Excel Report download Api Hit
-  const downloadOverdueVerificationExcelFormat = async () => {
+  const downloadPortfolioHistoryExport = async () => {
     showLoader(true);
     const requestdata = {
       InstrumentName: "",
-      RequesterName: "",
-      Type: "",
+      DepartmentName: "",
+      Quantity: 0,
       StatusIds: [],
-      FromDate: "",
-      ToDate: "",
-      ApprovedQuantity: null,
-      ShareTraded: null,
+      TypeIds: [],
+      RequesterName: "",
     };
 
-    await ExportOverdueVerificationCOExcel({
+    await ExportPortfolioHistoryCOExcel({
       callApi,
       showLoader,
       requestdata: requestdata,
@@ -329,7 +308,7 @@ const CompianceOfficerOverdueVerificationReports = () => {
               {
                 title: (
                   <span className={style.breadcrumbText}>
-                    Overdue Verifications
+                    Portfolio History
                   </span>
                 ),
               },
@@ -362,7 +341,7 @@ const CompianceOfficerOverdueVerificationReports = () => {
 
               <div
                 className={style.dropdownItem}
-                onClick={downloadOverdueVerificationExcelFormat}
+                onClick={downloadPortfolioHistoryExport}
               >
                 <img src={Excel} alt="Excel" draggable={false} />
                 <span>Export Excel</span>
@@ -411,11 +390,12 @@ const CompianceOfficerOverdueVerificationReports = () => {
       >
         <div className="px-4 md:px-6 lg:px-8 ">
           <BorderlessTable
-            rows={coOverdueVerificationListData?.overdueVerifications}
+            rows={coPortfolioHistoryListData?.complianceOfficerPortfolioHistory}
             columns={columns}
             classNameTable="border-less-table-blue"
             scroll={
-              coOverdueVerificationListData?.overdueVerifications?.length
+              coPortfolioHistoryListData?.complianceOfficerPortfolioHistory
+                ?.length
                 ? {
                     x: "max-content",
                     y: activeFilters.length > 0 ? 450 : 500,
@@ -432,4 +412,4 @@ const CompianceOfficerOverdueVerificationReports = () => {
   );
 };
 
-export default CompianceOfficerOverdueVerificationReports;
+export default CompianceOfficerPortfolioHistoryReports;

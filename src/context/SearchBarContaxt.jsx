@@ -334,6 +334,22 @@ export const SearchBarProvider = ({ children }) => {
     filterTrigger: false,
   });
 
+  //Compliance Officer Portfolio History search filter
+  const [coPortfolioHistoryReportSearch, setCoPortfolioHistoryReportSearch] =
+    useState({
+      instrumentName: "",
+      departmentName: "",
+      requesterName: "",
+      quantity: "",
+      startDate: null,
+      endDate: null,
+      type: [],
+      status: [],
+      pageNumber: 0,
+      pageSize: 10,
+      filterTrigger: false,
+    });
+
   // ===============================
   // Head of Compliance Approval (HCA) States
   // ===============================
@@ -403,6 +419,18 @@ export const SearchBarProvider = ({ children }) => {
     requesterNameSearch: "",
     type: [],
     status: [],
+    pageSize: 10,
+    pageNumber: 0,
+    filterTrigger: false,
+  });
+
+  /** 🔍 HOC Transaction Summary filters */
+  const [
+    hcoTransactionsSummarysReportsSearch,
+    setHCOTransactionsSummarysReportsSearch,
+  ] = useState({
+    endDate: "",
+    startDate: "",
     pageSize: 10,
     pageNumber: 0,
     filterTrigger: false,
@@ -805,6 +833,22 @@ export const SearchBarProvider = ({ children }) => {
       filterTrigger: false,
     });
 
+  /** Reset Compliance Officer Portfolio History report filters */
+  const resetComplianceOfficerPortfolioHistoryReportSearch = () =>
+    setCoPortfolioHistoryReportSearch({
+      instrumentName: "",
+      departmentName: "",
+      requesterName: "",
+      quantity: "",
+      startDate: null,
+      endDate: null,
+      type: [],
+      status: [],
+      pageNumber: 0,
+      pageSize: 10,
+      filterTrigger: false,
+    });
+
   /** Reset Compliance Officer Reconcile Portfolio filters */
   const resetComplianceOfficerReconcilePortfoliosSearch = () =>
     setComplianceOfficerReconcilePortfolioSearch({
@@ -870,6 +914,15 @@ export const SearchBarProvider = ({ children }) => {
 
   const resetCOTransactionsSummarysReportsSearch = () =>
     setCOTransactionsSummarysReportsSearch({
+      endDate: "",
+      startDate: "",
+      pageNumber: 0,
+      pageSize: 10,
+      filterTrigger: false,
+    });
+
+  const resetHOCTransactionsSummarysReportsSearch = () =>
+    setHCOTransactionsSummarysReportsSearch({
       endDate: "",
       startDate: "",
       pageNumber: 0,
@@ -1142,6 +1195,11 @@ export const SearchBarProvider = ({ children }) => {
         setCOTransactionsSummarysReportsViewDetailSearch,
         resetCOTransactionsSummarysReportsViewDetailsSearch,
 
+        //Compliance Officer Portfolio History
+        coPortfolioHistoryReportSearch,
+        setCoPortfolioHistoryReportSearch,
+        resetComplianceOfficerPortfolioHistoryReportSearch,
+
         // Compliance Officer Myaction
         complianceOfficerMyActionSearch,
         setComplianceOfficerMyActionSearch,
@@ -1207,6 +1265,11 @@ export const SearchBarProvider = ({ children }) => {
         headOfComplianceMyActionSearch,
         setHeadOfComplianceMyActionSearch,
         resetHeadOfComplianceOfficerMyActionSearch,
+
+        // Head Of Compliance Officer Transaction Summary
+        hcoTransactionsSummarysReportsSearch,
+        setHCOTransactionsSummarysReportsSearch,
+        resetHOCTransactionsSummarysReportsSearch,
 
         /** 🔍  HCO Trades Upload Via Portfolio filters */
         resetHCOTradesUploadViaPortfolioSearch,

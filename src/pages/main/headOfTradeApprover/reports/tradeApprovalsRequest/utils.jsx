@@ -1,23 +1,12 @@
-import { Button } from "../../../../../components";
-
 import ArrowUP from "../../../../../assets/img/arrow-up-dark.png";
 import ArrowDown from "../../../../../assets/img/arrow-down-dark.png";
 import DefaultColumArrow from "../../../../../assets/img/default-colum-arrow.png";
-import TypeColumnTitle from "../../../../../components/dropdowns/filters/typeColumnTitle";
-import StatusColumnTitle from "../../../../../components/dropdowns/filters/statusColumnTitle";
-import { Tag, Tooltip } from "antd";
-import style from "./TradeApprovalRequest.module.css";
+import style from "./HTATradeApprovalRequest.module.css";
 
 import {
-  dashBetweenApprovalAssets,
-  formatApiDateTime,
   toYYMMDD,
 } from "../../../../../common/funtions/rejex";
-import {
-  mapBuySellToIds,
-  mapStatusToIds,
-} from "../../../../../components/dropdowns/filters/utils";
-import { getTradeTypeById } from "../../../../../common/funtions/type";
+
 
 /**
  * Utility: Build API request payload for approval listing
@@ -101,105 +90,6 @@ const getSortIcon = (columnKey, sortedInfo) => {
   );
 };
 
-/**
- * Renders instrument cell with asset code and tooltip
- * @param {Object} record - Table row data
- * @returns {JSX.Element} Instrument cell component
- */
-const renderInstrumentCell = (record) => {
-  const code = record?.instrumentCode || "—";
-  const name = record?.instrumentName || "—";
-  const assetCode = record?.assetTypeShortCode || "";
-
-  return (
-    <div
-      style={{
-        display: "flex",
-        alignItems: "center",
-        gap: "8px",
-        minWidth: 0,
-      }}
-    >
-      <span
-        className="custom-shortCode-asset"
-        style={{
-          minWidth: 32,
-          flexShrink: 0,
-          display: "inline-flex",
-          alignItems: "center",
-          justifyContent: "center",
-        }}
-        data-testid="asset-code"
-      >
-        {assetCode?.substring(0, 2).toUpperCase()}
-      </span>
-      <Tooltip
-        title={`${code} - ${name}`}
-        placement="topLeft"
-        overlayStyle={{ maxWidth: "300px" }}
-      >
-        <span
-          className="font-medium"
-          style={{
-            overflow: "hidden",
-            textOverflow: "ellipsis",
-            whiteSpace: "nowrap",
-            minWidth: 0,
-            flex: 1,
-            cursor: "pointer",
-          }}
-          data-testid="instrument-code"
-        >
-          {code}
-        </span>
-      </Tooltip>
-    </div>
-  );
-};
-
-/**
- * Renders status tag with appropriate styling
- * @param {string} status - Approval status
- * @param {Object} approvalStatusMap - Status to style mapping
- * @returns {JSX.Element} Status tag component
- */
-const renderStatusTag = (status, approvalStatusMap) => {
-  const tagConfig = approvalStatusMap[status] || {};
-
-  return (
-    <Tag
-      style={{
-        backgroundColor: tagConfig.backgroundColor,
-        color: tagConfig.textColor,
-        whiteSpace: "nowrap",
-        overflow: "hidden",
-        textOverflow: "ellipsis",
-        display: "inline-flex",
-        alignItems: "center",
-        maxWidth: "100%",
-        minWidth: 0,
-        margin: 0,
-        border: "none",
-        borderRadius: "4px",
-        padding: "2px 8px",
-        fontSize: "16px",
-        lineHeight: "1.4",
-      }}
-      className="border-less-table-orange-status"
-      data-testid={`status-tag-${status}`}
-    >
-      <span
-        style={{
-          overflow: "hidden",
-          textOverflow: "ellipsis",
-          whiteSpace: "nowrap",
-        }}
-      >
-        {tagConfig.label || status}
-      </span>
-    </Tag>
-  );
-};
 
 // Helper for consistent column titles
 const withSortIcon = (label, columnKey, sortedInfo) => (
@@ -212,10 +102,7 @@ const withSortIcon = (label, columnKey, sortedInfo) => (
 );
 
 export const getBorderlessTableColumns = ({
-  approvalStatusMap,
   sortedInfo,
-  myTradeApprovalReportLineManageSearch,
-  setMyTradeApprovalReportLineManageSearch,
 }) => [
   {
     title: withSortIcon("Employee ID", "employeeID", sortedInfo),

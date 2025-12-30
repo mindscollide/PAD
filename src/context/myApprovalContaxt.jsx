@@ -153,6 +153,13 @@ export const MyApprovalProvider = ({ children }) => {
     totalRecordsTable: 0,
   });
 
+  // Compliance Officer Portfolio Histort Report
+  const [coPortfolioHistoryListData, setCoPortfolioHistoryListData] = useState({
+    complianceOfficerPortfolioHistory: [],
+    totalRecordsDataBase: 0,
+    totalRecordsTable: 0,
+  });
+
   const [
     coTransactionSummaryReportViewDetailsListData,
     setCOTransactionSummaryReportViewDetailsListData,
@@ -173,6 +180,15 @@ export const MyApprovalProvider = ({ children }) => {
     totalRecords: 0,
   });
 
+  // Head of COmpliance Transaction SUmmary Report
+  const [
+    hcoTransactionSummaryReportListData,
+    setHCOTransactionSummaryReportListData,
+  ] = useState({
+    transactions: [],
+    totalRecordsDataBase: 0,
+    totalRecordsTable: 0,
+  });
   // Reset function to set all states back to initial values
   /* =========================================================
      RESET FUNCTIONS
@@ -181,6 +197,15 @@ export const MyApprovalProvider = ({ children }) => {
   const resetCOTransactionSummaryReportListData = () => {
     setCOTransactionSummaryReportListData({
       transactions: [],
+      totalRecordsDataBase: 0,
+      totalRecordsTable: 0,
+    });
+  };
+
+  /** Reset CO Portfolio History Report */
+  const resetCOPortfolioHistoryReportListData = () => {
+    setCoPortfolioHistoryListData({
+      complianceOfficerPortfolioHistory: [],
       totalRecordsDataBase: 0,
       totalRecordsTable: 0,
     });
@@ -243,6 +268,15 @@ export const MyApprovalProvider = ({ children }) => {
     setMyActionHOCData({
       requests: [],
       totalRecords: 0,
+    });
+  };
+
+  /** Reset Head Of Compliance My Action Page */
+  const resetTransactionSummaryHeadOfCompliance = () => {
+    setHCOTransactionSummaryReportListData({
+      transactions: [],
+      totalRecordsDataBase: 0,
+      totalRecordsTable: 0,
     });
   };
 
@@ -313,6 +347,11 @@ export const MyApprovalProvider = ({ children }) => {
         setCOTransactionSummaryReportListData,
         resetCOTransactionSummaryReportListData,
 
+        //Compliance Officer Portfolio History Report
+        coPortfolioHistoryListData,
+        setCoPortfolioHistoryListData,
+        resetCOPortfolioHistoryReportListData,
+
         coTransactionSummaryReportViewDetailsFlag,
         setCOTransactionSummaryReportViewDetailsFlag,
         coTransactionSummaryReportViewDetailsListData,
@@ -326,6 +365,11 @@ export const MyApprovalProvider = ({ children }) => {
         myActionHOCData,
         setMyActionHOCData,
         resetMyActionHeadOfCompliance,
+
+        //HOC Trasanction Summary Report
+        hcoTransactionSummaryReportListData,
+        setHCOTransactionSummaryReportListData,
+        resetTransactionSummaryHeadOfCompliance,
       }}
     >
       {children}
