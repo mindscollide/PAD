@@ -64,6 +64,7 @@ const SearchWithPopoverOnly = () => {
     setEmployeeMyTradeApprovalsSearch,
     setLMPendingApprovalReportsSearch,
     setMyTradeApprovalReportLineManageSearch,
+    setHTAPolicyBreachesReportSearch,
     setCODatewiseTransactionReportSearch,
     setCOTransactionsSummarysReportsViewDetailSearch,
     setAdminSessionWiseActivitySearch,
@@ -428,6 +429,20 @@ const SearchWithPopoverOnly = () => {
             ...prev,
             employeeName: searchMain,
             departmentName: "",
+            filterTrigger: true,
+          }));
+        } else if (
+          currentPath === "/PAD/hta-reports/hta-policy-breaches-reports"
+        ) {
+          setHTAPolicyBreachesReportSearch((prev) => ({
+            ...prev,
+            instrumentName: searchMain,
+            employeeID: "",
+            employeeName: "",
+            quantity: "",
+            departmentName: "",
+            startDate: null,
+            endDate: null,
             filterTrigger: true,
           }));
         }

@@ -695,6 +695,22 @@ export const responseMessages = {
     "No data available",
   PAD_Trade_TradeServiceManager_GetHTATradeApprovalRequestsReport_03:
     "Exception",
+
+  PAD_Trade_TradeServiceManager_SearchPolicyBreachedWorkFlowsRequest_01:
+    "Data found",
+  PAD_Trade_TradeServiceManager_SearchPolicyBreachedWorkFlowsRequest_02:
+    "No data available",
+  PAD_Trade_TradeServiceManager_SearchPolicyBreachedWorkFlowsRequest_03:
+    "Exception",
+
+  PAD_Trade_GetPoliciesByIDs_01: "Data found",
+  PAD_Trade_GetPoliciesByIDs_02: "No data available",
+  PAD_Trade_GetPoliciesByIDs_03: "Exception",
+
+  PAD_Trade_TradeServiceManager_SearchHTATurnAroundTimeRequest_01: "Data found",
+  PAD_Trade_TradeServiceManager_SearchHTATurnAroundTimeRequest_02:
+    "No data available",
+  PAD_Trade_TradeServiceManager_SearchHTATurnAroundTimeRequest_03: "Exception",
 };
 
 /**
