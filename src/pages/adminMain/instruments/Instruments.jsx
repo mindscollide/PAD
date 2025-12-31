@@ -60,6 +60,7 @@ const Instruments = () => {
     setAdminAddDeleteClosingInstrument,
     selectedInstrumentOnClick,
     setSelectedInstrumentOnClick,
+    setSelectedInstrumentNameDataOnClick,
   } = useMyAdmin();
 
   const [loadingMore, setLoadingMore] = useState(false);
@@ -172,6 +173,7 @@ const Instruments = () => {
     setEditInstrumentModal,
     setEditModalData,
     setSelectedInstrumentOnClick,
+    setSelectedInstrumentNameDataOnClick,
   });
 
   /** 🔹 Fetch approvals from API */

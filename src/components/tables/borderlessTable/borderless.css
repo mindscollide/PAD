@@ -40,6 +40,13 @@ td.border-less-table-orange-cell:last-child {
   /* Example: add padding, border, etc. */
 }
 
+
+.border-less-table-orange .ant-table-body {
+  overflow-x: hidden !important; /* kill horizontal scrollbar */
+  overflow-y: auto !important; /* keep vertical scroll for lazy loading */
+  max-height: 550px; /* same height you passed */
+}
+
 /* Middle columns (excluding first and last) */
 td.border-less-table-orange-cell:not(:first-child):not(:last-child) {
   /* Your styles here */
@@ -57,7 +64,7 @@ td.border-less-table-orange-cell:hover {
 }
 /* Cell Styling */
 .border-less-table-orange-wrapper .border-less-table-orange-tbody > tr > td {
-  padding: 0px 0px 0px 6px;
+  padding:0px 6px;
   color: #424242;
   font-family: "Switzer Variable";
   font-weight: 500;
@@ -119,7 +126,7 @@ td.border-less-table-orange-cell:hover {
   font-family: "Switzer Variable";
   font-size: 14px;
   font-weight: 500;
-  padding: 0px 8px;
+  padding: 12px 8px;
   background: transparent !important;
   border-bottom: none;
 }

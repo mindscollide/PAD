@@ -136,7 +136,6 @@ export const getMyActionsColumn = (approvalStatusMap, sortedInfo) => [
                 display: "inline-block",
                 cursor: "pointer",
               }}
-              title={code}
             >
               {code}
             </span>
@@ -206,7 +205,7 @@ export const getMyActionsColumn = (approvalStatusMap, sortedInfo) => [
     dataIndex: "quantity",
     key: "quantity",
     width: "180px",
-    align: "center",
+    align: "left",
     ellipsis: true,
     sorter: (a, b) => a.quantity - b.quantity,
     sortDirections: ["ascend", "descend"],
