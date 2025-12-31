@@ -40,6 +40,8 @@ import {
   UserSessionWiseActivity,
   COTransactionsSummarysReports,
   TradesUploadViaPortfolio,
+  HTAPolicyBreachesReport,
+  HTATAT,
 } from "../pages";
 import RoleBasedRoute from "./RoleBasedRoute";
 import EscalatedApprovals from "../pages/main/headOfTradeApprover/escalatedApprovals/escalatedApprovals";
@@ -213,6 +215,15 @@ const router = createBrowserRouter(
             path="hta-trade-approval-requests"
             element={<HTATradeApprovalRequest />}
           />
+          <Route
+            path="hta-policy-breaches-reports"
+            element={<HTAPolicyBreachesReport />}
+          />
+           <Route
+            path="hta-tat-reports"
+            element={<HTATAT />}
+          />
+          
         </Route>
         {/* Compliance Officer */}
         <Route

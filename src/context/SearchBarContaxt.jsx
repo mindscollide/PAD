@@ -226,6 +226,30 @@ export const SearchBarProvider = ({ children }) => {
     filterTrigger: false,
   });
 
+  /** 🔍 Policy Breaches Reqport on HTA table filters */
+  const [htaPolicyBreachesReportSearch, setHTAPolicyBreachesReportSearch] =
+    useState({
+      instrumentName: "",
+      employeeID: "",
+      employeeName: "",
+      quantity: "",
+      departmentName: "",
+      startDate: null,
+      endDate: null,
+      type: [],
+      pageNumber: 0,
+      pageSize: 10,
+      filterTrigger: false,
+    });
+
+  /** 🔍 Policy Breaches Reqport on HTA table filters */
+  const [htaTATReportSearch, setHTATATReportSearch] = useState({
+    employeeName: "",
+    departmentName: "",
+    pageNumber: 0,
+    pageSize: 10,
+    filterTrigger: false,
+  });
   // ===============================
   // Compliance Officer States
   // ===============================
@@ -980,6 +1004,31 @@ export const SearchBarProvider = ({ children }) => {
       pageSize: 10,
       filterTrigger: false,
     });
+  /** 🔍 Reset Policy Breaches Reqport on HTA table filters */
+  const resetHTAPolicyBreachesReportSearch = () =>
+    setHTAPolicyBreachesReportSearch({
+      instrumentName: "",
+      employeeID: "",
+      employeeName: "",
+      quantity: "",
+      departmentName: "",
+      startDate: null,
+      endDate: null,
+      type: [],
+      pageNumber: 0,
+      pageSize: 10,
+      filterTrigger: false,
+    });
+
+  /** 🔍 Reset Policy Breaches Reqport on HTA table filters */
+  const resetHTATATReportSearch = () =>
+    setHTATATReportSearch({
+      employeeName: "",
+      departmentName: "",
+      pageNumber: 0,
+      pageSize: 10,
+      filterTrigger: false,
+    });
 
   /** Reset Admin Brokers List  filters */
   const resetAdminBrokersListSearch = () =>
@@ -1128,6 +1177,8 @@ export const SearchBarProvider = ({ children }) => {
     resetEmployeMyTradeApprovalsSearch();
     /** 🔍 Rest HCO Trades Upload Via Portfolio filters */
     resetHCOTradesUploadViaPortfolioSearch();
+    resetHTAPolicyBreachesReportSearch();
+    resetHTATATReportSearch();
   };
 
   // ===============================
@@ -1219,6 +1270,12 @@ export const SearchBarProvider = ({ children }) => {
         headOfTradeEscalatedApprovalsSearch,
         setHeadOfTradeEscalatedApprovalsSearch,
         resetHeadOfTradeApprovalEscalatedApprovalsSearch,
+        resetHTAPolicyBreachesReportSearch,
+        htaPolicyBreachesReportSearch,
+        setHTAPolicyBreachesReportSearch,
+        htaTATReportSearch,
+        setHTATATReportSearch,
+        resetHTATATReportSearch,
 
         // Admin Instrument Search filter
         adminIntrumentListSearch,

@@ -131,7 +131,7 @@ const HTAReportsIndex = () => {
               mainClassName="reports"
               boxes={policyBreaches}
               userRole="HTA"
-              route="hta-policy-breach"
+              route="hta-policy-breaches-reports"
             />
           </Col>
 
@@ -157,7 +157,7 @@ const HTAReportsIndex = () => {
               mainClassName="reports"
               boxes={tatRequestApprovals}
               userRole="HTA"
-              route="hta-tat-requests-approval"
+              route="hta-tat-reports"
             />
           </Col>
 

@@ -144,6 +144,7 @@ export const MyApprovalProvider = ({ children }) => {
       totalRecordsDataBase: 0,
       totalRecordsTable: 0,
     });
+
   const [
     coTransactionSummaryReportListData,
     setCOTransactionSummaryReportListData,
@@ -189,6 +190,22 @@ export const MyApprovalProvider = ({ children }) => {
     totalRecordsDataBase: 0,
     totalRecordsTable: 0,
   });
+
+  // HTA My Policy Breaches Reports context state
+  const [htaPolicyBreachesReportsData, setHTAPolicyBreachesReportsData] =
+    useState({
+      records: [],
+      totalRecordsDataBase: 0,
+      totalRecordsTable: 0,
+    });
+
+  // HTA My Policy Breaches Reports context state
+  const [htaTATReportsData, setHTATATReportsData] = useState({
+    employees: [],
+    totalRecordsDataBase: 0,
+    totalRecordsTable: 0,
+  });
+
   // Reset function to set all states back to initial values
   /* =========================================================
      RESET FUNCTIONS
@@ -280,6 +297,23 @@ export const MyApprovalProvider = ({ children }) => {
     });
   };
 
+  //Reset HTA My Policy Breaches Reports context state
+  const resetHTAPolicyBreachesReportsData = () => {
+    setHTAPolicyBreachesReportsData({
+      records: [],
+      totalRecordsDataBase: 0,
+      totalRecordsTable: 0,
+    });
+  };
+
+  //Reset HTA My Policy Breaches Reports context state
+  const resetHTATATReportsData = () => {
+    setHTATATReportsData({
+      employees: [],
+      totalRecordsDataBase: 0,
+      totalRecordsTable: 0,
+    });
+  };
   /* =========================================================
      PROVIDER RETURN
      ========================================================= */
@@ -335,6 +369,15 @@ export const MyApprovalProvider = ({ children }) => {
         // HTA Reports
         htaReportsDashboardData,
         setHTAReportsDashboardData,
+
+        // HTA My Policy Breaches Reports context state
+        htaPolicyBreachesReportsData,
+        setHTAPolicyBreachesReportsData,
+        resetHTAPolicyBreachesReportsData,
+
+        htaTATReportsData,
+        setHTATATReportsData,
+        resetHTATATReportsData,
 
         // compliance officer  date wise transaction report
         coDatewiseTransactionReportListData,

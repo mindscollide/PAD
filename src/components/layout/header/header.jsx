@@ -93,8 +93,10 @@ const Headers = () => {
                       currentPath === "/PAD/co-reports/co-portfolio-history" ||
                       coTransactionSummaryReportViewDetailsFlag)) ||
                   (selectedKeyRef.current === "14" &&
-                    currentPath ===
-                      "/PAD/hta-reports/hta-trade-approval-requests") ||
+                    (currentPath ===
+                      "/PAD/hta-reports/hta-trade-approval-requests" ||
+                      currentPath ===
+                        "/PAD/hta-reports/hta-policy-breaches-reports")) ||
                   (selectedKeyRef.current === "17" &&
                     (currentPath ===
                       "/PAD/hca-reports/hca-overdue-verifications" ||

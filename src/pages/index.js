@@ -31,3 +31,6 @@ export { default as ManageBrokerModal } from "./main/employes/manageBroker/index
 export { default as COTransactionsSummarysReports } from "./main/complianceOfficer/reports/transactionsSummary/index";
 export { default as TradesUploadViaPortfolio } from "./main/headOfComplianceOffice/reports/tradesUploadViaPortfolio/tradesUploadViaPortfolio";
 export { default as HOCMyActionPage } from "./main/headOfComplianceOffice/myActions/index";
+export { default as HTATradeApprovalRequest } from "./main/headOfTradeApprover/reports/tradeApprovalsRequest/HTATradeApprovalRequest";
+export { default as HTAPolicyBreachesReport } from "./main/headOfTradeApprover/reports/policyBreaches/index";
+export { default as HTATAT } from "./main/headOfTradeApprover/reports/TAT/index";

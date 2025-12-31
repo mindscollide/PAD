@@ -29,6 +29,7 @@ import { COTransactionReportViewDetailsFilter } from "./COTransactionReportViewD
 import { HOCMyAction } from "./HOCMyAction";
 import { HCOTradeUploadedViaPortfolioFilter } from "./HCOTradeUploadedViaPortfolioFilter";
 import { COPortfolioHisttory } from "./COPortfolioHistory";
+import { HTAPolicyBreachesReportFilter } from "./htaPolicyBreaches";
 
 // this is used for open specific filter according to page
 export const renderFilterContent = (
@@ -240,6 +241,18 @@ export const renderFilterContent = (
       if (currentPath === "/PAD/hta-reports/hta-trade-approval-requests") {
         return (
           <LineManagerMyTradeApprovalsReports
+            setVisible={setVisible}
+            clear={clear}
+            setClear={setClear}
+            maininstrumentName={searchMain}
+            setMaininstrumentName={setSearchMain}
+          />
+        );
+      } else if (
+        currentPath === "/PAD/hta-reports/hta-policy-breaches-reports"
+      ) {
+        return (
+          <HTAPolicyBreachesReportFilter
             setVisible={setVisible}
             clear={clear}
             setClear={setClear}
