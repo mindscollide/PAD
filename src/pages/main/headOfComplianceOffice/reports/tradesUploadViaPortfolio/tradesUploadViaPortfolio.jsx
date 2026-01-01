@@ -33,6 +33,7 @@ import { GetAllTransactionViewDetails } from "../../../../../api/myTransactionsA
 import { useGlobalModal } from "../../../../../context/GlobalModalContext";
 import {
   DownloadMyTradeApprovalReportRequestAPI,
+  ExportHOCUploadedPortfolioReportExcel,
   SearchHOCUploadedPortFolio,
   SearchMyTradeApprovalsReportsApi,
 } from "../../../../../api/myApprovalApi";
@@ -177,11 +178,11 @@ const TradesUploadViaPortfolio = () => {
     };
   }, []);
 
-      console.log("hcoTradesUploadViaPortfolioSearch")
+  console.log("hcoTradesUploadViaPortfolioSearch");
   // 🔹 call api on search
   useEffect(() => {
     if (hcoTradesUploadViaPortfolioSearch.filterTrigger) {
-      console.log("hcoTradesUploadViaPortfolioSearch")
+      console.log("hcoTradesUploadViaPortfolioSearch");
       const requestData = buildApiRequest(
         hcoTradesUploadViaPortfolioSearch,
         assetTypeListingData
@@ -315,11 +316,11 @@ const TradesUploadViaPortfolio = () => {
       Quantity: 0,
       StartDate: "",
       EndDate: "",
+      BrokerIds: [],
       StatusIds: [],
       TypeIds: [],
-      Broker: "",
     };
-    await DownloadMyTradeApprovalReportRequestAPI({
+    await ExportHOCUploadedPortfolioReportExcel({
       callApi,
       showLoader,
       requestdata: requestdata,

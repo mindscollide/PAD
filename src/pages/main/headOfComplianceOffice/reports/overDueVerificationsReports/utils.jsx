@@ -45,11 +45,11 @@ export const buildApiRequest = (searchState = {}, assetTypeListingData) => ({
  */
 export const mappingDateWiseTransactionReport = (
   assetTypeData,
-  coOverdueVerificationListData = []
+  overdueVerificationHCOListData = []
 ) => {
-  const overdueVerifications = Array.isArray(coOverdueVerificationListData)
-    ? coOverdueVerificationListData
-    : coOverdueVerificationListData?.overdueVerifications || [];
+  const overdueVerifications = Array.isArray(overdueVerificationHCOListData)
+    ? overdueVerificationHCOListData
+    : overdueVerificationHCOListData?.overdueVerifications || [];
   console.log(overdueVerifications, "overdueVerifications");
   if (!overdueVerifications.length) return [];
 
@@ -135,8 +135,7 @@ const withFilterHeader = (FilterComponent) => (
 );
 export const getBorderlessTableColumns = ({
   sortedInfo,
-  coOverdueVerificationReportSearch,
-  setCoOverdueVerificationReportSearch,
+  OverdueVerificationHCOReportSearch,
   setViewDetailHeadOfComplianceEscalated,
   handleViewDetailsForReconcileTransaction,
 }) => [
@@ -167,8 +166,8 @@ export const getBorderlessTableColumns = ({
     key: "tradeType",
     ellipsis: true,
     width: "80px",
-    filteredValue: coOverdueVerificationReportSearch.type?.length
-      ? coOverdueVerificationReportSearch.type
+    filteredValue: OverdueVerificationHCOReportSearch?.type?.length
+      ? OverdueVerificationHCOReportSearch?.type
       : null,
     onFilter: () => true, // Actual filtering handled by API
     render: (type, record) => (
@@ -194,14 +193,16 @@ export const getBorderlessTableColumns = ({
     key: "complianceOfficer",
     ellipsis: true,
     width: "170px",
-    filteredValue: coOverdueVerificationReportSearch.complianceOfficer?.length
-      ? coOverdueVerificationReportSearch.complianceOfficer
+    filteredValue: OverdueVerificationHCOReportSearch?.complianceOfficer?.length
+      ? OverdueVerificationHCOReportSearch?.complianceOfficer
       : null,
     onFilter: () => true, // Actual filtering handled by API
     render: (complianceOfficer, record) => (
       <span
         id={`cell-${record.key}-complianceOfficer`}
-        className={complianceOfficer === "Buy" ? "text-green-600" : "text-red-600"}
+        className={
+          complianceOfficer === "Buy" ? "text-green-600" : "text-red-600"
+        }
         data-testid={`trade-type-${complianceOfficer}`}
         style={{
           display: "inline-block",

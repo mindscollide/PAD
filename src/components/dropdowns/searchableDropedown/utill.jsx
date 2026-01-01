@@ -30,6 +30,7 @@ import { HOCMyAction } from "./HOCMyAction";
 import { HCOTradeUploadedViaPortfolioFilter } from "./HCOTradeUploadedViaPortfolioFilter";
 import { COPortfolioHisttory } from "./COPortfolioHistory";
 import { HTAPolicyBreachesReportFilter } from "./htaPolicyBreaches";
+import { HCOOverdueVerifications } from "./HCOOverdueVerifications";
 
 // this is used for open specific filter according to page
 export const renderFilterContent = (
@@ -288,7 +289,7 @@ export const renderFilterContent = (
     case "17":
       if (currentPath === "/PAD/hca-reports/hca-overdue-verifications") {
         return (
-          <COOverdueVerifications
+          <HCOOverdueVerifications
             setVisible={setVisible}
             clear={clear}
             setClear={setClear}

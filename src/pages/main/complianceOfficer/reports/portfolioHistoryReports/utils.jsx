@@ -169,9 +169,9 @@ export const getBorderlessTableColumns = ({
     align: "left",
     width: "80px",
     ellipsis: true,
-    sorter: (a, b) => a.employeeID.localeCompare(b.employeeID),
     sortDirections: ["ascend", "descend"],
     sortOrder: sortedInfo?.columnKey === "employeeID" ? sortedInfo.order : null,
+    sorter: (a, b) => a.employeeID - b.employeeID,
     showSorterTooltip: false,
     sortIcon: () => null,
     render: (text) => (
@@ -185,16 +185,19 @@ export const getBorderlessTableColumns = ({
     dataIndex: "employeeName",
     key: "employeeName",
     width: "150px",
-    align: "left",
+    align: "center",
     ellipsis: true,
-    sorter: (a, b) => a.employeeName.localeCompare(b.employeeName),
+    sorter: (a, b) =>
+      a.employeeName.localeCompare(b.employeeName, undefined, {
+        sensitivity: "base",
+      }),
     sortDirections: ["ascend", "descend"],
     sortOrder:
       sortedInfo?.columnKey === "employeeName" ? sortedInfo.order : null,
     showSorterTooltip: false,
     sortIcon: () => null,
     render: (text) => (
-      <span className={`${style["cell-text"]} font-medium`}>{text}</span>
+      <span className={`${style["cell-text"]} font-medium`}>{text ?? "—"}</span>
     ),
   },
   {
@@ -206,7 +209,10 @@ export const getBorderlessTableColumns = ({
     width: "150px",
     align: "left",
     ellipsis: true,
-    sorter: (a, b) => a.departmentName.localeCompare(b.departmentName),
+    sorter: (a, b) =>
+      a.departmentName.localeCompare(b.departmentName, undefined, {
+        sensitivity: "base",
+      }),
     sortDirections: ["ascend", "descend"],
     sortOrder:
       sortedInfo?.columnKey === "departmentName" ? sortedInfo.order : null,
@@ -260,11 +266,10 @@ export const getBorderlessTableColumns = ({
     key: "instrumentName",
     width: "150px",
     ellipsis: true,
-    sorter: (a, b) => {
-      const nameA = a?.instrumentShortCode || "";
-      const nameB = b?.instrumentShortCode || "";
-      return nameA.localeCompare(nameB);
-    },
+    sorter: (a, b) =>
+      a.instrumentName.localeCompare(b.instrumentName, undefined, {
+        sensitivity: "base",
+      }),
     sortDirections: ["ascend", "descend"],
     sortOrder:
       sortedInfo?.columnKey === "instrumentName" ? sortedInfo.order : null,
@@ -298,7 +303,6 @@ export const getBorderlessTableColumns = ({
                 display: "inline-block",
                 cursor: "pointer",
               }}
-              title={code}
             >
               {code}
             </span>
@@ -338,7 +342,7 @@ export const getBorderlessTableColumns = ({
     showSorterTooltip: false,
     sortIcon: () => null,
     render: (text) => (
-      <span className={`${style["cell-text"]} font-medium`}>{text}</span>
+      <span className={`${style["cell-text"]} font-medium`}>{text.toLocaleString()}</span>
     ),
   },
   {
@@ -348,11 +352,10 @@ export const getBorderlessTableColumns = ({
     width: "140px",
     align: "left",
     ellipsis: true,
-    sorter: (a, b) => {
-      const dateA = new Date(`${a.requestDate}`).getTime();
-      const dateB = new Date(`${b.requestDate}`).getTime();
-      return dateA - dateB;
-    },
+    sorter: (a, b) =>
+      formatApiDateTime(a.requestDate).localeCompare(
+        formatApiDateTime(b.requestDate)
+      ),
     sortDirections: ["ascend", "descend"],
     sortOrder:
       sortedInfo?.columnKey === "requestDate" ? sortedInfo.order : null,

@@ -646,10 +646,13 @@ export const responseMessages = {
   // ==============================
   // Compliance Officer OverDue report
   // ==============================
-  PAD_Trade_TradeServiceManager_SearchHOCOverdueVerifications_01: "Data found",
-  PAD_Trade_TradeServiceManager_SearchHOCOverdueVerifications_02:
+
+  PAD_Trade_TradeServiceManager_SearchComplianceOfficerOverdueVerifications_01:
+    "Data Available",
+  PAD_Trade_TradeServiceManager_SearchComplianceOfficerOverdueVerifications_02:
     "No data available",
-  PAD_Trade_TradeServiceManager_SearchHOCOverdueVerifications_03: "Exception",
+  PAD_Trade_TradeServiceManager_SearchComplianceOfficerOverdueVerifications_03:
+    "Exception",
 
   // ==============================
   // Compliance Officer Portfolio History Report
@@ -664,6 +667,7 @@ export const responseMessages = {
   // ==============================
   // Head of Compliance Officer Uploaded PortFolio report
   // ==============================
+
   PAD_Trade_TradeServiceManager_SearchHOCUploadedPortFolio_01: "Data found",
   PAD_Trade_TradeServiceManager_SearchHOCUploadedPortFolio_02:
     "No data available",
@@ -672,7 +676,6 @@ export const responseMessages = {
   PAD_TradeServiceManager_GetHOCMyActionsWorkflowDetail_01: "Data found",
   PAD_TradeServiceManager_GetHOCMyActionsWorkflowDetail_02: "No data available",
   PAD_TradeServiceManager_GetHOCMyActionsWorkflowDetail_03: "Exception",
-
 
   // ==============================
   // Head of Compliance Officer Date Wise Transaction report
@@ -706,6 +709,11 @@ export const responseMessages = {
   PAD_Trade_TradeServiceManager_SearchHTATurnAroundTimeRequest_02:
     "No data available",
   PAD_Trade_TradeServiceManager_SearchHTATurnAroundTimeRequest_03: "Exception",
+
+  PAD_Trade_TradeServiceManager_SearchHOCOverdueVerifications_01: "Data found",
+  PAD_Trade_TradeServiceManager_SearchHOCOverdueVerifications_02:
+    "No data available",
+  PAD_Trade_TradeServiceManager_SearchHOCOverdueVerifications_03: "Exception",
 };
 
 /**
