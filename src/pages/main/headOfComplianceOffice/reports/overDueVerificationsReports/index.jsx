@@ -21,6 +21,7 @@ import { useGlobalModal } from "../../../../../context/GlobalModalContext";
 import style from "./OverDueVerificationReports.module.css";
 import { useMyApproval } from "../../../../../context/myApprovalContaxt";
 import {
+  ExportHOCOverdueVerificationsExcelReport,
   ExportOverdueVerificationCOExcel,
   SearchHOCOverdueVerificationsRequestApi,
 } from "../../../../../api/myApprovalApi";
@@ -44,11 +45,6 @@ import UploadHeadOfComplianceTicketModal from "../../escalatedVerifications/esca
 import NoteHeadOfComplianceModal from "../../escalatedVerifications/escalatedVerification/modals/noteHeadOfComplianceModal/NoteHeadOfComplianceModal";
 import ApproveHeadOfComplianceModal from "../../escalatedVerifications/escalatedVerification/modals/approveHeadOfComplianceModal/ApproveHeadOfComplianceModal";
 import DeclinedHeadOfComplianceModal from "../../escalatedVerifications/escalatedVerification/modals/declinedHeadOfComplianceModal/DeclinedHeadOfComplianceModal";
-// import ViewTicketReconcileModal from "../../reconcile/transaction/modals/viewTicketReconcileModal/viewTicketReconcileModal";
-// import UploadReconcileTicketModal from "../../reconcile/transaction/modals/uploadReconcileTicketModal/UploadReconcileTicketModal";
-// import CompliantApproveModal from "../../reconcile/transaction/modals/compliantApproveModal/CompliantApproveModal";
-// import NonCompliantDeclineModal from "../../reconcile/transaction/modals/nonCompliantDeclineModal/nonCompliantDeclineModal";
-// import NoteModalComplianceOfficer from "../../reconcile/transaction/modals/noteModalComplianceOfficer/NoteModalComplianceOfficer";
 
 const HeadCompianceOfficerOverdueVerificationReports = () => {
   const navigate = useNavigate();
@@ -61,13 +57,13 @@ const HeadCompianceOfficerOverdueVerificationReports = () => {
   const { showLoader } = useGlobalLoader();
   const { selectedKey } = useSidebarContext();
 
-  const { coOverdueVerificationListData, setCoOverdueVerificationListData } =
+  const { overdueVerificationHCOListData, setOverdueVerificationHCOListData } =
     useMyApproval();
 
   const {
-    coOverdueVerificationReportSearch,
-    setCoOverdueVerificationReportSearch,
-    resetComplianceOfficerOverdueVerificationReportSearch,
+    OverdueVerificationHCOReportSearch,
+    setOverdueVerificationHCOReportSearch,
+    resetHeadOfComplianceOfficerOverdueVerificationReportSearch,
   } = useSearchBarContext();
   const {
     viewDetailHeadOfComplianceEscalated,
@@ -79,7 +75,7 @@ const HeadCompianceOfficerOverdueVerificationReports = () => {
     noteGlobalModal,
   } = useGlobalModal();
 
-  console.log(coOverdueVerificationListData, "coOverdueVerificationListData");
+  console.log(overdueVerificationHCOListData, "overdueVerificationHCOListData");
 
   console.log(selectedKey, "selectedKeyselectedKey");
 
@@ -129,7 +125,7 @@ const HeadCompianceOfficerOverdueVerificationReports = () => {
       if (!mapped || typeof mapped !== "object") return;
       console.log("records", mapped);
 
-      setCoOverdueVerificationListData((prev) => ({
+      setOverdueVerificationHCOListData((prev) => ({
         overdueVerifications: replace
           ? mapped
           : [...(prev?.overdueVerifications || []), ...mapped],
@@ -138,9 +134,9 @@ const HeadCompianceOfficerOverdueVerificationReports = () => {
         // this is for to know how mush dta currently fetch from  db
         totalRecordsTable: replace
           ? mapped.length
-          : coOverdueVerificationListData.totalRecordsTable + mapped.length,
+          : overdueVerificationHCOListData.totalRecordsTable + mapped.length,
       }));
-      setCoOverdueVerificationReportSearch((prev) => {
+      setOverdueVerificationHCOReportSearch((prev) => {
         const next = {
           ...prev,
           pageNumber: replace ? mapped.length : prev.pageNumber + mapped.length,
@@ -158,13 +154,13 @@ const HeadCompianceOfficerOverdueVerificationReports = () => {
       assetTypeListingData,
       callApi,
       navigate,
-      setCoOverdueVerificationReportSearch,
+      setOverdueVerificationHCOReportSearch,
       showLoader,
       showNotification,
     ]
   );
-  console.log("records", coOverdueVerificationListData);
-  console.log("records", coOverdueVerificationReportSearch);
+  console.log("records", overdueVerificationHCOListData);
+  console.log("records", OverdueVerificationHCOReportSearch);
 
   // -------------------- Effects --------------------
 
@@ -173,7 +169,7 @@ const HeadCompianceOfficerOverdueVerificationReports = () => {
     if (hasFetched.current) return;
     hasFetched.current = true;
     const requestData = buildApiRequest(
-      coOverdueVerificationReportSearch,
+      OverdueVerificationHCOReportSearch,
       assetTypeListingData
     );
     fetchApiCall(requestData, true, true);
@@ -183,34 +179,34 @@ const HeadCompianceOfficerOverdueVerificationReports = () => {
   useEffect(() => {
     return () => {
       // Reset search state for fresh load
-      resetComplianceOfficerOverdueVerificationReportSearch();
+      resetHeadOfComplianceOfficerOverdueVerificationReportSearch();
     };
   }, []);
 
   // 🔹 call api on search
   useEffect(() => {
-    if (coOverdueVerificationReportSearch?.filterTrigger) {
+    if (OverdueVerificationHCOReportSearch?.filterTrigger) {
       const requestData = buildApiRequest(
-        coOverdueVerificationReportSearch,
+        OverdueVerificationHCOReportSearch,
         assetTypeListingData
       );
       fetchApiCall(requestData, true, true);
     }
-  }, [coOverdueVerificationReportSearch?.filterTrigger]);
+  }, [OverdueVerificationHCOReportSearch?.filterTrigger]);
 
   // 🔹 Infinite Scroll (lazy loading)
   useTableScrollBottom(
     async () => {
       if (
-        coOverdueVerificationListData?.totalRecordsDataBase <=
-        coOverdueVerificationListData?.totalRecordsTable
+        overdueVerificationHCOListData?.totalRecordsDataBase <=
+        overdueVerificationHCOListData?.totalRecordsTable
       )
         return;
 
       try {
         setLoadingMore(true);
         const requestData = buildApiRequest(
-          coOverdueVerificationReportSearch,
+          OverdueVerificationHCOReportSearch,
           assetTypeListingData
         );
         await fetchApiCall(requestData, false, false);
@@ -248,8 +244,8 @@ const HeadCompianceOfficerOverdueVerificationReports = () => {
   // -------------------- Table Columns --------------------
   const columns = getBorderlessTableColumns({
     sortedInfo,
-    coOverdueVerificationReportSearch,
-    setCoOverdueVerificationReportSearch,
+    OverdueVerificationHCOReportSearch,
+    setOverdueVerificationHCOReportSearch,
     setViewDetailHeadOfComplianceEscalated,
     handleViewDetailsForReconcileTransaction,
   });
@@ -265,7 +261,7 @@ const HeadCompianceOfficerOverdueVerificationReports = () => {
       requestDate: { startDate: null, endDate: null },
     };
 
-    setCoOverdueVerificationReportSearch((prev) => ({
+    setOverdueVerificationHCOReportSearch((prev) => ({
       ...prev,
       ...resetMap[key], // reset only the clicked filter
       pageNumber: 0,
@@ -275,7 +271,7 @@ const HeadCompianceOfficerOverdueVerificationReports = () => {
 
   /** 🔹 Handle removing all filters */
   const handleRemoveAllFilters = () => {
-    setCoOverdueVerificationReportSearch((prev) => ({
+    setOverdueVerificationHCOReportSearch((prev) => ({
       ...prev,
       instrumentName: "",
       requesterName: "",
@@ -298,7 +294,7 @@ const HeadCompianceOfficerOverdueVerificationReports = () => {
       sharesTraded,
       startDate,
       endDate,
-    } = coOverdueVerificationReportSearch || {};
+    } = OverdueVerificationHCOReportSearch || {};
 
     const truncate = (val) =>
       val.length > 13 ? val.slice(0, 13) + "..." : val;
@@ -350,11 +346,13 @@ const HeadCompianceOfficerOverdueVerificationReports = () => {
       StatusIds: [],
       FromDate: "",
       ToDate: "",
+      EscalationFromDate: "",
+      EscalationToDate: "",
       ApprovedQuantity: null,
       ShareTraded: null,
     };
 
-    await ExportOverdueVerificationCOExcel({
+    await ExportHOCOverdueVerificationsExcelReport({
       callApi,
       showLoader,
       requestdata: requestdata,
@@ -466,11 +464,11 @@ const HeadCompianceOfficerOverdueVerificationReports = () => {
       >
         <div className="px-4 md:px-6 lg:px-8 ">
           <BorderlessTable
-            rows={coOverdueVerificationListData?.overdueVerifications}
+            rows={overdueVerificationHCOListData?.overdueVerifications}
             columns={columns}
             classNameTable="border-less-table-blue"
             scroll={
-              coOverdueVerificationListData?.overdueVerifications?.length
+              overdueVerificationHCOListData?.overdueVerifications?.length
                 ? {
                     x: "max-content",
                     y: activeFilters.length > 0 ? 450 : 500,

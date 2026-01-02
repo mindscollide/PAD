@@ -31,7 +31,7 @@ export const buildApiRequest = (searchState = {}, assetTypeListingData) => ({
   EmployeeName: searchState.quantity ? Number(searchState.employeeName) : "",
   StartDate: searchState.startDate ? toYYMMDD(searchState.startDate) : "",
   EndDate: searchState.endDate ? toYYMMDD(searchState.endDate) : "",
-  StatusIDs: mapStatusToIds(searchState.status,2) || [],
+  StatusIDs: mapStatusToIds(searchState.status, 2) || [],
   TypeIds:
     mapBuySellToIds(searchState.type, assetTypeListingData?.Equities) || [],
   PageNumber: Number(searchState.pageNumber) || 0,
@@ -55,8 +55,8 @@ export const mapEmployeeTransactions = (
     instrumentCode: item?.instrumentShortCode || "—",
     instrumentName: item?.instrumentName || "—",
     assetTypeShortCode: item?.assetType?.assetTypeShortCode || "—",
-    employeeID:item?.employeeID||"",
-    employeeName:item?.employeeFirstName + item?.employeeLastName||"",
+    employeeID: item?.employeeID || "",
+    employeeName: item?.employeeFirstName + item?.employeeLastName || "—",
     quantity: item.quantity || 0,
     tradeApprovalID: item.tradeApprovalID || "",
     type: getTradeTypeById(assetTypeData, item?.tradeType) || "-",
@@ -64,7 +64,9 @@ export const mapEmployeeTransactions = (
     assetTypeID: item.assetType?.assetTypeID || 0,
     assetType: item.assetType || "",
     requestDateTime:
-      [item?.transactionConductedDate, item?.transactionConductedTime].filter(Boolean).join(" ") || "—",
+      [item?.transactionConductedDate, item?.transactionConductedTime]
+        .filter(Boolean)
+        .join(" ") || "—",
   }));
 };
 
@@ -176,9 +178,7 @@ export const getBorderlessTableColumns = ({
     key: "employeeID",
     width: "12%",
     ellipsis: true,
-    sorter: (a, b) =>
-      parseInt(a.employeeID.replace(/[^\d]/g, ""), 10) -
-      parseInt(b.employeeID.replace(/[^\d]/g, ""), 10),
+    sorter: (a, b) => a.employeeID - b.employeeID,
     sortDirections: ["ascend", "descend"],
     sortOrder: sortedInfo?.columnKey === "employeeID" ? sortedInfo.order : null,
     showSorterTooltip: false,
@@ -198,8 +198,9 @@ export const getBorderlessTableColumns = ({
     width: "12%",
     ellipsis: true,
     sorter: (a, b) =>
-      parseInt(a.employeeName.replace(/[^\d]/g, ""), 10) -
-      parseInt(b.employeeName.replace(/[^\d]/g, ""), 10),
+      a.employeeName.localeCompare(b.employeeName, undefined, {
+        sensitivity: "base",
+      }),
     sortDirections: ["ascend", "descend"],
     sortOrder:
       sortedInfo?.columnKey === "employeeName" ? sortedInfo.order : null,

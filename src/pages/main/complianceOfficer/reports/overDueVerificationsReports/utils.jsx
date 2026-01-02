@@ -230,7 +230,6 @@ export const getBorderlessTableColumns = ({
                 display: "inline-block",
                 cursor: "pointer",
               }}
-              title={code}
             >
               {code}
             </span>

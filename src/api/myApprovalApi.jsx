@@ -3609,8 +3609,7 @@ export const GetHOCViewTransactionSummaryAPI = async ({
   }
 };
 
-
-//Download Export HTA Trade Approval Requests Excel Report 
+//Download Export HTA Trade Approval Requests Excel Report
 export const ExportHTATradeApprovalRequestsExcelReport = async ({
   callApi,
   showLoader,
@@ -3672,7 +3671,6 @@ export const ExportHTATradeApprovalRequestsExcelReport = async ({
   }
 };
 
-
 //For HTA Search Policy Breached Work Flows Request API for Reports
 export const SearchPolicyBreachedWorkFlowsRequest = async ({
   callApi,
@@ -3682,7 +3680,6 @@ export const SearchPolicyBreachedWorkFlowsRequest = async ({
   navigate,
 }) => {
   try {
-
     // 🔹 API Call
     const res = await callApi({
       requestMethod: import.meta.env
@@ -3805,10 +3802,7 @@ export const GetPoliciesByIDsAPI = async ({
       const message = getMessage(responseMessage);
 
       // Case 1 → Data available
-      if (
-        responseMessage ===
-        "PAD_Trade_GetPoliciesByIDs_01"
-      ) {
+      if (responseMessage === "PAD_Trade_GetPoliciesByIDs_01") {
         return {
           totalRecords: totalRecords,
           policies: policies,
@@ -3816,10 +3810,7 @@ export const GetPoliciesByIDsAPI = async ({
       }
 
       // Case 2 → No data
-      if (
-        responseMessage ===
-        "PAD_Trade_GetPoliciesByIDs_02"
-      ) {
+      if (responseMessage === "PAD_Trade_GetPoliciesByIDs_02") {
         return {
           totalRecords: 0,
           policies: [],
@@ -3860,7 +3851,6 @@ export const GetPoliciesByIDsAPI = async ({
   }
 };
 
-
 //For HTA Search Turn Around Time Request  API for Reports
 export const SearchHTATurnAroundTimeRequest = async ({
   callApi,
@@ -3870,7 +3860,6 @@ export const SearchHTATurnAroundTimeRequest = async ({
   navigate,
 }) => {
   try {
-
     // 🔹 API Call
     const res = await callApi({
       requestMethod: import.meta.env
@@ -3951,6 +3940,231 @@ export const SearchHTATurnAroundTimeRequest = async ({
     return null;
   } finally {
     // 🔹 Always hide loader
+    showLoader(false);
+  }
+};
+
+// ExportHOCUploadedPortfolioReportExcel
+export const ExportHOCUploadedPortfolioReportExcel = async ({
+  callApi,
+  showLoader,
+  requestdata,
+  navigate,
+}) => {
+  try {
+    showLoader(true);
+
+    // 🔹 API Call
+    const res = await callApi({
+      requestMethod: import.meta.env
+        .VITE_EXPORTHOC_UPLOADEDPORTFOLIO_REPORT_EXCEL_REQUEST_METHOD,
+      endpoint: import.meta.env.VITE_API_REPORT,
+      requestData: requestdata,
+      navigate,
+      responseType: "arraybuffer", // ⚡ Required for file download
+      headers: {
+        "Content-Type":
+          "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      },
+    });
+
+    // 🔹 Check Session Expiry
+    if (handleExpiredSession(res, navigate, showLoader)) return false;
+    // 🔹 When API send isExecuted false
+    if (!res?.result?.isExecuted) {
+      return false;
+    }
+
+    // 🔹 When API Send Success Response
+    if (res.success) {
+      try {
+        // Create a blob and trigger download
+        const blob = new Blob([res.result?.fileData || res.data], {
+          type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        });
+
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+
+        link.setAttribute("download", "Trade-Upload-Via-Portfolio-Report.xlsx");
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        setOpen(false);
+        return true;
+      } catch (downloadError) {
+        return false;
+      }
+    }
+
+    return false;
+  } catch (error) {
+    return false;
+  } finally {
+    showLoader(false);
+  }
+};
+
+// SearchComplianceOfficerOverdueVerificationsRequest For Compliance Officer Overdue Verification Page
+export const SearchOverdueVerificationsCORequestApi = async ({
+  callApi,
+  showNotification,
+  showLoader,
+  navigate,
+  requestdata,
+}) => {
+  try {
+    // 🔹 API Call
+    const res = await callApi({
+      requestMethod: import.meta.env
+        .VITE_SEARCH_COMPLIANCE_OFFICER_OVERDUE_VERIFICATION_REQEUST_METHOD, // 🔑 must be defined in .env
+      endpoint: import.meta.env.VITE_API_TRADE,
+      requestData: requestdata,
+      navigate,
+    });
+
+    // 🔹 Handle session expiry
+    if (handleExpiredSession(res, navigate, showLoader)) return null;
+
+    // 🔹 Validate execution
+    if (!res?.result?.isExecuted) {
+      showNotification({
+        type: "error",
+        title: "Error",
+        description:
+          "Something went wrong while fetching Compliance Officer date wise transaction reports Api.",
+      });
+      return null;
+    }
+
+    // 🔹 Handle success
+    if (res?.success) {
+      const { totalRecords, overdueVerifications, responseMessage } =
+        res.result;
+      const message = getMessage(responseMessage);
+      console.log("Check Console Rigt N0ow");
+
+      // Case 1 → Data available
+      if (
+        responseMessage ===
+        "PAD_Trade_TradeServiceManager_SearchComplianceOfficerOverdueVerifications_01"
+      ) {
+        console.log("Check Console Rigt N0ow");
+
+        return {
+          overdueVerifications: overdueVerifications,
+          totalRecords: totalRecords,
+        };
+      }
+
+      // Case 2 → No data
+      if (
+        responseMessage ===
+        "PAD_Trade_TradeServiceManager_SearchComplianceOfficerOverdueVerifications_02"
+      ) {
+        console.log("Check Console Rigt N0ow");
+        return {
+          overdueVerifications: [],
+          totalRecords: 0,
+        };
+      }
+
+      // Case 3 → Custom server messages
+      if (message) {
+        showNotification({
+          type: "warning",
+          title: message,
+          description: message,
+        });
+      }
+
+      return null;
+    }
+
+    // 🔹 Handle failure
+    showNotification({
+      type: "error",
+      title: "Fetch Failed",
+      description: getMessage(res.message),
+    });
+    return null;
+  } catch (error) {
+    // 🔹 Exception handling
+    showNotification({
+      type: "error",
+      title: "Error",
+      description:
+        "An unexpected error occurred while request Compliance officer date wise transaction reports  API .",
+    });
+    return null;
+  } finally {
+    // 🔹 Always hide loader
+    showLoader(false);
+  }
+};
+
+// ExportHOCUploadedPortfolioReportExcel
+export const ExportHOCOverdueVerificationsExcelReport = async ({
+  callApi,
+  showLoader,
+  requestdata,
+  navigate,
+}) => {
+  try {
+    showLoader(true);
+
+    // 🔹 API Call
+    const res = await callApi({
+      requestMethod: import.meta.env
+        .VITE_EXPORT_HCO_OVER_DUE_VERIFICATIONS_EXCEL_REPORT,
+      endpoint: import.meta.env.VITE_API_REPORT,
+      requestData: requestdata,
+      navigate,
+      responseType: "arraybuffer", // ⚡ Required for file download
+      headers: {
+        "Content-Type":
+          "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      },
+    });
+
+    // 🔹 Check Session Expiry
+    if (handleExpiredSession(res, navigate, showLoader)) return false;
+    // 🔹 When API send isExecuted false
+    if (!res?.result?.isExecuted) {
+      return false;
+    }
+
+    // 🔹 When API Send Success Response
+    if (res.success) {
+      try {
+        // Create a blob and trigger download
+        const blob = new Blob([res.result?.fileData || res.data], {
+          type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        });
+
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+
+        link.setAttribute(
+          "download",
+          "HOC-OverdueVerifications-Excel-Report.xlsx"
+        );
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        setOpen(false);
+        return true;
+      } catch (downloadError) {
+        return false;
+      }
+    }
+
+    return false;
+  } catch (error) {
+    return false;
+  } finally {
     showLoader(false);
   }
 };

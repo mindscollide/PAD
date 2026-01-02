@@ -70,6 +70,7 @@ const SearchWithPopoverOnly = () => {
     setAdminSessionWiseActivitySearch,
     setComplianceOfficerMyActionSearch,
     setCoOverdueVerificationReportSearch,
+    setOverdueVerificationHCOReportSearch,
     setHeadOfComplianceMyActionSearch,
     setHCOTradesUploadViaPortfolioSearch,
     setCoPortfolioHistoryReportSearch,
@@ -499,7 +500,7 @@ const SearchWithPopoverOnly = () => {
 
       case "17": // Head of Compliance Report
         if (currentPath === "/PAD/hca-reports/hca-overdue-verifications") {
-          setCoOverdueVerificationReportSearch((prev) => ({
+          setOverdueVerificationHCOReportSearch((prev) => ({
             ...prev,
             instrumentName: searchMain,
             requesterName: "",

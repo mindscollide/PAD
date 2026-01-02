@@ -145,6 +145,14 @@ export const MyApprovalProvider = ({ children }) => {
       totalRecordsTable: 0,
     });
 
+  // HEAD of Compliance Officer Overdue Verification Report
+  const [overdueVerificationHCOListData, setOverdueVerificationHCOListData] =
+    useState({
+      overdueVerifications: [],
+      totalRecordsDataBase: 0,
+      totalRecordsTable: 0,
+    });
+
   const [
     coTransactionSummaryReportListData,
     setCOTransactionSummaryReportListData,
@@ -389,6 +397,10 @@ export const MyApprovalProvider = ({ children }) => {
         coTransactionSummaryReportListData,
         setCOTransactionSummaryReportListData,
         resetCOTransactionSummaryReportListData,
+
+        // head of compliance officer
+        overdueVerificationHCOListData,
+        setOverdueVerificationHCOListData,
 
         //Compliance Officer Portfolio History Report
         coPortfolioHistoryListData,

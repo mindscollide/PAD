@@ -358,6 +358,23 @@ export const SearchBarProvider = ({ children }) => {
     filterTrigger: false,
   });
 
+  // Overdue Verification search filter Head Of Compliance (HOC)
+  const [
+    OverdueVerificationHCOReportSearch,
+    setOverdueVerificationHCOReportSearch,
+  ] = useState({
+    instrumentName: "",
+    requesterName: "",
+    approvedQuantity: "",
+    sharesTraded: "",
+    startDate: null,
+    endDate: null,
+    type: "",
+    pageNumber: 0,
+    pageSize: 10,
+    filterTrigger: false,
+  });
+
   //Compliance Officer Portfolio History search filter
   const [coPortfolioHistoryReportSearch, setCoPortfolioHistoryReportSearch] =
     useState({
@@ -857,6 +874,21 @@ export const SearchBarProvider = ({ children }) => {
       filterTrigger: false,
     });
 
+  /** Reset Head of Compliance Officer Overdue Verification report filters */
+  const resetHeadOfComplianceOfficerOverdueVerificationReportSearch = () =>
+    setOverdueVerificationHCOReportSearch({
+      instrumentName: "",
+      requesterName: "",
+      approvedQuantity: "",
+      sharesTraded: "",
+      startDate: null,
+      endDate: null,
+      type: "",
+      pageNumber: 0,
+      pageSize: 10,
+      filterTrigger: false,
+    });
+
   /** Reset Compliance Officer Portfolio History report filters */
   const resetComplianceOfficerPortfolioHistoryReportSearch = () =>
     setCoPortfolioHistoryReportSearch({
@@ -1327,6 +1359,11 @@ export const SearchBarProvider = ({ children }) => {
         hcoTransactionsSummarysReportsSearch,
         setHCOTransactionsSummarysReportsSearch,
         resetHOCTransactionsSummarysReportsSearch,
+
+        // Head Of Compliance Officer Overdue Respect
+        OverdueVerificationHCOReportSearch,
+        setOverdueVerificationHCOReportSearch,
+        resetHeadOfComplianceOfficerOverdueVerificationReportSearch,
 
         /** 🔍  HCO Trades Upload Via Portfolio filters */
         resetHCOTradesUploadViaPortfolioSearch,

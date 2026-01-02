@@ -43,6 +43,7 @@ const EditInstrument = () => {
     adminInstrumentPreviousClosingData,
     setAdminInstrumentPreviousClosingData,
     selectedInstrumentOnClick,
+    selectedInstrumentNameDataOnClick,
   } = useMyAdmin();
 
   const {
@@ -64,8 +65,8 @@ const EditInstrument = () => {
     "adminInstrumentPreviousClosingData"
   );
   console.log(
-    selectedInstrumentOnClick,
-    "selectedInstrumentOnClick"
+    selectedInstrumentNameDataOnClick,
+    "selectedInstrumentNameDataOnClick"
   );
   /**
    * 🧠 Convert API data into Ant Design Table-friendly rows
@@ -284,6 +285,9 @@ const EditInstrument = () => {
     }
   }, [editInstrumentModal]);
 
+  const instrumentCode =
+    selectedInstrumentNameDataOnClick?.split(" - ")?.[0] || "";
+
   return (
     <GlobalModal
       visible={editInstrumentModal}
@@ -296,7 +300,7 @@ const EditInstrument = () => {
             {/* ================= LEFT SIDE ================= */}
             <Col xs={24} md={8}>
               <div className={styles.sectionBox}>
-                <h2 className={styles.modalTitle}>Closed Period - HUBC</h2>
+                <h2 className={styles.modalTitle}>Closed Period - {instrumentCode}</h2>
                 <label className={styles.label}>Closed Period Start Date</label>
                 <DatePicker
                   className={styles.datePicker}

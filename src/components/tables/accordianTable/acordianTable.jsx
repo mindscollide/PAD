@@ -18,9 +18,19 @@ const AcordianTable = ({
 }) => {
   const [expandedRowKeys, setExpandedRowKeys] = useState([]);
 
-  const handleExpand = (expanded, record) => {
+  // const handleExpand = (expanded, record) => {
+  //   setExpandedRowKeys((prev) =>
+  //     expanded ? [...prev, record.id] : prev.filter((key) => key !== record.id)
+  //   );
+  // };
+
+  // New work click on row to collapse panel as Sir amir said also mentioned in SRS in CO Section in my action page
+  // ✅ Multiple rows can be expanded
+  const toggleRowExpand = (record) => {
     setExpandedRowKeys((prev) =>
-      expanded ? [...prev, record.id] : prev.filter((key) => key !== record.id)
+      prev.includes(record.id)
+        ? prev.filter((key) => key !== record.id)
+        : [...prev, record.id]
     );
   };
 
@@ -33,34 +43,30 @@ const AcordianTable = ({
             item.instrument?.toLowerCase().includes(searchText.toLowerCase()) ||
             item.id?.toLowerCase().includes(searchText.toLowerCase())
         )}
+        rowKey="id"
+        pagination={false}
+        onChange={onChange}
         expandable={{
           expandedRowKeys,
-          onExpand: handleExpand,
           expandedRowRender: (record) =>
-            record.trail.length > 0 ? (
+            record.trail?.length > 0 ? (
               <div className={styles["expanded-content"]}>
                 <ApprovalStepper trail={record.trail} />
               </div>
             ) : (
               <EmptyState type="Underdevelopment" />
             ),
-          expandIcon: ({ expanded, onExpand, record }) =>
+          expandIcon: ({ expanded }) =>
             expanded ? (
-              <UpOutlined
-                className={styles["expand-icon"]}
-                onClick={(e) => onExpand(record, e)}
-              />
+              <UpOutlined className={styles["expand-icon"]} />
             ) : (
-              <DownOutlined
-                className={styles["expand-icon"]}
-                onClick={(e) => onExpand(record, e)}
-              />
+              <DownOutlined className={styles["expand-icon"]} />
             ),
           expandIconColumnIndex: columns.length,
         }}
-        pagination={false}
-        rowKey="id"
-        onChange={onChange}
+        onRow={(record) => ({
+          onClick: () => toggleRowExpand(record),
+        })}
         rowClassName={(record) => {
           const baseClass =
             rowClassName?.(record) && styles[rowClassName(record)]
@@ -73,14 +79,11 @@ const AcordianTable = ({
         }}
       />
 
-      {/* loading spinner at bottom while fetching */}
       {loadingMore && (
         <div style={{ textAlign: "center", padding: 12 }}>
           <Spin size="small" />
         </div>
       )}
-
-     
     </div>
   );
 };

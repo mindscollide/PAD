@@ -153,6 +153,11 @@ export const MyAdminProvider = ({ children }) => {
   const [selectedInstrumentOnClick, setSelectedInstrumentOnClick] =
     useState(null);
 
+  const [
+    selectedInstrumentNameDataOnClick,
+    setSelectedInstrumentNameDataOnClick,
+  ] = useState("");
+
   // this state for setOpen tab of manage users
   // 0 users tab
   // 1 pending Request
@@ -412,6 +417,8 @@ export const MyAdminProvider = ({ children }) => {
         setAdminInstrumentPreviousClosingData,
         selectedInstrumentOnClick,
         setSelectedInstrumentOnClick,
+        selectedInstrumentNameDataOnClick,
+        setSelectedInstrumentNameDataOnClick,
 
         // Add and Delete Mqtt on Edit Modal of Instrument
         adminAddDeleteClosingInstrument,
@@ -512,7 +519,7 @@ export const MyAdminProvider = ({ children }) => {
         // session wise activity view action
         sessionWiseViewActionModal,
         setSessionWiseViewActionModal,
-        
+
         // rejected request list data
         resetManageUsersRejectedRequestTabData,
         manageUsersRejectedRequestTabData,
