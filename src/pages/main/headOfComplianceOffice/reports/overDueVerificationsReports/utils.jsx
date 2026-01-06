@@ -45,11 +45,11 @@ export const buildApiRequest = (searchState = {}, assetTypeListingData) => ({
  */
 export const mappingDateWiseTransactionReport = (
   assetTypeData,
-  coOverdueVerificationListData = []
+  overdueVerificationHCOListData = []
 ) => {
-  const overdueVerifications = Array.isArray(coOverdueVerificationListData)
-    ? coOverdueVerificationListData
-    : coOverdueVerificationListData?.overdueVerifications || [];
+  const overdueVerifications = Array.isArray(overdueVerificationHCOListData)
+    ? overdueVerificationHCOListData
+    : overdueVerificationHCOListData?.overdueVerifications || [];
   console.log(overdueVerifications, "overdueVerifications");
   if (!overdueVerifications.length) return [];
 
@@ -61,6 +61,7 @@ export const mappingDateWiseTransactionReport = (
     instrumentShortCode: item?.instrumentShortCode || "—",
     instrumentName: item?.instrumentName || "—",
     assetTypeShortCode: item?.assetTypeShortCode || "—",
+    complianceOfficer: item?.complianceOfficer || "—",
     transactionDate:
       `${item?.transactionDate || ""} ${item?.transactionTime || ""}`.trim() ||
       "—",
@@ -134,9 +135,8 @@ const withFilterHeader = (FilterComponent) => (
 );
 export const getBorderlessTableColumns = ({
   sortedInfo,
-  coOverdueVerificationReportSearch,
-  setCoOverdueVerificationReportSearch,
-  setViewDetailReconcileTransaction,
+  OverdueVerificationHCOReportSearch,
+  setViewDetailHeadOfComplianceEscalated,
   handleViewDetailsForReconcileTransaction,
 }) => [
   {
@@ -165,9 +165,9 @@ export const getBorderlessTableColumns = ({
     dataIndex: "tradeType",
     key: "tradeType",
     ellipsis: true,
-    width: "120px",
-    filteredValue: coOverdueVerificationReportSearch.type?.length
-      ? coOverdueVerificationReportSearch.type
+    width: "80px",
+    filteredValue: OverdueVerificationHCOReportSearch?.type?.length
+      ? OverdueVerificationHCOReportSearch?.type
       : null,
     onFilter: () => true, // Actual filtering handled by API
     render: (type, record) => (
@@ -188,11 +188,40 @@ export const getBorderlessTableColumns = ({
     ),
   },
   {
+    title: withSortIcon("Compliance Officer", "complianceOfficer", sortedInfo),
+    dataIndex: "complianceOfficer",
+    key: "complianceOfficer",
+    ellipsis: true,
+    width: "170px",
+    filteredValue: OverdueVerificationHCOReportSearch?.complianceOfficer?.length
+      ? OverdueVerificationHCOReportSearch?.complianceOfficer
+      : null,
+    onFilter: () => true, // Actual filtering handled by API
+    render: (complianceOfficer, record) => (
+      <span
+        id={`cell-${record.key}-complianceOfficer`}
+        className={
+          complianceOfficer === "Buy" ? "text-green-600" : "text-red-600"
+        }
+        data-testid={`trade-type-${complianceOfficer}`}
+        style={{
+          display: "inline-block",
+          width: "100%",
+          overflow: "hidden",
+          textOverflow: "ellipsis",
+          whiteSpace: "nowrap",
+        }}
+      >
+        {complianceOfficer}
+      </span>
+    ),
+  },
+  {
     title: withSortIcon("Instrument", "instrumentName", sortedInfo),
     dataIndex: "instrumentName",
     key: "instrumentName",
     ellipsis: true,
-    width: "180px",
+    width: "160px",
     sorter: (a, b) => {
       const nameA = a?.instrumentShortCode || "";
       const nameB = b?.instrumentShortCode || "";
@@ -230,6 +259,7 @@ export const getBorderlessTableColumns = ({
                 display: "inline-block",
                 cursor: "pointer",
               }}
+              title={code}
             >
               {code}
             </span>
@@ -315,7 +345,6 @@ export const getBorderlessTableColumns = ({
           className="small-dark-button"
           text={"View Details"}
           onClick={() => {
-            setViewDetailReconcileTransaction(true);
             handleViewDetailsForReconcileTransaction(record?.workFlowID);
             console.log(record, "tradeApprovalID");
             // setIsViewComments(true);

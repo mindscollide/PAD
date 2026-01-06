@@ -124,7 +124,7 @@ export const getPendingUserColumns = ({
     sortOrder: sortedInfo.columnKey === "fullName" ? sortedInfo.order : null,
     showSorterTooltip: false,
     sortIcon: () => null,
-    render: (text) => <Tooltip title={text || "—"}>{text || "—"}</Tooltip>,
+    render: (text, record) => <span className="text-gray-600">{text}</span>,
   },
 
   // 🧱 Email Address
@@ -143,7 +143,9 @@ export const getPendingUserColumns = ({
     sortOrder: sortedInfo.columnKey === "email" ? sortedInfo.order : null,
     showSorterTooltip: false,
     sortIcon: () => null,
-    render: (text) => <Tooltip title={text || "—"}>{text || "—"}</Tooltip>,
+    render: (text, record) => (
+      <span className="text-gray-600">{text || "—"}</span>
+    ),
   },
 
   // 🧱 Department
@@ -164,7 +166,9 @@ export const getPendingUserColumns = ({
       sortedInfo.columnKey === "departmentName" ? sortedInfo.order : null,
     showSorterTooltip: false,
     sortIcon: () => null,
-    render: (text) => <Tooltip title={text || "—"}>{text || "—"}</Tooltip>,
+    render: (text, record) => (
+      <span className="text-gray-600">{text || "—"}</span>
+    ),
   },
 
   // 🧱 Last Request Date

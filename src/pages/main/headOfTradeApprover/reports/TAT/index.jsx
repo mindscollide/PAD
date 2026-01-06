@@ -11,20 +11,19 @@ import PageLayout from "../../../../../components/pageContainer/pageContainer";
 import {
   buildApiRequest,
   getBorderlessTableColumns,
-  mappingDateWiseTransactionReport,
+  mapListData,
 } from "./utils";
-
-// 🔹 Contexts
-import { useGlobalModal } from "../../../../../context/GlobalModalContext";
+import { approvalStatusMap } from "../../../../../components/tables/borderlessTable/utill";
 
 // 🔹 Styles
-import style from "./PortfolioHistoryReports.module.css";
+import style from "./HTATAT.module.css";
 import { useMyApproval } from "../../../../../context/myApprovalContaxt";
 import {
-  ExportOverdueVerificationCOExcel,
-  ExportPortfolioHistoryCOExcel,
-  GetComplianceOfficerPortfolioHistoryRequestApi,
-  SearchHOCOverdueVerificationsRequestApi,
+  DownloadMyTransactionReportRequestAPI,
+  ExportHTATradeApprovalRequestsExcelReport,
+  GetHTATradeApprovalRequestsReport,
+  SearchHTATurnAroundTimeRequest,
+  SearchPolicyBreachedWorkFlowsRequest,
 } from "../../../../../api/myApprovalApi";
 import { useNotification } from "../../../../../components/NotificationProvider/NotificationProvider";
 import { useApi } from "../../../../../context/ApiContext";
@@ -35,10 +34,10 @@ import { useDashboardContext } from "../../../../../context/dashboardContaxt";
 import { getSafeAssetTypeData } from "../../../../../common/funtions/assetTypesList";
 import { useTableScrollBottom } from "../../../../../common/funtions/scroll";
 import CustomButton from "../../../../../components/buttons/button";
-import { useSidebarContext } from "../../../../../context/sidebarContaxt";
-import { approvalStatusMap } from "../../../../../components/tables/borderlessTable/utill";
+import { DateRangePicker } from "../../../../../components";
+import { toYYMMDD } from "../../../../../common/funtions/rejex";
 
-const CompianceOfficerPortfolioHistoryReports = () => {
+const HTATAT = () => {
   const navigate = useNavigate();
   const hasFetched = useRef(false);
   const tableScrollEmployeeTransaction = useRef(null);
@@ -48,21 +47,16 @@ const CompianceOfficerPortfolioHistoryReports = () => {
   const { showNotification } = useNotification();
   const { showLoader } = useGlobalLoader();
   const {
-    coPortfolioHistoryListData,
-    setCoPortfolioHistoryListData,
-    resetCOPortfolioHistoryReportListData,
+    htaTATReportsData,
+    setHTATATReportsData,
+    resetHTATATReportsData,
   } = useMyApproval();
 
   const {
-    coPortfolioHistoryReportSearch,
-    setCoPortfolioHistoryReportSearch,
-    resetComplianceOfficerPortfolioHistoryReportSearch,
+    htaTATReportSearch,
+    setHTATATReportSearch,
+    resetHTATATReportSearch,
   } = useSearchBarContext();
-
-  const { selectedKey } = useSidebarContext();
-  console.log(selectedKey, "selectedKey");
-
-  console.log(coPortfolioHistoryListData, "coPortfolioHistoryListData");
 
   const { assetTypeListingData, setAssetTypeListingData } =
     useDashboardContext();
@@ -71,7 +65,8 @@ const CompianceOfficerPortfolioHistoryReports = () => {
   const [sortedInfo, setSortedInfo] = useState({});
   const [loadingMore, setLoadingMore] = useState(false);
   const [open, setOpen] = useState(false);
-
+  const [policyModalVisible, setPolicyModalVisible] = useState(false);
+  const [selectedEmployee, setSelectedEmployee] = useState(null);
   // -------------------- Helpers --------------------
 
   /**
@@ -82,13 +77,15 @@ const CompianceOfficerPortfolioHistoryReports = () => {
     async (requestData, replace = false, showLoaderFlag = true) => {
       if (!requestData || typeof requestData !== "object") return;
       if (showLoaderFlag) showLoader(true);
-      const res = await GetComplianceOfficerPortfolioHistoryRequestApi({
+
+      const res = await SearchHTATurnAroundTimeRequest({
         callApi,
         showNotification,
         showLoader,
-        navigate,
         requestdata: requestData,
+        navigate,
       });
+      console.log("res".res);
 
       // ✅ Always get the freshest version (from memory or session)
       const currentAssetTypeData = getSafeAssetTypeData(
@@ -96,29 +93,22 @@ const CompianceOfficerPortfolioHistoryReports = () => {
         setAssetTypeListingData
       );
 
-      const records = Array.isArray(res?.complianceOfficerPortfolioHistory)
-        ? res.complianceOfficerPortfolioHistory
-        : [];
-      console.log("records", records);
-      const mapped = mappingDateWiseTransactionReport(
-        currentAssetTypeData?.Equities,
-        records
-      );
+      const employees = Array.isArray(res?.employees) ? res.employees : [];
+      console.log("records", employees);
+      const mapped = mapListData(currentAssetTypeData?.Equities, employees);
       if (!mapped || typeof mapped !== "object") return;
       console.log("records", mapped);
 
-      setCoPortfolioHistoryListData((prev) => ({
-        complianceOfficerPortfolioHistory: replace
-          ? mapped
-          : [...(prev?.complianceOfficerPortfolioHistory || []), ...mapped],
+      setHTATATReportsData((prev) => ({
+        employees: replace ? mapped : [...(prev?.employees || []), ...mapped],
         // this is for to run lazy loading its data comming from database of total data in db
         totalRecordsDataBase: res?.totalRecords || 0,
         // this is for to know how mush dta currently fetch from  db
         totalRecordsTable: replace
           ? mapped.length
-          : coPortfolioHistoryListData.totalRecordsTable + mapped.length,
+          : htaTATReportsData.totalRecordsTable + mapped.length,
       }));
-      setCoPortfolioHistoryReportSearch((prev) => {
+      setHTATATReportSearch((prev) => {
         const next = {
           ...prev,
           pageNumber: replace ? mapped.length : prev.pageNumber + mapped.length,
@@ -136,7 +126,7 @@ const CompianceOfficerPortfolioHistoryReports = () => {
       assetTypeListingData,
       callApi,
       navigate,
-      setCoPortfolioHistoryReportSearch,
+      setHTATATReportSearch,
       showLoader,
       showNotification,
     ]
@@ -149,44 +139,45 @@ const CompianceOfficerPortfolioHistoryReports = () => {
     if (hasFetched.current) return;
     hasFetched.current = true;
     const requestData = buildApiRequest(
-      coPortfolioHistoryReportSearch,
+      htaTATReportSearch,
       assetTypeListingData
     );
     fetchApiCall(requestData, true, true);
   }, []);
 
-  //   // Reset on Unmount
+  // Reset on Unmount
   useEffect(() => {
     return () => {
       // Reset search state for fresh load
-      resetComplianceOfficerPortfolioHistoryReportSearch();
+      resetHTATATReportSearch();
+      resetHTATATReportsData();
     };
   }, []);
 
   // 🔹 call api on search
   useEffect(() => {
-    if (coPortfolioHistoryReportSearch?.filterTrigger) {
+    if (htaTATReportSearch?.filterTrigger) {
       const requestData = buildApiRequest(
-        coPortfolioHistoryReportSearch,
+        htaTATReportSearch,
         assetTypeListingData
       );
       fetchApiCall(requestData, true, true);
     }
-  }, [coPortfolioHistoryReportSearch?.filterTrigger]);
+  }, [htaTATReportSearch?.filterTrigger]);
 
   // 🔹 Infinite Scroll (lazy loading)
   useTableScrollBottom(
     async () => {
       if (
-        coPortfolioHistoryListData?.totalRecordsDataBase <=
-        coPortfolioHistoryListData?.totalRecordsTable
+        htaTATReportsData?.totalRecordsDataBase <=
+        htaTATReportsData?.totalRecordsTable
       )
         return;
 
       try {
         setLoadingMore(true);
         const requestData = buildApiRequest(
-          coPortfolioHistoryReportSearch,
+          htaTATReportSearch,
           assetTypeListingData
         );
         await fetchApiCall(requestData, false, false);
@@ -204,23 +195,25 @@ const CompianceOfficerPortfolioHistoryReports = () => {
   const columns = getBorderlessTableColumns({
     approvalStatusMap,
     sortedInfo,
-    coPortfolioHistoryReportSearch,
-    setCoPortfolioHistoryReportSearch,
+    htaTATReportSearch,
+    setHTATATReportSearch,
+    setSelectedEmployee,
+    setPolicyModalVisible,
   });
 
   /** 🔹 Handle removing individual filter */
   const handleRemoveFilter = (key) => {
     const resetMap = {
       instrumentName: { instrumentName: "" },
-      requesterName: { requesterName: "" },
+      employeeName: { employeeName: "" },
       departmentName: { departmentName: "" },
-      quantity: { quantity: 0 },
-      // requestDate resets startDate + endDate
+      quantity: { quantity: "" },
+      dateRange: { startDate: null, endDate: null },
     };
 
-    setCoPortfolioHistoryReportSearch((prev) => ({
+    setHTATATReportSearch((prev) => ({
       ...prev,
-      ...resetMap[key], // reset only the clicked filter
+      ...resetMap[key],
       pageNumber: 0,
       filterTrigger: true,
     }));
@@ -228,14 +221,14 @@ const CompianceOfficerPortfolioHistoryReports = () => {
 
   /** 🔹 Handle removing all filters */
   const handleRemoveAllFilters = () => {
-    setCoPortfolioHistoryReportSearch((prev) => ({
+    setHTATATReportSearch((prev) => ({
       ...prev,
       instrumentName: "",
-      requesterName: "",
+      employeeName: "",
       departmentName: "",
-      quantity: 0,
-      type: [],
-      status: [],
+      quantity: "",
+      startDate: null,
+      endDate: null,
       pageNumber: 0,
       filterTrigger: true,
     }));
@@ -243,42 +236,70 @@ const CompianceOfficerPortfolioHistoryReports = () => {
 
   /** 🔹 Build Active Filters */
   const activeFilters = (() => {
-    const { instrumentName, requesterName, departmentName, quantity } =
-      coPortfolioHistoryReportSearch || {};
-
-    const truncate = (val) =>
-      val.length > 13 ? val.slice(0, 13) + "..." : val;
+    const {
+      instrumentName,
+      employeeName,
+      departmentName,
+      quantity,
+      startDate,
+      endDate,
+    } = htaTATReportSearch || {};
 
     return [
-      instrumentName
-        ? { key: "instrumentName", value: truncate(instrumentName) }
-        : null,
+      instrumentName && {
+        key: "instrumentName",
+        label: "Instrument",
+        value:
+          instrumentName.length > 13
+            ? instrumentName.slice(0, 13) + "..."
+            : instrumentName,
+      },
 
-      departmentName
-        ? { key: "departmentName", value: truncate(departmentName) }
-        : null,
+      employeeName && {
+        key: "employeeName",
+        label: "Employee",
+        value:
+          employeeName.length > 13
+            ? employeeName.slice(0, 13) + "..."
+            : employeeName,
+      },
 
-      requesterName
-        ? { key: "requesterName", value: truncate(requesterName) }
-        : null,
+      departmentName && {
+        key: "departmentName",
+        label: "Department",
+        value:
+          departmentName.length > 13
+            ? departmentName.slice(0, 13) + "..."
+            : departmentName,
+      },
 
-      quantity ? { key: "quantity", value: quantity } : null,
+      quantity && {
+        key: "quantity",
+        label: "Quantity",
+        value: Number(quantity).toLocaleString("en-US"),
+      },
+
+      (startDate || endDate) && {
+        key: "dateRange",
+        label: "Date",
+        value: `${startDate ? startDate.format("DD/MM/YYYY") : ""} ${
+          endDate ? `- ${endDate.format("DD/MM/YYYY")}` : ""
+        }`,
+      },
     ].filter(Boolean);
   })();
 
   // 🔷 Excel Report download Api Hit
-  const downloadPortfolioHistoryExport = async () => {
+  const downloadMyTradeApprovalLineManagerInExcelFormat = async () => {
     showLoader(true);
     const requestdata = {
-      InstrumentName: "",
-      DepartmentName: "",
-      Quantity: 0,
-      StatusIds: [],
-      TypeIds: [],
-      RequesterName: "",
+      StartDate: toYYMMDD(htaTATReportSearch.startDate) || null,
+      EndDate: toYYMMDD(htaTATReportSearch.endDate) || null,
+      SearchEmployeeName: htaTATReportSearch.employeeName,
+      SearchDepartmentName: htaTATReportSearch.departmentName,
     };
 
-    await ExportPortfolioHistoryCOExcel({
+    await ExportHTATradeApprovalRequestsExcelReport({
       callApi,
       showLoader,
       requestdata: requestdata,
@@ -298,7 +319,7 @@ const CompianceOfficerPortfolioHistoryReports = () => {
               {
                 title: (
                   <span
-                    onClick={() => navigate("/PAD/co-reports")}
+                    onClick={() => navigate("/PAD/hta-reports")}
                     className={style.breadcrumbLink}
                   >
                     Reports
@@ -308,13 +329,14 @@ const CompianceOfficerPortfolioHistoryReports = () => {
               {
                 title: (
                   <span className={style.breadcrumbText}>
-                    Portfolio History
+                    TAT Request Approvals{" "}
                   </span>
                 ),
               },
             ]}
           />
         </Col>
+
         <Col>
           <div className={style.headerActionsRow}>
             <CustomButton
@@ -338,10 +360,9 @@ const CompianceOfficerPortfolioHistoryReports = () => {
                 <img src={PDF} alt="PDF" draggable={false} />
                 <span>Export PDF</span>
               </div> */}
-
               <div
                 className={style.dropdownItem}
-                onClick={downloadPortfolioHistoryExport}
+                onClick={downloadMyTradeApprovalLineManagerInExcelFormat}
               >
                 <img src={Excel} alt="Excel" draggable={false} />
                 <span>Export Excel</span>
@@ -390,12 +411,11 @@ const CompianceOfficerPortfolioHistoryReports = () => {
       >
         <div className="px-4 md:px-6 lg:px-8 ">
           <BorderlessTable
-            rows={coPortfolioHistoryListData?.complianceOfficerPortfolioHistory}
+            rows={htaTATReportsData?.employees}
             columns={columns}
             classNameTable="border-less-table-blue"
             scroll={
-              coPortfolioHistoryListData?.complianceOfficerPortfolioHistory
-                ?.length
+              htaTATReportsData?.employees?.length
                 ? {
                     x: "max-content",
                     y: activeFilters.length > 0 ? 450 : 500,
@@ -412,4 +432,4 @@ const CompianceOfficerPortfolioHistoryReports = () => {
   );
 };
 
-export default CompianceOfficerPortfolioHistoryReports;
+export default HTATAT;

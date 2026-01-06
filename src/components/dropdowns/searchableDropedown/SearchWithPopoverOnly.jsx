@@ -64,11 +64,16 @@ const SearchWithPopoverOnly = () => {
     setEmployeeMyTradeApprovalsSearch,
     setLMPendingApprovalReportsSearch,
     setMyTradeApprovalReportLineManageSearch,
+    setHTAPolicyBreachesReportSearch,
     setCODatewiseTransactionReportSearch,
     setCOTransactionsSummarysReportsViewDetailSearch,
     setAdminSessionWiseActivitySearch,
     setComplianceOfficerMyActionSearch,
     setCoOverdueVerificationReportSearch,
+    setOverdueVerificationHCOReportSearch,
+    setHeadOfComplianceMyActionSearch,
+    setHCOTradesUploadViaPortfolioSearch,
+    setCoPortfolioHistoryReportSearch,
     //
     setUsersTabSearch,
     setPendingRequestsTabSearch,
@@ -374,6 +379,19 @@ const SearchWithPopoverOnly = () => {
             filterTrigger: true,
           }));
           setSearchMain("");
+        } else if (currentPath === "/PAD/co-reports/co-portfolio-history") {
+          setCoPortfolioHistoryReportSearch((prev) => ({
+            ...prev,
+            instrumentName: searchMain,
+            requesterName: "",
+            departmentName: "",
+            quantity: "",
+            type: [],
+            status: [],
+            pageNumber: 0,
+            filterTrigger: true,
+          }));
+          setSearchMain("");
         } else if (coTransactionSummaryReportViewDetailsFlag) {
           setCOTransactionsSummarysReportsViewDetailSearch((prev) => ({
             ...prev,
@@ -402,6 +420,33 @@ const SearchWithPopoverOnly = () => {
           pageSize: 10,
           filterTrigger: true,
         }));
+        setSearchMain("");
+
+        break;
+
+      case "14": // HTA Escalated
+        if (currentPath === "/PAD/hta-reports/hta-trade-approval-requests") {
+          setMyTradeApprovalReportLineManageSearch((prev) => ({
+            ...prev,
+            employeeName: searchMain,
+            departmentName: "",
+            filterTrigger: true,
+          }));
+        } else if (
+          currentPath === "/PAD/hta-reports/hta-policy-breaches-reports"
+        ) {
+          setHTAPolicyBreachesReportSearch((prev) => ({
+            ...prev,
+            instrumentName: searchMain,
+            employeeID: "",
+            employeeName: "",
+            quantity: "",
+            departmentName: "",
+            startDate: null,
+            endDate: null,
+            filterTrigger: true,
+          }));
+        }
         setSearchMain("");
 
         break;
@@ -435,6 +480,67 @@ const SearchWithPopoverOnly = () => {
         }
         break;
 
+      case "16":
+        setHeadOfComplianceMyActionSearch((prev) => ({
+          ...prev,
+          requestID: "",
+          instrumentName: searchMain,
+          requesterName: "",
+          startDate: null,
+          endDate: null,
+          quantity: 0,
+          pageNumber: 0,
+          type: [],
+          status: [],
+          filterTrigger: true,
+        }));
+
+        setSearchMain("");
+        break;
+
+      case "17": // Head of Compliance Report
+        if (currentPath === "/PAD/hca-reports/hca-overdue-verifications") {
+          setOverdueVerificationHCOReportSearch((prev) => ({
+            ...prev,
+            instrumentName: searchMain,
+            requesterName: "",
+            approvedQuantity: "",
+            sharesTraded: "",
+            startDate: null,
+            endDate: null,
+            pageNumber: 0,
+            filterTrigger: true,
+          }));
+        } else if (currentPath === "/PAD/hca-reports/hca-upload-portfolio") {
+          setHCOTradesUploadViaPortfolioSearch((prev) => ({
+            ...prev,
+            instrumentName: searchMain,
+            employeeName: "",
+            startDate: null,
+            endDate: null,
+            quantity: 0,
+            pageNumber: 0,
+            filterTrigger: true,
+          }));
+        } else if (
+          currentPath === "/PAD/hca-reports/hca-date-wise-transaction-report"
+        ) {
+          setCODatewiseTransactionReportSearch((prev) => ({
+            ...prev,
+            instrumentName: searchMain,
+            quantity: 0,
+            startDate: null,
+            endDate: null,
+            employeeID: 0,
+            employeeName: "",
+            departmentName: "",
+            pageNumber: 0,
+            filterTrigger: true,
+          }));
+        }
+        setSearchMain("");
+        break;
+
       case "18": // Admin Instrument List
         setAdminIntrumentListSearch((prev) => ({
           ...prev,
@@ -465,7 +571,6 @@ const SearchWithPopoverOnly = () => {
           openNewFormForAdminGropusAndPolicy &&
           pageTabesForAdminGropusAndPolicy === 1
         ) {
-          console.log("searchMain", searchMain);
           setAdminGropusAndPolicyPoliciesTabSearch((prev) => ({
             ...prev,
             policyId: searchMain,

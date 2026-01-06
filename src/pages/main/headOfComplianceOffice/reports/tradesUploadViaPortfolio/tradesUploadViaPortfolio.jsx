@@ -1,74 +1,89 @@
 import React, { useEffect, useState, useRef, useCallback } from "react";
 import { Breadcrumb, Col, Row } from "antd";
+import { useNavigate } from "react-router-dom";
 import PDF from "../../../../../assets/img/pdf.png";
 import Excel from "../../../../../assets/img/xls.png";
 import { UpOutlined, DownOutlined } from "@ant-design/icons";
-// 🔹 Components
-import BorderlessTable from "../../../../../components/tables/borderlessTable/borderlessTable";
-import PageLayout from "../../../../../components/pageContainer/pageContainer";
 
 // 🔹 Table Config
 import {
   buildApiRequest,
   getBorderlessTableColumns,
-  mapEmployeeTransactionsReport,
-} from "./utils";
-import { approvalStatusMap } from "../../../../../components/tables/borderlessTable/utill";
+  mapEmployeeTransactions,
+} from "./utill";
 
 // 🔹 Contexts
-import { useGlobalModal } from "../../../../../context/GlobalModalContext";
-
-// 🔹 Styles
-import style from "./TradeApprovalRequest.module.css";
-import { useMyApproval } from "../../../../../context/myApprovalContaxt";
-import {
-  DownloadLineManagerMyTradeApprovalReportRequestAPI,
-  DownloadMyTransactionReportRequestAPI,
-  SearchLineManagerTradeApprovalRequestApi,
-} from "../../../../../api/myApprovalApi";
-import { useNotification } from "../../../../../components/NotificationProvider/NotificationProvider";
+import { useSearchBarContext } from "../../../../../context/SearchBarContaxt";
 import { useApi } from "../../../../../context/ApiContext";
 import { useGlobalLoader } from "../../../../../context/LoaderContext";
-import { useNavigate } from "react-router-dom";
-import { useSearchBarContext } from "../../../../../context/SearchBarContaxt";
+import { useTransaction } from "../../../../../context/myTransaction";
 import { useDashboardContext } from "../../../../../context/dashboardContaxt";
-import { getSafeAssetTypeData } from "../../../../../common/funtions/assetTypesList";
-import { useTableScrollBottom } from "../../../../../common/funtions/scroll";
-import CustomButton from "../../../../../components/buttons/button";
-import { DateRangePicker } from "../../../../../components";
-import { toYYMMDD } from "../../../../../common/funtions/rejex";
 
-const TradeApprovalRequest = () => {
+// 🔹 API
+
+// 🔹 Styles
+import style from "./tradesUploadViaPortfolio.module.css";
+import { buildBrokerOptions } from "../../../../../common/funtions/brokersList";
+import { useTableScrollBottom } from "../../../../../common/funtions/scroll";
+import { getSafeAssetTypeData } from "../../../../../common/funtions/assetTypesList";
+import { BorderlessTable, PageLayout } from "../../../../../components";
+import { approvalStatusMap } from "../../../../../components/tables/borderlessTable/utill";
+import { useNotification } from "../../../../../components/NotificationProvider/NotificationProvider";
+import { GetAllTransactionViewDetails } from "../../../../../api/myTransactionsApi";
+import { useGlobalModal } from "../../../../../context/GlobalModalContext";
+import {
+  DownloadMyTradeApprovalReportRequestAPI,
+  ExportHOCUploadedPortfolioReportExcel,
+  SearchHOCUploadedPortFolio,
+  SearchMyTradeApprovalsReportsApi,
+} from "../../../../../api/myApprovalApi";
+import CustomButton from "../../../../../components/buttons/button";
+
+/**
+ * 📄 MyTransaction Component
+ *
+ * Displays employee transactions with filters, sorting, and infinite scrolling.
+ * Integrates with:
+ * - `SearchBarContext` for search/filter state
+ * - `ApiContext` for API calls
+ * - `LoaderContext` + `NotificationProvider` for feedback
+ * - `DashboardContext` for brokers data
+ * - `GlobalModal` for modal management
+ *
+ * @returns {JSX.Element}
+ */
+const TradesUploadViaPortfolio = () => {
   const navigate = useNavigate();
   const hasFetched = useRef(false);
-  const tableScrollEmployeeTransaction = useRef(null);
+  const tableScrollTradeUploadedViaPortfolio = useRef(null);
 
   // -------------------- Contexts --------------------
   const { callApi } = useApi();
   const { showNotification } = useNotification();
   const { showLoader } = useGlobalLoader();
-  const { myTradeApprovalLineManagerData, setMyTradeApprovalLineManagerData } =
-    useMyApproval();
-
-  const {
-    myTradeApprovalReportLineManageSearch,
-    setMyTradeApprovalReportLineManageSearch,
-    resetLineManagerMyTradeApproval,
-  } = useSearchBarContext();
 
   const { assetTypeListingData, setAssetTypeListingData } =
     useDashboardContext();
 
-  console.log(myTradeApprovalLineManagerData, "myTradeApprovalLineManagerData");
+  const {
+    hcoTradesUploadViaPortfolioSearch,
+    setHCOTradesUploadViaPortfolioSearch,
+    resetHCOTradesUploadViaPortfolioSearch,
+  } = useSearchBarContext();
+
+  const {
+    hcoUploadedPortFolioData,
+    setHCOUploadedPortFolioData,
+    hcoUploadedPortFolioDataMqtt,
+    setHCOUploadedPortFolioDataMqtt,
+    resetHCOUploadedPortFolioData,
+  } = useTransaction();
 
   // -------------------- Local State --------------------
   const [sortedInfo, setSortedInfo] = useState({});
   const [loadingMore, setLoadingMore] = useState(false);
   const [open, setOpen] = useState(false);
-  const [dateRange, setDateRange] = useState({
-    StartDate: null,
-    EndDate: null,
-  });
+
   // -------------------- Helpers --------------------
 
   /**
@@ -80,40 +95,44 @@ const TradeApprovalRequest = () => {
       if (!requestData || typeof requestData !== "object") return;
       if (showLoaderFlag) showLoader(true);
 
-      const res = await SearchLineManagerTradeApprovalRequestApi({
+      const res = await SearchHOCUploadedPortFolio({
         callApi,
         showNotification,
         showLoader,
         requestdata: requestData,
         navigate,
       });
-      console.log("res".res);
-
+      console.log("SearchHOCUploadedPortFolio", res);
       // ✅ Always get the freshest version (from memory or session)
       const currentAssetTypeData = getSafeAssetTypeData(
         assetTypeListingData,
         setAssetTypeListingData
       );
 
-      const records = Array.isArray(res?.records) ? res.records : [];
-      console.log("records", records);
-      const mapped = mapEmployeeTransactionsReport(
+      const pendingPortfolios = Array.isArray(res?.pendingPortfolios)
+        ? res.pendingPortfolios
+        : [];
+      console.log("SearchHOCUploadedPortFolio", pendingPortfolios);
+      const mapped = mapEmployeeTransactions(
         currentAssetTypeData?.Equities,
-        records
+        pendingPortfolios
       );
+      console.log("SearchHOCUploadedPortFolio", mapped);
       if (!mapped || typeof mapped !== "object") return;
-      console.log("records", mapped);
+      console.log("transactions", mapped);
 
-      setMyTradeApprovalLineManagerData((prev) => ({
-        records: replace ? mapped : [...(prev?.records || []), ...mapped],
+      setHCOUploadedPortFolioData((prev) => ({
+        pendingPortfolios: replace
+          ? mapped
+          : [...(prev?.pendingPortfolios || []), ...mapped],
         // this is for to run lazy loading its data comming from database of total data in db
         totalRecordsDataBase: res?.totalRecords || 0,
         // this is for to know how mush dta currently fetch from  db
         totalRecordsTable: replace
           ? mapped.length
-          : myTradeApprovalLineManagerData.totalRecordsTable + mapped.length,
+          : hcoUploadedPortFolioData.totalRecordsTable + mapped.length,
       }));
-      setMyTradeApprovalReportLineManageSearch((prev) => {
+      setHCOTradesUploadViaPortfolioSearch((prev) => {
         const next = {
           ...prev,
           pageNumber: replace ? mapped.length : prev.pageNumber + mapped.length,
@@ -131,7 +150,7 @@ const TradeApprovalRequest = () => {
       assetTypeListingData,
       callApi,
       navigate,
-      setMyTradeApprovalReportLineManageSearch,
+      setHCOTradesUploadViaPortfolioSearch,
       showLoader,
       showNotification,
     ]
@@ -144,7 +163,7 @@ const TradeApprovalRequest = () => {
     if (hasFetched.current) return;
     hasFetched.current = true;
     const requestData = buildApiRequest(
-      myTradeApprovalReportLineManageSearch,
+      hcoTradesUploadViaPortfolioSearch,
       assetTypeListingData
     );
     fetchApiCall(requestData, true, true);
@@ -154,34 +173,53 @@ const TradeApprovalRequest = () => {
   useEffect(() => {
     return () => {
       // Reset search state for fresh load
-      resetLineManagerMyTradeApproval();
+      resetHCOTradesUploadViaPortfolioSearch();
+      resetHCOUploadedPortFolioData();
     };
   }, []);
 
+  console.log("hcoTradesUploadViaPortfolioSearch");
   // 🔹 call api on search
   useEffect(() => {
-    if (myTradeApprovalReportLineManageSearch?.filterTrigger) {
+    if (hcoTradesUploadViaPortfolioSearch.filterTrigger) {
+      console.log("hcoTradesUploadViaPortfolioSearch");
       const requestData = buildApiRequest(
-        myTradeApprovalReportLineManageSearch,
+        hcoTradesUploadViaPortfolioSearch,
         assetTypeListingData
       );
       fetchApiCall(requestData, true, true);
     }
-  }, [myTradeApprovalReportLineManageSearch?.filterTrigger]);
+  }, [hcoTradesUploadViaPortfolioSearch.filterTrigger]);
+
+  // 🔹 Refresh on MQTT update
+  useEffect(() => {
+    if (hcoUploadedPortFolioDataMqtt) {
+      let requestData = buildApiRequest(
+        hcoTradesUploadViaPortfolioSearch,
+        assetTypeListingData
+      );
+      requestData = {
+        ...requestData,
+        PageNumber: 0,
+      };
+      fetchApiCall(requestData, true, false);
+      setHCOUploadedPortFolioDataMqtt(false);
+    }
+  }, [hcoUploadedPortFolioDataMqtt]);
 
   // 🔹 Infinite Scroll (lazy loading)
   useTableScrollBottom(
     async () => {
       if (
-        myTradeApprovalLineManagerData?.totalRecordsDataBase <=
-        myTradeApprovalLineManagerData?.totalRecordsTable
+        hcoUploadedPortFolioData?.totalRecordsDataBase <=
+        hcoUploadedPortFolioData?.totalRecordsTable
       )
         return;
 
       try {
         setLoadingMore(true);
         const requestData = buildApiRequest(
-          myTradeApprovalReportLineManageSearch,
+          hcoTradesUploadViaPortfolioSearch,
           assetTypeListingData
         );
         await fetchApiCall(requestData, false, false);
@@ -199,19 +237,20 @@ const TradeApprovalRequest = () => {
   const columns = getBorderlessTableColumns({
     approvalStatusMap,
     sortedInfo,
-    myTradeApprovalReportLineManageSearch,
-    setMyTradeApprovalReportLineManageSearch,
+    hcoTradesUploadViaPortfolioSearch,
+    setHCOTradesUploadViaPortfolioSearch,
   });
 
   /** 🔹 Handle removing individual filter */
   const handleRemoveFilter = (key) => {
-    console.log(key, "checkCheclebdkjbkwbcdjh");
     const resetMap = {
+      instrumentName: { instrumentName: "" },
       employeeName: { employeeName: "" },
-      departmentName: { departmentName: "" },
+      dateRange: { startDate: null, endDate: null },
+      quantity: { quantity: "" },
     };
 
-    setMyTradeApprovalReportLineManageSearch((prev) => ({
+    setHCOTradesUploadViaPortfolioSearch((prev) => ({
       ...prev,
       ...resetMap[key],
       pageNumber: 0,
@@ -221,10 +260,13 @@ const TradeApprovalRequest = () => {
 
   /** 🔹 Handle removing all filters */
   const handleRemoveAllFilters = () => {
-    setMyTradeApprovalReportLineManageSearch((prev) => ({
+    setHCOTradesUploadViaPortfolioSearch((prev) => ({
       ...prev,
+      instrumentName: "",
       employeeName: "",
-      departmentName: "",
+      quantity: "",
+      startDate: null,
+      endDate: null,
       pageNumber: 0,
       filterTrigger: true,
     }));
@@ -232,10 +274,18 @@ const TradeApprovalRequest = () => {
 
   /** 🔹 Build Active Filters */
   const activeFilters = (() => {
-    const { employeeName, departmentName } =
-      myTradeApprovalReportLineManageSearch || {};
+    const { instrumentName, employeeName, quantity, startDate, endDate } =
+      hcoTradesUploadViaPortfolioSearch || {};
 
     return [
+      instrumentName && {
+        key: "instrumentName",
+        value:
+          instrumentName.length > 13
+            ? instrumentName.slice(0, 13) + "..."
+            : instrumentName,
+      },
+
       employeeName && {
         key: "employeeName",
         value:
@@ -244,27 +294,33 @@ const TradeApprovalRequest = () => {
             : employeeName,
       },
 
-      departmentName && {
-        key: "departmentName",
-        value:
-          departmentName.length > 13
-            ? departmentName.slice(0, 13) + "..."
-            : departmentName,
-      },
+      startDate &&
+        endDate && {
+          key: "dateRange",
+          value: `${startDate} → ${endDate}`,
+        },
+
+      quantity &&
+        Number(quantity) > 0 && {
+          key: "quantity",
+          value: Number(quantity).toLocaleString("en-US"),
+        },
     ].filter(Boolean);
   })();
 
   // 🔷 Excel Report download Api Hit
-  const downloadMyTradeApprovalLineManagerInExcelFormat = async () => {
+  const downloadMyTransactionInExcelFormat = async () => {
     showLoader(true);
     const requestdata = {
+      InstrumentName: "",
+      Quantity: 0,
       StartDate: "",
       EndDate: "",
-      SearchEmployeeName: "",
-      SearchDepartmentName: "",
+      BrokerIds: [],
+      StatusIds: [],
+      TypeIds: [],
     };
-
-    await DownloadLineManagerMyTradeApprovalReportRequestAPI({
+    await ExportHOCUploadedPortfolioReportExcel({
       callApi,
       showLoader,
       requestdata: requestdata,
@@ -272,46 +328,11 @@ const TradeApprovalRequest = () => {
     });
   };
 
-  const handleDateChange = (dates) => {
-    if (dates && dates.length === 2) {
-      setDateRange({
-        StartDate: dates?.[0] || null,
-        EndDate: dates?.[1] || null,
-      });
-
-      // Call API immediately after date change
-      fetchApiCall(
-        {
-          StartDate: toYYMMDD(dates[0]) || null,
-          EndDate: toYYMMDD(dates[1]) || null,
-        },
-        true,
-        true
-      );
-    }
-  };
-
-  const handleClearDates = () => {
-    // Reset state
-    setDateRange({
-      StartDate: null,
-      EndDate: null,
-    });
-
-    // Call API with empty values
-    fetchApiCall(
-      {
-        StartDate: "",
-        EndDate: "",
-      },
-      true,
-      true
-    );
-  };
-
   // -------------------- Render --------------------
   return (
     <>
+      {/* 🔹 Active Filter Tags */}
+
       <Row justify="start" align="middle" className={style.breadcrumbRow}>
         <Col>
           <Breadcrumb
@@ -321,7 +342,7 @@ const TradeApprovalRequest = () => {
               {
                 title: (
                   <span
-                    onClick={() => navigate("/PAD/lm-reports")}
+                    onClick={() => navigate("/PAD/hca-reports")}
                     className={style.breadcrumbLink}
                   >
                     Reports
@@ -331,7 +352,7 @@ const TradeApprovalRequest = () => {
               {
                 title: (
                   <span className={style.breadcrumbText}>
-                    Trade Approval Requests
+                    Trades Upload Via Portfolio
                   </span>
                 ),
               },
@@ -341,13 +362,6 @@ const TradeApprovalRequest = () => {
 
         <Col>
           <div className={style.headerActionsRow}>
-            <DateRangePicker
-              size="medium"
-              className={style.dateRangePickerClass}
-              value={[dateRange.StartDate, dateRange.EndDate]}
-              onChange={handleDateChange}
-              onClear={handleClearDates}
-            />
             <CustomButton
               text={
                 <span className={style.exportButtonText}>
@@ -371,16 +385,15 @@ const TradeApprovalRequest = () => {
               </div> */}
               <div
                 className={style.dropdownItem}
-                onClick={downloadMyTradeApprovalLineManagerInExcelFormat}
+                onClick={downloadMyTransactionInExcelFormat}
               >
                 <img src={Excel} alt="Excel" draggable={false} />
-                <span>Export Excel</span>
+                <span>Export XLS</span>
               </div>
             </div>
           )}
         </Col>
       </Row>
-      {/* 🔹 Active Filter Tags */}
       {activeFilters.length > 0 && (
         <Row gutter={[12, 12]} className={style["filter-tags-container"]}>
           {activeFilters.map(({ key, value }) => (
@@ -413,18 +426,18 @@ const TradeApprovalRequest = () => {
       {/* 🔹 Transactions Table */}
       <PageLayout
         background="white"
-        style={{ marginTop: "3px" }}
+        style={{ marginTop: "2px" }}
         className={
           activeFilters.length > 0 ? "changeHeightreports" : "repotsHeight"
         }
       >
         <div className="px-4 md:px-6 lg:px-8 ">
           <BorderlessTable
-            rows={myTradeApprovalLineManagerData?.records}
+            rows={hcoUploadedPortFolioData?.pendingPortfolios}
             columns={columns}
             classNameTable="border-less-table-blue"
             scroll={
-              myTradeApprovalLineManagerData?.records?.length
+              hcoUploadedPortFolioData?.pendingPortfolios?.length
                 ? {
                     x: "max-content",
                     y: activeFilters.length > 0 ? 450 : 500,
@@ -433,7 +446,7 @@ const TradeApprovalRequest = () => {
             }
             onChange={(pagination, filters, sorter) => setSortedInfo(sorter)}
             loading={loadingMore}
-            ref={tableScrollEmployeeTransaction}
+            ref={tableScrollTradeUploadedViaPortfolio}
           />
         </div>
       </PageLayout>
@@ -441,4 +454,4 @@ const TradeApprovalRequest = () => {
   );
 };
 
-export default TradeApprovalRequest;
+export default TradesUploadViaPortfolio;

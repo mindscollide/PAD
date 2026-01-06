@@ -4,7 +4,7 @@ import ArrowDown from "../../../../assets/img/arrow-down-dark.png";
 import DefaultColumArrow from "../../../../assets/img/default-colum-arrow.png";
 import React from "react";
 import { Tag, Tooltip } from "antd";
-import style from "./co-myActions.module.css";
+import style from "./HOC-myActions.module.css";
 import {
   dashBetweenApprovalAssets,
   formatApiDateTime,
@@ -75,7 +75,7 @@ export const getMyActionsColumn = (approvalStatusMap, sortedInfo) => [
     dataIndex: "approvalID",
     key: "approvalID",
     ellipsis: true,
-    width: "220px",
+    width: "160px",
     sorter: (a, b) =>
       parseInt(a.approvalID.replace(/[^\d]/g, ""), 10) -
       parseInt(b.approvalID.replace(/[^\d]/g, ""), 10),
@@ -136,6 +136,7 @@ export const getMyActionsColumn = (approvalStatusMap, sortedInfo) => [
                 display: "inline-block",
                 cursor: "pointer",
               }}
+              title={code}
             >
               {code}
             </span>
@@ -167,8 +168,8 @@ export const getMyActionsColumn = (approvalStatusMap, sortedInfo) => [
     ),
     dataIndex: "approvalDateTime",
     key: "approvalDateTime",
-    width: "280px",
-    align: "left",
+    width: "250px",
+    align: "center",
     ellipsis: true,
     sorter: (a, b) => {
       const dateA = new Date(`${a.creationDate} ${a.creationTime}`).getTime();
@@ -185,6 +186,20 @@ export const getMyActionsColumn = (approvalStatusMap, sortedInfo) => [
         {formatApiDateTime(`${record.creationDate} ${record.creationTime}`)}
       </span>
     ),
+  },
+  {
+    title: withSortIcon("Nature", "nature", sortedInfo),
+    dataIndex: "nature",
+    key: "nature",
+    width: "100px",
+    align: "left",
+    ellipsis: true,
+    sorter: (a, b) => a.nature.localeCompare(b.nature),
+    sortDirections: ["ascend", "descend"],
+    sortOrder: sortedInfo?.columnKey === "nature" ? sortedInfo.order : null,
+    showSorterTooltip: false,
+    sortIcon: () => null,
+    render: (text) => <span className="font-medium">{text || "-"}</span>,
   },
   {
     title: withSortIcon("Type", "type", sortedInfo),
@@ -205,7 +220,7 @@ export const getMyActionsColumn = (approvalStatusMap, sortedInfo) => [
     dataIndex: "quantity",
     key: "quantity",
     width: "180px",
-    align: "left",
+    align: "center",
     ellipsis: true,
     sorter: (a, b) => a.quantity - b.quantity,
     sortDirections: ["ascend", "descend"],

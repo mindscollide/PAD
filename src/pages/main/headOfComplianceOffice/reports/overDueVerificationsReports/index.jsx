@@ -18,12 +18,11 @@ import {
 import { useGlobalModal } from "../../../../../context/GlobalModalContext";
 
 // 🔹 Styles
-import style from "./PortfolioHistoryReports.module.css";
+import style from "./OverDueVerificationReports.module.css";
 import { useMyApproval } from "../../../../../context/myApprovalContaxt";
 import {
+  ExportHOCOverdueVerificationsExcelReport,
   ExportOverdueVerificationCOExcel,
-  ExportPortfolioHistoryCOExcel,
-  GetComplianceOfficerPortfolioHistoryRequestApi,
   SearchHOCOverdueVerificationsRequestApi,
 } from "../../../../../api/myApprovalApi";
 import { useNotification } from "../../../../../components/NotificationProvider/NotificationProvider";
@@ -36,9 +35,18 @@ import { getSafeAssetTypeData } from "../../../../../common/funtions/assetTypesL
 import { useTableScrollBottom } from "../../../../../common/funtions/scroll";
 import CustomButton from "../../../../../components/buttons/button";
 import { useSidebarContext } from "../../../../../context/sidebarContaxt";
-import { approvalStatusMap } from "../../../../../components/tables/borderlessTable/utill";
+// import ViewDetailReconcileTransaction from "../../reconcile/transaction/modals/viewDetailReconcileTransaction.jsx/ViewDetailReconcileTransaction";
+import { GetAllTransactionViewDetails } from "../../../../../api/myTransactionsApi";
+import { useReconcileContext } from "../../../../../context/reconsileContax";
+import ViewDetailHeadOfComplianceReconcileTransaction from "../../escalatedVerifications/escalatedVerification/modals/viewDetailHeadOfComplianceReconcileTransactions/ViewDetailHeadOfComplianceReconcileTransaction";
+import { GetAllComplianceOfficerReconcileTransactionAndPortfolioRequest } from "../../../../../api/reconsile";
+import ViewTicketEscalatedModal from "../../escalatedVerifications/escalatedVerification/modals/viewTicketEscalatedModal/ViewTicketEscalatedModal";
+import UploadHeadOfComplianceTicketModal from "../../escalatedVerifications/escalatedVerification/modals/uploadHeadOfComplianceTicketModal/UploadHeadOfComplianceTicketModal";
+import NoteHeadOfComplianceModal from "../../escalatedVerifications/escalatedVerification/modals/noteHeadOfComplianceModal/NoteHeadOfComplianceModal";
+import ApproveHeadOfComplianceModal from "../../escalatedVerifications/escalatedVerification/modals/approveHeadOfComplianceModal/ApproveHeadOfComplianceModal";
+import DeclinedHeadOfComplianceModal from "../../escalatedVerifications/escalatedVerification/modals/declinedHeadOfComplianceModal/DeclinedHeadOfComplianceModal";
 
-const CompianceOfficerPortfolioHistoryReports = () => {
+const HeadCompianceOfficerOverdueVerificationReports = () => {
   const navigate = useNavigate();
   const hasFetched = useRef(false);
   const tableScrollEmployeeTransaction = useRef(null);
@@ -47,25 +55,35 @@ const CompianceOfficerPortfolioHistoryReports = () => {
   const { callApi } = useApi();
   const { showNotification } = useNotification();
   const { showLoader } = useGlobalLoader();
-  const {
-    coPortfolioHistoryListData,
-    setCoPortfolioHistoryListData,
-    resetCOPortfolioHistoryReportListData,
-  } = useMyApproval();
-
-  const {
-    coPortfolioHistoryReportSearch,
-    setCoPortfolioHistoryReportSearch,
-    resetComplianceOfficerPortfolioHistoryReportSearch,
-  } = useSearchBarContext();
-
   const { selectedKey } = useSidebarContext();
-  console.log(selectedKey, "selectedKey");
 
-  console.log(coPortfolioHistoryListData, "coPortfolioHistoryListData");
+  const { overdueVerificationHCOListData, setOverdueVerificationHCOListData } =
+    useMyApproval();
+
+  const {
+    OverdueVerificationHCOReportSearch,
+    setOverdueVerificationHCOReportSearch,
+    resetHeadOfComplianceOfficerOverdueVerificationReportSearch,
+  } = useSearchBarContext();
+  const {
+    viewDetailHeadOfComplianceEscalated,
+    setViewDetailHeadOfComplianceEscalated,
+    uploadComplianceModal,
+    isViewTicketTransactionModal,
+    compliantApproveModal,
+    nonCompliantDeclineModal,
+    noteGlobalModal,
+  } = useGlobalModal();
+
+  console.log(overdueVerificationHCOListData, "overdueVerificationHCOListData");
+
+  console.log(selectedKey, "selectedKeyselectedKey");
 
   const { assetTypeListingData, setAssetTypeListingData } =
     useDashboardContext();
+
+  const { setIsEscalatedHeadOfComplianceViewDetailData } =
+    useReconcileContext();
 
   // -------------------- Local State --------------------
   const [sortedInfo, setSortedInfo] = useState({});
@@ -82,7 +100,7 @@ const CompianceOfficerPortfolioHistoryReports = () => {
     async (requestData, replace = false, showLoaderFlag = true) => {
       if (!requestData || typeof requestData !== "object") return;
       if (showLoaderFlag) showLoader(true);
-      const res = await GetComplianceOfficerPortfolioHistoryRequestApi({
+      const res = await SearchHOCOverdueVerificationsRequestApi({
         callApi,
         showNotification,
         showLoader,
@@ -96,8 +114,8 @@ const CompianceOfficerPortfolioHistoryReports = () => {
         setAssetTypeListingData
       );
 
-      const records = Array.isArray(res?.complianceOfficerPortfolioHistory)
-        ? res.complianceOfficerPortfolioHistory
+      const records = Array.isArray(res?.overdueVerifications)
+        ? res.overdueVerifications
         : [];
       console.log("records", records);
       const mapped = mappingDateWiseTransactionReport(
@@ -107,18 +125,18 @@ const CompianceOfficerPortfolioHistoryReports = () => {
       if (!mapped || typeof mapped !== "object") return;
       console.log("records", mapped);
 
-      setCoPortfolioHistoryListData((prev) => ({
-        complianceOfficerPortfolioHistory: replace
+      setOverdueVerificationHCOListData((prev) => ({
+        overdueVerifications: replace
           ? mapped
-          : [...(prev?.complianceOfficerPortfolioHistory || []), ...mapped],
+          : [...(prev?.overdueVerifications || []), ...mapped],
         // this is for to run lazy loading its data comming from database of total data in db
         totalRecordsDataBase: res?.totalRecords || 0,
         // this is for to know how mush dta currently fetch from  db
         totalRecordsTable: replace
           ? mapped.length
-          : coPortfolioHistoryListData.totalRecordsTable + mapped.length,
+          : overdueVerificationHCOListData.totalRecordsTable + mapped.length,
       }));
-      setCoPortfolioHistoryReportSearch((prev) => {
+      setOverdueVerificationHCOReportSearch((prev) => {
         const next = {
           ...prev,
           pageNumber: replace ? mapped.length : prev.pageNumber + mapped.length,
@@ -136,11 +154,13 @@ const CompianceOfficerPortfolioHistoryReports = () => {
       assetTypeListingData,
       callApi,
       navigate,
-      setCoPortfolioHistoryReportSearch,
+      setOverdueVerificationHCOReportSearch,
       showLoader,
       showNotification,
     ]
   );
+  console.log("records", overdueVerificationHCOListData);
+  console.log("records", OverdueVerificationHCOReportSearch);
 
   // -------------------- Effects --------------------
 
@@ -149,7 +169,7 @@ const CompianceOfficerPortfolioHistoryReports = () => {
     if (hasFetched.current) return;
     hasFetched.current = true;
     const requestData = buildApiRequest(
-      coPortfolioHistoryReportSearch,
+      OverdueVerificationHCOReportSearch,
       assetTypeListingData
     );
     fetchApiCall(requestData, true, true);
@@ -159,34 +179,34 @@ const CompianceOfficerPortfolioHistoryReports = () => {
   useEffect(() => {
     return () => {
       // Reset search state for fresh load
-      resetComplianceOfficerPortfolioHistoryReportSearch();
+      resetHeadOfComplianceOfficerOverdueVerificationReportSearch();
     };
   }, []);
 
   // 🔹 call api on search
   useEffect(() => {
-    if (coPortfolioHistoryReportSearch?.filterTrigger) {
+    if (OverdueVerificationHCOReportSearch?.filterTrigger) {
       const requestData = buildApiRequest(
-        coPortfolioHistoryReportSearch,
+        OverdueVerificationHCOReportSearch,
         assetTypeListingData
       );
       fetchApiCall(requestData, true, true);
     }
-  }, [coPortfolioHistoryReportSearch?.filterTrigger]);
+  }, [OverdueVerificationHCOReportSearch?.filterTrigger]);
 
   // 🔹 Infinite Scroll (lazy loading)
   useTableScrollBottom(
     async () => {
       if (
-        coPortfolioHistoryListData?.totalRecordsDataBase <=
-        coPortfolioHistoryListData?.totalRecordsTable
+        overdueVerificationHCOListData?.totalRecordsDataBase <=
+        overdueVerificationHCOListData?.totalRecordsTable
       )
         return;
 
       try {
         setLoadingMore(true);
         const requestData = buildApiRequest(
-          coPortfolioHistoryReportSearch,
+          OverdueVerificationHCOReportSearch,
           assetTypeListingData
         );
         await fetchApiCall(requestData, false, false);
@@ -200,12 +220,34 @@ const CompianceOfficerPortfolioHistoryReports = () => {
     "border-less-table-blue"
   );
 
+  // This Api is for the getAllViewDetailModal For myTransaction in Emp role
+  // GETALLVIEWDETAIL OF Transaction API FUNCTION
+  const handleViewDetailsForReconcileTransaction = async (workFlowID) => {
+    await showLoader(true);
+    const requestdata = { TradeApprovalID: workFlowID };
+
+    const responseData =
+      await GetAllComplianceOfficerReconcileTransactionAndPortfolioRequest({
+        callApi,
+        showNotification,
+        showLoader,
+        requestdata,
+        navigate,
+      });
+
+    if (responseData) {
+      setIsEscalatedHeadOfComplianceViewDetailData(responseData);
+      setViewDetailHeadOfComplianceEscalated(true);
+    }
+  };
+
   // -------------------- Table Columns --------------------
   const columns = getBorderlessTableColumns({
-    approvalStatusMap,
     sortedInfo,
-    coPortfolioHistoryReportSearch,
-    setCoPortfolioHistoryReportSearch,
+    OverdueVerificationHCOReportSearch,
+    setOverdueVerificationHCOReportSearch,
+    setViewDetailHeadOfComplianceEscalated,
+    handleViewDetailsForReconcileTransaction,
   });
 
   /** 🔹 Handle removing individual filter */
@@ -213,12 +255,13 @@ const CompianceOfficerPortfolioHistoryReports = () => {
     const resetMap = {
       instrumentName: { instrumentName: "" },
       requesterName: { requesterName: "" },
-      departmentName: { departmentName: "" },
-      quantity: { quantity: 0 },
+      approvedQuantity: { approvedQuantity: 0 },
+      sharesTraded: { sharesTraded: 0 },
       // requestDate resets startDate + endDate
+      requestDate: { startDate: null, endDate: null },
     };
 
-    setCoPortfolioHistoryReportSearch((prev) => ({
+    setOverdueVerificationHCOReportSearch((prev) => ({
       ...prev,
       ...resetMap[key], // reset only the clicked filter
       pageNumber: 0,
@@ -228,14 +271,15 @@ const CompianceOfficerPortfolioHistoryReports = () => {
 
   /** 🔹 Handle removing all filters */
   const handleRemoveAllFilters = () => {
-    setCoPortfolioHistoryReportSearch((prev) => ({
+    setOverdueVerificationHCOReportSearch((prev) => ({
       ...prev,
       instrumentName: "",
       requesterName: "",
-      departmentName: "",
-      quantity: 0,
-      type: [],
-      status: [],
+      approvedQuantity: 0,
+      sharesTraded: 0,
+      startDate: null,
+      endDate: null,
+      type: "",
       pageNumber: 0,
       filterTrigger: true,
     }));
@@ -243,42 +287,72 @@ const CompianceOfficerPortfolioHistoryReports = () => {
 
   /** 🔹 Build Active Filters */
   const activeFilters = (() => {
-    const { instrumentName, requesterName, departmentName, quantity } =
-      coPortfolioHistoryReportSearch || {};
+    const {
+      instrumentName,
+      requesterName,
+      approvedQuantity,
+      sharesTraded,
+      startDate,
+      endDate,
+    } = OverdueVerificationHCOReportSearch || {};
 
     const truncate = (val) =>
       val.length > 13 ? val.slice(0, 13) + "..." : val;
+
+    const formatDate = (date) =>
+      date ? new Date(date).toISOString().split("T")[0] : null;
+
+    const formatArray = (arr) => (arr?.length ? arr.join(", ") : null);
+
+    const formattedStart = formatDate(startDate);
+    const formattedEnd = formatDate(endDate);
+
+    // 🔹 Combine into requestDate
+    let requestDate = null;
+    if (formattedStart && formattedEnd) {
+      requestDate = `${formattedStart} to ${formattedEnd}`;
+    } else if (formattedStart) {
+      requestDate = `From ${formattedStart}`;
+    } else if (formattedEnd) {
+      requestDate = `Till ${formattedEnd}`;
+    }
 
     return [
       instrumentName
         ? { key: "instrumentName", value: truncate(instrumentName) }
         : null,
 
-      departmentName
-        ? { key: "departmentName", value: truncate(departmentName) }
-        : null,
-
       requesterName
         ? { key: "requesterName", value: truncate(requesterName) }
         : null,
 
-      quantity ? { key: "quantity", value: quantity } : null,
+      approvedQuantity
+        ? { key: "approvedQuantity", value: approvedQuantity }
+        : null,
+
+      sharesTraded ? { key: "sharesTraded", value: sharesTraded } : null,
+
+      requestDate ? { key: "requestDate", value: requestDate } : null,
     ].filter(Boolean);
   })();
 
   // 🔷 Excel Report download Api Hit
-  const downloadPortfolioHistoryExport = async () => {
+  const downloadOverdueVerificationExcelFormat = async () => {
     showLoader(true);
     const requestdata = {
       InstrumentName: "",
-      DepartmentName: "",
-      Quantity: 0,
-      StatusIds: [],
-      TypeIds: [],
       RequesterName: "",
+      Type: "",
+      StatusIds: [],
+      FromDate: "",
+      ToDate: "",
+      EscalationFromDate: "",
+      EscalationToDate: "",
+      ApprovedQuantity: null,
+      ShareTraded: null,
     };
 
-    await ExportPortfolioHistoryCOExcel({
+    await ExportHOCOverdueVerificationsExcelReport({
       callApi,
       showLoader,
       requestdata: requestdata,
@@ -298,7 +372,7 @@ const CompianceOfficerPortfolioHistoryReports = () => {
               {
                 title: (
                   <span
-                    onClick={() => navigate("/PAD/co-reports")}
+                    onClick={() => navigate("/PAD/hca-reports")}
                     className={style.breadcrumbLink}
                   >
                     Reports
@@ -308,7 +382,7 @@ const CompianceOfficerPortfolioHistoryReports = () => {
               {
                 title: (
                   <span className={style.breadcrumbText}>
-                    Portfolio History
+                    Overdue Verifications
                   </span>
                 ),
               },
@@ -341,7 +415,7 @@ const CompianceOfficerPortfolioHistoryReports = () => {
 
               <div
                 className={style.dropdownItem}
-                onClick={downloadPortfolioHistoryExport}
+                onClick={downloadOverdueVerificationExcelFormat}
               >
                 <img src={Excel} alt="Excel" draggable={false} />
                 <span>Export Excel</span>
@@ -390,12 +464,11 @@ const CompianceOfficerPortfolioHistoryReports = () => {
       >
         <div className="px-4 md:px-6 lg:px-8 ">
           <BorderlessTable
-            rows={coPortfolioHistoryListData?.complianceOfficerPortfolioHistory}
+            rows={overdueVerificationHCOListData?.overdueVerifications}
             columns={columns}
             classNameTable="border-less-table-blue"
             scroll={
-              coPortfolioHistoryListData?.complianceOfficerPortfolioHistory
-                ?.length
+              overdueVerificationHCOListData?.overdueVerifications?.length
                 ? {
                     x: "max-content",
                     y: activeFilters.length > 0 ? 450 : 500,
@@ -408,8 +481,28 @@ const CompianceOfficerPortfolioHistoryReports = () => {
           />
         </div>
       </PageLayout>
+
+      {/* To show View Detail Reconcile Transaction on View Click */}
+      {viewDetailHeadOfComplianceEscalated && (
+        <ViewDetailHeadOfComplianceReconcileTransaction />
+      )}
+
+      {/* To show view Ticket Modal on click of View Ticket */}
+      {isViewTicketTransactionModal && <ViewTicketEscalatedModal />}
+
+      {/* To Show upload Ticket Modal On Add Ticket Click */}
+      {uploadComplianceModal && <UploadHeadOfComplianceTicketModal />}
+
+      {/* To show Note Modal When click on Compliant or Non Compliant */}
+      {noteGlobalModal && <NoteHeadOfComplianceModal />}
+
+      {/* To Show Compliant Approve modal when I click submit */}
+      {compliantApproveModal && <ApproveHeadOfComplianceModal />}
+
+      {/* To Show Non COmpliant Modal by click on submit */}
+      {nonCompliantDeclineModal && <DeclinedHeadOfComplianceModal />}
     </>
   );
 };
 
-export default CompianceOfficerPortfolioHistoryReports;
+export default HeadCompianceOfficerOverdueVerificationReports;

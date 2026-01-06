@@ -19,8 +19,6 @@ export const buildApiRequest = (searchState = {}) => ({
   Length: Number(searchState.pageSize) || 10,
 });
 
-
-
 export const mapAdminInstrumentListData = (adminInstruments = []) => {
   const instruments = Array.isArray(adminInstruments)
     ? adminInstruments
@@ -47,12 +45,12 @@ export const mapAdminInstrumentListData = (adminInstruments = []) => {
       instrument: item?.instrument,
       closedPeriodStartDate:
         [item?.closedPeriodStartDate, item?.closedPeriodStartTime]
-          .filter(Boolean)
-          .join(" ") || "—",
+          .filter((v) => v && v !== "-" && v !== "—")
+          .join(" ") || null,
       closedPeriodEndDate:
         [item?.closedPeriodEndDate, item?.closedPeriodEndTime]
-          .filter(Boolean)
-          .join(" ") || "—",
+          .filter((v) => v && v !== "-" && v !== "—")
+          .join(" ") || null,
       status: item.status || 0,
       timeRemainingToTrade: item.timeRemainingToTrade || "",
     };
@@ -88,6 +86,7 @@ const getSortIcon = (columnKey, sortedInfo) => {
 };
 
 export const getInstrumentTableColumns = ({
+  adminIntrgetInstrumentTableColumnsumentListSearch,
   adminIntrumentListSearch,
   setAdminIntrumentListSearch,
   sortedInfo,
@@ -99,6 +98,7 @@ export const getInstrumentTableColumns = ({
   setEditInstrumentModal,
   setEditModalData,
   setSelectedInstrumentOnClick,
+  setSelectedInstrumentNameDataOnClick,
 }) => [
   {
     title: (
@@ -181,7 +181,7 @@ export const getInstrumentTableColumns = ({
     sortIcon: () => null,
     render: (date, record) => (
       <span className={!record.status ? styles.inActiveColumnTexts : ""}>
-        {formatApiDateTime(date)}
+        {date ? formatApiDateTime(date) : "—"}
       </span>
     ),
   },
@@ -207,7 +207,7 @@ export const getInstrumentTableColumns = ({
     sortIcon: () => null,
     render: (date, record) => (
       <span className={!record.status ? styles.inActiveColumnTexts : ""}>
-        {formatApiDateTime(date)}
+        {date ? formatApiDateTime(date) : "—"}
       </span>
     ),
   },
@@ -227,6 +227,7 @@ export const getInstrumentTableColumns = ({
             onEditPreviousClosing(record.instrumentID);
             setEditInstrumentModal(true);
             setSelectedInstrumentOnClick(record.instrumentID);
+            setSelectedInstrumentNameDataOnClick(record.instrument);
           }}
         />
       );

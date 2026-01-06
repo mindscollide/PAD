@@ -11,20 +11,17 @@ import PageLayout from "../../../../../components/pageContainer/pageContainer";
 import {
   buildApiRequest,
   getBorderlessTableColumns,
-  mappingDateWiseTransactionReport,
+  mapEmployeeTransactionsReport,
 } from "./utils";
-
-// 🔹 Contexts
-import { useGlobalModal } from "../../../../../context/GlobalModalContext";
+import { approvalStatusMap } from "../../../../../components/tables/borderlessTable/utill";
 
 // 🔹 Styles
-import style from "./PortfolioHistoryReports.module.css";
+import style from "./HTATradeApprovalRequest.module.css";
 import { useMyApproval } from "../../../../../context/myApprovalContaxt";
 import {
-  ExportOverdueVerificationCOExcel,
-  ExportPortfolioHistoryCOExcel,
-  GetComplianceOfficerPortfolioHistoryRequestApi,
-  SearchHOCOverdueVerificationsRequestApi,
+  DownloadMyTransactionReportRequestAPI,
+  ExportHTATradeApprovalRequestsExcelReport,
+  GetHTATradeApprovalRequestsReport,
 } from "../../../../../api/myApprovalApi";
 import { useNotification } from "../../../../../components/NotificationProvider/NotificationProvider";
 import { useApi } from "../../../../../context/ApiContext";
@@ -35,10 +32,10 @@ import { useDashboardContext } from "../../../../../context/dashboardContaxt";
 import { getSafeAssetTypeData } from "../../../../../common/funtions/assetTypesList";
 import { useTableScrollBottom } from "../../../../../common/funtions/scroll";
 import CustomButton from "../../../../../components/buttons/button";
-import { useSidebarContext } from "../../../../../context/sidebarContaxt";
-import { approvalStatusMap } from "../../../../../components/tables/borderlessTable/utill";
+import { DateRangePicker } from "../../../../../components";
+import { toYYMMDD } from "../../../../../common/funtions/rejex";
 
-const CompianceOfficerPortfolioHistoryReports = () => {
+const HTATradeApprovalRequest = () => {
   const navigate = useNavigate();
   const hasFetched = useRef(false);
   const tableScrollEmployeeTransaction = useRef(null);
@@ -47,31 +44,28 @@ const CompianceOfficerPortfolioHistoryReports = () => {
   const { callApi } = useApi();
   const { showNotification } = useNotification();
   const { showLoader } = useGlobalLoader();
-  const {
-    coPortfolioHistoryListData,
-    setCoPortfolioHistoryListData,
-    resetCOPortfolioHistoryReportListData,
-  } = useMyApproval();
+  const { myTradeApprovalLineManagerData, setMyTradeApprovalLineManagerData } =
+    useMyApproval();
 
   const {
-    coPortfolioHistoryReportSearch,
-    setCoPortfolioHistoryReportSearch,
-    resetComplianceOfficerPortfolioHistoryReportSearch,
+    myTradeApprovalReportLineManageSearch,
+    setMyTradeApprovalReportLineManageSearch,
+    resetLineManagerMyTradeApproval,
   } = useSearchBarContext();
-
-  const { selectedKey } = useSidebarContext();
-  console.log(selectedKey, "selectedKey");
-
-  console.log(coPortfolioHistoryListData, "coPortfolioHistoryListData");
 
   const { assetTypeListingData, setAssetTypeListingData } =
     useDashboardContext();
+
+  console.log(myTradeApprovalLineManagerData, "myTradeApprovalLineManagerData");
 
   // -------------------- Local State --------------------
   const [sortedInfo, setSortedInfo] = useState({});
   const [loadingMore, setLoadingMore] = useState(false);
   const [open, setOpen] = useState(false);
-
+  const [dateRange, setDateRange] = useState({
+    StartDate: null,
+    EndDate: null,
+  });
   // -------------------- Helpers --------------------
 
   /**
@@ -82,13 +76,15 @@ const CompianceOfficerPortfolioHistoryReports = () => {
     async (requestData, replace = false, showLoaderFlag = true) => {
       if (!requestData || typeof requestData !== "object") return;
       if (showLoaderFlag) showLoader(true);
-      const res = await GetComplianceOfficerPortfolioHistoryRequestApi({
+
+      const res = await GetHTATradeApprovalRequestsReport({
         callApi,
         showNotification,
         showLoader,
-        navigate,
         requestdata: requestData,
+        navigate,
       });
+      console.log("res".res);
 
       // ✅ Always get the freshest version (from memory or session)
       const currentAssetTypeData = getSafeAssetTypeData(
@@ -96,29 +92,25 @@ const CompianceOfficerPortfolioHistoryReports = () => {
         setAssetTypeListingData
       );
 
-      const records = Array.isArray(res?.complianceOfficerPortfolioHistory)
-        ? res.complianceOfficerPortfolioHistory
-        : [];
+      const records = Array.isArray(res?.records) ? res.records : [];
       console.log("records", records);
-      const mapped = mappingDateWiseTransactionReport(
+      const mapped = mapEmployeeTransactionsReport(
         currentAssetTypeData?.Equities,
         records
       );
       if (!mapped || typeof mapped !== "object") return;
       console.log("records", mapped);
 
-      setCoPortfolioHistoryListData((prev) => ({
-        complianceOfficerPortfolioHistory: replace
-          ? mapped
-          : [...(prev?.complianceOfficerPortfolioHistory || []), ...mapped],
+      setMyTradeApprovalLineManagerData((prev) => ({
+        records: replace ? mapped : [...(prev?.records || []), ...mapped],
         // this is for to run lazy loading its data comming from database of total data in db
         totalRecordsDataBase: res?.totalRecords || 0,
         // this is for to know how mush dta currently fetch from  db
         totalRecordsTable: replace
           ? mapped.length
-          : coPortfolioHistoryListData.totalRecordsTable + mapped.length,
+          : myTradeApprovalLineManagerData.totalRecordsTable + mapped.length,
       }));
-      setCoPortfolioHistoryReportSearch((prev) => {
+      setMyTradeApprovalReportLineManageSearch((prev) => {
         const next = {
           ...prev,
           pageNumber: replace ? mapped.length : prev.pageNumber + mapped.length,
@@ -136,7 +128,7 @@ const CompianceOfficerPortfolioHistoryReports = () => {
       assetTypeListingData,
       callApi,
       navigate,
-      setCoPortfolioHistoryReportSearch,
+      setMyTradeApprovalReportLineManageSearch,
       showLoader,
       showNotification,
     ]
@@ -149,44 +141,44 @@ const CompianceOfficerPortfolioHistoryReports = () => {
     if (hasFetched.current) return;
     hasFetched.current = true;
     const requestData = buildApiRequest(
-      coPortfolioHistoryReportSearch,
+      myTradeApprovalReportLineManageSearch,
       assetTypeListingData
     );
     fetchApiCall(requestData, true, true);
   }, []);
 
-  //   // Reset on Unmount
+  // Reset on Unmount
   useEffect(() => {
     return () => {
       // Reset search state for fresh load
-      resetComplianceOfficerPortfolioHistoryReportSearch();
+      resetLineManagerMyTradeApproval();
     };
   }, []);
 
   // 🔹 call api on search
   useEffect(() => {
-    if (coPortfolioHistoryReportSearch?.filterTrigger) {
+    if (myTradeApprovalReportLineManageSearch?.filterTrigger) {
       const requestData = buildApiRequest(
-        coPortfolioHistoryReportSearch,
+        myTradeApprovalReportLineManageSearch,
         assetTypeListingData
       );
       fetchApiCall(requestData, true, true);
     }
-  }, [coPortfolioHistoryReportSearch?.filterTrigger]);
+  }, [myTradeApprovalReportLineManageSearch?.filterTrigger]);
 
   // 🔹 Infinite Scroll (lazy loading)
   useTableScrollBottom(
     async () => {
       if (
-        coPortfolioHistoryListData?.totalRecordsDataBase <=
-        coPortfolioHistoryListData?.totalRecordsTable
+        myTradeApprovalLineManagerData?.totalRecordsDataBase <=
+        myTradeApprovalLineManagerData?.totalRecordsTable
       )
         return;
 
       try {
         setLoadingMore(true);
         const requestData = buildApiRequest(
-          coPortfolioHistoryReportSearch,
+          myTradeApprovalReportLineManageSearch,
           assetTypeListingData
         );
         await fetchApiCall(requestData, false, false);
@@ -204,23 +196,21 @@ const CompianceOfficerPortfolioHistoryReports = () => {
   const columns = getBorderlessTableColumns({
     approvalStatusMap,
     sortedInfo,
-    coPortfolioHistoryReportSearch,
-    setCoPortfolioHistoryReportSearch,
+    myTradeApprovalReportLineManageSearch,
+    setMyTradeApprovalReportLineManageSearch,
   });
 
   /** 🔹 Handle removing individual filter */
   const handleRemoveFilter = (key) => {
+    console.log(key, "checkCheclebdkjbkwbcdjh");
     const resetMap = {
-      instrumentName: { instrumentName: "" },
-      requesterName: { requesterName: "" },
+      employeeName: { employeeName: "" },
       departmentName: { departmentName: "" },
-      quantity: { quantity: 0 },
-      // requestDate resets startDate + endDate
     };
 
-    setCoPortfolioHistoryReportSearch((prev) => ({
+    setMyTradeApprovalReportLineManageSearch((prev) => ({
       ...prev,
-      ...resetMap[key], // reset only the clicked filter
+      ...resetMap[key],
       pageNumber: 0,
       filterTrigger: true,
     }));
@@ -228,14 +218,10 @@ const CompianceOfficerPortfolioHistoryReports = () => {
 
   /** 🔹 Handle removing all filters */
   const handleRemoveAllFilters = () => {
-    setCoPortfolioHistoryReportSearch((prev) => ({
+    setMyTradeApprovalReportLineManageSearch((prev) => ({
       ...prev,
-      instrumentName: "",
-      requesterName: "",
+      employeeName: "",
       departmentName: "",
-      quantity: 0,
-      type: [],
-      status: [],
       pageNumber: 0,
       filterTrigger: true,
     }));
@@ -243,47 +229,102 @@ const CompianceOfficerPortfolioHistoryReports = () => {
 
   /** 🔹 Build Active Filters */
   const activeFilters = (() => {
-    const { instrumentName, requesterName, departmentName, quantity } =
-      coPortfolioHistoryReportSearch || {};
-
-    const truncate = (val) =>
-      val.length > 13 ? val.slice(0, 13) + "..." : val;
+    const { employeeName, departmentName } =
+      myTradeApprovalReportLineManageSearch || {};
 
     return [
-      instrumentName
-        ? { key: "instrumentName", value: truncate(instrumentName) }
-        : null,
+      employeeName && {
+        key: "employeeName",
+        value:
+          employeeName.length > 13
+            ? employeeName.slice(0, 13) + "..."
+            : employeeName,
+      },
 
-      departmentName
-        ? { key: "departmentName", value: truncate(departmentName) }
-        : null,
-
-      requesterName
-        ? { key: "requesterName", value: truncate(requesterName) }
-        : null,
-
-      quantity ? { key: "quantity", value: quantity } : null,
+      departmentName && {
+        key: "departmentName",
+        value:
+          departmentName.length > 13
+            ? departmentName.slice(0, 13) + "..."
+            : departmentName,
+      },
     ].filter(Boolean);
   })();
 
   // 🔷 Excel Report download Api Hit
-  const downloadPortfolioHistoryExport = async () => {
+  const downloadMyTradeApprovalLineManagerInExcelFormat = async () => {
     showLoader(true);
     const requestdata = {
-      InstrumentName: "",
-      DepartmentName: "",
-      Quantity: 0,
-      StatusIds: [],
-      TypeIds: [],
-      RequesterName: "",
+      StartDate:
+        toYYMMDD(myTradeApprovalReportLineManageSearch.startDate) || null,
+      EndDate: toYYMMDD(myTradeApprovalReportLineManageSearch.endDate) || null,
+      SearchEmployeeName: myTradeApprovalReportLineManageSearch.employeeName,
+      SearchDepartmentName:
+        myTradeApprovalReportLineManageSearch.departmentName,
     };
 
-    await ExportPortfolioHistoryCOExcel({
+    await ExportHTATradeApprovalRequestsExcelReport({
       callApi,
       showLoader,
       requestdata: requestdata,
       navigate,
     });
+  };
+
+  const handleDateChange = (dates) => {
+    if (dates && dates.length === 2) {
+      setDateRange({
+        StartDate: dates?.[0] || null,
+        EndDate: dates?.[1] || null,
+      });
+      setMyTradeApprovalReportLineManageSearch((prev) => ({
+        ...prev,
+        startDate: dates?.[0] || null,
+        endDate: dates?.[1] || null,
+        pageNumber: 0,
+      }));
+
+      // Call API immediately after date change
+      fetchApiCall(
+        {
+          EmployeeName: myTradeApprovalReportLineManageSearch.employeeName,
+          DepartmentName: myTradeApprovalReportLineManageSearch.departmentName,
+          PageNumber: 0,
+          Length: 10,
+          StartDate: toYYMMDD(dates[0]) || null,
+          EndDate: toYYMMDD(dates[1]) || null,
+        },
+        true,
+        true
+      );
+    }
+  };
+
+  const handleClearDates = () => {
+    // Reset state
+    setDateRange({
+      StartDate: null,
+      EndDate: null,
+    });
+    setMyTradeApprovalReportLineManageSearch((prev) => ({
+      ...prev,
+      startDate: "",
+      endDate: "",
+      pageNumber: 0,
+    }));
+    // Call API with empty values
+    fetchApiCall(
+      {
+        EmployeeName: myTradeApprovalReportLineManageSearch.employeeName,
+        DepartmentName: myTradeApprovalReportLineManageSearch.departmentName,
+        PageNumber: 0,
+        Length: 10,
+        StartDate: "",
+        EndDate: "",
+      },
+      true,
+      true
+    );
   };
 
   // -------------------- Render --------------------
@@ -298,7 +339,7 @@ const CompianceOfficerPortfolioHistoryReports = () => {
               {
                 title: (
                   <span
-                    onClick={() => navigate("/PAD/co-reports")}
+                    onClick={() => navigate("/PAD/hta-reports")}
                     className={style.breadcrumbLink}
                   >
                     Reports
@@ -308,15 +349,23 @@ const CompianceOfficerPortfolioHistoryReports = () => {
               {
                 title: (
                   <span className={style.breadcrumbText}>
-                    Portfolio History
+                    Trade Approval Requests
                   </span>
                 ),
               },
             ]}
           />
         </Col>
+
         <Col>
           <div className={style.headerActionsRow}>
+            <DateRangePicker
+              size="medium"
+              className={style.dateRangePickerClass}
+              value={[dateRange.StartDate, dateRange.EndDate]}
+              onChange={handleDateChange}
+              onClear={handleClearDates}
+            />
             <CustomButton
               text={
                 <span className={style.exportButtonText}>
@@ -338,10 +387,9 @@ const CompianceOfficerPortfolioHistoryReports = () => {
                 <img src={PDF} alt="PDF" draggable={false} />
                 <span>Export PDF</span>
               </div> */}
-
               <div
                 className={style.dropdownItem}
-                onClick={downloadPortfolioHistoryExport}
+                onClick={downloadMyTradeApprovalLineManagerInExcelFormat}
               >
                 <img src={Excel} alt="Excel" draggable={false} />
                 <span>Export Excel</span>
@@ -390,12 +438,11 @@ const CompianceOfficerPortfolioHistoryReports = () => {
       >
         <div className="px-4 md:px-6 lg:px-8 ">
           <BorderlessTable
-            rows={coPortfolioHistoryListData?.complianceOfficerPortfolioHistory}
+            rows={myTradeApprovalLineManagerData?.records}
             columns={columns}
             classNameTable="border-less-table-blue"
             scroll={
-              coPortfolioHistoryListData?.complianceOfficerPortfolioHistory
-                ?.length
+              myTradeApprovalLineManagerData?.records?.length
                 ? {
                     x: "max-content",
                     y: activeFilters.length > 0 ? 450 : 500,
@@ -412,4 +459,4 @@ const CompianceOfficerPortfolioHistoryReports = () => {
   );
 };
 
-export default CompianceOfficerPortfolioHistoryReports;
+export default HTATradeApprovalRequest;

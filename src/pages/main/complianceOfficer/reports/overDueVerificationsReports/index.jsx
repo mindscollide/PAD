@@ -22,7 +22,7 @@ import style from "./OverDueVerificationReports.module.css";
 import { useMyApproval } from "../../../../../context/myApprovalContaxt";
 import {
   ExportOverdueVerificationCOExcel,
-  SearchHOCOverdueVerificationsRequestApi,
+  SearchOverdueVerificationsCORequestApi,
 } from "../../../../../api/myApprovalApi";
 import { useNotification } from "../../../../../components/NotificationProvider/NotificationProvider";
 import { useApi } from "../../../../../context/ApiContext";
@@ -92,7 +92,7 @@ const CompianceOfficerOverdueVerificationReports = () => {
     async (requestData, replace = false, showLoaderFlag = true) => {
       if (!requestData || typeof requestData !== "object") return;
       if (showLoaderFlag) showLoader(true);
-      const res = await SearchHOCOverdueVerificationsRequestApi({
+      const res = await SearchOverdueVerificationsCORequestApi({
         callApi,
         showNotification,
         showLoader,

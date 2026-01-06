@@ -2917,3 +2917,1254 @@ export const ExportOverdueVerificationCOExcel = async ({
     showLoader(false);
   }
 };
+
+// SearchHOCUploadedPortFolio
+export const SearchHOCUploadedPortFolio = async ({
+  callApi,
+  showNotification,
+  showLoader,
+  requestdata,
+  navigate,
+}) => {
+  try {
+    // 🔹 API Call
+    const res = await callApi({
+      requestMethod: import.meta.env
+        .VITE_SEARCH_HOC_UPLOADED_PORTFOLIO_API_METHOD, // 🔑 must be defined in .env
+      endpoint: import.meta.env.VITE_API_TRADE,
+      requestData: requestdata,
+      navigate,
+    });
+    console.log("SearchHOCUploadedPortFolio", res);
+
+    // 🔹 Handle session expiry
+    if (handleExpiredSession(res, navigate, showLoader)) return null;
+
+    // 🔹 Validate execution
+    if (!res?.result?.isExecuted) {
+      showNotification({
+        type: "error",
+        title: "Error",
+        description:
+          "Something went wrong while fetching hoc uploaded portfolio reports api.",
+      });
+      return null;
+    }
+    console.log("SearchHOCUploadedPortFolio", res);
+
+    // 🔹 Handle success
+    if (res.success) {
+      const { responseMessage, pendingPortfolios, totalRecords } = res.result;
+      const message = getMessage(responseMessage);
+      console.log("handleExpiredSession", res);
+
+      // Case 1 → Data available
+      if (
+        responseMessage ===
+        "PAD_Trade_TradeServiceManager_SearchHOCUploadedPortFolio_01"
+      ) {
+        return {
+          pendingPortfolios: pendingPortfolios || [],
+          totalRecords: totalRecords || 0,
+        };
+      }
+
+      // Case 2 → No data
+      if (
+        responseMessage ===
+        "PAD_Trade_TradeServiceManager_SearchHOCUploadedPortFolio_02"
+      ) {
+        return {
+          pendingPortfolios: [],
+          totalRecords: 0,
+        };
+      }
+
+      // Case 3 → Custom server messages
+      if (message) {
+        showNotification({
+          type: "warning",
+          title: message,
+          description:
+            "No reports  found while fetching hoc uploaded portfolio reports api.",
+        });
+      }
+
+      return null;
+    }
+
+    // 🔹 Handle failure
+    showNotification({
+      type: "error",
+      title: "Fetch Failed",
+      description: getMessage(res.message),
+    });
+    return null;
+  } catch (error) {
+    // 🔹 Exception handling
+    showNotification({
+      type: "error",
+      title: "Error",
+      description:
+        "An unexpected error occurred while fetching hoc uploaded portfolio reports api.",
+    });
+    return null;
+  } finally {
+    // 🔹 Always hide loader
+    showLoader(false);
+  }
+};
+
+// SearchHOCDateWiseTransactionRequest
+export const SearchHOCDateWiseTransactionRequest = async ({
+  callApi,
+  showNotification,
+  showLoader,
+  navigate,
+  requestdata,
+}) => {
+  try {
+    // 🔹 API Call
+    const res = await callApi({
+      requestMethod: import.meta.env
+        .VITE_SEARCH_HOC_DATE_WISE_TRANSACTION_API_REQUEST_METHOD, // 🔑 must be defined in .env
+      endpoint: import.meta.env.VITE_API_TRADE,
+      requestData: requestdata,
+      navigate,
+    });
+
+    // 🔹 Handle session expiry
+    if (handleExpiredSession(res, navigate, showLoader)) return null;
+
+    // 🔹 Validate execution
+    if (!res?.result?.isExecuted) {
+      showNotification({
+        type: "error",
+        title: "Error",
+        description:
+          "Something went wrong while fetching HOC date wise transaction reports Api.",
+      });
+      return null;
+    }
+
+    // 🔹 Handle success
+    if (res?.success) {
+      const { totalRecords, complianceOfficerApprovals, responseMessage } =
+        res.result;
+      const message = getMessage(responseMessage);
+
+      // Case 1 → Data available
+      if (
+        responseMessage ===
+        "PAD_Trade_TradeServiceManager_SearchHOCDateWiseTransactionRequest_01"
+      ) {
+        return {
+          totalRecords: totalRecords,
+          complianceOfficerApprovals: complianceOfficerApprovals,
+        };
+      }
+
+      // Case 2 → No data
+      if (
+        responseMessage ===
+        "PAD_Trade_TradeServiceManager_SearchHOCDateWiseTransactionRequest_02"
+      ) {
+        return {
+          totalRecords: 0,
+          complianceOfficerApprovals: [],
+        };
+      }
+
+      // Case 3 → Custom server messages
+      if (message) {
+        showNotification({
+          type: "warning",
+          title: message,
+          description: message,
+        });
+      }
+
+      return null;
+    }
+
+    // 🔹 Handle failure
+    showNotification({
+      type: "error",
+      title: "Fetch Failed",
+      description: getMessage(res.message),
+    });
+    return null;
+  } catch (error) {
+    // 🔹 Exception handling
+    showNotification({
+      type: "error",
+      title: "Error",
+      description:
+        "An unexpected error occurred while request HOC date wise transaction reports  API .",
+    });
+    return null;
+  } finally {
+    // 🔹 Always hide loader
+    showLoader(false);
+  }
+};
+
+// ExportHOCDateWiseTransactionReportExcel
+export const ExportHOCDateWiseTransactionReportExcel = async ({
+  callApi,
+  showLoader,
+  requestdata,
+  navigate,
+}) => {
+  try {
+    showLoader(true);
+
+    // 🔹 API Call
+    const res = await callApi({
+      requestMethod: import.meta.env
+        .VITE_EXPORT_HOC_DATE_WISE_TRANSACTION_REPORT_EXCEL_API_REQUEST_METHOD,
+      endpoint: import.meta.env.VITE_API_REPORT,
+      requestData: requestdata,
+      navigate,
+      responseType: "arraybuffer", // ⚡ Required for file download
+      headers: {
+        "Content-Type":
+          "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      },
+    });
+
+    // 🔹 Check Session Expiry
+    if (handleExpiredSession(res, navigate, showLoader)) return false;
+    // 🔹 When API send isExecuted false
+    if (!res?.result?.isExecuted) {
+      return false;
+    }
+
+    // 🔹 When API Send Success Response
+    if (res.success) {
+      try {
+        // Create a blob and trigger download
+        const blob = new Blob([res.result?.fileData || res.data], {
+          type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        });
+
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+
+        link.setAttribute(
+          "download",
+          "ComplianceOfficer-DateWise-Transaction-Report.xlsx"
+        );
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        setOpen(false);
+        return true;
+      } catch (downloadError) {
+        return false;
+      }
+    }
+
+    return false;
+  } catch (error) {
+    return false;
+  } finally {
+    showLoader(false);
+  }
+};
+
+//For HTA Trade Approval Request API for Reports
+export const GetHTATradeApprovalRequestsReport = async ({
+  callApi,
+  showNotification,
+  showLoader,
+  requestdata,
+  navigate,
+}) => {
+  try {
+    console.log("🔍 Request Data (Transactions):", requestdata);
+
+    // 🔹 API Call
+    const res = await callApi({
+      requestMethod: import.meta.env
+        .VITE_GET_HTA_TRADE_APPROVAL_REQUESTS_REPORT_API_REQUEST_METHOD, // 🔑 must be defined in .env
+      endpoint: import.meta.env.VITE_API_TRADE,
+      requestData: requestdata,
+      navigate,
+    });
+
+    // 🔹 Handle session expiry
+    if (handleExpiredSession(res, navigate, showLoader)) return null;
+
+    // 🔹 Validate execution
+    if (!res?.result?.isExecuted) {
+      showNotification({
+        type: "error",
+        title: "Error",
+        description:
+          "Something went wrong while fetching HTA trade approvals reports api.",
+      });
+      return null;
+    }
+
+    // 🔹 Handle success
+    if (res.success) {
+      const { responseMessage, records, totalRecords } = res.result;
+      const message = getMessage(responseMessage);
+
+      // Case 1 → Data available
+      if (
+        responseMessage ===
+        "PAD_Trade_TradeServiceManager_GetHTATradeApprovalRequestsReport_01"
+      ) {
+        return {
+          records: records || [],
+          totalRecords: totalRecords || 0,
+        };
+      }
+
+      // Case 2 → No data
+      if (
+        responseMessage ===
+        "PAD_Trade_TradeServiceManager_GetHTATradeApprovalRequestsReport_02"
+      ) {
+        return {
+          records: [],
+          totalRecords: 0,
+        };
+      }
+
+      // Case 3 → Custom server messages
+      if (message) {
+        showNotification({
+          type: "warning",
+          title: message,
+          description: "No reports  found for this employee.",
+        });
+      }
+
+      return null;
+    }
+
+    // 🔹 Handle failure
+    showNotification({
+      type: "error",
+      title: "Fetch Failed",
+      description: getMessage(res.message),
+    });
+    return null;
+  } catch (error) {
+    // 🔹 Exception handling
+    showNotification({
+      type: "error",
+      title: "Error",
+      description:
+        "An unexpected error occurred while fetching HTA Trade Approvals Reports.",
+    });
+    return null;
+  } finally {
+    // 🔹 Always hide loader
+    showLoader(false);
+  }
+};
+
+export const GetHOCMyActionsWorkflowDetail = async ({
+  callApi,
+  showNotification,
+  showLoader,
+  requestdata,
+  navigate,
+}) => {
+  try {
+    // 🔹 API Call
+    const res = await callApi({
+      requestMethod: import.meta.env.VITE_MYACTION_HOC_API_REQUEST_METHOD, // 🔑 must be defined in .env
+      endpoint: import.meta.env.VITE_API_TRADE,
+      requestData: requestdata,
+      navigate,
+    });
+
+    // 🔹 Handle session expiry
+    if (handleExpiredSession(res, navigate, showLoader)) return null;
+
+    // 🔹 Validate execution
+    if (!res?.result?.isExecuted) {
+      showNotification({
+        type: "error",
+        title: "Error",
+        description: "Something went wrong while fetching My Actions List.",
+      });
+      return null;
+    }
+
+    // 🔹 Handle success
+    if (res.success) {
+      const { responseMessage, requests, totalRecords } = res.result;
+      const message = getMessage(responseMessage);
+
+      // Case 1 → Data available
+      if (
+        responseMessage ===
+        "PAD_TradeServiceManager_GetHOCMyActionsWorkflowDetail_01"
+      ) {
+        return {
+          requests: requests || [],
+          totalRecords: totalRecords || 0,
+        };
+      }
+
+      // Case 2 → No data
+      if (
+        responseMessage ===
+        "PAD_TradeServiceManager_GetHOCMyActionsWorkflowDetail_02"
+      ) {
+        return {
+          requests: [],
+          totalRecords: 0,
+        };
+      }
+
+      // Case 3 → Custom server messages
+      if (message) {
+        showNotification({
+          type: "warning",
+          title: message,
+          description: "No My Actions found.",
+        });
+      }
+
+      return null;
+    }
+
+    // 🔹 Handle failure
+    showNotification({
+      type: "error",
+      title: "Fetch Failed",
+      description: getMessage(res.message),
+    });
+    return null;
+  } catch (error) {
+    // 🔹 Exception handling
+    showNotification({
+      type: "error",
+      title: "Error",
+      description: "An unexpected error occurred  while fetching My Actions..",
+    });
+    return null;
+  } finally {
+    // 🔹 Always hide loader
+    showLoader(false);
+  }
+};
+
+//Compliance Officer Portfolio History Report API
+export const GetComplianceOfficerPortfolioHistoryRequestApi = async ({
+  callApi,
+  showNotification,
+  showLoader,
+  requestdata,
+  navigate,
+}) => {
+  try {
+    // 🔹 API Call
+    const res = await callApi({
+      requestMethod: import.meta.env
+        .VITE_COMPLIANCE_OFFICER_PORTFOLIO_HISTORY_API_REQUEST_METHOD, // 🔑 must be defined in .env
+      endpoint: import.meta.env.VITE_API_TRADE,
+      requestData: requestdata,
+      navigate,
+    });
+
+    // 🔹 Handle session expiry
+    if (handleExpiredSession(res, navigate, showLoader)) return null;
+
+    // 🔹 Validate execution
+    if (!res?.result?.isExecuted) {
+      showNotification({
+        type: "error",
+        title: "Error",
+        description: "Something went wrong while fetching My Actions List.",
+      });
+      return null;
+    }
+
+    // 🔹 Handle success
+    if (res.success) {
+      const {
+        responseMessage,
+        complianceOfficerPortfolioHistory,
+        totalRecords,
+      } = res.result;
+      const message = getMessage(responseMessage);
+
+      // Case 1 → Data available
+      if (
+        responseMessage ===
+        "PAD_Trade_TradeServiceManager_SearchComplianceOfficerPortfolioHistoryRequest_01"
+      ) {
+        return {
+          complianceOfficerPortfolioHistory:
+            complianceOfficerPortfolioHistory || [],
+          totalRecords: totalRecords || 0,
+        };
+      }
+
+      // Case 2 → No data
+      if (
+        responseMessage ===
+        "PAD_Trade_TradeServiceManager_SearchComplianceOfficerPortfolioHistoryRequest_02"
+      ) {
+        return {
+          complianceOfficerPortfolioHistory: [],
+          totalRecords: 0,
+        };
+      }
+
+      // Case 3 → Custom server messages
+      if (message) {
+        showNotification({
+          type: "warning",
+          title: message,
+          description: "No My Actions found.",
+        });
+      }
+
+      return null;
+    }
+
+    // 🔹 Handle failure
+    showNotification({
+      type: "error",
+      title: "Fetch Failed",
+      description: getMessage(res.message),
+    });
+    return null;
+  } catch (error) {
+    // 🔹 Exception handling
+    showNotification({
+      type: "error",
+      title: "Error",
+      description: "An unexpected error occurred  while fetching My Actions..",
+    });
+    return null;
+  } finally {
+    // 🔹 Always hide loader
+    showLoader(false);
+  }
+};
+
+//Compliance Officer Portfolio History Export Report API
+export const ExportPortfolioHistoryCOExcel = async ({
+  callApi,
+  showLoader,
+  requestdata,
+  navigate,
+}) => {
+  try {
+    showLoader(true);
+
+    // 🔹 API Call
+    const res = await callApi({
+      requestMethod: import.meta.env
+        .VITE_EXPORT_COMPLIANCE_REPORT_PORTFOLIO_HISTORY_API_METHOD,
+      endpoint: import.meta.env.VITE_API_REPORT,
+      requestData: requestdata,
+      navigate,
+      responseType: "arraybuffer", // ⚡ Required for file download
+      headers: {
+        "Content-Type":
+          "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      },
+    });
+
+    // 🔹 Check Session Expiry
+    if (handleExpiredSession(res, navigate, showLoader)) return false;
+    // 🔹 When API send isExecuted false
+    if (!res?.result?.isExecuted) {
+      return false;
+    }
+
+    // 🔹 When API Send Success Response
+    if (res.success) {
+      try {
+        // Create a blob and trigger download
+        const blob = new Blob([res.result?.fileData || res.data], {
+          type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        });
+
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+
+        link.setAttribute("download", "PortfolioHistory_Report.xlsx");
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        setOpen(false);
+        return true;
+      } catch (downloadError) {
+        return false;
+      }
+    }
+
+    return false;
+  } catch (error) {
+    return false;
+  } finally {
+    showLoader(false);
+  }
+};
+
+//Head Of Compliance Officer Transaction Summary Report
+export const GetHOCViewTransactionSummaryAPI = async ({
+  callApi,
+  showNotification,
+  showLoader,
+  navigate,
+  requestdata,
+}) => {
+  try {
+    // 🔹 API Call
+    const res = await callApi({
+      requestMethod: import.meta.env
+        .VITE_TRANSACTION_SUMMARY_REPORT_HOC_API_METHOD, // 🔑 must be defined in .env
+      endpoint: import.meta.env.VITE_API_TRADE,
+      requestData: requestdata,
+      navigate,
+    });
+
+    // 🔹 Handle session expiry
+    if (handleExpiredSession(res, navigate, showLoader)) return null;
+
+    // 🔹 Validate execution
+    if (!res?.result?.isExecuted) {
+      showNotification({
+        type: "error",
+        title: "Error",
+        description:
+          "Something went wrong while fetching Compliance Officer View Transaction Summary reports Api.",
+      });
+      return null;
+    }
+
+    // 🔹 Handle success
+    if (res?.success) {
+      const { totalRecords, transactions, responseMessage } = res.result;
+      const message = getMessage(responseMessage);
+
+      // Case 1 → Data available
+      if (
+        responseMessage ===
+        "PAD_Trade_TradeServiceManager_SearchComplianceOfficerTransactionSummaryReportRequest_01"
+      ) {
+        return {
+          totalRecords: totalRecords,
+          transactions: transactions,
+        };
+      }
+
+      // Case 2 → No data
+      if (
+        responseMessage ===
+        "PAD_Trade_TradeServiceManager_SearchComplianceOfficerTransactionSummaryReportRequest_02"
+      ) {
+        return {
+          totalRecords: 0,
+          transactions: [],
+        };
+      }
+
+      // Case 3 → Custom server messages
+      if (message) {
+        showNotification({
+          type: "warning",
+          title: message,
+          description: message,
+        });
+      }
+
+      return null;
+    }
+
+    // 🔹 Handle failure
+    showNotification({
+      type: "error",
+      title: "Fetch Failed",
+      description: getMessage(res.message),
+    });
+    return null;
+  } catch (error) {
+    // 🔹 Exception handling
+    showNotification({
+      type: "error",
+      title: "Error",
+      description:
+        "An unexpected error occurred while request Compliance Officer View Transaction Summary reports Api .",
+    });
+    return null;
+  } finally {
+    // 🔹 Always hide loader
+    showLoader(false);
+  }
+};
+
+//Download Export HTA Trade Approval Requests Excel Report
+export const ExportHTATradeApprovalRequestsExcelReport = async ({
+  callApi,
+  showLoader,
+  requestdata,
+  navigate,
+}) => {
+  try {
+    showLoader(true);
+
+    // 🔹 API Call
+    const res = await callApi({
+      requestMethod: import.meta.env
+        .VITE_EXPORT_HTA_TRADE_APPROVAL_REQUESTS_EXCEL_REPORT_REQUEST_METHOD,
+      endpoint: import.meta.env.VITE_API_REPORT,
+      requestData: requestdata,
+      navigate,
+      responseType: "arraybuffer", // ⚡ Required for file download
+      headers: {
+        "Content-Type":
+          "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      },
+    });
+
+    // 🔹 Check Session Expiry
+    if (handleExpiredSession(res, navigate, showLoader)) return false;
+    // 🔹 When API send isExecuted false
+    if (!res?.result?.isExecuted) {
+      return false;
+    }
+
+    // 🔹 When API Send Success Response
+    if (res.success) {
+      try {
+        // Create a blob and trigger download
+        const blob = new Blob([res.result?.fileData || res.data], {
+          type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        });
+
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+
+        link.setAttribute("download", "HTA-Trade-Approval-Report.xlsx");
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        setOpen(false);
+        return true;
+      } catch (downloadError) {
+        return false;
+      }
+    }
+
+    return false;
+  } catch (error) {
+    return false;
+  } finally {
+    showLoader(false);
+  }
+};
+
+//For HTA Search Policy Breached Work Flows Request API for Reports
+export const SearchPolicyBreachedWorkFlowsRequest = async ({
+  callApi,
+  showNotification,
+  showLoader,
+  requestdata,
+  navigate,
+}) => {
+  try {
+    // 🔹 API Call
+    const res = await callApi({
+      requestMethod: import.meta.env
+        .VITE_SEARCH_POLICY_BREACHED_WORKFLOWS_REQUEST_REQUEST_METHOD, // 🔑 must be defined in .env
+      endpoint: import.meta.env.VITE_API_TRADE,
+      requestData: requestdata,
+      navigate,
+    });
+
+    // 🔹 Handle session expiry
+    if (handleExpiredSession(res, navigate, showLoader)) return null;
+
+    // 🔹 Validate execution
+    if (!res?.result?.isExecuted) {
+      showNotification({
+        type: "error",
+        title: "Error",
+        description:
+          "Something went wrong while fetching HTA Policy breaches reports api.",
+      });
+      return null;
+    }
+
+    // 🔹 Handle success
+    if (res.success) {
+      const { responseMessage, records, totalRecords } = res.result;
+      const message = getMessage(responseMessage);
+
+      // Case 1 → Data available
+      if (
+        responseMessage ===
+        "PAD_Trade_TradeServiceManager_SearchPolicyBreachedWorkFlowsRequest_01"
+      ) {
+        return {
+          records: records || [],
+          totalRecords: totalRecords || 0,
+        };
+      }
+
+      // Case 2 → No data
+      if (
+        responseMessage ===
+        "PAD_Trade_TradeServiceManager_SearchPolicyBreachedWorkFlowsRequest_02"
+      ) {
+        return {
+          records: [],
+          totalRecords: 0,
+        };
+      }
+
+      // Case 3 → Custom server messages
+      if (message) {
+        showNotification({
+          type: "warning",
+          title: message,
+          description: "No reports  found for this employee.",
+        });
+      }
+
+      return null;
+    }
+
+    // 🔹 Handle failure
+    showNotification({
+      type: "error",
+      title: "Fetch Failed",
+      description: getMessage(res.message),
+    });
+    return null;
+  } catch (error) {
+    // 🔹 Exception handling
+    showNotification({
+      type: "error",
+      title: "Error",
+      description:
+        "An unexpected error occurred while fetching HTA Policy breaches Reports.",
+    });
+    return null;
+  } finally {
+    // 🔹 Always hide loader
+    showLoader(false);
+  }
+};
+
+//For HTA view Policy Breached by id Flows Request API for Reports
+export const GetPoliciesByIDsAPI = async ({
+  callApi,
+  showNotification,
+  showLoader,
+  navigate,
+  requestdata,
+}) => {
+  try {
+    // 🔹 API Call
+    const res = await callApi({
+      requestMethod: import.meta.env
+        .VITE_GET_POLICIES_BY_IDS_API_REQUEST_METHOD, // 🔑 must be defined in .env
+      endpoint: import.meta.env.VITE_API_TRADE,
+      requestData: requestdata,
+      navigate,
+    });
+
+    // 🔹 Handle session expiry
+    if (handleExpiredSession(res, navigate, showLoader)) return null;
+
+    // 🔹 Validate execution
+    if (!res?.result?.isExecuted) {
+      showNotification({
+        type: "error",
+        title: "Error",
+        description:
+          "Something went wrong while fetching HTA View Policy Breach By ID reports Api.",
+      });
+      return null;
+    }
+
+    // 🔹 Handle success
+    if (res?.success) {
+      const { totalRecords, policies, responseMessage } = res.result;
+      const message = getMessage(responseMessage);
+
+      // Case 1 → Data available
+      if (responseMessage === "PAD_Trade_GetPoliciesByIDs_01") {
+        return {
+          totalRecords: totalRecords,
+          policies: policies,
+        };
+      }
+
+      // Case 2 → No data
+      if (responseMessage === "PAD_Trade_GetPoliciesByIDs_02") {
+        return {
+          totalRecords: 0,
+          policies: [],
+        };
+      }
+
+      // Case 3 → Custom server messages
+      if (message) {
+        showNotification({
+          type: "warning",
+          title: message,
+          description: message,
+        });
+      }
+
+      return null;
+    }
+
+    // 🔹 Handle failure
+    showNotification({
+      type: "error",
+      title: "Fetch Failed",
+      description: getMessage(res.message),
+    });
+    return null;
+  } catch (error) {
+    // 🔹 Exception handling
+    showNotification({
+      type: "error",
+      title: "Error",
+      description:
+        "An unexpected error occurred while request HTA View Policy Breach By ID reports Api .",
+    });
+    return null;
+  } finally {
+    // 🔹 Always hide loader
+    showLoader(false);
+  }
+};
+
+//For HTA Search Turn Around Time Request  API for Reports
+export const SearchHTATurnAroundTimeRequest = async ({
+  callApi,
+  showNotification,
+  showLoader,
+  requestdata,
+  navigate,
+}) => {
+  try {
+    // 🔹 API Call
+    const res = await callApi({
+      requestMethod: import.meta.env
+        .VITE_SEARCH_HTA_TURN_AROUND_TIME_API_REQUEST_METHOD, // 🔑 must be defined in .env
+      endpoint: import.meta.env.VITE_API_TRADE,
+      requestData: requestdata,
+      navigate,
+    });
+
+    // 🔹 Handle session expiry
+    if (handleExpiredSession(res, navigate, showLoader)) return null;
+
+    // 🔹 Validate execution
+    if (!res?.result?.isExecuted) {
+      showNotification({
+        type: "error",
+        title: "Error",
+        description:
+          "Something went wrong while fetching HTA TAT  reports api.",
+      });
+      return null;
+    }
+
+    // 🔹 Handle success
+    if (res.success) {
+      const { responseMessage, employees, totalRecords } = res.result;
+      const message = getMessage(responseMessage);
+
+      // Case 1 → Data available
+      if (
+        responseMessage ===
+        "PAD_Trade_TradeServiceManager_SearchHTATurnAroundTimeRequest_01"
+      ) {
+        return {
+          employees: employees || [],
+          totalRecords: totalRecords || 0,
+        };
+      }
+
+      // Case 2 → No data
+      if (
+        responseMessage ===
+        "PAD_Trade_TradeServiceManager_SearchHTATurnAroundTimeRequest_02"
+      ) {
+        return {
+          employees: [],
+          totalRecords: 0,
+        };
+      }
+
+      // Case 3 → Custom server messages
+      if (message) {
+        showNotification({
+          type: "warning",
+          title: message,
+          description: "No reports  found for this employee.",
+        });
+      }
+
+      return null;
+    }
+
+    // 🔹 Handle failure
+    showNotification({
+      type: "error",
+      title: "Fetch Failed",
+      description: getMessage(res.message),
+    });
+    return null;
+  } catch (error) {
+    // 🔹 Exception handling
+    showNotification({
+      type: "error",
+      title: "Error",
+      description:
+        "An unexpected error occurred while fetching HTA TAT  Reports.",
+    });
+    return null;
+  } finally {
+    // 🔹 Always hide loader
+    showLoader(false);
+  }
+};
+
+// ExportHOCUploadedPortfolioReportExcel
+export const ExportHOCUploadedPortfolioReportExcel = async ({
+  callApi,
+  showLoader,
+  requestdata,
+  navigate,
+}) => {
+  try {
+    showLoader(true);
+
+    // 🔹 API Call
+    const res = await callApi({
+      requestMethod: import.meta.env
+        .VITE_EXPORTHOC_UPLOADEDPORTFOLIO_REPORT_EXCEL_REQUEST_METHOD,
+      endpoint: import.meta.env.VITE_API_REPORT,
+      requestData: requestdata,
+      navigate,
+      responseType: "arraybuffer", // ⚡ Required for file download
+      headers: {
+        "Content-Type":
+          "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      },
+    });
+
+    // 🔹 Check Session Expiry
+    if (handleExpiredSession(res, navigate, showLoader)) return false;
+    // 🔹 When API send isExecuted false
+    if (!res?.result?.isExecuted) {
+      return false;
+    }
+
+    // 🔹 When API Send Success Response
+    if (res.success) {
+      try {
+        // Create a blob and trigger download
+        const blob = new Blob([res.result?.fileData || res.data], {
+          type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        });
+
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+
+        link.setAttribute("download", "Trade-Upload-Via-Portfolio-Report.xlsx");
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        setOpen(false);
+        return true;
+      } catch (downloadError) {
+        return false;
+      }
+    }
+
+    return false;
+  } catch (error) {
+    return false;
+  } finally {
+    showLoader(false);
+  }
+};
+
+// SearchComplianceOfficerOverdueVerificationsRequest For Compliance Officer Overdue Verification Page
+export const SearchOverdueVerificationsCORequestApi = async ({
+  callApi,
+  showNotification,
+  showLoader,
+  navigate,
+  requestdata,
+}) => {
+  try {
+    // 🔹 API Call
+    const res = await callApi({
+      requestMethod: import.meta.env
+        .VITE_SEARCH_COMPLIANCE_OFFICER_OVERDUE_VERIFICATION_REQEUST_METHOD, // 🔑 must be defined in .env
+      endpoint: import.meta.env.VITE_API_TRADE,
+      requestData: requestdata,
+      navigate,
+    });
+
+    // 🔹 Handle session expiry
+    if (handleExpiredSession(res, navigate, showLoader)) return null;
+
+    // 🔹 Validate execution
+    if (!res?.result?.isExecuted) {
+      showNotification({
+        type: "error",
+        title: "Error",
+        description:
+          "Something went wrong while fetching Compliance Officer date wise transaction reports Api.",
+      });
+      return null;
+    }
+
+    // 🔹 Handle success
+    if (res?.success) {
+      const { totalRecords, overdueVerifications, responseMessage } =
+        res.result;
+      const message = getMessage(responseMessage);
+      console.log("Check Console Rigt N0ow");
+
+      // Case 1 → Data available
+      if (
+        responseMessage ===
+        "PAD_Trade_TradeServiceManager_SearchComplianceOfficerOverdueVerifications_01"
+      ) {
+        console.log("Check Console Rigt N0ow");
+
+        return {
+          overdueVerifications: overdueVerifications,
+          totalRecords: totalRecords,
+        };
+      }
+
+      // Case 2 → No data
+      if (
+        responseMessage ===
+        "PAD_Trade_TradeServiceManager_SearchComplianceOfficerOverdueVerifications_02"
+      ) {
+        console.log("Check Console Rigt N0ow");
+        return {
+          overdueVerifications: [],
+          totalRecords: 0,
+        };
+      }
+
+      // Case 3 → Custom server messages
+      if (message) {
+        showNotification({
+          type: "warning",
+          title: message,
+          description: message,
+        });
+      }
+
+      return null;
+    }
+
+    // 🔹 Handle failure
+    showNotification({
+      type: "error",
+      title: "Fetch Failed",
+      description: getMessage(res.message),
+    });
+    return null;
+  } catch (error) {
+    // 🔹 Exception handling
+    showNotification({
+      type: "error",
+      title: "Error",
+      description:
+        "An unexpected error occurred while request Compliance officer date wise transaction reports  API .",
+    });
+    return null;
+  } finally {
+    // 🔹 Always hide loader
+    showLoader(false);
+  }
+};
+
+// ExportHOCUploadedPortfolioReportExcel
+export const ExportHOCOverdueVerificationsExcelReport = async ({
+  callApi,
+  showLoader,
+  requestdata,
+  navigate,
+}) => {
+  try {
+    showLoader(true);
+
+    // 🔹 API Call
+    const res = await callApi({
+      requestMethod: import.meta.env
+        .VITE_EXPORT_HCO_OVER_DUE_VERIFICATIONS_EXCEL_REPORT,
+      endpoint: import.meta.env.VITE_API_REPORT,
+      requestData: requestdata,
+      navigate,
+      responseType: "arraybuffer", // ⚡ Required for file download
+      headers: {
+        "Content-Type":
+          "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      },
+    });
+
+    // 🔹 Check Session Expiry
+    if (handleExpiredSession(res, navigate, showLoader)) return false;
+    // 🔹 When API send isExecuted false
+    if (!res?.result?.isExecuted) {
+      return false;
+    }
+
+    // 🔹 When API Send Success Response
+    if (res.success) {
+      try {
+        // Create a blob and trigger download
+        const blob = new Blob([res.result?.fileData || res.data], {
+          type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        });
+
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+
+        link.setAttribute(
+          "download",
+          "HOC-OverdueVerifications-Excel-Report.xlsx"
+        );
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        setOpen(false);
+        return true;
+      } catch (downloadError) {
+        return false;
+      }
+    }
+
+    return false;
+  } catch (error) {
+    return false;
+  } finally {
+    showLoader(false);
+  }
+};

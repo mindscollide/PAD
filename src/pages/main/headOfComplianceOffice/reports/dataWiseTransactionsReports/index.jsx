@@ -22,11 +22,8 @@ import { useGlobalModal } from "../../../../../context/GlobalModalContext";
 import style from "./dataWiseTransactionsReports.module.css";
 import { useMyApproval } from "../../../../../context/myApprovalContaxt";
 import {
-  DownloadComplianceOfficerDateWiseTransactionReportRequestAPI,
-  DownloadLineManagerMyTradeApprovalReportRequestAPI,
-  DownloadMyTransactionReportRequestAPI,
-  SearchComplianceOfficerDateWiseTransactionRequest,
-  SearchLineManagerTradeApprovalRequestApi,
+  ExportHOCDateWiseTransactionReportExcel,
+  SearchHOCDateWiseTransactionRequest,
 } from "../../../../../api/myApprovalApi";
 import { useNotification } from "../../../../../components/NotificationProvider/NotificationProvider";
 import { useApi } from "../../../../../context/ApiContext";
@@ -37,9 +34,7 @@ import { useDashboardContext } from "../../../../../context/dashboardContaxt";
 import { getSafeAssetTypeData } from "../../../../../common/funtions/assetTypesList";
 import { useTableScrollBottom } from "../../../../../common/funtions/scroll";
 import CustomButton from "../../../../../components/buttons/button";
-import { DateRangePicker } from "../../../../../components";
 import ViewDetaildDateWiseTransaction from "./ViewDetaildDateWiseTransaction/ViewDetaildDateWiseTransaction";
-import { toYYMMDD } from "../../../../../common/funtions/rejex";
 import { DateWiseTransactionReportViewDetails } from "../../../../../api/myTransactionsApi";
 import { useReconcileContext } from "../../../../../context/reconsileContax";
 
@@ -86,7 +81,7 @@ const HCADateWiseTransactionsReports = () => {
     async (requestData, replace = false, showLoaderFlag = true) => {
       if (!requestData || typeof requestData !== "object") return;
       if (showLoaderFlag) showLoader(true);
-      const res = await SearchComplianceOfficerDateWiseTransactionRequest({
+      const res = await SearchHOCDateWiseTransactionRequest({
         callApi,
         showNotification,
         showLoader,
@@ -146,7 +141,6 @@ const HCADateWiseTransactionsReports = () => {
       showNotification,
     ]
   );
-
 
   // -------------------- Effects --------------------
 
@@ -218,7 +212,7 @@ const HCADateWiseTransactionsReports = () => {
     });
 
     if (responseData) {
-      console.log("responseData",responseData)
+      console.log("responseData", responseData);
       setIsViewComments(true);
 
       setReconcileTransactionViewDetailData(responseData);
@@ -351,7 +345,7 @@ const HCADateWiseTransactionsReports = () => {
       EndDate: "",
     };
 
-    await DownloadComplianceOfficerDateWiseTransactionReportRequestAPI({
+    await ExportHOCDateWiseTransactionReportExcel({
       callApi,
       showLoader,
       requestdata: requestdata,
@@ -371,7 +365,7 @@ const HCADateWiseTransactionsReports = () => {
               {
                 title: (
                   <span
-                    onClick={() => navigate("/PAD/co-reports")}
+                    onClick={() => navigate("/PAD/hca-reports")}
                     className={style.breadcrumbLink}
                   >
                     Reports

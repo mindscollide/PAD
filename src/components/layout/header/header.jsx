@@ -90,7 +90,19 @@ const Headers = () => {
                         "/PAD/co-reports/co-overdue-verifications" ||
                       currentPath ===
                         "/PAD/lm-reports/lm-tradeapproval-request" ||
-                      coTransactionSummaryReportViewDetailsFlag))) && (
+                      currentPath === "/PAD/co-reports/co-portfolio-history" ||
+                      coTransactionSummaryReportViewDetailsFlag)) ||
+                  (selectedKeyRef.current === "14" &&
+                    (currentPath ===
+                      "/PAD/hta-reports/hta-trade-approval-requests" ||
+                      currentPath ===
+                        "/PAD/hta-reports/hta-policy-breaches-reports")) ||
+                  (selectedKeyRef.current === "17" &&
+                    (currentPath ===
+                      "/PAD/hca-reports/hca-overdue-verifications" ||
+                      currentPath === "/PAD/hca-reports/hca-upload-portfolio" ||
+                      currentPath ===
+                        "/PAD/hca-reports/hca-date-wise-transaction-report"))) && (
                   <SearchWithFilter />
                 )
               )}

@@ -26,6 +26,11 @@ import { COMyAction } from "./COMyAction";
 import { LMPendigRequestReportSearchFilter } from "./LMPendigRequestReportSearchFilter";
 import { COOverdueVerifications } from "./COOverdueVerifications";
 import { COTransactionReportViewDetailsFilter } from "./COTransactionReportViewDetailsFilter";
+import { HOCMyAction } from "./HOCMyAction";
+import { HCOTradeUploadedViaPortfolioFilter } from "./HCOTradeUploadedViaPortfolioFilter";
+import { COPortfolioHisttory } from "./COPortfolioHistory";
+import { HTAPolicyBreachesReportFilter } from "./htaPolicyBreaches";
+import { HCOOverdueVerifications } from "./HCOOverdueVerifications";
 
 // this is used for open specific filter according to page
 export const renderFilterContent = (
@@ -177,6 +182,7 @@ export const renderFilterContent = (
           setMaininstrumentName={setSearchMain}
         />
       );
+
     case "11": // Compliance officer → reports pending approvals
       if (currentPath === "/PAD/co-reports/co-date-wise-transaction-report") {
         return (
@@ -188,9 +194,19 @@ export const renderFilterContent = (
             setMaininstrumentName={setSearchMain}
           />
         );
-      }else if (currentPath === "/PAD/co-reports/co-overdue-verifications") {
+      } else if (currentPath === "/PAD/co-reports/co-overdue-verifications") {
         return (
           <COOverdueVerifications
+            setVisible={setVisible}
+            clear={clear}
+            setClear={setClear}
+            maininstrumentName={searchMain}
+            setMaininstrumentName={setSearchMain}
+          />
+        );
+      } else if (currentPath === "/PAD/co-reports/co-portfolio-history") {
+        return (
+          <COPortfolioHisttory
             setVisible={setVisible}
             clear={clear}
             setClear={setClear}
@@ -222,6 +238,32 @@ export const renderFilterContent = (
         />
       );
 
+    case "14": // HTA → reports pending approvals
+      if (currentPath === "/PAD/hta-reports/hta-trade-approval-requests") {
+        return (
+          <LineManagerMyTradeApprovalsReports
+            setVisible={setVisible}
+            clear={clear}
+            setClear={setClear}
+            maininstrumentName={searchMain}
+            setMaininstrumentName={setSearchMain}
+          />
+        );
+      } else if (
+        currentPath === "/PAD/hta-reports/hta-policy-breaches-reports"
+      ) {
+        return (
+          <HTAPolicyBreachesReportFilter
+            setVisible={setVisible}
+            clear={clear}
+            setClear={setClear}
+            maininstrumentName={searchMain}
+            setMaininstrumentName={setSearchMain}
+          />
+        );
+      }
+      return null;
+
     case "15": // HCA Escalated
       return (
         <HcaReconcileFilter
@@ -232,6 +274,53 @@ export const renderFilterContent = (
           setMaininstrumentName={setSearchMain}
         />
       );
+
+    case "16": //HOC My Actions
+      return (
+        <HOCMyAction
+          setVisible={setVisible}
+          clear={clear}
+          setClear={setClear}
+          maininstrumentName={searchMain}
+          setMaininstrumentName={setSearchMain}
+        />
+      );
+
+    case "17":
+      if (currentPath === "/PAD/hca-reports/hca-overdue-verifications") {
+        return (
+          <HCOOverdueVerifications
+            setVisible={setVisible}
+            clear={clear}
+            setClear={setClear}
+            maininstrumentName={searchMain}
+            setMaininstrumentName={setSearchMain}
+          />
+        );
+      } else if (currentPath === "/PAD/hca-reports/hca-upload-portfolio") {
+        return (
+          <HCOTradeUploadedViaPortfolioFilter
+            setVisible={setVisible}
+            clear={clear}
+            setClear={setClear}
+            maininstrumentName={searchMain}
+            setMaininstrumentName={setSearchMain}
+          />
+        );
+      } else if (
+        currentPath === "/PAD/hca-reports/hca-date-wise-transaction-report"
+      ) {
+        return (
+          <CODateWiseTransactionReportFilter
+            setVisible={setVisible}
+            clear={clear}
+            setClear={setClear}
+            maininstrumentName={searchMain}
+            setMaininstrumentName={setSearchMain}
+          />
+        );
+      }
+      break;
 
     case "18": // Admin Instrument List
       return (

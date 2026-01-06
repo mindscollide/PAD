@@ -4,7 +4,7 @@
   align-items: center; /* keep content centered horizontally overall */
   justify-content: center;
   text-align: left; /* 👈 ensures headings align left */
-  padding: 24px;
+  padding: 10px 24px;
   gap: 8px;
 }
 

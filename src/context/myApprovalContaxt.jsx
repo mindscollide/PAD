@@ -144,11 +144,27 @@ export const MyApprovalProvider = ({ children }) => {
       totalRecordsDataBase: 0,
       totalRecordsTable: 0,
     });
+
+  // HEAD of Compliance Officer Overdue Verification Report
+  const [overdueVerificationHCOListData, setOverdueVerificationHCOListData] =
+    useState({
+      overdueVerifications: [],
+      totalRecordsDataBase: 0,
+      totalRecordsTable: 0,
+    });
+
   const [
     coTransactionSummaryReportListData,
     setCOTransactionSummaryReportListData,
   ] = useState({
     transactions: [],
+    totalRecordsDataBase: 0,
+    totalRecordsTable: 0,
+  });
+
+  // Compliance Officer Portfolio Histort Report
+  const [coPortfolioHistoryListData, setCoPortfolioHistoryListData] = useState({
+    complianceOfficerPortfolioHistory: [],
     totalRecordsDataBase: 0,
     totalRecordsTable: 0,
   });
@@ -167,6 +183,37 @@ export const MyApprovalProvider = ({ children }) => {
     setCOTransactionSummaryReportViewDetailsFlag,
   ] = useState(false);
 
+  // Head Of Compliance (HOC) My Action
+  const [myActionHOCData, setMyActionHOCData] = useState({
+    requests: [],
+    totalRecords: 0,
+  });
+
+  // Head of COmpliance Transaction SUmmary Report
+  const [
+    hcoTransactionSummaryReportListData,
+    setHCOTransactionSummaryReportListData,
+  ] = useState({
+    transactions: [],
+    totalRecordsDataBase: 0,
+    totalRecordsTable: 0,
+  });
+
+  // HTA My Policy Breaches Reports context state
+  const [htaPolicyBreachesReportsData, setHTAPolicyBreachesReportsData] =
+    useState({
+      records: [],
+      totalRecordsDataBase: 0,
+      totalRecordsTable: 0,
+    });
+
+  // HTA My Policy Breaches Reports context state
+  const [htaTATReportsData, setHTATATReportsData] = useState({
+    employees: [],
+    totalRecordsDataBase: 0,
+    totalRecordsTable: 0,
+  });
+
   // Reset function to set all states back to initial values
   /* =========================================================
      RESET FUNCTIONS
@@ -175,6 +222,15 @@ export const MyApprovalProvider = ({ children }) => {
   const resetCOTransactionSummaryReportListData = () => {
     setCOTransactionSummaryReportListData({
       transactions: [],
+      totalRecordsDataBase: 0,
+      totalRecordsTable: 0,
+    });
+  };
+
+  /** Reset CO Portfolio History Report */
+  const resetCOPortfolioHistoryReportListData = () => {
+    setCoPortfolioHistoryListData({
+      complianceOfficerPortfolioHistory: [],
       totalRecordsDataBase: 0,
       totalRecordsTable: 0,
     });
@@ -232,6 +288,40 @@ export const MyApprovalProvider = ({ children }) => {
     });
   };
 
+  /** Reset Head Of Compliance My Action Page */
+  const resetMyActionHeadOfCompliance = () => {
+    setMyActionHOCData({
+      requests: [],
+      totalRecords: 0,
+    });
+  };
+
+  /** Reset Head Of Compliance My Action Page */
+  const resetTransactionSummaryHeadOfCompliance = () => {
+    setHCOTransactionSummaryReportListData({
+      transactions: [],
+      totalRecordsDataBase: 0,
+      totalRecordsTable: 0,
+    });
+  };
+
+  //Reset HTA My Policy Breaches Reports context state
+  const resetHTAPolicyBreachesReportsData = () => {
+    setHTAPolicyBreachesReportsData({
+      records: [],
+      totalRecordsDataBase: 0,
+      totalRecordsTable: 0,
+    });
+  };
+
+  //Reset HTA My Policy Breaches Reports context state
+  const resetHTATATReportsData = () => {
+    setHTATATReportsData({
+      employees: [],
+      totalRecordsDataBase: 0,
+      totalRecordsTable: 0,
+    });
+  };
   /* =========================================================
      PROVIDER RETURN
      ========================================================= */
@@ -288,6 +378,15 @@ export const MyApprovalProvider = ({ children }) => {
         htaReportsDashboardData,
         setHTAReportsDashboardData,
 
+        // HTA My Policy Breaches Reports context state
+        htaPolicyBreachesReportsData,
+        setHTAPolicyBreachesReportsData,
+        resetHTAPolicyBreachesReportsData,
+
+        htaTATReportsData,
+        setHTATATReportsData,
+        resetHTATATReportsData,
+
         // compliance officer  date wise transaction report
         coDatewiseTransactionReportListData,
         setCODatewiseTransactionReportListData,
@@ -299,6 +398,15 @@ export const MyApprovalProvider = ({ children }) => {
         setCOTransactionSummaryReportListData,
         resetCOTransactionSummaryReportListData,
 
+        // head of compliance officer
+        overdueVerificationHCOListData,
+        setOverdueVerificationHCOListData,
+
+        //Compliance Officer Portfolio History Report
+        coPortfolioHistoryListData,
+        setCoPortfolioHistoryListData,
+        resetCOPortfolioHistoryReportListData,
+
         coTransactionSummaryReportViewDetailsFlag,
         setCOTransactionSummaryReportViewDetailsFlag,
         coTransactionSummaryReportViewDetailsListData,
@@ -307,6 +415,16 @@ export const MyApprovalProvider = ({ children }) => {
         // HCA Reports
         hcaReportsDashboardData,
         setHCAReportsDashboardData,
+
+        //HOC my Action
+        myActionHOCData,
+        setMyActionHOCData,
+        resetMyActionHeadOfCompliance,
+
+        //HOC Trasanction Summary Report
+        hcoTransactionSummaryReportListData,
+        setHCOTransactionSummaryReportListData,
+        resetTransactionSummaryHeadOfCompliance,
       }}
     >
       {children}

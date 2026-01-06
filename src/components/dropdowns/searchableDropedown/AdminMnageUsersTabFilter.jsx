@@ -48,6 +48,11 @@ export const AdminUsersTabFilter = ({
   const { showNotification } = useNotification();
 
   // -----------------------------------------------------
+  // 🔹 STATE
+  // -----------------------------------------------------
+  const [emailError, setEmailError] = useState("");
+
+  // -----------------------------------------------------
   // 🔹 PICK INITIAL STATE BASED ON TAB
   // -----------------------------------------------------
   const getInitialState = () => {
@@ -99,6 +104,25 @@ export const AdminUsersTabFilter = ({
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFieldValue(name, removeFirstSpace(value));
+
+    // Clear email error while typing
+    if (name === "emailAddress") {
+      setEmailError("");
+    }
+  };
+
+  const validateEmail = (email) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (email && !emailRegex.test(email)) {
+      return "Invalid Email Format";
+    }
+    return "";
+  };
+
+  const handleEmailBlur = (e) => {
+    const email = e.target.value.trim();
+    const error = validateEmail(email);
+    setEmailError(error);
   };
 
   // -----------------------------------------------------
@@ -106,20 +130,17 @@ export const AdminUsersTabFilter = ({
   // -----------------------------------------------------
   const handleSearchClick = () => {
     const email = localState.emailAddress?.trim();
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const error = validateEmail(email);
 
-    // ✅ If email is filled but invalid → stop search
-    if (email && !emailRegex.test(email)) {
+    if (error) {
+      setEmailError(error);
       showNotification({
         type: "error",
         title: "Error",
-        description: "Please enter a valid email address",
+        description: error,
       });
-      return; // ❌ stop execution
+      return;
     }
-
-    // ✅ Clear error if valid
-    // setEmailError("");
 
     const payload = {
       ...localState,
@@ -163,12 +184,12 @@ export const AdminUsersTabFilter = ({
       pageSize: 10,
       filterTrigger: true,
     };
+    setEmailError("");
     if (manageUsersTab === "0") setUsersTabSearch(payloadUsersTabSearch);
     else if (manageUsersTab === "1")
       setPendingRequestsTabSearch(payloadPendingRequestsTabSearch);
     else if (manageUsersTab === "2")
       setRejectedRequestsTabSearch(payloadRejectedRequestsTabSearch);
-
     setLocalState(getInitialState());
     setClear(false);
     setVisible(false);
@@ -208,8 +229,11 @@ export const AdminUsersTabFilter = ({
                 name="emailAddress"
                 value={localState.emailAddress}
                 onChange={handleInputChange}
+                onBlur={handleEmailBlur}
                 placeholder="Email Address"
                 classNames="Search-Field"
+                error={!!emailError}
+                helperText={emailError}
               />
             </Col>
             <Col xs={24} md={12}>
@@ -347,6 +371,7 @@ export const AdminUsersTabFilter = ({
               onClick={handleSearchClick}
               text="Search"
               className="big-dark-button"
+              disabled={!!localState.emailAddress && !!emailError}
             />
           </Space>
         </Col>

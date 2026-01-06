@@ -645,9 +645,74 @@ export const responseMessages = {
     "Exception",
   // ==============================
   // Compliance Officer OverDue report
-  // ============================== 
+  // ==============================
+
+  PAD_Trade_TradeServiceManager_SearchComplianceOfficerOverdueVerifications_01:
+    "Data Available",
+  PAD_Trade_TradeServiceManager_SearchComplianceOfficerOverdueVerifications_02:
+    "No data available",
+  PAD_Trade_TradeServiceManager_SearchComplianceOfficerOverdueVerifications_03:
+    "Exception",
+
+  // ==============================
+  // Compliance Officer Portfolio History Report
+  // ==============================
+  PAD_Trade_TradeServiceManager_SearchComplianceOfficerPortfolioHistoryRequest_01:
+    "Data found",
+  PAD_Trade_TradeServiceManager_SearchComplianceOfficerPortfolioHistoryRequest_02:
+    "No data available",
+  PAD_Trade_TradeServiceManager_SearchComplianceOfficerPortfolioHistoryRequest_03:
+    "Exception",
+
+  // ==============================
+  // Head of Compliance Officer Uploaded PortFolio report
+  // ==============================
+
+  PAD_Trade_TradeServiceManager_SearchHOCUploadedPortFolio_01: "Data found",
+  PAD_Trade_TradeServiceManager_SearchHOCUploadedPortFolio_02:
+    "No data available",
+  PAD_Trade_TradeServiceManager_SearchHOCUploadedPortFolio_03: "Exception",
+
+  PAD_TradeServiceManager_GetHOCMyActionsWorkflowDetail_01: "Data found",
+  PAD_TradeServiceManager_GetHOCMyActionsWorkflowDetail_02: "No data available",
+  PAD_TradeServiceManager_GetHOCMyActionsWorkflowDetail_03: "Exception",
+
+  // ==============================
+  // Head of Compliance Officer Date Wise Transaction report
+  // ==============================
+  PAD_Trade_TradeServiceManager_SearchHOCDateWiseTransactionRequest_01:
+    "Data found",
+  PAD_Trade_TradeServiceManager_SearchHOCDateWiseTransactionRequest_02:
+    "No data available",
+  PAD_Trade_TradeServiceManager_SearchHOCDateWiseTransactionRequest_03:
+    "Exception",
+
+  PAD_Trade_TradeServiceManager_GetHTATradeApprovalRequestsReport_01:
+    "Data found",
+  PAD_Trade_TradeServiceManager_GetHTATradeApprovalRequestsReport_02:
+    "No data available",
+  PAD_Trade_TradeServiceManager_GetHTATradeApprovalRequestsReport_03:
+    "Exception",
+
+  PAD_Trade_TradeServiceManager_SearchPolicyBreachedWorkFlowsRequest_01:
+    "Data found",
+  PAD_Trade_TradeServiceManager_SearchPolicyBreachedWorkFlowsRequest_02:
+    "No data available",
+  PAD_Trade_TradeServiceManager_SearchPolicyBreachedWorkFlowsRequest_03:
+    "Exception",
+
+  PAD_Trade_GetPoliciesByIDs_01: "Data found",
+  PAD_Trade_GetPoliciesByIDs_02: "No data available",
+  PAD_Trade_GetPoliciesByIDs_03: "Exception",
+
+  PAD_Trade_TradeServiceManager_SearchHTATurnAroundTimeRequest_01: "Data found",
+  PAD_Trade_TradeServiceManager_SearchHTATurnAroundTimeRequest_02:
+    "No data available",
+  PAD_Trade_TradeServiceManager_SearchHTATurnAroundTimeRequest_03: "Exception",
+
   PAD_Trade_TradeServiceManager_SearchHOCOverdueVerifications_01: "Data found",
-  PAD_Trade_TradeServiceManager_SearchHOCOverdueVerifications_02: "No data available",
+  PAD_Trade_TradeServiceManager_SearchHOCOverdueVerifications_02:
+    "No data available",
   PAD_Trade_TradeServiceManager_SearchHOCOverdueVerifications_03: "Exception",
 };
 

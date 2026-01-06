@@ -39,6 +39,9 @@ import {
   COdataWiseTransactionsReports,
   UserSessionWiseActivity,
   COTransactionsSummarysReports,
+  TradesUploadViaPortfolio,
+  HTAPolicyBreachesReport,
+  HTATAT,
 } from "../pages";
 import RoleBasedRoute from "./RoleBasedRoute";
 import EscalatedApprovals from "../pages/main/headOfTradeApprover/escalatedApprovals/escalatedApprovals";
@@ -54,6 +57,10 @@ import HCATransactionsSummarysReports from "../pages/main/headOfComplianceOffice
 import HCADateWiseTransactionsReports from "../pages/main/headOfComplianceOffice/reports/dataWiseTransactionsReports";
 import HeadOFComplianceApprovalReportsIndex from "../pages/main/headOfComplianceOffice/reports";
 import HTAReportsIndex from "../pages/main/headOfTradeApprover/reports";
+import HeadCompianceOfficerOverdueVerificationReports from "../pages/main/headOfComplianceOffice/reports/overDueVerificationsReports";
+import HOCMyActionPage from "../pages/main/headOfComplianceOffice/myActions";
+import CompianceOfficerPortfolioHistoryReports from "../pages/main/complianceOfficer/reports/portfolioHistoryReports";
+import HTATradeApprovalRequest from "../pages/main/headOfTradeApprover/reports/tradeApprovalsRequest/HTATradeApprovalRequest";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -205,9 +212,18 @@ const router = createBrowserRouter(
           <Route index element={<HTAReportsIndex />} />
           <Route path="lm-pending-request" element={<PendingRequest />} />
           <Route
-            path="lm-tradeapproval-request"
-            element={<TradeApprovalRequest />}
+            path="hta-trade-approval-requests"
+            element={<HTATradeApprovalRequest />}
           />
+          <Route
+            path="hta-policy-breaches-reports"
+            element={<HTAPolicyBreachesReport />}
+          />
+           <Route
+            path="hta-tat-reports"
+            element={<HTATAT />}
+          />
+          
         </Route>
         {/* Compliance Officer */}
         <Route
@@ -244,6 +260,12 @@ const router = createBrowserRouter(
             path="co-overdue-verifications"
             element={<CompianceOfficerOverdueVerificationReports />}
           />
+
+          <Route
+            path="co-portfolio-history"
+            element={<CompianceOfficerPortfolioHistoryReports />}
+          />
+
           <Route
             path="co-transactions-summary-report"
             element={<COTransactionsSummarysReports />}
@@ -263,7 +285,7 @@ const router = createBrowserRouter(
           path="hca-my-actions"
           element={
             <RoleBasedRoute isAdmin={false} allowedRoles={[6]}>
-              <EmployeMyTransaction />{" "}
+              <HOCMyActionPage />{" "}
             </RoleBasedRoute>
           }
         />
@@ -287,8 +309,13 @@ const router = createBrowserRouter(
           />
           <Route
             path="hca-overdue-verifications"
-            element={<PendingRequest />}
+            element={<HeadCompianceOfficerOverdueVerificationReports />}
           />
+          <Route
+            path="hca-upload-portfolio"
+            element={<TradesUploadViaPortfolio />}
+          />
+
           <Route path="hca-portfolio-history" element={<PendingRequest />} />
         </Route>
         {/* For Admin Roles Start here*/}

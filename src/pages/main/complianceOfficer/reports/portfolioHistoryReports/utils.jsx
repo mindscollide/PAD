@@ -6,14 +6,18 @@ import EscaltedOn from "../../../../../assets/img/escalated.png";
 import DefaultColumArrow from "../../../../../assets/img/default-colum-arrow.png";
 import TypeColumnTitle from "../../../../../components/dropdowns/filters/typeColumnTitle";
 import { Tag, Tooltip } from "antd";
-import style from "./OverDueVerificationReports.module.css";
+import style from "./PortfolioHistoryReports.module.css";
 
 import {
   formatApiDateTime,
   toYYMMDD,
 } from "../../../../../common/funtions/rejex";
-import { mapBuySellToIds } from "../../../../../components/dropdowns/filters/utils";
+import {
+  mapBuySellToIds,
+  mapStatusToIds,
+} from "../../../../../components/dropdowns/filters/utils";
 import { getTradeTypeById } from "../../../../../common/funtions/type";
+import StatusColumnTitle from "../../../../../components/dropdowns/filters/statusColumnTitle";
 
 /**
  * Utility: Build API request payload for approval listing
@@ -25,16 +29,29 @@ import { getTradeTypeById } from "../../../../../common/funtions/type";
 export const buildApiRequest = (searchState = {}, assetTypeListingData) => ({
   InstrumentName: searchState.instrumentName || "",
   RequesterName: searchState.requesterName || "",
-  ApprovedQuantity: Number(searchState.approvedQuantity) || null,
-  ShareTraded: Number(searchState.sharesTraded) || null,
+  DepartmentName: searchState.departmentName || "",
+  Quantity: Number(searchState.quantity) || 0,
+  StatusIds: mapStatusToIds(searchState.status),
+  TypeIds: mapBuySellToIds(searchState.type, assetTypeListingData?.Equities),
   PageNumber: Number(searchState.pageNumber) || 0,
   Length: Number(searchState.pageSize) || 10,
-  Type: searchState.type,
-  StatusIds: [],
-  EscalationFromDate: "",
-  EscalationToDate: "",
-  FromDate: searchState.startDate ? toYYMMDD(searchState.startDate) : "",
-  ToDate: searchState.endDate ? toYYMMDD(searchState.endDate) : "",
+});
+
+/**
+ * Generates AntD table cell styles for nowrap text handling.
+ *
+ * @param {number} minWidth - Minimum cell width.
+ * @param {number} maxWidth - Maximum cell width.
+ * @returns {Object} Style object for AntD `onCell`/`onHeaderCell`.
+ */
+const nowrapCell = (minWidth, maxWidth) => ({
+  style: {
+    minWidth,
+    maxWidth,
+    whiteSpace: "nowrap",
+    overflow: "hidden",
+    textOverflow: "ellipsis",
+  },
 });
 
 /**
@@ -45,33 +62,36 @@ export const buildApiRequest = (searchState = {}, assetTypeListingData) => ({
  */
 export const mappingDateWiseTransactionReport = (
   assetTypeData,
-  coOverdueVerificationListData = []
+  coPortfolioHistoryListData = []
 ) => {
-  const overdueVerifications = Array.isArray(coOverdueVerificationListData)
-    ? coOverdueVerificationListData
-    : coOverdueVerificationListData?.overdueVerifications || [];
-  console.log(overdueVerifications, "overdueVerifications");
-  if (!overdueVerifications.length) return [];
+  const complianceOfficerPortfolioHistory = Array.isArray(
+    coPortfolioHistoryListData
+  )
+    ? coPortfolioHistoryListData
+    : coPortfolioHistoryListData?.complianceOfficerPortfolioHistory || [];
+  console.log(complianceOfficerPortfolioHistory, "overdueVerifications");
+  if (!complianceOfficerPortfolioHistory.length) return [];
 
-  return overdueVerifications.map((item) => ({
-    key: item.workFlowID,
-    workFlowID: item.workFlowID,
+  return complianceOfficerPortfolioHistory.map((item) => ({
+    key: item.approvalID,
+    approvalID: item.approvalID,
     requesterName: item.requesterName || "—",
+    departmentName: item.departmentName || "—",
+    employeeCode: item.employeeCode || "—",
+    employeeID: item.employeeID || "",
+    tradeApprovalID: item.tradeApprovalID || "",
     title: item.title || "",
-    instrumentShortCode: item?.instrumentShortCode || "—",
-    instrumentName: item?.instrumentName || "—",
-    assetTypeShortCode: item?.assetTypeShortCode || "—",
-    transactionDate:
-      `${item?.transactionDate || ""} ${item?.transactionTime || ""}`.trim() ||
-      "—",
-    type: getTradeTypeById(assetTypeData, item?.tradeType) || "-",
-    approvedQuantity: item.approvedQuantity || 0,
-    shareTraded: item.shareTraded || 0,
+    instrumentCode: item?.instrument?.instrumentCode || "—",
+    instrumentName: item?.instrument?.instrumentName || "—",
+    assetTypeShortCode: item?.assetType?.assetTypeShortCode || "—",
+    requestDate:
+      `${item?.requestDate || ""} ${item?.requestTime || ""}`.trim() || "—",
+    type: getTradeTypeById(assetTypeData, item?.tradeType) || [],
     timeRemainingToTrade: item.timeRemainingToTrade || "",
-    tradeType: item.tradeType || "",
-    assetType: item.assetType?.assetTypeName || "",
+    assetType: item?.assetType?.assetTypeName || "",
+    quantity: item?.quantity || 0,
+    status: item?.approvalStatus?.approvalStatusName || "—",
     assetTypeID: item.assetType?.assetTypeID || 0,
-    isEscalationOpen: item.isEscalationOpen || false,
   }));
 };
 
@@ -133,20 +153,83 @@ const withFilterHeader = (FilterComponent) => (
   </div>
 );
 export const getBorderlessTableColumns = ({
+  approvalStatusMap = {},
   sortedInfo,
-  coOverdueVerificationReportSearch,
+  coPortfolioHistoryReportSearch,
   setCoOverdueVerificationReportSearch,
 }) => [
   {
     title: (
       <div style={{ marginLeft: "8px" }}>
-        {withSortIcon("Requester Name", "requesterName", sortedInfo)}
+        {withSortIcon("ID", "employeeID", sortedInfo)}
       </div>
+    ),
+    dataIndex: "employeeID",
+    key: "employeeID",
+    align: "left",
+    width: "80px",
+    ellipsis: true,
+    sortDirections: ["ascend", "descend"],
+    sortOrder: sortedInfo?.columnKey === "employeeID" ? sortedInfo.order : null,
+    sorter: (a, b) => a.employeeID - b.employeeID,
+    showSorterTooltip: false,
+    sortIcon: () => null,
+    render: (text) => (
+      <span className={`${style["cell-text"]} font-medium`}>{text}</span>
+    ),
+  },
+  {
+    title: (
+      <div>{withSortIcon("Employee Name", "employeeName", sortedInfo)}</div>
+    ),
+    dataIndex: "employeeName",
+    key: "employeeName",
+    width: "150px",
+    align: "center",
+    ellipsis: true,
+    sorter: (a, b) =>
+      a.employeeName.localeCompare(b.employeeName, undefined, {
+        sensitivity: "base",
+      }),
+    sortDirections: ["ascend", "descend"],
+    sortOrder:
+      sortedInfo?.columnKey === "employeeName" ? sortedInfo.order : null,
+    showSorterTooltip: false,
+    sortIcon: () => null,
+    render: (text) => (
+      <span className={`${style["cell-text"]} font-medium`}>{text ?? "—"}</span>
+    ),
+  },
+  {
+    title: (
+      <div>{withSortIcon("Department Name", "departmentName", sortedInfo)}</div>
+    ),
+    dataIndex: "departmentName",
+    key: "departmentName",
+    width: "150px",
+    align: "left",
+    ellipsis: true,
+    sorter: (a, b) =>
+      a.departmentName.localeCompare(b.departmentName, undefined, {
+        sensitivity: "base",
+      }),
+    sortDirections: ["ascend", "descend"],
+    sortOrder:
+      sortedInfo?.columnKey === "departmentName" ? sortedInfo.order : null,
+    showSorterTooltip: false,
+    sortIcon: () => null,
+    render: (text) => (
+      <span className={`${style["cell-text"]} font-medium`}>{text}</span>
+    ),
+  },
+  {
+    title: (
+      <div>{withSortIcon("Requester Name", "requesterName", sortedInfo)}</div>
     ),
     dataIndex: "requesterName",
     key: "requesterName",
+    width: "150px",
     align: "left",
-    width: "180px",
     ellipsis: true,
     sorter: (a, b) => a.requesterName.localeCompare(b.requesterName),
     sortDirections: ["ascend", "descend"],
@@ -159,51 +242,43 @@ export const getBorderlessTableColumns = ({
     ),
   },
   {
-    title: withSortIcon("Type", "tradeType", sortedInfo),
-    dataIndex: "tradeType",
-    key: "tradeType",
-    ellipsis: true,
+    title: (
+      <div>{withSortIcon("Tracking ID", "tradeApprovalID", sortedInfo)}</div>
+    ),
+    dataIndex: "tradeApprovalID",
+    key: "tradeApprovalID",
     width: "120px",
-    filteredValue: coOverdueVerificationReportSearch.type?.length
-      ? coOverdueVerificationReportSearch.type
-      : null,
-    onFilter: () => true, // Actual filtering handled by API
-    render: (type, record) => (
-      <span
-        id={`cell-${record.key}-type`}
-        className={type === "Buy" ? "text-green-600" : "text-red-600"}
-        data-testid={`trade-type-${type}`}
-        style={{
-          display: "inline-block",
-          width: "100%",
-          overflow: "hidden",
-          textOverflow: "ellipsis",
-          whiteSpace: "nowrap",
-        }}
-      >
-        {type}
-      </span>
+    align: "left",
+    ellipsis: true,
+    sorter: (a, b) => a.tradeApprovalID.localeCompare(b.tradeApprovalID),
+    sortDirections: ["ascend", "descend"],
+    sortOrder:
+      sortedInfo?.columnKey === "tradeApprovalID" ? sortedInfo.order : null,
+    showSorterTooltip: false,
+    sortIcon: () => null,
+    render: (text) => (
+      <span className={`${style["cell-text"]} font-medium`}>{text}</span>
     ),
   },
   {
     title: withSortIcon("Instrument", "instrumentName", sortedInfo),
     dataIndex: "instrumentName",
     key: "instrumentName",
+    width: "150px",
     ellipsis: true,
-    width: "180px",
-    sorter: (a, b) => {
-      const nameA = a?.instrumentShortCode || "";
-      const nameB = b?.instrumentShortCode || "";
-      return nameA.localeCompare(nameB);
-    },
+    sorter: (a, b) =>
+      a.instrumentName.localeCompare(b.instrumentName, undefined, {
+        sensitivity: "base",
+      }),
     sortDirections: ["ascend", "descend"],
     sortOrder:
       sortedInfo?.columnKey === "instrumentName" ? sortedInfo.order : null,
     showSorterTooltip: false,
     sortIcon: () => null,
     render: (instrument, record) => {
+      console.log(record, "recordRecordInstrument");
       const assetCode = record?.assetTypeShortCode;
-      const code = record?.instrumentShortCode || "";
+      const code = record?.instrumentCode || "";
       const instrumentName = record?.instrumentName || "";
 
       return (
@@ -228,7 +303,6 @@ export const getBorderlessTableColumns = ({
                 display: "inline-block",
                 cursor: "pointer",
               }}
-              title={code}
             >
               {code}
             </span>
@@ -238,86 +312,95 @@ export const getBorderlessTableColumns = ({
     },
   },
   {
-    title: withSortIcon(
-      "Transaction Date & Time",
-      "transactionDate",
-      sortedInfo
+    title: (
+      <TypeColumnTitle
+        state={coPortfolioHistoryReportSearch}
+        setState={setCoOverdueVerificationReportSearch}
+      />
     ),
-    dataIndex: "transactionDate",
-    key: "transactionDate",
-    align: "left",
-    width: "220px",
+    dataIndex: "type",
+    key: "type",
     ellipsis: true,
-    sorter: (a, b) => {
-      const dateA = new Date(`${a.transactionDate}`).getTime();
-      const dateB = new Date(`${b.transactionDate}`).getTime();
-      return dateA - dateB;
-    },
+    filteredValue: coPortfolioHistoryReportSearch?.type?.length
+      ? coPortfolioHistoryReportSearch.type
+      : null,
+    onFilter: () => true,
+    render: (type) => <span title={type || "—"}>{type || "—"}</span>,
+    onHeaderCell: () => nowrapCell(100, 100),
+    onCell: () => nowrapCell(100, 100),
+  },
+
+  {
+    title: withSortIcon("Quantity", "quantity", sortedInfo),
+    dataIndex: "quantity",
+    width: "140px",
+    key: "quantity",
+    ellipsis: true,
+    sorter: (a, b) => a.quantity - b.quantity,
+    sortDirections: ["ascend", "descend"],
+    sortOrder: sortedInfo?.columnKey === "quantity" ? sortedInfo.order : null,
+    showSorterTooltip: false,
+    sortIcon: () => null,
+    render: (text) => (
+      <span className={`${style["cell-text"]} font-medium`}>{text.toLocaleString()}</span>
+    ),
+  },
+  {
+    title: withSortIcon("Date & Time", "requestDate", sortedInfo),
+    dataIndex: "requestDate",
+    key: "requestDate",
+    width: "140px",
+    align: "left",
+    ellipsis: true,
+    sorter: (a, b) =>
+      formatApiDateTime(a.requestDate).localeCompare(
+        formatApiDateTime(b.requestDate)
+      ),
     sortDirections: ["ascend", "descend"],
     sortOrder:
-      sortedInfo?.columnKey === "transactionDate" ? sortedInfo.order : null,
+      sortedInfo?.columnKey === "requestDate" ? sortedInfo.order : null,
     showSorterTooltip: false,
     sortIcon: () => null,
     render: (_, record) => (
       <span className="text-gray-600">
-        {formatApiDateTime(`${record.transactionDate}`)}
+        {formatApiDateTime(`${record.requestDate}`)}
       </span>
     ),
   },
-
+  /* --------------------- Status --------------------- */
   {
-    title: withSortIcon("Approved Quantity", "approvedQuantity", sortedInfo),
-    dataIndex: "approvedQuantity",
-    width: "180px",
-    key: "approvedQuantity",
-    ellipsis: true,
-    sorter: (a, b) => a.approvedQuantity - b.approvedQuantity,
-    sortDirections: ["ascend", "descend"],
-    sortOrder:
-      sortedInfo?.columnKey === "approvedQuantity" ? sortedInfo.order : null,
-    showSorterTooltip: false,
-    sortIcon: () => null,
-    render: (q) => <span className="font-medium">{q.toLocaleString()}</span>,
-  },
-  {
-    title: withSortIcon("Shares Traded", "shareTraded", sortedInfo),
-    dataIndex: "shareTraded",
-    key: "shareTraded",
-    width: "180px",
-    ellipsis: true,
-    sorter: (a, b) => a.shareTraded - b.shareTraded,
-    sortDirections: ["ascend", "descend"],
-    sortOrder:
-      sortedInfo?.columnKey === "shareTraded" ? sortedInfo.order : null,
-    showSorterTooltip: false,
-    sortIcon: () => null,
-    render: (q) => <span className="font-medium">{q.toLocaleString()}</span>,
-  },
-  {
-    title: "",
-    key: "isEscalationOpen",
-    dataIndex: "isEscalationOpen",
-    align: "right",
-    render: (_, record) => {
-      return record.isEscalationOpen ? (
-        <img src={EscaltedOn} width={"40px"} />
-      ) : null;
-    },
-  },
-  {
-    title: "",
-    key: "action",
-    align: "right", // 🔷 Align content to the right
-    render: (_, record) => (
-      <div className={style.viewEditClass}>
-        <Button
-          className="small-dark-button"
-          text={"View Details"}
-          onClick={() => {
-            console.log(record, "tradeApprovalID");
-          }}
-        />
-      </div>
+    title: (
+      <StatusColumnTitle
+        state={coPortfolioHistoryReportSearch}
+        setState={setCoOverdueVerificationReportSearch}
+      />
     ),
+    dataIndex: "status",
+    key: "status",
+    ellipsis: true,
+    filteredValue: coPortfolioHistoryReportSearch?.status?.length
+      ? coPortfolioHistoryReportSearch.status
+      : null,
+    onFilter: () => true,
+    render: (status) => {
+      const tag = approvalStatusMap?.[status] || {};
+      return (
+        <Tag
+          style={{
+            backgroundColor: tag.backgroundColor,
+            color: tag.textColor,
+            whiteSpace: "nowrap",
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+            display: "inline-block",
+          }}
+          className="border-less-table-orange-status"
+        >
+          {tag.label || status || "—"}
+        </Tag>
+      );
+    },
+    onHeaderCell: () => nowrapCell(150, 240),
+    onCell: () => nowrapCell(150, 240),
   },
 ];
