@@ -78,6 +78,8 @@ const SearchWithPopoverOnly = () => {
     setUsersTabSearch,
     setPendingRequestsTabSearch,
     setRejectedRequestsTabSearch,
+    setHTAPendingApprovalReportsSearch,
+    setHeadOfTradeApprovalMyActionSearch,
   } = useSearchBarContext();
 
   const {
@@ -424,6 +426,24 @@ const SearchWithPopoverOnly = () => {
 
         break;
 
+      case "13": // HTA My Action
+        setHeadOfTradeApprovalMyActionSearch((prev) => ({
+          ...prev,
+          requestID: "",
+          instrumentName: searchMain,
+          requesterName: "",
+          startDate: "",
+          endDate: "",
+          quantity: null,
+          pageNumber: 0,
+          type: [],
+          status: [],
+          filterTrigger: true,
+        }));
+        setSearchMain("");
+
+        break;
+
       case "14": // HTA Escalated
         if (currentPath === "/PAD/hta-reports/hta-trade-approval-requests") {
           setMyTradeApprovalReportLineManageSearch((prev) => ({
@@ -444,6 +464,18 @@ const SearchWithPopoverOnly = () => {
             departmentName: "",
             startDate: null,
             endDate: null,
+            filterTrigger: true,
+          }));
+        } else if (currentPath === "/PAD/hta-reports/hta-pending-requests") {
+          setHTAPendingApprovalReportsSearch((prev) => ({
+            ...prev,
+            instrumentName: searchMain,
+            requesterName: "",
+            quantity: 0,
+            startDate: null,
+            endDate: null,
+            escalatedStartDate: null,
+            escalatedEndDate: null,
             filterTrigger: true,
           }));
         }

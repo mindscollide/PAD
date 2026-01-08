@@ -180,24 +180,21 @@ export const getBorderlessTableColumns = ({
   },
   {
     title: (
-      <div>{withSortIcon("Employee Name", "employeeName", sortedInfo)}</div>
+      <div>{withSortIcon("Employee Name", "requesterName", sortedInfo)}</div>
     ),
-    dataIndex: "employeeName",
-    key: "employeeName",
+    dataIndex: "requesterName",
+    key: "requesterName",
     width: "150px",
-    align: "center",
+    align: "left",
     ellipsis: true,
-    sorter: (a, b) =>
-      a.employeeName.localeCompare(b.employeeName, undefined, {
-        sensitivity: "base",
-      }),
+    sorter: (a, b) => a.requesterName.localeCompare(b.requesterName),
     sortDirections: ["ascend", "descend"],
     sortOrder:
-      sortedInfo?.columnKey === "employeeName" ? sortedInfo.order : null,
+      sortedInfo?.columnKey === "requesterName" ? sortedInfo.order : null,
     showSorterTooltip: false,
     sortIcon: () => null,
     render: (text) => (
-      <span className={`${style["cell-text"]} font-medium`}>{text ?? "—"}</span>
+      <span className={`${style["cell-text"]} font-medium`}>{text}</span>
     ),
   },
   {
@@ -222,25 +219,7 @@ export const getBorderlessTableColumns = ({
       <span className={`${style["cell-text"]} font-medium`}>{text}</span>
     ),
   },
-  {
-    title: (
-      <div>{withSortIcon("Requester Name", "requesterName", sortedInfo)}</div>
-    ),
-    dataIndex: "requesterName",
-    key: "requesterName",
-    width: "150px",
-    align: "left",
-    ellipsis: true,
-    sorter: (a, b) => a.requesterName.localeCompare(b.requesterName),
-    sortDirections: ["ascend", "descend"],
-    sortOrder:
-      sortedInfo?.columnKey === "requesterName" ? sortedInfo.order : null,
-    showSorterTooltip: false,
-    sortIcon: () => null,
-    render: (text) => (
-      <span className={`${style["cell-text"]} font-medium`}>{text}</span>
-    ),
-  },
+
   {
     title: (
       <div>{withSortIcon("Tracking ID", "tradeApprovalID", sortedInfo)}</div>
@@ -342,7 +321,9 @@ export const getBorderlessTableColumns = ({
     showSorterTooltip: false,
     sortIcon: () => null,
     render: (text) => (
-      <span className={`${style["cell-text"]} font-medium`}>{text.toLocaleString()}</span>
+      <span className={`${style["cell-text"]} font-medium`}>
+        {text.toLocaleString()}
+      </span>
     ),
   },
   {

@@ -184,7 +184,7 @@ const ViewDetaildDateWiseTransaction = () => {
                       title={selectedInstrument?.instrumentName}
                       className={styles.viewDetailSubLabelsForInstrument}
                     >
-                      {selectedInstrument?.instrumentCode}
+                      {`${selectedInstrument?.instrumentCode} - ${selectedInstrument?.instrumentName}`}
                     </span>
                   </label>
                 </div>
@@ -313,9 +313,9 @@ const ViewDetaildDateWiseTransaction = () => {
                     Shares Traded
                   </label>
                   <label className={styles.viewDetailSubLabels}>
-                      {
-                      reconcileTransactionViewDetailData?.complianceMappedTradeSummary[0]
-                        ?.tradeWorkFlowID
+                    {
+                      reconcileTransactionViewDetailData
+                        ?.complianceMappedTradeSummary[0]?.tradeWorkFlowID
                     }
                   </label>
                 </div>
@@ -324,9 +324,7 @@ const ViewDetaildDateWiseTransaction = () => {
             <Row gutter={[4, 4]} style={{ marginTop: 3 }}>
               <Col span={24}>
                 <div className={styles.backgrounColorOfDetail}>
-                  <label className={styles.viewDetailMainLabels}>
-                    Notes
-                  </label>
+                  <label className={styles.viewDetailMainLabels}>Notes</label>
                   <label className={styles.viewDetailSubLabels}>
                     {reconcileTransactionViewDetailData?.details?.[0]
                       ?.approvalComments?.length > 0 &&

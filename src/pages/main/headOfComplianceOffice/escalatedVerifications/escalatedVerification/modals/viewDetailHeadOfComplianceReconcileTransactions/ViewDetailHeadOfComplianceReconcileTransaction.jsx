@@ -270,7 +270,7 @@ const ViewDetailHeadOfComplianceReconcileTransaction = () => {
                             <span>EQ</span>
                           )}
                         </span>{" "}
-                        {selectedInstrument?.instrumentCode}
+                        {`${selectedInstrument?.instrumentCode} - ${selectedInstrument?.instrumentName}`}
                       </label>
                     </div>
                   </Col>

@@ -16,7 +16,8 @@ import {
 import { useMyAdmin } from "../../context/AdminContext";
 import { useSearchBarContext } from "../../context/SearchBarContaxt";
 
-const ManageUsersCard = ({ profile, name, email, id, file }) => {
+const ManageUsersCard = ({ profile, name, email, id, file, employeeCode }) => {
+  console.log(id, "UserProfileUserProfile");
   const navigate = useNavigate();
 
   // 🔷 Context Hooks
@@ -135,6 +136,8 @@ const ManageUsersCard = ({ profile, name, email, id, file }) => {
     },
   ];
 
+  console.log(items, "CheckItemItem");
+
   return (
     <div className={styles.mainUserCarddiv}>
       {/* Left Section - Profile */}
@@ -160,7 +163,7 @@ const ManageUsersCard = ({ profile, name, email, id, file }) => {
 
           <div className={styles.manageUserEmail}>
             <span>{email}</span>
-            <span>ID: {id}</span>
+            <span>ID: {employeeCode}</span>
           </div>
         </div>
         <Dropdown

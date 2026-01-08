@@ -37,7 +37,7 @@ export const buildApiRequest = (searchState = {}, assetTypeListingData) => ({
   InstrumentName: searchState.instrumentName || "",
   Quantity: searchState.quantity ? Number(searchState.quantity) : 0,
   StartDate: searchState.startDate ? toYYMMDD(searchState.startDate) : "",
-  StatusIds: mapStatusToIds(searchState.status,2),
+  StatusIds: mapStatusToIds(searchState.status, 2),
   TypeIds: mapBuySellToIds(searchState.type, assetTypeListingData?.Equities),
   EndDate: searchState.endDate ? toYYMMDD(searchState.endDate) : "",
   BrokerIds: Array.isArray(searchState.brokerIDs) ? searchState.brokerIDs : [],
@@ -100,31 +100,6 @@ export const getBorderlessTableColumns = (
   employeePendingApprovalSearch = {},
   setEmployeePendingApprovalSearch = () => {}
 ) => [
-  // 🔹 Transaction ID Column
-  {
-    title: (
-      <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-        Transaction ID {getSortIcon("tradeApprovalID", sortedInfo)}
-      </div>
-    ),
-    dataIndex: "tradeApprovalID",
-    key: "tradeApprovalID",
-    width: "10%",
-    ellipsis: true,
-    sorter: (a, b) =>
-      (a?.tradeApprovalID || "").localeCompare(b?.tradeApprovalID || ""),
-    sortDirections: ["ascend", "descend"],
-    sortOrder:
-      sortedInfo?.columnKey === "tradeApprovalID" ? sortedInfo.order : null,
-    showSorterTooltip: false,
-    sortIcon: () => null,
-    render: (text) => (
-      <span className="font-medium" title={text || "N/A"}>
-        {formatCode(text) || "—"}
-      </span>
-    ),
-  },
-
   // 🔹 Instrument Column
   {
     title: (
@@ -182,6 +157,31 @@ export const getBorderlessTableColumns = (
         </div>
       );
     },
+  },
+
+  // 🔹 Transaction ID Column
+  {
+    title: (
+      <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+        Transaction ID {getSortIcon("tradeApprovalID", sortedInfo)}
+      </div>
+    ),
+    dataIndex: "tradeApprovalID",
+    key: "tradeApprovalID",
+    width: "10%",
+    ellipsis: true,
+    sorter: (a, b) =>
+      (a?.tradeApprovalID || "").localeCompare(b?.tradeApprovalID || ""),
+    sortDirections: ["ascend", "descend"],
+    sortOrder:
+      sortedInfo?.columnKey === "tradeApprovalID" ? sortedInfo.order : null,
+    showSorterTooltip: false,
+    sortIcon: () => null,
+    render: (text) => (
+      <span className="font-medium" title={text || "N/A"}>
+        {formatCode(text) || "—"}
+      </span>
+    ),
   },
 
   // 🔹 Approval Request Date & Time Column

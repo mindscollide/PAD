@@ -96,7 +96,9 @@ const Headers = () => {
                     (currentPath ===
                       "/PAD/hta-reports/hta-trade-approval-requests" ||
                       currentPath ===
-                        "/PAD/hta-reports/hta-policy-breaches-reports")) ||
+                        "/PAD/hta-reports/hta-policy-breaches-reports" ||
+                      currentPath ===
+                        "/PAD/hta-reports/hta-pending-requests")) ||
                   (selectedKeyRef.current === "17" &&
                     (currentPath ===
                       "/PAD/hca-reports/hca-overdue-verifications" ||

@@ -61,6 +61,8 @@ import HeadCompianceOfficerOverdueVerificationReports from "../pages/main/headOf
 import HOCMyActionPage from "../pages/main/headOfComplianceOffice/myActions";
 import CompianceOfficerPortfolioHistoryReports from "../pages/main/complianceOfficer/reports/portfolioHistoryReports";
 import HTATradeApprovalRequest from "../pages/main/headOfTradeApprover/reports/tradeApprovalsRequest/HTATradeApprovalRequest";
+import PendingApprovalRequest from "../pages/main/headOfTradeApprover/reports/pendingRequest/pendingRequest";
+import HTAMyAction from "../pages/main/headOfTradeApprover/myActions/myActions";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -196,7 +198,7 @@ const router = createBrowserRouter(
           path="hta-my-actions"
           element={
             <RoleBasedRoute isAdmin={false} allowedRoles={[5]}>
-              <EmployeMyTransaction />{" "}
+              <HTAMyAction />{" "}
             </RoleBasedRoute>
           }
         />
@@ -210,7 +212,6 @@ const router = createBrowserRouter(
           }
         >
           <Route index element={<HTAReportsIndex />} />
-          <Route path="lm-pending-request" element={<PendingRequest />} />
           <Route
             path="hta-trade-approval-requests"
             element={<HTATradeApprovalRequest />}
@@ -219,11 +220,8 @@ const router = createBrowserRouter(
             path="hta-policy-breaches-reports"
             element={<HTAPolicyBreachesReport />}
           />
-           <Route
-            path="hta-tat-reports"
-            element={<HTATAT />}
-          />
-          
+          <Route path="hta-tat-reports" element={<HTATAT />} />
+          <Route path="hta-pending-requests" element={<PendingApprovalRequest />} />
         </Route>
         {/* Compliance Officer */}
         <Route

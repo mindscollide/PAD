@@ -170,8 +170,9 @@
   border-radius: 8px;
   min-height: 70px;
   display: flex;
-  flex-direction: column;
-  justify-content: center;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
 }
 
 .smallShareHomeCardcount {
@@ -194,7 +195,7 @@
 .smallShareHomeCardlabel {
   font-family: "Switzer Variable";
   font-weight: 700;
-  font-size: 12px;
+  font-size: 18px;
   line-height: 100%;
   word-break: break-word;
   white-space: normal;
@@ -626,7 +627,6 @@
   margin-bottom: -4px;
   margin-left: 9px;
 }
-
 
 .ellipsisContainer {
   max-width: 100%;

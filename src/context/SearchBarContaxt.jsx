@@ -208,6 +208,24 @@ export const SearchBarProvider = ({ children }) => {
   // ===============================
   /**  Head Of Trade Approvals Escalated Approvals Filters*/
 
+  /** 🔍 Head Of Trade Approval My Action table filters */
+  const [
+    headOfTradeApprovalMyActionSearch,
+    setHeadOfTradeApprovalMyActionSearch,
+  ] = useState({
+    requestID: "",
+    instrumentName: "",
+    requesterName: "",
+    startDate: "",
+    endDate: "",
+    type: [],
+    status: [],
+    quantity: null,
+    pageNumber: 0,
+    pageSize: 10,
+    filterTrigger: false,
+  });
+
   const [
     headOfTradeEscalatedApprovalsSearch,
     setHeadOfTradeEscalatedApprovalsSearch,
@@ -250,6 +268,25 @@ export const SearchBarProvider = ({ children }) => {
     pageSize: 10,
     filterTrigger: false,
   });
+
+  /** 🔍 Head Of Trade Approval (HTA) Pending Request Report Search filters */
+  const [hTAPendingApprovalReportsSearch, setHTAPendingApprovalReportsSearch] =
+    useState({
+      instrumentName: "",
+      requesterName: "",
+      lineManagerName: "",
+      quantity: 0,
+      startDate: null,
+      endDate: null,
+      escalatedStartDate: null,
+      escalatedEndDate: null,
+      type: [],
+      status: [],
+      pageSize: 10,
+      pageNumber: 0,
+      filterTrigger: false,
+    });
+
   // ===============================
   // Compliance Officer States
   // ===============================
@@ -1062,6 +1099,24 @@ export const SearchBarProvider = ({ children }) => {
       filterTrigger: false,
     });
 
+  const resetHTAPendingApprovalRequestReportSearch = () => {
+    setHTAPendingApprovalReportsSearch({
+      InstrumentName: "",
+      requesterName: "",
+      lineManagerName: "",
+      quantity: 0,
+      startDate: null,
+      endDate: null,
+      escalatedStartDate: null,
+      escalatedEndDate: null,
+      type: [],
+      status: [],
+      pageSize: 10,
+      PageNumber: 0,
+      filterTrigger: false,
+    });
+  };
+
   /** Reset Admin Brokers List  filters */
   const resetAdminBrokersListSearch = () =>
     setAdminBrokerSearch({
@@ -1299,6 +1354,8 @@ export const SearchBarProvider = ({ children }) => {
         resetHeadOfComplianceApprovalEscalatedVerificationsSearch,
 
         // Head Of Trade Approval Escalated Approvals
+        headOfTradeApprovalMyActionSearch,
+        setHeadOfTradeApprovalMyActionSearch,
         headOfTradeEscalatedApprovalsSearch,
         setHeadOfTradeEscalatedApprovalsSearch,
         resetHeadOfTradeApprovalEscalatedApprovalsSearch,
@@ -1308,6 +1365,11 @@ export const SearchBarProvider = ({ children }) => {
         htaTATReportSearch,
         setHTATATReportSearch,
         resetHTATATReportSearch,
+
+        // Head Of Trade Pending Approval Report Request
+        hTAPendingApprovalReportsSearch,
+        setHTAPendingApprovalReportsSearch,
+        resetHTAPendingApprovalRequestReportSearch,
 
         // Admin Instrument Search filter
         adminIntrumentListSearch,

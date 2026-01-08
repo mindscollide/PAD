@@ -31,6 +31,8 @@ import { HCOTradeUploadedViaPortfolioFilter } from "./HCOTradeUploadedViaPortfol
 import { COPortfolioHisttory } from "./COPortfolioHistory";
 import { HTAPolicyBreachesReportFilter } from "./htaPolicyBreaches";
 import { HCOOverdueVerifications } from "./HCOOverdueVerifications";
+import { HTAPendingRequestFilter } from "./HTAPendingRequestFilter";
+import { HTAMyActionFilter } from "./HTAMyActionFilter";
 
 // this is used for open specific filter according to page
 export const renderFilterContent = (
@@ -238,6 +240,17 @@ export const renderFilterContent = (
         />
       );
 
+    case "13": // Head Of Trade Approval → My Actions
+      return (
+        <HTAMyActionFilter
+          setVisible={setVisible}
+          clear={clear}
+          setClear={setClear}
+          maininstrumentName={searchMain}
+          setMaininstrumentName={setSearchMain}
+        />
+      );
+
     case "14": // HTA → reports pending approvals
       if (currentPath === "/PAD/hta-reports/hta-trade-approval-requests") {
         return (
@@ -254,6 +267,16 @@ export const renderFilterContent = (
       ) {
         return (
           <HTAPolicyBreachesReportFilter
+            setVisible={setVisible}
+            clear={clear}
+            setClear={setClear}
+            maininstrumentName={searchMain}
+            setMaininstrumentName={setSearchMain}
+          />
+        );
+      } else if (currentPath === "/PAD/hta-reports/hta-pending-requests") {
+        return (
+          <HTAPendingRequestFilter
             setVisible={setVisible}
             clear={clear}
             setClear={setClear}

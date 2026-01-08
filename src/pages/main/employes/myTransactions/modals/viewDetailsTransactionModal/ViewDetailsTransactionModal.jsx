@@ -203,7 +203,7 @@ const ViewDetailsTransactionModal = () => {
                     className={styles.viewDetailSubLabelsForInstrument}
                     title={variableOfInstrument?.instrumentName}
                   >
-                    {variableOfInstrument?.instrumentShortCode}
+                    {`${variableOfInstrument?.instrumentShortCode} - ${variableOfInstrument?.instrumentName}`}
                   </span>
                 </label>
               </div>

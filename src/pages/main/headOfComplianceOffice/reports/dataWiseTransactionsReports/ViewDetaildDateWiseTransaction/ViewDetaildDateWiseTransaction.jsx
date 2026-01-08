@@ -184,7 +184,7 @@ const ViewDetaildDateWiseTransaction = () => {
                       title={selectedInstrument?.instrumentName}
                       className={styles.viewDetailSubLabelsForInstrument}
                     >
-                      {selectedInstrument?.instrumentCode}
+                      {`${selectedInstrument?.instrumentCode} - ${selectedInstrument?.instrumentName}`}
                     </span>
                   </label>
                 </div>

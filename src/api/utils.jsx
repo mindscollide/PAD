@@ -677,6 +677,15 @@ export const responseMessages = {
   PAD_TradeServiceManager_GetHOCMyActionsWorkflowDetail_02: "No data available",
   PAD_TradeServiceManager_GetHOCMyActionsWorkflowDetail_03: "Exception",
 
+  PAD_Trade_GetPoliciesByIDs_01: "Data found",
+  PAD_Trade_GetPoliciesByIDs_02: "No data available",
+  PAD_Trade_GetPoliciesByIDs_03: "Exception",
+
+  PAD_Trade_TradeServiceManager_SearchHOCOverdueVerifications_01: "Data found",
+  PAD_Trade_TradeServiceManager_SearchHOCOverdueVerifications_02:
+    "No data available",
+  PAD_Trade_TradeServiceManager_SearchHOCOverdueVerifications_03: "Exception",
+
   // ==============================
   // Head of Compliance Officer Date Wise Transaction report
   // ==============================
@@ -687,6 +696,9 @@ export const responseMessages = {
   PAD_Trade_TradeServiceManager_SearchHOCDateWiseTransactionRequest_03:
     "Exception",
 
+  // ==============================
+  // Head Of Trade Approval Reports Listing (HTA)
+  // ==============================
   PAD_Trade_TradeServiceManager_GetHTATradeApprovalRequestsReport_01:
     "Data found",
   PAD_Trade_TradeServiceManager_GetHTATradeApprovalRequestsReport_02:
@@ -701,19 +713,16 @@ export const responseMessages = {
   PAD_Trade_TradeServiceManager_SearchPolicyBreachedWorkFlowsRequest_03:
     "Exception",
 
-  PAD_Trade_GetPoliciesByIDs_01: "Data found",
-  PAD_Trade_GetPoliciesByIDs_02: "No data available",
-  PAD_Trade_GetPoliciesByIDs_03: "Exception",
-
-  PAD_Trade_TradeServiceManager_SearchHTATurnAroundTimeRequest_01: "Data found",
-  PAD_Trade_TradeServiceManager_SearchHTATurnAroundTimeRequest_02:
+  //Pending Request Report API HTA
+  PAD_Trade_TradeServiceManager_GetPendingTradeApprovalsForHta_01: "Data found",
+  PAD_Trade_TradeServiceManager_GetPendingTradeApprovalsForHta_02:
     "No data available",
-  PAD_Trade_TradeServiceManager_SearchHTATurnAroundTimeRequest_03: "Exception",
+  PAD_Trade_TradeServiceManager_GetPendingTradeApprovalsForHta_03: "Exception",
 
-  PAD_Trade_TradeServiceManager_SearchHOCOverdueVerifications_01: "Data found",
-  PAD_Trade_TradeServiceManager_SearchHOCOverdueVerifications_02:
-    "No data available",
-  PAD_Trade_TradeServiceManager_SearchHOCOverdueVerifications_03: "Exception",
+  //My Action Workflow Detail API For HTA
+  PAD_Trade_GetHTAMyActionsWorkflowDetail_01: "Data found",
+  PAD_Trade_GetHTAMyActionsWorkflowDetail_02: "No data available",
+  PAD_Trade_GetHTAMyActionsWorkflowDetail_03: "Exception",
 };
 
 /**
