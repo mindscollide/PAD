@@ -160,6 +160,7 @@ const CompianceOfficerPortfolioHistoryReports = () => {
     return () => {
       // Reset search state for fresh load
       resetComplianceOfficerPortfolioHistoryReportSearch();
+      resetCOPortfolioHistoryReportListData();
     };
   }, []);
 

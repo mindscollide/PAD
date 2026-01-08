@@ -134,7 +134,6 @@ const StatusFilterDropdown = ({
         setFilterOptions([]);
     }
   }, [selectedKey]);
-  console.log("adminIntrumentListSearch", state);
 
   /**
    * Handles confirmation of selected statuses.
@@ -157,7 +156,7 @@ const StatusFilterDropdown = ({
       case "17":
       case "18":
       case "19":
-        console.log("adminIntrumentListSearch");
+        console.log("StatusFilterDropdown handleOk",tempSelected);
         setState((prev) => ({
           ...prev,
           status: tempSelected,
@@ -215,7 +214,7 @@ const StatusFilterDropdown = ({
       case "17":
       case "18":
       case "19":
-        console.log("adminIntrumentListSearch");
+        console.log("StatusFilterDropdown handleReset");
         setState((prev) => ({
           ...prev,
           status: [],

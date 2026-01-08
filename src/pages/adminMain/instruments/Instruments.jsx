@@ -72,13 +72,10 @@ const Instruments = () => {
     deleteConfirmationEditModal,
   } = useGlobalModal();
 
-  console.log("adminIntrumentsDataadminIntrumentsData", adminIntrumentsData);
-
   const [sortedInfo, setSortedInfo] = useState({});
 
   // 🔷 Toggle Api Call For Active and InActive Statuses
   const onToggleStatusApiRequest = async (instrumentID, isActive) => {
-    console.log("onToggleStatusApiRequest", instrumentID, isActive);
     showLoader(true);
     const payload = {
       InstrumentID: instrumentID,
@@ -238,7 +235,7 @@ const Instruments = () => {
       const requestData = buildApiRequest(adminIntrumentListSearch);
       fetchApiCall(requestData, true, true);
     }
-  }, [buildApiRequest, adminIntrumentListSearch, fetchApiCall]);
+  }, []);
 
   // Reset on Unmount
   useEffect(() => {
@@ -252,7 +249,6 @@ const Instruments = () => {
   useEffect(() => {
     if (adminIntrumentListSearch.filterTrigger) {
       const requestData = buildApiRequest(adminIntrumentListSearch);
-
       fetchApiCall(requestData, true, true);
     }
   }, [adminIntrumentListSearch.filterTrigger]);
