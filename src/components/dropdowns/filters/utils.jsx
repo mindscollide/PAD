@@ -32,7 +32,7 @@ export const emaStatusOptions = [
  */
 export const emtStatusOptions = ["Pending", "Compliant", "Non-Compliant"];
 export const escalated = ["Pending"];
-export const adminBrokersStatus = ["Active", "Inactive"];
+export const adminBrokersStatus = ["Active", "In Active"];
 
 /**
  * Status options for pending approvals (Line Manager).
@@ -129,7 +129,16 @@ export const mapStatusToIds = (arr, type = 1) => {
     Upcoming: 4,
   };
 
-  const statusMap = type === 1 ? statusMapBundel : statusMapWorkflow;
+  const statusMapWorkflowAdmin = {
+    Active: 1,
+    "In Active": 2,
+  };
+  const statusMap =
+    type === 1
+      ? statusMapBundel
+      : type === 3
+      ? statusMapWorkflowAdmin
+      : statusMapWorkflow;
 
   return arr
     .map((status) => statusMap[status] ?? null)

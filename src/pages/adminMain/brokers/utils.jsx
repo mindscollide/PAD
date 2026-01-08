@@ -63,7 +63,7 @@ const getSortIcon = (columnKey, sortedInfo) => {
 export const buildApiRequest = (searchState = {}) => ({
   BrokerName: searchState.brokerName || "",
   PSXCode: searchState.psxCode || "",
-  StatusIds: mapStatusToIds?.(searchState.status) || [],
+  StatusIds: mapStatusToIds?.(searchState.status,3) || [],
   PageNumber: Number(searchState.pageNumber) || 0,
   Length: Number(searchState.pageSize) || 10,
 });
@@ -117,7 +117,7 @@ export const getBrokerTableColumns = ({
             }`}
           />
           <span className={isActive ? styles.activeText : styles.InActiveText}>
-            {isActive ? "Active" : "Inactive"}
+            {isActive ? "Active" : "In Active"}
           </span>
         </div>
       );

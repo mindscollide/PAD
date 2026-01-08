@@ -74,6 +74,8 @@ const SearchWithPopoverOnly = () => {
     setHeadOfComplianceMyActionSearch,
     setHCOTradesUploadViaPortfolioSearch,
     setCoPortfolioHistoryReportSearch,
+    setHOCTransactionsSummarysReportsViewDetailSearch,
+
     //
     setUsersTabSearch,
     setPendingRequestsTabSearch,
@@ -566,6 +568,18 @@ const SearchWithPopoverOnly = () => {
             employeeID: 0,
             employeeName: "",
             departmentName: "",
+            pageNumber: 0,
+            filterTrigger: true,
+          }));
+        } else if (
+          currentPath === "/PAD/hca-reports/hca-transactions-summary-report" &&
+          coTransactionSummaryReportViewDetailsFlag
+        ) {
+          setHOCTransactionsSummarysReportsViewDetailSearch((prev) => ({
+            ...prev,
+            instrumentName: searchMain,
+            quantity: "",
+            employeeName: "",
             pageNumber: 0,
             filterTrigger: true,
           }));

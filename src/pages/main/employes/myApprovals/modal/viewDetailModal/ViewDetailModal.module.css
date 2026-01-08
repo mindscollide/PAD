@@ -279,6 +279,7 @@
 
 .stepCircle {
   display: flex;
+  cursor:default;
   align-items: center;
   justify-content: center;
   height: 50px;

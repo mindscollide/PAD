@@ -104,7 +104,10 @@ const Headers = () => {
                       "/PAD/hca-reports/hca-overdue-verifications" ||
                       currentPath === "/PAD/hca-reports/hca-upload-portfolio" ||
                       currentPath ===
-                        "/PAD/hca-reports/hca-date-wise-transaction-report"))) && (
+                        "/PAD/hca-reports/hca-date-wise-transaction-report")) ||
+                  (currentPath ===
+                    "/PAD/hca-reports/hca-transactions-summary-report" &&
+                    coTransactionSummaryReportViewDetailsFlag)) && (
                   <SearchWithFilter />
                 )
               )}
