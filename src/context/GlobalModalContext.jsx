@@ -163,6 +163,14 @@ export const GlobalModalProvider = ({ children }) => {
   // to Show Decline Modal after submitted  When click on Head Of Decline
   const [headDeclineNoteModal, setHeadDeclineNoteModal] = useState(false);
 
+  // to show View Details Page when you are on TAT Request Approvals in HTA
+  const [showViewDetailPageInTatOnHta, setShowViewDetailPageInTatOnHta] =
+    useState(false);
+
+  // to show selected Data on TAT View Details in HTA
+  const [showSelectedTatDataOnViewDetail, setShowSelectedTatDataOnViewDetail] =
+    useState(null);
+
   /**
    * Global States For Head Od Approval (HTA) Modals End here
    */
@@ -421,6 +429,8 @@ export const GlobalModalProvider = ({ children }) => {
         setHeadDeclineNoteModal,
 
         resetStateForHeadOfApproval,
+        showViewDetailPageInTatOnHta,
+        setShowViewDetailPageInTatOnHta,
 
         /**
          * Global States For Head Of Approval Modals End here

@@ -1167,15 +1167,15 @@ span.ant-btn-icon {
   color: #717171 !important;
   background-color: transparent !important;
 }
-.only-tex-not-selected-groups{
-    font-family: Switzer Variable !important;
+.only-tex-not-selected-groups {
+  font-family: Switzer Variable !important;
   font-weight: 400 !important;
   font-style: Regular !important;
   font-size: 26px !important;
   leading-trim: NONE !important;
   line-height: 100% !important;
   letter-spacing: 0% !important;
-  color: #30426A !important;
+  color: #30426a !important;
   background-color: transparent !important;
 }
 .only-tex-selected {
@@ -1435,7 +1435,6 @@ span.ant-btn-icon {
   cursor: not-allowed !important;
 }
 
-
 /* For Report button */
 .small-light-button-report {
   /* width: 120px !important; */
@@ -1459,6 +1458,32 @@ span.ant-btn-icon {
 }
 
 .small-light-button-report:disabled {
+  background: #d9d9d9 !important;
+  border: 1px solid #d9d9d9 !important;
+  color: #ffffff !important;
+  cursor: not-allowed !important;
+}
+
+.view-large-transparent-button {
+  padding: 0px 40px !important;
+  height: 38px !important;
+  background: transparent !important;
+  border: 1px solid #717171 !important;
+  color: #424242 !important;
+  border-radius: 6.95px !important;
+  font-family: "Switzer Variable" !important;
+  font-weight: 500 !important;
+  font-size: 14px !important;
+  line-height: 100% !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease !important;
+}
+
+/* .large-transparent-button:not(:disabled):hover {
+  box-shadow: 4px 4px 6px 0px #00000033 !important;
+} */
+
+.view-large-transparent-button:disabled {
   background: #d9d9d9 !important;
   border: 1px solid #d9d9d9 !important;
   color: #ffffff !important;
