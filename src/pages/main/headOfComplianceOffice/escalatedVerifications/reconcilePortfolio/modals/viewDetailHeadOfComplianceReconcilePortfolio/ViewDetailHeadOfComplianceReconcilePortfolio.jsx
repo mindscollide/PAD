@@ -194,7 +194,7 @@ const ViewDetailHeadOfComplianceReconcilePortfolio = () => {
                           className={styles.viewDetailSubLabelsForInstrument}
                           title={selectedInstrument?.instrumentName}
                         >
-                          {selectedInstrument?.instrumentCode}
+                          {`${selectedInstrument?.instrumentCode} - ${selectedInstrument?.instrumentName}`}
                         </span>
                       </label>
                     </div>

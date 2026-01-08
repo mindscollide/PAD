@@ -214,6 +214,20 @@ export const MyApprovalProvider = ({ children }) => {
     totalRecordsTable: 0,
   });
 
+  /** HTA Pending Request Approval Reports */
+  const [hTAPendingApprovalsData, setHTAPendingApprovalsData] = useState({
+    pendingTradeApprovals: [],
+    totalRecordsDataBase: 0,
+    totalRecordsTable: 0,
+  });
+
+  /** Head Of Trade Approval (HTA) My Action */
+  const [myActionHeadOfTradeApprovalData, setMyActionHeadOfTradeApprovalData] =
+    useState({
+      requests: [],
+      totalRecords: 0,
+    });
+
   // Reset function to set all states back to initial values
   /* =========================================================
      RESET FUNCTIONS
@@ -322,6 +336,16 @@ export const MyApprovalProvider = ({ children }) => {
       totalRecordsTable: 0,
     });
   };
+
+  //Reset HTA Pending Reqeust Approval Reports context state
+  const resetHtaPendingRequestApprovalData = () => {
+    setHTAPendingApprovalsData({
+      pendingTradeApprovals: [],
+      totalRecordsDataBase: 0,
+      totalRecordsTable: 0,
+    });
+  };
+
   /* =========================================================
      PROVIDER RETURN
      ========================================================= */
@@ -386,6 +410,8 @@ export const MyApprovalProvider = ({ children }) => {
         htaTATReportsData,
         setHTATATReportsData,
         resetHTATATReportsData,
+        myActionHeadOfTradeApprovalData,
+        setMyActionHeadOfTradeApprovalData,
 
         // compliance officer  date wise transaction report
         coDatewiseTransactionReportListData,
@@ -425,6 +451,11 @@ export const MyApprovalProvider = ({ children }) => {
         hcoTransactionSummaryReportListData,
         setHCOTransactionSummaryReportListData,
         resetTransactionSummaryHeadOfCompliance,
+
+        //HTA Pending Request Approval Report
+        hTAPendingApprovalsData,
+        setHTAPendingApprovalsData,
+        resetHtaPendingRequestApprovalData,
       }}
     >
       {children}

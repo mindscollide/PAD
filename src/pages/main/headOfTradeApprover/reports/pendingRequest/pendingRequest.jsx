@@ -17,29 +17,28 @@ import { useMyApproval } from "../../../../../context/myApprovalContaxt";
 import {
   ExportLineManagerPendingTradeApprovalsExcel,
   GetAllLineManagerViewDetailRequest,
-  SearchLineManagerPendingApprovalsRequest,
+  SearchPendingTradeApprovalsHTAReportRequest,
 } from "../../../../../api/myApprovalApi";
 import { useNavigate } from "react-router-dom";
 import { useDashboardContext } from "../../../../../context/dashboardContaxt";
 import { useTableScrollBottom } from "../../../../../common/funtions/scroll";
 import { getSafeAssetTypeData } from "../../../../../common/funtions/assetTypesList";
 import { BorderlessTable } from "../../../../../components";
-import PDF from "../../../../../assets/img/pdf.png";
 import Excel from "../../../../../assets/img/xls.png";
 import CustomButton from "../../../../../components/buttons/button";
 import { UpOutlined, DownOutlined } from "@ant-design/icons";
-import ViewDetailModal from "../../approvalRequest/modal/viewDetailLineManagerModal/ViewDetailModal";
+import ViewDetailModal from "../../../lineManager/approvalRequest/modal/viewDetailLineManagerModal/ViewDetailModal";
+import NoteLineManagerModal from "../../../lineManager/approvalRequest/modal/noteLineManagerModal/NoteLineManagerModal";
 
-const PendingRequest = () => {
+const PendingApprovalRequest = () => {
   const navigate = useNavigate();
   const hasFetched = useRef(false);
   const tableScrollLMApprovalRequest = useRef(null);
   const [open, setOpen] = useState(false);
-
   const {
-    viewDetailLineManagerModal,
     setViewDetailLineManagerModal,
-    setNoteGlobalModal,
+    viewDetailLineManagerModal,
+    noteGlobalModal,
     setIsSelectedViewDetailLineManager,
   } = useGlobalModal();
 
@@ -49,22 +48,22 @@ const PendingRequest = () => {
   const { showLoader } = useGlobalLoader();
   const { callApi } = useApi();
 
-  // state of Search context which I'm getting from the SearchBar for Line Manager
+  // state of Search context which I'm getting from the SearchBar for HTA
   // Global state for filter/search values
   const {
-    lMPendingApprovalReportsSearch,
-    setLMPendingApprovalReportsSearch,
-    resetLineManagerApprovalSearch,
+    hTAPendingApprovalReportsSearch,
+    setHTAPendingApprovalReportsSearch,
+    resetHTAPendingApprovalRequestReportSearch,
   } = useSearchBarContext();
 
-  // state of context which I'm getting from the myApproval for Line Manager
+  // state of context which I'm getting from the myApproval for HTA
   const {
-    lMPendingApprovalsData,
-    setLMPendingApprovalsData,
-    resetPendingRequestReportRequestContextState,
-    setViewDetailsLineManagerData,
+    hTAPendingApprovalsData,
+    setHTAPendingApprovalsData,
+
     lineManagerApprovalMqtt,
     setLineManagerApprovalMQtt,
+    setViewDetailsLineManagerData,
   } = useMyApproval();
 
   const [loadingMore, setLoadingMore] = useState(false);
@@ -82,7 +81,7 @@ const PendingRequest = () => {
       if (showLoaderFlag) showLoader(true);
 
       try {
-        const res = await SearchLineManagerPendingApprovalsRequest({
+        const res = await SearchPendingTradeApprovalsHTAReportRequest({
           callApi,
           showNotification,
           showLoader,
@@ -95,28 +94,28 @@ const PendingRequest = () => {
           assetTypeListingData,
           setAssetTypeListingData
         );
-        const pendingApprovals = Array.isArray(res?.pendingApprovals)
-          ? res.pendingApprovals
+        const pendingTradeApprovals = Array.isArray(res?.pendingTradeApprovals)
+          ? res.pendingTradeApprovals
           : [];
         // // map data according to used in table
         const mapped = mapApiResopse(
           currentAssetTypeData?.Equities,
-          pendingApprovals
+          pendingTradeApprovals
         );
 
-        setLMPendingApprovalsData((prev) => ({
-          pendingApprovals: replace
+        setHTAPendingApprovalsData((prev) => ({
+          pendingTradeApprovals: replace
             ? mapped
-            : [...(prev?.pendingApprovals || []), ...mapped],
+            : [...(prev?.pendingTradeApprovals || []), ...mapped],
           // this is for to run lazy loading its data comming from database of total data in db
           totalRecordsDataBase: res.totalRecords || 0,
           // this is for to know how mush dta currently fetch from  db
           totalRecordsTable: replace
             ? mapped.length
-            : lMPendingApprovalsData.totalRecordsTable + mapped.length,
+            : hTAPendingApprovalsData.totalRecordsTable + mapped.length,
         }));
 
-        setLMPendingApprovalReportsSearch((prev) => {
+        setHTAPendingApprovalReportsSearch((prev) => {
           const next = {
             ...prev,
             pageNumber: replace
@@ -142,60 +141,11 @@ const PendingRequest = () => {
     [callApi, showNotification, showLoader, navigate, assetTypeListingData]
   );
 
-  useEffect(() => {
-    return () => {
-      resetLineManagerApprovalSearch();
-      hasFetched.current = false;
-    };
-  }, []);
-  /**
-   * Runs only once to fetch api on initial render of a page
-   */
-  useEffect(() => {
-    if (hasFetched.current) return;
-    hasFetched.current = true;
-    const requestData = buildApiRequest(
-      lMPendingApprovalReportsSearch,
-      assetTypeListingData
-    );
-
-    fetchApiCall(requestData, true, true);
-    setNoteGlobalModal({ visible: false, action: null });
-  }, []);
-
-  /**
-   * Syncs filters on `filterTrigger` from context
-   */
-  useEffect(() => {
-    if (lMPendingApprovalReportsSearch.filterTrigger) {
-      // requestData, replace , mainLoader
-      const requestData = buildApiRequest(
-        lMPendingApprovalReportsSearch,
-        assetTypeListingData
-      );
-      fetchApiCall(requestData, true, true);
-    }
-  }, [lMPendingApprovalReportsSearch.filterTrigger]);
-
-  useEffect(() => {
-    if (!lineManagerApprovalMqtt) return;
-    let requestData = buildApiRequest(
-      lMPendingApprovalReportsSearch,
-      assetTypeListingData
-    );
-    requestData = {
-      ...requestData,
-      PageNumber: 0,
-    };
-    fetchApiCall(requestData, true, false);
-    setLineManagerApprovalMQtt(false);
-  }, [lineManagerApprovalMqtt]);
-
   // This Api is for the getAllViewDetailModal For LineManager
-  const handleViewDetailsForLineManager = async (workFlowID) => {
+  const handleViewDetailsForHTA = async (workFlowID) => {
     await showLoader(true);
     const requestdata = { TradeApprovalID: workFlowID };
-    console.log("Check APi",requestdata);
+    console.log("Check APi", requestdata);
 
     const responseData = await GetAllLineManagerViewDetailRequest({
       callApi,
@@ -211,15 +161,61 @@ const PendingRequest = () => {
     }
   };
 
+  useEffect(() => {
+    return () => {
+      resetHTAPendingApprovalRequestReportSearch();
+    };
+  }, []);
+  /**
+   * Runs only once to fetch api on initial render of a page
+   */
+  useEffect(() => {
+    if (hasFetched.current) return;
+    hasFetched.current = true;
+    const requestData = buildApiRequest(
+      hTAPendingApprovalReportsSearch,
+      assetTypeListingData
+    );
+
+    fetchApiCall(requestData, true, true);
+  }, []);
+
+  /**
+   * Syncs filters on `filterTrigger` from context
+   */
+  useEffect(() => {
+    if (hTAPendingApprovalReportsSearch.filterTrigger) {
+      // requestData, replace , mainLoader
+      const requestData = buildApiRequest(
+        hTAPendingApprovalReportsSearch,
+        assetTypeListingData
+      );
+      fetchApiCall(requestData, true, true);
+    }
+  }, [hTAPendingApprovalReportsSearch.filterTrigger]);
+
+  useEffect(() => {
+    if (!lineManagerApprovalMqtt) return;
+    let requestData = buildApiRequest(
+      hTAPendingApprovalReportsSearch,
+      assetTypeListingData
+    );
+    requestData = {
+      ...requestData,
+      PageNumber: 0,
+    };
+    fetchApiCall(requestData, true, false);
+    setLineManagerApprovalMQtt(false);
+  }, [lineManagerApprovalMqtt]);
+
   // Table columns with integrated filters
   const columns = getBorderlessLineManagerTableColumns({
     approvalStatusMap,
     sortedInfo,
-    lMPendingApprovalReportsSearch,
-    setLMPendingApprovalReportsSearch,
-    setViewDetailLineManagerModal,
+    hTAPendingApprovalReportsSearch,
+    setHTAPendingApprovalReportsSearch,
+    handleViewDetailsForHTA,
     setIsSelectedViewDetailLineManager,
-    handleViewDetailsForLineManager,
   });
 
   /** 🔹 Handle removing individual filter */
@@ -228,10 +224,11 @@ const PendingRequest = () => {
       instrumentName: { instrumentName: "" },
       requesterName: { requesterName: "" },
       dateRange: { startDate: null, endDate: null },
+      dateRange2: { escalatedStartDate: null, escalatedEndDate: null },
       quantity: { quantity: 0 },
     };
 
-    setLMPendingApprovalReportsSearch((prev) => ({
+    setHTAPendingApprovalReportsSearch((prev) => ({
       ...prev,
       ...resetMap[key],
       pageNumber: 0,
@@ -241,12 +238,14 @@ const PendingRequest = () => {
 
   /** 🔹 Handle removing all filters */
   const handleRemoveAllFilters = () => {
-    setLMPendingApprovalReportsSearch((prev) => ({
+    setHTAPendingApprovalReportsSearch((prev) => ({
       ...prev,
       instrumentName: "",
       requesterName: "",
       startDate: null,
       endDate: null,
+      escalatedStartDate: null,
+      escalatedEndDate: null,
       quantity: 0,
       pageNumber: 0,
       filterTrigger: true,
@@ -255,8 +254,15 @@ const PendingRequest = () => {
 
   /** 🔹 Build Active Filters */
   const activeFilters = (() => {
-    const { instrumentName, requesterName, startDate, endDate, quantity } =
-      lMPendingApprovalReportsSearch || {};
+    const {
+      instrumentName,
+      requesterName,
+      startDate,
+      endDate,
+      escalatedStartDate,
+      escalatedEndDate,
+      quantity,
+    } = hTAPendingApprovalReportsSearch || {};
 
     return [
       instrumentName && {
@@ -278,6 +284,11 @@ const PendingRequest = () => {
           key: "dateRange",
           value: `${startDate} → ${endDate}`,
         },
+      escalatedStartDate &&
+        escalatedEndDate && {
+          key: "dateRange2",
+          value: `${escalatedStartDate} → ${escalatedEndDate}`,
+        },
       quantity &&
         Number(quantity) > 0 && {
           key: "quantity",
@@ -295,7 +306,7 @@ const PendingRequest = () => {
         navigationEntries[0].type === "reload"
       ) {
         // Check localStorage for previously saved selectedKey
-        resetLineManagerApprovalSearch();
+        resetHTAPendingApprovalRequestReportSearch();
       }
     } catch (error) {
       console.error(
@@ -309,15 +320,15 @@ const PendingRequest = () => {
   useTableScrollBottom(
     async () => {
       if (
-        lMPendingApprovalsData?.totalRecordsDataBase <=
-        lMPendingApprovalsData?.totalRecordsTable
+        hTAPendingApprovalsData?.totalRecordsDataBase <=
+        hTAPendingApprovalsData?.totalRecordsTable
       )
         return;
 
       try {
         setLoadingMore(true);
         const requestData = buildApiRequest(
-          lMPendingApprovalReportsSearch,
+          hTAPendingApprovalReportsSearch,
           assetTypeListingData
         );
 
@@ -336,7 +347,7 @@ const PendingRequest = () => {
   const downloadMyComplianceReportInExcelFormat = async () => {
     showLoader(true);
     const requestData = buildApiRequest(
-      lMPendingApprovalReportsSearch,
+      hTAPendingApprovalReportsSearch,
       assetTypeListingData
     );
     let NewRequestData = {
@@ -366,7 +377,7 @@ const PendingRequest = () => {
               {
                 title: (
                   <span
-                    onClick={() => navigate("/PAD/lm-reports")}
+                    onClick={() => navigate("/PAD/hta-reports")}
                     className={style.breadcrumbLink}
                   >
                     Reports
@@ -460,10 +471,10 @@ const PendingRequest = () => {
         <div className="px-4 md:px-6 lg:px-8">
           {/* Table or Empty State */}
           <BorderlessTable
-            rows={lMPendingApprovalsData?.pendingApprovals}
+            rows={hTAPendingApprovalsData?.pendingTradeApprovals}
             columns={columns}
             scroll={
-              lMPendingApprovalsData?.pendingApprovals?.length
+              hTAPendingApprovalsData?.pendingTradeApprovals?.length
                 ? {
                     x: "max-content",
                     y: activeFilters.length > 0 ? 450 : 500,
@@ -477,10 +488,13 @@ const PendingRequest = () => {
           />
         </div>
       </PageLayout>
-           {/* To Show Line Manager View Detail Modal */}
+      {/* To Show Line Manager View Detail Modal */}
       {viewDetailLineManagerModal && <ViewDetailModal />}
+
+      {/* To Show Line Manager Note Modal */}
+      {noteGlobalModal && <NoteLineManagerModal />}
     </>
   );
 };
 
-export default PendingRequest;
+export default PendingApprovalRequest;

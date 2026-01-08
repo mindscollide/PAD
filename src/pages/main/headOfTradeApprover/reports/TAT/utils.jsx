@@ -39,12 +39,12 @@ export const mapListData = (
     : myTradeApprovalLineManagerData?.records || [];
 
   if (!records.length) return [];
-
+  console.log(records, "departmentdepartment");
   return records.map((item) => ({
     key: item.userID,
-    employeeID: item.userID,
-    employeeName: item.fullName || "",
-    departmentName: item.departmentName || "",
+    employeeID: item.employeeID,
+    employeeName: item.employeeName || "",
+    departmentName: item.department || "",
     quantity: item.quantity || 0,
     policyCount: item.totalBreachedPolicies || 0,
     breachedPolicies: item.breachedPolicies || 0,
@@ -108,21 +108,30 @@ export const getBorderlessTableColumns = ({
   setPolicyModalVisible,
 }) => [
   {
-    title: withSortIcon("Employee ID", "employeeID", sortedInfo),
+    title: (
+      <div style={{ marginLeft: "8px" }}>
+        {withSortIcon("Employee ID", "employeeID", sortedInfo)}
+      </div>
+    ),
     dataIndex: "employeeID",
     key: "employeeID",
     width: "140px",
     ellipsis: true,
-    sorter: (a, b) =>
-      parseInt(a.employeeID.replace(/[^\d]/g, ""), 10) -
-      parseInt(b.employeeID.replace(/[^\d]/g, ""), 10),
+    sorter: (a, b) => a.employeeID - b.employeeID,
     sortDirections: ["ascend", "descend"],
     sortOrder: sortedInfo?.columnKey === "employeeID" ? sortedInfo.order : null,
     showSorterTooltip: false,
     sortIcon: () => null,
     render: (employeeID) => {
       return (
-        <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: "12px",
+            marginLeft: "8px",
+          }}
+        >
           <span className="font-medium">{employeeID}</span>
         </div>
       );
@@ -134,13 +143,19 @@ export const getBorderlessTableColumns = ({
     key: "employeeName",
     ellipsis: true,
     width: "140px",
-    sorter: (a, b) => a.employeeName - b.employeeName,
+    sorter: (a, b) => a.employeeName.localeCompare(b.employeeName),
     sortDirections: ["ascend", "descend"],
     sortOrder:
       sortedInfo?.columnKey === "employeeName" ? sortedInfo.order : null,
     showSorterTooltip: false,
     sortIcon: () => null,
-    render: (q) => <span className="font-medium">{q.toLocaleString()}</span>,
+    render: (text, record) => {
+      return (
+        <div id={`cell-${record.key}-employeeName`}>
+          <span className="font-medium">{text}</span>
+        </div>
+      );
+    },
   },
   {
     title: withSortIcon("Department", "departmentName", sortedInfo),
@@ -154,7 +169,13 @@ export const getBorderlessTableColumns = ({
       sortedInfo?.columnKey === "departmentName" ? sortedInfo.order : null,
     showSorterTooltip: false,
     sortIcon: () => null,
-    render: (q) => <span className="font-medium">{q.toLocaleString()}</span>,
+    render: (text, record) => {
+      return (
+        <div id={`cell-${record.key}-departmentName`}>
+          <span className="font-medium">{text}</span>
+        </div>
+      );
+    },
   },
   {
     title: withSortIcon("Request date & time", "requestDateTime", sortedInfo),

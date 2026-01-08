@@ -70,7 +70,7 @@
 /* Add this new class */
 .changeHeight {
   height: 80vh !important;
-  top: 131px !important;
+  top: 151px !important;
 }
 .changeHeightreports {
   height: 78vh !important;
@@ -78,8 +78,8 @@
 }
 
 .changeHeightlmreports {
-  height: 75vh !important;
-  top: 186px !important;
+  height: 70vh !important;
+  top: 206px !important;
 }
 
 .changeSessionwiseHeight{

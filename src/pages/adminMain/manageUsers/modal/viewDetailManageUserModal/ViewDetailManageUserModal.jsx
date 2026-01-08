@@ -154,6 +154,11 @@ const ViewDetailManageUserModal = () => {
   const safeValue = (value, fallback) =>
     value && value.toString().trim() !== "" ? value : fallback;
 
+  //Check if Employeeid having roleId 2
+  const hasRoleId2 = manageUsersViewDetailModalData?.userAssignedRoles?.some(
+    (role) => role.roleID === 2
+  );
+
   // -----------------------
   // 🔹 Render
   // -----------------------
@@ -165,7 +170,13 @@ const ViewDetailManageUserModal = () => {
       modalHeader={null}
       onCancel={() => setViewDetailManageUser(false)}
       modalBody={
-        <div className={styles.modalBodyWrapper}>
+        <div
+          className={
+            hasRoleId2
+              ? styles.modalBodyWrapper
+              : styles.modalBodyWrapperRoleId2
+          }
+        >
           {/* Status Header */}
           <Row>
             <Col span={24}>
@@ -344,289 +355,321 @@ const ViewDetailManageUserModal = () => {
             </Col>
           </Row>
 
-          <>
-            <Row gutter={[16, 16]}>
-              {/* 🔹 Line Manager Card */}
-              {(isLineManagerEditOpen || !isComplianceOfficerEditOpen) && (
-                <Col span={isLineManagerEditOpen ? 24 : 12}>
-                  <div className={styles.complianceCard}>
-                    <h4 className={styles.cardTitle}>Line Manager</h4>
+          {hasRoleId2 && (
+            <>
+              <Row gutter={[16, 16]}>
+                {/* 🔹 Line Manager Card */}
+                {(isLineManagerEditOpen || !isComplianceOfficerEditOpen) && (
+                  <Col span={isLineManagerEditOpen ? 24 : 12}>
+                    <div className={styles.complianceCard}>
+                      <h4 className={styles.cardTitle}>Line Manager</h4>
 
-                    {isLineManagerEditOpen ? (
-                      // Edit Mode Dropdown
-                      <div className={styles.editMainDiv}>
-                        <label className={styles.instrumentLabel}>Name:</label>
-                        <Select
-                          allowClear
-                          showSearch
-                          optionFilterProp="label"
-                          optionLabelProp="label"
-                          className={styles.SelectDropdownClass}
-                          placeholder="Select a Line Manager"
-                          onChange={(value) => {
-                            setSelectedLineManagerID(value);
-                          }}
-                        >
-                          {lineManagerViewDetailDropdownData?.lineManagers?.map(
-                            (manager) => (
-                              <Select.Option
-                                key={manager.userID}
-                                value={manager.userID}
-                                label={`${manager.firstName} ${manager.lastName}`}
-                              >
-                                <Row>
-                                  <Col span={12}>
-                                    <div>
+                      {isLineManagerEditOpen ? (
+                        // Edit Mode Dropdown
+                        <div className={styles.editMainDiv}>
+                          <label className={styles.instrumentLabel}>
+                            Name:
+                          </label>
+                          <Select
+                            allowClear
+                            showSearch
+                            optionFilterProp="label"
+                            optionLabelProp="label"
+                            className={styles.SelectDropdownClass}
+                            placeholder="Select a Line Manager"
+                            onChange={(value) => {
+                              setSelectedLineManagerID(value);
+                            }}
+                          >
+                            {lineManagerViewDetailDropdownData?.lineManagers?.map(
+                              (manager) => (
+                                <Select.Option
+                                  key={manager.userID}
+                                  value={manager.userID}
+                                  label={`${manager.firstName} ${manager.lastName}`}
+                                >
+                                  <Row>
+                                    <Col span={12}>
+                                      <div>
+                                        <div
+                                          className={styles.selectFullNameText}
+                                        >
+                                          {manager.firstName} {manager.lastName}
+                                        </div>
+                                        <div className={styles.selectEmailText}>
+                                          {manager.emailAddress || "N/A"}
+                                        </div>
+                                      </div>
+                                    </Col>
+                                    <Col
+                                      span={12}
+                                      style={{ textAlign: "right" }}
+                                    >
                                       <div
                                         className={styles.selectFullNameText}
                                       >
-                                        {manager.firstName} {manager.lastName}
+                                        {manager.userID}
                                       </div>
                                       <div className={styles.selectEmailText}>
-                                        {manager.emailAddress || "N/A"}
+                                        {manageUsersViewDetailModalData
+                                          ?.userDetails?.departmentName ||
+                                          "N/A"}
                                       </div>
-                                    </div>
-                                  </Col>
-                                  <Col span={12} style={{ textAlign: "right" }}>
-                                    <div className={styles.selectFullNameText}>
-                                      {manager.userID}
-                                    </div>
-                                    <div className={styles.selectEmailText}>
-                                      {manageUsersViewDetailModalData
-                                        ?.userDetails?.departmentName || "N/A"}
-                                    </div>
-                                  </Col>
-                                </Row>
-                              </Select.Option>
-                            )
-                          )}
-                        </Select>
+                                    </Col>
+                                  </Row>
+                                </Select.Option>
+                              )
+                            )}
+                          </Select>
 
-                        <div className={styles.mainButtonDivClose}>
-                          <CustomButton
-                            text="Cancel"
-                            className="big-light-button"
-                            onClick={() => setIsLineManagerEditOpen(false)}
-                          />
-                          <CustomButton
-                            text="Save"
-                            onClick={saveLineManager}
-                            className="big-dark-button"
-                          />
-                        </div>
-                      </div>
-                    ) : (
-                      // Display Mode Card
-                      <div className={styles.LMcardContent}>
-                        {manageUsersViewDetailModalData?.userHierarchy?.find(
-                          (manager) => manager.roleID === 3
-                        ) ? (
-                          (() => {
-                            const LM =
-                              manageUsersViewDetailModalData.userHierarchy.find(
-                                (manager) => manager.roleID === 3
-                              );
-                            return (
-                              <Row gutter={16} align="middle">
-                                <Col span={12}>
-                                  <div className={styles.infoBlock}>
-                                    <label className={styles.infoLabel}>
-                                      Name: {LM.managerName || "N/A"}
-                                    </label>
-                                    <div className={styles.infoSubLabel}>
-                                      Email: {LM.managerEmail || "N/A"}
-                                    </div>
-                                  </div>
-                                </Col>
-
-                                <Col span={11}>
-                                  <div className={styles.infoBlock}>
-                                    <label className={styles.infoLabel}>
-                                      ID: {LM.managerID || "N/A"}
-                                    </label>
-                                    <div className={styles.infoSubLabel}>
-                                      Department:{" "}
-                                      {manageUsersViewDetailModalData
-                                        ?.userDetails?.departmentName || "N/A"}
-                                    </div>
-                                  </div>
-                                </Col>
-
-                                <Col span={1} className={styles.iconCol}>
-                                  <img
-                                    src={EditIcon}
-                                    onClick={() => {
-                                      onClickOfEditButtonLineMangerDropdown();
-                                      setIsLineManagerEditOpen(true);
-                                    }}
-                                    alt="Edit"
-                                  />
-                                </Col>
-                              </Row>
-                            );
-                          })()
-                        ) : (
-                          <div className={styles.noDataText}>
-                            No Line Manager Assigned
+                          <div className={styles.mainButtonDivClose}>
+                            <CustomButton
+                              text="Cancel"
+                              className="big-light-button"
+                              onClick={() => setIsLineManagerEditOpen(false)}
+                            />
+                            <CustomButton
+                              text="Save"
+                              onClick={saveLineManager}
+                              className="big-dark-button"
+                            />
                           </div>
-                        )}
-                      </div>
-                    )}
-                  </div>
-                </Col>
-              )}
-
-              {/* 🔹 Compliance Officer Card */}
-              {(isComplianceOfficerEditOpen || !isLineManagerEditOpen) && (
-                <Col span={isComplianceOfficerEditOpen ? 24 : 12}>
-                  <div className={styles.complianceCard}>
-                    <h4 className={styles.cardTitle}>Compliance Officer</h4>
-
-                    {isComplianceOfficerEditOpen ? (
-                      // Edit Mode Dropdown
-                      <div className={styles.editMainDiv}>
-                        <label className={styles.instrumentLabel}>Name:</label>
-                        <Select
-                          showSearch
-                          allowClear
-                          optionFilterProp="label"
-                          optionLabelProp="label"
-                          className={styles.SelectDropdownClass}
-                          placeholder="Select a Compliance Officer"
-                          onChange={(value) =>
-                            setSelectedComplianceOfficerID(value)
-                          }
-                        >
-                          {complianceOfficerViewDetailDropdownData?.lineManagers?.map(
-                            (officer) => (
-                              <Select.Option
-                                key={officer.userID}
-                                value={officer.userID}
-                                label={`${officer.firstName} ${officer.lastName}`}
-                              >
-                                <Row>
+                        </div>
+                      ) : (
+                        // Display Mode Card
+                        <div className={styles.LMcardContent}>
+                          {manageUsersViewDetailModalData?.userHierarchy?.find(
+                            (manager) => manager.roleID === 3
+                          ) ? (
+                            (() => {
+                              const LM =
+                                manageUsersViewDetailModalData.userHierarchy.find(
+                                  (manager) => manager.roleID === 3
+                                );
+                              return (
+                                <Row gutter={16} align="middle">
                                   <Col span={12}>
-                                    <div>
-                                      <div
-                                        className={styles.selectFullNameText}
-                                      >
-                                        {officer.firstName} {officer.lastName}
-                                      </div>
-                                      <div className={styles.selectEmailText}>
-                                        {officer.emailAddress || "N/A"}
+                                    <div className={styles.infoBlock}>
+                                      <label className={styles.infoLabel}>
+                                        Name: {LM.managerName || "N/A"}
+                                      </label>
+                                      <div className={styles.infoSubLabel}>
+                                        Email: {LM.managerEmail || "N/A"}
                                       </div>
                                     </div>
                                   </Col>
-                                  <Col span={12} style={{ textAlign: "right" }}>
-                                    <div className={styles.selectFullNameText}>
-                                      {officer.userID}
+
+                                  <Col span={11}>
+                                    <div className={styles.infoBlock}>
+                                      <label className={styles.infoLabel}>
+                                        ID: {LM.managerID || "N/A"}
+                                      </label>
+                                      <div className={styles.infoSubLabel}>
+                                        Department:{" "}
+                                        {manageUsersViewDetailModalData
+                                          ?.userDetails?.departmentName ||
+                                          "N/A"}
+                                      </div>
                                     </div>
-                                    <div className={styles.selectEmailText}>
-                                      {manageUsersViewDetailModalData
-                                        ?.userDetails?.departmentName || "N/A"}
-                                    </div>
+                                  </Col>
+
+                                  <Col span={1} className={styles.iconCol}>
+                                    <img
+                                      src={EditIcon}
+                                      onClick={() => {
+                                        onClickOfEditButtonLineMangerDropdown();
+                                        setIsLineManagerEditOpen(true);
+                                      }}
+                                      alt="Edit"
+                                    />
                                   </Col>
                                 </Row>
-                              </Select.Option>
-                            )
+                              );
+                            })()
+                          ) : (
+                            <div className={styles.noDataText}>
+                              No Line Manager Assigned
+                            </div>
                           )}
-                        </Select>
+                        </div>
+                      )}
+                    </div>
+                  </Col>
+                )}
 
-                        <div className={styles.mainButtonDivClose}>
-                          <CustomButton
-                            text="Cancel"
-                            className="big-light-button"
-                            onClick={() =>
-                              setIsComplianceOfficerEditOpen(false)
+                {/* 🔹 Compliance Officer Card */}
+                {(isComplianceOfficerEditOpen || !isLineManagerEditOpen) && (
+                  <Col span={isComplianceOfficerEditOpen ? 24 : 12}>
+                    <div className={styles.complianceCard}>
+                      <h4 className={styles.cardTitle}>Compliance Officer</h4>
+
+                      {isComplianceOfficerEditOpen ? (
+                        // Edit Mode Dropdown
+                        <div className={styles.editMainDiv}>
+                          <label className={styles.instrumentLabel}>
+                            Name:
+                          </label>
+                          <Select
+                            showSearch
+                            allowClear
+                            optionFilterProp="label"
+                            optionLabelProp="label"
+                            className={styles.SelectDropdownClass}
+                            placeholder="Select a Compliance Officer"
+                            onChange={(value) =>
+                              setSelectedComplianceOfficerID(value)
                             }
-                          />
-                          <CustomButton
-                            text="Save"
-                            onClick={saveComplianceOfficer}
-                            className="big-dark-button"
-                          />
-                        </div>
-                      </div>
-                    ) : (
-                      // Display Mode Card
-                      <div className={styles.cardContent}>
-                        {manageUsersViewDetailModalData?.userHierarchy?.find(
-                          (manager) => manager.roleID === 4
-                        ) ? (
-                          (() => {
-                            const CO =
-                              manageUsersViewDetailModalData.userHierarchy.find(
-                                (manager) => manager.roleID === 4
-                              );
-                            return (
-                              <Row gutter={16} align="middle">
-                                <Col span={12}>
-                                  <div className={styles.infoBlock}>
-                                    <label className={styles.infoLabel}>
-                                      Name: {CO.managerName || "N/A"}
-                                    </label>
-                                    <div className={styles.infoSubLabel}>
-                                      Email: {CO.managerEmail || "N/A"}
-                                    </div>
-                                  </div>
-                                </Col>
+                          >
+                            {complianceOfficerViewDetailDropdownData?.lineManagers?.map(
+                              (officer) => (
+                                <Select.Option
+                                  key={officer.userID}
+                                  value={officer.userID}
+                                  label={`${officer.firstName} ${officer.lastName}`}
+                                >
+                                  <Row>
+                                    <Col span={12}>
+                                      <div>
+                                        <div
+                                          className={styles.selectFullNameText}
+                                        >
+                                          {officer.firstName} {officer.lastName}
+                                        </div>
+                                        <div className={styles.selectEmailText}>
+                                          {officer.emailAddress || "N/A"}
+                                        </div>
+                                      </div>
+                                    </Col>
+                                    <Col
+                                      span={12}
+                                      style={{ textAlign: "right" }}
+                                    >
+                                      <div
+                                        className={styles.selectFullNameText}
+                                      >
+                                        {officer.userID}
+                                      </div>
+                                      <div className={styles.selectEmailText}>
+                                        {manageUsersViewDetailModalData
+                                          ?.userDetails?.departmentName ||
+                                          "N/A"}
+                                      </div>
+                                    </Col>
+                                  </Row>
+                                </Select.Option>
+                              )
+                            )}
+                          </Select>
 
-                                <Col span={11}>
-                                  <div className={styles.infoBlock}>
-                                    <label className={styles.infoLabel}>
-                                      ID: {CO.managerID || "N/A"}
-                                    </label>
-                                    <div className={styles.infoSubLabel}>
-                                      Department:{" "}
-                                      {manageUsersViewDetailModalData
-                                        ?.userDetails?.departmentName || "N/A"}
-                                    </div>
-                                  </div>
-                                </Col>
-
-                                <Col span={1} className={styles.iconCol}>
-                                  <img
-                                    src={EditIcon}
-                                    onClick={() => {
-                                      onClickOfEditButtonComplianceOfficerDropdown();
-                                      setIsComplianceOfficerEditOpen(true);
-                                    }}
-                                    alt="Edit"
-                                  />
-                                </Col>
-                              </Row>
-                            );
-                          })()
-                        ) : (
-                          <div className={styles.noDataText}>
-                            No Compliance Officer Assigned
+                          <div className={styles.mainButtonDivClose}>
+                            <CustomButton
+                              text="Cancel"
+                              className="big-light-button"
+                              onClick={() =>
+                                setIsComplianceOfficerEditOpen(false)
+                              }
+                            />
+                            <CustomButton
+                              text="Save"
+                              onClick={saveComplianceOfficer}
+                              className="big-dark-button"
+                            />
                           </div>
-                        )}
-                      </div>
-                    )}
-                  </div>
-                </Col>
-              )}
-            </Row>
+                        </div>
+                      ) : (
+                        // Display Mode Card
+                        <div className={styles.cardContent}>
+                          {manageUsersViewDetailModalData?.userHierarchy?.find(
+                            (manager) => manager.roleID === 4
+                          ) ? (
+                            (() => {
+                              const CO =
+                                manageUsersViewDetailModalData.userHierarchy.find(
+                                  (manager) => manager.roleID === 4
+                                );
+                              return (
+                                <Row gutter={16} align="middle">
+                                  <Col span={12}>
+                                    <div className={styles.infoBlock}>
+                                      <label className={styles.infoLabel}>
+                                        Name: {CO.managerName || "N/A"}
+                                      </label>
+                                      <div className={styles.infoSubLabel}>
+                                        Email: {CO.managerEmail || "N/A"}
+                                      </div>
+                                    </div>
+                                  </Col>
 
-            {/* 🔹 Bottom Buttons */}
-            {!isLineManagerEditOpen && !isComplianceOfficerEditOpen && (
-              <Row>
-                <Col span={24} className={styles.mainButtonDivClose}>
-                  <CustomButton
-                    text={"Roles & Policies"}
-                    className="big-light-button"
-                    onClick={onClickRoleAndPolicy}
-                  />
-                  <CustomButton
-                    text={"Close"}
-                    className="big-light-button"
-                    onClick={() => setViewDetailManageUser(false)}
-                  />
-                </Col>
+                                  <Col span={11}>
+                                    <div className={styles.infoBlock}>
+                                      <label className={styles.infoLabel}>
+                                        ID: {CO.managerID || "N/A"}
+                                      </label>
+                                      <div className={styles.infoSubLabel}>
+                                        Department:{" "}
+                                        {manageUsersViewDetailModalData
+                                          ?.userDetails?.departmentName ||
+                                          "N/A"}
+                                      </div>
+                                    </div>
+                                  </Col>
+
+                                  <Col span={1} className={styles.iconCol}>
+                                    <img
+                                      src={EditIcon}
+                                      onClick={() => {
+                                        onClickOfEditButtonComplianceOfficerDropdown();
+                                        setIsComplianceOfficerEditOpen(true);
+                                      }}
+                                      alt="Edit"
+                                    />
+                                  </Col>
+                                </Row>
+                              );
+                            })()
+                          ) : (
+                            <div className={styles.noDataText}>
+                              No Compliance Officer Assigned
+                            </div>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  </Col>
+                )}
               </Row>
-            )}
-          </>
+
+              {/* 🔹 Bottom Buttons */}
+              {!isLineManagerEditOpen && !isComplianceOfficerEditOpen && (
+                <Row>
+                  <Col span={24} className={styles.mainButtonDivClose}>
+                    <CustomButton
+                      text={"Roles & Policies"}
+                      className="big-light-button"
+                      onClick={onClickRoleAndPolicy}
+                    />
+                    <CustomButton
+                      text={"Close"}
+                      className="big-light-button"
+                      onClick={() => setViewDetailManageUser(false)}
+                    />
+                  </Col>
+                </Row>
+              )}
+            </>
+          )}
+
+          {!hasRoleId2 && (
+            <Row>
+              <Col span={24} className={styles.mainButtonDivClose}>
+                <CustomButton
+                  text={"Close"}
+                  className="big-light-button"
+                  onClick={() => setViewDetailManageUser(false)}
+                />
+              </Col>
+            </Row>
+          )}
         </div>
       }
     />
