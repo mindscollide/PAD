@@ -49,7 +49,6 @@ export const buildApiRequest = (searchState = {}, assetTypeListingData) => ({
  */
 export const mapEmployeeTransactions = (assetTypeData,employeeTransactionsData = {}) => {
   if (!employeeTransactionsData) return [];
-  console.log("assetTypeListingData", employeeTransactionsData);
 
   return employeeTransactionsData.map((item) => ({
     key: item.workFlowID,

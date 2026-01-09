@@ -15,15 +15,11 @@ import {
 } from "./utils";
 import { approvalStatusMap } from "../../../../../components/tables/borderlessTable/utill";
 
-// 🔹 Contexts
-import { useGlobalModal } from "../../../../../context/GlobalModalContext";
-
 // 🔹 Styles
 import style from "./TradeApprovalRequest.module.css";
 import { useMyApproval } from "../../../../../context/myApprovalContaxt";
 import {
   DownloadLineManagerMyTradeApprovalReportRequestAPI,
-  DownloadMyTransactionReportRequestAPI,
   SearchLineManagerTradeApprovalRequestApi,
 } from "../../../../../api/myApprovalApi";
 import { useNotification } from "../../../../../components/NotificationProvider/NotificationProvider";
@@ -32,7 +28,6 @@ import { useGlobalLoader } from "../../../../../context/LoaderContext";
 import { useNavigate } from "react-router-dom";
 import { useSearchBarContext } from "../../../../../context/SearchBarContaxt";
 import { useDashboardContext } from "../../../../../context/dashboardContaxt";
-import { getSafeAssetTypeData } from "../../../../../common/funtions/assetTypesList";
 import { useTableScrollBottom } from "../../../../../common/funtions/scroll";
 import CustomButton from "../../../../../components/buttons/button";
 import { DateRangePicker } from "../../../../../components";
@@ -56,8 +51,7 @@ const TradeApprovalRequest = () => {
     resetLineManagerMyTradeApproval,
   } = useSearchBarContext();
 
-  const { assetTypeListingData, setAssetTypeListingData } =
-    useDashboardContext();
+  const { assetTypeListingData } = useDashboardContext();
 
   console.log(myTradeApprovalLineManagerData, "myTradeApprovalLineManagerData");
 
@@ -87,20 +81,10 @@ const TradeApprovalRequest = () => {
         requestdata: requestData,
         navigate,
       });
-      console.log("res".res);
-
-      // ✅ Always get the freshest version (from memory or session)
-      const currentAssetTypeData = getSafeAssetTypeData(
-        assetTypeListingData,
-        setAssetTypeListingData
-      );
 
       const records = Array.isArray(res?.records) ? res.records : [];
       console.log("records", records);
-      const mapped = mapEmployeeTransactionsReport(
-        currentAssetTypeData?.Equities,
-        records
-      );
+      const mapped = mapEmployeeTransactionsReport(records);
       if (!mapped || typeof mapped !== "object") return;
       console.log("records", mapped);
 
@@ -143,10 +127,7 @@ const TradeApprovalRequest = () => {
   useEffect(() => {
     if (hasFetched.current) return;
     hasFetched.current = true;
-    const requestData = buildApiRequest(
-      myTradeApprovalReportLineManageSearch,
-      assetTypeListingData
-    );
+    const requestData = buildApiRequest(myTradeApprovalReportLineManageSearch);
     fetchApiCall(requestData, true, true);
   }, []);
 
@@ -162,8 +143,7 @@ const TradeApprovalRequest = () => {
   useEffect(() => {
     if (myTradeApprovalReportLineManageSearch?.filterTrigger) {
       const requestData = buildApiRequest(
-        myTradeApprovalReportLineManageSearch,
-        assetTypeListingData
+        myTradeApprovalReportLineManageSearch
       );
       fetchApiCall(requestData, true, true);
     }
@@ -181,8 +161,7 @@ const TradeApprovalRequest = () => {
       try {
         setLoadingMore(true);
         const requestData = buildApiRequest(
-          myTradeApprovalReportLineManageSearch,
-          assetTypeListingData
+          myTradeApprovalReportLineManageSearch
         );
         await fetchApiCall(requestData, false, false);
       } catch (err) {

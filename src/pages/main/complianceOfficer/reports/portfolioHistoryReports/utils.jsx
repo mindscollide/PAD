@@ -168,20 +168,20 @@ export const getBorderlessTableColumns = ({
   },
   {
     title: (
-      <div>{withSortIcon("Employee Name", "employeeName", sortedInfo)}</div>
+      <div>{withSortIcon("Employee Name", "requesterName", sortedInfo)}</div>
     ),
-    dataIndex: "employeeName",
-    key: "employeeName",
-    width: "150px",
-    align: "center",
+    dataIndex: "requesterName",
+    key: "requesterName",
+    width: 150,
+    align: "left",
     ellipsis: true,
     sorter: (a, b) =>
-      a.employeeName.localeCompare(b.employeeName, undefined, {
+      a.requesterName.localeCompare(b.requesterName, undefined, {
         sensitivity: "base",
       }),
     sortDirections: ["ascend", "descend"],
     sortOrder:
-      sortedInfo?.columnKey === "employeeName" ? sortedInfo.order : null,
+      sortedInfo?.columnKey === "requesterName" ? sortedInfo.order : null,
     showSorterTooltip: false,
     sortIcon: () => null,
     render: (text) => (
@@ -194,7 +194,7 @@ export const getBorderlessTableColumns = ({
     ),
     dataIndex: "departmentName",
     key: "departmentName",
-    width: "150px",
+    width: 200,
     align: "left",
     ellipsis: true,
     sorter: (a, b) =>
@@ -204,25 +204,6 @@ export const getBorderlessTableColumns = ({
     sortDirections: ["ascend", "descend"],
     sortOrder:
       sortedInfo?.columnKey === "departmentName" ? sortedInfo.order : null,
-    showSorterTooltip: false,
-    sortIcon: () => null,
-    render: (text) => (
-      <span className={`${style["cell-text"]} font-medium`}>{text}</span>
-    ),
-  },
-  {
-    title: (
-      <div>{withSortIcon("Requester Name", "requesterName", sortedInfo)}</div>
-    ),
-    dataIndex: "requesterName",
-    key: "requesterName",
-    width: "150px",
-    align: "left",
-    ellipsis: true,
-    sorter: (a, b) => a.requesterName.localeCompare(b.requesterName),
-    sortDirections: ["ascend", "descend"],
-    sortOrder:
-      sortedInfo?.columnKey === "requesterName" ? sortedInfo.order : null,
     showSorterTooltip: false,
     sortIcon: () => null,
     render: (text) => (
