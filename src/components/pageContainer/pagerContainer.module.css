@@ -94,6 +94,10 @@
   max-height:  575px  !important;
   top: 170px !important;
 }
+.repotsHeightHOC {
+  max-height:  550px  !important;
+  top: 170px !important;
+}
 .sessionwiseHeight{
   height: 80vh !important;
   top: 125px !important;

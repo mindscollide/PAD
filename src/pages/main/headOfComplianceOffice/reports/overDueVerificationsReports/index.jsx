@@ -310,6 +310,9 @@ const HeadCompianceOfficerOverdueVerificationReports = () => {
     const formatDate = (date) =>
       date ? new Date(date).toISOString().split("T")[0] : null;
 
+    const formatNumber = (num) =>
+      typeof num === "number" ? num.toLocaleString("en-US") : null;
+
     const buildDateRangeLabel = (from, to) => {
       if (from && to) return `${from} to ${to}`;
       if (from) return `From ${from}`;
@@ -348,10 +351,18 @@ const HeadCompianceOfficerOverdueVerificationReports = () => {
         : null,
 
       approvedQuantity
-        ? { key: "approvedQuantity", value: approvedQuantity }
+        ? {
+            key: "approvedQuantity",
+            value: formatNumber(approvedQuantity),
+          }
         : null,
 
-      sharesTraded ? { key: "sharesTraded", value: sharesTraded } : null,
+      sharesTraded
+        ? {
+            key: "sharesTraded",
+            value: formatNumber(sharesTraded),
+          }
+        : null,
 
       transactionDate ? { key: "requestDate", value: transactionDate } : null,
 
@@ -482,7 +493,7 @@ const HeadCompianceOfficerOverdueVerificationReports = () => {
         background="white"
         style={{ marginTop: "3px" }}
         className={
-          activeFilters.length > 0 ? "changeHeightreports" : "repotsHeight"
+          activeFilters.length > 0 ? "changeHeightlmreports" : "repotsHeightHOC"
         }
       >
         <div className="px-4 md:px-6 lg:px-8 ">
@@ -494,7 +505,7 @@ const HeadCompianceOfficerOverdueVerificationReports = () => {
               overdueVerificationHCOListData?.overdueVerifications?.length
                 ? {
                     x: "max-content",
-                    y: activeFilters.length > 0 ? 450 : 500,
+                    y: activeFilters.length > 0 ? 400 : 450,
                   }
                 : undefined
             }
