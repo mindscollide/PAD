@@ -3,10 +3,7 @@ import ArrowDown from "../../../../../assets/img/arrow-down-dark.png";
 import DefaultColumArrow from "../../../../../assets/img/default-colum-arrow.png";
 import style from "./HTATradeApprovalRequest.module.css";
 
-import {
-  toYYMMDD,
-} from "../../../../../common/funtions/rejex";
-
+import { toYYMMDD } from "../../../../../common/funtions/rejex";
 
 /**
  * Utility: Build API request payload for approval listing
@@ -90,7 +87,6 @@ const getSortIcon = (columnKey, sortedInfo) => {
   );
 };
 
-
 // Helper for consistent column titles
 const withSortIcon = (label, columnKey, sortedInfo) => (
   <div className={style["table-header-wrapper"]}>
@@ -100,19 +96,23 @@ const withSortIcon = (label, columnKey, sortedInfo) => (
     </span>
   </div>
 );
+const stringSorter = (key) => (a, b) =>
+  (a[key] || "").localeCompare(b[key] || "", undefined, {
+    sensitivity: "base",
+  });
 
-export const getBorderlessTableColumns = ({
-  sortedInfo,
-}) => [
+const numberSorter = (key) => (a, b) =>
+  Number(String(a[key] || 0).replace(/[^\d]/g, "")) -
+  Number(String(b[key] || 0).replace(/[^\d]/g, ""));
+
+export const getBorderlessTableColumns = ({ sortedInfo }) => [
   {
     title: withSortIcon("Employee ID", "employeeID", sortedInfo),
     dataIndex: "employeeID",
     key: "employeeID",
     width: "10%",
     ellipsis: true,
-    sorter: (a, b) =>
-      parseInt(a.employeeID.replace(/[^\d]/g, ""), 10) -
-      parseInt(b.employeeID.replace(/[^\d]/g, ""), 10),
+    sorter: numberSorter("employeeID"),
     sortDirections: ["ascend", "descend"],
     sortOrder: sortedInfo?.columnKey === "employeeID" ? sortedInfo.order : null,
     showSorterTooltip: false,
@@ -134,7 +134,7 @@ export const getBorderlessTableColumns = ({
     key: "employeeName",
     ellipsis: true,
     width: "12%",
-    sorter: (a, b) => a.employeeName - b.employeeName,
+    sorter: stringSorter("employeeName"),
     sortDirections: ["ascend", "descend"],
     sortOrder:
       sortedInfo?.columnKey === "employeeName" ? sortedInfo.order : null,
@@ -148,7 +148,7 @@ export const getBorderlessTableColumns = ({
     key: "department",
     ellipsis: true,
     width: "12%",
-    sorter: (a, b) => a.department - b.department,
+    sorter: stringSorter("department"),
     sortDirections: ["ascend", "descend"],
     sortOrder: sortedInfo?.columnKey === "department" ? sortedInfo.order : null,
     showSorterTooltip: false,
@@ -161,9 +161,7 @@ export const getBorderlessTableColumns = ({
     key: "totalRequests",
     width: "10%",
     ellipsis: true,
-    sorter: (a, b) =>
-      parseInt(a.totalRequests.replace(/[^\d]/g, ""), 10) -
-      parseInt(b.totalRequests.replace(/[^\d]/g, ""), 10),
+    sorter: numberSorter("totalRequests"),
     sortDirections: ["ascend", "descend"],
     sortOrder:
       sortedInfo?.columnKey === "totalRequests" ? sortedInfo.order : null,
@@ -183,9 +181,7 @@ export const getBorderlessTableColumns = ({
     key: "pending",
     width: "8%",
     ellipsis: true,
-    sorter: (a, b) =>
-      parseInt(a.pending.replace(/[^\d]/g, ""), 10) -
-      parseInt(b.pending.replace(/[^\d]/g, ""), 10),
+    sorter: numberSorter("pending"),
     sortDirections: ["ascend", "descend"],
     sortOrder: sortedInfo?.columnKey === "pending" ? sortedInfo.order : null,
     showSorterTooltip: false,
@@ -204,9 +200,7 @@ export const getBorderlessTableColumns = ({
     key: "approved",
     width: "8%",
     ellipsis: true,
-    sorter: (a, b) =>
-      parseInt(a.approved.replace(/[^\d]/g, ""), 10) -
-      parseInt(b.approved.replace(/[^\d]/g, ""), 10),
+    sorter: numberSorter("approved"),
     sortDirections: ["ascend", "descend"],
     sortOrder: sortedInfo?.columnKey === "approved" ? sortedInfo.order : null,
     showSorterTooltip: false,
@@ -225,9 +219,7 @@ export const getBorderlessTableColumns = ({
     key: "declined",
     width: "8%",
     ellipsis: true,
-    sorter: (a, b) =>
-      parseInt(a.declined.replace(/[^\d]/g, ""), 10) -
-      parseInt(b.declined.replace(/[^\d]/g, ""), 10),
+    sorter: numberSorter("Declined"),
     sortDirections: ["ascend", "descend"],
     sortOrder: sortedInfo?.columnKey === "declined" ? sortedInfo.order : null,
     showSorterTooltip: false,
@@ -246,9 +238,7 @@ export const getBorderlessTableColumns = ({
     key: "traded",
     width: "8%",
     ellipsis: true,
-    sorter: (a, b) =>
-      parseInt(a.traded.replace(/[^\d]/g, ""), 10) -
-      parseInt(b.traded.replace(/[^\d]/g, ""), 10),
+    sorter: numberSorter("traded"),
     sortDirections: ["ascend", "descend"],
     sortOrder: sortedInfo?.columnKey === "traded" ? sortedInfo.order : null,
     showSorterTooltip: false,
@@ -267,9 +257,8 @@ export const getBorderlessTableColumns = ({
     key: "notTraded",
     width: "8%",
     ellipsis: true,
-    sorter: (a, b) =>
-      parseInt(a.notTraded.replace(/[^\d]/g, ""), 10) -
-      parseInt(b.notTraded.replace(/[^\d]/g, ""), 10),
+
+    sorter: numberSorter("notTraded"),
     sortDirections: ["ascend", "descend"],
     sortOrder: sortedInfo?.columnKey === "notTraded" ? sortedInfo.order : null,
     showSorterTooltip: false,
@@ -288,9 +277,7 @@ export const getBorderlessTableColumns = ({
     key: "resubmitted",
     width: "10%",
     ellipsis: true,
-    sorter: (a, b) =>
-      parseInt(a.resubmitted.replace(/[^\d]/g, ""), 10) -
-      parseInt(b.resubmitted.replace(/[^\d]/g, ""), 10),
+    sorter: numberSorter("resubmitted"),
     sortDirections: ["ascend", "descend"],
     sortOrder:
       sortedInfo?.columnKey === "resubmitted" ? sortedInfo.order : null,
