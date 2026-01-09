@@ -139,24 +139,12 @@ const withSortIcon = (label, columnKey, sortedInfo) => (
     </span>
   </div>
 );
-const withFilterHeader = (FilterComponent) => (
-  <div
-    className={style["table-header-wrapper"]}
-    style={{
-      display: "flex",
-      alignItems: "center",
-      minHeight: "32px",
-      width: "100%",
-    }}
-  >
-    <FilterComponent />
-  </div>
-);
+
 export const getBorderlessTableColumns = ({
   approvalStatusMap = {},
   sortedInfo,
   coPortfolioHistoryReportSearch,
-  setCoOverdueVerificationReportSearch,
+  setCoPortfolioHistoryReportSearch,
 }) => [
   {
     title: (
@@ -184,17 +172,20 @@ export const getBorderlessTableColumns = ({
     ),
     dataIndex: "requesterName",
     key: "requesterName",
-    width: "150px",
+    width: 150,
     align: "left",
     ellipsis: true,
-    sorter: (a, b) => a.requesterName.localeCompare(b.requesterName),
+    sorter: (a, b) =>
+      a.requesterName.localeCompare(b.requesterName, undefined, {
+        sensitivity: "base",
+      }),
     sortDirections: ["ascend", "descend"],
     sortOrder:
       sortedInfo?.columnKey === "requesterName" ? sortedInfo.order : null,
     showSorterTooltip: false,
     sortIcon: () => null,
     render: (text) => (
-      <span className={`${style["cell-text"]} font-medium`}>{text}</span>
+      <span className={`${style["cell-text"]} font-medium`}>{text ?? "—"}</span>
     ),
   },
   {
@@ -203,7 +194,7 @@ export const getBorderlessTableColumns = ({
     ),
     dataIndex: "departmentName",
     key: "departmentName",
-    width: "150px",
+    width: 200,
     align: "left",
     ellipsis: true,
     sorter: (a, b) =>
@@ -219,7 +210,6 @@ export const getBorderlessTableColumns = ({
       <span className={`${style["cell-text"]} font-medium`}>{text}</span>
     ),
   },
-
   {
     title: (
       <div>{withSortIcon("Tracking ID", "tradeApprovalID", sortedInfo)}</div>
@@ -294,7 +284,7 @@ export const getBorderlessTableColumns = ({
     title: (
       <TypeColumnTitle
         state={coPortfolioHistoryReportSearch}
-        setState={setCoOverdueVerificationReportSearch}
+        setState={setCoPortfolioHistoryReportSearch}
       />
     ),
     dataIndex: "type",
@@ -353,7 +343,7 @@ export const getBorderlessTableColumns = ({
     title: (
       <StatusColumnTitle
         state={coPortfolioHistoryReportSearch}
-        setState={setCoOverdueVerificationReportSearch}
+        setState={setCoPortfolioHistoryReportSearch}
       />
     ),
     dataIndex: "status",

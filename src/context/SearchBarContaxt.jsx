@@ -418,10 +418,13 @@ export const SearchBarProvider = ({ children }) => {
     instrumentName: "",
     requesterName: "",
     approvedQuantity: "",
+    complianceOfficerName: "",
     sharesTraded: "",
     startDate: null,
     endDate: null,
-    type: "",
+    fromDate: null,
+    toDate: null,
+    type: [],
     pageNumber: 0,
     pageSize: 10,
     filterTrigger: false,
@@ -545,6 +548,22 @@ export const SearchBarProvider = ({ children }) => {
     pageNumber: 0,
     filterTrigger: false,
   });
+
+  /** 🔍 HOC transaction summry repot  View Details */
+  const [
+    hocTransactionsSummarysReportsViewDetailsSearch,
+    setHOCTransactionsSummarysReportsViewDetailSearch,
+  ] = useState({
+    quantity: "",
+    instrumentName: "",
+    employeeName: "",
+    type: [],
+    status: [],
+    pageSize: 10,
+    pageNumber: 0,
+    filterTrigger: false,
+  });
+
   // Admin Broker Search filter
   const [adminBrokerSearch, setAdminBrokerSearch] = useState({
     brokerName: "",
@@ -931,11 +950,14 @@ export const SearchBarProvider = ({ children }) => {
     setOverdueVerificationHCOReportSearch({
       instrumentName: "",
       requesterName: "",
+      complianceOfficerName: "",
       approvedQuantity: "",
       sharesTraded: "",
       startDate: null,
       endDate: null,
-      type: "",
+      fromDate: null,
+      toDate: null,
+      type: [],
       pageNumber: 0,
       pageSize: 10,
       filterTrigger: false,
@@ -1035,6 +1057,19 @@ export const SearchBarProvider = ({ children }) => {
       startDate: "",
       pageNumber: 0,
       pageSize: 10,
+      filterTrigger: false,
+    });
+
+  /** Reset HOC Transactions Summarys Reports View Details Search filters */
+  const resetHOCTransactionsSummarysReportsViewDetailsSearch = () =>
+    setHOCTransactionsSummarysReportsViewDetailSearch({
+      quantity: "",
+      instrumentName: "",
+      employeeName: "",
+      type: [],
+      status: [],
+      pageSize: 10,
+      pageNumber: 0,
       filterTrigger: false,
     });
 
@@ -1297,6 +1332,7 @@ export const SearchBarProvider = ({ children }) => {
     resetHCOTradesUploadViaPortfolioSearch();
     resetHTAPolicyBreachesReportSearch();
     resetHTATATReportSearch();
+    resetHOCTransactionsSummarysReportsViewDetailsSearch();
   };
 
   // ===============================
@@ -1376,6 +1412,7 @@ export const SearchBarProvider = ({ children }) => {
         coTransactionsSummarysReportsSearch,
         setCOTransactionsSummarysReportsSearch,
         resetCOTransactionsSummarysReportsSearch,
+
         // Head of Compliance Approval
         headOfComplianceApprovalPortfolioSearch,
         setHeadOfComplianceApprovalPortfolioSearch,
@@ -1383,6 +1420,10 @@ export const SearchBarProvider = ({ children }) => {
         headOfComplianceApprovalEscalatedVerificationsSearch,
         setHeadOfComplianceApprovalEscalatedVerificationsSearch,
         resetHeadOfComplianceApprovalEscalatedVerificationsSearch,
+
+        hocTransactionsSummarysReportsViewDetailsSearch,
+        setHOCTransactionsSummarysReportsViewDetailSearch,
+        resetHOCTransactionsSummarysReportsViewDetailsSearch,
 
         // Head Of Trade Approval Escalated Approvals
         headOfTradeApprovalMyActionSearch,

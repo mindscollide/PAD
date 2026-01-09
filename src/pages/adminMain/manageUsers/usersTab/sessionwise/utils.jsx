@@ -3,21 +3,12 @@ import { Button } from "../../../../../components";
 import ArrowUP from "../../../../../assets/img/arrow-up-dark.png";
 import ArrowDown from "../../../../../assets/img/arrow-down-dark.png";
 import DefaultColumArrow from "../../../../../assets/img/default-colum-arrow.png";
-import TypeColumnTitle from "../../../../../components/dropdowns/filters/typeColumnTitle";
-import StatusColumnTitle from "../../../../../components/dropdowns/filters/statusColumnTitle";
-import { Tag, Tooltip } from "antd";
 import style from "./sessionWise.module.css";
 
 import {
-  dashBetweenApprovalAssets,
   formatApiDateTime,
   toYYMMDD,
 } from "../../../../../common/funtions/rejex";
-import {
-  mapBuySellToIds,
-  mapStatusToIds,
-} from "../../../../../components/dropdowns/filters/utils";
-import { getTradeTypeById } from "../../../../../common/funtions/type";
 
 /**
  * Utility: Build API request payload for approval listing
@@ -135,23 +126,23 @@ export const getBorderlessTableColumns = ({
 
   {
     title: (
-      <span className={style.tableHeadingSpace}>
-        {withSortIcon("Login Date & Time", "loginDateTime", sortedInfo)}
-      </span>
+      <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+        Login Date & Time {getSortIcon("loginDateTime", sortedInfo)}
+      </div>
     ),
     dataIndex: "loginDateTime",
     key: "loginDateTime",
     ellipsis: true,
-    width: 300,
     sorter: (a, b) =>
-      new Date(a.loginDateTime).getTime() - new Date(b.loginDateTime).getTime(),
-    sortDirections: ["ascend", "descend"],
+      (a?.loginDateTime || "").localeCompare(b?.loginDateTime || ""),
     sortOrder:
       sortedInfo?.columnKey === "loginDateTime" ? sortedInfo.order : null,
     showSorterTooltip: false,
     sortIcon: () => null,
-    render: (text) => (
-      <span className="font-medium">{formatApiDateTime(text)}</span>
+    render: (date) => (
+      <span className="text-gray-600" title={date || "—"}>
+        {formatApiDateTime(date) || "—"}
+      </span>
     ),
   },
 
@@ -170,23 +161,25 @@ export const getBorderlessTableColumns = ({
     sortIcon: () => null,
     render: (q) => <span className="font-medium">{q}</span>,
   },
+
   {
-    title: withSortIcon("Logout Date & Time", "logoutDateTime", sortedInfo),
+    title: (
+      <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+        Logout Date & Time {getSortIcon("logoutDateTime", sortedInfo)}
+      </div>
+    ),
     dataIndex: "logoutDateTime",
     key: "logoutDateTime",
     ellipsis: true,
-    width:300,
     sorter: (a, b) =>
-      new Date(a.logoutDateTime).getTime() -
-      new Date(b.logoutDateTime).getTime(),
-    sortDirections: ["ascend", "descend"],
+      (a?.logoutDateTime || "").localeCompare(b?.logoutDateTime || ""),
     sortOrder:
       sortedInfo?.columnKey === "logoutDateTime" ? sortedInfo.order : null,
     showSorterTooltip: false,
     sortIcon: () => null,
-    render: (text) => (
-      <span className="font-medium text-gray-600">
-        {text ? formatApiDateTime(text) : "—"}
+    render: (date) => (
+      <span className="text-gray-600" title={date || "—"}>
+        {formatApiDateTime(date) || "—"}
       </span>
     ),
   },
@@ -201,7 +194,7 @@ export const getBorderlessTableColumns = ({
           className="small-light-button"
           text={"View Actions"}
           onClick={() => {
-            handleViewActionModal(record)
+            handleViewActionModal(record);
           }}
         />
       </div>

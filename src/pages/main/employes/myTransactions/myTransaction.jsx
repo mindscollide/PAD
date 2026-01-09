@@ -120,7 +120,6 @@ const MyTransaction = () => {
       const transactions = Array.isArray(res?.transactions)
         ? res.transactions
         : [];
-      console.log("transactions", transactions);
       const mapped = mapEmployeeTransactions(
         currentAssetTypeData?.Equities,
         transactions

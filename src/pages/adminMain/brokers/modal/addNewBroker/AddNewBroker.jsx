@@ -290,7 +290,7 @@ const AddNewBroker = () => {
               <span></span>
             </div>
             <div className={styles.brokerList}>
-              {sortedBrokers.map((broker) => (
+              {sortedBrokers.map((broker,index) => (
                 <div className={styles.brokerRow} key={broker.originalIndex}>
                   <span className={styles.brokerRowtext}>
                     {broker.brokerName}
@@ -301,7 +301,7 @@ const AddNewBroker = () => {
                   <img
                     src={BlackCrossImg}
                     className={styles.deleteButton}
-                    onClick={() => handleRemoveBroker(broker.originalIndex)}
+                    onClick={() => handleRemoveBroker(index)}
                     draggable={false}
                   />
                 </div>

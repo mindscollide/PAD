@@ -37,6 +37,7 @@ import { HTATATViewDetailFilter } from "./HTATATViewDetailFilter";
 import { AdminPolicyBreachesReportFilter } from "./AdminPolicyBreachesReportFilter";
 import { AdminUserActivityReportFilter } from "./AdminUserActivityReportFilter";
 import { AdminUserWiseComplianceReportFilter } from "./AdminUserWiseComplianceReportFilter";
+import { HOCTransactionReportViewDetailsFilter } from "./HOCTransactionReportViewDetailsFilter";
 
 // this is used for open specific filter according to page
 export const renderFilterContent = (
@@ -327,7 +328,7 @@ export const renderFilterContent = (
         />
       );
 
-    case "17":
+    case "17": // HOC → reports
       if (currentPath === "/PAD/hca-reports/hca-overdue-verifications") {
         return (
           <HCOOverdueVerifications
@@ -353,6 +354,19 @@ export const renderFilterContent = (
       ) {
         return (
           <CODateWiseTransactionReportFilter
+            setVisible={setVisible}
+            clear={clear}
+            setClear={setClear}
+            maininstrumentName={searchMain}
+            setMaininstrumentName={setSearchMain}
+          />
+        );
+      } else if (
+        currentPath === "/PAD/hca-reports/hca-transactions-summary-report" &&
+        coTransactionSummaryReportViewDetailsFlag
+      ) {
+        return (
+          <HOCTransactionReportViewDetailsFilter
             setVisible={setVisible}
             clear={clear}
             setClear={setClear}

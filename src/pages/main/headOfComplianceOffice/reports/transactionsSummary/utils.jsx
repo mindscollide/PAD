@@ -38,9 +38,9 @@ export const buildApiRequestViewDetails = (
   PageNumber: Number(searchState.pageNumber) || 0,
   Length: Number(searchState.pageSize) || 10,
   TransactionDate: searchState.transactionDate,
-  QuantitySearch: searchState.quantitySearch,
-  InstrumentNameSearch: searchState.instrumentNameSearch,
-  RequesterNameSearch: searchState.requesterNameSearch,
+  QuantitySearch: searchState.quantity,
+  InstrumentNameSearch: searchState.instrumentName,
+  RequesterNameSearch: searchState.employeeName,
   StatusIds: mapStatusToIds(searchState.status),
   TypeIds: mapBuySellToIds(searchState.type, assetTypeListingData?.Equities),
 });
@@ -320,12 +320,11 @@ const withFilterHeader = (FilterComponent) => (
     <FilterComponent />
   </div>
 );
-
 export const getBorderlessTableColumnsViewDetails = ({
   approvalStatusMap,
   sortedInfo,
-  coTransactionsSummarysReportsViewDetailsSearch,
-  setCOTransactionsSummarysReportsViewDetailSearch,
+  hocTransactionsSummarysReportsViewDetailsSearch,
+  setHOCTransactionsSummarysReportsViewDetailSearch,
   handelViewDetails,
 }) => [
   {
@@ -445,16 +444,16 @@ export const getBorderlessTableColumnsViewDetails = ({
   {
     title: withFilterHeader(() => (
       <TypeColumnTitle
-        state={coTransactionsSummarysReportsViewDetailsSearch}
-        setState={setCOTransactionsSummarysReportsViewDetailSearch}
+        state={hocTransactionsSummarysReportsViewDetailsSearch}
+        setState={setHOCTransactionsSummarysReportsViewDetailSearch}
       />
     )),
     dataIndex: "type",
     width: 150,
     key: "type",
     ellipsis: true,
-    filteredValue: coTransactionsSummarysReportsViewDetailsSearch.type?.length
-      ? coTransactionsSummarysReportsViewDetailsSearch.type
+    filteredValue: hocTransactionsSummarysReportsViewDetailsSearch.type?.length
+      ? hocTransactionsSummarysReportsViewDetailsSearch.type
       : null,
     onFilter: () => true, // Actual filtering handled by API
     render: (type, record) => (
@@ -495,16 +494,16 @@ export const getBorderlessTableColumnsViewDetails = ({
   {
     title: withFilterHeader(() => (
       <StatusColumnTitle
-        state={coTransactionsSummarysReportsViewDetailsSearch}
-        setState={setCOTransactionsSummarysReportsViewDetailSearch}
+        state={hocTransactionsSummarysReportsViewDetailsSearch}
+        setState={setHOCTransactionsSummarysReportsViewDetailSearch}
       />
     )),
     width: 200,
     dataIndex: "status",
     key: "status",
     ellipsis: true,
-    filteredValue: coTransactionsSummarysReportsViewDetailsSearch.status?.length
-      ? coTransactionsSummarysReportsViewDetailsSearch.status
+    filteredValue: hocTransactionsSummarysReportsViewDetailsSearch.status?.length
+      ? hocTransactionsSummarysReportsViewDetailsSearch.status
       : null,
     onFilter: () => true,
     render: (status, record) => (
@@ -526,10 +525,6 @@ export const getBorderlessTableColumnsViewDetails = ({
           onClick={() => {
             console.log(record, "tradeApprovalID");
             handelViewDetails(record.approvalID);
-            // setIsViewComments(true);
-            // setCheckTradeApprovalID(record?.approvalID);
-            // setEditBrokerModal(true);
-            // setEditModalData(record);
           }}
         />
       </div>
