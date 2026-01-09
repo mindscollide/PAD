@@ -9,6 +9,7 @@ import SearchWithFilter from "../../dropdowns/searchableDropedown/SearchWithPopo
 import { useSearchBarContext } from "../../../context/SearchBarContaxt";
 import { useMyAdmin } from "../../../context/AdminContext";
 import { useMyApproval } from "../../../context/myApprovalContaxt";
+import { useGlobalModal } from "../../../context/GlobalModalContext";
 
 const { Header } = Layout;
 
@@ -28,6 +29,7 @@ const Headers = () => {
 
   const { resetEmployeeMyApprovalSearch, resetLineManagerApprovalSearch } =
     useSearchBarContext();
+  const { showViewDetailPageInTatOnHta } = useGlobalModal();
 
   return (
     <Header className={style["custom-header"]}>
@@ -72,41 +74,48 @@ const Headers = () => {
                 pageTabesForAdminGropusAndPolicy !== 0 ? (
                 <SearchWithFilter />
               ) : (
-                ((selectedKeyRef.current === "5" &&
+                (selectedKeyRef.current === "5" &&
                   (currentPath === "/PAD/reports/my-trade-approvals" ||
                     currentPath === "/PAD/reports/my-transactions" ||
                     currentPath ===
                       "/PAD/reports/my-trade-approvals-standing" ||
                     currentPath === "/PAD/reports/my-compliance-approvals")) ||
-                  // Case 5: key = 8 and on pending request route
-                  (selectedKeyRef.current === "8" &&
-                    (currentPath === "/PAD/lm-reports/lm-pending-request" ||
-                      currentPath ===
-                        "/PAD/lm-reports/lm-tradeapproval-request")) ||
-                  (selectedKeyRef.current === "11" &&
-                    (currentPath ===
-                      "/PAD/co-reports/co-date-wise-transaction-report" ||
-                      currentPath ===
-                        "/PAD/co-reports/co-overdue-verifications" ||
-                      currentPath ===
-                        "/PAD/lm-reports/lm-tradeapproval-request" ||
-                      currentPath === "/PAD/co-reports/co-portfolio-history" ||
-                      coTransactionSummaryReportViewDetailsFlag)) ||
-                  (selectedKeyRef.current === "14" &&
-                    (currentPath ===
-                      "/PAD/hta-reports/hta-trade-approval-requests" ||
-                      currentPath ===
-                        "/PAD/hta-reports/hta-policy-breaches-reports" ||
-                      currentPath ===
-                        "/PAD/hta-reports/hta-pending-requests")) ||
-                  (selectedKeyRef.current === "17" &&
-                    (currentPath ===
-                      "/PAD/hca-reports/hca-overdue-verifications" ||
-                      currentPath === "/PAD/hca-reports/hca-upload-portfolio" ||
-                      currentPath ===
-                        "/PAD/hca-reports/hca-date-wise-transaction-report"))) && (
-                  <SearchWithFilter />
-                )
+                // Case 5: key = 8 and on pending request route
+                (selectedKeyRef.current === "8" &&
+                  (currentPath === "/PAD/lm-reports/lm-pending-request" ||
+                    currentPath ===
+                      "/PAD/lm-reports/lm-tradeapproval-request")) ||
+                (selectedKeyRef.current === "11" &&
+                  (currentPath ===
+                    "/PAD/co-reports/co-date-wise-transaction-report" ||
+                    currentPath ===
+                      "/PAD/co-reports/co-overdue-verifications" ||
+                    currentPath ===
+                      "/PAD/lm-reports/lm-tradeapproval-request" ||
+                    currentPath === "/PAD/co-reports/co-portfolio-history" ||
+                    coTransactionSummaryReportViewDetailsFlag)) ||
+                (selectedKeyRef.current === "14" &&
+                  (currentPath ===
+                    "/PAD/hta-reports/hta-trade-approval-requests" ||
+                    currentPath ===
+                      "/PAD/hta-reports/hta-policy-breaches-reports" ||
+                    currentPath === "/PAD/hta-reports/hta-pending-requests" ||
+                    (currentPath === "/PAD/hta-reports/hta-tat-reports" &&
+                      showViewDetailPageInTatOnHta === true))) ||
+                (selectedKeyRef.current === "17" &&
+                  (currentPath ===
+                    "/PAD/hca-reports/hca-overdue-verifications" ||
+                    currentPath === "/PAD/hca-reports/hca-upload-portfolio" ||
+                    currentPath ===
+                      "/PAD/hca-reports/hca-date-wise-transaction-report")) ||
+                (selectedKeyRef.current === "23" &&
+                  (currentPath ===
+                    "/PAD/admin-reports/admin-policy-breaches-report" ||
+                    currentPath === "/PAD/admin-reports/user-activity-report" ||
+                    currentPath ===
+                      "/PAD/admin-reports/admin-user-wise-compliance-report") && (
+                    <SearchWithFilter />
+                  ))
               )}
             </Col>
             <Col xs={24} sm={10} md={2} lg={2}>

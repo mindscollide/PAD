@@ -1,77 +1,71 @@
+import React, { useEffect, useState, useRef, useCallback } from "react";
 import { Breadcrumb, Col, Row } from "antd";
-import style from "./ViewDetails.module.css";
-import Excel from "../../../../../../assets/img/xls.png";
-import { useGlobalModal } from "../../../../../../context/GlobalModalContext";
-import CustomButton from "../../../../../../components/buttons/button";
+import Excel from "../../../../assets/img/xls.png";
 import { UpOutlined, DownOutlined } from "@ant-design/icons";
-import { useCallback, useEffect, useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { useSearchBarContext } from "../../../../../../context/SearchBarContaxt";
-import { useMyApproval } from "../../../../../../context/myApprovalContaxt";
-import { SearchHTATurnAroundTimeDetailsRequestApi } from "../../../../../../api/myApprovalApi";
-import { useNotification } from "../../../../../../components/NotificationProvider/NotificationProvider";
-import { useApi } from "../../../../../../context/ApiContext";
-import { useGlobalLoader } from "../../../../../../context/LoaderContext";
-import { useDashboardContext } from "../../../../../../context/dashboardContaxt";
+// 🔹 Components
+import BorderlessTable from "../../../../components/tables/borderlessTable/borderlessTable";
+import PageLayout from "../../../../components/pageContainer/pageContainer";
+
+// 🔹 Table Config
 import {
   buildApiRequest,
   getBorderlessTableColumns,
   mapListData,
 } from "./utils";
-import { useTableScrollBottom } from "../../../../../../common/funtions/scroll";
-import { approvalStatusMap } from "../../../../../../components/tables/borderlessTable/utill";
-import { BorderlessTable, PageLayout } from "../../../../../../components";
-import { getSafeAssetTypeData } from "../../../../../../common/funtions/assetTypesList";
-import { useSidebarContext } from "../../../../../../context/sidebarContaxt";
+import { approvalStatusMap } from "../../../../components/tables/borderlessTable/utill";
 
-const ViewDetails = () => {
+// 🔹 Styles
+import style from "./UserActivityReport.module.css";
+import { useMyApproval } from "../../../../context/myApprovalContaxt";
+import {
+  ExportHTATradeApprovalRequestsExcelReport,
+  SearchPolicyBreachedWorkFlowsRequest,
+} from "../../../../api/myApprovalApi";
+import { useNotification } from "../../../../components/NotificationProvider/NotificationProvider";
+import { useApi } from "../../../../context/ApiContext";
+import { useGlobalLoader } from "../../../../context/LoaderContext";
+import { useNavigate } from "react-router-dom";
+import { useSearchBarContext } from "../../../../context/SearchBarContaxt";
+import { useDashboardContext } from "../../../../context/dashboardContaxt";
+import { getSafeAssetTypeData } from "../../../../common/funtions/assetTypesList";
+import { useTableScrollBottom } from "../../../../common/funtions/scroll";
+import CustomButton from "../../../../components/buttons/button";
+import { toYYMMDD } from "../../../../common/funtions/rejex";
+import { useSidebarContext } from "../../../../context/sidebarContaxt";
+
+const AdminUserActivityReport = () => {
   const navigate = useNavigate();
   const hasFetched = useRef(false);
   const tableScrollEmployeeTransaction = useRef(null);
-  // -------------------- Contexts --------------------
 
+  // -------------------- Contexts --------------------
   const { callApi } = useApi();
   const { showNotification } = useNotification();
   const { showLoader } = useGlobalLoader();
-  const { assetTypeListingData, setAssetTypeListingData } =
-    useDashboardContext();
-
-  const { selectedKey } = useSidebarContext();
   const {
-    showViewDetailPageInTatOnHta,
-    setShowViewDetailPageInTatOnHta,
-    setShowSelectedTatDataOnViewDetailHTA,
-    showSelectedTatDataOnViewDetailHTA,
-  } = useGlobalModal();
-
-  const {
-    htaTATViewDetailsData,
-    setHTATATViewDetailsData,
-    resetHTATATViewDetails,
+    htaPolicyBreachesReportsData,
+    setHTAPolicyBreachesReportsData,
+    resetHTAPolicyBreachesReportsData,
   } = useMyApproval();
 
+  const { selectedKey } = useSidebarContext();
+  console.log(selectedKey, "selectedKeyselectedKey");
+
   const {
-    htaTATViewDetailsSearch,
-    setHTATATViewDetailsSearch,
-    resetHTATATViewDetailSearch,
+    htaPolicyBreachesReportSearch,
+    setHTAPolicyBreachesReportSearch,
+    resetHTAPolicyBreachesReportSearch,
   } = useSearchBarContext();
 
-  console.log(
-    showSelectedTatDataOnViewDetailHTA,
-    "showSelectedTatDataOnViewDetailHTA"
-  );
-
-  console.log(htaTATViewDetailsData, "htaTATViewDetailsData");
-  console.log(
-    { showViewDetailPageInTatOnHta, selectedKey },
-    "showViewDetailPageInTatOnHta"
-  );
+  const { assetTypeListingData, setAssetTypeListingData } =
+    useDashboardContext();
 
   // -------------------- Local State --------------------
   const [sortedInfo, setSortedInfo] = useState({});
   const [loadingMore, setLoadingMore] = useState(false);
   const [open, setOpen] = useState(false);
-
+  const [policyModalVisible, setPolicyModalVisible] = useState(false);
+  const [selectedEmployee, setSelectedEmployee] = useState(null);
   // -------------------- Helpers --------------------
 
   /**
@@ -81,15 +75,15 @@ const ViewDetails = () => {
   const fetchApiCall = useCallback(
     async (requestData, replace = false, showLoaderFlag = true) => {
       if (!requestData || typeof requestData !== "object") return;
-      if (showLoaderFlag) showLoader(true);
+      // if (showLoaderFlag) showLoader(true);
 
-      const res = await SearchHTATurnAroundTimeDetailsRequestApi({
-        callApi,
-        showNotification,
-        showLoader,
-        requestdata: requestData,
-        navigate,
-      });
+      // const res = await SearchPolicyBreachedWorkFlowsRequest({
+      //   callApi,
+      //   showNotification,
+      //   showLoader,
+      //   requestdata: requestData,
+      //   navigate,
+      // });
       console.log("res".res);
 
       // ✅ Always get the freshest version (from memory or session)
@@ -98,22 +92,22 @@ const ViewDetails = () => {
         setAssetTypeListingData
       );
 
-      const workFlows = Array.isArray(res?.workFlows) ? res.workFlows : [];
-      console.log("records", workFlows);
-      const mapped = mapListData(currentAssetTypeData?.Equities, workFlows);
+      const records = Array.isArray(res?.records) ? res.records : [];
+      console.log("records", records);
+      const mapped = mapListData(currentAssetTypeData?.Equities, records);
       if (!mapped || typeof mapped !== "object") return;
       console.log("records", mapped);
 
-      setHTATATViewDetailsData((prev) => ({
-        workFlows: replace ? mapped : [...(prev?.workFlows || []), ...mapped],
+      setHTAPolicyBreachesReportsData((prev) => ({
+        records: replace ? mapped : [...(prev?.records || []), ...mapped],
         // this is for to run lazy loading its data comming from database of total data in db
         totalRecordsDataBase: res?.totalRecords || 0,
         // this is for to know how mush dta currently fetch from  db
         totalRecordsTable: replace
           ? mapped.length
-          : htaTATViewDetailsData.totalRecordsTable + mapped.length,
+          : htaPolicyBreachesReportsData.totalRecordsTable + mapped.length,
       }));
-      setHTATATViewDetailsSearch((prev) => {
+      setHTAPolicyBreachesReportSearch((prev) => {
         const next = {
           ...prev,
           pageNumber: replace ? mapped.length : prev.pageNumber + mapped.length,
@@ -131,7 +125,7 @@ const ViewDetails = () => {
       assetTypeListingData,
       callApi,
       navigate,
-      setHTATATViewDetailsSearch,
+      setHTAPolicyBreachesReportSearch,
       showLoader,
       showNotification,
     ]
@@ -144,8 +138,7 @@ const ViewDetails = () => {
     if (hasFetched.current) return;
     hasFetched.current = true;
     const requestData = buildApiRequest(
-      htaTATViewDetailsSearch,
-      showSelectedTatDataOnViewDetailHTA,
+      htaPolicyBreachesReportSearch,
       assetTypeListingData
     );
     fetchApiCall(requestData, true, true);
@@ -155,35 +148,35 @@ const ViewDetails = () => {
   useEffect(() => {
     return () => {
       // Reset search state for fresh load
-      resetHTATATViewDetailSearch();
-      resetHTATATViewDetails();
+      resetHTAPolicyBreachesReportSearch();
+      resetHTAPolicyBreachesReportsData();
     };
   }, []);
 
   // 🔹 call api on search
   useEffect(() => {
-    if (htaTATViewDetailsSearch?.filterTrigger) {
+    if (htaPolicyBreachesReportSearch?.filterTrigger) {
       const requestData = buildApiRequest(
-        htaTATViewDetailsSearch,
+        htaPolicyBreachesReportSearch,
         assetTypeListingData
       );
       fetchApiCall(requestData, true, true);
     }
-  }, [htaTATViewDetailsSearch?.filterTrigger]);
+  }, [htaPolicyBreachesReportSearch?.filterTrigger]);
 
   // 🔹 Infinite Scroll (lazy loading)
   useTableScrollBottom(
     async () => {
       if (
-        htaTATViewDetailsData?.totalRecordsDataBase <=
-        htaTATViewDetailsData?.totalRecordsTable
+        htaPolicyBreachesReportsData?.totalRecordsDataBase <=
+        htaPolicyBreachesReportsData?.totalRecordsTable
       )
         return;
 
       try {
         setLoadingMore(true);
         const requestData = buildApiRequest(
-          htaTATViewDetailsSearch,
+          htaPolicyBreachesReportSearch,
           assetTypeListingData
         );
         await fetchApiCall(requestData, false, false);
@@ -201,8 +194,10 @@ const ViewDetails = () => {
   const columns = getBorderlessTableColumns({
     approvalStatusMap,
     sortedInfo,
-    htaTATViewDetailsSearch,
-    setHTATATViewDetailsSearch,
+    htaPolicyBreachesReportSearch,
+    setHTAPolicyBreachesReportSearch,
+    setSelectedEmployee,
+    setPolicyModalVisible,
   });
 
   /** 🔹 Handle removing individual filter */
@@ -215,7 +210,7 @@ const ViewDetails = () => {
       dateRange: { startDate: null, endDate: null },
     };
 
-    setHTATATViewDetailsSearch((prev) => ({
+    setHTAPolicyBreachesReportSearch((prev) => ({
       ...prev,
       ...resetMap[key],
       pageNumber: 0,
@@ -225,7 +220,7 @@ const ViewDetails = () => {
 
   /** 🔹 Handle removing all filters */
   const handleRemoveAllFilters = () => {
-    setHTATATViewDetailsSearch((prev) => ({
+    setHTAPolicyBreachesReportSearch((prev) => ({
       ...prev,
       instrumentName: "",
       employeeName: "",
@@ -247,7 +242,7 @@ const ViewDetails = () => {
       quantity,
       startDate,
       endDate,
-    } = htaTATViewDetailsSearch || {};
+    } = htaPolicyBreachesReportSearch || {};
 
     return [
       instrumentName && {
@@ -293,6 +288,25 @@ const ViewDetails = () => {
     ].filter(Boolean);
   })();
 
+  // 🔷 Excel Report download Api Hit
+  const downloadMyTradeApprovalLineManagerInExcelFormat = async () => {
+    showLoader(true);
+    const requestdata = {
+      StartDate: toYYMMDD(htaPolicyBreachesReportSearch.startDate) || null,
+      EndDate: toYYMMDD(htaPolicyBreachesReportSearch.endDate) || null,
+      SearchEmployeeName: htaPolicyBreachesReportSearch.employeeName,
+      SearchDepartmentName: htaPolicyBreachesReportSearch.departmentName,
+    };
+
+    await ExportHTATradeApprovalRequestsExcelReport({
+      callApi,
+      showLoader,
+      requestdata: requestdata,
+      navigate,
+    });
+  };
+
+  // -------------------- Render --------------------
   return (
     <>
       <Row justify="start" align="middle" className={style.breadcrumbRow}>
@@ -304,10 +318,7 @@ const ViewDetails = () => {
               {
                 title: (
                   <span
-                    onClick={() => {
-                      navigate("/PAD/hta-reports");
-                      setShowViewDetailPageInTatOnHta(false);
-                    }}
+                    onClick={() => navigate("/PAD/admin-reports")}
                     className={style.breadcrumbLink}
                   >
                     Reports
@@ -316,17 +327,9 @@ const ViewDetails = () => {
               },
               {
                 title: (
-                  <span
-                    onClick={() => setShowViewDetailPageInTatOnHta(false)}
-                    className={style.breadcrumbLink}
-                  >
-                    TAT Request Approvals
+                  <span className={style.breadcrumbText}>
+                    Users Activity Report
                   </span>
-                ),
-              },
-              {
-                title: (
-                  <span className={style.breadcrumbText}>View Details</span>
                 ),
               },
             ]}
@@ -352,7 +355,14 @@ const ViewDetails = () => {
           {/* 🔷 Export Dropdown */}
           {open && (
             <div className={style.dropdownExport}>
-              <div className={style.dropdownItem}>
+              {/* <div className={style.dropdownItem}>
+                <img src={PDF} alt="PDF" draggable={false} />
+                <span>Export PDF</span>
+              </div> */}
+              <div
+                className={style.dropdownItem}
+                onClick={downloadMyTradeApprovalLineManagerInExcelFormat}
+              >
                 <img src={Excel} alt="Excel" draggable={false} />
                 <span>Export Excel</span>
               </div>
@@ -360,7 +370,6 @@ const ViewDetails = () => {
           )}
         </Col>
       </Row>
-
       {/* 🔹 Active Filter Tags */}
       {activeFilters.length > 0 && (
         <Row gutter={[12, 12]} className={style["filter-tags-container"]}>
@@ -391,54 +400,21 @@ const ViewDetails = () => {
           )}
         </Row>
       )}
-
-      <Row className={style.breadcrumbRowBelowData}>
-        <Col span={6}>
-          <p className={style.mainTitleTextClass}>
-            Employee ID:{" "}
-            <span className={style.subTitleTextClass}>
-              {showSelectedTatDataOnViewDetailHTA.employeeID}
-            </span>
-          </p>
-        </Col>
-        <Col span={6}>
-          <p className={style.mainTitleTextClass}>
-            Employee Name:{" "}
-            <span className={style.subTitleTextClass}>
-              {showSelectedTatDataOnViewDetailHTA.employeeName}
-            </span>
-          </p>
-        </Col>{" "}
-        <Col span={6}>
-          <p className={style.mainTitleTextClass}>
-            Department:{" "}
-            <span className={style.subTitleTextClass}>
-              {showSelectedTatDataOnViewDetailHTA.departmentName}
-            </span>
-          </p>
-        </Col>
-        <Col span={6}>
-          <p className={style.mainTitleTextClass}>Date Range: </p>
-        </Col>
-      </Row>
-
       {/* 🔹 Transactions Table */}
       <PageLayout
         background="white"
         style={{ marginTop: "3px" }}
         className={
-          activeFilters.length > 0
-            ? "TATHTAchangeHeightreports"
-            : "TATHTArepotsHeight"
+          activeFilters.length > 0 ? "changeHeightreports" : "repotsHeight"
         }
       >
         <div className="px-4 md:px-6 lg:px-8 ">
           <BorderlessTable
-            rows={htaTATViewDetailsData?.workFlows}
+            rows={htaPolicyBreachesReportsData?.records}
             columns={columns}
             classNameTable="border-less-table-blue"
             scroll={
-              htaTATViewDetailsData?.workFlows?.length
+              htaPolicyBreachesReportsData?.records?.length
                 ? {
                     x: "max-content",
                     y: activeFilters.length > 0 ? 450 : 500,
@@ -455,4 +431,4 @@ const ViewDetails = () => {
   );
 };
 
-export default ViewDetails;
+export default AdminUserActivityReport;

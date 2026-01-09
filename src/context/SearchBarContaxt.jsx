@@ -269,6 +269,21 @@ export const SearchBarProvider = ({ children }) => {
     filterTrigger: false,
   });
 
+  /** 🔍 TAT Request Approval View Details Search HTA table filters */
+  const [htaTATViewDetailsSearch, setHTATATViewDetailsSearch] = useState({
+    instrumentName: "",
+    employeeID: 0,
+    startDate: "",
+    endDate: "",
+    actionStartDate: "",
+    actionEndDate: "",
+    actionBy: "",
+    tat: "",
+    pageNumber: 0,
+    pageSize: 10,
+    filterTrigger: false,
+  });
+
   /** 🔍 Head Of Trade Approval (HTA) Pending Request Report Search filters */
   const [hTAPendingApprovalReportsSearch, setHTAPendingApprovalReportsSearch] =
     useState({
@@ -1099,6 +1114,22 @@ export const SearchBarProvider = ({ children }) => {
       filterTrigger: false,
     });
 
+  /** 🔍 Reset TAT Request Approval View Detail on HTA table filters */
+  const resetHTATATViewDetailSearch = () =>
+    setHTATATViewDetailsSearch({
+      instrumentName: "",
+      employeeID: 0,
+      startDate: "",
+      endDate: "",
+      actionStartDate: "",
+      actionEndDate: "",
+      actionBy: "",
+      tat: "",
+      pageNumber: 0,
+      pageSize: 10,
+      filterTrigger: false,
+    });
+
   const resetHTAPendingApprovalRequestReportSearch = () => {
     setHTAPendingApprovalReportsSearch({
       InstrumentName: "",
@@ -1365,6 +1396,9 @@ export const SearchBarProvider = ({ children }) => {
         htaTATReportSearch,
         setHTATATReportSearch,
         resetHTATATReportSearch,
+        htaTATViewDetailsSearch,
+        setHTATATViewDetailsSearch,
+        resetHTATATViewDetailSearch,
 
         // Head Of Trade Pending Approval Report Request
         hTAPendingApprovalReportsSearch,

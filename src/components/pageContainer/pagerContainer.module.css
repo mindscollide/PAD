@@ -72,9 +72,15 @@
   height: 80vh !important;
   top: 151px !important;
 }
+
 .changeHeightreports {
   height: 78vh !important;
   top: 206px !important;
+}
+
+.TATHTAchangeHeightreports {
+  height: 75vh !important;
+  top: 220px !important;
 }
 
 .changeHeightlmreports {
@@ -93,6 +99,11 @@
 .repotsHeight {
   max-height:  575px  !important;
   top: 170px !important;
+}
+
+.TATHTArepotsHeight {
+  max-height:  500px  !important;
+  top: 225px !important;
 }
 .sessionwiseHeight{
   height: 80vh !important;

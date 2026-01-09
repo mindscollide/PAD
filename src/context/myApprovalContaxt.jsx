@@ -63,6 +63,11 @@ export const MyApprovalProvider = ({ children }) => {
   /** Compliance Officer dashboard report summary */
   const [hcaReportsDashboardData, setHCAReportsDashboardData] = useState([]);
 
+  /** admin dashboard report summary */
+  const [adminReportsDashboardData, setAdminReportsDashboardData] = useState(
+    []
+  );
+
   /** Employee Transaction Request Report API data */
   const [getEmployeeTransactionReport, setGetEmployeeTransactionReport] =
     useState({
@@ -214,6 +219,13 @@ export const MyApprovalProvider = ({ children }) => {
     totalRecordsTable: 0,
   });
 
+  // HTA TAT View Detail Reports context state
+  const [htaTATViewDetailsData, setHTATATViewDetailsData] = useState({
+    workFlows: [],
+    totalRecordsDataBase: 0,
+    totalRecordsTable: 0,
+  });
+
   /** HTA Pending Request Approval Reports */
   const [hTAPendingApprovalsData, setHTAPendingApprovalsData] = useState({
     pendingTradeApprovals: [],
@@ -337,6 +349,15 @@ export const MyApprovalProvider = ({ children }) => {
     });
   };
 
+  //Reset HTA TAT Request Approval View Detail
+  const resetHTATATViewDetails = () => {
+    setHTATATViewDetailsData({
+      workFlows: [],
+      totalRecordsDataBase: 0,
+      totalRecordsTable: 0,
+    });
+  };
+
   //Reset HTA Pending Reqeust Approval Reports context state
   const resetHtaPendingRequestApprovalData = () => {
     setHTAPendingApprovalsData({
@@ -413,6 +434,10 @@ export const MyApprovalProvider = ({ children }) => {
         myActionHeadOfTradeApprovalData,
         setMyActionHeadOfTradeApprovalData,
 
+        htaTATViewDetailsData,
+        setHTATATViewDetailsData,
+        resetHTATATViewDetails,
+
         // compliance officer  date wise transaction report
         coDatewiseTransactionReportListData,
         setCODatewiseTransactionReportListData,
@@ -451,6 +476,10 @@ export const MyApprovalProvider = ({ children }) => {
         hcoTransactionSummaryReportListData,
         setHCOTransactionSummaryReportListData,
         resetTransactionSummaryHeadOfCompliance,
+
+        //Admin Dashboard Report
+        adminReportsDashboardData,
+        setAdminReportsDashboardData,
 
         //HTA Pending Request Approval Report
         hTAPendingApprovalsData,

@@ -1,10 +1,10 @@
 import React, { useEffect, useState, useRef, useCallback } from "react";
 import { Breadcrumb, Col, Row } from "antd";
-import Excel from "../../../../../assets/img/xls.png";
+import Excel from "../../../../assets/img/xls.png";
 import { UpOutlined, DownOutlined } from "@ant-design/icons";
 // 🔹 Components
-import BorderlessTable from "../../../../../components/tables/borderlessTable/borderlessTable";
-import PageLayout from "../../../../../components/pageContainer/pageContainer";
+import BorderlessTable from "../../../../components/tables/borderlessTable/borderlessTable";
+import PageLayout from "../../../../components/pageContainer/pageContainer";
 
 // 🔹 Table Config
 import {
@@ -12,29 +12,31 @@ import {
   getBorderlessTableColumns,
   mapListData,
 } from "./utils";
-import { approvalStatusMap } from "../../../../../components/tables/borderlessTable/utill";
+import { approvalStatusMap } from "../../../../components/tables/borderlessTable/utill";
 
 // 🔹 Styles
-import style from "./HTATAT.module.css";
-import { useMyApproval } from "../../../../../context/myApprovalContaxt";
+import style from "./UserWiseComplianceReport.module.css";
+import { useMyApproval } from "../../../../context/myApprovalContaxt";
 import {
   ExportHTATradeApprovalRequestsExcelReport,
-  SearchHTATurnAroundTimeRequest,
-} from "../../../../../api/myApprovalApi";
-import { useNotification } from "../../../../../components/NotificationProvider/NotificationProvider";
-import { useApi } from "../../../../../context/ApiContext";
-import { useGlobalLoader } from "../../../../../context/LoaderContext";
+  SearchPolicyBreachedWorkFlowsRequest,
+} from "../../../../api/myApprovalApi";
+import { useNotification } from "../../../../components/NotificationProvider/NotificationProvider";
+import { useApi } from "../../../../context/ApiContext";
+import { useGlobalLoader } from "../../../../context/LoaderContext";
 import { useNavigate } from "react-router-dom";
-import { useSearchBarContext } from "../../../../../context/SearchBarContaxt";
-import { useDashboardContext } from "../../../../../context/dashboardContaxt";
-import { getSafeAssetTypeData } from "../../../../../common/funtions/assetTypesList";
-import { useTableScrollBottom } from "../../../../../common/funtions/scroll";
-import CustomButton from "../../../../../components/buttons/button";
-import { toYYMMDD } from "../../../../../common/funtions/rejex";
-import { useGlobalModal } from "../../../../../context/GlobalModalContext";
+import { useSearchBarContext } from "../../../../context/SearchBarContaxt";
+import { useDashboardContext } from "../../../../context/dashboardContaxt";
+import { getSafeAssetTypeData } from "../../../../common/funtions/assetTypesList";
+import { useTableScrollBottom } from "../../../../common/funtions/scroll";
+import CustomButton from "../../../../components/buttons/button";
+import { toYYMMDD } from "../../../../common/funtions/rejex";
+import { useSidebarContext } from "../../../../context/sidebarContaxt";
+import { useGlobalModal } from "../../../../context/GlobalModalContext";
 import ViewDetails from "./viewDetails/ViewDetails";
+import ViewDetailsAdmin from "./viewDetails/ViewDetails";
 
-const HTATAT = () => {
+const UserWiseComplianceReport = () => {
   const navigate = useNavigate();
   const hasFetched = useRef(false);
   const tableScrollEmployeeTransaction = useRef(null);
@@ -43,20 +45,24 @@ const HTATAT = () => {
   const { callApi } = useApi();
   const { showNotification } = useNotification();
   const { showLoader } = useGlobalLoader();
-  const { htaTATReportsData, setHTATATReportsData, resetHTATATReportsData } =
+  const { htaPolicyBreachesReportsData, resetHTAPolicyBreachesReportsData } =
     useMyApproval();
+  const {
+    showViewDetailOfUserwiseComplianceReportAdmin,
+    setShowViewDetailOfUserwiseComplianceReportAdmin,
+  } = useGlobalModal();
 
-  const { htaTATReportSearch, setHTATATReportSearch, resetHTATATReportSearch } =
-    useSearchBarContext();
+  const { selectedKey } = useSidebarContext();
+  console.log(selectedKey, "selectedKeyselectedKey");
+
+  const {
+    htaPolicyBreachesReportSearch,
+    setHTAPolicyBreachesReportSearch,
+    resetHTAPolicyBreachesReportSearch,
+  } = useSearchBarContext();
 
   const { assetTypeListingData, setAssetTypeListingData } =
     useDashboardContext();
-
-  const {
-    showViewDetailPageInTatOnHta,
-    setShowViewDetailPageInTatOnHta,
-    setShowSelectedTatDataOnViewDetailHTA,
-  } = useGlobalModal();
 
   // -------------------- Local State --------------------
   const [sortedInfo, setSortedInfo] = useState({});
@@ -70,64 +76,64 @@ const HTATAT = () => {
    * Fetches transactions from API.
    * @param {boolean} flag - whether to show loader
    */
-  const fetchApiCall = useCallback(
-    async (requestData, replace = false, showLoaderFlag = true) => {
-      if (!requestData || typeof requestData !== "object") return;
-      if (showLoaderFlag) showLoader(true);
+  // const fetchApiCall = useCallback(
+  //   async (requestData, replace = false, showLoaderFlag = true) => {
+  //     if (!requestData || typeof requestData !== "object") return;
+  //     // if (showLoaderFlag) showLoader(true);
 
-      const res = await SearchHTATurnAroundTimeRequest({
-        callApi,
-        showNotification,
-        showLoader,
-        requestdata: requestData,
-        navigate,
-      });
-      console.log("res".res);
+  //     // const res = await SearchPolicyBreachedWorkFlowsRequest({
+  //     //   callApi,
+  //     //   showNotification,
+  //     //   showLoader,
+  //     //   requestdata: requestData,
+  //     //   navigate,
+  //     // });
+  //     console.log("res".res);
 
-      // ✅ Always get the freshest version (from memory or session)
-      const currentAssetTypeData = getSafeAssetTypeData(
-        assetTypeListingData,
-        setAssetTypeListingData
-      );
+  //     // ✅ Always get the freshest version (from memory or session)
+  //     const currentAssetTypeData = getSafeAssetTypeData(
+  //       assetTypeListingData,
+  //       setAssetTypeListingData
+  //     );
 
-      const employees = Array.isArray(res?.employees) ? res.employees : [];
-      console.log("records", employees);
-      const mapped = mapListData(currentAssetTypeData?.Equities, employees);
-      if (!mapped || typeof mapped !== "object") return;
-      console.log("records", mapped);
+  //     const records = Array.isArray(res?.records) ? res.records : [];
+  //     console.log("records", records);
+  //     const mapped = mapListData(currentAssetTypeData?.Equities, records);
+  //     if (!mapped || typeof mapped !== "object") return;
+  //     console.log("records", mapped);
 
-      setHTATATReportsData((prev) => ({
-        employees: replace ? mapped : [...(prev?.employees || []), ...mapped],
-        // this is for to run lazy loading its data comming from database of total data in db
-        totalRecordsDataBase: res?.totalRecords || 0,
-        // this is for to know how mush dta currently fetch from  db
-        totalRecordsTable: replace
-          ? mapped.length
-          : htaTATReportsData.totalRecordsTable + mapped.length,
-      }));
-      setHTATATReportSearch((prev) => {
-        const next = {
-          ...prev,
-          pageNumber: replace ? mapped.length : prev.pageNumber + mapped.length,
-        };
+  //     setHTAPolicyBreachesReportsData((prev) => ({
+  //       records: replace ? mapped : [...(prev?.records || []), ...mapped],
+  //       // this is for to run lazy loading its data comming from database of total data in db
+  //       totalRecordsDataBase: res?.totalRecords || 0,
+  //       // this is for to know how mush dta currently fetch from  db
+  //       totalRecordsTable: replace
+  //         ? mapped.length
+  //         : htaPolicyBreachesReportsData.totalRecordsTable + mapped.length,
+  //     }));
+  //     setHTAPolicyBreachesReportSearch((prev) => {
+  //       const next = {
+  //         ...prev,
+  //         pageNumber: replace ? mapped.length : prev.pageNumber + mapped.length,
+  //       };
 
-        // this is for check if filter value get true only on that it will false
-        if (prev.filterTrigger) {
-          next.filterTrigger = false;
-        }
+  //       // this is for check if filter value get true only on that it will false
+  //       if (prev.filterTrigger) {
+  //         next.filterTrigger = false;
+  //       }
 
-        return next;
-      });
-    },
-    [
-      assetTypeListingData,
-      callApi,
-      navigate,
-      setHTATATReportSearch,
-      showLoader,
-      showNotification,
-    ]
-  );
+  //       return next;
+  //     });
+  //   },
+  //   [
+  //     assetTypeListingData,
+  //     callApi,
+  //     navigate,
+  //     setHTAPolicyBreachesReportSearch,
+  //     showLoader,
+  //     showNotification,
+  //   ]
+  // );
 
   // -------------------- Effects --------------------
 
@@ -136,48 +142,48 @@ const HTATAT = () => {
     if (hasFetched.current) return;
     hasFetched.current = true;
     const requestData = buildApiRequest(
-      htaTATReportSearch,
+      htaPolicyBreachesReportSearch,
       assetTypeListingData
     );
-    fetchApiCall(requestData, true, true);
+    // fetchApiCall(requestData, true, true);
   }, []);
 
   // Reset on Unmount
   useEffect(() => {
     return () => {
       // Reset search state for fresh load
-      resetHTATATReportSearch();
-      resetHTATATReportsData();
+      resetHTAPolicyBreachesReportSearch();
+      resetHTAPolicyBreachesReportsData();
     };
   }, []);
 
   // 🔹 call api on search
   useEffect(() => {
-    if (htaTATReportSearch?.filterTrigger) {
+    if (htaPolicyBreachesReportSearch?.filterTrigger) {
       const requestData = buildApiRequest(
-        htaTATReportSearch,
+        htaPolicyBreachesReportSearch,
         assetTypeListingData
       );
-      fetchApiCall(requestData, true, true);
+      // fetchApiCall(requestData, true, true);
     }
-  }, [htaTATReportSearch?.filterTrigger]);
+  }, [htaPolicyBreachesReportSearch?.filterTrigger]);
 
   // 🔹 Infinite Scroll (lazy loading)
   useTableScrollBottom(
     async () => {
       if (
-        htaTATReportsData?.totalRecordsDataBase <=
-        htaTATReportsData?.totalRecordsTable
+        htaPolicyBreachesReportsData?.totalRecordsDataBase <=
+        htaPolicyBreachesReportsData?.totalRecordsTable
       )
         return;
 
       try {
         setLoadingMore(true);
         const requestData = buildApiRequest(
-          htaTATReportSearch,
+          htaPolicyBreachesReportSearch,
           assetTypeListingData
         );
-        await fetchApiCall(requestData, false, false);
+        // await fetchApiCall(requestData, false, false);
       } catch (err) {
         console.error("Error loading more approvals:", err);
       } finally {
@@ -192,12 +198,11 @@ const HTATAT = () => {
   const columns = getBorderlessTableColumns({
     approvalStatusMap,
     sortedInfo,
-    htaTATReportSearch,
-    setHTATATReportSearch,
+    htaPolicyBreachesReportSearch,
+    setHTAPolicyBreachesReportSearch,
     setSelectedEmployee,
     setPolicyModalVisible,
-    setShowViewDetailPageInTatOnHta,
-    setShowSelectedTatDataOnViewDetailHTA,
+    setShowViewDetailOfUserwiseComplianceReportAdmin,
   });
 
   /** 🔹 Handle removing individual filter */
@@ -210,7 +215,7 @@ const HTATAT = () => {
       dateRange: { startDate: null, endDate: null },
     };
 
-    setHTATATReportSearch((prev) => ({
+    setHTAPolicyBreachesReportSearch((prev) => ({
       ...prev,
       ...resetMap[key],
       pageNumber: 0,
@@ -220,7 +225,7 @@ const HTATAT = () => {
 
   /** 🔹 Handle removing all filters */
   const handleRemoveAllFilters = () => {
-    setHTATATReportSearch((prev) => ({
+    setHTAPolicyBreachesReportSearch((prev) => ({
       ...prev,
       instrumentName: "",
       employeeName: "",
@@ -242,7 +247,7 @@ const HTATAT = () => {
       quantity,
       startDate,
       endDate,
-    } = htaTATReportSearch || {};
+    } = htaPolicyBreachesReportSearch || {};
 
     return [
       instrumentName && {
@@ -292,10 +297,10 @@ const HTATAT = () => {
   const downloadMyTradeApprovalLineManagerInExcelFormat = async () => {
     showLoader(true);
     const requestdata = {
-      StartDate: toYYMMDD(htaTATReportSearch.startDate) || null,
-      EndDate: toYYMMDD(htaTATReportSearch.endDate) || null,
-      SearchEmployeeName: htaTATReportSearch.employeeName,
-      SearchDepartmentName: htaTATReportSearch.departmentName,
+      StartDate: toYYMMDD(htaPolicyBreachesReportSearch.startDate) || null,
+      EndDate: toYYMMDD(htaPolicyBreachesReportSearch.endDate) || null,
+      SearchEmployeeName: htaPolicyBreachesReportSearch.employeeName,
+      SearchDepartmentName: htaPolicyBreachesReportSearch.departmentName,
     };
 
     await ExportHTATradeApprovalRequestsExcelReport({
@@ -306,11 +311,55 @@ const HTATAT = () => {
     });
   };
 
+  //Hardcoded Data
+  const hardcodedTableData = [
+    {
+      key: "1",
+      employeeID: "EMP-1001",
+      employeeName: "Amit Sharma",
+      department: "Compliance",
+      approvalScore: 82,
+      complianceScore: 91,
+    },
+    {
+      key: "2",
+      employeeID: "EMP-1002",
+      employeeName: "Neha Verma",
+      department: "Risk Management",
+      approvalScore: 74,
+      complianceScore: 88,
+    },
+    {
+      key: "3",
+      employeeID: "EMP-1003",
+      employeeName: "Rahul Mehta",
+      department: "Trading",
+      approvalScore: 69,
+      complianceScore: 79,
+    },
+    {
+      key: "4",
+      employeeID: "EMP-1004",
+      employeeName: "Pooja Singh",
+      department: "Operations",
+      approvalScore: 90,
+      complianceScore: 95,
+    },
+    {
+      key: "5",
+      employeeID: "EMP-1005",
+      employeeName: "Karan Patel",
+      department: "IT",
+      approvalScore: 77,
+      complianceScore: 83,
+    },
+  ];
+
   // -------------------- Render --------------------
   return (
     <>
-      {showViewDetailPageInTatOnHta ? (
-        <ViewDetails />
+      {showViewDetailOfUserwiseComplianceReportAdmin ? (
+        <ViewDetailsAdmin />
       ) : (
         <>
           <Row justify="start" align="middle" className={style.breadcrumbRow}>
@@ -322,10 +371,7 @@ const HTATAT = () => {
                   {
                     title: (
                       <span
-                        onClick={() => {
-                          navigate("/PAD/hta-reports");
-                          setShowViewDetailPageInTatOnHta(false);
-                        }}
+                        onClick={() => navigate("/PAD/admin-reports")}
                         className={style.breadcrumbLink}
                       >
                         Reports
@@ -334,11 +380,8 @@ const HTATAT = () => {
                   },
                   {
                     title: (
-                      <span
-                        className={style.breadcrumbText}
-                        onClick={() => setShowViewDetailPageInTatOnHta(false)}
-                      >
-                        TAT Request Approvals{" "}
+                      <span className={style.breadcrumbText}>
+                        Users Wise Compliance Report
                       </span>
                     ),
                   },
@@ -365,6 +408,10 @@ const HTATAT = () => {
               {/* 🔷 Export Dropdown */}
               {open && (
                 <div className={style.dropdownExport}>
+                  {/* <div className={style.dropdownItem}>
+                <img src={PDF} alt="PDF" draggable={false} />
+                <span>Export PDF</span>
+              </div> */}
                   <div
                     className={style.dropdownItem}
                     onClick={downloadMyTradeApprovalLineManagerInExcelFormat}
@@ -416,11 +463,12 @@ const HTATAT = () => {
           >
             <div className="px-4 md:px-6 lg:px-8 ">
               <BorderlessTable
-                rows={htaTATReportsData?.employees}
+                // rows={htaPolicyBreachesReportsData?.records}
+                rows={hardcodedTableData}
                 columns={columns}
                 classNameTable="border-less-table-blue"
                 scroll={
-                  htaTATReportsData?.employees?.length
+                  htaPolicyBreachesReportsData?.records?.length
                     ? {
                         x: "max-content",
                         y: activeFilters.length > 0 ? 450 : 500,
@@ -441,4 +489,4 @@ const HTATAT = () => {
   );
 };
 
-export default HTATAT;
+export default UserWiseComplianceReport;

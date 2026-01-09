@@ -108,6 +108,7 @@ export const getBorderlessTableColumns = ({
   setSelectedEmployee,
   setPolicyModalVisible,
   setShowViewDetailPageInTatOnHta,
+  setShowSelectedTatDataOnViewDetailHTA,
 }) => [
   {
     title: (
@@ -230,6 +231,7 @@ export const getBorderlessTableColumns = ({
     align: "right",
     width: "100px",
     render: (record) => {
+      console.log(record, "showSelectedTatDataOnViewDetailHTA");
       //Global State to selected data to show in ViewDetailLineManagerModal Statuses
       return (
         <>
@@ -244,7 +246,10 @@ export const getBorderlessTableColumns = ({
             <Button
               className="view-large-transparent-button"
               text="View Details"
-              onClick={() => setShowViewDetailPageInTatOnHta(true)}
+              onClick={() => {
+                setShowViewDetailPageInTatOnHta(true);
+                setShowSelectedTatDataOnViewDetailHTA(record);
+              }}
             />
           </div>
         </>
