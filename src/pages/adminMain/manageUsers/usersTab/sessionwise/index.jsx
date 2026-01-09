@@ -257,7 +257,6 @@ const UserSessionWiseActivity = () => {
 
   /** viewActionModal */
   const handleViewActionModal = async (data) => {
-    console.log("handleViewActionModal", data);
     const requestData = { SessionID: data.sessionID };
     showLoader(true);
     const res = await ViewUserSessionWiseActivity({
@@ -280,6 +279,7 @@ const UserSessionWiseActivity = () => {
       });
     }
   };
+  
   useEffect(() => {
     try {
       if (!viewActionSessionWiseModal) {
@@ -421,7 +421,7 @@ const UserSessionWiseActivity = () => {
         background="white"
         className={
           activeFilters.length > 0
-            ? "changeSessionwiseHeight"
+            ? "repotsHeightHOC"
             : "sessionwiseHeight"
         }
       >
