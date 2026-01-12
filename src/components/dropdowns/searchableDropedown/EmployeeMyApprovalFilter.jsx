@@ -199,7 +199,7 @@ export const EmployeeMyApprovalFilter = ({
             name="instrumentName"
             value={localState.instrumentName}
             onChange={handleInputChange}
-            placeholder="Enter instrument name"
+            placeholder="Instrument Name"
             size="medium"
             classNames="Search-Field"
           />
@@ -215,7 +215,7 @@ export const EmployeeMyApprovalFilter = ({
                 : ""
             }
             onChange={handleInputChange}
-            placeholder="Enter quantity"
+            placeholder="Quantity"
             size="medium"
             classNames="Search-Field"
           />

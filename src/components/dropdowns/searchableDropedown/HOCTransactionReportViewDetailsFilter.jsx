@@ -23,9 +23,8 @@ export const HOCTransactionReportViewDetailsFilter = ({
   clear,
   setClear,
 }) => {
-  const {
-    setHOCTransactionsSummarysReportsViewDetailSearch,
-  } = useSearchBarContext();
+  const { setHOCTransactionsSummarysReportsViewDetailSearch } =
+    useSearchBarContext();
 
   const [localState, setLocalState] = useState(INITIAL_LOCAL_STATE);
 
@@ -130,7 +129,7 @@ export const HOCTransactionReportViewDetailsFilter = ({
             name="instrumentName"
             value={localState.instrumentName}
             onChange={handleInputChange}
-            placeholder="Enter instrument name"
+            placeholder="Instrument Name"
             size="medium"
             classNames="Search-Field"
           />
@@ -142,7 +141,7 @@ export const HOCTransactionReportViewDetailsFilter = ({
             name="employeeName"
             value={localState.employeeName}
             onChange={handleInputChange}
-            placeholder="Enter employee name"
+            placeholder="Employee Name"
             size="medium"
             classNames="Search-Field"
           />
@@ -161,7 +160,7 @@ export const HOCTransactionReportViewDetailsFilter = ({
                 : ""
             }
             onChange={handleInputChange}
-            placeholder="Enter quantity"
+            placeholder="Quantity"
             size="medium"
             classNames="Search-Field"
           />

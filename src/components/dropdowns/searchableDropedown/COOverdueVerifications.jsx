@@ -158,7 +158,7 @@ export const COOverdueVerifications = ({
             name="instrumentName"
             value={localState.instrumentName}
             onChange={handleInputChange}
-            placeholder="Enter instrument name"
+            placeholder="Instrument Name"
             size="medium"
             classNames="Search-Field"
           />
@@ -170,7 +170,7 @@ export const COOverdueVerifications = ({
             name="requesterName"
             value={localState.requesterName}
             onChange={handleInputChange}
-            placeholder="Enter requester name"
+            placeholder="Requester Name"
             size="medium"
             classNames="Search-Field"
           />

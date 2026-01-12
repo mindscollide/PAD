@@ -74,6 +74,8 @@ export const buildMyHistoryApiRequest = (searchState = {}) => ({
 export const getMyHistoryColumn = (
   approvalStatusMap,
   sortedInfo,
+  employeeMyHistorySearch,
+  setEmployeeMyHistorySearch
 ) => [
   {
     title: withSortIcon(
@@ -84,7 +86,7 @@ export const getMyHistoryColumn = (
     dataIndex: "tradeApprovalID",
     key: "tradeApprovalID",
     ellipsis: true,
-    width: "200px",
+    width: 250,
     sorter: (a, b) =>
       parseInt(a.tradeApprovalID.replace(/[^\d]/g, ""), 10) -
       parseInt(b.tradeApprovalID.replace(/[^\d]/g, ""), 10),
@@ -107,7 +109,7 @@ export const getMyHistoryColumn = (
     title: withSortIcon("Instrument", "instrumentName", sortedInfo),
     dataIndex: "instrumentName",
     key: "instrumentName",
-    width: "140px",
+    width: 140,
     ellipsis: true,
     sorter: (a, b) => {
       const nameA = a?.instrumentShortCode || "";
@@ -196,25 +198,28 @@ export const getMyHistoryColumn = (
     render: (text) => <span className="font-medium">{text}</span>,
   },
   {
-    title: withSortIcon("Type", "type", sortedInfo),
+    title: (
+      <TypeColumnTitle
+        state={employeeMyHistorySearch}
+        setState={setEmployeeMyHistorySearch}
+      />
+    ),
     dataIndex: "type",
     key: "type",
-    width: "100px",
-    align: "left",
+    width: 150,
     ellipsis: true,
-    sorter: (a, b) => a.type.localeCompare(b.type),
-    sortDirections: ["ascend", "descend"],
-    sortOrder: sortedInfo?.columnKey === "type" ? sortedInfo.order : null,
-    showSorterTooltip: false,
-    sortIcon: () => null,
-    render: (text) => <span className="font-medium">{text}</span>,
+    filteredValue: employeeMyHistorySearch?.type?.length
+      ? employeeMyHistorySearch.type
+      : null,
+    onFilter: () => true,
+    render: (type) => <span title={type || "—"}>{type || "—"}</span>,
   },
   {
     title: withSortIcon("Quantity", "quantity", sortedInfo),
     dataIndex: "quantity",
     key: "quantity",
-    width: "180px",
-    align: "center",
+    width: 150,
+    align: "left",
     ellipsis: true,
     sorter: (a, b) => a.quantity - b.quantity,
     sortDirections: ["ascend", "descend"],
@@ -224,28 +229,35 @@ export const getMyHistoryColumn = (
     render: (q) => <span className="font-medium">{q.toLocaleString()}</span>,
   },
   {
-    title: withSortIcon("Status", "status", sortedInfo),
+    title: (
+      <StatusColumnTitle
+        state={employeeMyHistorySearch}
+        setState={setEmployeeMyHistorySearch}
+      />
+    ),
     dataIndex: "status",
     key: "status",
-    width: "160px",
-    align: "left",
     ellipsis: true,
-    sorter: (a, b) => a.status.localeCompare(b.status),
-    sortDirections: ["ascend", "descend"],
-    sortOrder: sortedInfo?.columnKey === "status" ? sortedInfo.order : null,
-    showSorterTooltip: false,
-    sortIcon: () => null,
+    filteredValue: employeeMyHistorySearch?.status?.length
+      ? employeeMyHistorySearch.status
+      : null,
+    onFilter: () => true,
+    width: 220,
     render: (status) => {
-      const tag = approvalStatusMap[status] || {};
+      const tag = approvalStatusMap?.[status] || {};
       return (
         <Tag
           style={{
             backgroundColor: tag.backgroundColor,
             color: tag.textColor,
+            whiteSpace: "nowrap",
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+            display: "inline-block",
           }}
           className="border-less-table-orange-status"
         >
-          {tag.label}
+          {tag.label || status || "—"}
         </Tag>
       );
     },

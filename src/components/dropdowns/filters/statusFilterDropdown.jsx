@@ -8,6 +8,7 @@ import {
   adminBrokersStatus,
   apiCallStatus,
   emaStatusOptions,
+  emaStatusOptionsofReportsMyHistory,
   emaStatusOptionsofReportsMyTradeApprovals,
   emtStatusOptions,
   emtStatusOptionsForPendingApproval,
@@ -95,6 +96,9 @@ const StatusFilterDropdown = ({
       case "6":
         setFilterOptions(emaStatusOptions);
         break;
+      case "3":
+        setFilterOptions(emaStatusOptionsofReportsMyHistory);
+        break;
       case "4":
         setFilterOptions(emtStatusOptionsForPendingApproval);
         break;
@@ -156,7 +160,7 @@ const StatusFilterDropdown = ({
       case "17":
       case "18":
       case "19":
-        console.log("StatusFilterDropdown handleOk",tempSelected);
+        console.log("StatusFilterDropdown handleOk", tempSelected);
         setState((prev) => ({
           ...prev,
           status: tempSelected,

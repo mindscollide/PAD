@@ -47,6 +47,17 @@ export const emaStatusOptionsofReportsMyTradeApprovals = [
   "Not Traded",
   "Resubmitted for Approval",
 ];
+
+export const emaStatusOptionsofReportsMyHistory = [
+  "Pending",
+  "Approved",
+  "Declined",
+  "Transaction Conducted",
+  "Not Traded",
+  "Resubmitted for Approval",
+  "Compliant",
+  "Non-Compliant",
+];
 // -----------------------------------------------------------------------------
 // 📌 Utility: Extract Type Options from AddApprovalRequestData
 // -----------------------------------------------------------------------------

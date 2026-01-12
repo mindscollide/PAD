@@ -463,7 +463,7 @@ li.ant-dropdown-menu-item.ant-dropdown-menu-item-only-child:focus {
   vertical-align: middle;
 }
 
-.accordian-Table-Cell-class  {
+.accordian-Table-Cell-class {
   max-height: 500px !important;
   overflow: hidden !important;
   overflow-y: auto !important;
@@ -617,3 +617,46 @@ Specificity: (0,1,1)
     width: 100%;
 } */
 
+:where(.css-dev-only-do-not-override-1rfzxih).ant-picker
+  .ant-picker-input
+  > input:placeholder-shown {
+  font-family: "Switzer Variable" !important; /* your font */
+  font-size: 18px !important;
+  font-weight: 500 !important;
+  color: #b4b4b4 !important; /* optional */
+  text-overflow: ellipsis !important;
+}
+
+:where(.css-dev-only-do-not-override-1rfzxih).ant-input:placeholder-shown {
+  font-family: "Switzer Variable" !important; /* your font */
+  font-size: 18px !important;
+  font-weight: 500 !important;
+  color: #b4b4b4 !important; /* optional */
+  text-overflow: ellipsis !important;
+}
+
+:where(
+    .css-dev-only-do-not-override-1rfzxih
+  ).EquitiesBrokerSelectPrefix-multiple
+  .EquitiesBrokerSelectPrefix-selection-placeholder {
+  position: absolute;
+  top: 56% !important;
+  inset-inline-start: 8px;
+  inset-inline-end: 11px;
+  transform: translateY(-50%);
+  transition: all 0.3s;
+  font-family: "Switzer Variable" !important; /* your font */
+  font-size: 18px !important;
+  font-weight: 350 !important;
+  color: #b4b4b4 !important; /* optional */
+  text-overflow: ellipsis !important;
+}
+:where(.css-dev-only-do-not-override-1rfzxih).ant-select-multiple
+  .ant-select-selection-placeholder {
+  margin: 4px !important;
+  font-family: "Switzer Variable" !important; /* your font */
+  font-size: 18px !important;
+  font-weight: 350 !important;
+  color: #b4b4b4 !important; /* optional */
+  text-overflow: ellipsis !important;
+}

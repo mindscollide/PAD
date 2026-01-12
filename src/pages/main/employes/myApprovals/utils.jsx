@@ -57,7 +57,7 @@ export const buildApiRequest = (searchState = {}, assetTypeListingData) => ({
   Quantity: searchState.quantity ? Number(searchState.quantity) : 0,
   StartDate: searchState.startDate ? toYYMMDD(searchState.startDate) : "",
   EndDate: searchState.endDate ? toYYMMDD(searchState.endDate) : "",
-  StatusIds: mapStatusToIds?.(searchState.status,2) || [],
+  StatusIds: mapStatusToIds?.(searchState.status, 2) || [],
   TypeIds:
     mapBuySellToIds?.(searchState.type, assetTypeListingData?.Equities) || [],
   PageNumber: Number(searchState.pageNumber) || 0,
@@ -382,40 +382,25 @@ export const getBorderlessTableColumns = ({
       const extractId = (id) => parseInt(id.replace(/[^\d]/g, ""), 10) || 0;
       return extractId(a.tradeApprovalID) - extractId(b.tradeApprovalID);
     },
-    sortDirections: [
-      COLUMN_CONFIG.SORT_ORDER.ASCEND,
-      COLUMN_CONFIG.SORT_ORDER.DESCEND,
-    ],
     sortOrder:
       sortedInfo?.columnKey === "tradeApprovalID" ? sortedInfo.order : null,
     showSorterTooltip: false,
+    width: 150,
+    align: "left",
     sortIcon: () => null,
-    render: (tradeApprovalID, record) => (
-      <div
-        id={`cell-${record.key}-tradeApprovalID`}
-        style={{ display: "flex", alignItems: "center", gap: "12px" }}
-      >
-        <span className="font-medium" data-testid="formatted-approval-id">
-          {dashBetweenApprovalAssets(tradeApprovalID)}
-        </span>
-      </div>
+    render: (tradeApprovalID) => (
+      <span className="font-medium" data-testid="formatted-approval-id">
+        {dashBetweenApprovalAssets(tradeApprovalID)}
+      </span>
     ),
-    onHeaderCell: () =>
-      createCellStyle(
-        COLUMN_CONFIG.WIDTHS.APPROVAL_ID.min,
-        COLUMN_CONFIG.WIDTHS.APPROVAL_ID.max
-      ),
-    onCell: () =>
-      createCellStyle(
-        COLUMN_CONFIG.WIDTHS.APPROVAL_ID.min,
-        COLUMN_CONFIG.WIDTHS.APPROVAL_ID.max
-      ),
   },
   {
     title: withSortIcon("Instrument", "instrumentCode", sortedInfo),
     dataIndex: "instrumentCode",
     key: "instrumentCode",
     ellipsis: true,
+    width: 150,
+    align: "left",
     sorter: (a, b) =>
       (a?.instrumentCode || "").localeCompare(b?.instrumentCode || ""),
     sortOrder:
@@ -448,6 +433,7 @@ export const getBorderlessTableColumns = ({
     dataIndex: "type",
     key: "type",
     ellipsis: true,
+    width: 150,
     filteredValue: employeeMyApprovalSearch.type?.length
       ? employeeMyApprovalSearch.type
       : null,
@@ -483,16 +469,13 @@ export const getBorderlessTableColumns = ({
     title: withSortIcon("Request Date & Time", "requestDateTime", sortedInfo),
     dataIndex: "requestDateTime",
     key: "requestDateTime",
-    width: "15%",
+    width: 200,
+    align: "center",
     ellipsis: true,
     sorter: (a, b) =>
       formatApiDateTime(a.requestDateTime).localeCompare(
         formatApiDateTime(b.requestDateTime)
       ),
-    sortDirections: [
-      COLUMN_CONFIG.SORT_ORDER.ASCEND,
-      COLUMN_CONFIG.SORT_ORDER.DESCEND,
-    ],
     sortOrder:
       sortedInfo?.columnKey === "requestDateTime" ? sortedInfo.order : null,
     showSorterTooltip: false,
@@ -513,16 +496,6 @@ export const getBorderlessTableColumns = ({
         {formatApiDateTime(date)}
       </span>
     ),
-    onHeaderCell: () =>
-      createCellStyle(
-        COLUMN_CONFIG.WIDTHS.DATE_TIME.min,
-        COLUMN_CONFIG.WIDTHS.DATE_TIME.max
-      ),
-    onCell: () =>
-      createCellStyle(
-        COLUMN_CONFIG.WIDTHS.DATE_TIME.min,
-        COLUMN_CONFIG.WIDTHS.DATE_TIME.max
-      ),
   },
   {
     title: withFilterHeader(() => (
@@ -533,6 +506,7 @@ export const getBorderlessTableColumns = ({
     )),
     dataIndex: "status",
     key: "status",
+    width: 130,
     ellipsis: true,
     filteredValue: employeeMyApprovalSearch.status?.length
       ? employeeMyApprovalSearch.status
@@ -558,6 +532,8 @@ export const getBorderlessTableColumns = ({
     title: "",
     dataIndex: "isEscalated",
     key: "isEscalated",
+    width: 50,
+    align: "center",
     ellipsis: true,
     render: (isEscalated) =>
       isEscalated && (
@@ -573,27 +549,15 @@ export const getBorderlessTableColumns = ({
           }}
         />
       ),
-    onHeaderCell: () =>
-      createCellStyle(
-        COLUMN_CONFIG.WIDTHS.ESCALATED.min,
-        COLUMN_CONFIG.WIDTHS.ESCALATED.max
-      ),
-    onCell: () =>
-      createCellStyle(
-        COLUMN_CONFIG.WIDTHS.ESCALATED.min,
-        COLUMN_CONFIG.WIDTHS.ESCALATED.max
-      ),
   },
   {
     title: withSortIcon("Quantity", "quantity", sortedInfo),
     dataIndex: "quantity",
     key: "quantity",
     ellipsis: true,
+    width: 100,
+    align: "left",
     sorter: (a, b) => a.quantity - b.quantity,
-    sortDirections: [
-      COLUMN_CONFIG.SORT_ORDER.ASCEND,
-      COLUMN_CONFIG.SORT_ORDER.DESCEND,
-    ],
     sortOrder: sortedInfo?.columnKey === "quantity" ? sortedInfo.order : null,
     showSorterTooltip: false,
     sortIcon: () => null,
@@ -614,38 +578,19 @@ export const getBorderlessTableColumns = ({
         {quantity.toLocaleString()}
       </span>
     ),
-    onHeaderCell: () =>
-      createCellStyle(
-        COLUMN_CONFIG.WIDTHS.QUANTITY.min,
-        COLUMN_CONFIG.WIDTHS.QUANTITY.max
-      ),
-    onCell: () =>
-      createCellStyle(
-        COLUMN_CONFIG.WIDTHS.QUANTITY.min,
-        COLUMN_CONFIG.WIDTHS.QUANTITY.max
-      ),
   },
   {
     title: "Time Remaining to Trade",
     dataIndex: "timeRemainingToTrade",
     key: "timeRemainingToTrade",
     ellipsis: true,
+    width: 200,
     align: "center",
     render: (text, record) => (
       <div id={`cell-${record.key}-timeRemainingToTrade`}>
         {renderTimeRemainingCell(record)}
       </div>
     ),
-    onHeaderCell: () =>
-      createCellStyle(
-        COLUMN_CONFIG.WIDTHS.TIME_REMAINING.min,
-        COLUMN_CONFIG.WIDTHS.TIME_REMAINING.max
-      ),
-    onCell: () =>
-      createCellStyle(
-        COLUMN_CONFIG.WIDTHS.TIME_REMAINING.min,
-        COLUMN_CONFIG.WIDTHS.TIME_REMAINING.max
-      ),
   },
   {
     title: "",
