@@ -128,7 +128,7 @@ export const COPortfolioHisttory = ({
             name="instrumentName"
             value={localState.instrumentName}
             onChange={handleInputChange}
-            placeholder="Enter instrument name"
+            placeholder="Instrument Name"
             size="medium"
             classNames="Search-Field"
           />
@@ -140,7 +140,7 @@ export const COPortfolioHisttory = ({
             name="employeeName"
             value={localState.requesterName}
             onChange={handleInputChange}
-            placeholder="Enter requester name"
+            placeholder="Requester Name"
             size="medium"
             classNames="Search-Field"
           />
@@ -155,7 +155,7 @@ export const COPortfolioHisttory = ({
             name="departmentName"
             value={localState.departmentName}
             onChange={handleInputChange}
-            placeholder="Enter department name"
+            placeholder="Department Name"
             size="medium"
             classNames="Search-Field"
           />

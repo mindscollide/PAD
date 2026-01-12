@@ -71,13 +71,14 @@ export const COTransactionReportViewDetailsFilter = ({
   };
 
   const handleSearchClick = () => {
-    const { instrumentNameSearch, requesterNameSearch, quantitySearch } = localState;
+    const { instrumentNameSearch, requesterNameSearch, quantitySearch } =
+      localState;
 
     const payload = {
       ...coTransactionsSummarysReportsViewDetailsSearch,
       instrumentNameSearch: instrumentNameSearch.trim(),
       requesterNameSearch: requesterNameSearch.trim(),
-      quantitySearch: quantitySearch ? Number(quantitySearch) :"",
+      quantitySearch: quantitySearch ? Number(quantitySearch) : "",
       pageNumber: 0,
       filterTrigger: true,
     };
@@ -116,7 +117,7 @@ export const COTransactionReportViewDetailsFilter = ({
             name="instrumentNameSearch"
             value={localState.instrumentNameSearch}
             onChange={handleInputChange}
-            placeholder="Enter instrument name"
+            placeholder="Instrument Name"
             size="medium"
             classNames="Search-Field"
           />
@@ -128,7 +129,7 @@ export const COTransactionReportViewDetailsFilter = ({
             name="requesterNameSearch"
             value={localState.requesterNameSearch}
             onChange={handleInputChange}
-            placeholder="Enter employee name"
+            placeholder="Employee Name"
             size="medium"
             classNames="Search-Field"
           />
@@ -147,7 +148,7 @@ export const COTransactionReportViewDetailsFilter = ({
                 : ""
             }
             onChange={handleInputChange}
-            placeholder="Enter quantitySearch"
+            placeholder="Quantity"
             size="medium"
             classNames="Search-Field"
           />

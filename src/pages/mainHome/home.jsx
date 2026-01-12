@@ -151,7 +151,7 @@ const Home = () => {
     () => dashboardData?.admin?.groupPolicies?.data || [],
     [dashboardData?.admin?.groupPolicies?.data]
   );
-    const reports = useMemo(
+  const reports = useMemo(
     () => dashboardData?.admin?.reports?.data || [],
     [dashboardData?.admin?.reports?.data]
   );
@@ -197,7 +197,7 @@ const Home = () => {
       console.error("Failed to fetch home summary", error);
     }
   };
-  
+
   useEffect(() => {
     if (hasFetched.current) return;
     hasFetched.current = true;
@@ -315,7 +315,7 @@ const Home = () => {
               <>
                 <Row gutter={[16, 16]}>
                   {firstMatchedRole === 2 && (
-                    <Col xs={24} md={12} lg={16}>
+                    <Col xs={24} md={12} lg={12}>
                       <TextCard
                         className="smallCard"
                         title={
@@ -329,7 +329,7 @@ const Home = () => {
                     </Col>
                   )}
 
-                  <Col xs={24} md={12} lg={8}>
+                  <Col xs={24} md={12} lg={12}>
                     <MemoizedBoxCard
                       locationStyle={"down"}
                       title={"Portfolio"}

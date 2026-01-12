@@ -210,7 +210,7 @@ export const HCOOverdueVerifications = ({
             name="instrumentName"
             value={localState.instrumentName}
             onChange={handleInputChange}
-            placeholder="Enter instrument name"
+            placeholder="Instrument Name"
           />
         </Col>
 
@@ -220,7 +220,7 @@ export const HCOOverdueVerifications = ({
             name="requesterName"
             value={localState.requesterName}
             onChange={handleInputChange}
-            placeholder="Enter requester name"
+            placeholder="Requester Name"
           />
         </Col>
       </Row>
@@ -285,7 +285,7 @@ export const HCOOverdueVerifications = ({
             name="complianceOfficerName"
             value={localState.complianceOfficerName}
             onChange={handleInputChange}
-            placeholder="Enter compliance officer name"
+            placeholder="Compliance Officer Name"
           />
         </Col>
       </Row>

@@ -187,7 +187,7 @@ export const HOCMyAction = ({
                 : ""
             }
             onChange={handleInputChange}
-            placeholder="Enter quantity"
+            placeholder="Quantity"
             size="medium"
             classNames="Search-Field"
           />

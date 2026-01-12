@@ -102,6 +102,12 @@ const ReportCard = ({
     ) {
       setSelectedKey("14"); // update your menu/side bar state
       navigate("/PAD/hta-reports/hta-trade-approval-requests");
+    }else if (
+      data?.label === "Policy Breaches" &&
+      userRole === "HTA"
+    ) {
+      setSelectedKey("14"); // update your menu/side bar state
+      navigate("/PAD/hta-reports/hta-policy-breaches-reports");
     }
     
   };

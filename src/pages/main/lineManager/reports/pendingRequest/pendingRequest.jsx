@@ -145,7 +145,6 @@ const PendingRequest = () => {
   useEffect(() => {
     return () => {
       resetLineManagerApprovalSearch();
-      hasFetched.current = false;
     };
   }, []);
   /**
@@ -158,7 +157,6 @@ const PendingRequest = () => {
       lMPendingApprovalReportsSearch,
       assetTypeListingData
     );
-
     fetchApiCall(requestData, true, true);
     setNoteGlobalModal({ visible: false, action: null });
   }, []);
@@ -195,7 +193,7 @@ const PendingRequest = () => {
   const handleViewDetailsForLineManager = async (workFlowID) => {
     await showLoader(true);
     const requestdata = { TradeApprovalID: workFlowID };
-    console.log("Check APi",requestdata);
+    console.log("Check APi", requestdata);
 
     const responseData = await GetAllLineManagerViewDetailRequest({
       callApi,
@@ -477,7 +475,7 @@ const PendingRequest = () => {
           />
         </div>
       </PageLayout>
-           {/* To Show Line Manager View Detail Modal */}
+      {/* To Show Line Manager View Detail Modal */}
       {viewDetailLineManagerModal && <ViewDetailModal />}
     </>
   );
