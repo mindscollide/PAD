@@ -203,7 +203,7 @@ export const getInstrumentTableColumns = ({
     showSorterTooltip: false,
     sortIcon: () => null,
     render: (date, record) => (
-      <span className={!record.status ? styles.inActiveColumnTexts : ""}>
+      <span className={!record.status ? styles.inActiveColumnTexts : ""} style={{ textAlign: "center" }}>
         {date ? formatApiDateTime(date) : "—"}
       </span>
     ),
