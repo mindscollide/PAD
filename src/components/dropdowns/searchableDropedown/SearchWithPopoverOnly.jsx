@@ -739,7 +739,7 @@ const SearchWithPopoverOnly = () => {
             : selectedKey === "20" && pageTabesForAdminGropusAndPolicy === 2
             ? "Employee name. Click the icon to view more options."
             : selectedKey === "20"
-            ? "Policy Name. Click the icon to view more options."
+            ? "Group Policy Name. Click the icon to view more options."
             : (selectedKey === "21" &&
                 currentPath !== "/PAD/admin-users/session-wise-activity") ||
               (selectedKey === "8" &&
