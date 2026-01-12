@@ -107,8 +107,8 @@ const withSortIcon = (label, columnKey, sortedInfo) => (
 export const getBorderlessTableColumns = ({
   approvalStatusMap,
   sortedInfo,
-  htaPolicyBreachesReportSearch,
-  setHTAPolicyBreachesReportSearch,
+  adminPolicyBreachesReportSearch,
+  setAdminPolicyBreachesReportSearch,
   setSelectedEmployee,
   setPolicyModalVisible,
 }) => [
@@ -230,16 +230,16 @@ export const getBorderlessTableColumns = ({
   {
     title: (
       <TypeColumnTitle
-        state={htaPolicyBreachesReportSearch}
-        setState={setHTAPolicyBreachesReportSearch}
+        state={adminPolicyBreachesReportSearch}
+        setState={setAdminPolicyBreachesReportSearch}
       />
     ),
     dataIndex: "type",
     key: "type",
     ellipsis: true,
     width: "140px",
-    filteredValue: htaPolicyBreachesReportSearch.type?.length
-      ? htaPolicyBreachesReportSearch?.type
+    filteredValue: adminPolicyBreachesReportSearch?.type?.length
+      ? adminPolicyBreachesReportSearch?.type
       : null,
     onFilter: () => true,
     render: (type, record) => (

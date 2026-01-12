@@ -76,7 +76,9 @@ const SearchWithPopoverOnly = () => {
     setHCOTradesUploadViaPortfolioSearch,
     setCoPortfolioHistoryReportSearch,
     setHOCTransactionsSummarysReportsViewDetailSearch,
-
+    setUserActivityComplianceReportAdmin,
+    setUserActivityReportAdmin,
+    setAdminPolicyBreachesReportSearch,
     //
     setUsersTabSearch,
     setPendingRequestsTabSearch,
@@ -727,9 +729,12 @@ const SearchWithPopoverOnly = () => {
 
       case "23": //Admin Reports
         if (currentPath === "/PAD/admin-reports/admin-policy-breaches-report") {
-          setAdminSessionWiseActivitySearch((prev) => ({
+          setAdminPolicyBreachesReportSearch((prev) => ({
             ...prev,
-            ipAddress: searchMain,
+            instrumentName: searchMain,
+            employeeName: "",
+            departmentName: "",
+            quantity: 0,
             startDate: null,
             endDate: null,
             filterTrigger: true,
@@ -737,7 +742,7 @@ const SearchWithPopoverOnly = () => {
             pageSize: 10,
           }));
         } else if (currentPath === "/PAD/admin-reports/user-activity-report") {
-          setAdminSessionWiseActivitySearch((prev) => ({
+          setUserActivityReportAdmin((prev) => ({
             ...prev,
             ipAddress: searchMain,
             startDate: null,
@@ -749,11 +754,10 @@ const SearchWithPopoverOnly = () => {
         } else if (
           currentPath === "/PAD/admin-reports/admin-user-wise-compliance-report"
         ) {
-          setAdminSessionWiseActivitySearch((prev) => ({
+          setUserActivityComplianceReportAdmin((prev) => ({
             ...prev,
-            ipAddress: searchMain,
-            startDate: null,
-            endDate: null,
+            employeeName: searchMain,
+            departmentName: "",
             filterTrigger: true,
             pageNumber: 0,
             pageSize: 10,

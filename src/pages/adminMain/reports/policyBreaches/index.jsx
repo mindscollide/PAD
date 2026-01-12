@@ -52,9 +52,9 @@ const AdminPolicyBreachesReport = () => {
   console.log(selectedKey, "selectedKeyselectedKey");
 
   const {
-    htaPolicyBreachesReportSearch,
-    setHTAPolicyBreachesReportSearch,
-    resetHTAPolicyBreachesReportSearch,
+    adminPolicyBreachesReportSearch,
+    setAdminPolicyBreachesReportSearch,
+    resetPolicyBreachesAdminReportSearch,
   } = useSearchBarContext();
 
   const { assetTypeListingData, setAssetTypeListingData } =
@@ -107,7 +107,7 @@ const AdminPolicyBreachesReport = () => {
           ? mapped.length
           : htaPolicyBreachesReportsData.totalRecordsTable + mapped.length,
       }));
-      setHTAPolicyBreachesReportSearch((prev) => {
+      setAdminPolicyBreachesReportSearch((prev) => {
         const next = {
           ...prev,
           pageNumber: replace ? mapped.length : prev.pageNumber + mapped.length,
@@ -125,7 +125,7 @@ const AdminPolicyBreachesReport = () => {
       assetTypeListingData,
       callApi,
       navigate,
-      setHTAPolicyBreachesReportSearch,
+      setAdminPolicyBreachesReportSearch,
       showLoader,
       showNotification,
     ]
@@ -138,7 +138,7 @@ const AdminPolicyBreachesReport = () => {
     if (hasFetched.current) return;
     hasFetched.current = true;
     const requestData = buildApiRequest(
-      htaPolicyBreachesReportSearch,
+      adminPolicyBreachesReportSearch,
       assetTypeListingData
     );
     fetchApiCall(requestData, true, true);
@@ -148,21 +148,21 @@ const AdminPolicyBreachesReport = () => {
   useEffect(() => {
     return () => {
       // Reset search state for fresh load
-      resetHTAPolicyBreachesReportSearch();
+      resetPolicyBreachesAdminReportSearch();
       resetHTAPolicyBreachesReportsData();
     };
   }, []);
 
   // 🔹 call api on search
   useEffect(() => {
-    if (htaPolicyBreachesReportSearch?.filterTrigger) {
+    if (adminPolicyBreachesReportSearch?.filterTrigger) {
       const requestData = buildApiRequest(
-        htaPolicyBreachesReportSearch,
+        adminPolicyBreachesReportSearch,
         assetTypeListingData
       );
       fetchApiCall(requestData, true, true);
     }
-  }, [htaPolicyBreachesReportSearch?.filterTrigger]);
+  }, [adminPolicyBreachesReportSearch?.filterTrigger]);
 
   // 🔹 Infinite Scroll (lazy loading)
   useTableScrollBottom(
@@ -176,7 +176,7 @@ const AdminPolicyBreachesReport = () => {
       try {
         setLoadingMore(true);
         const requestData = buildApiRequest(
-          htaPolicyBreachesReportSearch,
+          adminPolicyBreachesReportSearch,
           assetTypeListingData
         );
         await fetchApiCall(requestData, false, false);
@@ -194,8 +194,8 @@ const AdminPolicyBreachesReport = () => {
   const columns = getBorderlessTableColumns({
     approvalStatusMap,
     sortedInfo,
-    htaPolicyBreachesReportSearch,
-    setHTAPolicyBreachesReportSearch,
+    adminPolicyBreachesReportSearch,
+    setAdminPolicyBreachesReportSearch,
     setSelectedEmployee,
     setPolicyModalVisible,
   });
@@ -210,7 +210,7 @@ const AdminPolicyBreachesReport = () => {
       dateRange: { startDate: null, endDate: null },
     };
 
-    setHTAPolicyBreachesReportSearch((prev) => ({
+    setAdminPolicyBreachesReportSearch((prev) => ({
       ...prev,
       ...resetMap[key],
       pageNumber: 0,
@@ -220,7 +220,7 @@ const AdminPolicyBreachesReport = () => {
 
   /** 🔹 Handle removing all filters */
   const handleRemoveAllFilters = () => {
-    setHTAPolicyBreachesReportSearch((prev) => ({
+    setAdminPolicyBreachesReportSearch((prev) => ({
       ...prev,
       instrumentName: "",
       employeeName: "",
@@ -242,7 +242,7 @@ const AdminPolicyBreachesReport = () => {
       quantity,
       startDate,
       endDate,
-    } = htaPolicyBreachesReportSearch || {};
+    } = adminPolicyBreachesReportSearch || {};
 
     return [
       instrumentName && {
@@ -292,10 +292,10 @@ const AdminPolicyBreachesReport = () => {
   const downloadMyTradeApprovalLineManagerInExcelFormat = async () => {
     showLoader(true);
     const requestdata = {
-      StartDate: toYYMMDD(htaPolicyBreachesReportSearch.startDate) || null,
-      EndDate: toYYMMDD(htaPolicyBreachesReportSearch.endDate) || null,
-      SearchEmployeeName: htaPolicyBreachesReportSearch.employeeName,
-      SearchDepartmentName: htaPolicyBreachesReportSearch.departmentName,
+      StartDate: toYYMMDD(adminPolicyBreachesReportSearch.startDate) || null,
+      EndDate: toYYMMDD(adminPolicyBreachesReportSearch.endDate) || null,
+      SearchEmployeeName: adminPolicyBreachesReportSearch.employeeName,
+      SearchDepartmentName: adminPolicyBreachesReportSearch.departmentName,
     };
 
     await ExportHTATradeApprovalRequestsExcelReport({

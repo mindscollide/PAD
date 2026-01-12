@@ -61,6 +61,10 @@ export const GlobalModalProvider = ({ children }) => {
   const [discardChangesBrokerModal, setDiscardChangesBrokerModal] =
     useState(false);
 
+  // To show Intimation Modal On Employee While on Add Trade Approval Close
+  const [addTradeApprovalIntimationModal, setAddTradeApprovalIntimationModal] =
+    useState(false);
+
   /**
    * Global States For Employee Modals End here
    */
@@ -362,7 +366,8 @@ export const GlobalModalProvider = ({ children }) => {
 
         discardChangesBrokerModal,
         setDiscardChangesBrokerModal,
-
+        addTradeApprovalIntimationModal,
+        setAddTradeApprovalIntimationModal,
         /**
          * Global States For Line Manager Modals
          */

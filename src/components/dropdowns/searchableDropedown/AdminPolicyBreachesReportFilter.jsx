@@ -10,12 +10,11 @@ import {
 // 🔹 Initial state matching your global state structure
 const INITIAL_LOCAL_STATE = {
   instrumentName: "",
-  requesterName: "",
-  approvedQuantity: "",
-  sharesTraded: "",
+  employeeName: "",
+  departmentName: "",
+  quantity: 0,
   startDate: null,
   endDate: null,
-  type: "",
   pageNumber: 0,
   pageSize: 10,
   filterTrigger: false,
@@ -29,8 +28,8 @@ export const AdminPolicyBreachesReportFilter = ({
   setClear,
 }) => {
   const {
-    OverdueVerificationHCOReportSearch,
-    setOverdueVerificationHCOReportSearch,
+    adminPolicyBreachesReportSearch,
+    setAdminPolicyBreachesReportSearch,
   } = useSearchBarContext();
 
   const [localState, setLocalState] = useState(INITIAL_LOCAL_STATE);
@@ -71,7 +70,7 @@ export const AdminPolicyBreachesReportFilter = ({
     // Remove commas first
     const rawValue = value.replace(/,/g, "");
 
-    if (name === "approvedQuantity" || name === "sharesTraded") {
+    if (name === "quantity") {
       // Allow empty or numbers only
       if (rawValue === "" || allowOnlyNumbers(rawValue)) {
         setFieldValue(name, rawValue);
@@ -101,41 +100,40 @@ export const AdminPolicyBreachesReportFilter = ({
   const handleSearchClick = () => {
     const {
       instrumentName,
-      requesterName,
-      approvedQuantity,
-      sharesTraded,
+      employeeName,
+      departmentName,
+      quantity,
       startDate,
       endDate,
     } = localState;
 
     const searchPayload = {
-      ...OverdueVerificationHCOReportSearch,
+      ...adminPolicyBreachesReportSearch,
       instrumentName: instrumentName?.trim() || "",
-      requesterName: requesterName?.trim() || "",
-      approvedQuantity: approvedQuantity ? Number(approvedQuantity) : 0,
-      sharesTraded: sharesTraded ? Number(sharesTraded) : 0,
+      employeeName: employeeName?.trim() || "",
+      departmentName: departmentName?.trim() || "",
+      quantity: quantity ? Number(quantity) : 0,
       startDate: startDate || null,
       endDate: endDate || null,
       pageNumber: 0,
       filterTrigger: true,
     };
 
-    setOverdueVerificationHCOReportSearch(searchPayload);
+    setAdminPolicyBreachesReportSearch(searchPayload);
     setLocalState(INITIAL_LOCAL_STATE);
     setClear(false);
     setVisible(false);
   };
 
   const handleResetClick = () => {
-    setOverdueVerificationHCOReportSearch((prev) => ({
+    setAdminPolicyBreachesReportSearch((prev) => ({
       ...prev,
       instrumentName: "",
-      requesterName: "",
-      approvedQuantity: "",
-      sharesTraded: "",
+      employeeName: "",
+      departmentName: "",
+      quantity: 0,
       startDate: null,
       endDate: null,
-      type: "",
       pageNumber: 0,
       filterTrigger: true,
     }));
@@ -158,7 +156,7 @@ export const AdminPolicyBreachesReportFilter = ({
             name="instrumentName"
             value={localState.instrumentName}
             onChange={handleInputChange}
-            placeholder="Enter instrument name"
+            placeholder="Instrument Name"
             size="medium"
             classNames="Search-Field"
           />
@@ -166,11 +164,11 @@ export const AdminPolicyBreachesReportFilter = ({
 
         <Col xs={24} sm={24} md={12} lg={12}>
           <TextField
-            label="Requester Name"
-            name="requesterName"
-            value={localState.requesterName}
+            label="Employee Name"
+            name="employeeName"
+            value={localState.employeeName}
             onChange={handleInputChange}
-            placeholder="Enter requester name"
+            placeholder="Employee Name"
             size="medium"
             classNames="Search-Field"
           />
@@ -180,30 +178,24 @@ export const AdminPolicyBreachesReportFilter = ({
       {/* ROW 2: Quantity & Date Range */}
       <Row gutter={[12, 12]}>
         <Col xs={24} sm={24} md={12} lg={12}>
+          <TextField
+            label="Department Name"
+            name="departmentName"
+            value={localState.departmentName}
+            onChange={handleInputChange}
+            placeholder="Department Name"
+            size="medium"
+            classNames="Search-Field"
+          />
+        </Col>
+        <Col xs={24} sm={24} md={12} lg={12}>
           <DateRangePicker
-            label="Transaction Date"
+            label="Request Date"
             size="medium"
             value={[localState.startDate, localState.endDate]}
             onChange={handleDateChange}
             onClear={handleClearDates}
             format="YYYY-MM-DD"
-          />
-        </Col>
-
-        <Col xs={24} sm={24} md={12} lg={12}>
-          <TextField
-            label="Approved Quantity"
-            name="approvedQuantity"
-            value={
-              localState.approvedQuantity !== "" &&
-              !isNaN(localState.approvedQuantity)
-                ? Number(localState.approvedQuantity).toLocaleString("en-US")
-                : ""
-            }
-            onChange={handleInputChange}
-            placeholder="Approved Quantity"
-            size="medium"
-            classNames="Search-Field"
           />
         </Col>
       </Row>
@@ -212,15 +204,15 @@ export const AdminPolicyBreachesReportFilter = ({
       <Row gutter={[12, 12]}>
         <Col xs={24} sm={24} md={12} lg={12}>
           <TextField
-            label="Shares Traded"
-            name="sharesTraded"
+            label="Quantity"
+            name="quantity"
             value={
-              localState.sharesTraded !== "" && !isNaN(localState.sharesTraded)
-                ? Number(localState.sharesTraded).toLocaleString("en-US")
+              localState.quantity !== "" && !isNaN(localState.quantity)
+                ? Number(localState.quantity).toLocaleString("en-US")
                 : ""
             }
             onChange={handleInputChange}
-            placeholder="Shares Traded"
+            placeholder="Quantity"
             size="medium"
             classNames="Search-Field"
           />

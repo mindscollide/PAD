@@ -56,9 +56,9 @@ const UserWiseComplianceReport = () => {
   console.log(selectedKey, "selectedKeyselectedKey");
 
   const {
-    htaPolicyBreachesReportSearch,
-    setHTAPolicyBreachesReportSearch,
-    resetHTAPolicyBreachesReportSearch,
+    userActivityComplianceReportAdmin,
+    setUserActivityComplianceReportAdmin,
+    resetUserWiseComplianceReportSearch,
   } = useSearchBarContext();
 
   const { assetTypeListingData, setAssetTypeListingData } =
@@ -111,7 +111,7 @@ const UserWiseComplianceReport = () => {
   //         ? mapped.length
   //         : htaPolicyBreachesReportsData.totalRecordsTable + mapped.length,
   //     }));
-  //     setHTAPolicyBreachesReportSearch((prev) => {
+  //     setUserActivityComplianceReportAdmin((prev) => {
   //       const next = {
   //         ...prev,
   //         pageNumber: replace ? mapped.length : prev.pageNumber + mapped.length,
@@ -129,7 +129,7 @@ const UserWiseComplianceReport = () => {
   //     assetTypeListingData,
   //     callApi,
   //     navigate,
-  //     setHTAPolicyBreachesReportSearch,
+  //     setUserActivityComplianceReportAdmin,
   //     showLoader,
   //     showNotification,
   //   ]
@@ -142,7 +142,7 @@ const UserWiseComplianceReport = () => {
     if (hasFetched.current) return;
     hasFetched.current = true;
     const requestData = buildApiRequest(
-      htaPolicyBreachesReportSearch,
+      userActivityComplianceReportAdmin,
       assetTypeListingData
     );
     // fetchApiCall(requestData, true, true);
@@ -152,21 +152,21 @@ const UserWiseComplianceReport = () => {
   useEffect(() => {
     return () => {
       // Reset search state for fresh load
-      resetHTAPolicyBreachesReportSearch();
+      resetUserWiseComplianceReportSearch();
       resetHTAPolicyBreachesReportsData();
     };
   }, []);
 
   // 🔹 call api on search
   useEffect(() => {
-    if (htaPolicyBreachesReportSearch?.filterTrigger) {
+    if (userActivityComplianceReportAdmin?.filterTrigger) {
       const requestData = buildApiRequest(
-        htaPolicyBreachesReportSearch,
+        userActivityComplianceReportAdmin,
         assetTypeListingData
       );
       // fetchApiCall(requestData, true, true);
     }
-  }, [htaPolicyBreachesReportSearch?.filterTrigger]);
+  }, [userActivityComplianceReportAdmin?.filterTrigger]);
 
   // 🔹 Infinite Scroll (lazy loading)
   useTableScrollBottom(
@@ -180,7 +180,7 @@ const UserWiseComplianceReport = () => {
       try {
         setLoadingMore(true);
         const requestData = buildApiRequest(
-          htaPolicyBreachesReportSearch,
+          userActivityComplianceReportAdmin,
           assetTypeListingData
         );
         // await fetchApiCall(requestData, false, false);
@@ -198,8 +198,8 @@ const UserWiseComplianceReport = () => {
   const columns = getBorderlessTableColumns({
     approvalStatusMap,
     sortedInfo,
-    htaPolicyBreachesReportSearch,
-    setHTAPolicyBreachesReportSearch,
+    userActivityComplianceReportAdmin,
+    setUserActivityComplianceReportAdmin,
     setSelectedEmployee,
     setPolicyModalVisible,
     setShowViewDetailOfUserwiseComplianceReportAdmin,
@@ -215,7 +215,7 @@ const UserWiseComplianceReport = () => {
       dateRange: { startDate: null, endDate: null },
     };
 
-    setHTAPolicyBreachesReportSearch((prev) => ({
+    setUserActivityComplianceReportAdmin((prev) => ({
       ...prev,
       ...resetMap[key],
       pageNumber: 0,
@@ -225,7 +225,7 @@ const UserWiseComplianceReport = () => {
 
   /** 🔹 Handle removing all filters */
   const handleRemoveAllFilters = () => {
-    setHTAPolicyBreachesReportSearch((prev) => ({
+    setUserActivityComplianceReportAdmin((prev) => ({
       ...prev,
       instrumentName: "",
       employeeName: "",
@@ -247,7 +247,7 @@ const UserWiseComplianceReport = () => {
       quantity,
       startDate,
       endDate,
-    } = htaPolicyBreachesReportSearch || {};
+    } = userActivityComplianceReportAdmin || {};
 
     return [
       instrumentName && {
@@ -297,10 +297,10 @@ const UserWiseComplianceReport = () => {
   const downloadMyTradeApprovalLineManagerInExcelFormat = async () => {
     showLoader(true);
     const requestdata = {
-      StartDate: toYYMMDD(htaPolicyBreachesReportSearch.startDate) || null,
-      EndDate: toYYMMDD(htaPolicyBreachesReportSearch.endDate) || null,
-      SearchEmployeeName: htaPolicyBreachesReportSearch.employeeName,
-      SearchDepartmentName: htaPolicyBreachesReportSearch.departmentName,
+      StartDate: toYYMMDD(userActivityComplianceReportAdmin.startDate) || null,
+      EndDate: toYYMMDD(userActivityComplianceReportAdmin.endDate) || null,
+      SearchEmployeeName: userActivityComplianceReportAdmin.employeeName,
+      SearchDepartmentName: userActivityComplianceReportAdmin.departmentName,
     };
 
     await ExportHTATradeApprovalRequestsExcelReport({

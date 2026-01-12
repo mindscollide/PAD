@@ -134,11 +134,11 @@ export const getBorderlessTableColumns = ({
     },
   },
   {
-    title: withSortIcon("Name", "employeeName", sortedInfo),
+    title: withSortIcon("Employee Name", "employeeName", sortedInfo),
     dataIndex: "employeeName",
     key: "employeeName",
     ellipsis: true,
-    width: "140px",
+    width: "160px",
     sorter: (a, b) => a.employeeName - b.employeeName,
     sortDirections: ["ascend", "descend"],
     sortOrder:
@@ -151,7 +151,7 @@ export const getBorderlessTableColumns = ({
     title: withSortIcon("Date", "requestDateTime", sortedInfo),
     dataIndex: "requestDateTime",
     key: "requestDateTime",
-    width: "180px",
+    width: "160px",
     ellipsis: true,
     sorter: (a, b) =>
       formatApiDateTime(a.requestDateTime).localeCompare(

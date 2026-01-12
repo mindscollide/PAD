@@ -664,6 +664,44 @@ export const SearchBarProvider = ({ children }) => {
       pageSize: 10,
       filterTrigger: false,
     });
+
+  //User Activity Report Admin Role
+  const [userActivityReportAdmin, setUserActivityReportAdmin] = useState({
+    employeeName: "",
+    ipAddress: 0,
+    startDate: null,
+    endDate: null,
+    pageNumber: 0,
+    pageSize: 10,
+    filterTrigger: false,
+  });
+
+  // User wise Activity Compliance Report Admin Role
+  const [
+    userActivityComplianceReportAdmin,
+    setUserActivityComplianceReportAdmin,
+  ] = useState({
+    employeeName: "",
+    departmentName: "",
+    pageNumber: 0,
+    pageSize: 10,
+    filterTrigger: false,
+  });
+
+  // 🔍Policy Breaches Report On Admin ROle
+  const [adminPolicyBreachesReportSearch, setAdminPolicyBreachesReportSearch] =
+    useState({
+      instrumentName: "",
+      employeeName: "",
+      departmentName: "",
+      quantity: 0,
+      startDate: null,
+      endDate: null,
+      pageNumber: 0,
+      pageSize: 10,
+      filterTrigger: false,
+    });
+
   // ===============================
   // Sync Refs (Always-Latest Values)
   // ===============================
@@ -1288,6 +1326,42 @@ export const SearchBarProvider = ({ children }) => {
       filterTrigger: false,
     });
 
+  // Admin reset User Activity Report Search
+  const resetUserActivityReportSearch = () =>
+    setUserActivityReportAdmin({
+      employeeName: "",
+      ipAddress: 0,
+      startDate: null,
+      endDate: null,
+      pageNumber: 0,
+      pageSize: 10,
+      filterTrigger: false,
+    });
+
+  // Admin reset User Activity Report Search
+  const resetUserWiseComplianceReportSearch = () =>
+    setUserActivityComplianceReportAdmin({
+      employeeName: "",
+      departmentName: "",
+      pageNumber: 0,
+      pageSize: 10,
+      filterTrigger: false,
+    });
+
+  // Admin Policy Breached Report Search
+  const resetPolicyBreachesAdminReportSearch = () =>
+    setAdminPolicyBreachesReportSearch({
+      instrumentName: "",
+      employeeName: "",
+      departmentName: "",
+      quantity: 0,
+      startDate: null,
+      endDate: null,
+      pageNumber: 0,
+      pageSize: 10,
+      filterTrigger: false,
+    });
+
   /** 🔍 Rest HCO Trades Upload Via Portfolio filters */
   const resetHCOTradesUploadViaPortfolioSearch = () =>
     setHCOTradesUploadViaPortfolioSearch({
@@ -1471,6 +1545,20 @@ export const SearchBarProvider = ({ children }) => {
         adminGropusAndPolicyUsersTabSearch,
         setAdminGropusAndPolicyUsersTabSearch,
 
+        // Admin User Activity Report
+        userActivityReportAdmin,
+        setUserActivityReportAdmin,
+        resetUserActivityReportSearch,
+
+        // Admin User Wise Compliance Report
+        userActivityComplianceReportAdmin,
+        setUserActivityComplianceReportAdmin,
+        resetUserWiseComplianceReportSearch,
+
+        //Admin Policy Breaches Report
+        adminPolicyBreachesReportSearch,
+        setAdminPolicyBreachesReportSearch,
+        resetPolicyBreachesAdminReportSearch,
         // Manage Users page
         usersTabSearch,
         setUsersTabSearch,

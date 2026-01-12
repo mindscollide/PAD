@@ -43,6 +43,7 @@ import { useTableScrollBottom } from "../../../../../common/funtions/scroll";
 import CustomButton from "../../../../../components/buttons/button";
 import { DateRangePicker } from "../../../../../components";
 import ViewComment from "../../../employes/myApprovals/modal/viewComment/ViewComment";
+import ViewCommentTransaction from "./viewDetails/viewComment/ViewComment";
 // import ViewComment from "./viewComment/ViewComment";
 
 const COTransactionsSummarysReports = () => {
@@ -308,7 +309,7 @@ const COTransactionsSummarysReports = () => {
 
   const handelViewDetails = async (transactionDate) => {
     console.log("responseData", transactionDate);
-    await showLoader(true);
+    // await showLoader(true);
     const requestData = {
       TransactionDate: transactionDate.split(" ")[0],
       PageNumber: 0,
@@ -384,6 +385,7 @@ const COTransactionsSummarysReports = () => {
     coTransactionsSummarysReportsViewDetailsSearch,
     setCOTransactionsSummarysReportsViewDetailSearch,
     handelViewDetails,
+    setIsViewComments,
   });
 
   const handleDateChange = (dates) => {
@@ -665,7 +667,7 @@ const COTransactionsSummarysReports = () => {
         </div>
       </PageLayout>
 
-      {isViewComments && <ViewComment />}
+      {isViewComments && <ViewCommentTransaction />}
     </>
   );
 };

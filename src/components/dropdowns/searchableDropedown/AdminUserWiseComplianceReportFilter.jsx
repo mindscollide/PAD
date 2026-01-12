@@ -9,13 +9,8 @@ import {
 
 // 🔹 Initial state matching your global state structure
 const INITIAL_LOCAL_STATE = {
-  instrumentName: "",
-  requesterName: "",
-  approvedQuantity: "",
-  sharesTraded: "",
-  startDate: null,
-  endDate: null,
-  type: "",
+  employeeName: "",
+  departmentName: "",
   pageNumber: 0,
   pageSize: 10,
   filterTrigger: false,
@@ -29,8 +24,8 @@ export const AdminUserWiseComplianceReportFilter = ({
   setClear,
 }) => {
   const {
-    OverdueVerificationHCOReportSearch,
-    setOverdueVerificationHCOReportSearch,
+    userActivityComplianceReportAdmin,
+    setUserActivityComplianceReportAdmin,
   } = useSearchBarContext();
 
   const [localState, setLocalState] = useState(INITIAL_LOCAL_STATE);
@@ -99,43 +94,27 @@ export const AdminUserWiseComplianceReportFilter = ({
   };
 
   const handleSearchClick = () => {
-    const {
-      instrumentName,
-      requesterName,
-      approvedQuantity,
-      sharesTraded,
-      startDate,
-      endDate,
-    } = localState;
+    const { employeeName, departmentName } = localState;
 
     const searchPayload = {
-      ...OverdueVerificationHCOReportSearch,
-      instrumentName: instrumentName?.trim() || "",
-      requesterName: requesterName?.trim() || "",
-      approvedQuantity: approvedQuantity ? Number(approvedQuantity) : 0,
-      sharesTraded: sharesTraded ? Number(sharesTraded) : 0,
-      startDate: startDate || null,
-      endDate: endDate || null,
+      ...userActivityComplianceReportAdmin,
+      employeeName: employeeName?.trim() || "",
+      departmentName: departmentName?.trim() || "",
       pageNumber: 0,
       filterTrigger: true,
     };
 
-    setOverdueVerificationHCOReportSearch(searchPayload);
+    setUserActivityComplianceReportAdmin(searchPayload);
     setLocalState(INITIAL_LOCAL_STATE);
     setClear(false);
     setVisible(false);
   };
 
   const handleResetClick = () => {
-    setOverdueVerificationHCOReportSearch((prev) => ({
+    setUserActivityComplianceReportAdmin((prev) => ({
       ...prev,
-      instrumentName: "",
-      requesterName: "",
-      approvedQuantity: "",
-      sharesTraded: "",
-      startDate: null,
-      endDate: null,
-      type: "",
+      employeeName: "",
+      departmentName: "",
       pageNumber: 0,
       filterTrigger: true,
     }));
@@ -150,15 +129,15 @@ export const AdminUserWiseComplianceReportFilter = ({
   // -----------------------------------------------------
   return (
     <>
-      {/* ROW 1: Department & Instrument */}
+      {/* ROW 1: Department & Employee Name */}
       <Row gutter={[12, 12]}>
         <Col xs={24} sm={24} md={12} lg={12}>
           <TextField
-            label="Instrument Name"
-            name="instrumentName"
-            value={localState.instrumentName}
+            label="Employee Name"
+            name="employeeName"
+            value={localState.employeeName}
             onChange={handleInputChange}
-            placeholder="Enter instrument name"
+            placeholder="Employee Name"
             size="medium"
             classNames="Search-Field"
           />
@@ -166,61 +145,11 @@ export const AdminUserWiseComplianceReportFilter = ({
 
         <Col xs={24} sm={24} md={12} lg={12}>
           <TextField
-            label="Requester Name"
-            name="requesterName"
-            value={localState.requesterName}
+            label="Department Name"
+            name="departmentName"
+            value={localState.departmentName}
             onChange={handleInputChange}
-            placeholder="Enter requester name"
-            size="medium"
-            classNames="Search-Field"
-          />
-        </Col>
-      </Row>
-
-      {/* ROW 2: Quantity & Date Range */}
-      <Row gutter={[12, 12]}>
-        <Col xs={24} sm={24} md={12} lg={12}>
-          <DateRangePicker
-            label="Transaction Date"
-            size="medium"
-            value={[localState.startDate, localState.endDate]}
-            onChange={handleDateChange}
-            onClear={handleClearDates}
-            format="YYYY-MM-DD"
-          />
-        </Col>
-
-        <Col xs={24} sm={24} md={12} lg={12}>
-          <TextField
-            label="Approved Quantity"
-            name="approvedQuantity"
-            value={
-              localState.approvedQuantity !== "" &&
-              !isNaN(localState.approvedQuantity)
-                ? Number(localState.approvedQuantity).toLocaleString("en-US")
-                : ""
-            }
-            onChange={handleInputChange}
-            placeholder="Approved Quantity"
-            size="medium"
-            classNames="Search-Field"
-          />
-        </Col>
-      </Row>
-
-      {/* ROW 3: Employee ID & Employee Name */}
-      <Row gutter={[12, 12]}>
-        <Col xs={24} sm={24} md={12} lg={12}>
-          <TextField
-            label="Shares Traded"
-            name="sharesTraded"
-            value={
-              localState.sharesTraded !== "" && !isNaN(localState.sharesTraded)
-                ? Number(localState.sharesTraded).toLocaleString("en-US")
-                : ""
-            }
-            onChange={handleInputChange}
-            placeholder="Shares Traded"
+            placeholder="Department Name"
             size="medium"
             classNames="Search-Field"
           />
