@@ -11,12 +11,24 @@ import { useGlobalModal } from "../../../../../context/GlobalModalContext";
 import CustomButton from "../../../../../components/buttons/button";
 import { UpOutlined, DownOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  Tooltip,
+  Legend,
+} from "chart.js";
+import { Bar } from "react-chartjs-2";
 
 import {
   DateRangePicker,
   DonutChart,
   BoxCard,
 } from "../../../../../components";
+
+/* 🔷 Register Chart.js Modules */
+ChartJS.register(CategoryScale, LinearScale, BarElement, Tooltip, Legend);
 
 const ViewDetailsAdmin = () => {
   const navigate = useNavigate();
@@ -28,6 +40,51 @@ const ViewDetailsAdmin = () => {
 
   // -------------------- Local State --------------------
   const [open, setOpen] = useState(false);
+
+  /* 🔷 Bar Chart Dummy Data */
+  const barChartData = {
+    labels: ["Pending", "Approved", "Declined", "Traded"],
+    datasets: [
+      {
+        label: "Requests",
+        data: [10, 20, 5, 10],
+        backgroundColor: ["#717171", "#00640A", "#A50000", "#30426A"],
+        borderRadius: 6,
+        barThickness: 40, // 🔹 reduce bar width (px)
+      },
+    ],
+  };
+
+  const barChartOptions = {
+    responsive: true,
+    plugins: {
+      legend: { display: false },
+    },
+    scales: {
+      x: {
+        grid: {
+          display: false, // ❌ no vertical lines
+          drawBorder: false,
+        },
+        ticks: {
+          color: "#424242",
+        },
+      },
+      y: {
+        beginAtZero: true,
+        grid: {
+          display: true, // ✅ horizontal lines
+          drawBorder: false,
+          color: "#E0E0E0",
+          lineWidth: 1,
+        },
+        ticks: {
+          stepSize: 5,
+          color: "#424242",
+        },
+      },
+    },
+  };
 
   // -------------------- Helpers --------------------
 
@@ -287,6 +344,24 @@ const ViewDetailsAdmin = () => {
                     buttonClassName="big-white-card-button"
                     userRole={"CO"}
                   />
+                </Col>
+              </Row>
+              <Row gutter={[24, 24]}>
+                <Col span={12}>
+                  <div className={style.barGraphClass}>
+                    <p className={style.bartitleData}>Top Policy Breaches</p>
+                    <Bar data={barChartData} options={barChartOptions} />
+                  </div>
+                </Col>
+                <Col span={12}>
+                  <div className={style.donutGraphClass}>
+                    <DonutChart
+                      labels={["Pending", "Approved", "Declined", "Traded"]}
+                      counts={[10, 10, 5, 10]}
+                      percentages={[20, 40, 10, 30]}
+                      totalCount={45}
+                    />
+                  </div>
                 </Col>
               </Row>
             </div>

@@ -153,7 +153,7 @@
 }
 
 .ViewDetailAdminRightCol {
-  height: 630px;
+  height: 950px;
   width: 1000px;
   border-radius: 4px;
   border: 1px solid #b4b4b4;
@@ -274,4 +274,32 @@
   font-family: "Switzer Variable";
   font-weight: 500;
   font-size: 20px;
+}
+
+.barGraphClass {
+  background: #edf3ff;
+  height: 300px;
+  width: 478px;
+  margin-top: 20px;
+  border-radius: 14px;
+}
+
+.donutGraphClass {
+  background: #edf3ff;
+  height: 300px;
+  width: 478px;
+  margin-top: 20px;
+  border-radius: 14px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center; /* center vertically */
+  align-items: center; /* center horizontally */
+}
+
+.bartitleData {
+  font-size: 20px;
+  color: #424242;
+  font-family: "Switzer Variable";
+  font-weight: 700;
+  padding: 10px 8px;
 }
