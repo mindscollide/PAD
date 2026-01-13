@@ -720,9 +720,9 @@ export const responseMessages = {
   PAD_Trade_TradeServiceManager_GetPendingTradeApprovalsForHta_03: "Exception",
 
   //My Action Workflow Detail API For HTA
-  PAD_Trade_GetHTAMyActionsWorkflowDetail_01: "Data found",
-  PAD_Trade_GetHTAMyActionsWorkflowDetail_02: "No data available",
-  PAD_Trade_GetHTAMyActionsWorkflowDetail_03: "Exception",
+  PAD_Trade_TradeServiceManager_SearchHTATurnAroundTimeDetailsRequest_01: "Data found",
+  PAD_Trade_TradeServiceManager_SearchHTATurnAroundTimeDetailsRequest_02: "No data available",
+  PAD_Trade_TradeServiceManager_SearchHTATurnAroundTimeDetailsRequest_03: "Exception",
 };
 
 /**

@@ -19,6 +19,7 @@ import { useReconcileContext } from "../../../context/reconsileContax";
 import { useMyAdmin } from "../../../context/AdminContext";
 import { useLocation } from "react-router-dom";
 import { useMyApproval } from "../../../context/myApprovalContaxt";
+import { useGlobalModal } from "../../../context/GlobalModalContext";
 
 /**
  * 🔎 SearchWithPopoverOnly
@@ -75,13 +76,16 @@ const SearchWithPopoverOnly = () => {
     setHCOTradesUploadViaPortfolioSearch,
     setCoPortfolioHistoryReportSearch,
     setHOCTransactionsSummarysReportsViewDetailSearch,
-
+    setUserActivityComplianceReportAdmin,
+    setUserActivityReportAdmin,
+    setAdminPolicyBreachesReportSearch,
     //
     setUsersTabSearch,
     setPendingRequestsTabSearch,
     setRejectedRequestsTabSearch,
     setHTAPendingApprovalReportsSearch,
     setHeadOfTradeApprovalMyActionSearch,
+    setHTATATViewDetailsSearch,
   } = useSearchBarContext();
 
   const {
@@ -90,6 +94,8 @@ const SearchWithPopoverOnly = () => {
     openNewFormForAdminGropusAndPolicy,
     manageUsersTab,
   } = useMyAdmin();
+
+  const { showViewDetailPageInTatOnHta } = useGlobalModal();
 
   // -------------------------
   // ✅ Local state
@@ -480,6 +486,22 @@ const SearchWithPopoverOnly = () => {
             escalatedEndDate: null,
             filterTrigger: true,
           }));
+        } else if (
+          currentPath === "/PAD/hta-reports/hta-tat-reports" &&
+          showViewDetailPageInTatOnHta === true
+        ) {
+          setHTATATViewDetailsSearch((prev) => ({
+            ...prev,
+            instrumentName: searchMain,
+            employeeID: 0,
+            startDate: "",
+            endDate: "",
+            actionStartDate: "",
+            actionEndDate: "",
+            actionBy: "",
+            tat: "",
+            filterTrigger: true,
+          }));
         }
         setSearchMain("");
 
@@ -704,6 +726,46 @@ const SearchWithPopoverOnly = () => {
         }
         setSearchMain("");
         break;
+
+      case "23": //Admin Reports
+        if (currentPath === "/PAD/admin-reports/admin-policy-breaches-report") {
+          setAdminPolicyBreachesReportSearch((prev) => ({
+            ...prev,
+            instrumentName: searchMain,
+            employeeName: "",
+            departmentName: "",
+            quantity: 0,
+            startDate: null,
+            endDate: null,
+            filterTrigger: true,
+            pageNumber: 0,
+            pageSize: 10,
+          }));
+        } else if (currentPath === "/PAD/admin-reports/user-activity-report") {
+          setUserActivityReportAdmin((prev) => ({
+            ...prev,
+            ipAddress: searchMain,
+            startDate: null,
+            endDate: null,
+            filterTrigger: true,
+            pageNumber: 0,
+            pageSize: 10,
+          }));
+        } else if (
+          currentPath === "/PAD/admin-reports/admin-user-wise-compliance-report"
+        ) {
+          setUserActivityComplianceReportAdmin((prev) => ({
+            ...prev,
+            employeeName: searchMain,
+            departmentName: "",
+            filterTrigger: true,
+            pageNumber: 0,
+            pageSize: 10,
+          }));
+        }
+        setSearchMain("");
+        break;
+
       default:
         setEmployeeMyApprovalSearch((prev) => ({
           ...prev,
@@ -799,7 +861,8 @@ const SearchWithPopoverOnly = () => {
             setClear,
             openNewFormForAdminGropusAndPolicy,
             pageTabesForAdminGropusAndPolicy,
-            coTransactionSummaryReportViewDetailsFlag
+            coTransactionSummaryReportViewDetailsFlag,
+            showViewDetailPageInTatOnHta
           )}
           trigger="click"
           open={visible}

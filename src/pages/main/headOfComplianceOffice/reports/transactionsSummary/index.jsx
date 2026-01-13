@@ -28,6 +28,7 @@ import {
   DownloadComplianceOfficerDateWiseTransactionReportRequestAPI,
   DownloadLineManagerMyTradeApprovalReportRequestAPI,
   DownloadMyTransactionReportRequestAPI,
+  ExportHOCTransactionSummaryReportExcelApi,
   GetComplianceOfficerViewTransactionSummaryAPI,
   GetHOCViewTransactionSummaryAPI,
   SearchComplianceOfficerTransactionSummaryReportRequest,
@@ -384,20 +385,14 @@ const HCATransactionsSummarysReports = () => {
   };
 
   // 🔷 Excel Report download Api Hit
-  const downloadMyTradeApprovalLineManagerInExcelFormat = async () => {
+  const downloadHOCTransactionSummaryReportExcelFormat = async () => {
     showLoader(true);
     const requestdata = {
-      InstrumentName: "",
-      DepartmentName: "",
-      Quantity: 0,
-      StatusIds: [],
-      TypeIds: [],
-      RequesterName: "",
-      StartDate: "",
-      EndDate: "",
+      FromDate: dateRange.StartDate || null,
+      ToDate: dateRange.EndDate || null,
     };
 
-    await DownloadComplianceOfficerDateWiseTransactionReportRequestAPI({
+    await ExportHOCTransactionSummaryReportExcelApi({
       callApi,
       showLoader,
       requestdata: requestdata,
@@ -551,7 +546,7 @@ const HCATransactionsSummarysReports = () => {
               </div> */}
               <div
                 className={style.dropdownItem}
-                onClick={downloadMyTradeApprovalLineManagerInExcelFormat}
+                onClick={downloadHOCTransactionSummaryReportExcelFormat}
               >
                 <img src={Excel} alt="Excel" draggable={false} />
                 <span>Export Excel</span>

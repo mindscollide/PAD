@@ -61,6 +61,10 @@ export const GlobalModalProvider = ({ children }) => {
   const [discardChangesBrokerModal, setDiscardChangesBrokerModal] =
     useState(false);
 
+  // To show Intimation Modal On Employee While on Add Trade Approval Close
+  const [addTradeApprovalIntimationModal, setAddTradeApprovalIntimationModal] =
+    useState(false);
+
   /**
    * Global States For Employee Modals End here
    */
@@ -168,8 +172,10 @@ export const GlobalModalProvider = ({ children }) => {
     useState(false);
 
   // to show selected Data on TAT View Details in HTA
-  const [showSelectedTatDataOnViewDetail, setShowSelectedTatDataOnViewDetail] =
-    useState(null);
+  const [
+    showSelectedTatDataOnViewDetailHTA,
+    setShowSelectedTatDataOnViewDetailHTA,
+  ] = useState(null);
 
   /**
    * Global States For Head Od Approval (HTA) Modals End here
@@ -254,6 +260,13 @@ export const GlobalModalProvider = ({ children }) => {
 
   const [viewActionSessionWiseModalData, setViewActionSessionWiseModalData] =
     useState([]);
+
+  // to show View Details Page when you are on Userwise Compliance Report in Admin Role
+  const [
+    showViewDetailOfUserwiseComplianceReportAdmin,
+    setShowViewDetailOfUserwiseComplianceReportAdmin,
+  ] = useState(false);
+
   /**
    * Global States For Admin Role Modals End here
    */
@@ -353,7 +366,8 @@ export const GlobalModalProvider = ({ children }) => {
 
         discardChangesBrokerModal,
         setDiscardChangesBrokerModal,
-
+        addTradeApprovalIntimationModal,
+        setAddTradeApprovalIntimationModal,
         /**
          * Global States For Line Manager Modals
          */
@@ -431,7 +445,8 @@ export const GlobalModalProvider = ({ children }) => {
         resetStateForHeadOfApproval,
         showViewDetailPageInTatOnHta,
         setShowViewDetailPageInTatOnHta,
-
+        showSelectedTatDataOnViewDetailHTA,
+        setShowSelectedTatDataOnViewDetailHTA,
         /**
          * Global States For Head Of Approval Modals End here
          */
@@ -507,6 +522,10 @@ export const GlobalModalProvider = ({ children }) => {
         setCheckTradeApprovalID,
         viewActionSessionWiseModalData,
         setViewActionSessionWiseModalData,
+
+        //User wise COmpliance Report
+        showViewDetailOfUserwiseComplianceReportAdmin,
+        setShowViewDetailOfUserwiseComplianceReportAdmin,
         /**
          * Global States For Admin Role Modals End here
          */

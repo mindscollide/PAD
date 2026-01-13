@@ -81,15 +81,7 @@
 
 /* 🔹 Breadcrumb alignment */
 .breadcrumbRow {
-  padding: 12px 32px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-/* 🔹 Breadcrumb alignment */
-.breadcrumbRowBelowData {
-  padding: 0px 32px;
+  padding: 24px 32px;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -195,18 +187,4 @@
 
 .dropdownItem:hover {
   background: #f5f5f5;
-}
-
-.mainTitleTextClass {
-  font-family: "Switzer Variable";
-  font-size: 16px;
-  font-weight: 700;
-  color: #424242;
-}
-
-.subTitleTextClass {
-  font-family: "Switzer Variable";
-  font-size: 16px;
-  font-weight: 500;
-  color: #424242;
 }
