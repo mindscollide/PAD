@@ -29,8 +29,7 @@ export const buildApiRequest = (searchState = {}, assetTypeListingData) => ({
   ShareTraded: Number(searchState.sharesTraded) || null,
   PageNumber: Number(searchState.pageNumber) || 0,
   Length: Number(searchState.pageSize) || 10,
-  Type: searchState.type,
-  StatusIds: [],
+  Type: mapBuySellToIds(searchState.type, assetTypeListingData?.Equities),
   EscalationFromDate: "",
   EscalationToDate: "",
   FromDate: searchState.startDate ? toYYMMDD(searchState.startDate) : "",
@@ -147,8 +146,8 @@ export const getBorderlessTableColumns = ({
     ),
     dataIndex: "requesterName",
     key: "requesterName",
-    align: "left",
-    width: "180px",
+    align: "center",
+    width: 200,
     ellipsis: true,
     sorter: (a, b) => a.requesterName.localeCompare(b.requesterName),
     sortDirections: ["ascend", "descend"],
@@ -161,20 +160,25 @@ export const getBorderlessTableColumns = ({
     ),
   },
   {
-    title: withSortIcon("Type", "tradeType", sortedInfo),
+    title: withFilterHeader(() => (
+      <TypeColumnTitle
+        state={coOverdueVerificationReportSearch}
+        setState={setCoOverdueVerificationReportSearch}
+      />
+    )),
     dataIndex: "tradeType",
+    width: 200,
     key: "tradeType",
     ellipsis: true,
-    width: "120px",
     filteredValue: coOverdueVerificationReportSearch.type?.length
       ? coOverdueVerificationReportSearch.type
       : null,
     onFilter: () => true, // Actual filtering handled by API
-    render: (type, record) => (
+    render: (tradeType, record) => (
       <span
         id={`cell-${record.key}-type`}
-        className={type === "Buy" ? "text-green-600" : "text-red-600"}
-        data-testid={`trade-type-${type}`}
+        className={tradeType === "Buy" ? "text-green-600" : "text-red-600"}
+        data-testid={`trade-type-${tradeType}`}
         style={{
           display: "inline-block",
           width: "100%",
@@ -183,7 +187,7 @@ export const getBorderlessTableColumns = ({
           whiteSpace: "nowrap",
         }}
       >
-        {type}
+        {tradeType}
       </span>
     ),
   },
@@ -192,7 +196,7 @@ export const getBorderlessTableColumns = ({
     dataIndex: "instrumentName",
     key: "instrumentName",
     ellipsis: true,
-    width: "180px",
+    width: 200,
     sorter: (a, b) => {
       const nameA = a?.instrumentShortCode || "";
       const nameB = b?.instrumentShortCode || "";
@@ -247,7 +251,7 @@ export const getBorderlessTableColumns = ({
     dataIndex: "transactionDate",
     key: "transactionDate",
     align: "left",
-    width: "220px",
+    width: 250,
     ellipsis: true,
     sorter: (a, b) => {
       const dateA = new Date(`${a.transactionDate}`).getTime();
@@ -265,11 +269,10 @@ export const getBorderlessTableColumns = ({
       </span>
     ),
   },
-
   {
     title: withSortIcon("Approved Quantity", "approvedQuantity", sortedInfo),
     dataIndex: "approvedQuantity",
-    width: "180px",
+    width: 200,
     key: "approvedQuantity",
     ellipsis: true,
     sorter: (a, b) => a.approvedQuantity - b.approvedQuantity,
@@ -284,7 +287,7 @@ export const getBorderlessTableColumns = ({
     title: withSortIcon("Shares Traded", "shareTraded", sortedInfo),
     dataIndex: "shareTraded",
     key: "shareTraded",
-    width: "180px",
+    width: 200,
     ellipsis: true,
     sorter: (a, b) => a.shareTraded - b.shareTraded,
     sortDirections: ["ascend", "descend"],
@@ -308,6 +311,7 @@ export const getBorderlessTableColumns = ({
   {
     title: "",
     key: "action",
+    width: 150,
     align: "right", // 🔷 Align content to the right
     render: (_, record) => (
       <div className={style.viewEditClass}>

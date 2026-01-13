@@ -22,6 +22,8 @@ import {
   dashBetweenApprovalAssets,
   formatApiDateTime,
 } from "../../../../common/funtions/rejex";
+import { useDashboardContext } from "../../../../context/dashboardContaxt";
+import { getSafeAssetTypeData } from "../../../../common/funtions/assetTypesList";
 const MyHistory = () => {
   const navigate = useNavigate();
   const hasFetched = useRef(false);
@@ -43,6 +45,7 @@ const MyHistory = () => {
     setEmployeeMyHistorySearch,
     resetEmployeeMyHistorySearch,
   } = useSearchBarContext();
+  const { assetTypeListingData, setAssetTypeListingData } = useDashboardContext();
 
   const { setEmployeeMyHistoryData, employeeMyHistoryData } = useMyApproval();
 
@@ -62,7 +65,10 @@ const MyHistory = () => {
         requestdata: requestData,
         navigate,
       });
-
+    const currentAssetTypeData = getSafeAssetTypeData(
+        assetTypeListingData,
+        setAssetTypeListingData
+      );
       if (res) {
         setEmployeeMyHistoryData(res);
       }
@@ -74,7 +80,7 @@ const MyHistory = () => {
   useEffect(() => {
     if (!hasFetched.current) {
       hasFetched.current = true;
-      const requestData = buildMyHistoryApiRequest(employeeMyHistorySearch);
+      const requestData = buildMyHistoryApiRequest(employeeMyHistorySearch,assetTypeListingData);
 
       fetchApiCall(requestData, true, true);
     }
@@ -84,7 +90,7 @@ const MyHistory = () => {
   useEffect(() => {
     if (employeeMyHistorySearch?.filterTrigger) {
       hasFetched.current = true;
-      const requestData = buildMyHistoryApiRequest(employeeMyHistorySearch);
+      const requestData = buildMyHistoryApiRequest(employeeMyHistorySearch,assetTypeListingData);
 
       fetchApiCall(requestData, true, true);
       setEmployeeMyHistorySearch((prev) => ({
@@ -194,7 +200,7 @@ const MyHistory = () => {
         const currentLength = employeeMyHistoryData?.workFlows?.length || 0;
 
         // build request based on current search/filter but override pagination
-        const baseRequest = buildMyHistoryApiRequest(employeeMyHistorySearch);
+        const baseRequest = buildMyHistoryApiRequest(employeeMyHistorySearch,assetTypeListingData);
         const requestData = {
           ...baseRequest,
           PageNumber: currentLength, // sRow
