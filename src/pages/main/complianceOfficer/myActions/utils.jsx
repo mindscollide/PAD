@@ -10,6 +10,7 @@ import {
   formatApiDateTime,
   toYYMMDD,
 } from "../../../../common/funtions/rejex";
+
 const getSortIcon = (columnKey, sortedInfo) => {
   if (sortedInfo?.columnKey === columnKey) {
     return sortedInfo.order === "ascend" ? (
@@ -75,7 +76,7 @@ export const getMyActionsColumn = (approvalStatusMap, sortedInfo) => [
     dataIndex: "approvalID",
     key: "approvalID",
     ellipsis: true,
-    width: "220px",
+    width: 180,
     sorter: (a, b) =>
       parseInt(a.approvalID.replace(/[^\d]/g, ""), 10) -
       parseInt(b.approvalID.replace(/[^\d]/g, ""), 10),
@@ -143,6 +144,20 @@ export const getMyActionsColumn = (approvalStatusMap, sortedInfo) => [
         </div>
       );
     },
+  },
+  {
+    title: withSortIcon("Nature", "nature", sortedInfo),
+    dataIndex: "nature",
+    key: "nature",
+    width: "160px",
+    align: "left",
+    ellipsis: true,
+    sorter: (a, b) => a.nature.localeCompare(b.nature),
+    sortDirections: ["ascend", "descend"],
+    sortOrder: sortedInfo?.columnKey === "nature" ? sortedInfo.order : null,
+    showSorterTooltip: false,
+    sortIcon: () => null,
+    render: (text) => <span className="font-medium">{text}</span>,
   },
   {
     title: withSortIcon("Requester Name", "requesterName", sortedInfo),

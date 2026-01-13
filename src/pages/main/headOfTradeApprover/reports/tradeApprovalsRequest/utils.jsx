@@ -122,7 +122,6 @@ export const getBorderlessTableColumns = ({ sortedInfo }) => [
         <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
           <span className="font-medium">
             {employeeID}
-            {/* {dashBetweenApprovalAssets("REQ888888")} */}
           </span>
         </div>
       );

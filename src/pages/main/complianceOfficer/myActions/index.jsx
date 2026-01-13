@@ -85,7 +85,7 @@ const COMyAction = () => {
 
       fetchApiCall(requestData, true, true);
     }
-  }, [buildMyActionApiRequest, complianceOfficerMyActionSearch, fetchApiCall]);
+  }, []);
 
   /** 🔹 this useEffect is for Search Filter */
   useEffect(() => {

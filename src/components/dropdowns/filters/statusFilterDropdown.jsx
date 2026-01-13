@@ -63,6 +63,7 @@ const StatusFilterDropdown = ({
     setIsEmployeeMyApproval,
     setLineManagerApproval,
     setGetEmployeeTransactionReport,
+    coTransactionSummaryReportViewDetailsFlag,
   } = useMyApproval();
   const location = useLocation();
 
@@ -117,6 +118,14 @@ const StatusFilterDropdown = ({
         ) {
           setFilterOptions(emaStatusOptionsofReportsMyTradeApprovals);
         }
+        if (
+          location.pathname ===
+            "/PAD/co-reports/co-transactions-summary-report" &&
+          coTransactionSummaryReportViewDetailsFlag
+        ) {
+          setFilterOptions(emtStatusOptions);
+        }
+
         break;
       case "12":
       case "8":

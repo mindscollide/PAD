@@ -375,7 +375,6 @@ const SearchWithPopoverOnly = () => {
             pageNumber: 0,
             filterTrigger: true,
           }));
-          setSearchMain("");
         } else if (currentPath === "/PAD/co-reports/co-overdue-verifications") {
           setCoOverdueVerificationReportSearch((prev) => ({
             ...prev,
@@ -388,7 +387,6 @@ const SearchWithPopoverOnly = () => {
             pageNumber: 0,
             filterTrigger: true,
           }));
-          setSearchMain("");
         } else if (currentPath === "/PAD/co-reports/co-portfolio-history") {
           setCoPortfolioHistoryReportSearch((prev) => ({
             ...prev,
@@ -401,7 +399,6 @@ const SearchWithPopoverOnly = () => {
             pageNumber: 0,
             filterTrigger: true,
           }));
-          setSearchMain("");
         } else if (coTransactionSummaryReportViewDetailsFlag) {
           setCOTransactionsSummarysReportsViewDetailSearch((prev) => ({
             ...prev,
@@ -412,6 +409,8 @@ const SearchWithPopoverOnly = () => {
             filterTrigger: true,
           }));
         }
+          setSearchMain("");
+
         break;
 
       case "12": // HTA Escalated

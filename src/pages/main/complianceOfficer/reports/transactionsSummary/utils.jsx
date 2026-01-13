@@ -31,19 +31,6 @@ export const buildApiRequest = (searchState = {}) => ({
   FromDate: searchState.startDate ? toYYMMDD(searchState.startDate) : "",
 });
 
-export const buildApiRequestViewDetails = (
-  searchState = {},
-  assetTypeListingData
-) => ({
-  PageNumber: Number(searchState.pageNumber) || 0,
-  Length: Number(searchState.pageSize) || 10,
-  TransactionDate: searchState.transactionDate,
-  QuantitySearch: searchState.quantitySearch,
-  InstrumentNameSearch: searchState.instrumentNameSearch,
-  RequesterNameSearch: searchState.requesterNameSearch,
-  StatusIds: mapStatusToIds(searchState.status),
-  TypeIds: mapBuySellToIds(searchState.type, assetTypeListingData?.Equities),
-});
 /**
  * Maps employee transaction data into a UI-friendly format
  *
@@ -76,38 +63,7 @@ export const mappingDateWiseTransactionReport = (
         .join(" ") || "—",
   }));
 };
-export const mappingDateWiseTransactionviewDetailst = (
-  assetTypeData,
-  myTradeApprovalLineManagerData = []
-) => {
-  const records = Array.isArray(myTradeApprovalLineManagerData)
-    ? myTradeApprovalLineManagerData
-    : myTradeApprovalLineManagerData?.records || [];
 
-  if (!records.length) return [];
-
-  return records.map((item) => ({
-    key: item.workFlowID,
-    approvalID: item.approvalID,
-    tradeApprovalID: item.tradeApprovalID || "",
-    instrumentCode: item?.instrumentShortCode || "—",
-    instrumentName: item?.instrumentName || "—",
-    assetTypeShortCode: item?.assetShortCode || "—",
-    transactionDate:
-      `${item?.creationDate || ""} ${item?.creationTime || ""}`.trim() || "—",
-    department: item.departmentName,
-    type: getTradeTypeById(assetTypeData, item?.tradeType) || "-",
-    status: item.approvalStatus?.approvalStatusName || "",
-    quantity: item.quantity || 0,
-    timeRemainingToTrade: item.timeRemainingToTrade || "",
-    assetType: item.assetType?.assetTypeName || "",
-    assetTypeID: item.assetType?.assetTypeID || 0,
-    employeeName: item.requesterName || "",
-    employeeID: item.employeeID || "",
-    accetanceComments: item.accetanceComments || "",
-    rejectionComment: item.rejectionComment || "",
-  }));
-};
 /**
  * Returns the appropriate sort icon based on current sort state
  *
@@ -179,29 +135,29 @@ export const getBorderlessTableColumns = ({
     title: withSortIcon("Total Employees", "totalEmployees", sortedInfo),
     dataIndex: "totalEmployees",
     key: "totalEmployees",
-    width: 200,
+    width: 140,
+    align: "center",
     ellipsis: true,
-    align: "left",
     sorter: (a, b) => (a?.totalEmployees ?? 0) - (b?.totalEmployees ?? 0),
     sortOrder:
       sortedInfo?.columnKey === "totalEmployees" ? sortedInfo.order : null,
     showSorterTooltip: false,
     sortIcon: () => null,
-    render: (q) => <span className="font-medium">{q.toLocaleString()}</span>,
+    render: (q) => <span>{q.toLocaleString()}</span>,
   },
   {
     title: withSortIcon("Total Transactions", "totalTransactions", sortedInfo),
     dataIndex: "totalTransactions",
     key: "totalTransactions",
-    width: 200,
+    width: 140,
+    align: "center",
     ellipsis: true,
-    align: "left",
     sorter: (a, b) => (a?.totalTransactions ?? 0) - (b?.totalTransactions ?? 0),
     sortOrder:
       sortedInfo?.columnKey === "totalTransactions" ? sortedInfo.order : null,
     showSorterTooltip: false,
     sortIcon: () => null,
-    render: (q) => <span className="font-medium">{q.toLocaleString()}</span>,
+    render: (q) => <span>{q.toLocaleString()}</span>,
   },
   {
     title: withSortIcon(
@@ -211,9 +167,9 @@ export const getBorderlessTableColumns = ({
     ),
     dataIndex: "compliantTransactions",
     key: "compliantTransactions",
-    width: 200,
+    width: 140,
+    align: "center",
     ellipsis: true,
-    align: "left",
     sorter: (a, b) =>
       (a?.compliantTransactions ?? 0) - (b?.compliantTransactions ?? 0),
     sortOrder:
@@ -222,7 +178,7 @@ export const getBorderlessTableColumns = ({
         : null,
     showSorterTooltip: false,
     sortIcon: () => null,
-    render: (q) => <span className="font-medium">{q.toLocaleString()}</span>,
+    render: (q) => <span>{q.toLocaleString()}</span>,
   },
   {
     title: withSortIcon(
@@ -233,8 +189,8 @@ export const getBorderlessTableColumns = ({
     dataIndex: "nonCompliantTransactions",
     key: "nonCompliantTransactions",
     width: 200,
+    align: "center",
     ellipsis: true,
-    align: "left",
     sorter: (a, b) =>
       (a?.nonCompliantTransactions ?? 0) - (b?.nonCompliantTransactions ?? 0),
     sortOrder:
@@ -243,7 +199,7 @@ export const getBorderlessTableColumns = ({
         : null,
     showSorterTooltip: false,
     sortIcon: () => null,
-    render: (q) => <span className="font-medium">{q.toLocaleString()}</span>,
+    render: (q) => <span>{q.toLocaleString()}</span>,
   },
   {
     title: "",
@@ -264,6 +220,53 @@ export const getBorderlessTableColumns = ({
     ),
   },
 ];
+
+export const buildApiRequestViewDetails = (
+  searchState = {},
+  assetTypeListingData
+) => ({
+  PageNumber: Number(searchState.pageNumber) || 0,
+  Length: Number(searchState.pageSize) || 10,
+  TransactionDate: searchState.transactionDate,
+  QuantitySearch: searchState.quantitySearch,
+  InstrumentNameSearch: searchState.instrumentNameSearch,
+  RequesterNameSearch: searchState.requesterNameSearch,
+  StatusIds: mapStatusToIds(searchState.status, 2),
+  TypeIds: mapBuySellToIds(searchState.type, assetTypeListingData?.Equities),
+});
+
+export const mappingDateWiseTransactionviewDetailst = (
+  assetTypeData,
+  myTradeApprovalLineManagerData = []
+) => {
+  const records = Array.isArray(myTradeApprovalLineManagerData)
+    ? myTradeApprovalLineManagerData
+    : myTradeApprovalLineManagerData?.records || [];
+
+  if (!records.length) return [];
+
+  return records.map((item) => ({
+    key: item.workFlowID,
+    approvalID: item.approvalID,
+    tradeApprovalID: item.tradeApprovalID || "",
+    instrumentCode: item?.instrumentShortCode || "—",
+    instrumentName: item?.instrumentName || "—",
+    assetTypeShortCode: item?.assetShortCode || "—",
+    transactionDate:
+      `${item?.creationDate || ""} ${item?.creationTime || ""}`.trim() || "—",
+    department: item.departmentName,
+    type: getTradeTypeById(assetTypeData, item?.tradeType) || "-",
+    status: item.approvalStatus?.approvalStatusName || "",
+    quantity: item.quantity || 0,
+    timeRemainingToTrade: item.timeRemainingToTrade || "",
+    assetType: item.assetType?.assetTypeName || "",
+    assetTypeID: item.assetType?.assetTypeID || 0,
+    employeeName: item.requesterName || "",
+    employeeID: item.employeeID || "",
+    accetanceComments: item.accetanceComments || "",
+    rejectionComment: item.rejectionComment || "",
+  }));
+};
 /**
  * Renders status tag with appropriate styling
  * @param {string} status - Approval status
@@ -279,31 +282,15 @@ const renderStatusTag = (status, approvalStatusMap) => {
         backgroundColor: tagConfig.backgroundColor,
         color: tagConfig.textColor,
         whiteSpace: "nowrap",
-        overflow: "hidden",
-        textOverflow: "ellipsis",
         display: "inline-flex",
         alignItems: "center",
-        maxWidth: "100%",
-        minWidth: 0,
-        margin: 0,
         border: "none",
-        borderRadius: "4px",
+        borderRadius: 4,
         padding: "2px 8px",
-        fontSize: "16px",
-        lineHeight: "1.4",
+        fontSize: 14,
       }}
-      className="border-less-table-orange-status"
-      data-testid={`status-tag-${status}`}
     >
-      <span
-        style={{
-          overflow: "hidden",
-          textOverflow: "ellipsis",
-          whiteSpace: "nowrap",
-        }}
-      >
-        {tagConfig.label || status}
-      </span>
+      {tagConfig.label || status}
     </Tag>
   );
 };
@@ -321,39 +308,76 @@ const withFilterHeader = (FilterComponent) => (
   </div>
 );
 
+const getSortIconView = (columnKey, sortedInfo) => {
+  if (sortedInfo?.columnKey === columnKey) {
+    return sortedInfo.order === "ascend" ? (
+      <img
+        draggable={false}
+        src={ArrowDown}
+        alt="Asc"
+        className="custom-sort-icon"
+      />
+    ) : (
+      <img
+        draggable={false}
+        src={ArrowUP}
+        alt="Desc"
+        className="custom-sort-icon"
+      />
+    );
+  }
+  return (
+    <img
+      draggable={false}
+      src={DefaultColumArrow}
+      alt="Default"
+      className="custom-sort-icon"
+    />
+  );
+};
+
+// Helper for consistent column titles
+const withSortIconView = (label, columnKey, sortedInfo) => (
+  <div className={style["table-header-wrapper"]}>
+    <span className={style["table-header-text"]}>{label}</span>
+    <span className={style["table-header-icon"]}>
+      {getSortIconView(columnKey, sortedInfo)}
+    </span>
+  </div>
+);
+const numberSorter = (key) => (a, b) =>
+  Number(String(a[key] || 0).replace(/[^\d]/g, "")) -
+  Number(String(b[key] || 0).replace(/[^\d]/g, ""));
 export const getBorderlessTableColumnsViewDetails = ({
   approvalStatusMap,
-  sortedInfo,
+  sortedInfoView,
   coTransactionsSummarysReportsViewDetailsSearch,
   setCOTransactionsSummarysReportsViewDetailSearch,
   handelViewDetails,
   setIsViewComments,
 }) => [
   {
-    title: withSortIcon("Employee ID", "employeeID", sortedInfo),
+    title: withSortIconView("Employee ID", "employeeID", sortedInfoView),
     dataIndex: "employeeID",
     key: "employeeID",
     width: 150,
     ellipsis: true,
-    sorter: (a, b) =>
-      parseInt(a.employeeID.replace(/[^\d]/g, ""), 10) -
-      parseInt(b.employeeID.replace(/[^\d]/g, ""), 10),
+    sorter: numberSorter("employeeID"),
     sortDirections: ["ascend", "descend"],
-    sortOrder: sortedInfo?.columnKey === "employeeID" ? sortedInfo.order : null,
+    sortOrder:
+      sortedInfoView?.columnKey === "employeeID" ? sortedInfoView.order : null,
     showSorterTooltip: false,
     sortIcon: () => null,
     render: (employeeID) => {
       return (
         <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-          <span className="font-medium">
-            {employeeID}
-          </span>
+          <span className="font-medium">{employeeID}</span>
         </div>
       );
     },
   },
   {
-    title: withSortIcon("Employee Name", "employeeName", sortedInfo),
+    title: withSortIconView("Employee Name", "employeeName", sortedInfoView),
     dataIndex: "employeeName",
     key: "employeeName",
     width: 200,
@@ -362,25 +386,29 @@ export const getBorderlessTableColumnsViewDetails = ({
     sorter: (a, b) => a.employeeName.localeCompare(b.employeeName),
     sortDirections: ["ascend", "descend"],
     sortOrder:
-      sortedInfo?.columnKey === "employeeName" ? sortedInfo.order : null,
+      sortedInfoView?.columnKey === "employeeName"
+        ? sortedInfoView.order
+        : null,
     showSorterTooltip: false,
     sortIcon: () => null,
     render: (text) => <span className="font-medium">{text}</span>,
   },
   {
-    title: withSortIcon("Instrument", "instrumentName", sortedInfo),
+    title: withSortIconView("Instrument", "instrumentName", sortedInfoView),
     dataIndex: "instrumentName",
     key: "instrumentName",
     width: 150,
     ellipsis: true,
     sorter: (a, b) => {
-      const nameA = a?.instrumentShortCode || "";
-      const nameB = b?.instrumentShortCode || "";
+      const nameA = a?.instrumentName || "";
+      const nameB = b?.instrumentName || "";
       return nameA.localeCompare(nameB);
     },
     sortDirections: ["ascend", "descend"],
     sortOrder:
-      sortedInfo?.columnKey === "instrumentName" ? sortedInfo.order : null,
+      sortedInfoView?.columnKey === "instrumentName"
+        ? sortedInfoView.order
+        : null,
     showSorterTooltip: false,
     sortIcon: () => null,
     render: (instrument, record) => {
@@ -420,25 +448,22 @@ export const getBorderlessTableColumnsViewDetails = ({
     },
   },
   {
-    title: withSortIcon("Initiated at", "transactionDate", sortedInfo),
+    title: withSortIconView("Initiated at", "transactionDate", sortedInfoView),
     dataIndex: "transactionDate",
     key: "transactionDate",
     width: 200,
-    align: "left",
     ellipsis: true,
-    sorter: (a, b) => {
-      const dateA = new Date(`${a.transactionDate}`).getTime();
-      const dateB = new Date(`${b.transactionDate}`).getTime();
-      return dateA - dateB;
-    },
-    sortDirections: ["ascend", "descend"],
+    sorter: (a, b) =>
+      (a?.transactionDate || "").localeCompare(b?.transactionDate || ""),
     sortOrder:
-      sortedInfo?.columnKey === "transactionDate" ? sortedInfo.order : null,
+      sortedInfoView?.columnKey === "transactionDate"
+        ? sortedInfoView.order
+        : null,
     showSorterTooltip: false,
     sortIcon: () => null,
-    render: (_, record) => (
-      <span className="text-gray-600">
-        {formatApiDateTime(`${record.transactionDate}`)}
+    render: (date) => (
+      <span className="text-gray-600" title={date || "—"}>
+        {formatApiDateTime(date) || "—"}
       </span>
     ),
   },
@@ -477,7 +502,7 @@ export const getBorderlessTableColumnsViewDetails = ({
   {
     title: (
       <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-        Quantity {getSortIcon("quantity", sortedInfo)}
+        Quantity {getSortIconView("quantity", sortedInfoView)}
       </div>
     ),
     dataIndex: "quantity",
@@ -485,11 +510,16 @@ export const getBorderlessTableColumnsViewDetails = ({
     align: "left",
     width: 100,
     sorter: (a, b) => (a?.quantity ?? 0) - (b?.quantity ?? 0),
-    sortOrder: sortedInfo?.columnKey === "quantity" ? sortedInfo.order : null,
+    sortOrder:
+      sortedInfoView?.columnKey === "quantity" ? sortedInfoView.order : null,
     showSorterTooltip: false,
     sortIcon: () => null,
-    render: (q) => (
-      <span className="font-medium">{q?.toLocaleString() || "—"}</span>
+    render: (text) => (
+      <span className={`${style["cell-text"]} font-medium`}>
+        {text !== null && text !== undefined
+          ? Number(text).toLocaleString("en-US")
+          : "-"}
+      </span>
     ),
   },
   {
