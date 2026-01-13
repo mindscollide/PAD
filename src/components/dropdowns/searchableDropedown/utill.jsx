@@ -33,6 +33,10 @@ import { HTAPolicyBreachesReportFilter } from "./htaPolicyBreaches";
 import { HCOOverdueVerifications } from "./HCOOverdueVerifications";
 import { HTAPendingRequestFilter } from "./HTAPendingRequestFilter";
 import { HTAMyActionFilter } from "./HTAMyActionFilter";
+import { HTATATViewDetailFilter } from "./HTATATViewDetailFilter";
+import { AdminPolicyBreachesReportFilter } from "./AdminPolicyBreachesReportFilter";
+import { AdminUserActivityReportFilter } from "./AdminUserActivityReportFilter";
+import { AdminUserWiseComplianceReportFilter } from "./AdminUserWiseComplianceReportFilter";
 import { HOCTransactionReportViewDetailsFilter } from "./HOCTransactionReportViewDetailsFilter";
 
 // this is used for open specific filter according to page
@@ -46,7 +50,8 @@ export const renderFilterContent = (
   setClear,
   openNewFormForAdminGropusAndPolicy,
   pageTabesForAdminGropusAndPolicy,
-  coTransactionSummaryReportViewDetailsFlag
+  coTransactionSummaryReportViewDetailsFlag,
+  showViewDetailPageInTatOnHta
 ) => {
   switch (selectedKey) {
     case "1": // Employee → My Approval
@@ -285,6 +290,19 @@ export const renderFilterContent = (
             setMaininstrumentName={setSearchMain}
           />
         );
+      } else if (
+        currentPath === "/PAD/hta-reports/hta-tat-reports" &&
+        showViewDetailPageInTatOnHta === true
+      ) {
+        return (
+          <HTATATViewDetailFilter
+            setVisible={setVisible}
+            clear={clear}
+            setClear={setClear}
+            maininstrumentName={searchMain}
+            setMaininstrumentName={setSearchMain}
+          />
+        );
       }
       return null;
 
@@ -426,6 +444,41 @@ export const renderFilterContent = (
       ) {
         return (
           <AdminPoliciesAndGroupUsersTabFilter
+            setVisible={setVisible}
+            clear={clear}
+            setClear={setClear}
+            maininstrumentName={searchMain}
+            setMaininstrumentName={setSearchMain}
+          />
+        );
+      }
+
+    case "23":
+      if (currentPath === "/PAD/admin-reports/admin-policy-breaches-report") {
+        return (
+          <AdminPolicyBreachesReportFilter
+            setVisible={setVisible}
+            clear={clear}
+            setClear={setClear}
+            maininstrumentName={searchMain}
+            setMaininstrumentName={setSearchMain}
+          />
+        );
+      } else if (currentPath === "/PAD/admin-reports/user-activity-report") {
+        return (
+          <AdminUserActivityReportFilter
+            setVisible={setVisible}
+            clear={clear}
+            setClear={setClear}
+            maininstrumentName={searchMain}
+            setMaininstrumentName={setSearchMain}
+          />
+        );
+      } else if (
+        currentPath === "/PAD/admin-reports/admin-user-wise-compliance-report"
+      ) {
+        return (
+          <AdminUserWiseComplianceReportFilter
             setVisible={setVisible}
             clear={clear}
             setClear={setClear}

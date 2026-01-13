@@ -63,6 +63,10 @@ import CompianceOfficerPortfolioHistoryReports from "../pages/main/complianceOff
 import HTATradeApprovalRequest from "../pages/main/headOfTradeApprover/reports/tradeApprovalsRequest/HTATradeApprovalRequest";
 import PendingApprovalRequest from "../pages/main/headOfTradeApprover/reports/pendingRequest/pendingRequest";
 import HTAMyAction from "../pages/main/headOfTradeApprover/myActions/myActions";
+import AdminPolicyBreachesReport from "../pages/adminMain/reports/policyBreaches";
+import AdminReportsIndex from "../pages/adminMain/reports";
+import AdminUserActivityReport from "../pages/adminMain/reports/userActivityReport";
+import UserWiseComplianceReport from "../pages/adminMain/reports/userWiseComplianceReport";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -221,7 +225,10 @@ const router = createBrowserRouter(
             element={<HTAPolicyBreachesReport />}
           />
           <Route path="hta-tat-reports" element={<HTATAT />} />
-          <Route path="hta-pending-requests" element={<PendingApprovalRequest />} />
+          <Route
+            path="hta-pending-requests"
+            element={<PendingApprovalRequest />}
+          />
         </Route>
         {/* Compliance Officer */}
         <Route
@@ -389,10 +396,25 @@ const router = createBrowserRouter(
           path="admin-reports"
           element={
             <RoleBasedRoute isAdmin={true} allowedRoles={[1]}>
-              <EmpolyesReportsIndex />{" "}
+              <ReportsLayout />
             </RoleBasedRoute>
           }
-        />
+        >
+          <Route index element={<AdminReportsIndex />} />
+          <Route
+            path="user-activity-report"
+            element={<AdminUserActivityReport />}
+          />
+          <Route
+            path="admin-user-wise-compliance-report"
+            element={<UserWiseComplianceReport />}
+          />
+          <Route
+            path="admin-policy-breaches-report"
+            element={<AdminPolicyBreachesReport />}
+          />
+        </Route>
+
         <Route path="faq" element={<Faqs />} />
       </Route>
 

@@ -53,6 +53,12 @@ const MyComplianceStandingReport = () => {
   const counts = apiSummary.map((i) => i.totalCount);
   const percentages = apiSummary.map((i) => i.percentage);
   const totalCount = counts.reduce((a, b) => a + b, 0);
+console.log(
+  "labels type:", typeof labels,
+  "counts:", counts,
+  "percentages:", percentages,
+  "totalCount:", totalCount
+);
 
   // ---------------- FETCH API FUNCTION ----------------
   const fetchApiCall = useCallback(

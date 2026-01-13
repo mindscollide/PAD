@@ -29,6 +29,8 @@ const EquitiesApproval = () => {
     setIsEquitiesModalVisible,
     setIsSubmit,
     selectedAssetTypeId,
+    addTradeApprovalIntimationModal,
+    setAddTradeApprovalIntimationModal,
   } = useGlobalModal();
 
   const { employeeBasedBrokersData, allInstrumentsData, assetTypeListingData } =
@@ -172,15 +174,15 @@ const EquitiesApproval = () => {
 
   // Close handler
   const handleClose = async () => {
-    await resetStates();
     setIsEquitiesModalVisible(false);
+    setAddTradeApprovalIntimationModal(true);
   };
 
   return (
     <>
       <TradeAndPortfolioModal
         visible={isEquitiesModalVisible}
-        onClose={() => setIsEquitiesModalVisible(false)}
+        onClose={handleClose}
         onSubmit={clickOnSubmitButton}
         instruments={formattedInstruments}
         brokerOptions={brokerOptions}

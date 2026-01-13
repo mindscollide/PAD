@@ -44,6 +44,7 @@ import ConductTransaction from "./modal/conductTransaction/ConductTransaction";
 import style from "./approval.module.css";
 import { useTableScrollBottom } from "../../../../common/funtions/scroll";
 import { getSafeAssetTypeData } from "../../../../common/funtions/assetTypesList";
+import IntimationTradeApprovalModal from "./modal/intimationModalAddTradeClose/IntimationModal";
 
 const Approval = () => {
   const navigate = useNavigate();
@@ -82,6 +83,7 @@ const Approval = () => {
     resubmitIntimation,
     isConductedTransaction,
     setSelectedAssetTypeId,
+    addTradeApprovalIntimationModal,
   } = useGlobalModal();
 
   // ----------------- Local State -----------------
@@ -433,6 +435,7 @@ const Approval = () => {
       {isResubmitted && <ResubmitModal />}
       {resubmitIntimation && <ResubmitIntimationModal />}
       {isConductedTransaction && <ConductTransaction />}
+      {addTradeApprovalIntimationModal && <IntimationTradeApprovalModal />}
     </>
   );
 };

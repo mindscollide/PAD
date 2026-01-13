@@ -82,12 +82,17 @@
   top: 206px !important;
 }
 
+.TATHTAchangeHeightreports {
+  height: 75vh !important;
+  top: 220px !important;
+}
+
 .changeHeightlmreports {
   height: 70vh !important;
   top: 206px !important;
 }
 
-.changeSessionwiseHeight{
+.changeSessionwiseHeight {
   height: 78vh !important;
   top: 166px !important;
 }
@@ -96,16 +101,21 @@
   top: 170px !important;
 }
 .repotsHeight {
-  max-height:  575px  !important;
+  max-height: 575px !important;
   top: 170px !important;
+}
+
+.TATHTArepotsHeight {
+  max-height: 500px !important;
+  top: 225px !important;
 }
 .repotsHeightHOC {
-  max-height:  550px  !important;
+  max-height: 550px !important;
   top: 170px !important;
 }
-.sessionwiseHeight{
+.sessionwiseHeight {
   height: 80vh !important;
-  top: 135px  !important;
+  top: 135px !important;
 }
 .grouppolicy {
   top: 126px !important;

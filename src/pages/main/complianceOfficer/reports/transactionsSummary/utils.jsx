@@ -104,7 +104,7 @@ export const mappingDateWiseTransactionviewDetailst = (
     assetTypeID: item.assetType?.assetTypeID || 0,
     employeeName: item.requesterName || "",
     employeeID: item.employeeID || "",
-    approvalComment: item.approvalComment || "",
+    accetanceComments: item.accetanceComments || "",
     rejectionComment: item.rejectionComment || "",
   }));
 };
@@ -327,6 +327,7 @@ export const getBorderlessTableColumnsViewDetails = ({
   coTransactionsSummarysReportsViewDetailsSearch,
   setCOTransactionsSummarysReportsViewDetailSearch,
   handelViewDetails,
+  setIsViewComments,
 }) => [
   {
     title: withSortIcon("Employee ID", "employeeID", sortedInfo),
@@ -521,11 +522,11 @@ export const getBorderlessTableColumnsViewDetails = ({
       <div className={style.viewEditClass}>
         <Button
           className="small-light-button"
-          text={"View Comments"}
+          text={"View Comment"}
           onClick={() => {
             console.log(record, "tradeApprovalID");
-            handelViewDetails(record.approvalID);
-            // setIsViewComments(true);
+            // handelViewDetails(record.approvalID);
+            setIsViewComments(true);
             // setCheckTradeApprovalID(record?.approvalID);
             // setEditBrokerModal(true);
             // setEditModalData(record);

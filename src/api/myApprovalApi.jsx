@@ -4385,7 +4385,10 @@ export const SearchHTATurnAroundTimeDetailsRequestApi = async ({
       const message = getMessage(responseMessage);
 
       // Case 1 → Data available
-      if (responseMessage === "PAD_Trade_GetHTAMyActionsWorkflowDetail_01") {
+      if (
+        responseMessage ===
+        "PAD_Trade_TradeServiceManager_SearchHTATurnAroundTimeDetailsRequest_01"
+      ) {
         return {
           workFlows: workFlows || [],
           totalRecords: totalRecords || 0,
@@ -4393,7 +4396,10 @@ export const SearchHTATurnAroundTimeDetailsRequestApi = async ({
       }
 
       // Case 2 → No data
-      if (responseMessage === "PAD_Trade_GetHTAMyActionsWorkflowDetail_02") {
+      if (
+        responseMessage ===
+        "PAD_Trade_TradeServiceManager_SearchHTATurnAroundTimeDetailsRequest_02"
+      ) {
         return {
           workFlows: [],
           totalRecords: 0,
@@ -4429,6 +4435,71 @@ export const SearchHTATurnAroundTimeDetailsRequestApi = async ({
     return null;
   } finally {
     // 🔹 Always hide loader
+    showLoader(false);
+  }
+};
+
+// ExportHOCTransactionSummaryReportExcel
+export const ExportHOCTransactionSummaryReportExcelApi = async ({
+  callApi,
+  showLoader,
+  requestdata,
+  navigate,
+}) => {
+  try {
+    showLoader(true);
+
+    // 🔹 API Call
+    const res = await callApi({
+      requestMethod: import.meta.env
+        .VITE_HOC_Export_Transaction_Summary_Report_Excel_REQUEST_METHOD,
+      endpoint: import.meta.env.VITE_API_REPORT,
+      requestData: requestdata,
+      navigate,
+      responseType: "arraybuffer", // ⚡ Required for file download
+      headers: {
+        "Content-Type":
+          "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      },
+    });
+
+    // 🔹 Check Session Expiry
+    if (handleExpiredSession(res, navigate, showLoader)) return false;
+    // 🔹 When API send isExecuted false
+    if (!res?.result?.isExecuted) {
+      return false;
+    }
+
+    // 🔹 When API Send Success Response
+    if (res.success) {
+      try {
+        // Create a blob and trigger download
+        const blob = new Blob([res.result?.fileData || res.data], {
+          type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        });
+
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+
+        link.setAttribute(
+          "download",
+          "HOC-Transactions-Summary-Excel-Report.xlsx"
+        );
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        setOpen(false);
+        return true;
+      } catch (downloadError) {
+        return false;
+      }
+    }
+
+    return false;
+  } catch (error) {
+    return false;
+  } finally {
     showLoader(false);
   }
 };

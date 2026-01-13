@@ -269,6 +269,21 @@ export const SearchBarProvider = ({ children }) => {
     filterTrigger: false,
   });
 
+  /** 🔍 TAT Request Approval View Details Search HTA table filters */
+  const [htaTATViewDetailsSearch, setHTATATViewDetailsSearch] = useState({
+    instrumentName: "",
+    employeeID: 0,
+    startDate: "",
+    endDate: "",
+    actionStartDate: "",
+    actionEndDate: "",
+    actionBy: "",
+    tat: "",
+    pageNumber: 0,
+    pageSize: 10,
+    filterTrigger: false,
+  });
+
   /** 🔍 Head Of Trade Approval (HTA) Pending Request Report Search filters */
   const [hTAPendingApprovalReportsSearch, setHTAPendingApprovalReportsSearch] =
     useState({
@@ -649,6 +664,44 @@ export const SearchBarProvider = ({ children }) => {
       pageSize: 10,
       filterTrigger: false,
     });
+
+  //User Activity Report Admin Role
+  const [userActivityReportAdmin, setUserActivityReportAdmin] = useState({
+    employeeName: "",
+    ipAddress: 0,
+    startDate: null,
+    endDate: null,
+    pageNumber: 0,
+    pageSize: 10,
+    filterTrigger: false,
+  });
+
+  // User wise Activity Compliance Report Admin Role
+  const [
+    userActivityComplianceReportAdmin,
+    setUserActivityComplianceReportAdmin,
+  ] = useState({
+    employeeName: "",
+    departmentName: "",
+    pageNumber: 0,
+    pageSize: 10,
+    filterTrigger: false,
+  });
+
+  // 🔍Policy Breaches Report On Admin ROle
+  const [adminPolicyBreachesReportSearch, setAdminPolicyBreachesReportSearch] =
+    useState({
+      instrumentName: "",
+      employeeName: "",
+      departmentName: "",
+      quantity: 0,
+      startDate: null,
+      endDate: null,
+      pageNumber: 0,
+      pageSize: 10,
+      filterTrigger: false,
+    });
+
   // ===============================
   // Sync Refs (Always-Latest Values)
   // ===============================
@@ -1134,6 +1187,22 @@ export const SearchBarProvider = ({ children }) => {
       filterTrigger: false,
     });
 
+  /** 🔍 Reset TAT Request Approval View Detail on HTA table filters */
+  const resetHTATATViewDetailSearch = () =>
+    setHTATATViewDetailsSearch({
+      instrumentName: "",
+      employeeID: 0,
+      startDate: "",
+      endDate: "",
+      actionStartDate: "",
+      actionEndDate: "",
+      actionBy: "",
+      tat: "",
+      pageNumber: 0,
+      pageSize: 10,
+      filterTrigger: false,
+    });
+
   const resetHTAPendingApprovalRequestReportSearch = () => {
     setHTAPendingApprovalReportsSearch({
       InstrumentName: "",
@@ -1250,6 +1319,42 @@ export const SearchBarProvider = ({ children }) => {
     setAdminSessionWiseActivitySearch({
       employeeID: 0,
       ipAddress: 0,
+      startDate: null,
+      endDate: null,
+      pageNumber: 0,
+      pageSize: 10,
+      filterTrigger: false,
+    });
+
+  // Admin reset User Activity Report Search
+  const resetUserActivityReportSearch = () =>
+    setUserActivityReportAdmin({
+      employeeName: "",
+      ipAddress: 0,
+      startDate: null,
+      endDate: null,
+      pageNumber: 0,
+      pageSize: 10,
+      filterTrigger: false,
+    });
+
+  // Admin reset User Activity Report Search
+  const resetUserWiseComplianceReportSearch = () =>
+    setUserActivityComplianceReportAdmin({
+      employeeName: "",
+      departmentName: "",
+      pageNumber: 0,
+      pageSize: 10,
+      filterTrigger: false,
+    });
+
+  // Admin Policy Breached Report Search
+  const resetPolicyBreachesAdminReportSearch = () =>
+    setAdminPolicyBreachesReportSearch({
+      instrumentName: "",
+      employeeName: "",
+      departmentName: "",
+      quantity: 0,
       startDate: null,
       endDate: null,
       pageNumber: 0,
@@ -1406,6 +1511,9 @@ export const SearchBarProvider = ({ children }) => {
         htaTATReportSearch,
         setHTATATReportSearch,
         resetHTATATReportSearch,
+        htaTATViewDetailsSearch,
+        setHTATATViewDetailsSearch,
+        resetHTATATViewDetailSearch,
 
         // Head Of Trade Pending Approval Report Request
         hTAPendingApprovalReportsSearch,
@@ -1437,6 +1545,20 @@ export const SearchBarProvider = ({ children }) => {
         adminGropusAndPolicyUsersTabSearch,
         setAdminGropusAndPolicyUsersTabSearch,
 
+        // Admin User Activity Report
+        userActivityReportAdmin,
+        setUserActivityReportAdmin,
+        resetUserActivityReportSearch,
+
+        // Admin User Wise Compliance Report
+        userActivityComplianceReportAdmin,
+        setUserActivityComplianceReportAdmin,
+        resetUserWiseComplianceReportSearch,
+
+        //Admin Policy Breaches Report
+        adminPolicyBreachesReportSearch,
+        setAdminPolicyBreachesReportSearch,
+        resetPolicyBreachesAdminReportSearch,
         // Manage Users page
         usersTabSearch,
         setUsersTabSearch,
