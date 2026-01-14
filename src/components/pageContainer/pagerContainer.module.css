@@ -58,12 +58,32 @@
   min-height: 632px;
   max-width: 96% !important;
 }
+
+.bg-blue2 {
+  background-color: #edf3ff;
+  margin-top: 12px  !important;
+  min-height: 582px;
+  max-width: 96% !important;
+}
+.bg-changeblue2 {
+  background-color: #edf3ff;
+  margin-top: 12px  !important;
+  min-height: 528px !important;
+  max-width: 96% !important;
+}
+
 /* When changeheight = true */
 .changeHeightforPolicy {
   min-height: 592px !important;
   max-height: 592px !important;
   top: 180px !important;
 }
+.changeGrouppolicy{
+  min-height: 528px !important;
+  max-height: 528px !important;
+  top: 180px !important;
+}
+
 .bg-transparent {
   background-color: transparent;
 }

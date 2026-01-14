@@ -234,7 +234,7 @@ const Users = ({
         loading={loadingMore}
         scroll={
           adminGroupeAndPoliciesUsersTabData?.employees?.length
-            ? { y: activeFilters ? 450 : 500 }
+            ? { y: activeFilters ? 400 : 428 }
             : undefined
         }
         style={{ width: "100%" }}
