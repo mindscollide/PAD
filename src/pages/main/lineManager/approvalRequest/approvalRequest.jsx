@@ -367,7 +367,7 @@ const ApprovalRequest = () => {
       {/* Page Content */}
       <PageLayout
         background="white"
-        className={activeFilters.length > 0 && "changeHeight"}
+        className={activeFilters.length > 0 && "changeHeight2"}
       >
         <div className="px-4 md:px-6 lg:px-8">
           {/* Page Header */}

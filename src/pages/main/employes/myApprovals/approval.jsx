@@ -100,8 +100,6 @@ const Approval = () => {
   const menuItems = Object.entries(assetTypeListingData || {}).reduce(
     (acc, [categoryLabel, categoryData]) => {
       const items = categoryData?.items || [];
-      console.log(items, "itemsitems");
-      console.log(assetTypeListingData, "itemsitems");
 
       items.forEach((item) => {
         const { assetTypeID } = item;
@@ -340,7 +338,6 @@ const Approval = () => {
         employeeMyApproval?.totalRecordsTable
       )
         return;
-      console.log(employeeMyApprovalSearch, "assetTypeListingData");
       try {
         setLoadingMore(true);
         const requestData = buildApiRequest(

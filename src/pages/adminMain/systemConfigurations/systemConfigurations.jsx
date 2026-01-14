@@ -13,7 +13,6 @@ import { useNavigate } from "react-router-dom";
 // 🔹 Contexts
 import { useGlobalLoader } from "../../../context/LoaderContext";
 import { useApi } from "../../../context/ApiContext";
-import { useSearchBarContext } from "../../../context/SearchBarContaxt";
 import { useNotification } from "../../../components/NotificationProvider/NotificationProvider";
 
 // 🔹 Components
@@ -29,7 +28,7 @@ import {
 
 // 🔹 Styles
 import style from "./system_Configurations.module.css";
-import { stringify } from "postcss";
+import { useSidebarContext } from "../../../context/sidebarContaxt";
 
 const SystemConfigurations = () => {
   // ------------------------------------------------
@@ -41,7 +40,7 @@ const SystemConfigurations = () => {
   const { showNotification } = useNotification();
   const { showLoader } = useGlobalLoader();
   const { callApi } = useApi();
-
+  const { setSelectedKey } = useSidebarContext();
   // ------------------------------------------------
   // 🔹 Local State
   // ------------------------------------------------
@@ -101,6 +100,8 @@ const SystemConfigurations = () => {
       setFormValues(resetValues);
 
       setData(apiData);
+      navigate("/PAD");
+      setSelectedKey("0");
     } else {
       // If modal type is something else, you can handle differently if needed
       UpdateSystemConfiguration;
@@ -274,7 +275,7 @@ const SystemConfigurations = () => {
                 overflowY: "auto",
                 paddingRight: 10,
                 paddingLeft: 10,
-                maxHeight: 514,
+                maxHeight: 478,
               }}
             >
               {data.map((item) => (

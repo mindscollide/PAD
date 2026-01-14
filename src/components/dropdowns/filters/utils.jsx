@@ -125,6 +125,7 @@ export const mapStatusToIds = (arr, type = 1) => {
   const statusMapWorkflow = {
     Pending: 1,
     Resubmitted: 2,
+    "Resubmitted for Approval":2,
     Approved: 3,
     Declined: 4,
     Traded: 5,

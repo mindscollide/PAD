@@ -12,6 +12,10 @@ import {
   formatApiDateTime,
   toYYMMDD,
 } from "../../../../common/funtions/rejex";
+import {
+  mapBuySellToIds,
+  mapStatusToIds,
+} from "../../../../components/dropdowns/filters/utils";
 const getSortIcon = (columnKey, sortedInfo) => {
   if (sortedInfo?.columnKey === columnKey) {
     return sortedInfo.order === "ascend" ? (
@@ -58,15 +62,19 @@ const withSortIcon = (label, columnKey, sortedInfo) => (
  * @returns {Object} API-ready payload
  */
 
-export const buildMyHistoryApiRequest = (searchState = {}) => ({
+export const buildMyHistoryApiRequest = (
+  searchState = {},
+  assetTypeListingData
+) => ({
   RequestID: searchState.requestID || "",
   InstrumentName: searchState.instrumentName || "",
   Quantity: searchState.quantity ? Number(searchState.quantity) : 0,
   StartDate: searchState.startDate ? toYYMMDD(searchState.startDate) : null,
   EndDate: searchState.endDate ? toYYMMDD(searchState.endDate) : null,
   Nature: searchState.nature || "",
-  StatusIDs: searchState.status || [],
-  TradeApprovalTypeIDs: searchState.type || [],
+  StatusIDs: mapStatusToIds?.(searchState.status, 2) || [],
+  TradeApprovalTypeIDs:
+    mapBuySellToIds?.(searchState.type, assetTypeListingData?.Equities) || [],
   PageNumber: Number(searchState.pageNumber) || 0,
   Length: Number(searchState.pageSize) || 10,
 });

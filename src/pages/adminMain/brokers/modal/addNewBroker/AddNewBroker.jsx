@@ -10,6 +10,7 @@ import { GlobalModal, TextField } from "../../../../../components";
 import BlackCrossImg from "../../../../../assets/img/BlackCross.png";
 import CustomButton from "../../../../../components/buttons/button";
 import styles from "./addNewBroker.module.css";
+import { color } from "chart.js/helpers";
 
 const AddNewBroker = () => {
   const navigate = useNavigate();
@@ -187,7 +188,7 @@ const AddNewBroker = () => {
               <Col span={14}>
                 <div className={styles.inputContainer}>
                   <label className={styles.addBrokerorPSXtext}>
-                    Add Broker Name *
+                    Add Broker Name <span style={{ color: "#A50000" }}>*</span>
                   </label>
                   <TextField
                     type="text"
@@ -209,7 +210,7 @@ const AddNewBroker = () => {
               <Col span={7}>
                 <div className={styles.inputContainer}>
                   <label className={styles.addBrokerorPSXtext}>
-                    Add PSX Code *
+                    Add PSX Code <span style={{ color: "#A50000" }}>*</span>
                   </label>
                   <TextField
                     type="text"
@@ -290,7 +291,7 @@ const AddNewBroker = () => {
               <span></span>
             </div>
             <div className={styles.brokerList}>
-              {sortedBrokers.map((broker,index) => (
+              {sortedBrokers.map((broker, index) => (
                 <div className={styles.brokerRow} key={broker.originalIndex}>
                   <span className={styles.brokerRowtext}>
                     {broker.brokerName}
