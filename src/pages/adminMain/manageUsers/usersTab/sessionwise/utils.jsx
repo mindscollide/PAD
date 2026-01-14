@@ -93,8 +93,19 @@ const getSortIcon = (columnKey, sortedInfo) => {
 };
 
 // Helper for consistent column titles
-const withSortIcon = (label, columnKey, sortedInfo) => (
-  <div className={style["table-header-wrapper"]}>
+const withSortIcon = (label, columnKey, sortedInfo, align = "left") => (
+  <div
+    className={style["table-header-wrapper"]}
+    style={{
+      justifyContent:
+        align === "center"
+          ? "center"
+          : align === "right"
+          ? "flex-end"
+          : "flex-start",
+      textAlign: align,
+    }}
+  >
     <span className={style["table-header-text"]}>{label}</span>
     <span className={style["table-header-icon"]}>
       {getSortIcon(columnKey, sortedInfo)}
@@ -114,6 +125,7 @@ export const getBorderlessTableColumns = ({
     ),
     dataIndex: "ipAddress",
     key: "ipAddress",
+    align: "left",
     width: 300,
     ellipsis: true,
     sorter: (a, b) => a.ipAddress.localeCompare(b.ipAddress),
@@ -125,13 +137,15 @@ export const getBorderlessTableColumns = ({
   },
 
   {
-    title: (
-      <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-        Login Date & Time {getSortIcon("loginDateTime", sortedInfo)}
-      </div>
+    title: withSortIcon(
+      " Login Date & Time",
+      "loginDateTime",
+      sortedInfo,
+      "center"
     ),
     dataIndex: "loginDateTime",
     key: "loginDateTime",
+    align: "center",
     ellipsis: true,
     sorter: (a, b) =>
       (a?.loginDateTime || "").localeCompare(b?.loginDateTime || ""),
@@ -147,11 +161,11 @@ export const getBorderlessTableColumns = ({
   },
 
   {
-    title: withSortIcon("Total Actions", "totalActions", sortedInfo),
+    title: withSortIcon("Total Actions", "totalActions", sortedInfo, "center"),
     dataIndex: "totalActions",
     key: "totalActions",
     width: 300,
-    align: "left",
+    align: "center",
     ellipsis: true,
     sorter: (a, b) => a.totalActions - b.totalActions,
     sortDirections: ["ascend", "descend"],
@@ -163,13 +177,15 @@ export const getBorderlessTableColumns = ({
   },
 
   {
-    title: (
-      <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-        Logout Date & Time {getSortIcon("logoutDateTime", sortedInfo)}
-      </div>
+    title: withSortIcon(
+      " Logout Date & Time",
+      "logoutDateTime",
+      sortedInfo,
+      "center"
     ),
     dataIndex: "logoutDateTime",
     key: "logoutDateTime",
+    align: "center",
     ellipsis: true,
     sorter: (a, b) =>
       (a?.logoutDateTime || "").localeCompare(b?.logoutDateTime || ""),

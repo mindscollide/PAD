@@ -553,6 +553,35 @@ const GroupAndPolicyAddViewEdit = ({ currentPolicyID, setCurrentPolicyID }) => {
   return (
     <div className={styles.noScrollContainer}>
       {contextHolder}
+
+      {/* 🔹 Breadcrumb Section */}
+      <Row justify="start" align="middle" className={styles.breadcrumbRow}>
+        <Col>
+          <Breadcrumb
+            separator=">"
+            className={styles.customBreadcrumb}
+            items={[
+              {
+                title: (
+                  <span
+                    onClick={handleGroupPolicyClick}
+                    className={styles.breadcrumbLink}
+                  >
+                    Group Policy
+                  </span>
+                ),
+              },
+              {
+                title: (
+                  <span className={styles.breadcrumbText}>
+                    {getTitleByType()}
+                  </span>
+                ),
+              },
+            ]}
+          />
+        </Col>
+      </Row>
       {/* 🔹 Active Filter Tags */}
       {activeFilters.length > 0 && (
         <Row gutter={[12, 12]} className={styles["filter-tags-container"]}>
@@ -583,40 +612,13 @@ const GroupAndPolicyAddViewEdit = ({ currentPolicyID, setCurrentPolicyID }) => {
           )}
         </Row>
       )}
-      {/* 🔹 Breadcrumb Section */}
-      <Row justify="start" align="middle" className={styles.breadcrumbRow}>
-        <Col>
-          <Breadcrumb
-            separator=">"
-            className={styles.customBreadcrumb}
-            items={[
-              {
-                title: (
-                  <span
-                    onClick={handleGroupPolicyClick}
-                    className={styles.breadcrumbLink}
-                  >
-                    Group Policy
-                  </span>
-                ),
-              },
-              {
-                title: (
-                  <span className={styles.breadcrumbText}>
-                    {getTitleByType()}
-                  </span>
-                ),
-              },
-            ]}
-          />
-        </Col>
-      </Row>
-
       {/* 🔹 Page Layout with Tabs and Actions */}
       <PageLayout
-        background="blue"
+        background={
+          activeFilters.length > 0 ? "changeblue2" : "blue2"
+        }
         className={
-          activeFilters.length > 0 ? "changeHeightforPolicy" : "grouppolicy"
+          activeFilters.length > 0 ? "changeGrouppolicy" : "grouppolicy"
         }
       >
         <Row justify="space-between" align="middle" className={styles.header}>
