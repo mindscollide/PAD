@@ -86,6 +86,7 @@ const SearchWithPopoverOnly = () => {
     setHTAPendingApprovalReportsSearch,
     setHeadOfTradeApprovalMyActionSearch,
     setHTATATViewDetailsSearch,
+    setHTATATReportSearch,
   } = useSearchBarContext();
 
   const {
@@ -409,7 +410,7 @@ const SearchWithPopoverOnly = () => {
             filterTrigger: true,
           }));
         }
-          setSearchMain("");
+        setSearchMain("");
 
         break;
 
@@ -487,7 +488,7 @@ const SearchWithPopoverOnly = () => {
           }));
         } else if (
           currentPath === "/PAD/hta-reports/hta-tat-reports" &&
-          showViewDetailPageInTatOnHta === true
+          showViewDetailPageInTatOnHta
         ) {
           setHTATATViewDetailsSearch((prev) => ({
             ...prev,
@@ -499,6 +500,20 @@ const SearchWithPopoverOnly = () => {
             actionEndDate: "",
             actionBy: "",
             tat: "",
+            filterTrigger: true,
+          }));
+        } else if (
+          currentPath === "/PAD/hta-reports/hta-tat-reports" &&
+          !showViewDetailPageInTatOnHta
+        ) {
+          console.log(
+            "showViewDetailPageInTatOnHta",
+            showViewDetailPageInTatOnHta
+          );
+          setHTATATReportSearch((prev) => ({
+            ...prev,
+            employeeName: searchMain,
+            departmentName: "",
             filterTrigger: true,
           }));
         }
@@ -785,6 +800,54 @@ const SearchWithPopoverOnly = () => {
     return null; // ⛔ Hide entire search bar
   }
 
+  const getPlaceholderText = ({
+    selectedKey,
+    pageTabesForAdminGropusAndPolicy,
+    currentPath,
+    showViewDetailPageInTatOnHta,
+  }) => {
+    if (selectedKey === "19") {
+      return "Broker name. Click the icon to view more options.";
+    }
+
+    if (selectedKey === "20") {
+      if (pageTabesForAdminGropusAndPolicy === 1) {
+        return "Search Scenario. Click the icon to view more options.";
+      }
+      if (pageTabesForAdminGropusAndPolicy === 2) {
+        return "Employee name. Click the icon to view more options.";
+      }
+      return "Group Policy Name. Click the icon to view more options.";
+    }
+
+    if (
+      (selectedKey === "21" &&
+        currentPath !== "/PAD/admin-users/session-wise-activity") ||
+      (selectedKey === "8" &&
+        currentPath === "/PAD/lm-reports/lm-tradeapproval-request")
+    ) {
+      return "Employee name. Click the icon to view more options.";
+    }
+
+    if (
+      selectedKey === "21" &&
+      currentPath === "/PAD/admin-users/session-wise-activity"
+    ) {
+      return "Search";
+    }
+
+    if (
+      selectedKey === "14" &&
+      currentPath === "/PAD/hta-reports/hta-tat-reports" &&
+      !showViewDetailPageInTatOnHta
+    ) {
+      return "Employee name. Click the icon to view more options.";
+    }
+
+    // 🔹 Default fallback
+    return "Instrument name. Click the icon to view more options.";
+  };
+
   // ----------------------------------------------------------------
   // ✅ RENDER
   // ----------------------------------------------------------------
@@ -792,26 +855,35 @@ const SearchWithPopoverOnly = () => {
     <Space.Compact className={styles.searchWrapper}>
       {/* 🔎 Main Search Input */}
       <Input
-        placeholder={
-          selectedKey === "19"
-            ? "Broker name. Click the icon to view more options."
-            : selectedKey === "20" && pageTabesForAdminGropusAndPolicy === 1
-            ? "Search Scenario. Click the icon to view more options."
-            : selectedKey === "20" && pageTabesForAdminGropusAndPolicy === 2
-            ? "Employee name. Click the icon to view more options."
-            : selectedKey === "20"
-            ? "Group Policy Name. Click the icon to view more options."
-            : (selectedKey === "21" &&
-                currentPath !== "/PAD/admin-users/session-wise-activity") ||
-              (selectedKey === "8" &&
-                location.pathname ===
-                  "/PAD/lm-reports/lm-tradeapproval-request")
-            ? "Employee name. Click the icon to view more options."
-            : selectedKey === "21" &&
-              currentPath === "/PAD/admin-users/session-wise-activity"
-            ? "Search"
-            : "Instrument name. Click the icon to view more options."
-        }
+        // placeholder={
+        //   selectedKey === "19"
+        //     ? "Broker name. Click the icon to view more options."
+        //     : selectedKey === "20" && pageTabesForAdminGropusAndPolicy === 1
+        //     ? "Search Scenario. Click the icon to view more options."
+        //     : selectedKey === "20" && pageTabesForAdminGropusAndPolicy === 2
+        //     ? "Employee name. Click the icon to view more options."
+        //     : selectedKey === "20"
+        //     ? "Group Policy Name. Click the icon to view more options."
+        //     : (selectedKey === "21" &&
+        //         currentPath !== "/PAD/admin-users/session-wise-activity") ||
+        //       (selectedKey === "8" &&
+        //         currentPath === "/PAD/lm-reports/lm-tradeapproval-request")
+        //     ? "Employee name. Click the icon to view more options."
+        //     : selectedKey === "21" &&
+        //       currentPath === "/PAD/admin-users/session-wise-activity"
+        //     ? "Search"
+        //     : selectedKey === "14" &&
+        //       currentPath === "PAD/hta-reports/hta-tat-reports" &&
+        //       !showViewDetailPageInTatOnHta
+        //     ? "Employee name. Click the icon to view more options."
+        //     :"Instrument name. Click the icon to view more options."
+        // }
+        placeholder={getPlaceholderText({
+          selectedKey,
+          pageTabesForAdminGropusAndPolicy,
+          currentPath,
+          showViewDetailPageInTatOnHta,
+        })}
         allowClear
         className={
           collapsed ? styles["inputWrapperCollapsed"] : styles["inputWrapper"]

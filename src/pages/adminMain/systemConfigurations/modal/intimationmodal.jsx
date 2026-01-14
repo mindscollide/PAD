@@ -19,7 +19,7 @@ const Intimationmodal = ({
       width="935px"
       height="495px"
       centered
-      onCancel={() => setOpenModal(false)}
+      onCancel={onClickCloseSubmit}
       modalBody={
         <div className={styles.SubmittedCenteralized}>
           <Row justify="center" align="middle" style={{ height: "100%" }}>

@@ -260,7 +260,7 @@ export const SearchBarProvider = ({ children }) => {
       filterTrigger: false,
     });
 
-  /** 🔍 Policy Breaches Reqport on HTA table filters */
+  /** 🔍 HTA TAT Reports List Filter Search */
   const [htaTATReportSearch, setHTATATReportSearch] = useState({
     employeeName: "",
     departmentName: "",

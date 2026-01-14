@@ -38,6 +38,7 @@ import { AdminPolicyBreachesReportFilter } from "./AdminPolicyBreachesReportFilt
 import { AdminUserActivityReportFilter } from "./AdminUserActivityReportFilter";
 import { AdminUserWiseComplianceReportFilter } from "./AdminUserWiseComplianceReportFilter";
 import { HOCTransactionReportViewDetailsFilter } from "./HOCTransactionReportViewDetailsFilter";
+import { HTATATReportsListFilter } from "./HTATATReportListFilter";
 
 // this is used for open specific filter according to page
 export const renderFilterContent = (
@@ -258,7 +259,18 @@ export const renderFilterContent = (
       );
 
     case "14": // HTA → reports pending approvals
+      console.log(
+        "showViewDetailPageInTatOnHta",
+        currentPath,
+        showViewDetailPageInTatOnHta
+      );
+      console.log(
+        "showViewDetailPageInTatOnHta",
+        currentPath === "/PAD/hta-reports/hta-tat-reports" &&
+          !showViewDetailPageInTatOnHta
+      );
       if (currentPath === "/PAD/hta-reports/hta-trade-approval-requests") {
+        console.log("showViewDetailPageInTatOnHta");
         return (
           <LineManagerMyTradeApprovalsReports
             setVisible={setVisible}
@@ -271,6 +283,7 @@ export const renderFilterContent = (
       } else if (
         currentPath === "/PAD/hta-reports/hta-policy-breaches-reports"
       ) {
+        console.log("showViewDetailPageInTatOnHta");
         return (
           <HTAPolicyBreachesReportFilter
             setVisible={setVisible}
@@ -281,6 +294,7 @@ export const renderFilterContent = (
           />
         );
       } else if (currentPath === "/PAD/hta-reports/hta-pending-requests") {
+        console.log("showViewDetailPageInTatOnHta");
         return (
           <HTAPendingRequestFilter
             setVisible={setVisible}
@@ -292,8 +306,9 @@ export const renderFilterContent = (
         );
       } else if (
         currentPath === "/PAD/hta-reports/hta-tat-reports" &&
-        showViewDetailPageInTatOnHta === true
+        showViewDetailPageInTatOnHta
       ) {
+        console.log("showViewDetailPageInTatOnHta");
         return (
           <HTATATViewDetailFilter
             setVisible={setVisible}
@@ -303,6 +318,18 @@ export const renderFilterContent = (
             setMaininstrumentName={setSearchMain}
           />
         );
+      } else if (
+        currentPath === "/PAD/hta-reports/hta-tat-reports" &&
+        !showViewDetailPageInTatOnHta
+      ) {
+        console.log("showViewDetailPageInTatOnHta");
+        <HTATATReportsListFilter
+          setVisible={setVisible}
+          clear={clear}
+          setClear={setClear}
+          maininstrumentName={searchMain}
+          setMaininstrumentName={setSearchMain}
+        />;
       }
       return null;
 
