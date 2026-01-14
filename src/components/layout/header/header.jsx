@@ -115,8 +115,7 @@ const Headers = () => {
         "/PAD/hta-reports/hta-pending-requests",
         "/PAD/hta-reports/hta-tat-reports",
       ].includes(currentPath) ||
-        (currentPath === "/PAD/hta-reports/hta-tat-reports" &&
-          showViewDetailPageInTatOnHta))
+        currentPath === "/PAD/hta-reports/hta-tat-reports")
     ) {
       return true;
     }

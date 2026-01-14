@@ -323,13 +323,15 @@ export const renderFilterContent = (
         !showViewDetailPageInTatOnHta
       ) {
         console.log("showViewDetailPageInTatOnHta");
-        <HTATATReportsListFilter
-          setVisible={setVisible}
-          clear={clear}
-          setClear={setClear}
-          maininstrumentName={searchMain}
-          setMaininstrumentName={setSearchMain}
-        />;
+        return (
+          <HTATATReportsListFilter
+            setVisible={setVisible}
+            clear={clear}
+            setClear={setClear}
+            maininstrumentName={searchMain}
+            setMaininstrumentName={setSearchMain}
+          />
+        );
       }
       return null;
 
