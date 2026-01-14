@@ -18,7 +18,10 @@ const Headers = () => {
   const navigate = useNavigate();
   const { collapsed, setCollapsed, selectedKeyRef, setSelectedKey } =
     useSidebarContext();
-  const { coTransactionSummaryReportViewDetailsFlag ,coTransactionSummaryReportViewDetailsFlagRef} = useMyApproval();
+  const {
+    coTransactionSummaryReportViewDetailsFlag,
+    coTransactionSummaryReportViewDetailsFlagRef,
+  } = useMyApproval();
 
   const {
     openNewFormForAdminGropusAndPolicy,
@@ -34,7 +37,18 @@ const Headers = () => {
 
   const selectedKey = selectedKeyRef.current;
 
-  const hideSearchKeys = ["0", "5", "8", "11", "14", "17", "20", "22", "50"];
+  const hideSearchKeys = [
+    "0",
+    "5",
+    "8",
+    "11",
+    "14",
+    "17",
+    "20",
+    "22",
+    "23",
+    "50",
+  ];
 
   const shouldShowSearchWithFilter = () => {
     // 🔹 Default case

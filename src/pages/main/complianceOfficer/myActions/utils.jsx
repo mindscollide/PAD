@@ -149,8 +149,8 @@ export const getMyActionsColumn = (approvalStatusMap, sortedInfo) => [
     title: withSortIcon("Nature", "nature", sortedInfo),
     dataIndex: "nature",
     key: "nature",
-    width: "160px",
-    align: "left",
+    width: 120,
+    align: "center",
     ellipsis: true,
     sorter: (a, b) => a.nature.localeCompare(b.nature),
     sortDirections: ["ascend", "descend"],
@@ -163,8 +163,8 @@ export const getMyActionsColumn = (approvalStatusMap, sortedInfo) => [
     title: withSortIcon("Requester Name", "requesterName", sortedInfo),
     dataIndex: "requesterName",
     key: "requesterName",
-    width: "160px",
-    align: "left",
+    width: 180,
+    align: "center",
     ellipsis: true,
     sorter: (a, b) => a.requesterName.localeCompare(b.requesterName),
     sortDirections: ["ascend", "descend"],
@@ -183,22 +183,16 @@ export const getMyActionsColumn = (approvalStatusMap, sortedInfo) => [
     dataIndex: "approvalDateTime",
     key: "approvalDateTime",
     width: "280px",
-    align: "left",
+    align: "center",
     ellipsis: true,
-    sorter: (a, b) => {
-      const dateA = new Date(`${a.creationDate} ${a.creationTime}`).getTime();
-      const dateB = new Date(`${b.creationDate} ${b.creationTime}`).getTime();
-      return dateA - dateB;
-    },
-    sortDirections: ["ascend", "descend"],
+    sorter: (a, b) =>
+      (a?.approvalDateTime || "").localeCompare(b?.approvalDateTime || ""),
     sortOrder:
       sortedInfo?.columnKey === "approvalDateTime" ? sortedInfo.order : null,
     showSorterTooltip: false,
     sortIcon: () => null,
-    render: (_, record) => (
-      <span className="text-gray-600">
-        {formatApiDateTime(`${record.creationDate} ${record.creationTime}`)}
-      </span>
+    render: (date, record) => (
+      <span className="text-gray-600">{formatApiDateTime(date) || "—"}</span>
     ),
   },
   {

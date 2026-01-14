@@ -67,13 +67,14 @@ const COMyAction = () => {
         requestdata: requestData,
         navigate,
       });
-
+      console.log("setMyActionLineManagerData", res);
       if (res) {
         setMyActionLineManagerData(res);
       }
     },
     [callApi, navigate, showLoader, showNotification]
   );
+  console.log("setMyActionLineManagerData", myActionLineManagerData);
 
   // Initial Fetch
   useEffect(() => {
@@ -424,7 +425,11 @@ const COMyAction = () => {
         requesterName: wf.requesterName,
         creationDate: wf.requestedDate,
         creationTime: wf.requestedTime,
+        approvalDateTime:
+          [wf?.requestedDate, wf?.requestedTime].filter(Boolean).join(" ") ||
+          "—",
         quantity: Number(wf.quantity),
+        nature: wf.nature,
         type: wf.typeName || wf.type,
         status: wf.workFlowStatusName || wf.statusState,
         trail,
