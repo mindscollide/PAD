@@ -33,6 +33,7 @@ const showWarningNotification = (showNotification, responseMessage) => {
 export const GetUserDashBoardStats = async ({
   callApi,
   setEmployeeBasedBrokersData,
+  setAllBrokersData,
   setAllInstrumentsData,
   setAssetTypeListingData,
   setGetAllPredefineReasonData,
@@ -71,6 +72,14 @@ export const GetUserDashBoardStats = async ({
           showLoader,
           navigate,
         });
+
+        const allBrokers = await GetAllBrokers({
+          callApi,
+          showNotification,
+          showLoader,
+          navigate,
+        });
+
         const instrument = await GetAllInstruments({
           callApi,
           showNotification,
@@ -104,6 +113,10 @@ export const GetUserDashBoardStats = async ({
         if (brokers) {
           await setEmployeeBasedBrokersData(brokers);
         }
+        if (allBrokers) {
+          await setAllBrokersData(allBrokers);
+        }
+
         if (instrument) {
           await setAllInstrumentsData(instrument);
         }
@@ -140,7 +153,7 @@ export const GetUserDashBoardStats = async ({
   }
 };
 /**
- * ✅ Fetches all employee-based broker data
+ * ✅ Fetches all  broker data
  */
 export const GetAllBrokers = async ({
   callApi,

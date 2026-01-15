@@ -105,11 +105,6 @@ const EscalatedTransactionVerifications = ({ activeFilters }) => {
     setIsEscalatedHeadOfComplianceViewDetailData,
   } = useReconcileContext();
 
-  console.log(
-    headOfComplianceApprovalEscalatedVerificationsData,
-    "headOfComplianceApprovalEscalatedVerificationsData"
-  );
-
   // ===========================================================================
   // 🎯 API FUNCTIONS
   // ===========================================================================
@@ -122,7 +117,6 @@ const EscalatedTransactionVerifications = ({ activeFilters }) => {
   const handleViewDetailsHeadOfComplianceForReconcileTransaction = async (
     workFlowID
   ) => {
-    console.log("handleViewDetailsHeadOfComplianceForReconcileTransaction");
     await showLoader(true);
     const requestdata = { TradeApprovalID: workFlowID };
 
@@ -171,7 +165,6 @@ const EscalatedTransactionVerifications = ({ activeFilters }) => {
       if (!requestData || typeof requestData !== "object") return;
 
       if (showLoaderFlag) showLoader(true);
-
       try {
         const res = await SearchHeadOfComplianceEscalatedTransactionsAPI({
           callApi,
@@ -199,7 +192,7 @@ const EscalatedTransactionVerifications = ({ activeFilters }) => {
         setHeadOfComplianceApprovalEscalatedVerificationsData((prev) => ({
           escalatedVerification: replace
             ? mapped
-            : [...(prev?.escalatedPortfolio || []), ...mapped],
+            : [...(prev?.escalatedVerification || []), ...mapped],
           // this is for to run lazy loading its data comming from database of total data in db
           totalRecordsDataBase: res.totalRecords,
           // this is for to know how mush dta currently fetch from  db
@@ -270,10 +263,7 @@ const EscalatedTransactionVerifications = ({ activeFilters }) => {
 
       fetchApiCall(requestData, true, true); // replace mode
     }
-  }, [
-    headOfComplianceApprovalEscalatedVerificationsSearch?.filterTrigger,
-    fetchApiCall,
-  ]);
+  }, [headOfComplianceApprovalEscalatedVerificationsSearch?.filterTrigger]);
 
   // ===========================================================================
   // 🎯 INFINITE SCROLL
@@ -295,7 +285,7 @@ const EscalatedTransactionVerifications = ({ activeFilters }) => {
           assetTypeListingData
         );
 
-        await fetchApiCall(requestData, false, true); // append mode
+        await fetchApiCall(requestData, false, false);
       } catch (error) {
         console.error("❌ Error loading more approvals:", error);
         showNotification({
@@ -336,7 +326,7 @@ const EscalatedTransactionVerifications = ({ activeFilters }) => {
     } catch (error) {
       console.error("❌ Error detecting page reload:", error);
     }
-  }, [fetchApiCall, resetHeadOfComplianceApprovalEscalatedVerificationsSearch]);
+  }, []);
 
   /**
    * Cleanup on component unmount

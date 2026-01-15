@@ -16,6 +16,7 @@ import {
   mapBuySellToIds,
   mapStatusToIds,
 } from "../../../../components/dropdowns/filters/utils";
+
 const getSortIcon = (columnKey, sortedInfo) => {
   if (sortedInfo?.columnKey === columnKey) {
     return sortedInfo.order === "ascend" ? (
@@ -45,8 +46,19 @@ const getSortIcon = (columnKey, sortedInfo) => {
 };
 
 // Helper for consistent column titles
-const withSortIcon = (label, columnKey, sortedInfo) => (
-  <div className={style["table-header-wrapper"]}>
+const withSortIcon = (label, columnKey, sortedInfo, align = "left") => (
+  <div
+    className={style["table-header-wrapper"]}
+    style={{
+      justifyContent:
+        align === "center"
+          ? "center"
+          : align === "right"
+          ? "flex-end"
+          : "flex-start",
+      textAlign: align,
+    }}
+  >
     <span className={style["table-header-text"]}>{label}</span>
     <span className={style["table-header-icon"]}>
       {getSortIcon(columnKey, sortedInfo)}
@@ -167,22 +179,22 @@ export const getMyHistoryColumn = (
   {
     title: withSortIcon(
       "Date & Time of Approval Request",
-      "approvalDateTime",
-      sortedInfo
+      "creationDate",
+      sortedInfo,
+      "center"
     ),
-    dataIndex: "approvalDateTime",
-    key: "approvalDateTime",
+    dataIndex: "creationDate",
+    key: "creationDate",
     width: "280px",
-    align: "left",
+    align: "center",
     ellipsis: true,
-    sorter: (a, b) => {
-      const dateA = new Date(`${a.creationDate} ${a.creationTime}`).getTime();
-      const dateB = new Date(`${b.creationDate} ${b.creationTime}`).getTime();
-      return dateA - dateB;
-    },
+    sorter: (a, b) =>
+      formatApiDateTime(`${a.creationDate} ${a.creationTime}`).localeCompare(
+        formatApiDateTime(`${b.creationDate} ${b.creationTime}`)
+      ),
     sortDirections: ["ascend", "descend"],
     sortOrder:
-      sortedInfo?.columnKey === "approvalDateTime" ? sortedInfo.order : null,
+      sortedInfo?.columnKey === "creationDate" ? sortedInfo.order : null,
     showSorterTooltip: false,
     sortIcon: () => null,
     render: (_, record) => (
@@ -192,11 +204,11 @@ export const getMyHistoryColumn = (
     ),
   },
   {
-    title: withSortIcon("Nature", "nature", sortedInfo),
+    title: withSortIcon("Nature", "nature", sortedInfo, "center"),
     dataIndex: "nature",
     key: "nature",
     width: "160px",
-    align: "left",
+    align: "center",
     ellipsis: true,
     sorter: (a, b) => a.nature.localeCompare(b.nature),
     sortDirections: ["ascend", "descend"],
@@ -214,7 +226,7 @@ export const getMyHistoryColumn = (
     ),
     dataIndex: "type",
     key: "type",
-    width: 150,
+    width: 130,
     ellipsis: true,
     filteredValue: employeeMyHistorySearch?.type?.length
       ? employeeMyHistorySearch.type
@@ -223,11 +235,11 @@ export const getMyHistoryColumn = (
     render: (type) => <span title={type || "—"}>{type || "—"}</span>,
   },
   {
-    title: withSortIcon("Quantity", "quantity", sortedInfo),
+    title: withSortIcon("Quantity", "quantity", sortedInfo, "center"),
     dataIndex: "quantity",
     key: "quantity",
-    width: 150,
-    align: "left",
+    width: 120,
+    align: "center",
     ellipsis: true,
     sorter: (a, b) => a.quantity - b.quantity,
     sortDirections: ["ascend", "descend"],

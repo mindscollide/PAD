@@ -35,6 +35,7 @@ const Home = () => {
     dashboardData,
     setDashboardData,
     setEmployeeBasedBrokersData,
+    setAllBrokersData,
     setAllInstrumentsData,
     setAssetTypeListingData,
     setGetAllPredefineReasonData,
@@ -167,6 +168,7 @@ const Home = () => {
       const data = await GetUserDashBoardStats({
         callApi,
         setEmployeeBasedBrokersData,
+        setAllBrokersData,
         setAllInstrumentsData,
         setAssetTypeListingData,
         setGetAllPredefineReasonData,

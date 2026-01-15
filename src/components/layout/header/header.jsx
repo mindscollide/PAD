@@ -113,6 +113,7 @@ const Headers = () => {
         "/PAD/hta-reports/hta-trade-approval-requests",
         "/PAD/hta-reports/hta-policy-breaches-reports",
         "/PAD/hta-reports/hta-pending-requests",
+        "/PAD/hta-reports/hta-tat-reports",
       ].includes(currentPath) ||
         (currentPath === "/PAD/hta-reports/hta-tat-reports" &&
           showViewDetailPageInTatOnHta))

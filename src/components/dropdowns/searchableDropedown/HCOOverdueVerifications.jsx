@@ -249,10 +249,11 @@ export const HCOOverdueVerifications = ({
       </Row>
 
       {/* ROW 3 */}
-      <Row gutter={[12, 12]}>
+      <Row gutter={[12, 12]} style={{ marginTop: "12px" }}>
         <Col md={12}>
           <TextField
             label="Shares Traded"
+            placeholder="Shares Traded"
             name="sharesTraded"
             value={
               localState.sharesTraded
@@ -266,6 +267,7 @@ export const HCOOverdueVerifications = ({
         <Col md={12}>
           <TextField
             label="Approved Quantity"
+            placeholder="Approved Quantity"
             name="approvedQuantity"
             value={
               localState.approvedQuantity

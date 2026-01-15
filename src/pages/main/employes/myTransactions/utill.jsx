@@ -34,7 +34,7 @@ export const buildApiRequest = (searchState = {}, assetTypeListingData) => ({
 
   StartDate: searchState.startDate ? toYYMMDD(searchState.startDate) : "",
   EndDate: searchState.endDate ? toYYMMDD(searchState.endDate) : "",
-  StatusIds: mapStatusToIds?.(searchState.status,2) || [],
+  StatusIds: mapStatusToIds?.(searchState.status, 2) || [],
   TypeIds:
     mapBuySellToIds?.(searchState.type, assetTypeListingData?.Equities) || [],
   PageNumber: Number(searchState.pageNumber) || 0,
@@ -47,7 +47,10 @@ export const buildApiRequest = (searchState = {}, assetTypeListingData) => ({
  * @param {Object} employeeTransactionsData - API response containing transactions
  * @returns {Array} Mapped transaction list
  */
-export const mapEmployeeTransactions = (assetTypeData,employeeTransactionsData = {}) => {
+export const mapEmployeeTransactions = (
+  assetTypeData,
+  employeeTransactionsData = {}
+) => {
   if (!employeeTransactionsData) return [];
 
   return employeeTransactionsData.map((item) => ({
@@ -62,13 +65,18 @@ export const mapEmployeeTransactions = (assetTypeData,employeeTransactionsData =
     quantity: item.quantity || 0,
     tradeApprovalID: item.tradeApprovalID || "",
     tradeApprovalTypeID: item.tradeApprovalTypeID || null,
-    tradeType:getTradeTypeById(assetTypeData, item?.tradeApproval) || "-" ,
-    isEscalated:item.isEscalated,
+    tradeType: getTradeTypeById(assetTypeData, item?.tradeApproval) || "-",
+    isEscalated: item.isEscalated,
     workFlowStatusID: item.workFlowStatusID || null,
     workFlowStatus: item.workFlowStatus || "",
     assetTypeID: item.assetTypeID || null,
     assetType: item.assetType || "",
     assetShortCode: item.assetShortCode || "",
+
+    transactionConductedDateandTime:
+      `${item?.transactionConductedDate || ""} ${
+        item?.transactionConductedTime || ""
+      }`.trim() || "—",
     transactionConductedDate: item.transactionConductedDate || "",
     transactionConductedTime: item.transactionConductedTime || "",
     deadlineDate: item.deadlineDate || "",
@@ -113,8 +121,19 @@ const getSortIcon = (columnKey, sortedInfo) => {
 };
 
 // Helper for consistent column titles
-const withSortIcon = (label, columnKey, sortedInfo) => (
-  <div className={style["table-header-wrapper"]}>
+const withSortIcon = (label, columnKey, sortedInfo, align = "left") => (
+  <div
+    className={style["table-header-wrapper"]}
+    style={{
+      justifyContent:
+        align === "center"
+          ? "center"
+          : align === "right"
+          ? "flex-end"
+          : "flex-start",
+      textAlign: align,
+    }}
+  >
     <span className={style["table-header-text"]}>{label}</span>
     <span className={style["table-header-icon"]}>
       {getSortIcon(columnKey, sortedInfo)}
@@ -231,32 +250,29 @@ export const getBorderlessTableColumns = ({
   {
     title: withSortIcon(
       "Transaction Date & Time",
-      "transactionDateTime",
-      sortedInfo
+      "transactionConductedDateandTime",
+      sortedInfo,
+      "center"
     ),
-    dataIndex: "transactionDateTime",
-    key: "transactionDateTime",
-    ellipsis: true,
+    dataIndex: "transactionConductedDateandTime",
+    key: "transactionConductedDateandTime",
     width: "17%",
-    sorter: (a, b) => {
-      const dateA = new Date(
-        `${a.transactionConductedDate} ${a.transactionConductedTime}`
-      ).getTime();
-      const dateB = new Date(
-        `${b.transactionConductedDate} ${b.transactionConductedTime}`
-      ).getTime();
-      return dateA - dateB;
-    },
+    align: "center",
+    ellipsis: true,
+    sorter: (a, b) =>
+      formatApiDateTime(a.transactionConductedDateandTime).localeCompare(
+        formatApiDateTime(b.transactionConductedDateandTime)
+      ),
     sortDirections: ["ascend", "descend"],
     sortOrder:
-      sortedInfo?.columnKey === "transactionDateTime" ? sortedInfo.order : null,
+      sortedInfo?.columnKey === "transactionConductedDateandTime"
+        ? sortedInfo.order
+        : null,
     showSorterTooltip: false,
     sortIcon: () => null,
-    render: (_, record) => (
-      <span className="text-gray-600">
-        {formatApiDateTime(
-          `${record.transactionConductedDate} ${record.transactionConductedTime}`
-        )}
+    render: (date, record) => (
+      <span id={`cell-${record.key}-requestDateTime`} className="text-gray-600">
+        {formatApiDateTime(date)}
       </span>
     ),
   },

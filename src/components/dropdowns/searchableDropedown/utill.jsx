@@ -38,6 +38,7 @@ import { AdminPolicyBreachesReportFilter } from "./AdminPolicyBreachesReportFilt
 import { AdminUserActivityReportFilter } from "./AdminUserActivityReportFilter";
 import { AdminUserWiseComplianceReportFilter } from "./AdminUserWiseComplianceReportFilter";
 import { HOCTransactionReportViewDetailsFilter } from "./HOCTransactionReportViewDetailsFilter";
+import { HTATATReportsListFilter } from "./HTATATReportListFilter";
 
 // this is used for open specific filter according to page
 export const renderFilterContent = (
@@ -292,10 +293,23 @@ export const renderFilterContent = (
         );
       } else if (
         currentPath === "/PAD/hta-reports/hta-tat-reports" &&
-        showViewDetailPageInTatOnHta === true
+        showViewDetailPageInTatOnHta
       ) {
         return (
           <HTATATViewDetailFilter
+            setVisible={setVisible}
+            clear={clear}
+            setClear={setClear}
+            maininstrumentName={searchMain}
+            setMaininstrumentName={setSearchMain}
+          />
+        );
+      } else if (
+        currentPath === "/PAD/hta-reports/hta-tat-reports" &&
+        !showViewDetailPageInTatOnHta
+      ) {
+        return (
+          <HTATATReportsListFilter
             setVisible={setVisible}
             clear={clear}
             setClear={setClear}

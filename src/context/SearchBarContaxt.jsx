@@ -260,7 +260,7 @@ export const SearchBarProvider = ({ children }) => {
       filterTrigger: false,
     });
 
-  /** 🔍 Policy Breaches Reqport on HTA table filters */
+  /** 🔍 HTA TAT Reports List Filter Search */
   const [htaTATReportSearch, setHTATATReportSearch] = useState({
     employeeName: "",
     departmentName: "",
@@ -272,13 +272,14 @@ export const SearchBarProvider = ({ children }) => {
   /** 🔍 TAT Request Approval View Details Search HTA table filters */
   const [htaTATViewDetailsSearch, setHTATATViewDetailsSearch] = useState({
     instrumentName: "",
+    quantity: 0,
     employeeID: 0,
-    startDate: "",
-    endDate: "",
-    actionStartDate: "",
-    actionEndDate: "",
+    startDate: null,
+    endDate: null,
+    actionStartDate: null,
+    actionEndDate: null,
     actionBy: "",
-    tat: "",
+    tat: 0,
     pageNumber: 0,
     pageSize: 10,
     filterTrigger: false,
@@ -1191,13 +1192,14 @@ export const SearchBarProvider = ({ children }) => {
   const resetHTATATViewDetailSearch = () =>
     setHTATATViewDetailsSearch({
       instrumentName: "",
+      quantity: 0,
       employeeID: 0,
-      startDate: "",
-      endDate: "",
-      actionStartDate: "",
-      actionEndDate: "",
+      startDate: null,
+      endDate: null,
+      actionStartDate: null,
+      actionEndDate: null,
       actionBy: "",
-      tat: "",
+      tat: 0,
       pageNumber: 0,
       pageSize: 10,
       filterTrigger: false,

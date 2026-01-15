@@ -299,8 +299,10 @@ const ViewDetailHeadOfComplianceReconcilePortfolio = () => {
                       statusData={statusData}
                       viewDetailsData={
                         isEscalatedPortfolioHeadOfComplianceViewDetailData
+                          ?.details[0]?.brokers
                       }
                       variant={"Blue"}
+                      type={2}
                     />
                   </Col>
                 </Row>

@@ -42,6 +42,14 @@ const iconComponents = {
   policiestab: PoliciesTabIcon,
   closingupcoming: HistoryRecordIcon,
   employeebroker: EmptyBroker,
+  "co-portfolio-history": PortfolioIcon,
+  "co-date-wise-transaction-report": TransactionsIcon,
+  "co-overdue-verifications": ReportsIcon,
+  "co-transactions-summary-report": PendingApprovalIcon,
+  "hta-policy-breaches-reports": PortfolioIcon,
+  "hta-trade-approval-requests": TransactionsIcon,
+  "hta-tat-reports": AuditIcon,
+  "hta-pending-requests": PendingApprovalIcon,
 };
 
 /**
@@ -64,6 +72,14 @@ const defaultMessages = {
   policiestab: "No Policies Found",
   closingUpcoming: "Upcoming Instrument",
   employeebroker: "No Brokers Added Yet",
+  "co-portfolio-history": "No Portfolio History Reports",
+  "co-date-wise-transaction-report": "No Date Wise Transaction History Reports",
+  "co-overdue-verifications": "No Overdue Verifications Reports",
+  "co-transactions-summary-report": "No Transactions summary Reports",
+  "hta-policy-breaches-reports": "No Policy Breaches Reports",
+  "hta-trade-approval-requests": "No Trade Approval Requests Reports",
+  "hta-tat-reports": "No TAT Approval Request Reports",
+  "hta-pending-requests": "No Pending Requests Reports",
 };
 
 /**
@@ -100,11 +116,13 @@ const EmptyState = ({
   style,
 }) => {
   // Normalize type to match keys in the maps
+  console.log("empty img", type);
   const normalizedType = type?.toLowerCase();
-
+  console.log("empty img", normalizedType);
   // Pick default or provided message
   const displayMessage =
     message || defaultMessages[normalizedType] || "No data available";
+  console.log("empty img", displayMessage);
 
   // Pick icon based on type
   const IconSrc = iconComponents[normalizedType];

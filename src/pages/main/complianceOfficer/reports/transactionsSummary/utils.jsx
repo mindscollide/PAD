@@ -100,8 +100,19 @@ const getSortIcon = (columnKey, sortedInfo) => {
 };
 
 // Helper for consistent column titles
-const withSortIcon = (label, columnKey, sortedInfo) => (
-  <div className={style["table-header-wrapper"]}>
+const withSortIcon = (label, columnKey, sortedInfo, align = "left") => (
+  <div
+    className={style["table-header-wrapper"]}
+    style={{
+      justifyContent:
+        align === "center"
+          ? "center"
+          : align === "right"
+          ? "flex-end"
+          : "flex-start",
+      textAlign: align,
+    }}
+  >
     <span className={style["table-header-text"]}>{label}</span>
     <span className={style["table-header-icon"]}>
       {getSortIcon(columnKey, sortedInfo)}
@@ -114,10 +125,11 @@ export const getBorderlessTableColumns = ({
   handelViewDetails,
 }) => [
   {
-    title: withSortIcon("Transaction Date", "transactionDate", sortedInfo),
+    title: withSortIcon("Transaction Date", "transactionDate", sortedInfo,"center"),
     dataIndex: "transactionDate",
     key: "transactionDate",
     width: 200,
+    align:"center",
     ellipsis: true,
     sorter: (a, b) =>
       (a?.transactionDate || "").localeCompare(b?.transactionDate || ""),
@@ -132,7 +144,7 @@ export const getBorderlessTableColumns = ({
     ),
   },
   {
-    title: withSortIcon("Total Employees", "totalEmployees", sortedInfo),
+    title: withSortIcon("Total Employees", "totalEmployees", sortedInfo,"center"),
     dataIndex: "totalEmployees",
     key: "totalEmployees",
     width: 140,
@@ -146,7 +158,7 @@ export const getBorderlessTableColumns = ({
     render: (q) => <span>{q.toLocaleString()}</span>,
   },
   {
-    title: withSortIcon("Total Transactions", "totalTransactions", sortedInfo),
+    title: withSortIcon("Total Transactions", "totalTransactions", sortedInfo,"center"),
     dataIndex: "totalTransactions",
     key: "totalTransactions",
     width: 140,
@@ -163,7 +175,7 @@ export const getBorderlessTableColumns = ({
     title: withSortIcon(
       "Compliant Transactions",
       "compliantTransactions",
-      sortedInfo
+      sortedInfo,"center"
     ),
     dataIndex: "compliantTransactions",
     key: "compliantTransactions",
@@ -184,7 +196,8 @@ export const getBorderlessTableColumns = ({
     title: withSortIcon(
       "Non-Compliant Transactions",
       "nonCompliantTransactions",
-      sortedInfo
+      sortedInfo,
+      "center"
     ),
     dataIndex: "nonCompliantTransactions",
     key: "nonCompliantTransactions",

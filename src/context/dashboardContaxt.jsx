@@ -65,6 +65,7 @@ export const DashboardProvider = ({ children }) => {
    * Used mainly in Trade Approvals & Portfolio modules.
    */
   const [employeeBasedBrokersData, setEmployeeBasedBrokersData] = useState([]);
+  const [allBrokersData, setAllBrokersData] = useState([]);
 
   /**
    * ------------------------------------------------------
@@ -153,7 +154,7 @@ export const DashboardProvider = ({ children }) => {
       HeadofTradeApproval: {},
       HeadofComplianceOfficer: {},
     });
-
+    setAllBrokersData([]);
     setEmployeeBasedBrokersData([]);
     setAllInstrumentsData([]);
     setAssetTypeListingData([]);
@@ -176,6 +177,8 @@ export const DashboardProvider = ({ children }) => {
         // Employee-based Brokers
         employeeBasedBrokersData,
         setEmployeeBasedBrokersData,
+        allBrokersData,
+        setAllBrokersData,
 
         // Instruments List
         allInstrumentsData,

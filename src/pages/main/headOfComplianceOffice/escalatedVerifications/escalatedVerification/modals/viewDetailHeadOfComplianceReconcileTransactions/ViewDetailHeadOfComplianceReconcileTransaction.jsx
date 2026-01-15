@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef } from "react";
+
 import { Col, Row, Tag } from "antd";
 import { useGlobalModal } from "../../../../../../../context/GlobalModalContext";
 import { BrokerList, GlobalModal } from "../../../../../../../components";
@@ -7,7 +7,6 @@ import { Stepper, Step } from "react-form-stepper";
 import CustomButton from "../../../../../../../components/buttons/button";
 import CheckIcon from "../../../../../../../assets/img/Check.png";
 import EllipsesIcon from "../../../../../../../assets/img/Ellipses.png";
-import copyIcon from "../../../../../../../assets/img/copy-dark.png";
 import { useDashboardContext } from "../../../../../../../context/dashboardContaxt";
 import {
   dashBetweenApprovalAssets,
@@ -415,10 +414,12 @@ const ViewDetailHeadOfComplianceReconcileTransaction = () => {
                   <Col span={24}>
                     <BrokerList
                       statusData={statusData}
-                      viewDetailsData={
+                       viewDetailsData={
                         isEscalatedHeadOfComplianceViewDetailData
+                          ?.details[0]?.brokers
                       }
                       variant={"Blue"}
+                      type={2}
                     />
                   </Col>
                 </Row>

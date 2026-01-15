@@ -31,7 +31,7 @@ export const buildApiRequest = (searchState = {}, assetTypeListingData) => ({
   RequesterName: searchState.requesterName || "",
   DepartmentName: searchState.departmentName || "",
   Quantity: Number(searchState.quantity) || 0,
-  StatusIds: mapStatusToIds(searchState.status),
+  StatusIds: mapStatusToIds(searchState.status,2),
   TypeIds: mapBuySellToIds(searchState.type, assetTypeListingData?.Equities),
   PageNumber: Number(searchState.pageNumber) || 0,
   Length: Number(searchState.pageSize) || 10,

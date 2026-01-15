@@ -8,20 +8,30 @@ import {
 } from "../../../common/funtions/rejex";
 
 /* =============================================================================
- * 🔹 Initial Local State (Fully Aligned with Global State)
+ * 🔹 Initial Local State
+ * -----------------------------------------------------------------------------
+ * Maintains filter input values locally before applying them
+ * to the global search state.
  * =============================================================================
  */
 const INITIAL_LOCAL_STATE = {
   instrumentName: "",
-  employeeID: 0,
-  startDate: "",
-  endDate: "",
-  actionStartDate: "",
-  actionEndDate: "",
+  quantity: "",
+  startDate: null,
+  endDate: null,
+  actionStartDate: null,
+  actionEndDate: null,
   actionBy: "",
   tat: "",
 };
 
+/* =============================================================================
+ * 🔍 HTA TAT View Detail Filter
+ * -----------------------------------------------------------------------------
+ * Used for filtering HTA TAT View Detail data.
+ * Supports text, numeric, and date range filters.
+ * =============================================================================
+ */
 export const HTATATViewDetailFilter = ({
   setVisible,
   clear,
@@ -31,20 +41,29 @@ export const HTATATViewDetailFilter = ({
 }) => {
   /* ===========================================================================
    * 📌 Context
-   * =========================================================================== */
+   * ---------------------------------------------------------------------------
+   * Global search state for HTA TAT View Details
+   * ===========================================================================
+   */
   const { htaTATViewDetailsSearch, setHTATATViewDetailsSearch } =
     useSearchBarContext();
 
   /* ===========================================================================
    * 🧠 Local State
-   * =========================================================================== */
+   * ---------------------------------------------------------------------------
+   * Holds form values until user triggers Search
+   * ===========================================================================
+   */
   const [localState, setLocalState] = useState(INITIAL_LOCAL_STATE);
 
   /* ===========================================================================
    * 🔄 Effects
-   * =========================================================================== */
+   * ===========================================================================
+   */
 
-  // Prefill Instrument Name
+  /**
+   * Prefill Instrument Name when selected from outside
+   */
   useEffect(() => {
     if (maininstrumentName) {
       setLocalState((prev) => ({
@@ -56,7 +75,9 @@ export const HTATATViewDetailFilter = ({
     }
   }, [maininstrumentName]);
 
-  // External Clear
+  /**
+   * Handle external reset trigger
+   */
   useEffect(() => {
     if (clear && maininstrumentName === "") {
       setLocalState(INITIAL_LOCAL_STATE);
@@ -66,39 +87,63 @@ export const HTATATViewDetailFilter = ({
 
   /* ===========================================================================
    * 🛠 Handlers
-   * =========================================================================== */
+   * ===========================================================================
+   */
 
+  /**
+   * Generic field setter
+   */
   const setFieldValue = (field, value) => {
     setLocalState((prev) => ({ ...prev, [field]: value }));
   };
 
-  /** Input change */
+  /**
+   * Handle text and numeric input changes
+   */
   const handleInputChange = (e) => {
     const { name, value } = e.target;
+    const rawValue = value.replace(/,/g, "");
 
+    // Quantity: numbers only
     if (name === "quantity") {
-      const rawValue = value.replace(/,/g, "");
       if (
         (rawValue === "" || allowOnlyNumbers(rawValue)) &&
         rawValue.length <= 12
       ) {
         setFieldValue("quantity", rawValue);
       }
-    } else {
+    }
+
+    // TAT: numbers only
+    else if (name === "tat") {
+      if (
+        (rawValue === "" || allowOnlyNumbers(rawValue)) &&
+        rawValue.length <= 12
+      ) {
+        setFieldValue("tat", rawValue);
+      }
+    }
+
+    // Other text inputs
+    else {
       setFieldValue(name, removeFirstSpace(value));
     }
   };
 
-  /** Date range */
+  /**
+   * Request date range handler
+   */
   const handleDateChange = (dates) => {
     setLocalState((prev) => ({
       ...prev,
-      startDate: dates?.[0] || null,
-      endDate: dates?.[1] || null,
+      startDate: dates?.[0] ?? null,
+      endDate: dates?.[1] ?? null,
     }));
   };
 
-  /** Clear dates */
+  /**
+   * Clear request date range
+   */
   const handleClearDates = () => {
     setLocalState((prev) => ({
       ...prev,
@@ -107,46 +152,58 @@ export const HTATATViewDetailFilter = ({
     }));
   };
 
-  /** Date range */
-  const handleDateChangeEscalated = (dates) => {
+  /**
+   * Action date range handler
+   */
+  const handleDateChangeAction = (dates) => {
     setLocalState((prev) => ({
       ...prev,
-      escalatedStartDate: dates?.[0] || null,
-      escalatedEndDate: dates?.[1] || null,
+      actionStartDate: dates?.[0] ?? null,
+      actionEndDate: dates?.[1] ?? null,
     }));
   };
 
-  /** Clear dates */
+  /**
+   * Clear action date range
+   */
   const handleClearDatesEscalated = () => {
     setLocalState((prev) => ({
       ...prev,
-      escalatedStartDate: null,
-      escalatedEndDate: null,
+      actionStartDate: null,
+      actionEndDate: null,
     }));
   };
 
-  /** 🔍 Search */
+  /**
+   * 🔍 Apply filters
+   * Pushes local state into global search context
+   */
   const handleSearchClick = () => {
     const {
       instrumentName,
-      employeeID,
+      quantity,
       actionBy,
       startDate,
       endDate,
       actionStartDate,
       actionEndDate,
+      tat,
     } = localState;
+    console.log("htaTATViewDetailsSearch", localState);
 
     setHTATATViewDetailsSearch({
       ...htaTATViewDetailsSearch,
       instrumentName: instrumentName?.trim() || "",
-      employeeID: 0,
-      actionBy: "",
-      tat: "",
+      quantity: quantity ? Number(quantity) : 0,
+
+      // ✅ Dates: pass as-is (null stays null)
       startDate,
       endDate,
       actionStartDate,
       actionEndDate,
+
+      actionBy: actionBy?.trim() || "",
+      tat: tat ? Number(tat) : 0,
       pageNumber: 0,
       filterTrigger: true,
     });
@@ -155,20 +212,22 @@ export const HTATATViewDetailFilter = ({
     setClear(false);
   };
 
-  /** ♻️ Reset */
+  /**
+   * ♻️ Reset filters
+   */
   const handleResetClick = () => {
     setHTATATViewDetailsSearch({
+      ...htaTATViewDetailsSearch,
       instrumentName: "",
-      employeeID: 0,
-      startDate: "",
-      endDate: "",
-      actionStartDate: "",
-      actionEndDate: "",
+      quantity: 0,
+      startDate: null,
+      endDate: null,
+      actionStartDate: null,
+      actionEndDate: null,
       actionBy: "",
-      tat: "",
+      tat: 0,
       pageNumber: 0,
       pageSize: 10,
-      filterTrigger: true,
     });
 
     setLocalState(INITIAL_LOCAL_STATE);
@@ -178,9 +237,11 @@ export const HTATATViewDetailFilter = ({
 
   /* ===========================================================================
    * 🖥 Render
-   * =========================================================================== */
+   * ===========================================================================
+   */
   return (
     <>
+      {/* Instrument & Quantity */}
       <Row gutter={[12, 12]}>
         <Col xs={24} md={12}>
           <TextField
@@ -209,42 +270,19 @@ export const HTATATViewDetailFilter = ({
         </Col>
       </Row>
 
-      <Row gutter={[12, 12]}>
-        <Col xs={24} md={12}>
-          <DateRangePicker
-            label="Request Date Range"
-            size="medium"
-            value={[localState.startDate, localState.endDate]}
-            onChange={handleDateChange}
-            onClear={handleClearDates}
-          />
-        </Col>
-        <Col xs={24} md={12}>
-          <DateRangePicker
-            label="Escalated Date Range"
-            size="medium"
-            value={[localState.escalatedStartDate, localState.escalatedEndDate]}
-            onChange={handleDateChangeEscalated}
-            onClear={handleClearDatesEscalated}
-          />
-        </Col>
-      </Row>
-
+      {/* Action By & TAT */}
       <Row gutter={[12, 12]}>
         <Col xs={24} md={12}>
           <TextField
             label="Action By"
-            name="actionBy "
-            value={
-              localState.actionBy
-                ? Number(localState.actionBy).toLocaleString("en-US")
-                : ""
-            }
+            name="actionBy"
+            value={localState.actionBy}
             onChange={handleInputChange}
             placeholder="Action By"
             size="medium"
           />
         </Col>
+
         <Col xs={24} md={12}>
           <TextField
             label="TAT"
@@ -261,6 +299,30 @@ export const HTATATViewDetailFilter = ({
         </Col>
       </Row>
 
+      {/* Date Ranges */}
+      <Row gutter={[12, 12]}>
+        <Col xs={24} md={12}>
+          <DateRangePicker
+            label="Request Date Range"
+            size="medium"
+            value={[localState.startDate, localState.endDate]}
+            onChange={handleDateChange}
+            onClear={handleClearDates}
+          />
+        </Col>
+
+        <Col xs={24} md={12}>
+          <DateRangePicker
+            label="Escalated Date Range"
+            size="medium"
+            value={[localState.actionStartDate, localState.actionEndDate]}
+            onChange={handleDateChangeAction}
+            onClear={handleClearDatesEscalated}
+          />
+        </Col>
+      </Row>
+
+      {/* Actions */}
       <Row justify="end" style={{ marginTop: 16 }}>
         <Col>
           <Space>

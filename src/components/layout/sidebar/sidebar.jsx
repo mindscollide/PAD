@@ -33,6 +33,8 @@ const SideBar = () => {
   const {
     employeeBasedBrokersData,
     setEmployeeBasedBrokersData,
+    allBrokersData,
+    setAllBrokersData,
     allInstrumentsData,
     setAllInstrumentsData,
     assetTypeListingData,
@@ -79,6 +81,8 @@ const SideBar = () => {
             "employeeBasedBrokersData",
             setEmployeeBasedBrokersData
           );
+          restoreAndRemove("allBrokersData", setAllBrokersData);
+
           restoreAndRemove("allInstrumentsData", setAllInstrumentsData);
           if (lastSelectedKey === "0") {
             restoreAndRemove("assetTypeListingData", setAssetTypeListingData);
@@ -119,6 +123,10 @@ const SideBar = () => {
           JSON.stringify(employeeBasedBrokersData)
         );
         sessionStorage.setItem(
+          "allBrokersData",
+          JSON.stringify(allBrokersData)
+        );
+        sessionStorage.setItem(
           "allInstrumentsData",
           JSON.stringify(allInstrumentsData)
         );
@@ -138,6 +146,7 @@ const SideBar = () => {
   }, [
     selectedKey,
     employeeBasedBrokersData,
+    allBrokersData,
     allInstrumentsData,
     assetTypeListingData,
     getAllPredefineReasonData,
