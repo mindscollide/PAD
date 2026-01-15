@@ -283,13 +283,12 @@ const UserWiseComplianceReport = () => {
         value: Number(quantity).toLocaleString("en-US"),
       },
 
-      (startDate || endDate) && {
-        key: "dateRange",
-        label: "Date",
-        value: `${startDate ? startDate.format("DD/MM/YYYY") : ""} ${
-          endDate ? `- ${endDate.format("DD/MM/YYYY")}` : ""
-        }`,
-      },
+      startDate &&
+        endDate && {
+          label: "Date",
+          key: "dateRange",
+          value: `${startDate} → ${endDate}`,
+        },
     ].filter(Boolean);
   })();
 

@@ -88,8 +88,19 @@ const getSortIcon = (columnKey, sortedInfo) => {
 };
 
 // Helper for consistent column titles
-const withSortIcon = (label, columnKey, sortedInfo) => (
-  <div className={style["table-header-wrapper"]}>
+const withSortIcon = (label, columnKey, sortedInfo, align = "left") => (
+  <div
+    className={style["table-header-wrapper"]}
+    style={{
+      justifyContent:
+        align === "center"
+          ? "center"
+          : align === "right"
+          ? "flex-end"
+          : "flex-start",
+      textAlign: align,
+    }}
+  >
     <span className={style["table-header-text"]}>{label}</span>
     <span className={style["table-header-icon"]}>
       {getSortIcon(columnKey, sortedInfo)}
@@ -102,7 +113,7 @@ export const getBorderlessTableColumns = ({ sortedInfo }) => [
     title: withSortIcon("Employee ID", "employeeID", sortedInfo),
     dataIndex: "employeeID",
     key: "employeeID",
-    align: "center",
+    align: "left",
     width: "10%",
     ellipsis: true,
     sorter: (a, b) =>
@@ -117,7 +128,7 @@ export const getBorderlessTableColumns = ({ sortedInfo }) => [
     },
   },
   {
-    title: withSortIcon("Employee Name", "employeeName", sortedInfo),
+    title: withSortIcon("Employee Name", "employeeName", sortedInfo, "center"),
     dataIndex: "employeeName",
     key: "employeeName",
     align: "center",
@@ -146,7 +157,12 @@ export const getBorderlessTableColumns = ({ sortedInfo }) => [
     render: (q) => <span className="font-medium">{q.toLocaleString()}</span>,
   },
   {
-    title: withSortIcon("Total Requests", "totalRequests", sortedInfo),
+    title: withSortIcon(
+      "Total Requests",
+      "totalRequests",
+      sortedInfo,
+      "center"
+    ),
     dataIndex: "totalRequests",
     key: "totalRequests",
     align: "center",
@@ -161,11 +177,13 @@ export const getBorderlessTableColumns = ({ sortedInfo }) => [
     showSorterTooltip: false,
     sortIcon: () => null,
     render: (totalRequests) => {
-      return <span className="font-medium">{totalRequests}</span>;
+      return (
+        <span className="font-medium">{totalRequests.toLocaleString()}</span>
+      );
     },
   },
   {
-    title: withSortIcon("Pending", "pending", sortedInfo),
+    title: withSortIcon("Pending", "pending", sortedInfo, "center"),
     dataIndex: "pending",
     key: "pending",
     align: "center",
@@ -179,11 +197,11 @@ export const getBorderlessTableColumns = ({ sortedInfo }) => [
     showSorterTooltip: false,
     sortIcon: () => null,
     render: (pending) => {
-      return <span className="font-medium">{pending}</span>;
+      return <span className="font-medium">{pending.toLocaleString()}</span>;
     },
   },
   {
-    title: withSortIcon("Approved", "approved", sortedInfo),
+    title: withSortIcon("Approved", "approved", sortedInfo, "center"),
     dataIndex: "approved",
     key: "approved",
     align: "center",
@@ -197,11 +215,11 @@ export const getBorderlessTableColumns = ({ sortedInfo }) => [
     showSorterTooltip: false,
     sortIcon: () => null,
     render: (approved) => {
-      return <span className="font-medium">{approved}</span>;
+      return <span className="font-medium">{approved.toLocaleString()}</span>;
     },
   },
   {
-    title: withSortIcon("Declined", "declined", sortedInfo),
+    title: withSortIcon("Declined", "declined", sortedInfo, "center"),
     dataIndex: "declined",
     key: "declined",
     align: "center",
@@ -215,11 +233,11 @@ export const getBorderlessTableColumns = ({ sortedInfo }) => [
     showSorterTooltip: false,
     sortIcon: () => null,
     render: (declined) => {
-      return <span className="font-medium">{declined}</span>;
+      return <span className="font-medium">{declined.toLocaleString()}</span>;
     },
   },
   {
-    title: withSortIcon("Traded", "traded", sortedInfo),
+    title: withSortIcon("Traded", "traded", sortedInfo, "center"),
     dataIndex: "traded",
     key: "traded",
     align: "center",
@@ -233,11 +251,11 @@ export const getBorderlessTableColumns = ({ sortedInfo }) => [
     showSorterTooltip: false,
     sortIcon: () => null,
     render: (traded) => {
-      return <span className="font-medium">{traded}</span>;
+      return <span className="font-medium">{traded.toLocaleString()}</span>;
     },
   },
   {
-    title: withSortIcon("Not Traded", "notTraded", sortedInfo),
+    title: withSortIcon("Not Traded", "notTraded", sortedInfo, "center"),
     dataIndex: "notTraded",
     key: "notTraded",
     align: "center",
@@ -251,11 +269,11 @@ export const getBorderlessTableColumns = ({ sortedInfo }) => [
     showSorterTooltip: false,
     sortIcon: () => null,
     render: (notTraded) => {
-      return <span className="font-medium">{notTraded}</span>;
+      return <span className="font-medium">{notTraded.toLocaleString()}</span>;
     },
   },
   {
-    title: withSortIcon("Resubmitted", "resubmitted", sortedInfo),
+    title: withSortIcon("Resubmitted", "resubmitted", sortedInfo, "center"),
     dataIndex: "resubmitted",
     key: "resubmitted",
     align: "center",
@@ -271,9 +289,7 @@ export const getBorderlessTableColumns = ({ sortedInfo }) => [
     sortIcon: () => null,
     render: (resubmitted) => {
       return (
-        // <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-        <span className="font-medium">{resubmitted}</span>
-        // </div>
+        <span className="font-medium">{resubmitted.toLocaleString()}</span>
       );
     },
   },

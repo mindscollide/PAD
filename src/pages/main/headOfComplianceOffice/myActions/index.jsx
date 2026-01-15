@@ -403,6 +403,9 @@ const HOCMyActionPage = () => {
         requesterName: wf.requesterName,
         creationDate: wf.requestedDate,
         creationTime: wf.requestedTime,
+        creationTimeAndTime:
+          [wf?.requestedDate, wf?.requestedTime].filter(Boolean).join(" ") ||
+          "—",
         quantity: Number(wf.quantity),
         type: wf.typeName || wf.type,
         status: wf.workFlowStatusName || wf.statusState,

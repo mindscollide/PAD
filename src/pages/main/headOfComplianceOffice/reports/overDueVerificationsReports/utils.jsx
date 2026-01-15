@@ -117,14 +117,26 @@ const getSortIcon = (columnKey, sortedInfo) => {
 };
 
 // Helper for consistent column titles
-const withSortIcon = (label, columnKey, sortedInfo) => (
-  <div className={style["table-header-wrapper"]}>
+const withSortIcon = (label, columnKey, sortedInfo, align = "left") => (
+  <div
+    className={style["table-header-wrapper"]}
+    style={{
+      justifyContent:
+        align === "center"
+          ? "center"
+          : align === "right"
+          ? "flex-end"
+          : "flex-start",
+      textAlign: align,
+    }}
+  >
     <span className={style["table-header-text"]}>{label}</span>
     <span className={style["table-header-icon"]}>
       {getSortIcon(columnKey, sortedInfo)}
     </span>
   </div>
 );
+
 const withFilterHeader = (FilterComponent) => (
   <div
     className={style["table-header-wrapper"]}
@@ -306,9 +318,15 @@ export const getBorderlessTableColumns = ({
     ),
   },
   {
-    title: withSortIcon("Approved Quantity", "approvedQuantity", sortedInfo),
+    title: withSortIcon(
+      "Approved Quantity",
+      "approvedQuantity",
+      sortedInfo,
+      "center"
+    ),
     dataIndex: "approvedQuantity",
     width: 180,
+    align: "center",
     key: "approvedQuantity",
     ellipsis: true,
     sorter: (a, b) => a.approvedQuantity - b.approvedQuantity,
@@ -320,9 +338,10 @@ export const getBorderlessTableColumns = ({
     render: (q) => <span className="font-medium">{q.toLocaleString()}</span>,
   },
   {
-    title: withSortIcon("Shares Traded", "shareTraded", sortedInfo),
+    title: withSortIcon("Shares Traded", "shareTraded", sortedInfo, "center"),
     dataIndex: "shareTraded",
     key: "shareTraded",
+    align: "center",
     width: 150,
     ellipsis: true,
     sorter: (a, b) => a.shareTraded - b.shareTraded,

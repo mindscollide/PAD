@@ -3,8 +3,12 @@ import { Row, Col, Tag } from "antd";
 import styles from "./brokerList.module.css"; // create css module for BrokerList
 import { useDashboardContext } from "../../context/dashboardContaxt";
 
-const BrokerList = ({ statusData, viewDetailsData, variant }) => {
-  const { employeeBasedBrokersData } = useDashboardContext();
+const BrokerList = ({ statusData, viewDetailsData, variant, type = 1 }) => {
+  const { employeeBasedBrokersData, allBrokersData } = useDashboardContext();
+  console.log("allBrokersData", allBrokersData);
+  console.log("allBrokersData", viewDetailsData);
+  const brokersArray =
+    type === 1 ? viewDetailsData?.details?.[0]?.brokers : viewDetailsData;
 
   // Map variant to class name
   const getVariantClass = () => {
@@ -27,11 +31,15 @@ const BrokerList = ({ statusData, viewDetailsData, variant }) => {
         <div className={getVariantClass()}>
           <label className={styles.viewDetailMainLabels}>Brokers</label>
           <div className={styles.tagContainer}>
-            {viewDetailsData?.details?.[0]?.brokers?.map((brokerId) => {
-              const broker = employeeBasedBrokersData?.find(
-                (b) => String(b.brokerID) === String(brokerId)
-              );
-
+            {brokersArray?.map((brokerId) => {
+              const broker =
+                type === 1
+                  ? employeeBasedBrokersData?.find(
+                      (b) => String(b.brokerID) === String(brokerId)
+                    )
+                  : allBrokersData?.find(
+                      (b) => String(b.brokerID) === String(brokerId)
+                    );
               return (
                 broker && (
                   <Tag key={broker.brokerID} className={styles.tagClasses}>

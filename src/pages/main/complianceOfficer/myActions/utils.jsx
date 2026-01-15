@@ -227,7 +227,7 @@ export const getMyActionsColumn = (approvalStatusMap, sortedInfo) => [
     title: withSortIcon("Status", "status", sortedInfo),
     dataIndex: "status",
     key: "status",
-    width: "160px",
+    width: 180,
     align: "left",
     ellipsis: true,
     sorter: (a, b) => a.status.localeCompare(b.status),

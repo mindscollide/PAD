@@ -9,12 +9,13 @@ import StatusColumnTitle from "../../../components/dropdowns/filters/statusColum
 import { formatApiDateTime, toYYMMDD } from "../../../common/funtions/rejex";
 import { mapStatusToIds } from "../../../components/dropdowns/filters/utils";
 import DefaultColumArrow from "../../../assets/img/default-colum-arrow.png";
+import style from "./Instruments.module.css";
 
 export const buildApiRequest = (searchState = {}) => ({
   InstrumentName: searchState.instrumentName || "",
   StartDate: searchState.startDate ? toYYMMDD(searchState.startDate) : "",
   EndDate: searchState.endDate ? toYYMMDD(searchState.endDate) : "",
-  StatusIDs: mapStatusToIds?.(searchState.status,3) || [],
+  StatusIDs: mapStatusToIds?.(searchState.status, 3) || [],
   PageNumber: Number(searchState.pageNumber) || 0,
   Length: Number(searchState.pageSize) || 10,
 });
@@ -84,7 +85,25 @@ const getSortIcon = (columnKey, sortedInfo) => {
     />
   );
 };
-
+const withSortIcon = (label, columnKey, sortedInfo, align = "left") => (
+  <div
+    className={style["table-header-wrapper"]}
+    style={{
+      justifyContent:
+        align === "center"
+          ? "center"
+          : align === "right"
+          ? "flex-end"
+          : "flex-start",
+      textAlign: align,
+    }}
+  >
+    <span className={style["table-header-text"]}>{label}</span>
+    <span className={style["table-header-icon"]}>
+      {getSortIcon(columnKey, sortedInfo)}
+    </span>
+  </div>
+);
 export const getInstrumentTableColumns = ({
   adminIntrgetInstrumentTableColumnsumentListSearch,
   adminIntrumentListSearch,
@@ -154,11 +173,11 @@ export const getInstrumentTableColumns = ({
     },
   },
   {
-    title: (
-      <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-        Closed Period Start Date{" "}
-        {getSortIcon("closedPeriodStartDate", sortedInfo)}
-      </div>
+    title: withSortIcon(
+      "Closed Period Start Date",
+      "closedPeriodStartDate",
+      sortedInfo,
+      "center"
     ),
     dataIndex: "closedPeriodStartDate",
     key: "closedPeriodStartDate",
@@ -183,10 +202,11 @@ export const getInstrumentTableColumns = ({
     ),
   },
   {
-    title: (
-      <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-        Closed Period End Date {getSortIcon("closedPeriodEndDate", sortedInfo)}
-      </div>
+    title: withSortIcon(
+      " Closed Period End Date",
+      "closedPeriodEndDate",
+      sortedInfo,
+      "center"
     ),
     dataIndex: "closedPeriodEndDate",
     key: "closedPeriodEndDate",
@@ -203,7 +223,10 @@ export const getInstrumentTableColumns = ({
     showSorterTooltip: false,
     sortIcon: () => null,
     render: (date, record) => (
-      <span className={!record.status ? styles.inActiveColumnTexts : ""} style={{ textAlign: "center" }}>
+      <span
+        className={!record.status ? styles.inActiveColumnTexts : ""}
+        style={{ textAlign: "center" }}
+      >
         {date ? formatApiDateTime(date) : "—"}
       </span>
     ),
