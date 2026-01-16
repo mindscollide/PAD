@@ -3,11 +3,6 @@ import React from "react";
 import { Tag, Tooltip, Typography } from "antd";
 import { Button } from "../../../../../components";
 
-// Assets (sort icons)
-import DefaultColumnArrow from "../../../../../assets/img/default-colum-arrow.png";
-import ArrowUp from "../../../../../assets/img/arrow-up-dark.png";
-import ArrowDown from "../../../../../assets/img/arrow-down-dark.png";
-
 // Filter dropdowns
 import TypeColumnTitle from "../../../../../components/dropdowns/filters/typeColumnTitle";
 import StatusColumnTitle from "../../../../../components/dropdowns/filters/statusColumnTitle";
@@ -17,13 +12,13 @@ import {
   formatApiDateTime,
   toYYMMDD,
 } from "../../../../../common/funtions/rejex";
-import { useGlobalModal } from "../../../../../context/GlobalModalContext";
 import { usePortfolioContext } from "../../../../../context/portfolioContax";
 import { getTradeTypeById } from "../../../../../common/funtions/type";
 import {
   mapBuySellToIds,
   mapStatusToIds,
 } from "../../../../../components/dropdowns/filters/utils";
+import { withSortIcon } from "../../../../../common/funtions/tableIcon";
 
 const { Text } = Typography;
 
@@ -56,35 +51,6 @@ export const buildApiRequest = (searchState = {}, assetTypeListingData) => {
 /* ------------------------------------------------------------------ */
 /* 🔹 Utility Functions */
 /* ------------------------------------------------------------------ */
-
-/**
- * Returns the correct sorting icon for a given column.
- *
- * @param {string} columnKey - Column key being sorted.
- * @param {Object} sortedInfo - Ant Design `Table` sort state.
- * @returns {JSX.Element} Sorting icon (img).
- */
-const getSortIcon = (columnKey, sortedInfo) => {
-  if (sortedInfo?.columnKey !== columnKey) {
-    return (
-      <img
-        draggable={false}
-        src={DefaultColumnArrow}
-        alt="Default"
-        className="custom-sort-icon"
-      />
-    );
-  }
-  const isAsc = sortedInfo.order === "ascend";
-  return (
-    <img
-      draggable={false}
-      src={isAsc ? ArrowDown : ArrowUp}
-      alt={isAsc ? "Asc" : "Desc"}
-      className="custom-sort-icon"
-    />
-  );
-};
 
 /**
  * Maps API data list into AntD table rows.
@@ -147,11 +113,8 @@ export const getBorderlessTableColumns = ({
 }) => [
   /* --------------------- Requester Name --------------------- */
   {
-    title: (
-      <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-        Requester Name {getSortIcon("requesterName", sortedInfo)}
-      </div>
-    ),
+    title: withSortIcon("Requester Name", "requesterName", sortedInfo),
+    align: "left",
     dataIndex: "requesterName",
     key: "requesterName",
     ellipsis: true,
@@ -167,17 +130,12 @@ export const getBorderlessTableColumns = ({
         {text || "—"}
       </span>
     ),
-    onHeaderCell: () => nowrapCell(120, 160),
-    onCell: () => nowrapCell(120, 160),
   },
 
   /* --------------------- Instrument --------------------- */
   {
-    title: (
-      <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-        Instrument {getSortIcon("instrumentCode", sortedInfo)}
-      </div>
-    ),
+    title: withSortIcon("Instrument", "instrumentCode", sortedInfo),
+    align: "left",
     dataIndex: "instrumentCode",
     key: "instrumentCode",
     ellipsis: true,
@@ -223,17 +181,17 @@ export const getBorderlessTableColumns = ({
         </div>
       );
     },
-    onHeaderCell: () => nowrapCell(130, 170),
-    onCell: () => nowrapCell(130, 170),
   },
 
   /* --------------------- Date & Time --------------------- */
   {
-    title: (
-      <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-        Upload Date & Time {getSortIcon("transactionDate", sortedInfo)}
-      </div>
+    title: withSortIcon(
+      "Upload Date & Time",
+      "transactionDate",
+      sortedInfo,
+      "center"
     ),
+    align: "center",
     dataIndex: "transactionDate",
     key: "transactionDate",
     ellipsis: true,
@@ -251,20 +209,14 @@ export const getBorderlessTableColumns = ({
         </span>
       </Tooltip>
     ),
-    onHeaderCell: () => nowrapCell(120, 160),
-    onCell: () => nowrapCell(120, 160),
   },
 
   /* --------------------- Quantity --------------------- */
   {
-    title: (
-      <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-        Quantity {getSortIcon("quantity", sortedInfo)}
-      </div>
-    ),
+    title: withSortIcon("Quantity", "quantity", sortedInfo, "center"),
+    align: "center",
     dataIndex: "quantity",
     key: "quantity",
-    align: "left",
     width: 100,
     sorter: (a, b) => (a?.quantity ?? 0) - (b?.quantity ?? 0),
     sortOrder: sortedInfo?.columnKey === "quantity" ? sortedInfo.order : null,
@@ -273,8 +225,6 @@ export const getBorderlessTableColumns = ({
     render: (q) => (
       <span className="font-medium">{q?.toLocaleString() || "—"}</span>
     ),
-    onHeaderCell: () => nowrapCell(80, 120),
-    onCell: () => nowrapCell(80, 120),
   },
 
   /* --------------------- Trade Type --------------------- */
@@ -294,17 +244,12 @@ export const getBorderlessTableColumns = ({
       : null,
     onFilter: () => true,
     render: (type) => <span title={type || "—"}>{type || "—"}</span>,
-    onHeaderCell: () => nowrapCell(90, 110),
-    onCell: () => nowrapCell(90, 110),
   },
 
   /* --------------------- Escalated Date & Time --------------------- */
   {
-    title: (
-      <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-        Escalated on {getSortIcon("escalatedDate", sortedInfo)}
-      </div>
-    ),
+    title: withSortIcon("Escalated on", "escalatedDate", sortedInfo, "center"),
+    align: "center",
     dataIndex: "escalatedDate",
     key: "escalatedDate",
     ellipsis: true,
@@ -322,8 +267,6 @@ export const getBorderlessTableColumns = ({
         </span>
       </Tooltip>
     ),
-    onHeaderCell: () => nowrapCell(120, 160),
-    onCell: () => nowrapCell(120, 160),
   },
 
   /* --------------------- Actions --------------------- */
@@ -355,8 +298,6 @@ export const getBorderlessTableColumns = ({
         />
       );
     },
-    onHeaderCell: () => nowrapCell(110, 130),
-    onCell: () => nowrapCell(110, 130),
   },
 ];
 
