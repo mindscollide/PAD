@@ -43,20 +43,8 @@ const ViewDetailPortfolioTransaction = () => {
   } = usePortfolioContext();
 
   const { allInstrumentsData } = useDashboardContext();
-
-  console.log(
-    reconcilePortfolioViewDetailData,
-    "reconcilePortfolioViewDetailData"
-  );
-
-  console.log(
-    complianceOfficerReconcilePortfolioData,
-    "complianceOfficerReconcilePortfolioData"
-  );
-
   // This is the Status Which is I'm getting from the selectedViewDetail contextApi state
   const getStatusStyle = (status) => {
-    console.log(status, "checkStatusessss");
     switch (status) {
       case "1":
         return {
@@ -286,8 +274,11 @@ const ViewDetailPortfolioTransaction = () => {
                   <Col span={24}>
                     <BrokerList
                       statusData={statusData}
-                      viewDetailsData={reconcilePortfolioViewDetailData}
+                      viewDetailsData={
+                        reconcilePortfolioViewDetailData?.details[0]?.brokers
+                      }
                       variant={"Blue"}
+                      type={2}
                     />
                   </Col>
                 </Row>

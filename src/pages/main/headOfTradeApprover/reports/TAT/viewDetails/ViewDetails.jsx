@@ -36,11 +36,8 @@ const ViewDetails = () => {
   const { assetTypeListingData, setAssetTypeListingData } =
     useDashboardContext();
 
-  const { selectedKey } = useSidebarContext();
   const {
-    showViewDetailPageInTatOnHta,
     setShowViewDetailPageInTatOnHta,
-    setShowSelectedTatDataOnViewDetailHTA,
     showSelectedTatDataOnViewDetailHTA,
   } = useGlobalModal();
 
@@ -55,17 +52,6 @@ const ViewDetails = () => {
     setHTATATViewDetailsSearch,
     resetHTATATViewDetailSearch,
   } = useSearchBarContext();
-
-  console.log(
-    showSelectedTatDataOnViewDetailHTA,
-    "showSelectedTatDataOnViewDetailHTA"
-  );
-
-  console.log(htaTATViewDetailsData, "htaTATViewDetailsData");
-  console.log(
-    { showViewDetailPageInTatOnHta, selectedKey },
-    "showViewDetailPageInTatOnHta"
-  );
 
   // -------------------- Local State --------------------
   const [sortedInfo, setSortedInfo] = useState({});
@@ -145,8 +131,7 @@ const ViewDetails = () => {
     hasFetched.current = true;
     const requestData = buildApiRequest(
       htaTATViewDetailsSearch,
-      showSelectedTatDataOnViewDetailHTA,
-      assetTypeListingData
+      showSelectedTatDataOnViewDetailHTA
     );
     fetchApiCall(requestData, true, true);
   }, []);
@@ -163,9 +148,10 @@ const ViewDetails = () => {
   // 🔹 call api on search
   useEffect(() => {
     if (htaTATViewDetailsSearch?.filterTrigger) {
+      console.log("htaTATViewDetailsSearch", htaTATViewDetailsSearch);
       const requestData = buildApiRequest(
         htaTATViewDetailsSearch,
-        assetTypeListingData
+        showSelectedTatDataOnViewDetailHTA
       );
       fetchApiCall(requestData, true, true);
     }
@@ -184,7 +170,7 @@ const ViewDetails = () => {
         setLoadingMore(true);
         const requestData = buildApiRequest(
           htaTATViewDetailsSearch,
-          assetTypeListingData
+          showSelectedTatDataOnViewDetailHTA
         );
         await fetchApiCall(requestData, false, false);
       } catch (err) {
@@ -209,10 +195,11 @@ const ViewDetails = () => {
   const handleRemoveFilter = (key) => {
     const resetMap = {
       instrumentName: { instrumentName: "" },
-      employeeName: { employeeName: "" },
-      departmentName: { departmentName: "" },
-      quantity: { quantity: "" },
-      dateRange: { startDate: null, endDate: null },
+      quantity: { quantity: 0 },
+      actionBy: { actionBy: "" },
+      tat: { tat: 0 },
+      requestDateRange: { startDate: null, endDate: null },
+      actionDateRange: { actionStartDate: null, actionEndDate: null },
     };
 
     setHTATATViewDetailsSearch((prev) => ({
@@ -228,11 +215,13 @@ const ViewDetails = () => {
     setHTATATViewDetailsSearch((prev) => ({
       ...prev,
       instrumentName: "",
-      employeeName: "",
-      departmentName: "",
-      quantity: "",
+      quantity: 0,
       startDate: null,
       endDate: null,
+      actionStartDate: null,
+      actionEndDate: null,
+      actionBy: "",
+      tat: 0,
       pageNumber: 0,
       filterTrigger: true,
     }));
@@ -242,11 +231,13 @@ const ViewDetails = () => {
   const activeFilters = (() => {
     const {
       instrumentName,
-      employeeName,
-      departmentName,
       quantity,
       startDate,
       endDate,
+      actionStartDate,
+      actionEndDate,
+      actionBy,
+      tat,
     } = htaTATViewDetailsSearch || {};
 
     return [
@@ -259,37 +250,35 @@ const ViewDetails = () => {
             : instrumentName,
       },
 
-      employeeName && {
-        key: "employeeName",
-        label: "Employee",
-        value:
-          employeeName.length > 13
-            ? employeeName.slice(0, 13) + "..."
-            : employeeName,
-      },
-
-      departmentName && {
-        key: "departmentName",
-        label: "Department",
-        value:
-          departmentName.length > 13
-            ? departmentName.slice(0, 13) + "..."
-            : departmentName,
-      },
-
-      quantity && {
+      quantity > 0 && {
         key: "quantity",
         label: "Quantity",
         value: Number(quantity).toLocaleString("en-US"),
       },
 
-      (startDate || endDate) && {
-        key: "dateRange",
-        label: "Date",
-        value: `${startDate ? startDate.format("DD/MM/YYYY") : ""} ${
-          endDate ? `- ${endDate.format("DD/MM/YYYY")}` : ""
-        }`,
+      actionBy && {
+        key: "actionBy",
+        label: "Action By",
+        value: actionBy.length > 13 ? actionBy.slice(0, 13) + "..." : actionBy,
       },
+
+      tat > 0 && {
+        key: "tat",
+        label: "TAT",
+        value: Number(tat).toLocaleString("en-US"),
+      },
+
+      startDate &&
+        endDate && {
+          key: "requestDateRange",
+          value: `${startDate} → ${endDate}`,
+        },
+
+      actionStartDate &&
+        actionEndDate && {
+          key: "actionDateRange",
+          value: `${actionStartDate} → ${actionEndDate}`,
+        },
     ].filter(Boolean);
   })();
 
@@ -428,7 +417,7 @@ const ViewDetails = () => {
         style={{ marginTop: "3px" }}
         className={
           activeFilters.length > 0
-            ? "TATHTAchangeHeightreports"
+            ? "TATHTAchangeHeightreports2"
             : "TATHTArepotsHeight"
         }
       >
@@ -441,7 +430,7 @@ const ViewDetails = () => {
               htaTATViewDetailsData?.workFlows?.length
                 ? {
                     x: "max-content",
-                    y: activeFilters.length > 0 ? 450 : 500,
+                    y: activeFilters.length > 0 ? 400 : 450,
                   }
                 : undefined
             }

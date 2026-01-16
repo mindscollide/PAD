@@ -63,7 +63,7 @@ const getSortIcon = (columnKey, sortedInfo) => {
 export const buildApiRequest = (searchState = {}) => ({
   BrokerName: searchState.brokerName || "",
   PSXCode: searchState.psxCode || "",
-  StatusIds: mapStatusToIds?.(searchState.status,3) || [],
+  StatusIds: mapStatusToIds?.(searchState.status, 3) || [],
   PageNumber: Number(searchState.pageNumber) || 0,
   Length: Number(searchState.pageSize) || 10,
 });
@@ -77,13 +77,10 @@ export const getBrokerTableColumns = ({
   onStatusChange,
 }) => [
   {
-    title: (
-      <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-        Broker Name {getSortIcon("brokerName", sortedInfo)}
-      </div>
-    ),
+    title: <div>Broker Name {getSortIcon("brokerName", sortedInfo)}</div>,
     dataIndex: "brokerName",
     key: "brokerName",
+    width: 500,
     ellipsis: true,
     sorter: (a, b) => a.brokerName.localeCompare(b.brokerName),
     sortDirections: ["ascend", "descend"],
@@ -103,6 +100,7 @@ export const getBrokerTableColumns = ({
         setState={setAdminBrokerSearch}
       />
     ),
+    width: 150,
     dataIndex: "status",
     key: "status",
     render: (status, record) => {
@@ -129,6 +127,7 @@ export const getBrokerTableColumns = ({
         PSX Code {getSortIcon("psxCode", sortedInfo)}
       </div>
     ),
+    width: 150,
     dataIndex: "psxCode",
     key: "psxCode",
     ellipsis: true,
@@ -143,6 +142,7 @@ export const getBrokerTableColumns = ({
     title: "",
     key: "action",
     align: "right", // 🔷 Align content to the right
+    width: 50,
     render: (_, record) => (
       <div className={styles.viewEditClass}>
         <Button

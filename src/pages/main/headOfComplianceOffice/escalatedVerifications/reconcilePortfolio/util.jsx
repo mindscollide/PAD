@@ -298,50 +298,6 @@ export const getBorderlessTableColumns = ({
     onCell: () => nowrapCell(90, 110),
   },
 
-  /* --------------------- Status --------------------- */
-  {
-    title: (
-      <StatusColumnTitle
-        state={headOfComplianceApprovalPortfolioSearch}
-        setState={setHeadOfComplianceApprovalPortfolioSearch}
-      />
-    ),
-    dataIndex: "status",
-    key: "status",
-    ellipsis: true,
-    width: 140,
-    filteredValue: headOfComplianceApprovalPortfolioSearch?.status?.length
-      ? headOfComplianceApprovalPortfolioSearch.status
-      : null,
-    onFilter: () => true,
-    render: (status) => {
-      const tag = approvalStatusMap?.[status] || {};
-      return (
-        <Tag
-          style={{
-            backgroundColor: tag.backgroundColor,
-            color: tag.textColor,
-            whiteSpace: "nowrap",
-            overflow: "hidden",
-            textOverflow: "ellipsis",
-            display: "inline-block",
-            maxWidth: "120px",
-            border: "none",
-            borderRadius: "4px",
-            padding: "2px 8px",
-            fontSize: "16px",
-            fontWeight: "500",
-          }}
-          className="border-less-table-orange-status"
-        >
-          {tag.label || status || "—"}
-        </Tag>
-      );
-    },
-    onHeaderCell: () => nowrapCell(120, 160),
-    onCell: () => nowrapCell(120, 160),
-  },
-
   /* --------------------- Escalated Date & Time --------------------- */
   {
     title: (

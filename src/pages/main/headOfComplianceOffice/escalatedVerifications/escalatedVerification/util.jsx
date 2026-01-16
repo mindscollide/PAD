@@ -13,7 +13,6 @@ import EscalatedIcon from "../../../../../assets/img/escalated.png";
 import { formatApiDateTime, toYYMMDD } from "../../../../../common/funtions/rejex";
 import TypeColumnTitle from "../../../../../components/dropdowns/filters/typeColumnTitle";
 import StatusColumnTitle from "../../../../../components/dropdowns/filters/statusColumnTitle";
-import { useGlobalModal } from "../../../../../context/GlobalModalContext";
 import { useReconcileContext } from "../../../../../context/reconsileContax";
 
 import { getTradeTypeById } from "../../../../../common/funtions/type";
@@ -325,51 +324,6 @@ export const getBorderlessTableColumns = ({
     render: (type) => <span title={type || "—"}>{type || "—"}</span>,
     onHeaderCell: () => nowrapCell(90, 110),
     onCell: () => nowrapCell(90, 110),
-  },
-
-  /* --------------------- Status --------------------- */
-  {
-    title: (
-      <StatusColumnTitle
-        state={headOfComplianceApprovalEscalatedVerificationsSearch}
-        setState={setHeadOfComplianceApprovalEscalatedVerificationsSearch}
-      />
-    ),
-    dataIndex: "status",
-    key: "status",
-    ellipsis: true,
-    width: 140,
-    filteredValue: headOfComplianceApprovalEscalatedVerificationsSearch?.status
-      ?.length
-      ? headOfComplianceApprovalEscalatedVerificationsSearch.status
-      : null,
-    onFilter: () => true,
-    render: (status) => {
-      const tag = approvalStatusMap?.[status] || {};
-      return (
-        <Tag
-          style={{
-            backgroundColor: tag.backgroundColor,
-            color: tag.textColor,
-            whiteSpace: "nowrap",
-            overflow: "hidden",
-            textOverflow: "ellipsis",
-            display: "inline-block",
-            maxWidth: "120px",
-            border: "none",
-            borderRadius: "4px",
-            padding: "2px 8px",
-            fontSize: "12px",
-            fontWeight: "500",
-          }}
-          className="border-less-table-orange-status"
-        >
-          {tag.label || status || "—"}
-        </Tag>
-      );
-    },
-    onHeaderCell: () => nowrapCell(120, 160),
-    onCell: () => nowrapCell(120, 160),
   },
 
   /* --------------------- Escalated Date & Time --------------------- */

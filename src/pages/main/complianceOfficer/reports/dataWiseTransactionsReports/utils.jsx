@@ -34,7 +34,7 @@ export const buildApiRequest = (searchState = {}, assetTypeListingData) => ({
   PageNumber: Number(searchState.pageNumber) || 0,
   Length: Number(searchState.pageSize) || 10,
 
-  StatusIds: mapStatusToIds(searchState.status),
+  StatusIds: mapStatusToIds(searchState.status, 2),
   TypeIds: mapBuySellToIds(searchState.type, assetTypeListingData?.Equities),
 
   RequesterName: searchState.employeeName || "",
@@ -194,22 +194,24 @@ export const getBorderlessTableColumns = ({
     title: withSortIcon("Employee ID", "employeeID", sortedInfo),
     dataIndex: "employeeID",
     key: "employeeID",
-    width: "10%",
+    width: "140px",
     ellipsis: true,
-    sorter: (a, b) =>
-      parseInt(a.employeeID.replace(/[^\d]/g, ""), 10) -
-      parseInt(b.employeeID.replace(/[^\d]/g, ""), 10),
+    sorter: (a, b) => a.employeeID - b.employeeID,
     sortDirections: ["ascend", "descend"],
     sortOrder: sortedInfo?.columnKey === "employeeID" ? sortedInfo.order : null,
     showSorterTooltip: false,
     sortIcon: () => null,
     render: (employeeID) => {
       return (
-        <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-          <span className="font-medium">
-            {employeeID}
-            {/* {dashBetweenApprovalAssets("REQ888888")} */}
-          </span>
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: "12px",
+            marginLeft: "8px",
+          }}
+        >
+          <span className="font-medium">{employeeID}</span>
         </div>
       );
     },
@@ -243,6 +245,7 @@ export const getBorderlessTableColumns = ({
     sortIcon: () => null,
     render: (text) => <span className="font-medium">{text}</span>,
   },
+
   {
     title: withSortIcon("Instrument", "instrumentName", sortedInfo),
     dataIndex: "instrumentName",
@@ -250,8 +253,8 @@ export const getBorderlessTableColumns = ({
     width: "140px",
     ellipsis: true,
     sorter: (a, b) => {
-      const nameA = a?.instrumentShortCode || "";
-      const nameB = b?.instrumentShortCode || "";
+      const nameA = a?.instrumentName || "";
+      const nameB = b?.instrumentName || "";
       return nameA.localeCompare(nameB);
     },
     sortDirections: ["ascend", "descend"],
@@ -302,11 +305,8 @@ export const getBorderlessTableColumns = ({
     width: "280px",
     align: "left",
     ellipsis: true,
-    sorter: (a, b) => {
-      const dateA = new Date(`${a.transactionDate}`).getTime();
-      const dateB = new Date(`${b.transactionDate}`).getTime();
-      return dateA - dateB;
-    },
+    sorter: (a, b) =>
+      (a?.transactionDate || "").localeCompare(b?.transactionDate || ""),
     sortDirections: ["ascend", "descend"],
     sortOrder:
       sortedInfo?.columnKey === "transactionDate" ? sortedInfo.order : null,
@@ -394,7 +394,7 @@ export const getBorderlessTableColumns = ({
           text={"View Details"}
           onClick={() => {
             console.log(record, "tradeApprovalID");
-            handelViewDetails(record.approvalID)
+            handelViewDetails(record.approvalID);
             // setIsViewComments(true);
             // setCheckTradeApprovalID(record?.approvalID);
             // setEditBrokerModal(true);

@@ -46,7 +46,7 @@ export const buildApiRequest = (searchState = {}, assetTypeListingData) => {
   return {
     InstrumentName: instrumentName.trim(),
     RequesterName: requesterName.trim(),
-    Quantity: quantity ? Number(quantity) : 0,
+    Quantity: quantity ? (Number(quantity) === 0 ? "" : Number(quantity)) : "",
     StartDate: startDate ? toYYMMDD(startDate) : "",
     EndDate: endDate ? toYYMMDD(endDate) : "",
     StatusIds: mapStatusToIds?.(status) || [],
@@ -177,7 +177,7 @@ export const getBorderlessLineManagerTableColumns = ({
     title: withSortIcon("Instrument Name", "instrumentCode", sortedInfo),
     dataIndex: "instrumentCode",
     key: "instrumentCode",
-    width:200,
+    width: 200,
     ellipsis: true,
     sorter: (a, b) =>
       (a?.instrumentCode || "").localeCompare(b?.instrumentCode || ""),

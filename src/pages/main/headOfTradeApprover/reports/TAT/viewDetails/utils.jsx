@@ -22,10 +22,19 @@ export const buildApiRequest = (
   EmployeeID: showSelectedTatDataOnViewDetailHTA?.employeeID || "",
   StartDate: searchState.startDate ? toYYMMDD(searchState.startDate) : "",
   EndDate: searchState.endDate ? toYYMMDD(searchState.endDate) : "",
+  TAT: searchState?.tat || 0,
+  Quantity: searchState?.quantity || 0,
+  InstrumentName: searchState?.instrumentName || "",
+  ActionBy: searchState?.actionBy || "",
+  ActionStartDate: searchState.actionStartDate
+    ? toYYMMDD(searchState.actionStartDate)
+    : "",
+  ActionEndDate: searchState.actionEndDate
+    ? toYYMMDD(searchState.actionEndDate)
+    : "",
   PageNumber: Number(searchState.pageNumber) || 0,
   Length: Number(searchState.pageSize) || 10,
 });
-
 /**
  * Maps employee transaction data into a UI-friendly format
  *
@@ -95,8 +104,19 @@ const getSortIcon = (columnKey, sortedInfo) => {
 };
 
 // Helper for consistent column titles
-const withSortIcon = (label, columnKey, sortedInfo) => (
-  <div className={style["table-header-wrapper"]}>
+const withSortIcon = (label, columnKey, sortedInfo, align = "left") => (
+  <div
+    className={style["table-header-wrapper"]}
+    style={{
+      justifyContent:
+        align === "center"
+          ? "center"
+          : align === "right"
+          ? "flex-end"
+          : "flex-start",
+      textAlign: align,
+    }}
+  >
     <span className={style["table-header-text"]}>{label}</span>
     <span className={style["table-header-icon"]}>
       {getSortIcon(columnKey, sortedInfo)}
@@ -114,7 +134,7 @@ export const getBorderlessTableColumns = ({
     title: withSortIcon("Instrument", "instrumentCode", sortedInfo),
     dataIndex: "instrumentCode",
     key: "instrumentCode",
-    width: 200,
+    width: 150,
     ellipsis: true,
     sorter: (a, b) =>
       (a?.instrumentCode || "").localeCompare(b?.instrumentCode || ""),
@@ -155,14 +175,11 @@ export const getBorderlessTableColumns = ({
     },
   },
   {
-    title: (
-      <div style={{ marginLeft: "8px" }}>
-        {withSortIcon("Initiated At", "initiatedAt", sortedInfo)}
-      </div>
-    ),
+    title: withSortIcon("Initiated At", "initiatedAt", sortedInfo, "center"),
     dataIndex: "initiatedAt",
     key: "initiatedAt",
-    width: "140px",
+    width: 100,
+    align: "center",
     ellipsis: true,
     sortDirections: ["ascend", "descend"],
     showSorterTooltip: false,
@@ -170,12 +187,7 @@ export const getBorderlessTableColumns = ({
     sortOrder:
       sortedInfo?.columnKey === "initiatedAt" ? sortedInfo.order : null,
     sortIcon: () => null,
-
-    render: (value) => (
-      <div style={{ marginLeft: "8px" }}>
-        <span className="font-medium">{value || "—"}</span>
-      </div>
-    ),
+    render: (value) => <span className="font-medium">{value || "—"}</span>,
   },
   {
     title: (
@@ -187,7 +199,7 @@ export const getBorderlessTableColumns = ({
     dataIndex: "type",
     key: "type",
     ellipsis: true,
-    width: "140px",
+    width: 140,
     filteredValue: htaTATViewDetailsSearch.type?.length
       ? htaTATViewDetailsSearch?.type
       : null,
@@ -212,10 +224,11 @@ export const getBorderlessTableColumns = ({
     ),
   },
   {
-    title: withSortIcon("Quantity", "quantity", sortedInfo),
+    title: withSortIcon("Quantity", "quantity", sortedInfo, "center"),
     dataIndex: "quantity",
     key: "quantity",
-    width: "140px",
+    align: "center",
+    width: 150,
     ellipsis: true,
     sortIcon: () => null,
     showSorterTooltip: false,
@@ -228,51 +241,34 @@ export const getBorderlessTableColumns = ({
     ),
   },
   {
-    title: (
-      <div style={{ marginLeft: "8px" }}>
-        {withSortIcon("Action By", "actionBy", sortedInfo)}
-      </div>
-    ),
+    title: withSortIcon("Action By", "actionBy", sortedInfo, "center"),
     dataIndex: "actionBy",
     key: "actionBy",
+    align: "center",
     width: "140px",
     sortIcon: () => null,
     ellipsis: true,
     showSorterTooltip: false,
     sorter: (a, b) => (a.actionBy || "").localeCompare(b.actionBy || ""),
     sortOrder: sortedInfo?.columnKey === "actionBy" ? sortedInfo.order : null,
-    render: (value) => (
-      <div style={{ marginLeft: "8px" }}>
-        <span className="font-medium">{value || "—"}</span>
-      </div>
-    ),
+    render: (value) => <span className="font-medium">{value || "—"}</span>,
   },
   {
-    title: (
-      <div style={{ marginLeft: "8px" }}>
-        {withSortIcon("Action At", "actionAt", sortedInfo)}
-      </div>
-    ),
+    title: withSortIcon("Action At", "actionAt", sortedInfo, "center"),
     dataIndex: "actionAt",
     key: "actionAt",
+    align: "center",
     width: "140px",
     ellipsis: true,
     showSorterTooltip: false,
     sortIcon: () => null,
     sorter: (a, b) => (a.actionAt || "").localeCompare(b.actionAt || ""),
     sortOrder: sortedInfo?.columnKey === "actionAt" ? sortedInfo.order : null,
-    render: (value) => (
-      <div style={{ marginLeft: "8px" }}>
-        <span className="font-medium">{value || "—"}</span>
-      </div>
-    ),
+    render: (value) => <span className="font-medium">{value || "—"}</span>,
   },
   {
-    title: (
-      <div style={{ marginLeft: "8px" }}>
-        {withSortIcon("TAT", "Tat", sortedInfo)}
-      </div>
-    ),
+    title: withSortIcon("TAT", "Tat", sortedInfo, "center"),
+    align: "center",
     dataIndex: "Tat",
     key: "Tat",
     width: "140px",
@@ -281,10 +277,6 @@ export const getBorderlessTableColumns = ({
     sorter: (a, b) => (a.Tat || 0) - (b.Tat || 0),
     sortIcon: () => null,
     sortOrder: sortedInfo?.columnKey === "Tat" ? sortedInfo.order : null,
-    render: (value) => (
-      <div style={{ marginLeft: "8px" }}>
-        <span className="font-medium">{value || "—"}</span>
-      </div>
-    ),
+    render: (value) => <span className="font-medium">{value || "—"}</span>,
   },
 ];

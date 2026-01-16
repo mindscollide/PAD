@@ -2,13 +2,6 @@ import ArrowUP from "../../../../../assets/img/arrow-up-dark.png";
 import ArrowDown from "../../../../../assets/img/arrow-down-dark.png";
 import DefaultColumArrow from "../../../../../assets/img/default-colum-arrow.png";
 import style from "./HTATAT.module.css";
-
-import {
-  formatApiDateTime,
-  toYYMMDD,
-} from "../../../../../common/funtions/rejex";
-import { getTradeTypeById } from "../../../../../common/funtions/type";
-import TypeColumnTitle from "../../../../../components/dropdowns/filters/typeColumnTitle";
 import { Button } from "../../../../../components";
 
 /**
@@ -91,8 +84,19 @@ const getSortIcon = (columnKey, sortedInfo) => {
 };
 
 // Helper for consistent column titles
-const withSortIcon = (label, columnKey, sortedInfo) => (
-  <div className={style["table-header-wrapper"]}>
+const withSortIcon = (label, columnKey, sortedInfo, align = "left") => (
+  <div
+    className={style["table-header-wrapper"]}
+    style={{
+      justifyContent:
+        align === "center"
+          ? "center"
+          : align === "right"
+          ? "flex-end"
+          : "flex-start",
+      textAlign: align,
+    }}
+  >
     <span className={style["table-header-text"]}>{label}</span>
     <span className={style["table-header-icon"]}>
       {getSortIcon(columnKey, sortedInfo)}
@@ -101,12 +105,7 @@ const withSortIcon = (label, columnKey, sortedInfo) => (
 );
 
 export const getBorderlessTableColumns = ({
-  approvalStatusMap,
   sortedInfo,
-  htaPolicyBreachesReportSearch,
-  setHTAPolicyBreachesReportSearch,
-  setSelectedEmployee,
-  setPolicyModalVisible,
   setShowViewDetailPageInTatOnHta,
   setShowSelectedTatDataOnViewDetailHTA,
 }) => [
@@ -181,10 +180,11 @@ export const getBorderlessTableColumns = ({
     },
   },
   {
-    title: withSortIcon("Request Count", "totalRequests", sortedInfo),
+    title: withSortIcon("Request Count", "totalRequests", sortedInfo, "center"),
     dataIndex: "totalRequests",
     key: "totalRequests",
     width: "140px",
+    align: "center",
     ellipsis: true,
     sorter: (a, b) => a.totalRequests - b.totalRequests,
     sortDirections: ["ascend", "descend"],
@@ -192,22 +192,20 @@ export const getBorderlessTableColumns = ({
       sortedInfo?.columnKey === "totalRequests" ? sortedInfo.order : null,
     showSorterTooltip: false,
     sortIcon: () => null,
-    render: (text, record) => (
-      <span
-        className={`${style["cell-text"]} font-medium cursor-pointer text-primary`}
-      >
-        {text}
-      </span>
+    render: (text) => (
+      <span className="font-medium">{text.toLocaleString("en-US")}</span>
     ),
   },
   {
     title: withSortIcon(
       "Avg turn around time",
       "totalTurnAroundDays",
-      sortedInfo
+      sortedInfo,
+      "center"
     ),
     dataIndex: "totalTurnAroundDays",
     key: "totalTurnAroundDays",
+    align: "center",
     width: "140px",
     ellipsis: true,
     sorter: (a, b) =>
@@ -218,11 +216,7 @@ export const getBorderlessTableColumns = ({
     showSorterTooltip: false,
     sortIcon: () => null,
     render: (text) => (
-      <span className={`${style["cell-text"]} font-medium`}>
-        {text !== null && text !== undefined
-          ? Number(text).toLocaleString("en-US")
-          : "-"}
-      </span>
+      <span className="font-medium">{text.toLocaleString("en-US")}</span>
     ),
   },
   {

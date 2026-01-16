@@ -56,11 +56,6 @@ const MyAction = () => {
   const { setMyActionLineManagerData, myActionLineManagerData } =
     useMyApproval();
 
-  console.log(
-    myActionLineManagerData,
-    "myActionLineManagerDatamyActionLineManagerData"
-  );
-
   /**
    * Fetches transactions from API.
    * @param {boolean} flag - whether to show loader
@@ -366,7 +361,10 @@ const MyAction = () => {
         date: formatApiDateTime(`${wf.requestedDate} ${wf.requestedTime}`),
         iconType: "SendForApproval",
       };
-
+      // userID
+      const userProfileData = JSON.parse(
+        sessionStorage.getItem("user_profile_data")
+      );
       // Step 1: Bundle hierarchy
       const bundleSteps =
         wf.bundleHistory?.map((b) => ({
@@ -376,7 +374,10 @@ const MyAction = () => {
               : b.bundleStatus === 3
               ? "Declined"
               : "Pending",
-          user: `${b.firstName} ${b.lastName}`,
+          user:
+            userProfileData?.userID === b.assignedToUserID
+              ? "You"
+              : `${b.firstName} ${b.lastName}`,
           date: formatApiDateTime(
             `${b.bundleModifiedDate} ${b.bundleModifiedTime}`
           ),

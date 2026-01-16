@@ -283,13 +283,12 @@ const HTATAT = () => {
         value: Number(quantity).toLocaleString("en-US"),
       },
 
-      (startDate || endDate) && {
-        key: "dateRange",
-        label: "Date",
-        value: `${startDate ? startDate.format("DD/MM/YYYY") : ""} ${
-          endDate ? `- ${endDate.format("DD/MM/YYYY")}` : ""
-        }`,
-      },
+      startDate &&
+        endDate && {
+          label: "Date",
+          key: "dateRange",
+          value: `${startDate} → ${endDate}`,
+        },
     ].filter(Boolean);
   })();
 
@@ -416,7 +415,7 @@ const HTATAT = () => {
             background="white"
             style={{ marginTop: "3px" }}
             className={
-              activeFilters.length > 0 ? "changeHeightreports" : "repotsHeight"
+              activeFilters.length > 0 ? "TATHTArepotsHeight" : "repotsHeight"
             }
           >
             <div className="px-4 md:px-6 lg:px-8 ">

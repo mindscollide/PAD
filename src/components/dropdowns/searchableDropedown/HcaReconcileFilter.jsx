@@ -254,7 +254,7 @@ export const HcaReconcileFilter = ({
       </Row>
 
       {/* Escalation Date Range (only for escalated tab) */}
-      <Row gutter={[12, 12]}>
+      <Row gutter={[12, 12]} style={{ marginTop: "12px" }}>
         <Col xs={24} sm={24} md={12}>
           <TextField
             label="Quantity"
