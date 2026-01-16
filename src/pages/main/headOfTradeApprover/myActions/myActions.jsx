@@ -8,12 +8,7 @@ import React, {
 import { Row, Col } from "antd";
 import { DownloadOutlined } from "@ant-design/icons";
 import { AcordianTable, PageLayout } from "../../../../components";
-import CustomButton from "../../../../components/buttons/button";
 import style from "./myActions.module.css";
-import EmptyState from "../../../../components/emptyStates/empty-states";
-import CheckIcon from "../../../../assets/img/Check.png";
-import EllipsesIcon from "../../../../assets/img/Ellipses.png";
-import CrossIcon from "../../../../assets/img/Cross.png";
 import PDF from "../../../../assets/img/pdf.png";
 import Excel from "../../../../assets/img/xls.png";
 import { buildMyActionApiRequest, getMyActionsColumn } from "./utils";
@@ -58,13 +53,6 @@ const HTAMyAction = () => {
     myActionHeadOfTradeApprovalData,
     setMyActionHeadOfTradeApprovalData,
   } = useMyApproval();
-
-  console.log(selectedKey, "selectedKeyselectedKey");
-
-  console.log(
-    myActionHeadOfTradeApprovalData,
-    "myActionLineManagerDatamyActionLineManagerData"
-  );
 
   /**
    * Fetches transactions from API.

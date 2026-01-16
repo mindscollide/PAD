@@ -4,10 +4,11 @@ import { Tag, Tooltip } from "antd";
 import { Button } from "../../../../components";
 
 // Assets (sort icons)
-import DefaultColumnArrow from "../../../../assets/img/default-colum-arrow.png";
-import ArrowUp from "../../../../assets/img/arrow-up-dark.png";
+import DefaultColumArrow from "../../../../assets/img/default-colum-arrow.png";
+import ArrowUP from "../../../../assets/img/arrow-up-dark.png";
 import ArrowDown from "../../../../assets/img/arrow-down-dark.png";
 import EscalatedIcon from "../../../../assets/img/escalated.png";
+import style from "./escalatedApprovals.module.css";
 
 // Helpers
 import { formatApiDateTime, toYYMMDD } from "../../../../common/funtions/rejex";
@@ -23,17 +24,6 @@ import {
 // ===========================================================================
 // 🎯 CONSTANTS & CONFIGURATION
 // ===========================================================================
-
-const COLUMN_CONFIG = {
-  REQUISITION: { minWidth: 120, maxWidth: 160 },
-  INSTRUMENT: { minWidth: 130, maxWidth: 170 },
-  DATE: { minWidth: 120, maxWidth: 160 },
-  QUANTITY: { minWidth: 80, maxWidth: 120 },
-  TYPE: { minWidth: 90, maxWidth: 110 },
-  STATUS: { minWidth: 120, maxWidth: 160 },
-  ESCALATED: { minWidth: 120, maxWidth: 160 },
-  ACTIONS: { minWidth: 110, maxWidth: 130 },
-};
 
 /**
  * Build API request payload for Escalated Trade Approval.
@@ -72,46 +62,43 @@ export const buildApiRequest = (searchState = {}, assetTypeListingData) => {
  * @returns {JSX.Element} The corresponding sort icon (default, asc, desc).
  */
 const getSortIcon = (columnKey, sortedInfo) => {
-  if (sortedInfo?.columnKey !== columnKey) {
-    return (
-      <img
-        draggable={false}
-        src={DefaultColumnArrow}
-        alt="Default"
-        className="custom-sort-icon"
-      />
+  if (sortedInfo?.columnKey === columnKey) {
+    return sortedInfo.order === "ascend" ? (
+      <img src={ArrowDown} alt="Asc" className="custom-sort-icon" />
+    ) : (
+      <img src={ArrowUP} alt="Desc" className="custom-sort-icon" />
     );
   }
-  const isAsc = sortedInfo.order === "ascend";
   return (
     <img
       draggable={false}
-      src={isAsc ? ArrowDown : ArrowUp}
-      alt={isAsc ? "Asc" : "Desc"}
+      src={DefaultColumArrow}
+      alt="Not sorted"
       className="custom-sort-icon"
+      data-testid={`sort-icon-${columnKey}-default`}
     />
   );
 };
+const withSortIcon = (label, columnKey, sortedInfo, align = "left") => (
+  <div
+    className={style["table-header-wrapper"]}
+    style={{
+      justifyContent:
+        align === "center"
+          ? "center"
+          : align === "right"
+          ? "flex-end"
+          : "flex-start",
+      textAlign: align,
+    }}
+  >
+    <span className={style["table-header-text"]}>{label}</span>
+    <span className={style["table-header-icon"]}>
+      {getSortIcon(columnKey, sortedInfo)}
+    </span>
+  </div>
+);
 
-/* ------------------------------------------------------------------ */
-/* 🔹 Style Helpers */
-/* ------------------------------------------------------------------ */
-/**
- * Generates AntD table cell styles for nowrap text handling.
- *
- * @param {number} minWidth - Minimum cell width.
- * @param {number} maxWidth - Maximum cell width.
- * @returns {Object} Style object for AntD `onCell`/`onHeaderCell`.
- */
-const nowrapCell = (minWidth, maxWidth) => ({
-  style: {
-    minWidth,
-    maxWidth,
-    whiteSpace: "nowrap",
-    overflow: "hidden",
-    textOverflow: "ellipsis",
-  },
-});
 
 // ===========================================================================
 // 🗺️ DATA MAPPING FUNCTIONS
@@ -199,37 +186,6 @@ const renderInstrumentCell = (record) => {
 };
 
 /**
- * Renders status tag with appropriate colors
- * @param {string} status - Approval status
- * @param {Object} approvalStatusMap - Status color mapping
- * @returns {JSX.Element} Status tag component
- */
-const renderStatusCell = (status, approvalStatusMap) => {
-  const tag = approvalStatusMap?.[status] || {};
-  return (
-    <Tag
-      style={{
-        backgroundColor: tag.backgroundColor,
-        color: tag.textColor,
-        whiteSpace: "nowrap",
-        overflow: "hidden",
-        textOverflow: "ellipsis",
-        display: "inline-block",
-        maxWidth: "120px",
-        border: "none",
-        borderRadius: "4px",
-        padding: "2px 8px",
-        fontSize: "16px",
-        fontWeight: "500",
-      }}
-      className="border-less-table-orange-status"
-    >
-      {tag.label || status || "—"}
-    </Tag>
-  );
-};
-
-/**
  * Renders action buttons for table rows
  * @param {Object} record - Table row data
  * @param {Function} onViewDetail - View detail handler
@@ -295,13 +251,10 @@ export const getBorderlessTableColumns = ({
 }) => [
   /* --------------------- Requester Name --------------------- */
   {
-    title: (
-      <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-        Requester Name {getSortIcon("requesterName", sortedInfo)}
-      </div>
-    ),
+    title: withSortIcon("Requester Name", "requesterName", sortedInfo),
     dataIndex: "requesterName",
     key: "requesterName",
+    align:"left",
     ellipsis: true,
     width: 140,
     sorter: (a, b) =>
@@ -315,25 +268,11 @@ export const getBorderlessTableColumns = ({
         {text || "—"}
       </span>
     ),
-    onHeaderCell: () =>
-      nowrapCell(
-        COLUMN_CONFIG.REQUISITION.minWidth,
-        COLUMN_CONFIG.REQUISITION.maxWidth
-      ),
-    onCell: () =>
-      nowrapCell(
-        COLUMN_CONFIG.REQUISITION.minWidth,
-        COLUMN_CONFIG.REQUISITION.maxWidth
-      ),
   },
 
   /* --------------------- Line Manager Name --------------------- */
   {
-    title: (
-      <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-        Line Manager {getSortIcon("lineManagerName", sortedInfo)}
-      </div>
-    ),
+    title: withSortIcon("Line Manager", "lineManagerName", sortedInfo),
     dataIndex: "lineManagerName",
     key: "lineManagerName",
     ellipsis: true,
@@ -349,25 +288,11 @@ export const getBorderlessTableColumns = ({
         {text || "—"}
       </span>
     ),
-    onHeaderCell: () =>
-      nowrapCell(
-        COLUMN_CONFIG.REQUISITION.minWidth,
-        COLUMN_CONFIG.REQUISITION.maxWidth
-      ),
-    onCell: () =>
-      nowrapCell(
-        COLUMN_CONFIG.REQUISITION.minWidth,
-        COLUMN_CONFIG.REQUISITION.maxWidth
-      ),
   },
 
   /* --------------------- Instrument --------------------- */
   {
-    title: (
-      <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-        Instrument {getSortIcon("instrumentCode", sortedInfo)}
-      </div>
-    ),
+    title: withSortIcon("Instrument", "instrumentCode", sortedInfo),
     dataIndex: "instrumentCode",
     key: "instrumentCode",
     ellipsis: true,
@@ -379,28 +304,15 @@ export const getBorderlessTableColumns = ({
     showSorterTooltip: false,
     sortIcon: () => null,
     render: (_, record) => renderInstrumentCell(record),
-    onHeaderCell: () =>
-      nowrapCell(
-        COLUMN_CONFIG.INSTRUMENT.minWidth,
-        COLUMN_CONFIG.INSTRUMENT.maxWidth
-      ),
-    onCell: () =>
-      nowrapCell(
-        COLUMN_CONFIG.INSTRUMENT.minWidth,
-        COLUMN_CONFIG.INSTRUMENT.maxWidth
-      ),
   },
 
   /* --------------------- Date & Time --------------------- */
   {
-    title: (
-      <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-        Date & Time {getSortIcon("requestDateTime", sortedInfo)}
-      </div>
-    ),
+    title: withSortIcon("Date & Time", "requestDateTime", sortedInfo, "center"),
     dataIndex: "requestDateTime",
     key: "requestDateTime",
     ellipsis: true,
+    align: "center",
     width: 140,
     sorter: (a, b) =>
       (a?.requestDateTime || "").localeCompare(b?.requestDateTime || ""),
@@ -415,10 +327,6 @@ export const getBorderlessTableColumns = ({
         </span>
       </Tooltip>
     ),
-    onHeaderCell: () =>
-      nowrapCell(COLUMN_CONFIG.DATE.minWidth, COLUMN_CONFIG.DATE.maxWidth),
-    onCell: () =>
-      nowrapCell(COLUMN_CONFIG.DATE.minWidth, COLUMN_CONFIG.DATE.maxWidth),
   },
 
   /* --------------------- Trade Type --------------------- */
@@ -445,46 +353,58 @@ export const getBorderlessTableColumns = ({
         {type || "—"}
       </span>
     ),
-    onHeaderCell: () =>
-      nowrapCell(COLUMN_CONFIG.TYPE.minWidth, COLUMN_CONFIG.TYPE.maxWidth),
-    onCell: () =>
-      nowrapCell(COLUMN_CONFIG.TYPE.minWidth, COLUMN_CONFIG.TYPE.maxWidth),
   },
 
   /* --------------------- Status --------------------- */
-  {
-    title: (
-      <StatusColumnTitle
-        state={headOfTradeEscalatedApprovalsSearch}
-        setState={setHeadOfTradeEscalatedApprovalsSearch}
-      />
-    ),
-    dataIndex: "status",
-    key: "status",
-    ellipsis: true,
-    width: 140,
-    filteredValue: headOfTradeEscalatedApprovalsSearch?.status?.length
-      ? headOfTradeEscalatedApprovalsSearch.status
-      : null,
-    onFilter: () => true,
-    render: (status) => renderStatusCell(status, approvalStatusMap),
-    onHeaderCell: () =>
-      nowrapCell(COLUMN_CONFIG.STATUS.minWidth, COLUMN_CONFIG.STATUS.maxWidth),
-    onCell: () =>
-      nowrapCell(COLUMN_CONFIG.STATUS.minWidth, COLUMN_CONFIG.STATUS.maxWidth),
-  },
+  // {
+  //   title: (
+  //     <StatusColumnTitle
+  //       state={headOfTradeEscalatedApprovalsSearch}
+  //       setState={setHeadOfTradeEscalatedApprovalsSearch}
+  //     />
+  //   ),
+  //   dataIndex: "status",
+  //   key: "status",
+  //   ellipsis: true,
+  //   width: 140,
+  //   filteredValue: headOfTradeEscalatedApprovalsSearch?.status?.length
+  //     ? headOfTradeEscalatedApprovalsSearch.status
+  //     : null,
+  //   onFilter: () => true,
+  //   render: (status) => renderStatusCell(status, approvalStatusMap),
+  // },
 
+  /* --------------------- Status --------------------- */
+  {
+    title: withSortIcon("Quantity", "quantity", sortedInfo, "center"),
+    dataIndex: "quantity",
+    key: "quantity",
+    align: "center",
+    width: 100,
+    ellipsis: true,
+    sortIcon: () => null,
+    showSorterTooltip: false,
+    sorter: (a, b) => Number(a.quantity) - Number(b.quantity),
+    sortOrder: sortedInfo?.columnKey === "quantity" ? sortedInfo.order : null,
+    render: (text) => (
+      <span className="font-medium">
+        {Number(text).toLocaleString("en-US")}
+      </span>
+    ),
+  },
   /* --------------------- Escalated On --------------------- */
   {
-    title: (
-      <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-        Escalated On {getSortIcon("escalatedDateTime", sortedInfo)}
-      </div>
+    title: withSortIcon(
+      "Escalated On",
+      "escalatedDateTime",
+      sortedInfo,
+      "center"
     ),
     dataIndex: "escalatedDateTime",
     key: "escalatedDateTime",
     ellipsis: true,
     width: 140,
+    align: "center",
     sorter: (a, b) =>
       (a?.escalatedDateTime || "").localeCompare(b?.escalatedDateTime || ""),
     sortOrder:
@@ -498,16 +418,6 @@ export const getBorderlessTableColumns = ({
         </span>
       </Tooltip>
     ),
-    onHeaderCell: () =>
-      nowrapCell(
-        COLUMN_CONFIG.ESCALATED.minWidth,
-        COLUMN_CONFIG.ESCALATED.maxWidth
-      ),
-    onCell: () =>
-      nowrapCell(
-        COLUMN_CONFIG.ESCALATED.minWidth,
-        COLUMN_CONFIG.ESCALATED.maxWidth
-      ),
   },
 
   /* --------------------- Actions --------------------- */
@@ -519,16 +429,6 @@ export const getBorderlessTableColumns = ({
     fixed: "right",
     render: (text, record) =>
       renderActionCell(record, onViewDetail, setViewDetailsHeadOfApprovalModal),
-    onHeaderCell: () =>
-      nowrapCell(
-        COLUMN_CONFIG.ACTIONS.minWidth,
-        COLUMN_CONFIG.ACTIONS.maxWidth
-      ),
-    onCell: () =>
-      nowrapCell(
-        COLUMN_CONFIG.ACTIONS.minWidth,
-        COLUMN_CONFIG.ACTIONS.maxWidth
-      ),
   },
 ];
 
