@@ -455,9 +455,8 @@ const COdataWiseTransactionsReports = () => {
       {/* 🔹 Transactions Table */}
       <PageLayout
         background="white"
-        style={{ marginTop: "3px" }}
         className={
-          activeFilters.length > 0 ? "changeHeightreports" : "repotsHeight"
+          activeFilters.length > 0 ? "TATHTAchangeHeightreports2" : "repotsHeightHOC"
         }
       >
         <div className="px-4 md:px-6 lg:px-8 ">

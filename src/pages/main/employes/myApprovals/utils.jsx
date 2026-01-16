@@ -146,8 +146,19 @@ const getSortIcon = (columnKey, sortedInfo) => {
  */
 
 // Helper for consistent column titles
-const withSortIcon = (label, columnKey, sortedInfo) => (
-  <div className={style["table-header-wrapper"]}>
+const withSortIcon = (label, columnKey, sortedInfo, align = "left") => (
+  <div
+    className={style["table-header-wrapper"]}
+    style={{
+      justifyContent:
+        align === "center"
+          ? "center"
+          : align === "right"
+          ? "flex-end"
+          : "flex-start",
+      textAlign: align,
+    }}
+  >
     <span className={style["table-header-text"]}>{label}</span>
     <span className={style["table-header-icon"]}>
       {getSortIcon(columnKey, sortedInfo)}
@@ -433,7 +444,7 @@ export const getBorderlessTableColumns = ({
     dataIndex: "type",
     key: "type",
     ellipsis: true,
-    width: 150,
+    width: 130,
     filteredValue: employeeMyApprovalSearch.type?.length
       ? employeeMyApprovalSearch.type
       : null,
@@ -454,19 +465,14 @@ export const getBorderlessTableColumns = ({
         {type}
       </span>
     ),
-    onHeaderCell: () =>
-      createCellStyle(
-        COLUMN_CONFIG.WIDTHS.TYPE.min,
-        COLUMN_CONFIG.WIDTHS.TYPE.max
-      ),
-    onCell: () =>
-      createCellStyle(
-        COLUMN_CONFIG.WIDTHS.TYPE.min,
-        COLUMN_CONFIG.WIDTHS.TYPE.max
-      ),
   },
   {
-    title: withSortIcon("Request Date & Time", "requestDateTime", sortedInfo),
+    title: withSortIcon(
+      "Request Date & Time",
+      "requestDateTime",
+      sortedInfo,
+      "center"
+    ),
     dataIndex: "requestDateTime",
     key: "requestDateTime",
     width: 200,
@@ -480,22 +486,7 @@ export const getBorderlessTableColumns = ({
       sortedInfo?.columnKey === "requestDateTime" ? sortedInfo.order : null,
     showSorterTooltip: false,
     sortIcon: () => null,
-    render: (date, record) => (
-      <span
-        id={`cell-${record.key}-requestDateTime`}
-        className="text-gray-600"
-        data-testid="formatted-date"
-        style={{
-          display: "inline-block",
-          width: "100%",
-          overflow: "hidden",
-          textOverflow: "ellipsis",
-          whiteSpace: "nowrap",
-        }}
-      >
-        {formatApiDateTime(date)}
-      </span>
-    ),
+    render: (date, record) => <span>{formatApiDateTime(date)}</span>,
   },
   {
     title: withFilterHeader(() => (
