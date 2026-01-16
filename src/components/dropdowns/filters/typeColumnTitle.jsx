@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Col, Dropdown, Row } from "antd";
 import { DownOutlined } from "@ant-design/icons";
 import TypeFilterDropdown from "./typesFilterDropdown";
-import style from "../../../pages/main/employes/myApprovals/approval.module.css";
+import style from "./filter.module.css";
 
 /**
  * Component: TypeColumnTitle
@@ -14,10 +14,7 @@ import style from "../../../pages/main/employes/myApprovals/approval.module.css"
  * - employeeMyApprovalSearch: Object containing search filters for approvals.
  * - setEmployeeMyApprovalSearch: Function to update the filter state.
  */
-const TypeColumnTitle = ({
-  state,
-  setState,
-}) => {
+const TypeColumnTitle = ({ state, setState }) => {
   // Local dropdown visibility state
   const [visible, setVisible] = useState(false);
 
@@ -71,7 +68,13 @@ const TypeColumnTitle = ({
         onClick={(e) => e.stopPropagation()}
       >
         <Row gutter={[10, 10]}>
-          <Col>
+          <Col
+            className={`${style["table-filter-headding-text"]} ${
+              selected.length
+                ? style["after-selected-table-filter-headding-text"]
+                : ""
+            }`}
+          >
             {/* Display current filter state: single value, multiple, or default */}
             {selected.length === 1
               ? selected[0]
