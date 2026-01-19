@@ -170,7 +170,7 @@ export const getBorderlessTableColumns = ({
   },
   {
     title: withSortIcon(
-      "Request date & time",
+      "Request Date & Time",
       "requestDateTime",
       sortedInfo,
       "center"

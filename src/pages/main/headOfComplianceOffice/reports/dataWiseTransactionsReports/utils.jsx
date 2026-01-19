@@ -65,7 +65,7 @@ export const mappingDateWiseTransactionReport = (
     assetTypeShortCode: item?.assetType?.assetTypeShortCode || "—",
     transactionDate:
       `${item?.requestDate || ""} ${item?.requestTime || ""}`.trim() || "—",
-    department: item.departmentName,
+    department: item?.departmentName|| "—",
     type: getTradeTypeById(assetTypeData, item?.tradeType) || "-",
     status: item.approvalStatus?.approvalStatusName || "",
     quantity: item.quantity || 0,

@@ -153,32 +153,19 @@ export const getBorderlessTableColumns = ({
   },
   {
     title: withSortIcon("Officer Name", "complianceOfficer", sortedInfo),
+    align: "left",
     dataIndex: "complianceOfficer",
     key: "complianceOfficer",
-    ellipsis: true,
-    align: "left",
     width: 140,
-    filteredValue: OverdueVerificationHCOReportSearch?.complianceOfficer?.length
-      ? OverdueVerificationHCOReportSearch?.complianceOfficer
-      : null,
-    onFilter: () => true, // Actual filtering handled by API
-    render: (complianceOfficer, record) => (
-      <span
-        id={`cell-${record.key}-complianceOfficer`}
-        className={
-          complianceOfficer === "Buy" ? "text-green-600" : "text-red-600"
-        }
-        data-testid={`trade-type-${complianceOfficer}`}
-        style={{
-          display: "inline-block",
-          width: "100%",
-          overflow: "hidden",
-          textOverflow: "ellipsis",
-          whiteSpace: "nowrap",
-        }}
-      >
-        {complianceOfficer}
-      </span>
+    ellipsis: true,
+    sorter: (a, b) => a.complianceOfficer.localeCompare(b.complianceOfficer),
+    sortDirections: ["ascend", "descend"],
+    sortOrder:
+      sortedInfo?.columnKey === "complianceOfficer" ? sortedInfo.order : null,
+    showSorterTooltip: false,
+    sortIcon: () => null,
+    render: (text) => (
+      <span className={`${style["cell-text"]} font-medium`}>{text}</span>
     ),
   },
   {

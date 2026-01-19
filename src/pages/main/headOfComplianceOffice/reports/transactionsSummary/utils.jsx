@@ -64,10 +64,10 @@ export const mappingDateWiseTransactionReport = (
       item.compliantTransactions +
       item.totalTransactions +
       item.nonCompliantTransactions,
-    totalEmployees: item.totalEmployees,
-    totalTransactions: item.totalTransactions || "",
-    compliantTransactions: item.compliantTransactions || "—",
-    nonCompliantTransactions: item.nonCompliantTransactions || "—",
+    totalEmployees: item.totalEmployees || "0",
+    totalTransactions: item.totalTransactions || "0",
+    compliantTransactions: item.compliantTransactions || "0",
+    nonCompliantTransactions: item.nonCompliantTransactions || "0",
     transactionDate:
       [item?.transactionDate, item?.transactionTime]
         .filter(Boolean)
@@ -279,6 +279,7 @@ const renderStatusTag = (status, approvalStatusMap) => {
     </Tag>
   );
 };
+
 const withFilterHeader = (FilterComponent) => (
   <div
     className={style["table-header-wrapper"]}
@@ -292,6 +293,7 @@ const withFilterHeader = (FilterComponent) => (
     <FilterComponent />
   </div>
 );
+
 export const getBorderlessTableColumnsViewDetails = ({
   approvalStatusMap,
   sortedInfo,
@@ -429,20 +431,7 @@ export const getBorderlessTableColumnsViewDetails = ({
       : null,
     onFilter: () => true, // Actual filtering handled by API
     render: (type, record) => (
-      <span
-        id={`cell-${record.key}-type`}
-        className={type === "Buy" ? "text-green-600" : "text-red-600"}
-        data-testid={`trade-type-${type}`}
-        style={{
-          display: "inline-block",
-          width: "100%",
-          overflow: "hidden",
-          textOverflow: "ellipsis",
-          whiteSpace: "nowrap",
-        }}
-      >
-        {type}
-      </span>
+      <span id={`cell-${record.key}-type`}>{type}</span>
     ),
   },
   {
@@ -456,7 +445,7 @@ export const getBorderlessTableColumnsViewDetails = ({
     showSorterTooltip: false,
     sortIcon: () => null,
     render: (q) => (
-      <span className="font-medium">{q?.toLocaleString() || "—"}</span>
+      <span className="font-medium">{Number(q).toLocaleString("en-US") || "—"}</span>
     ),
   },
   {

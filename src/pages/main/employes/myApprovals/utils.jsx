@@ -5,9 +5,6 @@ import { Tag, Tooltip } from "antd";
 import { Button, StatusFilterDropdown } from "../../../../components";
 import style from "./approval.module.css";
 import EscalatedIcon from "../../../../assets/img/escalated.png";
-import ArrowUP from "../../../../assets/img/arrow-up-dark.png";
-import ArrowDown from "../../../../assets/img/arrow-down-dark.png";
-import DefaultColumArrow from "../../../../assets/img/default-colum-arrow.png";
 import TypeColumnTitle from "../../../../components/dropdowns/filters/typeColumnTitle";
 import StatusColumnTitle from "../../../../components/dropdowns/filters/statusColumnTitle";
 import { useGlobalModal } from "../../../../context/GlobalModalContext";
@@ -21,6 +18,7 @@ import {
   mapStatusToIds,
 } from "../../../../components/dropdowns/filters/utils";
 import { getTradeTypeById } from "../../../../common/funtions/type";
+import { withSortIcon } from "../../../../common/funtions/tableIcon";
 
 // 🔹 CONSTANTS
 const COLUMN_CONFIG = {
@@ -98,73 +96,6 @@ export const mapEmployeeMyApprovalData = (
     assetTypeID: item.assetType?.assetTypeID || 0,
   }));
 };
-
-/**
- * Returns the appropriate sort icon based on current sort state
- * @param {string} columnKey - The column's unique key
- * @param {Object} sortedInfo - Current table sorting information
- * @returns {JSX.Element} Sort icon component
- */
-const getSortIcon = (columnKey, sortedInfo) => {
-  if (sortedInfo?.columnKey === columnKey) {
-    return sortedInfo.order === COLUMN_CONFIG.SORT_ORDER.ASCEND ? (
-      <img
-        draggable={false}
-        src={ArrowDown}
-        alt="Sorted ascending"
-        className="custom-sort-icon"
-        data-testid={`sort-icon-${columnKey}-asc`}
-      />
-    ) : (
-      <img
-        draggable={false}
-        src={ArrowUP}
-        alt="Sorted descending"
-        className="custom-sort-icon"
-        data-testid={`sort-icon-${columnKey}-desc`}
-      />
-    );
-  }
-
-  return (
-    <img
-      draggable={false}
-      src={DefaultColumArrow}
-      alt="Not sorted"
-      className="custom-sort-icon"
-      data-testid={`sort-icon-${columnKey}-default`}
-    />
-  );
-};
-
-/**
- * Creates a table header with sort icon and proper alignment
- * @param {string} label - Column display label
- * @param {string} columnKey - Column unique key
- * @param {Object} sortedInfo - Current sorting state
- * @returns {JSX.Element} Header component with sort icon
- */
-
-// Helper for consistent column titles
-const withSortIcon = (label, columnKey, sortedInfo, align = "left") => (
-  <div
-    className={style["table-header-wrapper"]}
-    style={{
-      justifyContent:
-        align === "center"
-          ? "center"
-          : align === "right"
-          ? "flex-end"
-          : "flex-start",
-      textAlign: align,
-    }}
-  >
-    <span className={style["table-header-text"]}>{label}</span>
-    <span className={style["table-header-icon"]}>
-      {getSortIcon(columnKey, sortedInfo)}
-    </span>
-  </div>
-);
 
 /**
  * Creates a filter header without sort icon
@@ -542,30 +473,18 @@ export const getBorderlessTableColumns = ({
       ),
   },
   {
-    title: withSortIcon("Quantity", "quantity", sortedInfo),
+    title: withSortIcon("Quantity", "quantity", sortedInfo, "center"),
     dataIndex: "quantity",
+    align: "center",
     key: "quantity",
     ellipsis: true,
     width: 100,
-    align: "left",
     sorter: (a, b) => a.quantity - b.quantity,
     sortOrder: sortedInfo?.columnKey === "quantity" ? sortedInfo.order : null,
     showSorterTooltip: false,
     sortIcon: () => null,
     render: (quantity, record) => (
-      <span
-        id={`cell-${record.key}-quantity`}
-        className="font-medium"
-        data-testid="formatted-quantity"
-        style={{
-          display: "inline-block",
-          width: "100%",
-          overflow: "hidden",
-          textOverflow: "ellipsis",
-          whiteSpace: "nowrap",
-          textAlign: "left",
-        }}
-      >
+      <span id={`cell-${record.key}-quantity`} className="font-medium">
         {quantity.toLocaleString()}
       </span>
     ),
