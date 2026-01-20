@@ -124,11 +124,13 @@ const Headers = () => {
     // 🔹 Key = 17 (HCA)
     if (
       selectedKey === "17" &&
-      [
+      ([
         "/PAD/hca-reports/hca-overdue-verifications",
         "/PAD/hca-reports/hca-upload-portfolio",
         "/PAD/hca-reports/hca-date-wise-transaction-report",
-      ].includes(currentPath)
+      ].includes(currentPath) ||
+        (currentPath === "/PAD/hca-reports/hca-transactions-summary-report" &&
+          coTransactionSummaryReportViewDetailsFlag))
     ) {
       return true;
     }
