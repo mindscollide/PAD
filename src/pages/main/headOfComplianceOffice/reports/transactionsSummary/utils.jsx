@@ -228,7 +228,6 @@ export const getBorderlessTableColumns = ({
           className="small-light-button"
           text={"View Details"}
           onClick={() => {
-            console.log(record, "tradeApprovalID");
             handelViewDetails(record.transactionDate);
           }}
         />
@@ -481,8 +480,7 @@ export const getBorderlessTableColumnsViewDetails = ({
           className="small-light-button"
           text={"View Details"}
           onClick={() => {
-            console.log(record, "tradeApprovalID");
-            handelViewDetails(record.approvalID);
+            console.log(record, "record");
           }}
         />
       </div>
