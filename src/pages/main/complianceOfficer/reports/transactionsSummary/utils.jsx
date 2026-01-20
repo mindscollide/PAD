@@ -17,6 +17,7 @@ import {
   mapBuySellToIds,
   mapStatusToIds,
 } from "../../../../../components/dropdowns/filters/utils";
+import { withSortIcon } from "../../../../../common/funtions/tableIcon";
 
 /**
  * Utility: Build API request payload for approval listing
@@ -54,9 +55,9 @@ export const mappingDateWiseTransactionReport = (
       item.totalTransactions +
       item.nonCompliantTransactions,
     totalEmployees: item.totalEmployees,
-    totalTransactions: item.totalTransactions || "",
-    compliantTransactions: item.compliantTransactions || "—",
-    nonCompliantTransactions: item.nonCompliantTransactions || "—",
+    totalTransactions: item.totalTransactions || 0,
+    compliantTransactions: item.compliantTransactions || 0,
+    nonCompliantTransactions: item.nonCompliantTransactions || 0,
     transactionDate:
       [item?.transactionDate, item?.transactionTime]
         .filter(Boolean)
@@ -64,72 +65,22 @@ export const mappingDateWiseTransactionReport = (
   }));
 };
 
-/**
- * Returns the appropriate sort icon based on current sort state
- *
- * @param {string} columnKey - The column's key
- * @param {object} sortedInfo - Current sort state from the table
- * @returns {JSX.Element} The sort icon
- */
-const getSortIcon = (columnKey, sortedInfo) => {
-  if (sortedInfo?.columnKey === columnKey) {
-    return sortedInfo.order === "ascend" ? (
-      <img
-        draggable={false}
-        src={ArrowDown}
-        alt="Asc"
-        className="custom-sort-icon"
-      />
-    ) : (
-      <img
-        draggable={false}
-        src={ArrowUP}
-        alt="Desc"
-        className="custom-sort-icon"
-      />
-    );
-  }
-  return (
-    <img
-      draggable={false}
-      src={DefaultColumArrow}
-      alt="Default"
-      className="custom-sort-icon"
-    />
-  );
-};
-
-// Helper for consistent column titles
-const withSortIcon = (label, columnKey, sortedInfo, align = "left") => (
-  <div
-    className={style["table-header-wrapper"]}
-    style={{
-      justifyContent:
-        align === "center"
-          ? "center"
-          : align === "right"
-          ? "flex-end"
-          : "flex-start",
-      textAlign: align,
-    }}
-  >
-    <span className={style["table-header-text"]}>{label}</span>
-    <span className={style["table-header-icon"]}>
-      {getSortIcon(columnKey, sortedInfo)}
-    </span>
-  </div>
-);
 
 export const getBorderlessTableColumns = ({
   sortedInfo,
   handelViewDetails,
 }) => [
   {
-    title: withSortIcon("Transaction Date", "transactionDate", sortedInfo,"center"),
+    title: withSortIcon(
+      "Transaction Date",
+      "transactionDate",
+      sortedInfo,
+      "center"
+    ),
     dataIndex: "transactionDate",
     key: "transactionDate",
     width: 200,
-    align:"center",
+    align: "center",
     ellipsis: true,
     sorter: (a, b) =>
       (a?.transactionDate || "").localeCompare(b?.transactionDate || ""),
@@ -144,7 +95,12 @@ export const getBorderlessTableColumns = ({
     ),
   },
   {
-    title: withSortIcon("Total Employees", "totalEmployees", sortedInfo,"center"),
+    title: withSortIcon(
+      "Total Employees",
+      "totalEmployees",
+      sortedInfo,
+      "center"
+    ),
     dataIndex: "totalEmployees",
     key: "totalEmployees",
     width: 140,
@@ -158,7 +114,12 @@ export const getBorderlessTableColumns = ({
     render: (q) => <span>{q.toLocaleString()}</span>,
   },
   {
-    title: withSortIcon("Total Transactions", "totalTransactions", sortedInfo,"center"),
+    title: withSortIcon(
+      "Total Transactions",
+      "totalTransactions",
+      sortedInfo,
+      "center"
+    ),
     dataIndex: "totalTransactions",
     key: "totalTransactions",
     width: 140,
@@ -175,7 +136,8 @@ export const getBorderlessTableColumns = ({
     title: withSortIcon(
       "Compliant Transactions",
       "compliantTransactions",
-      sortedInfo,"center"
+      sortedInfo,
+      "center"
     ),
     dataIndex: "compliantTransactions",
     key: "compliantTransactions",
@@ -321,46 +283,10 @@ const withFilterHeader = (FilterComponent) => (
   </div>
 );
 
-const getSortIconView = (columnKey, sortedInfo) => {
-  if (sortedInfo?.columnKey === columnKey) {
-    return sortedInfo.order === "ascend" ? (
-      <img
-        draggable={false}
-        src={ArrowDown}
-        alt="Asc"
-        className="custom-sort-icon"
-      />
-    ) : (
-      <img
-        draggable={false}
-        src={ArrowUP}
-        alt="Desc"
-        className="custom-sort-icon"
-      />
-    );
-  }
-  return (
-    <img
-      draggable={false}
-      src={DefaultColumArrow}
-      alt="Default"
-      className="custom-sort-icon"
-    />
-  );
-};
-
-// Helper for consistent column titles
-const withSortIconView = (label, columnKey, sortedInfo) => (
-  <div className={style["table-header-wrapper"]}>
-    <span className={style["table-header-text"]}>{label}</span>
-    <span className={style["table-header-icon"]}>
-      {getSortIconView(columnKey, sortedInfo)}
-    </span>
-  </div>
-);
 const numberSorter = (key) => (a, b) =>
   Number(String(a[key] || 0).replace(/[^\d]/g, "")) -
   Number(String(b[key] || 0).replace(/[^\d]/g, ""));
+
 export const getBorderlessTableColumnsViewDetails = ({
   approvalStatusMap,
   sortedInfoView,
@@ -370,9 +296,10 @@ export const getBorderlessTableColumnsViewDetails = ({
   setIsViewComments,
 }) => [
   {
-    title: withSortIconView("Employee ID", "employeeID", sortedInfoView),
+    title: withSortIcon("Employee ID", "employeeID", sortedInfoView),
     dataIndex: "employeeID",
     key: "employeeID",
+    align: "left",
     width: 150,
     ellipsis: true,
     sorter: numberSorter("employeeID"),
@@ -390,7 +317,7 @@ export const getBorderlessTableColumnsViewDetails = ({
     },
   },
   {
-    title: withSortIconView("Employee Name", "employeeName", sortedInfoView),
+    title: withSortIcon("Employee Name", "employeeName", sortedInfoView),
     dataIndex: "employeeName",
     key: "employeeName",
     width: 200,
@@ -407,9 +334,10 @@ export const getBorderlessTableColumnsViewDetails = ({
     render: (text) => <span className="font-medium">{text}</span>,
   },
   {
-    title: withSortIconView("Instrument", "instrumentName", sortedInfoView),
+    title: withSortIcon("Instrument", "instrumentName", sortedInfoView),
     dataIndex: "instrumentName",
     key: "instrumentName",
+    align: "left",
     width: 150,
     ellipsis: true,
     sorter: (a, b) => {
@@ -461,9 +389,15 @@ export const getBorderlessTableColumnsViewDetails = ({
     },
   },
   {
-    title: withSortIconView("Initiated at", "transactionDate", sortedInfoView),
+    title: withSortIcon(
+      "Initiated at",
+      "transactionDate",
+      sortedInfoView,
+      "center"
+    ),
     dataIndex: "transactionDate",
     key: "transactionDate",
+    align: "center",
     width: 200,
     ellipsis: true,
     sorter: (a, b) =>
@@ -513,14 +447,10 @@ export const getBorderlessTableColumnsViewDetails = ({
     ),
   },
   {
-    title: (
-      <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-        Quantity {getSortIconView("quantity", sortedInfoView)}
-      </div>
-    ),
+    title: withSortIcon("Quantity", "quantity", sortedInfoView, "center"),
     dataIndex: "quantity",
     key: "quantity",
-    align: "left",
+    align: "center",
     width: 100,
     sorter: (a, b) => (a?.quantity ?? 0) - (b?.quantity ?? 0),
     sortOrder:

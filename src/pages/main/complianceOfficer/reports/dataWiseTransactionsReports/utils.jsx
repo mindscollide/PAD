@@ -18,6 +18,7 @@ import {
   mapStatusToIds,
 } from "../../../../../components/dropdowns/filters/utils";
 import { getTradeTypeById } from "../../../../../common/funtions/type";
+import { withSortIcon } from "../../../../../common/funtions/tableIcon";
 
 /**
  * Utility: Build API request payload for approval listing
@@ -83,41 +84,6 @@ export const mappingDateWiseTransactionReport = (
 };
 
 /**
- * Returns the appropriate sort icon based on current sort state
- *
- * @param {string} columnKey - The column's key
- * @param {object} sortedInfo - Current sort state from the table
- * @returns {JSX.Element} The sort icon
- */
-const getSortIcon = (columnKey, sortedInfo) => {
-  if (sortedInfo?.columnKey === columnKey) {
-    return sortedInfo.order === "ascend" ? (
-      <img
-        draggable={false}
-        src={ArrowDown}
-        alt="Asc"
-        className="custom-sort-icon"
-      />
-    ) : (
-      <img
-        draggable={false}
-        src={ArrowUP}
-        alt="Desc"
-        className="custom-sort-icon"
-      />
-    );
-  }
-  return (
-    <img
-      draggable={false}
-      src={DefaultColumArrow}
-      alt="Default"
-      className="custom-sort-icon"
-    />
-  );
-};
-
-/**
  * Renders status tag with appropriate styling
  * @param {string} status - Approval status
  * @param {Object} approvalStatusMap - Status to style mapping
@@ -161,15 +127,6 @@ const renderStatusTag = (status, approvalStatusMap) => {
   );
 };
 
-// Helper for consistent column titles
-const withSortIcon = (label, columnKey, sortedInfo) => (
-  <div className={style["table-header-wrapper"]}>
-    <span className={style["table-header-text"]}>{label}</span>
-    <span className={style["table-header-icon"]}>
-      {getSortIcon(columnKey, sortedInfo)}
-    </span>
-  </div>
-);
 const withFilterHeader = (FilterComponent) => (
   <div
     className={style["table-header-wrapper"]}
@@ -195,6 +152,7 @@ export const getBorderlessTableColumns = ({
     dataIndex: "employeeID",
     key: "employeeID",
     width: "140px",
+    align: "left",
     ellipsis: true,
     sorter: (a, b) => a.employeeID - b.employeeID,
     sortDirections: ["ascend", "descend"],
@@ -245,11 +203,11 @@ export const getBorderlessTableColumns = ({
     sortIcon: () => null,
     render: (text) => <span className="font-medium">{text}</span>,
   },
-
   {
     title: withSortIcon("Instrument", "instrumentName", sortedInfo),
     dataIndex: "instrumentName",
     key: "instrumentName",
+    align: "left",
     width: "140px",
     ellipsis: true,
     sorter: (a, b) => {
@@ -299,11 +257,16 @@ export const getBorderlessTableColumns = ({
     },
   },
   {
-    title: withSortIcon("Transaction Date", "transactionDate", sortedInfo),
+    title: withSortIcon(
+      "Transaction Date",
+      "transactionDate",
+      sortedInfo,
+      "center"
+    ),
     dataIndex: "transactionDate",
     key: "transactionDate",
     width: "280px",
-    align: "left",
+    align: "center",
     ellipsis: true,
     sorter: (a, b) =>
       (a?.transactionDate || "").localeCompare(b?.transactionDate || ""),
@@ -351,10 +314,11 @@ export const getBorderlessTableColumns = ({
     ),
   },
   {
-    title: withSortIcon("Quantity", "quantity", sortedInfo),
+    title: withSortIcon("Quantity", "quantity", sortedInfo, "center"),
     dataIndex: "quantity",
     key: "quantity",
     width: "120px",
+    align: "center",
     ellipsis: true,
     sorter: (a, b) => a.quantity - b.quantity,
     sortDirections: ["ascend", "descend"],

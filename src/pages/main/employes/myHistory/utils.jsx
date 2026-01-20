@@ -16,55 +16,7 @@ import {
   mapBuySellToIds,
   mapStatusToIds,
 } from "../../../../components/dropdowns/filters/utils";
-
-const getSortIcon = (columnKey, sortedInfo) => {
-  if (sortedInfo?.columnKey === columnKey) {
-    return sortedInfo.order === "ascend" ? (
-      <img
-        draggable={false}
-        src={ArrowDown}
-        alt="Asc"
-        className="custom-sort-icon"
-      />
-    ) : (
-      <img
-        draggable={false}
-        src={ArrowUP}
-        alt="Desc"
-        className="custom-sort-icon"
-      />
-    );
-  }
-  return (
-    <img
-      draggable={false}
-      src={DefaultColumArrow}
-      alt="Default"
-      className="custom-sort-icon"
-    />
-  );
-};
-
-// Helper for consistent column titles
-const withSortIcon = (label, columnKey, sortedInfo, align = "left") => (
-  <div
-    className={style["table-header-wrapper"]}
-    style={{
-      justifyContent:
-        align === "center"
-          ? "center"
-          : align === "right"
-          ? "flex-end"
-          : "flex-start",
-      textAlign: align,
-    }}
-  >
-    <span className={style["table-header-text"]}>{label}</span>
-    <span className={style["table-header-icon"]}>
-      {getSortIcon(columnKey, sortedInfo)}
-    </span>
-  </div>
-);
+import { withSortIcon } from "../../../../common/funtions/tableIcon";
 
 /**
  * Utility: Build API request payload for approval listing
@@ -103,6 +55,7 @@ export const getMyHistoryColumn = (
       "tradeApprovalID",
       sortedInfo
     ),
+    align: "left",
     dataIndex: "tradeApprovalID",
     key: "tradeApprovalID",
     ellipsis: true,
@@ -127,6 +80,7 @@ export const getMyHistoryColumn = (
   },
   {
     title: withSortIcon("Instrument", "instrumentName", sortedInfo),
+    align: "left",
     dataIndex: "instrumentName",
     key: "instrumentName",
     width: 140,
@@ -205,10 +159,10 @@ export const getMyHistoryColumn = (
   },
   {
     title: withSortIcon("Nature", "nature", sortedInfo, "center"),
+    align: "left",
     dataIndex: "nature",
     key: "nature",
     width: "160px",
-    align: "center",
     ellipsis: true,
     sorter: (a, b) => a.nature.localeCompare(b.nature),
     sortDirections: ["ascend", "descend"],

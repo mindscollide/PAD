@@ -10,37 +10,39 @@ import {
   formatApiDateTime,
   toYYMMDD,
 } from "../../../../common/funtions/rejex";
+
 const getSortIcon = (columnKey, sortedInfo) => {
   if (sortedInfo?.columnKey === columnKey) {
     return sortedInfo.order === "ascend" ? (
-      <img
-        draggable={false}
-        src={ArrowDown}
-        alt="Asc"
-        className="custom-sort-icon"
-      />
+      <img src={ArrowDown} alt="Asc" className="custom-sort-icon" />
     ) : (
-      <img
-        draggable={false}
-        src={ArrowUP}
-        alt="Desc"
-        className="custom-sort-icon"
-      />
+      <img src={ArrowUP} alt="Desc" className="custom-sort-icon" />
     );
   }
   return (
     <img
       draggable={false}
       src={DefaultColumArrow}
-      alt="Default"
+      alt="Not sorted"
       className="custom-sort-icon"
+      data-testid={`sort-icon-${columnKey}-default`}
     />
   );
 };
 
-// Helper for consistent column titles
-const withSortIcon = (label, columnKey, sortedInfo) => (
-  <div className={style["table-header-wrapper"]}>
+const withSortIcon = (label, columnKey, sortedInfo, align = "left") => (
+  <div
+    className={style["table-header-wrapper"]}
+    style={{
+      justifyContent:
+        align === "center"
+          ? "center"
+          : align === "right"
+          ? "flex-end"
+          : "flex-start",
+      textAlign: align,
+    }}
+  >
     <span className={style["table-header-text"]}>{label}</span>
     <span className={style["table-header-icon"]}>
       {getSortIcon(columnKey, sortedInfo)}
@@ -74,6 +76,7 @@ export const getMyActionsColumn = (approvalStatusMap, sortedInfo) => [
     title: withSortIcon("Request/Transaction ID", "approvalID", sortedInfo),
     dataIndex: "approvalID",
     key: "approvalID",
+    align: "left",
     ellipsis: true,
     width: "220px",
     sorter: (a, b) =>
@@ -97,6 +100,7 @@ export const getMyActionsColumn = (approvalStatusMap, sortedInfo) => [
     title: withSortIcon("Instrument", "instrumentName", sortedInfo),
     dataIndex: "instrumentName",
     key: "instrumentName",
+    align: "left",
     width: "140px",
     ellipsis: true,
     sorter: (a, b) => {
@@ -164,12 +168,13 @@ export const getMyActionsColumn = (approvalStatusMap, sortedInfo) => [
     title: withSortIcon(
       "Date & Time of Approval Request",
       "approvalDateTime",
-      sortedInfo
+      sortedInfo,
+      "center"
     ),
     dataIndex: "approvalDateTime",
     key: "approvalDateTime",
     width: "280px",
-    align: "left",
+    align: "center",
     ellipsis: true,
     sorter: (a, b) => {
       const dateA = new Date(`${a.creationDate} ${a.creationTime}`).getTime();
@@ -202,7 +207,7 @@ export const getMyActionsColumn = (approvalStatusMap, sortedInfo) => [
     render: (text) => <span className="font-medium">{text}</span>,
   },
   {
-    title: withSortIcon("Quantity", "quantity", sortedInfo),
+    title: withSortIcon("Quantity", "quantity", sortedInfo, "center"),
     dataIndex: "quantity",
     key: "quantity",
     width: "180px",

@@ -23,6 +23,7 @@ import {
   mapBuySellToIds,
   mapStatusToIds,
 } from "../../../../../components/dropdowns/filters/utils";
+import { withSortIcon } from "../../../../../common/funtions/tableIcon";
 
 /**
  * Build API request payload from search/filter state.
@@ -49,38 +50,6 @@ export const buildApiRequest = (searchState = {}, assetTypeListingData) => {
     PageNumber: Number(searchState.pageNumber) || 0,
     Length: Number(searchState.pageSize) || 10,
   };
-};
-
-/* ------------------------------------------------------------------ */
-/* 🔹 Sort Icon Helper */
-/* ------------------------------------------------------------------ */
-/**
- * Returns the appropriate sort icon based on column key and sorting info.
- *
- * @param {string} columnKey - The column key being sorted.
- * @param {Object} sortedInfo - AntD sorting info (columnKey, order).
- * @returns {JSX.Element} The corresponding sort icon (default, asc, desc).
- */
-const getSortIcon = (columnKey, sortedInfo) => {
-  if (sortedInfo?.columnKey !== columnKey) {
-    return (
-      <img
-        draggable={false}
-        src={DefaultColumnArrow}
-        alt="Default"
-        className="custom-sort-icon"
-      />
-    );
-  }
-  const isAsc = sortedInfo.order === "ascend";
-  return (
-    <img
-      draggable={false}
-      src={isAsc ? ArrowDown : ArrowUp}
-      alt={isAsc ? "Asc" : "Desc"}
-      className="custom-sort-icon"
-    />
-  );
 };
 
 /* ------------------------------------------------------------------ */
@@ -148,11 +117,7 @@ export const getBorderlessTableColumns = ({
 }) => [
   /* --------------------- Requester Name --------------------- */
   {
-    title: (
-      <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-        Requester Name {getSortIcon("requesterName", sortedInfo)}
-      </div>
-    ),
+    title: withSortIcon("Requester Name", "requesterName", sortedInfo),
     dataIndex: "requesterName",
     key: "requesterName",
     ellipsis: true,
@@ -172,11 +137,7 @@ export const getBorderlessTableColumns = ({
 
   /* --------------------- Instrument --------------------- */
   {
-    title: (
-      <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-        Instrument {getSortIcon("instrumentCode", sortedInfo)}
-      </div>
-    ),
+    title: withSortIcon("Instrument", "instrumentCode", sortedInfo),
     dataIndex: "instrumentCode",
     key: "instrumentCode",
     ellipsis: true,
@@ -220,13 +181,10 @@ export const getBorderlessTableColumns = ({
 
   /* --------------------- Date & Time --------------------- */
   {
-    title: (
-      <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-        Date & Time {getSortIcon("transactionDate", sortedInfo)}
-      </div>
-    ),
+    title: withSortIcon("Date & Time", "transactionDate", sortedInfo, "center"),
     dataIndex: "transactionDate",
     key: "transactionDate",
+    align: "center",
     ellipsis: true,
     sorter: (a, b) =>
       (a?.transactionDate || "").localeCompare(b?.transactionDate || ""),
@@ -243,14 +201,10 @@ export const getBorderlessTableColumns = ({
 
   /* --------------------- Quantity --------------------- */
   {
-    title: (
-      <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-        Quantity {getSortIcon("quantity", sortedInfo)}
-      </div>
-    ),
+    title: withSortIcon("Quantity", "quantity", sortedInfo, "center"),
     dataIndex: "quantity",
     key: "quantity",
-    align: "left",
+    align: "center",
     sorter: (a, b) => (a?.quantity ?? 0) - (b?.quantity ?? 0),
     sortOrder: sortedInfo?.columnKey === "quantity" ? sortedInfo.order : null,
     showSorterTooltip: false,

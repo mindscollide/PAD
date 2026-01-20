@@ -20,6 +20,7 @@ import {
   mapStatusToIds,
 } from "../../../../../components/dropdowns/filters/utils";
 import { getTradeTypeById } from "../../../../../common/funtions/type";
+import { withSortIcon } from "../../../../../common/funtions/tableIcon";
 // import TypeColumnTitle from "./typeFilter";
 
 /**
@@ -49,7 +50,7 @@ export const buildApiRequest = (searchState = {}, assetTypeListingData) => {
     Quantity: quantity ? (Number(quantity) === 0 ? "" : Number(quantity)) : "",
     StartDate: startDate ? toYYMMDD(startDate) : "",
     EndDate: endDate ? toYYMMDD(endDate) : "",
-    StatusIds: mapStatusToIds?.(status) || [],
+    // StatusIds: mapStatusToIds?.(status) || [],
     TypeIds: mapBuySellToIds?.(type, assetTypeListingData?.Equities) || [],
     PageNumber: Number(pageNumber) || 0,
     Length: Number(pageSize) || 10,
@@ -73,49 +74,6 @@ export const mapApiResopse = (assetTypeData, pendingApprovals = []) =>
       quantity: item.quantity || 0,
     })
   );
-/**
- * Returns the appropriate sort icon based on current sort state
- *
- * @param {string} columnKey - The column's key
- * @param {object} sortedInfo - Current sort state from the table
- * @returns {JSX.Element} The sort icon
- */
-const getSortIcon = (columnKey, sortedInfo) => {
-  if (sortedInfo?.columnKey === columnKey) {
-    return sortedInfo.order === "ascend" ? (
-      <img
-        draggable={false}
-        src={ArrowDown}
-        alt="Asc"
-        className="custom-sort-icon"
-      />
-    ) : (
-      <img
-        draggable={false}
-        src={ArrowUP}
-        alt="Desc"
-        className="custom-sort-icon"
-      />
-    );
-  }
-  return (
-    <img
-      draggable={false}
-      src={DefaultColumArrow}
-      alt="Default"
-      className="custom-sort-icon"
-    />
-  );
-};
-
-const withSortIcon = (label, columnKey, sortedInfo) => (
-  <div className={style["table-header-wrapper"]}>
-    <span className={style["table-header-text"]}>{label}</span>
-    <span className={style["table-header-icon"]}>
-      {getSortIcon(columnKey, sortedInfo)}
-    </span>
-  </div>
-);
 
 export const getBorderlessLineManagerTableColumns = ({
   approvalStatusMap,
@@ -128,6 +86,7 @@ export const getBorderlessLineManagerTableColumns = ({
 }) => [
   {
     title: withSortIcon("Approval ID", "tradeApprovalID", sortedInfo),
+    align: "left",
     dataIndex: "tradeApprovalID",
     key: "tradeApprovalID",
     width: "10%",
@@ -154,7 +113,8 @@ export const getBorderlessLineManagerTableColumns = ({
     },
   },
   {
-    title: <div>Requester Name {getSortIcon("requesterName", sortedInfo)}</div>,
+    title: withSortIcon("Requester Name", "requesterName", sortedInfo),
+    align: "left",
     dataIndex: "requesterName",
     key: "requesterName",
     ellipsis: true,
@@ -175,6 +135,7 @@ export const getBorderlessLineManagerTableColumns = ({
   },
   {
     title: withSortIcon("Instrument Name", "instrumentCode", sortedInfo),
+    align: "left",
     dataIndex: "instrumentCode",
     key: "instrumentCode",
     width: 200,
@@ -221,10 +182,15 @@ export const getBorderlessLineManagerTableColumns = ({
     },
   },
   {
-    title: withSortIcon("Request date & time", "requestDateTime", sortedInfo),
+    title: withSortIcon(
+      "Request Date & Time",
+      "requestDateTime",
+      sortedInfo,
+      "center"
+    ),
     dataIndex: "requestDateTime",
     key: "requestDateTime",
-
+    align: "center",
     ellipsis: true,
     sorter: (a, b) =>
       formatApiDateTime(a.requestDateTime).localeCompare(
@@ -266,45 +232,8 @@ export const getBorderlessLineManagerTableColumns = ({
     ),
   },
   {
-    title: (
-      <StatusColumnTitle
-        state={lMPendingApprovalReportsSearch}
-        setState={setLMPendingApprovalReportsSearch}
-      />
-    ),
-    dataIndex: "status",
-    key: "status",
-    ellipsis: true,
+    title: withSortIcon("Quantity", "quantity", sortedInfo, "center"),
     align: "center",
-    filteredValue: lMPendingApprovalReportsSearch.status?.length
-      ? lMPendingApprovalReportsSearch.status
-      : null,
-    onFilter: () => true,
-    render: (status, record) => {
-      console.log(status, "checkerStateus");
-      const tag = approvalStatusMap[status] || {};
-      return (
-        <div id={`cell-${record.key}-status`}>
-          <Tag
-            style={{
-              backgroundColor: tag.backgroundColor,
-              color: tag.textColor,
-              whiteSpace: "nowrap", // prevent wrapping
-              overflow: "hidden",
-              textOverflow: "ellipsis",
-              display: "inline-block",
-              // maxWidth: "100%", // tag respects parent cell width
-            }}
-            className="border-less-table-orange-status"
-          >
-            {tag.label}
-          </Tag>
-        </div>
-      );
-    },
-  },
-  {
-    title: withSortIcon("Quantity", "quantity", sortedInfo),
     dataIndex: "quantity",
     key: "quantity",
     width: "8%",
