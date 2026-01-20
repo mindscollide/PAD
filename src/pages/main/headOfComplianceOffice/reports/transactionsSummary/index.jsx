@@ -45,6 +45,7 @@ import { useTableScrollBottom } from "../../../../../common/funtions/scroll";
 import CustomButton from "../../../../../components/buttons/button";
 import { DateRangePicker } from "../../../../../components";
 import { mapStatusToIds } from "../../../../../components/dropdowns/filters/utils";
+import ViewCommentHOCTransaction from "./viewDetails/viewComment/ViewComment";
 // import ViewComment from "./viewComment/ViewComment";
 
 const HCATransactionsSummarysReports = () => {
@@ -625,7 +626,7 @@ const HCATransactionsSummarysReports = () => {
         </div>
       </PageLayout>
 
-      {/* {isViewComments && <ViewComment />} */}
+      {isViewComments && <ViewCommentHOCTransaction />}
     </>
   );
 };
