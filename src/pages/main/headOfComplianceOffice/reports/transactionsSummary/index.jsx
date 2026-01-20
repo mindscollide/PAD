@@ -359,6 +359,7 @@ const HCATransactionsSummarysReports = () => {
     hocTransactionsSummarysReportsViewDetailsSearch,
     setHOCTransactionsSummarysReportsViewDetailSearch,
     handelViewDetails,
+    setIsViewComments,
   });
 
   const handleDateChange = (dates) => {

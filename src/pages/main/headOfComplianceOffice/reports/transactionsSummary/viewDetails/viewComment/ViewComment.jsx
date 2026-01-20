@@ -16,32 +16,53 @@ const ViewCommentHOCTransaction = () => {
   );
 
   // Check workflow Id it shows comment against the workFlow ID
-  const workflowStatusID = coTransactionSummaryReportViewDetailsListData?.key;
+  const record =
+    coTransactionSummaryReportViewDetailsListData?.record?.[0] || null;
   // const detail = viewDetailsModalData?.details?.[0];
 
-  const accetanceComments =
-    coTransactionSummaryReportViewDetailsListData?.accetanceComments || [];
-  const rejectionComments =
-    coTransactionSummaryReportViewDetailsListData?.rejectionComment || [];
+  /**
+   * STEP 2: Extract required values
+   */
+  const workflowStatusID = record?.workFlowStatusID;
 
+  const accetanceComments = record?.accetanceComments
+    ? [record.accetanceComments]
+    : [];
+
+  const rejectionComments = record?.rejectionComments
+    ? [record.rejectionComments]
+    : [];
+
+  /**
+   * STEP 3: Format comments
+   */
   const formatComments = (commentsArray) => {
-    if (!commentsArray || commentsArray.length === 0)
+    if (!commentsArray || commentsArray.length === 0) {
       return "No comments available.";
+    }
 
     return commentsArray
       .map((comment, index) => `${index + 1}) ${comment}`)
       .join("\n");
   };
 
-  //To Show Approval or Rejection Comments
+  /**
+   * STEP 4: Decide which comment to show
+   */
   const getCommentText = () => {
+    if (!record) {
+      return "No comment available.";
+    }
+
     if (workflowStatusID === 3) {
       return formatComments(accetanceComments);
-    } else if (workflowStatusID === 4) {
-      return formatComments(rejectionComments);
-    } else {
-      return "No comment available for this status.";
     }
+
+    if (workflowStatusID === 4) {
+      return formatComments(rejectionComments);
+    }
+
+    return "No comment available for this status.";
   };
 
   // This is onClick of Go Back Functionality
