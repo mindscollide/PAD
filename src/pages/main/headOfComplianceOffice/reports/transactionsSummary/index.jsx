@@ -149,7 +149,7 @@ const HCATransactionsSummarysReports = () => {
       setHCOTransactionsSummarysReportsSearch,
       showLoader,
       showNotification,
-    ]
+    ],
   );
 
   const fetchApiCallViewDetails = useCallback(
@@ -167,11 +167,11 @@ const HCATransactionsSummarysReports = () => {
       const record = Array.isArray(res?.record) ? res.record : [];
       const currentAssetTypeData = getSafeAssetTypeData(
         assetTypeListingData,
-        setAssetTypeListingData
+        setAssetTypeListingData,
       );
       const mapped = mappingDateWiseTransactionviewDetailst(
         currentAssetTypeData?.Equities,
-        record
+        record,
       );
       if (!mapped || typeof mapped !== "object") return;
 
@@ -193,7 +193,9 @@ const HCATransactionsSummarysReports = () => {
         };
         return next;
       });
-      setCOTransactionSummaryReportViewDetailsFlag(true);
+      if (coTransactionSummaryReportViewDetailsFlag === false) {
+        setCOTransactionSummaryReportViewDetailsFlag(true);
+      }
     },
     [
       callApi,
@@ -201,7 +203,7 @@ const HCATransactionsSummarysReports = () => {
       setHOCTransactionsSummarysReportsViewDetailSearch,
       showLoader,
       showNotification,
-    ]
+    ],
   );
 
   // -------------------- Effects --------------------
@@ -240,13 +242,19 @@ const HCATransactionsSummarysReports = () => {
         ...prev,
         filterTrigger: false,
       }));
-        console.log("StatusFilterDropdown handleOk",hocTransactionsSummarysReportsViewDetailsSearch);
-        console.log("StatusFilterDropdown handleOk",mapStatusToIds(hocTransactionsSummarysReportsViewDetailsSearch.status));
-        console.log("StatusFilterDropdown handleOk",assetTypeListingData);
+      console.log(
+        "StatusFilterDropdown handleOk",
+        hocTransactionsSummarysReportsViewDetailsSearch,
+      );
+      console.log(
+        "StatusFilterDropdown handleOk",
+        mapStatusToIds(hocTransactionsSummarysReportsViewDetailsSearch.status),
+      );
+      console.log("StatusFilterDropdown handleOk", assetTypeListingData);
 
       const requestData = buildApiRequestViewDetails(
         hocTransactionsSummarysReportsViewDetailsSearch,
-        assetTypeListingData
+        assetTypeListingData,
       );
       fetchApiCallViewDetails(requestData, true, true);
     }
@@ -268,11 +276,14 @@ const HCATransactionsSummarysReports = () => {
 
         try {
           setLoadingMore(true);
-        console.log("StatusFilterDropdown handleOk",hocTransactionsSummarysReportsViewDetailsSearch);
+          console.log(
+            "StatusFilterDropdown handleOk",
+            hocTransactionsSummarysReportsViewDetailsSearch,
+          );
 
           const requestData = buildApiRequestViewDetails(
             hocTransactionsSummarysReportsViewDetailsSearch,
-            assetTypeListingData
+            assetTypeListingData,
           );
 
           await fetchApiCall(requestData, false, false);
@@ -299,7 +310,7 @@ const HCATransactionsSummarysReports = () => {
         setLoadingMore(true);
 
         const requestData = buildApiRequest(
-          hcoTransactionsSummarysReportsSearch
+          hcoTransactionsSummarysReportsSearch,
         );
 
         await fetchApiCall(requestData, false, false);
@@ -310,7 +321,7 @@ const HCATransactionsSummarysReports = () => {
       }
     },
     0,
-    "border-less-table-blue"
+    "border-less-table-blue",
   );
 
   const handelViewDetails = async (transactionDate) => {
