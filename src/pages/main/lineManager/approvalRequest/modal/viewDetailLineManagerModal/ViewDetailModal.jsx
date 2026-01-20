@@ -47,7 +47,7 @@ const ViewDetailModal = () => {
 
   console.log(
     isSelectedViewDetailLineManager,
-    "isSelectedViewDetailLineManager"
+    "isSelectedViewDetailLineManager",
   );
 
   //This is the Global state of Context Api
@@ -61,18 +61,18 @@ const ViewDetailModal = () => {
 
   // get data from sessionStorage
   const userProfileData = JSON.parse(
-    sessionStorage.getItem("user_profile_data") || "{}"
+    sessionStorage.getItem("user_profile_data") || "{}",
   );
   const loggedInUserID = userProfileData?.userID;
 
   // Extarct and Instrument from viewDetailsModalData context Api
   const instrumentId = Number(
-    viewDetailsLineManagerData?.details?.[0]?.instrumentID
+    viewDetailsLineManagerData?.details?.[0]?.instrumentID,
   );
 
   // Match that selected instrument Id in viewDetailsModalData and match them with allinstrumentsData context State
   const selectedInstrument = allInstrumentsData?.find(
-    (item) => item.instrumentID === instrumentId
+    (item) => item.instrumentID === instrumentId,
   );
 
   console.log(selectedInstrument, "SelectedInstrumentName");
@@ -137,13 +137,13 @@ const ViewDetailModal = () => {
   };
 
   const statusDataLM = getStatusStyle(
-    String(viewDetailsLineManagerData?.workFlowStatus?.workFlowStatusID)
+    String(viewDetailsLineManagerData?.workFlowStatus?.workFlowStatusID),
   );
-  console.log("statusDataLM.label",statusDataLM.label)
+  console.log("statusDataLM.label", statusDataLM.label);
   // When its already approve or ddecline by you then button should be disabled
   const hasAlreadyApprovedOrDeclined =
     viewDetailsLineManagerData?.hierarchyDetails?.some(
-      (item) => item.userID === loggedInUserID && item.bundleStatusID === 2 // 2 is approved
+      (item) => item.userID === loggedInUserID && item.bundleStatusID === 2, // 2 is approved
     );
 
   // To open Approved Modal when Click on Approved Button in ViewDetailLineManager Modal
@@ -288,7 +288,7 @@ const ViewDetailModal = () => {
                       <label className={styles.viewDetailSubLabels}>
                         {dashBetweenApprovalAssets(
                           viewDetailsLineManagerData?.details?.[0]
-                            ?.tradeApprovalID
+                            ?.tradeApprovalID,
                         )}
                       </label>
                     </div>
@@ -328,7 +328,7 @@ const ViewDetailModal = () => {
                     </label>
                     <label className={styles.viewDetailSubLabels}>
                       {formatNumberWithCommas(
-                        viewDetailsLineManagerData?.details?.[0]?.quantity
+                        viewDetailsLineManagerData?.details?.[0]?.quantity,
                       )}
                     </label>
                   </div>
@@ -349,7 +349,7 @@ const ViewDetailModal = () => {
                     </label>
                     <label className={styles.viewDetailSubLabels}>
                       {formatApiDateTime(
-                        isSelectedViewDetailLineManager?.requestDateTime
+                        isSelectedViewDetailLineManager?.requestDateTime,
                       )}
                     </label>
                   </div>
@@ -376,8 +376,11 @@ const ViewDetailModal = () => {
                 <Col span={24}>
                   <BrokerList
                     statusData={statusDataLM}
-                    viewDetailsData={viewDetailsLineManagerData}
                     variant={"Orange"}
+                    viewDetailsData={
+                      viewDetailsLineManagerData?.details[0]?.brokers
+                    }
+                    type={2}
                   />
                 </Col>
               </Row>
@@ -402,11 +405,11 @@ const ViewDetailModal = () => {
                       activeStep={Math.max(
                         0,
                         Array.isArray(
-                          viewDetailsLineManagerData?.hierarchyDetails
+                          viewDetailsLineManagerData?.hierarchyDetails,
                         )
                           ? viewDetailsLineManagerData.hierarchyDetails.length -
                               1
-                          : 0
+                          : 0,
                       )}
                       connectorStyleConfig={{
                         activeColor: "#00640A",
@@ -422,7 +425,7 @@ const ViewDetailModal = () => {
                       }}
                     >
                       {Array.isArray(
-                        viewDetailsLineManagerData?.hierarchyDetails
+                        viewDetailsLineManagerData?.hierarchyDetails,
                       ) &&
                         [...viewDetailsLineManagerData.hierarchyDetails]
                           .sort((a, b) => {
@@ -448,7 +451,7 @@ const ViewDetailModal = () => {
                             } = person;
 
                             const formattedDateTime = formatApiDateTime(
-                              `${modifiedDate} ${modifiedTime}`
+                              `${modifiedDate} ${modifiedTime}`,
                             );
 
                             let iconSrc;
