@@ -5,6 +5,7 @@ import { Tag, Tooltip } from "antd";
 import style from "./TradeApprovalRequest.module.css";
 
 import { toYYMMDD } from "../../../../../common/funtions/rejex";
+import { withSortIcon } from "../../../../../common/funtions/tableIcon";
 
 /**
  * Utility: Build API request payload for approval listing
@@ -52,61 +53,6 @@ export const mapEmployeeTransactionsReport = (
   }));
 };
 
-/**
- * Returns the appropriate sort icon based on current sort state
- *
- * @param {string} columnKey - The column's key
- * @param {object} sortedInfo - Current sort state from the table
- * @returns {JSX.Element} The sort icon
- */
-const getSortIcon = (columnKey, sortedInfo) => {
-  if (sortedInfo?.columnKey === columnKey) {
-    return sortedInfo.order === "ascend" ? (
-      <img
-        draggable={false}
-        src={ArrowDown}
-        alt="Asc"
-        className="custom-sort-icon"
-      />
-    ) : (
-      <img
-        draggable={false}
-        src={ArrowUP}
-        alt="Desc"
-        className="custom-sort-icon"
-      />
-    );
-  }
-  return (
-    <img
-      draggable={false}
-      src={DefaultColumArrow}
-      alt="Default"
-      className="custom-sort-icon"
-    />
-  );
-};
-
-// Helper for consistent column titles
-const withSortIcon = (label, columnKey, sortedInfo, align = "left") => (
-  <div
-    className={style["table-header-wrapper"]}
-    style={{
-      justifyContent:
-        align === "center"
-          ? "center"
-          : align === "right"
-          ? "flex-end"
-          : "flex-start",
-      textAlign: align,
-    }}
-  >
-    <span className={style["table-header-text"]}>{label}</span>
-    <span className={style["table-header-icon"]}>
-      {getSortIcon(columnKey, sortedInfo)}
-    </span>
-  </div>
-);
 
 export const getBorderlessTableColumns = ({ sortedInfo }) => [
   {
@@ -128,10 +74,10 @@ export const getBorderlessTableColumns = ({ sortedInfo }) => [
     },
   },
   {
-    title: withSortIcon("Employee Name", "employeeName", sortedInfo, "center"),
+    title: withSortIcon("Employee Name", "employeeName", sortedInfo),
     dataIndex: "employeeName",
     key: "employeeName",
-    align: "center",
+    align: "left",
     ellipsis: true,
     width: "12%",
     sorter: (a, b) => a.employeeName - b.employeeName,
@@ -146,7 +92,7 @@ export const getBorderlessTableColumns = ({ sortedInfo }) => [
     title: withSortIcon("Department", "department", sortedInfo),
     dataIndex: "department",
     key: "department",
-    align: "center",
+    align: "left",
     ellipsis: true,
     width: "12%",
     sorter: (a, b) => a.department - b.department,

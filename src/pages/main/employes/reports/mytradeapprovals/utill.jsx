@@ -1,6 +1,3 @@
-import ArrowUP from "../../../../../assets/img/arrow-up-dark.png";
-import ArrowDown from "../../../../../assets/img/arrow-down-dark.png";
-import DefaultColumArrow from "../../../../../assets/img/default-colum-arrow.png";
 import TypeColumnTitle from "../../../../../components/dropdowns/filters/typeColumnTitle";
 import StatusColumnTitle from "../../../../../components/dropdowns/filters/statusColumnTitle";
 import { Tag, Tooltip } from "antd";
@@ -17,8 +14,7 @@ import {
   mapStatusToIds,
 } from "../../../../../components/dropdowns/filters/utils";
 import { getTradeTypeById } from "../../../../../common/funtions/type";
-import { Button } from "../../../../../components";
-import { useGlobalModal } from "../../../../../context/GlobalModalContext";
+import { withSortIcon } from "../../../../../common/funtions/tableIcon";
 
 /**
  * Utility: Build API request payload for approval listing
@@ -34,7 +30,7 @@ export const buildApiRequest = (searchState = {}, assetTypeListingData) => ({
 
   StartDate: searchState.startDate ? toYYMMDD(searchState.startDate) : "",
   EndDate: searchState.endDate ? toYYMMDD(searchState.endDate) : "",
-  StatusIds: mapStatusToIds?.(searchState.status,2) || [],
+  StatusIds: mapStatusToIds?.(searchState.status, 2) || [],
   TypeIds:
     mapBuySellToIds?.(searchState.type, assetTypeListingData?.Equities) || [],
   PageNumber: Number(searchState.pageNumber) || 0,
@@ -134,51 +130,6 @@ const renderInstrumentCell = (record) => {
   );
 };
 
-/**
- * Returns the appropriate sort icon based on current sort state
- *
- * @param {string} columnKey - The column's key
- * @param {object} sortedInfo - Current sort state from the table
- * @returns {JSX.Element} The sort icon
- */
-const getSortIcon = (columnKey, sortedInfo) => {
-  if (sortedInfo?.columnKey === columnKey) {
-    return sortedInfo.order === "ascend" ? (
-      <img
-        draggable={false}
-        src={ArrowDown}
-        alt="Asc"
-        className="custom-sort-icon"
-      />
-    ) : (
-      <img
-        draggable={false}
-        src={ArrowUP}
-        alt="Desc"
-        className="custom-sort-icon"
-      />
-    );
-  }
-  return (
-    <img
-      draggable={false}
-      src={DefaultColumArrow}
-      alt="Default"
-      className="custom-sort-icon"
-    />
-  );
-};
-
-// Helper for consistent column titles
-const withSortIcon = (label, columnKey, sortedInfo) => (
-  <div className={style["table-header-wrapper"]}>
-    <span className={style["table-header-text"]}>{label}</span>
-    <span className={style["table-header-icon"]}>
-      {getSortIcon(columnKey, sortedInfo)}
-    </span>
-  </div>
-);
-
 export const getBorderlessTableColumns = ({
   approvalStatusMap,
   sortedInfo,
@@ -187,6 +138,7 @@ export const getBorderlessTableColumns = ({
 }) => [
   {
     title: withSortIcon("Trade Request ID", "tradeApprovalID", sortedInfo),
+    align: "left",
     dataIndex: "tradeApprovalID",
     key: "tradeApprovalID",
     width: "12%",
@@ -204,14 +156,14 @@ export const getBorderlessTableColumns = ({
         <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
           <span className="font-medium">
             {dashBetweenApprovalAssets(tradeApprovalID)}
-            {/* {dashBetweenApprovalAssets("REQ888888")} */}
           </span>
         </div>
       );
     },
   },
   {
-    title: withSortIcon("Date & Time", "requestDateTime", sortedInfo),
+    title: withSortIcon("Date & Time", "requestDateTime", sortedInfo, "center"),
+    align: "center",
     dataIndex: "requestDateTime",
     key: "requestDateTime",
     ellipsis: true,
@@ -244,6 +196,7 @@ export const getBorderlessTableColumns = ({
   },
   {
     title: withSortIcon("Instrument Name", "instrumentCode", sortedInfo),
+    align: "left",
     dataIndex: "instrumentCode",
     key: "instrumentCode",
     width: "12%",
@@ -308,7 +261,8 @@ export const getBorderlessTableColumns = ({
       ),
   },
   {
-    title: withSortIcon("Quantity", "quantity", sortedInfo),
+    title: withSortIcon("Quantity", "quantity", sortedInfo, "center"),
+    align: "center",
     dataIndex: "quantity",
     key: "quantity",
     ellipsis: true,
@@ -322,6 +276,7 @@ export const getBorderlessTableColumns = ({
   },
   {
     title: withSortIcon("Broker", "broker", sortedInfo),
+    align: "left",
     dataIndex: "broker",
     width: "13%",
     key: "broker",
@@ -363,7 +318,8 @@ export const getBorderlessTableColumns = ({
     },
   },
   {
-    title: withSortIcon("Action Date", "actionDateTime", sortedInfo),
+    title: withSortIcon("Action Date", "actionDateTime", sortedInfo, "center"),
+    align: "center",
     dataIndex: "actionDateTime",
     key: "actionDateTime",
     ellipsis: true,
@@ -396,10 +352,10 @@ export const getBorderlessTableColumns = ({
   },
   {
     title: withSortIcon("Action by", "actionBy", sortedInfo),
+    align: "left",
     dataIndex: "actionBy",
     key: "actionBy",
     width: "8%",
-    align: "center",
     sorter: (a, b) => (a.actionBy || "").localeCompare(b.actionBy || ""),
     sortOrder: sortedInfo?.columnKey === "actionBy" ? sortedInfo.order : null,
     sortDirections: ["ascend", "descend"],

@@ -23,6 +23,7 @@ import {
   mapStatusToIds,
 } from "../../../../../components/dropdowns/filters/utils";
 import { getTradeTypeById } from "../../../../../common/funtions/type";
+import { withSortIcon } from "../../../../../common/funtions/tableIcon";
 
 const { Text } = Typography;
 /**
@@ -46,41 +47,6 @@ export const buildApiRequest = (searchState = {}, assetTypeListingData) => ({
 });
 
 /**
- * Returns the correct sorting icon based on the current sort state.
- *
- * @param {string} columnKey - The column key to check against the sorted column.
- * @param {Object} sortedInfo - Ant Design Table's sort state object.
- * @returns {JSX.Element} Sort icon (img element).
- */
-const getSortIcon = (columnKey, sortedInfo) => {
-  if (sortedInfo?.columnKey === columnKey) {
-    return sortedInfo.order === "ascend" ? (
-      <img
-        draggable={false}
-        src={ArrowDown}
-        alt="Asc"
-        className="custom-sort-icon"
-      />
-    ) : (
-      <img
-        draggable={false}
-        src={ArrowUp}
-        alt="Desc"
-        className="custom-sort-icon"
-      />
-    );
-  }
-  return (
-    <img
-      draggable={false}
-      src={DefaultColumnArrow}
-      alt="Default"
-      className="custom-sort-icon"
-    />
-  );
-};
-
-/**
  * Generates column definitions for the Employee Pending Approval borderless table.
  *
  * Includes:
@@ -102,11 +68,8 @@ export const getBorderlessTableColumns = (
 ) => [
   // 🔹 Instrument Column
   {
-    title: (
-      <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-        Instrument {getSortIcon("instrument", sortedInfo)}
-      </div>
-    ),
+    title: withSortIcon("Instrument", "instrument", sortedInfo),
+    align: "left",
     dataIndex: "instrument",
     key: "instrument",
     ellipsis: true,
@@ -161,11 +124,8 @@ export const getBorderlessTableColumns = (
 
   // 🔹 Transaction ID Column
   {
-    title: (
-      <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-        Transaction ID {getSortIcon("tradeApprovalID", sortedInfo)}
-      </div>
-    ),
+    title: withSortIcon("Transaction ID", "tradeApprovalID", sortedInfo),
+    align: "left",
     dataIndex: "tradeApprovalID",
     key: "tradeApprovalID",
     width: "10%",
@@ -186,12 +146,13 @@ export const getBorderlessTableColumns = (
 
   // 🔹 Approval Request Date & Time Column
   {
-    title: (
-      <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-        Approval Request Date & Time{" "}
-        {getSortIcon("approvalRequestDateime", sortedInfo)}
-      </div>
+    title: withSortIcon(
+      "Approval Request Date & Time",
+      "approvalRequestDateime",
+      sortedInfo,
+      "center"
     ),
+    align: "center",
     dataIndex: "approvalRequestDateime",
     key: "approvalRequestDateime",
     width: "20%",
@@ -216,11 +177,8 @@ export const getBorderlessTableColumns = (
 
   // 🔹 Quantity Column
   {
-    title: (
-      <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-        Quantity {getSortIcon("quantity", sortedInfo)}
-      </div>
-    ),
+    title: withSortIcon("Quantity", "quantity", sortedInfo, "center"),
+    align: "center",
     dataIndex: "quantity",
     key: "quantity",
     width: "7%",
@@ -278,11 +236,8 @@ export const getBorderlessTableColumns = (
 
   // 🔹 Broker Column
   {
-    title: (
-      <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-        Broker {getSortIcon("broker", sortedInfo)}
-      </div>
-    ),
+    title: withSortIcon("Broker", "broker", sortedInfo),
+    align: "left",
     dataIndex: "broker",
     key: "broker",
     width: "12%",

@@ -72,34 +72,35 @@ export const mapListData = (
 const getSortIcon = (columnKey, sortedInfo) => {
   if (sortedInfo?.columnKey === columnKey) {
     return sortedInfo.order === "ascend" ? (
-      <img
-        draggable={false}
-        src={ArrowDown}
-        alt="Asc"
-        className="custom-sort-icon"
-      />
+      <img src={ArrowDown} alt="Asc" className="custom-sort-icon" />
     ) : (
-      <img
-        draggable={false}
-        src={ArrowUP}
-        alt="Desc"
-        className="custom-sort-icon"
-      />
+      <img src={ArrowUP} alt="Desc" className="custom-sort-icon" />
     );
   }
   return (
     <img
       draggable={false}
       src={DefaultColumArrow}
-      alt="Default"
+      alt="Not sorted"
       className="custom-sort-icon"
+      data-testid={`sort-icon-${columnKey}-default`}
     />
   );
 };
 
-// Helper for consistent column titles
-const withSortIcon = (label, columnKey, sortedInfo) => (
-  <div className={style["table-header-wrapper"]}>
+const withSortIcon = (label, columnKey, sortedInfo, align = "left") => (
+  <div
+    className={style["table-header-wrapper"]}
+    style={{
+      justifyContent:
+        align === "center"
+          ? "center"
+          : align === "right"
+          ? "flex-end"
+          : "flex-start",
+      textAlign: align,
+    }}
+  >
     <span className={style["table-header-text"]}>{label}</span>
     <span className={style["table-header-icon"]}>
       {getSortIcon(columnKey, sortedInfo)}
@@ -119,6 +120,7 @@ export const getBorderlessTableColumns = ({
     title: withSortIcon("Employee ID", "employeeID", sortedInfo),
     dataIndex: "employeeID",
     key: "employeeID",
+    align: "left",
     width: "140px",
     ellipsis: true,
     sorter: (a, b) =>
@@ -140,6 +142,7 @@ export const getBorderlessTableColumns = ({
     title: withSortIcon("Employee Name", "employeeName", sortedInfo),
     dataIndex: "employeeName",
     key: "employeeName",
+    align: "left",
     ellipsis: true,
     width: "140px",
     sorter: (a, b) => a.employeeName - b.employeeName,
@@ -154,6 +157,7 @@ export const getBorderlessTableColumns = ({
     title: withSortIcon("Department", "departmentName", sortedInfo),
     dataIndex: "departmentName",
     key: "departmentName",
+    align: "left",
     ellipsis: true,
     width: "140px",
     sorter: (a, b) => a.departmentName - b.departmentName,
@@ -165,9 +169,15 @@ export const getBorderlessTableColumns = ({
     render: (q) => <span className="font-medium">{q.toLocaleString()}</span>,
   },
   {
-    title: withSortIcon("Request date & time", "requestDateTime", sortedInfo),
+    title: withSortIcon(
+      "Request Date & Time",
+      "requestDateTime",
+      sortedInfo,
+      "center"
+    ),
     dataIndex: "requestDateTime",
     key: "requestDateTime",
+    align: "center",
     width: "140px",
     ellipsis: true,
     sorter: (a, b) =>
@@ -186,9 +196,10 @@ export const getBorderlessTableColumns = ({
     ),
   },
   {
-    title: withSortIcon("Quantity", "quantity", sortedInfo),
+    title: withSortIcon("Quantity", "quantity", sortedInfo, "center"),
     dataIndex: "quantity",
     key: "quantity",
+    align: "center",
     width: "140px",
     ellipsis: true,
     sorter: (a, b) => Number(a.quantity || 0) - Number(b.quantity || 0),
@@ -237,9 +248,10 @@ export const getBorderlessTableColumns = ({
     ),
   },
   {
-    title: withSortIcon("Policy Count", "policyCount", sortedInfo),
+    title: withSortIcon("Policy Count", "policyCount", sortedInfo, "center"),
     dataIndex: "policyCount",
     key: "policyCount",
+    align: "center",
     width: "140px",
     ellipsis: true,
     sorter: (a, b) => a.policyCount - b.policyCount,
