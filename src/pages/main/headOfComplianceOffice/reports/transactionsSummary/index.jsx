@@ -69,6 +69,8 @@ const HCATransactionsSummarysReports = () => {
     coTransactionSummaryReportViewDetailsListData,
     setCOTransactionSummaryReportViewDetailsListData,
     resetCOTransactionSummaryReportViewDetailsListData,
+    selectedWorkFlowViewDetaild,
+    setSelectedWorkFlowViewDetaild,
   } = useMyApproval();
 
   const { isViewComments, setIsViewComments, setCheckTradeApprovalID } =
@@ -360,6 +362,7 @@ const HCATransactionsSummarysReports = () => {
     setHOCTransactionsSummarysReportsViewDetailSearch,
     handelViewDetails,
     setIsViewComments,
+    setSelectedWorkFlowViewDetaild,
   });
 
   const handleDateChange = (dates) => {

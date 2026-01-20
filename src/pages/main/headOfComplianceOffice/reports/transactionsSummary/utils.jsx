@@ -301,6 +301,7 @@ export const getBorderlessTableColumnsViewDetails = ({
   setHOCTransactionsSummarysReportsViewDetailSearch,
   handelViewDetails,
   setIsViewComments,
+  setSelectedWorkFlowViewDetaild,
 }) => [
   {
     title: withSortIcon("Employee ID", "employeeID", sortedInfo),
@@ -485,6 +486,7 @@ export const getBorderlessTableColumnsViewDetails = ({
           text={"View Comments"}
           onClick={() => {
             console.log(record, "tradeApprovalID");
+            setSelectedWorkFlowViewDetaild(record);
             setIsViewComments(true);
           }}
         />

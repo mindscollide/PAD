@@ -9,27 +9,37 @@ const ViewCommentHOCTransaction = () => {
     useGlobalModal();
 
   //This is the Global state of Context Api
-  const { coTransactionSummaryReportViewDetailsListData } = useMyApproval();
+  const {
+    coTransactionSummaryReportViewDetailsListData,
+    selectedWorkFlowViewDetaild,
+  } = useMyApproval();
   console.log(
     coTransactionSummaryReportViewDetailsListData,
     "coTransactionSummaryReportViewDetailsListData",
   );
 
+  console.log(selectedWorkFlowViewDetaild, "selectedWorkFlowViewDetaild");
+
   // Check workflow Id it shows comment against the workFlow ID
-  const record =
-    coTransactionSummaryReportViewDetailsListData?.record?.[0] || null;
+  const record = selectedWorkFlowViewDetaild || null;
   // const detail = viewDetailsModalData?.details?.[0];
 
   /**
    * STEP 2: Extract required values
    */
-  const workflowStatusID = record?.workFlowStatusID;
+  const workflowStatusID = Number(record?.workFlowStatusID);
 
-  const accetanceComments = record?.accetanceComments
+  console.log(
+    workflowStatusID,
+    typeof workflowStatusID,
+    "workflowStatusID TYPE",
+  );
+
+  const accetanceComments = record?.accetanceComments?.trim()
     ? [record.accetanceComments]
     : [];
 
-  const rejectionComments = record?.rejectionComments
+  const rejectionComments = record?.rejectionComments?.trim()
     ? [record.rejectionComments]
     : [];
 
