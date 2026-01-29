@@ -24,6 +24,8 @@ import {
 } from "../../../../common/funtions/rejex";
 import { useDashboardContext } from "../../../../context/dashboardContaxt";
 import { getSafeAssetTypeData } from "../../../../common/funtions/assetTypesList";
+import { UpOutlined, DownOutlined } from "@ant-design/icons";
+
 const MyHistory = () => {
   const navigate = useNavigate();
   const hasFetched = useRef(false);
@@ -45,7 +47,8 @@ const MyHistory = () => {
     setEmployeeMyHistorySearch,
     resetEmployeeMyHistorySearch,
   } = useSearchBarContext();
-  const { assetTypeListingData, setAssetTypeListingData } = useDashboardContext();
+  const { assetTypeListingData, setAssetTypeListingData } =
+    useDashboardContext();
 
   const { setEmployeeMyHistoryData, employeeMyHistoryData } = useMyApproval();
 
@@ -65,22 +68,25 @@ const MyHistory = () => {
         requestdata: requestData,
         navigate,
       });
-    const currentAssetTypeData = getSafeAssetTypeData(
+      const currentAssetTypeData = getSafeAssetTypeData(
         assetTypeListingData,
-        setAssetTypeListingData
+        setAssetTypeListingData,
       );
       if (res) {
         setEmployeeMyHistoryData(res);
       }
     },
-    [callApi, navigate, showLoader, showNotification]
+    [callApi, navigate, showLoader, showNotification],
   );
 
   // Initial Fetch
   useEffect(() => {
     if (!hasFetched.current) {
       hasFetched.current = true;
-      const requestData = buildMyHistoryApiRequest(employeeMyHistorySearch,assetTypeListingData);
+      const requestData = buildMyHistoryApiRequest(
+        employeeMyHistorySearch,
+        assetTypeListingData,
+      );
 
       fetchApiCall(requestData, true, true);
     }
@@ -90,7 +96,10 @@ const MyHistory = () => {
   useEffect(() => {
     if (employeeMyHistorySearch?.filterTrigger) {
       hasFetched.current = true;
-      const requestData = buildMyHistoryApiRequest(employeeMyHistorySearch,assetTypeListingData);
+      const requestData = buildMyHistoryApiRequest(
+        employeeMyHistorySearch,
+        assetTypeListingData,
+      );
 
       fetchApiCall(requestData, true, true);
       setEmployeeMyHistorySearch((prev) => ({
@@ -105,7 +114,7 @@ const MyHistory = () => {
     approvalStatusMap,
     sortedInfo,
     employeeMyHistorySearch,
-    setEmployeeMyHistorySearch
+    setEmployeeMyHistorySearch,
   );
 
   /** 🔹 Handle removing individual filter */
@@ -200,7 +209,10 @@ const MyHistory = () => {
         const currentLength = employeeMyHistoryData?.workFlows?.length || 0;
 
         // build request based on current search/filter but override pagination
-        const baseRequest = buildMyHistoryApiRequest(employeeMyHistorySearch,assetTypeListingData);
+        const baseRequest = buildMyHistoryApiRequest(
+          employeeMyHistorySearch,
+          assetTypeListingData,
+        );
         const requestData = {
           ...baseRequest,
           PageNumber: currentLength, // sRow
@@ -325,11 +337,11 @@ const MyHistory = () => {
             b.bundleStatusState === 2
               ? "Approved"
               : b.bundleStatusState === 3
-              ? "Declined"
-              : "Pending",
+                ? "Declined"
+                : "Pending",
           user: `${b.firstName} ${b.lastName}`,
           date: formatApiDateTime(
-            `${b.bundleModifiedDate} ${b.bundleModifiedTime}`
+            `${b.bundleModifiedDate} ${b.bundleModifiedTime}`,
           ),
           iconType: getBundleIconType(b.bundleStatusState),
         })) || [];
@@ -418,10 +430,15 @@ const MyHistory = () => {
             </Col>
             <Col style={{ position: "relative", marginTop: "2px" }}>
               <CustomButton
-                text={"Export"}
-                className="big-light-button"
-                icon={<DownloadOutlined />}
-                iconPosition="end"
+                text={
+                  <span className={style.exportButtonText}>
+                    Export
+                    <span className={style.iconContainer}>
+                      {open ? <UpOutlined /> : <DownOutlined />}
+                    </span>
+                  </span>
+                }
+                className="small-light-button-report"
                 onClick={() => setOpen((prev) => !prev)}
               />
 

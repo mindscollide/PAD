@@ -55,7 +55,6 @@ const HeadCompianceOfficerOverdueVerificationReports = () => {
   const { callApi } = useApi();
   const { showNotification } = useNotification();
   const { showLoader } = useGlobalLoader();
-  const { selectedKey } = useSidebarContext();
 
   const { overdueVerificationHCOListData, setOverdueVerificationHCOListData } =
     useMyApproval();

@@ -59,7 +59,6 @@ const EmpolyesReportsIndex = () => {
 
       // Apply role-based filtering here if needed
       await setEmployeeReportsDashboardData(res || []);
-      console.log("employeeReportsDashboardData", res);
     } catch (error) {
       console.error("Failed to fetch reports:", error);
       showNotification({
@@ -71,7 +70,6 @@ const EmpolyesReportsIndex = () => {
       showLoader(false);
     }
   }, [callApi, navigate, showLoader, showNotification]);
-  console.log("employeeReportsDashboardData", employeeReportsDashboardData);
 
   /**
    * 🔹 Initial Data Load
@@ -86,25 +84,24 @@ const EmpolyesReportsIndex = () => {
   // complianceStanding
   const employeeReportsComplianceStanding = useMemo(
     () => employeeReportsDashboardData?.myComplianceStanding?.data || [],
-    [employeeReportsDashboardData?.myComplianceStanding?.data]
+    [employeeReportsDashboardData?.myComplianceStanding?.data],
   );
 
   // tradeApprovals
   const employeeReportsTradeApprovals = useMemo(
     () => employeeReportsDashboardData?.myTradeApprovals?.data || [],
-    [employeeReportsDashboardData?.myTradeApprovals?.data]
+    [employeeReportsDashboardData?.myTradeApprovals?.data],
   );
-  console.log("employeeReportsDashboardData", employeeReportsTradeApprovals);
   // tradeApprovalsStanding
   const employeeReportsTradeApprovalsStanding = useMemo(
     () => employeeReportsDashboardData?.myTradeApprovalsStanding?.data || [],
-    [employeeReportsDashboardData?.myTradeApprovalsStanding?.data]
+    [employeeReportsDashboardData?.myTradeApprovalsStanding?.data],
   );
 
   // transactions
   const employeeReportsTransactionsStanding = useMemo(
     () => employeeReportsDashboardData?.myTransactions?.data || [],
-    [employeeReportsDashboardData?.myTransactions?.data]
+    [employeeReportsDashboardData?.myTransactions?.data],
   );
 
   /**
@@ -120,7 +117,7 @@ const EmpolyesReportsIndex = () => {
         </Row>
         <Row gutter={[16, 16]}>
           {/* ---- My Approvals ---- */}
-          <Col xs={12} md={8} lg={8}>
+          <Col xs={24} md={12} lg={12}>
             <MemoizedBoxCard
               reportsFlag={true}
               locationStyle="up"
@@ -133,21 +130,9 @@ const EmpolyesReportsIndex = () => {
               route="my-trade-approvals"
             />
           </Col>
-          {/* ---- My Transactions ---- */}
-          <Col xs={12} md={8} lg={8}>
-            <MemoizedBoxCard
-              reportsFlag={true}
-              locationStyle="up"
-              title="My Transactions"
-              mainClassName="reports"
-              boxes={employeeReportsTransactionsStanding}
-              buttonId="Transactions-view-btn"
-              buttonClassName="big-white-card-button"
-              userRole="employee"
-              route="my-transactions"
-            />
-          </Col>
-          <Col xs={12} md={8} lg={8}>
+
+          {/* ---- My Trade Approvals Standing ---- */}
+          <Col xs={24} md={12} lg={12}>
             <MemoizedBoxCard
               reportsFlag={true}
               showProgress={true}
@@ -165,7 +150,23 @@ const EmpolyesReportsIndex = () => {
         </Row>
 
         <Row gutter={[16, 16]}>
-          <Col xs={12} md={8} lg={8}>
+          {/* ---- My Transactions ---- */}
+          <Col xs={24} md={12} lg={12}>
+            <MemoizedBoxCard
+              reportsFlag={true}
+              locationStyle="up"
+              title="My Transactions"
+              mainClassName="reports"
+              boxes={employeeReportsTransactionsStanding}
+              buttonId="Transactions-view-btn"
+              buttonClassName="big-white-card-button"
+              userRole="employee"
+              route="my-transactions"
+            />
+          </Col>
+
+          {/* ---- My Compliance Standing ---- */}
+          <Col xs={24} md={12} lg={12}>
             <MemoizedBoxCard
               reportsFlag={true}
               showProgress={true}

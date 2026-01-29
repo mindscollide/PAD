@@ -126,7 +126,6 @@ const MytradeapprovalsReport = () => {
         myTradeApprovals
       );
       if (!mapped || typeof mapped !== "object") return;
-      console.log("transactions", mapped);
 
       setEmployeeMyTradeApprovalsData((prev) => ({
         myTradeApprovals: replace
