@@ -56,6 +56,7 @@ const GroupsAndPolicy = () => {
   // ----------------- Local State -----------------
   const [loadingMore, setLoadingMore] = useState(false);
   const [currentPolicyID, setCurrentPolicyID] = useState(-1);
+  const [sortedInfo, setSortedInfo] = useState({});
 
   // ----------------- Helpers -----------------
 
@@ -112,7 +113,7 @@ const GroupsAndPolicy = () => {
       setAdminGropusAndPolicyData,
       showLoader,
       showNotification,
-    ]
+    ],
   );
 
   /** 🔹 Handle "View Details" modal */
@@ -138,7 +139,6 @@ const GroupsAndPolicy = () => {
 
   /** 🔹 Handle "View Details" modal */
   const handleViewDetails = async (record) => {
-    console.log("handleViewDetails", handleViewDetails);
     await setCurrentPolicyID(record.groupPolicyID);
     // Step 1 & 2 — reset values
     await setPageTypeForAdminGropusAndPolicy(2);
@@ -151,6 +151,7 @@ const GroupsAndPolicy = () => {
   const columns = getGroupPolicyColumns({
     onViewDetails: (record) => handleViewDetails(record),
     onEdit: (record) => handleOpenEditGroup(record),
+    sortedInfo,
   });
 
   /** 🔹 Handle removing individual filter */
@@ -268,7 +269,7 @@ const GroupsAndPolicy = () => {
       }
     },
     0,
-    "border-less-table-white-3"
+    "border-less-table-white-3",
   );
 
   // ----------------- Render -----------------
@@ -329,6 +330,7 @@ const GroupsAndPolicy = () => {
                       }
                     : undefined
                 }
+                onChange={(_, __, sorter) => setSortedInfo(sorter || {})}
                 classNameTable="border-less-table-white-3"
                 loading={loadingMore}
                 ref={tableScrollAdminGroupsAndPolicyList}

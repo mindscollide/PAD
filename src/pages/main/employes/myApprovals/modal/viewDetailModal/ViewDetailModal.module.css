@@ -279,7 +279,7 @@
 
 .stepCircle {
   display: flex;
-  cursor:default;
+  cursor: default;
   align-items: center;
   justify-content: center;
   height: 50px;
@@ -370,4 +370,11 @@
   color: #424242 !important;
   font-weight: 500;
   font-family: "Switzer Variable";
+}
+
+.inlineWithIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center; /* ✅ no quotes */
+  gap: 2px;
 }

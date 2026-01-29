@@ -58,18 +58,18 @@
 
 .input-error {
   font-family: Switzer Variable !important;
-  border: 1px solid red !important;
+  border: 1px solid #a50000 !important;
 }
 
 .required {
   font-family: Switzer Variable !important;
-  color: red !important;
+  color: #a50000 !important;
   margin-left: 4px !important;
 }
 
 .error-text {
   font-family: Switzer Variable !important;
-  color: red !important;
+  color: #a50000 !important;
   font-weight: 400 !important;
 }
 

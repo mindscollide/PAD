@@ -64,7 +64,7 @@ export const getBorderlessTableColumns = (
   approvalStatusMap = {},
   sortedInfo = {},
   employeePendingApprovalSearch = {},
-  setEmployeePendingApprovalSearch = () => {}
+  setEmployeePendingApprovalSearch = () => {},
 ) => [
   // 🔹 Instrument Column
   {
@@ -150,7 +150,7 @@ export const getBorderlessTableColumns = (
       "Approval Request Date & Time",
       "approvalRequestDateime",
       sortedInfo,
-      "center"
+      "center",
     ),
     align: "center",
     dataIndex: "approvalRequestDateime",
@@ -159,7 +159,7 @@ export const getBorderlessTableColumns = (
     ellipsis: true,
     sorter: (a, b) =>
       (a?.approvalRequestDateime || "").localeCompare(
-        b?.approvalRequestDateime || ""
+        b?.approvalRequestDateime || "",
       ),
     sortDirections: ["ascend", "descend"],
     sortOrder:
@@ -247,10 +247,12 @@ export const getBorderlessTableColumns = (
     sortOrder: sortedInfo?.columnKey === "broker" ? sortedInfo.order : null,
     showSorterTooltip: false,
     sortIcon: () => null,
-    render: (text) => (
-      <span className="font-medium" title={text || "N/A"}>
+    render: (text, record) => (
+      <Tooltip
+        title={text === "Multiple Brokers" ? record.brokersListed : text || "—"}
+      >
         {text || "—"}
-      </span>
+      </Tooltip>
     ),
   },
 
@@ -341,12 +343,31 @@ export const formatBrokerOptions = (brokers = []) => {
 export const mapToTableRows = (assetTypeData, list = [], brokerOptions = []) =>
   (Array.isArray(list) ? list : []).map((item = {}) => {
     let brokerLabel = "";
-
+    let brokersListed = [];
+    console.log("mapToTableRows", item);
+    console.log("mapToTableRows", brokerOptions);
     if (item?.broker === "Multiple Brokers") {
       brokerLabel = "Multiple Brokers";
+      let brokersAssigned = item?.brokersAssigned;
+      // 1️⃣ convert string to number array
+      console.log("mapToTableRows", brokersAssigned);
+      const brokerIds = brokersAssigned
+        ?.split(",")
+        .map((id) => Number(id.trim()));
+      console.log("mapToTableRows", brokerIds);
+
+      // 2️⃣ match and get broker names
+      const matchedBrokerNames = brokerOptions
+        .filter((broker) => brokerIds.includes(broker.brokerID))
+        .map((broker) => broker.brokerName);
+      console.log("mapToTableRows", matchedBrokerNames);
+
+      // 3️⃣ final comma-separated string
+      brokersListed = matchedBrokerNames.join(", ");
+      console.log("mapToTableRows", brokersListed);
     } else if (item?.broker) {
       const broker = brokerOptions.find(
-        (b) => String(b.brokerID) === String(item.broker)
+        (b) => String(b.brokerID) === String(item.broker),
       );
       brokerLabel =
         broker?.label || item?.broker?.brokerName || String(item.broker);
@@ -358,6 +379,7 @@ export const mapToTableRows = (assetTypeData, list = [], brokerOptions = []) =>
       instrumentName: item?.instrumentName || "—",
       assetTypeShortCode: item?.assetType?.assetTypeShortCode || "—",
       tradeApprovalID: item?.tradeApprovalID || "—",
+      brokersListed: brokersListed || "",
       approvalRequestDateime:
         `${item?.transactionConductedDate || ""} ${
           item?.transactionConductedTime || ""

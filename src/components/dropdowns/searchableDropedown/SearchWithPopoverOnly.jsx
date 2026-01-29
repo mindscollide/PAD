@@ -817,7 +817,7 @@ const SearchWithPopoverOnly = () => {
       if (pageTabesForAdminGropusAndPolicy === 2) {
         return "Employee name. Click the icon to view more options.";
       }
-      return "Group Policy Name. Click the icon to view more options.";
+      return "Group Policy Name.";
     }
 
     if (

@@ -73,10 +73,10 @@ const Dashboard = () => {
 
   // User info from session storage
   const userProfileData = JSON.parse(
-    sessionStorage.getItem("user_profile_data")
+    sessionStorage.getItem("user_profile_data"),
   );
   const userAssignedRolesData = JSON.parse(
-    sessionStorage.getItem("user_assigned_roles")
+    sessionStorage.getItem("user_assigned_roles"),
   );
   const currentUserId = userProfileData?.userID;
 
@@ -96,7 +96,7 @@ const Dashboard = () => {
     const roleArray = Array.isArray(roleIDs) ? roleIDs : [roleIDs];
 
     return userAssignedRolesData.some((role) =>
-      roleArray.includes(Number(role.roleID))
+      roleArray.includes(Number(role.roleID)),
     );
   };
   const apiCallwebNotification = async () => {
@@ -394,7 +394,7 @@ const Dashboard = () => {
                   // Prevent multiple fetches on mount
                   sessionStorage.setItem(
                     "urgentApprovals",
-                    JSON.stringify(payload)
+                    JSON.stringify(payload),
                   );
                   console.log("urgentApprovals", payload);
                   if (payload.count > 0) {
@@ -572,13 +572,13 @@ const Dashboard = () => {
                   if (currentKey === "15") {
                     if (currentactiveHCOEscalatedTabRef === "escalated") {
                       setHeadOfComplianceApprovalEscalatedVerificationsMqtt(
-                        true
+                        true,
                       );
                     } else if (
                       currentactiveHCOEscalatedTabRef === "portfolio"
                     ) {
                       setHeadOfComplianceApprovalEscalatedVerificationsData(
-                        true
+                        true,
                       );
                     }
                   }
@@ -591,7 +591,24 @@ const Dashboard = () => {
             }
 
             default:
-              console.warn("MQTT: No handler for role →", roleIDs);
+              console.log("mqtt User details updated → logging out");
+          }
+        } else {
+          switch (message) {
+            case "USER_DETAILS_UPDATED": {
+              try {
+                const parsedPayload = JSON.parse(payload);
+                if (parsedPayload?.UserID === currentUserId) {
+                  navigate("/"); // your logout function
+                }
+              } catch (error) {
+                console.error("error", error);
+              }
+              break;
+            }
+
+            default:
+              console.warn("MQTT: No handler for message →", message);
           }
         }
       } catch (error) {
