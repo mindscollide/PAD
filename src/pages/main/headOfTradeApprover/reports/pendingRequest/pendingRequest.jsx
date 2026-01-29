@@ -365,6 +365,7 @@ const PendingApprovalRequest = () => {
       requestdata: NewRequestData,
       navigate,
     });
+    setOpen(false)
   };
   return (
     <>
