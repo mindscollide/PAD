@@ -71,7 +71,7 @@ const HOCMyActionPage = () => {
         setMyActionHOCData(res);
       }
     },
-    [callApi, navigate, showLoader, showNotification]
+    [callApi, navigate, showLoader, showNotification],
   );
 
   // Initial Fetch
@@ -79,7 +79,7 @@ const HOCMyActionPage = () => {
     if (!hasFetched.current) {
       hasFetched.current = true;
       const requestData = buildMyActionApiRequest(
-        headOfComplianceMyActionSearch
+        headOfComplianceMyActionSearch,
       );
 
       fetchApiCall(requestData, true, true);
@@ -91,7 +91,7 @@ const HOCMyActionPage = () => {
     if (headOfComplianceMyActionSearch?.filterTrigger) {
       hasFetched.current = true;
       const requestData = buildMyActionApiRequest(
-        headOfComplianceMyActionSearch
+        headOfComplianceMyActionSearch,
       );
 
       fetchApiCall(requestData, true, true);
@@ -107,7 +107,7 @@ const HOCMyActionPage = () => {
     approvalStatusMap,
     sortedInfo,
     headOfComplianceMyActionSearch,
-    setHeadOfComplianceMyActionSearch
+    setHeadOfComplianceMyActionSearch,
   );
 
   /** 🔹 Handle removing individual filter */
@@ -148,76 +148,96 @@ const HOCMyActionPage = () => {
   };
 
   /** 🔹 Build Active Filters */
-  const activeFilters = (() => {
-    const {
-      requestID,
-      instrumentName,
-      requesterName,
-      startDate,
-      endDate,
-      quantity,
-      type,
-      status,
-    } = headOfComplianceMyActionSearch || {};
-    // 🔹 Mappings for display labels
-    const typeMap = {
-      1: "Buy",
-      2: "Sell",
-    };
+const activeFilters = (() => {
+  const {
+    requestID,
+    instrumentName,
+    requesterName,
+    startDate,
+    endDate,
+    quantity,
+    type,
+    status,
+  } = headOfComplianceMyActionSearch || {};
 
-    const statusMap = {
-      1: "Pending",
-      2: "Resubmit",
-      3: "Approved",
-      4: "Declined",
-      5: "Traded",
-      6: "Not-Traded",
-      7: "Compliant",
-      8: "Non-Compliant",
-    };
-    return [
-      requestID && {
-        key: "requestID",
-        value:
-          requestID.length > 13 ? requestID.slice(0, 13) + "..." : requestID,
-      },
-      instrumentName && {
-        key: "instrumentName",
-        value:
-          instrumentName.length > 13
-            ? instrumentName.slice(0, 13) + "..."
-            : instrumentName,
-      },
-      requesterName && {
-        key: "requesterName",
-        value:
-          requesterName.length > 13
-            ? requesterName.slice(0, 13) + "..."
-            : requesterName,
-      },
-      startDate &&
-        endDate && {
-          key: "dateRange",
-          value: `${startDate} → ${endDate}`,
-        },
-      quantity &&
-        Number(quantity) > 0 && {
-          key: "quantity",
-          value: Number(quantity).toLocaleString("en-US"),
-        },
-      // 🔹 Add Type (multiple selection support)
-      type?.length > 0 && {
-        key: "type",
-        value: type.map((id) => typeMap[id] || id).join(", "),
-      },
+  const typeMap = {
+    1: "Buy",
+    2: "Sell",
+  };
 
-      // 🔹 Add Status (multiple selection support)
-      status?.length > 0 && {
-        key: "status",
-        value: status.map((id) => statusMap[id] || id).join(", "),
-      },
-    ].filter(Boolean);
-  })();
+  const statusMap = {
+    1: "Pending",
+    2: "Resubmit",
+    3: "Approved",
+    4: "Declined",
+    5: "Traded",
+    6: "Not-Traded",
+    7: "Compliant",
+    8: "Non-Compliant",
+  };
+
+  const filters = [];
+
+  if (requestID) {
+    filters.push({
+      key: "requestID",
+      value:
+        requestID.length > 13 ? requestID.slice(0, 13) + "..." : requestID,
+    });
+  }
+
+  if (instrumentName) {
+    filters.push({
+      key: "instrumentName",
+      value:
+        instrumentName.length > 13
+          ? instrumentName.slice(0, 13) + "..."
+          : instrumentName,
+    });
+  }
+
+  if (requesterName) {
+    filters.push({
+      key: "requesterName",
+      value:
+        requesterName.length > 13
+          ? requesterName.slice(0, 13) + "..."
+          : requesterName,
+    });
+  }
+
+  if (startDate && endDate) {
+    filters.push({
+      key: "dateRange",
+      value: `${startDate} → ${endDate}`,
+    });
+  }
+
+  if (quantity && Number(quantity) > 0) {
+    filters.push({
+      key: "quantity",
+      value: Number(quantity).toLocaleString("en-US"),
+    });
+  }
+
+  // ✅ TYPE logic
+  if (Array.isArray(type) && type.length > 0) {
+    filters.push({
+      key: "type",
+      value: type.length === 1 ? typeMap[type[0]] : "Multiple",
+    });
+  }
+
+  // ✅ STATUS logic (THIS is what you want)
+  if (Array.isArray(status) && status.length > 0) {
+    filters.push({
+      key: "status",
+      value: status.length === 1 ? statusMap[status[0]] : "Multiple",
+    });
+  }
+
+  return filters;
+})();
 
   // Update hasMore when myActionHOCData changes
   useEffect(() => {
@@ -244,7 +264,7 @@ const HOCMyActionPage = () => {
 
         // build request based on current search/filter but override pagination
         const baseRequest = buildMyActionApiRequest(
-          headOfComplianceMyActionSearch
+          headOfComplianceMyActionSearch,
         );
         const requestData = {
           ...baseRequest,
@@ -373,7 +393,7 @@ const HOCMyActionPage = () => {
               stepType: "BundleHistory",
               status: statusText,
               date: formatApiDateTime(
-                `${b.bundleModifiedDate} ${b.bundleModifiedTime}`
+                `${b.bundleModifiedDate} ${b.bundleModifiedTime}`,
               ),
               iconType,
             };
@@ -386,7 +406,7 @@ const HOCMyActionPage = () => {
         stepType: "WorkflowFinal",
         status: getFinalWorkflowStatusText(
           wf.workFlowStatusID,
-          wf.workFlowStatusName
+          wf.workFlowStatusName,
         ),
         date: formatApiDateTime(`${wf.requestedDate} ${wf.requestedTime}`),
         iconType: getFinalWorkflowIcon(wf.workFlowStatusID),
