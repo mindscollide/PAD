@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
-import { Row, Col, Space } from "antd";
+import { Row, Col, Space, Select } from "antd";
 import { Button, TextField, DateRangePicker } from "../..";
 import { useSearchBarContext } from "../../../context/SearchBarContaxt";
 import { removeFirstSpace } from "../../../common/funtions/rejex";
+import styles from "./SearchWithPopoverOnly.module.css";
 
 // 🔹 Initial Local State (Updated)
 const INITIAL_LOCAL_STATE = {
@@ -12,6 +13,8 @@ const INITIAL_LOCAL_STATE = {
   startDate: null,
   endDate: null,
   quantity: 0,
+  status: [],
+  type: [],
 };
 
 export const HOCMyAction = ({
@@ -26,6 +29,7 @@ export const HOCMyAction = ({
 
   const [localState, setLocalState] = useState(INITIAL_LOCAL_STATE);
 
+  const { Option } = Select;
   // Prefill
   useEffect(() => {
     if (maininstrumentName) {
@@ -91,6 +95,8 @@ export const HOCMyAction = ({
       startDate,
       endDate,
       quantity,
+      status,
+      type,
     } = localState;
 
     const searchPayload = {
@@ -101,6 +107,8 @@ export const HOCMyAction = ({
       startDate,
       endDate,
       quantity: quantity || 0,
+      status: status || [],
+      type: type || [],
       filterTrigger: true,
       pageNumber: 0,
       pageSize: 10,
@@ -123,6 +131,8 @@ export const HOCMyAction = ({
       startDate: null,
       endDate: null,
       quantity: 0,
+      status: [],
+      type: [],
       filterTrigger: true,
       pageNumber: 0,
       pageSize: 10,
@@ -194,6 +204,47 @@ export const HOCMyAction = ({
         </Col>
       </Row>
 
+      <Row gutter={[12, 12]} className={styles.bottomGap}>
+        <Col xs={24} sm={24} md={12} lg={12}>
+          <label className={styles["typeAndStatusLabel"]}>Status</label>
+          <Select
+            mode="multiple"
+            allowClear
+            placeholder="Select Status"
+            size="middle"
+            value={localState.status}
+            onChange={(values) => setFieldValue("status", values)}
+            className={styles.statusSelectClass}
+            style={{ width: "100%" }}
+          >
+            <Option value={1}>Pending</Option>
+            <Option value={2}>Resubmit</Option>
+            <Option value={3}>Approved</Option>
+            <Option value={4}>Declined</Option>
+            <Option value={5}>Traded</Option>
+            <Option value={6}>Not-Traded</Option>
+            <Option value={7}>Compliant</Option>
+            <Option value={8}>Non-Compliant</Option>
+          </Select>
+        </Col>
+
+        <Col xs={24} sm={24} md={12} lg={12}>
+          <label className={styles["typeAndStatusLabel"]}>Type</label>
+          <Select
+            mode="multiple"
+            allowClear
+            placeholder="Select Type"
+            size="middle"
+            className={styles.statusSelectClass}
+            value={localState.type}
+            onChange={(values) => setFieldValue("type", values)}
+            style={{ width: "100%" }}
+          >
+            <Option value={1}>Buy</Option>
+            <Option value={2}>Sell</Option>
+          </Select>
+        </Col>
+      </Row>
       {/* Date Range */}
       <Row gutter={[12, 12]}>
         <Col xs={24} sm={24}>
