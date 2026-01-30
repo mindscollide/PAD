@@ -79,3 +79,9 @@
   letter-spacing: 0%;
   color: #424242;
 }
+
+.required {
+  font-family: Switzer Variable !important;
+  color: #a50000 !important;
+  margin-left: 4px !important;
+}

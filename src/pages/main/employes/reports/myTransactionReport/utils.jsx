@@ -50,7 +50,7 @@ export const buildApiRequest = (searchState = {}, assetTypeListingData) => ({
  */
 export const mapEmployeeTransactionsReport = (
   assetTypeData,
-  getEmployeeTransactionReport = []
+  getEmployeeTransactionReport = [],
 ) => {
   const transactions = Array.isArray(getEmployeeTransactionReport)
     ? getEmployeeTransactionReport
@@ -79,7 +79,56 @@ export const mapEmployeeTransactionsReport = (
     assetTypeID: item.assetType?.assetTypeID || 0,
   }));
 };
+const renderInstrumentCell = (record) => {
+  const code = record?.instrumentCode || "—";
+  const name = record?.instrumentName || "—";
+  const assetCode = record?.assetTypeShortCode || "";
 
+  return (
+    <div
+      style={{
+        display: "flex",
+        alignItems: "center",
+        gap: "8px",
+        minWidth: 0,
+      }}
+    >
+      <span
+        className="custom-shortCode-asset"
+        style={{
+          minWidth: 32,
+          flexShrink: 0,
+          display: "inline-flex",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+        data-testid="asset-code"
+      >
+        {assetCode?.substring(0, 2).toUpperCase()}
+      </span>
+      <Tooltip
+        title={`${code} - ${name}`}
+        placement="topLeft"
+        overlayStyle={{ maxWidth: "300px" }}
+      >
+        <span
+          className="font-medium"
+          style={{
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+            whiteSpace: "nowrap",
+            minWidth: 0,
+            flex: 1,
+            cursor: "pointer",
+          }}
+          data-testid="instrument-code"
+        >
+          {code}
+        </span>
+      </Tooltip>
+    </div>
+  );
+};
 export const getBorderlessTableColumns = ({
   approvalStatusMap,
   sortedInfo,
@@ -145,7 +194,7 @@ export const getBorderlessTableColumns = ({
     width: "13%",
     sorter: (a, b) =>
       formatApiDateTime(a.requestDateTime).localeCompare(
-        formatApiDateTime(b.requestDateTime)
+        formatApiDateTime(b.requestDateTime),
       ),
     sortOrder:
       sortedInfo?.columnKey === "requestDateTime" ? sortedInfo.order : null,
@@ -288,7 +337,7 @@ export const getBorderlessTableColumns = ({
     width: "10%",
     sorter: (a, b) =>
       formatApiDateTime(a.actionDateTime).localeCompare(
-        formatApiDateTime(b.actionDateTime)
+        formatApiDateTime(b.actionDateTime),
       ),
     sortDirections: ["ascend", "descend"],
     sortOrder:
@@ -314,7 +363,7 @@ export const getBorderlessTableColumns = ({
   },
   {
     title: withSortIcon("Action by", "actionBy", sortedInfo),
-    align:"left",
+    align: "left",
     dataIndex: "actionBy",
     key: "actionBy",
     ellipsis: true,

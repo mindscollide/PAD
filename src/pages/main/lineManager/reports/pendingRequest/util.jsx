@@ -47,7 +47,7 @@ export const buildApiRequest = (searchState = {}, assetTypeListingData) => {
   return {
     InstrumentName: instrumentName.trim(),
     RequesterName: requesterName.trim(),
-    Quantity: quantity ? (Number(quantity) === 0 ? "" : Number(quantity)) : "",
+    Quantity: quantity ? (Number(quantity) === 0 ? 0 : Number(quantity)) : 0,
     StartDate: startDate ? toYYMMDD(startDate) : "",
     EndDate: endDate ? toYYMMDD(endDate) : "",
     // StatusIds: mapStatusToIds?.(status) || [],

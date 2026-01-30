@@ -42,6 +42,7 @@ const PendingApprovals = ({ activeFilters }) => {
   const { showLoader } = useGlobalLoader();
   const {
     employeeBasedBrokersData,
+    allBrokersData,
     assetTypeListingData,
     setAssetTypeListingData,
   } = useDashboardContext();
@@ -70,7 +71,7 @@ const PendingApprovals = ({ activeFilters }) => {
   // -------------------------
   // ✅ Derived values
   // -------------------------
-  const brokerOptions = formatBrokerOptions(employeeBasedBrokersData || []);
+  const brokerOptions = formatBrokerOptions(allBrokersData || []);
   const columns = getBorderlessTableColumns(
     approvalStatusMap,
     sortedInfo,

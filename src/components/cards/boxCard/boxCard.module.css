@@ -130,7 +130,7 @@
 }
 
 .smallShareHomeCard {
-  height: 150px;
+  height: 130px;
   background: #fff;
   border-radius: 13.89px;
   padding: 0px;
@@ -168,7 +168,7 @@
 .smallShareHomeCardstatBox {
   padding: 5px 16px;
   border-radius: 8px;
-  min-height: 70px;
+  min-height: 54px;
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -276,7 +276,7 @@
 
 /* medium card */
 .mediumHomeCard {
-  height: 251px;
+  height: 220px;
   background: #fff;
   border-radius: 13.89px;
   padding: 0px;
@@ -314,7 +314,7 @@
 .mediumHomeCardstatBox {
   padding: 12px 16px;
   border-radius: 13.89px;
-  height: 163px;
+  height: 135px;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -392,7 +392,7 @@
 .mediumHomeSideCardstatBox {
   padding: 12px 40px;
   border-radius: 13.89px;
-  height: 163px;
+  height: 162px;
   display: flex;
   align-items: center;
   gap: 6px;
@@ -499,14 +499,14 @@
 .counterWrapper {
   display: flex;
   gap: 2px;
-  font-size: 32px;
+  font-size: 24px;
   font-weight: bold;
   line-height: 1;
 }
 
 .digitWrapper {
   position: relative;
-  height: 58px; /* adjust height */
+  height: 44px; /* adjust height */
   overflow: hidden;
 }
 
@@ -541,7 +541,7 @@
 
 /* reports card */
 .reports {
-  height: 310px;
+  height: 274px;
   background: #fff;
   border-radius: 13.89px;
   padding: 0px;
@@ -579,7 +579,7 @@
 .reportsstatBox {
   padding: 12px 16px;
   border-radius: 13.89px;
-  height: 217px;
+  height: 192px;
   display: flex;
   flex-direction: column;
   justify-content: center;

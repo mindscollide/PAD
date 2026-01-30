@@ -119,7 +119,7 @@ const SystemConfigurations = () => {
       // 🔹 Convert formValues into updated data format
       const updatedData = data.map((item) => {
         const matchedValue = formValues.find(
-          (val) => val.configurationID === item.configurationID
+          (val) => val.configurationID === item.configurationID,
         );
 
         return matchedValue
@@ -147,7 +147,7 @@ const SystemConfigurations = () => {
       (item) =>
         item.configValue === "" ||
         item.configValue === null ||
-        item.configValue === undefined
+        item.configValue === undefined,
     );
 
     if (hasEmptyFields) {
@@ -296,7 +296,7 @@ const SystemConfigurations = () => {
                       <Input
                         value={
                           formValues.find(
-                            (f) => f.configurationID === item.configurationID
+                            (f) => f.configurationID === item.configurationID,
                           )?.configValue || ""
                         }
                         onChange={(e) =>
@@ -326,13 +326,16 @@ const SystemConfigurations = () => {
                           max={item.maxValue ?? 100}
                           value={
                             formValues.find(
-                              (f) => f.configurationID === item.configurationID
+                              (f) => f.configurationID === item.configurationID,
                             )?.configValue || ""
                           }
                           onChange={(e) => {
                             const value = e.target.value;
                             // Allow empty or partial input (so user can type)
                             handleChange(item.configurationID, value);
+                          }}
+                          onKeyDown={(e) => {
+                            e.preventDefault(); // 🚫 disables typing
                           }}
                           onBlur={(e) => {
                             const value = e.target.value;
@@ -346,11 +349,11 @@ const SystemConfigurations = () => {
                               // Clamp the number, then convert back to string before setting
                               const clamped = Math.min(
                                 Math.max(num, item.minValue ?? 1),
-                                item.maxValue ?? 100
+                                item.maxValue ?? 100,
                               );
                               handleChange(
                                 item.configurationID,
-                                String(clamped)
+                                String(clamped),
                               );
                             }
                           }}

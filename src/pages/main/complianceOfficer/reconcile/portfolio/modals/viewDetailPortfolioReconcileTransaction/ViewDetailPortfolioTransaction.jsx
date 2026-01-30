@@ -131,6 +131,19 @@ const ViewDetailPortfolioTransaction = () => {
     setViewDetailPortfolioTransaction(false);
   };
 
+const hierarchyDetails =
+  reconcilePortfolioViewDetailData?.hierarchyDetails || [];
+
+const currentUserIndex = hierarchyDetails.findIndex(
+  (item) => item.userID === loggedInUserID
+);
+
+// show only previous + current user
+const visibleHierarchy =
+  currentUserIndex !== -1
+    ? hierarchyDetails.slice(0, currentUserIndex + 1)
+    : hierarchyDetails;
+
   return (
     <>
       <GlobalModal
@@ -295,11 +308,12 @@ const ViewDetailPortfolioTransaction = () => {
                     >
                       {/* Agar loginUserID match krti hai hierarchyDetails ki userID sy to wo wala stepper show nahi hoga */}
                       <Stepper
-                        activeStep={Math.max(
-                          0,
-                          (reconcilePortfolioViewDetailData?.hierarchyDetails
-                            ?.length || 1) - 1
-                        )}
+                        // activeStep={Math.max(
+                        //   0,
+                        //   (reconcilePortfolioViewDetailData?.hierarchyDetails
+                        //     ?.length || 1) - 1
+                        // )}
+                        activeStep={Math.max(0, visibleHierarchy.length - 1)}
                         connectorStyleConfig={{
                           activeColor: "#00640A",
                           completedColor: "#00640A",
@@ -314,9 +328,9 @@ const ViewDetailPortfolioTransaction = () => {
                         }}
                       >
                         {Array.isArray(
-                          reconcilePortfolioViewDetailData?.hierarchyDetails
+                          visibleHierarchy
                         ) &&
-                          reconcilePortfolioViewDetailData.hierarchyDetails.map(
+                          visibleHierarchy.map(
                             (person, index) => {
                               const {
                                 fullName,
