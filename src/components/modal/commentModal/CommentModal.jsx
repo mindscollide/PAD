@@ -99,7 +99,7 @@ const CommentModal = ({
     const combinedText = manualText
       ? `${manualText} - ${optionText.reason}`
       : optionText.reason;
-
+ 
     setValue(combinedText);
   };
 
