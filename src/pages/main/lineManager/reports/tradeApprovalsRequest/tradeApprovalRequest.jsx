@@ -31,7 +31,7 @@ import { useDashboardContext } from "../../../../../context/dashboardContaxt";
 import { useTableScrollBottom } from "../../../../../common/funtions/scroll";
 import CustomButton from "../../../../../components/buttons/button";
 import { DateRangePicker } from "../../../../../components";
-import { toYYMMDD } from "../../../../../common/funtions/rejex";
+import { formatToYYYYMMDD, toYYMMDD } from "../../../../../common/funtions/rejex";
 
 const TradeApprovalRequest = () => {
   const navigate = useNavigate();
@@ -118,7 +118,7 @@ const TradeApprovalRequest = () => {
       setMyTradeApprovalReportLineManageSearch,
       showLoader,
       showNotification,
-    ]
+    ],
   );
 
   // -------------------- Effects --------------------
@@ -127,7 +127,24 @@ const TradeApprovalRequest = () => {
   useEffect(() => {
     if (hasFetched.current) return;
     hasFetched.current = true;
-    const requestData = buildApiRequest(myTradeApprovalReportLineManageSearch);
+
+    const endDate = new Date();
+    const startDate = new Date();
+    startDate.setMonth(startDate.getMonth() - 6);
+    // 👇 SET dateRange state ONLY
+    setDateRange({
+      StartDate: formatToYYYYMMDD(startDate),
+      EndDate: formatToYYYYMMDD(endDate),
+    });
+    const updatedState = {
+      ...myTradeApprovalReportLineManageSearch,
+      startDate,
+      endDate,
+    };
+
+    // update state for UI consistency
+    setMyTradeApprovalReportLineManageSearch(updatedState);
+    const requestData = buildApiRequest(updatedState);
     fetchApiCall(requestData, true, true);
   }, []);
 
@@ -143,7 +160,7 @@ const TradeApprovalRequest = () => {
   useEffect(() => {
     if (myTradeApprovalReportLineManageSearch?.filterTrigger) {
       const requestData = buildApiRequest(
-        myTradeApprovalReportLineManageSearch
+        myTradeApprovalReportLineManageSearch,
       );
       fetchApiCall(requestData, true, true);
     }
@@ -161,7 +178,7 @@ const TradeApprovalRequest = () => {
       try {
         setLoadingMore(true);
         const requestData = buildApiRequest(
-          myTradeApprovalReportLineManageSearch
+          myTradeApprovalReportLineManageSearch,
         );
         await fetchApiCall(requestData, false, false);
       } catch (err) {
@@ -171,7 +188,7 @@ const TradeApprovalRequest = () => {
       }
     },
     0,
-    "border-less-table-blue"
+    "border-less-table-blue",
   );
 
   // -------------------- Table Columns --------------------
@@ -184,7 +201,6 @@ const TradeApprovalRequest = () => {
 
   /** 🔹 Handle removing individual filter */
   const handleRemoveFilter = (key) => {
-    console.log(key, "checkCheclebdkjbkwbcdjh");
     const resetMap = {
       employeeName: { employeeName: "" },
       departmentName: { departmentName: "" },
@@ -253,6 +269,8 @@ const TradeApprovalRequest = () => {
 
   const handleDateChange = (dates) => {
     if (dates && dates.length === 2) {
+      console.log("endDate", dates?.[0] )
+      console.log("endDate", dates?.[1] )
       setDateRange({
         StartDate: dates?.[0] || null,
         EndDate: dates?.[1] || null,
@@ -265,7 +283,7 @@ const TradeApprovalRequest = () => {
           EndDate: toYYMMDD(dates[1]) || null,
         },
         true,
-        true
+        true,
       );
     }
   };
@@ -284,7 +302,7 @@ const TradeApprovalRequest = () => {
         EndDate: "",
       },
       true,
-      true
+      true,
     );
   };
 

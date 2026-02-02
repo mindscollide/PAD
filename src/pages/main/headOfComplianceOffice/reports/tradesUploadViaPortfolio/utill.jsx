@@ -32,7 +32,7 @@ export const buildApiRequest = (searchState = {}, assetTypeListingData) => ({
   EmployeeName: searchState.quantity ? Number(searchState.employeeName) : "",
   StartDate: searchState.startDate ? toYYMMDD(searchState.startDate) : "",
   EndDate: searchState.endDate ? toYYMMDD(searchState.endDate) : "",
-  StatusIDs: mapStatusToIds(searchState.status, 2) || [],
+  StatusIds: mapStatusToIds(searchState.status, 2) || [],
   TypeIds:
     mapBuySellToIds(searchState.type, assetTypeListingData?.Equities) || [],
   PageNumber: Number(searchState.pageNumber) || 0,
