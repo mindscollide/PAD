@@ -24,6 +24,7 @@
   color: #30426a;
   line-height: 120%;
   margin-bottom: 12px;
+  margin-top: 6px;
   text-align: left; /* 👈 align heading to start */
 }
 
@@ -92,7 +93,7 @@
   font-size: 16px;
   line-height: 100%;
   letter-spacing: 0;
-  color: #30426A;
+  color: #30426a;
 }
 .mainTextType {
   font-family: "Switzer Variable", sans-serif;
@@ -128,7 +129,7 @@
   color: #1a1a1a;
   font-weight: 500;
   cursor: pointer;
-   transition: box-shadow 0.2s ease;
+  transition: box-shadow 0.2s ease;
 }
 
 .reasonTag:hover {

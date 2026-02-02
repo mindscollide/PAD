@@ -63,6 +63,8 @@ const CommentModal = ({
   // State to get option reason while selecting any reason
   const [selectedOption, setSelectedOption] = useState(null);
 
+  const [manualText, setManualText] = useState(""); // text user types
+
   //A counter show below the TextArea
   const charCount = value?.length;
 
@@ -72,20 +74,32 @@ const CommentModal = ({
   //OnChange function which tell that the option isselected on textArea field
   const handleChange = (e) => {
     const newText = e.target.value;
-    if (newText.length <= maxChars) {
-      setValue(newText);
 
-      // If user deleted everything, unselect the option
-      if (newText.trim() === "") {
-        setSelectedOption(null);
+    if (newText.length <= maxChars) {
+      // If a reason was selected, remove it from text before saving manual part
+      if (selectedOption) {
+        const reasonText = ` - ${selectedOption.reason}`;
+        if (newText.endsWith(reasonText)) {
+          setManualText(newText.replace(reasonText, ""));
+        } else {
+          setManualText(newText);
+          setSelectedOption(null);
+        }
+      } else {
+        setManualText(newText);
       }
+
+      setValue(newText);
     }
   };
 
   // For select options
   const handleOptionSelect = (optionText) => {
     setSelectedOption(optionText);
-    setValue(optionText.reason);
+    const combinedText = manualText
+      ? `${manualText} - ${optionText.reason}`
+      : optionText.reason;
+    setValue(combinedText);
   };
 
   //When User Click on Approve then note Modal will open then this Api need to Hit
@@ -198,7 +212,7 @@ const CommentModal = ({
     const requestdata = {
       TradeApprovalID: String(
         selectedEscalatedHeadOfComplianceData?.workflowID ||
-          selectedEscalatedPortfolioHeadOfComplianceData?.workflowID
+          selectedEscalatedPortfolioHeadOfComplianceData?.workflowID,
       ),
       StatusID:
         submitText === "HOC-Non-Compliant" ||
