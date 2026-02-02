@@ -31,7 +31,7 @@ export const buildApiRequest = (searchState = {}) => ({
 
 export const buildApiRequestViewDetails = (
   searchState = {},
-  assetTypeListingData
+  assetTypeListingData,
 ) => ({
   PageNumber: Number(searchState.pageNumber) || 0,
   Length: Number(searchState.pageSize) || 10,
@@ -49,7 +49,7 @@ export const buildApiRequestViewDetails = (
  * @returns {Array} Mapped transaction list
  */
 export const mappingDateWiseTransactionReport = (
-  myTradeApprovalLineManagerData = []
+  myTradeApprovalLineManagerData = [],
 ) => {
   const records = Array.isArray(myTradeApprovalLineManagerData)
     ? myTradeApprovalLineManagerData
@@ -76,7 +76,7 @@ export const mappingDateWiseTransactionReport = (
 };
 export const mappingDateWiseTransactionviewDetailst = (
   assetTypeData,
-  myTradeApprovalLineManagerData = []
+  myTradeApprovalLineManagerData = [],
 ) => {
   const records = Array.isArray(myTradeApprovalLineManagerData)
     ? myTradeApprovalLineManagerData
@@ -102,8 +102,9 @@ export const mappingDateWiseTransactionviewDetailst = (
     assetTypeID: item.assetType?.assetTypeID || 0,
     employeeName: item.requesterName || "",
     employeeID: item.employeeID || "",
-    approvalComment: item.approvalComment || "",
-    rejectionComment: item.rejectionComment || "",
+    accetanceComments: item.accetanceComments || "",
+    rejectionComments: item.rejectionComments || "",
+    workFlowStatusID: item.workFlowStatusID || 0,
   }));
 };
 
@@ -116,7 +117,7 @@ export const getBorderlessTableColumns = ({
       "Transaction Date",
       "transactionDate",
       sortedInfo,
-      "center"
+      "center",
     ),
     align: "center",
     dataIndex: "transactionDate",
@@ -140,7 +141,7 @@ export const getBorderlessTableColumns = ({
       "Total Employees",
       "totalEmployees",
       sortedInfo,
-      "center"
+      "center",
     ),
     dataIndex: "totalEmployees",
     key: "totalEmployees",
@@ -159,7 +160,7 @@ export const getBorderlessTableColumns = ({
       "Total Transactions",
       "totalTransactions",
       sortedInfo,
-      "center"
+      "center",
     ),
     dataIndex: "totalTransactions",
     key: "totalTransactions",
@@ -178,7 +179,7 @@ export const getBorderlessTableColumns = ({
       "Compliant Transactions",
       "compliantTransactions",
       sortedInfo,
-      "center"
+      "center",
     ),
     dataIndex: "compliantTransactions",
     key: "compliantTransactions",
@@ -200,7 +201,7 @@ export const getBorderlessTableColumns = ({
       "Non-Compliant Transactions",
       "nonCompliantTransactions",
       sortedInfo,
-      "center"
+      "center",
     ),
     dataIndex: "nonCompliantTransactions",
     key: "nonCompliantTransactions",
@@ -299,6 +300,8 @@ export const getBorderlessTableColumnsViewDetails = ({
   hocTransactionsSummarysReportsViewDetailsSearch,
   setHOCTransactionsSummarysReportsViewDetailSearch,
   handelViewDetails,
+  setIsViewComments,
+  setSelectedWorkFlowViewDetaild,
 }) => [
   {
     title: withSortIcon("Employee ID", "employeeID", sortedInfo),
@@ -391,7 +394,7 @@ export const getBorderlessTableColumnsViewDetails = ({
       "Initiated at",
       "transactionDate",
       sortedInfo,
-      "center"
+      "center",
     ),
     dataIndex: "transactionDate",
     key: "transactionDate",
@@ -444,7 +447,9 @@ export const getBorderlessTableColumnsViewDetails = ({
     showSorterTooltip: false,
     sortIcon: () => null,
     render: (q) => (
-      <span className="font-medium">{Number(q).toLocaleString("en-US") || "—"}</span>
+      <span className="font-medium">
+        {Number(q).toLocaleString("en-US") || "—"}
+      </span>
     ),
   },
   {
@@ -478,9 +483,11 @@ export const getBorderlessTableColumnsViewDetails = ({
       <div className={style.viewEditClass}>
         <Button
           className="small-light-button"
-          text={"View Details"}
+          text={"View Comments"}
           onClick={() => {
-            console.log(record, "record");
+            console.log(record, "tradeApprovalID");
+            setSelectedWorkFlowViewDetaild(record);
+            setIsViewComments(true);
           }}
         />
       </div>

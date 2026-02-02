@@ -10,7 +10,7 @@ import {
 // 🔹 Initial state matching your global state structure
 const INITIAL_LOCAL_STATE = {
   employeeName: "",
-  ipAddress: 0,
+  ipAddress: "",
   startDate: null,
   endDate: null,
   pageNumber: 0,
@@ -60,13 +60,39 @@ export const AdminUserActivityReportFilter = ({
     setLocalState((prev) => ({ ...prev, [field]: value }));
   };
 
+  // -----------------------------------------------------
+  // 🔹 IP Input Handler (auto-format IP)
+  // -----------------------------------------------------
+  const handleIPChange = (e) => {
+    let { value } = e.target;
+
+    // Allow digits & dots
+    value = value.replace(/[^0-9.]/g, "");
+
+    // Prevent multiple dots
+    value = value.replace(/\.{2,}/g, ".");
+
+    // Remove starting dot
+    if (value.startsWith(".")) value = value.substring(1);
+
+    // Limit blocks (0–255)
+    let parts = value.split(".");
+    if (parts.length > 4) parts = parts.slice(0, 4);
+
+    parts = parts.map((part) => part.slice(0, 3)); // max 3 digits each
+
+    value = parts.join(".");
+
+    setLocalState((prev) => ({ ...prev, ipAddress: value }));
+  };
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
 
     // Remove commas first
     const rawValue = value.replace(/,/g, "");
 
-    if (name === "ipAddress") {
+    if (name === "quantity") {
       // Allow empty or numbers only
       if (rawValue === "" || allowOnlyNumbers(rawValue)) {
         setFieldValue(name, rawValue);
@@ -99,7 +125,7 @@ export const AdminUserActivityReportFilter = ({
     const searchPayload = {
       ...userActivityReportAdmin,
       employeeName: employeeName?.trim() || "",
-      ipAddress: ipAddress ? Number(ipAddress) : 0,
+      ipAddress: ipAddress || "",
       startDate: startDate || null,
       endDate: endDate || null,
       pageNumber: 0,
@@ -116,7 +142,7 @@ export const AdminUserActivityReportFilter = ({
     setUserActivityReportAdmin((prev) => ({
       ...prev,
       employeeName: "",
-      ipAddress: 0,
+      ipAddress: "",
       startDate: null,
       endDate: null,
       pageNumber: 0,
@@ -151,12 +177,8 @@ export const AdminUserActivityReportFilter = ({
           <TextField
             label="IP Address"
             name="ipAddress"
-            value={
-              localState.ipAddress !== "" && !isNaN(localState.ipAddress)
-                ? Number(localState.ipAddress).toLocaleString("en-US")
-                : ""
-            }
-            onChange={handleInputChange}
+            value={localState.ipAddress}
+            onChange={handleIPChange}
             placeholder="IP Address"
             size="medium"
             classNames="Search-Field"

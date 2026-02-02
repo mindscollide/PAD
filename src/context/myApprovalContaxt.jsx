@@ -1,8 +1,4 @@
-import React, {
-  createContext,
-  useContext,
-  useState,
-} from "react";
+import React, { createContext, useContext, useState } from "react";
 
 /**
  * MyapprovalContext
@@ -69,7 +65,7 @@ export const MyApprovalProvider = ({ children }) => {
 
   /** admin dashboard report summary */
   const [adminReportsDashboardData, setAdminReportsDashboardData] = useState(
-    []
+    [],
   );
 
   /** Employee Transaction Request Report API data */
@@ -191,6 +187,10 @@ export const MyApprovalProvider = ({ children }) => {
     coTransactionSummaryReportViewDetailsFlag,
     setCOTransactionSummaryReportViewDetailsFlag,
   ] = useState(false);
+
+  // selected WorkFlow Id from GetComplianceOfficerViewTransactionSummaryAPI View Details
+  const [selectedWorkFlowViewDetaild, setSelectedWorkFlowViewDetaild] =
+    useState(null);
 
   // Head Of Compliance (HOC) My Action
   const [myActionHOCData, setMyActionHOCData] = useState({
@@ -467,6 +467,11 @@ export const MyApprovalProvider = ({ children }) => {
         coTransactionSummaryReportViewDetailsListData,
         setCOTransactionSummaryReportViewDetailsListData,
         resetCOTransactionSummaryReportViewDetailsListData,
+
+        // Selected View Detail Id
+        selectedWorkFlowViewDetaild,
+        setSelectedWorkFlowViewDetaild,
+
         // HCA Reports
         hcaReportsDashboardData,
         setHCAReportsDashboardData,

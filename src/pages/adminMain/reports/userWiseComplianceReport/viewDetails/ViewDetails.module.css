@@ -144,7 +144,7 @@
 }
 
 .ViewDetailAdminLeftCol {
-  height: 630px;
+  height: 715px;
   margin-left: 30px;
   width: 441px;
   border-radius: 4px;
@@ -153,8 +153,8 @@
 }
 
 .ViewDetailAdminRightCol {
-  height: 950px;
-  width: 1000px;
+  height: 715px;
+  width: 1033px;
   border-radius: 4px;
   border: 1px solid #b4b4b4;
   background-color: #fff;
@@ -302,4 +302,52 @@
   font-family: "Switzer Variable";
   font-weight: 500;
   padding: 10px 8px;
+}
+
+/* Boxes Report Background */
+
+.approvalBox {
+  width: 100%; /* ✅ instead of fixed 228px */
+  max-width: 228px;
+  height: 107px !important;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  font-family: "Inter", sans-serif;
+}
+
+.count {
+  font-size: 36px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.label {
+  font-size: 14px;
+  font-weight: 500;
+  margin-top: 6px;
+}
+
+/* Variants */
+.totalApproval {
+  background-color: #fff1e7;
+  color: #f67f29;
+}
+
+.approved {
+  background-color: #c5ffc7;
+  color: #00640a;
+}
+
+.declined {
+  background-color: #ffdbdb;
+  color: #a50000;
+}
+
+.approvalScore {
+  background-color: #c5ffc7;
+  color: #00640a;
 }

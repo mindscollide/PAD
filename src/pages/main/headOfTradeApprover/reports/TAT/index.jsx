@@ -33,6 +33,7 @@ import CustomButton from "../../../../../components/buttons/button";
 import { toYYMMDD } from "../../../../../common/funtions/rejex";
 import { useGlobalModal } from "../../../../../context/GlobalModalContext";
 import ViewDetails from "./viewDetails/ViewDetails";
+import { useSidebarContext } from "../../../../../context/sidebarContaxt";
 
 const HTATAT = () => {
   const navigate = useNavigate();
@@ -45,6 +46,7 @@ const HTATAT = () => {
   const { showLoader } = useGlobalLoader();
   const { htaTATReportsData, setHTATATReportsData, resetHTATATReportsData } =
     useMyApproval();
+  const { selectedKey } = useSidebarContext();
 
   const { htaTATReportSearch, setHTATATReportSearch, resetHTATATReportSearch } =
     useSearchBarContext();
@@ -57,6 +59,9 @@ const HTATAT = () => {
     setShowViewDetailPageInTatOnHta,
     setShowSelectedTatDataOnViewDetailHTA,
   } = useGlobalModal();
+
+  console.log(showViewDetailPageInTatOnHta, "showViewDetailPageInTatOnHta");
+  console.log(selectedKey, "selectedKey");
 
   // -------------------- Local State --------------------
   const [sortedInfo, setSortedInfo] = useState({});

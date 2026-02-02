@@ -45,6 +45,7 @@ import { useTableScrollBottom } from "../../../../../common/funtions/scroll";
 import CustomButton from "../../../../../components/buttons/button";
 import { DateRangePicker } from "../../../../../components";
 import { mapStatusToIds } from "../../../../../components/dropdowns/filters/utils";
+import ViewCommentHOCTransaction from "./viewDetails/viewComment/ViewComment";
 // import ViewComment from "./viewComment/ViewComment";
 
 const HCATransactionsSummarysReports = () => {
@@ -68,6 +69,8 @@ const HCATransactionsSummarysReports = () => {
     coTransactionSummaryReportViewDetailsListData,
     setCOTransactionSummaryReportViewDetailsListData,
     resetCOTransactionSummaryReportViewDetailsListData,
+    selectedWorkFlowViewDetaild,
+    setSelectedWorkFlowViewDetaild,
   } = useMyApproval();
 
   const { isViewComments, setIsViewComments, setCheckTradeApprovalID } =
@@ -358,6 +361,8 @@ const HCATransactionsSummarysReports = () => {
     hocTransactionsSummarysReportsViewDetailsSearch,
     setHOCTransactionsSummarysReportsViewDetailSearch,
     handelViewDetails,
+    setIsViewComments,
+    setSelectedWorkFlowViewDetaild,
   });
 
   const handleDateChange = (dates) => {
@@ -636,7 +641,7 @@ const HCATransactionsSummarysReports = () => {
         </div>
       </PageLayout>
 
-      {/* {isViewComments && <ViewComment />} */}
+      {isViewComments && <ViewCommentHOCTransaction />}
     </>
   );
 };

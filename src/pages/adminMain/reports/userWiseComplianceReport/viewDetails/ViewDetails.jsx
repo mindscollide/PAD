@@ -86,6 +86,13 @@ const ViewDetailsAdmin = () => {
     },
   };
 
+  const summary = [
+    { value: 82, label: "Total Approvals", variant: "totalApproval" },
+    { value: 72, label: "Approved", variant: "approved" },
+    { value: 8, label: "Declined", variant: "declined" },
+    { value: "78%", label: "Approval Score", variant: "approvalScore" },
+  ];
+
   // -------------------- Helpers --------------------
 
   return (
@@ -262,89 +269,29 @@ const ViewDetailsAdmin = () => {
                 </Col>
               </Row>
               {/* For Card Boxes */}
-              <Row>
-                <Col xs={12} md={6} lg={6}>
-                  <MemoizedBoxCard
-                    locationStyle="up"
-                    mainClassName={"mediumHomeCard"}
-                    buttonId="Approvals-view-btn"
-                    boxes={[{ count: 12, label: "Compliant" }]}
-                    buttonClassName="big-white-card-button"
-                    userRole={"CO"}
-                  />
-                </Col>
-                <Col xs={12} md={6} lg={6}>
-                  <MemoizedBoxCard
-                    locationStyle="up"
-                    boxes={[{ count: 12, label: "Decline" }]}
-                    mainClassName={"mediumHomeCard"}
-                    buttonId="Approvals-view-btn"
-                    buttonClassName="big-white-card-button"
-                    userRole={"CO"}
-                  />
-                </Col>
-                <Col xs={12} md={6} lg={6}>
-                  <MemoizedBoxCard
-                    locationStyle="up"
-                    mainClassName={"mediumHomeCard"}
-                    boxes={[{ count: 12, label: "Approved" }]}
-                    buttonId="Approvals-view-btn"
-                    buttonClassName="big-white-card-button"
-                    userRole={"CO"}
-                  />
-                </Col>
-                <Col xs={12} md={6} lg={6}>
-                  <MemoizedBoxCard
-                    locationStyle="up"
-                    mainClassName={"mediumHomeCard"}
-                    boxes={[{ count: 12, label: "Compliant" }]}
-                    buttonId="Approvals-view-btn"
-                    buttonClassName="big-white-card-button"
-                    userRole={"CO"}
-                  />
-                </Col>
-              </Row>{" "}
-              <Row>
-                <Col xs={12} md={6} lg={6}>
-                  <MemoizedBoxCard
-                    locationStyle="up"
-                    mainClassName={"mediumHomeCard"}
-                    buttonId="Approvals-view-btn"
-                    boxes={[{ count: 12, label: "Compliant" }]}
-                    buttonClassName="big-white-card-button"
-                    userRole={"CO"}
-                  />
-                </Col>
-                <Col xs={12} md={6} lg={6}>
-                  <MemoizedBoxCard
-                    locationStyle="up"
-                    boxes={[{ count: 12, label: "Decline" }]}
-                    mainClassName={"mediumHomeCard"}
-                    buttonId="Approvals-view-btn"
-                    buttonClassName="big-white-card-button"
-                    userRole={"CO"}
-                  />
-                </Col>
-                <Col xs={12} md={6} lg={6}>
-                  <MemoizedBoxCard
-                    locationStyle="up"
-                    mainClassName={"mediumHomeCard"}
-                    boxes={[{ count: 12, label: "Approved" }]}
-                    buttonId="Approvals-view-btn"
-                    buttonClassName="big-white-card-button"
-                    userRole={"CO"}
-                  />
-                </Col>
-                <Col xs={12} md={6} lg={6}>
-                  <MemoizedBoxCard
-                    locationStyle="up"
-                    mainClassName={"mediumHomeCard"}
-                    boxes={[{ count: 12, label: "Compliant" }]}
-                    buttonId="Approvals-view-btn"
-                    buttonClassName="big-white-card-button"
-                    userRole={"CO"}
-                  />
-                </Col>
+              <Row className="g-3">
+                {summary.map((item, index) => (
+                  <Col xs={12} md={6} lg={6} key={index}>
+                    <div
+                      className={`${style.approvalBox} ${style[item.variant]}`}
+                    >
+                      <div className={style.count}>{item.value}</div>
+                      <div className={style.label}>{item.label}</div>
+                    </div>
+                  </Col>
+                ))}
+              </Row>
+              <Row className="g-3" style={{ marginTop: "20px" }}>
+                {summary.map((item, index) => (
+                  <Col xs={12} md={6} lg={6} key={index}>
+                    <div
+                      className={`${style.approvalBox} ${style[item.variant]}`}
+                    >
+                      <div className={style.count}>{item.value}</div>
+                      <div className={style.label}>{item.label}</div>
+                    </div>
+                  </Col>
+                ))}
               </Row>
               <Row gutter={[24, 24]}>
                 <Col span={12}>
