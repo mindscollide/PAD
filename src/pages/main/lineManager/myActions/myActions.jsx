@@ -77,7 +77,7 @@ const MyAction = () => {
         setMyActionLineManagerData(res);
       }
     },
-    [callApi, navigate, showLoader, showNotification]
+    [callApi, navigate, showLoader, showNotification],
   );
 
   // Initial Fetch
@@ -109,7 +109,7 @@ const MyAction = () => {
     approvalStatusMap,
     sortedInfo,
     lineManagerMyActionSearch,
-    setLineManagerMyActionSearch
+    setLineManagerMyActionSearch,
   );
 
   /** 🔹 Handle removing individual filter */
@@ -168,14 +168,8 @@ const MyAction = () => {
     };
 
     const statusMap = {
-      1: "Pending",
-      2: "Resubmit",
-      3: "Approved",
-      4: "Declined",
-      5: "Traded",
-      6: "Not-Traded",
-      7: "Compliant",
-      8: "Non-Compliant",
+      2: "Approved",
+      3: "Declined",
     };
     return [
       requestID && {
@@ -363,7 +357,7 @@ const MyAction = () => {
       };
       // userID
       const userProfileData = JSON.parse(
-        sessionStorage.getItem("user_profile_data")
+        sessionStorage.getItem("user_profile_data"),
       );
       // Step 1: Bundle hierarchy
       const bundleSteps =
@@ -372,14 +366,14 @@ const MyAction = () => {
             b.bundleStatus === 2
               ? "Approved"
               : b.bundleStatus === 3
-              ? "Declined"
-              : "Pending",
+                ? "Declined"
+                : "Pending",
           user:
             userProfileData?.userID === b.assignedToUserID
               ? "You"
               : `${b.firstName} ${b.lastName}`,
           date: formatApiDateTime(
-            `${b.bundleModifiedDate} ${b.bundleModifiedTime}`
+            `${b.bundleModifiedDate} ${b.bundleModifiedTime}`,
           ),
           iconType: getBundleIconType(b.bundleStatus),
         })) || [];
@@ -419,7 +413,7 @@ const MyAction = () => {
         creationTime: wf.requestedTime,
         quantity: Number(wf.quantity),
         type: wf.typeName || wf.type,
-        status: wf.workFlowStatusName || wf.statusState,
+        status: wf.statusState,
         trail,
       };
     });
@@ -459,7 +453,7 @@ const MyAction = () => {
       )}
 
       {/* 🔹 Transactions Table */}
-      <PageLayout className={activeFilters.length > 0 && "changeHeight"}>
+      <PageLayout className={activeFilters.length > 0 && "changeHeight2"}>
         <div>
           {/* Header & Actions */}
           <Row

@@ -7,6 +7,7 @@ import { Row, Col, Divider } from "antd";
 import {
   adminBrokersStatus,
   apiCallStatus,
+  bundleStatus,
   emaStatusOptions,
   emaStatusOptionsofReportsMyHistory,
   emaStatusOptionsofReportsMyTradeApprovals,
@@ -83,7 +84,7 @@ const StatusFilterDropdown = ({
       (prev) =>
         prev.includes(status)
           ? prev.filter((item) => item !== status) // Remove if already selected
-          : [...prev, status] // Add if not selected
+          : [...prev, status], // Add if not selected
     );
   };
 
@@ -94,8 +95,10 @@ const StatusFilterDropdown = ({
   useEffect(() => {
     switch (selectedKey) {
       case "1":
-      case "6":
         setFilterOptions(emaStatusOptions);
+        break;
+      case "6":
+        setFilterOptions(bundleStatus);
         break;
       case "3":
         setFilterOptions(emaStatusOptionsofReportsMyHistory);

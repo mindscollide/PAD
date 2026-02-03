@@ -75,8 +75,6 @@ const ViewDetailModal = () => {
     (item) => item.instrumentID === instrumentId,
   );
 
-  console.log(selectedInstrument, "SelectedInstrumentName");
-
   // To show Note Modal when Click on Declined in ViewDetailLineManager Modal
   const onClickToOpenNoteModal = () => {
     setViewDetailLineManagerModal(false);
@@ -93,45 +91,21 @@ const ViewDetailModal = () => {
         };
       case "2":
         return {
-          label: "Resubmitted",
-          labelClassName: styles.resubmittedDetailHeading,
-          divClassName: styles.resubmittedBorderClass,
-        };
-      case "3":
-        return {
           label: "Approved",
           labelClassName: styles.approvedDetailHeading,
           divClassName: styles.approvedBorderClass,
         };
-      case "4":
+      case "3":
         return {
           label: "Declined",
           labelClassName: styles.declinedDetailHeading,
           divClassName: styles.declinedBorderClass,
         };
-      case "5":
-        return {
-          label: "Traded",
-          labelClassName: styles.tradedDetailHeading,
-          divClassName: styles.tradedBorderClass,
-        };
-      case "6":
-        return {
-          label: "Not Traded",
-          labelClassName: styles.notTradedDetailHeading,
-          divClassName: styles.notTradedBorderClass,
-        };
-      case "8":
-        return {
-          label: "Compliant",
-          labelClassName: styles.approvedDetailHeading,
-          divClassName: styles.approvedBorderClass,
-        };
       default:
         return {
-          label: "Detail",
-          labelClassName: styles.defaultDetailHeading,
-          divClassName: styles.defaultBorderClass,
+          label: "Pending",
+          labelClassName: styles.pendingDetailHeading,
+          divClassName: styles.pendingBorderClass,
         };
     }
   };
@@ -139,7 +113,8 @@ const ViewDetailModal = () => {
   const statusDataLM = getStatusStyle(
     String(viewDetailsLineManagerData?.workFlowStatus?.workFlowStatusID),
   );
-  console.log("statusDataLM.label", statusDataLM.label);
+  console.log("statusDataLM.label", viewDetailsLineManagerData);
+  console.log("statusDataLM.label", statusDataLM);
   // When its already approve or ddecline by you then button should be disabled
   const hasAlreadyApprovedOrDeclined =
     viewDetailsLineManagerData?.hierarchyDetails?.some(

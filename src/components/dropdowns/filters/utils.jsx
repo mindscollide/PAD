@@ -38,6 +38,7 @@ export const adminBrokersStatus = ["Active", "In Active"];
  * Status options for pending approvals (Line Manager).
  */
 export const emtStatusOptionsForPendingApproval = ["Pending", "Non-Compliant"];
+export const bundleStatus = ["Pending", "Approved","Declined"];
 
 export const emaStatusOptionsofReportsMyTradeApprovals = [
   "Pending",

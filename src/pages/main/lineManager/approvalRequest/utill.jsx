@@ -50,7 +50,7 @@ export const buildApiRequest = (searchState = {}, assetTypeListingData) => {
     Quantity: quantity ? Number(quantity) : 0,
     StartDate: startDate ? toYYMMDD(startDate) : "",
     EndDate: endDate ? toYYMMDD(endDate) : "",
-    StatusIds: mapStatusToIds?.(status,2) || [],
+    StatusIds: mapStatusToIds?.(status) || [],
     TypeIds: mapBuySellToIds?.(type, assetTypeListingData?.Equities) || [],
     PageNumber: Number(pageNumber) || 0,
     Length: Number(pageSize) || 10,
