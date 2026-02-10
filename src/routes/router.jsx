@@ -43,6 +43,7 @@ import {
   HTAPolicyBreachesReport,
   HTATAT,
   AdmindataWiseTransactionsReports,
+  AdminTransactionsSummarysReports,
 } from "../pages";
 import RoleBasedRoute from "./RoleBasedRoute";
 import EscalatedApprovals from "../pages/main/headOfTradeApprover/escalatedApprovals/escalatedApprovals";
@@ -407,7 +408,7 @@ const router = createBrowserRouter(
           />
           <Route
             path="admin-transactions-summary-report"
-            element={<AdminPolicyBreachesReport />}
+            element={<AdminTransactionsSummarysReports />}
           />
           <Route
             path="admin-tat-request-report"

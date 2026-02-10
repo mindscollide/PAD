@@ -5,10 +5,7 @@ import StatusColumnTitle from "../../../../components/dropdowns/filters/statusCo
 import { Tag, Tooltip } from "antd";
 import style from "./transactionsSummary.module.css";
 
-import {
-  formatApiDateTime,
-  toYYMMDD,
-} from "../../../../common/funtions/rejex";
+import { formatApiDateTime, toYYMMDD } from "../../../../common/funtions/rejex";
 import { getTradeTypeById } from "../../../../common/funtions/type";
 import {
   mapBuySellToIds,
@@ -36,7 +33,7 @@ export const buildApiRequest = (searchState = {}) => ({
  * @returns {Array} Mapped transaction list
  */
 export const mappingDateWiseTransactionReport = (
-  myTradeApprovalLineManagerData = []
+  myTradeApprovalLineManagerData = [],
 ) => {
   const records = Array.isArray(myTradeApprovalLineManagerData)
     ? myTradeApprovalLineManagerData
@@ -62,7 +59,6 @@ export const mappingDateWiseTransactionReport = (
   }));
 };
 
-
 export const getBorderlessTableColumns = ({
   sortedInfo,
   handelViewDetails,
@@ -72,11 +68,11 @@ export const getBorderlessTableColumns = ({
       "Transaction Date",
       "transactionDate",
       sortedInfo,
-      "center"
+      "center",
     ),
     dataIndex: "transactionDate",
     key: "transactionDate",
-    width: 200,
+    width: 140,
     align: "center",
     ellipsis: true,
     sorter: (a, b) =>
@@ -96,7 +92,7 @@ export const getBorderlessTableColumns = ({
       "Total Employees",
       "totalEmployees",
       sortedInfo,
-      "center"
+      "center",
     ),
     dataIndex: "totalEmployees",
     key: "totalEmployees",
@@ -115,7 +111,7 @@ export const getBorderlessTableColumns = ({
       "Total Transactions",
       "totalTransactions",
       sortedInfo,
-      "center"
+      "center",
     ),
     dataIndex: "totalTransactions",
     key: "totalTransactions",
@@ -130,15 +126,49 @@ export const getBorderlessTableColumns = ({
     render: (q) => <span>{q.toLocaleString()}</span>,
   },
   {
+    title: withSortIcon("Action By", "actionName", sortedInfo),
+    dataIndex: "actionName",
+    key: "actionName",
+    ellipsis: true,
+    width: 100,
+    sorter: (a, b) => a.actionName - b.actionName,
+    sortDirections: ["ascend", "descend"],
+    sortOrder: sortedInfo?.columnKey === "actionName" ? sortedInfo.order : null,
+    showSorterTooltip: false,
+    sortIcon: () => null,
+    render: (q) => <span className="font-medium">{q.toLocaleString()}</span>,
+  },
+  {
+    title: withSortIcon("Action Date", "actionDateTime", sortedInfo),
+    dataIndex: "actionDateTime",
+    key: "actionDateTime",
+    width: 140,
+    ellipsis: true,
+    sorter: (a, b) =>
+      formatApiDateTime(a.actionDateTime).localeCompare(
+        formatApiDateTime(b.actionDateTime),
+      ),
+    sortDirections: ["ascend", "descend"],
+    sortOrder:
+      sortedInfo?.columnKey === "actionDateTime" ? sortedInfo.order : null,
+    showSorterTooltip: false,
+    sortIcon: () => null,
+    render: (date, record) => (
+      <span id={`cell-${record.key}-actionDateTime`} className="text-gray-600">
+        {formatApiDateTime(date)}
+      </span>
+    ),
+  },
+  {
     title: withSortIcon(
       "Compliant Transactions",
       "compliantTransactions",
       sortedInfo,
-      "center"
+      "center",
     ),
     dataIndex: "compliantTransactions",
     key: "compliantTransactions",
-    width: 140,
+    width: 180,
     align: "center",
     ellipsis: true,
     sorter: (a, b) =>
@@ -156,7 +186,7 @@ export const getBorderlessTableColumns = ({
       "Non-Compliant Transactions",
       "nonCompliantTransactions",
       sortedInfo,
-      "center"
+      "center",
     ),
     dataIndex: "nonCompliantTransactions",
     key: "nonCompliantTransactions",
@@ -195,7 +225,7 @@ export const getBorderlessTableColumns = ({
 
 export const buildApiRequestViewDetails = (
   searchState = {},
-  assetTypeListingData
+  assetTypeListingData,
 ) => ({
   PageNumber: Number(searchState.pageNumber) || 0,
   Length: Number(searchState.pageSize) || 10,
@@ -209,7 +239,7 @@ export const buildApiRequestViewDetails = (
 
 export const mappingDateWiseTransactionviewDetailst = (
   assetTypeData,
-  myTradeApprovalLineManagerData = []
+  myTradeApprovalLineManagerData = [],
 ) => {
   const records = Array.isArray(myTradeApprovalLineManagerData)
     ? myTradeApprovalLineManagerData
@@ -219,6 +249,9 @@ export const mappingDateWiseTransactionviewDetailst = (
 
   return records.map((item) => ({
     key: item.workFlowID,
+    actionName: item.actionName || "",
+    actionDateTime:
+      `${item?.actionDate || ""} ${item?.actionTime || ""}`.trim() || "—",
     approvalID: item.approvalID,
     tradeApprovalID: item.tradeApprovalID || "",
     instrumentCode: item?.instrumentShortCode || "—",
@@ -390,7 +423,7 @@ export const getBorderlessTableColumnsViewDetails = ({
       "Initiated at",
       "transactionDate",
       sortedInfoView,
-      "center"
+      "center",
     ),
     dataIndex: "transactionDate",
     key: "transactionDate",

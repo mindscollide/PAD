@@ -137,16 +137,18 @@ const Headers = () => {
     // 🔹 Key = 23 (Admin)
     if (
       selectedKey === "23" &&
-      [
+      ([
         "/PAD/admin-reports/admin-user-activity-report",
         "/PAD/admin-reports/admin-user-wise-compliance-report",
         "/PAD/admin-reports/admin-policy-breaches-report",
         "/PAD/admin-reports/admin-trade-approval-report",
         "/PAD/admin-reports/admin-date-wise-transaction-report",
-        "/PAD/admin-reports/admin-transactions-summary-report",
         "/PAD/admin-reports/admin-TAT-Request-report",
         "/PAD/admin-reports/admin-trades-uploaded-via-portfolio-report",
-      ].includes(currentPath)
+      ].includes(currentPath) ||
+        (currentPath ===
+          "/PAD/admin-reports/admin-transactions-summary-report" &&
+          coTransactionSummaryReportViewDetailsFlag))
     ) {
       return true;
     }

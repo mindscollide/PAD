@@ -736,7 +736,8 @@ export const SearchBarProvider = ({ children }) => {
   ] = useState({
     instrumentName: "",
     employeeName: "",
-    departmentName: "",
+    type: [],
+    status: [],
     quantity: 0,
     startDate: null,
     endDate: null,
@@ -1424,45 +1425,35 @@ export const SearchBarProvider = ({ children }) => {
   // Trade Approval Request
   const resetAdminTradeApprovalRequestReportSearch = () =>
     setAdminTradeApprovalRequestReportSearch({
-      InstrumentName: "",
       employeeName: "",
-      startDate: null,
-      endDate: null,
-      quantity: 0,
-      type: [],
-      status: [],
-      pageSize: 10,
+      departmentName: "",
       pageNumber: 0,
+      pageSize: 10,
       filterTrigger: false,
     });
 
   // TAT Approval Request Report
   const resetAdminTATApprovalRequestReportSearch = () =>
     setAdminTATApprovalRequestReportSearch({
-      InstrumentName: "",
       employeeName: "",
-      startDate: null,
-      endDate: null,
-      quantity: 0,
-      type: [],
-      status: [],
-      pageSize: 10,
+      departmentName: "",
       pageNumber: 0,
+      pageSize: 10,
       filterTrigger: false,
     });
 
   // Trades Uploaded via Portfolio Report
   const resetAdminTradesUploadedviaPortfolioReportSearch = () =>
     setAdminTradesUploadedviaPortfolioReportSearch({
-      InstrumentName: "",
+      instrumentName: "",
       employeeName: "",
-      startDate: null,
-      endDate: null,
-      quantity: 0,
       type: [],
       status: [],
-      pageSize: 10,
+      quantity: 0,
+      startDate: null,
+      endDate: null,
       pageNumber: 0,
+      pageSize: 10,
       filterTrigger: false,
     });
 
