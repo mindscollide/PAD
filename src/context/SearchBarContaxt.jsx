@@ -645,6 +645,7 @@ export const SearchBarProvider = ({ children }) => {
     pageNumber: 0,
     pageSize: 10,
   });
+
   //Admin manageusers Rejected Requests Tab
   const [rejectedRequestsTabSearch, setRejectedRequestsTabSearch] = useState({
     employeeName: "",
@@ -703,6 +704,46 @@ export const SearchBarProvider = ({ children }) => {
       filterTrigger: false,
     });
 
+  // 🔍	Trade Approval Request Report On Admin ROle
+  const [
+    adminTradeApprovalRequestReportSearch,
+    setAdminTradeApprovalRequestReportSearch,
+  ] = useState({
+    employeeName: "",
+    departmentName: "",
+    pageNumber: 0,
+    pageSize: 10,
+    filterTrigger: false,
+  });
+
+  // 🔍	TAT Approval Request Report On Admin ROle
+  const [
+    adminTATApprovalRequestReportSearch,
+    setAdminTATApprovalRequestReportSearch,
+  ] = useState({
+    employeeName: "",
+    departmentName: "",
+    pageNumber: 0,
+    pageSize: 10,
+    filterTrigger: false,
+  });
+
+  // 🔍Trades Uploaded via Portfolio On Admin ROle
+  const [
+    adminTradesUploadedviaPortfolioReportSearch,
+    setAdminTradesUploadedviaPortfolioReportSearch,
+  ] = useState({
+    instrumentName: "",
+    employeeName: "",
+    departmentName: "",
+    quantity: 0,
+    startDate: null,
+    endDate: null,
+    pageNumber: 0,
+    pageSize: 10,
+    filterTrigger: false,
+  });
+
   // ===============================
   // Sync Refs (Always-Latest Values)
   // ===============================
@@ -710,26 +751,26 @@ export const SearchBarProvider = ({ children }) => {
   const employeeMyTransactionSearchRef = useRef(employeeMyTransactionSearch);
   const employeePortfolioSearchRef = useRef(employeePortfolioSearch);
   const employeePendingApprovalSearchRef = useRef(
-    employeePendingApprovalSearch
+    employeePendingApprovalSearch,
   );
   const employeeMyHistorySearchRef = useRef(employeeMyHistorySearch);
   const lineManagerApprovalSearchRef = useRef(lineManagerApprovalSearch);
   const complianceOfficerReconcileTransactionsSearchRef = useRef(
-    complianceOfficerReconcileTransactionsSearch
+    complianceOfficerReconcileTransactionsSearch,
   );
   const complianceOfficerReconcilePortfolioSearchRef = useRef(
-    complianceOfficerReconcilePortfolioSearch
+    complianceOfficerReconcilePortfolioSearch,
   );
   const headOfComplianceApprovalPortfolioSearchRef = useRef(
-    headOfComplianceApprovalPortfolioSearch
+    headOfComplianceApprovalPortfolioSearch,
   );
   const headOfComplianceApprovalEscalatedVerificationsSearchRef = useRef(
-    headOfComplianceApprovalEscalatedVerificationsSearch
+    headOfComplianceApprovalEscalatedVerificationsSearch,
   );
 
   // Head Of Trade Approval Escalated Approvals
   const headOfTradeEscalatedApprovalsSearchRef = useRef(
-    headOfTradeEscalatedApprovalsSearch
+    headOfTradeEscalatedApprovalsSearch,
   );
 
   // 🔄 Keep refs in sync with latest state
@@ -1379,6 +1420,51 @@ export const SearchBarProvider = ({ children }) => {
       filterTrigger: false,
     });
 
+  // Trade Approval Request
+  const resetAdminTradeApprovalRequestReportSearch = () =>
+    setAdminTradeApprovalRequestReportSearch({
+      InstrumentName: "",
+      employeeName: "",
+      startDate: null,
+      endDate: null,
+      quantity: 0,
+      type: [],
+      status: [],
+      pageSize: 10,
+      pageNumber: 0,
+      filterTrigger: false,
+    });
+
+  // TAT Approval Request Report
+  const resetAdminTATApprovalRequestReportSearch = () =>
+    setAdminTATApprovalRequestReportSearch({
+      InstrumentName: "",
+      employeeName: "",
+      startDate: null,
+      endDate: null,
+      quantity: 0,
+      type: [],
+      status: [],
+      pageSize: 10,
+      pageNumber: 0,
+      filterTrigger: false,
+    });
+
+  // Trades Uploaded via Portfolio Report
+  const resetAdminTradesUploadedviaPortfolioReportSearch = () =>
+    setAdminTradesUploadedviaPortfolioReportSearch({
+      InstrumentName: "",
+      employeeName: "",
+      startDate: null,
+      endDate: null,
+      quantity: 0,
+      type: [],
+      status: [],
+      pageSize: 10,
+      pageNumber: 0,
+      filterTrigger: false,
+    });
+
   // ================================================================================ //
   /** Reset all filters across modules */
   const resetSearchBarContextState = () => {
@@ -1409,6 +1495,9 @@ export const SearchBarProvider = ({ children }) => {
     resetHTAPolicyBreachesReportSearch();
     resetHTATATReportSearch();
     resetHOCTransactionsSummarysReportsViewDetailsSearch();
+    resetAdminTradeApprovalRequestReportSearch();
+    resetAdminTATApprovalRequestReportSearch();
+    resetAdminTradesUploadedviaPortfolioReportSearch();
   };
 
   // ===============================
@@ -1561,6 +1650,7 @@ export const SearchBarProvider = ({ children }) => {
         adminPolicyBreachesReportSearch,
         setAdminPolicyBreachesReportSearch,
         resetPolicyBreachesAdminReportSearch,
+
         // Manage Users page
         usersTabSearch,
         setUsersTabSearch,
@@ -1576,6 +1666,22 @@ export const SearchBarProvider = ({ children }) => {
         resetAdminSessionWiseActivitySearch,
         adminSessionWiseActivitySearch,
         setAdminSessionWiseActivitySearch,
+
+        // Admin Reports
+        // Trade Approval Request
+        adminTradeApprovalRequestReportSearch,
+        setAdminTradeApprovalRequestReportSearch,
+        resetAdminTradeApprovalRequestReportSearch,
+
+        // TAT Approval Request Report
+        adminTATApprovalRequestReportSearch,
+        setAdminTATApprovalRequestReportSearch,
+        resetAdminTATApprovalRequestReportSearch,
+
+        // Trades Uploaded via Portfolio Report
+        adminTradesUploadedviaPortfolioReportSearch,
+        setAdminTradesUploadedviaPortfolioReportSearch,
+        resetAdminTradesUploadedviaPortfolioReportSearch,
 
         // Head of Compliance Officer My Action
         headOfComplianceMyActionSearch,
@@ -1629,7 +1735,7 @@ export const useSearchBarContext = () => {
   const context = useContext(SearchBarContext);
   if (!context) {
     throw new Error(
-      "useSearchBarContext must be used within a SearchBarProvider"
+      "useSearchBarContext must be used within a SearchBarProvider",
     );
   }
   return context;
