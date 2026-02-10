@@ -6,6 +6,7 @@ import {
   allowOnlyNumbers,
   removeFirstSpace,
 } from "../../../common/funtions/rejex";
+import { useLocation } from "react-router-dom";
 
 // 🔹 Initial state matching your global state structure
 const INITIAL_LOCAL_STATE = {
@@ -26,8 +27,13 @@ export const AdminUserWiseComplianceReportFilter = ({
   const {
     userActivityComplianceReportAdmin,
     setUserActivityComplianceReportAdmin,
+    adminTradeApprovalRequestReportSearch,
+    setAdminTradeApprovalRequestReportSearch,
+    adminTATApprovalRequestReportSearch,
+    setAdminTATApprovalRequestReportSearch,
   } = useSearchBarContext();
-
+  const location = useLocation();
+  const currentPath = location.pathname;
   const [localState, setLocalState] = useState(INITIAL_LOCAL_STATE);
 
   // -----------------------------------------------------
@@ -77,47 +83,61 @@ export const AdminUserWiseComplianceReportFilter = ({
     setFieldValue(name, removeFirstSpace(value));
   };
 
-  const handleDateChange = (dates) => {
-    setLocalState({
-      ...localState,
-      startDate: dates?.[0] || null,
-      endDate: dates?.[1] || null,
-    });
-  };
-
-  const handleClearDates = () => {
-    setLocalState((prev) => ({
-      ...prev,
-      startDate: null,
-      endDate: null,
-    }));
-  };
-
   const handleSearchClick = () => {
     const { employeeName, departmentName } = localState;
-
     const searchPayload = {
-      ...userActivityComplianceReportAdmin,
+      ...(currentPath === "/PAD/admin-reports/admin-user-wise-compliance-report"
+        ? adminTradeApprovalRequestReportSearch
+        : currentPath === "/PAD/admin-reports/admin-TAT-Request-report"
+          ? adminTATApprovalRequestReportSearch
+          : userActivityComplianceReportAdmin),
       employeeName: employeeName?.trim() || "",
       departmentName: departmentName?.trim() || "",
       pageNumber: 0,
       filterTrigger: true,
     };
-
-    setUserActivityComplianceReportAdmin(searchPayload);
+    if (
+      currentPath === "/PAD/admin-reports/admin-user-wise-compliance-report"
+    ) {
+      setAdminTradeApprovalRequestReportSearch(searchPayload);
+    } else if (currentPath === "/PAD/admin-reports/admin-TAT-Request-report") {
+      setAdminTATApprovalRequestReportSearch(searchPayload);
+    } else {
+      setUserActivityComplianceReportAdmin(searchPayload);
+    }
     setLocalState(INITIAL_LOCAL_STATE);
     setClear(false);
     setVisible(false);
   };
 
   const handleResetClick = () => {
-    setUserActivityComplianceReportAdmin((prev) => ({
-      ...prev,
-      employeeName: "",
-      departmentName: "",
-      pageNumber: 0,
-      filterTrigger: true,
-    }));
+    if (
+      currentPath === "/PAD/admin-reports/admin-user-wise-compliance-report"
+    ) {
+      setAdminTradeApprovalRequestReportSearch((prev) => ({
+        ...prev,
+        employeeName: "",
+        departmentName: "",
+        pageNumber: 0,
+        filterTrigger: true,
+      }));
+    } else if (currentPath === "/PAD/admin-reports/admin-TAT-Request-report") {
+      setAdminTATApprovalRequestReportSearch((prev) => ({
+        ...prev,
+        employeeName: "",
+        departmentName: "",
+        pageNumber: 0,
+        filterTrigger: true,
+      }));
+    } else {
+      setUserActivityComplianceReportAdmin((prev) => ({
+        ...prev,
+        employeeName: "",
+        departmentName: "",
+        pageNumber: 0,
+        filterTrigger: true,
+      }));
+    }
 
     setLocalState(INITIAL_LOCAL_STATE);
     setClear(false);

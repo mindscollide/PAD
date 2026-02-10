@@ -34,3 +34,5 @@ export { default as HOCMyActionPage } from "./main/headOfComplianceOffice/myActi
 export { default as HTATradeApprovalRequest } from "./main/headOfTradeApprover/reports/tradeApprovalsRequest/HTATradeApprovalRequest";
 export { default as HTAPolicyBreachesReport } from "./main/headOfTradeApprover/reports/policyBreaches/index";
 export { default as HTATAT } from "./main/headOfTradeApprover/reports/TAT/index";
+export { default as AdmindataWiseTransactionsReports } from "./adminMain/reports/dataWiseTransactionsReports/index";
+export { default as AdminTransactionsSummarysReports } from "./adminMain/reports/transactionsSummary/index";

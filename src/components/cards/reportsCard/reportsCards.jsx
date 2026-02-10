@@ -99,6 +99,15 @@ const ReportCard = ({
     } else if (data?.label === "TAT Request Approval" && userRole === "HTA") {
       setSelectedKey("14");
       navigate("/PAD/hta-reports/hta-tat-reports");
+    }else if (data?.label === "User Activity Report" && userRole === "Admin") {
+      setSelectedKey("23");
+      navigate("/PAD/admin-reports/admin-user-activity-report");
+    }else if (data?.label === "User-wise Compliance Report" && userRole === "Admin") {
+      setSelectedKey("23");
+      navigate("/PAD/admin-reports/admin-user-wise-compliance-report");
+    }else if (data?.label === "Policy Breaches" && userRole === "Admin") {
+      setSelectedKey("23");
+      navigate("/PAD/admin-reports/admin-policy-breaches-report");
     }
   };
 

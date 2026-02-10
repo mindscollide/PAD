@@ -11,15 +11,22 @@ import PageLayout from "../../../../../components/pageContainer/pageContainer";
 import {
   buildApiRequest,
   getBorderlessTableColumns,
-  mapEmployeeTransactionsReport,
+  mappingDateWiseTransactionReport,
 } from "./utils";
 import { approvalStatusMap } from "../../../../../components/tables/borderlessTable/utill";
 
+// 🔹 Contexts
+import { useGlobalModal } from "../../../../../context/GlobalModalContext";
+
 // 🔹 Styles
-import style from "./TradeApprovalRequest.module.css";
+import style from "./transactionsSummary.module.css";
 import { useMyApproval } from "../../../../../context/myApprovalContaxt";
 import {
+  DownloadComplianceOfficerDateWiseTransactionReportRequestAPI,
   DownloadLineManagerMyTradeApprovalReportRequestAPI,
+  DownloadMyTransactionReportRequestAPI,
+  GetComplianceOfficerViewTransactionSummaryAPI,
+  SearchComplianceOfficerTransactionSummaryReportRequest,
   SearchLineManagerTradeApprovalRequestApi,
 } from "../../../../../api/myApprovalApi";
 import { useNotification } from "../../../../../components/NotificationProvider/NotificationProvider";
@@ -28,32 +35,37 @@ import { useGlobalLoader } from "../../../../../context/LoaderContext";
 import { useNavigate } from "react-router-dom";
 import { useSearchBarContext } from "../../../../../context/SearchBarContaxt";
 import { useDashboardContext } from "../../../../../context/dashboardContaxt";
+import { getSafeAssetTypeData } from "../../../../../common/funtions/assetTypesList";
 import { useTableScrollBottom } from "../../../../../common/funtions/scroll";
 import CustomButton from "../../../../../components/buttons/button";
 import { DateRangePicker } from "../../../../../components";
-import { formatToYYYYMMDD, toYYMMDD } from "../../../../../common/funtions/rejex";
+// import ViewComment from "./viewComment/ViewComment";
 
-const TradeApprovalRequest = () => {
+const COTransactionsSummarysReportsViewDetails = () => {
   const navigate = useNavigate();
-  const hasFetched = useRef(false);
   const tableScrollEmployeeTransaction = useRef(null);
 
   // -------------------- Contexts --------------------
   const { callApi } = useApi();
   const { showNotification } = useNotification();
   const { showLoader } = useGlobalLoader();
-  const { myTradeApprovalLineManagerData, setMyTradeApprovalLineManagerData } =
-    useMyApproval();
+  const {
+    coTransactionSummaryReportListData,
+    setCOTransactionSummaryReportListData,
+    resetCOTransactionSummaryReportListData,
+  } = useMyApproval();
+
+  const { isViewComments, setIsViewComments, setCheckTradeApprovalID } =
+    useGlobalModal();
 
   const {
-    myTradeApprovalReportLineManageSearch,
-    setMyTradeApprovalReportLineManageSearch,
-    resetLineManagerMyTradeApproval,
+    coTransactionsSummarysReportsSearch,
+    setCOTransactionsSummarysReportsSearch,
+    resetCOTransactionsSummarysReportsSearch,
   } = useSearchBarContext();
 
-  const { assetTypeListingData } = useDashboardContext();
+  const { setAssetTypeListingData } = useDashboardContext();
 
-  console.log(myTradeApprovalLineManagerData, "myTradeApprovalLineManagerData");
 
   // -------------------- Local State --------------------
   const [sortedInfo, setSortedInfo] = useState({});
@@ -63,6 +75,7 @@ const TradeApprovalRequest = () => {
     StartDate: null,
     EndDate: null,
   });
+
   // -------------------- Helpers --------------------
 
   /**
@@ -73,8 +86,7 @@ const TradeApprovalRequest = () => {
     async (requestData, replace = false, showLoaderFlag = true) => {
       if (!requestData || typeof requestData !== "object") return;
       if (showLoaderFlag) showLoader(true);
-
-      const res = await SearchLineManagerTradeApprovalRequestApi({
+      const res = await SearchComplianceOfficerTransactionSummaryReportRequest({
         callApi,
         showNotification,
         showLoader,
@@ -82,22 +94,27 @@ const TradeApprovalRequest = () => {
         navigate,
       });
 
-      const records = Array.isArray(res?.records) ? res.records : [];
-      console.log("records", records);
-      const mapped = mapEmployeeTransactionsReport(records);
+      const transactions = Array.isArray(res?.transactions)
+        ? res.transactions
+        : [];
+      console.log("records", transactions);
+      const mapped = mappingDateWiseTransactionReport(transactions);
       if (!mapped || typeof mapped !== "object") return;
       console.log("records", mapped);
 
-      setMyTradeApprovalLineManagerData((prev) => ({
-        records: replace ? mapped : [...(prev?.records || []), ...mapped],
+      setCOTransactionSummaryReportListData((prev) => ({
+        transactions: replace
+          ? mapped
+          : [...(prev?.transactions || []), ...mapped],
         // this is for to run lazy loading its data comming from database of total data in db
         totalRecordsDataBase: res?.totalRecords || 0,
         // this is for to know how mush dta currently fetch from  db
         totalRecordsTable: replace
           ? mapped.length
-          : myTradeApprovalLineManagerData.totalRecordsTable + mapped.length,
+          : coTransactionSummaryReportListData.totalRecordsTable +
+            mapped.length,
       }));
-      setMyTradeApprovalReportLineManageSearch((prev) => {
+      setCOTransactionsSummarysReportsSearch((prev) => {
         const next = {
           ...prev,
           pageNumber: replace ? mapped.length : prev.pageNumber + mapped.length,
@@ -112,73 +129,46 @@ const TradeApprovalRequest = () => {
       });
     },
     [
-      assetTypeListingData,
       callApi,
       navigate,
-      setMyTradeApprovalReportLineManageSearch,
+      setCOTransactionsSummarysReportsSearch,
       showLoader,
       showNotification,
-    ],
+    ]
   );
 
   // -------------------- Effects --------------------
 
-  // 🔹 Initial Fetch
-  useEffect(() => {
-    if (hasFetched.current) return;
-    hasFetched.current = true;
-
-    const endDate = new Date();
-    const startDate = new Date();
-    startDate.setMonth(startDate.getMonth() - 6);
-    // 👇 SET dateRange state ONLY
-    setDateRange({
-      StartDate: formatToYYYYMMDD(startDate),
-      EndDate: formatToYYYYMMDD(endDate),
-    });
-    const updatedState = {
-      ...myTradeApprovalReportLineManageSearch,
-      startDate,
-      endDate,
-    };
-
-    // update state for UI consistency
-    setMyTradeApprovalReportLineManageSearch(updatedState);
-    const requestData = buildApiRequest(updatedState);
-    fetchApiCall(requestData, true, true);
-  }, []);
-
-  // Reset on Unmount
+  //   // Reset on Unmount
   useEffect(() => {
     return () => {
       // Reset search state for fresh load
-      resetLineManagerMyTradeApproval();
+      resetCOTransactionsSummarysReportsSearch();
+      resetCOTransactionSummaryReportListData()
     };
   }, []);
 
   // 🔹 call api on search
   useEffect(() => {
-    if (myTradeApprovalReportLineManageSearch?.filterTrigger) {
-      const requestData = buildApiRequest(
-        myTradeApprovalReportLineManageSearch,
-      );
+    if (coTransactionsSummarysReportsSearch?.filterTrigger) {
+      const requestData = buildApiRequest(coTransactionsSummarysReportsSearch);
       fetchApiCall(requestData, true, true);
     }
-  }, [myTradeApprovalReportLineManageSearch?.filterTrigger]);
+  }, [coTransactionsSummarysReportsSearch?.filterTrigger]);
 
   // 🔹 Infinite Scroll (lazy loading)
   useTableScrollBottom(
     async () => {
       if (
-        myTradeApprovalLineManagerData?.totalRecordsDataBase <=
-        myTradeApprovalLineManagerData?.totalRecordsTable
+        coTransactionSummaryReportListData?.totalRecordsDataBase <=
+        coTransactionSummaryReportListData?.totalRecordsTable
       )
         return;
 
       try {
         setLoadingMore(true);
         const requestData = buildApiRequest(
-          myTradeApprovalReportLineManageSearch,
+          coTransactionsSummarysReportsSearch
         );
         await fetchApiCall(requestData, false, false);
       } catch (err) {
@@ -188,122 +178,72 @@ const TradeApprovalRequest = () => {
       }
     },
     0,
-    "border-less-table-blue",
+    "border-less-table-blue"
   );
 
   // -------------------- Table Columns --------------------
   const columns = getBorderlessTableColumns({
     approvalStatusMap,
     sortedInfo,
-    myTradeApprovalReportLineManageSearch,
-    setMyTradeApprovalReportLineManageSearch,
+    coTransactionsSummarysReportsSearch,
+    setCOTransactionsSummarysReportsSearch,
   });
 
-  /** 🔹 Handle removing individual filter */
-  const handleRemoveFilter = (key) => {
-    const resetMap = {
-      employeeName: { employeeName: "" },
-      departmentName: { departmentName: "" },
-    };
-
-    setMyTradeApprovalReportLineManageSearch((prev) => ({
-      ...prev,
-      ...resetMap[key],
-      pageNumber: 0,
-      filterTrigger: true,
-    }));
-  };
-
-  /** 🔹 Handle removing all filters */
-  const handleRemoveAllFilters = () => {
-    setMyTradeApprovalReportLineManageSearch((prev) => ({
-      ...prev,
-      employeeName: "",
-      departmentName: "",
-      pageNumber: 0,
-      filterTrigger: true,
-    }));
-  };
-
-  /** 🔹 Build Active Filters */
-  const activeFilters = (() => {
-    const { employeeName, departmentName } =
-      myTradeApprovalReportLineManageSearch || {};
-
-    return [
-      employeeName && {
-        key: "employeeName",
-        value:
-          employeeName.length > 13
-            ? employeeName.slice(0, 13) + "..."
-            : employeeName,
-      },
-
-      departmentName && {
-        key: "departmentName",
-        value:
-          departmentName.length > 13
-            ? departmentName.slice(0, 13) + "..."
-            : departmentName,
-      },
-    ].filter(Boolean);
-  })();
-
-  // 🔷 Excel Report download Api Hit
-  const downloadMyTradeApprovalLineManagerInExcelFormat = async () => {
-    showLoader(true);
-    const requestdata = {
-      StartDate: "",
-      EndDate: "",
-      SearchEmployeeName: "",
-      SearchDepartmentName: "",
-    };
-
-    await DownloadLineManagerMyTradeApprovalReportRequestAPI({
-      callApi,
-      showLoader,
-      requestdata: requestdata,
-      navigate,
-    });
-  };
-
   const handleDateChange = (dates) => {
-    if (dates && dates.length === 2) {
-      console.log("endDate", dates?.[0] )
-      console.log("endDate", dates?.[1] )
-      setDateRange({
-        StartDate: dates?.[0] || null,
-        EndDate: dates?.[1] || null,
-      });
+    if (!dates || dates.length !== 2) return;
 
-      // Call API immediately after date change
-      fetchApiCall(
-        {
-          StartDate: toYYMMDD(dates[0]) || null,
-          EndDate: toYYMMDD(dates[1]) || null,
-        },
-        true,
-        true,
-      );
-    }
+    const start = dates[0];
+    const end = dates[1];
+
+    setDateRange({
+      StartDate: start,
+      EndDate: end,
+    });
+
+    setCOTransactionsSummarysReportsSearch((prev) => ({
+      ...prev,
+      startDate: start,
+      endDate: end,
+      pageNumber: 0,
+      filterTrigger: true,
+    }));
   };
 
   const handleClearDates = () => {
-    // Reset state
     setDateRange({
       StartDate: null,
       EndDate: null,
     });
 
-    // Call API with empty values
-    fetchApiCall(
-      {
-        StartDate: "",
-        EndDate: "",
-      },
-      true,
-      true,
-    );
+    setCOTransactionsSummarysReportsSearch((prev) => ({
+      ...prev,
+      startDate: null,
+      endDate: null,
+      pageNumber: 0,
+      filterTrigger: true,
+    }));
+  };
+
+  // 🔷 Excel Report download Api Hit
+  const downloadMyTradeApprovalLineManagerInExcelFormat = async () => {
+    showLoader(true);
+    const requestdata = {
+      InstrumentName: "",
+      DepartmentName: "",
+      Quantity: 0,
+      StatusIds: [],
+      TypeIds: [],
+      RequesterName: "",
+      StartDate: "",
+      EndDate: "",
+    };
+
+    await DownloadComplianceOfficerDateWiseTransactionReportRequestAPI({
+      callApi,
+      showLoader,
+      requestdata: requestdata,
+      navigate,
+    });
   };
 
   // -------------------- Render --------------------
@@ -318,7 +258,7 @@ const TradeApprovalRequest = () => {
               {
                 title: (
                   <span
-                    onClick={() => navigate("/PAD/lm-reports")}
+                    onClick={() => navigate("/PAD/co-reports")}
                     className={style.breadcrumbLink}
                   >
                     Reports
@@ -328,7 +268,7 @@ const TradeApprovalRequest = () => {
               {
                 title: (
                   <span className={style.breadcrumbText}>
-                    Trade Approval Requests
+                    Transactions Summary Report
                   </span>
                 ),
               },
@@ -377,54 +317,26 @@ const TradeApprovalRequest = () => {
           )}
         </Col>
       </Row>
-      {/* 🔹 Active Filter Tags */}
-      {activeFilters.length > 0 && (
-        <Row gutter={[12, 12]} className={style["filter-tags-container"]}>
-          {activeFilters.map(({ key, value }) => (
-            <Col key={key}>
-              <div className={style["filter-tag"]}>
-                <span>{value}</span>
-                <span
-                  className={style["filter-tag-close"]}
-                  onClick={() => handleRemoveFilter(key)}
-                >
-                  &times;
-                </span>
-              </div>
-            </Col>
-          ))}
 
-          {/* 🔹 Show Clear All only if more than one filter */}
-          {activeFilters.length > 1 && (
-            <Col>
-              <div
-                className={`${style["filter-tag"]} ${style["clear-all-tag"]}`}
-                onClick={handleRemoveAllFilters}
-              >
-                <span>Clear All</span>
-              </div>
-            </Col>
-          )}
-        </Row>
-      )}
       {/* 🔹 Transactions Table */}
       <PageLayout
         background="white"
         style={{ marginTop: "3px" }}
-        className={
-          activeFilters.length > 0 ? "changeHeightreports" : "repotsHeight"
-        }
+        className={"repotsHeight"}
       >
         <div className="px-4 md:px-6 lg:px-8 ">
           <BorderlessTable
-            rows={myTradeApprovalLineManagerData?.records}
+            rows={
+              coTransactionSummaryReportListData?.transactions
+            }
             columns={columns}
             classNameTable="border-less-table-blue"
             scroll={
-              myTradeApprovalLineManagerData?.records?.length
+              coTransactionSummaryReportListData?.transactions
+                ?.length
                 ? {
                     x: "max-content",
-                    y: activeFilters.length > 0 ? 450 : 500,
+                    y: 500,
                   }
                 : undefined
             }
@@ -434,8 +346,9 @@ const TradeApprovalRequest = () => {
           />
         </div>
       </PageLayout>
+
     </>
   );
 };
 
-export default TradeApprovalRequest;
+export default COTransactionsSummarysReportsViewDetails;

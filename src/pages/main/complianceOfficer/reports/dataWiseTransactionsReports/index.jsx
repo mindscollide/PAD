@@ -39,7 +39,6 @@ import { useTableScrollBottom } from "../../../../../common/funtions/scroll";
 import CustomButton from "../../../../../components/buttons/button";
 import { DateRangePicker } from "../../../../../components";
 import ViewDetaildDateWiseTransaction from "./ViewDetaildDateWiseTransaction/ViewDetaildDateWiseTransaction";
-import { toYYMMDD } from "../../../../../common/funtions/rejex";
 import { DateWiseTransactionReportViewDetails } from "../../../../../api/myTransactionsApi";
 import { useReconcileContext } from "../../../../../context/reconsileContax";
 

@@ -79,6 +79,9 @@ const SearchWithPopoverOnly = () => {
     setUserActivityComplianceReportAdmin,
     setUserActivityReportAdmin,
     setAdminPolicyBreachesReportSearch,
+    setAdminTradeApprovalRequestReportSearch,
+    setAdminTATApprovalRequestReportSearch,
+    setAdminTradesUploadedviaPortfolioReportSearch,
     //
     setUsersTabSearch,
     setPendingRequestsTabSearch,
@@ -508,7 +511,7 @@ const SearchWithPopoverOnly = () => {
         ) {
           console.log(
             "showViewDetailPageInTatOnHta",
-            showViewDetailPageInTatOnHta
+            showViewDetailPageInTatOnHta,
           );
           setHTATATReportSearch((prev) => ({
             ...prev,
@@ -742,20 +745,7 @@ const SearchWithPopoverOnly = () => {
         break;
 
       case "23": //Admin Reports
-        if (currentPath === "/PAD/admin-reports/admin-policy-breaches-report") {
-          setAdminPolicyBreachesReportSearch((prev) => ({
-            ...prev,
-            instrumentName: searchMain,
-            employeeName: "",
-            departmentName: "",
-            quantity: 0,
-            startDate: null,
-            endDate: null,
-            filterTrigger: true,
-            pageNumber: 0,
-            pageSize: 10,
-          }));
-        } else if (currentPath === "/PAD/admin-reports/user-activity-report") {
+        if (currentPath === "/PAD/admin-reports/admin-user-activity-report") {
           setUserActivityReportAdmin((prev) => ({
             ...prev,
             ipAddress: searchMain,
@@ -775,6 +765,83 @@ const SearchWithPopoverOnly = () => {
             filterTrigger: true,
             pageNumber: 0,
             pageSize: 10,
+          }));
+        } else if (
+          currentPath === "/PAD/admin-reports/admin-policy-breaches-report"
+        ) {
+          setAdminPolicyBreachesReportSearch((prev) => ({
+            ...prev,
+            instrumentName: searchMain,
+            employeeName: "",
+            departmentName: "",
+            quantity: 0,
+            startDate: null,
+            endDate: null,
+            filterTrigger: true,
+            pageNumber: 0,
+            pageSize: 10,
+          }));
+        } else if (
+          currentPath === "/PAD/admin-reports/admin-trade-approval-report"
+        ) {
+          setAdminTradeApprovalRequestReportSearch((prev) => ({
+            ...prev,
+            employeeName: searchMain,
+            departmentName: "",
+            filterTrigger: true,
+            pageNumber: 0,
+            pageSize: 10,
+          }));
+        } else if (
+          currentPath ===
+          "/PAD/admin-reports/admin-date-wise-transaction-report"
+        ) {
+          setCODatewiseTransactionReportSearch((prev) => ({
+            ...prev,
+            instrumentName: searchMain,
+            quantity: 0,
+            startDate: null,
+            endDate: null,
+            employeeID: 0,
+            employeeName: "",
+            departmentName: "",
+            pageNumber: 0,
+            filterTrigger: true,
+          }));
+        } else if (coTransactionSummaryReportViewDetailsFlag) {
+          setCOTransactionsSummarysReportsViewDetailSearch((prev) => ({
+            ...prev,
+            quantitySearch: "",
+            instrumentNameSearch: searchMain,
+            requesterNameSearch: "",
+            pageNumber: 0,
+            filterTrigger: true,
+          }));
+        } else if (
+          currentPath === "/PAD/admin-reports/admin-TAT-Request-report"
+        ) {
+          setAdminTATApprovalRequestReportSearch((prev) => ({
+            ...prev,
+            employeeName: searchMain,
+            departmentName: "",
+            pageNumber: 0,
+            pageSize: 10,
+            filterTrigger: true,
+          }));
+        } else if (
+          currentPath ===
+          "/PAD/admin-reports/admin-trades-uploaded-via-portfolio-report"
+        ) {
+          setAdminTradesUploadedviaPortfolioReportSearch((prev) => ({
+            ...prev,
+            instrumentName: searchMain,
+            employeeName: "",
+            quantity: 0,
+            startDate: null,
+            endDate: null,
+            pageNumber: 0,
+            pageSize: 10,
+            filterTrigger: true,
           }));
         }
         setSearchMain("");
@@ -843,7 +910,16 @@ const SearchWithPopoverOnly = () => {
     ) {
       return "Employee name. Click the icon to view more options.";
     }
-
+    if (
+      selectedKey === "23" &&
+      (currentPath === "/PAD/admin-reports/admin-user-activity-report" ||
+        currentPath ===
+          "/PAD/admin-reports/admin-user-wise-compliance-report" ||
+        currentPath === "/PAD/admin-reports/admin-trade-approval-report" ||
+        currentPath === "/PAD/admin-reports/admin-TAT-Request-report")
+    ) {
+      return "Employee name. Click the icon to view more options.";
+    }
     // 🔹 Default fallback
     return "Instrument name. Click the icon to view more options.";
   };
@@ -933,7 +1009,7 @@ const SearchWithPopoverOnly = () => {
             openNewFormForAdminGropusAndPolicy,
             pageTabesForAdminGropusAndPolicy,
             coTransactionSummaryReportViewDetailsFlag,
-            showViewDetailPageInTatOnHta
+            showViewDetailPageInTatOnHta,
           )}
           trigger="click"
           open={visible}

@@ -42,6 +42,8 @@ import {
   TradesUploadViaPortfolio,
   HTAPolicyBreachesReport,
   HTATAT,
+  AdmindataWiseTransactionsReports,
+  AdminTransactionsSummarysReports,
 } from "../pages";
 import RoleBasedRoute from "./RoleBasedRoute";
 import EscalatedApprovals from "../pages/main/headOfTradeApprover/escalatedApprovals/escalatedApprovals";
@@ -365,24 +367,6 @@ const router = createBrowserRouter(
           />
         </Route>
 
-        {/*  */}
-        {/* <Route
-          path="admin-users"
-          element={
-            <RoleBasedRoute isAdmin={true} allowedRoles={[1]}>
-              <ManageUsers />
-            </RoleBasedRoute>
-          }
-        />
-        <Route
-          path="session-wise-activity"
-          element={
-            <RoleBasedRoute isAdmin={true} allowedRoles={[1]}>
-              <UserSessionWiseActivity />
-            </RoleBasedRoute>
-          }
-        /> */}
-
         <Route
           path="admin-system-configurations"
           element={
@@ -402,7 +386,7 @@ const router = createBrowserRouter(
         >
           <Route index element={<AdminReportsIndex />} />
           <Route
-            path="user-activity-report"
+            path="admin-user-activity-report"
             element={<AdminUserActivityReport />}
           />
           <Route
@@ -413,6 +397,27 @@ const router = createBrowserRouter(
             path="admin-policy-breaches-report"
             element={<AdminPolicyBreachesReport />}
           />
+          <Route
+            path="admin-trade-approval-report"
+            element={<AdminPolicyBreachesReport />}
+          />
+
+          <Route
+            path="admin-date-wise-transaction-report"
+            element={<AdmindataWiseTransactionsReports />}
+          />
+          <Route
+            path="admin-transactions-summary-report"
+            element={<AdminTransactionsSummarysReports />}
+          />
+          <Route
+            path="admin-tat-request-report"
+            element={<AdminPolicyBreachesReport />}
+          />
+          <Route
+            path="admin-trades-uploaded-via-portfolio-report"
+            element={<AdminPolicyBreachesReport />}
+          />
         </Route>
 
         <Route path="faq" element={<Faqs />} />
@@ -420,8 +425,8 @@ const router = createBrowserRouter(
 
       {/* Redirect all unknown routes to login */}
       <Route path="*" element={<Navigate to="/" replace />} />
-    </Route>
-  )
+    </Route>,
+  ),
 );
 
 export default router;

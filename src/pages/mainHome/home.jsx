@@ -56,105 +56,105 @@ const Home = () => {
 
   // find the first valid matched role (ignoring 1)
   const firstMatchedRole = filteredRoles.find((roleId) =>
-    checkRoleMatch(roles, roleId)
+    checkRoleMatch(roles, roleId),
   );
   // Employee
   const employeeApprovals = useMemo(
     () => dashboardData?.employee?.myApprovals?.data || [],
-    [dashboardData?.employee?.myApprovals?.data]
+    [dashboardData?.employee?.myApprovals?.data],
   );
   const employeePortfolio = useMemo(
     () => dashboardData?.employee?.portfolio?.data || [],
-    [dashboardData?.employee?.portfolio?.data]
+    [dashboardData?.employee?.portfolio?.data],
   );
   const employeeMyHistory = useMemo(
     () => dashboardData?.employee?.myHistory?.data || [],
-    [dashboardData?.employee?.myHistory?.data]
+    [dashboardData?.employee?.myHistory?.data],
   );
   const employeeTransactions = useMemo(
     () => dashboardData?.employee?.myTransactions?.data || [],
-    [dashboardData?.employee?.myTransactions?.data]
+    [dashboardData?.employee?.myTransactions?.data],
   );
   const employeeReports = useMemo(
     () => dashboardData?.employee?.reports?.data || [],
-    [dashboardData?.employee?.reports?.data]
+    [dashboardData?.employee?.reports?.data],
   );
   // Lime Manager
   const lineManagerApprovals = useMemo(
     () => dashboardData?.lineManager?.myApprovals?.data || [],
-    [dashboardData?.lineManager?.myApprovals?.data]
+    [dashboardData?.lineManager?.myApprovals?.data],
   );
   const lineManagerAction = useMemo(
     () => dashboardData?.lineManager?.myActions?.data || [],
-    [dashboardData?.lineManager?.myActions?.data]
+    [dashboardData?.lineManager?.myActions?.data],
   );
   const lineManagerReports = useMemo(
     () => dashboardData?.lineManager?.reports?.data || [],
-    [dashboardData?.lineManager?.reports?.data]
+    [dashboardData?.lineManager?.reports?.data],
   );
   // Compliance Officer
   const complianceOfficerMyActions = useMemo(
     () => dashboardData?.complianceOfficer?.myActions?.data || [],
-    [dashboardData?.complianceOfficer?.myActions?.data]
+    [dashboardData?.complianceOfficer?.myActions?.data],
   );
   const complianceOfficerReconsileTransactions = useMemo(
     () => dashboardData?.complianceOfficer?.myApprovals?.data || [],
-    [dashboardData?.complianceOfficer?.myApprovals?.data]
+    [dashboardData?.complianceOfficer?.myApprovals?.data],
   );
   const complianceOfficerReports = useMemo(
     () => dashboardData?.complianceOfficer?.reports?.data || [],
-    [dashboardData?.complianceOfficer?.reports?.data]
+    [dashboardData?.complianceOfficer?.reports?.data],
   );
   // head Of Compliance Approval
   const headofComplianceOfficerMyActions = useMemo(
     () => dashboardData?.headofComplianceOfficer?.myActions?.data || [],
-    [dashboardData?.headofComplianceOfficer?.myActions?.data]
+    [dashboardData?.headofComplianceOfficer?.myActions?.data],
   );
   const headofComplianceOfficerVerificationRequest = useMemo(
     () =>
       dashboardData?.headofComplianceOfficer?.verificationRequests?.data || [],
-    [dashboardData?.headofComplianceOfficer?.verificationRequests?.data]
+    [dashboardData?.headofComplianceOfficer?.verificationRequests?.data],
   );
   const headofComplianceOfficerReports = useMemo(
     () => dashboardData?.headofComplianceOfficer?.reports?.data || [],
-    [dashboardData?.headofComplianceOfficer?.reports?.data]
+    [dashboardData?.headofComplianceOfficer?.reports?.data],
   );
   // This is For HTA Dashboard
   const headofComplianceFlowMyAction = useMemo(
     () => dashboardData?.headofTradeApproval?.myActions?.data || [],
-    [dashboardData?.headofTradeApproval?.myActions?.data]
+    [dashboardData?.headofTradeApproval?.myActions?.data],
   );
 
   // This is For HTA Dashboard Verification Request
   const headofApprovalEscalatedRequest = useMemo(
     () => dashboardData?.headofTradeApproval?.escalatedApprovals?.data || [],
-    [dashboardData?.headofTradeApproval?.escalatedApprovals?.data]
+    [dashboardData?.headofTradeApproval?.escalatedApprovals?.data],
   );
   const headofApprovalReports = useMemo(
     () => dashboardData?.headofTradeApproval?.reports?.data || [],
-    [dashboardData?.headofTradeApproval?.reports?.data]
+    [dashboardData?.headofTradeApproval?.reports?.data],
   );
 
   // Admin
   const policyAssign = useMemo(
     () => dashboardData?.admin?.policyAssignedToUsers?.data || [],
-    [dashboardData?.admin?.policyAssignedToUsers?.data]
+    [dashboardData?.admin?.policyAssignedToUsers?.data],
   );
   const instrument = useMemo(
     () => dashboardData?.admin?.instruments?.data || [],
-    [dashboardData?.admin?.instruments?.data]
+    [dashboardData?.admin?.instruments?.data],
   );
   const brokers = useMemo(
     () => dashboardData?.admin?.brokers?.data || [],
-    [dashboardData?.admin?.brokers?.data]
+    [dashboardData?.admin?.brokers?.data],
   );
   const groupPolicy = useMemo(
     () => dashboardData?.admin?.groupPolicies?.data || [],
-    [dashboardData?.admin?.groupPolicies?.data]
+    [dashboardData?.admin?.groupPolicies?.data],
   );
   const reports = useMemo(
     () => dashboardData?.admin?.reports?.data || [],
-    [dashboardData?.admin?.reports?.data]
+    [dashboardData?.admin?.reports?.data],
   );
 
   const fetchData = async () => {
@@ -304,8 +304,8 @@ const Home = () => {
                   data={reports}
                   buttonId={"Reports-view-btn-admin"}
                   rowButtonClassName={"small-card-light-button"}
-                  userRole="Admin"
-                  route="reports"
+                  userRole={"Admin"}
+                  route={"reports"}
                 />
               </Col>
             </Row>

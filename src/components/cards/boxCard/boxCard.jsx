@@ -101,11 +101,13 @@ const BoxCard = ({
       }
     }
   };
+  
   // Handle card click
   const handleCardClick = () => {
     // You can switch route based on props or conditions
     navigate(route);
   };
+
   return (
     <Card
       className={`${styles[mainClassName]} ${
@@ -272,7 +274,7 @@ const BoxCard = ({
                         height:
                           showProgress &&
                           index !== normalizedBoxes.length - 1 &&
-                          "167px",
+                          "135px",
                       }}
                     >
                       {locationStyle === "down" ? (
