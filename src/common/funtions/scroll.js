@@ -1,5 +1,4 @@
 import { useEffect, useRef, useState } from "react";
-
 /**
  * Custom hook for infinite scroll detection on table
  * @param {Function} onBottomReach - Callback when bottom is reached
@@ -58,3 +57,4 @@ export const useTableScrollBottom = (
     setHasReachedBottom,
   };
 };
+

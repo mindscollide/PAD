@@ -28,7 +28,7 @@ const TypeFilterDropdown = ({
   };
 
   const handleOk = async () => {
-      console.log("hcoTradesUploadViaPortfolioSearch")
+    console.log("hcoTradesUploadViaPortfolioSearch");
     switch (selectedKey) {
       // 🔹 Keys that only update state with filterTrigger = true
       case "1":
@@ -39,10 +39,12 @@ const TypeFilterDropdown = ({
       case "6":
       case "8":
       case "9":
+      case "11":
       case "12":
+      case "14":
       case "15":
       case "17":
-      console.log("hcoTradesUploadViaPortfolioSearch")
+        console.log("hcoTradesUploadViaPortfolioSearch");
         setState((prev) => ({
           ...prev,
           type: tempSelected,
@@ -71,7 +73,9 @@ const TypeFilterDropdown = ({
       case "6":
       case "8":
       case "9":
+      case "11":
       case "12":
+      case "14":
       case "15":
       case "17":
         setState((prev) => ({

@@ -51,6 +51,7 @@
 .clear-all-tag {
   cursor: pointer !important;
 }
+
 .table-header-wrapper {
   display: flex;
   align-items: flex-start; /* Keep icon aligned to top if text wraps */

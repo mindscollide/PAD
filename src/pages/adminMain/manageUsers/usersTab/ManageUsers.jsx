@@ -168,8 +168,9 @@ const UsersTab = () => {
                 profile={user.profilePicture}
                 name={user.employeeName}
                 email={user.emailAddress}
-                id={user.employeeCode}
+                id={user.employeeID}
                 file={user.isDisable}
+                employeeCode={user.employeeCode}
               />
             </Col>
           ))}

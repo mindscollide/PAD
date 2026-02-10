@@ -22,6 +22,10 @@ import {
   dashBetweenApprovalAssets,
   formatApiDateTime,
 } from "../../../../common/funtions/rejex";
+import { useDashboardContext } from "../../../../context/dashboardContaxt";
+import { getSafeAssetTypeData } from "../../../../common/funtions/assetTypesList";
+import { UpOutlined, DownOutlined } from "@ant-design/icons";
+
 const MyHistory = () => {
   const navigate = useNavigate();
   const hasFetched = useRef(false);
@@ -43,13 +47,10 @@ const MyHistory = () => {
     setEmployeeMyHistorySearch,
     resetEmployeeMyHistorySearch,
   } = useSearchBarContext();
+  const { assetTypeListingData, setAssetTypeListingData } =
+    useDashboardContext();
 
   const { setEmployeeMyHistoryData, employeeMyHistoryData } = useMyApproval();
-
-  console.log(
-    employeeMyHistoryData,
-    "employeeMyHistoryDataemployeeMyHistoryData"
-  );
 
   /**
    * Fetches transactions from API.
@@ -67,29 +68,38 @@ const MyHistory = () => {
         requestdata: requestData,
         navigate,
       });
-
+      const currentAssetTypeData = getSafeAssetTypeData(
+        assetTypeListingData,
+        setAssetTypeListingData,
+      );
       if (res) {
         setEmployeeMyHistoryData(res);
       }
     },
-    [callApi, navigate, showLoader, showNotification]
+    [callApi, navigate, showLoader, showNotification],
   );
 
   // Initial Fetch
   useEffect(() => {
     if (!hasFetched.current) {
       hasFetched.current = true;
-      const requestData = buildMyHistoryApiRequest(employeeMyHistorySearch);
+      const requestData = buildMyHistoryApiRequest(
+        employeeMyHistorySearch,
+        assetTypeListingData,
+      );
 
       fetchApiCall(requestData, true, true);
     }
-  }, [buildMyHistoryApiRequest, employeeMyHistorySearch, fetchApiCall]);
+  }, []);
 
   /** 🔹 this useEffect is for Search Filter */
   useEffect(() => {
     if (employeeMyHistorySearch?.filterTrigger) {
       hasFetched.current = true;
-      const requestData = buildMyHistoryApiRequest(employeeMyHistorySearch);
+      const requestData = buildMyHistoryApiRequest(
+        employeeMyHistorySearch,
+        assetTypeListingData,
+      );
 
       fetchApiCall(requestData, true, true);
       setEmployeeMyHistorySearch((prev) => ({
@@ -97,14 +107,14 @@ const MyHistory = () => {
         filterTrigger: false,
       }));
     }
-  }, [buildMyHistoryApiRequest, employeeMyHistorySearch, fetchApiCall]);
+  }, [employeeMyHistorySearch]);
 
   // -------------------- Table Columns --------------------
   const columns = getMyHistoryColumn(
     approvalStatusMap,
     sortedInfo,
     employeeMyHistorySearch,
-    setEmployeeMyHistorySearch
+    setEmployeeMyHistorySearch,
   );
 
   /** 🔹 Handle removing individual filter */
@@ -115,8 +125,6 @@ const MyHistory = () => {
       quantity: { quantity: 0 },
       dateRange: { startDate: null, endDate: null },
       nature: { nature: "" },
-      type: { type: [] },
-      status: { status: [] },
     };
 
     setEmployeeMyHistorySearch((prev) => ({
@@ -137,8 +145,6 @@ const MyHistory = () => {
       startDate: null,
       endDate: null,
       nature: "",
-      type: [],
-      status: [],
       pageNumber: 0,
       filterTrigger: true,
     }));
@@ -146,33 +152,8 @@ const MyHistory = () => {
 
   /** 🔹 Build Active Filters */
   const activeFilters = (() => {
-    const {
-      requestID,
-      instrumentName,
-      startDate,
-      endDate,
-      quantity,
-      nature,
-      type,
-      status,
-    } = employeeMyHistorySearch || {};
-
-    // 🔹 Mappings for display labels
-    const typeMap = {
-      1: "Buy",
-      2: "Sell",
-    };
-
-    const statusMap = {
-      1: "Pending",
-      2: "Resubmit",
-      3: "Approved",
-      4: "Declined",
-      5: "Traded",
-      6: "Not-Traded",
-      7: "Compliant",
-      8: "Non-Compliant",
-    };
+    const { requestID, instrumentName, startDate, endDate, quantity, nature } =
+      employeeMyHistorySearch || {};
 
     return [
       requestID && {
@@ -201,17 +182,6 @@ const MyHistory = () => {
         key: "nature",
         value: nature.length > 13 ? nature.slice(0, 13) + "..." : nature,
       },
-      // 🔹 Add Type (multiple selection support)
-      type?.length > 0 && {
-        key: "type",
-        value: type.map((id) => typeMap[id] || id).join(", "),
-      },
-
-      // 🔹 Add Status (multiple selection support)
-      status?.length > 0 && {
-        key: "status",
-        value: status.map((id) => statusMap[id] || id).join(", "),
-      },
     ].filter(Boolean);
   })();
 
@@ -239,7 +209,10 @@ const MyHistory = () => {
         const currentLength = employeeMyHistoryData?.workFlows?.length || 0;
 
         // build request based on current search/filter but override pagination
-        const baseRequest = buildMyHistoryApiRequest(employeeMyHistorySearch);
+        const baseRequest = buildMyHistoryApiRequest(
+          employeeMyHistorySearch,
+          assetTypeListingData,
+        );
         const requestData = {
           ...baseRequest,
           PageNumber: currentLength, // sRow
@@ -364,11 +337,11 @@ const MyHistory = () => {
             b.bundleStatusState === 2
               ? "Approved"
               : b.bundleStatusState === 3
-              ? "Declined"
-              : "Pending",
+                ? "Declined"
+                : "Pending",
           user: `${b.firstName} ${b.lastName}`,
           date: formatApiDateTime(
-            `${b.bundleModifiedDate} ${b.bundleModifiedTime}`
+            `${b.bundleModifiedDate} ${b.bundleModifiedTime}`,
           ),
           iconType: getBundleIconType(b.bundleStatusState),
         })) || [];
@@ -448,23 +421,24 @@ const MyHistory = () => {
       )}
 
       {/* 🔹 Transactions Table */}
-      <PageLayout className={activeFilters.length > 0 && "changeHeight"}>
-        <div>
+      <PageLayout className={activeFilters.length > 0 && "changeHeight2"}>
+        <div className="px-4 md:px-6 lg:px-8">
           {/* Header & Actions */}
-          <Row
-            justify="space-between"
-            align="middle"
-            style={{ marginBottom: 16, marginTop: 26 }}
-          >
+          <Row justify="space-between" align="middle">
             <Col>
               <span className={style["heading"]}>My History</span>
             </Col>
-            <Col style={{ position: "relative" }}>
+            <Col style={{ position: "relative", marginTop: "2px" }}>
               <CustomButton
-                text={"Export"}
-                className="big-light-button"
-                icon={<DownloadOutlined />}
-                iconPosition="end"
+                text={
+                  <span className={style.exportButtonText}>
+                    Export
+                    <span className={style.iconContainer}>
+                      {open ? <UpOutlined /> : <DownOutlined />}
+                    </span>
+                  </span>
+                }
+                className="small-light-button-report"
                 onClick={() => setOpen((prev) => !prev)}
               />
 

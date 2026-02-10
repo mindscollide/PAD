@@ -234,7 +234,7 @@ const ManageBrokerModal = ({ open }) => {
     <>
       <GlobalModal
         visible={open}
-        width="600px"
+        width="700px"
         centered
         onCancel={() => setManageBrokersModalOpen(false)}
         modalBody={

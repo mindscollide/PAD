@@ -129,7 +129,7 @@
 }
 
 .brokersOptionData {
-  margin-top: -8px !important;
+  margin-top: 0 !important;
 }
 
 .statusSelectClass {
@@ -172,4 +172,8 @@
   font-size: 14px !important;
   font-weight: 500 !important;
   color: #424242;
+}
+
+.bottomGap{
+  margin-bottom: 14px;
 }

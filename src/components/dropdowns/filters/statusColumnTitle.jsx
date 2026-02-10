@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 import { Col, Dropdown, Row } from "antd";
 import { DownOutlined } from "@ant-design/icons";
 import StatusFilterDropdown from "./statusFilterDropdown";
-import style from "../../../pages/main/employes/myApprovals/approval.module.css";
+import style from "./filter.module.css";
 
 /**
  * StatusColumnTitle Component
@@ -77,7 +77,9 @@ const StatusColumnTitle = ({ state, setState }) => {
       >
         <Row gutter={[10, 10]}>
           {/* Status Label */}
-          <Col>
+          <Col  className={`${style["table-filter-headding-text"]} ${
+          selected.length ? style["after-selected-table-filter-headding-text"] : ""
+        }`}>
             {
               selected.length === 1
                 ? selected[0] // Single selection → show the status

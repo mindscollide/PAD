@@ -43,6 +43,7 @@ import { useTableScrollBottom } from "../../../../../common/funtions/scroll";
 import CustomButton from "../../../../../components/buttons/button";
 import { DateRangePicker } from "../../../../../components";
 import ViewComment from "../../../employes/myApprovals/modal/viewComment/ViewComment";
+import ViewCommentTransaction from "./viewDetails/viewComment/ViewComment";
 // import ViewComment from "./viewComment/ViewComment";
 
 const COTransactionsSummarysReports = () => {
@@ -83,6 +84,7 @@ const COTransactionsSummarysReports = () => {
 
   // -------------------- Local State --------------------
   const [sortedInfo, setSortedInfo] = useState({});
+  const [sortedInfoView, setSortedInfoView] = useState({});
   const [loadingMore, setLoadingMore] = useState(false);
   const [open, setOpen] = useState(false);
   const [dateRange, setDateRange] = useState({
@@ -268,7 +270,7 @@ const COTransactionsSummarysReports = () => {
             assetTypeListingData
           );
 
-          await fetchApiCall(requestData, false, false);
+          await fetchApiCallViewDetails(requestData, false, false);
         } catch (error) {
           console.error("Error loading view details:", error);
         } finally {
@@ -324,49 +326,6 @@ const COTransactionsSummarysReports = () => {
       transactionDate: transactionDate.split(" ")[0],
     }));
     fetchApiCallViewDetails(requestData, true, true);
-    // const res = await GetComplianceOfficerViewTransactionSummaryAPI({
-    //   callApi,
-    //   showNotification,
-    //   showLoader,
-    //   requestdata,
-    //   navigate,
-    // });
-
-    // if (res) {
-    //   const record = Array.isArray(res?.record) ? res.record : [];
-    //   const currentAssetTypeData = getSafeAssetTypeData(
-    //     assetTypeListingData,
-    //     setAssetTypeListingData
-    //   );
-    //   const mapped = mappingDateWiseTransactionviewDetailst(
-    //     currentAssetTypeData?.Equities,
-    //     record
-    //   );
-    //   console.log("responseData", mapped);
-    //   if (!mapped || typeof mapped !== "object") return;
-    //   setCOTransactionsSummarysReportsViewDetailSearch((prev) => {
-    //     const next = {
-    //       ...prev,
-    //       pageNumber: mapped.length,
-    //       transactionDate: transactionDate.split(" ")[0],
-    //     };
-
-    //     // this is for check if filter value get true only on that it will false
-    //     if (prev.filterTrigger) {
-    //       next.filterTrigger = false;
-    //     }
-
-    //     return next;
-    //   });
-
-    //   setCOTransactionSummaryReportViewDetailsListData({
-    //     record: mapped,
-    //     // this is for to run lazy loading its data comming from database of total data in db
-    //     totalRecordsDataBase: res?.totalRecords || 0,
-    //     // this is for to know how mush dta currently fetch from  db
-    //     totalRecordsTable: mapped.length,
-    //   });
-    // }
   };
 
   // -------------------- Table Columns --------------------
@@ -380,10 +339,11 @@ const COTransactionsSummarysReports = () => {
 
   const columnsViewDetails = getBorderlessTableColumnsViewDetails({
     approvalStatusMap,
-    sortedInfo,
+    sortedInfoView,
     coTransactionsSummarysReportsViewDetailsSearch,
     setCOTransactionsSummarysReportsViewDetailSearch,
     handelViewDetails,
+    setIsViewComments,
   });
 
   const handleDateChange = (dates) => {
@@ -498,6 +458,11 @@ const COTransactionsSummarysReports = () => {
         },
     ].filter(Boolean);
   })();
+
+  const tableRows = coTransactionSummaryReportViewDetailsFlag
+    ? coTransactionSummaryReportViewDetailsListData?.record
+    : coTransactionSummaryReportListData?.transactions;
+
   // -------------------- Render --------------------
   return (
     <>
@@ -630,7 +595,7 @@ const COTransactionsSummarysReports = () => {
         background="white"
         style={{ marginTop: "3px" }}
         className={
-          activeFilters.length > 0 ? "changeHeightreports" : "repotsHeight"
+          activeFilters.length > 0 ? "changeHeightlmreports" : "repotsHeightHOC"
         }
       >
         <div className="px-4 md:px-6 lg:px-8 ">
@@ -647,14 +612,18 @@ const COTransactionsSummarysReports = () => {
             }
             classNameTable="border-less-table-blue"
             scroll={
-              coTransactionSummaryReportListData?.transactions?.length
+              tableRows && tableRows.length > 0
                 ? {
                     x: "max-content",
-                    y: 500,
+                    y: 470,
                   }
                 : undefined
             }
-            onChange={(pagination, filters, sorter) => setSortedInfo(sorter)}
+            onChange={(pagination, filters, sorter) =>
+              coTransactionSummaryReportViewDetailsFlag
+                ? setSortedInfoView(sorter)
+                : setSortedInfo(sorter)
+            }
             loading={loadingMore}
             ref={
               coTransactionSummaryReportViewDetailsFlag
@@ -665,7 +634,7 @@ const COTransactionsSummarysReports = () => {
         </div>
       </PageLayout>
 
-      {isViewComments && <ViewComment />}
+      {isViewComments && <ViewCommentTransaction />}
     </>
   );
 };

@@ -18,6 +18,7 @@ import {
 } from "../../../../../../common/funtions/rejex";
 import { useNotification } from "../../../../../../components/NotificationProvider/NotificationProvider";
 import CopyToClipboard from "../../../../../../hooks/useClipboard";
+import Repeat from "../../../../../../assets/img/repeat.png";
 
 const ViewDetailModal = () => {
   // This is Global State for modal which is create in ContextApi
@@ -33,7 +34,7 @@ const ViewDetailModal = () => {
 
   // get data from sessionStorage
   const userProfileData = JSON.parse(
-    sessionStorage.getItem("user_profile_data") || "{}"
+    sessionStorage.getItem("user_profile_data") || "{}",
   );
   const loggedInUserID = userProfileData?.userID;
 
@@ -42,20 +43,20 @@ const ViewDetailModal = () => {
 
   console.log(viewDetailsModalData, "viewDetailsModalData");
 
-  const { allInstrumentsData } = useDashboardContext();
+  const { allInstrumentsData ,setViewDetailsModalData} = useDashboardContext();
 
   // Refactor sessionStorage read with useMemo for performance & error handling
   const complianceOfficerDetails = useMemo(() => {
     try {
       const storedData = JSON.parse(
-        sessionStorage.getItem("user_Hierarchy_Details") || "[]"
+        sessionStorage.getItem("user_Hierarchy_Details") || "[]",
       );
 
       if (!Array.isArray(storedData)) return {};
 
       const found = storedData.find(
         (item) =>
-          item.roleName === "Compliance Officer (CO)" && item.levelNo === 1
+          item.roleName === "Compliance Officer (CO)" && item.levelNo === 1,
       );
 
       return found
@@ -119,7 +120,7 @@ const ViewDetailModal = () => {
 
   //This is how I can pass the status in statusData Variables
   const statusData = getStatusStyle(
-    String(viewDetailsModalData?.workFlowStatus?.workFlowStatusID)
+    String(viewDetailsModalData?.workFlowStatus?.workFlowStatusID),
   );
 
   // Extarct and Instrument from viewDetailsModalData context Api
@@ -127,7 +128,7 @@ const ViewDetailModal = () => {
 
   // Match that selected instrument Id in viewDetailsModalData and match them with allinstrumentsData context State
   const selectedInstrument = allInstrumentsData?.find(
-    (item) => item.instrumentID === instrumentId
+    (item) => item.instrumentID === instrumentId,
   );
 
   // To Show View Comments Modal and Closed Declined Modal
@@ -185,7 +186,19 @@ const ViewDetailModal = () => {
               {/* Show Heading by Status in View Detail Modal */}
               <Row>
                 <Col span={24}>
-                  <div className={statusData.divClassName}>
+                  <div
+                    className={`${statusData.divClassName} ${
+                      viewDetailsModalData?.details?.[0]
+                        ?.resubmitRequestTrackingID
+                        ? styles.inlineWithIcon
+                        : ""
+                    }`}
+                  >
+                    {viewDetailsModalData?.details?.[0]
+                      ?.resubmitRequestTrackingID && (
+                      <img draggable={false} src={Repeat} alt="Repeat" />
+                    )}
+
                     <label className={statusData.labelClassName}>
                       {statusData.label}
                     </label>
@@ -214,7 +227,7 @@ const ViewDetailModal = () => {
                             className={styles.viewDetailSubLabelsForInstrument}
                             title={selectedInstrument?.instrumentName}
                           >
-                            {selectedInstrument?.instrumentCode}
+                            {`${selectedInstrument?.instrumentCode} - ${selectedInstrument?.instrumentName}`}
                           </span>
                         </label>
                       </div>
@@ -248,15 +261,15 @@ const ViewDetailModal = () => {
                       statusData.label === "Traded"
                         ? styles.backgroundColorOfInstrumentDetailTraded
                         : // status 1 is Pending
-                        statusData.label === "Pending" ||
-                          // status 2 is Resubmitted
-                          statusData.label === "Resubmitted" ||
-                          // status 4 is Declined
-                          statusData.label === "Declined" ||
-                          // status 6 is Not Traded
-                          statusData.label === "Not Traded"
-                        ? styles.backgrounColorOfInstrumentDetail
-                        : styles.backgrounColorOfDetail
+                          statusData.label === "Pending" ||
+                            // status 2 is Resubmitted
+                            statusData.label === "Resubmitted" ||
+                            // status 4 is Declined
+                            statusData.label === "Declined" ||
+                            // status 6 is Not Traded
+                            statusData.label === "Not Traded"
+                          ? styles.backgrounColorOfInstrumentDetail
+                          : styles.backgrounColorOfDetail
                     }
                   >
                     <label className={styles.viewDetailMainLabels}>
@@ -279,7 +292,7 @@ const ViewDetailModal = () => {
                             className={styles.viewDetailSubLabelsForInstrument}
                             title={selectedInstrument?.instrumentName}
                           >
-                            {selectedInstrument?.instrumentCode}
+                            {`${selectedInstrument?.instrumentCode} - ${selectedInstrument?.instrumentName}`}
                           </span>
                         </>
                       )}
@@ -306,7 +319,7 @@ const ViewDetailModal = () => {
                         </label>
                         <label className={styles.viewDetailSubLabels}>
                           {dashBetweenApprovalAssets(
-                            viewDetailsModalData?.details?.[0]?.tradeApprovalID
+                            viewDetailsModalData?.details?.[0]?.tradeApprovalID,
                           )}
                         </label>
                       </div>
@@ -330,7 +343,7 @@ const ViewDetailModal = () => {
                           <u>
                             {dashBetweenApprovalAssets(
                               viewDetailsModalData?.details?.[0]
-                                ?.resubmitRequestTrackingID
+                                ?.resubmitRequestTrackingID,
                             )}
                           </u>
                         </label>
@@ -338,30 +351,67 @@ const ViewDetailModal = () => {
                     </Col>
                   </>
                 ) : (
-                  <Col span={12}>
-                    <div
-                      className={
-                        // status 5 is Traded
-                        statusData.label === "Traded"
-                          ? styles.backgroundColorOfInstrumentDetailTradedRight
-                          : // status 1 is Pending
-                          statusData.label === "Pending" ||
-                            // status 6 is Not Traded
-                            statusData.label === "Not Traded"
-                          ? styles.backgrounColorOfApprovalDetail
-                          : styles.backgrounColorOfDetail
+                  <>
+                    <Col
+                      span={
+                        viewDetailsModalData?.details?.[0]
+                          ?.resubmitRequestTrackingID
+                          ? 6
+                          : 12
                       }
                     >
-                      <label className={styles.viewDetailMainLabels}>
-                        Approval ID
-                      </label>
-                      <label className={styles.viewDetailSubLabels}>
-                        {dashBetweenApprovalAssets(
-                          viewDetailsModalData?.details?.[0]?.tradeApprovalID
-                        )}
-                      </label>
-                    </div>
-                  </Col>
+                      <div
+                        className={
+                          // status 5 is Traded
+                          statusData.label === "Traded"
+                            ? styles.backgroundColorOfInstrumentDetailTradedRight
+                            : // status 1 is Pending
+                              statusData.label === "Pending" ||
+                                // status 6 is Not Traded
+                                statusData.label === "Not Traded"
+                              ? styles.backgrounColorOfApprovalDetail
+                              : styles.backgrounColorOfDetail
+                        }
+                      >
+                        <label className={styles.viewDetailMainLabels}>
+                          Approval ID
+                        </label>
+                        <label className={styles.viewDetailSubLabels}>
+                          {dashBetweenApprovalAssets(
+                            viewDetailsModalData?.details?.[0]?.tradeApprovalID,
+                          )}
+                        </label>
+                      </div>
+                    </Col>
+                    {viewDetailsModalData?.details?.[0]
+                      ?.resubmitRequestTrackingID && (
+                      <Col span={6}>
+                        {/* You can render some other related info here */}
+                        <div
+                          className={
+                            // status 1 is Pending
+                            statusData.label === "1" ||
+                            // status 2 is Resubmitted
+                            statusData.label === "2"
+                              ? styles.backgrounColorOfApprovalDetail
+                              : styles.backgrounColorOfDetail
+                          }
+                        >
+                          <label className={styles.viewDetailMainLabels}>
+                            Previous ID
+                          </label>
+                          <label className={styles.viewDetailSubLabels}>
+                            <u>
+                              {dashBetweenApprovalAssets(
+                                viewDetailsModalData?.details?.[0]
+                                  ?.resubmitRequestTrackingID,
+                              )}
+                            </u>
+                          </label>
+                        </div>
+                      </Col>
+                    )}
+                  </>
                 )}
               </Row>
 
@@ -400,7 +450,7 @@ const ViewDetailModal = () => {
                     <label className={styles.viewDetailSubLabels}>
                       {/* {selectedViewDetail?.quantity} */}
                       {formatNumberWithCommas(
-                        viewDetailsModalData?.details?.[0]?.quantity
+                        viewDetailsModalData?.details?.[0]?.quantity,
                       )}
                     </label>
                   </div>
@@ -446,8 +496,10 @@ const ViewDetailModal = () => {
                 <Col span={24}>
                   <BrokerList
                     statusData={statusData}
-                    viewDetailsData={viewDetailsModalData}
+                    // viewDetailsData={viewDetailsModalData}
                     variant={"Orange"}
+                    viewDetailsData={viewDetailsModalData?.details[0]?.brokers}
+                    type={2}
                   />
                 </Col>
               </Row>
@@ -512,12 +564,12 @@ const ViewDetailModal = () => {
                           activeStep={Math.max(
                             0,
                             Array.isArray(
-                              viewDetailsModalData?.hierarchyDetails
+                              viewDetailsModalData?.hierarchyDetails,
                             )
                               ? viewDetailsModalData?.hierarchyDetails.filter(
-                                  (person) => person.userID !== loggedInUserID
+                                  (person) => person.userID !== loggedInUserID,
                                 ).length - 1
-                              : 0
+                              : 0,
                           )}
                           connectorStyleConfig={{
                             activeColor: "#00640A",
@@ -533,11 +585,11 @@ const ViewDetailModal = () => {
                           }}
                         >
                           {Array.isArray(
-                            viewDetailsModalData?.hierarchyDetails
+                            viewDetailsModalData?.hierarchyDetails,
                           ) &&
                             viewDetailsModalData?.hierarchyDetails
                               .filter(
-                                (person) => person.userID !== loggedInUserID
+                                (person) => person.userID !== loggedInUserID,
                               )
                               .map((person, index) => {
                                 const {
@@ -548,13 +600,13 @@ const ViewDetailModal = () => {
                                 } = person;
 
                                 const formattedDateTime = formatApiDateTime(
-                                  `${modifiedDate} ${modifiedTime}`
+                                  `${modifiedDate} ${modifiedTime}`,
                                 );
 
                                 let iconSrc;
                                 console.log(
                                   bundleStatusID,
-                                  "CheckerrrrrbundleStatusID"
+                                  "CheckerrrrrbundleStatusID",
                                 );
                                 switch (bundleStatusID) {
                                   case 1:

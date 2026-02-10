@@ -142,7 +142,9 @@ const Details = ({
       <Row gutter={[0, 24]}>
         {/* 🔹 Group Title */}
         <Col span={24}>
-          <label className={styles.label}>Group Title</label>
+          <label className={styles.label}>
+            Group Title <span className={styles["required"]}>*</span>
+          </label>
           {pageTypeForAdminGropusAndPolicy !== 2 ? (
             <>
               <Input
@@ -158,8 +160,8 @@ const Details = ({
                   isTitleValid === false
                     ? styles.errorBorder
                     : isTitleValid === true
-                    ? styles.successBorder
-                    : ""
+                      ? styles.successBorder
+                      : ""
                 }`}
               />
               <div
@@ -198,7 +200,9 @@ const Details = ({
 
         {/* 🔹 Group Description */}
         <Col span={24}>
-          <label className={styles.label}>Group Description</label>
+          <label className={styles.label}>
+            Group Description <span className={styles["required"]}>*</span>
+          </label>
           {pageTypeForAdminGropusAndPolicy !== 2 ? (
             <>
               {" "}

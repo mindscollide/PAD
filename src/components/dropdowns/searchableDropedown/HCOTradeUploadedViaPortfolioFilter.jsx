@@ -148,7 +148,7 @@ export const HCOTradeUploadedViaPortfolioFilter = ({
             name="instrumentName"
             value={localState.instrumentName}
             onChange={handleInputChange}
-            placeholder="Enter instrument name"
+            placeholder="Instrument Name"
             size="medium"
             classNames="Search-Field"
           />
@@ -160,7 +160,7 @@ export const HCOTradeUploadedViaPortfolioFilter = ({
             name="employeeName"
             value={localState.employeeName}
             onChange={handleInputChange}
-            placeholder="Enter employee name"
+            placeholder="Employee Name"
             size="medium"
             classNames="Search-Field"
           />
@@ -190,7 +190,7 @@ export const HCOTradeUploadedViaPortfolioFilter = ({
                 : ""
             }
             onChange={handleInputChange}
-            placeholder="Enter quantity"
+            placeholder="Quantity"
             size="medium"
             classNames="Search-Field"
           />

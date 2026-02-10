@@ -54,7 +54,7 @@ const PendingRequest = () => {
   const {
     lMPendingApprovalReportsSearch,
     setLMPendingApprovalReportsSearch,
-    resetLineManagerApprovalSearch,
+    resetLineManagerPendingApprovalReportsSearch,
   } = useSearchBarContext();
 
   // state of context which I'm getting from the myApproval for Line Manager
@@ -93,7 +93,7 @@ const PendingRequest = () => {
         // ✅ Always get the freshest version (from memory or session)
         const currentAssetTypeData = getSafeAssetTypeData(
           assetTypeListingData,
-          setAssetTypeListingData
+          setAssetTypeListingData,
         );
         const pendingApprovals = Array.isArray(res?.pendingApprovals)
           ? res.pendingApprovals
@@ -101,7 +101,7 @@ const PendingRequest = () => {
         // // map data according to used in table
         const mapped = mapApiResopse(
           currentAssetTypeData?.Equities,
-          pendingApprovals
+          pendingApprovals,
         );
 
         setLMPendingApprovalsData((prev) => ({
@@ -139,15 +139,9 @@ const PendingRequest = () => {
         if (showLoaderFlag) showLoader(false);
       }
     },
-    [callApi, showNotification, showLoader, navigate, assetTypeListingData]
+    [callApi, showNotification, showLoader, navigate, assetTypeListingData],
   );
 
-  useEffect(() => {
-    return () => {
-      resetLineManagerApprovalSearch();
-      hasFetched.current = false;
-    };
-  }, []);
   /**
    * Runs only once to fetch api on initial render of a page
    */
@@ -156,13 +150,18 @@ const PendingRequest = () => {
     hasFetched.current = true;
     const requestData = buildApiRequest(
       lMPendingApprovalReportsSearch,
-      assetTypeListingData
+      assetTypeListingData,
     );
-
     fetchApiCall(requestData, true, true);
     setNoteGlobalModal({ visible: false, action: null });
   }, []);
 
+  useEffect(() => {
+    return () => {
+      console.log("resetLineManagerApprovalSearch");
+      resetLineManagerPendingApprovalReportsSearch();
+    };
+  }, []);
   /**
    * Syncs filters on `filterTrigger` from context
    */
@@ -171,7 +170,7 @@ const PendingRequest = () => {
       // requestData, replace , mainLoader
       const requestData = buildApiRequest(
         lMPendingApprovalReportsSearch,
-        assetTypeListingData
+        assetTypeListingData,
       );
       fetchApiCall(requestData, true, true);
     }
@@ -181,7 +180,7 @@ const PendingRequest = () => {
     if (!lineManagerApprovalMqtt) return;
     let requestData = buildApiRequest(
       lMPendingApprovalReportsSearch,
-      assetTypeListingData
+      assetTypeListingData,
     );
     requestData = {
       ...requestData,
@@ -195,7 +194,7 @@ const PendingRequest = () => {
   const handleViewDetailsForLineManager = async (workFlowID) => {
     await showLoader(true);
     const requestdata = { TradeApprovalID: workFlowID };
-    console.log("Check APi",requestdata);
+    console.log("Check APi", requestdata);
 
     const responseData = await GetAllLineManagerViewDetailRequest({
       callApi,
@@ -300,7 +299,7 @@ const PendingRequest = () => {
     } catch (error) {
       console.error(
         "❌ Error detecting page reload or restoring state:",
-        error
+        error,
       );
     }
   }, []);
@@ -318,7 +317,7 @@ const PendingRequest = () => {
         setLoadingMore(true);
         const requestData = buildApiRequest(
           lMPendingApprovalReportsSearch,
-          assetTypeListingData
+          assetTypeListingData,
         );
 
         await fetchApiCall(requestData, false, false); // append mode
@@ -329,7 +328,7 @@ const PendingRequest = () => {
       }
     },
     0,
-    "border-less-table-orange"
+    "border-less-table-orange",
   );
 
   //download Report Excel
@@ -337,7 +336,7 @@ const PendingRequest = () => {
     showLoader(true);
     const requestData = buildApiRequest(
       lMPendingApprovalReportsSearch,
-      assetTypeListingData
+      assetTypeListingData,
     );
     let NewRequestData = {
       InstrumentName: requestData.InstrumentName,
@@ -477,7 +476,7 @@ const PendingRequest = () => {
           />
         </div>
       </PageLayout>
-           {/* To Show Line Manager View Detail Modal */}
+      {/* To Show Line Manager View Detail Modal */}
       {viewDetailLineManagerModal && <ViewDetailModal />}
     </>
   );

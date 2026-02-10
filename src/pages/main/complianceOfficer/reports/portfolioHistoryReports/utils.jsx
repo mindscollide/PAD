@@ -18,6 +18,7 @@ import {
 } from "../../../../../components/dropdowns/filters/utils";
 import { getTradeTypeById } from "../../../../../common/funtions/type";
 import StatusColumnTitle from "../../../../../components/dropdowns/filters/statusColumnTitle";
+import { withSortIcon } from "../../../../../common/funtions/tableIcon";
 
 /**
  * Utility: Build API request payload for approval listing
@@ -31,7 +32,7 @@ export const buildApiRequest = (searchState = {}, assetTypeListingData) => ({
   RequesterName: searchState.requesterName || "",
   DepartmentName: searchState.departmentName || "",
   Quantity: Number(searchState.quantity) || 0,
-  StatusIds: mapStatusToIds(searchState.status),
+  StatusIds: mapStatusToIds(searchState.status, 2),
   TypeIds: mapBuySellToIds(searchState.type, assetTypeListingData?.Equities),
   PageNumber: Number(searchState.pageNumber) || 0,
   Length: Number(searchState.pageSize) || 10,
@@ -95,75 +96,14 @@ export const mappingDateWiseTransactionReport = (
   }));
 };
 
-/**
- * Returns the appropriate sort icon based on current sort state
- *
- * @param {string} columnKey - The column's key
- * @param {object} sortedInfo - Current sort state from the table
- * @returns {JSX.Element} The sort icon
- */
-const getSortIcon = (columnKey, sortedInfo) => {
-  if (sortedInfo?.columnKey === columnKey) {
-    return sortedInfo.order === "ascend" ? (
-      <img
-        draggable={false}
-        src={ArrowDown}
-        alt="Asc"
-        className="custom-sort-icon"
-      />
-    ) : (
-      <img
-        draggable={false}
-        src={ArrowUP}
-        alt="Desc"
-        className="custom-sort-icon"
-      />
-    );
-  }
-  return (
-    <img
-      draggable={false}
-      src={DefaultColumArrow}
-      alt="Default"
-      className="custom-sort-icon"
-    />
-  );
-};
-
-// Helper for consistent column titles
-const withSortIcon = (label, columnKey, sortedInfo) => (
-  <div className={style["table-header-wrapper"]}>
-    <span className={style["table-header-text"]}>{label}</span>
-    <span className={style["table-header-icon"]}>
-      {getSortIcon(columnKey, sortedInfo)}
-    </span>
-  </div>
-);
-const withFilterHeader = (FilterComponent) => (
-  <div
-    className={style["table-header-wrapper"]}
-    style={{
-      display: "flex",
-      alignItems: "center",
-      minHeight: "32px",
-      width: "100%",
-    }}
-  >
-    <FilterComponent />
-  </div>
-);
 export const getBorderlessTableColumns = ({
   approvalStatusMap = {},
   sortedInfo,
   coPortfolioHistoryReportSearch,
-  setCoOverdueVerificationReportSearch,
+  setCoPortfolioHistoryReportSearch,
 }) => [
   {
-    title: (
-      <div style={{ marginLeft: "8px" }}>
-        {withSortIcon("ID", "employeeID", sortedInfo)}
-      </div>
-    ),
+    title: withSortIcon("ID", "employeeID", sortedInfo),
     dataIndex: "employeeID",
     key: "employeeID",
     align: "left",
@@ -179,21 +119,19 @@ export const getBorderlessTableColumns = ({
     ),
   },
   {
-    title: (
-      <div>{withSortIcon("Employee Name", "employeeName", sortedInfo)}</div>
-    ),
-    dataIndex: "employeeName",
-    key: "employeeName",
-    width: "150px",
-    align: "center",
+    title: withSortIcon("Employee Name", "requesterName", sortedInfo),
+    dataIndex: "requesterName",
+    key: "requesterName",
+    width: 150,
+    align: "left",
     ellipsis: true,
     sorter: (a, b) =>
-      a.employeeName.localeCompare(b.employeeName, undefined, {
+      a.requesterName.localeCompare(b.requesterName, undefined, {
         sensitivity: "base",
       }),
     sortDirections: ["ascend", "descend"],
     sortOrder:
-      sortedInfo?.columnKey === "employeeName" ? sortedInfo.order : null,
+      sortedInfo?.columnKey === "requesterName" ? sortedInfo.order : null,
     showSorterTooltip: false,
     sortIcon: () => null,
     render: (text) => (
@@ -201,12 +139,10 @@ export const getBorderlessTableColumns = ({
     ),
   },
   {
-    title: (
-      <div>{withSortIcon("Department Name", "departmentName", sortedInfo)}</div>
-    ),
+    title: withSortIcon("Department Name", "departmentName", sortedInfo),
     dataIndex: "departmentName",
     key: "departmentName",
-    width: "150px",
+    width: 200,
     align: "left",
     ellipsis: true,
     sorter: (a, b) =>
@@ -223,28 +159,7 @@ export const getBorderlessTableColumns = ({
     ),
   },
   {
-    title: (
-      <div>{withSortIcon("Requester Name", "requesterName", sortedInfo)}</div>
-    ),
-    dataIndex: "requesterName",
-    key: "requesterName",
-    width: "150px",
-    align: "left",
-    ellipsis: true,
-    sorter: (a, b) => a.requesterName.localeCompare(b.requesterName),
-    sortDirections: ["ascend", "descend"],
-    sortOrder:
-      sortedInfo?.columnKey === "requesterName" ? sortedInfo.order : null,
-    showSorterTooltip: false,
-    sortIcon: () => null,
-    render: (text) => (
-      <span className={`${style["cell-text"]} font-medium`}>{text}</span>
-    ),
-  },
-  {
-    title: (
-      <div>{withSortIcon("Tracking ID", "tradeApprovalID", sortedInfo)}</div>
-    ),
+    title: withSortIcon("Tracking ID", "tradeApprovalID", sortedInfo),
     dataIndex: "tradeApprovalID",
     key: "tradeApprovalID",
     width: "120px",
@@ -265,6 +180,7 @@ export const getBorderlessTableColumns = ({
     dataIndex: "instrumentName",
     key: "instrumentName",
     width: "150px",
+    align: "left",
     ellipsis: true,
     sorter: (a, b) =>
       a.instrumentName.localeCompare(b.instrumentName, undefined, {
@@ -315,7 +231,7 @@ export const getBorderlessTableColumns = ({
     title: (
       <TypeColumnTitle
         state={coPortfolioHistoryReportSearch}
-        setState={setCoOverdueVerificationReportSearch}
+        setState={setCoPortfolioHistoryReportSearch}
       />
     ),
     dataIndex: "type",
@@ -331,10 +247,11 @@ export const getBorderlessTableColumns = ({
   },
 
   {
-    title: withSortIcon("Quantity", "quantity", sortedInfo),
+    title: withSortIcon("Quantity", "quantity", sortedInfo, "center"),
     dataIndex: "quantity",
     width: "140px",
     key: "quantity",
+    align: "center",
     ellipsis: true,
     sorter: (a, b) => a.quantity - b.quantity,
     sortDirections: ["ascend", "descend"],
@@ -342,15 +259,17 @@ export const getBorderlessTableColumns = ({
     showSorterTooltip: false,
     sortIcon: () => null,
     render: (text) => (
-      <span className={`${style["cell-text"]} font-medium`}>{text.toLocaleString()}</span>
+      <span className={`${style["cell-text"]} font-medium`}>
+        {text.toLocaleString()}
+      </span>
     ),
   },
   {
-    title: withSortIcon("Date & Time", "requestDate", sortedInfo),
+    title: withSortIcon("Date & Time", "requestDate", sortedInfo, "center"),
     dataIndex: "requestDate",
     key: "requestDate",
     width: "140px",
-    align: "left",
+    align: "center",
     ellipsis: true,
     sorter: (a, b) =>
       formatApiDateTime(a.requestDate).localeCompare(
@@ -372,7 +291,7 @@ export const getBorderlessTableColumns = ({
     title: (
       <StatusColumnTitle
         state={coPortfolioHistoryReportSearch}
-        setState={setCoOverdueVerificationReportSearch}
+        setState={setCoPortfolioHistoryReportSearch}
       />
     ),
     dataIndex: "status",

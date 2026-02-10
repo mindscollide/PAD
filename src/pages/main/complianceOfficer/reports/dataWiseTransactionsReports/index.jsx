@@ -39,7 +39,6 @@ import { useTableScrollBottom } from "../../../../../common/funtions/scroll";
 import CustomButton from "../../../../../components/buttons/button";
 import { DateRangePicker } from "../../../../../components";
 import ViewDetaildDateWiseTransaction from "./ViewDetaildDateWiseTransaction/ViewDetaildDateWiseTransaction";
-import { toYYMMDD } from "../../../../../common/funtions/rejex";
 import { DateWiseTransactionReportViewDetails } from "../../../../../api/myTransactionsApi";
 import { useReconcileContext } from "../../../../../context/reconsileContax";
 
@@ -455,9 +454,8 @@ const COdataWiseTransactionsReports = () => {
       {/* 🔹 Transactions Table */}
       <PageLayout
         background="white"
-        style={{ marginTop: "3px" }}
         className={
-          activeFilters.length > 0 ? "changeHeightreports" : "repotsHeight"
+          activeFilters.length > 0 ? "TATHTAchangeHeightreports2" : "repotsHeightHOC"
         }
       >
         <div className="px-4 md:px-6 lg:px-8 ">

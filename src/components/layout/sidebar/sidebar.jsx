@@ -33,6 +33,8 @@ const SideBar = () => {
   const {
     employeeBasedBrokersData,
     setEmployeeBasedBrokersData,
+    allBrokersData,
+    setAllBrokersData,
     allInstrumentsData,
     setAllInstrumentsData,
     assetTypeListingData,
@@ -79,6 +81,8 @@ const SideBar = () => {
             "employeeBasedBrokersData",
             setEmployeeBasedBrokersData
           );
+          restoreAndRemove("allBrokersData", setAllBrokersData);
+
           restoreAndRemove("allInstrumentsData", setAllInstrumentsData);
           if (lastSelectedKey === "0") {
             restoreAndRemove("assetTypeListingData", setAssetTypeListingData);
@@ -119,6 +123,10 @@ const SideBar = () => {
           JSON.stringify(employeeBasedBrokersData)
         );
         sessionStorage.setItem(
+          "allBrokersData",
+          JSON.stringify(allBrokersData)
+        );
+        sessionStorage.setItem(
           "allInstrumentsData",
           JSON.stringify(allInstrumentsData)
         );
@@ -138,6 +146,7 @@ const SideBar = () => {
   }, [
     selectedKey,
     employeeBasedBrokersData,
+    allBrokersData,
     allInstrumentsData,
     assetTypeListingData,
     getAllPredefineReasonData,
@@ -168,8 +177,6 @@ const SideBar = () => {
         (currentKey === "21" &&
           location.pathname !== "PAD/admin-users/session-wise-activity")
       ) {
-     
-
         if (currentKey === "5" && location.pathname.includes("PAD/reports")) {
           setSelectedKey(selectedKey); // keep previous selection
         } else if (
@@ -227,14 +234,84 @@ const SideBar = () => {
           theme="dark"
           mode="inline"
           selectedKeys={[selectedKey]}
-          onSelect={({ key }) => {
-            console.log("Navigating");
-            setSelectedKey(key);
+          // onSelect={({ key }) => {
+          //   console.log("Navigating");
+          //   setSelectedKey(key);
+
+          //   // Collapse automatically if not root
+          //   if (key !== ROOT_KEY) setCollapsed(true);
+
+          //   console.log("Navigating");
+          //   const path = routeMap[key];
+          //   console.log("Navigating",path);
+          //   if (path) navigate(path);
+          // }}
+          onClick={({ key }) => {
+            console.log("routeMaprouteMap", key);
+            const path = routeMap[key];
 
             // Collapse automatically if not root
             if (key !== ROOT_KEY) setCollapsed(true);
 
-            const path = routeMap[key];
+            // 🔁 SAME MENU ITEM CLICKED AGAIN
+            if (key === selectedKey) {
+              // Employee Reports
+              if (
+                key === "5" &&
+                location.pathname.startsWith("/PAD/reports/")
+              ) {
+                navigate("/PAD/reports");
+                return;
+              }
+
+              // LM Reports
+              if (
+                key === "8" &&
+                location.pathname.startsWith("/PAD/lm-reports/")
+              ) {
+                navigate("/PAD/lm-reports");
+                return;
+              }
+
+              // CO Reports
+              if (
+                key === "11" &&
+                location.pathname.startsWith("/PAD/co-reports/")
+              ) {
+                navigate("/PAD/co-reports");
+                return;
+              }
+
+              // HTA Reports
+              if (
+                key === "14" &&
+                location.pathname.startsWith("/PAD/hta-reports/")
+              ) {
+                navigate("/PAD/hta-reports");
+                return;
+              }
+
+              // HCA Reports
+              if (
+                key === "8" &&
+                location.pathname.startsWith("/PAD/hca-reports/")
+              ) {
+                navigate("/PAD/hca-reports");
+                return;
+              }
+
+              // Admin Reports
+              if (
+                key === "23" &&
+                location.pathname.startsWith("/PAD/admin-reports/")
+              ) {
+                navigate("/PAD/admin-reports");
+                return;
+              }
+            }
+
+            // Normal behavior
+            setSelectedKey(key);
             if (path) navigate(path);
           }}
           items={sidebarItems(

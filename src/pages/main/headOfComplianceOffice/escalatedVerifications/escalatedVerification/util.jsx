@@ -3,22 +3,23 @@ import React from "react";
 import { Tag, Tooltip } from "antd";
 import { Button } from "../../../../../components";
 
-// Assets (sort icons)
-import DefaultColumnArrow from "../../../../../assets/img/default-colum-arrow.png";
-import ArrowUp from "../../../../../assets/img/arrow-up-dark.png";
-import ArrowDown from "../../../../../assets/img/arrow-down-dark.png";
 import EscalatedIcon from "../../../../../assets/img/escalated.png";
 
 // Helpers
-import { formatApiDateTime, toYYMMDD } from "../../../../../common/funtions/rejex";
+import {
+  formatApiDateTime,
+  toYYMMDD,
+} from "../../../../../common/funtions/rejex";
 import TypeColumnTitle from "../../../../../components/dropdowns/filters/typeColumnTitle";
 import StatusColumnTitle from "../../../../../components/dropdowns/filters/statusColumnTitle";
-import { useGlobalModal } from "../../../../../context/GlobalModalContext";
 import { useReconcileContext } from "../../../../../context/reconsileContax";
 
 import { getTradeTypeById } from "../../../../../common/funtions/type";
-import { mapBuySellToIds, mapStatusToIds } from "../../../../../components/dropdowns/filters/utils";
-
+import {
+  mapBuySellToIds,
+  mapStatusToIds,
+} from "../../../../../components/dropdowns/filters/utils";
+import { withSortIcon } from "../../../../../common/funtions/tableIcon";
 
 /**
  * Builds API request payload from search/filter state
@@ -45,37 +46,6 @@ export function buildApiRequest(searchState = {}, assetTypeListingData) {
     Length: Number(searchState.pageSize) || 10,
   };
 }
-/* ------------------------------------------------------------------ */
-/* 🔹 Sort Icon Helper */
-/* ------------------------------------------------------------------ */
-/**
- * Returns the appropriate sort icon based on column key and sorting info.
- *
- * @param {string} columnKey - The column key being sorted.
- * @param {Object} sortedInfo - AntD sorting info (columnKey, order).
- * @returns {JSX.Element} The corresponding sort icon (default, asc, desc).
- */
-const getSortIcon = (columnKey, sortedInfo) => {
-  if (sortedInfo?.columnKey !== columnKey) {
-    return (
-      <img
-        draggable={false}
-        src={DefaultColumnArrow}
-        alt="Default"
-        className="custom-sort-icon"
-      />
-    );
-  }
-  const isAsc = sortedInfo.order === "ascend";
-  return (
-    <img
-      draggable={false}
-      src={isAsc ? ArrowDown : ArrowUp}
-      alt={isAsc ? "Asc" : "Desc"}
-      className="custom-sort-icon"
-    />
-  );
-};
 
 /* ------------------------------------------------------------------ */
 /* 🔹 Data Mapper */
@@ -107,26 +77,6 @@ export const mapToTableRows = (assetTypeData, list = []) =>
   }));
 
 /* ------------------------------------------------------------------ */
-/* 🔹 Style Helpers */
-/* ------------------------------------------------------------------ */
-/**
- * Generates AntD table cell styles for nowrap text handling.
- *
- * @param {number} minWidth - Minimum cell width.
- * @param {number} maxWidth - Maximum cell width.
- * @returns {Object} Style object for AntD `onCell`/`onHeaderCell`.
- */
-const nowrapCell = (minWidth, maxWidth) => ({
-  style: {
-    minWidth,
-    maxWidth,
-    whiteSpace: "nowrap",
-    overflow: "hidden",
-    textOverflow: "ellipsis",
-  },
-});
-
-/* ------------------------------------------------------------------ */
 /* 🔹 Column Definitions */
 /* ------------------------------------------------------------------ */
 /**
@@ -147,11 +97,8 @@ export const getBorderlessTableColumns = ({
 }) => [
   /* --------------------- Requester Name --------------------- */
   {
-    title: (
-      <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-        Requester Name {getSortIcon("requesterName", sortedInfo)}
-      </div>
-    ),
+    title: withSortIcon("Requester Name", "requesterName", sortedInfo),
+    align: "left",
     dataIndex: "requesterName",
     key: "requesterName",
     ellipsis: true,
@@ -167,17 +114,16 @@ export const getBorderlessTableColumns = ({
         {text || "—"}
       </span>
     ),
-    onHeaderCell: () => nowrapCell(120, 160),
-    onCell: () => nowrapCell(120, 160),
   },
 
   /* --------------------- Compliance Officer Name --------------------- */
   {
-    title: (
-      <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-        Compliance Officer {getSortIcon("complianceOfficerName", sortedInfo)}
-      </div>
+    title: withSortIcon(
+      "Compliance Officer",
+      "complianceOfficerName",
+      sortedInfo
     ),
+    align: "left",
     dataIndex: "complianceOfficerName",
     key: "complianceOfficerName",
     ellipsis: true,
@@ -197,17 +143,12 @@ export const getBorderlessTableColumns = ({
         {text || "—"}
       </span>
     ),
-    onHeaderCell: () => nowrapCell(140, 180),
-    onCell: () => nowrapCell(140, 180),
   },
 
   /* --------------------- Instrument --------------------- */
   {
-    title: (
-      <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-        Instrument {getSortIcon("instrumentCode", sortedInfo)}
-      </div>
-    ),
+    title: withSortIcon("Instrument", "instrumentCode", sortedInfo),
+    align: "left",
     dataIndex: "instrumentCode",
     key: "instrumentCode",
     ellipsis: true,
@@ -253,17 +194,12 @@ export const getBorderlessTableColumns = ({
         </div>
       );
     },
-    onHeaderCell: () => nowrapCell(130, 170),
-    onCell: () => nowrapCell(130, 170),
   },
 
   /* --------------------- Date & Time --------------------- */
   {
-    title: (
-      <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-        Date & Time {getSortIcon("transactionDate", sortedInfo)}
-      </div>
-    ),
+    title: withSortIcon("Date & Time", "transactionDate", sortedInfo, "center"),
+    align: "center",
     dataIndex: "transactionDate",
     key: "transactionDate",
     ellipsis: true,
@@ -279,20 +215,14 @@ export const getBorderlessTableColumns = ({
         {formatApiDateTime(date) || "—"}
       </span>
     ),
-    onHeaderCell: () => nowrapCell(120, 160),
-    onCell: () => nowrapCell(120, 160),
   },
 
   /* --------------------- Quantity --------------------- */
   {
-    title: (
-      <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-        Quantity {getSortIcon("quantity", sortedInfo)}
-      </div>
-    ),
+    title: withSortIcon("Quantity", "quantity", sortedInfo, "center"),
+    align: "center",
     dataIndex: "quantity",
     key: "quantity",
-    align: "left",
     width: 100,
     sorter: (a, b) => (a?.quantity ?? 0) - (b?.quantity ?? 0),
     sortOrder: sortedInfo?.columnKey === "quantity" ? sortedInfo.order : null,
@@ -301,8 +231,6 @@ export const getBorderlessTableColumns = ({
     render: (q) => (
       <span className="font-medium">{q?.toLocaleString() || "—"}</span>
     ),
-    onHeaderCell: () => nowrapCell(80, 120),
-    onCell: () => nowrapCell(80, 120),
   },
 
   /* --------------------- Trade Type --------------------- */
@@ -323,62 +251,12 @@ export const getBorderlessTableColumns = ({
       : null,
     onFilter: () => true,
     render: (type) => <span title={type || "—"}>{type || "—"}</span>,
-    onHeaderCell: () => nowrapCell(90, 110),
-    onCell: () => nowrapCell(90, 110),
-  },
-
-  /* --------------------- Status --------------------- */
-  {
-    title: (
-      <StatusColumnTitle
-        state={headOfComplianceApprovalEscalatedVerificationsSearch}
-        setState={setHeadOfComplianceApprovalEscalatedVerificationsSearch}
-      />
-    ),
-    dataIndex: "status",
-    key: "status",
-    ellipsis: true,
-    width: 140,
-    filteredValue: headOfComplianceApprovalEscalatedVerificationsSearch?.status
-      ?.length
-      ? headOfComplianceApprovalEscalatedVerificationsSearch.status
-      : null,
-    onFilter: () => true,
-    render: (status) => {
-      const tag = approvalStatusMap?.[status] || {};
-      return (
-        <Tag
-          style={{
-            backgroundColor: tag.backgroundColor,
-            color: tag.textColor,
-            whiteSpace: "nowrap",
-            overflow: "hidden",
-            textOverflow: "ellipsis",
-            display: "inline-block",
-            maxWidth: "120px",
-            border: "none",
-            borderRadius: "4px",
-            padding: "2px 8px",
-            fontSize: "12px",
-            fontWeight: "500",
-          }}
-          className="border-less-table-orange-status"
-        >
-          {tag.label || status || "—"}
-        </Tag>
-      );
-    },
-    onHeaderCell: () => nowrapCell(120, 160),
-    onCell: () => nowrapCell(120, 160),
   },
 
   /* --------------------- Escalated Date & Time --------------------- */
   {
-    title: (
-      <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-        Escalated on {getSortIcon("escalatedDate", sortedInfo)}
-      </div>
-    ),
+    title: withSortIcon("Escalated on", "escalatedDate", sortedInfo, "center"),
+    align: "center",
     dataIndex: "escalatedDate",
     key: "escalatedDate",
     ellipsis: true,
@@ -394,8 +272,6 @@ export const getBorderlessTableColumns = ({
         {formatApiDateTime(date) || "—"}
       </span>
     ),
-    onHeaderCell: () => nowrapCell(120, 160),
-    onCell: () => nowrapCell(120, 160),
   },
 
   /* --------------------- Actions --------------------- */
@@ -427,8 +303,6 @@ export const getBorderlessTableColumns = ({
         />
       );
     },
-    onHeaderCell: () => nowrapCell(110, 130),
-    onCell: () => nowrapCell(110, 130),
   },
 ];
 

@@ -32,12 +32,13 @@ export const emaStatusOptions = [
  */
 export const emtStatusOptions = ["Pending", "Compliant", "Non-Compliant"];
 export const escalated = ["Pending"];
-export const adminBrokersStatus = ["Active", "Inactive"];
+export const adminBrokersStatus = ["Active", "In Active"];
 
 /**
  * Status options for pending approvals (Line Manager).
  */
 export const emtStatusOptionsForPendingApproval = ["Pending", "Non-Compliant"];
+export const bundleStatus = ["Pending", "Approved","Declined"];
 
 export const emaStatusOptionsofReportsMyTradeApprovals = [
   "Pending",
@@ -46,6 +47,17 @@ export const emaStatusOptionsofReportsMyTradeApprovals = [
   "Transaction Conducted",
   "Not Traded",
   "Resubmitted for Approval",
+];
+
+export const emaStatusOptionsofReportsMyHistory = [
+  "Pending",
+  "Approved",
+  "Declined",
+  "Transaction Conducted",
+  "Not Traded",
+  "Resubmitted for Approval",
+  "Compliant",
+  "Non-Compliant",
 ];
 // -----------------------------------------------------------------------------
 // 📌 Utility: Extract Type Options from AddApprovalRequestData
@@ -114,6 +126,7 @@ export const mapStatusToIds = (arr, type = 1) => {
   const statusMapWorkflow = {
     Pending: 1,
     Resubmitted: 2,
+    "Resubmitted for Approval":2,
     Approved: 3,
     Declined: 4,
     Traded: 5,
@@ -129,7 +142,16 @@ export const mapStatusToIds = (arr, type = 1) => {
     Upcoming: 4,
   };
 
-  const statusMap = type === 1 ? statusMapBundel : statusMapWorkflow;
+  const statusMapWorkflowAdmin = {
+    Active: 1,
+    "In Active": 2,
+  };
+  const statusMap =
+    type === 1
+      ? statusMapBundel
+      : type === 3
+      ? statusMapWorkflowAdmin
+      : statusMapWorkflow;
 
   return arr
     .map((status) => statusMap[status] ?? null)

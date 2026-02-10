@@ -63,6 +63,11 @@ export const MyApprovalProvider = ({ children }) => {
   /** Compliance Officer dashboard report summary */
   const [hcaReportsDashboardData, setHCAReportsDashboardData] = useState([]);
 
+  /** admin dashboard report summary */
+  const [adminReportsDashboardData, setAdminReportsDashboardData] = useState(
+    [],
+  );
+
   /** Employee Transaction Request Report API data */
   const [getEmployeeTransactionReport, setGetEmployeeTransactionReport] =
     useState({
@@ -183,6 +188,10 @@ export const MyApprovalProvider = ({ children }) => {
     setCOTransactionSummaryReportViewDetailsFlag,
   ] = useState(false);
 
+  // selected WorkFlow Id from GetComplianceOfficerViewTransactionSummaryAPI View Details
+  const [selectedWorkFlowViewDetaild, setSelectedWorkFlowViewDetaild] =
+    useState(null);
+
   // Head Of Compliance (HOC) My Action
   const [myActionHOCData, setMyActionHOCData] = useState({
     requests: [],
@@ -213,6 +222,27 @@ export const MyApprovalProvider = ({ children }) => {
     totalRecordsDataBase: 0,
     totalRecordsTable: 0,
   });
+
+  // HTA TAT View Detail Reports context state
+  const [htaTATViewDetailsData, setHTATATViewDetailsData] = useState({
+    workFlows: [],
+    totalRecordsDataBase: 0,
+    totalRecordsTable: 0,
+  });
+
+  /** HTA Pending Request Approval Reports */
+  const [hTAPendingApprovalsData, setHTAPendingApprovalsData] = useState({
+    pendingTradeApprovals: [],
+    totalRecordsDataBase: 0,
+    totalRecordsTable: 0,
+  });
+
+  /** Head Of Trade Approval (HTA) My Action */
+  const [myActionHeadOfTradeApprovalData, setMyActionHeadOfTradeApprovalData] =
+    useState({
+      requests: [],
+      totalRecords: 0,
+    });
 
   // Reset function to set all states back to initial values
   /* =========================================================
@@ -322,6 +352,25 @@ export const MyApprovalProvider = ({ children }) => {
       totalRecordsTable: 0,
     });
   };
+
+  //Reset HTA TAT Request Approval View Detail
+  const resetHTATATViewDetails = () => {
+    setHTATATViewDetailsData({
+      workFlows: [],
+      totalRecordsDataBase: 0,
+      totalRecordsTable: 0,
+    });
+  };
+
+  //Reset HTA Pending Reqeust Approval Reports context state
+  const resetHtaPendingRequestApprovalData = () => {
+    setHTAPendingApprovalsData({
+      pendingTradeApprovals: [],
+      totalRecordsDataBase: 0,
+      totalRecordsTable: 0,
+    });
+  };
+
   /* =========================================================
      PROVIDER RETURN
      ========================================================= */
@@ -386,6 +435,12 @@ export const MyApprovalProvider = ({ children }) => {
         htaTATReportsData,
         setHTATATReportsData,
         resetHTATATReportsData,
+        myActionHeadOfTradeApprovalData,
+        setMyActionHeadOfTradeApprovalData,
+
+        htaTATViewDetailsData,
+        setHTATATViewDetailsData,
+        resetHTATATViewDetails,
 
         // compliance officer  date wise transaction report
         coDatewiseTransactionReportListData,
@@ -412,6 +467,11 @@ export const MyApprovalProvider = ({ children }) => {
         coTransactionSummaryReportViewDetailsListData,
         setCOTransactionSummaryReportViewDetailsListData,
         resetCOTransactionSummaryReportViewDetailsListData,
+
+        // Selected View Detail Id
+        selectedWorkFlowViewDetaild,
+        setSelectedWorkFlowViewDetaild,
+
         // HCA Reports
         hcaReportsDashboardData,
         setHCAReportsDashboardData,
@@ -425,6 +485,15 @@ export const MyApprovalProvider = ({ children }) => {
         hcoTransactionSummaryReportListData,
         setHCOTransactionSummaryReportListData,
         resetTransactionSummaryHeadOfCompliance,
+
+        //Admin Dashboard Report
+        adminReportsDashboardData,
+        setAdminReportsDashboardData,
+
+        //HTA Pending Request Approval Report
+        hTAPendingApprovalsData,
+        setHTAPendingApprovalsData,
+        resetHtaPendingRequestApprovalData,
       }}
     >
       {children}

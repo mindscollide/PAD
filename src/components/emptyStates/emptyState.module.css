@@ -14,6 +14,10 @@
   object-fit: contain;
 }
 
+.emptyPolicyIcon {
+ display: none;
+}
+
 .messageText {
   font-family: "Switzer Variable";
   font-weight: 700;
@@ -24,6 +28,15 @@
   margin-bottom: 8px;
 }
 
+.messagePolicyText {
+  font-family: "Switzer Variable";
+  font-weight: 700;
+  font-size: 30px;
+  line-height: 100%;
+  text-align: center;
+  color: #717171;
+  margin-top: -66px;
+}
 .descriptionText {
   font-family: "Switzer Variable";
   font-size: 16px;

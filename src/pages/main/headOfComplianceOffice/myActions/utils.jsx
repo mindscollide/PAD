@@ -1,52 +1,12 @@
 // columns.js
-import ArrowUP from "../../../../assets/img/arrow-up-dark.png";
-import ArrowDown from "../../../../assets/img/arrow-down-dark.png";
-import DefaultColumArrow from "../../../../assets/img/default-colum-arrow.png";
 import React from "react";
 import { Tag, Tooltip } from "antd";
-import style from "./HOC-myActions.module.css";
 import {
   dashBetweenApprovalAssets,
   formatApiDateTime,
   toYYMMDD,
 } from "../../../../common/funtions/rejex";
-const getSortIcon = (columnKey, sortedInfo) => {
-  if (sortedInfo?.columnKey === columnKey) {
-    return sortedInfo.order === "ascend" ? (
-      <img
-        draggable={false}
-        src={ArrowDown}
-        alt="Asc"
-        className="custom-sort-icon"
-      />
-    ) : (
-      <img
-        draggable={false}
-        src={ArrowUP}
-        alt="Desc"
-        className="custom-sort-icon"
-      />
-    );
-  }
-  return (
-    <img
-      draggable={false}
-      src={DefaultColumArrow}
-      alt="Default"
-      className="custom-sort-icon"
-    />
-  );
-};
-
-// Helper for consistent column titles
-const withSortIcon = (label, columnKey, sortedInfo) => (
-  <div className={style["table-header-wrapper"]}>
-    <span className={style["table-header-text"]}>{label}</span>
-    <span className={style["table-header-icon"]}>
-      {getSortIcon(columnKey, sortedInfo)}
-    </span>
-  </div>
-);
+import { withSortIcon } from "../../../../common/funtions/tableIcon";
 
 /**
  * Utility: Build API request payload for approval listing
@@ -163,28 +123,29 @@ export const getMyActionsColumn = (approvalStatusMap, sortedInfo) => [
   {
     title: withSortIcon(
       "Date & Time of Approval Request",
-      "approvalDateTime",
+      "creationTimeAndTime",
       sortedInfo
     ),
-    dataIndex: "approvalDateTime",
-    key: "approvalDateTime",
+    dataIndex: "creationTimeAndTime",
+    key: "creationTimeAndTime",
     width: "250px",
     align: "center",
     ellipsis: true,
-    sorter: (a, b) => {
-      const dateA = new Date(`${a.creationDate} ${a.creationTime}`).getTime();
-      const dateB = new Date(`${b.creationDate} ${b.creationTime}`).getTime();
-      return dateA - dateB;
-    },
+    sorter: (a, b) =>
+      (a?.creationTimeAndTime || "").localeCompare(
+        b?.creationTimeAndTime || ""
+      ),
     sortDirections: ["ascend", "descend"],
     sortOrder:
-      sortedInfo?.columnKey === "approvalDateTime" ? sortedInfo.order : null,
+      sortedInfo?.columnKey === "creationTimeAndTime" ? sortedInfo.order : null,
     showSorterTooltip: false,
     sortIcon: () => null,
-    render: (_, record) => (
-      <span className="text-gray-600">
-        {formatApiDateTime(`${record.creationDate} ${record.creationTime}`)}
-      </span>
+    render: (date) => (
+      <Tooltip title={formatApiDateTime(date) || "—"}>
+        <span className="text-gray-600" title={date || "—"}>
+          {formatApiDateTime(date) || "—"}
+        </span>
+      </Tooltip>
     ),
   },
   {
@@ -216,7 +177,7 @@ export const getMyActionsColumn = (approvalStatusMap, sortedInfo) => [
     render: (text) => <span className="font-medium">{text}</span>,
   },
   {
-    title: withSortIcon("Quantity", "quantity", sortedInfo),
+    title: withSortIcon("Quantity", "quantity", sortedInfo, "center"),
     dataIndex: "quantity",
     key: "quantity",
     width: "180px",

@@ -5,9 +5,6 @@ import { Tag, Tooltip } from "antd";
 import { Button, StatusFilterDropdown } from "../../../../components";
 import style from "./approval.module.css";
 import EscalatedIcon from "../../../../assets/img/escalated.png";
-import ArrowUP from "../../../../assets/img/arrow-up-dark.png";
-import ArrowDown from "../../../../assets/img/arrow-down-dark.png";
-import DefaultColumArrow from "../../../../assets/img/default-colum-arrow.png";
 import TypeColumnTitle from "../../../../components/dropdowns/filters/typeColumnTitle";
 import StatusColumnTitle from "../../../../components/dropdowns/filters/statusColumnTitle";
 import { useGlobalModal } from "../../../../context/GlobalModalContext";
@@ -21,6 +18,7 @@ import {
   mapStatusToIds,
 } from "../../../../components/dropdowns/filters/utils";
 import { getTradeTypeById } from "../../../../common/funtions/type";
+import { withSortIcon } from "../../../../common/funtions/tableIcon";
 
 // 🔹 CONSTANTS
 const COLUMN_CONFIG = {
@@ -57,7 +55,7 @@ export const buildApiRequest = (searchState = {}, assetTypeListingData) => ({
   Quantity: searchState.quantity ? Number(searchState.quantity) : 0,
   StartDate: searchState.startDate ? toYYMMDD(searchState.startDate) : "",
   EndDate: searchState.endDate ? toYYMMDD(searchState.endDate) : "",
-  StatusIds: mapStatusToIds?.(searchState.status,2) || [],
+  StatusIds: mapStatusToIds?.(searchState.status, 2) || [],
   TypeIds:
     mapBuySellToIds?.(searchState.type, assetTypeListingData?.Equities) || [],
   PageNumber: Number(searchState.pageNumber) || 0,
@@ -98,62 +96,6 @@ export const mapEmployeeMyApprovalData = (
     assetTypeID: item.assetType?.assetTypeID || 0,
   }));
 };
-
-/**
- * Returns the appropriate sort icon based on current sort state
- * @param {string} columnKey - The column's unique key
- * @param {Object} sortedInfo - Current table sorting information
- * @returns {JSX.Element} Sort icon component
- */
-const getSortIcon = (columnKey, sortedInfo) => {
-  if (sortedInfo?.columnKey === columnKey) {
-    return sortedInfo.order === COLUMN_CONFIG.SORT_ORDER.ASCEND ? (
-      <img
-        draggable={false}
-        src={ArrowDown}
-        alt="Sorted ascending"
-        className="custom-sort-icon"
-        data-testid={`sort-icon-${columnKey}-asc`}
-      />
-    ) : (
-      <img
-        draggable={false}
-        src={ArrowUP}
-        alt="Sorted descending"
-        className="custom-sort-icon"
-        data-testid={`sort-icon-${columnKey}-desc`}
-      />
-    );
-  }
-
-  return (
-    <img
-      draggable={false}
-      src={DefaultColumArrow}
-      alt="Not sorted"
-      className="custom-sort-icon"
-      data-testid={`sort-icon-${columnKey}-default`}
-    />
-  );
-};
-
-/**
- * Creates a table header with sort icon and proper alignment
- * @param {string} label - Column display label
- * @param {string} columnKey - Column unique key
- * @param {Object} sortedInfo - Current sorting state
- * @returns {JSX.Element} Header component with sort icon
- */
-
-// Helper for consistent column titles
-const withSortIcon = (label, columnKey, sortedInfo) => (
-  <div className={style["table-header-wrapper"]}>
-    <span className={style["table-header-text"]}>{label}</span>
-    <span className={style["table-header-icon"]}>
-      {getSortIcon(columnKey, sortedInfo)}
-    </span>
-  </div>
-);
 
 /**
  * Creates a filter header without sort icon
@@ -382,40 +324,25 @@ export const getBorderlessTableColumns = ({
       const extractId = (id) => parseInt(id.replace(/[^\d]/g, ""), 10) || 0;
       return extractId(a.tradeApprovalID) - extractId(b.tradeApprovalID);
     },
-    sortDirections: [
-      COLUMN_CONFIG.SORT_ORDER.ASCEND,
-      COLUMN_CONFIG.SORT_ORDER.DESCEND,
-    ],
     sortOrder:
       sortedInfo?.columnKey === "tradeApprovalID" ? sortedInfo.order : null,
     showSorterTooltip: false,
+    width: 150,
+    align: "left",
     sortIcon: () => null,
-    render: (tradeApprovalID, record) => (
-      <div
-        id={`cell-${record.key}-tradeApprovalID`}
-        style={{ display: "flex", alignItems: "center", gap: "12px" }}
-      >
-        <span className="font-medium" data-testid="formatted-approval-id">
-          {dashBetweenApprovalAssets(tradeApprovalID)}
-        </span>
-      </div>
+    render: (tradeApprovalID) => (
+      <span className="font-medium" data-testid="formatted-approval-id">
+        {dashBetweenApprovalAssets(tradeApprovalID)}
+      </span>
     ),
-    onHeaderCell: () =>
-      createCellStyle(
-        COLUMN_CONFIG.WIDTHS.APPROVAL_ID.min,
-        COLUMN_CONFIG.WIDTHS.APPROVAL_ID.max
-      ),
-    onCell: () =>
-      createCellStyle(
-        COLUMN_CONFIG.WIDTHS.APPROVAL_ID.min,
-        COLUMN_CONFIG.WIDTHS.APPROVAL_ID.max
-      ),
   },
   {
     title: withSortIcon("Instrument", "instrumentCode", sortedInfo),
     dataIndex: "instrumentCode",
     key: "instrumentCode",
     ellipsis: true,
+    width: 150,
+    align: "left",
     sorter: (a, b) =>
       (a?.instrumentCode || "").localeCompare(b?.instrumentCode || ""),
     sortOrder:
@@ -448,6 +375,7 @@ export const getBorderlessTableColumns = ({
     dataIndex: "type",
     key: "type",
     ellipsis: true,
+    width: 130,
     filteredValue: employeeMyApprovalSearch.type?.length
       ? employeeMyApprovalSearch.type
       : null,
@@ -468,61 +396,28 @@ export const getBorderlessTableColumns = ({
         {type}
       </span>
     ),
-    onHeaderCell: () =>
-      createCellStyle(
-        COLUMN_CONFIG.WIDTHS.TYPE.min,
-        COLUMN_CONFIG.WIDTHS.TYPE.max
-      ),
-    onCell: () =>
-      createCellStyle(
-        COLUMN_CONFIG.WIDTHS.TYPE.min,
-        COLUMN_CONFIG.WIDTHS.TYPE.max
-      ),
   },
   {
-    title: withSortIcon("Request Date & Time", "requestDateTime", sortedInfo),
+    title: withSortIcon(
+      "Request Date & Time",
+      "requestDateTime",
+      sortedInfo,
+      "center"
+    ),
     dataIndex: "requestDateTime",
     key: "requestDateTime",
-    width: "15%",
+    width: 200,
+    align: "center",
     ellipsis: true,
     sorter: (a, b) =>
       formatApiDateTime(a.requestDateTime).localeCompare(
         formatApiDateTime(b.requestDateTime)
       ),
-    sortDirections: [
-      COLUMN_CONFIG.SORT_ORDER.ASCEND,
-      COLUMN_CONFIG.SORT_ORDER.DESCEND,
-    ],
     sortOrder:
       sortedInfo?.columnKey === "requestDateTime" ? sortedInfo.order : null,
     showSorterTooltip: false,
     sortIcon: () => null,
-    render: (date, record) => (
-      <span
-        id={`cell-${record.key}-requestDateTime`}
-        className="text-gray-600"
-        data-testid="formatted-date"
-        style={{
-          display: "inline-block",
-          width: "100%",
-          overflow: "hidden",
-          textOverflow: "ellipsis",
-          whiteSpace: "nowrap",
-        }}
-      >
-        {formatApiDateTime(date)}
-      </span>
-    ),
-    onHeaderCell: () =>
-      createCellStyle(
-        COLUMN_CONFIG.WIDTHS.DATE_TIME.min,
-        COLUMN_CONFIG.WIDTHS.DATE_TIME.max
-      ),
-    onCell: () =>
-      createCellStyle(
-        COLUMN_CONFIG.WIDTHS.DATE_TIME.min,
-        COLUMN_CONFIG.WIDTHS.DATE_TIME.max
-      ),
+    render: (date, record) => <span>{formatApiDateTime(date)}</span>,
   },
   {
     title: withFilterHeader(() => (
@@ -533,6 +428,7 @@ export const getBorderlessTableColumns = ({
     )),
     dataIndex: "status",
     key: "status",
+    width: 130,
     ellipsis: true,
     filteredValue: employeeMyApprovalSearch.status?.length
       ? employeeMyApprovalSearch.status
@@ -558,6 +454,8 @@ export const getBorderlessTableColumns = ({
     title: "",
     dataIndex: "isEscalated",
     key: "isEscalated",
+    width: 50,
+    align: "center",
     ellipsis: true,
     render: (isEscalated) =>
       isEscalated && (
@@ -573,79 +471,36 @@ export const getBorderlessTableColumns = ({
           }}
         />
       ),
-    onHeaderCell: () =>
-      createCellStyle(
-        COLUMN_CONFIG.WIDTHS.ESCALATED.min,
-        COLUMN_CONFIG.WIDTHS.ESCALATED.max
-      ),
-    onCell: () =>
-      createCellStyle(
-        COLUMN_CONFIG.WIDTHS.ESCALATED.min,
-        COLUMN_CONFIG.WIDTHS.ESCALATED.max
-      ),
   },
   {
-    title: withSortIcon("Quantity", "quantity", sortedInfo),
+    title: withSortIcon("Quantity", "quantity", sortedInfo, "center"),
     dataIndex: "quantity",
+    align: "center",
     key: "quantity",
     ellipsis: true,
+    width: 100,
     sorter: (a, b) => a.quantity - b.quantity,
-    sortDirections: [
-      COLUMN_CONFIG.SORT_ORDER.ASCEND,
-      COLUMN_CONFIG.SORT_ORDER.DESCEND,
-    ],
     sortOrder: sortedInfo?.columnKey === "quantity" ? sortedInfo.order : null,
     showSorterTooltip: false,
     sortIcon: () => null,
     render: (quantity, record) => (
-      <span
-        id={`cell-${record.key}-quantity`}
-        className="font-medium"
-        data-testid="formatted-quantity"
-        style={{
-          display: "inline-block",
-          width: "100%",
-          overflow: "hidden",
-          textOverflow: "ellipsis",
-          whiteSpace: "nowrap",
-          textAlign: "left",
-        }}
-      >
+      <span id={`cell-${record.key}-quantity`} className="font-medium">
         {quantity.toLocaleString()}
       </span>
     ),
-    onHeaderCell: () =>
-      createCellStyle(
-        COLUMN_CONFIG.WIDTHS.QUANTITY.min,
-        COLUMN_CONFIG.WIDTHS.QUANTITY.max
-      ),
-    onCell: () =>
-      createCellStyle(
-        COLUMN_CONFIG.WIDTHS.QUANTITY.min,
-        COLUMN_CONFIG.WIDTHS.QUANTITY.max
-      ),
   },
   {
     title: "Time Remaining to Trade",
     dataIndex: "timeRemainingToTrade",
     key: "timeRemainingToTrade",
     ellipsis: true,
+    width: 200,
     align: "center",
     render: (text, record) => (
       <div id={`cell-${record.key}-timeRemainingToTrade`}>
         {renderTimeRemainingCell(record)}
       </div>
     ),
-    onHeaderCell: () =>
-      createCellStyle(
-        COLUMN_CONFIG.WIDTHS.TIME_REMAINING.min,
-        COLUMN_CONFIG.WIDTHS.TIME_REMAINING.max
-      ),
-    onCell: () =>
-      createCellStyle(
-        COLUMN_CONFIG.WIDTHS.TIME_REMAINING.min,
-        COLUMN_CONFIG.WIDTHS.TIME_REMAINING.max
-      ),
   },
   {
     title: "",

@@ -3,10 +3,7 @@ import ArrowDown from "../../../../../assets/img/arrow-down-dark.png";
 import DefaultColumArrow from "../../../../../assets/img/default-colum-arrow.png";
 import style from "./HTATradeApprovalRequest.module.css";
 
-import {
-  toYYMMDD,
-} from "../../../../../common/funtions/rejex";
-
+import { toYYMMDD } from "../../../../../common/funtions/rejex";
 
 /**
  * Utility: Build API request payload for approval listing
@@ -90,10 +87,20 @@ const getSortIcon = (columnKey, sortedInfo) => {
   );
 };
 
-
 // Helper for consistent column titles
-const withSortIcon = (label, columnKey, sortedInfo) => (
-  <div className={style["table-header-wrapper"]}>
+const withSortIcon = (label, columnKey, sortedInfo, align = "left") => (
+  <div
+    className={style["table-header-wrapper"]}
+    style={{
+      justifyContent:
+        align === "center"
+          ? "center"
+          : align === "right"
+          ? "flex-end"
+          : "flex-start",
+      textAlign: align,
+    }}
+  >
     <span className={style["table-header-text"]}>{label}</span>
     <span className={style["table-header-icon"]}>
       {getSortIcon(columnKey, sortedInfo)}
@@ -101,18 +108,23 @@ const withSortIcon = (label, columnKey, sortedInfo) => (
   </div>
 );
 
-export const getBorderlessTableColumns = ({
-  sortedInfo,
-}) => [
+const stringSorter = (key) => (a, b) =>
+  (a[key] || "").localeCompare(b[key] || "", undefined, {
+    sensitivity: "base",
+  });
+
+const numberSorter = (key) => (a, b) =>
+  Number(String(a[key] || 0).replace(/[^\d]/g, "")) -
+  Number(String(b[key] || 0).replace(/[^\d]/g, ""));
+
+export const getBorderlessTableColumns = ({ sortedInfo }) => [
   {
     title: withSortIcon("Employee ID", "employeeID", sortedInfo),
     dataIndex: "employeeID",
     key: "employeeID",
     width: "10%",
     ellipsis: true,
-    sorter: (a, b) =>
-      parseInt(a.employeeID.replace(/[^\d]/g, ""), 10) -
-      parseInt(b.employeeID.replace(/[^\d]/g, ""), 10),
+    sorter: numberSorter("employeeID"),
     sortDirections: ["ascend", "descend"],
     sortOrder: sortedInfo?.columnKey === "employeeID" ? sortedInfo.order : null,
     showSorterTooltip: false,
@@ -120,10 +132,7 @@ export const getBorderlessTableColumns = ({
     render: (employeeID) => {
       return (
         <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-          <span className="font-medium">
-            {employeeID}
-            {/* {dashBetweenApprovalAssets("REQ888888")} */}
-          </span>
+          <span className="font-medium">{employeeID}</span>
         </div>
       );
     },
@@ -134,13 +143,13 @@ export const getBorderlessTableColumns = ({
     key: "employeeName",
     ellipsis: true,
     width: "12%",
-    sorter: (a, b) => a.employeeName - b.employeeName,
+    sorter: stringSorter("employeeName"),
     sortDirections: ["ascend", "descend"],
     sortOrder:
       sortedInfo?.columnKey === "employeeName" ? sortedInfo.order : null,
     showSorterTooltip: false,
     sortIcon: () => null,
-    render: (q) => <span className="font-medium">{q.toLocaleString()}</span>,
+    render: (q) => <span className="font-medium">{q.toLocaleString("en-US")}</span>,
   },
   {
     title: withSortIcon("Department", "department", sortedInfo),
@@ -148,22 +157,26 @@ export const getBorderlessTableColumns = ({
     key: "department",
     ellipsis: true,
     width: "12%",
-    sorter: (a, b) => a.department - b.department,
+    sorter: stringSorter("department"),
     sortDirections: ["ascend", "descend"],
     sortOrder: sortedInfo?.columnKey === "department" ? sortedInfo.order : null,
     showSorterTooltip: false,
     sortIcon: () => null,
-    render: (q) => <span className="font-medium">{q.toLocaleString()}</span>,
+    render: (q) => <span className="font-medium">{q.toLocaleString("en-US")}</span>,
   },
   {
-    title: withSortIcon("Total Requests", "totalRequests", sortedInfo),
+    title: withSortIcon(
+      "Total Requests",
+      "totalRequests",
+      sortedInfo,
+      "center"
+    ),
     dataIndex: "totalRequests",
     key: "totalRequests",
+    align: "center",
     width: "10%",
     ellipsis: true,
-    sorter: (a, b) =>
-      parseInt(a.totalRequests.replace(/[^\d]/g, ""), 10) -
-      parseInt(b.totalRequests.replace(/[^\d]/g, ""), 10),
+    sorter: numberSorter("totalRequests"),
     sortDirections: ["ascend", "descend"],
     sortOrder:
       sortedInfo?.columnKey === "totalRequests" ? sortedInfo.order : null,
@@ -171,126 +184,98 @@ export const getBorderlessTableColumns = ({
     sortIcon: () => null,
     render: (totalRequests) => {
       return (
-        <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-          <span className="font-medium">{totalRequests}</span>
-        </div>
+        <span className="font-medium">{totalRequests.toLocaleString("en-US")}</span>
       );
     },
   },
   {
-    title: withSortIcon("Pending", "pending", sortedInfo),
+    title: withSortIcon("Pending", "pending", sortedInfo, "center"),
     dataIndex: "pending",
     key: "pending",
+    align: "center",
     width: "8%",
     ellipsis: true,
-    sorter: (a, b) =>
-      parseInt(a.pending.replace(/[^\d]/g, ""), 10) -
-      parseInt(b.pending.replace(/[^\d]/g, ""), 10),
+    sorter: numberSorter("pending"),
     sortDirections: ["ascend", "descend"],
     sortOrder: sortedInfo?.columnKey === "pending" ? sortedInfo.order : null,
     showSorterTooltip: false,
     sortIcon: () => null,
     render: (pending) => {
-      return (
-        <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-          <span className="font-medium">{pending}</span>
-        </div>
-      );
+      return <span className="font-medium">{pending.toLocaleString("en-US")}</span>;
     },
   },
   {
-    title: withSortIcon("Approved", "approved", sortedInfo),
+    title: withSortIcon("Approved", "approved", sortedInfo, "center"),
     dataIndex: "approved",
     key: "approved",
     width: "8%",
+    align: "center",
     ellipsis: true,
-    sorter: (a, b) =>
-      parseInt(a.approved.replace(/[^\d]/g, ""), 10) -
-      parseInt(b.approved.replace(/[^\d]/g, ""), 10),
+    sorter: numberSorter("approved"),
     sortDirections: ["ascend", "descend"],
     sortOrder: sortedInfo?.columnKey === "approved" ? sortedInfo.order : null,
     showSorterTooltip: false,
     sortIcon: () => null,
     render: (approved) => {
-      return (
-        <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-          <span className="font-medium">{approved}</span>
-        </div>
-      );
+      return <span className="font-medium">{approved.toLocaleString("en-US")}</span>;
     },
   },
   {
-    title: withSortIcon("Declined", "declined", sortedInfo),
+    title: withSortIcon("Declined", "declined", sortedInfo, "center"),
     dataIndex: "declined",
     key: "declined",
     width: "8%",
+    align: "center",
     ellipsis: true,
-    sorter: (a, b) =>
-      parseInt(a.declined.replace(/[^\d]/g, ""), 10) -
-      parseInt(b.declined.replace(/[^\d]/g, ""), 10),
+    sorter: numberSorter("declined"),
     sortDirections: ["ascend", "descend"],
     sortOrder: sortedInfo?.columnKey === "declined" ? sortedInfo.order : null,
     showSorterTooltip: false,
     sortIcon: () => null,
     render: (declined) => {
-      return (
-        <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-          <span className="font-medium">{declined}</span>
-        </div>
-      );
+      return <span className="font-medium">{declined.toLocaleString("en-US")}</span>;
     },
   },
   {
-    title: withSortIcon("Traded", "traded", sortedInfo),
+    title: withSortIcon("Traded", "traded", sortedInfo, "center"),
     dataIndex: "traded",
     key: "traded",
     width: "8%",
+    align: "center",
     ellipsis: true,
-    sorter: (a, b) =>
-      parseInt(a.traded.replace(/[^\d]/g, ""), 10) -
-      parseInt(b.traded.replace(/[^\d]/g, ""), 10),
+    sorter: numberSorter("traded"),
     sortDirections: ["ascend", "descend"],
     sortOrder: sortedInfo?.columnKey === "traded" ? sortedInfo.order : null,
     showSorterTooltip: false,
     sortIcon: () => null,
     render: (traded) => {
-      return (
-        <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-          <span className="font-medium">{traded}</span>
-        </div>
-      );
+      return <span className="font-medium">{traded.toLocaleString("en-US")}</span>;
     },
   },
   {
-    title: withSortIcon("Not Traded", "notTraded", sortedInfo),
+    title: withSortIcon("Not Traded", "notTraded", sortedInfo, "center"),
     dataIndex: "notTraded",
     key: "notTraded",
     width: "8%",
     ellipsis: true,
-    sorter: (a, b) =>
-      parseInt(a.notTraded.replace(/[^\d]/g, ""), 10) -
-      parseInt(b.notTraded.replace(/[^\d]/g, ""), 10),
+    align: "center",
+    sorter: numberSorter("notTraded"),
     sortDirections: ["ascend", "descend"],
     sortOrder: sortedInfo?.columnKey === "notTraded" ? sortedInfo.order : null,
     showSorterTooltip: false,
     sortIcon: () => null,
     render: (notTraded) => {
-      return (
-        <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-          <span className="font-medium">{notTraded}</span>
-        </div>
-      );
+      return <span className="font-medium">{notTraded.toLocaleString("en-US")}</span>;
     },
   },
   {
-    title: withSortIcon("Resubmitted", "resubmitted", sortedInfo),
+    title: withSortIcon("Resubmitted", "resubmitted", sortedInfo, "center"),
     dataIndex: "resubmitted",
     key: "resubmitted",
     width: "10%",
+    align: "center",
     ellipsis: true,
-    sorter: (a, b) =>
-      parseInt(a.resubmitted.replace(/[^\d]/g, ""), 10) -
-      parseInt(b.resubmitted.replace(/[^\d]/g, ""), 10),
+    sorter: numberSorter("resubmitted"),
     sortDirections: ["ascend", "descend"],
     sortOrder:
       sortedInfo?.columnKey === "resubmitted" ? sortedInfo.order : null,
@@ -298,9 +283,7 @@ export const getBorderlessTableColumns = ({
     sortIcon: () => null,
     render: (resubmitted) => {
       return (
-        <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-          <span className="font-medium">{resubmitted}</span>
-        </div>
+        <span className="font-medium">{resubmitted.toLocaleString("en-US")}</span>
       );
     },
   },

@@ -58,31 +58,65 @@
   min-height: 632px;
   max-width: 96% !important;
 }
+
+.bg-blue2 {
+  background-color: #edf3ff;
+  margin-top: 12px  !important;
+  min-height: 582px;
+  max-width: 96% !important;
+}
+.bg-changeblue2 {
+  background-color: #edf3ff;
+  margin-top: 12px  !important;
+  min-height: 528px !important;
+  max-width: 96% !important;
+}
+
 /* When changeheight = true */
 .changeHeightforPolicy {
   min-height: 592px !important;
   max-height: 592px !important;
   top: 180px !important;
 }
+.changeGrouppolicy{
+  min-height: 528px !important;
+  max-height: 528px !important;
+  top: 180px !important;
+}
+
 .bg-transparent {
   background-color: transparent;
 }
 /* Add this new class */
 .changeHeight {
   height: 80vh !important;
-  top: 131px !important;
+  top: 151px !important;
+}
+
+.changeHeight2 {
+  height: 78vh !important;
+  top: 151px !important;
 }
 .changeHeightreports {
   height: 78vh !important;
   top: 206px !important;
 }
 
-.changeHeightlmreports {
+.TATHTAchangeHeightreports {
   height: 75vh !important;
-  top: 186px !important;
+  top: 220px !important;
+}
+.TATHTAchangeHeightreports2 {
+  height: 68vh  !important;
+  top: 220px !important;
 }
 
-.changeSessionwiseHeight{
+.changeHeightlmreports {
+  height: 70vh !important;
+  top: 206px !important;
+}
+
+.changeSessionwiseHeight {
   height: 78vh !important;
   top: 166px !important;
 }
@@ -91,12 +125,21 @@
   top: 170px !important;
 }
 .repotsHeight {
-  max-height:  575px  !important;
+  max-height: 575px !important;
   top: 170px !important;
 }
-.sessionwiseHeight{
+
+.TATHTArepotsHeight {
+  max-height: 500px !important;
+  top: 225px !important;
+}
+.repotsHeightHOC {
+  max-height: 550px !important;
+  top: 170px !important;
+}
+.sessionwiseHeight {
   height: 80vh !important;
-  top: 125px !important;
+  top: 135px !important;
 }
 .grouppolicy {
   top: 126px !important;

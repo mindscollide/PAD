@@ -1,0 +1,353 @@
+.heading {
+  /* width: 204px; */
+  /* height: 34px; */
+  opacity: 1;
+  font-family: Switzer Variable;
+  font-weight: 700;
+  font-style: Bold;
+  font-size: 26px;
+  line-height: 100%;
+  letter-spacing: 0%;
+  color: var(--Blue-V1, #30426a);
+}
+
+/* 🔹 Breadcrumb alignment */
+.breadcrumbRow {
+  padding: 12px 32px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* 🔹 Breadcrumb alignment */
+.breadcrumbRowBelowData {
+  padding: 0px 32px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* 🔹 Breadcrumb overall style */
+.customBreadcrumb {
+  font-family: "Switzer Variable", sans-serif;
+  font-weight: 700;
+  font-style: bold;
+  font-size: 26px;
+  line-height: 100%;
+  color: #30426a;
+}
+
+/* 🔹 Normal breadcrumb text */
+.breadcrumbText {
+  color: #30426a;
+}
+
+/* 🔹 Clickable link ONLY for "Group Policy" */
+.breadcrumbLink {
+  color: #30426a;
+  cursor: pointer;
+  transition: all 0.25s ease-in-out;
+}
+
+.breadcrumbLink:hover {
+  color: #213155;
+  text-shadow: 0px 2px 6px rgba(33, 49, 85, 0.4);
+  transform: scale(1.05);
+}
+
+/* 🔹 Separator “>” (static) */
+:global(.ant-breadcrumb-separator) {
+  color: #30426a !important;
+  font-family: "Switzer Variable", sans-serif;
+  font-weight: 700;
+  font-size: 26px;
+  margin: 0 8px;
+}
+
+.headerActionsRow {
+  display: flex;
+  align-items: center;
+  gap: 12px; /* space between items */
+}
+
+.exportButtonText {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.iconContainer {
+  display: flex;
+  align-items: center;
+  font-size: 14px; /* Adjust size as needed */
+  transition: transform 0.3s ease;
+}
+
+.dropdownExport {
+  position: absolute;
+  top: 100%; /* appears below the button */
+  right: 0;
+  width: 168px;
+  border-radius: 8px;
+  border: 1px solid #b4b4b4;
+  background: #fff;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+  z-index: 1000; /* keep above table */
+  padding: 8px 0;
+}
+
+.dropdownItem {
+  padding: 8px 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 16px;
+  font-family: "Switzer Variable";
+  font-weight: 500;
+  color: #424242;
+  cursor: pointer;
+  transition: background 0.2s;
+  position: relative; /* required for ::after */
+}
+.dropdownItem img {
+  width: 20px;
+  height: 20px;
+  pointer-events: none;
+}
+
+.dropdownItem:not(:last-child)::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 12px; /* 👈 inset from left */
+  right: 12px; /* 👈 inset from right */
+  height: 1px;
+  background-color: #e0e0e0;
+}
+
+.dropdownItem:hover {
+  background: #f5f5f5;
+}
+
+.mainTitleTextClass {
+  font-family: "Switzer Variable";
+  font-size: 16px;
+  font-weight: 700;
+  color: #424242;
+}
+
+.subTitleTextClass {
+  font-family: "Switzer Variable";
+  font-size: 16px;
+  font-weight: 500;
+  color: #424242;
+}
+
+.ViewDetailAdminLeftCol {
+  height: 715px;
+  margin-left: 30px;
+  width: 441px;
+  border-radius: 4px;
+  border: 1px solid #b4b4b4;
+  background-color: #fff;
+}
+
+.ViewDetailAdminRightCol {
+  height: 715px;
+  width: 1033px;
+  border-radius: 4px;
+  border: 1px solid #b4b4b4;
+  background-color: #fff;
+}
+
+.userInfoSection {
+  background-color: #edf3ff;
+  padding: 10px 10px;
+  margin: 10px 11px;
+  border-radius: 4px;
+}
+
+.rolesSection {
+  padding: 4px 10px;
+  border-radius: 4px;
+}
+
+.accountInfoSection {
+  background-color: #edf3ff;
+  padding: 10px 10px;
+  margin: 10px 11px;
+  border-radius: 4px;
+}
+
+.policySection {
+  background-color: #edf3ff;
+  padding: 10px 10px;
+  margin: 10px 11px;
+  border-radius: 4px;
+}
+
+.infoRow {
+  display: flex;
+  align-items: center !important;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.infoRowColumn {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 10px;
+}
+
+.infoLabel {
+  color: #424242;
+  font-weight: 500;
+  font-family: "Switzer Variable";
+  font-size: 16px;
+}
+
+.policyInfoLabel {
+  color: #424242;
+  font-weight: 500;
+  font-family: "Switzer Variable";
+  font-size: 20px;
+}
+
+.infoValue {
+  color: #424242;
+  font-weight: 500;
+  font-family: "Switzer Variable";
+  font-size: 16px;
+}
+
+.activeStatus {
+  color: #16a34a;
+}
+
+.sectionDivider {
+  height: 1px;
+  margin: 12px 0;
+}
+
+.sectionTitle {
+  font-weight: 500;
+  margin-bottom: 8px;
+  font-size: 16px;
+  font-family: "Switzer Variable";
+  color: #30426a;
+}
+
+.rolesWrapper {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.roleChip {
+  background: #30426a;
+  color: #ffff;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-family: "Switzer Variable";
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.viewDetailLink {
+  color: #30426a;
+  text-decoration: underline;
+  font-family: "Switzer Variable";
+  font-weight: 700;
+  font-size: 14px;
+  cursor: pointer;
+  display: flex;
+  justify-content: end;
+}
+
+.durationDivClass {
+  padding: 10px 20px !important;
+}
+
+.reportDurationText {
+  color: #30426a;
+  font-family: "Switzer Variable";
+  font-weight: 500;
+  font-size: 20px;
+}
+
+.barGraphClass {
+  background: #edf3ff;
+  height: 300px;
+  width: 478px;
+  margin-top: 20px;
+  border-radius: 14px;
+}
+
+.donutGraphClass {
+  background: #edf3ff;
+  height: 300px;
+  width: 478px;
+  margin-top: 20px;
+  border-radius: 14px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center; /* center vertically */
+  align-items: center; /* center horizontally */
+}
+
+.bartitleData {
+  font-size: 17px;
+  color: #424242;
+  font-family: "Switzer Variable";
+  font-weight: 500;
+  padding: 10px 8px;
+}
+
+/* Boxes Report Background */
+
+.approvalBox {
+  width: 100%; /* ✅ instead of fixed 228px */
+  max-width: 228px;
+  height: 107px !important;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  font-family: "Inter", sans-serif;
+}
+
+.count {
+  font-size: 36px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.label {
+  font-size: 14px;
+  font-weight: 500;
+  margin-top: 6px;
+}
+
+/* Variants */
+.totalApproval {
+  background-color: #fff1e7;
+  color: #f67f29;
+}
+
+.approved {
+  background-color: #c5ffc7;
+  color: #00640a;
+}
+
+.declined {
+  background-color: #ffdbdb;
+  color: #a50000;
+}
+
+.approvalScore {
+  background-color: #c5ffc7;
+  color: #00640a;
+}

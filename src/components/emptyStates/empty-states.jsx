@@ -20,6 +20,10 @@ import RequestPendingIcon from "../../assets/img/request-pendinding-icon.png";
 import TransactionsIcon from "../../assets/img/transactions-icon.png";
 import PoliciesTabIcon from "../../assets/img/Group-creation-cancle.png";
 import EmptyBroker from "../../assets/img/EmptyBroker-icon.png";
+import Instrument from "../../assets/img/big_Instrument_icon.png";
+import Broker from "../../assets/img/big_Broker_icon.png";
+import Group from "../../assets/img/Group-created.png";
+
 const { Text } = Typography;
 
 /**
@@ -42,6 +46,25 @@ const iconComponents = {
   policiestab: PoliciesTabIcon,
   closingupcoming: HistoryRecordIcon,
   employeebroker: EmptyBroker,
+  "co-portfolio-history": PortfolioIcon,
+  "co-date-wise-transaction-report": TransactionsIcon,
+  "co-overdue-verifications": ReportsIcon,
+  "co-transactions-summary-report": PendingApprovalIcon,
+  "hta-policy-breaches-reports": PortfolioIcon,
+  "hta-trade-approval-requests": TransactionsIcon,
+  "hta-tat-reports": AuditIcon,
+  "hta-pending-requests": PendingApprovalIcon,
+  instruments: Instrument,
+  brokers: Broker,
+  grouppolicies: Group,
+  "admin-user-activity-report": UsersIcon,
+  "admin-user-wise-compliance-report": PendingApprovalIcon,
+  "admin-policy-breaches-report": PolicyIcon,
+  "admin-trade-approval-report": ApprovalsIcon,
+  "admin-transactions-summary-report": ReportsIcon,
+  "admin-date-wise-transaction-report": TransactionsIcon,
+  "admin-trades-uploaded-via-portfolio-report": RequestPendingIcon,
+  "admin-tat-request-report": AuditIcon,
 };
 
 /**
@@ -62,8 +85,29 @@ const defaultMessages = {
   users: "No Users Found",
   underdevelopment: "Currently under development",
   policiestab: "No Policies Found",
+  policies: "No Policy Assign",
   closingUpcoming: "Upcoming Instrument",
   employeebroker: "No Brokers Added Yet",
+  "co-portfolio-history": "No Portfolio History Reports",
+  "co-date-wise-transaction-report": "No Date Wise Transaction History Reports",
+  "co-overdue-verifications": "No Overdue Verifications Reports",
+  "co-transactions-summary-report": "No Transactions summary Reports",
+  "hta-policy-breaches-reports": "No Policy Breaches Reports",
+  "hta-trade-approval-requests": "No Trade Approval Requests Reports",
+  "hta-tat-reports": "No TAT Approval Request Reports",
+  "hta-pending-requests": "No Pending Requests Reports",
+  instruments: "No Instruments",
+  brokers: "No Brokers",
+  grouppolicies: "No Group Policies Created",
+  "admin-user-activity-report": "No User Activity Report Found",
+  "admin-user-wise-compliance-report": "No User Wise Compliance Report Found",
+  "admin-policy-breaches-report": "No Policy Breaches Report Found",
+  "admin-trade-approval-report": "No Trade Approval Requests Report Found",
+  "admin-transactions-summary-report": "No Transactions Summary Report Found",
+  "admin-date-wise-transaction-report":
+    "No Date Wise Transaction ReportDate Wise Transaction Report Found",
+  "admin-trades-uploaded-via-portfolio-report": "No Trades Uploaded via Portfolio Report Found",
+  "admin-tat-request-report": "No TAT Request Report Found",
 };
 
 /**
@@ -100,15 +144,19 @@ const EmptyState = ({
   style,
 }) => {
   // Normalize type to match keys in the maps
+  console.log("empty img", style);
   const normalizedType = type?.toLowerCase();
-
+  console.log("empty img", normalizedType);
   // Pick default or provided message
   const displayMessage =
     message || defaultMessages[normalizedType] || "No data available";
+  console.log("empty img", displayMessage);
 
   // Pick icon based on type
   const IconSrc = iconComponents[normalizedType];
+  console.log("empty IconSrc", displayMessage);
   const isImage = typeof IconSrc === "string" || IconSrc instanceof String;
+  console.log("empty IconSrc", displayMessage);
 
   return (
     <Empty
@@ -121,7 +169,13 @@ const EmptyState = ({
             className={styles.emptyIcon}
           />
         ) : (
-          <FileSearchOutlined className={styles.emptyIcon} />
+          <FileSearchOutlined
+            className={
+              displayMessage !== "No Policy Assign"
+                ? styles.emptyIcon
+                : styles.emptyPolicyIcon
+            }
+          />
         )
       }
       description={

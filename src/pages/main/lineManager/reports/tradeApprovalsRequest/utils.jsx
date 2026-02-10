@@ -1,23 +1,11 @@
-import { Button } from "../../../../../components";
-
 import ArrowUP from "../../../../../assets/img/arrow-up-dark.png";
 import ArrowDown from "../../../../../assets/img/arrow-down-dark.png";
 import DefaultColumArrow from "../../../../../assets/img/default-colum-arrow.png";
-import TypeColumnTitle from "../../../../../components/dropdowns/filters/typeColumnTitle";
-import StatusColumnTitle from "../../../../../components/dropdowns/filters/statusColumnTitle";
 import { Tag, Tooltip } from "antd";
 import style from "./TradeApprovalRequest.module.css";
 
-import {
-  dashBetweenApprovalAssets,
-  formatApiDateTime,
-  toYYMMDD,
-} from "../../../../../common/funtions/rejex";
-import {
-  mapBuySellToIds,
-  mapStatusToIds,
-} from "../../../../../components/dropdowns/filters/utils";
-import { getTradeTypeById } from "../../../../../common/funtions/type";
+import { toYYMMDD } from "../../../../../common/funtions/rejex";
+import { withSortIcon } from "../../../../../common/funtions/tableIcon";
 
 /**
  * Utility: Build API request payload for approval listing
@@ -26,7 +14,7 @@ import { getTradeTypeById } from "../../../../../common/funtions/type";
  * @param {Object} assetTypeListingData - Extra request metadata (optional)
  * @returns {Object} API-ready payload
  */
-export const buildApiRequest = (searchState = {}, assetTypeListingData) => ({
+export const buildApiRequest = (searchState = {}) => ({
   StartDate: searchState.startDate ? toYYMMDD(searchState.startDate) : null,
   EndDate: searchState.endDate ? toYYMMDD(searchState.endDate) : null,
   EmployeeName: searchState.employeeName || "",
@@ -42,7 +30,6 @@ export const buildApiRequest = (searchState = {}, assetTypeListingData) => ({
  * @returns {Array} Mapped transaction list
  */
 export const mapEmployeeTransactionsReport = (
-  assetTypeData,
   myTradeApprovalLineManagerData = []
 ) => {
   const records = Array.isArray(myTradeApprovalLineManagerData)
@@ -66,161 +53,13 @@ export const mapEmployeeTransactionsReport = (
   }));
 };
 
-/**
- * Returns the appropriate sort icon based on current sort state
- *
- * @param {string} columnKey - The column's key
- * @param {object} sortedInfo - Current sort state from the table
- * @returns {JSX.Element} The sort icon
- */
-const getSortIcon = (columnKey, sortedInfo) => {
-  if (sortedInfo?.columnKey === columnKey) {
-    return sortedInfo.order === "ascend" ? (
-      <img
-        draggable={false}
-        src={ArrowDown}
-        alt="Asc"
-        className="custom-sort-icon"
-      />
-    ) : (
-      <img
-        draggable={false}
-        src={ArrowUP}
-        alt="Desc"
-        className="custom-sort-icon"
-      />
-    );
-  }
-  return (
-    <img
-      draggable={false}
-      src={DefaultColumArrow}
-      alt="Default"
-      className="custom-sort-icon"
-    />
-  );
-};
 
-/**
- * Renders instrument cell with asset code and tooltip
- * @param {Object} record - Table row data
- * @returns {JSX.Element} Instrument cell component
- */
-const renderInstrumentCell = (record) => {
-  const code = record?.instrumentCode || "—";
-  const name = record?.instrumentName || "—";
-  const assetCode = record?.assetTypeShortCode || "";
-
-  return (
-    <div
-      style={{
-        display: "flex",
-        alignItems: "center",
-        gap: "8px",
-        minWidth: 0,
-      }}
-    >
-      <span
-        className="custom-shortCode-asset"
-        style={{
-          minWidth: 32,
-          flexShrink: 0,
-          display: "inline-flex",
-          alignItems: "center",
-          justifyContent: "center",
-        }}
-        data-testid="asset-code"
-      >
-        {assetCode?.substring(0, 2).toUpperCase()}
-      </span>
-      <Tooltip
-        title={`${code} - ${name}`}
-        placement="topLeft"
-        overlayStyle={{ maxWidth: "300px" }}
-      >
-        <span
-          className="font-medium"
-          style={{
-            overflow: "hidden",
-            textOverflow: "ellipsis",
-            whiteSpace: "nowrap",
-            minWidth: 0,
-            flex: 1,
-            cursor: "pointer",
-          }}
-          data-testid="instrument-code"
-        >
-          {code}
-        </span>
-      </Tooltip>
-    </div>
-  );
-};
-
-/**
- * Renders status tag with appropriate styling
- * @param {string} status - Approval status
- * @param {Object} approvalStatusMap - Status to style mapping
- * @returns {JSX.Element} Status tag component
- */
-const renderStatusTag = (status, approvalStatusMap) => {
-  const tagConfig = approvalStatusMap[status] || {};
-
-  return (
-    <Tag
-      style={{
-        backgroundColor: tagConfig.backgroundColor,
-        color: tagConfig.textColor,
-        whiteSpace: "nowrap",
-        overflow: "hidden",
-        textOverflow: "ellipsis",
-        display: "inline-flex",
-        alignItems: "center",
-        maxWidth: "100%",
-        minWidth: 0,
-        margin: 0,
-        border: "none",
-        borderRadius: "4px",
-        padding: "2px 8px",
-        fontSize: "16px",
-        lineHeight: "1.4",
-      }}
-      className="border-less-table-orange-status"
-      data-testid={`status-tag-${status}`}
-    >
-      <span
-        style={{
-          overflow: "hidden",
-          textOverflow: "ellipsis",
-          whiteSpace: "nowrap",
-        }}
-      >
-        {tagConfig.label || status}
-      </span>
-    </Tag>
-  );
-};
-
-// Helper for consistent column titles
-const withSortIcon = (label, columnKey, sortedInfo) => (
-  <div className={style["table-header-wrapper"]}>
-    <span className={style["table-header-text"]}>{label}</span>
-    <span className={style["table-header-icon"]}>
-      {getSortIcon(columnKey, sortedInfo)}
-    </span>
-  </div>
-);
-
-export const getBorderlessTableColumns = ({
-  approvalStatusMap,
-  sortedInfo,
-  myTradeApprovalReportLineManageSearch,
-  setMyTradeApprovalReportLineManageSearch,
-}) => [
+export const getBorderlessTableColumns = ({ sortedInfo }) => [
   {
     title: withSortIcon("Employee ID", "employeeID", sortedInfo),
     dataIndex: "employeeID",
     key: "employeeID",
+    align: "left",
     width: "10%",
     ellipsis: true,
     sorter: (a, b) =>
@@ -231,20 +70,14 @@ export const getBorderlessTableColumns = ({
     showSorterTooltip: false,
     sortIcon: () => null,
     render: (employeeID) => {
-      return (
-        <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-          <span className="font-medium">
-            {employeeID}
-            {/* {dashBetweenApprovalAssets("REQ888888")} */}
-          </span>
-        </div>
-      );
+      return <span className="font-medium">{employeeID}</span>;
     },
   },
   {
     title: withSortIcon("Employee Name", "employeeName", sortedInfo),
     dataIndex: "employeeName",
     key: "employeeName",
+    align: "left",
     ellipsis: true,
     width: "12%",
     sorter: (a, b) => a.employeeName - b.employeeName,
@@ -259,6 +92,7 @@ export const getBorderlessTableColumns = ({
     title: withSortIcon("Department", "department", sortedInfo),
     dataIndex: "department",
     key: "department",
+    align: "left",
     ellipsis: true,
     width: "12%",
     sorter: (a, b) => a.department - b.department,
@@ -269,9 +103,15 @@ export const getBorderlessTableColumns = ({
     render: (q) => <span className="font-medium">{q.toLocaleString()}</span>,
   },
   {
-    title: withSortIcon("Total Requests", "totalRequests", sortedInfo),
+    title: withSortIcon(
+      "Total Requests",
+      "totalRequests",
+      sortedInfo,
+      "center"
+    ),
     dataIndex: "totalRequests",
     key: "totalRequests",
+    align: "center",
     width: "10%",
     ellipsis: true,
     sorter: (a, b) =>
@@ -284,16 +124,15 @@ export const getBorderlessTableColumns = ({
     sortIcon: () => null,
     render: (totalRequests) => {
       return (
-        <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-          <span className="font-medium">{totalRequests}</span>
-        </div>
+        <span className="font-medium">{totalRequests.toLocaleString()}</span>
       );
     },
   },
   {
-    title: withSortIcon("Pending", "pending", sortedInfo),
+    title: withSortIcon("Pending", "pending", sortedInfo, "center"),
     dataIndex: "pending",
     key: "pending",
+    align: "center",
     width: "8%",
     ellipsis: true,
     sorter: (a, b) =>
@@ -304,17 +143,14 @@ export const getBorderlessTableColumns = ({
     showSorterTooltip: false,
     sortIcon: () => null,
     render: (pending) => {
-      return (
-        <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-          <span className="font-medium">{pending}</span>
-        </div>
-      );
+      return <span className="font-medium">{pending.toLocaleString()}</span>;
     },
   },
   {
-    title: withSortIcon("Approved", "approved", sortedInfo),
+    title: withSortIcon("Approved", "approved", sortedInfo, "center"),
     dataIndex: "approved",
     key: "approved",
+    align: "center",
     width: "8%",
     ellipsis: true,
     sorter: (a, b) =>
@@ -325,17 +161,14 @@ export const getBorderlessTableColumns = ({
     showSorterTooltip: false,
     sortIcon: () => null,
     render: (approved) => {
-      return (
-        <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-          <span className="font-medium">{approved}</span>
-        </div>
-      );
+      return <span className="font-medium">{approved.toLocaleString()}</span>;
     },
   },
   {
-    title: withSortIcon("Declined", "declined", sortedInfo),
+    title: withSortIcon("Declined", "declined", sortedInfo, "center"),
     dataIndex: "declined",
     key: "declined",
+    align: "center",
     width: "8%",
     ellipsis: true,
     sorter: (a, b) =>
@@ -346,17 +179,14 @@ export const getBorderlessTableColumns = ({
     showSorterTooltip: false,
     sortIcon: () => null,
     render: (declined) => {
-      return (
-        <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-          <span className="font-medium">{declined}</span>
-        </div>
-      );
+      return <span className="font-medium">{declined.toLocaleString()}</span>;
     },
   },
   {
-    title: withSortIcon("Traded", "traded", sortedInfo),
+    title: withSortIcon("Traded", "traded", sortedInfo, "center"),
     dataIndex: "traded",
     key: "traded",
+    align: "center",
     width: "8%",
     ellipsis: true,
     sorter: (a, b) =>
@@ -367,17 +197,14 @@ export const getBorderlessTableColumns = ({
     showSorterTooltip: false,
     sortIcon: () => null,
     render: (traded) => {
-      return (
-        <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-          <span className="font-medium">{traded}</span>
-        </div>
-      );
+      return <span className="font-medium">{traded.toLocaleString()}</span>;
     },
   },
   {
-    title: withSortIcon("Not Traded", "notTraded", sortedInfo),
+    title: withSortIcon("Not Traded", "notTraded", sortedInfo, "center"),
     dataIndex: "notTraded",
     key: "notTraded",
+    align: "center",
     width: "8%",
     ellipsis: true,
     sorter: (a, b) =>
@@ -388,17 +215,14 @@ export const getBorderlessTableColumns = ({
     showSorterTooltip: false,
     sortIcon: () => null,
     render: (notTraded) => {
-      return (
-        <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-          <span className="font-medium">{notTraded}</span>
-        </div>
-      );
+      return <span className="font-medium">{notTraded.toLocaleString()}</span>;
     },
   },
   {
-    title: withSortIcon("Resubmitted", "resubmitted", sortedInfo),
+    title: withSortIcon("Resubmitted", "resubmitted", sortedInfo, "center"),
     dataIndex: "resubmitted",
     key: "resubmitted",
+    align: "center",
     width: "10%",
     ellipsis: true,
     sorter: (a, b) =>
@@ -411,9 +235,7 @@ export const getBorderlessTableColumns = ({
     sortIcon: () => null,
     render: (resubmitted) => {
       return (
-        <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-          <span className="font-medium">{resubmitted}</span>
-        </div>
+        <span className="font-medium">{resubmitted.toLocaleString()}</span>
       );
     },
   },

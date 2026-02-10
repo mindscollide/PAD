@@ -24,9 +24,10 @@
   margin: 10px 0;
 }
 .brokersListContainer {
-  max-height: 200px; /* approx height for 4 rows, adjust as needed */
+  max-height: 350px; /* approx height for 4 rows, adjust as needed */
   overflow-y: auto;
   margin-top: 8px;
+  width: 100%;
   padding-right: 4px; /* for scrollbar spacing */
 }
 
@@ -41,7 +42,7 @@
   border-radius: 4px;
   transition: all 0.2s ease-in-out;
   cursor: pointer;
-  width: 508px !important;
+  width: 100% !important;
   background-color: #fff;
 }
 .mt2 {

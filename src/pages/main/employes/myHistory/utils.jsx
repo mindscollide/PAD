@@ -12,43 +12,11 @@ import {
   formatApiDateTime,
   toYYMMDD,
 } from "../../../../common/funtions/rejex";
-const getSortIcon = (columnKey, sortedInfo) => {
-  if (sortedInfo?.columnKey === columnKey) {
-    return sortedInfo.order === "ascend" ? (
-      <img
-        draggable={false}
-        src={ArrowDown}
-        alt="Asc"
-        className="custom-sort-icon"
-      />
-    ) : (
-      <img
-        draggable={false}
-        src={ArrowUP}
-        alt="Desc"
-        className="custom-sort-icon"
-      />
-    );
-  }
-  return (
-    <img
-      draggable={false}
-      src={DefaultColumArrow}
-      alt="Default"
-      className="custom-sort-icon"
-    />
-  );
-};
-
-// Helper for consistent column titles
-const withSortIcon = (label, columnKey, sortedInfo) => (
-  <div className={style["table-header-wrapper"]}>
-    <span className={style["table-header-text"]}>{label}</span>
-    <span className={style["table-header-icon"]}>
-      {getSortIcon(columnKey, sortedInfo)}
-    </span>
-  </div>
-);
+import {
+  mapBuySellToIds,
+  mapStatusToIds,
+} from "../../../../components/dropdowns/filters/utils";
+import { withSortIcon } from "../../../../common/funtions/tableIcon";
 
 /**
  * Utility: Build API request payload for approval listing
@@ -58,15 +26,19 @@ const withSortIcon = (label, columnKey, sortedInfo) => (
  * @returns {Object} API-ready payload
  */
 
-export const buildMyHistoryApiRequest = (searchState = {}) => ({
+export const buildMyHistoryApiRequest = (
+  searchState = {},
+  assetTypeListingData
+) => ({
   RequestID: searchState.requestID || "",
   InstrumentName: searchState.instrumentName || "",
   Quantity: searchState.quantity ? Number(searchState.quantity) : 0,
   StartDate: searchState.startDate ? toYYMMDD(searchState.startDate) : null,
   EndDate: searchState.endDate ? toYYMMDD(searchState.endDate) : null,
   Nature: searchState.nature || "",
-  StatusIDs: searchState.status || [],
-  TradeApprovalTypeIDs: searchState.type || [],
+  StatusIDs: mapStatusToIds?.(searchState.status, 2) || [],
+  TradeApprovalTypeIDs:
+    mapBuySellToIds?.(searchState.type, assetTypeListingData?.Equities) || [],
   PageNumber: Number(searchState.pageNumber) || 0,
   Length: Number(searchState.pageSize) || 10,
 });
@@ -74,6 +46,8 @@ export const buildMyHistoryApiRequest = (searchState = {}) => ({
 export const getMyHistoryColumn = (
   approvalStatusMap,
   sortedInfo,
+  employeeMyHistorySearch,
+  setEmployeeMyHistorySearch
 ) => [
   {
     title: withSortIcon(
@@ -81,10 +55,11 @@ export const getMyHistoryColumn = (
       "tradeApprovalID",
       sortedInfo
     ),
+    align: "left",
     dataIndex: "tradeApprovalID",
     key: "tradeApprovalID",
     ellipsis: true,
-    width: "200px",
+    width: 250,
     sorter: (a, b) =>
       parseInt(a.tradeApprovalID.replace(/[^\d]/g, ""), 10) -
       parseInt(b.tradeApprovalID.replace(/[^\d]/g, ""), 10),
@@ -105,9 +80,10 @@ export const getMyHistoryColumn = (
   },
   {
     title: withSortIcon("Instrument", "instrumentName", sortedInfo),
+    align: "left",
     dataIndex: "instrumentName",
     key: "instrumentName",
-    width: "140px",
+    width: 140,
     ellipsis: true,
     sorter: (a, b) => {
       const nameA = a?.instrumentShortCode || "";
@@ -157,22 +133,22 @@ export const getMyHistoryColumn = (
   {
     title: withSortIcon(
       "Date & Time of Approval Request",
-      "approvalDateTime",
-      sortedInfo
+      "creationDate",
+      sortedInfo,
+      "center"
     ),
-    dataIndex: "approvalDateTime",
-    key: "approvalDateTime",
+    dataIndex: "creationDate",
+    key: "creationDate",
     width: "280px",
-    align: "left",
+    align: "center",
     ellipsis: true,
-    sorter: (a, b) => {
-      const dateA = new Date(`${a.creationDate} ${a.creationTime}`).getTime();
-      const dateB = new Date(`${b.creationDate} ${b.creationTime}`).getTime();
-      return dateA - dateB;
-    },
+    sorter: (a, b) =>
+      formatApiDateTime(`${a.creationDate} ${a.creationTime}`).localeCompare(
+        formatApiDateTime(`${b.creationDate} ${b.creationTime}`)
+      ),
     sortDirections: ["ascend", "descend"],
     sortOrder:
-      sortedInfo?.columnKey === "approvalDateTime" ? sortedInfo.order : null,
+      sortedInfo?.columnKey === "creationDate" ? sortedInfo.order : null,
     showSorterTooltip: false,
     sortIcon: () => null,
     render: (_, record) => (
@@ -182,11 +158,11 @@ export const getMyHistoryColumn = (
     ),
   },
   {
-    title: withSortIcon("Nature", "nature", sortedInfo),
+    title: withSortIcon("Nature", "nature", sortedInfo, "center"),
+    align: "left",
     dataIndex: "nature",
     key: "nature",
     width: "160px",
-    align: "left",
     ellipsis: true,
     sorter: (a, b) => a.nature.localeCompare(b.nature),
     sortDirections: ["ascend", "descend"],
@@ -196,24 +172,27 @@ export const getMyHistoryColumn = (
     render: (text) => <span className="font-medium">{text}</span>,
   },
   {
-    title: withSortIcon("Type", "type", sortedInfo),
+    title: (
+      <TypeColumnTitle
+        state={employeeMyHistorySearch}
+        setState={setEmployeeMyHistorySearch}
+      />
+    ),
     dataIndex: "type",
     key: "type",
-    width: "100px",
-    align: "left",
+    width: 130,
     ellipsis: true,
-    sorter: (a, b) => a.type.localeCompare(b.type),
-    sortDirections: ["ascend", "descend"],
-    sortOrder: sortedInfo?.columnKey === "type" ? sortedInfo.order : null,
-    showSorterTooltip: false,
-    sortIcon: () => null,
-    render: (text) => <span className="font-medium">{text}</span>,
+    filteredValue: employeeMyHistorySearch?.type?.length
+      ? employeeMyHistorySearch.type
+      : null,
+    onFilter: () => true,
+    render: (type) => <span title={type || "—"}>{type || "—"}</span>,
   },
   {
-    title: withSortIcon("Quantity", "quantity", sortedInfo),
+    title: withSortIcon("Quantity", "quantity", sortedInfo, "center"),
     dataIndex: "quantity",
     key: "quantity",
-    width: "180px",
+    width: 120,
     align: "center",
     ellipsis: true,
     sorter: (a, b) => a.quantity - b.quantity,
@@ -224,28 +203,35 @@ export const getMyHistoryColumn = (
     render: (q) => <span className="font-medium">{q.toLocaleString()}</span>,
   },
   {
-    title: withSortIcon("Status", "status", sortedInfo),
+    title: (
+      <StatusColumnTitle
+        state={employeeMyHistorySearch}
+        setState={setEmployeeMyHistorySearch}
+      />
+    ),
     dataIndex: "status",
     key: "status",
-    width: "160px",
-    align: "left",
     ellipsis: true,
-    sorter: (a, b) => a.status.localeCompare(b.status),
-    sortDirections: ["ascend", "descend"],
-    sortOrder: sortedInfo?.columnKey === "status" ? sortedInfo.order : null,
-    showSorterTooltip: false,
-    sortIcon: () => null,
+    filteredValue: employeeMyHistorySearch?.status?.length
+      ? employeeMyHistorySearch.status
+      : null,
+    onFilter: () => true,
+    width: 220,
     render: (status) => {
-      const tag = approvalStatusMap[status] || {};
+      const tag = approvalStatusMap?.[status] || {};
       return (
         <Tag
           style={{
             backgroundColor: tag.backgroundColor,
             color: tag.textColor,
+            whiteSpace: "nowrap",
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+            display: "inline-block",
           }}
           className="border-less-table-orange-status"
         >
-          {tag.label}
+          {tag.label || status || "—"}
         </Tag>
       );
     },

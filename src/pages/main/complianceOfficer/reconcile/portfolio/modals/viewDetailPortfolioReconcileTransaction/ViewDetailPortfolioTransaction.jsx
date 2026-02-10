@@ -43,20 +43,8 @@ const ViewDetailPortfolioTransaction = () => {
   } = usePortfolioContext();
 
   const { allInstrumentsData } = useDashboardContext();
-
-  console.log(
-    reconcilePortfolioViewDetailData,
-    "reconcilePortfolioViewDetailData"
-  );
-
-  console.log(
-    complianceOfficerReconcilePortfolioData,
-    "complianceOfficerReconcilePortfolioData"
-  );
-
   // This is the Status Which is I'm getting from the selectedViewDetail contextApi state
   const getStatusStyle = (status) => {
-    console.log(status, "checkStatusessss");
     switch (status) {
       case "1":
         return {
@@ -143,6 +131,19 @@ const ViewDetailPortfolioTransaction = () => {
     setViewDetailPortfolioTransaction(false);
   };
 
+const hierarchyDetails =
+  reconcilePortfolioViewDetailData?.hierarchyDetails || [];
+
+const currentUserIndex = hierarchyDetails.findIndex(
+  (item) => item.userID === loggedInUserID
+);
+
+// show only previous + current user
+const visibleHierarchy =
+  currentUserIndex !== -1
+    ? hierarchyDetails.slice(0, currentUserIndex + 1)
+    : hierarchyDetails;
+
   return (
     <>
       <GlobalModal
@@ -189,7 +190,7 @@ const ViewDetailPortfolioTransaction = () => {
                           className={styles.viewDetailSubLabelsForInstrument}
                           title={selectedInstrument?.instrumentName}
                         >
-                          {selectedInstrument?.instrumentCode}
+                          {`${selectedInstrument?.instrumentCode} - ${selectedInstrument?.instrumentName}`}
                         </span>
                       </label>
                     </div>
@@ -286,8 +287,11 @@ const ViewDetailPortfolioTransaction = () => {
                   <Col span={24}>
                     <BrokerList
                       statusData={statusData}
-                      viewDetailsData={reconcilePortfolioViewDetailData}
+                      viewDetailsData={
+                        reconcilePortfolioViewDetailData?.details[0]?.brokers
+                      }
                       variant={"Blue"}
+                      type={2}
                     />
                   </Col>
                 </Row>
@@ -304,11 +308,12 @@ const ViewDetailPortfolioTransaction = () => {
                     >
                       {/* Agar loginUserID match krti hai hierarchyDetails ki userID sy to wo wala stepper show nahi hoga */}
                       <Stepper
-                        activeStep={Math.max(
-                          0,
-                          (reconcilePortfolioViewDetailData?.hierarchyDetails
-                            ?.length || 1) - 1
-                        )}
+                        // activeStep={Math.max(
+                        //   0,
+                        //   (reconcilePortfolioViewDetailData?.hierarchyDetails
+                        //     ?.length || 1) - 1
+                        // )}
+                        activeStep={Math.max(0, visibleHierarchy.length - 1)}
                         connectorStyleConfig={{
                           activeColor: "#00640A",
                           completedColor: "#00640A",
@@ -323,9 +328,9 @@ const ViewDetailPortfolioTransaction = () => {
                         }}
                       >
                         {Array.isArray(
-                          reconcilePortfolioViewDetailData?.hierarchyDetails
+                          visibleHierarchy
                         ) &&
-                          reconcilePortfolioViewDetailData.hierarchyDetails.map(
+                          visibleHierarchy.map(
                             (person, index) => {
                               const {
                                 fullName,

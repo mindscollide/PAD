@@ -208,6 +208,24 @@ export const SearchBarProvider = ({ children }) => {
   // ===============================
   /**  Head Of Trade Approvals Escalated Approvals Filters*/
 
+  /** 🔍 Head Of Trade Approval My Action table filters */
+  const [
+    headOfTradeApprovalMyActionSearch,
+    setHeadOfTradeApprovalMyActionSearch,
+  ] = useState({
+    requestID: "",
+    instrumentName: "",
+    requesterName: "",
+    startDate: "",
+    endDate: "",
+    type: [],
+    status: [],
+    quantity: null,
+    pageNumber: 0,
+    pageSize: 10,
+    filterTrigger: false,
+  });
+
   const [
     headOfTradeEscalatedApprovalsSearch,
     setHeadOfTradeEscalatedApprovalsSearch,
@@ -242,7 +260,7 @@ export const SearchBarProvider = ({ children }) => {
       filterTrigger: false,
     });
 
-  /** 🔍 Policy Breaches Reqport on HTA table filters */
+  /** 🔍 HTA TAT Reports List Filter Search */
   const [htaTATReportSearch, setHTATATReportSearch] = useState({
     employeeName: "",
     departmentName: "",
@@ -250,6 +268,41 @@ export const SearchBarProvider = ({ children }) => {
     pageSize: 10,
     filterTrigger: false,
   });
+
+  /** 🔍 TAT Request Approval View Details Search HTA table filters */
+  const [htaTATViewDetailsSearch, setHTATATViewDetailsSearch] = useState({
+    instrumentName: "",
+    quantity: 0,
+    employeeID: 0,
+    startDate: null,
+    endDate: null,
+    actionStartDate: null,
+    actionEndDate: null,
+    actionBy: "",
+    tat: 0,
+    pageNumber: 0,
+    pageSize: 10,
+    filterTrigger: false,
+  });
+
+  /** 🔍 Head Of Trade Approval (HTA) Pending Request Report Search filters */
+  const [hTAPendingApprovalReportsSearch, setHTAPendingApprovalReportsSearch] =
+    useState({
+      instrumentName: "",
+      requesterName: "",
+      lineManagerName: "",
+      quantity: 0,
+      startDate: null,
+      endDate: null,
+      escalatedStartDate: null,
+      escalatedEndDate: null,
+      type: [],
+      status: [],
+      pageSize: 10,
+      pageNumber: 0,
+      filterTrigger: false,
+    });
+
   // ===============================
   // Compliance Officer States
   // ===============================
@@ -366,10 +419,13 @@ export const SearchBarProvider = ({ children }) => {
     instrumentName: "",
     requesterName: "",
     approvedQuantity: "",
+    complianceOfficerName: "",
     sharesTraded: "",
     startDate: null,
     endDate: null,
-    type: "",
+    fromDate: null,
+    toDate: null,
+    type: [],
     pageNumber: 0,
     pageSize: 10,
     filterTrigger: false,
@@ -493,6 +549,22 @@ export const SearchBarProvider = ({ children }) => {
     pageNumber: 0,
     filterTrigger: false,
   });
+
+  /** 🔍 HOC transaction summry repot  View Details */
+  const [
+    hocTransactionsSummarysReportsViewDetailsSearch,
+    setHOCTransactionsSummarysReportsViewDetailSearch,
+  ] = useState({
+    quantity: "",
+    instrumentName: "",
+    employeeName: "",
+    type: [],
+    status: [],
+    pageSize: 10,
+    pageNumber: 0,
+    filterTrigger: false,
+  });
+
   // Admin Broker Search filter
   const [adminBrokerSearch, setAdminBrokerSearch] = useState({
     brokerName: "",
@@ -573,6 +645,7 @@ export const SearchBarProvider = ({ children }) => {
     pageNumber: 0,
     pageSize: 10,
   });
+
   //Admin manageusers Rejected Requests Tab
   const [rejectedRequestsTabSearch, setRejectedRequestsTabSearch] = useState({
     employeeName: "",
@@ -593,6 +666,86 @@ export const SearchBarProvider = ({ children }) => {
       pageSize: 10,
       filterTrigger: false,
     });
+
+  // Admin Reports
+  //User Activity Report Admin Role
+  const [userActivityReportAdmin, setUserActivityReportAdmin] = useState({
+    employeeName: "",
+    ipAddress: 0,
+    startDate: null,
+    endDate: null,
+    pageNumber: 0,
+    pageSize: 10,
+    filterTrigger: false,
+  });
+
+  // User wise Activity Compliance Report Admin Role
+  const [
+    userActivityComplianceReportAdmin,
+    setUserActivityComplianceReportAdmin,
+  ] = useState({
+    employeeName: "",
+    departmentName: "",
+    pageNumber: 0,
+    pageSize: 10,
+    filterTrigger: false,
+  });
+
+  // 🔍Policy Breaches Report On Admin ROle
+  const [adminPolicyBreachesReportSearch, setAdminPolicyBreachesReportSearch] =
+    useState({
+      instrumentName: "",
+      employeeName: "",
+      departmentName: "",
+      quantity: 0,
+      startDate: null,
+      endDate: null,
+      pageNumber: 0,
+      pageSize: 10,
+      filterTrigger: false,
+    });
+
+  // 🔍	Trade Approval Request Report On Admin ROle
+  const [
+    adminTradeApprovalRequestReportSearch,
+    setAdminTradeApprovalRequestReportSearch,
+  ] = useState({
+    employeeName: "",
+    departmentName: "",
+    pageNumber: 0,
+    pageSize: 10,
+    filterTrigger: false,
+  });
+
+  // 🔍	TAT Approval Request Report On Admin ROle
+  const [
+    adminTATApprovalRequestReportSearch,
+    setAdminTATApprovalRequestReportSearch,
+  ] = useState({
+    employeeName: "",
+    departmentName: "",
+    pageNumber: 0,
+    pageSize: 10,
+    filterTrigger: false,
+  });
+
+  // 🔍Trades Uploaded via Portfolio On Admin ROle
+  const [
+    adminTradesUploadedviaPortfolioReportSearch,
+    setAdminTradesUploadedviaPortfolioReportSearch,
+  ] = useState({
+    instrumentName: "",
+    employeeName: "",
+    type: [],
+    status: [],
+    quantity: 0,
+    startDate: null,
+    endDate: null,
+    pageNumber: 0,
+    pageSize: 10,
+    filterTrigger: false,
+  });
+
   // ===============================
   // Sync Refs (Always-Latest Values)
   // ===============================
@@ -600,26 +753,26 @@ export const SearchBarProvider = ({ children }) => {
   const employeeMyTransactionSearchRef = useRef(employeeMyTransactionSearch);
   const employeePortfolioSearchRef = useRef(employeePortfolioSearch);
   const employeePendingApprovalSearchRef = useRef(
-    employeePendingApprovalSearch
+    employeePendingApprovalSearch,
   );
   const employeeMyHistorySearchRef = useRef(employeeMyHistorySearch);
   const lineManagerApprovalSearchRef = useRef(lineManagerApprovalSearch);
   const complianceOfficerReconcileTransactionsSearchRef = useRef(
-    complianceOfficerReconcileTransactionsSearch
+    complianceOfficerReconcileTransactionsSearch,
   );
   const complianceOfficerReconcilePortfolioSearchRef = useRef(
-    complianceOfficerReconcilePortfolioSearch
+    complianceOfficerReconcilePortfolioSearch,
   );
   const headOfComplianceApprovalPortfolioSearchRef = useRef(
-    headOfComplianceApprovalPortfolioSearch
+    headOfComplianceApprovalPortfolioSearch,
   );
   const headOfComplianceApprovalEscalatedVerificationsSearchRef = useRef(
-    headOfComplianceApprovalEscalatedVerificationsSearch
+    headOfComplianceApprovalEscalatedVerificationsSearch,
   );
 
   // Head Of Trade Approval Escalated Approvals
   const headOfTradeEscalatedApprovalsSearchRef = useRef(
-    headOfTradeEscalatedApprovalsSearch
+    headOfTradeEscalatedApprovalsSearch,
   );
 
   // 🔄 Keep refs in sync with latest state
@@ -879,11 +1032,14 @@ export const SearchBarProvider = ({ children }) => {
     setOverdueVerificationHCOReportSearch({
       instrumentName: "",
       requesterName: "",
+      complianceOfficerName: "",
       approvedQuantity: "",
       sharesTraded: "",
       startDate: null,
       endDate: null,
-      type: "",
+      fromDate: null,
+      toDate: null,
+      type: [],
       pageNumber: 0,
       pageSize: 10,
       filterTrigger: false,
@@ -986,6 +1142,19 @@ export const SearchBarProvider = ({ children }) => {
       filterTrigger: false,
     });
 
+  /** Reset HOC Transactions Summarys Reports View Details Search filters */
+  const resetHOCTransactionsSummarysReportsViewDetailsSearch = () =>
+    setHOCTransactionsSummarysReportsViewDetailSearch({
+      quantity: "",
+      instrumentName: "",
+      employeeName: "",
+      type: [],
+      status: [],
+      pageSize: 10,
+      pageNumber: 0,
+      filterTrigger: false,
+    });
+
   /** Reset HCA Portfolio filters */
   const resetHeadOfComplianceApprovalPortfolioSearch = () =>
     setHeadOfComplianceApprovalPortfolioSearch({
@@ -1061,6 +1230,41 @@ export const SearchBarProvider = ({ children }) => {
       pageSize: 10,
       filterTrigger: false,
     });
+
+  /** 🔍 Reset TAT Request Approval View Detail on HTA table filters */
+  const resetHTATATViewDetailSearch = () =>
+    setHTATATViewDetailsSearch({
+      instrumentName: "",
+      quantity: 0,
+      employeeID: 0,
+      startDate: null,
+      endDate: null,
+      actionStartDate: null,
+      actionEndDate: null,
+      actionBy: "",
+      tat: 0,
+      pageNumber: 0,
+      pageSize: 10,
+      filterTrigger: false,
+    });
+
+  const resetHTAPendingApprovalRequestReportSearch = () => {
+    setHTAPendingApprovalReportsSearch({
+      InstrumentName: "",
+      requesterName: "",
+      lineManagerName: "",
+      quantity: 0,
+      startDate: null,
+      endDate: null,
+      escalatedStartDate: null,
+      escalatedEndDate: null,
+      type: [],
+      status: [],
+      pageSize: 10,
+      PageNumber: 0,
+      filterTrigger: false,
+    });
+  };
 
   /** Reset Admin Brokers List  filters */
   const resetAdminBrokersListSearch = () =>
@@ -1167,6 +1371,42 @@ export const SearchBarProvider = ({ children }) => {
       filterTrigger: false,
     });
 
+  // Admin reset User Activity Report Search
+  const resetUserActivityReportSearch = () =>
+    setUserActivityReportAdmin({
+      employeeName: "",
+      ipAddress: 0,
+      startDate: null,
+      endDate: null,
+      pageNumber: 0,
+      pageSize: 10,
+      filterTrigger: false,
+    });
+
+  // Admin reset User Activity Report Search
+  const resetUserWiseComplianceReportSearch = () =>
+    setUserActivityComplianceReportAdmin({
+      employeeName: "",
+      departmentName: "",
+      pageNumber: 0,
+      pageSize: 10,
+      filterTrigger: false,
+    });
+
+  // Admin Policy Breached Report Search
+  const resetPolicyBreachesAdminReportSearch = () =>
+    setAdminPolicyBreachesReportSearch({
+      instrumentName: "",
+      employeeName: "",
+      departmentName: "",
+      quantity: 0,
+      startDate: null,
+      endDate: null,
+      pageNumber: 0,
+      pageSize: 10,
+      filterTrigger: false,
+    });
+
   /** 🔍 Rest HCO Trades Upload Via Portfolio filters */
   const resetHCOTradesUploadViaPortfolioSearch = () =>
     setHCOTradesUploadViaPortfolioSearch({
@@ -1179,6 +1419,41 @@ export const SearchBarProvider = ({ children }) => {
       status: [],
       pageSize: 10,
       pageNumber: 0,
+      filterTrigger: false,
+    });
+
+  // Trade Approval Request
+  const resetAdminTradeApprovalRequestReportSearch = () =>
+    setAdminTradeApprovalRequestReportSearch({
+      employeeName: "",
+      departmentName: "",
+      pageNumber: 0,
+      pageSize: 10,
+      filterTrigger: false,
+    });
+
+  // TAT Approval Request Report
+  const resetAdminTATApprovalRequestReportSearch = () =>
+    setAdminTATApprovalRequestReportSearch({
+      employeeName: "",
+      departmentName: "",
+      pageNumber: 0,
+      pageSize: 10,
+      filterTrigger: false,
+    });
+
+  // Trades Uploaded via Portfolio Report
+  const resetAdminTradesUploadedviaPortfolioReportSearch = () =>
+    setAdminTradesUploadedviaPortfolioReportSearch({
+      instrumentName: "",
+      employeeName: "",
+      type: [],
+      status: [],
+      quantity: 0,
+      startDate: null,
+      endDate: null,
+      pageNumber: 0,
+      pageSize: 10,
       filterTrigger: false,
     });
 
@@ -1211,6 +1486,10 @@ export const SearchBarProvider = ({ children }) => {
     resetHCOTradesUploadViaPortfolioSearch();
     resetHTAPolicyBreachesReportSearch();
     resetHTATATReportSearch();
+    resetHOCTransactionsSummarysReportsViewDetailsSearch();
+    resetAdminTradeApprovalRequestReportSearch();
+    resetAdminTATApprovalRequestReportSearch();
+    resetAdminTradesUploadedviaPortfolioReportSearch();
   };
 
   // ===============================
@@ -1290,6 +1569,7 @@ export const SearchBarProvider = ({ children }) => {
         coTransactionsSummarysReportsSearch,
         setCOTransactionsSummarysReportsSearch,
         resetCOTransactionsSummarysReportsSearch,
+
         // Head of Compliance Approval
         headOfComplianceApprovalPortfolioSearch,
         setHeadOfComplianceApprovalPortfolioSearch,
@@ -1298,7 +1578,13 @@ export const SearchBarProvider = ({ children }) => {
         setHeadOfComplianceApprovalEscalatedVerificationsSearch,
         resetHeadOfComplianceApprovalEscalatedVerificationsSearch,
 
+        hocTransactionsSummarysReportsViewDetailsSearch,
+        setHOCTransactionsSummarysReportsViewDetailSearch,
+        resetHOCTransactionsSummarysReportsViewDetailsSearch,
+
         // Head Of Trade Approval Escalated Approvals
+        headOfTradeApprovalMyActionSearch,
+        setHeadOfTradeApprovalMyActionSearch,
         headOfTradeEscalatedApprovalsSearch,
         setHeadOfTradeEscalatedApprovalsSearch,
         resetHeadOfTradeApprovalEscalatedApprovalsSearch,
@@ -1308,6 +1594,14 @@ export const SearchBarProvider = ({ children }) => {
         htaTATReportSearch,
         setHTATATReportSearch,
         resetHTATATReportSearch,
+        htaTATViewDetailsSearch,
+        setHTATATViewDetailsSearch,
+        resetHTATATViewDetailSearch,
+
+        // Head Of Trade Pending Approval Report Request
+        hTAPendingApprovalReportsSearch,
+        setHTAPendingApprovalReportsSearch,
+        resetHTAPendingApprovalRequestReportSearch,
 
         // Admin Instrument Search filter
         adminIntrumentListSearch,
@@ -1334,6 +1628,21 @@ export const SearchBarProvider = ({ children }) => {
         adminGropusAndPolicyUsersTabSearch,
         setAdminGropusAndPolicyUsersTabSearch,
 
+        // Admin User Activity Report
+        userActivityReportAdmin,
+        setUserActivityReportAdmin,
+        resetUserActivityReportSearch,
+
+        // Admin User Wise Compliance Report
+        userActivityComplianceReportAdmin,
+        setUserActivityComplianceReportAdmin,
+        resetUserWiseComplianceReportSearch,
+
+        //Admin Policy Breaches Report
+        adminPolicyBreachesReportSearch,
+        setAdminPolicyBreachesReportSearch,
+        resetPolicyBreachesAdminReportSearch,
+
         // Manage Users page
         usersTabSearch,
         setUsersTabSearch,
@@ -1349,6 +1658,22 @@ export const SearchBarProvider = ({ children }) => {
         resetAdminSessionWiseActivitySearch,
         adminSessionWiseActivitySearch,
         setAdminSessionWiseActivitySearch,
+
+        // Admin Reports
+        // Trade Approval Request
+        adminTradeApprovalRequestReportSearch,
+        setAdminTradeApprovalRequestReportSearch,
+        resetAdminTradeApprovalRequestReportSearch,
+
+        // TAT Approval Request Report
+        adminTATApprovalRequestReportSearch,
+        setAdminTATApprovalRequestReportSearch,
+        resetAdminTATApprovalRequestReportSearch,
+
+        // Trades Uploaded via Portfolio Report
+        adminTradesUploadedviaPortfolioReportSearch,
+        setAdminTradesUploadedviaPortfolioReportSearch,
+        resetAdminTradesUploadedviaPortfolioReportSearch,
 
         // Head of Compliance Officer My Action
         headOfComplianceMyActionSearch,
@@ -1402,7 +1727,7 @@ export const useSearchBarContext = () => {
   const context = useContext(SearchBarContext);
   if (!context) {
     throw new Error(
-      "useSearchBarContext must be used within a SearchBarProvider"
+      "useSearchBarContext must be used within a SearchBarProvider",
     );
   }
   return context;

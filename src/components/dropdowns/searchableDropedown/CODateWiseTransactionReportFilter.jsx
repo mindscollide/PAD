@@ -71,7 +71,10 @@ export const CODateWiseTransactionReportFilter = ({
       case "quantity":
       case "employeeID": {
         const rawValue = value.replace(/,/g, "");
-        if ((rawValue === "" || allowOnlyNumbers(rawValue)) && rawValue.length <= 12) {
+        if (
+          (rawValue === "" || allowOnlyNumbers(rawValue)) &&
+          rawValue.length <= 12
+        ) {
           setFieldValue(name, rawValue);
         }
         break;
@@ -162,7 +165,7 @@ export const CODateWiseTransactionReportFilter = ({
             name="employeeID"
             value={localState.employeeID}
             onChange={handleInputChange}
-            placeholder="Enter employee ID"
+            placeholder="Employee ID"
             size="medium"
             classNames="Search-Field"
           />
@@ -174,7 +177,7 @@ export const CODateWiseTransactionReportFilter = ({
             name="employeeName"
             value={localState.employeeName}
             onChange={handleInputChange}
-            placeholder="Enter employee name"
+            placeholder="Employee Name"
             size="medium"
             classNames="Search-Field"
           />
@@ -189,7 +192,7 @@ export const CODateWiseTransactionReportFilter = ({
             name="departmentName"
             value={localState.departmentName}
             onChange={handleInputChange}
-            placeholder="Enter department name"
+            placeholder="Department Name"
             size="medium"
             classNames="Search-Field"
           />
@@ -201,7 +204,7 @@ export const CODateWiseTransactionReportFilter = ({
             name="instrumentName"
             value={localState.instrumentName}
             onChange={handleInputChange}
-            placeholder="Enter instrument name"
+            placeholder="Instrument Name"
             size="medium"
             classNames="Search-Field"
           />
@@ -220,7 +223,7 @@ export const CODateWiseTransactionReportFilter = ({
                 : ""
             }
             onChange={handleInputChange}
-            placeholder="Enter quantity"
+            placeholder="Quantity"
             size="medium"
             classNames="Search-Field"
           />

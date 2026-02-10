@@ -1,6 +1,7 @@
 import { Tag, Switch, Tooltip } from "antd";
 import styles from "./groups_and_policy.module.css";
 import { Button } from "../../../components";
+import { withSortIcon } from "./addEditViewFlow/usersTab/utils";
 
 // import TypeColumnTitle from "./typeFilter";
 
@@ -43,73 +44,52 @@ export const buildApiRequest = (searchState = {}) => ({
 /**
  * 🔹 Table Columns for Group Policy Listing (No Sorting)
  */
-export const getGroupPolicyColumns = ({ onViewDetails, onEdit }) => [
+export const getGroupPolicyColumns = ({
+  onViewDetails,
+  onEdit,
+  sortedInfo = {},
+}) => [
   {
-    title: "Group Policy Name",
+    title: withSortIcon("Group Policy Name", "groupTitle", sortedInfo),
+    align: "left",
     dataIndex: "groupTitle",
     key: "groupTitle",
-    width: "20%",
+    ellipsis: true,
+    width: 170,
+    sorter: (a, b) => (a?.groupTitle || "").localeCompare(b?.groupTitle || ""),
+    sortOrder: sortedInfo?.columnKey === "groupTitle" ? sortedInfo.order : null,
+    showSorterTooltip: false,
+    sortIcon: () => null,
     render: (text) => {
       const truncated = text?.length > 35 ? text.slice(0, 35) + "…" : text;
       return (
         <Tooltip title={text}>
-          <span className={styles.groupPolicyName}>{truncated}</span>
+          <span>{truncated}</span>
         </Tooltip>
       );
     },
   },
+
   {
-    title: "Policy Count",
+    title: withSortIcon("Policy Count", "policyCount", sortedInfo, "center"),
     dataIndex: "policyCount",
     key: "policyCount",
+    width: 50,
     align: "center",
-    width: "10%",
-    render: (policyCount) => <span>{policyCount}</span>,
+    ellipsis: true,
+    sorter: (a, b) => a.policyCount - b.policyCount,
+    sortDirections: ["ascend", "descend"],
+    sortOrder:
+      sortedInfo?.columnKey === "policyCount" ? sortedInfo.order : null,
+    showSorterTooltip: false,
+    sortIcon: () => null,
+    render: (q) => <span className="font-medium">{q.toLocaleString()}</span>,
   },
-  {
-    title: "Policy Count",
-    dataIndex: "policyCount",
-    key: "policyCount",
-    align: "center",
-    width: "8%",
-    render: (policyCount) => <span>{policyCount}</span>,
-  },
-  // {
-  //   title: "Users",
-  //   dataIndex: "assignedUsers",
-  //   key: "assignedUsers",
-  //   width: "30%",
-  //   render: (assignedUsers = "") => {
-  //     if (!assignedUsers?.trim()) return <span>-</span>;
-
-  //     // ✅ Split by both comma (,) and plus (+)
-  //     const parts = assignedUsers
-  //       .split(/,|\+/) // split by comma OR plus
-  //       .map((s) => s.trim())
-  //       .filter(Boolean); // remove empty strings
-
-  //     return (
-  //       <div className={styles.userList}>
-  //         {parts.map((part, index) => {
-  //           const isMore = /\b\d+\s*more\b/i.test(part); // detect "X more"
-  //           return (
-  //             <div
-  //               key={index}
-  //               className={isMore ? styles.moreUsers : styles.userChip}
-  //             >
-  //               {isMore ? `+ ${part.replace(/more/i, "").trim()} more` : part}
-  //             </div>
-  //           );
-  //         })}
-  //       </div>
-  //     );
-  //   },
-  // },
   {
     title: "Users",
     dataIndex: "assignedUsers",
     key: "assignedUsers",
-    width: "30%",
+    width: 200,
     render: (assignedUsers = "") => {
       if (!assignedUsers?.trim()) return <span>-</span>;
 
@@ -147,7 +127,7 @@ export const getGroupPolicyColumns = ({ onViewDetails, onEdit }) => [
     title: "",
     key: "viewDetails",
     align: "right",
-    width: "8%",
+    width: 80,
     render: (_, record) => (
       <Button
         type="primary"
@@ -162,7 +142,7 @@ export const getGroupPolicyColumns = ({ onViewDetails, onEdit }) => [
     title: "",
     key: "edit",
     align: "right",
-    width: "8%",
+    width: 50,
     render: (_, record) => (
       <Button
         type="primary"

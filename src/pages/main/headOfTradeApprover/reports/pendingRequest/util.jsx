@@ -20,6 +20,7 @@ import {
   mapStatusToIds,
 } from "../../../../../components/dropdowns/filters/utils";
 import { getTradeTypeById } from "../../../../../common/funtions/type";
+import { withSortIcon } from "../../../../../common/funtions/tableIcon";
 // import TypeColumnTitle from "./typeFilter";
 
 /**
@@ -34,11 +35,14 @@ export const buildApiRequest = (searchState = {}, assetTypeListingData) => {
   const {
     instrumentName = "",
     requesterName = "",
+    lineManagerName = "",
     quantity = 0,
     startDate = null,
     endDate = null,
-    status = [],
+    escalatedStartDate = null,
+    escalatedEndDate = null,
     type = [],
+    status = [],
     pageNumber = 0,
     pageSize = 10,
   } = searchState;
@@ -46,22 +50,27 @@ export const buildApiRequest = (searchState = {}, assetTypeListingData) => {
   return {
     InstrumentName: instrumentName.trim(),
     RequesterName: requesterName.trim(),
+    LineManagerName: lineManagerName.trim(),
     Quantity: quantity ? Number(quantity) : 0,
-    StartDate: startDate ? toYYMMDD(startDate) : "",
-    EndDate: endDate ? toYYMMDD(endDate) : "",
+    RequestDateFrom: startDate ? toYYMMDD(startDate) : "",
+    RequestDateTo: endDate ? toYYMMDD(endDate) : "",
+    EscalatedDateFrom: escalatedStartDate ? toYYMMDD(escalatedStartDate) : "",
+    EscalatedDateTo: escalatedEndDate ? toYYMMDD(escalatedEndDate) : "",
     StatusIds: mapStatusToIds?.(status) || [],
-    TypeIds: mapBuySellToIds?.(type, assetTypeListingData?.Equities) || [],
+    TradeApprovalTypeIds:
+      mapBuySellToIds?.(type, assetTypeListingData?.Equities) || [],
     PageNumber: Number(pageNumber) || 0,
     Length: Number(pageSize) || 10,
   };
 };
 
-export const mapApiResopse = (assetTypeData, pendingApprovals = []) =>
-  (Array.isArray(pendingApprovals) ? pendingApprovals : []).map(
+export const mapApiResopse = (assetTypeData, pendingTradeApprovals = []) =>
+  (Array.isArray(pendingTradeApprovals) ? pendingTradeApprovals : []).map(
     (item = {}) => ({
-      key: item.workFlowID,
+      approvalID: item.approvalID,
       tradeApprovalID: item?.tradeApprovalID ?? "—",
       requesterName: item.requesterName,
+      lineManagerName: item.lineManagerName,
       assetTypeShortCode: item?.assetType?.assetTypeShortCode ?? "—",
       instrument: item?.instrument?.instrumentCode ?? "—",
       instrumentName: item?.instrument?.instrumentName ?? "—",
@@ -69,94 +78,24 @@ export const mapApiResopse = (assetTypeData, pendingApprovals = []) =>
       isEscalated: item.isEscalated,
       type: getTradeTypeById(assetTypeData, item?.tradeType),
       status: item?.approvalStatus?.approvalStatusName ?? "—",
-
       quantity: item.quantity || 0,
     })
   );
-/**
- * Returns the appropriate sort icon based on current sort state
- *
- * @param {string} columnKey - The column's key
- * @param {object} sortedInfo - Current sort state from the table
- * @returns {JSX.Element} The sort icon
- */
-const getSortIcon = (columnKey, sortedInfo) => {
-  if (sortedInfo?.columnKey === columnKey) {
-    return sortedInfo.order === "ascend" ? (
-      <img
-        draggable={false}
-        src={ArrowDown}
-        alt="Asc"
-        className="custom-sort-icon"
-      />
-    ) : (
-      <img
-        draggable={false}
-        src={ArrowUP}
-        alt="Desc"
-        className="custom-sort-icon"
-      />
-    );
-  }
-  return (
-    <img
-      draggable={false}
-      src={DefaultColumArrow}
-      alt="Default"
-      className="custom-sort-icon"
-    />
-  );
-};
 
-const withSortIcon = (label, columnKey, sortedInfo) => (
-  <div className={style["table-header-wrapper"]}>
-    <span className={style["table-header-text"]}>{label}</span>
-    <span className={style["table-header-icon"]}>
-      {getSortIcon(columnKey, sortedInfo)}
-    </span>
-  </div>
-);
 
 export const getBorderlessLineManagerTableColumns = ({
   approvalStatusMap,
   sortedInfo,
-  lMPendingApprovalReportsSearch,
-  setLMPendingApprovalReportsSearch,
-  setViewDetailLineManagerModal,
+  hTAPendingApprovalReportsSearch,
+  setHTAPendingApprovalReportsSearch,
+  handleViewDetailsForHTA,
   setIsSelectedViewDetailLineManager,
-  handleViewDetailsForLineManager,
 }) => [
   {
-    title: withSortIcon("Approval ID", "tradeApprovalID", sortedInfo),
-    dataIndex: "tradeApprovalID",
-    key: "tradeApprovalID",
-    width: "10%",
-    ellipsis: true,
-    sorter: (a, b) =>
-      parseInt(a.tradeApprovalID.replace(/[^\d]/g, ""), 10) -
-      parseInt(b.tradeApprovalID.replace(/[^\d]/g, ""), 10),
-    sortDirections: ["ascend", "descend"],
-    sortOrder:
-      sortedInfo?.columnKey === "tradeApprovalID" ? sortedInfo.order : null,
-    showSorterTooltip: false,
-    sortIcon: () => null,
-    render: (tradeApprovalID, record) => {
-      return (
-        <div
-          id={`cell-${record.key}-tradeApprovalID`}
-          style={{ display: "flex", alignItems: "center", gap: "12px" }}
-        >
-          <span className="font-medium">
-            {dashBetweenApprovalAssets(tradeApprovalID)}
-          </span>
-        </div>
-      );
-    },
-  },
-  {
-    title: <div>Requester Name {getSortIcon("requesterName", sortedInfo)}</div>,
+    title: withSortIcon("Requester Name", "requesterName", sortedInfo),
     dataIndex: "requesterName",
     key: "requesterName",
+    align: "left",
     ellipsis: true,
     width: "14%",
     sorter: (a, b) => a.requesterName.localeCompare(b.requesterName),
@@ -167,17 +106,42 @@ export const getBorderlessLineManagerTableColumns = ({
     sortIcon: () => null,
     render: (text, record) => {
       return (
-        <div id={`cell-${record.key}-requesterName`}>
+        <div
+          id={`cell-${record.key}-requesterName`}
+          style={{ marginLeft: "8px" }}
+        >
           <span className="font-medium">{text}</span>
         </div>
       );
     },
   },
   {
-    title: withSortIcon("Instrument Name", "instrumentCode", sortedInfo),
+    title: withSortIcon("Line Manager", "lineManagerName", sortedInfo),
+    dataIndex: "lineManagerName",
+    key: "lineManagerName",
+    ellipsis: true,
+    align: "left",
+    width: "14%",
+    sorter: (a, b) => a.lineManagerName.localeCompare(b.lineManagerName),
+    sortDirections: ["ascend", "descend"],
+    sortOrder:
+      sortedInfo?.columnKey === "lineManagerName" ? sortedInfo.order : null,
+    showSorterTooltip: false,
+    sortIcon: () => null,
+    render: (text, record) => {
+      return (
+        <div id={`cell-${record.key}-lineManagerName`}>
+          <span className="font-medium">{text}</span>
+        </div>
+      );
+    },
+  },
+  {
+    title: withSortIcon("Instrument", "instrumentCode", sortedInfo),
     dataIndex: "instrumentCode",
     key: "instrumentCode",
-    width:200,
+    align: "left",
+    width: 200,
     ellipsis: true,
     sorter: (a, b) =>
       (a?.instrumentCode || "").localeCompare(b?.instrumentCode || ""),
@@ -221,10 +185,15 @@ export const getBorderlessLineManagerTableColumns = ({
     },
   },
   {
-    title: withSortIcon("Request date & time", "requestDateTime", sortedInfo),
+    title: withSortIcon(
+      "Request Date & Time",
+      "requestDateTime",
+      sortedInfo,
+      "center"
+    ),
     dataIndex: "requestDateTime",
     key: "requestDateTime",
-
+    align: "center",
     ellipsis: true,
     sorter: (a, b) =>
       formatApiDateTime(a.requestDateTime).localeCompare(
@@ -244,16 +213,17 @@ export const getBorderlessLineManagerTableColumns = ({
   {
     title: (
       <TypeColumnTitle
-        state={lMPendingApprovalReportsSearch}
-        setState={setLMPendingApprovalReportsSearch}
+        state={hTAPendingApprovalReportsSearch}
+        setState={setHTAPendingApprovalReportsSearch}
       />
     ),
     dataIndex: "type",
+    align: "left",
     key: "type",
     width: "8%",
     ellipsis: true,
-    filteredValue: lMPendingApprovalReportsSearch.type?.length
-      ? lMPendingApprovalReportsSearch.type
+    filteredValue: hTAPendingApprovalReportsSearch?.type?.length
+      ? hTAPendingApprovalReportsSearch?.type
       : null,
     onFilter: () => true,
     render: (type, record) => (
@@ -266,47 +236,10 @@ export const getBorderlessLineManagerTableColumns = ({
     ),
   },
   {
-    title: (
-      <StatusColumnTitle
-        state={lMPendingApprovalReportsSearch}
-        setState={setLMPendingApprovalReportsSearch}
-      />
-    ),
-    dataIndex: "status",
-    key: "status",
-    ellipsis: true,
-    align: "center",
-    filteredValue: lMPendingApprovalReportsSearch.status?.length
-      ? lMPendingApprovalReportsSearch.status
-      : null,
-    onFilter: () => true,
-    render: (status, record) => {
-      console.log(status, "checkerStateus");
-      const tag = approvalStatusMap[status] || {};
-      return (
-        <div id={`cell-${record.key}-status`}>
-          <Tag
-            style={{
-              backgroundColor: tag.backgroundColor,
-              color: tag.textColor,
-              whiteSpace: "nowrap", // prevent wrapping
-              overflow: "hidden",
-              textOverflow: "ellipsis",
-              display: "inline-block",
-              // maxWidth: "100%", // tag respects parent cell width
-            }}
-            className="border-less-table-orange-status"
-          >
-            {tag.label}
-          </Tag>
-        </div>
-      );
-    },
-  },
-  {
-    title: withSortIcon("Quantity", "quantity", sortedInfo),
+    title: withSortIcon("Quantity", "quantity", sortedInfo, "center"),
     dataIndex: "quantity",
     key: "quantity",
+    align: "center",
     width: "8%",
     ellipsis: true,
     sorter: (a, b) => a.quantity - b.quantity,
@@ -338,7 +271,6 @@ export const getBorderlessLineManagerTableColumns = ({
       ) : null;
     },
   },
-
   {
     title: "",
     key: "actions",
@@ -360,9 +292,9 @@ export const getBorderlessLineManagerTableColumns = ({
               className="big-orange-button"
               text="View Details"
               onClick={() => {
-                handleViewDetailsForLineManager(record?.key);
+                console.log(record, "djasvdjavdajvasjvdj");
+                handleViewDetailsForHTA(record?.approvalID);
                 setIsSelectedViewDetailLineManager(record);
-                setViewDetailLineManagerModal(true);
               }}
             />
           </div>

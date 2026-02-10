@@ -74,6 +74,10 @@
   height: 690px !important;
 }
 
+.modalBodyWrapperRoleId2 {
+  padding: 0px 50px; /* or any padding you want */
+}
+
 .tagContainer {
   display: flex;
   gap: 10px;

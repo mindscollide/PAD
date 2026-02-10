@@ -19,50 +19,6 @@
   border: 0.74px solid #b4b4b4 !important;
 }
 
-/* Custom header container with base layout */
-.custom-column-header {
-  display: inline-flex;
-  align-items: center;
-  font-family: Switzer Variable;
-  font-weight: 500;
-  font-style: Medium;
-  font-size: 14px;
-  leading-trim: NONE;
-  line-height: 100%;
-  letter-spacing: 0%;
-  color: var(--Blue-V1, #30426a);
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-/* Highlighted style when filters are applied */
-.filtered-header {
-  background-color: var(--Blue-V1, #30426a);
-  border-radius: 7.09px;
-  height: 35px;
-  width: 100%;
-  color: #fff;
-  display: flex;
-  justify-content: center;
-}
-
-/* Icon base style */
-.icon {
-  font-size: 12px;
-  transition: transform 0.3s ease-in-out;
-  /* padding-left: 4px auto; */
-}
-
-/* Rotate icon when filter is active */
-.rotated {
-  /* padding-left: 4px auto; */
-  transform: rotate(180deg);
-}
-
-/* Style for AntD dropdown root if needed */
-.table-filter-dropdown .ant-dropdown-menu {
-  padding: 0px I !important;
-}
 
 .filter-tags-container {
   padding: 0 23px;

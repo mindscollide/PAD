@@ -78,14 +78,11 @@ const BoxCard = ({
   const base = mainClassName || "smallShareHomeCard"; // fallback class name if none provided
   const navigate = useNavigate();
   const { setSelectedKey } = useSidebarContext();
-  const [sortedInfo, setSortedInfo] = useState({});
   const roles = JSON.parse(sessionStorage.getItem("user_assigned_roles"));
   // Prevent multiple fetches on mount
   const userRoleIDs = roles.map((r) => r.roleID);
   // Normalize boxes input (always an array)
   let normalizedBoxes = Array.isArray(boxes) ? boxes : boxes ? [boxes] : [];
-  console.log("normalizedBoxes", normalizedBoxes);
-  console.log("normalizedBoxes", boxes);
 
   /**
    * Handles button click → navigates to the correct route
@@ -104,11 +101,13 @@ const BoxCard = ({
       }
     }
   };
+  
   // Handle card click
   const handleCardClick = () => {
     // You can switch route based on props or conditions
     navigate(route);
   };
+
   return (
     <Card
       className={`${styles[mainClassName]} ${
@@ -275,7 +274,7 @@ const BoxCard = ({
                         height:
                           showProgress &&
                           index !== normalizedBoxes.length - 1 &&
-                          "167px",
+                          "135px",
                       }}
                     >
                       {locationStyle === "down" ? (

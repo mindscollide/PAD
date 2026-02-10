@@ -7,7 +7,9 @@ import { Row, Col, Divider } from "antd";
 import {
   adminBrokersStatus,
   apiCallStatus,
+  bundleStatus,
   emaStatusOptions,
+  emaStatusOptionsofReportsMyHistory,
   emaStatusOptionsofReportsMyTradeApprovals,
   emtStatusOptions,
   emtStatusOptionsForPendingApproval,
@@ -62,6 +64,7 @@ const StatusFilterDropdown = ({
     setIsEmployeeMyApproval,
     setLineManagerApproval,
     setGetEmployeeTransactionReport,
+    coTransactionSummaryReportViewDetailsFlag,
   } = useMyApproval();
   const location = useLocation();
 
@@ -81,7 +84,7 @@ const StatusFilterDropdown = ({
       (prev) =>
         prev.includes(status)
           ? prev.filter((item) => item !== status) // Remove if already selected
-          : [...prev, status] // Add if not selected
+          : [...prev, status], // Add if not selected
     );
   };
 
@@ -92,8 +95,13 @@ const StatusFilterDropdown = ({
   useEffect(() => {
     switch (selectedKey) {
       case "1":
-      case "6":
         setFilterOptions(emaStatusOptions);
+        break;
+      case "6":
+        setFilterOptions(bundleStatus);
+        break;
+      case "3":
+        setFilterOptions(emaStatusOptionsofReportsMyHistory);
         break;
       case "4":
         setFilterOptions(emtStatusOptionsForPendingApproval);
@@ -111,8 +119,17 @@ const StatusFilterDropdown = ({
             "/PAD/co-reports/co-date-wise-transaction-report" ||
           location.pathname === "/PAD/co-reports/co-portfolio-history"
         ) {
-          setFilterOptions(emaStatusOptionsofReportsMyTradeApprovals);
+          setFilterOptions(emtStatusOptions);
         }
+
+        if (
+          location.pathname ===
+            "/PAD/co-reports/co-transactions-summary-report" &&
+          coTransactionSummaryReportViewDetailsFlag
+        ) {
+          setFilterOptions(emtStatusOptions);
+        }
+
         break;
       case "12":
       case "8":
@@ -134,7 +151,6 @@ const StatusFilterDropdown = ({
         setFilterOptions([]);
     }
   }, [selectedKey]);
-  console.log("adminIntrumentListSearch", state);
 
   /**
    * Handles confirmation of selected statuses.
@@ -157,7 +173,7 @@ const StatusFilterDropdown = ({
       case "17":
       case "18":
       case "19":
-        console.log("adminIntrumentListSearch");
+        console.log("StatusFilterDropdown handleOk", tempSelected);
         setState((prev) => ({
           ...prev,
           status: tempSelected,
@@ -215,7 +231,7 @@ const StatusFilterDropdown = ({
       case "17":
       case "18":
       case "19":
-        console.log("adminIntrumentListSearch");
+        console.log("StatusFilterDropdown handleReset");
         setState((prev) => ({
           ...prev,
           status: [],

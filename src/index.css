@@ -23,6 +23,9 @@ body {
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
   font-synthesis: none;
+  /* for scroll */
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
 }
 
 #root {
@@ -463,7 +466,7 @@ li.ant-dropdown-menu-item.ant-dropdown-menu-item-only-child:focus {
   vertical-align: middle;
 }
 
-.accordian-Table-Cell-class  {
+.accordian-Table-Cell-class {
   max-height: 500px !important;
   overflow: hidden !important;
   overflow-y: auto !important;
@@ -617,3 +620,106 @@ Specificity: (0,1,1)
     width: 100%;
 } */
 
+:where(.css-dev-only-do-not-override-1rfzxih).ant-picker
+  .ant-picker-input
+  > input:placeholder-shown {
+  font-family: "Switzer Variable" !important; /* your font */
+  font-size: 18px !important;
+  font-weight: 500 !important;
+  color: #b4b4b4 !important; /* optional */
+  text-overflow: ellipsis !important;
+}
+
+:where(.css-dev-only-do-not-override-1rfzxih).ant-input:placeholder-shown {
+  font-family: "Switzer Variable" !important; /* your font */
+  font-size: 18px !important;
+  font-weight: 500 !important;
+  color: #b4b4b4 !important; /* optional */
+  text-overflow: ellipsis !important;
+}
+
+:where(
+    .css-dev-only-do-not-override-1rfzxih
+  ).EquitiesBrokerSelectPrefix-multiple
+  .EquitiesBrokerSelectPrefix-selection-placeholder {
+  position: absolute;
+  top: 56% !important;
+  inset-inline-start: 8px;
+  inset-inline-end: 11px;
+  transform: translateY(-50%);
+  transition: all 0.3s;
+  font-family: "Switzer Variable" !important; /* your font */
+  font-size: 18px !important;
+  font-weight: 350 !important;
+  color: #b4b4b4 !important; /* optional */
+  text-overflow: ellipsis !important;
+}
+:where(.css-dev-only-do-not-override-1rfzxih).ant-select-multiple
+  .ant-select-selection-placeholder {
+  margin: 4px !important;
+  font-family: "Switzer Variable" !important; /* your font */
+  font-size: 18px !important;
+  font-weight: 350 !important;
+  color: #b4b4b4 !important; /* optional */
+  text-overflow: ellipsis !important;
+}
+
+/* ===============================
+   GLOBAL SCROLLBAR STYLING
+   =============================== */
+
+/* Chrome, Edge, Safari */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+  border-radius: 999px;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #b9c1d1;
+  border-radius: 999px; /* 🔵 fully round */
+  border: 2px solid transparent;
+  background-clip: content-box;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: #b9c1d1;
+}
+
+/* Remove scrollbar arrows (buttons) */
+::-webkit-scrollbar-button {
+  display: none;
+  width: 0;
+  height: 0;
+}
+/* Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #b9c1d1 transparent;
+}
+
+/* . Ant Design tables & containers (important) */
+.ant-table-body,
+.ant-table-content,
+.ant-table-wrapper,
+.ant-table-container {
+  scrollbar-gutter: stable;
+}
+
+
+:where(.css-dev-only-do-not-override-1rfzxih).border-less-table-blue-wrapper .border-less-table-blue-cell-scrollbar:not([rowspan]) {
+    box-shadow: none !important;
+}
+
+/* ===============================
+   TABLE SCROLL FIX
+   =============================== */
+
+/* Only show scrollbar when content overflows */
+.ant-table-body:has(> table) {
+  scrollbar-gutter: auto;
+}

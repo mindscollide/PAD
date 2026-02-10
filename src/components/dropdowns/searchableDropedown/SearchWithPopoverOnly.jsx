@@ -19,6 +19,7 @@ import { useReconcileContext } from "../../../context/reconsileContax";
 import { useMyAdmin } from "../../../context/AdminContext";
 import { useLocation } from "react-router-dom";
 import { useMyApproval } from "../../../context/myApprovalContaxt";
+import { useGlobalModal } from "../../../context/GlobalModalContext";
 
 /**
  * 🔎 SearchWithPopoverOnly
@@ -74,10 +75,21 @@ const SearchWithPopoverOnly = () => {
     setHeadOfComplianceMyActionSearch,
     setHCOTradesUploadViaPortfolioSearch,
     setCoPortfolioHistoryReportSearch,
+    setHOCTransactionsSummarysReportsViewDetailSearch,
+    setUserActivityComplianceReportAdmin,
+    setUserActivityReportAdmin,
+    setAdminPolicyBreachesReportSearch,
+    setAdminTradeApprovalRequestReportSearch,
+    setAdminTATApprovalRequestReportSearch,
+    setAdminTradesUploadedviaPortfolioReportSearch,
     //
     setUsersTabSearch,
     setPendingRequestsTabSearch,
     setRejectedRequestsTabSearch,
+    setHTAPendingApprovalReportsSearch,
+    setHeadOfTradeApprovalMyActionSearch,
+    setHTATATViewDetailsSearch,
+    setHTATATReportSearch,
   } = useSearchBarContext();
 
   const {
@@ -86,6 +98,8 @@ const SearchWithPopoverOnly = () => {
     openNewFormForAdminGropusAndPolicy,
     manageUsersTab,
   } = useMyAdmin();
+
+  const { showViewDetailPageInTatOnHta } = useGlobalModal();
 
   // -------------------------
   // ✅ Local state
@@ -365,7 +379,6 @@ const SearchWithPopoverOnly = () => {
             pageNumber: 0,
             filterTrigger: true,
           }));
-          setSearchMain("");
         } else if (currentPath === "/PAD/co-reports/co-overdue-verifications") {
           setCoOverdueVerificationReportSearch((prev) => ({
             ...prev,
@@ -378,7 +391,6 @@ const SearchWithPopoverOnly = () => {
             pageNumber: 0,
             filterTrigger: true,
           }));
-          setSearchMain("");
         } else if (currentPath === "/PAD/co-reports/co-portfolio-history") {
           setCoPortfolioHistoryReportSearch((prev) => ({
             ...prev,
@@ -391,7 +403,6 @@ const SearchWithPopoverOnly = () => {
             pageNumber: 0,
             filterTrigger: true,
           }));
-          setSearchMain("");
         } else if (coTransactionSummaryReportViewDetailsFlag) {
           setCOTransactionsSummarysReportsViewDetailSearch((prev) => ({
             ...prev,
@@ -402,6 +413,8 @@ const SearchWithPopoverOnly = () => {
             filterTrigger: true,
           }));
         }
+        setSearchMain("");
+
         break;
 
       case "12": // HTA Escalated
@@ -418,6 +431,24 @@ const SearchWithPopoverOnly = () => {
           type: [],
           pageNumber: 0,
           pageSize: 10,
+          filterTrigger: true,
+        }));
+        setSearchMain("");
+
+        break;
+
+      case "13": // HTA My Action
+        setHeadOfTradeApprovalMyActionSearch((prev) => ({
+          ...prev,
+          requestID: "",
+          instrumentName: searchMain,
+          requesterName: "",
+          startDate: "",
+          endDate: "",
+          quantity: null,
+          pageNumber: 0,
+          type: [],
+          status: [],
           filterTrigger: true,
         }));
         setSearchMain("");
@@ -444,6 +475,48 @@ const SearchWithPopoverOnly = () => {
             departmentName: "",
             startDate: null,
             endDate: null,
+            filterTrigger: true,
+          }));
+        } else if (currentPath === "/PAD/hta-reports/hta-pending-requests") {
+          setHTAPendingApprovalReportsSearch((prev) => ({
+            ...prev,
+            instrumentName: searchMain,
+            requesterName: "",
+            quantity: 0,
+            startDate: null,
+            endDate: null,
+            escalatedStartDate: null,
+            escalatedEndDate: null,
+            filterTrigger: true,
+          }));
+        } else if (
+          currentPath === "/PAD/hta-reports/hta-tat-reports" &&
+          showViewDetailPageInTatOnHta
+        ) {
+          setHTATATViewDetailsSearch((prev) => ({
+            ...prev,
+            instrumentName: searchMain,
+            employeeID: 0,
+            startDate: "",
+            endDate: "",
+            actionStartDate: "",
+            actionEndDate: "",
+            actionBy: "",
+            tat: "",
+            filterTrigger: true,
+          }));
+        } else if (
+          currentPath === "/PAD/hta-reports/hta-tat-reports" &&
+          !showViewDetailPageInTatOnHta
+        ) {
+          console.log(
+            "showViewDetailPageInTatOnHta",
+            showViewDetailPageInTatOnHta,
+          );
+          setHTATATReportSearch((prev) => ({
+            ...prev,
+            employeeName: searchMain,
+            departmentName: "",
             filterTrigger: true,
           }));
         }
@@ -534,6 +607,18 @@ const SearchWithPopoverOnly = () => {
             employeeID: 0,
             employeeName: "",
             departmentName: "",
+            pageNumber: 0,
+            filterTrigger: true,
+          }));
+        } else if (
+          currentPath === "/PAD/hca-reports/hca-transactions-summary-report" &&
+          coTransactionSummaryReportViewDetailsFlag
+        ) {
+          setHOCTransactionsSummarysReportsViewDetailSearch((prev) => ({
+            ...prev,
+            instrumentName: searchMain,
+            quantity: "",
+            employeeName: "",
             pageNumber: 0,
             filterTrigger: true,
           }));
@@ -658,6 +743,110 @@ const SearchWithPopoverOnly = () => {
         }
         setSearchMain("");
         break;
+
+      case "23": //Admin Reports
+        if (currentPath === "/PAD/admin-reports/admin-user-activity-report") {
+          setUserActivityReportAdmin((prev) => ({
+            ...prev,
+            ipAddress: searchMain,
+            startDate: null,
+            endDate: null,
+            filterTrigger: true,
+            pageNumber: 0,
+            pageSize: 10,
+          }));
+        } else if (
+          currentPath === "/PAD/admin-reports/admin-user-wise-compliance-report"
+        ) {
+          setUserActivityComplianceReportAdmin((prev) => ({
+            ...prev,
+            employeeName: searchMain,
+            departmentName: "",
+            filterTrigger: true,
+            pageNumber: 0,
+            pageSize: 10,
+          }));
+        } else if (
+          currentPath === "/PAD/admin-reports/admin-policy-breaches-report"
+        ) {
+          setAdminPolicyBreachesReportSearch((prev) => ({
+            ...prev,
+            instrumentName: searchMain,
+            employeeName: "",
+            departmentName: "",
+            quantity: 0,
+            startDate: null,
+            endDate: null,
+            filterTrigger: true,
+            pageNumber: 0,
+            pageSize: 10,
+          }));
+        } else if (
+          currentPath === "/PAD/admin-reports/admin-trade-approval-report"
+        ) {
+          setAdminTradeApprovalRequestReportSearch((prev) => ({
+            ...prev,
+            employeeName: searchMain,
+            departmentName: "",
+            filterTrigger: true,
+            pageNumber: 0,
+            pageSize: 10,
+          }));
+        } else if (
+          currentPath ===
+          "/PAD/admin-reports/admin-date-wise-transaction-report"
+        ) {
+          setCODatewiseTransactionReportSearch((prev) => ({
+            ...prev,
+            instrumentName: searchMain,
+            quantity: 0,
+            startDate: null,
+            endDate: null,
+            employeeID: 0,
+            employeeName: "",
+            departmentName: "",
+            pageNumber: 0,
+            filterTrigger: true,
+          }));
+        } else if (coTransactionSummaryReportViewDetailsFlag) {
+          setCOTransactionsSummarysReportsViewDetailSearch((prev) => ({
+            ...prev,
+            quantitySearch: "",
+            instrumentNameSearch: searchMain,
+            requesterNameSearch: "",
+            pageNumber: 0,
+            filterTrigger: true,
+          }));
+        } else if (
+          currentPath === "/PAD/admin-reports/admin-TAT-Request-report"
+        ) {
+          setAdminTATApprovalRequestReportSearch((prev) => ({
+            ...prev,
+            employeeName: searchMain,
+            departmentName: "",
+            pageNumber: 0,
+            pageSize: 10,
+            filterTrigger: true,
+          }));
+        } else if (
+          currentPath ===
+          "/PAD/admin-reports/admin-trades-uploaded-via-portfolio-report"
+        ) {
+          setAdminTradesUploadedviaPortfolioReportSearch((prev) => ({
+            ...prev,
+            instrumentName: searchMain,
+            employeeName: "",
+            quantity: 0,
+            startDate: null,
+            endDate: null,
+            pageNumber: 0,
+            pageSize: 10,
+            filterTrigger: true,
+          }));
+        }
+        setSearchMain("");
+        break;
+
       default:
         setEmployeeMyApprovalSearch((prev) => ({
           ...prev,
@@ -678,6 +867,63 @@ const SearchWithPopoverOnly = () => {
     return null; // ⛔ Hide entire search bar
   }
 
+  const getPlaceholderText = ({
+    selectedKey,
+    pageTabesForAdminGropusAndPolicy,
+    currentPath,
+    showViewDetailPageInTatOnHta,
+  }) => {
+    if (selectedKey === "19") {
+      return "Broker name. Click the icon to view more options.";
+    }
+
+    if (selectedKey === "20") {
+      if (pageTabesForAdminGropusAndPolicy === 1) {
+        return "Search Scenario. Click the icon to view more options.";
+      }
+      if (pageTabesForAdminGropusAndPolicy === 2) {
+        return "Employee name. Click the icon to view more options.";
+      }
+      return "Group Policy Name.";
+    }
+
+    if (
+      (selectedKey === "21" &&
+        currentPath !== "/PAD/admin-users/session-wise-activity") ||
+      (selectedKey === "8" &&
+        currentPath === "/PAD/lm-reports/lm-tradeapproval-request")
+    ) {
+      return "Employee name. Click the icon to view more options.";
+    }
+
+    if (
+      selectedKey === "21" &&
+      currentPath === "/PAD/admin-users/session-wise-activity"
+    ) {
+      return "Search";
+    }
+
+    if (
+      selectedKey === "14" &&
+      currentPath === "/PAD/hta-reports/hta-tat-reports" &&
+      !showViewDetailPageInTatOnHta
+    ) {
+      return "Employee name. Click the icon to view more options.";
+    }
+    if (
+      selectedKey === "23" &&
+      (currentPath === "/PAD/admin-reports/admin-user-activity-report" ||
+        currentPath ===
+          "/PAD/admin-reports/admin-user-wise-compliance-report" ||
+        currentPath === "/PAD/admin-reports/admin-trade-approval-report" ||
+        currentPath === "/PAD/admin-reports/admin-TAT-Request-report")
+    ) {
+      return "Employee name. Click the icon to view more options.";
+    }
+    // 🔹 Default fallback
+    return "Instrument name. Click the icon to view more options.";
+  };
+
   // ----------------------------------------------------------------
   // ✅ RENDER
   // ----------------------------------------------------------------
@@ -685,26 +931,35 @@ const SearchWithPopoverOnly = () => {
     <Space.Compact className={styles.searchWrapper}>
       {/* 🔎 Main Search Input */}
       <Input
-        placeholder={
-          selectedKey === "19"
-            ? "Broker name. Click the icon to view more options."
-            : selectedKey === "20" && pageTabesForAdminGropusAndPolicy === 1
-            ? "Search Scenario. Click the icon to view more options."
-            : selectedKey === "20" && pageTabesForAdminGropusAndPolicy === 2
-            ? "Employee name. Click the icon to view more options."
-            : selectedKey === "20"
-            ? "Policy Name. Click the icon to view more options."
-            : (selectedKey === "21" &&
-                currentPath !== "/PAD/admin-users/session-wise-activity") ||
-              (selectedKey === "8" &&
-                location.pathname ===
-                  "/PAD/lm-reports/lm-tradeapproval-request")
-            ? "Employee name. Click the icon to view more options."
-            : selectedKey === "21" &&
-              currentPath === "/PAD/admin-users/session-wise-activity"
-            ? "Search"
-            : "Instrument name. Click the icon to view more options."
-        }
+        // placeholder={
+        //   selectedKey === "19"
+        //     ? "Broker name. Click the icon to view more options."
+        //     : selectedKey === "20" && pageTabesForAdminGropusAndPolicy === 1
+        //     ? "Search Scenario. Click the icon to view more options."
+        //     : selectedKey === "20" && pageTabesForAdminGropusAndPolicy === 2
+        //     ? "Employee name. Click the icon to view more options."
+        //     : selectedKey === "20"
+        //     ? "Group Policy Name. Click the icon to view more options."
+        //     : (selectedKey === "21" &&
+        //         currentPath !== "/PAD/admin-users/session-wise-activity") ||
+        //       (selectedKey === "8" &&
+        //         currentPath === "/PAD/lm-reports/lm-tradeapproval-request")
+        //     ? "Employee name. Click the icon to view more options."
+        //     : selectedKey === "21" &&
+        //       currentPath === "/PAD/admin-users/session-wise-activity"
+        //     ? "Search"
+        //     : selectedKey === "14" &&
+        //       currentPath === "PAD/hta-reports/hta-tat-reports" &&
+        //       !showViewDetailPageInTatOnHta
+        //     ? "Employee name. Click the icon to view more options."
+        //     :"Instrument name. Click the icon to view more options."
+        // }
+        placeholder={getPlaceholderText({
+          selectedKey,
+          pageTabesForAdminGropusAndPolicy,
+          currentPath,
+          showViewDetailPageInTatOnHta,
+        })}
         allowClear
         className={
           collapsed ? styles["inputWrapperCollapsed"] : styles["inputWrapper"]
@@ -753,7 +1008,8 @@ const SearchWithPopoverOnly = () => {
             setClear,
             openNewFormForAdminGropusAndPolicy,
             pageTabesForAdminGropusAndPolicy,
-            coTransactionSummaryReportViewDetailsFlag
+            coTransactionSummaryReportViewDetailsFlag,
+            showViewDetailPageInTatOnHta,
           )}
           trigger="click"
           open={visible}

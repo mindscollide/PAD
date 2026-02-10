@@ -17,12 +17,7 @@
  *  - Memoized data slices for performance optimization
  */
 
-import React, {
-  useEffect,
-  useRef,
-  useCallback,
-  useMemo,
-} from "react";
+import React, { useEffect, useRef, useCallback, useMemo } from "react";
 import { Col, Row } from "antd";
 import EmptyState from "../../../../components/emptyStates/empty-states";
 import { BoxCard } from "../../../../components";
@@ -106,25 +101,25 @@ const ComplianceOfficerReportsIndex = () => {
   /** Date Wise Transactions */
   const coReportsComplianceDateWiseTransactions = useMemo(
     () => coReportsDashboardData?.dateWiseTransactions?.data || [],
-    [coReportsDashboardData?.dateWiseTransactions?.data]
+    [coReportsDashboardData?.dateWiseTransactions?.data],
   );
 
   /** Transactions Summary */
   const coReportsTradeTransactionsSummary = useMemo(
     () => coReportsDashboardData?.transactionsSummary?.data || [],
-    [coReportsDashboardData?.transactionsSummary?.data]
+    [coReportsDashboardData?.transactionsSummary?.data],
   );
 
   /** Overdue Verifications */
   const coReportsOverdueVerifications = useMemo(
     () => coReportsDashboardData?.overdueVerifications?.data || [],
-    [coReportsDashboardData?.overdueVerifications?.data]
+    [coReportsDashboardData?.overdueVerifications?.data],
   );
 
   /** Portfolio History */
   const coReportsPortfolioHistory = useMemo(
     () => coReportsDashboardData?.portfolioHistory?.data || [],
-    [coReportsDashboardData?.portfolioHistory?.data]
+    [coReportsDashboardData?.portfolioHistory?.data],
   );
 
   /* ---------------------------------------------------------
@@ -143,11 +138,11 @@ const ComplianceOfficerReportsIndex = () => {
         {/* ========== First Row Reports ========== */}
         <Row gutter={[16, 16]}>
           {/* ---- Date Wise Transaction Report ---- */}
-          <Col xs={12} md={8} lg={8}>
+          <Col xs={24} md={12} lg={12}>
             <MemoizedBoxCard
               reportsFlag={true}
               locationStyle="up"
-              title="Date Wise Transaction Report"
+              title="Date Wise Transactions"
               mainClassName="reports"
               boxes={coReportsComplianceDateWiseTransactions}
               buttonId="Approvals-view-btn"
@@ -158,11 +153,11 @@ const ComplianceOfficerReportsIndex = () => {
           </Col>
 
           {/* ---- Transaction Summary ---- */}
-          <Col xs={12} md={8} lg={8}>
+          <Col xs={24} md={12} lg={12}>
             <MemoizedBoxCard
               reportsFlag={true}
               locationStyle="up"
-              title="Transactions Summary Report"
+              title="Transactions Summary"
               mainClassName="reports"
               boxes={coReportsTradeTransactionsSummary}
               buttonId="Transactions-view-btn"
@@ -171,9 +166,12 @@ const ComplianceOfficerReportsIndex = () => {
               route="co-transactions-summary-report"
             />
           </Col>
+        </Row>
 
+        {/* ========== Second Row Reports ========== */}
+        <Row gutter={[16, 16]}>
           {/* ---- Overdue Verifications ---- */}
-          <Col xs={12} md={8} lg={8}>
+          <Col xs={24} md={12} lg={12}>
             <MemoizedBoxCard
               reportsFlag={true}
               locationStyle="up"
@@ -186,12 +184,8 @@ const ComplianceOfficerReportsIndex = () => {
               route="co-overdue-verifications"
             />
           </Col>
-        </Row>
-
-        {/* ========== Second Row Reports ========== */}
-        <Row gutter={[16, 16]}>
           {/* ---- Portfolio History ---- */}
-          <Col xs={12} md={8} lg={8}>
+          <Col xs={24} md={12} lg={12}>
             <MemoizedBoxCard
               reportsFlag={true}
               locationStyle="up"

@@ -55,7 +55,6 @@ const HeadCompianceOfficerOverdueVerificationReports = () => {
   const { callApi } = useApi();
   const { showNotification } = useNotification();
   const { showLoader } = useGlobalLoader();
-  const { selectedKey } = useSidebarContext();
 
   const { overdueVerificationHCOListData, setOverdueVerificationHCOListData } =
     useMyApproval();
@@ -65,6 +64,7 @@ const HeadCompianceOfficerOverdueVerificationReports = () => {
     setOverdueVerificationHCOReportSearch,
     resetHeadOfComplianceOfficerOverdueVerificationReportSearch,
   } = useSearchBarContext();
+
   const {
     viewDetailHeadOfComplianceEscalated,
     setViewDetailHeadOfComplianceEscalated,
@@ -74,10 +74,6 @@ const HeadCompianceOfficerOverdueVerificationReports = () => {
     nonCompliantDeclineModal,
     noteGlobalModal,
   } = useGlobalModal();
-
-  console.log(overdueVerificationHCOListData, "overdueVerificationHCOListData");
-
-  console.log(selectedKey, "selectedKeyselectedKey");
 
   const { assetTypeListingData, setAssetTypeListingData } =
     useDashboardContext();
@@ -117,7 +113,6 @@ const HeadCompianceOfficerOverdueVerificationReports = () => {
       const records = Array.isArray(res?.overdueVerifications)
         ? res.overdueVerifications
         : [];
-      console.log("records", records);
       const mapped = mappingDateWiseTransactionReport(
         currentAssetTypeData?.Equities,
         records
@@ -159,8 +154,6 @@ const HeadCompianceOfficerOverdueVerificationReports = () => {
       showNotification,
     ]
   );
-  console.log("records", overdueVerificationHCOListData);
-  console.log("records", OverdueVerificationHCOReportSearch);
 
   // -------------------- Effects --------------------
 
@@ -255,15 +248,21 @@ const HeadCompianceOfficerOverdueVerificationReports = () => {
     const resetMap = {
       instrumentName: { instrumentName: "" },
       requesterName: { requesterName: "" },
+      complianceOfficerName: { complianceOfficerName: "" },
+
       approvedQuantity: { approvedQuantity: 0 },
       sharesTraded: { sharesTraded: 0 },
-      // requestDate resets startDate + endDate
+
+      // 🔹 Transaction Date
       requestDate: { startDate: null, endDate: null },
+
+      // 🔹 Escalated Date
+      escalatedDate: { fromDate: null, toDate: null },
     };
 
     setOverdueVerificationHCOReportSearch((prev) => ({
       ...prev,
-      ...resetMap[key], // reset only the clicked filter
+      ...(resetMap[key] || {}),
       pageNumber: 0,
       filterTrigger: true,
     }));
@@ -275,10 +274,13 @@ const HeadCompianceOfficerOverdueVerificationReports = () => {
       ...prev,
       instrumentName: "",
       requesterName: "",
+      complianceOfficerName: "",
       approvedQuantity: 0,
       sharesTraded: 0,
       startDate: null,
       endDate: null,
+      fromDate: null,
+      toDate: null,
       type: "",
       pageNumber: 0,
       filterTrigger: true,
@@ -290,32 +292,46 @@ const HeadCompianceOfficerOverdueVerificationReports = () => {
     const {
       instrumentName,
       requesterName,
+      complianceOfficerName,
       approvedQuantity,
       sharesTraded,
       startDate,
       endDate,
+      fromDate,
+      toDate,
     } = OverdueVerificationHCOReportSearch || {};
 
+    /* ---------------- Helpers ---------------- */
+
     const truncate = (val) =>
-      val.length > 13 ? val.slice(0, 13) + "..." : val;
+      val?.length > 13 ? `${val.slice(0, 13)}...` : val;
 
     const formatDate = (date) =>
       date ? new Date(date).toISOString().split("T")[0] : null;
 
-    const formatArray = (arr) => (arr?.length ? arr.join(", ") : null);
+    const formatNumber = (num) =>
+      typeof num === "number" ? num.toLocaleString("en-US") : null;
 
-    const formattedStart = formatDate(startDate);
-    const formattedEnd = formatDate(endDate);
+    const buildDateRangeLabel = (from, to) => {
+      if (from && to) return `${from} to ${to}`;
+      if (from) return `From ${from}`;
+      if (to) return `Till ${to}`;
+      return null;
+    };
 
-    // 🔹 Combine into requestDate
-    let requestDate = null;
-    if (formattedStart && formattedEnd) {
-      requestDate = `${formattedStart} to ${formattedEnd}`;
-    } else if (formattedStart) {
-      requestDate = `From ${formattedStart}`;
-    } else if (formattedEnd) {
-      requestDate = `Till ${formattedEnd}`;
-    }
+    /* ---------------- Date Formatting ---------------- */
+
+    const transactionDate = buildDateRangeLabel(
+      formatDate(startDate),
+      formatDate(endDate)
+    );
+
+    const escalatedDate = buildDateRangeLabel(
+      formatDate(fromDate),
+      formatDate(toDate)
+    );
+
+    /* ---------------- Active Filters ---------------- */
 
     return [
       instrumentName
@@ -326,13 +342,30 @@ const HeadCompianceOfficerOverdueVerificationReports = () => {
         ? { key: "requesterName", value: truncate(requesterName) }
         : null,
 
-      approvedQuantity
-        ? { key: "approvedQuantity", value: approvedQuantity }
+      complianceOfficerName
+        ? {
+            key: "complianceOfficerName",
+            value: truncate(complianceOfficerName),
+          }
         : null,
 
-      sharesTraded ? { key: "sharesTraded", value: sharesTraded } : null,
+      approvedQuantity
+        ? {
+            key: "approvedQuantity",
+            value: formatNumber(approvedQuantity),
+          }
+        : null,
 
-      requestDate ? { key: "requestDate", value: requestDate } : null,
+      sharesTraded
+        ? {
+            key: "sharesTraded",
+            value: formatNumber(sharesTraded),
+          }
+        : null,
+
+      transactionDate ? { key: "requestDate", value: transactionDate } : null,
+
+      escalatedDate ? { key: "escalatedDate", value: escalatedDate } : null,
     ].filter(Boolean);
   })();
 
@@ -459,7 +492,7 @@ const HeadCompianceOfficerOverdueVerificationReports = () => {
         background="white"
         style={{ marginTop: "3px" }}
         className={
-          activeFilters.length > 0 ? "changeHeightreports" : "repotsHeight"
+          activeFilters.length > 0 ? "changeHeightlmreports" : "repotsHeightHOC"
         }
       >
         <div className="px-4 md:px-6 lg:px-8 ">
@@ -471,7 +504,7 @@ const HeadCompianceOfficerOverdueVerificationReports = () => {
               overdueVerificationHCOListData?.overdueVerifications?.length
                 ? {
                     x: "max-content",
-                    y: activeFilters.length > 0 ? 450 : 500,
+                    y: activeFilters.length > 0 ? 400 : 450,
                   }
                 : undefined
             }

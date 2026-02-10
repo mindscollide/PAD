@@ -28,6 +28,7 @@ import {
   DownloadComplianceOfficerDateWiseTransactionReportRequestAPI,
   DownloadLineManagerMyTradeApprovalReportRequestAPI,
   DownloadMyTransactionReportRequestAPI,
+  ExportHOCTransactionSummaryReportExcelApi,
   GetComplianceOfficerViewTransactionSummaryAPI,
   GetHOCViewTransactionSummaryAPI,
   SearchComplianceOfficerTransactionSummaryReportRequest,
@@ -43,6 +44,8 @@ import { getSafeAssetTypeData } from "../../../../../common/funtions/assetTypesL
 import { useTableScrollBottom } from "../../../../../common/funtions/scroll";
 import CustomButton from "../../../../../components/buttons/button";
 import { DateRangePicker } from "../../../../../components";
+import { mapStatusToIds } from "../../../../../components/dropdowns/filters/utils";
+import ViewCommentHOCTransaction from "./viewDetails/viewComment/ViewComment";
 // import ViewComment from "./viewComment/ViewComment";
 
 const HCATransactionsSummarysReports = () => {
@@ -66,6 +69,8 @@ const HCATransactionsSummarysReports = () => {
     coTransactionSummaryReportViewDetailsListData,
     setCOTransactionSummaryReportViewDetailsListData,
     resetCOTransactionSummaryReportViewDetailsListData,
+    selectedWorkFlowViewDetaild,
+    setSelectedWorkFlowViewDetaild,
   } = useMyApproval();
 
   const { isViewComments, setIsViewComments, setCheckTradeApprovalID } =
@@ -76,9 +81,9 @@ const HCATransactionsSummarysReports = () => {
     setHCOTransactionsSummarysReportsSearch,
     resetHOCTransactionsSummarysReportsSearch,
 
-    coTransactionsSummarysReportsViewDetailsSearch,
-    setCOTransactionsSummarysReportsViewDetailSearch,
-    resetCOTransactionsSummarysReportsViewDetailsSearch,
+    hocTransactionsSummarysReportsViewDetailsSearch,
+    setHOCTransactionsSummarysReportsViewDetailSearch,
+    resetHOCTransactionsSummarysReportsViewDetailsSearch,
   } = useSearchBarContext();
 
   // -------------------- Local State --------------------
@@ -147,7 +152,7 @@ const HCATransactionsSummarysReports = () => {
       setHCOTransactionsSummarysReportsSearch,
       showLoader,
       showNotification,
-    ]
+    ],
   );
 
   const fetchApiCallViewDetails = useCallback(
@@ -165,11 +170,11 @@ const HCATransactionsSummarysReports = () => {
       const record = Array.isArray(res?.record) ? res.record : [];
       const currentAssetTypeData = getSafeAssetTypeData(
         assetTypeListingData,
-        setAssetTypeListingData
+        setAssetTypeListingData,
       );
       const mapped = mappingDateWiseTransactionviewDetailst(
         currentAssetTypeData?.Equities,
-        record
+        record,
       );
       if (!mapped || typeof mapped !== "object") return;
 
@@ -184,22 +189,24 @@ const HCATransactionsSummarysReports = () => {
             mapped.length,
       }));
 
-      setCOTransactionsSummarysReportsViewDetailSearch((prev) => {
+      setHOCTransactionsSummarysReportsViewDetailSearch((prev) => {
         const next = {
           ...prev,
           pageNumber: replace ? mapped.length : prev.pageNumber + mapped.length,
         };
         return next;
       });
-      setCOTransactionSummaryReportViewDetailsFlag(true);
+      if (coTransactionSummaryReportViewDetailsFlag === false) {
+        setCOTransactionSummaryReportViewDetailsFlag(true);
+      }
     },
     [
       callApi,
       navigate,
-      setCOTransactionsSummarysReportsViewDetailSearch,
+      setHOCTransactionsSummarysReportsViewDetailSearch,
       showLoader,
       showNotification,
-    ]
+    ],
   );
 
   // -------------------- Effects --------------------
@@ -220,7 +227,7 @@ const HCATransactionsSummarysReports = () => {
       resetTransactionSummaryHeadOfCompliance();
       setCOTransactionSummaryReportViewDetailsFlag(false);
       resetCOTransactionSummaryReportViewDetailsListData();
-      resetCOTransactionsSummarysReportsViewDetailsSearch();
+      resetHOCTransactionsSummarysReportsViewDetailsSearch();
     };
   }, []);
 
@@ -233,18 +240,28 @@ const HCATransactionsSummarysReports = () => {
   }, [hcoTransactionsSummarysReportsSearch?.filterTrigger]);
 
   useEffect(() => {
-    if (coTransactionsSummarysReportsViewDetailsSearch?.filterTrigger) {
-      setCOTransactionsSummarysReportsViewDetailSearch((prev) => ({
+    if (hocTransactionsSummarysReportsViewDetailsSearch?.filterTrigger) {
+      setHOCTransactionsSummarysReportsViewDetailSearch((prev) => ({
         ...prev,
         filterTrigger: false,
       }));
+      console.log(
+        "StatusFilterDropdown handleOk",
+        hocTransactionsSummarysReportsViewDetailsSearch,
+      );
+      console.log(
+        "StatusFilterDropdown handleOk",
+        mapStatusToIds(hocTransactionsSummarysReportsViewDetailsSearch.status),
+      );
+      console.log("StatusFilterDropdown handleOk", assetTypeListingData);
+
       const requestData = buildApiRequestViewDetails(
-        coTransactionsSummarysReportsViewDetailsSearch,
-        assetTypeListingData
+        hocTransactionsSummarysReportsViewDetailsSearch,
+        assetTypeListingData,
       );
       fetchApiCallViewDetails(requestData, true, true);
     }
-  }, [coTransactionsSummarysReportsViewDetailsSearch?.filterTrigger]);
+  }, [hocTransactionsSummarysReportsViewDetailsSearch?.filterTrigger]);
 
   // 🔹 Infinite Scroll (lazy loading)
   useTableScrollBottom(
@@ -262,10 +279,14 @@ const HCATransactionsSummarysReports = () => {
 
         try {
           setLoadingMore(true);
+          console.log(
+            "StatusFilterDropdown handleOk",
+            hocTransactionsSummarysReportsViewDetailsSearch,
+          );
 
           const requestData = buildApiRequestViewDetails(
-            coTransactionsSummarysReportsViewDetailsSearch,
-            assetTypeListingData
+            hocTransactionsSummarysReportsViewDetailsSearch,
+            assetTypeListingData,
           );
 
           await fetchApiCall(requestData, false, false);
@@ -292,7 +313,7 @@ const HCATransactionsSummarysReports = () => {
         setLoadingMore(true);
 
         const requestData = buildApiRequest(
-          hcoTransactionsSummarysReportsSearch
+          hcoTransactionsSummarysReportsSearch,
         );
 
         await fetchApiCall(requestData, false, false);
@@ -303,11 +324,10 @@ const HCATransactionsSummarysReports = () => {
       }
     },
     0,
-    "border-less-table-blue"
+    "border-less-table-blue",
   );
 
   const handelViewDetails = async (transactionDate) => {
-    console.log("responseData", transactionDate);
     await showLoader(true);
     const requestData = {
       TransactionDate: transactionDate.split(" ")[0],
@@ -319,54 +339,11 @@ const HCATransactionsSummarysReports = () => {
       StatusIds: [],
       TypeIds: [],
     };
-    setCOTransactionsSummarysReportsViewDetailSearch((prev) => ({
+    setHOCTransactionsSummarysReportsViewDetailSearch((prev) => ({
       ...prev,
       transactionDate: transactionDate.split(" ")[0],
     }));
     fetchApiCallViewDetails(requestData, true, true);
-    // const res = await GetComplianceOfficerViewTransactionSummaryAPI({
-    //   callApi,
-    //   showNotification,
-    //   showLoader,
-    //   requestdata,
-    //   navigate,
-    // });
-
-    // if (res) {
-    //   const record = Array.isArray(res?.record) ? res.record : [];
-    //   const currentAssetTypeData = getSafeAssetTypeData(
-    //     assetTypeListingData,
-    //     setAssetTypeListingData
-    //   );
-    //   const mapped = mappingDateWiseTransactionviewDetailst(
-    //     currentAssetTypeData?.Equities,
-    //     record
-    //   );
-    //   console.log("responseData", mapped);
-    //   if (!mapped || typeof mapped !== "object") return;
-    //   setCOTransactionsSummarysReportsViewDetailSearch((prev) => {
-    //     const next = {
-    //       ...prev,
-    //       pageNumber: mapped.length,
-    //       transactionDate: transactionDate.split(" ")[0],
-    //     };
-
-    //     // this is for check if filter value get true only on that it will false
-    //     if (prev.filterTrigger) {
-    //       next.filterTrigger = false;
-    //     }
-
-    //     return next;
-    //   });
-
-    //   setCOTransactionSummaryReportViewDetailsListData({
-    //     record: mapped,
-    //     // this is for to run lazy loading its data comming from database of total data in db
-    //     totalRecordsDataBase: res?.totalRecords || 0,
-    //     // this is for to know how mush dta currently fetch from  db
-    //     totalRecordsTable: mapped.length,
-    //   });
-    // }
   };
 
   // -------------------- Table Columns --------------------
@@ -381,9 +358,11 @@ const HCATransactionsSummarysReports = () => {
   const columnsViewDetails = getBorderlessTableColumnsViewDetails({
     approvalStatusMap,
     sortedInfo,
-    coTransactionsSummarysReportsViewDetailsSearch,
-    setCOTransactionsSummarysReportsViewDetailSearch,
+    hocTransactionsSummarysReportsViewDetailsSearch,
+    setHOCTransactionsSummarysReportsViewDetailSearch,
     handelViewDetails,
+    setIsViewComments,
+    setSelectedWorkFlowViewDetaild,
   });
 
   const handleDateChange = (dates) => {
@@ -422,20 +401,14 @@ const HCATransactionsSummarysReports = () => {
   };
 
   // 🔷 Excel Report download Api Hit
-  const downloadMyTradeApprovalLineManagerInExcelFormat = async () => {
+  const downloadHOCTransactionSummaryReportExcelFormat = async () => {
     showLoader(true);
     const requestdata = {
-      InstrumentName: "",
-      DepartmentName: "",
-      Quantity: 0,
-      StatusIds: [],
-      TypeIds: [],
-      RequesterName: "",
-      StartDate: "",
-      EndDate: "",
+      FromDate: dateRange.StartDate || null,
+      ToDate: dateRange.EndDate || null,
     };
 
-    await DownloadComplianceOfficerDateWiseTransactionReportRequestAPI({
+    await ExportHOCTransactionSummaryReportExcelApi({
       callApi,
       showLoader,
       requestdata: requestdata,
@@ -446,14 +419,14 @@ const HCATransactionsSummarysReports = () => {
   /** 🔹 Handle removing individual filter */
   const handleRemoveFilter = (key) => {
     const resetMap = {
-      instrumentNameSearch: { instrumentNameSearch: "" },
-      requesterNameSearch: { requesterNameSearch: "" },
-      quantitySearch: { quantitySearch: "" },
+      instrumentName: { instrumentName: "" },
+      employeeName: { employeeName: "" },
+      quantity: { quantity: "" },
     };
 
-    setCOTransactionsSummarysReportsViewDetailSearch((prev) => ({
+    setHOCTransactionsSummarysReportsViewDetailSearch((prev) => ({
       ...prev,
-      ...resetMap[key],
+      ...(resetMap[key] || {}),
       pageNumber: 0,
       filterTrigger: true,
     }));
@@ -461,11 +434,11 @@ const HCATransactionsSummarysReports = () => {
 
   /** 🔹 Handle removing all filters */
   const handleRemoveAllFilters = () => {
-    setCOTransactionsSummarysReportsViewDetailSearch((prev) => ({
+    setHOCTransactionsSummarysReportsViewDetailSearch((prev) => ({
       ...prev,
-      instrumentNameSearch: "",
-      requesterNameSearch: "",
-      quantitySearch: "",
+      quantity: "",
+      instrumentName: "",
+      employeeName: "",
       pageNumber: 0,
       filterTrigger: true,
     }));
@@ -473,31 +446,34 @@ const HCATransactionsSummarysReports = () => {
 
   /** 🔹 Build Active Filters for display */
   const activeFilters = (() => {
-    const { instrumentNameSearch, requesterNameSearch, quantitySearch } =
-      coTransactionsSummarysReportsViewDetailsSearch || {};
+    const { instrumentName, employeeName, quantity } =
+      hocTransactionsSummarysReportsViewDetailsSearch || {};
 
     return [
-      instrumentNameSearch && {
-        key: "instrumentNameSearch",
+      instrumentName && {
+        key: "instrumentName",
         value:
-          instrumentNameSearch.length > 13
-            ? instrumentNameSearch.slice(0, 13) + "..."
-            : instrumentNameSearch,
+          instrumentName.length > 13
+            ? instrumentName.slice(0, 13) + "..."
+            : instrumentName,
       },
-      requesterNameSearch && {
-        key: "requesterNameSearch",
+
+      employeeName && {
+        key: "employeeName",
         value:
-          requesterNameSearch.length > 13
-            ? requesterNameSearch.slice(0, 13) + "..."
-            : requesterNameSearch,
+          employeeName.length > 13
+            ? employeeName.slice(0, 13) + "..."
+            : employeeName,
       },
-      quantitySearch &&
-        Number(quantitySearch) > 0 && {
-          key: "quantitySearch",
-          value: Number(quantitySearch).toLocaleString("en-US"),
+
+      quantity &&
+        Number(quantity) > 0 && {
+          key: "quantity",
+          value: Number(quantity).toLocaleString("en-US"),
         },
     ].filter(Boolean);
   })();
+
   // -------------------- Render --------------------
   return (
     <>
@@ -530,7 +506,7 @@ const HCATransactionsSummarysReports = () => {
                       coTransactionSummaryReportViewDetailsFlag &&
                         setCOTransactionSummaryReportViewDetailsFlag(false);
                       resetCOTransactionSummaryReportViewDetailsListData();
-                      resetCOTransactionsSummarysReportsViewDetailsSearch();
+                      resetHOCTransactionsSummarysReportsViewDetailsSearch();
                     }}
                   >
                     Transactions Summary Report
@@ -586,7 +562,7 @@ const HCATransactionsSummarysReports = () => {
               </div> */}
               <div
                 className={style.dropdownItem}
-                onClick={downloadMyTradeApprovalLineManagerInExcelFormat}
+                onClick={downloadHOCTransactionSummaryReportExcelFormat}
               >
                 <img src={Excel} alt="Excel" draggable={false} />
                 <span>Export Excel</span>
@@ -665,7 +641,7 @@ const HCATransactionsSummarysReports = () => {
         </div>
       </PageLayout>
 
-      {/* {isViewComments && <ViewComment />} */}
+      {isViewComments && <ViewCommentHOCTransaction />}
     </>
   );
 };

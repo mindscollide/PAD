@@ -3,18 +3,20 @@ import { Button } from "../../../components";
 import ArrowUP from "../../../assets/img/arrow-up-dark.png";
 import ArrowDown from "../../../assets/img/arrow-down-dark.png";
 import { ArrowsAltOutlined } from "@ant-design/icons";
-import { Tag, Switch } from "antd";
+import { Tag, Switch, Tooltip } from "antd";
 import styles from "./Instruments.module.css";
 import StatusColumnTitle from "../../../components/dropdowns/filters/statusColumnTitle";
 import { formatApiDateTime, toYYMMDD } from "../../../common/funtions/rejex";
 import { mapStatusToIds } from "../../../components/dropdowns/filters/utils";
 import DefaultColumArrow from "../../../assets/img/default-colum-arrow.png";
+import style from "./Instruments.module.css";
+import { withSortIcon } from "../../../common/funtions/tableIcon";
 
 export const buildApiRequest = (searchState = {}) => ({
   InstrumentName: searchState.instrumentName || "",
   StartDate: searchState.startDate ? toYYMMDD(searchState.startDate) : "",
   EndDate: searchState.endDate ? toYYMMDD(searchState.endDate) : "",
-  StatusIDs: mapStatusToIds?.(searchState.status) || [],
+  StatusIDs: mapStatusToIds?.(searchState.status, 3) || [],
   PageNumber: Number(searchState.pageNumber) || 0,
   Length: Number(searchState.pageSize) || 10,
 });
@@ -57,34 +59,6 @@ export const mapAdminInstrumentListData = (adminInstruments = []) => {
   });
 };
 
-// import TypeColumnTitle from "./typeFilter";
-
-/**
- * Returns the appropriate sort icon based on current sort state
- *
- * @param {string} columnKey - The column's key
- * @param {object} sortedInfo - Current sort state from the table
- * @returns {JSX.Element} The sort icon
- */
-const getSortIcon = (columnKey, sortedInfo) => {
-  if (sortedInfo?.columnKey === columnKey) {
-    return sortedInfo.order === "ascend" ? (
-      <img src={ArrowDown} alt="Asc" className="custom-sort-icon" />
-    ) : (
-      <img src={ArrowUP} alt="Desc" className="custom-sort-icon" />
-    );
-  }
-  return (
-    <img
-      draggable={false}
-      src={DefaultColumArrow}
-      alt="Not sorted"
-      className="custom-sort-icon"
-      data-testid={`sort-icon-${columnKey}-default`}
-    />
-  );
-};
-
 export const getInstrumentTableColumns = ({
   adminIntrgetInstrumentTableColumnsumentListSearch,
   adminIntrumentListSearch,
@@ -101,28 +75,43 @@ export const getInstrumentTableColumns = ({
   setSelectedInstrumentNameDataOnClick,
 }) => [
   {
-    title: (
-      <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-        Instrument {getSortIcon("instrument", sortedInfo)}
-      </div>
-    ),
+    title: withSortIcon("Instrument", "instrument", sortedInfo),
     dataIndex: "instrument",
     key: "instrument",
+    align: "left",
+    width: 400,
     ellipsis: true,
     sorter: (a, b) => a.instrument.localeCompare(b.instrument),
     sortIcon: () => null,
     sortDirections: ["ascend", "descend"],
     sortOrder: sortedInfo?.columnKey === "instrument" ? sortedInfo.order : null,
     render: (text, record) => (
-      <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-        <span
-          className={`font-medium ${
-            !record.status ? styles.inActiveColumnTexts : ""
-          }`}
+      <Tooltip title={text}>
+        <div
+          style={{
+            maxWidth: "380px", // 🔴 important
+            overflow: "hidden",
+            whiteSpace: "nowrap",
+            textOverflow: "ellipsis",
+            display: "flex",
+            alignItems: "center",
+            gap: "12px",
+          }}
         >
-          {text}
-        </span>
-      </div>
+          <span
+            className={`font-medium ${
+              !record.status ? styles.inActiveColumnTexts : ""
+            }`}
+            style={{
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+              whiteSpace: "nowrap",
+            }}
+          >
+            {text}
+          </span>
+        </div>
+      </Tooltip>
     ),
   },
   {
@@ -132,6 +121,7 @@ export const getInstrumentTableColumns = ({
         setState={setAdminIntrumentListSearch}
       />
     ),
+    width: 150,
     dataIndex: "status",
     key: "status",
     render: (status, record) => {
@@ -141,36 +131,33 @@ export const getInstrumentTableColumns = ({
         <div className={styles.SwitchMainDiv}>
           <Switch
             checked={isActive}
-            // onChange={(value) =>
-            //   console.log("isActive", record.instrumentID, value)
-            // }
             onChange={(value) => onStatusChange(record.instrumentID, value)}
             className={`${styles.switchBase} ${
               isActive ? styles.switchbackground : styles.unSwitchBackground
             }`}
           />
           <span className={isActive ? styles.activeText : styles.InActiveText}>
-            {isActive ? "Active" : "Inactive"}
+            {isActive ? "Active" : "In Active"}
           </span>
         </div>
       );
     },
   },
   {
-    title: (
-      <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-        Closed Period Start Date{" "}
-        {getSortIcon("closedPeriodStartDate", sortedInfo)}
-      </div>
+    title: withSortIcon(
+      "Closed Period Start Date",
+      "closedPeriodStartDate",
+      sortedInfo,
+      "center",
     ),
     dataIndex: "closedPeriodStartDate",
     key: "closedPeriodStartDate",
-    width: "15%",
+    width: 150,
     align: "center",
     ellipsis: true,
     sorter: (a, b) =>
       formatApiDateTime(a.closedPeriodStartDate).localeCompare(
-        formatApiDateTime(b.closedPeriodStartDate)
+        formatApiDateTime(b.closedPeriodStartDate),
       ),
 
     sortOrder:
@@ -186,19 +173,20 @@ export const getInstrumentTableColumns = ({
     ),
   },
   {
-    title: (
-      <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-        Closed Period End Date {getSortIcon("closedPeriodEndDate", sortedInfo)}
-      </div>
+    title: withSortIcon(
+      " Closed Period End Date",
+      "closedPeriodEndDate",
+      sortedInfo,
+      "center",
     ),
     dataIndex: "closedPeriodEndDate",
     key: "closedPeriodEndDate",
-    width: "15%",
+    width: 150,
     align: "center",
     ellipsis: true,
     sorter: (a, b) =>
       formatApiDateTime(a.closedPeriodEndDate).localeCompare(
-        formatApiDateTime(b.closedPeriodEndDate)
+        formatApiDateTime(b.closedPeriodEndDate),
       ),
 
     sortOrder:
@@ -206,7 +194,10 @@ export const getInstrumentTableColumns = ({
     showSorterTooltip: false,
     sortIcon: () => null,
     render: (date, record) => (
-      <span className={!record.status ? styles.inActiveColumnTexts : ""}>
+      <span
+        className={!record.status ? styles.inActiveColumnTexts : ""}
+        style={{ textAlign: "center" }}
+      >
         {date ? formatApiDateTime(date) : "—"}
       </span>
     ),
@@ -215,6 +206,7 @@ export const getInstrumentTableColumns = ({
     title: "",
     key: "action",
     align: "right",
+    width: 150,
     render: (record) => {
       return (
         <Button

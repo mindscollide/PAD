@@ -20,6 +20,7 @@ import {
   mapStatusToIds,
 } from "../../../../components/dropdowns/filters/utils";
 import { getTradeTypeById } from "../../../../common/funtions/type";
+import { withSortIcon } from "../../../../common/funtions/tableIcon";
 // import TypeColumnTitle from "./typeFilter";
 
 /**
@@ -73,49 +74,6 @@ export const mapEscalatedApprovalsToTableRows = (
     timeRemaining: item.timeRemainingToTrade || "",
     ...item,
   }));
-/**
- * Returns the appropriate sort icon based on current sort state
- *
- * @param {string} columnKey - The column's key
- * @param {object} sortedInfo - Current sort state from the table
- * @returns {JSX.Element} The sort icon
- */
-const getSortIcon = (columnKey, sortedInfo) => {
-  if (sortedInfo?.columnKey === columnKey) {
-    return sortedInfo.order === "ascend" ? (
-      <img
-        draggable={false}
-        src={ArrowDown}
-        alt="Asc"
-        className="custom-sort-icon"
-      />
-    ) : (
-      <img
-        draggable={false}
-        src={ArrowUP}
-        alt="Desc"
-        className="custom-sort-icon"
-      />
-    );
-  }
-  return (
-    <img
-      draggable={false}
-      src={DefaultColumArrow}
-      alt="Default"
-      className="custom-sort-icon"
-    />
-  );
-};
-
-const withSortIcon = (label, columnKey, sortedInfo) => (
-  <div className={style["table-header-wrapper"]}>
-    <span className={style["table-header-text"]}>{label}</span>
-    <span className={style["table-header-icon"]}>
-      {getSortIcon(columnKey, sortedInfo)}
-    </span>
-  </div>
-);
 
 export const getBorderlessLineManagerTableColumns = ({
   approvalStatusMap,
@@ -128,6 +86,7 @@ export const getBorderlessLineManagerTableColumns = ({
 }) => [
   {
     title: withSortIcon("Approval ID", "tradeApprovalID", sortedInfo),
+    align: "left",
     dataIndex: "tradeApprovalID",
     key: "tradeApprovalID",
     width: "10%",
@@ -155,7 +114,8 @@ export const getBorderlessLineManagerTableColumns = ({
     },
   },
   {
-    title: <div>Requester Name {getSortIcon("requesterName", sortedInfo)}</div>,
+    title: withSortIcon("Requester Name", "requesterName", sortedInfo),
+    align: "left",
     dataIndex: "requesterName",
     key: "requesterName",
     ellipsis: true,
@@ -176,6 +136,7 @@ export const getBorderlessLineManagerTableColumns = ({
   },
   {
     title: withSortIcon("Instrument", "instrumentName", sortedInfo),
+    align: "left",
     dataIndex: "instrument",
     key: "instrumentName",
     ellipsis: true,
@@ -228,10 +189,10 @@ export const getBorderlessLineManagerTableColumns = ({
     },
   },
   {
-    title: withSortIcon("Date & Time", "requestDateTime", sortedInfo),
+    title: withSortIcon("Date & Time", "requestDateTime", sortedInfo, "center"),
+    align: "center",
     dataIndex: "requestDateTime",
     key: "requestDateTime",
-
     ellipsis: true,
     sorter: (a, b) =>
       formatApiDateTime(a.requestDateTime).localeCompare(
@@ -311,7 +272,8 @@ export const getBorderlessLineManagerTableColumns = ({
     },
   },
   {
-    title: withSortIcon("Quantity", "quantity", sortedInfo),
+    title: withSortIcon("Quantity", "quantity", sortedInfo, "center"),
+    align: "center",
     dataIndex: "quantity",
     key: "quantity",
     width: "8%",

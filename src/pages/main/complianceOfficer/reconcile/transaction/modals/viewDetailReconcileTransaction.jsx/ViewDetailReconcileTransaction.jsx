@@ -268,7 +268,7 @@ const ViewDetailReconcileTransaction = () => {
                           className={styles.viewDetailSubLabelsForInstrument}
                           title={selectedInstrument?.instrumentName}
                         >
-                          {selectedInstrument?.instrumentCode}
+                          {`${selectedInstrument?.instrumentCode} - ${selectedInstrument?.instrumentName}`}
                         </span>
                       </label>
                     </div>
@@ -413,8 +413,12 @@ const ViewDetailReconcileTransaction = () => {
                   <Col span={24}>
                     <BrokerList
                       statusData={statusData}
-                      viewDetailsData={reconcileTransactionViewDetailData}
+                      // viewDetailsData={reconcileTransactionViewDetailData}
                       variant={"Blue"}
+                      viewDetailsData={
+                        reconcileTransactionViewDetailData?.details[0]?.brokers
+                      }
+                      type={2}
                     />
                   </Col>
                 </Row>

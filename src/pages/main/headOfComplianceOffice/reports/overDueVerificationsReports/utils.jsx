@@ -14,6 +14,7 @@ import {
 } from "../../../../../common/funtions/rejex";
 import { mapBuySellToIds } from "../../../../../components/dropdowns/filters/utils";
 import { getTradeTypeById } from "../../../../../common/funtions/type";
+import { withSortIcon } from "../../../../../common/funtions/tableIcon";
 
 /**
  * Utility: Build API request payload for approval listing
@@ -25,14 +26,17 @@ import { getTradeTypeById } from "../../../../../common/funtions/type";
 export const buildApiRequest = (searchState = {}, assetTypeListingData) => ({
   InstrumentName: searchState.instrumentName || "",
   RequesterName: searchState.requesterName || "",
+  ComplianceOfficerName: searchState.complianceOfficerName || "",
   ApprovedQuantity: Number(searchState.approvedQuantity) || null,
   ShareTraded: Number(searchState.sharesTraded) || null,
   PageNumber: Number(searchState.pageNumber) || 0,
   Length: Number(searchState.pageSize) || 10,
-  Type: searchState.type,
-  StatusIds: [],
-  EscalationFromDate: "",
-  EscalationToDate: "",
+  TypeIds:
+    mapBuySellToIds?.(searchState.type, assetTypeListingData?.Equities) || [],
+  EscalationFromDate: searchState.fromDate
+    ? toYYMMDD(searchState.fromDate)
+    : "",
+  EscalationToDate: searchState.toDate ? toYYMMDD(searchState.toDate) : "",
   FromDate: searchState.startDate ? toYYMMDD(searchState.startDate) : "",
   ToDate: searchState.endDate ? toYYMMDD(searchState.endDate) : "",
 });
@@ -45,7 +49,7 @@ export const buildApiRequest = (searchState = {}, assetTypeListingData) => ({
  */
 export const mappingDateWiseTransactionReport = (
   assetTypeData,
-  overdueVerificationHCOListData = []
+  overdueVerificationHCOListData = [],
 ) => {
   const overdueVerifications = Array.isArray(overdueVerificationHCOListData)
     ? overdueVerificationHCOListData
@@ -61,9 +65,12 @@ export const mappingDateWiseTransactionReport = (
     instrumentShortCode: item?.instrumentShortCode || "—",
     instrumentName: item?.instrumentName || "—",
     assetTypeShortCode: item?.assetTypeShortCode || "—",
-    complianceOfficer: item?.complianceOfficer || "—",
+    complianceOfficer: item?.officerName || "—",
     transactionDate:
       `${item?.transactionDate || ""} ${item?.transactionTime || ""}`.trim() ||
+      "—",
+    escalatedDate:
+      `${item?.escalationDate || ""} ${item?.escalationTime || ""}`.trim() ||
       "—",
     type: getTradeTypeById(assetTypeData, item?.tradeType) || "-",
     approvedQuantity: item.approvedQuantity || 0,
@@ -76,50 +83,6 @@ export const mappingDateWiseTransactionReport = (
   }));
 };
 
-/**
- * Returns the appropriate sort icon based on current sort state
- *
- * @param {string} columnKey - The column's key
- * @param {object} sortedInfo - Current sort state from the table
- * @returns {JSX.Element} The sort icon
- */
-const getSortIcon = (columnKey, sortedInfo) => {
-  if (sortedInfo?.columnKey === columnKey) {
-    return sortedInfo.order === "ascend" ? (
-      <img
-        draggable={false}
-        src={ArrowDown}
-        alt="Asc"
-        className="custom-sort-icon"
-      />
-    ) : (
-      <img
-        draggable={false}
-        src={ArrowUP}
-        alt="Desc"
-        className="custom-sort-icon"
-      />
-    );
-  }
-  return (
-    <img
-      draggable={false}
-      src={DefaultColumArrow}
-      alt="Default"
-      className="custom-sort-icon"
-    />
-  );
-};
-
-// Helper for consistent column titles
-const withSortIcon = (label, columnKey, sortedInfo) => (
-  <div className={style["table-header-wrapper"]}>
-    <span className={style["table-header-text"]}>{label}</span>
-    <span className={style["table-header-icon"]}>
-      {getSortIcon(columnKey, sortedInfo)}
-    </span>
-  </div>
-);
 const withFilterHeader = (FilterComponent) => (
   <div
     className={style["table-header-wrapper"]}
@@ -136,19 +99,16 @@ const withFilterHeader = (FilterComponent) => (
 export const getBorderlessTableColumns = ({
   sortedInfo,
   OverdueVerificationHCOReportSearch,
+  setOverdueVerificationHCOReportSearch,
   setViewDetailHeadOfComplianceEscalated,
   handleViewDetailsForReconcileTransaction,
 }) => [
   {
-    title: (
-      <div style={{ marginLeft: "8px" }}>
-        {withSortIcon("Requester Name", "requesterName", sortedInfo)}
-      </div>
-    ),
+    title: withSortIcon("Requester Name", "requesterName", sortedInfo),
+    align: "left",
     dataIndex: "requesterName",
     key: "requesterName",
-    align: "left",
-    width: "180px",
+    width: 160,
     ellipsis: true,
     sorter: (a, b) => a.requesterName.localeCompare(b.requesterName),
     sortDirections: ["ascend", "descend"],
@@ -161,13 +121,18 @@ export const getBorderlessTableColumns = ({
     ),
   },
   {
-    title: withSortIcon("Type", "tradeType", sortedInfo),
-    dataIndex: "tradeType",
-    key: "tradeType",
+    title: withFilterHeader(() => (
+      <TypeColumnTitle
+        state={OverdueVerificationHCOReportSearch}
+        setState={setOverdueVerificationHCOReportSearch}
+      />
+    )),
+    dataIndex: "type",
+    width: 100,
+    key: "type",
     ellipsis: true,
-    width: "80px",
-    filteredValue: OverdueVerificationHCOReportSearch?.type?.length
-      ? OverdueVerificationHCOReportSearch?.type
+    filteredValue: OverdueVerificationHCOReportSearch.type?.length
+      ? OverdueVerificationHCOReportSearch.type
       : null,
     onFilter: () => true, // Actual filtering handled by API
     render: (type, record) => (
@@ -188,40 +153,29 @@ export const getBorderlessTableColumns = ({
     ),
   },
   {
-    title: withSortIcon("Compliance Officer", "complianceOfficer", sortedInfo),
+    title: withSortIcon("Officer Name", "complianceOfficer", sortedInfo),
+    align: "left",
     dataIndex: "complianceOfficer",
     key: "complianceOfficer",
+    width: 140,
     ellipsis: true,
-    width: "170px",
-    filteredValue: OverdueVerificationHCOReportSearch?.complianceOfficer?.length
-      ? OverdueVerificationHCOReportSearch?.complianceOfficer
-      : null,
-    onFilter: () => true, // Actual filtering handled by API
-    render: (complianceOfficer, record) => (
-      <span
-        id={`cell-${record.key}-complianceOfficer`}
-        className={
-          complianceOfficer === "Buy" ? "text-green-600" : "text-red-600"
-        }
-        data-testid={`trade-type-${complianceOfficer}`}
-        style={{
-          display: "inline-block",
-          width: "100%",
-          overflow: "hidden",
-          textOverflow: "ellipsis",
-          whiteSpace: "nowrap",
-        }}
-      >
-        {complianceOfficer}
-      </span>
+    sorter: (a, b) => a.complianceOfficer.localeCompare(b.complianceOfficer),
+    sortDirections: ["ascend", "descend"],
+    sortOrder:
+      sortedInfo?.columnKey === "complianceOfficer" ? sortedInfo.order : null,
+    showSorterTooltip: false,
+    sortIcon: () => null,
+    render: (text) => (
+      <span className={`${style["cell-text"]} font-medium`}>{text}</span>
     ),
   },
   {
     title: withSortIcon("Instrument", "instrumentName", sortedInfo),
     dataIndex: "instrumentName",
     key: "instrumentName",
+    align: "left",
     ellipsis: true,
-    width: "160px",
+    width: 120,
     sorter: (a, b) => {
       const nameA = a?.instrumentShortCode || "";
       const nameB = b?.instrumentShortCode || "";
@@ -268,38 +222,40 @@ export const getBorderlessTableColumns = ({
       );
     },
   },
-  {
+   {
     title: withSortIcon(
-      "Transaction Date & Time",
+      "Transaction Date",
       "transactionDate",
-      sortedInfo
+      sortedInfo,
+      "center",
     ),
+    align: "center",
     dataIndex: "transactionDate",
     key: "transactionDate",
-    align: "left",
-    width: "220px",
     ellipsis: true,
-    sorter: (a, b) => {
-      const dateA = new Date(`${a.transactionDate}`).getTime();
-      const dateB = new Date(`${b.transactionDate}`).getTime();
-      return dateA - dateB;
-    },
-    sortDirections: ["ascend", "descend"],
+    width: 150,
+    sorter: (a, b) =>
+      (a?.transactionDate || "").localeCompare(b?.transactionDate || ""),
     sortOrder:
       sortedInfo?.columnKey === "transactionDate" ? sortedInfo.order : null,
     showSorterTooltip: false,
     sortIcon: () => null,
-    render: (_, record) => (
-      <span className="text-gray-600">
-        {formatApiDateTime(`${record.transactionDate}`)}
+    render: (date) => (
+      <span className="text-gray-600" title={date || "—"}>
+        {formatApiDateTime(date) || "—"}
       </span>
     ),
   },
-
   {
-    title: withSortIcon("Approved Quantity", "approvedQuantity", sortedInfo),
+    title: withSortIcon(
+      "Approved Quantity",
+      "approvedQuantity",
+      sortedInfo,
+      "center",
+    ),
     dataIndex: "approvedQuantity",
-    width: "180px",
+    width: 180,
+    align: "center",
     key: "approvedQuantity",
     ellipsis: true,
     sorter: (a, b) => a.approvedQuantity - b.approvedQuantity,
@@ -311,10 +267,11 @@ export const getBorderlessTableColumns = ({
     render: (q) => <span className="font-medium">{q.toLocaleString()}</span>,
   },
   {
-    title: withSortIcon("Shares Traded", "shareTraded", sortedInfo),
+    title: withSortIcon("Shares Traded", "shareTraded", sortedInfo, "center"),
     dataIndex: "shareTraded",
     key: "shareTraded",
-    width: "180px",
+    align: "center",
+    width: 150,
     ellipsis: true,
     sorter: (a, b) => a.shareTraded - b.shareTraded,
     sortDirections: ["ascend", "descend"],
@@ -328,7 +285,8 @@ export const getBorderlessTableColumns = ({
     title: "",
     key: "isEscalationOpen",
     dataIndex: "isEscalationOpen",
-    align: "right",
+    align: "center",
+    width: 20,
     render: (_, record) => {
       return record.isEscalationOpen ? (
         <img src={EscaltedOn} width={"40px"} />
@@ -336,9 +294,34 @@ export const getBorderlessTableColumns = ({
     },
   },
   {
+    title: withSortIcon(
+      "Escalated Date",
+      "escalatedDate",
+      sortedInfo,
+      "center",
+    ),
+    align: "center",
+    dataIndex: "escalatedDate",
+    key: "escalatedDate",
+    ellipsis: true,
+    width: 150,
+    sorter: (a, b) =>
+      (a?.escalatedDate || "").localeCompare(b?.escalatedDate || ""),
+    sortOrder:
+      sortedInfo?.columnKey === "escalatedDate" ? sortedInfo.order : null,
+    showSorterTooltip: false,
+    sortIcon: () => null,
+    render: (date) => (
+      <span className="text-gray-600" title={date || "—"}>
+        {formatApiDateTime(date) || "—"}
+      </span>
+    ),
+  },
+  {
     title: "",
     key: "action",
-    align: "right", // 🔷 Align content to the right
+    align: "center", // 🔷 Align content to the right
+    width: 50,
     render: (_, record) => (
       <div className={style.viewEditClass}>
         <Button

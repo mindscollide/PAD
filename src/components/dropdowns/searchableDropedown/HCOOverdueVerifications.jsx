@@ -7,14 +7,20 @@ import {
   removeFirstSpace,
 } from "../../../common/funtions/rejex";
 
-// 🔹 Initial state matching your global state structure
+/**
+ * 🔹 Initial local state
+ * Mirrors global search state structure
+ */
 const INITIAL_LOCAL_STATE = {
   instrumentName: "",
   requesterName: "",
+  complianceOfficerName: "",
   approvedQuantity: "",
   sharesTraded: "",
   startDate: null,
   endDate: null,
+  fromDate: null,
+  toDate: null,
   type: "",
   pageNumber: 0,
   pageSize: 10,
@@ -35,10 +41,13 @@ export const HCOOverdueVerifications = ({
 
   const [localState, setLocalState] = useState(INITIAL_LOCAL_STATE);
 
-  // -----------------------------------------------------
-  // 🔹 Effects
-  // -----------------------------------------------------
+  /* =====================================================
+   * 🔹 Effects
+   * ===================================================== */
 
+  /**
+   * Populate Instrument Name when coming from outside
+   */
   useEffect(() => {
     if (maininstrumentName) {
       setLocalState((prev) => ({
@@ -50,6 +59,9 @@ export const HCOOverdueVerifications = ({
     }
   }, [maininstrumentName]);
 
+  /**
+   * Reset local state on clear trigger
+   */
   useEffect(() => {
     if (clear && maininstrumentName === "") {
       setLocalState(INITIAL_LOCAL_STATE);
@@ -57,22 +69,26 @@ export const HCOOverdueVerifications = ({
     }
   }, [clear]);
 
-  // -----------------------------------------------------
-  // 🔹 Handlers
-  // -----------------------------------------------------
+  /* =====================================================
+   * 🔹 Handlers
+   * ===================================================== */
 
+  /**
+   * Generic state setter
+   */
   const setFieldValue = (field, value) => {
     setLocalState((prev) => ({ ...prev, [field]: value }));
   };
 
+  /**
+   * Handle text & numeric input
+   */
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-
-    // Remove commas first
     const rawValue = value.replace(/,/g, "");
 
-    if (name === "approvedQuantity" || name === "sharesTraded") {
-      // Allow empty or numbers only
+    // Numeric fields
+    if (["approvedQuantity", "sharesTraded"].includes(name)) {
       if (rawValue === "" || allowOnlyNumbers(rawValue)) {
         setFieldValue(name, rawValue);
       }
@@ -82,12 +98,15 @@ export const HCOOverdueVerifications = ({
     setFieldValue(name, removeFirstSpace(value));
   };
 
+  /**
+   * Transaction date range
+   */
   const handleDateChange = (dates) => {
-    setLocalState({
-      ...localState,
+    setLocalState((prev) => ({
+      ...prev,
       startDate: dates?.[0] || null,
       endDate: dates?.[1] || null,
-    });
+    }));
   };
 
   const handleClearDates = () => {
@@ -98,44 +117,76 @@ export const HCOOverdueVerifications = ({
     }));
   };
 
+  /**
+   * Escalated date range
+   */
+  const handleEscalatedDateChange = (dates) => {
+    setLocalState((prev) => ({
+      ...prev,
+      fromDate: dates?.[0] || null,
+      toDate: dates?.[1] || null,
+    }));
+  };
+
+  const handleEscalatedClearDates = () => {
+    setLocalState((prev) => ({
+      ...prev,
+      fromDate: null,
+      toDate: null,
+    }));
+  };
+
+  /**
+   * Apply search filters
+   */
   const handleSearchClick = () => {
     const {
       instrumentName,
       requesterName,
+      complianceOfficerName,
       approvedQuantity,
       sharesTraded,
       startDate,
       endDate,
+      fromDate,
+      toDate,
     } = localState;
 
-    const searchPayload = {
+    setOverdueVerificationHCOReportSearch({
       ...OverdueVerificationHCOReportSearch,
-      instrumentName: instrumentName?.trim() || "",
-      requesterName: requesterName?.trim() || "",
+      instrumentName: instrumentName.trim(),
+      requesterName: requesterName.trim(),
+      complianceOfficerName: complianceOfficerName.trim(),
       approvedQuantity: approvedQuantity ? Number(approvedQuantity) : 0,
       sharesTraded: sharesTraded ? Number(sharesTraded) : 0,
-      startDate: startDate || null,
-      endDate: endDate || null,
+      startDate,
+      endDate,
+      fromDate,
+      toDate,
       pageNumber: 0,
       filterTrigger: true,
-    };
+    });
 
-    setOverdueVerificationHCOReportSearch(searchPayload);
     setLocalState(INITIAL_LOCAL_STATE);
     setClear(false);
     setVisible(false);
   };
 
+  /**
+   * Reset filters
+   */
   const handleResetClick = () => {
     setOverdueVerificationHCOReportSearch((prev) => ({
       ...prev,
       instrumentName: "",
       requesterName: "",
-      approvedQuantity: "",
-      sharesTraded: "",
+      complianceOfficerName: "",
+      approvedQuantity: 0,
+      sharesTraded: 0,
       startDate: null,
       endDate: null,
-      type: "",
+      fromDate: null,
+      toDate: null,
       pageNumber: 0,
       filterTrigger: true,
     }));
@@ -145,44 +196,40 @@ export const HCOOverdueVerifications = ({
     setVisible(false);
   };
 
-  // -----------------------------------------------------
-  // 🔹 Render
-  // -----------------------------------------------------
+  /* =====================================================
+   * 🔹 Render
+   * ===================================================== */
+
   return (
     <>
-      {/* ROW 1: Department & Instrument */}
+      {/* ROW 1 */}
       <Row gutter={[12, 12]}>
-        <Col xs={24} sm={24} md={12} lg={12}>
+        <Col md={12}>
           <TextField
             label="Instrument Name"
             name="instrumentName"
             value={localState.instrumentName}
             onChange={handleInputChange}
-            placeholder="Enter instrument name"
-            size="medium"
-            classNames="Search-Field"
+            placeholder="Instrument Name"
           />
         </Col>
 
-        <Col xs={24} sm={24} md={12} lg={12}>
+        <Col md={12}>
           <TextField
             label="Requester Name"
             name="requesterName"
             value={localState.requesterName}
             onChange={handleInputChange}
-            placeholder="Enter requester name"
-            size="medium"
-            classNames="Search-Field"
+            placeholder="Requester Name"
           />
         </Col>
       </Row>
 
-      {/* ROW 2: Quantity & Date Range */}
+      {/* ROW 2 */}
       <Row gutter={[12, 12]}>
-        <Col xs={24} sm={24} md={12} lg={12}>
+        <Col md={12}>
           <DateRangePicker
             label="Transaction Date"
-            size="medium"
             value={[localState.startDate, localState.endDate]}
             onChange={handleDateChange}
             onClear={handleClearDates}
@@ -190,59 +237,75 @@ export const HCOOverdueVerifications = ({
           />
         </Col>
 
-        <Col xs={24} sm={24} md={12} lg={12}>
-          <TextField
-            label="Approved Quantity"
-            name="approvedQuantity"
-            value={
-              localState.approvedQuantity !== "" &&
-              !isNaN(localState.approvedQuantity)
-                ? Number(localState.approvedQuantity).toLocaleString("en-US")
-                : ""
-            }
-            onChange={handleInputChange}
-            placeholder="Approved Quantity"
-            size="medium"
-            classNames="Search-Field"
+        <Col md={12}>
+          <DateRangePicker
+            label="Escalated Date"
+            value={[localState.fromDate, localState.toDate]}
+            onChange={handleEscalatedDateChange}
+            onClear={handleEscalatedClearDates}
+            format="YYYY-MM-DD"
           />
         </Col>
       </Row>
 
-      {/* ROW 3: Employee ID & Employee Name */}
-      <Row gutter={[12, 12]}>
-        <Col xs={24} sm={24} md={12} lg={12}>
+      {/* ROW 3 */}
+      <Row gutter={[12, 12]} style={{ marginTop: "12px" }}>
+        <Col md={12}>
           <TextField
             label="Shares Traded"
+            placeholder="Shares Traded"
             name="sharesTraded"
             value={
-              localState.sharesTraded !== "" && !isNaN(localState.sharesTraded)
+              localState.sharesTraded
                 ? Number(localState.sharesTraded).toLocaleString("en-US")
                 : ""
             }
             onChange={handleInputChange}
-            placeholder="Shares Traded"
-            size="medium"
-            classNames="Search-Field"
+          />
+        </Col>
+
+        <Col md={12}>
+          <TextField
+            label="Approved Quantity"
+            placeholder="Approved Quantity"
+            name="approvedQuantity"
+            value={
+              localState.approvedQuantity
+                ? Number(localState.approvedQuantity).toLocaleString("en-US")
+                : ""
+            }
+            onChange={handleInputChange}
           />
         </Col>
       </Row>
 
-      {/* ACTION ROW */}
-      <Row gutter={[12, 12]} justify="end" style={{ marginTop: 16 }}>
-        <Col>
-          <Space>
-            <Button
-              onClick={handleResetClick}
-              text="Reset"
-              className="big-light-button"
-            />
-            <Button
-              onClick={handleSearchClick}
-              text="Search"
-              className="big-dark-button"
-            />
-          </Space>
+      {/* ROW 4 */}
+      <Row gutter={[12, 12]}>
+        <Col md={12}>
+          <TextField
+            label="Compliance Officer Name"
+            name="complianceOfficerName"
+            value={localState.complianceOfficerName}
+            onChange={handleInputChange}
+            placeholder="Compliance Officer Name"
+          />
         </Col>
+      </Row>
+
+      {/* ACTIONS */}
+      <Row justify="end" style={{ marginTop: 16 }}>
+        <Space>
+          <Button
+            onClick={handleResetClick}
+            text="Reset"
+            className="big-light-button"
+          />
+          <Button
+            onClick={handleSearchClick}
+            text="Search"
+            className="big-dark-button"
+          />
+        </Space>
       </Row>
     </>
   );

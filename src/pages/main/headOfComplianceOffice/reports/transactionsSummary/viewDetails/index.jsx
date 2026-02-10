@@ -64,8 +64,12 @@ const COTransactionsSummarysReportsViewDetails = () => {
     resetCOTransactionsSummarysReportsSearch,
   } = useSearchBarContext();
 
-  const { setAssetTypeListingData } = useDashboardContext();
+  console.log(
+    coTransactionSummaryReportListData,
+    "coTransactionSummaryReportListData",
+  );
 
+  const { setAssetTypeListingData } = useDashboardContext();
 
   // -------------------- Local State --------------------
   const [sortedInfo, setSortedInfo] = useState({});
@@ -134,7 +138,7 @@ const COTransactionsSummarysReportsViewDetails = () => {
       setCOTransactionsSummarysReportsSearch,
       showLoader,
       showNotification,
-    ]
+    ],
   );
 
   // -------------------- Effects --------------------
@@ -144,7 +148,7 @@ const COTransactionsSummarysReportsViewDetails = () => {
     return () => {
       // Reset search state for fresh load
       resetCOTransactionsSummarysReportsSearch();
-      resetCOTransactionSummaryReportListData()
+      resetCOTransactionSummaryReportListData();
     };
   }, []);
 
@@ -168,7 +172,7 @@ const COTransactionsSummarysReportsViewDetails = () => {
       try {
         setLoadingMore(true);
         const requestData = buildApiRequest(
-          coTransactionsSummarysReportsSearch
+          coTransactionsSummarysReportsSearch,
         );
         await fetchApiCall(requestData, false, false);
       } catch (err) {
@@ -178,7 +182,7 @@ const COTransactionsSummarysReportsViewDetails = () => {
       }
     },
     0,
-    "border-less-table-blue"
+    "border-less-table-blue",
   );
 
   // -------------------- Table Columns --------------------
@@ -326,14 +330,11 @@ const COTransactionsSummarysReportsViewDetails = () => {
       >
         <div className="px-4 md:px-6 lg:px-8 ">
           <BorderlessTable
-            rows={
-              coTransactionSummaryReportListData?.transactions
-            }
+            rows={coTransactionSummaryReportListData?.transactions}
             columns={columns}
             classNameTable="border-less-table-blue"
             scroll={
-              coTransactionSummaryReportListData?.transactions
-                ?.length
+              coTransactionSummaryReportListData?.transactions?.length
                 ? {
                     x: "max-content",
                     y: 500,
@@ -346,8 +347,6 @@ const COTransactionsSummarysReportsViewDetails = () => {
           />
         </div>
       </PageLayout>
-
-      {/* {isViewComments && <ViewComment />} */}
     </>
   );
 };

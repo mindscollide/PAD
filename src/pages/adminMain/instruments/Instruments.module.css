@@ -171,3 +171,32 @@
   color: #a3a3a3 !important;
   font-family: "Switzer Variable";
 }
+
+.table-header-wrapper {
+  display: flex;
+  align-items: center;
+  max-width: 100%;
+  gap: 5px;
+}
+
+.table-header-text {
+  font-family: Switzer Variable;
+  font-weight: 500;
+  font-style: Bold;
+  font-size: 14px;
+  leading-trim: NONE;
+  line-height: 100%;
+  letter-spacing: 0%;
+  color: var(--Blue-V1, #30426a);
+
+  white-space: normal;
+  word-break: break-word;
+  display: inline-block;
+  max-width: calc(100% - 20px);
+}
+
+.table-header-icon {
+  flex-shrink: 0;
+  margin-left: 6px;
+  color: var(--Blue-V1, #30426a);
+}

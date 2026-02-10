@@ -1,0 +1,212 @@
+.heading {
+  /* width: 204px; */
+  /* height: 34px; */
+  opacity: 1;
+  font-family: Switzer Variable;
+  font-weight: 700;
+  font-style: Bold;
+  font-size: 26px;
+  line-height: 100%;
+  letter-spacing: 0%;
+  color: var(--Blue-V1, #30426a);
+}
+
+.filter-tags-container {
+  padding: 0 30px;
+  position: relative;
+  /* margin-bottom: 12px !important; */
+  margin-top: -18px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.filter-tag {
+  display: flex;
+  align-items: center;
+  max-width: 240px;
+  height: 35px;
+  padding: 0px 12px;
+  background: #30426a;
+  color: white;
+  border-radius: 7.09px;
+  font-size: 14px;
+  gap: 10px;
+}
+
+.filter-tag-text {
+  flex: 1 1 auto !important;
+  min-width: 0 !important; /* 🔑 allows ellipsis */
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+}
+.filter-tag-close {
+  cursor: pointer;
+  flex-shrink: 0;
+  font-size: 16px;
+  line-height: 1;
+  z-index: 1 !important;
+}
+.clear-all-tag {
+  cursor: pointer !important;
+}
+.table-header-wrapper {
+  display: flex;
+  align-items: flex-start; /* Keep icon aligned to top if text wraps */
+  gap: 6px;
+  flex-wrap: wrap; /* Allow text + icon to move to next line if needed */
+}
+
+.table-header-text {
+  font-family: "Switzer Variable";
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 1.3;
+  color: var(--Blue-V1, #30426a);
+
+  white-space: normal; /* Allow wrapping */
+  word-break: break-word;
+  /* flex: 1 1 auto; */ /* Let text take available space */
+  flex: none;
+  min-width: 0; /* Prevent overflow issues in flex */
+}
+
+.table-header-icon {
+  /* margin-left: 4px; bas halka sa gap */
+  color: var(--Blue-V1, #30426a);
+  display: flex;
+  align-items: center;
+}
+
+/* 🔹 Breadcrumb alignment */
+.breadcrumbRow {
+  padding: 12px 32px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* 🔹 Breadcrumb alignment */
+.breadcrumbRowBelowData {
+  padding: 0px 32px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* 🔹 Breadcrumb overall style */
+.customBreadcrumb {
+  font-family: "Switzer Variable", sans-serif;
+  font-weight: 700;
+  font-style: bold;
+  font-size: 26px;
+  line-height: 100%;
+  color: #30426a;
+}
+
+/* 🔹 Normal breadcrumb text */
+.breadcrumbText {
+  color: #30426a;
+}
+
+/* 🔹 Clickable link ONLY for "Group Policy" */
+.breadcrumbLink {
+  color: #30426a;
+  cursor: pointer;
+  transition: all 0.25s ease-in-out;
+}
+
+.breadcrumbLink:hover {
+  color: #213155;
+  text-shadow: 0px 2px 6px rgba(33, 49, 85, 0.4);
+  transform: scale(1.05);
+}
+
+/* 🔹 Separator “>” (static) */
+:global(.ant-breadcrumb-separator) {
+  color: #30426a !important;
+  font-family: "Switzer Variable", sans-serif;
+  font-weight: 700;
+  font-size: 26px;
+  margin: 0 8px;
+}
+
+.headerActionsRow {
+  display: flex;
+  align-items: center;
+  gap: 12px; /* space between items */
+}
+
+.exportButtonText {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.iconContainer {
+  display: flex;
+  align-items: center;
+  font-size: 14px; /* Adjust size as needed */
+  transition: transform 0.3s ease;
+}
+
+.dropdownExport {
+  position: absolute;
+  top: 100%; /* appears below the button */
+  right: 0;
+  width: 168px;
+  border-radius: 8px;
+  border: 1px solid #b4b4b4;
+  background: #fff;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+  z-index: 1000; /* keep above table */
+  padding: 8px 0;
+}
+
+.dropdownItem {
+  padding: 8px 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 16px;
+  font-family: "Switzer Variable";
+  font-weight: 500;
+  color: #424242;
+  cursor: pointer;
+  transition: background 0.2s;
+  position: relative; /* required for ::after */
+}
+.dropdownItem img {
+  width: 20px;
+  height: 20px;
+  pointer-events: none;
+}
+
+.dropdownItem:not(:last-child)::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 12px; /* 👈 inset from left */
+  right: 12px; /* 👈 inset from right */
+  height: 1px;
+  background-color: #e0e0e0;
+}
+
+.dropdownItem:hover {
+  background: #f5f5f5;
+}
+
+.mainTitleTextClass {
+  font-family: "Switzer Variable";
+  font-size: 16px;
+  font-weight: 700;
+  color: #424242;
+}
+
+.subTitleTextClass {
+  font-family: "Switzer Variable";
+  font-size: 16px;
+  font-weight: 500;
+  color: #424242;
+}

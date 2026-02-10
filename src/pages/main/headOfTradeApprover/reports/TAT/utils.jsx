@@ -2,13 +2,7 @@ import ArrowUP from "../../../../../assets/img/arrow-up-dark.png";
 import ArrowDown from "../../../../../assets/img/arrow-down-dark.png";
 import DefaultColumArrow from "../../../../../assets/img/default-colum-arrow.png";
 import style from "./HTATAT.module.css";
-
-import {
-  formatApiDateTime,
-  toYYMMDD,
-} from "../../../../../common/funtions/rejex";
-import { getTradeTypeById } from "../../../../../common/funtions/type";
-import TypeColumnTitle from "../../../../../components/dropdowns/filters/typeColumnTitle";
+import { Button } from "../../../../../components";
 
 /**
  * Utility: Build API request payload for approval listing
@@ -39,15 +33,15 @@ export const mapListData = (
     : myTradeApprovalLineManagerData?.records || [];
 
   if (!records.length) return [];
-
+  console.log(records, "departmentdepartment");
   return records.map((item) => ({
     key: item.userID,
-    employeeID: item.userID,
-    employeeName: item.fullName || "",
-    departmentName: item.departmentName || "",
+    employeeID: item.employeeID,
+    employeeName: item.employeeName || "",
+    departmentName: item.department || "",
     quantity: item.quantity || 0,
-    policyCount: item.totalBreachedPolicies || 0,
-    breachedPolicies: item.breachedPolicies || 0,
+    totalRequests: item.totalRequests || 0,
+    totalTurnAroundDays: item.totalTurnAroundDays || 0,
     requestDateTime:
       `${item?.requestDate || ""} ${item?.requestTime || ""}`.trim() || "—",
     resubmitted: item.resubmitted || 0,
@@ -90,8 +84,19 @@ const getSortIcon = (columnKey, sortedInfo) => {
 };
 
 // Helper for consistent column titles
-const withSortIcon = (label, columnKey, sortedInfo) => (
-  <div className={style["table-header-wrapper"]}>
+const withSortIcon = (label, columnKey, sortedInfo, align = "left") => (
+  <div
+    className={style["table-header-wrapper"]}
+    style={{
+      justifyContent:
+        align === "center"
+          ? "center"
+          : align === "right"
+          ? "flex-end"
+          : "flex-start",
+      textAlign: align,
+    }}
+  >
     <span className={style["table-header-text"]}>{label}</span>
     <span className={style["table-header-icon"]}>
       {getSortIcon(columnKey, sortedInfo)}
@@ -100,29 +105,35 @@ const withSortIcon = (label, columnKey, sortedInfo) => (
 );
 
 export const getBorderlessTableColumns = ({
-  approvalStatusMap,
   sortedInfo,
-  htaPolicyBreachesReportSearch,
-  setHTAPolicyBreachesReportSearch,
-  setSelectedEmployee,
-  setPolicyModalVisible,
+  setShowViewDetailPageInTatOnHta,
+  setShowSelectedTatDataOnViewDetailHTA,
 }) => [
   {
-    title: withSortIcon("Employee ID", "employeeID", sortedInfo),
+    title: (
+      <div style={{ marginLeft: "8px" }}>
+        {withSortIcon("Employee ID", "employeeID", sortedInfo)}
+      </div>
+    ),
     dataIndex: "employeeID",
     key: "employeeID",
     width: "140px",
     ellipsis: true,
-    sorter: (a, b) =>
-      parseInt(a.employeeID.replace(/[^\d]/g, ""), 10) -
-      parseInt(b.employeeID.replace(/[^\d]/g, ""), 10),
+    sorter: (a, b) => a.employeeID - b.employeeID,
     sortDirections: ["ascend", "descend"],
     sortOrder: sortedInfo?.columnKey === "employeeID" ? sortedInfo.order : null,
     showSorterTooltip: false,
     sortIcon: () => null,
     render: (employeeID) => {
       return (
-        <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: "12px",
+            marginLeft: "8px",
+          }}
+        >
           <span className="font-medium">{employeeID}</span>
         </div>
       );
@@ -134,13 +145,19 @@ export const getBorderlessTableColumns = ({
     key: "employeeName",
     ellipsis: true,
     width: "140px",
-    sorter: (a, b) => a.employeeName - b.employeeName,
+    sorter: (a, b) => a.employeeName.localeCompare(b.employeeName),
     sortDirections: ["ascend", "descend"],
     sortOrder:
       sortedInfo?.columnKey === "employeeName" ? sortedInfo.order : null,
     showSorterTooltip: false,
     sortIcon: () => null,
-    render: (q) => <span className="font-medium">{q.toLocaleString()}</span>,
+    render: (text, record) => {
+      return (
+        <div id={`cell-${record.key}-employeeName`}>
+          <span className="font-medium">{text}</span>
+        </div>
+      );
+    },
   },
   {
     title: withSortIcon("Department", "departmentName", sortedInfo),
@@ -154,70 +171,83 @@ export const getBorderlessTableColumns = ({
       sortedInfo?.columnKey === "departmentName" ? sortedInfo.order : null,
     showSorterTooltip: false,
     sortIcon: () => null,
-    render: (q) => <span className="font-medium">{q.toLocaleString()}</span>,
+    render: (text, record) => {
+      return (
+        <div id={`cell-${record.key}-departmentName`}>
+          <span className="font-medium">{text}</span>
+        </div>
+      );
+    },
   },
   {
-    title: withSortIcon("Request date & time", "requestDateTime", sortedInfo),
-    dataIndex: "requestDateTime",
-    key: "requestDateTime",
+    title: withSortIcon("Request Count", "totalRequests", sortedInfo, "center"),
+    dataIndex: "totalRequests",
+    key: "totalRequests",
     width: "140px",
+    align: "center",
     ellipsis: true,
-    sorter: (a, b) =>
-      formatApiDateTime(a.requestDateTime).localeCompare(
-        formatApiDateTime(b.requestDateTime)
-      ),
+    sorter: (a, b) => a.totalRequests - b.totalRequests,
     sortDirections: ["ascend", "descend"],
     sortOrder:
-      sortedInfo?.columnKey === "requestDateTime" ? sortedInfo.order : null,
-    showSorterTooltip: false,
-    sortIcon: () => null,
-    render: (date, record) => (
-      <span id={`cell-${record.key}-requestDateTime`} className="text-gray-600">
-        {formatApiDateTime(date)}
-      </span>
-    ),
-  },
-  {
-    title: withSortIcon("Quantity", "quantity", sortedInfo),
-    dataIndex: "quantity",
-    key: "quantity",
-    width: "140px",
-    ellipsis: true,
-    sorter: (a, b) => Number(a.quantity || 0) - Number(b.quantity || 0),
-    sortDirections: ["ascend", "descend"],
-    sortOrder: sortedInfo?.columnKey === "quantity" ? sortedInfo.order : null,
+      sortedInfo?.columnKey === "totalRequests" ? sortedInfo.order : null,
     showSorterTooltip: false,
     sortIcon: () => null,
     render: (text) => (
-      <span className={`${style["cell-text"]} font-medium`}>
-        {text !== null && text !== undefined
-          ? Number(text).toLocaleString("en-US")
-          : "-"}
-      </span>
+      <span className="font-medium">{text.toLocaleString("en-US")}</span>
     ),
   },
   {
-    title: withSortIcon("Policy Count", "policyCount", sortedInfo),
-    dataIndex: "policyCount",
-    key: "policyCount",
+    title: withSortIcon(
+      "Avg turn around time",
+      "totalTurnAroundDays",
+      sortedInfo,
+      "center"
+    ),
+    dataIndex: "totalTurnAroundDays",
+    key: "totalTurnAroundDays",
+    align: "center",
     width: "140px",
     ellipsis: true,
-    sorter: (a, b) => a.policyCount - b.policyCount,
+    sorter: (a, b) =>
+      Number(a.totalTurnAroundDays || 0) - Number(b.totalTurnAroundDays || 0),
     sortDirections: ["ascend", "descend"],
     sortOrder:
-      sortedInfo?.columnKey === "policyCount" ? sortedInfo.order : null,
+      sortedInfo?.columnKey === "totalTurnAroundDays" ? sortedInfo.order : null,
     showSorterTooltip: false,
     sortIcon: () => null,
-    render: (text, record) => (
-      <span
-        className={`${style["cell-text"]} font-medium cursor-pointer text-primary`}
-        onClick={() => {
-          setSelectedEmployee(record);
-          setPolicyModalVisible(true);
-        }}
-      >
-        {text}
-      </span>
+    render: (text) => (
+      <span className="font-medium">{text.toLocaleString("en-US")}</span>
     ),
+  },
+  {
+    title: "",
+    key: "actions",
+    align: "right",
+    width: "100px",
+    render: (record) => {
+      console.log(record, "showSelectedTatDataOnViewDetailHTA");
+      //Global State to selected data to show in ViewDetailLineManagerModal Statuses
+      return (
+        <>
+          <div
+            id={`cell-${record.key}-actions`}
+            style={{
+              display: "flex",
+              alignItems: "center",
+              marginRight: "10px",
+            }}
+          >
+            <Button
+              className="view-large-transparent-button"
+              text="View Details"
+              onClick={() => {
+                setShowViewDetailPageInTatOnHta(true);
+                setShowSelectedTatDataOnViewDetailHTA(record);
+              }}
+            />
+          </div>
+        </>
+      );
+    },
   },
 ];

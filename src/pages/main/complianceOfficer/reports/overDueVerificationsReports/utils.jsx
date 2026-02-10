@@ -14,6 +14,7 @@ import {
 } from "../../../../../common/funtions/rejex";
 import { mapBuySellToIds } from "../../../../../components/dropdowns/filters/utils";
 import { getTradeTypeById } from "../../../../../common/funtions/type";
+import { withSortIcon } from "../../../../../common/funtions/tableIcon";
 
 /**
  * Utility: Build API request payload for approval listing
@@ -29,8 +30,7 @@ export const buildApiRequest = (searchState = {}, assetTypeListingData) => ({
   ShareTraded: Number(searchState.sharesTraded) || null,
   PageNumber: Number(searchState.pageNumber) || 0,
   Length: Number(searchState.pageSize) || 10,
-  Type: searchState.type,
-  StatusIds: [],
+  Type: mapBuySellToIds(searchState.type, assetTypeListingData?.Equities),
   EscalationFromDate: "",
   EscalationToDate: "",
   FromDate: searchState.startDate ? toYYMMDD(searchState.startDate) : "",
@@ -75,50 +75,6 @@ export const mappingDateWiseTransactionReport = (
   }));
 };
 
-/**
- * Returns the appropriate sort icon based on current sort state
- *
- * @param {string} columnKey - The column's key
- * @param {object} sortedInfo - Current sort state from the table
- * @returns {JSX.Element} The sort icon
- */
-const getSortIcon = (columnKey, sortedInfo) => {
-  if (sortedInfo?.columnKey === columnKey) {
-    return sortedInfo.order === "ascend" ? (
-      <img
-        draggable={false}
-        src={ArrowDown}
-        alt="Asc"
-        className="custom-sort-icon"
-      />
-    ) : (
-      <img
-        draggable={false}
-        src={ArrowUP}
-        alt="Desc"
-        className="custom-sort-icon"
-      />
-    );
-  }
-  return (
-    <img
-      draggable={false}
-      src={DefaultColumArrow}
-      alt="Default"
-      className="custom-sort-icon"
-    />
-  );
-};
-
-// Helper for consistent column titles
-const withSortIcon = (label, columnKey, sortedInfo) => (
-  <div className={style["table-header-wrapper"]}>
-    <span className={style["table-header-text"]}>{label}</span>
-    <span className={style["table-header-icon"]}>
-      {getSortIcon(columnKey, sortedInfo)}
-    </span>
-  </div>
-);
 const withFilterHeader = (FilterComponent) => (
   <div
     className={style["table-header-wrapper"]}
@@ -132,6 +88,7 @@ const withFilterHeader = (FilterComponent) => (
     <FilterComponent />
   </div>
 );
+
 export const getBorderlessTableColumns = ({
   sortedInfo,
   coOverdueVerificationReportSearch,
@@ -140,15 +97,11 @@ export const getBorderlessTableColumns = ({
   handleViewDetailsForReconcileTransaction,
 }) => [
   {
-    title: (
-      <div style={{ marginLeft: "8px" }}>
-        {withSortIcon("Requester Name", "requesterName", sortedInfo)}
-      </div>
-    ),
+    title: withSortIcon("Requester Name", "requesterName", sortedInfo),
     dataIndex: "requesterName",
     key: "requesterName",
     align: "left",
-    width: "180px",
+    width: 200,
     ellipsis: true,
     sorter: (a, b) => a.requesterName.localeCompare(b.requesterName),
     sortDirections: ["ascend", "descend"],
@@ -161,20 +114,25 @@ export const getBorderlessTableColumns = ({
     ),
   },
   {
-    title: withSortIcon("Type", "tradeType", sortedInfo),
+    title: withFilterHeader(() => (
+      <TypeColumnTitle
+        state={coOverdueVerificationReportSearch}
+        setState={setCoOverdueVerificationReportSearch}
+      />
+    )),
     dataIndex: "tradeType",
+    width: 200,
     key: "tradeType",
     ellipsis: true,
-    width: "120px",
     filteredValue: coOverdueVerificationReportSearch.type?.length
       ? coOverdueVerificationReportSearch.type
       : null,
     onFilter: () => true, // Actual filtering handled by API
-    render: (type, record) => (
+    render: (tradeType, record) => (
       <span
         id={`cell-${record.key}-type`}
-        className={type === "Buy" ? "text-green-600" : "text-red-600"}
-        data-testid={`trade-type-${type}`}
+        className={tradeType === "Buy" ? "text-green-600" : "text-red-600"}
+        data-testid={`trade-type-${tradeType}`}
         style={{
           display: "inline-block",
           width: "100%",
@@ -183,7 +141,7 @@ export const getBorderlessTableColumns = ({
           whiteSpace: "nowrap",
         }}
       >
-        {type}
+        {tradeType}
       </span>
     ),
   },
@@ -191,8 +149,9 @@ export const getBorderlessTableColumns = ({
     title: withSortIcon("Instrument", "instrumentName", sortedInfo),
     dataIndex: "instrumentName",
     key: "instrumentName",
+    align: "left",
     ellipsis: true,
-    width: "180px",
+    width: 200,
     sorter: (a, b) => {
       const nameA = a?.instrumentShortCode || "";
       const nameB = b?.instrumentShortCode || "";
@@ -209,13 +168,7 @@ export const getBorderlessTableColumns = ({
       const instrumentName = record?.instrumentName || "";
 
       return (
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: "12px",
-          }}
-        >
+        <div>
           <span className="custom-shortCode-asset" style={{ minWidth: 30 }}>
             {assetCode?.substring(0, 2).toUpperCase()}
           </span>
@@ -242,12 +195,13 @@ export const getBorderlessTableColumns = ({
     title: withSortIcon(
       "Transaction Date & Time",
       "transactionDate",
-      sortedInfo
+      sortedInfo,
+      "center"
     ),
     dataIndex: "transactionDate",
     key: "transactionDate",
-    align: "left",
-    width: "220px",
+    align: "center",
+    width: 250,
     ellipsis: true,
     sorter: (a, b) => {
       const dateA = new Date(`${a.transactionDate}`).getTime();
@@ -265,12 +219,17 @@ export const getBorderlessTableColumns = ({
       </span>
     ),
   },
-
   {
-    title: withSortIcon("Approved Quantity", "approvedQuantity", sortedInfo),
+    title: withSortIcon(
+      "Approved Quantity",
+      "approvedQuantity",
+      sortedInfo,
+      "center"
+    ),
     dataIndex: "approvedQuantity",
-    width: "180px",
+    width: 200,
     key: "approvedQuantity",
+    align: "center",
     ellipsis: true,
     sorter: (a, b) => a.approvedQuantity - b.approvedQuantity,
     sortDirections: ["ascend", "descend"],
@@ -281,10 +240,11 @@ export const getBorderlessTableColumns = ({
     render: (q) => <span className="font-medium">{q.toLocaleString()}</span>,
   },
   {
-    title: withSortIcon("Shares Traded", "shareTraded", sortedInfo),
+    title: withSortIcon("Shares Traded", "shareTraded", sortedInfo, "center"),
     dataIndex: "shareTraded",
     key: "shareTraded",
-    width: "180px",
+    width: 200,
+    align: "center",
     ellipsis: true,
     sorter: (a, b) => a.shareTraded - b.shareTraded,
     sortDirections: ["ascend", "descend"],
@@ -308,6 +268,7 @@ export const getBorderlessTableColumns = ({
   {
     title: "",
     key: "action",
+    width: 150,
     align: "right", // 🔷 Align content to the right
     render: (_, record) => (
       <div className={style.viewEditClass}>

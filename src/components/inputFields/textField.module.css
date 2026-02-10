@@ -86,7 +86,7 @@
 .medium .input,
 .input-medium {
   height: 56px!important;
-  font-size: 16px!important;
+  /* font-size: 16px!important; */
   padding: 10px 14px!important;
 }
 

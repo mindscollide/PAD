@@ -72,38 +72,43 @@ const ReportCard = ({
     ) {
       setSelectedKey("11"); // update your menu/side bar state
       navigate("/PAD/co-reports/co-transactions-summary-report");
-    } else if (
-      data?.label === "Overdue Verifications" &&
-      userRole === "CO"
-    ) {
+    } else if (data?.label === "Overdue Verifications" && userRole === "CO") {
       setSelectedKey("11"); // update your menu/side bar state
       navigate("/PAD/co-reports/co-overdue-verifications");
-    } else if (
-      data?.label === "Overdue Verifications" &&
-      userRole === "HCA"
-    ) {
+    } else if (data?.label === "Overdue Verifications" && userRole === "HCA") {
       setSelectedKey("17"); // update your menu/side bar state
       navigate("/PAD/hca-reports/hca-overdue-verifications");
-    }else if (
+    } else if (
       data?.label === "Date Wise Transaction Report" &&
       userRole === "HCA"
     ) {
       setSelectedKey("17"); // update your menu/side bar state
       navigate("/PAD/hca-reports/hca-date-wise-transaction-report");
-    }else if (
+    } else if (
       data?.label === "Transaction Summary Report" &&
       userRole === "HCA"
     ) {
       setSelectedKey("17"); // update your menu/side bar state
       navigate("/PAD/hca-reports/hca-transactions-summary-report");
-    }else if (
-      data?.label === "Trade Approval Request" &&
-      userRole === "HTA"
-    ) {
-      setSelectedKey("14"); // update your menu/side bar state
+    } else if (data?.label === "Trade Approval Request" && userRole === "HTA") {
+      setSelectedKey("14");
       navigate("/PAD/hta-reports/hta-trade-approval-requests");
+    } else if (data?.label === "Policy Breaches" && userRole === "HTA") {
+      setSelectedKey("14");
+      navigate("/PAD/hta-reports/hta-policy-breaches-reports");
+    } else if (data?.label === "TAT Request Approval" && userRole === "HTA") {
+      setSelectedKey("14");
+      navigate("/PAD/hta-reports/hta-tat-reports");
+    }else if (data?.label === "User Activity Report" && userRole === "Admin") {
+      setSelectedKey("23");
+      navigate("/PAD/admin-reports/admin-user-activity-report");
+    }else if (data?.label === "User-wise Compliance Report" && userRole === "Admin") {
+      setSelectedKey("23");
+      navigate("/PAD/admin-reports/admin-user-wise-compliance-report");
+    }else if (data?.label === "Policy Breaches" && userRole === "Admin") {
+      setSelectedKey("23");
+      navigate("/PAD/admin-reports/admin-policy-breaches-report");
     }
-    
   };
 
   const reportIcons = {

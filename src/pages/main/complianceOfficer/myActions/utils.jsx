@@ -10,43 +10,7 @@ import {
   formatApiDateTime,
   toYYMMDD,
 } from "../../../../common/funtions/rejex";
-const getSortIcon = (columnKey, sortedInfo) => {
-  if (sortedInfo?.columnKey === columnKey) {
-    return sortedInfo.order === "ascend" ? (
-      <img
-        draggable={false}
-        src={ArrowDown}
-        alt="Asc"
-        className="custom-sort-icon"
-      />
-    ) : (
-      <img
-        draggable={false}
-        src={ArrowUP}
-        alt="Desc"
-        className="custom-sort-icon"
-      />
-    );
-  }
-  return (
-    <img
-      draggable={false}
-      src={DefaultColumArrow}
-      alt="Default"
-      className="custom-sort-icon"
-    />
-  );
-};
-
-// Helper for consistent column titles
-const withSortIcon = (label, columnKey, sortedInfo) => (
-  <div className={style["table-header-wrapper"]}>
-    <span className={style["table-header-text"]}>{label}</span>
-    <span className={style["table-header-icon"]}>
-      {getSortIcon(columnKey, sortedInfo)}
-    </span>
-  </div>
-);
+import { withSortIcon } from "../../../../common/funtions/tableIcon";
 
 /**
  * Utility: Build API request payload for approval listing
@@ -75,7 +39,8 @@ export const getMyActionsColumn = (approvalStatusMap, sortedInfo) => [
     dataIndex: "approvalID",
     key: "approvalID",
     ellipsis: true,
-    width: "220px",
+    align: "left",
+    width: 180,
     sorter: (a, b) =>
       parseInt(a.approvalID.replace(/[^\d]/g, ""), 10) -
       parseInt(b.approvalID.replace(/[^\d]/g, ""), 10),
@@ -97,6 +62,7 @@ export const getMyActionsColumn = (approvalStatusMap, sortedInfo) => [
     title: withSortIcon("Instrument", "instrumentName", sortedInfo),
     dataIndex: "instrumentName",
     key: "instrumentName",
+    align: "left",
     width: "140px",
     ellipsis: true,
     sorter: (a, b) => {
@@ -145,10 +111,24 @@ export const getMyActionsColumn = (approvalStatusMap, sortedInfo) => [
     },
   },
   {
+    title: withSortIcon("Nature", "nature", sortedInfo),
+    dataIndex: "nature",
+    key: "nature",
+    width: 120,
+    align: "left",
+    ellipsis: true,
+    sorter: (a, b) => a.nature.localeCompare(b.nature),
+    sortDirections: ["ascend", "descend"],
+    sortOrder: sortedInfo?.columnKey === "nature" ? sortedInfo.order : null,
+    showSorterTooltip: false,
+    sortIcon: () => null,
+    render: (text) => <span className="font-medium">{text}</span>,
+  },
+  {
     title: withSortIcon("Requester Name", "requesterName", sortedInfo),
     dataIndex: "requesterName",
     key: "requesterName",
-    width: "160px",
+    width: 180,
     align: "left",
     ellipsis: true,
     sorter: (a, b) => a.requesterName.localeCompare(b.requesterName),
@@ -163,27 +143,22 @@ export const getMyActionsColumn = (approvalStatusMap, sortedInfo) => [
     title: withSortIcon(
       "Date & Time of Approval Request",
       "approvalDateTime",
-      sortedInfo
+      sortedInfo,
+      "center"
     ),
     dataIndex: "approvalDateTime",
     key: "approvalDateTime",
     width: "280px",
-    align: "left",
+    align: "center",
     ellipsis: true,
-    sorter: (a, b) => {
-      const dateA = new Date(`${a.creationDate} ${a.creationTime}`).getTime();
-      const dateB = new Date(`${b.creationDate} ${b.creationTime}`).getTime();
-      return dateA - dateB;
-    },
-    sortDirections: ["ascend", "descend"],
+    sorter: (a, b) =>
+      (a?.approvalDateTime || "").localeCompare(b?.approvalDateTime || ""),
     sortOrder:
       sortedInfo?.columnKey === "approvalDateTime" ? sortedInfo.order : null,
     showSorterTooltip: false,
     sortIcon: () => null,
-    render: (_, record) => (
-      <span className="text-gray-600">
-        {formatApiDateTime(`${record.creationDate} ${record.creationTime}`)}
-      </span>
+    render: (date, record) => (
+      <span className="text-gray-600">{formatApiDateTime(date) || "—"}</span>
     ),
   },
   {
@@ -201,11 +176,11 @@ export const getMyActionsColumn = (approvalStatusMap, sortedInfo) => [
     render: (text) => <span className="font-medium">{text}</span>,
   },
   {
-    title: withSortIcon("Quantity", "quantity", sortedInfo),
+    title: withSortIcon("Quantity", "quantity", sortedInfo, "center"),
     dataIndex: "quantity",
     key: "quantity",
     width: "180px",
-    align: "left",
+    align: "center",
     ellipsis: true,
     sorter: (a, b) => a.quantity - b.quantity,
     sortDirections: ["ascend", "descend"],
@@ -218,7 +193,7 @@ export const getMyActionsColumn = (approvalStatusMap, sortedInfo) => [
     title: withSortIcon("Status", "status", sortedInfo),
     dataIndex: "status",
     key: "status",
-    width: "160px",
+    width: 180,
     align: "left",
     ellipsis: true,
     sorter: (a, b) => a.status.localeCompare(b.status),

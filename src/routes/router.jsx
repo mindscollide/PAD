@@ -42,6 +42,8 @@ import {
   TradesUploadViaPortfolio,
   HTAPolicyBreachesReport,
   HTATAT,
+  AdmindataWiseTransactionsReports,
+  AdminTransactionsSummarysReports,
 } from "../pages";
 import RoleBasedRoute from "./RoleBasedRoute";
 import EscalatedApprovals from "../pages/main/headOfTradeApprover/escalatedApprovals/escalatedApprovals";
@@ -61,6 +63,12 @@ import HeadCompianceOfficerOverdueVerificationReports from "../pages/main/headOf
 import HOCMyActionPage from "../pages/main/headOfComplianceOffice/myActions";
 import CompianceOfficerPortfolioHistoryReports from "../pages/main/complianceOfficer/reports/portfolioHistoryReports";
 import HTATradeApprovalRequest from "../pages/main/headOfTradeApprover/reports/tradeApprovalsRequest/HTATradeApprovalRequest";
+import PendingApprovalRequest from "../pages/main/headOfTradeApprover/reports/pendingRequest/pendingRequest";
+import HTAMyAction from "../pages/main/headOfTradeApprover/myActions/myActions";
+import AdminPolicyBreachesReport from "../pages/adminMain/reports/policyBreaches";
+import AdminReportsIndex from "../pages/adminMain/reports";
+import AdminUserActivityReport from "../pages/adminMain/reports/userActivityReport";
+import UserWiseComplianceReport from "../pages/adminMain/reports/userWiseComplianceReport";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -196,7 +204,7 @@ const router = createBrowserRouter(
           path="hta-my-actions"
           element={
             <RoleBasedRoute isAdmin={false} allowedRoles={[5]}>
-              <EmployeMyTransaction />{" "}
+              <HTAMyAction />{" "}
             </RoleBasedRoute>
           }
         />
@@ -210,7 +218,6 @@ const router = createBrowserRouter(
           }
         >
           <Route index element={<HTAReportsIndex />} />
-          <Route path="lm-pending-request" element={<PendingRequest />} />
           <Route
             path="hta-trade-approval-requests"
             element={<HTATradeApprovalRequest />}
@@ -219,11 +226,11 @@ const router = createBrowserRouter(
             path="hta-policy-breaches-reports"
             element={<HTAPolicyBreachesReport />}
           />
-           <Route
-            path="hta-tat-reports"
-            element={<HTATAT />}
+          <Route path="hta-tat-reports" element={<HTATAT />} />
+          <Route
+            path="hta-pending-requests"
+            element={<PendingApprovalRequest />}
           />
-          
         </Route>
         {/* Compliance Officer */}
         <Route
@@ -360,24 +367,6 @@ const router = createBrowserRouter(
           />
         </Route>
 
-        {/*  */}
-        {/* <Route
-          path="admin-users"
-          element={
-            <RoleBasedRoute isAdmin={true} allowedRoles={[1]}>
-              <ManageUsers />
-            </RoleBasedRoute>
-          }
-        />
-        <Route
-          path="session-wise-activity"
-          element={
-            <RoleBasedRoute isAdmin={true} allowedRoles={[1]}>
-              <UserSessionWiseActivity />
-            </RoleBasedRoute>
-          }
-        /> */}
-
         <Route
           path="admin-system-configurations"
           element={
@@ -391,17 +380,53 @@ const router = createBrowserRouter(
           path="admin-reports"
           element={
             <RoleBasedRoute isAdmin={true} allowedRoles={[1]}>
-              <EmpolyesReportsIndex />{" "}
+              <ReportsLayout />
             </RoleBasedRoute>
           }
-        />
+        >
+          <Route index element={<AdminReportsIndex />} />
+          <Route
+            path="admin-user-activity-report"
+            element={<AdminUserActivityReport />}
+          />
+          <Route
+            path="admin-user-wise-compliance-report"
+            element={<UserWiseComplianceReport />}
+          />
+          <Route
+            path="admin-policy-breaches-report"
+            element={<AdminPolicyBreachesReport />}
+          />
+          <Route
+            path="admin-trade-approval-report"
+            element={<AdminPolicyBreachesReport />}
+          />
+
+          <Route
+            path="admin-date-wise-transaction-report"
+            element={<AdmindataWiseTransactionsReports />}
+          />
+          <Route
+            path="admin-transactions-summary-report"
+            element={<AdminTransactionsSummarysReports />}
+          />
+          <Route
+            path="admin-tat-request-report"
+            element={<AdminPolicyBreachesReport />}
+          />
+          <Route
+            path="admin-trades-uploaded-via-portfolio-report"
+            element={<AdminPolicyBreachesReport />}
+          />
+        </Route>
+
         <Route path="faq" element={<Faqs />} />
       </Route>
 
       {/* Redirect all unknown routes to login */}
       <Route path="*" element={<Navigate to="/" replace />} />
-    </Route>
-  )
+    </Route>,
+  ),
 );
 
 export default router;
