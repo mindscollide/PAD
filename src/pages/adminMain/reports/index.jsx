@@ -231,21 +231,6 @@ const AdminReportsIndex = () => {
         </Row>
         {/* ========== Second Row Reports ========== */}
         <Row gutter={[16, 16]}>
-          {/* ---- User Wise Transaction Report ---- */}
-          <Col xs={24} md={12} lg={12}>
-            <MemoizedBoxCard
-              reportsFlag={true}
-              locationStyle="up"
-              title="User Wise Transaction Report"
-              mainClassName="reports"
-              boxes={adminUserWiseTransactionReport}
-              buttonId="Transactions-view-btn"
-              buttonClassName="big-white-card-button"
-              userRole="Admin"
-              route="admin-user-wise-transaction-report"
-            />
-          </Col>
-
           {/* ---- Date Wise Transaction Report ---- */}
           <Col xs={24} md={12} lg={12}>
             <MemoizedBoxCard
@@ -260,25 +245,25 @@ const AdminReportsIndex = () => {
               route="admin-date-wise-transaction-report"
             />
           </Col>
-        </Row>
 
-        {/* ========== Third Row Reports ========== */}
-        <Row gutter={[16, 16]}>
-          {/* ---- Compliance Standing Report ---- */}
+          {/* ---- Transactions Summary Report ---- */}
           <Col xs={24} md={12} lg={12}>
             <MemoizedBoxCard
               reportsFlag={true}
               locationStyle="up"
-              title="Compliance Standing Report"
+              title="Transactions Summary Report"
               mainClassName="reports"
-              boxes={complianceStandingTransactionReport}
+              boxes={adminUserWiseTransactionReport}
               buttonId="Transactions-view-btn"
               buttonClassName="big-white-card-button"
               userRole="Admin"
-              route="admin-compliance-standing-report"
+              route="admin-transactions-summary-report"
             />
           </Col>
+        </Row>
 
+        {/* ========== Third Row Reports ========== */}
+        <Row gutter={[16, 16]}>
           {/* ---- TAT Request Approvals Report ---- */}
           <Col xs={24} md={12} lg={12}>
             <MemoizedBoxCard
@@ -291,6 +276,20 @@ const AdminReportsIndex = () => {
               buttonClassName="big-white-card-button"
               userRole="Admin"
               route="admin-TAT-Request-report"
+            />
+          </Col>
+          {/* ---- Trades Uploaded via Portfolio ---- */}
+          <Col xs={24} md={12} lg={12}>
+            <MemoizedBoxCard
+              reportsFlag={true}
+              locationStyle="up"
+              title="Trades Uploaded via Portfolio"
+              mainClassName="reports"
+              boxes={complianceStandingTransactionReport}
+              buttonId="Transactions-view-btn"
+              buttonClassName="big-white-card-button"
+              userRole="Admin"
+              route="admin-trades-uploaded-via-portfolio-report"
             />
           </Col>
         </Row>

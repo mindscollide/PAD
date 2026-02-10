@@ -61,9 +61,9 @@ const iconComponents = {
   "admin-user-wise-compliance-report": PendingApprovalIcon,
   "admin-policy-breaches-report": PolicyIcon,
   "admin-trade-approval-report": ApprovalsIcon,
-  "admin-userwise-transaction-report": ReportsIcon,
-  "admin-datewise-transaction-report": TransactionsIcon,
-  "admin-compliance-standing-report": RequestPendingIcon,
+  "admin-transactions-summary-report": ReportsIcon,
+  "admin-date-wise-transaction-report": TransactionsIcon,
+  "admin-trades-uploaded-via-portfolio-report": RequestPendingIcon,
   "admin-tat-request-report": AuditIcon,
 };
 
@@ -103,10 +103,10 @@ const defaultMessages = {
   "admin-user-wise-compliance-report": "No User Wise Compliance Report Found",
   "admin-policy-breaches-report": "No Policy Breaches Report Found",
   "admin-trade-approval-report": "No Trade Approval Requests Report Found",
-  "admin-user-wise-transaction-report": "No Transactions Summary Report Found",
+  "admin-transactions-summary-report": "No Transactions Summary Report Found",
   "admin-date-wise-transaction-report":
     "No Date Wise Transaction ReportDate Wise Transaction Report Found",
-  "admin-compliance-standing-report": "No Compliance Standing Report Found",
+  "admin-trades-uploaded-via-portfolio-report": "No Trades Uploaded via Portfolio Report Found",
   "admin-tat-request-report": "No TAT Request Report Found",
 };
 

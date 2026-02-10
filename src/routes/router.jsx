@@ -42,6 +42,7 @@ import {
   TradesUploadViaPortfolio,
   HTAPolicyBreachesReport,
   HTATAT,
+  AdmindataWiseTransactionsReports,
 } from "../pages";
 import RoleBasedRoute from "./RoleBasedRoute";
 import EscalatedApprovals from "../pages/main/headOfTradeApprover/escalatedApprovals/escalatedApprovals";
@@ -365,24 +366,6 @@ const router = createBrowserRouter(
           />
         </Route>
 
-        {/*  */}
-        {/* <Route
-          path="admin-users"
-          element={
-            <RoleBasedRoute isAdmin={true} allowedRoles={[1]}>
-              <ManageUsers />
-            </RoleBasedRoute>
-          }
-        />
-        <Route
-          path="session-wise-activity"
-          element={
-            <RoleBasedRoute isAdmin={true} allowedRoles={[1]}>
-              <UserSessionWiseActivity />
-            </RoleBasedRoute>
-          }
-        /> */}
-
         <Route
           path="admin-system-configurations"
           element={
@@ -418,15 +401,15 @@ const router = createBrowserRouter(
             element={<AdminPolicyBreachesReport />}
           />
           <Route
-            path="admin-user-wise-transaction-report"
+            path="admin-transactions-summary-report"
             element={<AdminPolicyBreachesReport />}
           />
           <Route
             path="admin-date-wise-transaction-report"
-            element={<AdminPolicyBreachesReport />}
+            element={<AdmindataWiseTransactionsReports />}
           />
           <Route
-            path="admin-compliance-standing-report"
+            path="admin-trades-uploaded-via-portfolio-report"
             element={<AdminPolicyBreachesReport />}
           />
           <Route

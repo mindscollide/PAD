@@ -19,13 +19,14 @@ import { approvalStatusMap } from "../../../../../components/tables/borderlessTa
 import { useGlobalModal } from "../../../../../context/GlobalModalContext";
 
 // 🔹 Styles
-import style from "./dataWiseTransactionsReports.module.css";
+import style from "./transactionsSummary.module.css";
 import { useMyApproval } from "../../../../../context/myApprovalContaxt";
 import {
   DownloadComplianceOfficerDateWiseTransactionReportRequestAPI,
   DownloadLineManagerMyTradeApprovalReportRequestAPI,
   DownloadMyTransactionReportRequestAPI,
-  SearchComplianceOfficerDateWiseTransactionRequest,
+  GetComplianceOfficerViewTransactionSummaryAPI,
+  SearchComplianceOfficerTransactionSummaryReportRequest,
   SearchLineManagerTradeApprovalRequestApi,
 } from "../../../../../api/myApprovalApi";
 import { useNotification } from "../../../../../components/NotificationProvider/NotificationProvider";
@@ -38,13 +39,10 @@ import { getSafeAssetTypeData } from "../../../../../common/funtions/assetTypesL
 import { useTableScrollBottom } from "../../../../../common/funtions/scroll";
 import CustomButton from "../../../../../components/buttons/button";
 import { DateRangePicker } from "../../../../../components";
-import ViewDetaildDateWiseTransaction from "./ViewDetaildDateWiseTransaction/ViewDetaildDateWiseTransaction";
-import { DateWiseTransactionReportViewDetails } from "../../../../../api/myTransactionsApi";
-import { useReconcileContext } from "../../../../../context/reconsileContax";
+// import ViewComment from "./viewComment/ViewComment";
 
-const COdataWiseTransactionsReports = () => {
+const COTransactionsSummarysReportsViewDetails = () => {
   const navigate = useNavigate();
-  const hasFetched = useRef(false);
   const tableScrollEmployeeTransaction = useRef(null);
 
   // -------------------- Contexts --------------------
@@ -52,28 +50,31 @@ const COdataWiseTransactionsReports = () => {
   const { showNotification } = useNotification();
   const { showLoader } = useGlobalLoader();
   const {
-    coDatewiseTransactionReportListData,
-    setCODatewiseTransactionReportListData,
+    coTransactionSummaryReportListData,
+    setCOTransactionSummaryReportListData,
+    resetCOTransactionSummaryReportListData,
   } = useMyApproval();
 
   const { isViewComments, setIsViewComments, setCheckTradeApprovalID } =
     useGlobalModal();
 
   const {
-    coDatewiseTransactionReportSearch,
-    setCODatewiseTransactionReportSearch,
-    resetComplianceOfficerDateWiseTransationReportSearch,
+    coTransactionsSummarysReportsSearch,
+    setCOTransactionsSummarysReportsSearch,
+    resetCOTransactionsSummarysReportsSearch,
   } = useSearchBarContext();
 
-  const { assetTypeListingData, setAssetTypeListingData } =
-    useDashboardContext();
+  const { setAssetTypeListingData } = useDashboardContext();
 
-  const { setReconcileTransactionViewDetailData } = useReconcileContext();
 
   // -------------------- Local State --------------------
   const [sortedInfo, setSortedInfo] = useState({});
   const [loadingMore, setLoadingMore] = useState(false);
   const [open, setOpen] = useState(false);
+  const [dateRange, setDateRange] = useState({
+    StartDate: null,
+    EndDate: null,
+  });
 
   // -------------------- Helpers --------------------
 
@@ -85,7 +86,7 @@ const COdataWiseTransactionsReports = () => {
     async (requestData, replace = false, showLoaderFlag = true) => {
       if (!requestData || typeof requestData !== "object") return;
       if (showLoaderFlag) showLoader(true);
-      const res = await SearchComplianceOfficerDateWiseTransactionRequest({
+      const res = await SearchComplianceOfficerTransactionSummaryReportRequest({
         callApi,
         showNotification,
         showLoader,
@@ -93,36 +94,27 @@ const COdataWiseTransactionsReports = () => {
         navigate,
       });
 
-      // ✅ Always get the freshest version (from memory or session)
-      const currentAssetTypeData = getSafeAssetTypeData(
-        assetTypeListingData,
-        setAssetTypeListingData
-      );
-
-      const records = Array.isArray(res?.complianceOfficerApprovals)
-        ? res.complianceOfficerApprovals
+      const transactions = Array.isArray(res?.transactions)
+        ? res.transactions
         : [];
-      console.log("records", records);
-      const mapped = mappingDateWiseTransactionReport(
-        currentAssetTypeData?.Equities,
-        records
-      );
+      console.log("records", transactions);
+      const mapped = mappingDateWiseTransactionReport(transactions);
       if (!mapped || typeof mapped !== "object") return;
       console.log("records", mapped);
 
-      setCODatewiseTransactionReportListData((prev) => ({
-        complianceOfficerApprovalsList: replace
+      setCOTransactionSummaryReportListData((prev) => ({
+        transactions: replace
           ? mapped
-          : [...(prev?.complianceOfficerApprovalsList || []), ...mapped],
+          : [...(prev?.transactions || []), ...mapped],
         // this is for to run lazy loading its data comming from database of total data in db
         totalRecordsDataBase: res?.totalRecords || 0,
         // this is for to know how mush dta currently fetch from  db
         totalRecordsTable: replace
           ? mapped.length
-          : coDatewiseTransactionReportListData.totalRecordsTable +
+          : coTransactionSummaryReportListData.totalRecordsTable +
             mapped.length,
       }));
-      setCODatewiseTransactionReportSearch((prev) => {
+      setCOTransactionsSummarysReportsSearch((prev) => {
         const next = {
           ...prev,
           pageNumber: replace ? mapped.length : prev.pageNumber + mapped.length,
@@ -137,62 +129,46 @@ const COdataWiseTransactionsReports = () => {
       });
     },
     [
-      assetTypeListingData,
       callApi,
       navigate,
-      setCODatewiseTransactionReportSearch,
+      setCOTransactionsSummarysReportsSearch,
       showLoader,
       showNotification,
     ]
   );
 
-
   // -------------------- Effects --------------------
-
-  // 🔹 Initial Fetch
-  useEffect(() => {
-    if (hasFetched.current) return;
-    hasFetched.current = true;
-    const requestData = buildApiRequest(
-      coDatewiseTransactionReportSearch,
-      assetTypeListingData
-    );
-    fetchApiCall(requestData, true, true);
-  }, []);
 
   //   // Reset on Unmount
   useEffect(() => {
     return () => {
       // Reset search state for fresh load
-      resetComplianceOfficerDateWiseTransationReportSearch();
+      resetCOTransactionsSummarysReportsSearch();
+      resetCOTransactionSummaryReportListData()
     };
   }, []);
 
   // 🔹 call api on search
   useEffect(() => {
-    if (coDatewiseTransactionReportSearch?.filterTrigger) {
-      const requestData = buildApiRequest(
-        coDatewiseTransactionReportSearch,
-        assetTypeListingData
-      );
+    if (coTransactionsSummarysReportsSearch?.filterTrigger) {
+      const requestData = buildApiRequest(coTransactionsSummarysReportsSearch);
       fetchApiCall(requestData, true, true);
     }
-  }, [coDatewiseTransactionReportSearch?.filterTrigger]);
+  }, [coTransactionsSummarysReportsSearch?.filterTrigger]);
 
   // 🔹 Infinite Scroll (lazy loading)
   useTableScrollBottom(
     async () => {
       if (
-        coDatewiseTransactionReportListData?.totalRecordsDataBase <=
-        coDatewiseTransactionReportListData?.totalRecordsTable
+        coTransactionSummaryReportListData?.totalRecordsDataBase <=
+        coTransactionSummaryReportListData?.totalRecordsTable
       )
         return;
 
       try {
         setLoadingMore(true);
         const requestData = buildApiRequest(
-          coDatewiseTransactionReportSearch,
-          assetTypeListingData
+          coTransactionsSummarysReportsSearch
         );
         await fetchApiCall(requestData, false, false);
       } catch (err) {
@@ -204,137 +180,49 @@ const COdataWiseTransactionsReports = () => {
     0,
     "border-less-table-blue"
   );
-  const handelViewDetails = async (workFlowID) => {
-    await showLoader(true);
-    const requestdata = { TradeApprovalID: workFlowID };
 
-    const responseData = await DateWiseTransactionReportViewDetails({
-      callApi,
-      showNotification,
-      showLoader,
-      requestdata,
-      navigate,
-    });
-
-    if (responseData) {
-      console.log("responseData",responseData)
-      setIsViewComments(true);
-
-      setReconcileTransactionViewDetailData(responseData);
-    }
-  };
   // -------------------- Table Columns --------------------
   const columns = getBorderlessTableColumns({
     approvalStatusMap,
     sortedInfo,
-    coDatewiseTransactionReportSearch,
-    setCODatewiseTransactionReportSearch,
-    handelViewDetails,
-    setIsViewComments,
-    setCheckTradeApprovalID,
+    coTransactionsSummarysReportsSearch,
+    setCOTransactionsSummarysReportsSearch,
   });
 
-  /** 🔹 Handle removing individual filter */
-  const handleRemoveFilter = (key) => {
-    const resetMap = {
-      employeeID: { employeeID: 0 },
-      employeeName: { employeeName: "" },
-      departmentName: { departmentName: "" },
-      instrumentName: { instrumentName: "" },
-      quantity: { quantity: 0 },
+  const handleDateChange = (dates) => {
+    if (!dates || dates.length !== 2) return;
 
-      // requestDate resets startDate + endDate
-      requestDate: { startDate: null, endDate: null },
+    const start = dates[0];
+    const end = dates[1];
 
-      type: { type: [] },
-      status: { status: [] },
-    };
+    setDateRange({
+      StartDate: start,
+      EndDate: end,
+    });
 
-    setCODatewiseTransactionReportSearch((prev) => ({
+    setCOTransactionsSummarysReportsSearch((prev) => ({
       ...prev,
-      ...resetMap[key], // reset only the clicked filter
+      startDate: start,
+      endDate: end,
       pageNumber: 0,
       filterTrigger: true,
     }));
   };
 
-  /** 🔹 Handle removing all filters */
-  const handleRemoveAllFilters = () => {
-    setCODatewiseTransactionReportSearch((prev) => ({
+  const handleClearDates = () => {
+    setDateRange({
+      StartDate: null,
+      EndDate: null,
+    });
+
+    setCOTransactionsSummarysReportsSearch((prev) => ({
       ...prev,
-      employeeID: 0,
-      employeeName: "",
-      departmentName: "",
-      instrumentName: "",
-      quantity: 0,
       startDate: null,
       endDate: null,
-      type: [],
-      status: [],
       pageNumber: 0,
       filterTrigger: true,
     }));
   };
-
-  /** 🔹 Build Active Filters */
-  const activeFilters = (() => {
-    const {
-      employeeID,
-      employeeName,
-      departmentName,
-      instrumentName,
-      quantity,
-      startDate,
-      endDate,
-      type,
-      status,
-    } = coDatewiseTransactionReportSearch || {};
-
-    const truncate = (val) =>
-      val.length > 13 ? val.slice(0, 13) + "..." : val;
-
-    const formatDate = (date) =>
-      date ? new Date(date).toISOString().split("T")[0] : null;
-
-    const formatArray = (arr) => (arr?.length ? arr.join(", ") : null);
-
-    const formattedStart = formatDate(startDate);
-    const formattedEnd = formatDate(endDate);
-
-    // 🔹 Combine into requestDate
-    let requestDate = null;
-    if (formattedStart && formattedEnd) {
-      requestDate = `${formattedStart} to ${formattedEnd}`;
-    } else if (formattedStart) {
-      requestDate = `From ${formattedStart}`;
-    } else if (formattedEnd) {
-      requestDate = `Till ${formattedEnd}`;
-    }
-
-    return [
-      employeeID ? { key: "employeeID", value: employeeID } : null,
-
-      employeeName
-        ? { key: "employeeName", value: truncate(employeeName) }
-        : null,
-
-      departmentName
-        ? { key: "departmentName", value: truncate(departmentName) }
-        : null,
-
-      instrumentName
-        ? { key: "instrumentName", value: truncate(instrumentName) }
-        : null,
-
-      quantity ? { key: "quantity", value: quantity } : null,
-
-      requestDate ? { key: "requestDate", value: requestDate } : null,
-
-      type?.length ? { key: "type", value: formatArray(type) } : null,
-
-      status?.length ? { key: "status", value: formatArray(status) } : null,
-    ].filter(Boolean);
-  })();
 
   // 🔷 Excel Report download Api Hit
   const downloadMyTradeApprovalLineManagerInExcelFormat = async () => {
@@ -380,15 +268,23 @@ const COdataWiseTransactionsReports = () => {
               {
                 title: (
                   <span className={style.breadcrumbText}>
-                    Date Wise Transaction
+                    Transactions Summary Report
                   </span>
                 ),
               },
             ]}
           />
         </Col>
+
         <Col>
           <div className={style.headerActionsRow}>
+            <DateRangePicker
+              size="medium"
+              className={style.dateRangePickerClass}
+              value={[dateRange.StartDate, dateRange.EndDate]}
+              onChange={handleDateChange}
+              onClear={handleClearDates}
+            />
             <CustomButton
               text={
                 <span className={style.exportButtonText}>
@@ -421,56 +317,26 @@ const COdataWiseTransactionsReports = () => {
           )}
         </Col>
       </Row>
-      {/* 🔹 Active Filter Tags */}
-      {activeFilters.length > 0 && (
-        <Row gutter={[12, 12]} className={style["filter-tags-container"]}>
-          {activeFilters.map(({ key, value }) => (
-            <Col key={key}>
-              <div className={style["filter-tag"]}>
-                <span>{value}</span>
-                <span
-                  className={style["filter-tag-close"]}
-                  onClick={() => handleRemoveFilter(key)}
-                >
-                  &times;
-                </span>
-              </div>
-            </Col>
-          ))}
 
-          {/* 🔹 Show Clear All only if more than one filter */}
-          {activeFilters.length > 1 && (
-            <Col>
-              <div
-                className={`${style["filter-tag"]} ${style["clear-all-tag"]}`}
-                onClick={handleRemoveAllFilters}
-              >
-                <span>Clear All</span>
-              </div>
-            </Col>
-          )}
-        </Row>
-      )}
       {/* 🔹 Transactions Table */}
       <PageLayout
         background="white"
-        className={
-          activeFilters.length > 0 ? "TATHTAchangeHeightreports2" : "repotsHeightHOC"
-        }
+        style={{ marginTop: "3px" }}
+        className={"repotsHeight"}
       >
         <div className="px-4 md:px-6 lg:px-8 ">
           <BorderlessTable
             rows={
-              coDatewiseTransactionReportListData?.complianceOfficerApprovalsList
+              coTransactionSummaryReportListData?.transactions
             }
             columns={columns}
             classNameTable="border-less-table-blue"
             scroll={
-              coDatewiseTransactionReportListData
-                ?.complianceOfficerApprovalsList?.length
+              coTransactionSummaryReportListData?.transactions
+                ?.length
                 ? {
                     x: "max-content",
-                    y: activeFilters.length > 0 ? 450 : 500,
+                    y: 500,
                   }
                 : undefined
             }
@@ -481,9 +347,8 @@ const COdataWiseTransactionsReports = () => {
         </div>
       </PageLayout>
 
-      {isViewComments && <ViewDetaildDateWiseTransaction />}
     </>
   );
 };
 
-export default COdataWiseTransactionsReports;
+export default COTransactionsSummarysReportsViewDetails;

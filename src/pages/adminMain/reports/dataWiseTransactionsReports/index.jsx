@@ -1,11 +1,11 @@
 import React, { useEffect, useState, useRef, useCallback } from "react";
 import { Breadcrumb, Col, Row } from "antd";
-import PDF from "../../../../../assets/img/pdf.png";
-import Excel from "../../../../../assets/img/xls.png";
+import PDF from "../../../../assets/img/pdf.png";
+import Excel from "../../../../assets/img/xls.png";
 import { UpOutlined, DownOutlined } from "@ant-design/icons";
 // 🔹 Components
-import BorderlessTable from "../../../../../components/tables/borderlessTable/borderlessTable";
-import PageLayout from "../../../../../components/pageContainer/pageContainer";
+import BorderlessTable from "../../../../components/tables/borderlessTable/borderlessTable";
+import PageLayout from "../../../../components/pageContainer/pageContainer";
 
 // 🔹 Table Config
 import {
@@ -13,36 +13,36 @@ import {
   getBorderlessTableColumns,
   mappingDateWiseTransactionReport,
 } from "./utils";
-import { approvalStatusMap } from "../../../../../components/tables/borderlessTable/utill";
+import { approvalStatusMap } from "../../../../components/tables/borderlessTable/utill";
 
 // 🔹 Contexts
-import { useGlobalModal } from "../../../../../context/GlobalModalContext";
 
 // 🔹 Styles
 import style from "./dataWiseTransactionsReports.module.css";
-import { useMyApproval } from "../../../../../context/myApprovalContaxt";
+import { useMyApproval } from "../../../../context/myApprovalContaxt";
 import {
   DownloadComplianceOfficerDateWiseTransactionReportRequestAPI,
   DownloadLineManagerMyTradeApprovalReportRequestAPI,
   DownloadMyTransactionReportRequestAPI,
   SearchComplianceOfficerDateWiseTransactionRequest,
   SearchLineManagerTradeApprovalRequestApi,
-} from "../../../../../api/myApprovalApi";
-import { useNotification } from "../../../../../components/NotificationProvider/NotificationProvider";
-import { useApi } from "../../../../../context/ApiContext";
-import { useGlobalLoader } from "../../../../../context/LoaderContext";
+} from "../../../../api/myApprovalApi";
+import { useNotification } from "../../../../components/NotificationProvider/NotificationProvider";
+import { useApi } from "../../../../context/ApiContext";
+import { useGlobalLoader } from "../../../../context/LoaderContext";
 import { useNavigate } from "react-router-dom";
-import { useSearchBarContext } from "../../../../../context/SearchBarContaxt";
-import { useDashboardContext } from "../../../../../context/dashboardContaxt";
-import { getSafeAssetTypeData } from "../../../../../common/funtions/assetTypesList";
-import { useTableScrollBottom } from "../../../../../common/funtions/scroll";
-import CustomButton from "../../../../../components/buttons/button";
-import { DateRangePicker } from "../../../../../components";
+import { useSearchBarContext } from "../../../../context/SearchBarContaxt";
+import { useDashboardContext } from "../../../../context/dashboardContaxt";
+import { getSafeAssetTypeData } from "../../../../common/funtions/assetTypesList";
+import { useTableScrollBottom } from "../../../../common/funtions/scroll";
+import CustomButton from "../../../../components/buttons/button";
+import { DateRangePicker } from "../../../../components";
 import ViewDetaildDateWiseTransaction from "./ViewDetaildDateWiseTransaction/ViewDetaildDateWiseTransaction";
-import { DateWiseTransactionReportViewDetails } from "../../../../../api/myTransactionsApi";
-import { useReconcileContext } from "../../../../../context/reconsileContax";
+import { DateWiseTransactionReportViewDetails } from "../../../../api/myTransactionsApi";
+import { useReconcileContext } from "../../../../context/reconsileContax";
+import { useGlobalModal } from "../../../../context/GlobalModalContext";
 
-const COdataWiseTransactionsReports = () => {
+const AdmindataWiseTransactionsReports = () => {
   const navigate = useNavigate();
   const hasFetched = useRef(false);
   const tableScrollEmployeeTransaction = useRef(null);
@@ -486,4 +486,4 @@ const COdataWiseTransactionsReports = () => {
   );
 };
 
-export default COdataWiseTransactionsReports;
+export default AdmindataWiseTransactionsReports;
