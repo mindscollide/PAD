@@ -667,6 +667,7 @@ export const SearchBarProvider = ({ children }) => {
       filterTrigger: false,
     });
 
+  // Admin Reports
   //User Activity Report Admin Role
   const [userActivityReportAdmin, setUserActivityReportAdmin] = useState({
     employeeName: "",
