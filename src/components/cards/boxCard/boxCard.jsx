@@ -274,7 +274,7 @@ const BoxCard = ({
                         height:
                           showProgress &&
                           index !== normalizedBoxes.length - 1 &&
-                          "167px",
+                          "135px",
                       }}
                     >
                       {locationStyle === "down" ? (
