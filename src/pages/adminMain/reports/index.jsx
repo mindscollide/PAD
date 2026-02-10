@@ -109,50 +109,50 @@ const AdminReportsIndex = () => {
   /** Admin User Activity Report */
   const adminUserActivityReports = useMemo(
     () => adminReportsDashboardData?.userActivityCount?.data || [],
-    [adminReportsDashboardData?.userActivityCount?.data]
+    [adminReportsDashboardData?.userActivityCount?.data],
   );
 
   /** Admin User Wise Compliance Report */
   const adminUserWiseComplianceReport = useMemo(
     () => adminReportsDashboardData?.userWiseComplianceCount?.data || [],
-    [adminReportsDashboardData?.userWiseComplianceCount?.data]
+    [adminReportsDashboardData?.userWiseComplianceCount?.data],
   );
 
   /** Admin Policy Breaches Report */
   const adminPolicyBreachesReport = useMemo(
     () => adminReportsDashboardData?.policyBreachesCount?.data || [],
-    [adminReportsDashboardData?.policyBreachesCount?.data]
+    [adminReportsDashboardData?.policyBreachesCount?.data],
   );
 
   /** Admin Trade Approval Report*/
   const adminTradeApprovalReport = useMemo(
     () => adminReportsDashboardData?.tradeApprovalRequestCount?.data || [],
-    [adminReportsDashboardData?.tradeApprovalRequestCount?.data]
+    [adminReportsDashboardData?.tradeApprovalRequestCount?.data],
   );
 
   /** Admin User-Wise Transaction Report*/
   const adminUserWiseTransactionReport = useMemo(
     () => adminReportsDashboardData?.userWiseTransactionCount?.data || [],
-    [adminReportsDashboardData?.userWiseTransactionCount?.data]
+    [adminReportsDashboardData?.userWiseTransactionCount?.data],
   );
 
   /** Admin Date-Wise Transaction Report*/
   const adminDateWiseTransactionReport = useMemo(
     () => adminReportsDashboardData?.userDateTransactionCount?.data || [],
-    [adminReportsDashboardData?.userDateTransactionCount?.data]
+    [adminReportsDashboardData?.userDateTransactionCount?.data],
   );
 
   /** Compliance Standing Transaction Report Report*/
   const complianceStandingTransactionReport = useMemo(
     () =>
       adminReportsDashboardData?.complianceStandingTransactionCount?.data || [],
-    [adminReportsDashboardData?.complianceStandingTransactionCount?.data]
+    [adminReportsDashboardData?.complianceStandingTransactionCount?.data],
   );
 
   /** TAT Request Approval Report*/
   const adminTatRequestApprovalReport = useMemo(
     () => adminReportsDashboardData?.tatRequestApprovalCount?.data || [],
-    [adminReportsDashboardData?.tatRequestApprovalCount?.data]
+    [adminReportsDashboardData?.tatRequestApprovalCount?.data],
   );
 
   /* ---------------------------------------------------------
@@ -171,7 +171,7 @@ const AdminReportsIndex = () => {
         {/* ========== First Row Reports ========== */}
         <Row gutter={[16, 16]}>
           {/* ---- User Activity Report ---- */}
-          <Col xs={12} md={8} lg={8}>
+          <Col xs={24} md={12} lg={12}>
             <MemoizedBoxCard
               reportsFlag={true}
               locationStyle="up"
@@ -180,12 +180,12 @@ const AdminReportsIndex = () => {
               boxes={adminUserActivityReports}
               buttonId="Transactions-view-btn"
               buttonClassName="big-white-card-button"
-              userRole="HCA"
-              route="user-activity-report"
+              userRole="Admin"
+              route="admin-user-activity-report"
             />
           </Col>
           {/* ---- User Wise Compliance Report ---- */}
-          <Col xs={12} md={8} lg={8}>
+          <Col xs={24} md={12} lg={12}>
             <MemoizedBoxCard
               reportsFlag={true}
               locationStyle="up"
@@ -194,12 +194,14 @@ const AdminReportsIndex = () => {
               boxes={adminUserWiseComplianceReport}
               buttonId="Approvals-view-btn"
               buttonClassName="big-white-card-button"
-              userRole="HCA"
+              userRole="Admin"
               route="admin-user-wise-compliance-report"
             />
           </Col>
+        </Row>
+        <Row gutter={[16, 16]}>
           {/* ---- Policy Breaches Report ---- */}
-          <Col xs={12} md={8} lg={8}>
+          <Col xs={24} md={12} lg={12}>
             <MemoizedBoxCard
               reportsFlag={true}
               locationStyle="up"
@@ -208,16 +210,12 @@ const AdminReportsIndex = () => {
               boxes={adminPolicyBreachesReport}
               buttonId="Transactions-view-btn"
               buttonClassName="big-white-card-button"
-              userRole="HCA"
+              userRole="Admin"
               route="admin-policy-breaches-report"
             />
           </Col>
-        </Row>
-
-        {/* ========== Second Row Reports ========== */}
-        <Row gutter={[16, 16]}>
           {/* ---- Trade Approval Requests ---- */}
-          <Col xs={12} md={8} lg={8}>
+          <Col xs={24} md={12} lg={12}>
             <MemoizedBoxCard
               reportsFlag={true}
               locationStyle="up"
@@ -226,13 +224,15 @@ const AdminReportsIndex = () => {
               boxes={adminTradeApprovalReport}
               buttonId="Transactions-view-btn"
               buttonClassName="big-white-card-button"
-              userRole="HCA"
+              userRole="Admin"
               route="admin-trade-approval-report"
             />
           </Col>
-
+        </Row>
+        {/* ========== Second Row Reports ========== */}
+        <Row gutter={[16, 16]}>
           {/* ---- User Wise Transaction Report ---- */}
-          <Col xs={12} md={8} lg={8}>
+          <Col xs={24} md={12} lg={12}>
             <MemoizedBoxCard
               reportsFlag={true}
               locationStyle="up"
@@ -241,13 +241,13 @@ const AdminReportsIndex = () => {
               boxes={adminUserWiseTransactionReport}
               buttonId="Transactions-view-btn"
               buttonClassName="big-white-card-button"
-              userRole="HCA"
-              route="admin-userwise-transaction-report"
+              userRole="Admin"
+              route="admin-user-wise-transaction-report"
             />
           </Col>
 
           {/* ---- Date Wise Transaction Report ---- */}
-          <Col xs={12} md={8} lg={8}>
+          <Col xs={24} md={12} lg={12}>
             <MemoizedBoxCard
               reportsFlag={true}
               locationStyle="up"
@@ -256,8 +256,8 @@ const AdminReportsIndex = () => {
               boxes={adminDateWiseTransactionReport}
               buttonId="Transactions-view-btn"
               buttonClassName="big-white-card-button"
-              userRole="HCA"
-              route="admin-datewise-transaction-report"
+              userRole="Admin"
+              route="admin-date-wise-transaction-report"
             />
           </Col>
         </Row>
@@ -265,7 +265,7 @@ const AdminReportsIndex = () => {
         {/* ========== Third Row Reports ========== */}
         <Row gutter={[16, 16]}>
           {/* ---- Compliance Standing Report ---- */}
-          <Col xs={12} md={8} lg={8}>
+          <Col xs={24} md={12} lg={12}>
             <MemoizedBoxCard
               reportsFlag={true}
               locationStyle="up"
@@ -274,13 +274,13 @@ const AdminReportsIndex = () => {
               boxes={complianceStandingTransactionReport}
               buttonId="Transactions-view-btn"
               buttonClassName="big-white-card-button"
-              userRole="HCA"
+              userRole="Admin"
               route="admin-compliance-standing-report"
             />
           </Col>
 
           {/* ---- TAT Request Approvals Report ---- */}
-          <Col xs={12} md={8} lg={8}>
+          <Col xs={24} md={12} lg={12}>
             <MemoizedBoxCard
               reportsFlag={true}
               locationStyle="up"
@@ -289,7 +289,7 @@ const AdminReportsIndex = () => {
               boxes={adminTatRequestApprovalReport}
               buttonId="Transactions-view-btn"
               buttonClassName="big-white-card-button"
-              userRole="HCA"
+              userRole="Admin"
               route="admin-TAT-Request-report"
             />
           </Col>

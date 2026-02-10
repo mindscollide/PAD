@@ -402,7 +402,7 @@ const router = createBrowserRouter(
         >
           <Route index element={<AdminReportsIndex />} />
           <Route
-            path="user-activity-report"
+            path="admin-user-activity-report"
             element={<AdminUserActivityReport />}
           />
           <Route
@@ -413,6 +413,26 @@ const router = createBrowserRouter(
             path="admin-policy-breaches-report"
             element={<AdminPolicyBreachesReport />}
           />
+          <Route
+            path="admin-trade-approval-report"
+            element={<AdminPolicyBreachesReport />}
+          />
+          <Route
+            path="admin-user-wise-transaction-report"
+            element={<AdminPolicyBreachesReport />}
+          />
+          <Route
+            path="admin-date-wise-transaction-report"
+            element={<AdminPolicyBreachesReport />}
+          />
+          <Route
+            path="admin-compliance-standing-report"
+            element={<AdminPolicyBreachesReport />}
+          />
+          <Route
+            path="admin-tat-request-report"
+            element={<AdminPolicyBreachesReport />}
+          />
         </Route>
 
         <Route path="faq" element={<Faqs />} />
@@ -420,8 +440,8 @@ const router = createBrowserRouter(
 
       {/* Redirect all unknown routes to login */}
       <Route path="*" element={<Navigate to="/" replace />} />
-    </Route>
-  )
+    </Route>,
+  ),
 );
 
 export default router;

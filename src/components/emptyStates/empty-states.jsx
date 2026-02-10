@@ -57,6 +57,14 @@ const iconComponents = {
   instruments: Instrument,
   brokers: Broker,
   grouppolicies: Group,
+  "admin-user-activity-report": UsersIcon,
+  "admin-user-wise-compliance-report": PendingApprovalIcon,
+  "admin-policy-breaches-report": PolicyIcon,
+  "admin-trade-approval-report": ApprovalsIcon,
+  "admin-userwise-transaction-report": ReportsIcon,
+  "admin-datewise-transaction-report": TransactionsIcon,
+  "admin-compliance-standing-report": RequestPendingIcon,
+  "admin-tat-request-report": AuditIcon,
 };
 
 /**
@@ -91,6 +99,15 @@ const defaultMessages = {
   instruments: "No Instruments",
   brokers: "No Brokers",
   grouppolicies: "No Group Policies Created",
+  "admin-user-activity-report": "No User Activity Report Found",
+  "admin-user-wise-compliance-report": "No User Wise Compliance Report Found",
+  "admin-policy-breaches-report": "No Policy Breaches Report Found",
+  "admin-trade-approval-report": "No Trade Approval Requests Report Found",
+  "admin-user-wise-transaction-report": "No Transactions Summary Report Found",
+  "admin-date-wise-transaction-report":
+    "No Date Wise Transaction ReportDate Wise Transaction Report Found",
+  "admin-compliance-standing-report": "No Compliance Standing Report Found",
+  "admin-tat-request-report": "No TAT Request Report Found",
 };
 
 /**
