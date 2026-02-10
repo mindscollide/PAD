@@ -400,20 +400,21 @@ const router = createBrowserRouter(
             path="admin-trade-approval-report"
             element={<AdminPolicyBreachesReport />}
           />
-          <Route
-            path="admin-transactions-summary-report"
-            element={<AdminPolicyBreachesReport />}
-          />
+
           <Route
             path="admin-date-wise-transaction-report"
             element={<AdmindataWiseTransactionsReports />}
           />
           <Route
-            path="admin-trades-uploaded-via-portfolio-report"
+            path="admin-transactions-summary-report"
             element={<AdminPolicyBreachesReport />}
           />
           <Route
             path="admin-tat-request-report"
+            element={<AdminPolicyBreachesReport />}
+          />
+          <Route
+            path="admin-trades-uploaded-via-portfolio-report"
             element={<AdminPolicyBreachesReport />}
           />
         </Route>

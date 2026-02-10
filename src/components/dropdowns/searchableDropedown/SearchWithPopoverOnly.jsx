@@ -508,7 +508,7 @@ const SearchWithPopoverOnly = () => {
         ) {
           console.log(
             "showViewDetailPageInTatOnHta",
-            showViewDetailPageInTatOnHta
+            showViewDetailPageInTatOnHta,
           );
           setHTATATReportSearch((prev) => ({
             ...prev,
@@ -843,7 +843,16 @@ const SearchWithPopoverOnly = () => {
     ) {
       return "Employee name. Click the icon to view more options.";
     }
-
+    if (
+      selectedKey === "23" &&
+      (currentPath === "/PAD/admin-reports/admin-user-activity-report" ||
+        currentPath ===
+          "/PAD/admin-reports/admin-user-wise-compliance-report" ||
+        currentPath === "/PAD/admin-reports/admin-trade-approval-report" ||
+        currentPath === "/PAD/admin-reports/admin-TAT-Request-report")
+    ) {
+      return "Employee name. Click the icon to view more options.";
+    }
     // 🔹 Default fallback
     return "Instrument name. Click the icon to view more options.";
   };
@@ -933,7 +942,7 @@ const SearchWithPopoverOnly = () => {
             openNewFormForAdminGropusAndPolicy,
             pageTabesForAdminGropusAndPolicy,
             coTransactionSummaryReportViewDetailsFlag,
-            showViewDetailPageInTatOnHta
+            showViewDetailPageInTatOnHta,
           )}
           trigger="click"
           open={visible}
