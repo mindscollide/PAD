@@ -475,7 +475,7 @@ const AdminTransactionsSummarysReports = () => {
               {
                 title: (
                   <span
-                    onClick={() => navigate("/PAD/co-reports")}
+                    onClick={() => navigate("/PAD/admin-reports")}
                     className={style.breadcrumbLink}
                   >
                     Reports
