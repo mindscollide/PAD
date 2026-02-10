@@ -52,7 +52,7 @@ export const renderFilterContent = (
   openNewFormForAdminGropusAndPolicy,
   pageTabesForAdminGropusAndPolicy,
   coTransactionSummaryReportViewDetailsFlag,
-  showViewDetailPageInTatOnHta
+  showViewDetailPageInTatOnHta,
 ) => {
   switch (selectedKey) {
     case "1": // Employee → My Approval
@@ -100,7 +100,7 @@ export const renderFilterContent = (
       );
 
     case "5": // Employee → Report
-      if (currentPath === "/PAD/reports/my-trade-approvals") {
+      if (currentPath === "/PAD/reports/my-trade-approvals")
         return (
           <EmployeeMyTradeApprovalsReportsFilter
             setVisible={setVisible}
@@ -110,7 +110,7 @@ export const renderFilterContent = (
             setMaininstrumentName={setSearchMain}
           />
         );
-      } else if (currentPath === "/PAD/reports/my-transactions") {
+      if (currentPath === "/PAD/reports/my-transactions")
         return (
           <EmployeeTransactionReportFilter
             setVisible={setVisible}
@@ -120,8 +120,6 @@ export const renderFilterContent = (
             setMaininstrumentName={setSearchMain}
           />
         );
-      }
-
       return null;
 
     case "6": // Line Manager Approval
@@ -147,7 +145,7 @@ export const renderFilterContent = (
       );
 
     case "8": // LineManager → reports pending approvals
-      if (currentPath === "/PAD/lm-reports/lm-pending-request") {
+      if (currentPath === "/PAD/lm-reports/lm-pending-request")
         return (
           <LMPendigRequestReportSearchFilter
             setVisible={setVisible}
@@ -157,7 +155,7 @@ export const renderFilterContent = (
             setMaininstrumentName={setSearchMain}
           />
         );
-      } else if (currentPath === "/PAD/lm-reports/lm-tradeapproval-request") {
+      if (currentPath === "/PAD/lm-reports/lm-tradeapproval-request")
         return (
           <LineManagerMyTradeApprovalsReports
             setVisible={setVisible}
@@ -167,7 +165,7 @@ export const renderFilterContent = (
             setMaininstrumentName={setSearchMain}
           />
         );
-      }
+
       return null;
 
     case "9": // Compliance Officer → Reconcile
@@ -193,7 +191,7 @@ export const renderFilterContent = (
       );
 
     case "11": // Compliance officer → reports pending approvals
-      if (currentPath === "/PAD/co-reports/co-date-wise-transaction-report") {
+      if (currentPath === "/PAD/co-reports/co-date-wise-transaction-report")
         return (
           <CODateWiseTransactionReportFilter
             setVisible={setVisible}
@@ -203,7 +201,7 @@ export const renderFilterContent = (
             setMaininstrumentName={setSearchMain}
           />
         );
-      } else if (currentPath === "/PAD/co-reports/co-overdue-verifications") {
+      if (currentPath === "/PAD/co-reports/co-overdue-verifications")
         return (
           <COOverdueVerifications
             setVisible={setVisible}
@@ -213,7 +211,7 @@ export const renderFilterContent = (
             setMaininstrumentName={setSearchMain}
           />
         );
-      } else if (currentPath === "/PAD/co-reports/co-portfolio-history") {
+      if (currentPath === "/PAD/co-reports/co-portfolio-history")
         return (
           <COPortfolioHisttory
             setVisible={setVisible}
@@ -223,7 +221,7 @@ export const renderFilterContent = (
             setMaininstrumentName={setSearchMain}
           />
         );
-      } else if (coTransactionSummaryReportViewDetailsFlag) {
+      if (coTransactionSummaryReportViewDetailsFlag)
         return (
           <COTransactionReportViewDetailsFilter
             setVisible={setVisible}
@@ -233,7 +231,6 @@ export const renderFilterContent = (
             setMaininstrumentName={setSearchMain}
           />
         );
-      }
       return null;
 
     case "12": // HTA Escalated
@@ -259,7 +256,7 @@ export const renderFilterContent = (
       );
 
     case "14": // HTA → reports pending approvals
-      if (currentPath === "/PAD/hta-reports/hta-trade-approval-requests") {
+      if (currentPath === "/PAD/hta-reports/hta-trade-approval-requests")
         return (
           <LineManagerMyTradeApprovalsReports
             setVisible={setVisible}
@@ -269,9 +266,7 @@ export const renderFilterContent = (
             setMaininstrumentName={setSearchMain}
           />
         );
-      } else if (
-        currentPath === "/PAD/hta-reports/hta-policy-breaches-reports"
-      ) {
+      if (currentPath === "/PAD/hta-reports/hta-policy-breaches-reports")
         return (
           <HTAPolicyBreachesReportFilter
             setVisible={setVisible}
@@ -281,7 +276,7 @@ export const renderFilterContent = (
             setMaininstrumentName={setSearchMain}
           />
         );
-      } else if (currentPath === "/PAD/hta-reports/hta-pending-requests") {
+      if (currentPath === "/PAD/hta-reports/hta-pending-requests")
         return (
           <HTAPendingRequestFilter
             setVisible={setVisible}
@@ -291,10 +286,10 @@ export const renderFilterContent = (
             setMaininstrumentName={setSearchMain}
           />
         );
-      } else if (
+      if (
         currentPath === "/PAD/hta-reports/hta-tat-reports" &&
         showViewDetailPageInTatOnHta
-      ) {
+      )
         return (
           <HTATATViewDetailFilter
             setVisible={setVisible}
@@ -304,10 +299,10 @@ export const renderFilterContent = (
             setMaininstrumentName={setSearchMain}
           />
         );
-      } else if (
+      if (
         currentPath === "/PAD/hta-reports/hta-tat-reports" &&
         !showViewDetailPageInTatOnHta
-      ) {
+      )
         return (
           <HTATATReportsListFilter
             setVisible={setVisible}
@@ -317,7 +312,7 @@ export const renderFilterContent = (
             setMaininstrumentName={setSearchMain}
           />
         );
-      }
+
       return null;
 
     case "15": // HCA Escalated
@@ -343,7 +338,7 @@ export const renderFilterContent = (
       );
 
     case "17": // HOC → reports
-      if (currentPath === "/PAD/hca-reports/hca-overdue-verifications") {
+      if (currentPath === "/PAD/hca-reports/hca-overdue-verifications")
         return (
           <HCOOverdueVerifications
             setVisible={setVisible}
@@ -353,7 +348,7 @@ export const renderFilterContent = (
             setMaininstrumentName={setSearchMain}
           />
         );
-      } else if (currentPath === "/PAD/hca-reports/hca-upload-portfolio") {
+      if (currentPath === "/PAD/hca-reports/hca-upload-portfolio")
         return (
           <HCOTradeUploadedViaPortfolioFilter
             setVisible={setVisible}
@@ -363,9 +358,7 @@ export const renderFilterContent = (
             setMaininstrumentName={setSearchMain}
           />
         );
-      } else if (
-        currentPath === "/PAD/hca-reports/hca-date-wise-transaction-report"
-      ) {
+      if (currentPath === "/PAD/hca-reports/hca-date-wise-transaction-report")
         return (
           <CODateWiseTransactionReportFilter
             setVisible={setVisible}
@@ -375,10 +368,10 @@ export const renderFilterContent = (
             setMaininstrumentName={setSearchMain}
           />
         );
-      } else if (
+      if (
         currentPath === "/PAD/hca-reports/hca-transactions-summary-report" &&
         coTransactionSummaryReportViewDetailsFlag
-      ) {
+      )
         return (
           <HOCTransactionReportViewDetailsFilter
             setVisible={setVisible}
@@ -388,8 +381,8 @@ export const renderFilterContent = (
             setMaininstrumentName={setSearchMain}
           />
         );
-      }
-      break;
+
+      return null;
 
     case "18": // Admin Instrument List
       return (
@@ -437,12 +430,10 @@ export const renderFilterContent = (
       }
 
     case "20": // groupe listing create edit and view
-      console.log("AdminPoliciesFilter");
-
       if (
         openNewFormForAdminGropusAndPolicy &&
         pageTabesForAdminGropusAndPolicy === 1
-      ) {
+      )
         return (
           <AdminPoliciesFilter
             setVisible={setVisible}
@@ -452,10 +443,10 @@ export const renderFilterContent = (
             setMaininstrumentName={setSearchMain}
           />
         );
-      } else if (
+      if (
         openNewFormForAdminGropusAndPolicy &&
         pageTabesForAdminGropusAndPolicy === 2
-      ) {
+      )
         return (
           <AdminPoliciesAndGroupUsersTabFilter
             setVisible={setVisible}
@@ -465,20 +456,10 @@ export const renderFilterContent = (
             setMaininstrumentName={setSearchMain}
           />
         );
-      }
+      return null;
 
     case "23":
-      if (currentPath === "/PAD/admin-reports/admin-policy-breaches-report") {
-        return (
-          <AdminPolicyBreachesReportFilter
-            setVisible={setVisible}
-            clear={clear}
-            setClear={setClear}
-            maininstrumentName={searchMain}
-            setMaininstrumentName={setSearchMain}
-          />
-        );
-      } else if (currentPath === "/PAD/admin-reports/user-activity-report") {
+      if (currentPath === "/PAD/admin-reports/admin-user-activity-report")
         return (
           <AdminUserActivityReportFilter
             setVisible={setVisible}
@@ -488,9 +469,10 @@ export const renderFilterContent = (
             setMaininstrumentName={setSearchMain}
           />
         );
-      } else if (
+
+      if (
         currentPath === "/PAD/admin-reports/admin-user-wise-compliance-report"
-      ) {
+      )
         return (
           <AdminUserWiseComplianceReportFilter
             setVisible={setVisible}
@@ -500,8 +482,61 @@ export const renderFilterContent = (
             setMaininstrumentName={setSearchMain}
           />
         );
-      }
 
+      if (currentPath === "/PAD/admin-reports/admin-policy-breaches-report")
+        return (
+          <AdminPolicyBreachesReportFilter
+            setVisible={setVisible}
+            clear={clear}
+            setClear={setClear}
+            maininstrumentName={searchMain}
+            setMaininstrumentName={setSearchMain}
+          />
+        );
+
+      if (currentPath === "/PAD/admin-reports/admin-trade-approval-report")
+        return (
+          <AdminUserWiseComplianceReportFilter
+            setVisible={setVisible}
+            clear={clear}
+            setClear={setClear}
+            maininstrumentName={searchMain}
+            setMaininstrumentName={setSearchMain}
+          />
+        );
+      if (
+        currentPath === "/PAD/admin-reports/admin-date-wise-transaction-report"
+      )
+        return (
+          <CODateWiseTransactionReportFilter
+            setVisible={setVisible}
+            clear={clear}
+            setClear={setClear}
+            maininstrumentName={searchMain}
+            setMaininstrumentName={setSearchMain}
+          />
+        );
+      if (coTransactionSummaryReportViewDetailsFlag)
+        return (
+          <COTransactionReportViewDetailsFilter
+            setVisible={setVisible}
+            clear={clear}
+            setClear={setClear}
+            maininstrumentName={searchMain}
+            setMaininstrumentName={setSearchMain}
+          />
+        );
+         if (currentPath === "/PAD/admin-reports/admin-TAT-Request-report")
+        return (
+          <AdminUserWiseComplianceReportFilter
+            setVisible={setVisible}
+            clear={clear}
+            setClear={setClear}
+            maininstrumentName={searchMain}
+            setMaininstrumentName={setSearchMain}
+          />
+        );
+      return null;
     // 🔧 Add more cases for keys "3" to "17" as needed below
 
     default:
