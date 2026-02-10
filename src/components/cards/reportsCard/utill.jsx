@@ -1,6 +1,9 @@
 // ============================
 // ROUTE MAPS FOR EACH USER ROLE
 // ============================
+export const adminRouteMap = {
+  reports: { path: "admin-reports", key: "23" },
+};
 
 export const employeRouteMap = {
   approvals: { path: "approvals", key: "1" },
@@ -68,6 +71,9 @@ export const navigateToPage = (userRole, route, setSelectedKey, navigate) => {
     case "HCA":
       pathInfo = headOfComplianceRouteMap[route];
       break;
+    case "Admin":
+      pathInfo = adminRouteMap[route];
+      break;
     default:
       console.warn("Unknown userRole:", userRole);
   }
@@ -82,7 +88,7 @@ export const navigateToPage = (userRole, route, setSelectedKey, navigate) => {
       "Navigation path not found for userRole:",
       userRole,
       "and title:",
-      route
+      route,
     );
   }
 };
