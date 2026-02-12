@@ -71,17 +71,17 @@ export const mapApiResopse = (assetTypeData, pendingTradeApprovals = []) =>
       tradeApprovalID: item?.tradeApprovalID ?? "—",
       requesterName: item.requesterName,
       lineManagerName: item.lineManagerName,
-      assetTypeShortCode: item?.assetType?.assetTypeShortCode ?? "—",
-      instrument: item?.instrument?.instrumentCode ?? "—",
-      instrumentName: item?.instrument?.instrumentName ?? "—",
+      instrumentCode: item?.instrument?.instrumentCode || "—",
+      instrumentName: item?.instrument?.instrumentName || "—",
+      assetTypeShortCode: item?.assetType?.assetTypeShortCode || "—",
       requestDateTime: `${item.requestDate || ""} ${item.requestTime || ""}`,
+      escalatedDateTime: `${item.escalatedOnDate || ""} ${item.escalatedOnTime || ""}`,
       isEscalated: item.isEscalated,
       type: getTradeTypeById(assetTypeData, item?.tradeType),
       status: item?.approvalStatus?.approvalStatusName ?? "—",
       quantity: item.quantity || 0,
-    })
+    }),
   );
-
 
 export const getBorderlessLineManagerTableColumns = ({
   approvalStatusMap,
@@ -137,22 +137,26 @@ export const getBorderlessLineManagerTableColumns = ({
     },
   },
   {
-    title: withSortIcon("Instrument", "instrumentCode", sortedInfo),
-    dataIndex: "instrumentCode",
-    key: "instrumentCode",
+    title: withSortIcon("Instrument", "instrumentName", sortedInfo),
+    dataIndex: "instrumentName",
+    key: "instrumentName",
     align: "left",
-    width: 200,
+    width: 140,
     ellipsis: true,
-    sorter: (a, b) =>
-      (a?.instrumentCode || "").localeCompare(b?.instrumentCode || ""),
+    sorter: (a, b) => {
+      const nameA = a?.instrumentName || "";
+      const nameB = b?.instrumentName || "";
+      return nameA.localeCompare(nameB);
+    },
+    sortDirections: ["ascend", "descend"],
     sortOrder:
-      sortedInfo?.columnKey === "instrumentCode" ? sortedInfo.order : null,
+      sortedInfo?.columnKey === "instrumentName" ? sortedInfo.order : null,
     showSorterTooltip: false,
     sortIcon: () => null,
-    render: (_, record) => {
-      const code = record?.instrument || "—";
-      const name = record?.instrumentName || "—";
-      const assetCode = record?.assetTypeShortCode || "";
+    render: (instrument, record) => {
+      const assetCode = record?.assetTypeShortCode;
+      const code = record?.instrumentCode || "";
+      const instrumentName = record?.instrumentName || "";
 
       return (
         <div
@@ -165,7 +169,7 @@ export const getBorderlessLineManagerTableColumns = ({
           <span className="custom-shortCode-asset" style={{ minWidth: 30 }}>
             {assetCode?.substring(0, 2).toUpperCase()}
           </span>
-          <Tooltip title={`${name} - ${code}`} placement="topLeft">
+          <Tooltip title={instrumentName} placement="topLeft">
             <span
               className="font-medium"
               style={{
@@ -176,6 +180,7 @@ export const getBorderlessLineManagerTableColumns = ({
                 display: "inline-block",
                 cursor: "pointer",
               }}
+              title={code}
             >
               {code}
             </span>
@@ -189,7 +194,7 @@ export const getBorderlessLineManagerTableColumns = ({
       "Request Date & Time",
       "requestDateTime",
       sortedInfo,
-      "center"
+      "center",
     ),
     dataIndex: "requestDateTime",
     key: "requestDateTime",
@@ -197,7 +202,7 @@ export const getBorderlessLineManagerTableColumns = ({
     ellipsis: true,
     sorter: (a, b) =>
       formatApiDateTime(a.requestDateTime).localeCompare(
-        formatApiDateTime(b.requestDateTime)
+        formatApiDateTime(b.requestDateTime),
       ),
     sortDirections: ["ascend", "descend"],
     sortOrder:
@@ -270,6 +275,35 @@ export const getBorderlessLineManagerTableColumns = ({
         />
       ) : null;
     },
+  },
+  {
+    title: withSortIcon(
+      "Escalated date & time",
+      "escalatedDateTime",
+      sortedInfo,
+      "center",
+    ),
+    dataIndex: "escalatedDateTime",
+    key: "escalatedDateTime",
+    align: "center",
+    ellipsis: true,
+    sorter: (a, b) =>
+      formatApiDateTime(a.escalatedDateTime).localeCompare(
+        formatApiDateTime(b.escalatedDateTime),
+      ),
+    sortDirections: ["ascend", "descend"],
+    sortOrder:
+      sortedInfo?.columnKey === "escalatedDateTime" ? sortedInfo.order : null,
+    showSorterTooltip: false,
+    sortIcon: () => null,
+    render: (date, record) => (
+      <span
+        id={`cell-${record.key}-escalatedDateTime`}
+        className="text-gray-600"
+      >
+        {formatApiDateTime(date)}
+      </span>
+    ),
   },
   {
     title: "",

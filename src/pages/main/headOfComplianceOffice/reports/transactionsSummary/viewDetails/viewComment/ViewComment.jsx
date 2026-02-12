@@ -2,6 +2,7 @@ import React from "react";
 import { useGlobalModal } from "../../../../../../../context/GlobalModalContext";
 import { ViewCommentModal } from "../../../../../../../components";
 import { useMyApproval } from "../../../../../../../context/myApprovalContaxt";
+import { parseComments } from "./utils";
 
 const ViewCommentHOCTransaction = () => {
   // This is Global State for modal which is create in ContextApi
@@ -22,7 +23,8 @@ const ViewCommentHOCTransaction = () => {
 
   // Check workflow Id it shows comment against the workFlow ID
   const record = selectedWorkFlowViewDetaild || null;
-  // const detail = viewDetailsModalData?.details?.[0];
+  const acceptanceList = parseComments(record?.accetanceComments);
+  const rejectionList = parseComments(record?.rejectionComments);
 
   /**
    * STEP 2: Extract required values
@@ -64,12 +66,8 @@ const ViewCommentHOCTransaction = () => {
       return "No comment available.";
     }
 
-    if (workflowStatusID === 3) {
-      return formatComments(accetanceComments);
-    }
-
-    if (workflowStatusID === 4) {
-      return formatComments(rejectionComments);
+    if (acceptanceList && rejectionList) {
+      return (acceptanceList, rejectionList);
     }
 
     return "No comment available for this status.";
@@ -94,7 +92,9 @@ const ViewCommentHOCTransaction = () => {
         onClose={onClickCloseComment}
         onGoBack={onClickGoBack}
         CommentHeading={"View Comment"}
-        commentText={getCommentText()}
+        commentTypeFlag={true}
+        acceptanceList={acceptanceList}
+        rejectionList={rejectionList}
       />
     </>
   );

@@ -380,7 +380,7 @@ const COdataWiseTransactionsReports = () => {
               {
                 title: (
                   <span className={style.breadcrumbText}>
-                    Date Wise Transaction
+                    Date Wise Transactions
                   </span>
                 ),
               },

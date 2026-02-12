@@ -45,6 +45,7 @@ import UploadHeadOfComplianceTicketModal from "../../escalatedVerifications/esca
 import NoteHeadOfComplianceModal from "../../escalatedVerifications/escalatedVerification/modals/noteHeadOfComplianceModal/NoteHeadOfComplianceModal";
 import ApproveHeadOfComplianceModal from "../../escalatedVerifications/escalatedVerification/modals/approveHeadOfComplianceModal/ApproveHeadOfComplianceModal";
 import DeclinedHeadOfComplianceModal from "../../escalatedVerifications/escalatedVerification/modals/declinedHeadOfComplianceModal/DeclinedHeadOfComplianceModal";
+import ViewOverDueTransactionComment from "./viewOverdueVerificationReportsComment/ViewOverdueVerificationReportsComment";
 
 const HeadCompianceOfficerOverdueVerificationReports = () => {
   const navigate = useNavigate();
@@ -68,6 +69,7 @@ const HeadCompianceOfficerOverdueVerificationReports = () => {
   const {
     viewDetailHeadOfComplianceEscalated,
     setViewDetailHeadOfComplianceEscalated,
+    viewCommentReconcileModal,
     uploadComplianceModal,
     isViewTicketTransactionModal,
     compliantApproveModal,
@@ -107,7 +109,7 @@ const HeadCompianceOfficerOverdueVerificationReports = () => {
       // ✅ Always get the freshest version (from memory or session)
       const currentAssetTypeData = getSafeAssetTypeData(
         assetTypeListingData,
-        setAssetTypeListingData
+        setAssetTypeListingData,
       );
 
       const records = Array.isArray(res?.overdueVerifications)
@@ -115,7 +117,7 @@ const HeadCompianceOfficerOverdueVerificationReports = () => {
         : [];
       const mapped = mappingDateWiseTransactionReport(
         currentAssetTypeData?.Equities,
-        records
+        records,
       );
       if (!mapped || typeof mapped !== "object") return;
       console.log("records", mapped);
@@ -152,7 +154,7 @@ const HeadCompianceOfficerOverdueVerificationReports = () => {
       setOverdueVerificationHCOReportSearch,
       showLoader,
       showNotification,
-    ]
+    ],
   );
 
   // -------------------- Effects --------------------
@@ -163,7 +165,7 @@ const HeadCompianceOfficerOverdueVerificationReports = () => {
     hasFetched.current = true;
     const requestData = buildApiRequest(
       OverdueVerificationHCOReportSearch,
-      assetTypeListingData
+      assetTypeListingData,
     );
     fetchApiCall(requestData, true, true);
   }, []);
@@ -181,7 +183,7 @@ const HeadCompianceOfficerOverdueVerificationReports = () => {
     if (OverdueVerificationHCOReportSearch?.filterTrigger) {
       const requestData = buildApiRequest(
         OverdueVerificationHCOReportSearch,
-        assetTypeListingData
+        assetTypeListingData,
       );
       fetchApiCall(requestData, true, true);
     }
@@ -200,7 +202,7 @@ const HeadCompianceOfficerOverdueVerificationReports = () => {
         setLoadingMore(true);
         const requestData = buildApiRequest(
           OverdueVerificationHCOReportSearch,
-          assetTypeListingData
+          assetTypeListingData,
         );
         await fetchApiCall(requestData, false, false);
       } catch (err) {
@@ -210,7 +212,7 @@ const HeadCompianceOfficerOverdueVerificationReports = () => {
       }
     },
     0,
-    "border-less-table-blue"
+    "border-less-table-blue",
   );
 
   // This Api is for the getAllViewDetailModal For myTransaction in Emp role
@@ -323,12 +325,12 @@ const HeadCompianceOfficerOverdueVerificationReports = () => {
 
     const transactionDate = buildDateRangeLabel(
       formatDate(startDate),
-      formatDate(endDate)
+      formatDate(endDate),
     );
 
     const escalatedDate = buildDateRangeLabel(
       formatDate(fromDate),
-      formatDate(toDate)
+      formatDate(toDate),
     );
 
     /* ---------------- Active Filters ---------------- */
@@ -519,6 +521,9 @@ const HeadCompianceOfficerOverdueVerificationReports = () => {
       {viewDetailHeadOfComplianceEscalated && (
         <ViewDetailHeadOfComplianceReconcileTransaction />
       )}
+
+      {/* To show View Comment Modal when CLick on View Comment Button */}
+      {viewCommentReconcileModal && <ViewOverDueTransactionComment />}
 
       {/* To show view Ticket Modal on click of View Ticket */}
       {isViewTicketTransactionModal && <ViewTicketEscalatedModal />}

@@ -10,6 +10,10 @@ const ViewCommentModal = ({
   onGoBack,
   CommentHeading,
   commentText,
+  commentTypeFlag = false,
+  showClosed = false,
+  acceptanceList = [],
+  rejectionList = [],
   width = "951px",
   height = "367px",
 }) => {
@@ -30,11 +34,50 @@ const ViewCommentModal = ({
             </Col>
           </Row>
           <div className={styles.mainDivComment}>
-            <Row>
-              <Col span={24} style={{ whiteSpace: "pre-line" }}>
-                <p className={styles.ViewCommentParagraph}>{commentText}</p>
-              </Col>
-            </Row>
+            {commentTypeFlag && (
+              <Row>
+                <Col span={24}>
+                  {/* Acceptance Comments */}
+                  {acceptanceList?.length > 0 && (
+                    <div className={styles.commentSection}>
+                      {acceptanceList.map((item, index) => (
+                        <div
+                          key={`acc-${index}`}
+                          className={styles.acceptComment}
+                        >
+                          {item}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  {/* Rejection Comments */}
+                  {rejectionList?.length > 0 && (
+                    <div className={styles.commentSection}>
+                      {rejectionList.map((item, index) => (
+                        <div
+                          key={`rej-${index}`}
+                          className={styles.rejectComment}
+                        >
+                          {item}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  {!acceptanceList?.length && !rejectionList?.length && (
+                    <p className={styles.noComment}>—</p>
+                  )}
+                </Col>
+              </Row>
+            )}
+            {!commentTypeFlag && (
+              <Row>
+                <Col span={24} style={{ whiteSpace: "pre-line" }}>
+                  <p className={styles.ViewCommentParagraph}>{commentText}</p>
+                </Col>
+              </Row>
+            )}
           </div>
           <Row>
             <Col span={24}>
@@ -46,11 +89,14 @@ const ViewCommentModal = ({
                     onClick={onGoBack}
                   />
                 )}
-                <CustomButton
-                  text="Close"
-                  className="big-light-button"
-                  onClick={onClose}
-                />
+                {!commentTypeFlag ||
+                  (showClosed && (
+                    <CustomButton
+                      text="Close"
+                      className="big-light-button"
+                      onClick={onClose}
+                    />
+                  ))}
               </div>
             </Col>
           </Row>
