@@ -271,7 +271,7 @@ export const getBorderlessTableColumns = ({
     dataIndex: "shareTraded",
     key: "shareTraded",
     align: "center",
-    width: 150,
+    width: 100,
     ellipsis: true,
     sorter: (a, b) => a.shareTraded - b.shareTraded,
     sortDirections: ["ascend", "descend"],
@@ -329,11 +329,6 @@ export const getBorderlessTableColumns = ({
           text={"View Details"}
           onClick={() => {
             handleViewDetailsForReconcileTransaction(record?.workFlowID);
-            console.log(record, "tradeApprovalID");
-            // setIsViewComments(true);
-            // setCheckTradeApprovalID(record?.approvalID);
-            // setEditBrokerModal(true);
-            // setEditModalData(record);
           }}
         />
       </div>

@@ -14,7 +14,7 @@
 
 .home-reprot-card {
   /* width: 100%; */
-  height: 220px;
+  height: 250px;
   opacity: 1;
   border-radius: 13.89px;
   border-width: 0.87px;
@@ -63,7 +63,7 @@
 
 .home-reprot-card-reportItem {
   background-color: #edf3ff;
-  padding: 4px 10px;
+  padding: 8px 10px;
   border-radius: 10.42px;
   display: flex;
   justify-content: space-between;

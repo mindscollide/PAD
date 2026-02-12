@@ -65,6 +65,7 @@ export const mappingDateWiseTransactionReport = (
       item.totalTransactions +
       item.nonCompliantTransactions,
     totalEmployees: item.totalEmployees || "0",
+    actionBy: item.actionBy || "",
     totalTransactions: item.totalTransactions || "0",
     compliantTransactions: item.compliantTransactions || "0",
     nonCompliantTransactions: item.nonCompliantTransactions || "0",
@@ -72,6 +73,9 @@ export const mappingDateWiseTransactionReport = (
       [item?.transactionDate, item?.transactionTime]
         .filter(Boolean)
         .join(" ") || "—",
+
+    actionDate:
+      `${item?.actionDate || ""} ${item?.actionTime || ""}`.trim() || "—",
   }));
 };
 export const mappingDateWiseTransactionviewDetailst = (
@@ -113,6 +117,23 @@ export const getBorderlessTableColumns = ({
   handelViewDetails,
 }) => [
   {
+    title: withSortIcon("Action Date", "actionDate", sortedInfo, "center"),
+    align: "center",
+    dataIndex: "actionDate",
+    key: "actionDate",
+    width: 140,
+    ellipsis: true,
+    sorter: (a, b) => (a?.actionDate || "").localeCompare(b?.actionDate || ""),
+    sortOrder: sortedInfo?.columnKey === "actionDate" ? sortedInfo.order : null,
+    showSorterTooltip: false,
+    sortIcon: () => null,
+    render: (date) => (
+      <span className="text-gray-600" title={date || "—"}>
+        {formatApiDateTime(date) || "—"}
+      </span>
+    ),
+  },
+  {
     title: withSortIcon(
       "Transaction Date",
       "transactionDate",
@@ -122,7 +143,7 @@ export const getBorderlessTableColumns = ({
     align: "center",
     dataIndex: "transactionDate",
     key: "transactionDate",
-    width: 200,
+    width: 160,
     ellipsis: true,
     sorter: (a, b) =>
       (a?.transactionDate || "").localeCompare(b?.transactionDate || ""),
@@ -137,6 +158,20 @@ export const getBorderlessTableColumns = ({
     ),
   },
   {
+    title: withSortIcon("Action By", "actionBy", sortedInfo),
+    dataIndex: "actionBy",
+    key: "actionBy",
+    width: 120,
+    align: "left",
+    ellipsis: true,
+    sorter: (a, b) => a.actionBy.localeCompare(b.actionBy),
+    sortDirections: ["ascend", "descend"],
+    sortOrder: sortedInfo?.columnKey === "actionBy" ? sortedInfo.order : null,
+    showSorterTooltip: false,
+    sortIcon: () => null,
+    render: (text) => <span className="font-medium">{text}</span>,
+  },
+  {
     title: withSortIcon(
       "Total Employees",
       "totalEmployees",
@@ -145,7 +180,7 @@ export const getBorderlessTableColumns = ({
     ),
     dataIndex: "totalEmployees",
     key: "totalEmployees",
-    width: 200,
+    width: 160,
     ellipsis: true,
     align: "center",
     sorter: (a, b) => (a?.totalEmployees ?? 0) - (b?.totalEmployees ?? 0),
@@ -164,7 +199,7 @@ export const getBorderlessTableColumns = ({
     ),
     dataIndex: "totalTransactions",
     key: "totalTransactions",
-    width: 200,
+    width: 160,
     ellipsis: true,
     align: "center",
     sorter: (a, b) => (a?.totalTransactions ?? 0) - (b?.totalTransactions ?? 0),
@@ -205,7 +240,7 @@ export const getBorderlessTableColumns = ({
     ),
     dataIndex: "nonCompliantTransactions",
     key: "nonCompliantTransactions",
-    width: 200,
+    width: 240,
     ellipsis: true,
     align: "center",
     sorter: (a, b) =>

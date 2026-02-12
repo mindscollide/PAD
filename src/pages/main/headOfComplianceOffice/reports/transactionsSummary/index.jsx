@@ -245,16 +245,6 @@ const HCATransactionsSummarysReports = () => {
         ...prev,
         filterTrigger: false,
       }));
-      console.log(
-        "StatusFilterDropdown handleOk",
-        hocTransactionsSummarysReportsViewDetailsSearch,
-      );
-      console.log(
-        "StatusFilterDropdown handleOk",
-        mapStatusToIds(hocTransactionsSummarysReportsViewDetailsSearch.status),
-      );
-      console.log("StatusFilterDropdown handleOk", assetTypeListingData);
-
       const requestData = buildApiRequestViewDetails(
         hocTransactionsSummarysReportsViewDetailsSearch,
         assetTypeListingData,
@@ -262,6 +252,12 @@ const HCATransactionsSummarysReports = () => {
       fetchApiCallViewDetails(requestData, true, true);
     }
   }, [hocTransactionsSummarysReportsViewDetailsSearch?.filterTrigger]);
+  
+  useEffect(() => {
+    if (open) {
+      setOpen(false);
+    }
+  }, [coTransactionSummaryReportViewDetailsFlag]);
 
   // 🔹 Infinite Scroll (lazy loading)
   useTableScrollBottom(

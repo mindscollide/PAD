@@ -29,6 +29,7 @@ const ViewDetailHeadOfComplianceReconcileTransaction = () => {
   const {
     viewDetailHeadOfComplianceEscalated,
     setViewDetailHeadOfComplianceEscalated,
+    setViewCommentReconcileModal,
     setUploadComplianceModal,
     setNoteGlobalModal,
     setIsViewTicketTransactionModal,
@@ -38,6 +39,7 @@ const ViewDetailHeadOfComplianceReconcileTransaction = () => {
   const { showLoader } = useGlobalLoader();
   const { showNotification } = useNotification();
 
+  console.log("requesterName", viewDetailHeadOfComplianceEscalated);
   // get data from sessionStorage
   const userProfileData = JSON.parse(
     sessionStorage.getItem("user_profile_data") || "{}",
@@ -287,7 +289,9 @@ const ViewDetailHeadOfComplianceReconcileTransaction = () => {
                         Requester Name
                       </label>
                       <label className={styles.viewDetailSubLabels}>
-                        {"Saif"}
+                        {
+                          isEscalatedHeadOfComplianceViewDetailData.requesterName
+                        }
                       </label>
                     </div>
                   </Col>
@@ -670,6 +674,7 @@ const ViewDetailHeadOfComplianceReconcileTransaction = () => {
                           text="View Comment"
                           className="big-light-button"
                           onClick={() => {
+                            setViewCommentReconcileModal(true);
                             setViewDetailHeadOfComplianceEscalated(false);
                           }}
                         />{" "}
