@@ -140,7 +140,7 @@ export const getBorderlessTableColumns = ({
     align: "left",
     dataIndex: "tradeApprovalID",
     key: "tradeApprovalID",
-    width: "10%",
+    width: 140,
     ellipsis: true,
     sorter: (a, b) =>
       parseInt(a.tradeApprovalID.replace(/[^\d]/g, ""), 10) -
@@ -166,7 +166,7 @@ export const getBorderlessTableColumns = ({
     align: "left",
     dataIndex: "requestID",
     key: "requestID",
-    width: "13%",
+    width: 160,
     ellipsis: true,
     sorter: (a, b) =>
       parseInt(a.requestID.replace(/[^\d]/g, ""), 10) -
@@ -191,7 +191,7 @@ export const getBorderlessTableColumns = ({
     dataIndex: "requestDateTime",
     key: "requestDateTime",
     ellipsis: true,
-    width: "13%",
+    width: 100,
     sorter: (a, b) =>
       formatApiDateTime(a.requestDateTime).localeCompare(
         formatApiDateTime(b.requestDateTime),
@@ -206,13 +206,6 @@ export const getBorderlessTableColumns = ({
         id={`cell-${record.key}-requestDateTime`}
         className="text-gray-600"
         data-testid="formatted-date"
-        style={{
-          display: "inline-block",
-          width: "100%",
-          overflow: "hidden",
-          textOverflow: "ellipsis",
-          whiteSpace: "nowrap",
-        }}
       >
         {formatApiDateTime(date)}
       </span>
@@ -223,7 +216,7 @@ export const getBorderlessTableColumns = ({
     align: "left",
     dataIndex: "instrumentCode",
     key: "instrumentCode",
-    width: "12%",
+    width: 160,
     ellipsis: true,
     sorter: (a, b) =>
       (a?.instrumentCode || "").localeCompare(b?.instrumentCode || ""),
@@ -247,7 +240,7 @@ export const getBorderlessTableColumns = ({
     dataIndex: "type",
     key: "type",
     ellipsis: true,
-    width: "7%",
+    width: 100,
     filteredValue: employeeMyTransactionReportSearch.type?.length
       ? employeeMyTransactionReportSearch?.type
       : null,
@@ -275,7 +268,7 @@ export const getBorderlessTableColumns = ({
     dataIndex: "quantity",
     key: "quantity",
     ellipsis: true,
-    width: "8%",
+    width: 100,
     sorter: (a, b) => a.quantity - b.quantity,
     sortDirections: ["ascend", "descend"],
     sortOrder: sortedInfo?.columnKey === "quantity" ? sortedInfo.order : null,
@@ -289,7 +282,7 @@ export const getBorderlessTableColumns = ({
     dataIndex: "brokerName",
     key: "brokerName",
     ellipsis: true,
-    width: "7%",
+    width: 80,
     sorter: (a, b) => a.brokerName - b.brokerName,
     sortDirections: ["ascend", "descend"],
     sortOrder: sortedInfo?.columnKey === "brokerName" ? sortedInfo.order : null,
@@ -307,7 +300,7 @@ export const getBorderlessTableColumns = ({
     dataIndex: "status",
     key: "status",
     ellipsis: true,
-    width: "7%",
+    width: 140,
     filteredValue: employeeMyTransactionReportSearch.status?.length
       ? employeeMyTransactionReportSearch.status
       : null,
@@ -334,7 +327,7 @@ export const getBorderlessTableColumns = ({
     dataIndex: "actionDateTime",
     key: "actionDateTime",
     ellipsis: true,
-    width: "10%",
+    width: 100,
     sorter: (a, b) =>
       formatApiDateTime(a.actionDateTime).localeCompare(
         formatApiDateTime(b.actionDateTime),
@@ -349,13 +342,6 @@ export const getBorderlessTableColumns = ({
         id={`cell-${record.key}-requestDateTime`}
         className="text-gray-600"
         data-testid="formatted-date"
-        style={{
-          display: "inline-block",
-          width: "100%",
-          overflow: "hidden",
-          textOverflow: "ellipsis",
-          whiteSpace: "nowrap",
-        }}
       >
         {formatApiDateTime(date)}
       </span>
@@ -367,7 +353,7 @@ export const getBorderlessTableColumns = ({
     dataIndex: "actionBy",
     key: "actionBy",
     ellipsis: true,
-    width: "8%",
+    width: 100,
     sorter: (a, b) => (a.actionBy || "").localeCompare(b.actionBy || ""),
     sortOrder: sortedInfo?.columnKey === "actionBy" ? sortedInfo.order : null,
     sortDirections: ["ascend", "descend"],

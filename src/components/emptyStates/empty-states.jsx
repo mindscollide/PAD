@@ -65,6 +65,7 @@ const iconComponents = {
   "admin-date-wise-transaction-report": TransactionsIcon,
   "admin-trades-uploaded-via-portfolio-report": RequestPendingIcon,
   "admin-tat-request-report": AuditIcon,
+  "discard-changes": PoliciesTabIcon,
 };
 
 /**
@@ -106,8 +107,10 @@ const defaultMessages = {
   "admin-transactions-summary-report": "No Transactions Summary Report Found",
   "admin-date-wise-transaction-report":
     "No Date Wise Transaction ReportDate Wise Transaction Report Found",
-  "admin-trades-uploaded-via-portfolio-report": "No Trades Uploaded via Portfolio Report Found",
+  "admin-trades-uploaded-via-portfolio-report":
+    "No Trades Uploaded via Portfolio Report Found",
   "admin-tat-request-report": "No TAT Request Report Found",
+  "discard-changes": "Discard Changes",
 };
 
 /**

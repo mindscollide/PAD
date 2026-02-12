@@ -461,6 +461,7 @@ const SearchWithPopoverOnly = () => {
             ...prev,
             employeeName: searchMain,
             departmentName: "",
+            pageNumber: 0,
             filterTrigger: true,
           }));
         } else if (
@@ -475,6 +476,7 @@ const SearchWithPopoverOnly = () => {
             departmentName: "",
             startDate: null,
             endDate: null,
+            pageNumber: 0,
             filterTrigger: true,
           }));
         } else if (currentPath === "/PAD/hta-reports/hta-pending-requests") {
@@ -487,6 +489,7 @@ const SearchWithPopoverOnly = () => {
             endDate: null,
             escalatedStartDate: null,
             escalatedEndDate: null,
+            pageNumber: 0,
             filterTrigger: true,
           }));
         } else if (
@@ -503,20 +506,18 @@ const SearchWithPopoverOnly = () => {
             actionEndDate: "",
             actionBy: "",
             tat: "",
+            pageNumber: 0,
             filterTrigger: true,
           }));
         } else if (
           currentPath === "/PAD/hta-reports/hta-tat-reports" &&
           !showViewDetailPageInTatOnHta
         ) {
-          console.log(
-            "showViewDetailPageInTatOnHta",
-            showViewDetailPageInTatOnHta,
-          );
           setHTATATReportSearch((prev) => ({
             ...prev,
             employeeName: searchMain,
             departmentName: "",
+            pageNumber: 0,
             filterTrigger: true,
           }));
         }

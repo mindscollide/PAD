@@ -1,10 +1,24 @@
-.SubmittedText {
-  font-size: 30px !important;
+.SubmittedTextHeading {
+  font-size: 50px !important;
   font-weight: 700;
   font-family: "Switzer Variable";
-  color: #424242;
+  color: #30426a;
 }
 
+.SubmittedTextDiscription {
+  font-family: "Switzer Variable";
+  font-weight: 500;
+  font-style: Medium;
+  font-size: 20px;
+  line-height: 100%;
+  letter-spacing: 0%;
+  text-align: center;
+  color: #424242;
+}
+.urgentImg {
+  object-fit: contain; /* keeps aspect ratio inside box */
+  margin-right: 12px;
+}
 .submittedTextSubHeading {
   font-size: 20px !important;
   font-weight: 500;

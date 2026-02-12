@@ -13,6 +13,7 @@ import PendingRequestIcon from "../../../assets/img/shield-doted.png";
 import CalenderIcon from "../../../assets/img/calender.png";
 import PolicyBreachesIcon from "../../../assets/img/policy-report.png";
 import ReportIcon from "../../../assets/img/repot-activity.png";
+import ReportclockIcon from "../../../assets/img/report-clock.png";
 
 const { Title } = Typography;
 
@@ -29,13 +30,12 @@ const ReportCard = ({
   const base = mainClassName || "home-reprot-card"; // fallback class name
   const navigate = useNavigate();
   const { setSelectedKey } = useSidebarContext();
+
   const onHeaderButtonClick = () => {
     navigateToPage(userRole, route, setSelectedKey, navigate);
   };
-  const onRowButtonClick = (data) => {
-    console.log("onRowButtonClick", data);
-    console.log("onRowButtonClick", userRole);
 
+  const onRowButtonClick = (data) => {
     if (data?.label === "My Trade Approvals" && userRole === "employee") {
       setSelectedKey("5"); // update your menu/side bar state
       navigate("/PAD/reports/my-trade-approvals"); // route change
@@ -99,13 +99,16 @@ const ReportCard = ({
     } else if (data?.label === "TAT Request Approval" && userRole === "HTA") {
       setSelectedKey("14");
       navigate("/PAD/hta-reports/hta-tat-reports");
-    }else if (data?.label === "User Activity Report" && userRole === "Admin") {
+    } else if (data?.label === "User Activity Report" && userRole === "Admin") {
       setSelectedKey("23");
       navigate("/PAD/admin-reports/admin-user-activity-report");
-    }else if (data?.label === "User-wise Compliance Report" && userRole === "Admin") {
+    } else if (
+      data?.label === "User-wise Compliance Report" &&
+      userRole === "Admin"
+    ) {
       setSelectedKey("23");
       navigate("/PAD/admin-reports/admin-user-wise-compliance-report");
-    }else if (data?.label === "Policy Breaches" && userRole === "Admin") {
+    } else if (data?.label === "Policy Breaches" && userRole === "Admin") {
       setSelectedKey("23");
       navigate("/PAD/admin-reports/admin-policy-breaches-report");
     }
@@ -240,7 +243,34 @@ const ReportCard = ({
         className={styles.urgentImg}
       />
     ),
+    "trade approval request": (
+      <img
+        draggable={false}
+        src={MyTradeApprovalIcon}
+        alt="TAT"
+        className={styles.urgentImg}
+      />
+    ),
+    "tat request approval": (
+      <img
+        draggable={false}
+        src={ReportclockIcon}
+        alt="TAT"
+        className={styles.urgentImg}
+      />
+    ),
+    "transaction summary report": (
+      <img
+        draggable={false}
+        src={MyTransactionsIcon}
+        alt="TAT"
+        className={styles.urgentImg}
+      />
+    ),
   };
+
+  console.log("onRowButtonClick", data);
+
   return (
     <Card className={styles[base]} style={{ padding: "10px 20px" }}>
       <div className={styles[`${base}-header`]}>
@@ -263,7 +293,6 @@ const ReportCard = ({
             {data.map((report, index) => (
               <div key={index} className={styles[`${base}-reportItem`]}>
                 <div className={styles.left}>
-                  {console.log("datadata", data)}
                   <span className={styles.icon}>
                     {reportIcons[report.label.toLowerCase()] || report.icon || (
                       <span>📄</span>
