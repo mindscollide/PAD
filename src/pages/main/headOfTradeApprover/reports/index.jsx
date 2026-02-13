@@ -123,7 +123,7 @@ const HTAReportsIndex = () => {
         </Row>
         <Row gutter={[16, 16]}>
           {/* ---- Policy Breaches ---- */}
-          <Col xs={12} md={8} lg={8}>
+          <Col xs={24} md={12} lg={12}>
             <MemoizedBoxCard
               reportsFlag={true}
               locationStyle="up"
@@ -136,7 +136,7 @@ const HTAReportsIndex = () => {
           </Col>
 
           {/* ---- Trade Approval Requests ---- */}
-          <Col xs={12} md={8} lg={8}>
+          <Col xs={24} md={12} lg={12}>
             <MemoizedBoxCard
               reportsFlag={true}
               locationStyle="up"
@@ -149,7 +149,7 @@ const HTAReportsIndex = () => {
           </Col>
 
           {/* ---- TAT Request Approvals ---- */}
-          <Col xs={12} md={8} lg={8}>
+          <Col xs={24} md={12} lg={12}>
             <MemoizedBoxCard
               reportsFlag={true}
               locationStyle="up"
@@ -162,7 +162,7 @@ const HTAReportsIndex = () => {
           </Col>
 
           {/* ---- Pending Requests ---- */}
-          <Col xs={12} md={8} lg={8}>
+          <Col xs={24} md={12} lg={12}>
             <MemoizedBoxCard
               reportsFlag={true}
               locationStyle="up"

@@ -459,6 +459,7 @@ export const getBorderlessTableColumnsViewDetails = ({
         setState={setHOCTransactionsSummarysReportsViewDetailSearch}
       />
     )),
+    align: "center",
     dataIndex: "type",
     width: 150,
     key: "type",
@@ -495,6 +496,7 @@ export const getBorderlessTableColumnsViewDetails = ({
       />
     )),
     width: 200,
+    align: "center",
     dataIndex: "status",
     key: "status",
     ellipsis: true,

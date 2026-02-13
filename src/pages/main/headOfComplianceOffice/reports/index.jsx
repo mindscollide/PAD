@@ -105,25 +105,25 @@ const HeadOFComplianceApprovalReportsIndex = () => {
   /** Date Wise Transactions */
   const hcaReportsComplianceDateWiseTransactions = useMemo(
     () => hcaReportsDashboardData?.dateWiseTransactionCount?.data || [],
-    [hcaReportsDashboardData?.dateWiseTransactionCount?.data]
+    [hcaReportsDashboardData?.dateWiseTransactionCount?.data],
   );
 
   /** Transactions Summary */
   const transactionSummary = useMemo(
     () => hcaReportsDashboardData?.transactionSummary?.data || [],
-    [hcaReportsDashboardData?.transactionSummary?.data]
+    [hcaReportsDashboardData?.transactionSummary?.data],
   );
 
   /** Overdue Verifications */
   const hcaReportsOverdueVerifications = useMemo(
     () => hcaReportsDashboardData?.overDueVerificationsCount?.data || [],
-    [hcaReportsDashboardData?.overDueVerificationsCount?.data]
+    [hcaReportsDashboardData?.overDueVerificationsCount?.data],
   );
 
   /** Portfolio History */
   const hcaReportsPortfolioHistory = useMemo(
     () => hcaReportsDashboardData?.uploadedPortfolioCount?.data || [],
-    [hcaReportsDashboardData?.uploadedPortfolioCount?.data]
+    [hcaReportsDashboardData?.uploadedPortfolioCount?.data],
   );
 
   /* ---------------------------------------------------------
@@ -142,7 +142,7 @@ const HeadOFComplianceApprovalReportsIndex = () => {
         {/* ========== First Row Reports ========== */}
         <Row gutter={[16, 16]}>
           {/* ---- Overdue Verifications ---- */}
-          <Col xs={12} md={8} lg={8}>
+          <Col xs={24} md={12} lg={12}>
             <MemoizedBoxCard
               reportsFlag={true}
               locationStyle="up"
@@ -156,7 +156,7 @@ const HeadOFComplianceApprovalReportsIndex = () => {
             />
           </Col>
           {/* ---- Date Wise Transaction Report ---- */}
-          <Col xs={12} md={8} lg={8}>
+          <Col xs={24} md={12} lg={12}>
             <MemoizedBoxCard
               reportsFlag={true}
               locationStyle="up"
@@ -169,8 +169,9 @@ const HeadOFComplianceApprovalReportsIndex = () => {
               route="hca-date-wise-transaction-report"
             />
           </Col>
+
           {/* ---- Transaction Summary ---- */}
-          <Col xs={12} md={8} lg={8}>
+          <Col xs={24} md={12} lg={12}>
             <MemoizedBoxCard
               reportsFlag={true}
               locationStyle="up"
@@ -183,12 +184,8 @@ const HeadOFComplianceApprovalReportsIndex = () => {
               route="hca-transactions-summary-report"
             />
           </Col>
-        </Row>
-
-        {/* ========== Second Row Reports ========== */}
-        <Row gutter={[16, 16]}>
           {/* ---- Portfolio History ---- */}
-          <Col xs={12} md={8} lg={8}>
+          <Col xs={24} md={12} lg={12}>
             <MemoizedBoxCard
               reportsFlag={true}
               locationStyle="up"

@@ -207,8 +207,8 @@ const ViewDetailReconcileTransaction = () => {
         // 🔹 Now set final files in state (with blob injected in 0th index)
         console.log("updatedFiles workflow files", updatedFiles);
         await setUploadattAchmentsFiles(updatedFiles);
-        setViewDetailReconcileTransaction(false);
         setIsViewTicketTransactionModal(true);
+        setViewDetailReconcileTransaction(false);
       }
     } catch (err) {
       console.error("Failed to fetch workflow files", err);
@@ -599,8 +599,9 @@ const ViewDetailReconcileTransaction = () => {
                           text="View Ticket"
                           className="big-light-button"
                           onClick={() => {
-                            setIsViewTicketTransactionModal(true);
-                            setViewDetailReconcileTransaction(false);
+                            // setIsViewTicketTransactionModal(true);
+                            // setViewDetailReconcileTransaction(false);
+                            handleViewTicket()
                           }}
                         />{" "}
                         <CustomButton
@@ -625,8 +626,9 @@ const ViewDetailReconcileTransaction = () => {
                           text="View Ticket"
                           className="big-light-button"
                           onClick={() => {
-                            setIsViewTicketTransactionModal(true);
-                            setViewDetailReconcileTransaction(false);
+                            // setIsViewTicketTransactionModal(true);
+                            // setViewDetailReconcileTransaction(false);
+                            handleViewTicket()
                           }}
                         />{" "}
                         <CustomButton

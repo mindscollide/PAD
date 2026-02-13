@@ -65,6 +65,10 @@ const ViewTicketReconcileModal = () => {
    * Avoids recalculating the selected file on each render unless dependencies change
    */
   const selectedFile = useMemo(() => {
+      console.log("createObjectURL",selectedIndex !== null
+      ? uploadattAchmentsFiles[selectedIndex]
+      : null)
+
     return selectedIndex !== null
       ? uploadattAchmentsFiles[selectedIndex]
       : null;
@@ -153,6 +157,8 @@ const ViewTicketReconcileModal = () => {
    * @returns {string|null} Object URL for Blob
    */
   const base64ToBlobUrl = (base64, mimeType = "application/pdf") => {
+      console.log("createObjectURL",base64)
+
     try {
       const byteChars = atob(base64);
       const byteNumbers = new Array(byteChars.length);
@@ -161,6 +167,7 @@ const ViewTicketReconcileModal = () => {
       }
       const byteArray = new Uint8Array(byteNumbers);
       const blob = new Blob([byteArray], { type: mimeType });
+      console.log("createObjectURL",blob)
       return URL.createObjectURL(blob);
     } catch (err) {
       console.error("❌ Failed to convert base64 to Blob URL", err);

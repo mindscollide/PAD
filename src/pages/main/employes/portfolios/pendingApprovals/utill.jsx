@@ -206,6 +206,7 @@ export const getBorderlessTableColumns = (
         setState={setEmployeePendingApprovalSearch}
       />
     ),
+    align: "center",
     dataIndex: "type",
     key: "type",
     ellipsis: true,
@@ -264,6 +265,7 @@ export const getBorderlessTableColumns = (
         setState={setEmployeePendingApprovalSearch}
       />
     ),
+    align: "center",
     dataIndex: "status",
     key: "status",
     ellipsis: true,

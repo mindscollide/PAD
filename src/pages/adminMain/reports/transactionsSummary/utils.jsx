@@ -451,6 +451,7 @@ export const getBorderlessTableColumnsViewDetails = ({
         setState={setCOTransactionsSummarysReportsViewDetailSearch}
       />
     )),
+    align: "center",
     dataIndex: "type",
     width: 150,
     key: "type",
@@ -502,6 +503,7 @@ export const getBorderlessTableColumnsViewDetails = ({
         setState={setCOTransactionsSummarysReportsViewDetailSearch}
       />
     )),
+    align: "center",
     width: 200,
     dataIndex: "status",
     key: "status",

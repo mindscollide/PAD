@@ -277,8 +277,8 @@ const ManageBrokerModal = ({ open }) => {
                       >
                         <Tooltip title={broker.brokerName}>
                           <span className={styles.brokerName}>
-                            {broker.brokerName.length > 25
-                              ? broker.brokerName.slice(0, 25) + "…"
+                            {broker.brokerName.length > 40
+                              ? broker.brokerName.slice(0, 40) + "…"
                               : broker.brokerName}
                           </span>
                         </Tooltip>

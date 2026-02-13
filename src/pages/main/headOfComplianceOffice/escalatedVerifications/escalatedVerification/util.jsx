@@ -241,6 +241,7 @@ export const getBorderlessTableColumns = ({
         setState={setHeadOfComplianceApprovalEscalatedVerificationsSearch}
       />
     ),
+    align: "center",
     dataIndex: "type",
     key: "type",
     ellipsis: true,

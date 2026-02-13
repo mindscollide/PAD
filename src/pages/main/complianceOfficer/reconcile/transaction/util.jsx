@@ -45,7 +45,7 @@ export const buildApiRequest = (searchState = {}, assetTypeListingData) => {
     Quantity: searchState.quantity ? Number(searchState.quantity) : 0,
     StartDate: startDate,
     EndDate: endDate,
-    StatusIds: mapStatusToIds(searchState.status),
+    StatusIds: mapStatusToIds(searchState.status,2),
     TypeIds: mapBuySellToIds(searchState.type, assetTypeListingData?.Equities),
     PageNumber: Number(searchState.pageNumber) || 0,
     Length: Number(searchState.pageSize) || 10,
@@ -222,6 +222,7 @@ export const getBorderlessTableColumns = ({
         setState={setComplianceOfficerReconcileTransactionsSearch}
       />
     ),
+    align: "center",
     dataIndex: "type",
     key: "type",
     ellipsis: true,
@@ -242,6 +243,7 @@ export const getBorderlessTableColumns = ({
         setState={setComplianceOfficerReconcileTransactionsSearch}
       />
     ),
+    align: "center",
     dataIndex: "status",
     key: "status",
     ellipsis: true,

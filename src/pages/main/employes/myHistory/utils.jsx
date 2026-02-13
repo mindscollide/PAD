@@ -178,6 +178,7 @@ export const getMyHistoryColumn = (
         setState={setEmployeeMyHistorySearch}
       />
     ),
+    align: "center",
     dataIndex: "type",
     key: "type",
     width: 130,
@@ -209,6 +210,7 @@ export const getMyHistoryColumn = (
         setState={setEmployeeMyHistorySearch}
       />
     ),
+    align: "center",
     dataIndex: "status",
     key: "status",
     ellipsis: true,

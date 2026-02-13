@@ -128,6 +128,7 @@ export const getBorderlessTableColumns = ({
       />
     )),
     dataIndex: "type",
+    align: "center",
     width: 100,
     key: "type",
     ellipsis: true,

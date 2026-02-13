@@ -288,6 +288,7 @@ export const getBorderlessTableColumns = ({
         setState={setCODatewiseTransactionReportSearch}
       />
     )),
+    align: "center",
     dataIndex: "type",
     width: 100,
     key: "type",
@@ -334,6 +335,7 @@ export const getBorderlessTableColumns = ({
         setState={setCODatewiseTransactionReportSearch}
       />
     )),
+    align: "center",
     dataIndex: "status",
     key: "status",
     ellipsis: true,
