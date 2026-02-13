@@ -120,6 +120,7 @@ export const getBorderlessTableColumns = ({
         setState={setCoOverdueVerificationReportSearch}
       />
     )),
+    align: "center",
     dataIndex: "tradeType",
     width: 200,
     key: "tradeType",

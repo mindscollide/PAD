@@ -181,6 +181,7 @@ export const getBorderlessTableColumns = ({
         setState={setEmployeeMyTransactionSearch}
       />
     ),
+    align: "center",
     dataIndex: "tradeType",
     key: "tradeType",
     ellipsis: true,
@@ -230,6 +231,7 @@ export const getBorderlessTableColumns = ({
         setState={setEmployeeMyTransactionSearch}
       />
     ),
+    align: "center",
     dataIndex: "workFlowStatus",
     key: "workFlowStatus",
     ellipsis: true,

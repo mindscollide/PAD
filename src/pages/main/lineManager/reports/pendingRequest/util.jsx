@@ -214,6 +214,7 @@ export const getBorderlessLineManagerTableColumns = ({
         setState={setLMPendingApprovalReportsSearch}
       />
     ),
+    align: "center",
     dataIndex: "type",
     key: "type",
     width: "8%",

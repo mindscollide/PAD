@@ -222,8 +222,8 @@ export const getBorderlessLineManagerTableColumns = ({
         setState={setHTAPendingApprovalReportsSearch}
       />
     ),
+    align: "center",
     dataIndex: "type",
-    align: "left",
     key: "type",
     width: "8%",
     ellipsis: true,

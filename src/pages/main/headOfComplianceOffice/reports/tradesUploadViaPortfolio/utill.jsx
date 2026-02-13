@@ -198,10 +198,10 @@ export const getBorderlessTableColumns = ({
         setState={setHCOTradesUploadViaPortfolioSearch}
       />
     ),
+    align: "center",
     dataIndex: "type",
     key: "type",
     ellipsis: true,
-    align: "left",
     width: "8%",
     filteredValue: hcoTradesUploadViaPortfolioSearch.type?.length
       ? hcoTradesUploadViaPortfolioSearch?.type
@@ -282,6 +282,7 @@ export const getBorderlessTableColumns = ({
         setState={setHCOTradesUploadViaPortfolioSearch}
       />
     ),
+    align: "center",
     dataIndex: "status",
     key: "status",
     ellipsis: true,

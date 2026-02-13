@@ -162,9 +162,7 @@ const ViewDetailsTransactionModal = () => {
         title: "Error",
         description: "Unable to fetch workflow files.",
       });
-    } finally {
-      showLoader(false);
-    }
+    } 
   };
 
   // -----------------------

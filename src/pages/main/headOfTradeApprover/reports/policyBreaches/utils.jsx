@@ -222,6 +222,7 @@ export const getBorderlessTableColumns = ({
         setState={setHTAPolicyBreachesReportSearch}
       />
     ),
+    align: "center",
     dataIndex: "type",
     key: "type",
     ellipsis: true,

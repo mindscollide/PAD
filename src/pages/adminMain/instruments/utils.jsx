@@ -121,6 +121,7 @@ export const getInstrumentTableColumns = ({
         setState={setAdminIntrumentListSearch}
       />
     ),
+    align: "center",
     width: 150,
     dataIndex: "status",
     key: "status",

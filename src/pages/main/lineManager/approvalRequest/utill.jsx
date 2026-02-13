@@ -59,7 +59,7 @@ export const buildApiRequest = (searchState = {}, assetTypeListingData) => {
 
 export const mapEscalatedApprovalsToTableRows = (
   assetTypeData,
-  approvals = []
+  approvals = [],
 ) =>
   (Array.isArray(approvals) ? approvals : []).map((item = {}) => ({
     key: item.approvalID,
@@ -196,7 +196,7 @@ export const getBorderlessLineManagerTableColumns = ({
     ellipsis: true,
     sorter: (a, b) =>
       formatApiDateTime(a.requestDateTime).localeCompare(
-        formatApiDateTime(b.requestDateTime)
+        formatApiDateTime(b.requestDateTime),
       ),
     sortDirections: ["ascend", "descend"],
     sortOrder:
@@ -216,6 +216,7 @@ export const getBorderlessLineManagerTableColumns = ({
         setState={setLineManagerApprovalSearch}
       />
     ),
+    align: "center",
     dataIndex: "type",
     key: "type",
     width: "8%",
@@ -225,10 +226,7 @@ export const getBorderlessLineManagerTableColumns = ({
       : null,
     onFilter: () => true,
     render: (type, record) => (
-      <span
-        id={`cell-${record.key}-type`}
-        className={type === "Buy" ? "text-green-600" : "text-red-600"}
-      >
+      <span id={`cell-${record.key}-type`} >
         {type}
       </span>
     ),
@@ -240,10 +238,10 @@ export const getBorderlessLineManagerTableColumns = ({
         setState={setLineManagerApprovalSearch}
       />
     ),
+    align: "center",
     dataIndex: "status",
     key: "status",
     ellipsis: true,
-    align: "center",
     filteredValue: lineManagerApprovalSearch.status?.length
       ? lineManagerApprovalSearch.status
       : null,

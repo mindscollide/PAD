@@ -140,6 +140,7 @@ export const getBorderlessTableColumns = ({
         setState={setHTATATViewDetailsSearch}
       />
     ),
+    align: "center",
     dataIndex: "type",
     key: "type",
     ellipsis: true,

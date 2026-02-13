@@ -29,7 +29,7 @@ export const buildMyActionApiRequest = (searchState = {}) => ({
 
 export const getMyActionsColumn = (approvalStatusMap, sortedInfo) => [
   {
-    title: withSortIcon("Request/Transaction ID", "approvalID", sortedInfo),
+    title: withSortIcon("RequestID", "approvalID", sortedInfo),
     align: "left",
     dataIndex: "approvalID",
     key: "approvalID",

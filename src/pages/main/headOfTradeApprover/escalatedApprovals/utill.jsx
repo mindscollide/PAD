@@ -337,6 +337,7 @@ export const getBorderlessTableColumns = ({
         setState={setHeadOfTradeEscalatedApprovalsSearch}
       />
     ),
+    align: "center",
     dataIndex: "type",
     key: "type",
     ellipsis: true,

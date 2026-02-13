@@ -235,6 +235,7 @@ export const getBorderlessTableColumns = ({
         setState={setHeadOfComplianceApprovalPortfolioSearch}
       />
     ),
+    align: "center",
     dataIndex: "type",
     key: "type",
     ellipsis: true,
