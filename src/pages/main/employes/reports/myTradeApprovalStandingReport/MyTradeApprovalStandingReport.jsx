@@ -58,6 +58,7 @@ const MyTradeApprovalStandingReport = () => {
   const counts = apiSummary.map((i) => i.statusCount);
   const percentages = apiSummary.map((i) => i.percentage);
   const totalCount = counts.reduce((a, b) => a + b, 0);
+  const totalPercentage = percentages.reduce((acc, curr) => acc + curr, 0);
 
   // ---------------- FETCH API FUNCTION ----------------
   const fetchApiCall = useCallback(
@@ -284,7 +285,7 @@ const MyTradeApprovalStandingReport = () => {
                   <tr className={style.totalRow}>
                     <td>Total</td>
                     <td>{totalCount}</td>
-                    <td>100%</td>
+                    <td>{totalPercentage}%</td>
                   </tr>
                 </tbody>
               </table>

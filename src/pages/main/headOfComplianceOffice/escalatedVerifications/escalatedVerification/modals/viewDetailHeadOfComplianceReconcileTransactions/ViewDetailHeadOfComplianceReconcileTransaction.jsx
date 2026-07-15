@@ -42,7 +42,7 @@ const ViewDetailHeadOfComplianceReconcileTransaction = () => {
   console.log("requesterName", viewDetailHeadOfComplianceEscalated);
   // get data from sessionStorage
   const userProfileData = JSON.parse(
-    sessionStorage.getItem("user_profile_data") || "{}",
+    sessionStorage.getItem("user_profile_data") || "{}"
   );
   const loggedInUserID = userProfileData?.userID;
 
@@ -57,12 +57,12 @@ const ViewDetailHeadOfComplianceReconcileTransaction = () => {
 
   console.log(
     isEscalatedHeadOfComplianceViewDetailData,
-    "isEscalatedHeadOfComplianceViewDetailData",
+    "isEscalatedHeadOfComplianceViewDetailData"
   );
 
   console.log(
     headOfComplianceApprovalEscalatedVerificationsData,
-    "headOfComplianceApprovalEscalatedVerificationsData",
+    "headOfComplianceApprovalEscalatedVerificationsData"
   );
 
   // This is the Status Which is I'm getting from the selectedViewDetail contextApi state
@@ -131,18 +131,18 @@ const ViewDetailHeadOfComplianceReconcileTransaction = () => {
   const statusData = getStatusStyle(
     String(
       isEscalatedHeadOfComplianceViewDetailData?.workFlowStatus
-        ?.workFlowStatusID,
-    ),
+        ?.workFlowStatusID
+    )
   );
 
   // Extarct and Instrument from viewDetailsModalData context Api
   const instrumentId = Number(
-    isEscalatedHeadOfComplianceViewDetailData?.details?.[0]?.instrumentID,
+    isEscalatedHeadOfComplianceViewDetailData?.details?.[0]?.instrumentID
   );
 
   // Match that selected instrument Id in viewDetailsModalData and match them with allinstrumentsData context State
   const selectedInstrument = allInstrumentsData?.find(
-    (item) => item.instrumentID === instrumentId,
+    (item) => item.instrumentID === instrumentId
   );
 
   //if status is Pending and ticketUpload is false then compliant and Non Compliant is disable
@@ -160,7 +160,7 @@ const ViewDetailHeadOfComplianceReconcileTransaction = () => {
 
   const complianceOfficer =
     isEscalatedHeadOfComplianceViewDetailData?.hierarchyDetails?.find(
-      (item) => item.roleID === 4,
+      (item) => item.roleID === 4
     );
 
   const onClickFromCompliantNoteModalFromHeadOfCompliance = () => {
@@ -306,7 +306,7 @@ const ViewDetailHeadOfComplianceReconcileTransaction = () => {
                       <label className={styles.viewDetailSubLabels}>
                         {dashBetweenApprovalAssets(
                           isEscalatedHeadOfComplianceViewDetailData
-                            ?.tradedWorkFlowRequests?.[0]?.tradeApprovalID,
+                            ?.tradedWorkFlowRequests?.[0]?.tradeApprovalID
                         )}
                       </label>
                     </div>
@@ -323,7 +323,7 @@ const ViewDetailHeadOfComplianceReconcileTransaction = () => {
                       <label className={styles.viewDetailSubLabels}>
                         {dashBetweenApprovalAssets(
                           isEscalatedHeadOfComplianceViewDetailData
-                            ?.details?.[0]?.tradeApprovalID,
+                            ?.details?.[0]?.tradeApprovalID
                         )}
                       </label>
                     </div>
@@ -360,7 +360,7 @@ const ViewDetailHeadOfComplianceReconcileTransaction = () => {
                       <label className={styles.viewDetailSubLabels}>
                         {formatNumberWithCommas(
                           isEscalatedHeadOfComplianceViewDetailData
-                            ?.tradedWorkFlowRequests?.[0]?.quantity,
+                            ?.tradedWorkFlowRequests?.[0]?.quantity
                         )}
                       </label>
                     </div>
@@ -373,7 +373,7 @@ const ViewDetailHeadOfComplianceReconcileTransaction = () => {
                       <label className={styles.viewDetailSubLabels}>
                         {formatNumberWithCommas(
                           isEscalatedHeadOfComplianceViewDetailData
-                            ?.details?.[0]?.quantity,
+                            ?.details?.[0]?.quantity
                         )}
                       </label>
                     </div>
@@ -387,10 +387,12 @@ const ViewDetailHeadOfComplianceReconcileTransaction = () => {
                         Transaction Date
                       </label>
                       <label className={styles.viewDetailSubLabels}>
-                        {formatApiDateTime(
-                          headOfComplianceApprovalEscalatedVerificationsData
-                            ?.escalatedVerification[0]?.transactionDate,
-                        )}
+                        {isEscalatedHeadOfComplianceViewDetailData?.transactionDate &&
+                        isEscalatedHeadOfComplianceViewDetailData?.transactionTime
+                          ? formatApiDateTime(
+                              `${isEscalatedHeadOfComplianceViewDetailData.transactionDate} ${isEscalatedHeadOfComplianceViewDetailData.transactionTime}`
+                            )
+                          : "—"}
                       </label>
                     </div>
                   </Col>
@@ -465,17 +467,16 @@ const ViewDetailHeadOfComplianceReconcileTransaction = () => {
                         activeStep={Math.max(
                           0,
                           Array.isArray(
-                            isEscalatedHeadOfComplianceViewDetailData?.hierarchyDetails,
+                            isEscalatedHeadOfComplianceViewDetailData?.hierarchyDetails
                           )
                             ? (isEscalatedHeadOfComplianceViewDetailData
                                 ?.hierarchyDetails.length > 1
                                 ? isEscalatedHeadOfComplianceViewDetailData?.hierarchyDetails.filter(
-                                    (person) =>
-                                      person.userID !== loggedInUserID,
+                                    (person) => person.userID !== loggedInUserID
                                   )
                                 : isEscalatedHeadOfComplianceViewDetailData?.hierarchyDetails
                               ).length - 1 // 🔥 fix here
-                            : 0,
+                            : 0
                         )}
                         connectorStyleConfig={{
                           activeColor: "#00640A",
@@ -491,12 +492,12 @@ const ViewDetailHeadOfComplianceReconcileTransaction = () => {
                         }}
                       >
                         {Array.isArray(
-                          isEscalatedHeadOfComplianceViewDetailData?.hierarchyDetails,
+                          isEscalatedHeadOfComplianceViewDetailData?.hierarchyDetails
                         ) &&
                           (isEscalatedHeadOfComplianceViewDetailData
                             ?.hierarchyDetails.length > 1
                             ? isEscalatedHeadOfComplianceViewDetailData?.hierarchyDetails.filter(
-                                (person) => person.userID !== loggedInUserID,
+                                (person) => person.userID !== loggedInUserID
                               )
                             : isEscalatedHeadOfComplianceViewDetailData?.hierarchyDetails
                           ) // 🔥 fix here
@@ -510,7 +511,7 @@ const ViewDetailHeadOfComplianceReconcileTransaction = () => {
                               } = person;
 
                               const formattedDateTime = formatApiDateTime(
-                                `${modifiedDate} ${modifiedTime}`,
+                                `${modifiedDate} ${modifiedTime}`
                               );
 
                               let iconSrc;

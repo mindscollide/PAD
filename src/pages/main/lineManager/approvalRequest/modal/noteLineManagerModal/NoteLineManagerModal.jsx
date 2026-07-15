@@ -40,6 +40,7 @@ const NoteLineManagerModal = () => {
       predefinedReasons={getAllPredefineReasonData}
       setValue={setCommentValue}
       width={"902px"}
+      height={"620px"}
       centered={true}
       submitText={noteGlobalModal.action === "Approve" ? "Approve" : "Decline"}
       onCancel={() => setNoteGlobalModal({ visible: false, action: null })}

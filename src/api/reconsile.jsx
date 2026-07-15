@@ -595,6 +595,8 @@ export const GetAllComplianceOfficerReconcileTransactionAndPortfolioRequest =
           ticketUploaded,
           requesterName,
           escalations,
+          transactionDate,
+          transactionTime,
         } = res.result;
 
         if (
@@ -614,6 +616,8 @@ export const GetAllComplianceOfficerReconcileTransactionAndPortfolioRequest =
             ticketUploaded: ticketUploaded || false,
             requesterName: requesterName || "",
             escalations: escalations || [],
+            transactionDate: transactionDate || "",
+            transactionTime: transactionTime || "",
           };
         }
 
@@ -631,6 +635,8 @@ export const GetAllComplianceOfficerReconcileTransactionAndPortfolioRequest =
           ticketUploaded: false,
           requesterName: "",
           escalations: [],
+          transactionDate: "",
+          transactionTime: "",
         };
       }
 

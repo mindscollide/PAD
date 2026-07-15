@@ -49,7 +49,7 @@ export const buildApiRequest = (searchState = {}, assetTypeListingData) => ({
  */
 export const mappingDateWiseTransactionReport = (
   assetTypeData,
-  overdueVerificationHCOListData = [],
+  overdueVerificationHCOListData = []
 ) => {
   const overdueVerifications = Array.isArray(overdueVerificationHCOListData)
     ? overdueVerificationHCOListData
@@ -222,12 +222,12 @@ export const getBorderlessTableColumns = ({
       );
     },
   },
-   {
+  {
     title: withSortIcon(
       "Transaction Date",
       "transactionDate",
       sortedInfo,
-      "center",
+      "center"
     ),
     align: "center",
     dataIndex: "transactionDate",
@@ -251,7 +251,7 @@ export const getBorderlessTableColumns = ({
       "Approved Quantity",
       "approvedQuantity",
       sortedInfo,
-      "center",
+      "center"
     ),
     dataIndex: "approvedQuantity",
     width: 180,
@@ -298,7 +298,7 @@ export const getBorderlessTableColumns = ({
       "Escalated Date",
       "escalatedDate",
       sortedInfo,
-      "center",
+      "center"
     ),
     align: "center",
     dataIndex: "escalatedDate",

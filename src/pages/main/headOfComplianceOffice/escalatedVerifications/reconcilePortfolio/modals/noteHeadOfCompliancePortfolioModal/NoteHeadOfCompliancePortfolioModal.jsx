@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useGlobalModal } from "../../../../../../../context/GlobalModalContext";
 import { CommentModal } from "../../../../../../../components";
+import { useDashboardContext } from "../../../../../../../context/dashboardContaxt";
 
 const NoteHeadOfCompliancePortfolioModal = () => {
   const {
@@ -9,6 +10,9 @@ const NoteHeadOfCompliancePortfolioModal = () => {
     setViewDetailHeadOfComplianceEscalatedPortfolio,
     setDeclinedGlobalModal,
   } = useGlobalModal();
+
+  // Context Api For Reasons which is coming from the API and stored in contextApi
+  const { getAllPredefineReasonData } = useDashboardContext();
 
   // 🔹 Local state upar uthao
   const [commentValue, setCommentValue] = useState("");
@@ -33,9 +37,9 @@ const NoteHeadOfCompliancePortfolioModal = () => {
       visible={noteGlobalModal.visible}
       onClose={onClickClose}
       value={commentValue} // pass controlled value
+      // predefinedReasons={getAllPredefineReasonData}
       setValue={setCommentValue}
       width={"902px"}
-      height={"620px"}
       centered={false}
       submitText={
         noteGlobalModal.action === "HOC-Portfolio-Compliant"

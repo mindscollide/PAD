@@ -178,6 +178,8 @@ const EquitiesApproval = () => {
     setAddTradeApprovalIntimationModal(true);
   };
 
+  console.log(formattedInstruments, "formattedInstrumentsformattedInstruments");
+
   return (
     <>
       <TradeAndPortfolioModal
