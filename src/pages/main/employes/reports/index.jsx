@@ -84,24 +84,24 @@ const EmpolyesReportsIndex = () => {
   // complianceStanding
   const employeeReportsComplianceStanding = useMemo(
     () => employeeReportsDashboardData?.myComplianceStanding?.data || [],
-    [employeeReportsDashboardData?.myComplianceStanding?.data],
+    [employeeReportsDashboardData?.myComplianceStanding?.data]
   );
 
   // tradeApprovals
   const employeeReportsTradeApprovals = useMemo(
     () => employeeReportsDashboardData?.myTradeApprovals?.data || [],
-    [employeeReportsDashboardData?.myTradeApprovals?.data],
+    [employeeReportsDashboardData?.myTradeApprovals?.data]
   );
   // tradeApprovalsStanding
   const employeeReportsTradeApprovalsStanding = useMemo(
     () => employeeReportsDashboardData?.myTradeApprovalsStanding?.data || [],
-    [employeeReportsDashboardData?.myTradeApprovalsStanding?.data],
+    [employeeReportsDashboardData?.myTradeApprovalsStanding?.data]
   );
 
   // transactions
   const employeeReportsTransactionsStanding = useMemo(
     () => employeeReportsDashboardData?.myTransactions?.data || [],
-    [employeeReportsDashboardData?.myTransactions?.data],
+    [employeeReportsDashboardData?.myTransactions?.data]
   );
 
   /**
