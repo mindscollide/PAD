@@ -212,7 +212,7 @@ const CommentModal = ({
     const requestdata = {
       TradeApprovalID: String(
         selectedEscalatedHeadOfComplianceData?.workflowID ||
-          selectedEscalatedPortfolioHeadOfComplianceData?.workflowID,
+          selectedEscalatedPortfolioHeadOfComplianceData?.workflowID
       ),
       StatusID:
         submitText === "HOC-Non-Compliant" ||
@@ -246,6 +246,7 @@ const CommentModal = ({
     if (visible) {
       setSelectedOption(null);
       setValue("");
+      setManualText(""); // 👈 add this line
     }
   }, [visible]);
 
