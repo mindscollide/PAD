@@ -18,6 +18,7 @@ const INITIAL_LOCAL_STATE = {
   requestDateTo: null,
   escalatedDateFrom: null,
   escalatedDateTo: null,
+  Quantity: null,
 };
 
 export const HeadOfTradeEscalatedFilter = ({
@@ -27,15 +28,13 @@ export const HeadOfTradeEscalatedFilter = ({
   clear,
   setClear,
 }) => {
-   // Context states (Head of Trade Escalated Approvals)
+  // Context states (Head of Trade Escalated Approvals)
   const {
     headOfTradeEscalatedApprovalsSearch,
     setHeadOfTradeEscalatedApprovalsSearch,
   } = useSearchBarContext();
   // Local form state
   const [localState, setLocalState] = useState(INITIAL_LOCAL_STATE);
-
- 
 
   // -----------------------------------------------------
   // 🔹 EFFECTS
@@ -83,7 +82,7 @@ export const HeadOfTradeEscalatedFilter = ({
       setFieldValue(name, removeFirstSpace(value));
     }
   };
-  
+
   /** Date change */
   const handleDateChange = (dates) => {
     setLocalState({
@@ -129,6 +128,7 @@ export const HeadOfTradeEscalatedFilter = ({
       requestDateTo,
       escalatedDateFrom,
       escalatedDateTo,
+      Quantity,
     } = localState;
 
     const searchPayload = {
@@ -140,6 +140,7 @@ export const HeadOfTradeEscalatedFilter = ({
       requestDateTo: requestDateTo || null,
       escalatedDateFrom: escalatedDateFrom || null,
       escalatedDateTo: escalatedDateTo || null,
+      Quantity: Quantity ? Number(Quantity) : null,
       pageNumber: 0,
       filterTrigger: true,
     };
@@ -161,6 +162,7 @@ export const HeadOfTradeEscalatedFilter = ({
       requestDateTo: null,
       escalatedDateFrom: null,
       escalatedDateTo: null,
+      Quantity: null,
       pageNumber: 0,
       filterTrigger: true,
     }));
@@ -233,6 +235,22 @@ export const HeadOfTradeEscalatedFilter = ({
             value={localState.requesterName}
             onChange={handleInputChange}
             placeholder="Requester Name"
+            size="medium"
+            classNames="Search-Field"
+          />
+        </Col>
+
+        <Col xs={24} sm={24} md={12}>
+          <TextField
+            label="Quantity"
+            name="Quantity"
+            value={
+              localState.Quantity
+                ? Number(localState.Quantity).toLocaleString("en-US")
+                : ""
+            }
+            onChange={handleInputChange}
+            placeholder="Quantity"
             size="medium"
             classNames="Search-Field"
           />

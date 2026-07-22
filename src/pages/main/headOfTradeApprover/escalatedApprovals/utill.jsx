@@ -36,16 +36,16 @@ export const buildApiRequest = (searchState = {}, assetTypeListingData) => {
   const formatDate = (date) => (date ? toYYMMDD(date) : "");
 
   return {
-    RequesterName: searchState.requesterName || "",
-    LineManagerName: searchState.lineManagerName || "",
     InstrumentName: searchState.instrumentName || "",
+    Quantity: searchState.Quantity ? Number(searchState.Quantity) : null,
     RequestDateFrom: formatDate(searchState.requestDateFrom),
     RequestDateTo: formatDate(searchState.requestDateTo),
     EscalatedDateFrom: formatDate(searchState.escalatedDateFrom),
     EscalatedDateTo: formatDate(searchState.escalatedDateTo),
-    StatusIds: mapStatusToIds(searchState.status) || [],
     TypeIds:
       mapBuySellToIds(searchState.type, assetTypeListingData?.Equities) || [],
+    RequesterName: searchState.requesterName || "",
+    LineManagerName: searchState.lineManagerName || "",
     PageNumber: Number(searchState.pageNumber) || 0,
     Length: Number(searchState.pageSize) || 10,
   };
@@ -98,7 +98,6 @@ const withSortIcon = (label, columnKey, sortedInfo, align = "left") => (
     </span>
   </div>
 );
-
 
 // ===========================================================================
 // 🗺️ DATA MAPPING FUNCTIONS
@@ -254,7 +253,7 @@ export const getBorderlessTableColumns = ({
     title: withSortIcon("Requester Name", "requesterName", sortedInfo),
     dataIndex: "requesterName",
     key: "requesterName",
-    align:"left",
+    align: "left",
     ellipsis: true,
     width: 140,
     sorter: (a, b) =>
