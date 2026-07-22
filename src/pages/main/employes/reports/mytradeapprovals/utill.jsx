@@ -215,6 +215,7 @@ export const getBorderlessTableColumns = ({
       </div>
     ),
   },
+
   {
     title: (
       <TypeColumnTitle
@@ -230,11 +231,11 @@ export const getBorderlessTableColumns = ({
       ? employeeMyTradeApprovalsSearch?.type
       : null,
     onFilter: () => true,
-    render: (type, record) => (
+    render: (tradeType, record) => (
       <span
         id={`cell-${record.key}-type`}
-        className={type === "Buy" ? "text-green-600" : "text-red-600"}
-        data-testid={`trade-type-${type}`}
+        className={tradeType === "Buy" ? "text-green-600" : "text-red-600"}
+        data-testid={`trade-type-${tradeType}`}
         style={{
           display: "inline-block",
           width: "100%",
@@ -243,7 +244,7 @@ export const getBorderlessTableColumns = ({
           whiteSpace: "nowrap",
         }}
       >
-        {type}
+        {tradeType}
       </span>
     ),
   },

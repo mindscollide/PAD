@@ -101,25 +101,25 @@ const ComplianceOfficerReportsIndex = () => {
   /** Date Wise Transactions */
   const coReportsComplianceDateWiseTransactions = useMemo(
     () => coReportsDashboardData?.dateWiseTransactions?.data || [],
-    [coReportsDashboardData?.dateWiseTransactions?.data],
+    [coReportsDashboardData?.dateWiseTransactions?.data]
   );
 
   /** Transactions Summary */
   const coReportsTradeTransactionsSummary = useMemo(
     () => coReportsDashboardData?.transactionsSummary?.data || [],
-    [coReportsDashboardData?.transactionsSummary?.data],
+    [coReportsDashboardData?.transactionsSummary?.data]
   );
 
   /** Overdue Verifications */
   const coReportsOverdueVerifications = useMemo(
     () => coReportsDashboardData?.overdueVerifications?.data || [],
-    [coReportsDashboardData?.overdueVerifications?.data],
+    [coReportsDashboardData?.overdueVerifications?.data]
   );
 
   /** Portfolio History */
   const coReportsPortfolioHistory = useMemo(
     () => coReportsDashboardData?.portfolioHistory?.data || [],
-    [coReportsDashboardData?.portfolioHistory?.data],
+    [coReportsDashboardData?.portfolioHistory?.data]
   );
 
   /* ---------------------------------------------------------
