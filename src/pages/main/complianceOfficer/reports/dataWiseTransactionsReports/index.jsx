@@ -23,10 +23,7 @@ import style from "./dataWiseTransactionsReports.module.css";
 import { useMyApproval } from "../../../../../context/myApprovalContaxt";
 import {
   DownloadComplianceOfficerDateWiseTransactionReportRequestAPI,
-  DownloadLineManagerMyTradeApprovalReportRequestAPI,
-  DownloadMyTransactionReportRequestAPI,
   SearchComplianceOfficerDateWiseTransactionRequest,
-  SearchLineManagerTradeApprovalRequestApi,
 } from "../../../../../api/myApprovalApi";
 import { useNotification } from "../../../../../components/NotificationProvider/NotificationProvider";
 import { useApi } from "../../../../../context/ApiContext";
@@ -41,6 +38,7 @@ import { DateRangePicker } from "../../../../../components";
 import ViewDetaildDateWiseTransaction from "./ViewDetaildDateWiseTransaction/ViewDetaildDateWiseTransaction";
 import { DateWiseTransactionReportViewDetails } from "../../../../../api/myTransactionsApi";
 import { useReconcileContext } from "../../../../../context/reconsileContax";
+import { formatToYYYYMMDD } from "../../../../../common/funtions/rejex";
 
 const COdataWiseTransactionsReports = () => {
   const navigate = useNavigate();
@@ -51,6 +49,7 @@ const COdataWiseTransactionsReports = () => {
   const { callApi } = useApi();
   const { showNotification } = useNotification();
   const { showLoader } = useGlobalLoader();
+
   const {
     coDatewiseTransactionReportListData,
     setCODatewiseTransactionReportListData,
@@ -74,6 +73,10 @@ const COdataWiseTransactionsReports = () => {
   const [sortedInfo, setSortedInfo] = useState({});
   const [loadingMore, setLoadingMore] = useState(false);
   const [open, setOpen] = useState(false);
+  const [dateRange, setDateRange] = useState({
+    StartDate: null,
+    EndDate: null,
+  });
 
   // -------------------- Helpers --------------------
 
@@ -102,13 +105,11 @@ const COdataWiseTransactionsReports = () => {
       const records = Array.isArray(res?.complianceOfficerApprovals)
         ? res.complianceOfficerApprovals
         : [];
-      console.log("records", records);
       const mapped = mappingDateWiseTransactionReport(
         currentAssetTypeData?.Equities,
         records
       );
       if (!mapped || typeof mapped !== "object") return;
-      console.log("records", mapped);
 
       setCODatewiseTransactionReportListData((prev) => ({
         complianceOfficerApprovalsList: replace
@@ -146,29 +147,47 @@ const COdataWiseTransactionsReports = () => {
     ]
   );
 
-
   // -------------------- Effects --------------------
 
   // 🔹 Initial Fetch
   useEffect(() => {
     if (hasFetched.current) return;
     hasFetched.current = true;
-    const requestData = buildApiRequest(
-      coDatewiseTransactionReportSearch,
-      assetTypeListingData
-    );
-    fetchApiCall(requestData, true, true);
-  }, []);
 
-  //   // Reset on Unmount
-  useEffect(() => {
+    const endDate = new Date();
+    const startDate = new Date();
+    startDate.setMonth(startDate.getMonth() - 6);
+
+    setDateRange({
+      StartDate: formatToYYYYMMDD(startDate),
+      EndDate: formatToYYYYMMDD(endDate),
+    });
+
+    const updatedState = {
+      ...coDatewiseTransactionReportSearch,
+      startDate,
+      endDate,
+    };
+
+    setCODatewiseTransactionReportSearch(updatedState);
+    const requestData = buildApiRequest(updatedState, assetTypeListingData);
+    fetchApiCall(requestData, true, true);
+
     return () => {
-      // Reset search state for fresh load
       resetComplianceOfficerDateWiseTransationReportSearch();
+      hasFetched.current = false; // allow a genuine remount to fully re-init
     };
   }, []);
 
-  // 🔹 call api on search
+  //   // Reset on Unmount
+  // useEffect(() => {
+  //   return () => {
+  //     // Reset search state for fresh load
+  //     resetComplianceOfficerDateWiseTransationReportSearch();
+  //   };
+  // }, []);
+
+  // 🔹 call api on search (covers text/dropdown filters AND date range changes below)
   useEffect(() => {
     if (coDatewiseTransactionReportSearch?.filterTrigger) {
       const requestData = buildApiRequest(
@@ -217,9 +236,7 @@ const COdataWiseTransactionsReports = () => {
     });
 
     if (responseData) {
-      console.log("responseData",responseData)
       setIsViewComments(true);
-
       setReconcileTransactionViewDetailData(responseData);
     }
   };
@@ -234,7 +251,7 @@ const COdataWiseTransactionsReports = () => {
     setCheckTradeApprovalID,
   });
 
-  /** 🔹 Handle removing individual filter */
+  /** 🔹 Handle removing individual filter (date is handled separately by the DateRangePicker, not here) */
   const handleRemoveFilter = (key) => {
     const resetMap = {
       employeeID: { employeeID: 0 },
@@ -242,10 +259,6 @@ const COdataWiseTransactionsReports = () => {
       departmentName: { departmentName: "" },
       instrumentName: { instrumentName: "" },
       quantity: { quantity: 0 },
-
-      // requestDate resets startDate + endDate
-      requestDate: { startDate: null, endDate: null },
-
       type: { type: [] },
       status: { status: [] },
     };
@@ -258,7 +271,7 @@ const COdataWiseTransactionsReports = () => {
     }));
   };
 
-  /** 🔹 Handle removing all filters */
+  /** 🔹 Handle removing all filters (leaves date range untouched — it's controlled separately) */
   const handleRemoveAllFilters = () => {
     setCODatewiseTransactionReportSearch((prev) => ({
       ...prev,
@@ -267,8 +280,6 @@ const COdataWiseTransactionsReports = () => {
       departmentName: "",
       instrumentName: "",
       quantity: 0,
-      startDate: null,
-      endDate: null,
       type: [],
       status: [],
       pageNumber: 0,
@@ -276,7 +287,7 @@ const COdataWiseTransactionsReports = () => {
     }));
   };
 
-  /** 🔹 Build Active Filters */
+  /** 🔹 Build Active Filters (date range is shown via the DateRangePicker above, not as a tag) */
   const activeFilters = (() => {
     const {
       employeeID,
@@ -284,8 +295,6 @@ const COdataWiseTransactionsReports = () => {
       departmentName,
       instrumentName,
       quantity,
-      startDate,
-      endDate,
       type,
       status,
     } = coDatewiseTransactionReportSearch || {};
@@ -293,23 +302,7 @@ const COdataWiseTransactionsReports = () => {
     const truncate = (val) =>
       val.length > 13 ? val.slice(0, 13) + "..." : val;
 
-    const formatDate = (date) =>
-      date ? new Date(date).toISOString().split("T")[0] : null;
-
     const formatArray = (arr) => (arr?.length ? arr.join(", ") : null);
-
-    const formattedStart = formatDate(startDate);
-    const formattedEnd = formatDate(endDate);
-
-    // 🔹 Combine into requestDate
-    let requestDate = null;
-    if (formattedStart && formattedEnd) {
-      requestDate = `${formattedStart} to ${formattedEnd}`;
-    } else if (formattedStart) {
-      requestDate = `From ${formattedStart}`;
-    } else if (formattedEnd) {
-      requestDate = `Till ${formattedEnd}`;
-    }
 
     return [
       employeeID ? { key: "employeeID", value: employeeID } : null,
@@ -327,8 +320,6 @@ const COdataWiseTransactionsReports = () => {
         : null,
 
       quantity ? { key: "quantity", value: quantity } : null,
-
-      requestDate ? { key: "requestDate", value: requestDate } : null,
 
       type?.length ? { key: "type", value: formatArray(type) } : null,
 
@@ -356,6 +347,41 @@ const COdataWiseTransactionsReports = () => {
       requestdata: requestdata,
       navigate,
     });
+  };
+
+  // 🔹 Date range now flows through the same filter state + filterTrigger effect as
+  // every other filter, so it merges with employeeName/department/instrument/type/status
+  // instead of overwriting them.
+  const handleDateChange = (dates) => {
+    if (dates && dates.length === 2) {
+      setDateRange({
+        StartDate: dates?.[0] || null,
+        EndDate: dates?.[1] || null,
+      });
+
+      setCODatewiseTransactionReportSearch((prev) => ({
+        ...prev,
+        startDate: dates[0],
+        endDate: dates[1],
+        pageNumber: 0,
+        filterTrigger: true,
+      }));
+    }
+  };
+
+  const handleClearDates = () => {
+    setDateRange({
+      StartDate: null,
+      EndDate: null,
+    });
+
+    setCODatewiseTransactionReportSearch((prev) => ({
+      ...prev,
+      startDate: null,
+      endDate: null,
+      pageNumber: 0,
+      filterTrigger: true,
+    }));
   };
 
   // -------------------- Render --------------------
@@ -389,6 +415,13 @@ const COdataWiseTransactionsReports = () => {
         </Col>
         <Col>
           <div className={style.headerActionsRow}>
+            <DateRangePicker
+              size="medium"
+              className={style.dateRangePickerClass}
+              value={[dateRange.StartDate, dateRange.EndDate]}
+              onChange={handleDateChange}
+              onClear={handleClearDates}
+            />
             <CustomButton
               text={
                 <span className={style.exportButtonText}>
@@ -421,7 +454,7 @@ const COdataWiseTransactionsReports = () => {
           )}
         </Col>
       </Row>
-      {/* 🔹 Active Filter Tags */}
+      {/* 🔹 Active Filter Tags (date range is NOT included here anymore) */}
       {activeFilters.length > 0 && (
         <Row gutter={[12, 12]} className={style["filter-tags-container"]}>
           {activeFilters.map(({ key, value }) => (
@@ -455,7 +488,9 @@ const COdataWiseTransactionsReports = () => {
       <PageLayout
         background="white"
         className={
-          activeFilters.length > 0 ? "TATHTAchangeHeightreports2" : "repotsHeightHOC"
+          activeFilters.length > 0
+            ? "TATHTAchangeHeightreports2"
+            : "repotsHeightHOC"
         }
       >
         <div className="px-4 md:px-6 lg:px-8 ">

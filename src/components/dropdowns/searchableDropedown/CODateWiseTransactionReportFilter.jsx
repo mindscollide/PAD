@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Row, Col, Space } from "antd";
-import { Button, TextField, DateRangePicker } from "../..";
+import { Button, TextField } from "../..";
 import { useSearchBarContext } from "../../../context/SearchBarContaxt";
 import {
   allowOnlyNumbers,
@@ -8,14 +8,14 @@ import {
 } from "../../../common/funtions/rejex";
 
 // 🔹 Initial state matching your global state structure
+// (startDate/endDate deliberately excluded — that's controlled by the
+// DateRangePicker on COdataWiseTransactionsReports, not this filter panel)
 const INITIAL_LOCAL_STATE = {
   employeeID: "",
   employeeName: "",
   departmentName: "",
   instrumentName: "",
   quantity: "",
-  startDate: null,
-  endDate: null,
   type: [],
   status: [],
 };
@@ -85,22 +85,6 @@ export const CODateWiseTransactionReportFilter = ({
     }
   };
 
-  const handleDateChange = (dates) => {
-    setLocalState({
-      ...localState,
-      startDate: dates?.[0] || null,
-      endDate: dates?.[1] || null,
-    });
-  };
-
-  const handleClearDates = () => {
-    setLocalState((prev) => ({
-      ...prev,
-      startDate: null,
-      endDate: null,
-    }));
-  };
-
   const handleSearchClick = () => {
     const {
       employeeID,
@@ -108,10 +92,12 @@ export const CODateWiseTransactionReportFilter = ({
       departmentName,
       instrumentName,
       quantity,
-      startDate,
-      endDate,
     } = localState;
 
+    // Spreading coDatewiseTransactionReportSearch first means whatever
+    // startDate/endDate is currently set via the report page's
+    // DateRangePicker carries through untouched — this filter no longer
+    // owns or overwrites the date range.
     const searchPayload = {
       ...coDatewiseTransactionReportSearch,
       employeeID: employeeID ? Number(employeeID) : 0,
@@ -119,8 +105,6 @@ export const CODateWiseTransactionReportFilter = ({
       departmentName: departmentName?.trim() || "",
       instrumentName: instrumentName?.trim() || "",
       quantity: quantity ? Number(quantity) : 0,
-      startDate: startDate || null,
-      endDate: endDate || null,
       pageNumber: 0,
       filterTrigger: true,
     };
@@ -132,6 +116,8 @@ export const CODateWiseTransactionReportFilter = ({
   };
 
   const handleResetClick = () => {
+    // NOTE: startDate/endDate intentionally left out — Reset only clears
+    // the fields this panel owns, not the date range from the separate picker.
     setCODatewiseTransactionReportSearch((prev) => ({
       ...prev,
       employeeID: 0,
@@ -139,8 +125,6 @@ export const CODateWiseTransactionReportFilter = ({
       departmentName: "",
       instrumentName: "",
       quantity: "",
-      startDate: null,
-      endDate: null,
       type: [],
       status: [],
       pageNumber: 0,
@@ -159,13 +143,24 @@ export const CODateWiseTransactionReportFilter = ({
     <>
       {/* ROW 1: Employee ID & Employee Name */}
       <Row gutter={[12, 12]}>
-        <Col xs={24} sm={24} md={12} lg={12}>
+        {/* <Col xs={24} sm={24} md={12} lg={12}>
           <TextField
             label="Employee ID"
             name="employeeID"
             value={localState.employeeID}
             onChange={handleInputChange}
             placeholder="Employee ID"
+            size="medium"
+            classNames="Search-Field"
+          />
+        </Col> */}
+        <Col xs={24} sm={24} md={12} lg={12}>
+          <TextField
+            label="Instrument Name"
+            name="instrumentName"
+            value={localState.instrumentName}
+            onChange={handleInputChange}
+            placeholder="Instrument Name"
             size="medium"
             classNames="Search-Field"
           />
@@ -197,22 +192,6 @@ export const CODateWiseTransactionReportFilter = ({
             classNames="Search-Field"
           />
         </Col>
-
-        <Col xs={24} sm={24} md={12} lg={12}>
-          <TextField
-            label="Instrument Name"
-            name="instrumentName"
-            value={localState.instrumentName}
-            onChange={handleInputChange}
-            placeholder="Instrument Name"
-            size="medium"
-            classNames="Search-Field"
-          />
-        </Col>
-      </Row>
-
-      {/* ROW 3: Quantity & Date Range */}
-      <Row gutter={[12, 12]}>
         <Col xs={24} sm={24} md={12} lg={12}>
           <TextField
             label="Quantity"
@@ -228,18 +207,9 @@ export const CODateWiseTransactionReportFilter = ({
             classNames="Search-Field"
           />
         </Col>
-
-        <Col xs={24} sm={24} md={12} lg={12}>
-          <DateRangePicker
-            label="Transaction Date"
-            size="medium"
-            value={[localState.startDate, localState.endDate]}
-            onChange={handleDateChange}
-            onClear={handleClearDates}
-            format="YYYY-MM-DD"
-          />
-        </Col>
       </Row>
+
+      {/* ROW 3: Quantity (Date Range moved out — now controlled from the report page header) */}
 
       {/* ACTION ROW */}
       <Row gutter={[12, 12]} justify="end" style={{ marginTop: 16 }}>
