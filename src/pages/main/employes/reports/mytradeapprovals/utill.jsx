@@ -80,7 +80,7 @@ export const mapEmployeeTransactions = (
     brokers: item.brokers || [],
   }));
 };
-
+console.log("test");
 const renderInstrumentCell = (record) => {
   const code = record?.instrumentCode || "—";
   const name = record?.instrumentName || "—";
