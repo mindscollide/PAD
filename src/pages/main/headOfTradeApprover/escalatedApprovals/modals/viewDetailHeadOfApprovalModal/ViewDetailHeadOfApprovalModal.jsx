@@ -35,18 +35,18 @@ const ViewDetailHeadOfApprovalModal = () => {
 
   // get data from sessionStorage
   const userProfileData = JSON.parse(
-    sessionStorage.getItem("user_profile_data") || "{}",
+    sessionStorage.getItem("user_profile_data") || "{}"
   );
   const loggedInUserID = userProfileData?.userID;
 
   // Extarct and Instrument from viewDetailsModalData context Api
   const instrumentId = Number(
-    viewDetailsHeadOfApprovalData?.details?.[0]?.instrumentID,
+    viewDetailsHeadOfApprovalData?.details?.[0]?.instrumentID
   );
 
   // Match that selected instrument Id in viewDetailsModalData and match them with allinstrumentsData context State
   const selectedInstrument = allInstrumentsData?.find(
-    (item) => item.instrumentID === instrumentId,
+    (item) => item.instrumentID === instrumentId
   );
 
   const getStatusStyle = (status) => {
@@ -109,13 +109,13 @@ const ViewDetailHeadOfApprovalModal = () => {
   };
 
   const statusDataHTA = getStatusStyle(
-    String(viewDetailsHeadOfApprovalData?.workFlowStatus?.workFlowStatusID),
+    String(viewDetailsHeadOfApprovalData?.workFlowStatus?.workFlowStatusID)
   );
 
   // When its already approve or ddecline by you then button should be disabled
   const hasAlreadyApprovedOrDeclined =
     viewDetailsHeadOfApprovalData?.hierarchyDetails?.some(
-      (item) => item.userID === loggedInUserID && item.bundleStatusID === 2, // 2 is approved
+      (item) => item.userID === loggedInUserID && item.bundleStatusID === 2 // 2 is approved
     );
 
   const escalatedFromID =
@@ -228,7 +228,7 @@ const ViewDetailHeadOfApprovalModal = () => {
                         <label className={styles.viewDetailSubLabels}>
                           {dashBetweenApprovalAssets(
                             viewDetailsHeadOfApprovalData?.details?.[0]
-                              ?.tradeApprovalID,
+                              ?.tradeApprovalID
                           )}
                         </label>
                       </div>
@@ -256,7 +256,7 @@ const ViewDetailHeadOfApprovalModal = () => {
                       <label className={styles.viewDetailSubLabels}>
                         {dashBetweenApprovalAssets(
                           viewDetailsHeadOfApprovalData?.details?.[0]
-                            ?.tradeApprovalID,
+                            ?.tradeApprovalID
                         )}
                       </label>
                     </div>
@@ -284,7 +284,7 @@ const ViewDetailHeadOfApprovalModal = () => {
                     </label>
                     <label className={styles.viewDetailSubLabels}>
                       {formatNumberWithCommas(
-                        viewDetailsHeadOfApprovalData?.details?.[0]?.quantity,
+                        viewDetailsHeadOfApprovalData?.details?.[0]?.quantity
                       )}
                     </label>
                   </div>
@@ -299,7 +299,7 @@ const ViewDetailHeadOfApprovalModal = () => {
                     </label>
                     <label className={styles.viewDetailSubLabels}>
                       {formatApiDateTime(
-                        isSelectedViewDetailHeadOfApproval?.requestDateTime,
+                        isSelectedViewDetailHeadOfApproval?.requestDateTime
                       )}
                     </label>
                   </div>
@@ -345,11 +345,11 @@ const ViewDetailHeadOfApprovalModal = () => {
                       activeStep={Math.max(
                         0,
                         Array.isArray(
-                          viewDetailsHeadOfApprovalData?.hierarchyDetails,
+                          viewDetailsHeadOfApprovalData?.hierarchyDetails
                         )
                           ? viewDetailsHeadOfApprovalData.hierarchyDetails
                               .length - 1
-                          : 0,
+                          : 0
                       )}
                       connectorStyleConfig={{
                         activeColor: "#00640A",
@@ -365,7 +365,7 @@ const ViewDetailHeadOfApprovalModal = () => {
                       }}
                     >
                       {Array.isArray(
-                        viewDetailsHeadOfApprovalData?.hierarchyDetails,
+                        viewDetailsHeadOfApprovalData?.hierarchyDetails
                       ) &&
                         [...viewDetailsHeadOfApprovalData.hierarchyDetails]
                           .sort((a, b) => {
@@ -391,7 +391,7 @@ const ViewDetailHeadOfApprovalModal = () => {
                             } = person;
 
                             const formattedDateTime = formatApiDateTime(
-                              `${modifiedDate} ${modifiedTime}`,
+                              `${modifiedDate} ${modifiedTime}`
                             );
 
                             let iconSrc;
