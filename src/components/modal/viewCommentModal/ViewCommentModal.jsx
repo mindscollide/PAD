@@ -36,7 +36,7 @@ const ViewCommentModal = ({
           <div className={styles.mainDivComment}>
             {commentTypeFlag && (
               <Row>
-                <Col span={24}>
+                <Col span={36}>
                   {/* Acceptance Comments */}
                   {acceptanceList?.length > 0 && (
                     <div className={styles.commentSection}>

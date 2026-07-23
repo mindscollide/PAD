@@ -9,12 +9,14 @@
   font-size: 26px;
   color: #424242;
   font-weight: 400;
+  width: max-content;
   font-family: "Switzer Variable";
 }
 
 .mainDivComment {
   padding: 25px 50px !important;
   height: 40vh !important;
+  width: max-content !important;
   overflow: hidden !important;
   overflow-y: auto !important;
   scrollbar-width: thin !important;

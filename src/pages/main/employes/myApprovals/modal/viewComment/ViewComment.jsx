@@ -4,19 +4,16 @@ import { ViewCommentModal } from "../../../../../../components";
 import { useMyApproval } from "../../../../../../context/myApprovalContaxt";
 
 const ViewComment = () => {
-  // This is Global State for modal which is create in ContextApi
   const { isViewComments, setIsViewComments, setIsViewDetail } =
     useGlobalModal();
 
-  //This is the Global state of Context Api
   const { viewDetailsModalData } = useMyApproval();
-  console.log(viewDetailsModalData, "CheckViewModalDataNow");
 
-  // Check workflow Id it shows comment against the workFlow ID
   const workflowStatusID =
     viewDetailsModalData?.workFlowStatus?.workFlowStatusID;
   const detail = viewDetailsModalData?.details?.[0];
 
+  // These are arrays of { name, comments } objects, not nested under `.comments`
   const approvalComments = detail?.approvalComments || [];
   const rejectionComments = detail?.rejectionComment || [];
 
@@ -25,11 +22,10 @@ const ViewComment = () => {
       return "No comments available.";
 
     return commentsArray
-      .map((comment, index) => `${index + 1}) ${comment}`)
+      .map((item, index) => `${index + 1}) ${item.comments} - ${item.name}`)
       .join("\n");
   };
 
-  //To Show Approval or Rejection Comments
   const getCommentText = () => {
     if (workflowStatusID === 3) {
       return formatComments(approvalComments);
@@ -40,20 +36,17 @@ const ViewComment = () => {
     }
   };
 
-  // This is onClick of Go Back Functionality
   const onClickGoBack = () => {
     setIsViewComments(false);
     setIsViewDetail(true);
   };
 
-  //This is the onCLick of Close Comment
   const onClickCloseComment = () => {
     setIsViewComments(false);
   };
 
   return (
     <>
-      {/* Import View Comment Modal Which Is Create inside modal folder Component because now we can use on multiple time */}
       <ViewCommentModal
         visible={isViewComments}
         onClose={onClickCloseComment}
