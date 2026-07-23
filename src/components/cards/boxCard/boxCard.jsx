@@ -101,7 +101,7 @@ const BoxCard = ({
       }
     }
   };
-  
+
   // Handle card click
   const handleCardClick = () => {
     // You can switch route based on props or conditions
@@ -315,7 +315,13 @@ const BoxCard = ({
                                     )}
                                   />
                                 </div>
-                                <Tooltip title={box.label}>
+                                <Tooltip
+                                  title={
+                                    box.label === "NON_COMPLIANT"
+                                      ? "NON-COMPLIANT"
+                                      : box.label
+                                  }
+                                >
                                   <Text
                                     className={
                                       styles[
@@ -326,7 +332,9 @@ const BoxCard = ({
                                     }
                                     style={{ color: textLableColor }}
                                   >
-                                    {box.label}
+                                    {box.label === "NON_COMPLIANT"
+                                      ? "NON-COMPLIANT"
+                                      : box.label}
                                   </Text>
                                 </Tooltip>
                               </>

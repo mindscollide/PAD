@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useGlobalModal } from "../../../../../../../context/GlobalModalContext";
 import { CommentModal } from "../../../../../../../components";
+import { useDashboardContext } from "../../../../../../../context/dashboardContaxt";
 
 const NotePortfolioComplianceOfficerModal = () => {
   const {
@@ -10,7 +11,15 @@ const NotePortfolioComplianceOfficerModal = () => {
     viewDetailPortfolioTransaction,
   } = useGlobalModal();
 
-  console.log(noteGlobalModal, "viewDetailReconcileTransaction");
+  // console.log(noteGlobalModal, "viewDetailReconcileTransaction");
+
+  // Context Api For Reasons which is coming from the API and stored in contextApi
+  const { getAllPredefineReasonData } = useDashboardContext();
+
+  console.log(
+    getAllPredefineReasonData,
+    "getAllPredefineReasonDatagetAllPredefineReasonData"
+  );
 
   // 🔹 Local state upar uthao
   const [commentValue, setCommentValue] = useState("");
@@ -28,10 +37,11 @@ const NotePortfolioComplianceOfficerModal = () => {
       visible={noteGlobalModal.visible}
       onClose={onClickClose}
       value={commentValue} // pass controlled value
+      predefinedReasons={getAllPredefineReasonData}
       setValue={setCommentValue}
-      width={"902px"}
-      height={"620px"}
-      centered={false}
+      // width={"902px"}
+      // height={"620px"}
+      centered={true}
       submitText={
         noteGlobalModal.action === "Portfolio-Compliant"
           ? "Portfolio-Compliant"

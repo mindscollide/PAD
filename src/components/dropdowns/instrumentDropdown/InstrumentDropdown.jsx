@@ -26,9 +26,15 @@ const InstrumentSelect = ({
         value={value}
         onClear={onClear}
         allowClear
-        filterOption={(input, option) =>
-          (option?.label ?? "").toLowerCase().includes(input.toLowerCase())
-        }
+        filterOption={(input, option) => {
+          const item = data.find((d) => d.id === option.value);
+          if (!item) return false;
+          const search = input.toLowerCase();
+          return (
+            item.description?.toLowerCase().includes(search) ||
+            item.name?.toLowerCase().includes(search)
+          );
+        }}
         onSelect={onSelect}
         disabled={disabled}
       >

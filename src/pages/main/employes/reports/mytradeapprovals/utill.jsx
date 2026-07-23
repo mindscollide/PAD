@@ -67,6 +67,7 @@ export const mapEmployeeTransactions = (
     isEscalated: item.isEscalated,
     assetTypeID: item.assetType?.assetTypeID || 0,
     actionBy: item?.actionBy || "",
+    actionByList: item.actionByList || [],
     assetType: item.assetType || "",
     assetTypeShortCode: item?.assetType?.assetTypeShortCode || "—",
     requestDateTime:
@@ -75,7 +76,8 @@ export const mapEmployeeTransactions = (
       [item?.actionDate, item?.actionTime].filter(Boolean).join(" ") || "—",
     deadlineDate: item.deadlineDate || "",
     deadlineTime: item.deadlineTime || "",
-    broker: item.broker || "Multiple Brokers",
+    broker: item.brokerName || "-",
+    brokers: item.brokers || [],
   }));
 };
 
@@ -167,7 +169,7 @@ export const getBorderlessTableColumns = ({
     dataIndex: "requestDateTime",
     key: "requestDateTime",
     ellipsis: true,
-    width: "13%",
+    width: "10%",
     sorter: (a, b) =>
       formatApiDateTime(a.requestDateTime).localeCompare(
         formatApiDateTime(b.requestDateTime)
@@ -213,6 +215,7 @@ export const getBorderlessTableColumns = ({
       </div>
     ),
   },
+
   {
     title: (
       <TypeColumnTitle
@@ -228,11 +231,11 @@ export const getBorderlessTableColumns = ({
       ? employeeMyTradeApprovalsSearch?.type
       : null,
     onFilter: () => true,
-    render: (type, record) => (
+    render: (tradeType, record) => (
       <span
         id={`cell-${record.key}-type`}
-        className={type === "Buy" ? "text-green-600" : "text-red-600"}
-        data-testid={`trade-type-${type}`}
+        className={tradeType === "Buy" ? "text-green-600" : "text-red-600"}
+        data-testid={`trade-type-${tradeType}`}
         style={{
           display: "inline-block",
           width: "100%",
@@ -241,7 +244,7 @@ export const getBorderlessTableColumns = ({
           whiteSpace: "nowrap",
         }}
       >
-        {type}
+        {tradeType}
       </span>
     ),
   },
@@ -280,11 +283,51 @@ export const getBorderlessTableColumns = ({
     dataIndex: "broker",
     width: "13%",
     key: "broker",
-    sorter: (a, b) => a.broker - b.broker,
+    ellipsis: true,
+    sorter: (a, b) => (a.broker || "").localeCompare(b.broker || ""),
     sortDirections: ["ascend", "descend"],
     sortOrder: sortedInfo?.columnKey === "broker" ? sortedInfo.order : null,
     showSorterTooltip: false,
     sortIcon: () => null,
+    render: (broker, record) => {
+      const isMultiple = broker === "Multiple Brokers";
+      const brokerNames = (record.brokers || [])
+        .map((b) => b.brokerName)
+        .filter(Boolean);
+
+      const cellContent = (
+        <span
+          className="font-medium"
+          style={{
+            display: "inline-block",
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+            whiteSpace: "nowrap",
+            maxWidth: "100%",
+          }}
+        >
+          {broker || "-"}
+        </span>
+      );
+
+      if (isMultiple && brokerNames.length > 0) {
+        return (
+          <Tooltip
+            title={
+              <div>
+                {brokerNames.map((name, idx) => (
+                  <div key={idx}>{name}</div>
+                ))}
+              </div>
+            }
+          >
+            {cellContent}
+          </Tooltip>
+        );
+      }
+
+      return cellContent;
+    },
   },
   {
     title: (
@@ -351,20 +394,25 @@ export const getBorderlessTableColumns = ({
     ),
   },
   {
-    title: withSortIcon("Action by", "actionBy", sortedInfo),
-    align: "left",
+    title: withSortIcon("Action by", "actionBy", sortedInfo, "center"),
+    align: "center",
     dataIndex: "actionBy",
     key: "actionBy",
-    width: "8%",
+    width: "12%",
     sorter: (a, b) => (a.actionBy || "").localeCompare(b.actionBy || ""),
     sortOrder: sortedInfo?.columnKey === "actionBy" ? sortedInfo.order : null,
     sortDirections: ["ascend", "descend"],
     showSorterTooltip: false,
     sortIcon: () => null,
 
-    render: (text) => {
+    render: (text, record) => {
       const value = text || "-";
-      const showTooltip = value.length > 11;
+      const isMultiple = value === "Multiple Users";
+      const names = (record.actionByList || [])
+        .map((u) => u.name)
+        .filter(Boolean);
+
+      const showTooltip = !isMultiple && value.length > 11;
       const displayText = showTooltip ? value.slice(0, 11) + "…" : value;
 
       const commonStyle = {
@@ -375,17 +423,33 @@ export const getBorderlessTableColumns = ({
         maxWidth: "100%",
       };
 
-      return showTooltip ? (
-        <Tooltip title={value}>
-          <span className="font-medium" style={commonStyle}>
-            {displayText}
-          </span>
-        </Tooltip>
-      ) : (
+      const cellContent = (
         <span className="font-medium" style={commonStyle}>
-          {displayText}
+          {isMultiple ? value : displayText}
         </span>
       );
+
+      if (isMultiple && names.length > 0) {
+        return (
+          <Tooltip
+            title={
+              <div>
+                {names.map((name, idx) => (
+                  <div key={idx}>{name}</div>
+                ))}
+              </div>
+            }
+          >
+            {cellContent}
+          </Tooltip>
+        );
+      }
+
+      if (showTooltip) {
+        return <Tooltip title={value}>{cellContent}</Tooltip>;
+      }
+
+      return cellContent;
     },
   },
 ];

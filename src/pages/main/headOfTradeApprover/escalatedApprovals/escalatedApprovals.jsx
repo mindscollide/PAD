@@ -242,8 +242,9 @@ const EscalatedApprovals = () => {
     const resetMap = {
       instrumentName: { instrumentName: "" },
       requesterName: { requesterName: "" },
-      lineManagerName: { inlineManagerNamestrumentName: "" },
-      dateRange: { escalatedDateFrom: null, requestDateTo: null },
+      lineManagerName: { lineManagerName: "" },
+      quantity: { Quantity: null },
+      dateRange: { requestDateFrom: null, requestDateTo: null },
       escalatedDateRange: { escalatedDateFrom: null, escalatedDateTo: null },
     };
 
@@ -262,6 +263,7 @@ const EscalatedApprovals = () => {
       instrumentName: "",
       requesterName: "",
       lineManagerName: "",
+      Quantity: null,
       requestDateFrom: null,
       requestDateTo: null,
       escalatedDateFrom: null,
@@ -277,6 +279,7 @@ const EscalatedApprovals = () => {
       instrumentName,
       requesterName,
       lineManagerName,
+      Quantity,
       requestDateFrom,
       requestDateTo,
       escalatedDateFrom,
@@ -294,16 +297,20 @@ const EscalatedApprovals = () => {
       requesterName && {
         key: "requesterName",
         value:
-          instrumentName.length > 13
-            ? instrumentName.slice(0, 13) + "..."
-            : instrumentName,
+          requesterName.length > 13
+            ? requesterName.slice(0, 13) + "..."
+            : requesterName,
       },
       lineManagerName && {
         key: "lineManagerName",
         value:
-          instrumentName.length > 13
-            ? instrumentName.slice(0, 13) + "..."
-            : instrumentName,
+          lineManagerName.length > 13
+            ? lineManagerName.slice(0, 13) + "..."
+            : lineManagerName,
+      },
+      Quantity && {
+        key: "quantity",
+        value: Number(Quantity).toLocaleString("en-US"),
       },
       requestDateFrom &&
         requestDateTo && {

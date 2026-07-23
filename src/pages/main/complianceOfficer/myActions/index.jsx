@@ -414,7 +414,11 @@ const COMyAction = () => {
         iconType: getFinalWorkflowIcon(wf.workFlowStatusID),
       };
 
-      const trail = [sendForApprovalStep, ...bundleSteps, finalWorkflowStep];
+      const trail = [
+        sendForApprovalStep,
+        ...bundleSteps,
+        // finalWorkflowStep
+      ];
 
       return {
         id: String(wf.requestID),

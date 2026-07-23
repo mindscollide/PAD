@@ -50,7 +50,7 @@ export const mappingDateWiseTransactionReport = (
   const overdueVerifications = Array.isArray(coOverdueVerificationListData)
     ? coOverdueVerificationListData
     : coOverdueVerificationListData?.overdueVerifications || [];
-  console.log(overdueVerifications, "overdueVerifications");
+
   if (!overdueVerifications.length) return [];
 
   return overdueVerifications.map((item) => ({
@@ -64,7 +64,11 @@ export const mappingDateWiseTransactionReport = (
     transactionDate:
       `${item?.transactionDate || ""} ${item?.transactionTime || ""}`.trim() ||
       "—",
-    type: getTradeTypeById(assetTypeData, item?.tradeType) || "-",
+    // ✅ use typeName straight from the API response
+    type:
+      item?.tradeType?.typeName ||
+      getTradeTypeById(assetTypeData, item?.tradeType) ||
+      "-",
     approvedQuantity: item.approvedQuantity || 0,
     shareTraded: item.shareTraded || 0,
     timeRemainingToTrade: item.timeRemainingToTrade || "",
@@ -113,16 +117,17 @@ export const getBorderlessTableColumns = ({
       <span className={`${style["cell-text"]} font-medium`}>{text}</span>
     ),
   },
+
   {
-    title: withFilterHeader(() => (
+    title: (
       <TypeColumnTitle
         state={coOverdueVerificationReportSearch}
         setState={setCoOverdueVerificationReportSearch}
       />
-    )),
-    dataIndex: "tradeType",
+    ),
+    dataIndex: "type",
     width: 200,
-    key: "tradeType",
+    key: "type",
     ellipsis: true,
     filteredValue: coOverdueVerificationReportSearch.type?.length
       ? coOverdueVerificationReportSearch.type

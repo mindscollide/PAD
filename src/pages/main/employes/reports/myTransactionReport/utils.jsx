@@ -50,7 +50,7 @@ export const buildApiRequest = (searchState = {}, assetTypeListingData) => ({
  */
 export const mapEmployeeTransactionsReport = (
   assetTypeData,
-  getEmployeeTransactionReport = [],
+  getEmployeeTransactionReport = []
 ) => {
   const transactions = Array.isArray(getEmployeeTransactionReport)
     ? getEmployeeTransactionReport
@@ -75,6 +75,9 @@ export const mapEmployeeTransactionsReport = (
     quantity: item.quantity || 0,
     nature: item?.nature || "",
     brokerName: item?.brokerName || "",
+    brokers: item.brokers || [],
+    actionBy: item?.actionBy || "",
+    actionByList: item.actionByList || [],
     assetType: item.assetType?.assetTypeName || "",
     assetTypeID: item.assetType?.assetTypeID || 0,
   }));
@@ -194,7 +197,7 @@ export const getBorderlessTableColumns = ({
     width: 100,
     sorter: (a, b) =>
       formatApiDateTime(a.requestDateTime).localeCompare(
-        formatApiDateTime(b.requestDateTime),
+        formatApiDateTime(b.requestDateTime)
       ),
     sortOrder:
       sortedInfo?.columnKey === "requestDateTime" ? sortedInfo.order : null,
@@ -283,12 +286,50 @@ export const getBorderlessTableColumns = ({
     key: "brokerName",
     ellipsis: true,
     width: 80,
-    sorter: (a, b) => a.brokerName - b.brokerName,
+    sorter: (a, b) => (a.brokerName || "").localeCompare(b.brokerName || ""),
     sortDirections: ["ascend", "descend"],
     sortOrder: sortedInfo?.columnKey === "brokerName" ? sortedInfo.order : null,
     showSorterTooltip: false,
     sortIcon: () => null,
-    render: (q) => <span className="font-medium">{q.toLocaleString()}</span>,
+    render: (broker, record) => {
+      const isMultiple = broker === "Multiple Brokers";
+      const brokerNames = (record.brokers || [])
+        .map((b) => b.brokerName)
+        .filter(Boolean);
+
+      const cellContent = (
+        <span
+          className="font-medium"
+          style={{
+            display: "inline-block",
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+            whiteSpace: "nowrap",
+            maxWidth: "100%",
+          }}
+        >
+          {broker || "-"}
+        </span>
+      );
+
+      if (isMultiple && brokerNames.length > 0) {
+        return (
+          <Tooltip
+            title={
+              <div>
+                {brokerNames.map((name, idx) => (
+                  <div key={idx}>{name}</div>
+                ))}
+              </div>
+            }
+          >
+            {cellContent}
+          </Tooltip>
+        );
+      }
+
+      return cellContent;
+    },
   },
   {
     title: (
@@ -330,7 +371,7 @@ export const getBorderlessTableColumns = ({
     width: 100,
     sorter: (a, b) =>
       formatApiDateTime(a.actionDateTime).localeCompare(
-        formatApiDateTime(b.actionDateTime),
+        formatApiDateTime(b.actionDateTime)
       ),
     sortDirections: ["ascend", "descend"],
     sortOrder:
@@ -359,12 +400,32 @@ export const getBorderlessTableColumns = ({
     sortDirections: ["ascend", "descend"],
     showSorterTooltip: false,
     sortIcon: () => null,
+    render: (text, record) => {
+      const value = text || "-";
+      const isMultiple = value === "Multiple Users";
+      const names = (record.actionByList || [])
+        .map((u) => u.name)
+        .filter(Boolean);
 
-    // correct render
-    render: (text) => (
-      <span className="font-medium">
-        {text || "-"} {/* SHOW DASH IF EMPTY */}
-      </span>
-    ),
+      const cellContent = <span className="font-medium">{value}</span>;
+
+      if (isMultiple && names.length > 0) {
+        return (
+          <Tooltip
+            title={
+              <div>
+                {names.map((name, idx) => (
+                  <div key={idx}>{name}</div>
+                ))}
+              </div>
+            }
+          >
+            {cellContent}
+          </Tooltip>
+        );
+      }
+
+      return cellContent;
+    },
   },
 ];
