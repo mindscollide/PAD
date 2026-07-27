@@ -224,6 +224,8 @@ export const GetAllReconcilePortfolioTransactionRequest = async ({
         hierarchyDetails,
         requesterName,
         workFlowStatus,
+        myActionStatusID,
+        myActionStatus,
       } = res.result;
 
       if (
@@ -237,6 +239,8 @@ export const GetAllReconcilePortfolioTransactionRequest = async ({
           hierarchyDetails: hierarchyDetails || [],
           requesterName: requesterName || "",
           workFlowStatus: workFlowStatus || {},
+          myActionStatusID: myActionStatusID ?? null,
+          myActionStatus: myActionStatus || "",
         };
       }
 
@@ -251,6 +255,8 @@ export const GetAllReconcilePortfolioTransactionRequest = async ({
         hierarchyDetails: [],
         requesterName: "",
         workFlowStatus: {},
+        myActionStatusID: null,
+        myActionStatus: "",
       };
     }
 

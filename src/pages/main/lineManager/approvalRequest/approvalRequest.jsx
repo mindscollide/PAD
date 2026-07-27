@@ -121,9 +121,9 @@ const ApprovalRequest = () => {
         setLineManagerApprovalSearch((prev) => {
           const next = {
             ...prev,
-            pageNumber: replace
-              ? mapped.length
-              : prev.pageNumber + mapped.length,
+            // Backend PageNumber is now a 1-based page index — advance by one
+            // page per fetch, not by however many rows just loaded
+            pageNumber: replace ? 2 : prev.pageNumber + 1,
           };
           // this is for check if filter value get true only on that it will false
           if (prev.filterTrigger) {
@@ -186,7 +186,7 @@ const ApprovalRequest = () => {
     );
     requestData = {
       ...requestData,
-      PageNumber: 0,
+      PageNumber: 1,
     };
     fetchApiCall(requestData, true, false);
     setLineManagerApprovalMQtt(false);
@@ -234,7 +234,7 @@ const ApprovalRequest = () => {
     setLineManagerApprovalSearch((prev) => ({
       ...prev,
       ...resetMap[key],
-      pageNumber: 0,
+      pageNumber: 1,
       filterTrigger: true,
     }));
   };
@@ -248,7 +248,7 @@ const ApprovalRequest = () => {
       startDate: null,
       endDate: null,
       quantity: 0,
-      pageNumber: 0,
+      pageNumber: 1,
       filterTrigger: true,
     }));
   };

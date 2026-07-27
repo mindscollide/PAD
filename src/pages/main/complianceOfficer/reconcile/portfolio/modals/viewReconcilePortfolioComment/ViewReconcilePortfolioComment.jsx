@@ -13,23 +13,34 @@ const ViewReconcilePortfolioComment = () => {
 
   const { reconcilePortfolioViewDetailData } = usePortfolioContext();
 
-  // Check workflow Id it shows comment against the workFlow ID
-  const workflowStatusID =
-    reconcilePortfolioViewDetailData?.workFlowStatus?.workFlowStatusID;
+  // Gate on the CO's own action (myActionStatusID: 2 = Compliant, 3 = Non-Compliant),
+  // not the overall workFlowStatus — the overall workflow can still be Pending
+  // (awaiting other approvers) after this CO already acted on their own level.
+  const myActionStatusID = reconcilePortfolioViewDetailData?.myActionStatusID;
   const detail = reconcilePortfolioViewDetailData?.details?.[0];
 
-  const approvalComment = detail?.approvalComment;
-  const rejectionComment = detail?.rejectionComment;
+  // GetComplianceOfficerViewDetailsByTradeApprovalID returns these as arrays of
+  // strings (e.g. ["Level 1 approve"]), not a single scalar string
+  const approvalComments = Array.isArray(detail?.approvalComment)
+    ? detail.approvalComment
+    : [];
+  const rejectionComments = Array.isArray(detail?.rejectionComment)
+    ? detail.rejectionComment
+    : [];
 
   //To Show Approval or Rejection Comments
   const getCommentText = () => {
-    //For Approved Comment Show
-    if (workflowStatusID === 8) {
-      return approvalComment || "No approval comment available.";
+    //For Compliant Comment Show
+    if (myActionStatusID === 2) {
+      return approvalComments.length > 0
+        ? approvalComments.join("\n")
+        : "No approval comment available.";
     }
-    //For Declined Comment Show
-    else if (workflowStatusID === 9) {
-      return rejectionComment || "No rejection comment available.";
+    //For Non-Compliant Comment Show
+    else if (myActionStatusID === 3) {
+      return rejectionComments.length > 0
+        ? rejectionComments.join("\n")
+        : "No rejection comment available.";
     } else {
       return "No comment available for this status.";
     }

@@ -136,7 +136,8 @@ const HeadCompianceOfficerOverdueVerificationReports = () => {
       setOverdueVerificationHCOReportSearch((prev) => {
         const next = {
           ...prev,
-          pageNumber: replace ? mapped.length : prev.pageNumber + mapped.length,
+          // Backend PageNumber is now a 1-based page index
+          pageNumber: replace ? 2 : prev.pageNumber + 1,
         };
 
         // this is for check if filter value get true only on that it will false

@@ -135,10 +135,15 @@ export const mapStatusToIds = (arr, type = 1) => {
     "Non-Compliant": 9,
   };
 
+  // Bundle-level scheme (ActionableBundleStatusState) - same numeric IDs, but
+  // label text differs by domain: LM chain uses Approved/Declined, CO/HCO
+  // reconcile (Transaction/Portfolio) uses Compliant/Non-Compliant for the same 2/3.
   const statusMapBundel = {
     Pending: 1,
     Approved: 2,
+    Compliant: 2,
     Declined: 3,
+    "Non-Compliant": 3,
     Upcoming: 4,
   };
 

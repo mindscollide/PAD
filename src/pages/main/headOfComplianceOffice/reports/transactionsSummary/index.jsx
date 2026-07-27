@@ -29,7 +29,7 @@ import {
   DownloadLineManagerMyTradeApprovalReportRequestAPI,
   DownloadMyTransactionReportRequestAPI,
   ExportHOCTransactionSummaryReportExcelApi,
-  GetComplianceOfficerViewTransactionSummaryAPI,
+  GetHOCTransactionSummaryViewDetailsAPI,
   GetHOCViewTransactionSummaryAPI,
   SearchComplianceOfficerTransactionSummaryReportRequest,
   SearchLineManagerTradeApprovalRequestApi,
@@ -135,7 +135,8 @@ const HCATransactionsSummarysReports = () => {
       setHCOTransactionsSummarysReportsSearch((prev) => {
         const next = {
           ...prev,
-          pageNumber: replace ? mapped.length : prev.pageNumber + mapped.length,
+          // Backend PageNumber is now a 1-based page index
+          pageNumber: replace ? 2 : prev.pageNumber + 1,
         };
 
         // this is for check if filter value get true only on that it will false
@@ -159,7 +160,7 @@ const HCATransactionsSummarysReports = () => {
     async (requestData, replace = false, showLoaderFlag = true) => {
       if (!requestData || typeof requestData !== "object") return;
       if (showLoaderFlag) showLoader(true);
-      const res = await GetComplianceOfficerViewTransactionSummaryAPI({
+      const res = await GetHOCTransactionSummaryViewDetailsAPI({
         callApi,
         showNotification,
         showLoader,
@@ -192,7 +193,8 @@ const HCATransactionsSummarysReports = () => {
       setHOCTransactionsSummarysReportsViewDetailSearch((prev) => {
         const next = {
           ...prev,
-          pageNumber: replace ? mapped.length : prev.pageNumber + mapped.length,
+          // Backend PageNumber is now a 1-based page index
+          pageNumber: replace ? 2 : prev.pageNumber + 1,
         };
         return next;
       });

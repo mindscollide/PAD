@@ -45,7 +45,9 @@ export const buildApiRequest = (searchState = {}, assetTypeListingData) => {
     searchState.type,
     assetTypeListingData?.Equities
   );
-  const statusIds = mapStatusToIds(searchState.status, 2);
+  // SearchComplianceOfficerReconcilePortfolioRequest uses the bundle-level
+  // status scheme (Pending/Compliant/Non-Compliant/Upcoming), not the workflow scheme
+  const statusIds = mapStatusToIds(searchState.status, 1);
 
   return {
     RequesterName: searchState.requesterName || "",
