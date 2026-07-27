@@ -39,7 +39,7 @@ export const buildApiRequestViewDetails = (
   QuantitySearch: searchState.quantity,
   InstrumentNameSearch: searchState.instrumentName,
   RequesterNameSearch: searchState.employeeName,
-  StatusIds: mapStatusToIds(searchState.status),
+  StatusIds: mapStatusToIds(searchState.status, 2),
   TypeIds: mapBuySellToIds(searchState.type, assetTypeListingData?.Equities),
 });
 /**

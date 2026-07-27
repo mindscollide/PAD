@@ -297,7 +297,7 @@ export const apiCallStatus = async ({
         const filteredStatuses = newdata.filter((s) =>
           allowedStatusesForTransactions.includes(s)
         );
-        statusIds = mapStatusToIds(filteredStatuses);
+        statusIds = mapStatusToIds(filteredStatuses, 2);
 
         requestdata = buildTransactionRequestData({
           state,

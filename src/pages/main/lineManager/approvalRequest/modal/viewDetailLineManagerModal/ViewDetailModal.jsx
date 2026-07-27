@@ -91,11 +91,17 @@ const ViewDetailModal = () => {
         };
       case "2":
         return {
+          label: "Resubmitted",
+          labelClassName: styles.resubmittedDetailHeading,
+          divClassName: styles.resubmittedBorderClass,
+        };
+      case "3":
+        return {
           label: "Approved",
           labelClassName: styles.approvedDetailHeading,
           divClassName: styles.approvedBorderClass,
         };
-      case "3":
+      case "4":
         return {
           label: "Declined",
           labelClassName: styles.declinedDetailHeading,

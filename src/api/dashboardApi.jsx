@@ -440,6 +440,7 @@ export const GetAllPredefineReassonApi = async ({
           reasonForCOAndHCO: { approved: [], decline: [] },
           reasonForLMAndHTA: { approved: [], decline: [] },
           reasonForAdminPendingRequest: { approved: [], decline: [] },
+          reasonForEmployeeResubmit: [],
         };
       }
 
@@ -447,6 +448,7 @@ export const GetAllPredefineReassonApi = async ({
         reasonForCOAndHCO: { approved: [], decline: [] },
         reasonForLMAndHTA: { approved: [], decline: [] },
         reasonForAdminPendingRequest: { approved: [], decline: [] },
+        reasonForEmployeeResubmit: [],
       };
     }
 

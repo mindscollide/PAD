@@ -100,6 +100,7 @@ export const DashboardProvider = ({ children }) => {
     reasonForCOAndHCO: { approved: [], decline: [] },
     reasonForLMAndHTA: { approved: [], decline: [] },
     reasonForAdminPendingRequest: { approved: [], decline: [] },
+    reasonForEmployeeResubmit: [],
   });
 
   /**
@@ -166,6 +167,7 @@ export const DashboardProvider = ({ children }) => {
       reasonForCOAndHCO: { approved: [], decline: [] },
       reasonForLMAndHTA: { approved: [], decline: [] },
       reasonForAdminPendingRequest: { approved: [], decline: [] },
+      reasonForEmployeeResubmit: [],
     });
     setManageBrokersModalOpen(false);
   };

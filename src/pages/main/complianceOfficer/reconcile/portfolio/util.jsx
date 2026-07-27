@@ -45,7 +45,7 @@ export const buildApiRequest = (searchState = {}, assetTypeListingData) => {
     searchState.type,
     assetTypeListingData?.Equities
   );
-  const statusIds = mapStatusToIds(searchState.status);
+  const statusIds = mapStatusToIds(searchState.status, 2);
 
   return {
     RequesterName: searchState.requesterName || "",
