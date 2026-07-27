@@ -181,34 +181,22 @@ const ViewDetailReconcileTransaction = () => {
       });
 
       if (res?.length > 0) {
-        // Add empty blob initially
+        // Leave attachmentBlob unset so ViewTicketReconcileModal's own
+        // handleSelectFile lazily fetches it per-file on selection.
         const updatedFiles = res.map((file) => ({
           ...file,
           attachmentBlob: "",
         }));
 
-        // Work only on the first file
-        const firstFile = updatedFiles[0];
-
-        // 🔹 Wait for blob
-        const blob = await GetAnnotationOfFilesAttachementAPI({
-          callApi,
-          showNotification,
-          showLoader,
-          requestData: { FileID: firstFile.pK_FileID },
-          navigate,
-        });
-
-        if (blob) {
-          // 🔹 Only after blob is ready, update index 0
-          updatedFiles[0] = { ...firstFile, attachmentBlob: blob };
-        }
-
-        // 🔹 Now set final files in state (with blob injected in 0th index)
-        console.log("updatedFiles workflow files", updatedFiles);
-        await setUploadattAchmentsFiles(updatedFiles);
+        setUploadattAchmentsFiles(updatedFiles);
         setViewDetailReconcileTransaction(false);
         setIsViewTicketTransactionModal(true);
+      } else {
+        showNotification({
+          type: "info",
+          title: "No Tickets",
+          description: "No ticket files found for this transaction.",
+        });
       }
     } catch (err) {
       console.error("Failed to fetch workflow files", err);
@@ -624,11 +612,8 @@ const ViewDetailReconcileTransaction = () => {
                         <CustomButton
                           text="View Ticket"
                           className="big-light-button"
-                          onClick={() => {
-                            setIsViewTicketTransactionModal(true);
-                            setViewDetailReconcileTransaction(false);
-                          }}
-                        />{" "}
+                          onClick={() => handleViewTicket()} // no disabled check
+                        />
                         <CustomButton
                           text="View Comment"
                           className="big-light-button"

@@ -185,7 +185,7 @@
 
 .viewDetailSubLabelsForInstrument {
   flex: 1; /* let it shrink inside flex */
-  max-width: 250px; /* 👈 critical inside flex */
+  max-width: 350px; /* 👈 critical inside flex */
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;

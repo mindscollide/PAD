@@ -65,12 +65,12 @@ export const mappingDateWiseTransactionReport = (
     instrumentShortCode: item?.instrumentShortCode || "—",
     instrumentName: item?.instrumentName || "—",
     assetTypeShortCode: item?.assetTypeShortCode || "—",
-    complianceOfficer: item?.officerName || "—",
+    complianceOfficer: item?.complianceOfficerName || "—",
     transactionDate:
       `${item?.transactionDate || ""} ${item?.transactionTime || ""}`.trim() ||
       "—",
     escalatedDate:
-      `${item?.escalationDate || ""} ${item?.escalationTime || ""}`.trim() ||
+      `${item?.escalatedOnDate || ""} ${item?.escalatedOnTime || ""}`.trim() ||
       "—",
     type: getTradeTypeById(assetTypeData, item?.tradeType) || "-",
     approvedQuantity: item.approvedQuantity || 0,

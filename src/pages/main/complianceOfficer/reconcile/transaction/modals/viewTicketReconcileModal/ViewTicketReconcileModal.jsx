@@ -52,11 +52,12 @@ const ViewTicketReconcileModal = () => {
   // 📌 Local state
   const [selectedIndex, setSelectedIndex] = useState(null); // currently selected file index
   const [loadingIndex, setLoadingIndex] = useState(null); // index of file being loaded
-  
+
   // ✅ Auto-select 0th index when files are available
   useEffect(() => {
     if (uploadattAchmentsFiles?.length > 0 && selectedIndex === null) {
       setSelectedIndex(0);
+      handleSelectFile(0);
     }
   }, [uploadattAchmentsFiles, selectedIndex]);
 

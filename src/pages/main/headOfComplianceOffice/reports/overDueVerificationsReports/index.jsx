@@ -418,7 +418,7 @@ const HeadCompianceOfficerOverdueVerificationReports = () => {
               {
                 title: (
                   <span className={style.breadcrumbText}>
-                    Overdue Verifications...
+                    Overdue Verifications
                   </span>
                 ),
               },

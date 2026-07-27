@@ -34,7 +34,7 @@ const ViewDetailModal = () => {
 
   // get data from sessionStorage
   const userProfileData = JSON.parse(
-    sessionStorage.getItem("user_profile_data") || "{}",
+    sessionStorage.getItem("user_profile_data") || "{}"
   );
   const loggedInUserID = userProfileData?.userID;
 
@@ -43,20 +43,20 @@ const ViewDetailModal = () => {
 
   console.log(viewDetailsModalData, "viewDetailsModalData");
 
-  const { allInstrumentsData ,setViewDetailsModalData} = useDashboardContext();
+  const { allInstrumentsData, setViewDetailsModalData } = useDashboardContext();
 
   // Refactor sessionStorage read with useMemo for performance & error handling
   const complianceOfficerDetails = useMemo(() => {
     try {
       const storedData = JSON.parse(
-        sessionStorage.getItem("user_Hierarchy_Details") || "[]",
+        sessionStorage.getItem("user_Hierarchy_Details") || "[]"
       );
 
       if (!Array.isArray(storedData)) return {};
 
       const found = storedData.find(
         (item) =>
-          item.roleName === "Compliance Officer (CO)" && item.levelNo === 1,
+          item.roleName === "Compliance Officer (CO)" && item.levelNo === 1
       );
 
       return found
@@ -120,7 +120,7 @@ const ViewDetailModal = () => {
 
   //This is how I can pass the status in statusData Variables
   const statusData = getStatusStyle(
-    String(viewDetailsModalData?.workFlowStatus?.workFlowStatusID),
+    String(viewDetailsModalData?.workFlowStatus?.workFlowStatusID)
   );
 
   // Extarct and Instrument from viewDetailsModalData context Api
@@ -128,7 +128,7 @@ const ViewDetailModal = () => {
 
   // Match that selected instrument Id in viewDetailsModalData and match them with allinstrumentsData context State
   const selectedInstrument = allInstrumentsData?.find(
-    (item) => item.instrumentID === instrumentId,
+    (item) => item.instrumentID === instrumentId
   );
 
   // To Show View Comments Modal and Closed Declined Modal
@@ -222,7 +222,7 @@ const ViewDetailModal = () => {
                         <label className={styles.viewDetailSubLabels}>
                           <span className={styles.customTag}>
                             {viewDetailsModalData?.assetTypes?.[0]?.shortCode}
-                          </span>{" "}
+                          </span>
                           <span
                             className={styles.viewDetailSubLabelsForInstrument}
                             title={selectedInstrument?.instrumentName}
@@ -261,15 +261,15 @@ const ViewDetailModal = () => {
                       statusData.label === "Traded"
                         ? styles.backgroundColorOfInstrumentDetailTraded
                         : // status 1 is Pending
-                          statusData.label === "Pending" ||
-                            // status 2 is Resubmitted
-                            statusData.label === "Resubmitted" ||
-                            // status 4 is Declined
-                            statusData.label === "Declined" ||
-                            // status 6 is Not Traded
-                            statusData.label === "Not Traded"
-                          ? styles.backgrounColorOfInstrumentDetail
-                          : styles.backgrounColorOfDetail
+                        statusData.label === "Pending" ||
+                          // status 2 is Resubmitted
+                          statusData.label === "Resubmitted" ||
+                          // status 4 is Declined
+                          statusData.label === "Declined" ||
+                          // status 6 is Not Traded
+                          statusData.label === "Not Traded"
+                        ? styles.backgrounColorOfInstrumentDetail
+                        : styles.backgrounColorOfDetail
                     }
                   >
                     <label className={styles.viewDetailMainLabels}>
@@ -319,7 +319,7 @@ const ViewDetailModal = () => {
                         </label>
                         <label className={styles.viewDetailSubLabels}>
                           {dashBetweenApprovalAssets(
-                            viewDetailsModalData?.details?.[0]?.tradeApprovalID,
+                            viewDetailsModalData?.details?.[0]?.tradeApprovalID
                           )}
                         </label>
                       </div>
@@ -343,7 +343,7 @@ const ViewDetailModal = () => {
                           <u>
                             {dashBetweenApprovalAssets(
                               viewDetailsModalData?.details?.[0]
-                                ?.resubmitRequestTrackingID,
+                                ?.resubmitRequestTrackingID
                             )}
                           </u>
                         </label>
@@ -366,11 +366,11 @@ const ViewDetailModal = () => {
                           statusData.label === "Traded"
                             ? styles.backgroundColorOfInstrumentDetailTradedRight
                             : // status 1 is Pending
-                              statusData.label === "Pending" ||
-                                // status 6 is Not Traded
-                                statusData.label === "Not Traded"
-                              ? styles.backgrounColorOfApprovalDetail
-                              : styles.backgrounColorOfDetail
+                            statusData.label === "Pending" ||
+                              // status 6 is Not Traded
+                              statusData.label === "Not Traded"
+                            ? styles.backgrounColorOfApprovalDetail
+                            : styles.backgrounColorOfDetail
                         }
                       >
                         <label className={styles.viewDetailMainLabels}>
@@ -378,7 +378,7 @@ const ViewDetailModal = () => {
                         </label>
                         <label className={styles.viewDetailSubLabels}>
                           {dashBetweenApprovalAssets(
-                            viewDetailsModalData?.details?.[0]?.tradeApprovalID,
+                            viewDetailsModalData?.details?.[0]?.tradeApprovalID
                           )}
                         </label>
                       </div>
@@ -404,7 +404,7 @@ const ViewDetailModal = () => {
                             <u>
                               {dashBetweenApprovalAssets(
                                 viewDetailsModalData?.details?.[0]
-                                  ?.resubmitRequestTrackingID,
+                                  ?.resubmitRequestTrackingID
                               )}
                             </u>
                           </label>
@@ -450,7 +450,7 @@ const ViewDetailModal = () => {
                     <label className={styles.viewDetailSubLabels}>
                       {/* {selectedViewDetail?.quantity} */}
                       {formatNumberWithCommas(
-                        viewDetailsModalData?.details?.[0]?.quantity,
+                        viewDetailsModalData?.details?.[0]?.quantity
                       )}
                     </label>
                   </div>
@@ -564,12 +564,12 @@ const ViewDetailModal = () => {
                           activeStep={Math.max(
                             0,
                             Array.isArray(
-                              viewDetailsModalData?.hierarchyDetails,
+                              viewDetailsModalData?.hierarchyDetails
                             )
                               ? viewDetailsModalData?.hierarchyDetails.filter(
-                                  (person) => person.userID !== loggedInUserID,
+                                  (person) => person.userID !== loggedInUserID
                                 ).length - 1
-                              : 0,
+                              : 0
                           )}
                           connectorStyleConfig={{
                             activeColor: "#00640A",
@@ -585,11 +585,11 @@ const ViewDetailModal = () => {
                           }}
                         >
                           {Array.isArray(
-                            viewDetailsModalData?.hierarchyDetails,
+                            viewDetailsModalData?.hierarchyDetails
                           ) &&
                             viewDetailsModalData?.hierarchyDetails
                               .filter(
-                                (person) => person.userID !== loggedInUserID,
+                                (person) => person.userID !== loggedInUserID
                               )
                               .map((person, index) => {
                                 const {
@@ -600,13 +600,13 @@ const ViewDetailModal = () => {
                                 } = person;
 
                                 const formattedDateTime = formatApiDateTime(
-                                  `${modifiedDate} ${modifiedTime}`,
+                                  `${modifiedDate} ${modifiedTime}`
                                 );
 
                                 let iconSrc;
                                 console.log(
                                   bundleStatusID,
-                                  "CheckerrrrrbundleStatusID",
+                                  "CheckerrrrrbundleStatusID"
                                 );
                                 switch (bundleStatusID) {
                                   case 1:
