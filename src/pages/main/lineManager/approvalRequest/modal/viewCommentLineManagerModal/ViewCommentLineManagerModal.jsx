@@ -14,9 +14,11 @@ const ViewCommentLineManagerModal = () => {
   //This is the Global state of Context Api
   const { viewDetailsLineManagerData } = useMyApproval();
 
-  // Check workflow Id it shows comment against the workFlow ID
-  const workflowStatusID =
-    viewDetailsLineManagerData?.workFlowStatus?.workFlowStatusID;
+  // Gate on the LM's own action status (myActionStatusID: 2 = Approved, 3 = Declined
+  // by this LM), not the overall multi-level workFlowStatus — a request can still be
+  // "Pending" overall (awaiting HTA/CO) after this LM already approved/declined their step
+  // and left a comment.
+  const myActionStatusID = viewDetailsLineManagerData?.myActionStatusID;
   const detail = viewDetailsLineManagerData?.details?.[0];
 
   const approvalComment = detail?.approvalComment;
@@ -25,11 +27,11 @@ const ViewCommentLineManagerModal = () => {
   //To Show Approval or Rejection Comments
   const getCommentText = () => {
     //For Approved Comment Show
-    if (workflowStatusID === 3) {
+    if (myActionStatusID === 2) {
       return approvalComment || "No approval comment available.";
     }
     //For Declined Comment Show
-    else if (workflowStatusID === 4) {
+    else if (myActionStatusID === 3) {
       return rejectionComment || "No rejection comment available.";
     } else {
       return "No comment available for this status.";

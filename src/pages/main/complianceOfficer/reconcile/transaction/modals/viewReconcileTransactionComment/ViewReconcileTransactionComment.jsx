@@ -26,14 +26,23 @@ const ViewReconcileTransactionComment = () => {
     reconcileTransactionViewDetailData?.workFlowStatus?.workFlowStatusID;
   const detail = reconcileTransactionViewDetailData?.details?.[0];
 
-  const approvalComment = detail?.approvalComment;
-  const rejectionComment = detail?.rejectionComment;
+  // GetAllViewDetailsTransactionsByTradeApprovalID returns arrays of
+  // { name, comments } objects (restructured 2026-07-23) — show just the comment text
+  const approvalComments = detail?.approvalComments || [];
+  const rejectionComments = detail?.rejectionComment || [];
+
+  const formatComments = (commentsArray) => {
+    if (!commentsArray || commentsArray.length === 0)
+      return "No comments available.";
+
+    return commentsArray.map((item) => item.comments).join("\n");
+  };
 
   const getCommentText = () => {
     if (workflowStatusID === 8) {
-      return approvalComment || "No approval comment available.";
+      return formatComments(approvalComments);
     } else if (workflowStatusID === 9) {
-      return rejectionComment || "No rejection comment available.";
+      return formatComments(rejectionComments);
     } else {
       return "No comment available for this status.";
     }

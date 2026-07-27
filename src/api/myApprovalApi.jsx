@@ -858,6 +858,9 @@ export const GetAllLineManagerViewDetailRequest = async ({
         hierarchyDetails,
         requesterName,
         workFlowStatus,
+        myActionStatusID,
+        myActionStatus,
+        isEscalated,
       } = res.result;
 
       if (
@@ -871,6 +874,9 @@ export const GetAllLineManagerViewDetailRequest = async ({
           hierarchyDetails: hierarchyDetails || [],
           requesterName: requesterName || "",
           workFlowStatus: workFlowStatus || {},
+          myActionStatusID: myActionStatusID ?? null,
+          myActionStatus: myActionStatus || "",
+          isEscalated: isEscalated || false,
         };
       }
 
@@ -885,6 +891,9 @@ export const GetAllLineManagerViewDetailRequest = async ({
         hierarchyDetails: [],
         requesterName: "",
         workFlowStatus: {},
+        myActionStatusID: null,
+        myActionStatus: "",
+        isEscalated: false,
       };
     }
 

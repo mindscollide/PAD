@@ -38,6 +38,7 @@ import NoteHeadOfComplianceModal from "./modals/noteHeadOfComplianceModal/NoteHe
 import ApproveHeadOfComplianceModal from "./modals/approveHeadOfComplianceModal/ApproveHeadOfComplianceModal";
 import DeclinedHeadOfComplianceModal from "./modals/declinedHeadOfComplianceModal/DeclinedHeadOfComplianceModal";
 import ViewTicketEscalatedModal from "./modals/viewTicketEscalatedModal/ViewTicketEscalatedModal";
+import ViewCommentHeadOfComplianceModal from "./modals/viewCommentHeadOfComplianceModal/ViewCommentHeadOfComplianceModal";
 import { useTableScrollBottom } from "../../../../../common/funtions/scroll";
 import { getSafeAssetTypeData } from "../../../../../common/funtions/assetTypesList";
 
@@ -85,6 +86,7 @@ const EscalatedTransactionVerifications = ({ activeFilters }) => {
     compliantApproveModal,
     nonCompliantDeclineModal,
     isViewTicketTransactionModal,
+    viewCommentReconcileModal,
   } = useGlobalModal();
   const { assetTypeListingData, setAssetTypeListingData } =
     useDashboardContext();
@@ -389,6 +391,9 @@ const EscalatedTransactionVerifications = ({ activeFilters }) => {
       {nonCompliantDeclineModal && <DeclinedHeadOfComplianceModal />}
 
       {isViewTicketTransactionModal && <ViewTicketEscalatedModal />}
+
+      {/* To Show View Comment Modal when clicking View Comment on the escalated transaction detail */}
+      {viewCommentReconcileModal && <ViewCommentHeadOfComplianceModal />}
     </>
   );
 };

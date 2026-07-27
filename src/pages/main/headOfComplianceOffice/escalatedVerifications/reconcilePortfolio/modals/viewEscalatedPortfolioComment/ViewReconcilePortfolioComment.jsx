@@ -41,7 +41,6 @@ const ViewReconcilePortfolioComment = () => {
 
   //This is the onCLick of Close Comment
   const onClickCloseComment = () => {
-    setViewDetailPortfolioTransaction(false);
     setViewCommentPortfolioModal(false);
   };
 
