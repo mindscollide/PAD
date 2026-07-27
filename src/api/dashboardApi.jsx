@@ -436,10 +436,18 @@ export const GetAllPredefineReassonApi = async ({
         responseMessage ===
         "PAD_Trade_TradeServiceManager_GetAllPredefinedReasons_02"
       ) {
-        return [];
+        return {
+          reasonForCOAndHCO: { approved: [], decline: [] },
+          reasonForLMAndHTA: { approved: [], decline: [] },
+          reasonForAdminPendingRequest: { approved: [], decline: [] },
+        };
       }
 
-      return [];
+      return {
+        reasonForCOAndHCO: { approved: [], decline: [] },
+        reasonForLMAndHTA: { approved: [], decline: [] },
+        reasonForAdminPendingRequest: { approved: [], decline: [] },
+      };
     }
 
     showErrorNotification(

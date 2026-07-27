@@ -37,7 +37,11 @@ const NoteHeadOfCompliancePortfolioModal = () => {
       visible={noteGlobalModal.visible}
       onClose={onClickClose}
       value={commentValue} // pass controlled value
-      // predefinedReasons={getAllPredefineReasonData}
+      predefinedReasons={
+        noteGlobalModal.action === "HOC-Portfolio-Compliant"
+          ? getAllPredefineReasonData?.reasonForCOAndHCO?.approved || []
+          : getAllPredefineReasonData?.reasonForCOAndHCO?.decline || []
+      }
       setValue={setCommentValue}
       width={"902px"}
       centered={false}

@@ -81,7 +81,10 @@ const ResubmitModal = () => {
       title={`Why do you want to resubmit trade request ${dashBetweenApprovalAssets(
         selectedViewDetail.tradeApprovalID
       )}?`}
-      predefinedReasons={getAllPredefineReasonData}
+      // GetAllPredefineReason no longer returns resubmit-flow reasons (restructured 2026-07-23
+      // into reasonForCOAndHCO/reasonForLMAndHTA/reasonForAdminPendingRequest groups only).
+      // No group maps to resubmit — this will render no suggestions until a new source is added.
+      predefinedReasons={[]}
       onSubmit={clickOnReSubmitButton}
       centered={true}
       width={"902px"}

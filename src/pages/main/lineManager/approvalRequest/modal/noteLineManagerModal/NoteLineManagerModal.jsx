@@ -37,7 +37,11 @@ const NoteLineManagerModal = () => {
       visible={noteGlobalModal.visible}
       onClose={onClickClose}
       value={commentValue} // pass controlled value
-      predefinedReasons={getAllPredefineReasonData}
+      predefinedReasons={
+        noteGlobalModal.action === "Approve"
+          ? getAllPredefineReasonData?.reasonForLMAndHTA?.approved || []
+          : getAllPredefineReasonData?.reasonForLMAndHTA?.decline || []
+      }
       setValue={setCommentValue}
       width={"902px"}
       height={"620px"}

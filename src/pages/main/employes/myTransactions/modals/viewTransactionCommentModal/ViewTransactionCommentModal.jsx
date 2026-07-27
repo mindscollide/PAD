@@ -18,14 +18,24 @@ const ViewTransactionCommentModal = () => {
   const detail =
     employeeTransactionViewDetailData?.details?.[0];
 
-  const approvalComment = detail?.approvalComment;
-  const rejectionComment = detail?.rejectionComment;
+  // Arrays of { name, comments } objects, not nested under `.comments`
+  const approvalComments = detail?.approvalComments || [];
+  const rejectionComments = detail?.rejectionComment || [];
+
+  const formatComments = (commentsArray) => {
+    if (!commentsArray || commentsArray.length === 0)
+      return "No comments available.";
+
+    return commentsArray
+      .map((item, index) => `${index + 1}) ${item.comments} - ${item.name}`)
+      .join("\n");
+  };
 
   const getCommentText = () => {
     if (workflowStatusID === 8) {
-      return approvalComment || "No approval comment available.";
+      return formatComments(approvalComments);
     } else if (workflowStatusID === 9) {
-      return rejectionComment || "No rejection comment available.";
+      return formatComments(rejectionComments);
     } else {
       return "No comment available for this status.";
     }

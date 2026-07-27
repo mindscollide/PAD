@@ -1,9 +1,10 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, { useMemo, useState } from "react";
 import { Col, Row } from "antd";
 
 // 🔹 Components & Contexts
 import { GlobalModal } from "../../../../../components";
 import { useMyAdmin } from "../../../../../context/AdminContext";
+import { useDashboardContext } from "../../../../../context/dashboardContaxt";
 
 // 🔹 Icons
 import UsernameIcon from "../../../../../assets/img/username.png";
@@ -16,10 +17,7 @@ import AvatarIcon from "../../../../../assets/img/avatar-half-name-icon.png";
 import styles from "./requestApprovedRejeectedModal.module.css";
 import CustomButton from "../../../../../components/buttons/button";
 import TextArea from "antd/es/input/TextArea";
-import {
-  GetPredefinedReasonsByAdmin,
-  ProcessUserRegistrationRequest,
-} from "../../../../../api/adminApi";
+import { ProcessUserRegistrationRequest } from "../../../../../api/adminApi";
 import { useApi } from "../../../../../context/ApiContext";
 import { useGlobalLoader } from "../../../../../context/LoaderContext";
 import { useNotification } from "../../../../../components/NotificationProvider/NotificationProvider";
@@ -29,7 +27,6 @@ const RequestApprovedRejeectedModal = ({ currentUserData = [] }) => {
   const { callApi } = useApi();
   const { showLoader } = useGlobalLoader();
   const { showNotification } = useNotification();
-  const hasFetched = useRef(false);
   const navigate = useNavigate();
 
   const {
@@ -38,8 +35,17 @@ const RequestApprovedRejeectedModal = ({ currentUserData = [] }) => {
     typeofAction,
   } = useMyAdmin();
 
+  const { getAllPredefineReasonData } = useDashboardContext();
+
   const [writeNote, setWriteNote] = useState("");
-  const [reasons, setReasons] = useState([]);
+
+  // Admin signup approve/decline reasons come from GetAllPredefineReason's
+  // reasonForAdminPendingRequest group (already fetched into dashboard context on login)
+  const reasons = useMemo(() => {
+    const { approved = [], decline = [] } =
+      getAllPredefineReasonData?.reasonForAdminPendingRequest || {};
+    return [...approved, ...decline].map((item) => item.reason);
+  }, [getAllPredefineReasonData]);
 
   // 🔹 Handle textarea input (limit to 500 chars)
   const handleNoteChange = (e) => {
@@ -124,27 +130,6 @@ const RequestApprovedRejeectedModal = ({ currentUserData = [] }) => {
     }
   };
 
-  const fetchApiCall = useCallback(async () => {
-    showLoader(true);
-
-    const res = await GetPredefinedReasonsByAdmin({
-      callApi,
-      showNotification,
-      showLoader,
-      navigate,
-    });
-    const reasons = Array.isArray(res?.reasons)
-      ? res?.reasons.map((item) => item.reason)
-      : [];
-    setReasons(reasons);
-  }, [callApi, navigate, showLoader, showNotification]);
-
-  useEffect(() => {
-    if (!hasFetched.current) {
-      hasFetched.current = true;
-      fetchApiCall(true, true);
-    }
-  }, [fetchApiCall]);
   // -----------------------
   // 🔹 Render
   // -----------------------

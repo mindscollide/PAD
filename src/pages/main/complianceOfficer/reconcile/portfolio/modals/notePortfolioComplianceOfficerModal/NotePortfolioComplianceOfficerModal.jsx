@@ -37,7 +37,11 @@ const NotePortfolioComplianceOfficerModal = () => {
       visible={noteGlobalModal.visible}
       onClose={onClickClose}
       value={commentValue} // pass controlled value
-      predefinedReasons={getAllPredefineReasonData}
+      predefinedReasons={
+        noteGlobalModal.action === "Portfolio-Compliant"
+          ? getAllPredefineReasonData?.reasonForCOAndHCO?.approved || []
+          : getAllPredefineReasonData?.reasonForCOAndHCO?.decline || []
+      }
       setValue={setCommentValue}
       // width={"902px"}
       // height={"620px"}
