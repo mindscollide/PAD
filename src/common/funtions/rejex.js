@@ -15,10 +15,15 @@ export const allowOnlyAlphabets = (value) => /^[A-Za-z\s]*$/.test(value);
 // Comma Separator for numbers
 export const formatNumberWithCommas = (value) => {
   if (value === null || value === undefined || value === "") return 0;
-  // Convert to string and remove any non-digit chars (like commas)
-  const strValue = String(value).replace(/\D/g, "");
+  // Preserve a leading negative sign - some values (e.g. net share balance) can
+  // legitimately be negative, and stripping non-digits below would drop the "-".
+  const strValue = String(value);
+  const isNegative = strValue.trim().startsWith("-");
+  // Remove any non-digit chars (like commas)
+  const digitsOnly = strValue.replace(/\D/g, "");
   // Add commas without converting to Number
-  return strValue.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  const withCommas = digitsOnly.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  return isNegative ? `-${withCommas}` : withCommas;
 };
 
 // Here's a simple function that takes a number or numeric string,

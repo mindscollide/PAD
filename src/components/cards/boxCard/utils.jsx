@@ -1,5 +1,8 @@
 // =========================
 // TYPE COLOR CONFIGURATION
+
+import { assign } from "lodash";
+
 // =========================
 export const typeColorMap = {
   shares: {
@@ -107,6 +110,22 @@ export const typeColorMap = {
     textAlign: "center",
   },
   restricted: {
+    bgColor: "#FFDBDB",
+    textLableColor: "#A50000",
+    textCountColor: "#A50000",
+    textAlign: "center",
+  },
+
+  // admin
+
+  unassigned: {
+    bgColor: "#C5FFC7",
+    textLableColor: "#00640A",
+    textCountColor: "#00640A",
+    textAlign: "center",
+  },
+
+  assigned: {
     bgColor: "#FFDBDB",
     textLableColor: "#A50000",
     textCountColor: "#A50000",
@@ -348,7 +367,7 @@ export const navigateToPage = (userRole, route, setSelectedKey, navigate) => {
       "Navigation path not found for userRole:",
       userRole,
       "and title:",
-      route
+      route,
     );
   }
 };
