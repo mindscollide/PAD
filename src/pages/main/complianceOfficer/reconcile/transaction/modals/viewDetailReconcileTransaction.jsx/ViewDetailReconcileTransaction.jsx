@@ -117,10 +117,25 @@ const ViewDetailReconcileTransaction = () => {
     }
   };
 
-  //This is how I can pass the status in statusData Variables
+  //This is how I can pass the status in statusData Variables (workflow-level —
+  // only still used for the "Traded" background-styling checks below)
   const statusData = getStatusStyle(
     String(reconcileTransactionViewDetailData?.workFlowStatus?.workFlowStatusID)
   );
+
+  // Header badge + action buttons show the CO's own action (myActionStatusID:
+  // 2=Compliant, 3=Non-Compliant), not the overall workFlowStatus — the overall
+  // workflow can still be Pending (awaiting other approvers) after this CO
+  // already acted on their own level. Map onto the same "8"/"9" codes
+  // getStatusStyle already uses for Compliant/Non Compliant labels/styles.
+  const myActionStatusID = reconcileTransactionViewDetailData?.myActionStatusID;
+  const myActionStatusCode =
+    myActionStatusID === 2
+      ? "8"
+      : myActionStatusID === 3
+        ? "9"
+        : String(myActionStatusID ?? "");
+  const myActionStatusData = getStatusStyle(myActionStatusCode);
 
   // Extarct and Instrument from viewDetailsModalData context Api
   const instrumentId = Number(
@@ -226,9 +241,9 @@ const ViewDetailReconcileTransaction = () => {
               {/* Show Heading by Status in View Detail Modal */}
               <Row>
                 <Col span={24}>
-                  <div className={statusData.divClassName}>
-                    <label className={statusData.labelClassName}>
-                      {statusData.label}
+                  <div className={myActionStatusData.divClassName}>
+                    <label className={myActionStatusData.labelClassName}>
+                      {myActionStatusData.label}
                     </label>
                   </div>
                 </Col>
@@ -534,7 +549,7 @@ const ViewDetailReconcileTransaction = () => {
                   </div>
                 </Row>
 
-                {statusData.label === "Pending" && (
+                {myActionStatusData.label === "Pending" && (
                   <>
                     <Row>
                       <Col span={[24]}>
@@ -564,7 +579,7 @@ const ViewDetailReconcileTransaction = () => {
               <Row className={styles.mainButtonDivClose}>
                 <Col span={[24]}>
                   <>
-                    {statusData?.label === "Pending" ? (
+                    {myActionStatusData.label === "Pending" ? (
                       <>
                         <div className={styles.approvedButtonClass}>
                           <CustomButton
@@ -581,7 +596,7 @@ const ViewDetailReconcileTransaction = () => {
                           />
                         </div>
                       </>
-                    ) : statusData?.label === "Non Compliant" ? (
+                    ) : myActionStatusData.label === "Non Compliant" ? (
                       <div className={styles.noncompliantButtonClass}>
                         <CustomButton
                           text="View Ticket"
@@ -607,7 +622,7 @@ const ViewDetailReconcileTransaction = () => {
                           className="big-light-button"
                         />
                       </div>
-                    ) : statusData?.label === "Compliant" ? (
+                    ) : myActionStatusData.label === "Compliant" ? (
                       <div className={styles.noncompliantButtonClass}>
                         <CustomButton
                           text="View Ticket"

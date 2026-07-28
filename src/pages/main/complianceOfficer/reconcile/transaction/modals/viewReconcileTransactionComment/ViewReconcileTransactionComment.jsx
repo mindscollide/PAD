@@ -22,8 +22,10 @@ const ViewReconcileTransactionComment = () => {
     "viewCommentReconcileModalviewCommentReconcileModal"
   );
 
-  const workflowStatusID =
-    reconcileTransactionViewDetailData?.workFlowStatus?.workFlowStatusID;
+  // Gate on the CO's own action (myActionStatusID: 2 = Compliant, 3 = Non-Compliant),
+  // not the overall workFlowStatus — the overall workflow can still be Pending
+  // (awaiting other approvers) after this CO already acted on their own level.
+  const myActionStatusID = reconcileTransactionViewDetailData?.myActionStatusID;
   const detail = reconcileTransactionViewDetailData?.details?.[0];
 
   // GetAllViewDetailsTransactionsByTradeApprovalID returns arrays of
@@ -39,9 +41,9 @@ const ViewReconcileTransactionComment = () => {
   };
 
   const getCommentText = () => {
-    if (workflowStatusID === 8) {
+    if (myActionStatusID === 2) {
       return formatComments(approvalComments);
-    } else if (workflowStatusID === 9) {
+    } else if (myActionStatusID === 3) {
       return formatComments(rejectionComments);
     } else {
       return "No comment available for this status.";
