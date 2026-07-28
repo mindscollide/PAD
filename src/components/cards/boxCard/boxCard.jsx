@@ -151,13 +151,26 @@ const BoxCard = ({
         >
           {normalizedBoxes.map((box, index) => {
             // Resolve colors & alignment based on `type`
+            const normalizedType = box.type?.toLowerCase().replace(/[\s-]+/g, "_");
+            const baseTypeStyle = typeColorMap[normalizedType] || {
+              bgColor: "#f0f0f0",
+              textLableColor: "#000",
+              textCountColor: "#000",
+              textAlign: "center",
+            };
+            // Employee Portfolio tile's "Shares" count is now a net share balance
+            // (Buy adds, Sell subtracts) and can legitimately be negative — per SRS,
+            // render the value green when positive, red when negative.
             const { bgColor, textLableColor, textCountColor, textAlign } =
-              typeColorMap[box.type?.toLowerCase().replace(/[\s-]+/g, "_")] || {
-                bgColor: "#f0f0f0",
-                textLableColor: "#000",
-                textCountColor: "#000",
-                textAlign: "center",
-              };
+              normalizedType === "shares"
+                ? {
+                    ...baseTypeStyle,
+                    textCountColor:
+                      Number(box.count) < 0
+                        ? "#A50000"
+                        : baseTypeStyle.textCountColor,
+                  }
+                : baseTypeStyle;
             // Split label into first word + remaining text (used in "left" layout)
             const [firstWord, ...rest] = box.label.split(" ");
             const secondPart = rest.join(" ");
