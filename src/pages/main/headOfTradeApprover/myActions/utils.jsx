@@ -67,7 +67,7 @@ export const buildMyActionApiRequest = (searchState = {}) => ({
   Type: searchState.type || [],
   Status: searchState.status || [],
   Quantity: searchState.quantity ? Number(searchState.quantity) : null,
-  PageNumber: Number(searchState.pageNumber) || 0,
+  PageNumber: Number(searchState.pageNumber) || 1,
   Length: Number(searchState.pageSize) || 10,
 });
 

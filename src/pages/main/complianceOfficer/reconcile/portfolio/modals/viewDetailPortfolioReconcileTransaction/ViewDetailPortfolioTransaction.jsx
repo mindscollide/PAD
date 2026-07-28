@@ -109,6 +109,19 @@ const ViewDetailPortfolioTransaction = () => {
     String(reconcilePortfolioViewDetailData?.workFlowStatus?.workFlowStatusID)
   );
 
+  // Action buttons must gate on the CO's own action (myActionStatusID), not the
+  // overall workFlowStatus badge above — the overall workflow can still be Pending
+  // (awaiting other approvers) after this CO already acted on their own level.
+  const myActionStatusID = reconcilePortfolioViewDetailData?.myActionStatusID;
+  const myActionLabel =
+    myActionStatusID === 1
+      ? "Pending"
+      : myActionStatusID === 2
+        ? "Compliant"
+        : myActionStatusID === 3
+          ? "Non Compliant"
+          : null;
+
   // Extarct and Instrument from viewDetailsModalData context Api
   const instrumentId = Number(
     reconcilePortfolioViewDetailData?.details?.[0]?.instrumentID
@@ -417,7 +430,7 @@ const visibleHierarchy =
               <Row className={styles.mainButtonDivClose}>
                 <Col span={[24]}>
                   <>
-                    {statusData?.label === "Pending" ? (
+                    {myActionLabel === "Pending" ? (
                       <>
                         {" "}
                         <div className={styles.approvedButtonClass}>
@@ -433,7 +446,7 @@ const visibleHierarchy =
                           />
                         </div>
                       </>
-                    ) : statusData.label === "Compliant" ? (
+                    ) : myActionLabel === "Compliant" ? (
                       <>
                         <div className={styles.compliantNonCompliant}>
                           <CustomButton
@@ -453,7 +466,7 @@ const visibleHierarchy =
                           />
                         </div>
                       </>
-                    ) : statusData.label === "Non Compliant" ? (
+                    ) : myActionLabel === "Non Compliant" ? (
                       <>
                         <div className={styles.compliantNonCompliant}>
                           <CustomButton

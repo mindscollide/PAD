@@ -22,18 +22,29 @@ const ViewReconcileTransactionComment = () => {
     "viewCommentReconcileModalviewCommentReconcileModal"
   );
 
-  const workflowStatusID =
-    reconcileTransactionViewDetailData?.workFlowStatus?.workFlowStatusID;
+  // Gate on the CO's own action (myActionStatusID: 2 = Compliant, 3 = Non-Compliant),
+  // not the overall workFlowStatus — the overall workflow can still be Pending
+  // (awaiting other approvers) after this CO already acted on their own level.
+  const myActionStatusID = reconcileTransactionViewDetailData?.myActionStatusID;
   const detail = reconcileTransactionViewDetailData?.details?.[0];
 
-  const approvalComment = detail?.approvalComment;
-  const rejectionComment = detail?.rejectionComment;
+  // GetAllViewDetailsTransactionsByTradeApprovalID returns arrays of
+  // { name, comments } objects (restructured 2026-07-23) — show just the comment text
+  const approvalComments = detail?.approvalComments || [];
+  const rejectionComments = detail?.rejectionComment || [];
+
+  const formatComments = (commentsArray) => {
+    if (!commentsArray || commentsArray.length === 0)
+      return "No comments available.";
+
+    return commentsArray.map((item) => item.comments).join("\n");
+  };
 
   const getCommentText = () => {
-    if (workflowStatusID === 8) {
-      return approvalComment || "No approval comment available.";
-    } else if (workflowStatusID === 9) {
-      return rejectionComment || "No rejection comment available.";
+    if (myActionStatusID === 2) {
+      return formatComments(approvalComments);
+    } else if (myActionStatusID === 3) {
+      return formatComments(rejectionComments);
     } else {
       return "No comment available for this status.";
     }

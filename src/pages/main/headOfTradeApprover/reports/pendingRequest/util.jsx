@@ -56,7 +56,7 @@ export const buildApiRequest = (searchState = {}, assetTypeListingData) => {
     RequestDateTo: endDate ? toYYMMDD(endDate) : "",
     EscalatedDateFrom: escalatedStartDate ? toYYMMDD(escalatedStartDate) : "",
     EscalatedDateTo: escalatedEndDate ? toYYMMDD(escalatedEndDate) : "",
-    StatusIds: mapStatusToIds?.(status) || [],
+    StatusIds: mapStatusToIds?.(status, 2) || [],
     TradeApprovalTypeIds:
       mapBuySellToIds?.(type, assetTypeListingData?.Equities) || [],
     PageNumber: Number(pageNumber) || 0,

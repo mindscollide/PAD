@@ -858,6 +858,9 @@ export const GetAllLineManagerViewDetailRequest = async ({
         hierarchyDetails,
         requesterName,
         workFlowStatus,
+        myActionStatusID,
+        myActionStatus,
+        isEscalated,
       } = res.result;
 
       if (
@@ -871,6 +874,9 @@ export const GetAllLineManagerViewDetailRequest = async ({
           hierarchyDetails: hierarchyDetails || [],
           requesterName: requesterName || "",
           workFlowStatus: workFlowStatus || {},
+          myActionStatusID: myActionStatusID ?? null,
+          myActionStatus: myActionStatus || "",
+          isEscalated: isEscalated || false,
         };
       }
 
@@ -885,6 +891,9 @@ export const GetAllLineManagerViewDetailRequest = async ({
         hierarchyDetails: [],
         requesterName: "",
         workFlowStatus: {},
+        myActionStatusID: null,
+        myActionStatus: "",
+        isEscalated: false,
       };
     }
 
@@ -2463,6 +2472,102 @@ export const GetComplianceOfficerViewTransactionSummaryAPI = async ({
       title: "Error",
       description:
         "An unexpected error occurred while request Compliance Officer View Transaction Summary reports Api .",
+    });
+    return null;
+  } finally {
+    // 🔹 Always hide loader
+    showLoader(false);
+  }
+};
+
+// GetHOCViewTransactionSummaryAPI — HOC's own View Details of Transaction Summary Report.
+// System-wide (no CO-hierarchy scoping), unlike GetComplianceOfficerViewTransactionSummaryAPI
+// above which is deliberately scoped to the calling CO's own subordinates and cannot be
+// reused for HOC. Same request shape as the CO version.
+export const GetHOCTransactionSummaryViewDetailsAPI = async ({
+  callApi,
+  showNotification,
+  showLoader,
+  navigate,
+  requestdata,
+}) => {
+  try {
+    // 🔹 API Call
+    const res = await callApi({
+      requestMethod: import.meta.env
+        .VITE_GET_HOC_VIEW_TRANSACTION_SUMMARY_REPORT_REQUEST_METHOD, // 🔑 must be defined in .env
+      endpoint: import.meta.env.VITE_API_TRADE,
+      requestData: requestdata,
+      navigate,
+    });
+
+    // 🔹 Handle session expiry
+    if (handleExpiredSession(res, navigate, showLoader)) return null;
+
+    // 🔹 Validate execution
+    if (!res?.result?.isExecuted) {
+      showNotification({
+        type: "error",
+        title: "Error",
+        description:
+          "Something went wrong while fetching HOC View Transaction Summary reports Api.",
+      });
+      return null;
+    }
+
+    // 🔹 Handle success
+    if (res?.success) {
+      const { totalRecords, records, responseMessage } = res.result;
+      const message = getMessage(responseMessage);
+
+      // Case 1 → Data available
+      if (
+        responseMessage ===
+        "PAD_Trade_TradeServiceManager_GetHOCViewTransactionSummaryAPI_01"
+      ) {
+        return {
+          totalRecords: totalRecords,
+          record: records,
+        };
+      }
+
+      // Case 2 → No data
+      if (
+        responseMessage ===
+        "PAD_Trade_TradeServiceManager_GetHOCViewTransactionSummaryAPI_02"
+      ) {
+        return {
+          totalRecords: 0,
+          record: [],
+        };
+      }
+
+      // Case 3 → Custom server messages
+      if (message) {
+        showNotification({
+          type: "warning",
+          title: message,
+          description: message,
+        });
+      }
+
+      return null;
+    }
+
+    // 🔹 Handle failure
+    showNotification({
+      type: "error",
+      title: "Fetch Failed",
+      description: getMessage(res.message),
+    });
+    return null;
+  } catch (error) {
+    // 🔹 Exception handling
+    showNotification({
+      type: "error",
+      title: "Error",
+      description:
+        "An unexpected error occurred while requesting HOC View Transaction Summary reports Api.",
     });
     return null;
   } finally {

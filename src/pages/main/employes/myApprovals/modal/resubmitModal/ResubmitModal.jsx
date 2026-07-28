@@ -81,7 +81,9 @@ const ResubmitModal = () => {
       title={`Why do you want to resubmit trade request ${dashBetweenApprovalAssets(
         selectedViewDetail.tradeApprovalID
       )}?`}
-      predefinedReasons={getAllPredefineReasonData}
+      // reasonForEmployeeResubmit is a flat ReasonItem[] (no approve/decline split,
+      // since resubmitting isn't an approve/decline action)
+      predefinedReasons={getAllPredefineReasonData?.reasonForEmployeeResubmit || []}
       onSubmit={clickOnReSubmitButton}
       centered={true}
       width={"902px"}

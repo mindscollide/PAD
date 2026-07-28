@@ -45,7 +45,9 @@ export const buildApiRequest = (searchState = {}, assetTypeListingData) => {
     Quantity: searchState.quantity ? Number(searchState.quantity) : 0,
     StartDate: startDate,
     EndDate: endDate,
-    StatusIds: mapStatusToIds(searchState.status),
+    // SearchComplianceOfficerReconcileTransactionRequest uses the bundle-level
+    // status scheme (Pending/Compliant/Non-Compliant/Upcoming), not the workflow scheme
+    StatusIds: mapStatusToIds(searchState.status, 1),
     TypeIds: mapBuySellToIds(searchState.type, assetTypeListingData?.Equities),
     PageNumber: Number(searchState.pageNumber) || 0,
     Length: Number(searchState.pageSize) || 10,

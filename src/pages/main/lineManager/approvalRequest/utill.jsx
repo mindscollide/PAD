@@ -40,7 +40,7 @@ export const buildApiRequest = (searchState = {}, assetTypeListingData) => {
     endDate = null,
     status = [],
     type = [],
-    pageNumber = 0,
+    pageNumber = 1,
     pageSize = 10,
   } = searchState;
 
@@ -50,9 +50,13 @@ export const buildApiRequest = (searchState = {}, assetTypeListingData) => {
     Quantity: quantity ? Number(quantity) : 0,
     StartDate: startDate ? toYYMMDD(startDate) : "",
     EndDate: endDate ? toYYMMDD(endDate) : "",
-    StatusIds: mapStatusToIds?.(status) || [],
+    // SearchLineManagerApprovalsRequest uses the bundle-level status scheme
+    // (Pending/Approved/Declined/Upcoming), fixed backend-side 2026-07-27 —
+    // not the workflow-level scheme used by other Trade Approval screens.
+    StatusIds: mapStatusToIds?.(status, 1) || [],
     TypeIds: mapBuySellToIds?.(type, assetTypeListingData?.Equities) || [],
-    PageNumber: Number(pageNumber) || 0,
+    // Backend now treats PageNumber as a 1-based page index: offset = (PageNumber-1)*Length
+    PageNumber: Number(pageNumber) || 1,
     Length: Number(pageSize) || 10,
   };
 };

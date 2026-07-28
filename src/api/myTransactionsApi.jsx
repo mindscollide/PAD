@@ -168,6 +168,9 @@ export const GetAllTransactionViewDetails = async ({
         tradedWorkFlowReqeust,
         ticketUploaded,
         reqeusterName,
+        isEscalated,
+        myActionStatusID,
+        myActionStatus,
       } = res.result;
 
       if (
@@ -183,6 +186,9 @@ export const GetAllTransactionViewDetails = async ({
           tradedWorkFlowReqeust: tradedWorkFlowReqeust || [],
           ticketUploaded: ticketUploaded ?? false, // <-- Add this line
           reqeusterName: reqeusterName || "",
+          isEscalated: isEscalated || false,
+          myActionStatusID: myActionStatusID ?? null,
+          myActionStatus: myActionStatus || "",
         };
       }
 

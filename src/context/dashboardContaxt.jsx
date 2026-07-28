@@ -91,12 +91,17 @@ export const DashboardProvider = ({ children }) => {
 
   /**
    * ------------------------------------------------------
-   * Predefined Reason List (Used in Re-Submit Flow)
+   * Predefined Reasons (role/action-grouped — see GetAllPredefineReason)
+   * Shape: { reasonForCOAndHCO, reasonForLMAndHTA, reasonForAdminPendingRequest }
+   * each { approved: [], decline: [] }
    * ------------------------------------------------------
    */
-  const [getAllPredefineReasonData, setGetAllPredefineReasonData] = useState(
-    []
-  );
+  const [getAllPredefineReasonData, setGetAllPredefineReasonData] = useState({
+    reasonForCOAndHCO: { approved: [], decline: [] },
+    reasonForLMAndHTA: { approved: [], decline: [] },
+    reasonForAdminPendingRequest: { approved: [], decline: [] },
+    reasonForEmployeeResubmit: [],
+  });
 
   /**
    * ------------------------------------------------------
@@ -158,7 +163,12 @@ export const DashboardProvider = ({ children }) => {
     setEmployeeBasedBrokersData([]);
     setAllInstrumentsData([]);
     setAssetTypeListingData([]);
-    setGetAllPredefineReasonData([]);
+    setGetAllPredefineReasonData({
+      reasonForCOAndHCO: { approved: [], decline: [] },
+      reasonForLMAndHTA: { approved: [], decline: [] },
+      reasonForAdminPendingRequest: { approved: [], decline: [] },
+      reasonForEmployeeResubmit: [],
+    });
     setManageBrokersModalOpen(false);
   };
 

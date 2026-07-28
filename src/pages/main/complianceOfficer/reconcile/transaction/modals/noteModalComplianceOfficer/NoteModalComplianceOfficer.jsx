@@ -3,6 +3,7 @@ import { useGlobalModal } from "../../../../../../../context/GlobalModalContext"
 import { CommentModal } from "../../../../../../../components";
 import { useSidebarContext } from "../../../../../../../context/sidebarContaxt";
 import { useReconcileContext } from "../../../../../../../context/reconsileContax";
+import { useDashboardContext } from "../../../../../../../context/dashboardContaxt";
 
 const NoteModalComplianceOfficer = () => {
   const { selectedKey } = useSidebarContext();
@@ -16,6 +17,9 @@ const NoteModalComplianceOfficer = () => {
   } = useGlobalModal();
 
   const { complianceOfficerReconcileTransactionData } = useReconcileContext();
+
+  // Context Api For Reasons which is coming from the API and stored in contextApi
+  const { getAllPredefineReasonData } = useDashboardContext();
 
   console.log(
     complianceOfficerReconcileTransactionData,
@@ -40,6 +44,11 @@ const NoteModalComplianceOfficer = () => {
       visible={noteGlobalModal.visible}
       onClose={onClickClose}
       value={commentValue} // pass controlled value
+      predefinedReasons={
+        noteGlobalModal.action === "Compliant"
+          ? getAllPredefineReasonData?.reasonForCOAndHCO?.approved || []
+          : getAllPredefineReasonData?.reasonForCOAndHCO?.decline || []
+      }
       setValue={setCommentValue}
       width={"902px"}
       height={"620px"}
