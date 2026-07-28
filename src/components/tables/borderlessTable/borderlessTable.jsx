@@ -28,7 +28,7 @@ const BorderlessTable = ({
       dataSource={rows}
       columns={columns}
       pagination={false}
-      rowKey={(record) => record.id}
+      rowKey={(record) => record.key ?? record.id}
       bordered={false}
       prefixCls={classNameTable}
       onChange={onChange}

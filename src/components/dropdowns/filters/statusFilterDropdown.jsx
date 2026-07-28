@@ -117,7 +117,8 @@ const StatusFilterDropdown = ({
         if (
           location.pathname ===
             "/PAD/co-reports/co-date-wise-transaction-report" ||
-          location.pathname === "/PAD/co-reports/co-portfolio-history"
+          location.pathname === "/PAD/co-reports/co-portfolio-history" ||
+          location.pathname === "/PAD/co-reports/co-overdue-verifications"
         ) {
           setFilterOptions(emtStatusOptions);
         }
