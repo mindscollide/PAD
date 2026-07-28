@@ -13,6 +13,7 @@ import {
   getBorderlessTableColumns,
   mappingDateWiseTransactionReport,
 } from "./utils";
+import { approvalStatusMap } from "../../../../../components/tables/borderlessTable/utill";
 
 // 🔹 Contexts
 import { useGlobalModal } from "../../../../../context/GlobalModalContext";
@@ -235,6 +236,7 @@ const CompianceOfficerOverdueVerificationReports = () => {
   // -------------------- Table Columns --------------------
   const columns = getBorderlessTableColumns({
     sortedInfo,
+    approvalStatusMap,
     coOverdueVerificationReportSearch,
     setCoOverdueVerificationReportSearch,
     setViewDetailReconcileTransaction,
@@ -271,6 +273,7 @@ const CompianceOfficerOverdueVerificationReports = () => {
       startDate: null,
       endDate: null,
       type: "",
+      status: [],
       pageNumber: 0,
       filterTrigger: true,
     }));

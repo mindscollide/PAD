@@ -5,14 +5,18 @@ import ArrowDown from "../../../../../assets/img/arrow-down-dark.png";
 import EscaltedOn from "../../../../../assets/img/escalated.png";
 import DefaultColumArrow from "../../../../../assets/img/default-colum-arrow.png";
 import TypeColumnTitle from "../../../../../components/dropdowns/filters/typeColumnTitle";
+import StatusColumnTitle from "../../../../../components/dropdowns/filters/statusColumnTitle";
 import { Tag, Tooltip } from "antd";
 import style from "./OverDueVerificationReports.module.css";
 
 import {
-  formatApiDateTime,
+  formatShowOnlyDate,
   toYYMMDD,
 } from "../../../../../common/funtions/rejex";
-import { mapBuySellToIds } from "../../../../../components/dropdowns/filters/utils";
+import {
+  mapBuySellToIds,
+  mapStatusToIds,
+} from "../../../../../components/dropdowns/filters/utils";
 import { getTradeTypeById } from "../../../../../common/funtions/type";
 import { withSortIcon } from "../../../../../common/funtions/tableIcon";
 
@@ -31,6 +35,9 @@ export const buildApiRequest = (searchState = {}, assetTypeListingData) => ({
   PageNumber: Number(searchState.pageNumber) || 0,
   Length: Number(searchState.pageSize) || 10,
   Type: mapBuySellToIds(searchState.type, assetTypeListingData?.Equities),
+  // Bundle-level status scheme (Pending/Compliant/Non-Compliant/Upcoming),
+  // same as co-reconcile-transactions - not the workflow-level scheme
+  StatusIds: mapStatusToIds(searchState.status, 1),
   EscalationFromDate: "",
   EscalationToDate: "",
   FromDate: searchState.startDate ? toYYMMDD(searchState.startDate) : "",
@@ -61,9 +68,9 @@ export const mappingDateWiseTransactionReport = (
     instrumentShortCode: item?.instrumentShortCode || "—",
     instrumentName: item?.instrumentName || "—",
     assetTypeShortCode: item?.assetTypeShortCode || "—",
-    transactionDate:
-      `${item?.transactionDate || ""} ${item?.transactionTime || ""}`.trim() ||
-      "—",
+    // Backend sends TransactionDate as a date-only "yyyyMMdd" string - there is
+    // no separate TransactionTime field on this endpoint's response.
+    transactionDate: item?.transactionDate || "—",
     // ✅ use typeName straight from the API response
     type:
       item?.tradeType?.typeName ||
@@ -71,6 +78,7 @@ export const mappingDateWiseTransactionReport = (
       "-",
     approvedQuantity: item.approvedQuantity || 0,
     shareTraded: item.shareTraded || 0,
+    status: item?.approvalStatus?.approvalStatusName || "—",
     timeRemainingToTrade: item.timeRemainingToTrade || "",
     tradeType: item.tradeType || "",
     assetType: item.assetType?.assetTypeName || "",
@@ -95,6 +103,7 @@ const withFilterHeader = (FilterComponent) => (
 
 export const getBorderlessTableColumns = ({
   sortedInfo,
+  approvalStatusMap = {},
   coOverdueVerificationReportSearch,
   setCoOverdueVerificationReportSearch,
   setViewDetailReconcileTransaction,
@@ -198,7 +207,7 @@ export const getBorderlessTableColumns = ({
   },
   {
     title: withSortIcon(
-      "Transaction Date & Time",
+      "Transaction Date",
       "transactionDate",
       sortedInfo,
       "center"
@@ -208,11 +217,11 @@ export const getBorderlessTableColumns = ({
     align: "center",
     width: 250,
     ellipsis: true,
-    sorter: (a, b) => {
-      const dateA = new Date(`${a.transactionDate}`).getTime();
-      const dateB = new Date(`${b.transactionDate}`).getTime();
-      return dateA - dateB;
-    },
+    // transactionDate is a zero-padded "yyyyMMdd" string - new Date(...) can't
+    // parse that format (returns Invalid Date/NaN for every row, so sorting had
+    // no effect); a plain string compare sorts it correctly since it's fixed-width.
+    sorter: (a, b) =>
+      (a.transactionDate || "").localeCompare(b.transactionDate || ""),
     sortDirections: ["ascend", "descend"],
     sortOrder:
       sortedInfo?.columnKey === "transactionDate" ? sortedInfo.order : null,
@@ -220,7 +229,7 @@ export const getBorderlessTableColumns = ({
     sortIcon: () => null,
     render: (_, record) => (
       <span className="text-gray-600">
-        {formatApiDateTime(`${record.transactionDate}`)}
+        {formatShowOnlyDate(record.transactionDate)}
       </span>
     ),
   },
@@ -258,6 +267,39 @@ export const getBorderlessTableColumns = ({
     showSorterTooltip: false,
     sortIcon: () => null,
     render: (q) => <span className="font-medium">{q.toLocaleString()}</span>,
+  },
+  {
+    title: (
+      <StatusColumnTitle
+        state={coOverdueVerificationReportSearch}
+        setState={setCoOverdueVerificationReportSearch}
+      />
+    ),
+    dataIndex: "status",
+    key: "status",
+    width: 160,
+    ellipsis: true,
+    filteredValue: coOverdueVerificationReportSearch?.status?.length
+      ? coOverdueVerificationReportSearch.status
+      : null,
+    onFilter: () => true,
+    render: (status) => {
+      const tag = approvalStatusMap?.[status] || {};
+      return (
+        <Tag
+          style={{
+            backgroundColor: tag.backgroundColor,
+            color: tag.textColor,
+            whiteSpace: "nowrap",
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+            display: "inline-block",
+          }}
+        >
+          {tag.label || status || "—"}
+        </Tag>
+      );
+    },
   },
   {
     title: "",
