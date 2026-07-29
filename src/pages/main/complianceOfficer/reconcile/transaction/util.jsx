@@ -66,6 +66,7 @@ export const buildApiRequest = (searchState = {}, assetTypeListingData) => {
  */
 export const mapToTableRows = (assetTypeData, list = []) =>
   (Array.isArray(list) ? list : []).map((item = {}) => ({
+    tradeApprovalID: item?.tradeApprovalID,
     requesterName: item?.requesterName,
     approvalID: item?.approvalID,
     instrumentCode: item?.instrument?.instrumentCode || "—",
@@ -117,6 +118,26 @@ export const getBorderlessTableColumns = ({
   setComplianceOfficerReconcileTransactionsSearch = () => {},
   handleViewDetailsForReconcileTransaction,
 }) => [
+  /* --------------------- Requester Name --------------------- */
+  {
+    title: withSortIcon("Trade Approval ID", "tradeApprovalID", sortedInfo),
+    dataIndex: "tradeApprovalID",
+    key: "tradeApprovalID",
+    ellipsis: true,
+    width: 180,
+    sorter: (a, b) =>
+      (a?.tradeApprovalID || "").localeCompare(b?.tradeApprovalID || ""),
+    sortOrder:
+      sortedInfo?.columnKey === "tradeApprovalID" ? sortedInfo.order : null,
+    showSorterTooltip: false,
+    sortIcon: () => null,
+    render: (text) => (
+      <span className="font-medium" title={text || "—"}>
+        {text || ""}
+      </span>
+    ),
+  },
+
   /* --------------------- Requester Name --------------------- */
   {
     title: withSortIcon("Requester Name", "requesterName", sortedInfo),
