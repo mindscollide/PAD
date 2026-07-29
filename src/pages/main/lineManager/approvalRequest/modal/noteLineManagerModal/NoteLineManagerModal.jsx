@@ -48,7 +48,6 @@ const NoteLineManagerModal = () => {
       centered={true}
       submitText={noteGlobalModal.action === "Approve" ? "Approve" : "Decline"}
       onCancel={() => setNoteGlobalModal({ visible: false, action: null })}
-      title={"Write a Notes"}
       onSubmit={onClickOpenDeclinedModal}
     />
   );

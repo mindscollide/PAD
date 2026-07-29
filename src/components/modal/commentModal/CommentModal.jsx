@@ -273,7 +273,7 @@ const CommentModal = ({
                 value={value}
                 onChange={handleChange}
                 className={styles.textAreaStyle}
-                placeholder="Enter a Notes"
+                placeholder="Write a Note"
               />
               <div className={styles.maxCharacterClass}>
                 <Text type={charCount > maxChars ? "danger" : "secondary"}>
