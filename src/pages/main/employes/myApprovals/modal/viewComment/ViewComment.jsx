@@ -51,7 +51,7 @@ const ViewComment = () => {
         visible={isViewComments}
         onClose={onClickCloseComment}
         onGoBack={onClickGoBack}
-        CommentHeading={"View Comment"}
+        CommentHeading={"View Comments"}
         commentText={getCommentText()}
       />
     </>

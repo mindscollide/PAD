@@ -9,7 +9,7 @@ const ViewOverDueTransactionComment = () => {
   const {
     viewCommentReconcileModal,
     setViewCommentReconcileModal,
-    setViewDetailHeadOfComplianceEscalated
+    setViewDetailHeadOfComplianceEscalated,
   } = useGlobalModal();
 
   //This is the Global state of Context Api
@@ -20,10 +20,7 @@ const ViewOverDueTransactionComment = () => {
     "viewCommentReconcileModalviewCommentReconcileModal"
   );
   const record = isEscalatedHeadOfComplianceViewDetailData?.details[0] || null;
-    console.log(
-    record,
-    "viewCommentReconcileModalviewCommentReconcileModal"
-  );
+  console.log(record, "viewCommentReconcileModalviewCommentReconcileModal");
   const acceptanceList = parseComments(record?.approvalComment);
   const rejectionList = parseComments(record?.rejectionComment);
 
@@ -45,14 +42,13 @@ const ViewOverDueTransactionComment = () => {
         visible={viewCommentReconcileModal}
         onClose={onClickCloseComment}
         onGoBack={onClickGoBack}
-        CommentHeading={"View Comment"}
+        CommentHeading={"View Comments"}
         // commentText={getCommentText()}
-        
+
         commentTypeFlag={true}
         showClosed={true}
         acceptanceList={acceptanceList}
         rejectionList={rejectionList}
-
       />
     </>
   );

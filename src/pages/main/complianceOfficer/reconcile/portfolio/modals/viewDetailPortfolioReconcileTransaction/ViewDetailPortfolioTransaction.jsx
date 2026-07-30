@@ -117,10 +117,10 @@ const ViewDetailPortfolioTransaction = () => {
     myActionStatusID === 1
       ? "Pending"
       : myActionStatusID === 2
-        ? "Compliant"
-        : myActionStatusID === 3
-          ? "Non Compliant"
-          : null;
+      ? "Compliant"
+      : myActionStatusID === 3
+      ? "Non Compliant"
+      : null;
 
   // Extarct and Instrument from viewDetailsModalData context Api
   const instrumentId = Number(
@@ -144,18 +144,18 @@ const ViewDetailPortfolioTransaction = () => {
     setViewDetailPortfolioTransaction(false);
   };
 
-const hierarchyDetails =
-  reconcilePortfolioViewDetailData?.hierarchyDetails || [];
+  const hierarchyDetails =
+    reconcilePortfolioViewDetailData?.hierarchyDetails || [];
 
-const currentUserIndex = hierarchyDetails.findIndex(
-  (item) => item.userID === loggedInUserID
-);
+  const currentUserIndex = hierarchyDetails.findIndex(
+    (item) => item.userID === loggedInUserID
+  );
 
-// show only previous + current user
-const visibleHierarchy =
-  currentUserIndex !== -1
-    ? hierarchyDetails.slice(0, currentUserIndex + 1)
-    : hierarchyDetails;
+  // show only previous + current user
+  const visibleHierarchy =
+    currentUserIndex !== -1
+      ? hierarchyDetails.slice(0, currentUserIndex + 1)
+      : hierarchyDetails;
 
   return (
     <>
@@ -340,86 +340,82 @@ const visibleHierarchy =
                           borderRadius: "50%",
                         }}
                       >
-                        {Array.isArray(
-                          visibleHierarchy
-                        ) &&
-                          visibleHierarchy.map(
-                            (person, index) => {
-                              const {
-                                fullName,
-                                bundleStatusID,
-                                modifiedDate,
-                                modifiedTime,
-                                userID,
-                              } = person;
+                        {Array.isArray(visibleHierarchy) &&
+                          visibleHierarchy.map((person, index) => {
+                            const {
+                              fullName,
+                              bundleStatusID,
+                              modifiedDate,
+                              modifiedTime,
+                              userID,
+                            } = person;
 
-                              const formattedDateTime = formatApiDateTime(
-                                `${modifiedDate} ${modifiedTime}`
-                              );
+                            const formattedDateTime = formatApiDateTime(
+                              `${modifiedDate} ${modifiedTime}`
+                            );
 
-                              // Decide icon and label
-                              let iconSrc;
-                              let displayText;
-                              let isApprovedOrDeclined = false;
+                            // Decide icon and label
+                            let iconSrc;
+                            let displayText;
+                            let isApprovedOrDeclined = false;
 
-                              if (bundleStatusID === 2) {
-                                iconSrc = CheckIcon;
-                                displayText =
-                                  loggedInUserID === userID
-                                    ? "You marked this as compliant"
-                                    : `${fullName} `;
-                                isApprovedOrDeclined = true;
-                              } else if (bundleStatusID === 3) {
-                                iconSrc = CrossIcon;
-                                displayText =
-                                  loggedInUserID === userID
-                                    ? "You marked this as non-compliant"
-                                    : `${fullName}`;
-                                isApprovedOrDeclined = true;
-                              } else {
-                                iconSrc = EllipsesIcon;
-                                displayText = "Awaiting for action";
-                              }
+                            if (bundleStatusID === 2) {
+                              iconSrc = CheckIcon;
+                              displayText =
+                                loggedInUserID === userID
+                                  ? "You marked this as compliant"
+                                  : `${fullName} `;
+                              isApprovedOrDeclined = true;
+                            } else if (bundleStatusID === 3) {
+                              iconSrc = CrossIcon;
+                              displayText =
+                                loggedInUserID === userID
+                                  ? "You marked this as non-compliant"
+                                  : `${fullName}`;
+                              isApprovedOrDeclined = true;
+                            } else {
+                              iconSrc = EllipsesIcon;
+                              displayText = "Awaiting for action";
+                            }
 
-                              return (
-                                <Step
-                                  key={index}
-                                  label={
+                            return (
+                              <Step
+                                key={index}
+                                label={
+                                  <div
+                                    className={`${styles.customlabel} ${
+                                      isApprovedOrDeclined
+                                        ? styles.centerAlignLabel
+                                        : ""
+                                    }`}
+                                  >
+                                    <div className={styles.customtitle}>
+                                      {displayText}
+                                    </div>
                                     <div
-                                      className={`${styles.customlabel} ${
+                                      className={`${styles.customdesc} ${
                                         isApprovedOrDeclined
-                                          ? styles.centerAlignLabel
+                                          ? styles.centerAlignText
                                           : ""
                                       }`}
                                     >
-                                      <div className={styles.customtitle}>
-                                        {displayText}
-                                      </div>
-                                      <div
-                                        className={`${styles.customdesc} ${
-                                          isApprovedOrDeclined
-                                            ? styles.centerAlignText
-                                            : ""
-                                        }`}
-                                      >
-                                        {bundleStatusID !== 1 &&
-                                          formattedDateTime}
-                                      </div>
+                                      {bundleStatusID !== 1 &&
+                                        formattedDateTime}
                                     </div>
-                                  }
-                                >
-                                  <div className={styles.stepCircle}>
-                                    <img
-                                      draggable={false}
-                                      src={iconSrc}
-                                      alt="status-icon"
-                                      className={styles.circleImg}
-                                    />
                                   </div>
-                                </Step>
-                              );
-                            }
-                          )}
+                                }
+                              >
+                                <div className={styles.stepCircle}>
+                                  <img
+                                    draggable={false}
+                                    src={iconSrc}
+                                    alt="status-icon"
+                                    className={styles.circleImg}
+                                  />
+                                </div>
+                              </Step>
+                            );
+                          })}
                       </Stepper>
                     </div>
                   </div>
@@ -450,7 +446,7 @@ const visibleHierarchy =
                       <>
                         <div className={styles.compliantNonCompliant}>
                           <CustomButton
-                            text={"View Comment"}
+                            text={"View Comments"}
                             onClick={() => {
                               setViewDetailPortfolioTransaction(false);
                               setViewCommentPortfolioModal(true);
@@ -470,7 +466,7 @@ const visibleHierarchy =
                       <>
                         <div className={styles.compliantNonCompliant}>
                           <CustomButton
-                            text={"View Comment"}
+                            text={"View Comments"}
                             onClick={() => {
                               setViewDetailPortfolioTransaction(false);
                               setViewCommentPortfolioModal(true);

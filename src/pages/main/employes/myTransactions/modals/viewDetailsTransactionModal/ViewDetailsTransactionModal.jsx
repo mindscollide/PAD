@@ -386,7 +386,7 @@ const ViewDetailsTransactionModal = () => {
             <Col span={24}>
               <div className={styles.approvedButtonClassViewComment}>
                 <CustomButton
-                  text="View Comment"
+                  text="View Comments"
                   className="big-light-button"
                   onClick={() => {
                     setViewCommentTransactionModal(true);

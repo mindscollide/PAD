@@ -462,7 +462,7 @@ const ViewDetailHeadOfComplianceReconcilePortfolio = () => {
                     ) : statusData?.label === "Non Compliant" ? (
                       <div className={styles.noncompliantButtonClass}>
                         <CustomButton
-                          text="View Comment"
+                          text="View Comments"
                           className="big-light-button"
                           onClick={() => {
                             setViewCommentPortfolioModal(true);
@@ -484,7 +484,7 @@ const ViewDetailHeadOfComplianceReconcilePortfolio = () => {
                     ) : statusData?.label === "Compliant" ? (
                       <div className={styles.noncompliantButtonClass}>
                         <CustomButton
-                          text="View Comment"
+                          text="View Comments"
                           className="big-light-button"
                           onClick={() => {
                             setViewCommentPortfolioModal(true);

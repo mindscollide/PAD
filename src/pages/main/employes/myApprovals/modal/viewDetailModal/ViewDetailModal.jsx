@@ -663,7 +663,7 @@ const ViewDetailModal = () => {
                     <>
                       <div className={styles.approvedButtonClass}>
                         <CustomButton
-                          text={"View Comment"}
+                          text={"View Comments"}
                           className="big-light-button"
                           onClick={onClickViewModal}
                         />
@@ -693,7 +693,7 @@ const ViewDetailModal = () => {
                     <>
                       <div className={styles.approvedButtonClass}>
                         <CustomButton
-                          text={"View Comment"}
+                          text={"View Comments"}
                           className="big-light-button"
                           onClick={onClickViewModal}
                         />

@@ -508,7 +508,7 @@ const ViewDetailHeadOfApprovalModal = () => {
                     <Col span={[24]}>
                       <div className={styles.approvedButtonClassViewComment}>
                         <CustomButton
-                          text={"View Comment"}
+                          text={"View Comments"}
                           className="big-light-button"
                           onClick={onClickViewCommentModal}
                         />

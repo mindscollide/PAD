@@ -33,7 +33,7 @@ export const buildApiRequest = (searchState = {}) => ({
  * @returns {Array} Mapped transaction list
  */
 export const mappingDateWiseTransactionReport = (
-  myTradeApprovalLineManagerData = [],
+  myTradeApprovalLineManagerData = []
 ) => {
   const records = Array.isArray(myTradeApprovalLineManagerData)
     ? myTradeApprovalLineManagerData
@@ -68,7 +68,7 @@ export const getBorderlessTableColumns = ({
       "Transaction Date",
       "transactionDate",
       sortedInfo,
-      "center",
+      "center"
     ),
     dataIndex: "transactionDate",
     key: "transactionDate",
@@ -92,7 +92,7 @@ export const getBorderlessTableColumns = ({
       "Total Employees",
       "totalEmployees",
       sortedInfo,
-      "center",
+      "center"
     ),
     dataIndex: "totalEmployees",
     key: "totalEmployees",
@@ -111,7 +111,7 @@ export const getBorderlessTableColumns = ({
       "Total Transactions",
       "totalTransactions",
       sortedInfo,
-      "center",
+      "center"
     ),
     dataIndex: "totalTransactions",
     key: "totalTransactions",
@@ -146,7 +146,7 @@ export const getBorderlessTableColumns = ({
     ellipsis: true,
     sorter: (a, b) =>
       formatApiDateTime(a.actionDateTime).localeCompare(
-        formatApiDateTime(b.actionDateTime),
+        formatApiDateTime(b.actionDateTime)
       ),
     sortDirections: ["ascend", "descend"],
     sortOrder:
@@ -164,7 +164,7 @@ export const getBorderlessTableColumns = ({
       "Compliant Transactions",
       "compliantTransactions",
       sortedInfo,
-      "center",
+      "center"
     ),
     dataIndex: "compliantTransactions",
     key: "compliantTransactions",
@@ -186,7 +186,7 @@ export const getBorderlessTableColumns = ({
       "Non-Compliant Transactions",
       "nonCompliantTransactions",
       sortedInfo,
-      "center",
+      "center"
     ),
     dataIndex: "nonCompliantTransactions",
     key: "nonCompliantTransactions",
@@ -225,7 +225,7 @@ export const getBorderlessTableColumns = ({
 
 export const buildApiRequestViewDetails = (
   searchState = {},
-  assetTypeListingData,
+  assetTypeListingData
 ) => ({
   PageNumber: Number(searchState.pageNumber) || 0,
   Length: Number(searchState.pageSize) || 10,
@@ -239,7 +239,7 @@ export const buildApiRequestViewDetails = (
 
 export const mappingDateWiseTransactionviewDetailst = (
   assetTypeData,
-  myTradeApprovalLineManagerData = [],
+  myTradeApprovalLineManagerData = []
 ) => {
   const records = Array.isArray(myTradeApprovalLineManagerData)
     ? myTradeApprovalLineManagerData
@@ -423,7 +423,7 @@ export const getBorderlessTableColumnsViewDetails = ({
       "Initiated at",
       "transactionDate",
       sortedInfoView,
-      "center",
+      "center"
     ),
     dataIndex: "transactionDate",
     key: "transactionDate",
@@ -525,7 +525,7 @@ export const getBorderlessTableColumnsViewDetails = ({
       <div className={style.viewEditClass}>
         <Button
           className="small-light-button"
-          text={"View Comment"}
+          text={"View Comments"}
           onClick={() => {
             console.log(record, "tradeApprovalID");
             // handelViewDetails(record.approvalID);
