@@ -56,7 +56,6 @@ const ViewTicketReconcileModal = () => {
   // ✅ Auto-select 0th index when files are available
   useEffect(() => {
     if (uploadattAchmentsFiles?.length > 0 && selectedIndex === null) {
-      setSelectedIndex(0);
       handleSelectFile(0);
     }
   }, [uploadattAchmentsFiles, selectedIndex]);
@@ -72,11 +71,60 @@ const ViewTicketReconcileModal = () => {
   }, [selectedIndex, uploadattAchmentsFiles]);
 
   /**
+   * 🔹 Converts a Base64 string into a Blob URL for preview
+   * @param {string} base64 - Base64 encoded string
+   * @param {string} [mimeType="application/pdf"] - File MIME type (defaults to PDF)
+   * @returns {string|null} Object URL for Blob
+   */
+  const base64ToBlobUrl = (base64, mimeType = "application/pdf") => {
+    try {
+      const byteChars = atob(base64);
+      const byteNumbers = new Array(byteChars.length);
+      for (let i = 0; i < byteChars.length; i++) {
+        byteNumbers[i] = byteChars.charCodeAt(i);
+      }
+      const byteArray = new Uint8Array(byteNumbers);
+      const blob = new Blob([byteArray], { type: mimeType });
+      return URL.createObjectURL(blob);
+    } catch (err) {
+      console.error("❌ Failed to convert base64 to Blob URL", err);
+      return null;
+    }
+  };
+
+  /**
+   * 🔹 Blob URL for the currently selected file's preview.
+   * Memoized on the blob data itself (not recomputed on every render) - URL.createObjectURL
+   * returns a brand-new unique URL each call even for identical data, so calling it inline
+   * in the iframe's `src` regenerated a new URL - and forced an iframe reload - on every
+   * unrelated re-render (e.g. loadingIndex toggling for a different file), which could
+   * interrupt an in-progress preview load. Old URLs are revoked to avoid leaking memory.
+   */
+  const selectedFileBlobUrl = useMemo(() => {
+    if (!selectedFile?.attachmentBlob) return null;
+    return base64ToBlobUrl(selectedFile.attachmentBlob);
+  }, [selectedFile?.attachmentBlob]);
+
+  useEffect(() => {
+    return () => {
+      if (selectedFileBlobUrl) {
+        URL.revokeObjectURL(selectedFileBlobUrl);
+      }
+    };
+  }, [selectedFileBlobUrl]);
+
+  /**
    * 🔹 Selects a file and fetches its blob if not already present
    * @param {number} index - Index of the file in the attachments list
    */
   const handleSelectFile = async (index) => {
     const file = uploadattAchmentsFiles[index];
+
+    // Switch the preview pane to this file immediately - if it's already
+    // cached (attachmentBlob present) it shows right away with no API call;
+    // if not, the render below shows a loading state in the preview pane
+    // itself instead of leaving the previous file's preview up.
+    setSelectedIndex(index);
 
     // If file blob not already fetched, request it from API
     if (!file.attachmentBlob) {
@@ -91,10 +139,14 @@ const ViewTicketReconcileModal = () => {
         });
 
         if (blob) {
-          // Update attachment list with blob
-          const updatedFiles = [...uploadattAchmentsFiles];
-          updatedFiles[index] = { ...file, attachmentBlob: blob };
-          setUploadattAchmentsFiles(updatedFiles);
+          // Update attachment list with blob - functional update so a slower
+          // fetch for a different file (clicked earlier) can't clobber this
+          // one with a stale snapshot of the array.
+          setUploadattAchmentsFiles((prevFiles) => {
+            const updatedFiles = [...prevFiles];
+            updatedFiles[index] = { ...updatedFiles[index], attachmentBlob: blob };
+            return updatedFiles;
+          });
         }
       } catch (err) {
         console.error("❌ Failed to fetch attachment blob", err);
@@ -107,8 +159,6 @@ const ViewTicketReconcileModal = () => {
         setLoadingIndex(null);
       }
     }
-
-    setSelectedIndex(index);
   };
 
   /**
@@ -147,28 +197,6 @@ const ViewTicketReconcileModal = () => {
     };
   };
 
-  /**
-   * 🔹 Converts a Base64 string into a Blob URL for preview
-   * @param {string} base64 - Base64 encoded string
-   * @param {string} [mimeType="application/pdf"] - File MIME type (defaults to PDF)
-   * @returns {string|null} Object URL for Blob
-   */
-  const base64ToBlobUrl = (base64, mimeType = "application/pdf") => {
-    try {
-      const byteChars = atob(base64);
-      const byteNumbers = new Array(byteChars.length);
-      for (let i = 0; i < byteChars.length; i++) {
-        byteNumbers[i] = byteChars.charCodeAt(i);
-      }
-      const byteArray = new Uint8Array(byteNumbers);
-      const blob = new Blob([byteArray], { type: mimeType });
-      return URL.createObjectURL(blob);
-    } catch (err) {
-      console.error("❌ Failed to convert base64 to Blob URL", err);
-      return null;
-    }
-  };
-
   return (
     <GlobalModal
       visible={isViewTicketTransactionModal}
@@ -190,18 +218,19 @@ const ViewTicketReconcileModal = () => {
             <Col span={14}>
               <div className={styles.documentContainer}>
                 {selectedFile ? (
-                  <iframe
-                    src={
-                      selectedFile.attachmentBlob
-                        ? `${base64ToBlobUrl(
-                            selectedFile.attachmentBlob
-                          )}#toolbar=0&navpanes=0&scrollbar=0`
-                        : ""
-                    }
-                    width="99%"
-                    height="500px"
-                    title={`Preview of ${selectedFile.displayFileName}`}
-                  />
+                  selectedFileBlobUrl ? (
+                    <iframe
+                      src={`${selectedFileBlobUrl}#toolbar=0&navpanes=0&scrollbar=0`}
+                      width="99%"
+                      height="500px"
+                      title={`Preview of ${selectedFile.displayFileName}`}
+                    />
+                  ) : (
+                    // Not cached yet - show a loading state in the preview
+                    // pane itself instead of leaving the previous file's
+                    // preview visible while the fetch is in flight.
+                    <div className={styles.noPreview}>Loading preview...</div>
+                  )
                 ) : (
                   <div className={styles.noPreview}>
                     Select a file to preview
