@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React from "react";
 import { Col, Row, Tag } from "antd";
 import { useGlobalModal } from "../../../../../../context/GlobalModalContext";
 import { BrokerList, GlobalModal } from "../../../../../../components";
@@ -8,56 +8,28 @@ import CustomButton from "../../../../../../components/buttons/button";
 import CheckIcon from "../../../../../../assets/img/Check.png";
 import EllipsesIcon from "../../../../../../assets/img/Ellipses.png";
 import CrossIcon from "../../../../../../assets/img/Cross.png";
-import repeat from "../../../../../../assets/img/repeat.png";
-import ApprovedResubmit from "../../../../../../assets/img/ApprovedResubmit.png";
-import DeclinedResubmit from "../../../../../../assets/img/DeclinedResubmite.png";
-
 import {
   dashBetweenApprovalAssets,
   formatApiDateTime,
   formatNumberWithCommas,
 } from "../../../../../../common/funtions/rejex";
-import {
-  GetAllLineManagerViewDetailRequest,
-  UpdateApprovalRequestStatusLineManager,
-} from "../../../../../../api/myApprovalApi";
-import { useGlobalLoader } from "../../../../../../context/LoaderContext";
-import { useApi } from "../../../../../../context/ApiContext";
-import { useNotification } from "../../../../../../components/NotificationProvider/NotificationProvider";
-import { useNavigate } from "react-router-dom";
 import { useMyApproval } from "../../../../../../context/myApprovalContaxt";
 import { useDashboardContext } from "../../../../../../context/dashboardContaxt";
 
 const ViewDetailModal = () => {
-  const navigate = useNavigate();
-  const hasFetched = useRef(false);
-  const { showNotification } = useNotification();
-  const { showLoader } = useGlobalLoader();
-  const { callApi } = useApi();
-
   // This is Global State for modal which is create in ContextApi
   const {
     viewDetailLineManagerModal,
     setViewDetailLineManagerModal,
     isSelectedViewDetailLineManager,
     setNoteGlobalModal,
-    setApprovedGlobalModal,
     setViewCommentGlobalModal,
   } = useGlobalModal();
 
-  console.log(
-    isSelectedViewDetailLineManager,
-    "isSelectedViewDetailLineManager"
-  );
-
   //This is the Global state of Context Api
-  const { viewDetailsLineManagerData, setViewDetailsLineManagerData } =
-    useMyApproval();
+  const { viewDetailsLineManagerData } = useMyApproval();
 
-  const { allInstrumentsData, employeeBasedBrokersData } =
-    useDashboardContext();
-
-  console.log(viewDetailsLineManagerData, "viewDetailsLineManagerData");
+  const { allInstrumentsData } = useDashboardContext();
 
   // get data from sessionStorage
   const userProfileData = JSON.parse(
@@ -119,8 +91,6 @@ const ViewDetailModal = () => {
   const statusDataLM = getStatusStyle(
     String(viewDetailsLineManagerData?.workFlowStatus?.workFlowStatusID)
   );
-  console.log("statusDataLM.label", viewDetailsLineManagerData);
-  console.log("statusDataLM.label", statusDataLM);
   // When its already approve or ddecline by you then button should be disabled
   const hasAlreadyApprovedOrDeclined =
     viewDetailsLineManagerData?.hierarchyDetails?.some(

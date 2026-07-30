@@ -190,7 +190,7 @@ const ViewDetailsTransactionModal = () => {
 
           {/* Transaction Summary */}
           <Row gutter={[4, 4]} style={{ marginTop: "13px" }}>
-            <Col span={12}>
+            <Col span={24}>
               <div className={styles.backgroundColorOfInstrumentDetailApproved}>
                 <label className={styles.viewDetailMainLabels}>
                   Instrument
@@ -208,7 +208,10 @@ const ViewDetailsTransactionModal = () => {
                 </label>
               </div>
             </Col>
-            <Col span={12}>
+          </Row>
+
+          <Row gutter={[4, 4]} style={{ marginTop: "3px" }}>
+            <Col span={8}>
               <div className={styles.backgrounColorOfApprovedDetail}>
                 <label className={styles.viewDetailMainLabels}>
                   Approval ID
@@ -220,10 +223,7 @@ const ViewDetailsTransactionModal = () => {
                 </label>
               </div>
             </Col>
-          </Row>
-
-          <Row gutter={[4, 4]} style={{ marginTop: "3px" }}>
-            <Col span={12}>
+            <Col span={8}>
               <div className={styles.backgrounColorOfDetail}>
                 <label className={styles.viewDetailMainLabels}>
                   Transaction ID
@@ -235,7 +235,7 @@ const ViewDetailsTransactionModal = () => {
                 </label>
               </div>
             </Col>
-            <Col span={12}>
+            <Col span={8}>
               <div className={styles.backgrounColorOfDetail}>
                 <label className={styles.viewDetailMainLabels}>Type</label>
                 <label className={styles.viewDetailSubLabels}>
