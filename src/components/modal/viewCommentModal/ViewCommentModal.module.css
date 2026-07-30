@@ -9,7 +9,8 @@
   font-size: 26px;
   color: #424242;
   font-weight: 400;
-  width: max-content;
+  /* width: max-content; */
+  max-width: 55vw;
   font-family: "Switzer Variable";
 }
 
