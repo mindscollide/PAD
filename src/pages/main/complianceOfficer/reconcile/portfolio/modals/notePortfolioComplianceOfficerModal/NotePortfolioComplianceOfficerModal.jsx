@@ -52,7 +52,7 @@ const NotePortfolioComplianceOfficerModal = () => {
           : "Portfolio-Non-Compliant"
       }
       // onCancel={() => setNoteGlobalModal({ visible: false, action: null })}
-      title={"Write a Notes"}
+      title={"Write Notes"}
       // onSubmit={onClickOpenDeclinedModal}
     />
   );

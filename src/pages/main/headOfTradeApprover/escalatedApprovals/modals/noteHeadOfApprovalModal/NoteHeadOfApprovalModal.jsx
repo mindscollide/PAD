@@ -41,7 +41,7 @@ const NoteHeadOfApprovalModal = () => {
         noteGlobalModal.action === "HTA-Approve" ? "HTA-Approve" : "HTA-Decline"
       }
       onCancel={() => setNoteGlobalModal({ visible: false, action: null })}
-      title={"Write a Notes"}
+      title={"Write Notes"}
       onSubmit={onClickOpenDeclinedModal}
     />
   );

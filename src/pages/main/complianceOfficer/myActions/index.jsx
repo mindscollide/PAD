@@ -1,10 +1,7 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { Row, Col } from "antd";
-import { DownloadOutlined } from "@ant-design/icons";
 import { AcordianTable, PageLayout } from "../../../../components";
-import CustomButton from "../../../../components/buttons/button";
 import style from "./co-myActions.module.css";
-import Excel from "../../../../assets/img/xls.png";
 import { buildMyActionApiRequest, getMyActionsColumn } from "./utils";
 import { useSearchBarContext } from "../../../../context/SearchBarContaxt";
 import { approvalStatusMap } from "../../../../components/tables/borderlessTable/utill";
@@ -18,11 +15,7 @@ import { useNotification } from "../../../../components/NotificationProvider/Not
 import { useGlobalLoader } from "../../../../context/LoaderContext";
 import { useApi } from "../../../../context/ApiContext";
 import { useNavigate } from "react-router-dom";
-import { useSidebarContext } from "../../../../context/sidebarContaxt";
-import {
-  dashBetweenApprovalAssets,
-  formatApiDateTime,
-} from "../../../../common/funtions/rejex";
+import { formatApiDateTime } from "../../../../common/funtions/rejex";
 const COMyAction = () => {
   const navigate = useNavigate();
   const hasFetched = useRef(false);
@@ -40,16 +33,10 @@ const COMyAction = () => {
   const {
     complianceOfficerMyActionSearch,
     setComplianceOfficerMyActionSearch,
-    resetComplianceOfficerMyActionSearch,
   } = useSearchBarContext();
 
   const { setMyActionLineManagerData, myActionLineManagerData } =
     useMyApproval();
-
-  console.log(
-    myActionLineManagerData,
-    "myActionLineManagerDatamyActionLineManagerData"
-  );
 
   /**
    * Fetches transactions from API.
@@ -67,7 +54,6 @@ const COMyAction = () => {
         requestdata: requestData,
         navigate,
       });
-      console.log("setMyActionLineManagerData", res);
       if (res) {
         setMyActionLineManagerData(res);
       }
@@ -387,7 +373,7 @@ const COMyAction = () => {
               statusText = "Marked Compliant by You";
               iconType = "co-Compliant";
             } else if (b.bundleStatus === 3) {
-              statusText = "Marked Non-compliant by You";
+              statusText = "Marked Non-Compliant by You";
               iconType = "co-Non-Compliant";
             } else return null;
 

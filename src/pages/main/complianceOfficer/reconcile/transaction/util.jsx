@@ -111,6 +111,19 @@ const nowrapCell = (minWidth, maxWidth) => ({
  * @param {Function} setComplianceOfficerReconcileTransactionsSearch - Setter to update filter state.
  * @returns {Array<Object>} Column configurations for AntD Table.
  */
+
+// this regex work as a dash seperator befor REQ009 after regex REQ-009
+export const dashBetweenApprovalAssets = (id) => {
+  if (!id) return "";
+
+  const prefix = id.substring(0, 3);
+  const number = id.substring(3);
+
+  // If you want to always keep it padded to 3 digits (REQ-009)
+  const padded = number.padStart(3, "0");
+
+  return `${prefix}-${padded}`;
+};
 export const getBorderlessTableColumns = ({
   approvalStatusMap = {},
   sortedInfo = {},
@@ -120,7 +133,7 @@ export const getBorderlessTableColumns = ({
 }) => [
   /* --------------------- Requester Name --------------------- */
   {
-    title: withSortIcon("Trade Approval ID", "tradeApprovalID", sortedInfo),
+    title: withSortIcon("Transaction ID", "tradeApprovalID", sortedInfo),
     dataIndex: "tradeApprovalID",
     key: "tradeApprovalID",
     ellipsis: true,
@@ -131,9 +144,9 @@ export const getBorderlessTableColumns = ({
       sortedInfo?.columnKey === "tradeApprovalID" ? sortedInfo.order : null,
     showSorterTooltip: false,
     sortIcon: () => null,
-    render: (text) => (
-      <span className="font-medium" title={text || "—"}>
-        {text || ""}
+    render: (approvalID) => (
+      <span className="font-medium">
+        {dashBetweenApprovalAssets(approvalID)}
       </span>
     ),
   },
