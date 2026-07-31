@@ -99,7 +99,7 @@ export const getBorderlessTableColumns = ({
     align: "left",
     dataIndex: "tradeApprovalID",
     key: "tradeApprovalID",
-    width: "12%",
+    width: 150,
     ellipsis: true,
     sorter: (a, b) =>
       parseInt(a.tradeApprovalID.replace(/[^\d]/g, ""), 10) -
@@ -125,7 +125,7 @@ export const getBorderlessTableColumns = ({
     align: "left",
     dataIndex: "Instrument",
     key: "instrumentName",
-    width: "15%",
+    width: 170,
     ellipsis: true,
     sorter: (a, b) => {
       const nameA = a?.instrumentShortCode || "";
@@ -184,7 +184,8 @@ export const getBorderlessTableColumns = ({
     dataIndex: "tradeType",
     key: "tradeType",
     ellipsis: true,
-    width: "10%",
+    width: 100,
+    align: "center",
     filteredValue: employeeMyTransactionSearch.type?.length
       ? employeeMyTransactionSearch?.type
       : null,
@@ -203,7 +204,7 @@ export const getBorderlessTableColumns = ({
     ),
     dataIndex: "transactionConductedDateandTime",
     key: "transactionConductedDateandTime",
-    width: "17%",
+    width: 250,
     align: "center",
     ellipsis: true,
     sorter: (a, b) =>
@@ -233,7 +234,7 @@ export const getBorderlessTableColumns = ({
     dataIndex: "workFlowStatus",
     key: "workFlowStatus",
     ellipsis: true,
-    width: "12%",
+    width: 130,
     filteredValue: employeeMyTransactionSearch.status?.length
       ? employeeMyTransactionSearch.status
       : null,
@@ -260,7 +261,7 @@ export const getBorderlessTableColumns = ({
     dataIndex: "quantity",
     key: "quantity",
     ellipsis: true,
-    width: "8%",
+    width: 100,
     sorter: (a, b) => a.quantity - b.quantity,
     sortDirections: ["ascend", "descend"],
     sortOrder: sortedInfo?.columnKey === "quantity" ? sortedInfo.order : null,
@@ -272,7 +273,7 @@ export const getBorderlessTableColumns = ({
     title: withSortIcon("Broker", "broker", sortedInfo),
     align: "left",
     dataIndex: "broker",
-    width: "17%",
+    width: 200,
     key: "broker",
     sorter: (a, b) => a.broker - b.broker,
     sortDirections: ["ascend", "descend"],

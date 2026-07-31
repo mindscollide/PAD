@@ -23,7 +23,7 @@ const CommentModal = ({
   onSubmit,
   predefinedReasons = [], // optional array of reasons
   centered,
-  title,
+  title = "Write Notes",
   submitText,
   maxChars = 500,
   value, // 🔹 ab parent se aayega
