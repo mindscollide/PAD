@@ -272,6 +272,9 @@ const SearchWithPopoverOnly = () => {
           quantity: 0,
           startDate: null,
           endDate: null,
+          // Backend PageNumber is a 1-based page index - a new search must
+          // restart at page 1, not keep whatever page infinite-scroll had reached
+          pageNumber: 1,
           filterTrigger: true,
         }));
         setSearchMain("");
@@ -312,6 +315,7 @@ const SearchWithPopoverOnly = () => {
             ...prev,
             employeeName: searchMain,
             departmentName: "",
+            pageNumber: 1,
             filterTrigger: true,
           }));
         }
