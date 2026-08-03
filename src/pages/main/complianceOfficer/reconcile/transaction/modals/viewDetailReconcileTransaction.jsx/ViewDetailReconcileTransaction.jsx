@@ -583,7 +583,7 @@ const ViewDetailReconcileTransaction = () => {
                       <>
                         <div className={styles.approvedButtonClass}>
                           <CustomButton
-                            text="Non Compliant"
+                            text="Non-Compliant"
                             className="Decline-dark-button"
                             disabled={isTicketUploaded}
                             onClick={openNoteModalOnNonCompliantClick}
