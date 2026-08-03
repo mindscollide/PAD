@@ -375,18 +375,18 @@ const HeadCompianceOfficerOverdueVerificationReports = () => {
   // 🔷 Excel Report download Api Hit
   const downloadOverdueVerificationExcelFormat = async () => {
     showLoader(true);
-    const requestdata = {
-      InstrumentName: "",
-      RequesterName: "",
-      Type: "",
-      StatusIds: [],
-      FromDate: "",
-      ToDate: "",
-      EscalationFromDate: "",
-      EscalationToDate: "",
-      ApprovedQuantity: null,
-      ShareTraded: null,
-    };
+    // Export must match what's currently shown on the listing page - reuse the
+    // same request builder as the list fetch instead of a hardcoded/empty
+    // filter set. PageNumber/Length/TypeIds are dropped: the export endpoint's
+    // SQL call (sp_HOCOverdueVerificationsExcelReport) takes neither pagination
+    // params nor a TypeIds field - unlike the listing SP, it matches a single
+    // Type NAME string exactly (LOWER(TypeName) = LOWER(p_type)), not a CSV of
+    // IDs, so TypeIds from buildApiRequest can't be reused as-is here.
+    const { PageNumber, Length, TypeIds, ...requestdata } = buildApiRequest(
+      OverdueVerificationHCOReportSearch,
+      assetTypeListingData
+    );
+    requestdata.Type = OverdueVerificationHCOReportSearch?.type?.[0] || "";
 
     await ExportHOCOverdueVerificationsExcelReport({
       callApi,
@@ -438,6 +438,7 @@ const HeadCompianceOfficerOverdueVerificationReports = () => {
                 </span>
               }
               className="small-light-button-report"
+              disabled={!overdueVerificationHCOListData?.overdueVerifications?.length}
               onClick={() => setOpen((prev) => !prev)}
             />
           </div>
