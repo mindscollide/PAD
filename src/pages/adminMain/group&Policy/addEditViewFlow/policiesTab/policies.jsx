@@ -457,7 +457,7 @@ const Policies = ({
                       pagination={false}
                       rowKey="transactionId"
                       classNameTable="border-less-table-white-4"
-                      scroll={{ y: 400 }} // Internal table scroll
+                      // scroll={{ y: 400 }} // Internal table scroll
                       style={{ width: "100%" }}
                     />
                   </div>

@@ -119,7 +119,7 @@ const SystemConfigurations = () => {
       // 🔹 Convert formValues into updated data format
       const updatedData = data.map((item) => {
         const matchedValue = formValues.find(
-          (val) => val.configurationID === item.configurationID,
+          (val) => val.configurationID === item.configurationID
         );
 
         return matchedValue
@@ -147,7 +147,7 @@ const SystemConfigurations = () => {
       (item) =>
         item.configValue === "" ||
         item.configValue === null ||
-        item.configValue === undefined,
+        item.configValue === undefined
     );
 
     if (hasEmptyFields) {
@@ -188,6 +188,22 @@ const SystemConfigurations = () => {
       console.log("Updated Configurations:", formValues);
     }
   };
+  /**
+   * Steps to the next/previous value in `list` relative to `current`.
+   * Falls back to the nearest boundary if current isn't in the list.
+   */
+  const stepApplicableValue = (list, current, direction) => {
+    if (!list.length) return current;
+
+    if (direction === "up") {
+      const next = list.find((v) => v > current);
+      return next !== undefined ? next : list[list.length - 1];
+    }
+    const prevCandidates = list.filter((v) => v < current);
+    return prevCandidates.length
+      ? prevCandidates[prevCandidates.length - 1]
+      : list[0];
+  };
 
   // ------------------------------------------------
   // 🔹 API Fetching
@@ -213,7 +229,6 @@ const SystemConfigurations = () => {
             let minValue = null;
             let maxValue = null;
 
-            // Parse "minMax" if valid (e.g., "1,100")
             if (item.minMax && typeof item.minMax === "string") {
               const [min, max] = item.minMax
                 .split(",")
@@ -222,7 +237,16 @@ const SystemConfigurations = () => {
               if (!isNaN(max)) maxValue = max;
             }
 
-            return { ...item, minValue, maxValue };
+            // 🔹 Parse applicableValues -> sorted number array, e.g. [1440, 2880, 4320, ...]
+            const applicableValuesArray = item.applicableValues
+              ? item.applicableValues
+                  .split(",")
+                  .map((v) => Number(v.trim()))
+                  .filter((v) => !isNaN(v))
+                  .sort((a, b) => a - b)
+              : [];
+
+            return { ...item, minValue, maxValue, applicableValuesArray };
           })
         : [];
       console.log("Updated Configurations:", systemConfigurations);
@@ -296,7 +320,7 @@ const SystemConfigurations = () => {
                       <Input
                         value={
                           formValues.find(
-                            (f) => f.configurationID === item.configurationID,
+                            (f) => f.configurationID === item.configurationID
                           )?.configValue || ""
                         }
                         onChange={(e) =>
@@ -322,40 +346,36 @@ const SystemConfigurations = () => {
                         </span>
                         <Input
                           type="number"
-                          min={item.minValue ?? 1}
-                          max={item.maxValue ?? 100}
                           value={
                             formValues.find(
-                              (f) => f.configurationID === item.configurationID,
+                              (f) => f.configurationID === item.configurationID
                             )?.configValue || ""
                           }
                           onChange={(e) => {
-                            const value = e.target.value;
-                            // Allow empty or partial input (so user can type)
-                            handleChange(item.configurationID, value);
+                            const list = item.applicableValuesArray || [];
+                            if (list.length === 0) return; // no applicable values -> ignore spinner
+
+                            const currentValue = Number(
+                              formValues.find(
+                                (f) =>
+                                  f.configurationID === item.configurationID
+                              )?.configValue || 0
+                            );
+                            const numNew = Number(e.target.value);
+
+                            // Native spinner nudges by ±1 before onChange fires — use that to detect direction
+                            const direction =
+                              numNew > currentValue ? "up" : "down";
+                            const snapped = stepApplicableValue(
+                              list,
+                              currentValue,
+                              direction
+                            );
+
+                            handleChange(item.configurationID, String(snapped));
                           }}
                           onKeyDown={(e) => {
-                            e.preventDefault(); // 🚫 disables typing
-                          }}
-                          onBlur={(e) => {
-                            const value = e.target.value;
-                            const num = Number(value);
-
-                            if (
-                              value !== "" &&
-                              (num < (item.minValue ?? 1) ||
-                                num > (item.maxValue ?? 100))
-                            ) {
-                              // Clamp the number, then convert back to string before setting
-                              const clamped = Math.min(
-                                Math.max(num, item.minValue ?? 1),
-                                item.maxValue ?? 100,
-                              );
-                              handleChange(
-                                item.configurationID,
-                                String(clamped),
-                              );
-                            }
+                            e.preventDefault(); // keep typing disabled, only spinner arrows work
                           }}
                           placeholder="Enter number"
                           className={style.inputDuration}
