@@ -10,6 +10,7 @@ import CrossIcon from "../../../../../../assets/img/Cross.png";
 import ApprovedResubmit from "../../../../../../assets/img/ApprovedResubmit.png";
 import DeclinedResubmit from "../../../../../../assets/img/DeclinedResubmite.png";
 import EscaltedOn from "../../../../../../assets/img/EscaltedOn.png";
+import repeat from "../../../../../../assets/img/repeat.png";
 
 import {
   dashBetweenApprovalAssets,
@@ -154,7 +155,18 @@ const ViewDetailHeadOfApprovalModal = () => {
 
               <Row>
                 <Col span={24}>
-                  <div className={statusDataHTA.divClassName}>
+                  <div
+                    className={`${statusDataHTA.divClassName} ${
+                      viewDetailsHeadOfApprovalData?.details?.[0]
+                        ?.resubmitRequestTrackingID
+                        ? styles.inlineWithIcon
+                        : ""
+                    }`}
+                  >
+                    {viewDetailsHeadOfApprovalData?.details?.[0]
+                      ?.resubmitRequestTrackingID && (
+                      <img draggable={false} src={repeat} alt="Repeat" />
+                    )}
                     <label className={statusDataHTA.labelClassName}>
                       {statusDataHTA.label}
                     </label>
@@ -213,12 +225,8 @@ const ViewDetailHeadOfApprovalModal = () => {
                   </div>
                 </Col>
 
-                {isSelectedViewDetailHeadOfApproval?.status === "Resubmit" ||
-                isSelectedViewDetailHeadOfApproval.status === "Approved" ||
-                isSelectedViewDetailHeadOfApproval.status === "Declined" ? (
-                  // When status is Approved and Declined Resubmitted
-                  // isSelectedViewDetailHeadOfApproval.status === "Approved"
-                  // isSelectedViewDetailHeadOfApproval.status === "Declined"
+                {viewDetailsHeadOfApprovalData?.details?.[0]
+                  ?.resubmitRequestTrackingID ? (
                   <>
                     <Col span={6}>
                       <div className={styles.backgrounColorOfDetail}>
@@ -235,13 +243,15 @@ const ViewDetailHeadOfApprovalModal = () => {
                     </Col>
                     <Col span={6}>
                       <div className={styles.backgrounColorOfDetail}>
-                        {/* You can duplicate or modify the content here as needed */}
                         <label className={styles.viewDetailMainLabels}>
                           Previous req ID
                         </label>
                         <label className={styles.viewDetailSubLabels}>
                           <u style={{ color: "#30426a", cursor: "pointer" }}>
-                            {dashBetweenApprovalAssets("REQ709")}
+                            {dashBetweenApprovalAssets(
+                              viewDetailsHeadOfApprovalData?.details?.[0]
+                                ?.resubmitRequestTrackingID
+                            )}
                           </u>
                         </label>
                       </div>

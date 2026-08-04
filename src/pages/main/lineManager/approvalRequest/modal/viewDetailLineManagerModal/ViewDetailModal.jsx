@@ -172,7 +172,18 @@ const ViewDetailModal = () => {
 
               <Row>
                 <Col span={24}>
-                  <div className={myActionStatusData.divClassName}>
+                  <div
+                    className={`${myActionStatusData.divClassName} ${
+                      viewDetailsLineManagerData?.details?.[0]
+                        ?.resubmitRequestTrackingID
+                        ? styles.inlineWithIcon
+                        : ""
+                    }`}
+                  >
+                    {viewDetailsLineManagerData?.details?.[0]
+                      ?.resubmitRequestTrackingID && (
+                      <img draggable={false} src={repeat} alt="Repeat" />
+                    )}
                     <label className={myActionStatusData.labelClassName}>
                       {myActionStatusData.label}
                     </label>
@@ -243,10 +254,8 @@ const ViewDetailModal = () => {
                   </div>
                 </Col>
 
-                {isSelectedViewDetailLineManager?.status === "Resubmit" ? (
-                  // When status is Approved and Declined Resubmitted
-                  // isSelectedViewDetailLineManager.status === "Approved"
-                  // isSelectedViewDetailLineManager.status === "Declined"
+                {viewDetailsLineManagerData?.details?.[0]
+                  ?.resubmitRequestTrackingID ? (
                   <>
                     <Col span={6}>
                       <div className={styles.backgrounColorOfDetail}>
@@ -254,19 +263,24 @@ const ViewDetailModal = () => {
                           Approval ID
                         </label>
                         <label className={styles.viewDetailSubLabels}>
-                          {dashBetweenApprovalAssets("REQ709")}
+                          {dashBetweenApprovalAssets(
+                            viewDetailsLineManagerData?.details?.[0]
+                              ?.tradeApprovalID,
+                          )}
                         </label>
                       </div>
                     </Col>
                     <Col span={6}>
                       <div className={styles.backgrounColorOfDetail}>
-                        {/* You can duplicate or modify the content here as needed */}
                         <label className={styles.viewDetailMainLabels}>
                           Previous req ID
                         </label>
                         <label className={styles.viewDetailSubLabels}>
                           <u style={{ color: "#30426a", cursor: "pointer" }}>
-                            {dashBetweenApprovalAssets("REQ709")}
+                            {dashBetweenApprovalAssets(
+                              viewDetailsLineManagerData?.details?.[0]
+                                ?.resubmitRequestTrackingID,
+                            )}
                           </u>
                         </label>
                       </div>
