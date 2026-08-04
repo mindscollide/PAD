@@ -2,6 +2,21 @@
    Accordion Table Styles - Blue Theme
    ========================================= */
 
+/* Expanded row content (the journey trail stepper) — the stepper lays its
+   steps out horizontally, so a long trail scrolls sideways within the
+   expanded row instead of spilling outside it. */
+.expanded-content {
+  overflow: hidden;
+  overflow-x: auto;
+  scrollbar-width: thin;
+  padding-bottom: 10px;
+  scrollbar-color: #b9c1d1;
+}
+
+.expanded-content > * {
+  min-width: max-content;
+}
+
 /* ===========================
    1. Base table container
    =========================== */

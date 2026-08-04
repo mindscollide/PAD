@@ -370,16 +370,17 @@ const HTAMyAction = () => {
             iconType: "EscaltedOn",
           };
         case "Approved By You":
+          // actorName here is always the viewing HTA themselves (per the
+          // event's own name) — show "Approved by You" literally instead
+          // of the name a second time.
           return {
-            status: "Approved",
-            user: event.actorName,
+            status: "Approved by You",
             date,
             iconType: "Approved",
           };
         case "Declined by You":
           return {
-            status: "Declined",
-            user: event.actorName,
+            status: "Declined by You",
             date,
             iconType: "Decline",
           };
