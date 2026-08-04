@@ -724,9 +724,14 @@ export const SearchApprovalRequestLineManager = async ({
       lineApprovals: [],
       totalRecords: 0,
     };
-  } finally {
-    showLoader(false);
   }
+  // No blanket showLoader(false) here — the caller (fetchApiCall in
+  // approvalRequest.jsx) already owns loader show/hide via its own
+  // showLoaderFlag, specifically so MQTT-triggered background refreshes
+  // (LINE_MANAGER_NEW_TRADE_APPROVAL_REQUEST etc., showLoaderFlag=false)
+  // can run silently. An unconditional hide here ignored that flag and
+  // killed the loader mid-flight for whatever unrelated action was
+  // actually showing it (e.g. the Approve/Decline submit flow).
 };
 
 //UPDATE APPROVALS REQUEST STATUS API START HERE
