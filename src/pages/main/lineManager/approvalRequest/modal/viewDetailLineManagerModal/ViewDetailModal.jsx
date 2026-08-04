@@ -121,6 +121,24 @@ const ViewDetailModal = () => {
   );
   console.log("statusDataLM.label", viewDetailsLineManagerData);
   console.log("statusDataLM.label", statusDataLM);
+
+  // Header badge shows the LM's own action (myActionStatusID: 1=Pending,
+  // 2=Approved, 3=Declined), not the overall workFlowStatus — the overall
+  // workflow can still be Pending (awaiting other approvers) after this LM
+  // already acted on their own level. myActionStatusID uses a different
+  // numbering scheme than workFlowStatusID, so map it onto the codes
+  // getStatusStyle already uses for the same labels (1=Pending, 3=Approved,
+  // 4=Declined) instead of duplicating the style lookup.
+  const myActionStatusID = viewDetailsLineManagerData?.myActionStatusID;
+  const myActionStatusCode =
+    myActionStatusID === 2
+      ? "3"
+      : myActionStatusID === 3
+        ? "4"
+        : myActionStatusID === 1
+          ? "1"
+          : String(myActionStatusID ?? "");
+  const myActionStatusData = getStatusStyle(myActionStatusCode);
   // When its already approve or ddecline by you then button should be disabled
   const hasAlreadyApprovedOrDeclined =
     viewDetailsLineManagerData?.hierarchyDetails?.some(
@@ -154,9 +172,9 @@ const ViewDetailModal = () => {
 
               <Row>
                 <Col span={24}>
-                  <div className={statusDataLM.divClassName}>
-                    <label className={statusDataLM.labelClassName}>
-                      {statusDataLM.label}
+                  <div className={myActionStatusData.divClassName}>
+                    <label className={myActionStatusData.labelClassName}>
+                      {myActionStatusData.label}
                     </label>
                   </div>
                 </Col>
