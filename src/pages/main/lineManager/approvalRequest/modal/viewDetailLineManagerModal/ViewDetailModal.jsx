@@ -11,6 +11,7 @@ import CrossIcon from "../../../../../../assets/img/Cross.png";
 import repeat from "../../../../../../assets/img/repeat.png";
 import ApprovedResubmit from "../../../../../../assets/img/ApprovedResubmit.png";
 import DeclinedResubmit from "../../../../../../assets/img/DeclinedResubmite.png";
+import EscaltedOn from "../../../../../../assets/img/escalated.png";
 
 import {
   dashBetweenApprovalAssets,
@@ -56,8 +57,6 @@ const ViewDetailModal = () => {
 
   const { allInstrumentsData, employeeBasedBrokersData } =
     useDashboardContext();
-
-  console.log(viewDetailsLineManagerData, "viewDetailsLineManagerData");
 
   // get data from sessionStorage
   const userProfileData = JSON.parse(
@@ -351,20 +350,34 @@ const ViewDetailModal = () => {
               <Row gutter={[4, 4]} style={{ marginTop: "3px" }}>
                 <Col span={12}>
                   <div
-                    className={
+                    className={`${
                       statusDataLM.label === "Traded"
                         ? styles.backgroundColorOfInstrumentDetailTradednoradius
                         : styles.backgrounColorOfDetail
-                    }
+                    } ${
+                      viewDetailsLineManagerData?.isEscalated
+                        ? styles.detailWithIcon
+                        : ""
+                    }`}
                   >
-                    <label className={styles.viewDetailMainLabels}>
-                      Request Date
-                    </label>
-                    <label className={styles.viewDetailSubLabels}>
-                      {formatApiDateTime(
-                        isSelectedViewDetailLineManager?.requestDateTime,
-                      )}
-                    </label>
+                    <div>
+                      <label className={styles.viewDetailMainLabels}>
+                        Request Date
+                      </label>
+                      <label className={styles.viewDetailSubLabels}>
+                        {formatApiDateTime(
+                          isSelectedViewDetailLineManager?.requestDateTime,
+                        )}
+                      </label>
+                    </div>
+                    {viewDetailsLineManagerData?.isEscalated && (
+                      <img
+                        draggable={false}
+                        src={EscaltedOn}
+                        alt="Escalated"
+                        className={styles.escalatedIcon}
+                      />
+                    )}
                   </div>
                 </Col>
                 <Col span={12}>
