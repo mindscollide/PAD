@@ -82,7 +82,11 @@ export const mapEmployeeTransactions = (
     transactionConductedTime: item.transactionConductedTime || "",
     deadlineDate: item.deadlineDate || "",
     deadlineTime: item.deadlineTime || "",
-    broker: item.broker || "Multiple Brokers",
+    brokers: item.brokers || [],
+    broker:
+      Array.isArray(item.brokers) && item.brokers.length > 1
+        ? "Multiple Brokers"
+        : item.brokers?.[0]?.brokerName || item.broker || "—",
   }));
 };
 
@@ -279,6 +283,17 @@ export const getBorderlessTableColumns = ({
     sortOrder: sortedInfo?.columnKey === "broker" ? sortedInfo.order : null,
     showSorterTooltip: false,
     sortIcon: () => null,
+    render: (broker, record) => {
+      const brokers = record?.brokers || [];
+      if (brokers.length > 1) {
+        return (
+          <Tooltip title={brokers.map((b) => b.brokerName).join(", ")}>
+            <span>{broker}</span>
+          </Tooltip>
+        );
+      }
+      return <span>{broker}</span>;
+    },
   },
   {
     title: "",

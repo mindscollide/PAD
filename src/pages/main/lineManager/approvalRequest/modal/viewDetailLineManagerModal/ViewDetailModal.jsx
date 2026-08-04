@@ -11,6 +11,7 @@ import CrossIcon from "../../../../../../assets/img/Cross.png";
 import repeat from "../../../../../../assets/img/repeat.png";
 import ApprovedResubmit from "../../../../../../assets/img/ApprovedResubmit.png";
 import DeclinedResubmit from "../../../../../../assets/img/DeclinedResubmite.png";
+import EscaltedOn from "../../../../../../assets/img/escalated.png";
 
 import {
   dashBetweenApprovalAssets,
@@ -56,8 +57,6 @@ const ViewDetailModal = () => {
 
   const { allInstrumentsData, employeeBasedBrokersData } =
     useDashboardContext();
-
-  console.log(viewDetailsLineManagerData, "viewDetailsLineManagerData");
 
   // get data from sessionStorage
   const userProfileData = JSON.parse(
@@ -121,6 +120,24 @@ const ViewDetailModal = () => {
   );
   console.log("statusDataLM.label", viewDetailsLineManagerData);
   console.log("statusDataLM.label", statusDataLM);
+
+  // Header badge shows the LM's own action (myActionStatusID: 1=Pending,
+  // 2=Approved, 3=Declined), not the overall workFlowStatus — the overall
+  // workflow can still be Pending (awaiting other approvers) after this LM
+  // already acted on their own level. myActionStatusID uses a different
+  // numbering scheme than workFlowStatusID, so map it onto the codes
+  // getStatusStyle already uses for the same labels (1=Pending, 3=Approved,
+  // 4=Declined) instead of duplicating the style lookup.
+  const myActionStatusID = viewDetailsLineManagerData?.myActionStatusID;
+  const myActionStatusCode =
+    myActionStatusID === 2
+      ? "3"
+      : myActionStatusID === 3
+        ? "4"
+        : myActionStatusID === 1
+          ? "1"
+          : String(myActionStatusID ?? "");
+  const myActionStatusData = getStatusStyle(myActionStatusCode);
   // When its already approve or ddecline by you then button should be disabled
   const hasAlreadyApprovedOrDeclined =
     viewDetailsLineManagerData?.hierarchyDetails?.some(
@@ -154,9 +171,20 @@ const ViewDetailModal = () => {
 
               <Row>
                 <Col span={24}>
-                  <div className={statusDataLM.divClassName}>
-                    <label className={statusDataLM.labelClassName}>
-                      {statusDataLM.label}
+                  <div
+                    className={`${myActionStatusData.divClassName} ${
+                      viewDetailsLineManagerData?.details?.[0]
+                        ?.resubmitRequestTrackingID
+                        ? styles.inlineWithIcon
+                        : ""
+                    }`}
+                  >
+                    {viewDetailsLineManagerData?.details?.[0]
+                      ?.resubmitRequestTrackingID && (
+                      <img draggable={false} src={repeat} alt="Repeat" />
+                    )}
+                    <label className={myActionStatusData.labelClassName}>
+                      {myActionStatusData.label}
                     </label>
                   </div>
                 </Col>
@@ -225,10 +253,8 @@ const ViewDetailModal = () => {
                   </div>
                 </Col>
 
-                {isSelectedViewDetailLineManager?.status === "Resubmit" ? (
-                  // When status is Approved and Declined Resubmitted
-                  // isSelectedViewDetailLineManager.status === "Approved"
-                  // isSelectedViewDetailLineManager.status === "Declined"
+                {viewDetailsLineManagerData?.details?.[0]
+                  ?.resubmitRequestTrackingID ? (
                   <>
                     <Col span={6}>
                       <div className={styles.backgrounColorOfDetail}>
@@ -236,19 +262,24 @@ const ViewDetailModal = () => {
                           Approval ID
                         </label>
                         <label className={styles.viewDetailSubLabels}>
-                          {dashBetweenApprovalAssets("REQ709")}
+                          {dashBetweenApprovalAssets(
+                            viewDetailsLineManagerData?.details?.[0]
+                              ?.tradeApprovalID,
+                          )}
                         </label>
                       </div>
                     </Col>
                     <Col span={6}>
                       <div className={styles.backgrounColorOfDetail}>
-                        {/* You can duplicate or modify the content here as needed */}
                         <label className={styles.viewDetailMainLabels}>
                           Previous req ID
                         </label>
                         <label className={styles.viewDetailSubLabels}>
                           <u style={{ color: "#30426a", cursor: "pointer" }}>
-                            {dashBetweenApprovalAssets("REQ709")}
+                            {dashBetweenApprovalAssets(
+                              viewDetailsLineManagerData?.details?.[0]
+                                ?.resubmitRequestTrackingID,
+                            )}
                           </u>
                         </label>
                       </div>
@@ -319,20 +350,34 @@ const ViewDetailModal = () => {
               <Row gutter={[4, 4]} style={{ marginTop: "3px" }}>
                 <Col span={12}>
                   <div
-                    className={
+                    className={`${
                       statusDataLM.label === "Traded"
                         ? styles.backgroundColorOfInstrumentDetailTradednoradius
                         : styles.backgrounColorOfDetail
-                    }
+                    } ${
+                      viewDetailsLineManagerData?.isEscalated
+                        ? styles.detailWithIcon
+                        : ""
+                    }`}
                   >
-                    <label className={styles.viewDetailMainLabels}>
-                      Request Date
-                    </label>
-                    <label className={styles.viewDetailSubLabels}>
-                      {formatApiDateTime(
-                        isSelectedViewDetailLineManager?.requestDateTime,
-                      )}
-                    </label>
+                    <div>
+                      <label className={styles.viewDetailMainLabels}>
+                        Request Date
+                      </label>
+                      <label className={styles.viewDetailSubLabels}>
+                        {formatApiDateTime(
+                          isSelectedViewDetailLineManager?.requestDateTime,
+                        )}
+                      </label>
+                    </div>
+                    {viewDetailsLineManagerData?.isEscalated && (
+                      <img
+                        draggable={false}
+                        src={EscaltedOn}
+                        alt="Escalated"
+                        className={styles.escalatedIcon}
+                      />
+                    )}
                   </div>
                 </Col>
                 <Col span={12}>

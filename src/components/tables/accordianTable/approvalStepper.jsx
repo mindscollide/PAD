@@ -1,4 +1,5 @@
 import React from "react";
+import { Tooltip } from "antd";
 import styles from "./ApprovalStepper.module.css";
 import CheckIcon from "../../../assets/img/Check.png";
 import EllipsesIcon from "../../../assets/img/Ellipses.png";
@@ -88,9 +89,11 @@ const ApprovalStepper = ({ trail }) => {
                   {step.user && (
                     <>
                       {"by"}
-                      <span className={styles.stepTileStrongText}>
-                        {step.user}
-                      </span>
+                      <Tooltip title={step.user}>
+                        <span className={styles.stepTileStrongText}>
+                          {step.user}
+                        </span>
+                      </Tooltip>
                     </>
                   )}
                 </div>

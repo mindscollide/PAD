@@ -1,3 +1,10 @@
+.inlineWithIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+}
+
 .resubmittedBorderClass {
   border: 2.65px dashed #717171 !important;
   border-radius: 8px !important;
@@ -119,6 +126,18 @@
   padding: 10px 20px;
   display: flex;
   flex-direction: column !important;
+}
+
+.detailWithIcon {
+  flex-direction: row !important;
+  align-items: center;
+  justify-content: space-between !important;
+}
+
+.escalatedIcon {
+  width: 40px;
+  height: 26px;
+  flex-shrink: 0;
 }
 
 .backgrounColorOfBrokerDetail {

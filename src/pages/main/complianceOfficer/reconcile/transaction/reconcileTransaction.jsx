@@ -71,8 +71,6 @@ const ReconcileTransaction = ({ activeFilters }) => {
   const {
     viewDetailReconcileTransaction,
     noteGlobalModal,
-    compliantApproveModal,
-    nonCompliantDeclineModal,
     viewCommentReconcileModal,
     isViewTicketTransactionModal,
     uploadComplianceModal,
@@ -156,7 +154,13 @@ const ReconcileTransaction = ({ activeFilters }) => {
       } catch (error) {
         console.error("❌ Error fetching pending approvals:", error);
       } finally {
-        if (!loader) showLoader(false);
+        // Symmetric with the `if (loader) showLoader(true)` above — MQTT-
+        // triggered background refreshes pass loader=false specifically to
+        // leave the loader alone; hiding it here unconditionally (the old
+        // inverted `if (!loader)`) would rip the loader out from under an
+        // unrelated in-flight action, like the Compliant/Non-Compliant
+        // submit flow.
+        if (loader) showLoader(false);
       }
     },
     [callApi, showNotification, showLoader, navigate, assetTypeListingData]
@@ -326,11 +330,14 @@ const ReconcileTransaction = ({ activeFilters }) => {
       {/* To show Note Modal When click on Compliant or Non Compliant */}
       {noteGlobalModal && <NoteModalComplianceOfficer />}
 
-      {/* To Show Compliant Approve modal when I click submit */}
-      {compliantApproveModal && <CompliantApproveModal />}
+      {/* To Show Compliant Approve modal when I click submit — always
+      mounted, like NoteModalComplianceOfficer above; compliantApproveModal
+      is a plain boolean, so mounting on-demand forced a full component
+      construction right at the moment it needed to appear */}
+      <CompliantApproveModal />
 
-      {/* To Show Non COmpliant Modal by click on submit */}
-      {nonCompliantDeclineModal && <NonCompliantDeclineModal />}
+      {/* To Show Non COmpliant Modal by click on submit — same reasoning */}
+      <NonCompliantDeclineModal />
 
       {/* To show View Comment Modal when CLick on View Comment Button */}
       {viewCommentReconcileModal && <ViewReconcileTransactionComment />}

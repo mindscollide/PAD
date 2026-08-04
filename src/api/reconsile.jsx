@@ -86,10 +86,12 @@ export const SearchComplianceOfficerReconcileTransactionRequest = async ({
       description: "An unexpected error occurred.",
     });
     return null;
-  } finally {
-    // 🔹 Always stop loader
-    showLoader(false);
   }
+  // No blanket showLoader(false) here — the caller's fetchApiCall owns
+  // loader show/hide via its own `loader` flag, specifically so
+  // MQTT-triggered background refreshes can run silently without
+  // touching an unrelated in-flight loader (e.g. the Compliant/
+  // Non-Compliant submit flow's own loader).
 };
 
 // 🔹 SearchComplianceOfficerReconcilePortfolioRequest
@@ -181,10 +183,12 @@ export const SearchComplianceOfficerReconcilePortfolioRequest = async ({
       description: "An unexpected error occurred.",
     });
     return null;
-  } finally {
-    // 🔹 Always stop loader
-    showLoader(false);
   }
+  // No blanket showLoader(false) here — the caller's fetchApiCall owns
+  // loader show/hide via its own `loader` flag, specifically so
+  // MQTT-triggered background refreshes can run silently without
+  // touching an unrelated in-flight loader (e.g. the Compliant/
+  // Non-Compliant submit flow's own loader).
 };
 
 //Get All View Details By rECONCILE pORTFOLIO tRANSACTION Trade Approval ID
@@ -313,6 +317,7 @@ export const UpdatedComplianceOfficerTransactionRequest = async ({
         title: "Error",
         description: "Something went wrong. Please try again.",
       });
+      showLoader(false);
       return false;
     }
 
@@ -347,6 +352,9 @@ export const UpdatedComplianceOfficerTransactionRequest = async ({
           setValue("");
         }
 
+        // Loader stays up until the Compliant/Non-Compliant confirmation
+        // modal has actually been told to open above — only then hide it.
+        showLoader(false);
         return true;
       }
 
@@ -355,6 +363,7 @@ export const UpdatedComplianceOfficerTransactionRequest = async ({
         type: "warning",
         title: getMessage(responseMessage),
       });
+      showLoader(false);
       return false;
     }
 
@@ -364,18 +373,17 @@ export const UpdatedComplianceOfficerTransactionRequest = async ({
       title: "Request Failed",
       description: getMessage(res.message),
     });
+    showLoader(false);
     return false;
   } catch (error) {
-    // ❌ Unexpected exception
+    // Exception: no modal is opening, so hide the loader immediately
     showNotification({
       type: "error",
       title: "Error",
       description: "An unexpected error occurred.",
     });
-    return false;
-  } finally {
-    // 🔽 Always hide loader after API completes
     showLoader(false);
+    return false;
   }
 };
 
