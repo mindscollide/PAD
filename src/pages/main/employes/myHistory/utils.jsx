@@ -17,6 +17,7 @@ import {
   mapStatusToIds,
 } from "../../../../components/dropdowns/filters/utils";
 import { withSortIcon } from "../../../../common/funtions/tableIcon";
+import repeat from "../../../../assets/img/repeat.png";
 
 /**
  * Utility: Build API request payload for approval listing
@@ -68,12 +69,23 @@ export const getMyHistoryColumn = (
       sortedInfo?.columnKey === "tradeApprovalID" ? sortedInfo.order : null,
     showSorterTooltip: false,
     sortIcon: () => null,
-    render: (tradeApprovalID) => {
+    render: (tradeApprovalID, record) => {
       return (
-        <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
           <span className="font-medium">
             {dashBetweenApprovalAssets(tradeApprovalID)}
           </span>
+          {record?.isResubmitLinked && (
+            <Tooltip title="Part of a resubmit chain">
+              <img
+                draggable={false}
+                src={repeat}
+                alt="Resubmit"
+                width={16}
+                height={16}
+              />
+            </Tooltip>
+          )}
         </div>
       );
     },
