@@ -18,8 +18,7 @@ const ViewCommentHeadOfComplianceModal = () => {
   // GetAllViewDetailsEscalatedTransactionsAndPortFolioByTradeApprovalID is unaffected by
   // the 2026-07-23 comment restructure — still a scalar approvalComment/rejectionComment string
   const workflowStatusID =
-    isEscalatedHeadOfComplianceViewDetailData?.workFlowStatus
-      ?.workFlowStatusID;
+    isEscalatedHeadOfComplianceViewDetailData?.workFlowStatus?.workFlowStatusID;
   const detail = isEscalatedHeadOfComplianceViewDetailData?.details?.[0];
 
   const approvalComment = detail?.approvalComment;
@@ -52,7 +51,7 @@ const ViewCommentHeadOfComplianceModal = () => {
         visible={viewCommentReconcileModal}
         onClose={onClickCloseComment}
         onGoBack={onClickGoBack}
-        CommentHeading={"View Comment"}
+        CommentHeading={"View Comments"}
         commentText={getCommentText()}
       />
     </>

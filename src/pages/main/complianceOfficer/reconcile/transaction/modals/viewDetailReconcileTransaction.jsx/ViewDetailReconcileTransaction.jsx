@@ -133,8 +133,8 @@ const ViewDetailReconcileTransaction = () => {
     myActionStatusID === 2
       ? "8"
       : myActionStatusID === 3
-        ? "9"
-        : String(myActionStatusID ?? "");
+      ? "9"
+      : String(myActionStatusID ?? "");
   const myActionStatusData = getStatusStyle(myActionStatusCode);
 
   // Extarct and Instrument from viewDetailsModalData context Api
@@ -588,7 +588,7 @@ const ViewDetailReconcileTransaction = () => {
                       <>
                         <div className={styles.approvedButtonClass}>
                           <CustomButton
-                            text="Non Compliant"
+                            text="Non-Compliant"
                             className="Decline-dark-button"
                             disabled={isTicketUploaded}
                             onClick={openNoteModalOnNonCompliantClick}
@@ -612,7 +612,7 @@ const ViewDetailReconcileTransaction = () => {
                           }}
                         />{" "}
                         <CustomButton
-                          text="View Comment"
+                          text="View Comments"
                           className="big-light-button"
                           onClick={() => {
                             setViewCommentReconcileModal(true);
@@ -635,7 +635,7 @@ const ViewDetailReconcileTransaction = () => {
                           onClick={() => handleViewTicket()} // no disabled check
                         />
                         <CustomButton
-                          text="View Comment"
+                          text="View Comments"
                           className="big-light-button"
                           onClick={() => {
                             setViewCommentReconcileModal(true);

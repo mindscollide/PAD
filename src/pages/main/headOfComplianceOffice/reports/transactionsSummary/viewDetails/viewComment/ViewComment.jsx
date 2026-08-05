@@ -16,7 +16,7 @@ const ViewCommentHOCTransaction = () => {
   } = useMyApproval();
   console.log(
     coTransactionSummaryReportViewDetailsListData,
-    "coTransactionSummaryReportViewDetailsListData",
+    "coTransactionSummaryReportViewDetailsListData"
   );
 
   console.log(selectedWorkFlowViewDetaild, "selectedWorkFlowViewDetaild");
@@ -34,7 +34,7 @@ const ViewCommentHOCTransaction = () => {
   console.log(
     workflowStatusID,
     typeof workflowStatusID,
-    "workflowStatusID TYPE",
+    "workflowStatusID TYPE"
   );
 
   const accetanceComments = record?.accetanceComments?.trim()
@@ -67,7 +67,7 @@ const ViewCommentHOCTransaction = () => {
     }
 
     if (acceptanceList && rejectionList) {
-      return (acceptanceList, rejectionList);
+      return acceptanceList, rejectionList;
     }
 
     return "No comment available for this status.";
@@ -91,7 +91,7 @@ const ViewCommentHOCTransaction = () => {
         visible={isViewComments}
         onClose={onClickCloseComment}
         onGoBack={onClickGoBack}
-        CommentHeading={"View Comment"}
+        CommentHeading={"View Comments"}
         commentTypeFlag={true}
         acceptanceList={acceptanceList}
         rejectionList={rejectionList}

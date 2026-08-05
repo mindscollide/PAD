@@ -21,7 +21,6 @@
    1. Base table container
    =========================== */
 
-
 /* ===========================
    2. Table header (thead)
    =========================== */
@@ -166,8 +165,8 @@
  }  */
 
 .accordianTableMainDiv {
-  max-height: 530px !important;
-  overflow: hidden !important;
+  max-height: 70vh !important;
+  overflow-x: auto !important;
   overflow-y: auto !important;
 }
 

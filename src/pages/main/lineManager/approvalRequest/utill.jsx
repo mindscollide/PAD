@@ -224,6 +224,8 @@ export const getBorderlessLineManagerTableColumns = ({
     key: "type",
     width: "8%",
     ellipsis: true,
+    align: "center",
+
     filteredValue: lineManagerApprovalSearch.type?.length
       ? lineManagerApprovalSearch.type
       : null,

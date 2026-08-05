@@ -217,12 +217,12 @@ export const HOCMyAction = ({
             className={styles.statusSelectClass}
             style={{ width: "100%" }}
           >
-            <Option value={1}>Pending</Option>
+            {/* <Option value={1}>Pending</Option>
             <Option value={2}>Resubmit</Option>
             <Option value={3}>Approved</Option>
             <Option value={4}>Declined</Option>
             <Option value={5}>Traded</Option>
-            <Option value={6}>Not-Traded</Option>
+            <Option value={6}>Not-Traded</Option> */}
             <Option value={7}>Compliant</Option>
             <Option value={8}>Non-Compliant</Option>
           </Select>
