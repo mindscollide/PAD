@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import { Col, Row, Tag } from "antd";
 import { useGlobalModal } from "../../../../../../context/GlobalModalContext";
 import { BrokerList, GlobalModal } from "../../../../../../components";
@@ -18,21 +18,42 @@ import {
   formatApiDateTime,
   formatNumberWithCommas,
 } from "../../../../../../common/funtions/rejex";
+import {
+  GetAllLineManagerViewDetailRequest,
+  UpdateApprovalRequestStatusLineManager,
+} from "../../../../../../api/myApprovalApi";
+import { useGlobalLoader } from "../../../../../../context/LoaderContext";
+import { useApi } from "../../../../../../context/ApiContext";
+import { useNotification } from "../../../../../../components/NotificationProvider/NotificationProvider";
+import { useNavigate } from "react-router-dom";
 import { useMyApproval } from "../../../../../../context/myApprovalContaxt";
 import { useDashboardContext } from "../../../../../../context/dashboardContaxt";
 
 const ViewDetailModal = () => {
+  const navigate = useNavigate();
+  const hasFetched = useRef(false);
+  const { showNotification } = useNotification();
+  const { showLoader } = useGlobalLoader();
+  const { callApi } = useApi();
+
   // This is Global State for modal which is create in ContextApi
   const {
     viewDetailLineManagerModal,
     setViewDetailLineManagerModal,
     isSelectedViewDetailLineManager,
     setNoteGlobalModal,
+    setApprovedGlobalModal,
     setViewCommentGlobalModal,
   } = useGlobalModal();
 
+  console.log(
+    isSelectedViewDetailLineManager,
+    "isSelectedViewDetailLineManager"
+  );
+
   //This is the Global state of Context Api
-  const { viewDetailsLineManagerData } = useMyApproval();
+  const { viewDetailsLineManagerData, setViewDetailsLineManagerData } =
+    useMyApproval();
 
   const { allInstrumentsData, employeeBasedBrokersData } =
     useDashboardContext();
@@ -594,7 +615,7 @@ const ViewDetailModal = () => {
                     <Col span={[24]}>
                       <div className={styles.approvedButtonClassViewComment}>
                         <CustomButton
-                          text={"View Comments"}
+                          text={"View Comment"}
                           className="big-light-button"
                           onClick={onClickViewCommentModal}
                         />
