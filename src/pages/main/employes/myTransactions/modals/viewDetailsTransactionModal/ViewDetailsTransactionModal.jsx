@@ -28,6 +28,7 @@ import { useTransaction } from "../../../../../../context/myTransaction";
 import { useDashboardContext } from "../../../../../../context/dashboardContaxt";
 
 // 🔹 Assets
+import CrossIcon from "../../../../../../assets/img/Cross.png";
 import CheckIcon from "../../../../../../assets/img/Check.png";
 import EllipsesIcon from "../../../../../../assets/img/Ellipses.png";
 
@@ -358,7 +359,11 @@ const ViewDetailsTransactionModal = () => {
                         );
 
                         const iconSrc =
-                          bundleStatusID === 2 ? CheckIcon : EllipsesIcon;
+                          bundleStatusID === 2
+                            ? CheckIcon
+                            : bundleStatusID === 3
+                            ? CrossIcon
+                            : EllipsesIcon;
 
                         return (
                           <Step
