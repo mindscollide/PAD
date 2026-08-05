@@ -647,7 +647,7 @@ const ViewDetailHeadOfComplianceReconcileTransaction = () => {
                       <>
                         <div className={styles.approvedButtonClass}>
                           <CustomButton
-                            text="Non Compliant"
+                            text="Non-Compliant"
                             className="Decline-dark-button"
                             disabled={disableCompliantOrNonCompliantBtn}
                             onClick={

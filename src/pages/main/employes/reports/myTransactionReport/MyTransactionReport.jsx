@@ -329,9 +329,7 @@ const MyTransactionReport = () => {
               },
               {
                 title: (
-                  <span className={style.breadcrumbText}>
-                    My Transactionssss
-                  </span>
+                  <span className={style.breadcrumbText}>My Transactions</span>
                 ),
               },
             ]}
