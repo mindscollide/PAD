@@ -368,6 +368,7 @@ const HTATradeApprovalRequest = () => {
               onClear={handleClearDates}
             />
             <CustomButton
+              disabled={myTradeApprovalLineManagerData?.records?.length === 0}
               text={
                 <span className={style.exportButtonText}>
                   Export

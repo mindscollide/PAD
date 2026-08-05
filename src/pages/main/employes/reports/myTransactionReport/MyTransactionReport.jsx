@@ -339,6 +339,9 @@ const MyTransactionReport = () => {
         <Col>
           <div className={style.headerActionsRow}>
             <CustomButton
+              disabled={
+                getEmployeeTransactionReport?.transactions?.length === 0
+              }
               text={
                 <span className={style.exportButtonText}>
                   Export

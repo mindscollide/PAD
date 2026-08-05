@@ -365,7 +365,7 @@ const PendingApprovalRequest = () => {
       requestdata: NewRequestData,
       navigate,
     });
-    setOpen(false)
+    setOpen(false);
   };
   return (
     <>
@@ -396,6 +396,9 @@ const PendingApprovalRequest = () => {
         <Col style={{ marginLeft: "auto" }}>
           <div className={style.headerActionsRow}>
             <CustomButton
+              disabled={
+                hTAPendingApprovalsData?.pendingTradeApprovals?.length === 0
+              }
               text={
                 <span className={style.exportButtonText}>
                   Export

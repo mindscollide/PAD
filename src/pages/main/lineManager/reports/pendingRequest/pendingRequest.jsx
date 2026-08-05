@@ -93,7 +93,7 @@ const PendingRequest = () => {
         // ✅ Always get the freshest version (from memory or session)
         const currentAssetTypeData = getSafeAssetTypeData(
           assetTypeListingData,
-          setAssetTypeListingData,
+          setAssetTypeListingData
         );
         const pendingApprovals = Array.isArray(res?.pendingApprovals)
           ? res.pendingApprovals
@@ -101,7 +101,7 @@ const PendingRequest = () => {
         // // map data according to used in table
         const mapped = mapApiResopse(
           currentAssetTypeData?.Equities,
-          pendingApprovals,
+          pendingApprovals
         );
 
         setLMPendingApprovalsData((prev) => ({
@@ -139,7 +139,7 @@ const PendingRequest = () => {
         if (showLoaderFlag) showLoader(false);
       }
     },
-    [callApi, showNotification, showLoader, navigate, assetTypeListingData],
+    [callApi, showNotification, showLoader, navigate, assetTypeListingData]
   );
 
   /**
@@ -150,7 +150,7 @@ const PendingRequest = () => {
     hasFetched.current = true;
     const requestData = buildApiRequest(
       lMPendingApprovalReportsSearch,
-      assetTypeListingData,
+      assetTypeListingData
     );
     fetchApiCall(requestData, true, true);
     setNoteGlobalModal({ visible: false, action: null });
@@ -170,7 +170,7 @@ const PendingRequest = () => {
       // requestData, replace , mainLoader
       const requestData = buildApiRequest(
         lMPendingApprovalReportsSearch,
-        assetTypeListingData,
+        assetTypeListingData
       );
       fetchApiCall(requestData, true, true);
     }
@@ -180,7 +180,7 @@ const PendingRequest = () => {
     if (!lineManagerApprovalMqtt) return;
     let requestData = buildApiRequest(
       lMPendingApprovalReportsSearch,
-      assetTypeListingData,
+      assetTypeListingData
     );
     requestData = {
       ...requestData,
@@ -299,7 +299,7 @@ const PendingRequest = () => {
     } catch (error) {
       console.error(
         "❌ Error detecting page reload or restoring state:",
-        error,
+        error
       );
     }
   }, []);
@@ -317,7 +317,7 @@ const PendingRequest = () => {
         setLoadingMore(true);
         const requestData = buildApiRequest(
           lMPendingApprovalReportsSearch,
-          assetTypeListingData,
+          assetTypeListingData
         );
 
         await fetchApiCall(requestData, false, false); // append mode
@@ -328,7 +328,7 @@ const PendingRequest = () => {
       }
     },
     0,
-    "border-less-table-orange",
+    "border-less-table-orange"
   );
 
   //download Report Excel
@@ -336,7 +336,7 @@ const PendingRequest = () => {
     showLoader(true);
     const requestData = buildApiRequest(
       lMPendingApprovalReportsSearch,
-      assetTypeListingData,
+      assetTypeListingData
     );
     let NewRequestData = {
       InstrumentName: requestData.InstrumentName,
@@ -383,6 +383,7 @@ const PendingRequest = () => {
         <Col style={{ marginLeft: "auto" }}>
           <div className={style.headerActionsRow}>
             <CustomButton
+              disabled={lMPendingApprovalsData.pendingApprovals.length === 0}
               text={
                 <span className={style.exportButtonText}>
                   Export
