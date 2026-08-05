@@ -126,10 +126,11 @@ export const SearchEscalatedApprovalsRequestMethod = async ({
       description: "An unexpected error occurred.",
     });
     return null;
-  } finally {
-    // 🔹 Always stop loader (whether success/fail/exception)
-    showLoader(false);
   }
+  // No blanket showLoader(false) here — the caller (fetchApiCall in
+  // escalatedApprovals.jsx) already owns loader show/hide via its own
+  // showLoaderFlag, specifically so MQTT-triggered background refreshes
+  // can run silently without touching an unrelated in-flight loader.
 };
 
 //GET ESCALATED APPROVALS REQUEST VIEW DATA HEAD OF APPROVAL (HTA) API START HERE

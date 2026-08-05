@@ -333,16 +333,18 @@ const CompianceOfficerOverdueVerificationReports = () => {
   // 🔷 Excel Report download Api Hit
   const downloadOverdueVerificationExcelFormat = async () => {
     showLoader(true);
-    const requestdata = {
-      InstrumentName: "",
-      RequesterName: "",
-      Type: "",
-      StatusIds: [],
-      FromDate: "",
-      ToDate: "",
-      ApprovedQuantity: null,
-      ShareTraded: null,
-    };
+    // Export must match what's currently shown on the listing page - reuse the
+    // same request builder as the list fetch instead of a hardcoded/empty
+    // filter set, and ExportComplianceOfficerOverdueVerificationsExcelReport now
+    // shares the same request shape as the search endpoint (Type is a list of
+    // TradeApprovalTypeIDs, not a single string) - see 2026-07-27 doc.
+    // PageNumber/Length are dropped - the export endpoint has no concept of
+    // pagination (its SQL call never receives them), it always returns every
+    // row matching the filters below.
+    const { PageNumber, Length, ...requestdata } = buildApiRequest(
+      coOverdueVerificationReportSearch,
+      assetTypeListingData
+    );
 
     await ExportOverdueVerificationCOExcel({
       callApi,
@@ -393,6 +395,7 @@ const CompianceOfficerOverdueVerificationReports = () => {
                 </span>
               }
               className="small-light-button-report"
+              disabled={!coOverdueVerificationListData?.overdueVerifications?.length}
               onClick={() => setOpen((prev) => !prev)}
             />
           </div>

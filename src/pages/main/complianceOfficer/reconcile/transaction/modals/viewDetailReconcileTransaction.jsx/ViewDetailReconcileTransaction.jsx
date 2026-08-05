@@ -10,8 +10,8 @@ import EllipsesIcon from "../../../../../../../assets/img/Ellipses.png";
 import CrossIcon from "../../../../../../../assets/img/Cross.png";
 import { useDashboardContext } from "../../../../../../../context/dashboardContaxt";
 import {
+  convertUTCToCurrentTimeZone,
   dashBetweenApprovalAssets,
-  formatApiDateTime,
   formatNumberWithCommas,
 } from "../../../../../../../common/funtions/rejex";
 import { useReconcileContext } from "../../../../../../../context/reconsileContax";
@@ -150,6 +150,22 @@ const ViewDetailReconcileTransaction = () => {
   //Button condition on Compliant, Non-Compliant and View Ticket it will be false when ticketUploaded is false
   const isTicketUploaded =
     reconcileTransactionViewDetailData?.ticketUploaded === false;
+
+  // Hierarchy list: show only up to (and including) the logged-in user's own
+  // step, same as ViewDetailPortfolioTransaction.jsx — the previous logic
+  // filtered the logged-in user OUT of the list entirely whenever there was
+  // more than one entry, which hid their own action and miscounted activeStep.
+  const hierarchyDetails =
+    reconcileTransactionViewDetailData?.hierarchyDetails || [];
+
+  const currentUserIndex = hierarchyDetails.findIndex(
+    (item) => item.userID === loggedInUserID
+  );
+
+  const visibleHierarchy =
+    currentUserIndex !== -1
+      ? hierarchyDetails.slice(0, currentUserIndex + 1)
+      : hierarchyDetails;
 
   // To Show Note Modal When Click on Compliant Click
   const openNoteModalOnCompliantClick = () => {
@@ -387,7 +403,8 @@ const ViewDetailReconcileTransaction = () => {
                         Transaction Date
                       </label>
                       <label className={styles.viewDetailSubLabels}>
-                        {formatApiDateTime(
+                        {/* Row value is a combined UTC "YYYYMMDD HHmmss" string */}
+                        {convertUTCToCurrentTimeZone(
                           selectedReconcileTransactionData?.transactionDate
                         )}
                       </label>
@@ -430,27 +447,13 @@ const ViewDetailReconcileTransaction = () => {
                   <div className={styles.mainStepperContainer}>
                     <div
                       className={`${styles.backgrounColorOfStepper} ${
-                        (reconcileTransactionViewDetailData?.hierarchyDetails
-                          ?.length || 0) <= 3
+                        visibleHierarchy.length <= 3
                           ? styles.centerAlignStepper
                           : styles.leftAlignStepper
                       }`}
                     >
                       <Stepper
-                        activeStep={Math.max(
-                          0,
-                          Array.isArray(
-                            reconcileTransactionViewDetailData?.hierarchyDetails
-                          )
-                            ? (reconcileTransactionViewDetailData
-                                ?.hierarchyDetails.length > 1
-                                ? reconcileTransactionViewDetailData?.hierarchyDetails.filter(
-                                    (person) => person.userID !== loggedInUserID
-                                  )
-                                : reconcileTransactionViewDetailData?.hierarchyDetails
-                              ).length - 1
-                            : 0
-                        )}
+                        activeStep={Math.max(0, visibleHierarchy.length - 1)}
                         connectorStyleConfig={{
                           activeColor: "#00640A",
                           completedColor: "#00640A",
@@ -464,45 +467,47 @@ const ViewDetailReconcileTransaction = () => {
                           borderRadius: "50%",
                         }}
                       >
-                        {Array.isArray(
-                          reconcileTransactionViewDetailData?.hierarchyDetails
-                        ) &&
-                          (reconcileTransactionViewDetailData?.hierarchyDetails
-                            .length > 1
-                            ? reconcileTransactionViewDetailData?.hierarchyDetails.filter(
-                                (person) => person.userID !== loggedInUserID
-                              )
-                            : reconcileTransactionViewDetailData?.hierarchyDetails
-                          ).map((person, index) => {
+                        {Array.isArray(visibleHierarchy) &&
+                          visibleHierarchy.map((person, index) => {
                             const {
                               fullName,
                               bundleStatusID,
                               modifiedDate,
                               modifiedTime,
+                              userID,
                             } = person;
 
-                            const formattedDateTime = formatApiDateTime(
-                              `${modifiedDate} ${modifiedTime}`
+                            // BE sends these in UTC — convert for display only
+                            const formattedDateTime = convertUTCToCurrentTimeZone(
+                              modifiedDate,
+                              modifiedTime
                             );
 
                             // Decide icon and text based on status
                             let iconSrc;
                             let displayText;
+                            let isApprovedOrDeclined = false;
 
-                            switch (bundleStatusID) {
-                              case 2: // ✅ Compliant
-                                iconSrc = CheckIcon;
-                                displayText = "You marked this as compliant";
-                                break;
-                              case 3: // ❌ Non-Compliant
-                                iconSrc = CrossIcon;
-                                displayText =
-                                  "You marked this as non-compliant";
-                                break;
-                              case 1: // ⏳ Pending
-                              default:
-                                iconSrc = EllipsesIcon;
-                                displayText = "Awaiting for action";
+                            if (bundleStatusID === 2) {
+                              // ✅ Compliant
+                              iconSrc = CheckIcon;
+                              displayText =
+                                loggedInUserID === userID
+                                  ? "You marked this as compliant"
+                                  : `${fullName}`;
+                              isApprovedOrDeclined = true;
+                            } else if (bundleStatusID === 3) {
+                              // ❌ Non-Compliant
+                              iconSrc = CrossIcon;
+                              displayText =
+                                loggedInUserID === userID
+                                  ? "You marked this as non-compliant"
+                                  : `${fullName}`;
+                              isApprovedOrDeclined = true;
+                            } else {
+                              // ⏳ Pending
+                              iconSrc = EllipsesIcon;
+                              displayText = "Awaiting for action";
                             }
 
                             return (
@@ -511,7 +516,7 @@ const ViewDetailReconcileTransaction = () => {
                                 label={
                                   <div
                                     className={`${styles.customlabel} ${
-                                      bundleStatusID === 2 || 3
+                                      isApprovedOrDeclined
                                         ? styles.centerAlignLabel
                                         : ""
                                     }`}
@@ -521,7 +526,7 @@ const ViewDetailReconcileTransaction = () => {
                                     </div>
                                     <div
                                       className={`${styles.customdesc} ${
-                                        bundleStatusID === 2 || 3
+                                        isApprovedOrDeclined
                                           ? styles.centerAlignText
                                           : ""
                                       }`}

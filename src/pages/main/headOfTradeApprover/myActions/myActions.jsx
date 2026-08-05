@@ -346,82 +346,61 @@ const HTAMyAction = () => {
   const mapMyActionData = (data) => {
     if (!data?.requests) return [];
 
-    const getBundleIconType = (state) => {
-      switch (state) {
-        case 2:
-          return "Approved";
-        case 3:
-          return "Decline";
-        default:
-          return "Pending";
-      }
-    };
+    // eventType → trail step shape (see approvalStepper.jsx's getIcon)
+    const mapTimelineEvent = (event) => {
+      const date = formatApiDateTime(
+        `${event.eventDate} ${event.eventTime}`
+      );
 
-    // ❗ REMOVE "Compliant" and "Declined" from workflow icon mapping
-    const getWorkFlowIconType = (id) => {
-      switch (id) {
-        case 6:
-          return "Not-Traded";
-        case 5:
-          return "Traded";
-        case 2:
-          return "Resubmit";
-        case 3:
-          return "Approved";
-        // case 4 (Declined) → removed
-        // case 8 (Compliant) → removed
+      switch (event.eventType) {
+        case "Submitted For Approval":
+          return { status: "Submitted For Approval", date, iconType: "SendForApproval" };
+        case "Resubmitted For Approval":
+          return {
+            status: "Resubmit",
+            date,
+            requesterID: dashBetweenApprovalAssets(event.referenceApprovalID),
+            iconType: "Resubmit",
+          };
+        case "Escalated On":
+          return {
+            status: "Escalated On",
+            user: event.actorName,
+            date,
+            iconType: "EscaltedOn",
+          };
+        case "Approved By You":
+          // actorName here is always the viewing HTA themselves (per the
+          // event's own name) — show "Approved by You" literally instead
+          // of the name a second time.
+          return {
+            status: "Approved by You",
+            date,
+            iconType: "Approved",
+          };
+        case "Declined by You":
+          return {
+            status: "Declined by You",
+            date,
+            iconType: "Decline",
+          };
         default:
-          return "ellipsis";
+          return {
+            status: event.eventType,
+            user: event.actorName,
+            date,
+            iconType: "ellipsis",
+          };
       }
     };
 
     return data.requests.map((wf) => {
-      // Step 0: Send For Approval
-      const sendForApprovalStep = {
-        status: "Send for Approval",
-        date: formatApiDateTime(`${wf.requestedDate} ${wf.requestedTime}`),
-        iconType: "SendForApproval",
-      };
-
-      // Step 1: Bundle hierarchy
-      const bundleSteps =
-        wf.bundleHistory?.map((b) => ({
-          status:
-            b.bundleStatus === 2
-              ? "Approved"
-              : b.bundleStatus === 3
-              ? "Declined"
-              : "Pending",
-          user: `${b.firstName} ${b.lastName}`,
-          date: formatApiDateTime(
-            `${b.bundleModifiedDate} ${b.bundleModifiedTime}`
-          ),
-          iconType: getBundleIconType(b.bundleStatus),
-        })) || [];
-
-      // Step 2: Final workflow status
-      const finalStepStatus = wf.workFlowStatusID;
-
-      // ❗ EXCLUDE Compliant (ID 8) and Declined (ID 4)
-      const shouldAddFinalStep = ![8, 4].includes(finalStepStatus);
-
-      let finalStep = null;
-
-      if (shouldAddFinalStep) {
-        finalStep = {
-          status: wf.workFlowStatusName,
-          date: formatApiDateTime(`${wf.requestedDate} ${wf.requestedTime}`),
-          requesterID: dashBetweenApprovalAssets(wf.approvalID),
-          iconType: getWorkFlowIconType(wf.workFlowStatusID),
-        };
-      }
-
-      // 🔥 Final ordered steps
-      const trail = [
-        sendForApprovalStep,
-        ...bundleSteps,
-        ...(shouldAddFinalStep ? [finalStep] : []),
-      ];
+      // Journey trail — built from the pre-sorted timeline[] (chronological
+      // events: submitted/resubmitted, each escalation, each approve/decline
+      // this HTA closed), not the flat per-actor bundleHistory[] snapshot.
+      const trail = Array.isArray(wf.timeline)
+        ? wf.timeline.map(mapTimelineEvent)
+        : [];
 
       return {
         id: String(wf.requestID),

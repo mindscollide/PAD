@@ -349,11 +349,17 @@ const MyAction = () => {
     };
 
     return data.requests.map((wf) => {
-      // Step 0: Send For Approval
+      // Step 0: Send For Approval — show the Resubmit label/icon instead
+      // when this request is itself a resubmission (workFlowStatusName is
+      // only "Resubmit" on the request that was resubmitted, not on
+      // approved/declined/traded ones).
+      const isResubmittedRequest = wf.workFlowStatusName === "Resubmit";
       const sendForApprovalStep = {
-        status: "Send for Approval",
+        status: isResubmittedRequest
+          ? "Resubmit for Approval"
+          : "Send for Approval",
         date: formatApiDateTime(`${wf.requestedDate} ${wf.requestedTime}`),
-        iconType: "SendForApproval",
+        iconType: isResubmittedRequest ? "Resubmit" : "SendForApproval",
       };
       // userID
       const userProfileData = JSON.parse(
@@ -414,6 +420,7 @@ const MyAction = () => {
         quantity: Number(wf.quantity),
         type: wf.typeName || wf.type,
         status: wf.statusState,
+        isResubmit: isResubmittedRequest,
         trail,
       };
     });

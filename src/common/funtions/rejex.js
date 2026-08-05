@@ -90,6 +90,71 @@ export function formatApiDateTime(apiDateTime) {
   return `${localYear}-${localMonth}-${localDay} | ${formattedTime}`;
 }
 
+/**
+ * Universal UTC → current-timezone converter for backend timestamps.
+ *
+ * Contract with the backend: every timestamp is SENT in UTC and EXPECTED
+ * back in UTC. Converting to the viewer's timezone is purely a display
+ * concern and belongs here, on the FE — never send the converted value back.
+ *
+ * The backend usually splits a timestamp into two separate fields
+ * (e.g. `modifiedDate` + `modifiedTime`, `requestDate` + `requestTime`), so
+ * this takes them as two arguments. It also accepts a single combined
+ * "YYYYMMDD HHmmss" string as the first argument, which makes it a drop-in
+ * for the older `formatApiDateTime`.
+ *
+ * @param {string} utcDate - UTC date "YYYYMMDD", or combined "YYYYMMDD HHmmss"
+ * @param {string} [utcTime] - UTC time "HHmm" or "HHmmss"
+ * @returns {string} Local "YYYY-MM-DD | hh:mm am/pm", or "" if input is unusable
+ *
+ * @example
+ * // Browser in UTC+5, backend sent 17:39:42 UTC
+ * convertUTCToCurrentTimeZone("20260803", "173942"); // "2026-08-03 | 10:39 pm"
+ */
+export function convertUTCToCurrentTimeZone(utcDate, utcTime) {
+  let datePart = String(utcDate ?? "").trim();
+  let timePart = String(utcTime ?? "").trim();
+
+  // Allow a single combined "YYYYMMDD HHmmss" string
+  if (!timePart && datePart.includes(" ")) {
+    [datePart, timePart] = datePart.split(/\s+/);
+  }
+
+  // Guard against "", null, "undefined undefined" and any malformed value —
+  // without this, Date.UTC(NaN, ...) silently yields an Invalid Date and
+  // renders as garbage in the UI.
+  if (!/^\d{8}$/.test(datePart) || !/^\d{4,6}$/.test(timePart)) return "";
+
+  const year = Number(datePart.slice(0, 4));
+  const month = Number(datePart.slice(4, 6)) - 1;
+  const day = Number(datePart.slice(6, 8));
+
+  const hours = Number(timePart.slice(0, 2));
+  const minutes = Number(timePart.slice(2, 4));
+  // Seconds are optional ("HHmm" vs "HHmmss") and never displayed
+  const seconds = timePart.length >= 6 ? Number(timePart.slice(4, 6)) : 0;
+
+  // Build the instant from UTC parts...
+  const instant = new Date(Date.UTC(year, month, day, hours, minutes, seconds));
+  if (Number.isNaN(instant.getTime())) return "";
+
+  // ...then read it back with LOCAL getters — that is the actual conversion
+  // into whatever timezone the user's browser is currently in.
+  const localYear = instant.getFullYear();
+  const localMonth = String(instant.getMonth() + 1).padStart(2, "0");
+  const localDay = String(instant.getDate()).padStart(2, "0");
+
+  let localHours = instant.getHours();
+  const localMinutes = String(instant.getMinutes()).padStart(2, "0");
+  const ampm = localHours >= 12 ? "pm" : "am";
+
+  localHours = localHours % 12 || 12; // 0 -> 12 for 12-hour clock
+
+  return `${localYear}-${localMonth}-${localDay} | ${String(
+    localHours
+  ).padStart(2, "0")}:${localMinutes} ${ampm}`;
+}
+
 // this is the formator to convert any type of date to formate into this
 // Universal UTC → YYMMDD Formatter
 export const toYYMMDD = (input) => {

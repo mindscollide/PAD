@@ -77,8 +77,6 @@ const ReconcilePortfolio = ({ activeFilters }) => {
     viewDetailPortfolioTransaction,
     noteGlobalModal,
     viewCommentPortfolioModal,
-    compliantPortfolioApproveModal,
-    nonCompliantPortfolioDeclineModal,
   } = useGlobalModal();
 
   const {
@@ -198,7 +196,13 @@ const ReconcilePortfolio = ({ activeFilters }) => {
       } catch (error) {
         console.error("❌ Error fetching reconcile portfolios:", error);
       } finally {
-        if (!loader) showLoader(false);
+        // Symmetric with the `if (loader) showLoader(true)` above — MQTT-
+        // triggered background refreshes pass loader=false specifically to
+        // leave the loader alone; hiding it here unconditionally (the old
+        // inverted `if (!loader)`) would rip the loader out from under an
+        // unrelated in-flight action, like the Compliant/Non-Compliant
+        // submit flow.
+        if (loader) showLoader(false);
       }
     },
     [callApi, showNotification, showLoader, navigate]
@@ -366,13 +370,16 @@ const ReconcilePortfolio = ({ activeFilters }) => {
       {/* To show open only View Modal which is coming in Compliant and Non Compliant on Reconcile Portfolio */}
       {viewCommentPortfolioModal && <ViewReconcilePortfolioComment />}
 
-      {/* To show COmpliant Modal when Note Modal is SUccess on portfolio Reconcile */}
-      {compliantPortfolioApproveModal && <CompliantPortfolioApproveModal />}
+      {/* To show COmpliant Modal when Note Modal is SUccess on portfolio
+      Reconcile — always mounted, like NotePortfolioComplianceOfficerModal
+      above; compliantPortfolioApproveModal is a plain boolean, so mounting
+      on-demand forced a full component construction right at the moment
+      it needed to appear */}
+      <CompliantPortfolioApproveModal />
 
-      {/* To show Non Portfolio COmpliant Modal when Note Modal is SUccess on portfolio Reconcile */}
-      {nonCompliantPortfolioDeclineModal && (
-        <NonCompliantPortdolioDeclineModal />
-      )}
+      {/* To show Non Portfolio COmpliant Modal when Note Modal is SUccess
+      on portfolio Reconcile — same reasoning */}
+      <NonCompliantPortdolioDeclineModal />
     </>
   );
 };

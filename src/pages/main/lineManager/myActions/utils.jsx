@@ -5,6 +5,7 @@ import {
   toYYMMDD,
 } from "../../../../common/funtions/rejex";
 import { withSortIcon } from "../../../../common/funtions/tableIcon";
+import repeat from "../../../../assets/img/repeat.png";
 
 /**
  * Utility: Build API request payload for approval listing
@@ -42,12 +43,21 @@ export const getMyActionsColumn = (approvalStatusMap, sortedInfo) => [
     sortOrder: sortedInfo?.columnKey === "approvalID" ? sortedInfo.order : null,
     showSorterTooltip: false,
     sortIcon: () => null,
-    render: (approvalID) => {
+    render: (approvalID, record) => {
       return (
-        <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
           <span className="font-medium">
             {dashBetweenApprovalAssets(approvalID)}
           </span>
+          {record?.isResubmit && (
+            <img
+              draggable={false}
+              src={repeat}
+              alt="Resubmit"
+              width={16}
+              height={16}
+            />
+          )}
         </div>
       );
     },

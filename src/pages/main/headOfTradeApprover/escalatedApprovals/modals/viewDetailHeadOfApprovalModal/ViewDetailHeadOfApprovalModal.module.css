@@ -1,3 +1,10 @@
+.inlineWithIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+}
+
 .resubmittedBorderClass {
   border: 2.65px dashed #717171 !important;
   border-radius: 8px !important;
