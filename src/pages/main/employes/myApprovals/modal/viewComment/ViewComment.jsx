@@ -21,18 +21,18 @@ const ViewComment = () => {
       ...approvalComments.map((c) => ({ ...c, type: "approved" })),
       ...rejectionComments.map((c) => ({ ...c, type: "rejected" })),
     ];
-
+    return combined;
     // Order them using hierarchyDetails sequence (matches actual approval order)
-    const orderMap = hierarchyDetails.reduce((acc, person, index) => {
-      acc[person.userID] = index;
-      return acc;
-    }, {});
+    // const orderMap = hierarchyDetails.reduce((acc, person, index) => {
+    //   acc[person.userID] = index;
+    //   return acc;
+    // }, {});
 
-    return combined.sort((a, b) => {
-      const orderA = orderMap[a.userID] ?? Number.MAX_SAFE_INTEGER;
-      const orderB = orderMap[b.userID] ?? Number.MAX_SAFE_INTEGER;
-      return orderA - orderB;
-    });
+    // return combined.sort((a, b) => {
+    //   const orderA = orderMap[a.userID] ?? Number.MAX_SAFE_INTEGER;
+    //   const orderB = orderMap[b.userID] ?? Number.MAX_SAFE_INTEGER;
+    //   return orderA - orderB;
+    // });
   };
 
   const formatComments = (commentsArray) => {

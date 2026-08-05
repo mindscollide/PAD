@@ -478,10 +478,11 @@ const ViewDetailReconcileTransaction = () => {
                             } = person;
 
                             // BE sends these in UTC — convert for display only
-                            const formattedDateTime = convertUTCToCurrentTimeZone(
-                              modifiedDate,
-                              modifiedTime
-                            );
+                            const formattedDateTime =
+                              convertUTCToCurrentTimeZone(
+                                modifiedDate,
+                                modifiedTime
+                              );
 
                             // Decide icon and text based on status
                             let iconSrc;
@@ -560,7 +561,7 @@ const ViewDetailReconcileTransaction = () => {
                       <Col span={[24]}>
                         <div className={styles.addticketBuuton}>
                           <CustomButton
-                            text={"View Ticket"}
+                            text={"View Tickets"}
                             className={"big-ViewTicket-light-button"}
                             onClick={() => handleViewTicket()}
                             disabled={isTicketUploaded}
@@ -604,7 +605,7 @@ const ViewDetailReconcileTransaction = () => {
                     ) : myActionStatusData.label === "Non Compliant" ? (
                       <div className={styles.noncompliantButtonClass}>
                         <CustomButton
-                          text="View Ticket"
+                          text="View Tickets"
                           className="big-light-button"
                           onClick={() => {
                             setIsViewTicketTransactionModal(true);
@@ -630,7 +631,7 @@ const ViewDetailReconcileTransaction = () => {
                     ) : myActionStatusData.label === "Compliant" ? (
                       <div className={styles.noncompliantButtonClass}>
                         <CustomButton
-                          text="View Ticket"
+                          text="View Tickets"
                           className="big-light-button"
                           onClick={() => handleViewTicket()} // no disabled check
                         />

@@ -404,7 +404,7 @@ const ViewDetailsTransactionModal = () => {
                   }}
                 />
                 <CustomButton
-                  text="View Ticket"
+                  text="View Tickets"
                   className="big-light-button"
                   onClick={handleViewTicket}
                 />
