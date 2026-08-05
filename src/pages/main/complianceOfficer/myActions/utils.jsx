@@ -29,7 +29,9 @@ export const buildMyActionApiRequest = (searchState = {}) => ({
   Type: searchState.type || [],
   Status: searchState.status || [],
   Quantity: searchState.quantity ? Number(searchState.quantity) : 0,
-  PageNumber: Number(searchState.pageNumber) || 0,
+  // GetComplianceOfficerMyActionsWorkflowDetail's PageNumber is now a
+  // real 1-indexed page number (backend fix 2026-08-05).
+  PageNumber: Number(searchState.pageNumber) || 1,
   Length: Number(searchState.pageSize) || 10,
 });
 

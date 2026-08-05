@@ -24,7 +24,9 @@ export const buildApiRequest = (searchState) => ({
   StartDate: searchState.startDate ? toYYMMDD(searchState.startDate) : "",
   EndDate: searchState.endDate ? toYYMMDD(searchState.endDate) : "",
 
-  PageNumber: Number(searchState.pageNumber) || 0,
+  // GetUserSessionWiseActivity's PageNumber is now a real 1-indexed page
+  // number (backend fix 2026-08-05, confirmed working).
+  PageNumber: Number(searchState.pageNumber) || 1,
   Length: Number(searchState.pageSize) || 10,
 });
 

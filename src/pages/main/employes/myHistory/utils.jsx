@@ -40,7 +40,9 @@ export const buildMyHistoryApiRequest = (
   StatusIDs: mapStatusToIds?.(searchState.status, 2) || [],
   TradeApprovalTypeIDs:
     mapBuySellToIds?.(searchState.type, assetTypeListingData?.Equities) || [],
-  PageNumber: Number(searchState.pageNumber) || 0,
+  // GetEmployeeHistoryWorkFlowDetails's PageNumber is now a real
+  // 1-indexed page number (backend fix 2026-08-05).
+  PageNumber: Number(searchState.pageNumber) || 1,
   Length: Number(searchState.pageSize) || 10,
 });
 

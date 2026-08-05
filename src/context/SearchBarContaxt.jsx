@@ -44,7 +44,10 @@ export const SearchBarProvider = ({ children }) => {
     type: [],
     status: [],
     pageSize: 10,
-    pageNumber: 0,
+    // SearchTradeApprovals's PageNumber is now a real 1-indexed page
+    // number (backend fix 2026-08-05: OFFSET = (PageNumber-1)*Length) —
+    // was 0 to compensate for the old broken OFFSET=PageNumber behavior.
+    pageNumber: 1,
     filterTrigger: false,
   });
 
@@ -101,7 +104,9 @@ export const SearchBarProvider = ({ children }) => {
     nature: "",
     status: [],
     type: [],
-    pageNumber: 0,
+    // GetEmployeeHistoryWorkFlowDetails's PageNumber is now a real
+    // 1-indexed page number (backend fix 2026-08-05).
+    pageNumber: 1,
     pageSize: 10,
     filterTrigger: false,
   });
@@ -355,7 +360,9 @@ export const SearchBarProvider = ({ children }) => {
       type: [],
       status: [],
       quantity: 0,
-      pageNumber: 0,
+      // GetComplianceOfficerMyActionsWorkflowDetail's PageNumber is now
+      // a real 1-indexed page number (backend fix 2026-08-05).
+      pageNumber: 1,
       pageSize: 10,
       filterTrigger: false,
     });
@@ -663,7 +670,9 @@ export const SearchBarProvider = ({ children }) => {
       ipAddress: 0,
       startDate: null,
       endDate: null,
-      pageNumber: 0,
+      // GetUserSessionWiseActivity's PageNumber is now a real 1-indexed
+      // page number (backend fix 2026-08-05, confirmed working).
+      pageNumber: 1,
       pageSize: 10,
       filterTrigger: false,
     });
@@ -841,7 +850,7 @@ export const SearchBarProvider = ({ children }) => {
       type: [],
       status: [],
       pageSize: 10,
-      pageNumber: 0,
+      pageNumber: 1,
       filterTrigger: false,
     });
 
@@ -918,7 +927,7 @@ export const SearchBarProvider = ({ children }) => {
       type: [],
       status: [],
       pageSize: "",
-      pageNumber: 0,
+      pageNumber: 1,
       filterTrigger: false,
     });
 
@@ -1105,7 +1114,7 @@ export const SearchBarProvider = ({ children }) => {
       type: [],
       status: [],
       quantity: 0,
-      pageNumber: 0,
+      pageNumber: 1,
       pageSize: 10,
       filterTrigger: false,
     });
@@ -1368,7 +1377,7 @@ export const SearchBarProvider = ({ children }) => {
       ipAddress: 0,
       startDate: null,
       endDate: null,
-      pageNumber: 0,
+      pageNumber: 1,
       pageSize: 10,
       filterTrigger: false,
     });
