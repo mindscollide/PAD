@@ -69,7 +69,7 @@ const ViewReconcileTransactionComment = () => {
         visible={viewCommentReconcileModal}
         onClose={onClickCloseComment}
         onGoBack={onClickGoBack}
-        CommentHeading={"View Comment"}
+        CommentHeading={"View Comments"}
         commentText={getCommentText()}
       />
     </>

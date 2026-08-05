@@ -65,7 +65,6 @@ export const mappingDateWiseTransactionReport = (
   }));
 };
 
-
 export const getBorderlessTableColumns = ({
   sortedInfo,
   handelViewDetails,
@@ -495,7 +494,7 @@ export const getBorderlessTableColumnsViewDetails = ({
       <div className={style.viewEditClass}>
         <Button
           className="small-light-button"
-          text={"View Comment"}
+          text={"View Comments"}
           onClick={() => {
             console.log(record, "tradeApprovalID");
             // handelViewDetails(record.approvalID);

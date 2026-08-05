@@ -23,7 +23,7 @@ const CommentModal = ({
   onSubmit,
   predefinedReasons = [], // optional array of reasons
   centered,
-  title,
+  title = "Write Notes",
   submitText,
   maxChars = 500,
   value, // 🔹 ab parent se aayega
@@ -273,7 +273,8 @@ const CommentModal = ({
                 value={value}
                 onChange={handleChange}
                 className={styles.textAreaStyle}
-                placeholder="Enter a Notes"
+                placeholder="Write Notes"
+                //  placeholder="Write a Note Comment Modal"
               />
               <div className={styles.maxCharacterClass}>
                 <Text type={charCount > maxChars ? "danger" : "secondary"}>

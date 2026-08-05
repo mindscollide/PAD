@@ -375,7 +375,7 @@ export const getBorderlessTableColumns = ({
     dataIndex: "type",
     key: "type",
     ellipsis: true,
-    width: 130,
+    width: 100,
     filteredValue: employeeMyApprovalSearch.type?.length
       ? employeeMyApprovalSearch.type
       : null,

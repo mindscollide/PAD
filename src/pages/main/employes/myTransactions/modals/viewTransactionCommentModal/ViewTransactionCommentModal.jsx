@@ -15,8 +15,7 @@ const ViewTransactionCommentModal = () => {
 
   const workflowStatusID =
     employeeTransactionViewDetailData?.workFlowStatus?.workFlowStatusID;
-  const detail =
-    employeeTransactionViewDetailData?.details?.[0];
+  const detail = employeeTransactionViewDetailData?.details?.[0];
 
   // Arrays of { name, comments } objects, not nested under `.comments`
   const approvalComments = detail?.approvalComments || [];
@@ -59,7 +58,7 @@ const ViewTransactionCommentModal = () => {
         visible={viewCommentTransactionModal}
         onClose={onClickCloseComment}
         onGoBack={onClickGoBack}
-        CommentHeading={"View Comment"}
+        CommentHeading={"View Comments"}
         commentText={getCommentText()}
       />
     </>

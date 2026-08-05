@@ -40,7 +40,7 @@ export const getMyActionsColumn = (approvalStatusMap, sortedInfo) => [
     key: "approvalID",
     ellipsis: true,
     align: "left",
-    width: 180,
+    width: 150,
     sorter: (a, b) =>
       parseInt(a.approvalID.replace(/[^\d]/g, ""), 10) -
       parseInt(b.approvalID.replace(/[^\d]/g, ""), 10),
@@ -63,7 +63,7 @@ export const getMyActionsColumn = (approvalStatusMap, sortedInfo) => [
     dataIndex: "instrumentName",
     key: "instrumentName",
     align: "left",
-    width: "140px",
+    width: 150,
     ellipsis: true,
     sorter: (a, b) => {
       const nameA = a?.instrumentShortCode || "";
@@ -148,7 +148,7 @@ export const getMyActionsColumn = (approvalStatusMap, sortedInfo) => [
     ),
     dataIndex: "approvalDateTime",
     key: "approvalDateTime",
-    width: "280px",
+    width: 280,
     align: "center",
     ellipsis: true,
     sorter: (a, b) =>
@@ -165,7 +165,7 @@ export const getMyActionsColumn = (approvalStatusMap, sortedInfo) => [
     title: withSortIcon("Type", "type", sortedInfo),
     dataIndex: "type",
     key: "type",
-    width: "100px",
+    width: 100,
     align: "left",
     ellipsis: true,
     sorter: (a, b) => a.type.localeCompare(b.type),
@@ -179,7 +179,7 @@ export const getMyActionsColumn = (approvalStatusMap, sortedInfo) => [
     title: withSortIcon("Quantity", "quantity", sortedInfo, "center"),
     dataIndex: "quantity",
     key: "quantity",
-    width: "180px",
+    width: 120,
     align: "center",
     ellipsis: true,
     sorter: (a, b) => a.quantity - b.quantity,

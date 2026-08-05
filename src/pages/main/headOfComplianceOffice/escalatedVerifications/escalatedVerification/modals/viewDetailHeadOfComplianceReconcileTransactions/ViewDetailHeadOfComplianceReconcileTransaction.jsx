@@ -647,7 +647,7 @@ const ViewDetailHeadOfComplianceReconcileTransaction = () => {
                       <>
                         <div className={styles.approvedButtonClass}>
                           <CustomButton
-                            text="Non Compliant"
+                            text="Non-Compliant"
                             className="Decline-dark-button"
                             disabled={disableCompliantOrNonCompliantBtn}
                             onClick={
@@ -672,7 +672,7 @@ const ViewDetailHeadOfComplianceReconcileTransaction = () => {
                           onClick={handleViewTicket}
                         />{" "}
                         <CustomButton
-                          text="View Comment"
+                          text="View Comments"
                           className="big-light-button"
                           onClick={() => {
                             setViewCommentReconcileModal(true);
@@ -695,7 +695,7 @@ const ViewDetailHeadOfComplianceReconcileTransaction = () => {
                           onClick={handleViewTicket}
                         />{" "}
                         <CustomButton
-                          text="View Comment"
+                          text="View Comments"
                           className="big-light-button"
                           onClick={() => {
                             setViewDetailHeadOfComplianceEscalated(false);

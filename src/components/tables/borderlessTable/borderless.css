@@ -13,8 +13,9 @@
 /* Table Row Styling */
 
 .border-less-table-orange-body {
-  overflow-x: hidden !important;
+  overflow-x: auto !important;
   overflow-y: auto !important;
+  max-height: 60vh !important;
 }
 
 .border-less-table-orange-row {
@@ -40,9 +41,8 @@ td.border-less-table-orange-cell:last-child {
   /* Example: add padding, border, etc. */
 }
 
-
 .border-less-table-orange .ant-table-body {
-  overflow-x: hidden !important; /* kill horizontal scrollbar */
+  overflow-x: auto !important; /* kill horizontal scrollbar */
   overflow-y: auto !important; /* keep vertical scroll for lazy loading */
   max-height: 550px; /* same height you passed */
 }
@@ -64,7 +64,7 @@ td.border-less-table-orange-cell:hover {
 }
 /* Cell Styling */
 .border-less-table-orange-wrapper .border-less-table-orange-tbody > tr > td {
-  padding:0px 6px;
+  padding: 0px 6px;
   color: #424242;
   font-family: "Switzer Variable";
   font-weight: 500;
@@ -202,8 +202,9 @@ border-  bottom-bottom-right-radius: 6.94px !important;
 /* For blue */
 
 .border-less-table-blue-body {
-  overflow-x: hidden !important;
+  overflow-x: auto !important;
   overflow-y: auto !important;
+  max-height: 60vh !important;
 }
 
 /* Root Table Layout */
@@ -1597,8 +1598,6 @@ td.border-less-table-noColorTable-cell:hover {
   /* border-bottom: none !important; */
   border-bottom: 1px solid #d4d4d4 !important;
 }
-
-
 
 /* border-top-right-radius: 6.94px !important;
   border-top-left-radius: 6.94px !important;
