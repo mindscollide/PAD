@@ -336,6 +336,7 @@ const HTAPolicyBreachesReport = () => {
         <Col>
           <div className={style.headerActionsRow}>
             <CustomButton
+              disabled={htaPolicyBreachesReportsData?.records?.length === 0}
               text={
                 <span className={style.exportButtonText}>
                   Export

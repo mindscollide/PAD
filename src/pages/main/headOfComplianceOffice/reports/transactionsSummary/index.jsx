@@ -153,7 +153,7 @@ const HCATransactionsSummarysReports = () => {
       setHCOTransactionsSummarysReportsSearch,
       showLoader,
       showNotification,
-    ],
+    ]
   );
 
   const fetchApiCallViewDetails = useCallback(
@@ -171,11 +171,11 @@ const HCATransactionsSummarysReports = () => {
       const record = Array.isArray(res?.record) ? res.record : [];
       const currentAssetTypeData = getSafeAssetTypeData(
         assetTypeListingData,
-        setAssetTypeListingData,
+        setAssetTypeListingData
       );
       const mapped = mappingDateWiseTransactionviewDetailst(
         currentAssetTypeData?.Equities,
-        record,
+        record
       );
       if (!mapped || typeof mapped !== "object") return;
 
@@ -208,7 +208,7 @@ const HCATransactionsSummarysReports = () => {
       setHOCTransactionsSummarysReportsViewDetailSearch,
       showLoader,
       showNotification,
-    ],
+    ]
   );
 
   // -------------------- Effects --------------------
@@ -249,12 +249,12 @@ const HCATransactionsSummarysReports = () => {
       }));
       const requestData = buildApiRequestViewDetails(
         hocTransactionsSummarysReportsViewDetailsSearch,
-        assetTypeListingData,
+        assetTypeListingData
       );
       fetchApiCallViewDetails(requestData, true, true);
     }
   }, [hocTransactionsSummarysReportsViewDetailsSearch?.filterTrigger]);
-  
+
   useEffect(() => {
     if (open) {
       setOpen(false);
@@ -279,12 +279,12 @@ const HCATransactionsSummarysReports = () => {
           setLoadingMore(true);
           console.log(
             "StatusFilterDropdown handleOk",
-            hocTransactionsSummarysReportsViewDetailsSearch,
+            hocTransactionsSummarysReportsViewDetailsSearch
           );
 
           const requestData = buildApiRequestViewDetails(
             hocTransactionsSummarysReportsViewDetailsSearch,
-            assetTypeListingData,
+            assetTypeListingData
           );
 
           await fetchApiCall(requestData, false, false);
@@ -311,7 +311,7 @@ const HCATransactionsSummarysReports = () => {
         setLoadingMore(true);
 
         const requestData = buildApiRequest(
-          hcoTransactionsSummarysReportsSearch,
+          hcoTransactionsSummarysReportsSearch
         );
 
         await fetchApiCall(requestData, false, false);
@@ -322,7 +322,7 @@ const HCATransactionsSummarysReports = () => {
       }
     },
     0,
-    "border-less-table-blue",
+    "border-less-table-blue"
   );
 
   const handelViewDetails = async (transactionDate) => {
@@ -538,6 +538,9 @@ const HCATransactionsSummarysReports = () => {
               />
             )}
             <CustomButton
+              disabled={
+                hcoTransactionSummaryReportListData?.transactions?.length === 0
+              }
               text={
                 <span className={style.exportButtonText}>
                   Export

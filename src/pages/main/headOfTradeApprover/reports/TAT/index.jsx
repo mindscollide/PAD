@@ -353,6 +353,7 @@ const HTATAT = () => {
             <Col>
               <div className={style.headerActionsRow}>
                 <CustomButton
+                  disabled={htaTATReportsData?.employees?.length === 0}
                   text={
                     <span className={style.exportButtonText}>
                       Export

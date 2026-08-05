@@ -31,7 +31,10 @@ import { useDashboardContext } from "../../../../../context/dashboardContaxt";
 import { useTableScrollBottom } from "../../../../../common/funtions/scroll";
 import CustomButton from "../../../../../components/buttons/button";
 import { DateRangePicker } from "../../../../../components";
-import { formatToYYYYMMDD, toYYMMDD } from "../../../../../common/funtions/rejex";
+import {
+  formatToYYYYMMDD,
+  toYYMMDD,
+} from "../../../../../common/funtions/rejex";
 
 const TradeApprovalRequest = () => {
   const navigate = useNavigate();
@@ -118,7 +121,7 @@ const TradeApprovalRequest = () => {
       setMyTradeApprovalReportLineManageSearch,
       showLoader,
       showNotification,
-    ],
+    ]
   );
 
   // -------------------- Effects --------------------
@@ -160,7 +163,7 @@ const TradeApprovalRequest = () => {
   useEffect(() => {
     if (myTradeApprovalReportLineManageSearch?.filterTrigger) {
       const requestData = buildApiRequest(
-        myTradeApprovalReportLineManageSearch,
+        myTradeApprovalReportLineManageSearch
       );
       fetchApiCall(requestData, true, true);
     }
@@ -178,7 +181,7 @@ const TradeApprovalRequest = () => {
       try {
         setLoadingMore(true);
         const requestData = buildApiRequest(
-          myTradeApprovalReportLineManageSearch,
+          myTradeApprovalReportLineManageSearch
         );
         await fetchApiCall(requestData, false, false);
       } catch (err) {
@@ -188,7 +191,7 @@ const TradeApprovalRequest = () => {
       }
     },
     0,
-    "border-less-table-blue",
+    "border-less-table-blue"
   );
 
   // -------------------- Table Columns --------------------
@@ -269,8 +272,8 @@ const TradeApprovalRequest = () => {
 
   const handleDateChange = (dates) => {
     if (dates && dates.length === 2) {
-      console.log("endDate", dates?.[0] )
-      console.log("endDate", dates?.[1] )
+      console.log("endDate", dates?.[0]);
+      console.log("endDate", dates?.[1]);
       setDateRange({
         StartDate: dates?.[0] || null,
         EndDate: dates?.[1] || null,
@@ -283,7 +286,7 @@ const TradeApprovalRequest = () => {
           EndDate: toYYMMDD(dates[1]) || null,
         },
         true,
-        true,
+        true
       );
     }
   };
@@ -302,7 +305,7 @@ const TradeApprovalRequest = () => {
         EndDate: "",
       },
       true,
-      true,
+      true
     );
   };
 
@@ -346,6 +349,7 @@ const TradeApprovalRequest = () => {
               onClear={handleClearDates}
             />
             <CustomButton
+              disabled={myTradeApprovalLineManagerData.records.length === 0}
               text={
                 <span className={style.exportButtonText}>
                   Export

@@ -373,6 +373,9 @@ const MytradeapprovalsReport = () => {
         <Col>
           <div className={style.headerActionsRow}>
             <CustomButton
+              disabled={
+                employeeMyTradeApprovalsData?.myTradeApprovals?.length === 0
+              }
               text={
                 <span className={style.exportButtonText}>
                   Export

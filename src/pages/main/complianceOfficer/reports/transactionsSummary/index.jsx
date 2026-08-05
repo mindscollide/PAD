@@ -529,6 +529,7 @@ const COTransactionsSummarysReports = () => {
               />
             )}
             <CustomButton
+              disabled={tableRows.length === 0}
               text={
                 <span className={style.exportButtonText}>
                   Export

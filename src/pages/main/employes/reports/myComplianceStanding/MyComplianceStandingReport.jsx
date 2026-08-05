@@ -226,6 +226,7 @@ const MyComplianceStandingReport = () => {
             />
 
             <CustomButton
+              disabled={getEmployeeMyComplianceReport?.summary?.length === 0}
               text={
                 <span className={style.exportButtonText}>
                   Export
