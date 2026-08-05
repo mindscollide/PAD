@@ -100,8 +100,11 @@ const ApprovalStepper = ({ trail }) => {
 
                 {/* 🔹 Bottom line: date only */}
                 <div className={styles.stepDesc}>{step.date}</div>
-                {/* {For Requester ID if necesarry} */}
-                {step.status === "Resubmit" && (
+                {/* Tracking ID (previous/next REQ in a resubmit chain) —
+                driven by requesterID being set at all, not an exact
+                status-text match, since callers now use wording like
+                "Resubmit for Approval" as well as plain "Resubmit" */}
+                {step.requesterID && (
                   <div className={styles.stepDesc}>
                     <strong>{step.requesterID}</strong>
                   </div>

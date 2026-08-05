@@ -323,11 +323,42 @@ const MyHistory = () => {
     };
 
     return data.workFlows.map((wf) => {
-      // Step 0: Send For Approval
+      // Step 0: Send For Approval — when this request was itself CREATED
+      // by resubmitting an earlier one (resubmitRequestTrackingID set,
+      // and this request's own status isn't "Resubmit" — that's the
+      // OTHER direction, handled by the final step below), show
+      // "Resubmit for Approval" with the original submission's date/time
+      // and the previous REQ-ID it came from. creationDate/creationTime
+      // on this record is when THIS resubmitted record was created, not
+      // the lineage's original submission — that's embedded in `title`
+      // instead (e.g. "TradeApprovalRequest-41-20260804 12:49:06").
+      const isCreatedFromResubmit =
+        wf.workFlowStatus !== "Resubmit" &&
+        Boolean(wf.resubmitRequestTrackingID);
+
+      // title's time portion is colon-separated ("12:49:06"), unlike the
+      // plain HHmmss used everywhere else — strip the colons before
+      // handing it to formatApiDateTime.
+      const titleDateTimeMatch = wf.title?.match(
+        /(\d{8})\s(\d{2}):(\d{2}):(\d{2})$/,
+      );
+
       const sendForApprovalStep = {
-        status: "Send for Approval",
-        date: formatApiDateTime(`${wf.creationDate} ${wf.creationTime}`),
-        iconType: "SendForApproval",
+        status: isCreatedFromResubmit
+          ? "Resubmit for Approval"
+          : "Send for Approval",
+        date:
+          isCreatedFromResubmit && titleDateTimeMatch
+            ? formatApiDateTime(
+                `${titleDateTimeMatch[1]} ${titleDateTimeMatch[2]}${titleDateTimeMatch[3]}${titleDateTimeMatch[4]}`,
+              )
+            : formatApiDateTime(`${wf.creationDate} ${wf.creationTime}`),
+        ...(isCreatedFromResubmit && {
+          requesterID: dashBetweenApprovalAssets(
+            wf.resubmitRequestTrackingID,
+          ),
+        }),
+        iconType: isCreatedFromResubmit ? "Resubmit" : "SendForApproval",
       };
 
       // Step 1: Bundle hierarchy
@@ -358,7 +389,17 @@ const MyHistory = () => {
         finalStep = {
           status: wf.workFlowStatus,
           date: formatApiDateTime(`${wf.creationDate} ${wf.creationTime}`),
-          requesterID: dashBetweenApprovalAssets(wf.tradeApprovalID),
+          // Only show the tracking ID here when THIS request was itself
+          // resubmitted (workFlowStatus === "Resubmit") — then
+          // resubmitRequestTrackingID is the NEW REQ-ID it became. A
+          // request merely created FROM a resubmission (e.g. now
+          // Approved) also has resubmitRequestTrackingID set, but that
+          // belongs on the "Resubmit for Approval" step above, not here.
+          ...(wf.workFlowStatus === "Resubmit" && {
+            requesterID: dashBetweenApprovalAssets(
+              wf.resubmitRequestTrackingID
+            ),
+          }),
           iconType: getWorkFlowIconType(wf.workFlowStatusID),
         };
       }
@@ -382,6 +423,10 @@ const MyHistory = () => {
         creationDate: wf.creationDate,
         creationTime: wf.creationTime,
         status: wf.workFlowStatus,
+        // Set whenever this request is part of a resubmit chain, in
+        // either direction — resubmitted into a new request, or itself
+        // created by resubmitting an earlier one.
+        isResubmitLinked: Boolean(wf.resubmitRequestTrackingID),
         trail,
       };
     });
