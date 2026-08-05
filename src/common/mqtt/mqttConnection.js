@@ -13,6 +13,20 @@ export const useMqttClient = ({
   const connectionAttemptRef = useRef(false); // ✅ Track connection attempts
   const reconnectTimeoutRef = useRef(null);
 
+  // clientRef.current.onMessageArrived/onConnectionLost are only ever
+  // assigned once, inside connectToMqtt, which itself only runs on the
+  // very first successful connection (guarded against reconnecting).
+  // Routing every call through these refs — updated on every render,
+  // unlike the Paho client's handler properties — means the live client
+  // always calls whatever closure is current (fresh currentUserId, etc.)
+  // instead of being permanently frozen to whichever render happened to
+  // be active at first connect.
+  const onMessageArrivedCallbackRef = useRef(onMessageArrivedCallback);
+  onMessageArrivedCallbackRef.current = onMessageArrivedCallback;
+
+  const onConnectionLostCallbackRef = useRef(onConnectionLostCallback);
+  onConnectionLostCallbackRef.current = onConnectionLostCallback;
+
   const userProfileData = JSON.parse(
     sessionStorage.getItem("user_profile_data")
   );
@@ -67,35 +81,35 @@ export const useMqttClient = ({
     [isConnected]
   );
 
-  const onMessageArrived = useCallback(
-    (message) => {
-      try {
-        const parsed = JSON.parse(message.payloadString);
-        console.log("📨 MQTT message arrived:", parsed);
-        if (onMessageArrivedCallback) onMessageArrivedCallback(parsed);
-      } catch (err) {
-        console.error("❌ Failed to parse message:", err);
+  const onMessageArrived = useCallback((message) => {
+    try {
+      const parsed = JSON.parse(message.payloadString);
+      console.log("📨 MQTT message arrived:", parsed);
+      // Always call the LATEST callback (via ref), not whichever one was
+      // closed over when this handler got bound to the Paho client.
+      if (onMessageArrivedCallbackRef.current) {
+        onMessageArrivedCallbackRef.current(parsed);
       }
-    },
-    [onMessageArrivedCallback]
-  );
+    } catch (err) {
+      console.error("❌ Failed to parse message:", err);
+    }
+  }, []);
 
-  const onConnectionLost = useCallback(
-    (resObj) => {
-      console.warn("🔌 MQTT connection lost:", resObj?.errorMessage);
-      setIsConnected(false);
-      setSubscribedTopics([]);
-      connectionAttemptRef.current = false; // ✅ Reset on connection loss
+  const onConnectionLost = useCallback((resObj) => {
+    console.warn("🔌 MQTT connection lost:", resObj?.errorMessage);
+    setIsConnected(false);
+    setSubscribedTopics([]);
+    connectionAttemptRef.current = false; // ✅ Reset on connection loss
 
-      // Clear any existing timeout
-      if (reconnectTimeoutRef.current) {
-        clearTimeout(reconnectTimeoutRef.current);
-      }
+    // Clear any existing timeout
+    if (reconnectTimeoutRef.current) {
+      clearTimeout(reconnectTimeoutRef.current);
+    }
 
-      if (onConnectionLostCallback) onConnectionLostCallback(resObj);
-    },
-    [onConnectionLostCallback]
-  );
+    if (onConnectionLostCallbackRef.current) {
+      onConnectionLostCallbackRef.current(resObj);
+    }
+  }, []);
 
   const connectToMqtt = useCallback(
     ({ topic, userID }) => {
