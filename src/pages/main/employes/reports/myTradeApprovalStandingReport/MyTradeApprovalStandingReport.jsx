@@ -214,6 +214,7 @@ const MyTradeApprovalStandingReport = () => {
             />
 
             <CustomButton
+              disabled={getEmployeeTradeApprovalReport?.summary?.length === 0}
               text={
                 <span className={style.exportButtonText}>
                   Export

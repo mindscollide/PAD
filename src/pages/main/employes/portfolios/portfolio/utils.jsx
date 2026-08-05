@@ -112,7 +112,8 @@ export function getEmployeePortfolioColumns({
       title: "Transaction ID",
       dataIndex: "tradeApprovalId",
       key: "tradeApprovalId",
-      width: "15%",
+      width: 100,
+
       render: (text, record) => (
         <span className="font-medium flex items-center" title={text || "N/A"}>
           {formatCode?.(text) || "—"}
@@ -131,7 +132,9 @@ export function getEmployeePortfolioColumns({
       title: "Transaction Conducted Date & Time",
       dataIndex: "verificationConductedDate",
       key: "verificationConductedDate",
-      width: "20%",
+      width: 150,
+      align: "center",
+
       render: (_, record) => {
         const rawValue = `${record?.verificationConductedDate || ""} ${
           record?.verificationConductedTime || ""
@@ -143,6 +146,9 @@ export function getEmployeePortfolioColumns({
       title: "Type",
       dataIndex: "tradeType",
       key: "tradeType",
+      width: 50,
+      align: "center",
+
       render: (text) => (
         <Text style={{ color: text === "Buy" ? "#00640A" : "#A50000" }}>
           {text}
@@ -153,7 +159,9 @@ export function getEmployeePortfolioColumns({
       title: "Quantity",
       dataIndex: "quantity",
       key: "quantity",
-      width: 150,
+      width: 100,
+      align: "center",
+
       render: (value, record) => (
         <Text
           style={{ color: record.tradeType === "Buy" ? "#00640A" : "#A50000" }}
@@ -166,7 +174,9 @@ export function getEmployeePortfolioColumns({
       title: "Brokers",
       dataIndex: "brokers",
       key: "brokers",
-      width: "30%",
+      width: 150,
+      align: "center",
+
       render: (brokerIds) => (
         <div
           style={{
@@ -183,6 +193,9 @@ export function getEmployeePortfolioColumns({
       title: "Verification Date & Time",
       dataIndex: "verificationConductedDate",
       key: "verificationConductedDate",
+      width: 150,
+      align: "center",
+
       render: (_, record) => {
         const rawValue = `${record?.verificationConductedDate || ""} ${
           record?.verificationConductedTime || ""

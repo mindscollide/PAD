@@ -363,6 +363,9 @@ const TradesUploadViaPortfolio = () => {
         <Col>
           <div className={style.headerActionsRow}>
             <CustomButton
+              disabled={
+                hcoUploadedPortFolioData?.pendingPortfolios?.length === 0
+              }
               text={
                 <span className={style.exportButtonText}>
                   Export

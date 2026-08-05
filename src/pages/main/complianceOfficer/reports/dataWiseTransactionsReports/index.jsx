@@ -423,6 +423,10 @@ const COdataWiseTransactionsReports = () => {
               onClear={handleClearDates}
             />
             <CustomButton
+              disabled={
+                coDatewiseTransactionReportListData
+                  ?.complianceOfficerApprovalsList?.length === 0
+              }
               text={
                 <span className={style.exportButtonText}>
                   Export
