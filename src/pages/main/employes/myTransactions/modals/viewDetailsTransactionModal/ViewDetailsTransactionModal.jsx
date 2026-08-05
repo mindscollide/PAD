@@ -302,8 +302,18 @@ const ViewDetailsTransactionModal = () => {
             <Col span={24}>
               <BrokerList
                 statusData={label}
-                viewDetailsData={employeeTransactionViewDetailData}
+                // This is a historical/completed transaction record — the
+                // brokers chosen at submission time must keep showing even
+                // if they've since been unassigned from this employee, so
+                // resolve against the full broker master list (type 2:
+                // allBrokersData), not the employee's *current* assigned
+                // list (type 1, the default), which silently drops brokers
+                // that are no longer assigned.
+                viewDetailsData={
+                  employeeTransactionViewDetailData?.details?.[0]?.brokers
+                }
                 variant="Blue"
+                type={2}
               />
             </Col>
           </Row>
