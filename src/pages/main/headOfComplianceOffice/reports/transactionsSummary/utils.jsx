@@ -31,7 +31,7 @@ export const buildApiRequest = (searchState = {}) => ({
 
 export const buildApiRequestViewDetails = (
   searchState = {},
-  assetTypeListingData,
+  assetTypeListingData
 ) => ({
   PageNumber: Number(searchState.pageNumber) || 0,
   Length: Number(searchState.pageSize) || 10,
@@ -49,7 +49,7 @@ export const buildApiRequestViewDetails = (
  * @returns {Array} Mapped transaction list
  */
 export const mappingDateWiseTransactionReport = (
-  myTradeApprovalLineManagerData = [],
+  myTradeApprovalLineManagerData = []
 ) => {
   const records = Array.isArray(myTradeApprovalLineManagerData)
     ? myTradeApprovalLineManagerData
@@ -65,7 +65,7 @@ export const mappingDateWiseTransactionReport = (
       item.totalTransactions +
       item.nonCompliantTransactions,
     totalEmployees: item.totalEmployees || "0",
-    actionBy: item.actionBy || "",
+    actionBy: item.actionBy || [],
     totalTransactions: item.totalTransactions || "0",
     compliantTransactions: item.compliantTransactions || "0",
     nonCompliantTransactions: item.nonCompliantTransactions || "0",
@@ -80,7 +80,7 @@ export const mappingDateWiseTransactionReport = (
 };
 export const mappingDateWiseTransactionviewDetailst = (
   assetTypeData,
-  myTradeApprovalLineManagerData = [],
+  myTradeApprovalLineManagerData = []
 ) => {
   const records = Array.isArray(myTradeApprovalLineManagerData)
     ? myTradeApprovalLineManagerData
@@ -138,7 +138,7 @@ export const getBorderlessTableColumns = ({
       "Transaction Date",
       "transactionDate",
       sortedInfo,
-      "center",
+      "center"
     ),
     align: "center",
     dataIndex: "transactionDate",
@@ -164,19 +164,38 @@ export const getBorderlessTableColumns = ({
     width: 120,
     align: "left",
     ellipsis: true,
-    sorter: (a, b) => a.actionBy.localeCompare(b.actionBy),
     sortDirections: ["ascend", "descend"],
-    sortOrder: sortedInfo?.columnKey === "actionBy" ? sortedInfo.order : null,
     showSorterTooltip: false,
     sortIcon: () => null,
-    render: (text) => <span className="font-medium">{text}</span>,
+    render: (actionBy = []) => {
+      if (!Array.isArray(actionBy) || actionBy.length === 0) {
+        return <span className="text-gray-600">—</span>;
+      }
+
+      const names = actionBy
+        .map(
+          (user) =>
+            user?.fullName ||
+            `${user?.firstName || ""} ${user?.lastName || ""}`.trim()
+        )
+        .filter(Boolean);
+
+      const tooltipText = names.join(", ");
+      const displayText = actionBy.length === 1 ? names[0] : "Multiple Users";
+
+      return (
+        <Tooltip title={tooltipText}>
+          <span className="text-gray-600">{displayText}</span>
+        </Tooltip>
+      );
+    },
   },
   {
     title: withSortIcon(
       "Total Employees",
       "totalEmployees",
       sortedInfo,
-      "center",
+      "center"
     ),
     dataIndex: "totalEmployees",
     key: "totalEmployees",
@@ -195,7 +214,7 @@ export const getBorderlessTableColumns = ({
       "Total Transactions",
       "totalTransactions",
       sortedInfo,
-      "center",
+      "center"
     ),
     dataIndex: "totalTransactions",
     key: "totalTransactions",
@@ -214,7 +233,7 @@ export const getBorderlessTableColumns = ({
       "Compliant Transactions",
       "compliantTransactions",
       sortedInfo,
-      "center",
+      "center"
     ),
     dataIndex: "compliantTransactions",
     key: "compliantTransactions",
@@ -236,7 +255,7 @@ export const getBorderlessTableColumns = ({
       "Non-Compliant Transactions",
       "nonCompliantTransactions",
       sortedInfo,
-      "center",
+      "center"
     ),
     dataIndex: "nonCompliantTransactions",
     key: "nonCompliantTransactions",
@@ -429,7 +448,7 @@ export const getBorderlessTableColumnsViewDetails = ({
       "Initiated at",
       "transactionDate",
       sortedInfo,
-      "center",
+      "center"
     ),
     dataIndex: "transactionDate",
     key: "transactionDate",
