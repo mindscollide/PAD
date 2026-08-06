@@ -641,7 +641,9 @@ export const SearchBarProvider = ({ children }) => {
     emailAddress: "",
     departmentName: "",
     filterTrigger: false,
-    pageNumber: 0,
+    // GetAllEmployeesWithAssignedManageUsersUserTabPolicies's PageNumber
+    // is now a real 1-indexed page number (backend fix 2026-08-06).
+    pageNumber: 1,
     pageSize: 10,
   });
 
@@ -1349,7 +1351,7 @@ export const SearchBarProvider = ({ children }) => {
       emailAddress: "",
       departmentName: "",
       filterTrigger: false,
-      pageNumber: 0,
+      pageNumber: 1,
       pageSize: 10,
     });
 
