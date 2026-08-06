@@ -622,7 +622,7 @@ const ViewDetailHeadOfComplianceReconcileTransaction = () => {
                   <Col span={[24]}>
                     <div className={styles.addticketBuuton}>
                       <CustomButton
-                        text={"View Ticket"}
+                        text={"View Tickets"}
                         className={"big-ViewTicket-light-button"}
                         onClick={handleViewTicket}
                       />
@@ -667,7 +667,7 @@ const ViewDetailHeadOfComplianceReconcileTransaction = () => {
                     ) : statusData?.label === "Non Compliant" ? (
                       <div className={styles.noncompliantButtonClass}>
                         <CustomButton
-                          text="View Ticket"
+                          text="View Tickets"
                           className="big-light-button"
                           onClick={handleViewTicket}
                         />{" "}
@@ -690,7 +690,7 @@ const ViewDetailHeadOfComplianceReconcileTransaction = () => {
                     ) : statusData?.label === "Compliant" ? (
                       <div className={styles.noncompliantButtonClass}>
                         <CustomButton
-                          text="View Ticket"
+                          text="View Tickets"
                           className="big-light-button"
                           onClick={handleViewTicket}
                         />{" "}

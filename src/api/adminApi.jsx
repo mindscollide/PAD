@@ -2147,6 +2147,7 @@ export const UpdateEmployeeManagerManageUserTab = async ({
 
       // Case 3 → Custom server messages
       if (message) {
+        console.log("Custom server messages");
       }
 
       return false;
@@ -2959,7 +2960,7 @@ export const ViewUserSessionWiseActivity = async ({
         return {
           userSessionActivityUserDetails: userSessionActivityUserDetails || [],
           userSessionActions: userSessionActions || [],
-          result:true
+          result: true,
         };
       }
 
@@ -2968,7 +2969,7 @@ export const ViewUserSessionWiseActivity = async ({
         return {
           userSessionActivityUserDetails: [],
           userSessionActions: [],
-          result:false
+          result: false,
         };
       }
 

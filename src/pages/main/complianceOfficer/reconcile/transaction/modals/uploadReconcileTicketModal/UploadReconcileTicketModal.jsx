@@ -300,6 +300,7 @@ const UploadReconcileTicketModal = () => {
       fileList: [], // Managed separately in state
       multiple: true,
       showUploadList: false, // Use custom file list
+      accept: ".pdf",
     }),
     [handleBeforeUpload]
   );
