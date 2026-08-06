@@ -22,6 +22,7 @@ import { useApi } from "../../../context/ApiContext";
 import { useGlobalLoader } from "../../../context/LoaderContext";
 import { useMyAdmin } from "../../../context/AdminContext";
 import { ManageBrokerModal } from "../../../pages";
+import { logout } from "../../../api/loginApi";
 const { Content } = Layout;
 
 const Dashboard = () => {
@@ -599,7 +600,21 @@ const Dashboard = () => {
               try {
                 const parsedPayload = JSON.parse(payload);
                 if (parsedPayload?.UserID === currentUserId) {
-                  navigate("/"); // your logout function
+                  // FK_UserStatusID: 1=Active, 2=Disabled, 3=Closed,
+                  // 4=Dormant (see statusOptions in
+                  // EditRoleAndPoliciesModal.jsx). Disabled gets its own
+                  // message; any other update to the current user while
+                  // still active (roles/group policy) uses the generic
+                  // "changed" message.
+                  showNotification({
+                    type: "warning",
+                    title: "Account Updated",
+                    description:
+                      parsedPayload?.FK_UserStatusID === 2
+                        ? "Your status is set to In-Active by the Admin. Please contact Admin."
+                        : "Your Group Policy is changed by the Admin. Please login again.",
+                  });
+                  logout({ navigate, showLoader });
                 }
               } catch (error) {
                 console.error("error", error);

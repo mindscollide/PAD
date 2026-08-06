@@ -210,12 +210,16 @@ const Brokers = () => {
   );
 
   // 🔷 Excel Report download Api Hit
+  // Was hardcoded to an empty {BrokerName, PSXCode} stub, ignoring every
+  // on-screen filter including StatusIds — export always returned every
+  // broker regardless of the Active/Inactive filter applied on screen.
+  // Build from the same filters the live listing uses; PageNumber/Length
+  // excluded since sp_GetBrokersReport takes no pagination params at all
+  // (confirmed via SQL_Scripts/sp_GetBrokersReport_AddStatusFilter.sql).
   const downloadReportInExcelFormat = async () => {
     showLoader(true);
-    const requestdata = {
-      BrokerName: "",
-      PSXCode: "",
-    };
+    const { PageNumber, Length, ...requestdata } =
+      buildApiRequest(adminBrokerSearch);
 
     await DownloadBrokerReportRequest({
       callApi,

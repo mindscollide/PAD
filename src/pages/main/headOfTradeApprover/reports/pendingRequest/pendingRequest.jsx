@@ -15,7 +15,7 @@ import { useGlobalLoader } from "../../../../../context/LoaderContext";
 import { useApi } from "../../../../../context/ApiContext";
 import { useMyApproval } from "../../../../../context/myApprovalContaxt";
 import {
-  ExportLineManagerPendingTradeApprovalsExcel,
+  ExportHTAPendingTradeApprovalsExcel,
   GetAllLineManagerViewDetailRequest,
   SearchPendingTradeApprovalsHTAReportRequest,
 } from "../../../../../api/myApprovalApi";
@@ -118,9 +118,10 @@ const PendingApprovalRequest = () => {
         setHTAPendingApprovalReportsSearch((prev) => {
           const next = {
             ...prev,
-            pageNumber: replace
-              ? mapped.length
-              : prev.pageNumber + mapped.length,
+            // PageNumber is 1-indexed (per the API reference doc) —
+            // advance by one page per fetch, not by however many rows
+            // just loaded.
+            pageNumber: replace ? 2 : prev.pageNumber + 1,
           };
           // this is for check if filter value get true only on that it will false
           if (prev.filterTrigger) {
@@ -202,7 +203,7 @@ const PendingApprovalRequest = () => {
     );
     requestData = {
       ...requestData,
-      PageNumber: 0,
+      PageNumber: 1,
     };
     fetchApiCall(requestData, true, false);
     setLineManagerApprovalMQtt(false);
@@ -231,7 +232,7 @@ const PendingApprovalRequest = () => {
     setHTAPendingApprovalReportsSearch((prev) => ({
       ...prev,
       ...resetMap[key],
-      pageNumber: 0,
+      pageNumber: 1,
       filterTrigger: true,
     }));
   };
@@ -247,7 +248,7 @@ const PendingApprovalRequest = () => {
       escalatedStartDate: null,
       escalatedEndDate: null,
       quantity: 0,
-      pageNumber: 0,
+      pageNumber: 1,
       filterTrigger: true,
     }));
   };
@@ -344,25 +345,23 @@ const PendingApprovalRequest = () => {
   );
 
   //download Report Excel
+  // Was calling the LM screen's export (wrong endpoint) with the LM
+  // screen's 6-field shape (StartDate/EndDate/TypeIds — fields this
+  // endpoint doesn't even have). Confirmed shape per
+  // 2026-08-05_hta_pending_requests_screen_api_reference.md: same 10
+  // filter fields as the list request, minus PageNumber/Length (export
+  // always returns every matching row).
   const downloadMyComplianceReportInExcelFormat = async () => {
     showLoader(true);
-    const requestData = buildApiRequest(
+    const { PageNumber, Length, ...requestData } = buildApiRequest(
       hTAPendingApprovalReportsSearch,
       assetTypeListingData
     );
-    let NewRequestData = {
-      InstrumentName: requestData.InstrumentName,
-      Quantity: requestData.Quantity,
-      StartDate: requestData.StartDate,
-      EndDate: requestData.EndDate,
-      TypeIds: requestData.TypeIds,
-      StatusIds: requestData.StatusIds,
-      RequesterName: requestData.RequesterName,
-    };
-    await ExportLineManagerPendingTradeApprovalsExcel({
+
+    await ExportHTAPendingTradeApprovalsExcel({
       callApi,
       showLoader,
-      requestdata: NewRequestData,
+      requestdata: requestData,
       navigate,
     });
     setOpen(false);

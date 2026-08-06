@@ -119,9 +119,10 @@ const PendingRequest = () => {
         setLMPendingApprovalReportsSearch((prev) => {
           const next = {
             ...prev,
-            pageNumber: replace
-              ? mapped.length
-              : prev.pageNumber + mapped.length,
+            // PageNumber is 1-indexed (per the API reference doc) —
+            // advance by one page per fetch, not by however many rows
+            // just loaded.
+            pageNumber: replace ? 2 : prev.pageNumber + 1,
           };
           // this is for check if filter value get true only on that it will false
           if (prev.filterTrigger) {
@@ -184,7 +185,7 @@ const PendingRequest = () => {
     );
     requestData = {
       ...requestData,
-      PageNumber: 0,
+      PageNumber: 1,
     };
     fetchApiCall(requestData, true, false);
     setLineManagerApprovalMQtt(false);
@@ -233,7 +234,7 @@ const PendingRequest = () => {
     setLMPendingApprovalReportsSearch((prev) => ({
       ...prev,
       ...resetMap[key],
-      pageNumber: 0,
+      pageNumber: 1,
       filterTrigger: true,
     }));
   };
@@ -247,7 +248,7 @@ const PendingRequest = () => {
       startDate: null,
       endDate: null,
       quantity: 0,
-      pageNumber: 0,
+      pageNumber: 1,
       filterTrigger: true,
     }));
   };
@@ -294,7 +295,11 @@ const PendingRequest = () => {
         navigationEntries[0].type === "reload"
       ) {
         // Check localStorage for previously saved selectedKey
-        resetLineManagerApprovalSearch();
+        // Was calling resetLineManagerApprovalSearch(), a function never
+        // destructured in this file (that name belongs to the main
+        // lm-approval-requests page) — silently threw a ReferenceError
+        // caught below, so the reset never actually ran on reload.
+        resetLineManagerPendingApprovalReportsSearch();
       }
     } catch (error) {
       console.error(
@@ -338,13 +343,15 @@ const PendingRequest = () => {
       lMPendingApprovalReportsSearch,
       assetTypeListingData
     );
+    // Confirmed final shape per 2026-08-05_lm_pending_export_request_shape.md
+    // — no PageNumber/Length (export always returns every matching row)
+    // and no StatusIds (not supported on this export, list-only field).
     let NewRequestData = {
       InstrumentName: requestData.InstrumentName,
       Quantity: requestData.Quantity,
       StartDate: requestData.StartDate,
       EndDate: requestData.EndDate,
       TypeIds: requestData.TypeIds,
-      StatusIds: requestData.StatusIds,
       RequesterName: requestData.RequesterName,
     };
     await ExportLineManagerPendingTradeApprovalsExcel({

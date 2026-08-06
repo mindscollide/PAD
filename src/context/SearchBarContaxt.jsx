@@ -44,7 +44,10 @@ export const SearchBarProvider = ({ children }) => {
     type: [],
     status: [],
     pageSize: 10,
-    pageNumber: 0,
+    // SearchTradeApprovals's PageNumber is now a real 1-indexed page
+    // number (backend fix 2026-08-05: OFFSET = (PageNumber-1)*Length) —
+    // was 0 to compensate for the old broken OFFSET=PageNumber behavior.
+    pageNumber: 1,
     filterTrigger: false,
   });
 
@@ -101,7 +104,9 @@ export const SearchBarProvider = ({ children }) => {
     nature: "",
     status: [],
     type: [],
-    pageNumber: 0,
+    // GetEmployeeHistoryWorkFlowDetails's PageNumber is now a real
+    // 1-indexed page number (backend fix 2026-08-05).
+    pageNumber: 1,
     pageSize: 10,
     filterTrigger: false,
   });
@@ -185,7 +190,9 @@ export const SearchBarProvider = ({ children }) => {
       type: [],
       status: [],
       pageSize: 10,
-      pageNumber: 0,
+      // SearchLineManagerPendingApprovalsRequest's PageNumber is
+      // 1-indexed (see 2026-08-05_lm_pending_requests_screen_api_reference.md).
+      pageNumber: 1,
       filterTrigger: false,
     });
 
@@ -299,7 +306,9 @@ export const SearchBarProvider = ({ children }) => {
       type: [],
       status: [],
       pageSize: 10,
-      pageNumber: 0,
+      // GetPendingTradeApprovalsForHta's PageNumber is 1-indexed (see
+      // 2026-08-05_hta_pending_requests_screen_api_reference.md).
+      pageNumber: 1,
       filterTrigger: false,
     });
 
@@ -355,7 +364,9 @@ export const SearchBarProvider = ({ children }) => {
       type: [],
       status: [],
       quantity: 0,
-      pageNumber: 0,
+      // GetComplianceOfficerMyActionsWorkflowDetail's PageNumber is now
+      // a real 1-indexed page number (backend fix 2026-08-05).
+      pageNumber: 1,
       pageSize: 10,
       filterTrigger: false,
     });
@@ -663,7 +674,9 @@ export const SearchBarProvider = ({ children }) => {
       ipAddress: 0,
       startDate: null,
       endDate: null,
-      pageNumber: 0,
+      // GetUserSessionWiseActivity's PageNumber is now a real 1-indexed
+      // page number (backend fix 2026-08-05, confirmed working).
+      pageNumber: 1,
       pageSize: 10,
       filterTrigger: false,
     });
@@ -841,7 +854,7 @@ export const SearchBarProvider = ({ children }) => {
       type: [],
       status: [],
       pageSize: 10,
-      pageNumber: 0,
+      pageNumber: 1,
       filterTrigger: false,
     });
 
@@ -918,7 +931,7 @@ export const SearchBarProvider = ({ children }) => {
       type: [],
       status: [],
       pageSize: "",
-      pageNumber: 0,
+      pageNumber: 1,
       filterTrigger: false,
     });
 
@@ -977,7 +990,7 @@ export const SearchBarProvider = ({ children }) => {
       type: [],
       status: [],
       pageSize: 10,
-      pageNumber: 0,
+      pageNumber: 1,
       filterTrigger: false,
     });
 
@@ -1105,7 +1118,7 @@ export const SearchBarProvider = ({ children }) => {
       type: [],
       status: [],
       quantity: 0,
-      pageNumber: 0,
+      pageNumber: 1,
       pageSize: 10,
       filterTrigger: false,
     });
@@ -1252,7 +1265,11 @@ export const SearchBarProvider = ({ children }) => {
 
   const resetHTAPendingApprovalRequestReportSearch = () => {
     setHTAPendingApprovalReportsSearch({
-      InstrumentName: "",
+      // Was "InstrumentName"/"PageNumber" (wrong casing) — buildApiRequest
+      // reads lowercase instrumentName/pageNumber, so those fields never
+      // actually got reset to a real value (silently fell through to
+      // buildApiRequest's own destructuring defaults instead).
+      instrumentName: "",
       requesterName: "",
       lineManagerName: "",
       quantity: 0,
@@ -1263,7 +1280,7 @@ export const SearchBarProvider = ({ children }) => {
       type: [],
       status: [],
       pageSize: 10,
-      PageNumber: 0,
+      pageNumber: 1,
       filterTrigger: false,
     });
   };
@@ -1368,7 +1385,7 @@ export const SearchBarProvider = ({ children }) => {
       ipAddress: 0,
       startDate: null,
       endDate: null,
-      pageNumber: 0,
+      pageNumber: 1,
       pageSize: 10,
       filterTrigger: false,
     });

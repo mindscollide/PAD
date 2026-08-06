@@ -3781,6 +3781,69 @@ export const ExportHTATradeApprovalRequestsExcelReport = async ({
   }
 };
 
+// HTA Pending Requests screen export — ServiceManager.ExportHTAPendingTradeApprovalsExcel
+// (alias of ExportHtaPendingTradeApprovalExcelReport, same implementation).
+// See API_Changes/2026-08-05_hta_pending_requests_screen_api_reference.md.
+export const ExportHTAPendingTradeApprovalsExcel = async ({
+  callApi,
+  showLoader,
+  requestdata,
+  navigate,
+}) => {
+  try {
+    showLoader(true);
+
+    // 🔹 API Call
+    const res = await callApi({
+      requestMethod: import.meta.env
+        .VITE_EXPORT_HTA_PENDING_TRADE_APPROVALS_EXCEL_REQUEST_METHOD,
+      endpoint: import.meta.env.VITE_API_REPORT,
+      requestData: requestdata,
+      navigate,
+      responseType: "arraybuffer", // ⚡ Required for file download
+      headers: {
+        "Content-Type":
+          "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      },
+    });
+
+    // 🔹 Check Session Expiry
+    if (handleExpiredSession(res, navigate, showLoader)) return false;
+    // 🔹 When API send isExecuted false
+    if (!res?.result?.isExecuted) {
+      return false;
+    }
+
+    // 🔹 When API Send Success Response
+    if (res.success) {
+      try {
+        // Create a blob and trigger download
+        const blob = new Blob([res.result?.fileData || res.data], {
+          type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        });
+
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+
+        link.setAttribute("download", "HTA-Pending-Request-Report.xlsx");
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        return true;
+      } catch {
+        return false;
+      }
+    }
+
+    return false;
+  } catch {
+    return false;
+  } finally {
+    showLoader(false);
+  }
+};
+
 //For HTA Search Policy Breached Work Flows Request API for Reports
 export const SearchPolicyBreachedWorkFlowsRequest = async ({
   callApi,
