@@ -10,6 +10,8 @@ export const buildManageUserUseraTabApiRequest = (searchState = {}) => ({
   EmployeeID: searchState.employeeID ? Number(searchState.employeeID) : 0,
   EmployeeName: searchState.employeeName || "",
   EmailAddress: searchState.emailAddress || "",
-  PageNumber: Number(searchState.pageNumber) || 0,
+  // GetAllEmployeesWithAssignedManageUsersUserTabPolicies's PageNumber is
+  // now a real 1-indexed page number (backend fix 2026-08-06).
+  PageNumber: Number(searchState.pageNumber) || 1,
   Length: Number(searchState.pageSize) || 10,
 });

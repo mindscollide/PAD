@@ -106,10 +106,11 @@ export const MarkNotificationAsReadRequest = async ({
   navigate,
 }) => {
   try {
-    // 🔹 Start loader
-    showLoader(true);
-
-    // 🔹 Call API
+    // 🔹 Call API — no showLoader(true) here: this runs as a quiet
+    // background call (dropdown close / scroll-to-bottom / "Mark all as
+    // read" click), same as GetUserWebNotificationRequest. Flashing the
+    // app's full-page loader for it is disruptive UX for something this
+    // minor.
     const res = await callApi({
       requestMethod: import.meta.env
         .VITE_MARK_NOTIFICATIONS_AS_READ_REQUEST_METHOD,

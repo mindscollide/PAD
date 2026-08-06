@@ -144,11 +144,16 @@ const NotificationDropdown = () => {
 
     try {
       const currentDateTime = getCurrentDateTimeMarkAsReadNotification();
+      // PascalCase "ReadOnDateTime" — the backend deserializes RequestData
+      // with System.Text.Json (case-sensitive, no options set), so this
+      // must match the C# model's property name exactly. Confirmed in
+      // 2026-08-06_markNotificationsAsRead_request_casing.md: camelCase
+      // "readOnDateTime" silently deserializes to null and returns _02
+      // ("Invalid Request Data"). This also applies to every other RPC
+      // call in the app — RequestData keys should always be PascalCase.
       const requestdata = {
         ReadOnDateTime: currentDateTime,
       };
-
-      console.log(requestdata, "CHeckecnecnecln");
 
       await MarkNotificationAsReadRequest({
         callApi,
@@ -168,8 +173,11 @@ const NotificationDropdown = () => {
         })),
       }));
 
-      // Update context state
-      setMarkAsReadNotificationState(true);
+      // NOTE: intentionally not calling setMarkAsReadNotificationState(true)
+      // here — that flag is what the effect below watches to *invoke*
+      // markAllAsRead in the first place (set by onOpenChange on dropdown
+      // close). Setting it again on completion made this call itself a
+      // second time through that effect on every run.
     } catch (error) {
       console.error("Error marking all notifications as read:", error);
     }
@@ -305,6 +313,28 @@ const NotificationDropdown = () => {
               </>
             )}
           </div>
+
+          {/* Explicit "Mark all as read" action — was styled (.mark-all)
+              but never rendered; previously the only way to mark
+              notifications read was implicitly, by closing the dropdown. */}
+          {notifications.length > 0 && (
+            <div
+              className={styles["mark-all"]}
+              role="button"
+              tabIndex={unreadCount ? 0 : -1}
+              aria-disabled={!unreadCount}
+              style={
+                unreadCount
+                  ? undefined
+                  : { cursor: "default", opacity: 0.5 }
+              }
+              onClick={() => {
+                if (unreadCount) markAllAsRead();
+              }}
+            >
+              Mark all as read
+            </div>
+          )}
         </>
       )}
     >

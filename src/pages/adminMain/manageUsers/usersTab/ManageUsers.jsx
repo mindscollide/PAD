@@ -104,15 +104,21 @@ const UsersTab = () => {
       setLoadingMore(true);
 
       try {
-        // calculate current offset (PageNumber) as current loaded employees length
+        // GetAllEmployeesWithAssignedManageUsersUserTabPolicies's
+        // PageNumber is now a real 1-indexed page number (backend fix
+        // 2026-08-06: OFFSET = (PageNumber-1)*Length) — derive the next
+        // page from how many rows are already loaded, not the raw row
+        // count itself.
         const currentLength = adminManageUserTabData?.employees?.length || 0;
+        const pageSize = 10;
+        const nextPageNumber = Math.floor(currentLength / pageSize) + 1;
 
         // build request based on current search/filter but override pagination
         const baseRequest = buildManageUserUseraTabApiRequest(usersTabSearch);
         const requestData = {
           ...baseRequest,
-          PageNumber: currentLength, // sRow
-          Length: 10, // eRow (static 10)
+          PageNumber: nextPageNumber,
+          Length: pageSize,
         };
 
         const res = await SearchManageUserListRequest({
