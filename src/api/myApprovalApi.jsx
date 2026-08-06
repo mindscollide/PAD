@@ -4676,3 +4676,206 @@ export const ExportHOCTransactionSummaryReportExcelApi = async ({
     showLoader(false);
   }
 };
+
+// HOC Transaction Summary "View Details" per-date drill-down export —
+// ServiceManager.GetHCAViewTransactionSummaryExportAPI (brand new endpoint,
+// see API_Changes/2026-08-06_hca_view_transaction_summary_export_new_api.md).
+// Distinct from ExportHOCTransactionSummaryReportExcelApi above, which
+// exports the aggregated summary list, not one date's transaction detail.
+export const GetHCAViewTransactionSummaryExportAPI = async ({
+  callApi,
+  showLoader,
+  requestdata,
+  navigate,
+}) => {
+  try {
+    showLoader(true);
+
+    // 🔹 API Call
+    const res = await callApi({
+      requestMethod: import.meta.env
+        .VITE_GET_HCA_VIEW_TRANSACTION_SUMMARY_EXPORT_API_REQUEST_METHOD,
+      endpoint: import.meta.env.VITE_API_REPORT,
+      requestData: requestdata,
+      navigate,
+      responseType: "arraybuffer", // ⚡ Required for file download
+      headers: {
+        "Content-Type":
+          "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      },
+    });
+
+    // 🔹 Check Session Expiry
+    if (handleExpiredSession(res, navigate, showLoader)) return false;
+    // 🔹 When API send isExecuted false
+    if (!res?.result?.isExecuted) {
+      return false;
+    }
+
+    // 🔹 When API Send Success Response
+    if (res.success) {
+      try {
+        // Create a blob and trigger download
+        const blob = new Blob([res.result?.fileData || res.data], {
+          type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        });
+
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+
+        link.setAttribute(
+          "download",
+          "HOC-Transaction-Summary-View-Details-Report.xlsx"
+        );
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        return true;
+      } catch {
+        return false;
+      }
+    }
+
+    return false;
+  } catch {
+    return false;
+  } finally {
+    showLoader(false);
+  }
+};
+
+// CO's own Transaction Summary report export —
+// ServiceManager.ExportComplianceOfficerTransactionSummaryReportExcel (was
+// throwing on every call, fixed 2026-08-06 — see
+// API_Changes/2026-08-06_co_transaction_summary_exports.md). Distinct from
+// the shared DownloadComplianceOfficerDateWiseTransactionReportRequestAPI
+// above, which is a different report ("Date-Wise Transactions") used by
+// several other pages — this one is CO Transaction Summary-specific.
+export const ExportComplianceOfficerTransactionSummaryReportExcel = async ({
+  callApi,
+  showLoader,
+  requestdata,
+  navigate,
+}) => {
+  try {
+    showLoader(true);
+
+    // 🔹 API Call
+    const res = await callApi({
+      requestMethod: import.meta.env
+        .VITE_EXPORT_COMPLIANCE_OFFICER_TRANSACTION_SUMMARY_REPORT_EXCEL_REQUEST_METHOD,
+      endpoint: import.meta.env.VITE_API_REPORT,
+      requestData: requestdata,
+      navigate,
+      responseType: "arraybuffer", // ⚡ Required for file download
+      headers: {
+        "Content-Type":
+          "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      },
+    });
+
+    // 🔹 Check Session Expiry
+    if (handleExpiredSession(res, navigate, showLoader)) return false;
+    // 🔹 When API send isExecuted false
+    if (!res?.result?.isExecuted) {
+      return false;
+    }
+
+    // 🔹 When API Send Success Response
+    if (res.success) {
+      try {
+        // Create a blob and trigger download
+        const blob = new Blob([res.result?.fileData || res.data], {
+          type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        });
+
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+
+        link.setAttribute(
+          "download",
+          "CO-Transaction-Summary-Report.xlsx"
+        );
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        return true;
+      } catch {
+        return false;
+      }
+    }
+
+    return false;
+  } catch {
+    return false;
+  } finally {
+    showLoader(false);
+  }
+};
+
+// CO Transaction Summary "View Details" per-date drill-down export —
+// ServiceManager.ExportComplianceOfficerViewTransactionSummaryReportExcel
+// (brand new endpoint, CO-scoped mirror of GetHCAViewTransactionSummaryExportAPI
+// above — same request/response shape, scoped server-side to the calling
+// CO's own hierarchy). See
+// API_Changes/2026-08-06_co_transaction_summary_exports.md.
+export const ExportComplianceOfficerViewTransactionSummaryReportExcel =
+  async ({ callApi, showLoader, requestdata, navigate }) => {
+    try {
+      showLoader(true);
+
+      // 🔹 API Call
+      const res = await callApi({
+        requestMethod: import.meta.env
+          .VITE_EXPORT_COMPLIANCE_OFFICER_VIEW_TRANSACTION_SUMMARY_REPORT_EXCEL_REQUEST_METHOD,
+        endpoint: import.meta.env.VITE_API_REPORT,
+        requestData: requestdata,
+        navigate,
+        responseType: "arraybuffer", // ⚡ Required for file download
+        headers: {
+          "Content-Type":
+            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        },
+      });
+
+      // 🔹 Check Session Expiry
+      if (handleExpiredSession(res, navigate, showLoader)) return false;
+      // 🔹 When API send isExecuted false
+      if (!res?.result?.isExecuted) {
+        return false;
+      }
+
+      // 🔹 When API Send Success Response
+      if (res.success) {
+        try {
+          // Create a blob and trigger download
+          const blob = new Blob([res.result?.fileData || res.data], {
+            type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+          });
+
+          const url = window.URL.createObjectURL(blob);
+          const link = document.createElement("a");
+          link.href = url;
+
+          link.setAttribute(
+            "download",
+            "CO-Transaction-Summary-View-Details-Report.xlsx"
+          );
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+          return true;
+        } catch {
+          return false;
+        }
+      }
+
+      return false;
+    } catch {
+      return false;
+    } finally {
+      showLoader(false);
+    }
+  };
