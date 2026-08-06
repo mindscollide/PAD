@@ -28,6 +28,8 @@ import {
   DownloadComplianceOfficerDateWiseTransactionReportRequestAPI,
   DownloadLineManagerMyTradeApprovalReportRequestAPI,
   DownloadMyTransactionReportRequestAPI,
+  ExportComplianceOfficerTransactionSummaryReportExcel,
+  ExportComplianceOfficerViewTransactionSummaryReportExcel,
   GetComplianceOfficerViewTransactionSummaryAPI,
   SearchComplianceOfficerTransactionSummaryReportRequest,
   SearchLineManagerTradeApprovalRequestApi,
@@ -381,27 +383,46 @@ const COTransactionsSummarysReports = () => {
     }));
   };
 
-  // 🔷 Excel Report download Api Hit
+  // 🔷 Excel Report download Api Hit — summary list (date groups)
+  // Was calling the shared "Date-Wise Transactions" report export (a
+  // different report entirely, used by several other pages) with a
+  // payload shape that doesn't even match this endpoint — hence always
+  // erroring. Confirmed shape per
+  // API_Changes/2026-08-06_co_transaction_summary_exports.md: just
+  // {FromDate, ToDate}, both optional.
   const downloadMyTradeApprovalLineManagerInExcelFormat = async () => {
     showLoader(true);
-    const requestdata = {
-      InstrumentName: "",
-      DepartmentName: "",
-      Quantity: 0,
-      StatusIds: [],
-      TypeIds: [],
-      RequesterName: "",
-      StartDate: "",
-      EndDate: "",
-    };
+    const { PageNumber, Length, ...requestdata } = buildApiRequest(
+      coTransactionsSummarysReportsSearch
+    );
 
-    await DownloadComplianceOfficerDateWiseTransactionReportRequestAPI({
+    await ExportComplianceOfficerTransactionSummaryReportExcel({
       callApi,
       showLoader,
-      requestdata: requestdata,
+      requestdata,
       navigate,
     });
   };
+
+  // 🔷 Excel Report download Api Hit — "View Details" drill-down for one
+  // date (brand new endpoint, was previously not wired up at all — the
+  // Export button always called the summary export above regardless of
+  // which view was open).
+  const downloadComplianceOfficerViewTransactionSummaryExcelFormat =
+    async () => {
+      showLoader(true);
+      const { PageNumber, Length, ...requestdata } = buildApiRequestViewDetails(
+        coTransactionsSummarysReportsViewDetailsSearch,
+        assetTypeListingData
+      );
+
+      await ExportComplianceOfficerViewTransactionSummaryReportExcel({
+        callApi,
+        showLoader,
+        requestdata,
+        navigate,
+      });
+    };
 
   /** 🔹 Handle removing individual filter */
   const handleRemoveFilter = (key) => {
@@ -552,7 +573,11 @@ const COTransactionsSummarysReports = () => {
               </div> */}
               <div
                 className={style.dropdownItem}
-                onClick={downloadMyTradeApprovalLineManagerInExcelFormat}
+                onClick={
+                  coTransactionSummaryReportViewDetailsFlag
+                    ? downloadComplianceOfficerViewTransactionSummaryExcelFormat
+                    : downloadMyTradeApprovalLineManagerInExcelFormat
+                }
               >
                 <img src={Excel} alt="Excel" draggable={false} />
                 <span>Export Excel</span>
