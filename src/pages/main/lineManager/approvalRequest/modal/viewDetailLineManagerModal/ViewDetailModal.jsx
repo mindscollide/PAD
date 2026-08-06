@@ -665,7 +665,7 @@ const ViewDetailModal = () => {
                               {" "}
                               <div className={styles.CompliantButtonClass}>
                                 <CustomButton
-                                  text={"View Ticket"}
+                                  text={"View Tickets"}
                                   className="big-light-button"
                                 />
                                 <CustomButton

@@ -31,7 +31,7 @@ export const buildApiRequest = (searchState = {}) => ({
 
 export const buildApiRequestViewDetails = (
   searchState = {},
-  assetTypeListingData,
+  assetTypeListingData
 ) => ({
   PageNumber: Number(searchState.pageNumber) || 0,
   Length: Number(searchState.pageSize) || 10,
@@ -49,7 +49,7 @@ export const buildApiRequestViewDetails = (
  * @returns {Array} Mapped transaction list
  */
 export const mappingDateWiseTransactionReport = (
-  myTradeApprovalLineManagerData = [],
+  myTradeApprovalLineManagerData = []
 ) => {
   const records = Array.isArray(myTradeApprovalLineManagerData)
     ? myTradeApprovalLineManagerData
@@ -80,7 +80,7 @@ export const mappingDateWiseTransactionReport = (
 };
 export const mappingDateWiseTransactionviewDetailst = (
   assetTypeData,
-  myTradeApprovalLineManagerData = [],
+  myTradeApprovalLineManagerData = []
 ) => {
   const records = Array.isArray(myTradeApprovalLineManagerData)
     ? myTradeApprovalLineManagerData
@@ -107,8 +107,7 @@ export const mappingDateWiseTransactionviewDetailst = (
       instrumentName: item?.instrumentName || "—",
       assetTypeShortCode: item?.assetShortCode || "—",
       transactionDate:
-        `${item?.creationDate || ""} ${item?.creationTime || ""}`.trim() ||
-        "—",
+        `${item?.creationDate || ""} ${item?.creationTime || ""}`.trim() || "—",
       department: item.departmentName,
       type: getTradeTypeById(assetTypeData, item?.tradeType) || "-",
       status: item.approvalStatus?.approvalStatusName || "",
@@ -121,7 +120,8 @@ export const mappingDateWiseTransactionviewDetailst = (
       accetanceComments: item.accetanceComments || "",
       rejectionComments: item.rejectionComments || "",
       workFlowStatusID: item.workFlowStatusID || 0,
-      actionBy: actionByNames.length > 1 ? "Multiple Users" : actionByNames[0] || "",
+      actionBy:
+        actionByNames.length > 1 ? "Multiple Users" : actionByNames[0] || "",
       actionByFullNames: actionByNames.join(", "),
       actionDate:
         `${item?.actionDate || ""} ${item?.actionTime || ""}`.trim() || "—",
@@ -138,7 +138,7 @@ export const getBorderlessTableColumns = ({
       "Transaction Date",
       "transactionDate",
       sortedInfo,
-      "center",
+      "center"
     ),
     align: "center",
     dataIndex: "transactionDate",
@@ -162,7 +162,7 @@ export const getBorderlessTableColumns = ({
       "Total Employees",
       "totalEmployees",
       sortedInfo,
-      "center",
+      "center"
     ),
     dataIndex: "totalEmployees",
     key: "totalEmployees",
@@ -181,7 +181,7 @@ export const getBorderlessTableColumns = ({
       "Total Transactions",
       "totalTransactions",
       sortedInfo,
-      "center",
+      "center"
     ),
     dataIndex: "totalTransactions",
     key: "totalTransactions",
@@ -200,7 +200,7 @@ export const getBorderlessTableColumns = ({
       "Compliant Transactions",
       "compliantTransactions",
       sortedInfo,
-      "center",
+      "center"
     ),
     dataIndex: "compliantTransactions",
     key: "compliantTransactions",
@@ -222,7 +222,7 @@ export const getBorderlessTableColumns = ({
       "Non-Compliant Transactions",
       "nonCompliantTransactions",
       sortedInfo,
-      "center",
+      "center"
     ),
     dataIndex: "nonCompliantTransactions",
     key: "nonCompliantTransactions",
@@ -415,7 +415,7 @@ export const getBorderlessTableColumnsViewDetails = ({
       "Initiated at",
       "transactionDate",
       sortedInfo,
-      "center",
+      "center"
     ),
     dataIndex: "transactionDate",
     key: "transactionDate",

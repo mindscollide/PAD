@@ -244,6 +244,7 @@ export const getBorderlessTableColumns = ({
     key: "type",
     ellipsis: true,
     width: 100,
+    align: "center",
     filteredValue: employeeMyTransactionReportSearch.type?.length
       ? employeeMyTransactionReportSearch?.type
       : null,
@@ -368,7 +369,7 @@ export const getBorderlessTableColumns = ({
     dataIndex: "actionDateTime",
     key: "actionDateTime",
     ellipsis: true,
-    width: 100,
+    width: 230,
     sorter: (a, b) =>
       formatApiDateTime(a.actionDateTime).localeCompare(
         formatApiDateTime(b.actionDateTime)
@@ -394,7 +395,7 @@ export const getBorderlessTableColumns = ({
     dataIndex: "actionBy",
     key: "actionBy",
     ellipsis: true,
-    width: 100,
+    width: 150,
     sorter: (a, b) => (a.actionBy || "").localeCompare(b.actionBy || ""),
     sortOrder: sortedInfo?.columnKey === "actionBy" ? sortedInfo.order : null,
     sortDirections: ["ascend", "descend"],
