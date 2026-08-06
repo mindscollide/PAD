@@ -77,12 +77,14 @@ export const mapApiResopse = (assetTypeData, pendingTradeApprovals = []) =>
       instrumentName: item?.instrument?.instrumentName || "—",
       assetTypeShortCode: item?.assetType?.assetTypeShortCode || "—",
       requestDateTime: `${item.requestDate || ""} ${item.requestTime || ""}`,
-      escalatedDateTime: `${item.escalatedOnDate || ""} ${item.escalatedOnTime || ""}`,
+      escalatedDateTime: `${item.escalatedOnDate || ""} ${
+        item.escalatedOnTime || ""
+      }`,
       isEscalated: item.isEscalated,
       type: getTradeTypeById(assetTypeData, item?.tradeType),
       status: item?.approvalStatus?.approvalStatusName ?? "—",
       quantity: item.quantity || 0,
-    }),
+    })
   );
 
 export const getBorderlessLineManagerTableColumns = ({
@@ -99,7 +101,7 @@ export const getBorderlessLineManagerTableColumns = ({
     key: "requesterName",
     align: "left",
     ellipsis: true,
-    width: "14%",
+    width: 200,
     sorter: (a, b) => a.requesterName.localeCompare(b.requesterName),
     sortDirections: ["ascend", "descend"],
     sortOrder:
@@ -123,7 +125,8 @@ export const getBorderlessLineManagerTableColumns = ({
     key: "lineManagerName",
     ellipsis: true,
     align: "left",
-    width: "14%",
+    width: 150,
+
     sorter: (a, b) => a.lineManagerName.localeCompare(b.lineManagerName),
     sortDirections: ["ascend", "descend"],
     sortOrder:
@@ -196,15 +199,17 @@ export const getBorderlessLineManagerTableColumns = ({
       "Request Date & Time",
       "requestDateTime",
       sortedInfo,
-      "center",
+      "center"
     ),
     dataIndex: "requestDateTime",
     key: "requestDateTime",
     align: "center",
+    width: 220,
+
     ellipsis: true,
     sorter: (a, b) =>
       formatApiDateTime(a.requestDateTime).localeCompare(
-        formatApiDateTime(b.requestDateTime),
+        formatApiDateTime(b.requestDateTime)
       ),
     sortDirections: ["ascend", "descend"],
     sortOrder:
@@ -227,7 +232,8 @@ export const getBorderlessLineManagerTableColumns = ({
     dataIndex: "type",
     align: "left",
     key: "type",
-    width: "8%",
+    width: 120,
+
     ellipsis: true,
     filteredValue: hTAPendingApprovalReportsSearch?.type?.length
       ? hTAPendingApprovalReportsSearch?.type
@@ -247,7 +253,8 @@ export const getBorderlessLineManagerTableColumns = ({
     dataIndex: "quantity",
     key: "quantity",
     align: "center",
-    width: "8%",
+    width: 100,
+
     ellipsis: true,
     sorter: (a, b) => a.quantity - b.quantity,
     sortDirections: ["ascend", "descend"],
@@ -264,7 +271,8 @@ export const getBorderlessLineManagerTableColumns = ({
     title: "",
     dataIndex: "isEscalated",
     key: "isEscalated",
-    width: "7%",
+    width: 50,
+
     ellipsis: true,
     render: (isEscalated, record) => {
       console.log(record, "CheckIsEsclated");
@@ -283,15 +291,17 @@ export const getBorderlessLineManagerTableColumns = ({
       "Escalated date & time",
       "escalatedDateTime",
       sortedInfo,
-      "center",
+      "center"
     ),
     dataIndex: "escalatedDateTime",
     key: "escalatedDateTime",
     align: "center",
     ellipsis: true,
+    width: 200,
+
     sorter: (a, b) =>
       formatApiDateTime(a.escalatedDateTime).localeCompare(
-        formatApiDateTime(b.escalatedDateTime),
+        formatApiDateTime(b.escalatedDateTime)
       ),
     sortDirections: ["ascend", "descend"],
     sortOrder:
