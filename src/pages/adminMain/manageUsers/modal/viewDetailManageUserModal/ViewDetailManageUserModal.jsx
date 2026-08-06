@@ -702,6 +702,7 @@ import {
   GetLineManagerOnViewDetailUserTabRequest,
   GetViewDetailsUserRoleAndPoliciesRequests,
   UpdateEmployeeManagerManageUserTab,
+  ViewDetailManageUserUserTabRequest,
 } from "../../../../../api/adminApi";
 import { useNavigate } from "react-router-dom";
 import { useNotification } from "../../../../../components/NotificationProvider/NotificationProvider";
@@ -729,15 +730,16 @@ const ViewDetailManageUserModal = () => {
     complianceOfficerViewDetailDropdownData,
     setComplianceOfficerViewDetailDropdownData,
     setRoleAndPolicyViewDetailData,
+    setManageUsersViewDetailModalData,
   } = useMyAdmin();
 
   //🔹 Separate edit flags for each role section and Local States
   const [isLineManagerEditOpen, setIsLineManagerEditOpen] = useState(false);
   const [isComplianceOfficerEditOpen, setIsComplianceOfficerEditOpen] =
     useState(false);
-  //🔹 For selected Manager User Id From LM
+  //🔹 For selected Manager User Id From LM — shape: { value, label } (labelInValue)
   const [selectedLineManagerID, setSelectedLineManagerID] = useState(null);
-  //🔹 For selected Manager User Id From Compliance Offier
+  //🔹 For selected Manager User Id From Compliance Officer — shape: { value, label } (labelInValue)
   const [selectedComplianceOfficerID, setSelectedComplianceOfficerID] =
     useState(null);
 
@@ -753,6 +755,31 @@ const ViewDetailManageUserModal = () => {
 
     if (res) {
       setLineManagerViewDetailDropdownData(res);
+
+      // 🔹 Pre-select the currently assigned Line Manager once the dropdown list is available
+      const currentLM = manageUsersViewDetailModalData?.userHierarchy?.find(
+        (manager) => manager.roleID === 3
+      );
+
+      if (currentLM) {
+        const matchedManager = res?.lineManagers?.find(
+          (manager) => manager.userID === currentLM.managerID
+        );
+
+        if (matchedManager) {
+          setSelectedLineManagerID({
+            value: matchedManager.userID,
+            label: `${matchedManager.firstName} ${matchedManager.lastName}`,
+          });
+        } else {
+          // Current LM wasn't returned by the dropdown API (e.g. disabled/removed) —
+          // fall back to the name we already have from the hierarchy data
+          setSelectedLineManagerID({
+            value: currentLM.managerID,
+            label: currentLM.managerName,
+          });
+        }
+      }
     }
   };
 
@@ -768,6 +795,31 @@ const ViewDetailManageUserModal = () => {
 
     if (res) {
       setComplianceOfficerViewDetailDropdownData(res);
+
+      // 🔹 Pre-select the currently assigned Compliance Officer once the dropdown list is available
+      const currentCO = manageUsersViewDetailModalData?.userHierarchy?.find(
+        (manager) => manager.roleID === 4
+      );
+
+      if (currentCO) {
+        const matchedOfficer = res?.lineManagers?.find(
+          (officer) => officer.userID === currentCO.managerID
+        );
+
+        if (matchedOfficer) {
+          setSelectedComplianceOfficerID({
+            value: matchedOfficer.userID,
+            label: `${matchedOfficer.firstName} ${matchedOfficer.lastName}`,
+          });
+        } else {
+          // Current CO wasn't returned by GetAllComplianceOfficer (e.g. disabled/removed) —
+          // fall back to the name we already have from the hierarchy data
+          setSelectedComplianceOfficerID({
+            value: currentCO.managerID,
+            label: currentCO.managerName,
+          });
+        }
+      }
     }
   };
 
@@ -794,6 +846,24 @@ const ViewDetailManageUserModal = () => {
       setRoleAndPolicyViewDetailData(res);
     }
   };
+  const getUpdatedUserDetails = async () => {
+    showLoader(true);
+    const payload = {
+      EmployeeID: manageUsersViewDetailModalData?.userDetails?.employeeID,
+    };
+
+    let res = await ViewDetailManageUserUserTabRequest({
+      callApi,
+      showNotification,
+      showLoader,
+      requestdata: payload,
+      navigate,
+    });
+
+    if (res) {
+      setManageUsersViewDetailModalData(res);
+    }
+  };
 
   // You might want Save handlers here, I just simulate closing edit mode
   const saveLineManager = async () => {
@@ -801,7 +871,7 @@ const ViewDetailManageUserModal = () => {
     let payload = {
       EmployeeID: manageUsersViewDetailModalData?.userDetails?.employeeID,
       EntityTypeID: 1, // for line manager 1 for compliance officer 2
-      ManagerID: selectedLineManagerID,
+      ManagerID: selectedLineManagerID?.value,
     };
     await UpdateEmployeeManagerManageUserTab({
       callApi,
@@ -810,6 +880,8 @@ const ViewDetailManageUserModal = () => {
       showLoader,
       navigate,
     });
+
+    getUpdatedUserDetails();
     setIsLineManagerEditOpen(false);
   };
 
@@ -818,7 +890,7 @@ const ViewDetailManageUserModal = () => {
     let payload = {
       EmployeeID: manageUsersViewDetailModalData?.userDetails?.employeeID,
       EntityTypeID: 2, // for line manager 1 for compliance officer 2
-      ManagerID: selectedComplianceOfficerID,
+      ManagerID: selectedComplianceOfficerID?.value,
     };
     await UpdateEmployeeManagerManageUserTab({
       callApi,
@@ -827,6 +899,7 @@ const ViewDetailManageUserModal = () => {
       showLoader,
       navigate,
     });
+    getUpdatedUserDetails();
     setIsComplianceOfficerEditOpen(false);
   };
 
@@ -1051,8 +1124,9 @@ const ViewDetailManageUserModal = () => {
                             Name:
                           </label>
                           <Select
-                            allowClear
                             showSearch
+                            labelInValue
+                            value={selectedLineManagerID}
                             optionFilterProp="label"
                             optionLabelProp="label"
                             className={styles.SelectDropdownClass}
@@ -1106,7 +1180,10 @@ const ViewDetailManageUserModal = () => {
                             <CustomButton
                               text="Cancel"
                               className="big-light-button"
-                              onClick={() => setIsLineManagerEditOpen(false)}
+                              onClick={() => {
+                                setSelectedLineManagerID(null);
+                                setIsLineManagerEditOpen(false);
+                              }}
                             />
                             <CustomButton
                               text="Save"
@@ -1191,7 +1268,8 @@ const ViewDetailManageUserModal = () => {
                           </label>
                           <Select
                             showSearch
-                            allowClear
+                            labelInValue
+                            value={selectedComplianceOfficerID}
                             optionFilterProp="label"
                             optionLabelProp="label"
                             className={styles.SelectDropdownClass}
@@ -1245,9 +1323,10 @@ const ViewDetailManageUserModal = () => {
                             <CustomButton
                               text="Cancel"
                               className="big-light-button"
-                              onClick={() =>
-                                setIsComplianceOfficerEditOpen(false)
-                              }
+                              onClick={() => {
+                                setSelectedComplianceOfficerID(null);
+                                setIsComplianceOfficerEditOpen(false);
+                              }}
                             />
                             <CustomButton
                               text="Save"
