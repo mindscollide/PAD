@@ -101,8 +101,7 @@ const Dashboard = () => {
     );
   };
   const apiCallwebNotification = async () => {
-    const requestdata = { sRow: 0, eRow: 10 }; // Initial fetch data from API
-    console.log("action", requestdata);
+    const requestdata = { sRow: 0, eRow: 10 }; // Re-fetch just the first page
     const webNotificationRequest = await GetUserWebNotificationRequest({
       callApi,
       showNotification,
@@ -110,8 +109,30 @@ const Dashboard = () => {
       requestdata,
       navigate,
     });
-    console.log("action", webNotificationRequest);
-    await setWebNotificationData(webNotificationRequest);
+    if (!webNotificationRequest) return;
+
+    // This fires on every "WEBNOTIFICATION" MQTT push, which can land while
+    // the user has scrolled the dropdown past the first page. Overwriting
+    // webNotificationData wholesale would drop those already-loaded pages,
+    // so merge the fresh first page in (dedupe by notificationID) instead
+    // of replacing the list outright.
+    setWebNotificationData((prev = {}) => {
+      const existing = prev?.notifications || [];
+      const incoming = webNotificationRequest.notifications || [];
+      const incomingIds = new Set(incoming.map((n) => n.notificationID));
+
+      return {
+        ...prev,
+        notifications: [
+          ...incoming,
+          ...existing.filter((n) => !incomingIds.has(n.notificationID)),
+        ],
+        unReadCount:
+          webNotificationRequest.unReadCount ?? prev?.unReadCount ?? 0,
+        totalCount:
+          webNotificationRequest.totalCount ?? prev?.totalCount ?? 0,
+      };
+    });
   };
   /**
    * ✅ Handle MQTT messages
