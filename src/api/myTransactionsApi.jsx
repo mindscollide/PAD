@@ -268,7 +268,16 @@ export const DateWiseTransactionReportViewDetails = async ({
         requesterName,
         complianceMappedTradeSummary,
         mappedTradeMetaData,
-        requesterEmployeeID
+        requesterEmployeeID,
+        // New (2026-08-06_datewise_transaction_viewdetails_srs_fields.md) —
+        // transactionDate/actionDate/actionBy used to be (wrongly) read off
+        // hierarchyDetails[0], which is scoped to only the requesting
+        // user's own bundle row, not "who actually took the last action".
+        transactionDate,
+        transactionTime,
+        actionBy,
+        actionDate,
+        actionTime,
       } = res.result;
 
       if (
@@ -286,7 +295,12 @@ export const DateWiseTransactionReportViewDetails = async ({
           requesterName: requesterName || "",
           requesterEmployeeID: requesterEmployeeID || "",
           complianceMappedTradeSummary:complianceMappedTradeSummary||[],
-          mappedTradeMetaData:mappedTradeMetaData||[]
+          mappedTradeMetaData:mappedTradeMetaData||[],
+          transactionDate: transactionDate || "",
+          transactionTime: transactionTime || "",
+          actionBy: actionBy || [],
+          actionDate: actionDate || "",
+          actionTime: actionTime || "",
         };
       }
 
@@ -305,7 +319,12 @@ export const DateWiseTransactionReportViewDetails = async ({
           reqeusterName:   "",
           requesterEmployeeID:   "",
           complianceMappedTradeSummary:[],
-          mappedTradeMetaData:[]
+          mappedTradeMetaData:[],
+          transactionDate: "",
+          transactionTime: "",
+          actionBy: [],
+          actionDate: "",
+          actionTime: "",
       };
     }
 
