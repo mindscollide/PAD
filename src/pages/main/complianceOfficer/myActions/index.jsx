@@ -113,7 +113,7 @@ const COMyAction = () => {
     setComplianceOfficerMyActionSearch((prev) => ({
       ...prev,
       ...resetMap[key],
-      pageNumber: 0,
+      pageNumber: 1,
       filterTrigger: true,
     }));
   };
@@ -130,7 +130,7 @@ const COMyAction = () => {
       endDate: null,
       type: [],
       status: [],
-      pageNumber: 0,
+      pageNumber: 1,
       filterTrigger: true,
     }));
   };
@@ -227,8 +227,13 @@ const COMyAction = () => {
       setLoadingMore(true);
 
       try {
-        // calculate current offset (PageNumber) as current loaded employees length
+        // GetComplianceOfficerMyActionsWorkflowDetail's PageNumber is now
+        // a real 1-indexed page number (backend fix 2026-08-05: OFFSET =
+        // (PageNumber-1)*Length) — derive the next page from how many
+        // rows are already loaded, not the raw row count itself.
         const currentLength = myActionLineManagerData?.requests?.length || 0;
+        const pageSize = 10;
+        const nextPageNumber = Math.floor(currentLength / pageSize) + 1;
 
         // build request based on current search/filter but override pagination
         const baseRequest = buildMyActionApiRequest(
@@ -236,8 +241,8 @@ const COMyAction = () => {
         );
         const requestData = {
           ...baseRequest,
-          PageNumber: currentLength, // sRow
-          Length: 10, // eRow (static 10)
+          PageNumber: nextPageNumber,
+          Length: pageSize,
         };
 
         const res = await SearchLMMyActionWorkFlowRequest({

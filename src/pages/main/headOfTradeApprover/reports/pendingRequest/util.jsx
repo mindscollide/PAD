@@ -43,7 +43,7 @@ export const buildApiRequest = (searchState = {}, assetTypeListingData) => {
     escalatedEndDate = null,
     type = [],
     status = [],
-    pageNumber = 0,
+    pageNumber = 1,
     pageSize = 10,
   } = searchState;
 
@@ -59,7 +59,9 @@ export const buildApiRequest = (searchState = {}, assetTypeListingData) => {
     StatusIds: mapStatusToIds?.(status, 2) || [],
     TradeApprovalTypeIds:
       mapBuySellToIds?.(type, assetTypeListingData?.Equities) || [],
-    PageNumber: Number(pageNumber) || 0,
+    // PageNumber is 1-indexed (confirmed in
+    // 2026-08-05_hta_pending_requests_screen_api_reference.md).
+    PageNumber: Number(pageNumber) || 1,
     Length: Number(pageSize) || 10,
   };
 };
@@ -296,12 +298,16 @@ export const getBorderlessLineManagerTableColumns = ({
       sortedInfo?.columnKey === "escalatedDateTime" ? sortedInfo.order : null,
     showSorterTooltip: false,
     sortIcon: () => null,
+    // EscalatedOnDate/Time are empty strings (not garbage
+    // DateTime.MinValue values) when never escalated, as of the
+    // 2026-08-05 backend fix — render "-" explicitly rather than feeding
+    // a blank string through formatApiDateTime.
     render: (date, record) => (
       <span
         id={`cell-${record.key}-escalatedDateTime`}
         className="text-gray-600"
       >
-        {formatApiDateTime(date)}
+        {record?.isEscalated ? formatApiDateTime(date) : "-"}
       </span>
     ),
   },
