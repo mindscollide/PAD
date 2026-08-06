@@ -29,6 +29,7 @@ import {
   DownloadLineManagerMyTradeApprovalReportRequestAPI,
   DownloadMyTransactionReportRequestAPI,
   ExportHOCTransactionSummaryReportExcelApi,
+  GetHCAViewTransactionSummaryExportAPI,
   GetHOCTransactionSummaryViewDetailsAPI,
   GetHOCViewTransactionSummaryAPI,
   SearchComplianceOfficerTransactionSummaryReportRequest,
@@ -398,7 +399,7 @@ const HCATransactionsSummarysReports = () => {
     }));
   };
 
-  // 🔷 Excel Report download Api Hit
+  // 🔷 Excel Report download Api Hit — summary list (date groups)
   const downloadHOCTransactionSummaryReportExcelFormat = async () => {
     showLoader(true);
     const requestdata = {
@@ -410,6 +411,25 @@ const HCATransactionsSummarysReports = () => {
       callApi,
       showLoader,
       requestdata: requestdata,
+      navigate,
+    });
+  };
+
+  // 🔷 Excel Report download Api Hit — "View Details" drill-down for one
+  // date (was wrongly reusing the summary export above regardless of
+  // which view was open, per
+  // API_Changes/2026-08-06_hca_view_transaction_summary_export_new_api.md).
+  const downloadHOCTransactionSummaryViewDetailsExcelFormat = async () => {
+    showLoader(true);
+    const { PageNumber, Length, ...requestdata } = buildApiRequestViewDetails(
+      hocTransactionsSummarysReportsViewDetailsSearch,
+      assetTypeListingData
+    );
+
+    await GetHCAViewTransactionSummaryExportAPI({
+      callApi,
+      showLoader,
+      requestdata,
       navigate,
     });
   };
@@ -563,7 +583,11 @@ const HCATransactionsSummarysReports = () => {
               </div> */}
               <div
                 className={style.dropdownItem}
-                onClick={downloadHOCTransactionSummaryReportExcelFormat}
+                onClick={
+                  coTransactionSummaryReportViewDetailsFlag
+                    ? downloadHOCTransactionSummaryViewDetailsExcelFormat
+                    : downloadHOCTransactionSummaryReportExcelFormat
+                }
               >
                 <img src={Excel} alt="Excel" draggable={false} />
                 <span>Export Excel</span>

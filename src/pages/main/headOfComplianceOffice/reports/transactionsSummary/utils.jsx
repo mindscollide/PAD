@@ -57,6 +57,10 @@ export const mappingDateWiseTransactionReport = (
 
   if (!records.length) return [];
 
+  // Action Date / Action By moved to the View Details drill-down (one row
+  // per transaction, where "who/when acted" is unambiguous) — this
+  // summary is grouped by date, where multiple people could act, which is
+  // why the backend sends ActionBy as an array here. Not read anymore.
   return records.map((item) => ({
     key:
       item.transactionDate +
@@ -65,7 +69,6 @@ export const mappingDateWiseTransactionReport = (
       item.totalTransactions +
       item.nonCompliantTransactions,
     totalEmployees: item.totalEmployees || "0",
-    actionBy: item.actionBy || [],
     totalTransactions: item.totalTransactions || "0",
     compliantTransactions: item.compliantTransactions || "0",
     nonCompliantTransactions: item.nonCompliantTransactions || "0",
@@ -73,9 +76,6 @@ export const mappingDateWiseTransactionReport = (
       [item?.transactionDate, item?.transactionTime]
         .filter(Boolean)
         .join(" ") || "—",
-
-    actionDate:
-      `${item?.actionDate || ""} ${item?.actionTime || ""}`.trim() || "—",
   }));
 };
 export const mappingDateWiseTransactionviewDetailst = (
@@ -88,51 +88,51 @@ export const mappingDateWiseTransactionviewDetailst = (
 
   if (!records.length) return [];
 
-  return records.map((item) => ({
-    key: item.workFlowID,
-    approvalID: item.approvalID,
-    tradeApprovalID: item.tradeApprovalID || "",
-    instrumentCode: item?.instrumentShortCode || "—",
-    instrumentName: item?.instrumentName || "—",
-    assetTypeShortCode: item?.assetShortCode || "—",
-    transactionDate:
-      `${item?.creationDate || ""} ${item?.creationTime || ""}`.trim() || "—",
-    department: item.departmentName,
-    type: getTradeTypeById(assetTypeData, item?.tradeType) || "-",
-    status: item.approvalStatus?.approvalStatusName || "",
-    quantity: item.quantity || 0,
-    timeRemainingToTrade: item.timeRemainingToTrade || "",
-    assetType: item.assetType?.assetTypeName || "",
-    assetTypeID: item.assetType?.assetTypeID || 0,
-    employeeName: item.requesterName || "",
-    employeeID: item.employeeID || "",
-    accetanceComments: item.accetanceComments || "",
-    rejectionComments: item.rejectionComments || "",
-    workFlowStatusID: item.workFlowStatusID || 0,
-  }));
+  // ActionBy moved here from the summary list (2026-08-06) as an array of
+  // {userID, firstName, lastName, fullName} — a single workflow can still
+  // have more than one actor (multi-level approval chain), so this uses
+  // the same "single name direct / Multiple Users + full list on hover"
+  // display as the summary previously did. ActionDate is unchanged — the
+  // latest action timestamp for that workflow, still a single value.
+  return records.map((item) => {
+    const actionByNames = Array.isArray(item.actionBy)
+      ? item.actionBy.map((user) => user?.fullName).filter(Boolean)
+      : [];
+
+    return {
+      key: item.workFlowID,
+      approvalID: item.approvalID,
+      tradeApprovalID: item.tradeApprovalID || "",
+      instrumentCode: item?.instrumentShortCode || "—",
+      instrumentName: item?.instrumentName || "—",
+      assetTypeShortCode: item?.assetShortCode || "—",
+      transactionDate:
+        `${item?.creationDate || ""} ${item?.creationTime || ""}`.trim() || "—",
+      department: item.departmentName,
+      type: getTradeTypeById(assetTypeData, item?.tradeType) || "-",
+      status: item.approvalStatus?.approvalStatusName || "",
+      quantity: item.quantity || 0,
+      timeRemainingToTrade: item.timeRemainingToTrade || "",
+      assetType: item.assetType?.assetTypeName || "",
+      assetTypeID: item.assetType?.assetTypeID || 0,
+      employeeName: item.requesterName || "",
+      employeeID: item.employeeID || "",
+      accetanceComments: item.accetanceComments || "",
+      rejectionComments: item.rejectionComments || "",
+      workFlowStatusID: item.workFlowStatusID || 0,
+      actionBy:
+        actionByNames.length > 1 ? "Multiple Users" : actionByNames[0] || "",
+      actionByFullNames: actionByNames.join(", "),
+      actionDate:
+        `${item?.actionDate || ""} ${item?.actionTime || ""}`.trim() || "—",
+    };
+  });
 };
 
 export const getBorderlessTableColumns = ({
   sortedInfo,
   handelViewDetails,
 }) => [
-  {
-    title: withSortIcon("Action Date", "actionDate", sortedInfo, "center"),
-    align: "center",
-    dataIndex: "actionDate",
-    key: "actionDate",
-    width: 140,
-    ellipsis: true,
-    sorter: (a, b) => (a?.actionDate || "").localeCompare(b?.actionDate || ""),
-    sortOrder: sortedInfo?.columnKey === "actionDate" ? sortedInfo.order : null,
-    showSorterTooltip: false,
-    sortIcon: () => null,
-    render: (date) => (
-      <span className="text-gray-600" title={date || "—"}>
-        {formatApiDateTime(date) || "—"}
-      </span>
-    ),
-  },
   {
     title: withSortIcon(
       "Transaction Date",
@@ -156,39 +156,6 @@ export const getBorderlessTableColumns = ({
         {formatApiDateTime(date) || "—"}
       </span>
     ),
-  },
-  {
-    title: withSortIcon("Action By", "actionBy", sortedInfo),
-    dataIndex: "actionBy",
-    key: "actionBy",
-    width: 120,
-    align: "left",
-    ellipsis: true,
-    sortDirections: ["ascend", "descend"],
-    showSorterTooltip: false,
-    sortIcon: () => null,
-    render: (actionBy = []) => {
-      if (!Array.isArray(actionBy) || actionBy.length === 0) {
-        return <span className="text-gray-600">—</span>;
-      }
-
-      const names = actionBy
-        .map(
-          (user) =>
-            user?.fullName ||
-            `${user?.firstName || ""} ${user?.lastName || ""}`.trim()
-        )
-        .filter(Boolean);
-
-      const tooltipText = names.join(", ");
-      const displayText = actionBy.length === 1 ? names[0] : "Multiple Users";
-
-      return (
-        <Tooltip title={tooltipText}>
-          <span className="text-gray-600">{displayText}</span>
-        </Tooltip>
-      );
-    },
   },
   {
     title: withSortIcon(
@@ -504,6 +471,44 @@ export const getBorderlessTableColumnsViewDetails = ({
       <span className="font-medium">
         {Number(q).toLocaleString("en-US") || "—"}
       </span>
+    ),
+  },
+  {
+    title: withSortIcon("Action Date", "actionDate", sortedInfo, "center"),
+    align: "center",
+    dataIndex: "actionDate",
+    key: "actionDate",
+    width: 160,
+    ellipsis: true,
+    sorter: (a, b) => (a?.actionDate || "").localeCompare(b?.actionDate || ""),
+    sortOrder: sortedInfo?.columnKey === "actionDate" ? sortedInfo.order : null,
+    showSorterTooltip: false,
+    sortIcon: () => null,
+    render: (date) => (
+      <span className="text-gray-600" title={date || "—"}>
+        {formatApiDateTime(date) || "—"}
+      </span>
+    ),
+  },
+  {
+    title: withSortIcon("Action By", "actionBy", sortedInfo),
+    dataIndex: "actionBy",
+    key: "actionBy",
+    width: 150,
+    align: "left",
+    ellipsis: true,
+    sorter: (a, b) => (a?.actionBy || "").localeCompare(b?.actionBy || ""),
+    sortDirections: ["ascend", "descend"],
+    sortOrder: sortedInfo?.columnKey === "actionBy" ? sortedInfo.order : null,
+    showSorterTooltip: false,
+    sortIcon: () => null,
+    // actionBy shows a single name directly, or "Multiple Users" when
+    // more than one person acted on this workflow — hover reveals the
+    // full comma-separated name list either way.
+    render: (text, record) => (
+      <Tooltip title={record?.actionByFullNames || text} placement="topLeft">
+        <span className="font-medium">{text || "—"}</span>
+      </Tooltip>
     ),
   },
   {
