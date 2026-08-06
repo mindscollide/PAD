@@ -212,11 +212,26 @@ const ViewDetailReconcileTransaction = () => {
       });
 
       if (res?.length > 0) {
+        // Show the delete icon only for the requesting user's own uploads
+        // (fK_UserID on each file, confirmed against a live
+        // GetWorkFlowFiles response), and only before this CO has already
+        // acted on it (myActionStatusID 2/3 = they already marked it
+        // Compliant/Non-Compliant). DeleteDocument's own _04 ownership
+        // check still runs server-side regardless - this is purely to
+        // avoid showing a delete affordance on other people's files that
+        // would just fail.
+        const notYetActioned = !(
+          myActionStatusID === 2 || myActionStatusID === 3
+        );
+
         // Leave attachmentBlob unset so ViewTicketReconcileModal's own
         // handleSelectFile lazily fetches it per-file on selection.
         const updatedFiles = res.map((file) => ({
           ...file,
           attachmentBlob: "",
+          canDelete:
+            notYetActioned &&
+            String(file.fK_UserID) === String(loggedInUserID),
         }));
 
         setUploadattAchmentsFiles(updatedFiles);
