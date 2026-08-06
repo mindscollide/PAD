@@ -190,7 +190,9 @@ export const SearchBarProvider = ({ children }) => {
       type: [],
       status: [],
       pageSize: 10,
-      pageNumber: 0,
+      // SearchLineManagerPendingApprovalsRequest's PageNumber is
+      // 1-indexed (see 2026-08-05_lm_pending_requests_screen_api_reference.md).
+      pageNumber: 1,
       filterTrigger: false,
     });
 
@@ -304,7 +306,9 @@ export const SearchBarProvider = ({ children }) => {
       type: [],
       status: [],
       pageSize: 10,
-      pageNumber: 0,
+      // GetPendingTradeApprovalsForHta's PageNumber is 1-indexed (see
+      // 2026-08-05_hta_pending_requests_screen_api_reference.md).
+      pageNumber: 1,
       filterTrigger: false,
     });
 
@@ -986,7 +990,7 @@ export const SearchBarProvider = ({ children }) => {
       type: [],
       status: [],
       pageSize: 10,
-      pageNumber: 0,
+      pageNumber: 1,
       filterTrigger: false,
     });
 
@@ -1261,7 +1265,11 @@ export const SearchBarProvider = ({ children }) => {
 
   const resetHTAPendingApprovalRequestReportSearch = () => {
     setHTAPendingApprovalReportsSearch({
-      InstrumentName: "",
+      // Was "InstrumentName"/"PageNumber" (wrong casing) — buildApiRequest
+      // reads lowercase instrumentName/pageNumber, so those fields never
+      // actually got reset to a real value (silently fell through to
+      // buildApiRequest's own destructuring defaults instead).
+      instrumentName: "",
       requesterName: "",
       lineManagerName: "",
       quantity: 0,
@@ -1272,7 +1280,7 @@ export const SearchBarProvider = ({ children }) => {
       type: [],
       status: [],
       pageSize: 10,
-      PageNumber: 0,
+      pageNumber: 1,
       filterTrigger: false,
     });
   };

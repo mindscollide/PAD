@@ -40,7 +40,7 @@ export const buildApiRequest = (searchState = {}, assetTypeListingData) => {
     endDate = null,
     status = [],
     type = [],
-    pageNumber = 0,
+    pageNumber = 1,
     pageSize = 10,
   } = searchState;
 
@@ -50,9 +50,14 @@ export const buildApiRequest = (searchState = {}, assetTypeListingData) => {
     Quantity: quantity ? (Number(quantity) === 0 ? 0 : Number(quantity)) : 0,
     StartDate: startDate ? toYYMMDD(startDate) : "",
     EndDate: endDate ? toYYMMDD(endDate) : "",
+    // StatusIds intentionally not sent — this screen has no Status filter
+    // UI, and per the API reference doc the backing SP always forces
+    // Pending regardless of this field anyway.
     // StatusIds: mapStatusToIds?.(status) || [],
     TypeIds: mapBuySellToIds?.(type, assetTypeListingData?.Equities) || [],
-    PageNumber: Number(pageNumber) || 0,
+    // PageNumber is 1-indexed (confirmed in
+    // 2026-08-05_lm_pending_requests_screen_api_reference.md).
+    PageNumber: Number(pageNumber) || 1,
     Length: Number(pageSize) || 10,
   };
 };
@@ -61,6 +66,14 @@ export const mapApiResopse = (assetTypeData, pendingApprovals = []) =>
   (Array.isArray(pendingApprovals) ? pendingApprovals : []).map(
     (item = {}) => ({
       key: item.workFlowID,
+      // CommentModal.jsx's Approve/Reject submit reads
+      // isSelectedViewDetailLineManager?.approvalID and sends it as
+      // TradeApprovalID — which the backend actually parses as the
+      // numeric WorkFlowID despite the name (see
+      // 2026-08-05_lm_pending_requests_screen_api_reference.md). Without
+      // this field, approving/rejecting from this screen silently sent
+      // "undefined".
+      approvalID: item.workFlowID,
       tradeApprovalID: item?.tradeApprovalID ?? "—",
       requesterName: item.requesterName,
       assetTypeShortCode: item?.assetType?.assetTypeShortCode ?? "—",
