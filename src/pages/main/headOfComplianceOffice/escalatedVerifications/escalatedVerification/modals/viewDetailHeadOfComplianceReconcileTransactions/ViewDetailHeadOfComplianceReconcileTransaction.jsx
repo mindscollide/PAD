@@ -187,10 +187,24 @@ const ViewDetailHeadOfComplianceReconcileTransaction = () => {
       });
 
       if (res?.length > 0) {
+        // Show the delete icon only for the requesting user's own uploads
+        // (fK_UserID on each file, confirmed against a live
+        // GetWorkFlowFiles response), and only while the transaction is
+        // still Pending (statusData is computed above from
+        // workFlowStatusID; once it's Compliant/Non-Compliant, HOC has
+        // already acted and the evidence is locked). DeleteDocument's own
+        // _04 ownership check still runs server-side regardless - this is
+        // purely to avoid showing a delete affordance on other people's
+        // files that would just fail.
+        const notYetActioned = statusData.label === "Pending";
+
         // Add empty blob initially
         const updatedFiles = res.map((file) => ({
           ...file,
           attachmentBlob: "",
+          canDelete:
+            notYetActioned &&
+            String(file.fK_UserID) === String(loggedInUserID),
         }));
 
         // Work only on the first file

@@ -13,7 +13,7 @@
  */
 
 import React, { useState, useMemo, useEffect } from "react";
-import { Col, Row, Tooltip } from "antd";
+import { Col, Row, Tooltip, Popconfirm } from "antd";
 import styles from "./ViewTicketTransactionModal.module.css";
 
 // 🔹 Components & Contexts
@@ -31,9 +31,13 @@ import Download from "../../../../../../assets/img/Download.png";
 import DownloadWhite from "../../../../../../assets/img/DownloadWhite.png";
 import PDFVectorWhite from "../../../../../../assets/img/PDFVectorWhite.png";
 import Excel from "../../../../../../assets/img/xls.png";
+import DeleteIcon from "../../../../../../assets/img/CrossImg.png";
 
 // 🔹 API
-import { GetAnnotationOfFilesAttachementAPI } from "../../../../../../api/fileApi";
+import {
+  GetAnnotationOfFilesAttachementAPI,
+  DeleteDocumentAPI,
+} from "../../../../../../api/fileApi";
 
 const ViewTicketReconcileModal = () => {
   // 📌 Context hooks
@@ -109,6 +113,37 @@ const ViewTicketReconcileModal = () => {
     }
 
     setSelectedIndex(index);
+  };
+
+  /**
+   * 🔹 Deletes the selected file (only ever offered when file.canDelete is
+   * true - see handleViewTicket in ViewDetailsTransactionModal.jsx for that
+   * gating: uploader match + not yet actioned on).
+   * @param {Object} file - File object being deleted
+   */
+  const handleDeleteFile = async (file) => {
+    const deleted = await DeleteDocumentAPI({
+      callApi,
+      showNotification,
+      showLoader,
+      requestData: { FileID: file.pK_FileID },
+      navigate,
+    });
+
+    if (!deleted) return;
+
+    setUploadattAchmentsFiles((prevFiles) =>
+      (prevFiles || []).filter((f) => f.pK_FileID !== file.pK_FileID)
+    );
+    // Let the auto-select effect pick the next available file (or show the
+    // empty state if that was the last one).
+    setSelectedIndex(null);
+
+    showNotification({
+      type: "success",
+      title: "Deleted",
+      description: `"${file.displayFileName}" was deleted.`,
+    });
   };
 
   /**
@@ -252,18 +287,49 @@ const ViewTicketReconcileModal = () => {
                             </span>
                           </span>
 
-                          {/* Download Button */}
-                          <img
-                            src={downloadIcon}
-                            alt="Download file"
-                            draggable={false}
-                            width="26"
-                            height="26"
-                            onClick={(e) => {
-                              e.stopPropagation(); // prevent triggering select
-                              handleDownloadFile(file);
-                            }}
-                          />
+                          <span
+                            style={{ display: "flex", alignItems: "center", gap: 8 }}
+                          >
+                            {/* Download Button */}
+                            <img
+                              src={downloadIcon}
+                              alt="Download file"
+                              draggable={false}
+                              width="26"
+                              height="26"
+                              onClick={(e) => {
+                                e.stopPropagation(); // prevent triggering select
+                                handleDownloadFile(file);
+                              }}
+                            />
+
+                            {/* Delete Button — only offered while the
+                                transaction is still not-actioned-on (see
+                                canDelete in ViewDetailsTransactionModal.jsx);
+                                ownership itself is enforced server-side. */}
+                            {file.canDelete && (
+                              <Popconfirm
+                                title="Delete this document?"
+                                description="This ticket file will be permanently removed."
+                                okText="Delete"
+                                cancelText="Cancel"
+                                onConfirm={(e) => {
+                                  e?.stopPropagation?.();
+                                  handleDeleteFile(file);
+                                }}
+                              >
+                                <img
+                                  src={DeleteIcon}
+                                  alt="Delete document"
+                                  draggable={false}
+                                  width="30"
+                                  height="30"
+                                  style={{ cursor: "pointer" }}
+                                  onClick={(e) => e.stopPropagation()}
+                                />
+                              </Popconfirm>
+                            )}
+                          </span>
                         </div>
                       </div>
                     );
