@@ -114,17 +114,24 @@ const Brokers = () => {
         // this is for to run lazy loading its data comming from database of total data in db
         totalRecordsDataBase: res?.totalRecords || 0,
         // this is for to know how mush dta currently fetch from  db
+        // (was reading the outer `adminBrokerData` closure instead of this
+        // updater's own `prev` - stale under back-to-back fetches)
         totalRecordsTable: replace
           ? brokers.length
-          : adminBrokerData.totalRecordsTable + brokers.length,
+          : (prev?.totalRecordsTable || 0) + brokers.length,
       }));
 
       setAdminBrokerSearch((prev) => {
         const next = {
           ...prev,
-          pageNumber: replace
-            ? brokers.length
-            : prev.pageNumber + brokers.length,
+          // PageNumber is 1-indexed on the backend now (page 1 -> OFFSET 0,
+          // page 2 -> OFFSET Length, ...) - this used to track a cumulative
+          // fetched-row count instead of an actual page number, which only
+          // worked with the old (broken) backend that used PageNumber
+          // directly as OFFSET. A `replace` fetch always requests page 1,
+          // so prime this for the *next* page; a lazy-scroll fetch just
+          // advances by one page.
+          pageNumber: replace ? 2 : prev.pageNumber + 1,
         };
 
         // this is for check if filter value get true only on that it will false
@@ -180,7 +187,7 @@ const Brokers = () => {
       let requestData = buildApiRequest(adminBrokerSearch);
       requestData = {
         ...requestData,
-        PageNumber: 0,
+        PageNumber: 1,
       };
       fetchApiCall(requestData, true, false);
     }
@@ -241,7 +248,7 @@ const Brokers = () => {
     setAdminBrokerSearch((prev) => ({
       ...prev,
       ...resetMap[key],
-      pageNumber: 0,
+      pageNumber: 1,
       filterTrigger: true,
     }));
   };
@@ -252,7 +259,7 @@ const Brokers = () => {
       ...prev,
       brokerName: "",
       psxCode: "",
-      pageNumber: 0,
+      pageNumber: 1,
       filterTrigger: true,
     }));
   };

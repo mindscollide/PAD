@@ -64,7 +64,9 @@ export const buildApiRequest = (searchState = {}) => ({
   BrokerName: searchState.brokerName || "",
   PSXCode: searchState.psxCode || "",
   StatusIds: mapStatusToIds?.(searchState.status, 3) || [],
-  PageNumber: Number(searchState.pageNumber) || 0,
+  // p_PageNumber is 1-indexed on the backend (page 1 -> OFFSET 0), defaults
+  // to 1 if not supplied.
+  PageNumber: Number(searchState.pageNumber) || 1,
   Length: Number(searchState.pageSize) || 10,
 });
 
