@@ -199,9 +199,9 @@ const HCATransactionsSummarysReports = () => {
         };
         return next;
       });
-      if (coTransactionSummaryReportViewDetailsFlag === false) {
-        setCOTransactionSummaryReportViewDetailsFlag(true);
-      }
+      // if (coTransactionSummaryReportViewDetailsFlag === false) {
+      //   setCOTransactionSummaryReportViewDetailsFlag(true);
+      // }
     },
     [
       callApi,
@@ -342,6 +342,7 @@ const HCATransactionsSummarysReports = () => {
       ...prev,
       transactionDate: transactionDate.split(" ")[0],
     }));
+    setCOTransactionSummaryReportViewDetailsFlag(true);
     fetchApiCallViewDetails(requestData, true, true);
   };
 

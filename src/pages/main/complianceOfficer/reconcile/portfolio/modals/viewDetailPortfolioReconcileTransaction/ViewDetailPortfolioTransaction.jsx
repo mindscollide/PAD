@@ -363,14 +363,14 @@ const ViewDetailPortfolioTransaction = () => {
                               iconSrc = CheckIcon;
                               displayText =
                                 loggedInUserID === userID
-                                  ? "You marked this as compliant"
+                                  ? "Marked Compliant by You"
                                   : `${fullName} `;
                               isApprovedOrDeclined = true;
                             } else if (bundleStatusID === 3) {
                               iconSrc = CrossIcon;
                               displayText =
                                 loggedInUserID === userID
-                                  ? "You marked this as non-compliant"
+                                  ? "Marked Non-Compliant by You"
                                   : `${fullName}`;
                               isApprovedOrDeclined = true;
                             } else {

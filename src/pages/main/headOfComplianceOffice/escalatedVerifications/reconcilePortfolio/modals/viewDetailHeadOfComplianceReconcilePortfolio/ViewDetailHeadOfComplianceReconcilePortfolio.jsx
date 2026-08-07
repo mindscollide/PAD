@@ -376,12 +376,11 @@ const ViewDetailHeadOfComplianceReconcilePortfolio = () => {
                               switch (bundleStatusID) {
                                 case 2: // ✅ Compliant
                                   iconSrc = CheckIcon;
-                                  displayText = "You marked this as compliant";
+                                  displayText = "Marked Compliant by You";
                                   break;
                                 case 3: // ❌ Non-Compliant
                                   iconSrc = CrossIcon;
-                                  displayText =
-                                    "You marked this as non-compliant";
+                                  displayText = "Marked Non-Compliant by You";
                                   break;
                                 case 1: // ⏳ Pending
                                 default:

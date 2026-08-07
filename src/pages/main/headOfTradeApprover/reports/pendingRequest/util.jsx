@@ -142,20 +142,20 @@ export const getBorderlessLineManagerTableColumns = ({
     },
   },
   {
-    title: withSortIcon("Instrument", "instrumentName", sortedInfo),
-    dataIndex: "instrumentName",
-    key: "instrumentName",
+    title: withSortIcon("Instrument", "instrumentCode", sortedInfo),
+    dataIndex: "instrumentCode",
+    key: "instrumentCode",
     align: "left",
     width: 140,
     ellipsis: true,
     sorter: (a, b) => {
-      const nameA = a?.instrumentName || "";
-      const nameB = b?.instrumentName || "";
+      const nameA = a?.instrumentCode || "";
+      const nameB = b?.instrumentCode || "";
       return nameA.localeCompare(nameB);
     },
     sortDirections: ["ascend", "descend"],
     sortOrder:
-      sortedInfo?.columnKey === "instrumentName" ? sortedInfo.order : null,
+      sortedInfo?.columnKey === "instrumentCode" ? sortedInfo.order : null,
     showSorterTooltip: false,
     sortIcon: () => null,
     render: (instrument, record) => {

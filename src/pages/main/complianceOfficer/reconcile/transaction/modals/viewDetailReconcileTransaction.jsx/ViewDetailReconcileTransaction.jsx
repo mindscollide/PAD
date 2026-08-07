@@ -230,8 +230,7 @@ const ViewDetailReconcileTransaction = () => {
           ...file,
           attachmentBlob: "",
           canDelete:
-            notYetActioned &&
-            String(file.fK_UserID) === String(loggedInUserID),
+            notYetActioned && String(file.fK_UserID) === String(loggedInUserID),
         }));
 
         setUploadattAchmentsFiles(updatedFiles);
@@ -509,7 +508,7 @@ const ViewDetailReconcileTransaction = () => {
                               iconSrc = CheckIcon;
                               displayText =
                                 loggedInUserID === userID
-                                  ? "You marked this as compliant"
+                                  ? "Marked Compliant by You"
                                   : `${fullName}`;
                               isApprovedOrDeclined = true;
                             } else if (bundleStatusID === 3) {
@@ -517,7 +516,7 @@ const ViewDetailReconcileTransaction = () => {
                               iconSrc = CrossIcon;
                               displayText =
                                 loggedInUserID === userID
-                                  ? "You marked this as non-compliant"
+                                  ? "Marked Non-Compliant by You"
                                   : `${fullName}`;
                               isApprovedOrDeclined = true;
                             } else {

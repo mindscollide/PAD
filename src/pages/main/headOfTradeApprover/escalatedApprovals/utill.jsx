@@ -310,7 +310,7 @@ export const getBorderlessTableColumns = ({
     title: withSortIcon("Date & Time", "requestDateTime", sortedInfo, "center"),
     dataIndex: "requestDateTime",
     key: "requestDateTime",
-    ellipsis: true,
+    // ellipsis: true,
     align: "center",
     width: 140,
     sorter: (a, b) =>
@@ -338,7 +338,7 @@ export const getBorderlessTableColumns = ({
     ),
     dataIndex: "type",
     key: "type",
-    ellipsis: true,
+    // ellipsis: true,
     width: 100,
     filteredValue: headOfTradeEscalatedApprovalsSearch?.type?.length
       ? headOfTradeEscalatedApprovalsSearch.type
@@ -380,7 +380,7 @@ export const getBorderlessTableColumns = ({
     key: "quantity",
     align: "center",
     width: 100,
-    ellipsis: true,
+    // ellipsis: true,
     sortIcon: () => null,
     showSorterTooltip: false,
     sorter: (a, b) => Number(a.quantity) - Number(b.quantity),
@@ -401,7 +401,7 @@ export const getBorderlessTableColumns = ({
     ),
     dataIndex: "escalatedDateTime",
     key: "escalatedDateTime",
-    ellipsis: true,
+    // ellipsis: true,
     width: 140,
     align: "center",
     sorter: (a, b) =>

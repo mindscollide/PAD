@@ -6,9 +6,6 @@ import { Stepper, Step } from "react-form-stepper";
 import CustomButton from "../../../../../../components/buttons/button";
 import CheckIcon from "../../../../../../assets/img/Check.png";
 import EllipsesIcon from "../../../../../../assets/img/Ellipses.png";
-import CrossIcon from "../../../../../../assets/img/Cross.png";
-import ApprovedResubmit from "../../../../../../assets/img/ApprovedResubmit.png";
-import DeclinedResubmit from "../../../../../../assets/img/DeclinedResubmite.png";
 import EscaltedOn from "../../../../../../assets/img/EscaltedOn.png";
 import repeat from "../../../../../../assets/img/repeat.png";
 
@@ -126,9 +123,7 @@ const ViewDetailHeadOfApprovalModal = () => {
   // escalation contributes an "Escalated On" step, followed either by
   // who closed it (escalationClosedBy/escalationClosedByName set) or a
   // "Waiting for your approval" step while it's still open.
-  const escalations = Array.isArray(
-    viewDetailsHeadOfApprovalData?.escalations
-  )
+  const escalations = Array.isArray(viewDetailsHeadOfApprovalData?.escalations)
     ? viewDetailsHeadOfApprovalData.escalations
     : [];
 
@@ -446,7 +441,7 @@ const ViewDetailHeadOfApprovalModal = () => {
                             </div>
                           </Step>
                         );
-                          })}
+                      })}
                     </Stepper>
                   </div>
                 </div>

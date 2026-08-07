@@ -1,12 +1,8 @@
 import { Button } from "../../../../components";
 
-import ArrowUP from "../../../../assets/img/arrow-up-dark.png";
-import ArrowDown from "../../../../assets/img/arrow-down-dark.png";
-import DefaultColumArrow from "../../../../assets/img/default-colum-arrow.png";
 import TypeColumnTitle from "../../../../components/dropdowns/filters/typeColumnTitle";
 import StatusColumnTitle from "../../../../components/dropdowns/filters/statusColumnTitle";
 import { Tag, Tooltip } from "antd";
-import style from "./myTransaction.module.css";
 
 import {
   dashBetweenApprovalAssets,
@@ -103,8 +99,8 @@ export const getBorderlessTableColumns = ({
     align: "left",
     dataIndex: "tradeApprovalID",
     key: "tradeApprovalID",
-    width: 150,
-    ellipsis: true,
+    width: 140,
+    // ellipsis: true,
     sorter: (a, b) =>
       parseInt(a.tradeApprovalID.replace(/[^\d]/g, ""), 10) -
       parseInt(b.tradeApprovalID.replace(/[^\d]/g, ""), 10),
@@ -129,7 +125,7 @@ export const getBorderlessTableColumns = ({
     align: "left",
     dataIndex: "Instrument",
     key: "instrumentName",
-    width: 170,
+    width: 120,
     ellipsis: true,
     sorter: (a, b) => {
       const nameA = a?.instrumentShortCode || "";
@@ -142,7 +138,6 @@ export const getBorderlessTableColumns = ({
     showSorterTooltip: false,
     sortIcon: () => null,
     render: (instrument, record) => {
-      console.log(record, "Checkerrrrr");
       const assetCode = record?.assetShortCode;
       const code = record?.instrumentShortCode || "";
       const instrumentName = record?.instrumentName || "";
@@ -187,15 +182,13 @@ export const getBorderlessTableColumns = ({
     ),
     dataIndex: "tradeType",
     key: "tradeType",
-    ellipsis: true,
     width: 100,
     align: "center",
     filteredValue: employeeMyTransactionSearch.type?.length
       ? employeeMyTransactionSearch?.type
       : null,
     onFilter: () => true,
-    render: (value, record) => {
-      console.log("check what type", value, record);
+    render: (value) => {
       return value || "-";
     },
   },
@@ -210,7 +203,7 @@ export const getBorderlessTableColumns = ({
     key: "transactionConductedDateandTime",
     width: 250,
     align: "center",
-    ellipsis: true,
+    // ellipsis: true,
     sorter: (a, b) =>
       formatApiDateTime(a.transactionConductedDateandTime).localeCompare(
         formatApiDateTime(b.transactionConductedDateandTime)
@@ -264,7 +257,7 @@ export const getBorderlessTableColumns = ({
     align: "center",
     dataIndex: "quantity",
     key: "quantity",
-    ellipsis: true,
+    // ellipsis: true,
     width: 100,
     sorter: (a, b) => a.quantity - b.quantity,
     sortDirections: ["ascend", "descend"],
@@ -273,6 +266,7 @@ export const getBorderlessTableColumns = ({
     sortIcon: () => null,
     render: (q) => <span className="font-medium">{q.toLocaleString()}</span>,
   },
+
   {
     title: withSortIcon("Broker", "broker", sortedInfo),
     align: "left",
