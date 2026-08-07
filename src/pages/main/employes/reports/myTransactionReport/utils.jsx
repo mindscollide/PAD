@@ -38,7 +38,10 @@ export const buildApiRequest = (searchState = {}, assetTypeListingData) => ({
   ActionEndDate: searchState.actionEndDate
     ? toYYMMDD(searchState.actionEndDate)
     : null,
-  PageNumber: Number(searchState.pageNumber) || 0,
+  // GetEmployeeTransactionReqeustReportsAPI's PageNumber is now a real
+  // 1-indexed page number (backend fix 2026-08-07 - p_pageNumber was being
+  // used directly as a raw OFFSET before).
+  PageNumber: Number(searchState.pageNumber) || 1,
   Length: Number(searchState.pageSize) || 10,
 });
 
@@ -62,6 +65,13 @@ export const mapEmployeeTransactionsReport = (
     key: item.workFlowID,
     workFlowID: item.workFlowID,
     tradeApprovalID: item.tradeApprovalID || "",
+    // New field (2026-08-07_employee_transactions_report_trade_request_id.md)
+    // - the "Trade Request ID" column already existed in
+    // getBorderlessTableColumns below but had nothing to read; its sorter
+    // (a.requestID.replace(...)) would throw on the undefined this used to
+    // map to. Can legitimately be empty per the doc if no compliance
+    // mapping exists for the workflow.
+    requestID: item.tradeRequestID || "",
     instrumentCode: item?.instrument?.instrumentCode || "—",
     instrumentName: item?.instrument?.instrumentName || "—",
     assetTypeShortCode: item?.assetType?.assetTypeShortCode || "—",

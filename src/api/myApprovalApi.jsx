@@ -1866,8 +1866,10 @@ export const DownloadMyTradeApprovalStandingRequestAPI = async ({
 //Download My Transaction From the Employee report dashboard
 export const DownloadMyTransactionReportRequestAPI = async ({
   callApi,
+  showNotification,
   showLoader,
   requestdata,
+  setOpen,
   navigate,
 }) => {
   try {
@@ -1891,6 +1893,11 @@ export const DownloadMyTransactionReportRequestAPI = async ({
     if (handleExpiredSession(res, navigate, showLoader)) return false;
     // 🔹 When API send isExecuted false
     if (!res?.result?.isExecuted) {
+      showNotification({
+        type: "error",
+        title: "Export Failed",
+        description: "Something went wrong while exporting your transactions.",
+      });
       return false;
     }
 
@@ -1910,15 +1917,37 @@ export const DownloadMyTransactionReportRequestAPI = async ({
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
-        setOpen(false);
+        window.URL.revokeObjectURL(url);
+        // was calling setOpen(false) without setOpen ever being a
+        // parameter of this function - a ReferenceError silently caught by
+        // the catch block below, making an actually-successful download
+        // report itself as a failure (same bug fixed in
+        // DownloadMyHistoryReportRequest).
+        if (setOpen) setOpen(false);
         return true;
-      } catch (downloadError) {
+      } catch {
+        showNotification({
+          type: "error",
+          title: "Export Failed",
+          description: "Unable to prepare the exported file for download.",
+        });
         return false;
       }
     }
 
+    showNotification({
+      type: "error",
+      title: "Export Failed",
+      description: getMessage(res.message) || "No records found to export.",
+    });
     return false;
-  } catch (error) {
+  } catch {
+    showNotification({
+      type: "error",
+      title: "Error",
+      description:
+        "An unexpected error occurred while exporting your transactions.",
+    });
     return false;
   } finally {
     showLoader(false);
