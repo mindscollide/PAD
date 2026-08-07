@@ -125,10 +125,23 @@ const ViewDetailsTransactionModal = () => {
       });
 
       if (res?.length > 0) {
+        // Show the delete icon only for the requesting user's own uploads
+        // (fK_UserID on each file, confirmed against a live
+        // GetWorkFlowFiles response), and only while the transaction hasn't
+        // been verified yet (statusId 8/9 = Compliant / Non-Compliant —
+        // once the CO has acted, evidence is locked). DeleteDocument's own
+        // _04 ownership check still runs server-side regardless - this is
+        // purely to avoid showing a delete affordance on other people's
+        // files that would just fail.
+        const notYetActioned = ![8, 9].includes(Number(statusId));
+
         // Add empty blob initially
         const updatedFiles = res.map((file) => ({
           ...file,
           attachmentBlob: "",
+          canDelete:
+            notYetActioned &&
+            String(file.fK_UserID) === String(loggedInUserID),
         }));
 
         // Work only on the first file

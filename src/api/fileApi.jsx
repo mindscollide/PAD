@@ -250,6 +250,113 @@ export const GetWorkFlowFilesAPI = async ({
   }
 };
 
+// 🔹 DeleteDocumentAPI — ServiceManager.DeleteDocument
+// (2026-08-06_deleteDocument_new_api.md). Ownership is enforced entirely
+// server-side (_04) by comparing the file's stored uploader against the
+// caller's token - FE deliberately does NOT pre-check ownership before
+// calling this, per that doc's explicit guidance; just call it and surface
+// _04 if it comes back. Not deployed yet as of this doc's date.
+export const DeleteDocumentAPI = async ({
+  callApi,
+  showNotification,
+  showLoader,
+  requestData, // { FileID: 123 }
+  navigate,
+}) => {
+  try {
+    // 🔹 API Call
+    const res = await callApi({
+      requestMethod: import.meta.env.VITE_DELETE_DOCUMENT_REQUEST_METHOD,
+      endpoint: import.meta.env.VITE_API_SETTINGS,
+      requestData,
+      navigate,
+    });
+
+    // 🔹 Handle session expiry
+    if (handleExpiredSession(res, navigate, showLoader)) return false;
+
+    // 🔹 Validate execution
+    if (!res?.result?.isExecuted) {
+      showNotification({
+        type: "error",
+        title: "Delete Failed",
+        description: "Something went wrong while deleting the file.",
+      });
+      return false;
+    }
+
+    // 🔹 Handle success
+    if (res.success) {
+      const { responseMessage } = res.result;
+
+      // Case 1 → Successfully deleted
+      if (
+        responseMessage === "Settings_SettingsServiceManager_DeleteDocument_01"
+      ) {
+        return true;
+      }
+
+      // Case-specific messaging per the doc's response table (_02..._06)
+      switch (responseMessage) {
+        case "Settings_SettingsServiceManager_DeleteDocument_02":
+          showNotification({
+            type: "error",
+            title: "Delete Failed",
+            description: "Invalid request - no file was specified.",
+          });
+          break;
+        case "Settings_SettingsServiceManager_DeleteDocument_03":
+          showNotification({
+            type: "warning",
+            title: "File Not Found",
+            description: "This file no longer exists.",
+          });
+          break;
+        case "Settings_SettingsServiceManager_DeleteDocument_04":
+          showNotification({
+            type: "warning",
+            title: "Not Allowed",
+            description: "You can only delete documents you uploaded.",
+          });
+          break;
+        case "Settings_SettingsServiceManager_DeleteDocument_05":
+          showNotification({
+            type: "error",
+            title: "Delete Failed",
+            description: "The file could not be deleted. Please try again.",
+          });
+          break;
+        default:
+          showNotification({
+            type: "error",
+            title: "Error",
+            description: "An unexpected error occurred while deleting the file.",
+          });
+      }
+
+      return false;
+    }
+
+    // 🔹 Handle failure
+    showNotification({
+      type: "error",
+      title: "Delete Failed",
+      description: getMessage(res.message),
+    });
+    return false;
+  } catch (error) {
+    console.error("DeleteDocumentAPI error:", error);
+    showNotification({
+      type: "error",
+      title: "Error",
+      description: "An unexpected error occurred while deleting the file.",
+    });
+    return false;
+  } finally {
+    showLoader(false);
+  }
+};
+
 export const GetAnnotationOfFilesAttachementAPI = async ({
   callApi,
   showNotification,

@@ -12,7 +12,7 @@
  */
 
 import React from "react";
-import { Col, Row } from "antd";
+import { Col, Row, Tooltip } from "antd";
 import { Stepper, Step } from "react-form-stepper";
 import { useNavigate } from "react-router-dom";
 
@@ -136,6 +136,22 @@ const ViewDetaildDateWiseTransaction = () => {
   const isTicketUploaded =
     reconcileTransactionViewDetailData?.ticketUploaded === false;
 
+  /* ========================== ACTION BY ==========================
+     actionBy is an array of {userID, firstName, lastName, fullName} - every
+     distinct user who has actually acted on this workflow. New field
+     (2026-08-06_datewise_transaction_viewdetails_srs_fields.md) - replaces
+     the old hierarchyDetails[0] read below, which was scoped only to the
+     requesting user's own bundle row ("what's my status"), not "who
+     actually took the last action". Same "single name / Multiple Users +
+     tooltip" convention used elsewhere in the app. */
+  const actionByList = Array.isArray(reconcileTransactionViewDetailData?.actionBy)
+    ? reconcileTransactionViewDetailData.actionBy
+    : [];
+  const actionByNames = actionByList.map((u) => u?.fullName).filter(Boolean);
+  const actionByDisplay =
+    actionByNames.length > 1 ? "Multiple Users" : actionByNames[0] || "—";
+  const actionByFullNames = actionByNames.join(", ");
+
   /* ========================== ACTION HANDLERS ========================== */
   const closedModal = () => {
     setIsViewComments(false);
@@ -258,16 +274,16 @@ const ViewDetaildDateWiseTransaction = () => {
                     Transaction Date
                   </label>
                   <label className={styles.viewDetailSubLabels}>
-                    {formatApiDateTime(
-                      [
-                        reconcileTransactionViewDetailData?.hierarchyDetails[0]
-                          ?.requestDate,
-                        reconcileTransactionViewDetailData?.hierarchyDetails[0]
-                          ?.requestTime,
-                      ]
-                        .filter(Boolean)
-                        .join(" ")
-                    )}
+                    {reconcileTransactionViewDetailData?.transactionDate
+                      ? formatApiDateTime(
+                          [
+                            reconcileTransactionViewDetailData?.transactionDate,
+                            reconcileTransactionViewDetailData?.transactionTime,
+                          ]
+                            .filter(Boolean)
+                            .join(" ")
+                        )
+                      : "—"}
                   </label>
                 </div>
               </Col>
@@ -277,16 +293,16 @@ const ViewDetaildDateWiseTransaction = () => {
                     Action Date
                   </label>
                   <label className={styles.viewDetailSubLabels}>
-                    {formatApiDateTime(
-                      [
-                        reconcileTransactionViewDetailData?.hierarchyDetails[0]
-                          ?.modifiedDate,
-                        reconcileTransactionViewDetailData?.hierarchyDetails[0]
-                          ?.modifiedTime,
-                      ]
-                        .filter(Boolean)
-                        .join(" ")
-                    )}
+                    {reconcileTransactionViewDetailData?.actionDate
+                      ? formatApiDateTime(
+                          [
+                            reconcileTransactionViewDetailData?.actionDate,
+                            reconcileTransactionViewDetailData?.actionTime,
+                          ]
+                            .filter(Boolean)
+                            .join(" ")
+                        )
+                      : "—"}
                   </label>
                 </div>
               </Col>
@@ -299,10 +315,9 @@ const ViewDetaildDateWiseTransaction = () => {
                     Action by
                   </label>
                   <label className={styles.viewDetailSubLabels}>
-                    {
-                      reconcileTransactionViewDetailData?.hierarchyDetails[0]
-                        ?.fullName
-                    }
+                    <Tooltip title={actionByFullNames || actionByDisplay}>
+                      <span>{actionByDisplay}</span>
+                    </Tooltip>
                   </label>
                 </div>
               </Col>
@@ -326,11 +341,17 @@ const ViewDetaildDateWiseTransaction = () => {
                 <div className={styles.backgrounColorOfDetail}>
                   <label className={styles.viewDetailMainLabels}>Notes</label>
                   <label className={styles.viewDetailSubLabels}>
+                    {/* approvalComments/rejectionComment are now arrays of
+                        {userID, name, comments} - every actor's note, not
+                        just the caller's own (2026-08-06_datewise_
+                        transaction_viewdetails_notes_shape.md). */}
                     {reconcileTransactionViewDetailData?.details?.[0]
                       ?.approvalComments?.length > 0 &&
                       reconcileTransactionViewDetailData.details[0].approvalComments.map(
                         (comment, index) => (
-                          <div key={`approval-${index}`}>{comment}</div>
+                          <div key={`approval-${index}`}>
+                            <strong>{comment?.name}:</strong> {comment?.comments}
+                          </div>
                         )
                       )}
 
@@ -338,7 +359,9 @@ const ViewDetaildDateWiseTransaction = () => {
                       ?.rejectionComment?.length > 0 &&
                       reconcileTransactionViewDetailData.details[0].rejectionComment.map(
                         (comment, index) => (
-                          <div key={`rejection-${index}`}>{comment}</div>
+                          <div key={`rejection-${index}`}>
+                            <strong>{comment?.name}:</strong> {comment?.comments}
+                          </div>
                         )
                       )}
                   </label>
