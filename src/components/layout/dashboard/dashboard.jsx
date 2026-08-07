@@ -273,14 +273,15 @@ const Dashboard = () => {
             // Employee mqtt
             case "2": {
               switch (message) {
-                case "EMPLOYEE_USER_DASHBOARD_DATA":
-                // ADDED (2026-08-07): was completely unhandled before - the
-                // BE sender (NotifyEmployeeDashboardPortFolioCountAsync)
-                // sends the exact same UserRoleDashboard payload shape as
+                // ADDED (2026-08-07): EMPLOYEE_PORTFOLIO_DASHBOARD_DATA was
+                // completely unhandled before - the BE sender
+                // (NotifyEmployeeDashboardPortFolioCountAsync) sends the
+                // exact same UserRoleDashboard payload shape as
                 // EMPLOYEE_USER_DASHBOARD_DATA (just with only the Portfolio
                 // key populated), so it shares this handler rather than
                 // duplicating it - the generic key-merge below only touches
                 // whatever keys are actually present in the payload.
+                case "EMPLOYEE_USER_DASHBOARD_DATA":
                 case "EMPLOYEE_PORTFOLIO_DASHBOARD_DATA": {
                   if (currentKey === "0") {
                     setDashboardData((prev) => {
@@ -414,6 +415,46 @@ const Dashboard = () => {
                   }
                   break;
                 }
+                // ADDED (2026-08-07, per 2026-08-07_mqtt_fixes_fe_implementation.md):
+                // was completely unhandled - falling through to default and
+                // silently dropped. BE now fans this out as a second,
+                // separate message per assigned employee (RoleIDs=Employee),
+                // so if this client received it at all, it's already for
+                // them - no UserIDs-membership check needed, unlike
+                // USER_DETAILS_UPDATED's UserID check. payload is a
+                // JSON-encoded string here (PascalCase keys), not a
+                // pre-parsed object like the dashboard-tile messages, same
+                // as USER_DETAILS_UPDATED. No existing UI in this codebase
+                // reads an employee's own Group Policy assignment live, so
+                // there's nothing to silently refresh - goes with the
+                // visible-notification option the doc offered instead,
+                // mirroring how USER_DETAILS_UPDATED already handles "your
+                // account changed" (just without the forced logout - no
+                // token/session change is implied by a policy assignment).
+                case "GROUP_POLICY_CREATED":
+                case "GROUP_POLICY_UPDATED": {
+                  try {
+                    const parsedPolicyPayload = JSON.parse(payload);
+                    const isNewAssignment = message === "GROUP_POLICY_CREATED";
+                    showNotification({
+                      type: "info",
+                      title: isNewAssignment
+                        ? "Group Policy Assigned"
+                        : "Group Policy Updated",
+                      description: parsedPolicyPayload?.GroupTitle
+                        ? `Your assigned Group Policy "${parsedPolicyPayload.GroupTitle}" has been ${
+                            isNewAssignment ? "assigned to you" : "updated"
+                          }.`
+                        : "Your assigned Group Policy has changed.",
+                    });
+                  } catch (error) {
+                    console.error(
+                      "MQTT: Failed to parse GROUP_POLICY payload",
+                      error
+                    );
+                  }
+                  break;
+                }
                 default:
                   console.warn("MQTT: No handler for message →", message);
               }
@@ -425,13 +466,19 @@ const Dashboard = () => {
                 case "LINE_MANAGER_DASHBOARD_DATA": {
                   if (currentKey === "0") {
                     setDashboardData((prev) => {
-                      if (!prev?.lineManager) return prev;
-                      const updatedLineManager = { ...prev.lineManager };
+                      // FIXED (2026-08-07, per MQTT_Message_Catalog.md #2):
+                      // was reading/writing prev.lineManager (lowercase) -
+                      // dashboardContaxt.jsx's actual state key is
+                      // "LineManager" (capitalized), so the guard below
+                      // always bailed and this message never updated
+                      // dashboard state.
+                      if (!prev?.LineManager) return prev;
+                      const updatedLineManager = { ...prev.LineManager };
                       Object.keys(payload).forEach((key) => {
                         if (payload[key] !== null)
                           updatedLineManager[key] = payload[key];
                       });
-                      return { ...prev, lineManager: updatedLineManager };
+                      return { ...prev, LineManager: updatedLineManager };
                     });
                   }
                   break;
@@ -461,14 +508,11 @@ const Dashboard = () => {
                 // ACTION"), not a keyed object like the sibling dashboard
                 // messages, so it's re-keyed by each tile's own Label before
                 // merging. Merges into dashboardData.LineManager (matching
-                // the actual state key casing in dashboardContaxt.jsx) - NOT
-                // the "lineManager" (lowercase) key the neighboring
-                // LINE_MANAGER_DASHBOARD_DATA case above merges into, which
-                // is a pre-existing casing mismatch against that same state
-                // (state key is "LineManager") - see MQTT_Message_Catalog.md.
-                // That pre-existing bug is left as-is here (out of scope for
-                // this fix), but this new case uses the correct casing so it
-                // actually takes effect rather than silently repeating it.
+                // the actual state key casing in dashboardContaxt.jsx) - the
+                // neighboring LINE_MANAGER_DASHBOARD_DATA case above used to
+                // merge into a "lineManager" (lowercase) key that never
+                // matched this state and silently no-op'd; that's now fixed
+                // to the same casing (see MQTT_Message_Catalog.md #2).
                 case "LINE_MANAGER_DASHBOARD_URGENT_SUMMARY_UPDATE": {
                   if (currentKey === "0" && Array.isArray(payload)) {
                     setDashboardData((prev) => {
@@ -546,13 +590,19 @@ const Dashboard = () => {
                 case "COMPLIANCE_OFFICER_DASHBOARD_DATA": {
                   if (currentKey === "0") {
                     setDashboardData((prev) => {
-                      if (!prev?.complianceOfficer) return prev;
-                      const updatedEmployee = { ...prev.complianceOfficer };
+                      // FIXED (2026-08-07, per MQTT_Message_Catalog.md #2):
+                      // was reading/writing prev.complianceOfficer
+                      // (lowercase) - dashboardContaxt.jsx's actual state
+                      // key is "ComplianceOfficer" (capitalized), so the
+                      // guard below always bailed and this message never
+                      // updated dashboard state.
+                      if (!prev?.ComplianceOfficer) return prev;
+                      const updatedEmployee = { ...prev.ComplianceOfficer };
                       Object.keys(payload).forEach((key) => {
                         if (payload[key] !== null)
                           updatedEmployee[key] = payload[key];
                       });
-                      return { ...prev, complianceOfficer: updatedEmployee };
+                      return { ...prev, ComplianceOfficer: updatedEmployee };
                     });
                   }
                   break;
@@ -628,14 +678,11 @@ const Dashboard = () => {
                 // ADDED (2026-08-07): was completely unhandled (see the
                 // "// missing dashboard" comment this replaces) - merges into
                 // dashboardData.HeadofTradeApproval, same generic key-merge
-                // pattern already used for LM/CO dashboards. Uses the actual
-                // state key casing (HeadofTradeApproval, matching
-                // dashboardContaxt.jsx's initial state) rather than copying
-                // the lineManager/complianceOfficer lowercase mismatch those
-                // two siblings have (see MQTT_Message_Catalog.md) - that bug
-                // is real but wasn't part of what was asked to be fixed here,
-                // so it's left alone rather than silently carried forward
-                // into new code.
+                // pattern already used for LM/CO dashboards, using the
+                // correct state key casing (HeadofTradeApproval, matching
+                // dashboardContaxt.jsx's initial state) - the LM/CO siblings
+                // had a lowercase-key mismatch bug of this exact shape,
+                // fixed separately (see MQTT_Message_Catalog.md #2).
                 case "HTA_DASHBOARD_DATA":
                 case "HTA_ESCALATION_DASHBOARD_STATS": {
                   if (currentKey === "0") {

@@ -275,22 +275,22 @@ const MyHistory = () => {
   }, [containerRef.current, hasMore, loadingMore, employeeMyHistoryData]);
 
   // 🔷 Excel Report download Api Hit
+  // Was hardcoded to an empty payload, ignoring every on-screen filter -
+  // export always returned every request regardless of what was applied.
+  // Build from the same filters the live listing uses; PageNumber/Length
+  // excluded since exports return every matching row, never a page.
   const downloadMyHistoryReportInExcelFormat = async () => {
-    showLoader(true);
-    const requestdata = {
-      RequestID: "",
-      InstrumentName: "",
-      Quantity: 0,
-      StartDate: "",
-      EndDate: "",
-      Nature: "",
-      StatusIDs: [],
-      TradeApprovalTypeIDs: [],
-    };
+    const { PageNumber, Length, ...requestdata } = buildMyHistoryApiRequest(
+      employeeMyHistorySearch,
+      assetTypeListingData,
+    );
+
     await DownloadMyHistoryReportRequest({
       callApi,
+      showNotification,
       showLoader,
-      requestdata: requestdata,
+      requestdata,
+      setOpen,
       navigate,
     });
   };
