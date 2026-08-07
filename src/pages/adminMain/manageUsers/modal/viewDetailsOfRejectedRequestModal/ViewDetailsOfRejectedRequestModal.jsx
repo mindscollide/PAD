@@ -54,9 +54,7 @@ const ViewDetailsOfRejectedRequestModal = () => {
         });
 
         // ✅ Fix: Corrected typo and safely extract reasons
-        console.log("reasonsArray", res);
         const reasonsArray = Array.isArray(res?.registrationHistory) ? res : [];
-        console.log("reasonsArray", reasonsArray);
         // 🔹 Set to state (if you have `setReasons`)
         setDetailsData(reasonsArray);
       } catch (error) {

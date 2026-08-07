@@ -147,19 +147,14 @@ const EmptyState = ({
   style,
 }) => {
   // Normalize type to match keys in the maps
-  console.log("empty img", style);
   const normalizedType = type?.toLowerCase();
-  console.log("empty img", normalizedType);
   // Pick default or provided message
   const displayMessage =
     message || defaultMessages[normalizedType] || "No data available";
-  console.log("empty img", displayMessage);
 
   // Pick icon based on type
   const IconSrc = iconComponents[normalizedType];
-  console.log("empty IconSrc", displayMessage);
   const isImage = typeof IconSrc === "string" || IconSrc instanceof String;
-  console.log("empty IconSrc", displayMessage);
 
   return (
     <Empty

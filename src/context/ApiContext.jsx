@@ -82,20 +82,17 @@ export const ApiProvider = ({ children }) => {
       // showLoader(false);
 
       if (responseCode === 200) {
-      console.log("heloo log", responseResult);
         return {
           success: true,
           result: responseResult,
           responseMessage,
         };
       }
-      console.log("heloo log", retryOnExpire);
       if ((responseCode === 417 || responseCode === 401) && retryOnExpire) {
         const refreshed = await refreshToken(callApi, navigate, {
           showNotification,
           showLoader,
         });
-        console.log("heloo log");
         if (refreshed === true) {
           // Retry the original request with fresh token
           return await callApi({
