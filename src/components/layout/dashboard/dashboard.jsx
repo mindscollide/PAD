@@ -621,19 +621,44 @@ const Dashboard = () => {
               try {
                 const parsedPayload = JSON.parse(payload);
                 if (parsedPayload?.UserID === currentUserId) {
-                  // FK_UserStatusID: 1=Active, 2=Disabled, 3=Closed,
-                  // 4=Dormant (see statusOptions in
-                  // EditRoleAndPoliciesModal.jsx). Disabled gets its own
-                  // message; any other update to the current user while
-                  // still active (roles/group policy) uses the generic
-                  // "changed" message.
+                  // CHANGED (2026-08-06, per CR): FK_UserStatusID: 1=Active,
+                  // 2=Disabled, 3=Closed, 4=Dormant (see statusOptions in
+                  // EditRoleAndPoliciesModal.jsx). Each status now gets the
+                  // same title/description pairing shown at login for that
+                  // status (see ERM_Auth_AuthServiceManager_Login_04/_05 in
+                  // utils.jsx + loginApi.jsx), so the live push the user
+                  // sees right now and the message they'd see if they tried
+                  // to log back in read consistently. Any update that
+                  // leaves status at Active (1) - i.e. a Group Policy
+                  // assign/change with no status change - keeps the
+                  // previous generic "Account Updated" wrapper. No backend/
+                  // MQTT payload change needed - FK_UserStatusID was already
+                  // in the payload.
+                  let title = "Account Updated";
+                  let description =
+                    "Your Group Policy and/or Status is changed by the Admin. Please login again.";
+
+                  switch (parsedPayload?.FK_UserStatusID) {
+                    case 2: // Disabled
+                      title = "Account inactive; requires reactivation";
+                      description = "Please login again.";
+                      break;
+                    case 3: // Closed
+                      title = "Account permanently closed";
+                      description = "Please contact System Administrator.";
+                      break;
+                    case 4: // Dormant
+                      title = "Account is Inactive and requires reactivation";
+                      description = "Please contact System Administrator.";
+                      break;
+                    default:
+                      break;
+                  }
+
                   showNotification({
                     type: "warning",
-                    title: "Account Updated",
-                    description:
-                      parsedPayload?.FK_UserStatusID === 2
-                        ? "Your status is set to In-Active by the Admin. Please contact Admin."
-                        : "Your Group Policy is changed by the Admin. Please login again.",
+                    title,
+                    description,
                   });
                   logout({ navigate, showLoader });
                 }

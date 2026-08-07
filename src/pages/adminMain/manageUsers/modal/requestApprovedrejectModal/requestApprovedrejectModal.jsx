@@ -291,7 +291,7 @@ const RequestApprovedRejeectedModal = ({ currentUserData = [] }) => {
               value={writeNote}
               onChange={handleNoteChange}
               rows={4}
-              placeholder="Add Note"
+              placeholder="Write Notes"
               maxLength={500}
               className={styles.textareaField}
             />
