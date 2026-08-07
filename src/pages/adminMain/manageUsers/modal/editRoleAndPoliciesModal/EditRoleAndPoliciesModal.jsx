@@ -43,25 +43,27 @@ const EditRoleAndPoliciesModal = () => {
     setStoreEditRolesAndPoliciesData,
   } = useMyAdmin();
 
-  console.log(
-    roleAndPolicyViewDetailData,
-    "roleAndPolicyViewDetailDataroleAndPolicyViewDetailData"
-  );
-
   // 🔹 Extract user details from context
   const userDetails = roleAndPolicyViewDetailData?.userDetails;
+  // Was indexing [0] straight off the optional-chained result - if
+  // assignedGroupPolicies itself is missing (no policy assigned at all,
+  // the exact case this screen needs to handle), that's `undefined[0]` and
+  // throws.
   const assignedGroupPolicies =
-    roleAndPolicyViewDetailData?.assignedGroupPolicies[0];
+    roleAndPolicyViewDetailData?.assignedGroupPolicies?.[0];
 
-  console.log(
-    assignedGroupPolicies,
-    "assignedGroupPoliciesassignedGroupPolicies"
-  );
   const [selectedRoles, setSelectedRoles] = useState([]);
   // 🔹 Initialize state based on userStatusID
   const [userStatus, setUserStatus] = useState(userDetails?.userStatusID || 1);
 
-  const [selectedPolicy, setSelectedPolicy] = useState(null);
+  // 🔹 Seed from the user's currently assigned policy (if any) so opening
+  // this modal shows the "Assigned Group Policy" card immediately, same as
+  // the read-only RolesAndPoliciesModal does - previously this always
+  // started at null, so the modal opened looking like nothing was assigned
+  // even when it was, until the admin picked something from the dropdown.
+  const [selectedPolicy, setSelectedPolicy] = useState(
+    assignedGroupPolicies?.groupPolicyID || null
+  );
 
   // get data from sessionStorage
   const userProfileData = JSON.parse(
@@ -70,12 +72,18 @@ const EditRoleAndPoliciesModal = () => {
   const loggedInUserID = userProfileData?.userID;
 
   // 🔹 This the groupPolicyOptions data which is coming in the Change Group Policy dropdown
+  // Excludes whatever policy is currently assigned - no point offering to
+  // "change" to the same policy that's already assigned.
   const groupPolicyOptions =
-    editRoleAndPolicyGroupDropdownData?.groupPolicies?.map((policy) => ({
-      label: policy.groupTitle,
-      value: policy.groupPolicyID,
-      description: policy.groupDescription,
-    })) || [];
+    editRoleAndPolicyGroupDropdownData?.groupPolicies
+      ?.filter(
+        (policy) => policy.groupPolicyID !== assignedGroupPolicies?.groupPolicyID
+      )
+      ?.map((policy) => ({
+        label: policy.groupTitle,
+        value: policy.groupPolicyID,
+        description: policy.groupDescription,
+      })) || [];
 
   // 🔹 This the checkbox data in which all roles will be shown
   const allRoles = allUserRolesForEditRolePolicyData?.userRoles || [];
@@ -112,9 +120,18 @@ const EditRoleAndPoliciesModal = () => {
   };
 
   // 🔹 Selected policy from the change Group Policy
-  const selectedPolicyData = groupPolicyOptions.find(
-    (p) => p.value === selectedPolicy
-  );
+  // Still on the originally-assigned policy -> read straight from
+  // assignedGroupPolicies (now excluded from groupPolicyOptions above, so
+  // it wouldn't be found there); otherwise the admin picked something new
+  // from the (filtered) dropdown.
+  const selectedPolicyData =
+    assignedGroupPolicies && selectedPolicy === assignedGroupPolicies.groupPolicyID
+      ? {
+          label: assignedGroupPolicies.groupTitle,
+          value: assignedGroupPolicies.groupPolicyID,
+          description: assignedGroupPolicies.groupDescription,
+        }
+      : groupPolicyOptions.find((p) => p.value === selectedPolicy);
 
   // 🔹 Active, Disable and other statuses
   const statusOptions = [
@@ -123,6 +140,32 @@ const EditRoleAndPoliciesModal = () => {
     { label: "Dormant", value: 4, color: "#ff4d4f" },
     { label: "Closed", value: 3, color: "#000000" },
   ];
+
+  // 🔹 Whether the admin actually changed anything vs. what this user was
+  // loaded with, so the "Unsaved Changes" confirmation only shows when
+  // there's really something at risk of being lost on Close.
+  const hasUnsavedChanges = () => {
+    const originalStatus = userDetails?.userStatusID || 1;
+    const statusChanged = userStatus !== originalStatus;
+
+    const assignedRolesArray = (userDetails?.assignedRoles || "")
+      .split(",")
+      .map((role) => role.trim())
+      .filter(Boolean);
+    const originalRoleIDs = allRoles
+      .filter((role) => assignedRolesArray.includes(role.roleName))
+      .map((role) => role.userRoleID);
+    const originalRolesSet = new Set(originalRoleIDs);
+    const currentRolesSet = new Set(selectedRoles);
+    const rolesChanged =
+      originalRolesSet.size !== currentRolesSet.size ||
+      originalRoleIDs.some((id) => !currentRolesSet.has(id));
+
+    const originalPolicyID = assignedGroupPolicies?.groupPolicyID || null;
+    const policyChanged = selectedPolicy !== originalPolicyID;
+
+    return statusChanged || rolesChanged || policyChanged;
+  };
 
   // 🔹 onCLick Save This API Function will be hit
   const onClickSaveOnEditRolesAndPolicies = async () => {
@@ -246,8 +289,13 @@ const EditRoleAndPoliciesModal = () => {
                       <label className={styles.policyHeading}>
                         Assigned Policy:
                         <span className={styles.policyDescription}>
-                          {assignedGroupPolicies?.groupDescription ||
-                            "This user is not assigned any Group Policy"}
+                          {assignedGroupPolicies
+                            ? `${assignedGroupPolicies.groupTitle}${
+                                assignedGroupPolicies.groupDescription
+                                  ? ` - ${assignedGroupPolicies.groupDescription}`
+                                  : ""
+                              }`
+                            : "This user is not assigned any Group Policy"}
                         </span>
                       </label>
                       <label className={styles.dropdownLabel}>
@@ -310,6 +358,13 @@ const EditRoleAndPoliciesModal = () => {
               text="Close"
               className="big-light-button"
               onClick={() => {
+                // 🔹 Nothing was actually changed - just close, no need to
+                // confirm losing changes that don't exist.
+                if (!hasUnsavedChanges()) {
+                  setEditrolesAndPoliciesUser(false);
+                  return;
+                }
+
                 // 🔹 Store unsaved data globally
                 setStoreEditRolesAndPoliciesData({
                   UserID: userDetails?.userID,

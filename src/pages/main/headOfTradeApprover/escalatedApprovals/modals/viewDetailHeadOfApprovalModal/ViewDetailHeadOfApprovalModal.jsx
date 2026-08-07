@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { Col, Row, Tag } from "antd";
 import { useGlobalModal } from "../../../../../../context/GlobalModalContext";
 import { BrokerList, GlobalModal } from "../../../../../../components";
@@ -31,9 +32,20 @@ const ViewDetailHeadOfApprovalModal = () => {
     setViewCommentGlobalModal,
   } = useGlobalModal();
 
-  const { viewDetailsHeadOfApprovalData } = useEscalatedApprovals();
+  const { viewDetailsHeadOfApprovalData, viewDetailsHeadOfApprovalIDRef } =
+    useEscalatedApprovals();
 
   const { allInstrumentsData } = useDashboardContext();
+
+  // This modal is only ever mounted while open (parent renders it as
+  // {viewDetailsHeadOfApprovalModal && <ViewDetailHeadOfApprovalModal />}),
+  // so a cleanup-on-unmount is the reliable way to clear the "currently
+  // open" ref regardless of which button/action caused the close.
+  useEffect(() => {
+    return () => {
+      viewDetailsHeadOfApprovalIDRef.current = null;
+    };
+  }, [viewDetailsHeadOfApprovalIDRef]);
 
   // get data from sessionStorage
   const userProfileData = JSON.parse(

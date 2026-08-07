@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState } from "react";
+import React, { createContext, useContext, useRef, useState } from "react";
 
 /**
  * 📌 MyEscalatedApprovalsContext
@@ -54,6 +54,13 @@ export const MyEscalatedApprovalsProvider = ({ children }) => {
   /** Stores the latest MQTT update for Compliance Officer Transactions. */
   const [htaEscalatedApprovalDataMqtt, setHtaEscalatedApprovalDataMqtt] =
     useState(false);
+
+  // Tracks which request (approvalID) the HTA currently has View Details
+  // open for, if any - read by dashboard.jsx's MQTT handler so
+  // ESCALATED_REQUEST_RESOLVED_HTA can close that modal when it's the same
+  // request being resolved. A ref (not state) since this is read
+  // imperatively from an MQTT callback, not rendered anywhere.
+  const viewDetailsHeadOfApprovalIDRef = useRef(null);
   /**
    * ♻️ Reset Context State (Table + API Data)
    *
@@ -77,6 +84,7 @@ export const MyEscalatedApprovalsProvider = ({ children }) => {
         setHtaEscalatedApprovalDataMqtt,
         viewDetailsHeadOfApprovalData,
         setViewDetailsHeadOfApprovalData,
+        viewDetailsHeadOfApprovalIDRef,
 
         // Reset functions
         resetMyEscalatedApprovalContextState,

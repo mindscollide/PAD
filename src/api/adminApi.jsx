@@ -393,6 +393,92 @@ export const DownloadBrokerReportRequest = async ({
   }
 };
 
+// 🔹 ExportManageUsersUsersTabExcelReport — brand new endpoint
+// (2026-08-07_manage_users_export_new_api.md). Same 4 filters as
+// GetAllEmployeesWithAssignedManageUsersUserTabPolicies, no pagination
+// fields (export always returns every matching row). Not deployed yet as
+// of that doc's date.
+export const ExportManageUsersUsersTabExcelReportRequest = async ({
+  callApi,
+  showNotification,
+  showLoader,
+  requestdata,
+  navigate,
+}) => {
+  try {
+    showLoader(true);
+
+    // 🔹 API Call
+    const res = await callApi({
+      requestMethod: import.meta.env
+        .VITE_EXPORT_MANAGE_USERS_USERS_TAB_EXCEL_REPORT_REQUEST_METHOD,
+      endpoint: import.meta.env.VITE_API_REPORT,
+      requestData: requestdata,
+      navigate,
+      responseType: "arraybuffer", // ⚡ Required for file download
+      headers: {
+        "Content-Type":
+          "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      },
+    });
+
+    // 🔹 Check Session Expiry
+    if (handleExpiredSession(res, navigate, showLoader)) return false;
+
+    // 🔹 When API send isExecuted false
+    if (!res?.result?.isExecuted) {
+      showNotification({
+        type: "error",
+        title: "Export Failed",
+        description: "Something went wrong while exporting users.",
+      });
+      return false;
+    }
+
+    // 🔹 When API Send Success Response
+    if (res.success) {
+      try {
+        const blob = new Blob([res.result?.fileData || res.data], {
+          type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        });
+
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.setAttribute("download", "Manage-Users-Users-Export.xlsx");
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        window.URL.revokeObjectURL(url);
+        return true;
+      } catch {
+        showNotification({
+          type: "error",
+          title: "Export Failed",
+          description: "Unable to prepare the exported file for download.",
+        });
+        return false;
+      }
+    }
+
+    showNotification({
+      type: "error",
+      title: "Export Failed",
+      description: getMessage(res.message),
+    });
+    return false;
+  } catch {
+    showNotification({
+      type: "error",
+      title: "Error",
+      description: "An unexpected error occurred while exporting users.",
+    });
+    return false;
+  } finally {
+    showLoader(false);
+  }
+};
+
 export const SearchGetInstrumentsWithClosingPeriod = async ({
   callApi,
   showNotification,
@@ -2743,8 +2829,6 @@ export const UpdateEditRolesAndPoliciesRequest = async ({
   navigate,
 }) => {
   try {
-    console.log("Check is this COming");
-
     // 🔹 API Call
     const res = await callApi({
       requestMethod: import.meta.env
@@ -2781,8 +2865,6 @@ export const UpdateEditRolesAndPoliciesRequest = async ({
         responseMessage ===
         "PAD_UserServiceManager_UpdateUserDetailsWithRolesAndPolicies_06"
       ) {
-        console.log("Check is this COming");
-
         setEditrolesAndPoliciesUser(true);
         setRoleAndPoliciesIntimationModal(true);
         return {
@@ -2795,14 +2877,24 @@ export const UpdateEditRolesAndPoliciesRequest = async ({
         responseMessage ===
         "PAD_UserServiceManager_UpdateUserDetailsWithRolesAndPolicies_07"
       ) {
-        console.log("Check is this COming");
-
         setEditrolesAndPoliciesUser(true);
         setRoleAndPoliciesIntimationModal(true);
         return {
           employees: employees || [],
           hasDependency: hasDependency || false,
         };
+      }
+
+      // Any other code (_01 Invalid input, _03 Update failed, _04
+      // Exception occurred, _05 Unauthorized User) used to fall through
+      // here with no feedback at all - the modal just stayed open with no
+      // indication anything went wrong.
+      if (message) {
+        showNotification({
+          type: "error",
+          title: "Update Failed",
+          description: message,
+        });
       }
 
       return false;
