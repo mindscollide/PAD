@@ -312,11 +312,36 @@ export const UpdatedComplianceOfficerTransactionRequest = async ({
 
     // If execution failed
     if (!res?.result?.isExecuted) {
-      showNotification({
-        type: "error",
-        title: "Error",
-        description: "Something went wrong. Please try again.",
-      });
+      // CORRECTED (2026-08-07_update_transaction_status_policy_violation_
+      // no_longer_blocks.md, refined same-day): marking Compliant on a
+      // transaction that violates an assigned policy is still blocked
+      // (isExecuted: false) - only marking the same transaction
+      // Non-Compliant now succeeds. violatedPolicies comes back populated
+      // on this specific failure - surface why instead of the generic
+      // message, since retrying identically will always hit the same
+      // block; only choosing Non-Compliant gets past it.
+      const violatedPolicies = res?.result?.violatedPolicies;
+      if (Array.isArray(violatedPolicies) && violatedPolicies.length > 0) {
+        const policyCodes = violatedPolicies
+          .map((p) => p?.policyCode)
+          .filter(Boolean)
+          .join(", ");
+        showNotification({
+          type: "error",
+          title: "Cannot Mark Compliant",
+          description: policyCodes
+            ? `This transaction breaches ${
+                violatedPolicies.length > 1 ? "policies" : "policy"
+              } ${policyCodes} and cannot be marked Compliant. Mark it Non-Compliant instead.`
+            : "This transaction breaches an assigned policy and cannot be marked Compliant. Mark it Non-Compliant instead.",
+        });
+      } else {
+        showNotification({
+          type: "error",
+          title: "Error",
+          description: "Something went wrong. Please try again.",
+        });
+      }
       showLoader(false);
       return false;
     }
@@ -329,6 +354,32 @@ export const UpdatedComplianceOfficerTransactionRequest = async ({
         responseMessage ===
         "PAD_Trade_TradeServiceManager_UpdateTransactionRequestStatus_01"
       ) {
+        // Reaching here with violatedPolicies populated means this was a
+        // Non-Compliant submission on a violating transaction - the one
+        // combination that now succeeds instead of blocking (Compliant on
+        // the same violation is still blocked, handled in the
+        // isExecuted:false branch above). Logged server-side for the
+        // Policy Breaches report either way; surfaced here as a heads-up
+        // since the submission otherwise proceeds silently
+        // (2026-08-07_update_transaction_status_policy_violation_no_
+        // longer_blocks.md).
+        const violatedPolicies = res.result?.violatedPolicies;
+        if (Array.isArray(violatedPolicies) && violatedPolicies.length > 0) {
+          const policyCodes = violatedPolicies
+            .map((p) => p?.policyCode)
+            .filter(Boolean)
+            .join(", ");
+          showNotification({
+            type: "warning",
+            title: "Policy Violation Noted",
+            description: policyCodes
+              ? `This transaction breaches ${
+                  violatedPolicies.length > 1 ? "policies" : "policy"
+                } ${policyCodes}. Logged for the Policy Breaches report.`
+              : "This transaction breaches an assigned policy. Logged for the Policy Breaches report.",
+          });
+        }
+
         setNoteGlobalModal({ visible: false, action: null });
         if (
           submitText === "Compliant" ||

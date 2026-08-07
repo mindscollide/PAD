@@ -71,6 +71,7 @@ const EscalatedApprovals = () => {
     htaEscalatedApprovalDataMqtt,
     setHtaEscalatedApprovalDataMqtt,
     setViewDetailsHeadOfApprovalData,
+    viewDetailsHeadOfApprovalIDRef,
   } = useEscalatedApprovals();
   const {
     headOfTradeEscalatedApprovalsSearch,
@@ -222,6 +223,10 @@ const EscalatedApprovals = () => {
     if (responseData) {
       setViewDetailsHeadOfApprovalData(responseData);
       setViewDetailsHeadOfApprovalModal(true);
+      // Track which request this View Details is open for, so an incoming
+      // ESCALATED_REQUEST_RESOLVED_HTA MQTT push can tell whether it's the
+      // exact one currently on screen (see dashboard.jsx).
+      viewDetailsHeadOfApprovalIDRef.current = approvalID;
     }
   };
   // ===========================================================================

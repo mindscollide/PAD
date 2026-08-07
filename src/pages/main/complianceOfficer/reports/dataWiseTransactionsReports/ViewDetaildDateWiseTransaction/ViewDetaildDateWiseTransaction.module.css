@@ -185,7 +185,12 @@
 
 .viewDetailSubLabelsForInstrument {
   flex: 1; /* let it shrink inside flex */
-  max-width: 250px; /* 👈 critical inside flex */
+  /* Was max-width: 250px, tuned for when this box was half a row (Col
+     span={12}) - now that Instrument is a full row (span={24}), that cap
+     left most of the box empty with the text truncated well before the
+     edge. 100% lets it use the actual available width; ellipsis still
+     kicks in for anything genuinely too long for the full row. */
+  max-width: 100%;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;

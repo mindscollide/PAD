@@ -15,6 +15,7 @@ import { useTransaction } from "../../../context/myTransaction";
 import { useReconcileContext } from "../../../context/reconsileContax";
 import { useSidebarContext } from "../../../context/sidebarContaxt";
 import { useEscalatedApprovals } from "../../../context/escalatedApprovalContext";
+import { useGlobalModal } from "../../../context/GlobalModalContext";
 import { useWebNotification } from "../../../context/notificationContext";
 import { GetUserWebNotificationRequest } from "../../../api/notification";
 import { useNotification } from "../../NotificationProvider/NotificationProvider";
@@ -49,7 +50,12 @@ const Dashboard = () => {
     // FE handler at all (see MQTT_Message_Catalog.md).
     setAdminGropusAndPolicyMqtt,
   } = useMyAdmin();
-  const { setHtaEscalatedApprovalDataMqtt } = useEscalatedApprovals();
+  const {
+    setHtaEscalatedApprovalDataMqtt,
+    setHtaEscalatedApprovalData,
+    viewDetailsHeadOfApprovalIDRef,
+  } = useEscalatedApprovals();
+  const { setViewDetailsHeadOfApprovalModal } = useGlobalModal();
   const { setEmployeePendingApprovalsDataMqtt, activeTabRef } =
     usePortfolioContext();
 
@@ -119,8 +125,13 @@ const Dashboard = () => {
    * If the row isn't currently loaded in this client (e.g. a page past
    * what's been scrolled to), it's silently skipped rather than forcing a
    * refetch just to patch something not on screen.
+   *
+   * `overrides` lets a specific caller correct/supply fields the generic
+   * mapper can't get right for its payload shape (see
+   * ..._STATUS_CHANGE_TRADED below, whose payload doesn't carry the
+   * approvalStatus block the mapper reads `status` from).
    */
-  const patchEmployeeMyApprovalRow = (payload) => {
+  const patchEmployeeMyApprovalRow = (payload, overrides = {}) => {
     const [updatedApproval] = mapEmployeeMyApprovalData(
       assetTypeListingData?.Equities,
       [payload]
@@ -128,16 +139,18 @@ const Dashboard = () => {
 
     if (!updatedApproval) return;
 
+    const patchedApproval = { ...updatedApproval, ...overrides };
+
     setIsEmployeeMyApproval((prev) => {
       const approvals = prev?.approvals || [];
       const existingIndex = approvals.findIndex(
-        (item) => item.approvalID === updatedApproval.approvalID
+        (item) => item.approvalID === patchedApproval.approvalID
       );
 
       if (existingIndex === -1) return prev;
 
       const updatedApprovals = [...approvals];
-      updatedApprovals[existingIndex] = updatedApproval;
+      updatedApprovals[existingIndex] = patchedApproval;
 
       return { ...prev, approvals: updatedApprovals };
     });
@@ -386,9 +399,23 @@ const Dashboard = () => {
                 }
                 case "EMPLOYEE_TRADE_APPROVAL_REQUEST_STATUS_CHANGE_TRADED": {
                   // Patches in place instead of a full API refetch - see
-                  // patchEmployeeMyApprovalRow above.
+                  // patchEmployeeMyApprovalRow above. Per
+                  // MQTT_Message_Catalog.md this payload is "Trade summary
+                  // + workFlowStatus block" - a different shape than the
+                  // plain "Trade summary" the other callers get, and the
+                  // mapper's `status` read (item.approvalStatus?.
+                  // approvalStatusName) won't exist here, so it'd come out
+                  // blank without an override. Reads the string status off
+                  // workFlowStatus the same way this codebase already does
+                  // elsewhere (pendingApprovals/utill.jsx,
+                  // tradesUploadViaPortfolio/utill.jsx both read
+                  // item.workFlowStatus?.workFlowStatus), falling back to
+                  // the literal "Traded" - what this message means by
+                  // definition - if that field isn't there either.
                   if (currentKey === "1") {
-                    patchEmployeeMyApprovalRow(payload);
+                    patchEmployeeMyApprovalRow(payload, {
+                      status: payload?.workFlowStatus?.workFlowStatus || "Traded",
+                    });
                   }
                   break;
                 }
@@ -756,6 +783,65 @@ const Dashboard = () => {
                 case "REQUEST_ESCALATED_TO_HTA": {
                   if (currentKey === "12") {
                     setHtaEscalatedApprovalDataMqtt(true);
+                  }
+                  break;
+                }
+                // ADDED (2026-08-07, per 2026-08-07_hta_escalation_
+                // resolved_notification.md): a Line Manager approving/
+                // declining a request that was escalated past them
+                // resolves the HTA's open escalation. Unlike the sibling
+                // case above (a brand new escalation, where a full
+                // refetch is the only option since there's no existing row
+                // to update), a resolution instead patches the listing in
+                // place - the resolved request no longer belongs in
+                // "Escalated Approvals" at all, so its row is removed
+                // rather than refetching the whole page. Also closes View
+                // Details if the HTA has this exact request open right
+                // now, via viewDetailsHeadOfApprovalIDRef (escalatedApprovalContext.jsx).
+                case "ESCALATED_REQUEST_RESOLVED_HTA": {
+                  if (currentKey === "12") {
+                    // payload is "a raw array containing the single
+                    // resolved workFlowID" per the doc. This table's rows
+                    // only carry approvalID (not a separate workFlowID),
+                    // so matching against approvalID assumes the two line
+                    // up - the same value this page already sends as
+                    // TradeApprovalID when fetching View Details. Not
+                    // explicitly confirmed by the doc; flagged as an
+                    // assumption.
+                    const resolvedWorkFlowID = Array.isArray(payload)
+                      ? payload[0]
+                      : payload;
+
+                    if (
+                      resolvedWorkFlowID != null &&
+                      Number(viewDetailsHeadOfApprovalIDRef?.current) ===
+                        Number(resolvedWorkFlowID)
+                    ) {
+                      setViewDetailsHeadOfApprovalModal(false);
+                    }
+
+                    setHtaEscalatedApprovalData((prev) => {
+                      const list = prev?.htaEscalatedApprovalsList || [];
+                      const remaining = list.filter(
+                        (item) =>
+                          Number(item.approvalID) !== Number(resolvedWorkFlowID)
+                      );
+
+                      if (remaining.length === list.length) return prev;
+
+                      return {
+                        ...prev,
+                        htaEscalatedApprovalsList: remaining,
+                        totalRecordsDataBase: Math.max(
+                          0,
+                          (prev?.totalRecordsDataBase || 0) - 1
+                        ),
+                        totalRecordsTable: Math.max(
+                          0,
+                          (prev?.totalRecordsTable || 0) - 1
+                        ),
+                      };
+                    });
                   }
                   break;
                 }
