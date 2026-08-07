@@ -844,6 +844,27 @@ const Dashboard = () => {
                       description = "Please contact System Administrator.";
                       break;
                     default:
+                      // ADDED (2026-08-07, per 2026-08-07_employee_manager_
+                      // reassign_force_logout.md): UpdateEmployeeManager
+                      // (Admin reassigns an employee's Line Manager or
+                      // Compliance Officer) now also sends this same
+                      // message with status left unchanged (still Active),
+                      // landing here alongside genuine Group Policy
+                      // changes. EntityTypeID (1=Line Manager, 2=Compliance
+                      // Officer) distinguishes the two so a reassigned
+                      // employee gets a message naming what actually
+                      // changed, instead of the generic "Group Policy
+                      // and/or Status" text for something that isn't a
+                      // policy change at all. Genuine Group Policy changes
+                      // don't send EntityTypeID, so they keep the original
+                      // generic text set above.
+                      if (parsedPayload?.EntityTypeID === 1) {
+                        description =
+                          "Your Line Manager has been reassigned by the Admin. Please login again.";
+                      } else if (parsedPayload?.EntityTypeID === 2) {
+                        description =
+                          "Your Compliance Officer has been reassigned by the Admin. Please login again.";
+                      }
                       break;
                   }
 
