@@ -583,7 +583,7 @@ export const SearchBarProvider = ({ children }) => {
     psxCode: "",
     status: [],
     filterTrigger: false,
-    pageNumber: 0,
+    pageNumber: 1,
     pageSize: 10,
   });
 
@@ -1290,10 +1290,13 @@ export const SearchBarProvider = ({ children }) => {
   /** Reset Admin Brokers List  filters */
   const resetAdminBrokersListSearch = () =>
     setAdminBrokerSearch({
-      brokersName: "",
+      // was "brokersName" (extra 's') - didn't match the actual state key
+      // (brokerName) used everywhere else, so reset never actually cleared
+      // the broker name filter.
+      brokerName: "",
       psxCode: "",
       status: [],
-      pageNumber: 0,
+      pageNumber: 1,
       pageSize: 10,
       filterTrigger: false,
     });
