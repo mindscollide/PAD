@@ -23,6 +23,7 @@ import { useGlobalLoader } from "../../../context/LoaderContext";
 import { useMyAdmin } from "../../../context/AdminContext";
 import { ManageBrokerModal } from "../../../pages";
 import { logout } from "../../../api/loginApi";
+import { mapEmployeeMyApprovalData } from "../../../pages/main/employes/myApprovals/utils";
 const { Content } = Layout;
 
 const Dashboard = () => {
@@ -31,7 +32,10 @@ const Dashboard = () => {
   const connectionAttemptedRef = useRef(false); // ✅ Track connection attempts
 
   // Context hooks
-  const { setLineManagerApprovalMQtt, setIsEmployeeMyApprovalMqtt } =
+  // setIsEmployeeMyApprovalMqtt (full-refetch trigger) no longer used here -
+  // every EMPLOYEE_* case that used to set it now patches
+  // employeeMyApproval in place via patchEmployeeMyApprovalRow instead.
+  const { setLineManagerApprovalMQtt, setIsEmployeeMyApproval } =
     useMyApproval();
   const {
     setAdminBrokerMqtt,
@@ -67,6 +71,7 @@ const Dashboard = () => {
     setUrgentAlert,
     manageBrokersModalOpen,
     setManageBrokersModalOpen,
+    assetTypeListingData,
   } = useDashboardContext();
 
   const { setEmployeeTransactionsTableDataMqtt } = useTransaction();
@@ -102,6 +107,42 @@ const Dashboard = () => {
       roleArray.includes(Number(role.roleID))
     );
   };
+
+  /**
+   * ✅ Patches a single employee "My Approvals" row in place from an MQTT
+   * "Trade summary" payload, instead of a full API refetch. Shared by
+   * EMPLOYEE_TRADE_APPROVAL_REQUEST_APPROVED/DECLINED and
+   * ..._STATUS_CHANGE_TRADED - all of which update an *existing* row's
+   * status, not add a new one. payload is one raw approval item, same
+   * shape SearchTadeApprovals returns per-row, so it's run through the
+   * same mapper the initial fetch uses rather than guessing field names.
+   * If the row isn't currently loaded in this client (e.g. a page past
+   * what's been scrolled to), it's silently skipped rather than forcing a
+   * refetch just to patch something not on screen.
+   */
+  const patchEmployeeMyApprovalRow = (payload) => {
+    const [updatedApproval] = mapEmployeeMyApprovalData(
+      assetTypeListingData?.Equities,
+      [payload]
+    );
+
+    if (!updatedApproval) return;
+
+    setIsEmployeeMyApproval((prev) => {
+      const approvals = prev?.approvals || [];
+      const existingIndex = approvals.findIndex(
+        (item) => item.approvalID === updatedApproval.approvalID
+      );
+
+      if (existingIndex === -1) return prev;
+
+      const updatedApprovals = [...approvals];
+      updatedApprovals[existingIndex] = updatedApproval;
+
+      return { ...prev, approvals: updatedApprovals };
+    });
+  };
+
   const apiCallwebNotification = async () => {
     const requestdata = { sRow: 0, eRow: 10 }; // Re-fetch just the first page
     const webNotificationRequest = await GetUserWebNotificationRequest({
@@ -297,8 +338,38 @@ const Dashboard = () => {
                   break;
                 }
                 case "EMPLOYEE_NEW_TRADE_APPROVAL_REQUEST": {
+                  // New row (not an update to an existing one, unlike
+                  // patchEmployeeMyApprovalRow's callers) - prepend instead
+                  // of a full API refetch, same [payload, ...prev] shape
+                  // already sketched for EMPLOYEE_CONDUCTED_TRANSACTION
+                  // below. Dedup'd against approvalID in case the
+                  // submitting client already added this optimistically on
+                  // its own submit flow before the MQTT echo arrived. Both
+                  // record-count totals bump by 1 - a real new row now
+                  // exists in the DB and is now also loaded here.
                   if (currentKey === "1") {
-                    setIsEmployeeMyApprovalMqtt(true);
+                    const [newApproval] = mapEmployeeMyApprovalData(
+                      assetTypeListingData?.Equities,
+                      [payload]
+                    );
+
+                    if (newApproval) {
+                      setIsEmployeeMyApproval((prev) => {
+                        const approvals = prev?.approvals || [];
+                        const alreadyPresent = approvals.some(
+                          (item) => item.approvalID === newApproval.approvalID
+                        );
+                        if (alreadyPresent) return prev;
+
+                        return {
+                          ...prev,
+                          approvals: [newApproval, ...approvals],
+                          totalRecordsDataBase:
+                            (prev?.totalRecordsDataBase || 0) + 1,
+                          totalRecordsTable: (prev?.totalRecordsTable || 0) + 1,
+                        };
+                      });
+                    }
                   }
                   break;
                 }
@@ -314,25 +385,10 @@ const Dashboard = () => {
                   break;
                 }
                 case "EMPLOYEE_TRADE_APPROVAL_REQUEST_STATUS_CHANGE_TRADED": {
+                  // Patches in place instead of a full API refetch - see
+                  // patchEmployeeMyApprovalRow above.
                   if (currentKey === "1") {
-                    setIsEmployeeMyApprovalMqtt(true);
-
-                    // setIsEmployeeMyApproval((prev) => {
-                    //   const approvals = prev.approvals || [];
-                    //   const existingIndex = approvals.findIndex(
-                    //     (item) => item.approvalID === payload.approvalID
-                    //   );
-
-                    //   if (existingIndex === -1) return prev;
-
-                    //   const updatedApprovals = [...approvals];
-                    //   updatedApprovals[existingIndex] = payload;
-
-                    //   return {
-                    //     ...prev,
-                    //     approvals: updatedApprovals,
-                    //   };
-                    // });
+                    patchEmployeeMyApprovalRow(payload);
                   }
                   break;
                 }
@@ -347,31 +403,18 @@ const Dashboard = () => {
                   break;
                 }
                 case "EMPLOYEE_TRADE_APPROVAL_REQUEST_APPROVED": {
+                  // Patches in place instead of a full API refetch - see
+                  // patchEmployeeMyApprovalRow above.
                   if (currentKey === "1") {
-                    setIsEmployeeMyApprovalMqtt(true);
-
-                    // setIsEmployeeMyApproval((prev) => {
-                    //   const approvals = prev.approvals || [];
-                    //   const existingIndex = approvals.findIndex(
-                    //     (item) => item.approvalID === payload.approvalID
-                    //   );
-
-                    //   if (existingIndex === -1) return prev;
-
-                    //   const updatedApprovals = [...approvals];
-                    //   updatedApprovals[existingIndex] = payload;
-
-                    //   return {
-                    //     ...prev,
-                    //     approvals: updatedApprovals,
-                    //   };
-                    // });
+                    patchEmployeeMyApprovalRow(payload);
                   }
                   break;
                 }
                 case "EMPLOYEE_TRADE_APPROVAL_REQUEST_DECLINED": {
+                  // Patches in place instead of a full API refetch - see
+                  // patchEmployeeMyApprovalRow above.
                   if (currentKey === "1") {
-                    setIsEmployeeMyApprovalMqtt(true);
+                    patchEmployeeMyApprovalRow(payload);
                   }
                   break;
                 }
@@ -393,14 +436,27 @@ const Dashboard = () => {
                   break;
                 }
                 case "EMPLOYEE_NEW_TRADE_APPROVAL_REQUEST_RESUBMITTED": {
+                  // Treated as an update to the existing row (a resubmit
+                  // flips the same workflow's status back to pending rather
+                  // than creating a new record) - patches in place instead
+                  // of a full API refetch, see patchEmployeeMyApprovalRow
+                  // above. If that assumption is wrong and this actually
+                  // lands under a different approvalID, the patch silently
+                  // no-ops (existingIndex === -1) rather than corrupting
+                  // anything - worst case is a stale row until next full
+                  // load, not a crash.
                   if (currentKey === "1") {
-                    setIsEmployeeMyApprovalMqtt(true);
+                    patchEmployeeMyApprovalRow(payload);
                   }
                   break;
                 }
                 case "WORKFLOW_ESCALATED_FROM_HTA": {
+                  // Same treatment as the resubmit case above - an
+                  // escalation is assumed to update the existing row's
+                  // fields (isEscalated, escalatedDate, etc.), not create a
+                  // new one.
                   if (currentKey === "1") {
-                    setIsEmployeeMyApprovalMqtt(true);
+                    patchEmployeeMyApprovalRow(payload);
                   }
                   break;
                 }
