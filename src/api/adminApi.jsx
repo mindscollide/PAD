@@ -2829,8 +2829,6 @@ export const UpdateEditRolesAndPoliciesRequest = async ({
   navigate,
 }) => {
   try {
-    console.log("Check is this COming");
-
     // 🔹 API Call
     const res = await callApi({
       requestMethod: import.meta.env
@@ -2867,8 +2865,6 @@ export const UpdateEditRolesAndPoliciesRequest = async ({
         responseMessage ===
         "PAD_UserServiceManager_UpdateUserDetailsWithRolesAndPolicies_06"
       ) {
-        console.log("Check is this COming");
-
         setEditrolesAndPoliciesUser(true);
         setRoleAndPoliciesIntimationModal(true);
         return {
@@ -2881,14 +2877,24 @@ export const UpdateEditRolesAndPoliciesRequest = async ({
         responseMessage ===
         "PAD_UserServiceManager_UpdateUserDetailsWithRolesAndPolicies_07"
       ) {
-        console.log("Check is this COming");
-
         setEditrolesAndPoliciesUser(true);
         setRoleAndPoliciesIntimationModal(true);
         return {
           employees: employees || [],
           hasDependency: hasDependency || false,
         };
+      }
+
+      // Any other code (_01 Invalid input, _03 Update failed, _04
+      // Exception occurred, _05 Unauthorized User) used to fall through
+      // here with no feedback at all - the modal just stayed open with no
+      // indication anything went wrong.
+      if (message) {
+        showNotification({
+          type: "error",
+          title: "Update Failed",
+          description: message,
+        });
       }
 
       return false;

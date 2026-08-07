@@ -45,35 +45,47 @@ const RolesAndPoliciesModal = () => {
     setEditrolesAndPoliciesUser,
   } = useGlobalModal();
 
+  // 🔹 Local button spinner for "Edit Roles & Policies" - was flashing the
+  // main/global loader while its 2 lookups ran; a local spinner on the
+  // button itself is less disruptive for something this scoped.
+  const [isEditRolesButtonLoading, setIsEditRolesButtonLoading] =
+    useState(false);
+
   /** 🔹 on Click On Edit Button In ComplianceOfficer Dropdown in view detail modal of manage User users Tab*/
+  // Uses a local button spinner instead of the main/global loader while
+  // these two lookups run, then opens the Edit modal.
   const onClickOfEditRolesAndPolicyButton = async () => {
-    showLoader(true);
-    let res = await GetAllExistingGroupDataRequest({
-      callApi,
-      showNotification,
-      showLoader,
-      setRolesAndPoliciesManageUser,
-      setEditrolesAndPoliciesUser,
-      navigate,
-    });
+    setIsEditRolesButtonLoading(true);
+    try {
+      let res = await GetAllExistingGroupDataRequest({
+        callApi,
+        showNotification,
+        showLoader,
+        setRolesAndPoliciesManageUser,
+        setEditrolesAndPoliciesUser,
+        navigate,
+      });
 
-    if (res) {
-      // Edit Role And Policy Group And Policy Dropdown State
-      setEditRoleAndPolicyGroupDropdownData(res);
-    }
+      if (res) {
+        // Edit Role And Policy Group And Policy Dropdown State
+        setEditRoleAndPolicyGroupDropdownData(res);
+      }
 
-    let res2 = await GetAllUserRolesDataRequest({
-      callApi,
-      showNotification,
-      showLoader,
-      setRolesAndPoliciesManageUser,
-      setEditrolesAndPoliciesUser,
-      navigate,
-    });
+      let res2 = await GetAllUserRolesDataRequest({
+        callApi,
+        showNotification,
+        showLoader,
+        setRolesAndPoliciesManageUser,
+        setEditrolesAndPoliciesUser,
+        navigate,
+      });
 
-    if (res2) {
-      // Edit Role And Policy Group And Policy Dropdown State
-      setAllUserRolesForEditRolePolicyData(res2);
+      if (res2) {
+        // Edit Role And Policy Group And Policy Dropdown State
+        setAllUserRolesForEditRolePolicyData(res2);
+      }
+    } finally {
+      setIsEditRolesButtonLoading(false);
     }
   };
 
@@ -203,6 +215,7 @@ const RolesAndPoliciesModal = () => {
                   text={"Edit Roles & Policies"}
                   className="big-light-button"
                   onClick={onClickOfEditRolesAndPolicyButton}
+                  loading={isEditRolesButtonLoading}
                 />
                 <CustomButton
                   text={"Close"}
