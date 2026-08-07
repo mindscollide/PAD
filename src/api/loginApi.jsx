@@ -116,10 +116,25 @@ export const login = async ({
       //Yaha success pa true rakha hai takay GetUserDashBoardStats ki API ka response anay tak loader chalay
       showLoader(true);
     } else {
+      // CHANGED (2026-08-06, per CR): Closed (_04) and Inactive/Dormant (_05)
+      // used to share the same generic "Please login again." description as
+      // every other error code - both now point the user to the System
+      // Administrator instead, since re-logging in can't fix either state.
+      // Every other code (temporarily disabled, bad credentials, etc.) keeps
+      // "Please login again." unchanged. No backend change needed for this -
+      // the login API already returns a distinct responseCodeKey per case,
+      // this is purely a client-side branch on a value FE already receives.
+      let description = "Please login again.";
+      if (responseCodeKey === "ERM_Auth_AuthServiceManager_Login_04") {
+        description = "Please contact System Administrator.";
+      } else if (responseCodeKey === "ERM_Auth_AuthServiceManager_Login_05") {
+        description = "Please contact System Administrator.";
+      }
+
       showNotification({
         type: "error",
         title: message,
-        description: "Please login again.",
+        description,
       });
 
       showLoader(false);
