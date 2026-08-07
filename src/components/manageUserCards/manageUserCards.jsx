@@ -162,8 +162,8 @@ const ManageUsersCard = ({ profile, name, email, id, file, employeeCode }) => {
           </div>
 
           <div className={styles.manageUserEmail}>
-            <span>{email}</span>
-            <span>ID: {employeeCode}</span>
+            <span className={styles.email}>{email}</span>
+            <span className={styles.code}>ID: {employeeCode}</span>
           </div>
         </div>
         <Dropdown

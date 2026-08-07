@@ -57,8 +57,6 @@ const ManageBrokerModal = ({ open }) => {
   const [localBrokers, setLocalBrokers] = useState([]); // Selected brokers in UI
   const [requestData, setRequestData] = useState({ Brokers: [] }); // Payload for API
 
-  console.log(manageBrokersModalOpen, "manageBrokersModalOpen");
-
   // ---------------------- Fetch & Initialize ----------------------
   useEffect(() => {
     if (!open) return;
@@ -227,7 +225,6 @@ const ManageBrokerModal = ({ open }) => {
     (broker) => broker.isActive !== false
   );
 
-  console.log(activeBrokers, "activeBrokersactiveBrokers");
   // ---------------------- UI ----------------------
 
   return (

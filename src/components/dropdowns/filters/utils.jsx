@@ -38,7 +38,7 @@ export const adminBrokersStatus = ["Active", "In Active"];
  * Status options for pending approvals (Line Manager).
  */
 export const emtStatusOptionsForPendingApproval = ["Pending", "Non-Compliant"];
-export const bundleStatus = ["Pending", "Approved","Declined"];
+export const bundleStatus = ["Pending", "Approved", "Declined"];
 
 export const emaStatusOptionsofReportsMyTradeApprovals = [
   "Pending",
@@ -97,11 +97,8 @@ export const getTypeOptions = (assetTypeListingData) => {
  * @returns {number[]} Array of tradeApprovalTypeIDs.
  */
 export const mapBuySellToIds = (selectedLabels = [], options = {}) => {
-  console.log("mapBuySellToIds", selectedLabels);
-  console.log("mapBuySellToIds", options);
   const items = Array.isArray(options.items) ? options.items : [];
   if (!selectedLabels.length || !items.length) return [];
-  console.log("mapBuySellToIds", items);
   return selectedLabels
     .map((label) => {
       const match = items.find((item) => item.type === label);
@@ -126,7 +123,7 @@ export const mapStatusToIds = (arr, type = 1) => {
   const statusMapWorkflow = {
     Pending: 1,
     Resubmitted: 2,
-    "Resubmitted for Approval":2,
+    "Resubmitted for Approval": 2,
     Approved: 3,
     Declined: 4,
     Traded: 5,

@@ -60,9 +60,6 @@ const HTATAT = () => {
     setShowSelectedTatDataOnViewDetailHTA,
   } = useGlobalModal();
 
-  console.log(showViewDetailPageInTatOnHta, "showViewDetailPageInTatOnHta");
-  console.log(selectedKey, "selectedKey");
-
   // -------------------- Local State --------------------
   const [sortedInfo, setSortedInfo] = useState({});
   const [loadingMore, setLoadingMore] = useState(false);

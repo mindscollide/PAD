@@ -12,12 +12,9 @@
  * @returns {string} The trade type label (e.g., "Buy", "Sell") or "—".
  */
 export const getTradeTypeById = (assetTypeData, tradeType) => {
-  console.log("assetTypeListingData", assetTypeData);
-  console.log("assetTypeListingData", tradeType);
   if (!Array.isArray(assetTypeData?.items)) return "—";
   return (
     assetTypeData.items.find((i) => i.tradeApprovalTypeID === tradeType.typeID)
       ?.type || "—"
   );
 };
-

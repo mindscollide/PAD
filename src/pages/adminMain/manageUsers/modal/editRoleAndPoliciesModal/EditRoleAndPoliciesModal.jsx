@@ -44,13 +44,19 @@ const EditRoleAndPoliciesModal = () => {
   } = useMyAdmin();
 
   console.log(
-    allUserRolesForEditRolePolicyData,
-    "allUserRolesForEditRolePolicyData"
+    roleAndPolicyViewDetailData,
+    "roleAndPolicyViewDetailDataroleAndPolicyViewDetailData"
   );
 
   // 🔹 Extract user details from context
   const userDetails = roleAndPolicyViewDetailData?.userDetails;
+  const assignedGroupPolicies =
+    roleAndPolicyViewDetailData?.assignedGroupPolicies[0];
 
+  console.log(
+    assignedGroupPolicies,
+    "assignedGroupPoliciesassignedGroupPolicies"
+  );
   const [selectedRoles, setSelectedRoles] = useState([]);
   // 🔹 Initialize state based on userStatusID
   const [userStatus, setUserStatus] = useState(userDetails?.userStatusID || 1);
@@ -238,10 +244,10 @@ const EditRoleAndPoliciesModal = () => {
                   {!selectedPolicyData ? (
                     <div className={styles.policySection}>
                       <label className={styles.policyHeading}>
-                        Assigned Policy:{" "}
+                        Assigned Policy:
                         <span className={styles.policyDescription}>
-                          Policy Management Hub – Streamlining Compliance,
-                          Governance, and Regulatory Best Practices
+                          {assignedGroupPolicies?.groupDescription ||
+                            "This user is not assigned any Group Policy"}
                         </span>
                       </label>
                       <label className={styles.dropdownLabel}>
