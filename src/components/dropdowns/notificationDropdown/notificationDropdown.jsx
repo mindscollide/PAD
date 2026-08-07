@@ -47,7 +47,6 @@ import {
 const NotificationDropdown = () => {
   const navigate = useNavigate();
   const containerRef = useRef(null);
-  console.log(containerRef, "Reached bottom");
   const { showNotification } = useNotification();
   const { showLoader } = useGlobalLoader();
   const {
@@ -199,8 +198,6 @@ const NotificationDropdown = () => {
 
     // 🔹 Detect if user scrolled to bottom
     if (scrollTop + clientHeight >= scrollHeight - 10) {
-      console.log("Reached bottom of dropdown");
-
       setHasFetched(true);
       setLoadingMore(true); // 👈 show loader
 
@@ -306,7 +303,7 @@ const NotificationDropdown = () => {
               </>
             ) : (
               <>
-                <img src={NotificationBellDarkIcon} width={45} height={45}/>
+                <img src={NotificationBellDarkIcon} width={45} height={45} />
                 <div className={styles["no-notification-text"]}>
                   No Notification Available
                 </div>
@@ -324,9 +321,7 @@ const NotificationDropdown = () => {
               tabIndex={unreadCount ? 0 : -1}
               aria-disabled={!unreadCount}
               style={
-                unreadCount
-                  ? undefined
-                  : { cursor: "default", opacity: 0.5 }
+                unreadCount ? undefined : { cursor: "default", opacity: 0.5 }
               }
               onClick={() => {
                 if (unreadCount) markAllAsRead();

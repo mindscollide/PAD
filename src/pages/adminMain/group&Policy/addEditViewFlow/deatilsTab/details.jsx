@@ -160,8 +160,8 @@ const Details = ({
                   isTitleValid === false
                     ? styles.errorBorder
                     : isTitleValid === true
-                      ? styles.successBorder
-                      : ""
+                    ? styles.successBorder
+                    : ""
                 }`}
               />
               <div

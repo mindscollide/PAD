@@ -2379,7 +2379,6 @@ export const GetUserRegistrationHistoryByLoginID = async ({
       });
       return null;
     }
-    console.log("reasonsArray", res);
 
     // 🔹 Handle success
     if (res.success) {

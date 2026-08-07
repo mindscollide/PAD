@@ -62,7 +62,6 @@ const SideBar = () => {
           // Restore sidebar key
           const lastSelectedKey = sessionStorage.getItem("selectedKey");
           if (lastSelectedKey) {
-            console.log("Navigating");
             setSelectedKey(lastSelectedKey);
             if (lastSelectedKey !== ROOT_KEY) setCollapsed(true);
             sessionStorage.removeItem("selectedKey");
@@ -235,15 +234,12 @@ const SideBar = () => {
           mode="inline"
           selectedKeys={[selectedKey]}
           // onSelect={({ key }) => {
-          //   console.log("Navigating");
           //   setSelectedKey(key);
 
           //   // Collapse automatically if not root
           //   if (key !== ROOT_KEY) setCollapsed(true);
 
-          //   console.log("Navigating");
           //   const path = routeMap[key];
-          //   console.log("Navigating",path);
           //   if (path) navigate(path);
           // }}
           onClick={({ key }) => {

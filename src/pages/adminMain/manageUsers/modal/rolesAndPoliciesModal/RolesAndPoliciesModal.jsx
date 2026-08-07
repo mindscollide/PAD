@@ -34,7 +34,11 @@ const RolesAndPoliciesModal = () => {
     setEditRoleAndPolicyGroupDropdownData,
     setAllUserRolesForEditRolePolicyData,
   } = useMyAdmin();
-  console.log(roleAndPolicyViewDetailData, "roleAndPolicyViewDetailData");
+
+  console.log(
+    roleAndPolicyViewDetailData,
+    "roleAndPolicyViewDetailDataroleAndPolicyViewDetailData"
+  );
   const {
     rolesAndPoliciesManageUser,
     setRolesAndPoliciesManageUser,

@@ -69,7 +69,6 @@ const HeadOFComplianceApprovalReportsIndex = () => {
 
       // Update global state
       await setHCAReportsDashboardData(res || []);
-      console.log("hcaReportsDashboardData", res);
     } catch (error) {
       console.error("Failed to fetch reports:", error);
       showNotification({

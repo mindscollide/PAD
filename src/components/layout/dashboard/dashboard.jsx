@@ -74,10 +74,10 @@ const Dashboard = () => {
 
   // User info from session storage
   const userProfileData = JSON.parse(
-    sessionStorage.getItem("user_profile_data"),
+    sessionStorage.getItem("user_profile_data")
   );
   const userAssignedRolesData = JSON.parse(
-    sessionStorage.getItem("user_assigned_roles"),
+    sessionStorage.getItem("user_assigned_roles")
   );
   const currentUserId = userProfileData?.userID;
 
@@ -85,8 +85,6 @@ const Dashboard = () => {
   const topic = useMemo(() => {
     return currentUserId ? `PAD_${currentUserId}` : null;
   }, [currentUserId]);
-
-  console.log("selectedKey", selectedKeyRef);
 
   /**
    * ✅ Utility: check if current user has required role(s)
@@ -97,7 +95,7 @@ const Dashboard = () => {
     const roleArray = Array.isArray(roleIDs) ? roleIDs : [roleIDs];
 
     return userAssignedRolesData.some((role) =>
-      roleArray.includes(Number(role.roleID)),
+      roleArray.includes(Number(role.roleID))
     );
   };
   const apiCallwebNotification = async () => {
@@ -129,8 +127,7 @@ const Dashboard = () => {
         ],
         unReadCount:
           webNotificationRequest.unReadCount ?? prev?.unReadCount ?? 0,
-        totalCount:
-          webNotificationRequest.totalCount ?? prev?.totalCount ?? 0,
+        totalCount: webNotificationRequest.totalCount ?? prev?.totalCount ?? 0,
       };
     });
   };
@@ -416,7 +413,7 @@ const Dashboard = () => {
                   // Prevent multiple fetches on mount
                   sessionStorage.setItem(
                     "urgentApprovals",
-                    JSON.stringify(payload),
+                    JSON.stringify(payload)
                   );
                   console.log("urgentApprovals", payload);
                   if (payload.count > 0) {
@@ -594,13 +591,13 @@ const Dashboard = () => {
                   if (currentKey === "15") {
                     if (currentactiveHCOEscalatedTabRef === "escalated") {
                       setHeadOfComplianceApprovalEscalatedVerificationsMqtt(
-                        true,
+                        true
                       );
                     } else if (
                       currentactiveHCOEscalatedTabRef === "portfolio"
                     ) {
                       setHeadOfComplianceApprovalEscalatedVerificationsData(
-                        true,
+                        true
                       );
                     }
                   }
