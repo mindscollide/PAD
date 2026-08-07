@@ -40,6 +40,10 @@ const Dashboard = () => {
     setManageUsersPendingTabMqtt,
     setManageUsersRejectedRequestTabMQTT,
     manageUsersTabRef,
+    // ADDED (2026-08-07): was already scaffolded in AdminContext.jsx but
+    // never wired to the MQTT handler - GROUP_POLICY_CREATED/UPDATED had no
+    // FE handler at all (see MQTT_Message_Catalog.md).
+    setAdminGropusAndPolicyMqtt,
   } = useMyAdmin();
   const { setHtaEscalatedApprovalDataMqtt } = useEscalatedApprovals();
   const { setEmployeePendingApprovalsDataMqtt, activeTabRef } =
@@ -245,6 +249,21 @@ const Dashboard = () => {
                   break;
                 }
 
+                // ADDED (2026-08-07): was completely unhandled before (see
+                // MQTT_Message_Catalog.md) - same pattern as the Broker/
+                // Instrument cases above, currentKey "20" = Group Policies
+                // page (see sidebar/utils.jsx routeMap).
+                case "GROUP_POLICY_CREATED":
+                case "GROUP_POLICY_UPDATED": {
+                  if (currentRoleIsAdminRefLocal) {
+                    if (currentKey === "20") {
+                      setAdminGropusAndPolicyMqtt(true);
+                      return;
+                    }
+                  }
+                  break;
+                }
+
                 default:
                   console.warn("MQTT: No handler for message →", message);
               }
@@ -254,7 +273,15 @@ const Dashboard = () => {
             // Employee mqtt
             case "2": {
               switch (message) {
-                case "EMPLOYEE_USER_DASHBOARD_DATA": {
+                case "EMPLOYEE_USER_DASHBOARD_DATA":
+                // ADDED (2026-08-07): was completely unhandled before - the
+                // BE sender (NotifyEmployeeDashboardPortFolioCountAsync)
+                // sends the exact same UserRoleDashboard payload shape as
+                // EMPLOYEE_USER_DASHBOARD_DATA (just with only the Portfolio
+                // key populated), so it shares this handler rather than
+                // duplicating it - the generic key-merge below only touches
+                // whatever keys are actually present in the payload.
+                case "EMPLOYEE_PORTFOLIO_DASHBOARD_DATA": {
                   if (currentKey === "0") {
                     setDashboardData((prev) => {
                       if (!prev?.employee) return prev;
@@ -428,6 +455,33 @@ const Dashboard = () => {
 
                   break;
                 }
+                // ADDED (2026-08-07): was completely unhandled before. BE
+                // sends this as an array of tiles ([{Count, Label, Type}, ...] -
+                // "TOTAL PENDING APPROVALS" and "APPROVAL REQUIRE URGENT
+                // ACTION"), not a keyed object like the sibling dashboard
+                // messages, so it's re-keyed by each tile's own Label before
+                // merging. Merges into dashboardData.LineManager (matching
+                // the actual state key casing in dashboardContaxt.jsx) - NOT
+                // the "lineManager" (lowercase) key the neighboring
+                // LINE_MANAGER_DASHBOARD_DATA case above merges into, which
+                // is a pre-existing casing mismatch against that same state
+                // (state key is "LineManager") - see MQTT_Message_Catalog.md.
+                // That pre-existing bug is left as-is here (out of scope for
+                // this fix), but this new case uses the correct casing so it
+                // actually takes effect rather than silently repeating it.
+                case "LINE_MANAGER_DASHBOARD_URGENT_SUMMARY_UPDATE": {
+                  if (currentKey === "0" && Array.isArray(payload)) {
+                    setDashboardData((prev) => {
+                      if (!prev?.LineManager) return prev;
+                      const updated = { ...prev.LineManager };
+                      payload.forEach((tile) => {
+                        if (tile?.Label) updated[tile.Label] = tile;
+                      });
+                      return { ...prev, LineManager: updated };
+                    });
+                  }
+                  break;
+                }
                 case "LINE_MANAGER_NEW_TRADE_APPROVAL_REQUEST": {
                   if (currentKey === "6") {
                     setLineManagerApprovalMQtt(true);
@@ -570,8 +624,32 @@ const Dashboard = () => {
             }
             // HTA mqtt
             case "5": {
-              // missing dashboard
               switch (message) {
+                // ADDED (2026-08-07): was completely unhandled (see the
+                // "// missing dashboard" comment this replaces) - merges into
+                // dashboardData.HeadofTradeApproval, same generic key-merge
+                // pattern already used for LM/CO dashboards. Uses the actual
+                // state key casing (HeadofTradeApproval, matching
+                // dashboardContaxt.jsx's initial state) rather than copying
+                // the lineManager/complianceOfficer lowercase mismatch those
+                // two siblings have (see MQTT_Message_Catalog.md) - that bug
+                // is real but wasn't part of what was asked to be fixed here,
+                // so it's left alone rather than silently carried forward
+                // into new code.
+                case "HTA_DASHBOARD_DATA":
+                case "HTA_ESCALATION_DASHBOARD_STATS": {
+                  if (currentKey === "0") {
+                    setDashboardData((prev) => {
+                      if (!prev?.HeadofTradeApproval) return prev;
+                      const updated = { ...prev.HeadofTradeApproval };
+                      Object.keys(payload).forEach((key) => {
+                        if (payload[key] !== null) updated[key] = payload[key];
+                      });
+                      return { ...prev, HeadofTradeApproval: updated };
+                    });
+                  }
+                  break;
+                }
                 case "REQUEST_ESCALATED_TO_HTA": {
                   if (currentKey === "12") {
                     setHtaEscalatedApprovalDataMqtt(true);
@@ -585,8 +663,22 @@ const Dashboard = () => {
             }
             // HOC mqtt
             case "6": {
-              // missing dashboard
               switch (message) {
+                // ADDED (2026-08-07): was completely unhandled - see the
+                // matching HTA case above for the full rationale.
+                case "HOC_ESCALATION_DASHBOARD_STATS": {
+                  if (currentKey === "0") {
+                    setDashboardData((prev) => {
+                      if (!prev?.HeadofComplianceOfficer) return prev;
+                      const updated = { ...prev.HeadofComplianceOfficer };
+                      Object.keys(payload).forEach((key) => {
+                        if (payload[key] !== null) updated[key] = payload[key];
+                      });
+                      return { ...prev, HeadofComplianceOfficer: updated };
+                    });
+                  }
+                  break;
+                }
                 case "REQUEST_ESCALATED_TO_HOC": {
                   if (currentKey === "15") {
                     if (currentactiveHCOEscalatedTabRef === "escalated") {
@@ -662,6 +754,30 @@ const Dashboard = () => {
               } catch (error) {
                 console.error("error", error);
               }
+              break;
+            }
+            // ADDED (2026-08-07): was completely unhandled before - see
+            // MQTT_Message_Catalog.md. Fires from a server-side idle-session
+            // timer (SessionKillTimer_Elapsed in UserCollection.cs) that
+            // deletes the user's registered token; unlike every other
+            // message, its BE sender never sets RoleIDs at all, so
+            // hasUserRole(...) always evaluates false for it regardless of
+            // the recipient's actual role - that's exactly why it lands in
+            // this same "else" branch as USER_DETAILS_UPDATED rather than
+            // needing its own roleIDs case. Its Payload is also a bare
+            // string ("USER_lOGOUT_DUE_TO_INACTIVITY" again, not JSON), so -
+            // unlike USER_DETAILS_UPDATED - there's nothing to JSON.parse or
+            // cross-check; the message key alone is the whole signal, and
+            // this client only ever receives it on its own MQTT topic
+            // (PAD_<currentUserId>) in the first place.
+            case "USER_lOGOUT_DUE_TO_INACTIVITY": {
+              showNotification({
+                type: "warning",
+                title: "Session Expired",
+                description:
+                  "You have been logged out due to inactivity. Please login again.",
+              });
+              logout({ navigate, showLoader });
               break;
             }
 
