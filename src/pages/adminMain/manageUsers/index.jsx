@@ -1,8 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { Tabs, Row, Col } from "antd";
+import { useNavigate } from "react-router-dom";
 import { ManageUsersCard, PageLayout } from "../../../components";
 import styles from "./ManageUsers.module.css";
 import CustomButton from "../../../components/buttons/button";
+import { useNotification } from "../../../components/NotificationProvider/NotificationProvider";
+import { useGlobalLoader } from "../../../context/LoaderContext";
+import { useApi } from "../../../context/ApiContext";
+import { ExportManageUsersUsersTabExcelReportRequest } from "../../../api/adminApi";
 import Profile2 from "../../../assets/img/Profile2.png";
 import Profile3 from "../../../assets/img/Profile3.png";
 import Profile4 from "../../../assets/img/Profile4.png";
@@ -24,6 +29,11 @@ import IntimationEditRoleAndPoliciesModal from "./modal/intimatiomEditRoleAndPol
 
 const ManageUsers = () => {
   // ----------------- Contexts -----------------
+
+  const navigate = useNavigate();
+  const { showNotification } = useNotification();
+  const { showLoader } = useGlobalLoader();
+  const { callApi } = useApi();
 
   const {
     viewDetailManageUser,
@@ -141,6 +151,31 @@ const ManageUsers = () => {
       console.error("Error performing bulk action:", error);
     }
   };
+  // 🔹 Export the Users tab listing to Excel — same 4 filters as the
+  // listing endpoint (whatever's currently applied on screen), no
+  // pagination (export always returns every matching row).
+  // ServiceManager.ExportManageUsersUsersTabExcelReport
+  // (2026-08-07_manage_users_export_new_api.md) — brand new endpoint, not
+  // deployed yet as of that doc's date.
+  const handleExportUsersTab = async () => {
+    const requestdata = {
+      EmployeeID: usersTabSearch?.employeeID
+        ? Number(usersTabSearch.employeeID)
+        : 0,
+      EmployeeName: usersTabSearch?.employeeName || "",
+      EmailAddress: usersTabSearch?.emailAddress || "",
+      DepartmentName: usersTabSearch?.departmentName || "",
+    };
+
+    await ExportManageUsersUsersTabExcelReportRequest({
+      callApi,
+      showNotification,
+      showLoader,
+      requestdata,
+      navigate,
+    });
+  };
+
   /** 🔹 Handle removing individual filter */
   const handleRemoveFilter = (key) => {
     const resetCommon = {
@@ -359,7 +394,11 @@ const ManageUsers = () => {
 
           <div className={styles.ExportButtonClass}>
             {manageUsersTab === "0" && (
-              <CustomButton text="Export" className="big-dark-button" />
+              <CustomButton
+                text="Export"
+                className="big-dark-button"
+                onClick={handleExportUsersTab}
+              />
             )}
             {manageUsersTab === "1" && (
               <CustomButton
