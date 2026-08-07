@@ -41,8 +41,12 @@ export const responseMessages = {
   ERM_Auth_AuthServiceManager_Login_03:
     "User is temporarily disabled and cannot login",
   ERM_Auth_AuthServiceManager_Login_04: "Account permanently closed",
+  // CHANGED (2026-08-06, per CR): was "Account inactive; requires reactivation" -
+  // title text only, paired with a code-specific description now set in
+  // loginApi.jsx (see the responseCodeKey branch there) instead of the old
+  // generic "Please login again." suffix used for every non-success code.
   ERM_Auth_AuthServiceManager_Login_05:
-    "Account inactive; requires reactivation",
+    "Account is Inactive and requires reactivation",
   ERM_Auth_AuthServiceManager_Login_06: "An error occurred. Please try again.",
   ERM_Auth_AuthServiceManager_Login_07: "Please fill both fields",
 
