@@ -126,7 +126,9 @@ export const SearchBarProvider = ({ children }) => {
     actionBy: "",
     actionStartDate: null,
     actionEndDate: null,
-    pageNumber: 0,
+    // GetEmployeeTransactionReqeustReportsAPI's PageNumber is now a real
+    // 1-indexed page number (backend fix 2026-08-07).
+    pageNumber: 1,
     pageSize: 10,
     filterTrigger: false,
   });
@@ -951,7 +953,7 @@ export const SearchBarProvider = ({ children }) => {
       actionBy: "",
       actionStartDate: null,
       actionEndDate: null,
-      pageNumber: 0,
+      pageNumber: 1,
       pageSize: 10,
       filterTrigger: false,
     });

@@ -385,7 +385,7 @@ const HOCMyActionPage = () => {
               statusText = "Marked Compliant by You";
               iconType = "co-Compliant";
             } else if (b.bundleStatus === 3) {
-              statusText = "Marked Non-compliant by You";
+              statusText = "Marked Non-Compliant by You";
               iconType = "co-Non-Compliant";
             } else return null;
 

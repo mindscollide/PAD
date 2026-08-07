@@ -107,14 +107,24 @@ const MyTransactionReport = () => {
         // this is for to run lazy loading its data comming from database of total data in db
         totalRecordsDataBase: res?.totalRecords || 0,
         // this is for to know how mush dta currently fetch from  db
+        // (was reading the outer getEmployeeTransactionReport closure
+        // instead of this updater's own prev - stale under back-to-back
+        // fetches)
         totalRecordsTable: replace
           ? mapped.length
-          : getEmployeeTransactionReport.totalRecordsTable + mapped.length,
+          : (prev?.totalRecordsTable || 0) + mapped.length,
       }));
       setEmployeeMyTransactionReportSearch((prev) => {
+        // PageNumber is 1-indexed on the backend now (page 1 -> OFFSET 0,
+        // ...) - this used to track a cumulative fetched-row count, which
+        // only worked with the old (broken) backend that used PageNumber
+        // directly as OFFSET (2026-08-07_employee_transactions_report_
+        // trade_request_id.md). A `replace` fetch always requests page 1,
+        // so prime this for the *next* page; a lazy-scroll fetch just
+        // advances by one page.
         const next = {
           ...prev,
-          pageNumber: replace ? mapped.length : prev.pageNumber + mapped.length,
+          pageNumber: replace ? 2 : prev.pageNumber + 1,
         };
 
         // this is for check if filter value get true only on that it will false
@@ -216,7 +226,7 @@ const MyTransactionReport = () => {
     setEmployeeMyTransactionReportSearch((prev) => ({
       ...prev,
       ...resetMap[key],
-      pageNumber: 0,
+      pageNumber: 1,
       filterTrigger: true,
     }));
   };
@@ -233,7 +243,7 @@ const MyTransactionReport = () => {
       broker: "",
       actionStartDate: null,
       actionEndDate: null,
-      pageNumber: 0,
+      pageNumber: 1,
       filterTrigger: true,
     }));
   };
@@ -286,24 +296,23 @@ const MyTransactionReport = () => {
   })();
 
   // 🔷 Excel Report download Api Hit
+  // Was hardcoded to an empty payload, ignoring every on-screen filter -
+  // export always returned every transaction regardless of what was
+  // applied. Build from the same filters the live listing uses;
+  // PageNumber/Length excluded since exports return every matching row,
+  // never a page.
   const downloadMyTransactionInExcelFormat = async () => {
-    showLoader(true);
-    const requestdata = {
-      InstrumentName: "",
-      Quantity: 0,
-      StartDate: "",
-      EndDate: "",
-      StatusIds: [],
-      TypeIds: [],
-      Broker: "",
-      ActionBy: "",
-      ActionStartDate: "",
-      ActionEndDate: "",
-    };
+    const { PageNumber, Length, ...requestdata } = buildApiRequest(
+      employeeMyTransactionReportSearch,
+      assetTypeListingData
+    );
+
     await DownloadMyTransactionReportRequestAPI({
       callApi,
+      showNotification,
       showLoader,
-      requestdata: requestdata,
+      requestdata,
+      setOpen,
       navigate,
     });
   };

@@ -136,6 +136,15 @@ const ViewDetaildDateWiseTransaction = () => {
   const isTicketUploaded =
     reconcileTransactionViewDetailData?.ticketUploaded === false;
 
+  /* ========================== NOTES ==========================
+     Note text can still carry a trailing internal "CO<id>" tracking
+     suffix (e.g. "...marking this as Compliant CO6") - stripped
+     server-side per 2026-08-06_datewise_transaction_viewdetails_notes_
+     shape.md, but that fix isn't deployed yet, so strip it defensively
+     here too rather than showing an ID the viewer never needs to see. */
+  const stripInternalIdSuffix = (text) =>
+    (text || "").replace(/\s*CO\d+\s*$/i, "").trim();
+
   /* ========================== ACTION BY ==========================
      actionBy is an array of {userID, firstName, lastName, fullName} - every
      distinct user who has actually acted on this workflow. New field
@@ -185,9 +194,10 @@ const ViewDetaildDateWiseTransaction = () => {
 
           {/* ========================== CONTENT ========================== */}
           <div className={styles.modalBodyContentScroller}>
-            {/* Instrument */}
+            {/* Instrument - full row (Transaction ID moved to the Quantity
+                slot below, freeing this row up) */}
             <Row gutter={[4, 4]} style={{ marginTop: 3 }}>
-              <Col span={12}>
+              <Col span={24}>
                 <div
                   className={styles.backgroundColorOfInstrumentDetailApproved}
                 >
@@ -205,6 +215,9 @@ const ViewDetaildDateWiseTransaction = () => {
                   </label>
                 </div>
               </Col>
+            </Row>
+            {/* Transaction ID (moved here from the Instrument row) & Type */}
+            <Row gutter={[4, 4]} style={{ marginTop: 3 }}>
               <Col span={12}>
                 <div className={styles.backgrounColorOfDetail}>
                   <label className={styles.viewDetailMainLabels}>
@@ -215,19 +228,6 @@ const ViewDetaildDateWiseTransaction = () => {
                       reconcileTransactionViewDetailData?.details?.[0]
                         ?.tradeApprovalID
                     )}
-                  </label>
-                </div>
-              </Col>
-            </Row>
-            {/* •	Quantity & •	Type */}
-            <Row gutter={[4, 4]} style={{ marginTop: 3 }}>
-              <Col span={12}>
-                <div className={styles.backgrounColorOfDetail}>
-                  <label className={styles.viewDetailMainLabels}>
-                    Quantity
-                  </label>
-                  <label className={styles.viewDetailSubLabels}>
-                    {reconcileTransactionViewDetailData?.details[0]?.quantity}
                   </label>
                 </div>
               </Col>
@@ -243,7 +243,8 @@ const ViewDetaildDateWiseTransaction = () => {
                 </div>
               </Col>
             </Row>
-            {/* Employee Name & Employee ID */}
+            {/* Employee Name & Quantity (moved here from above; Employee ID
+                removed - not required) */}
             <Row gutter={[4, 4]} style={{ marginTop: 3 }}>
               <Col span={12}>
                 <div className={styles.backgrounColorOfDetail}>
@@ -258,10 +259,10 @@ const ViewDetaildDateWiseTransaction = () => {
               <Col span={12}>
                 <div className={styles.backgrounColorOfDetail}>
                   <label className={styles.viewDetailMainLabels}>
-                    Employee ID
+                    Quantity
                   </label>
                   <label className={styles.viewDetailSubLabels}>
-                    {reconcileTransactionViewDetailData?.requesterEmployeeID}
+                    {reconcileTransactionViewDetailData?.details[0]?.quantity}
                   </label>
                 </div>
               </Col>
@@ -352,7 +353,8 @@ const ViewDetaildDateWiseTransaction = () => {
                       reconcileTransactionViewDetailData.details[0].approvalComments.map(
                         (comment, index) => (
                           <div key={`approval-${index}`}>
-                            <strong>{comment?.name}:</strong> {comment?.comments}
+                            <strong>{comment?.name}:</strong>{" "}
+                            {stripInternalIdSuffix(comment?.comments)}
                           </div>
                         )
                       )}
@@ -362,7 +364,8 @@ const ViewDetaildDateWiseTransaction = () => {
                       reconcileTransactionViewDetailData.details[0].rejectionComment.map(
                         (comment, index) => (
                           <div key={`rejection-${index}`}>
-                            <strong>{comment?.name}:</strong> {comment?.comments}
+                            <strong>{comment?.name}:</strong>{" "}
+                            {stripInternalIdSuffix(comment?.comments)}
                           </div>
                         )
                       )}

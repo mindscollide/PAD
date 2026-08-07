@@ -15,6 +15,7 @@ import { useTransaction } from "../../../context/myTransaction";
 import { useReconcileContext } from "../../../context/reconsileContax";
 import { useSidebarContext } from "../../../context/sidebarContaxt";
 import { useEscalatedApprovals } from "../../../context/escalatedApprovalContext";
+import { useGlobalModal } from "../../../context/GlobalModalContext";
 import { useWebNotification } from "../../../context/notificationContext";
 import { GetUserWebNotificationRequest } from "../../../api/notification";
 import { useNotification } from "../../NotificationProvider/NotificationProvider";
@@ -23,6 +24,7 @@ import { useGlobalLoader } from "../../../context/LoaderContext";
 import { useMyAdmin } from "../../../context/AdminContext";
 import { ManageBrokerModal } from "../../../pages";
 import { logout } from "../../../api/loginApi";
+import { mapEmployeeMyApprovalData } from "../../../pages/main/employes/myApprovals/utils";
 const { Content } = Layout;
 
 const Dashboard = () => {
@@ -31,7 +33,10 @@ const Dashboard = () => {
   const connectionAttemptedRef = useRef(false); // ✅ Track connection attempts
 
   // Context hooks
-  const { setLineManagerApprovalMQtt, setIsEmployeeMyApprovalMqtt } =
+  // setIsEmployeeMyApprovalMqtt (full-refetch trigger) no longer used here -
+  // every EMPLOYEE_* case that used to set it now patches
+  // employeeMyApproval in place via patchEmployeeMyApprovalRow instead.
+  const { setLineManagerApprovalMQtt, setIsEmployeeMyApproval } =
     useMyApproval();
   const {
     setAdminBrokerMqtt,
@@ -40,8 +45,17 @@ const Dashboard = () => {
     setManageUsersPendingTabMqtt,
     setManageUsersRejectedRequestTabMQTT,
     manageUsersTabRef,
+    // ADDED (2026-08-07): was already scaffolded in AdminContext.jsx but
+    // never wired to the MQTT handler - GROUP_POLICY_CREATED/UPDATED had no
+    // FE handler at all (see MQTT_Message_Catalog.md).
+    setAdminGropusAndPolicyMqtt,
   } = useMyAdmin();
-  const { setHtaEscalatedApprovalDataMqtt } = useEscalatedApprovals();
+  const {
+    setHtaEscalatedApprovalDataMqtt,
+    setHtaEscalatedApprovalData,
+    viewDetailsHeadOfApprovalIDRef,
+  } = useEscalatedApprovals();
+  const { setViewDetailsHeadOfApprovalModal } = useGlobalModal();
   const { setEmployeePendingApprovalsDataMqtt, activeTabRef } =
     usePortfolioContext();
 
@@ -63,6 +77,7 @@ const Dashboard = () => {
     setUrgentAlert,
     manageBrokersModalOpen,
     setManageBrokersModalOpen,
+    assetTypeListingData,
   } = useDashboardContext();
 
   const { setEmployeeTransactionsTableDataMqtt } = useTransaction();
@@ -98,6 +113,49 @@ const Dashboard = () => {
       roleArray.includes(Number(role.roleID))
     );
   };
+
+  /**
+   * ✅ Patches a single employee "My Approvals" row in place from an MQTT
+   * "Trade summary" payload, instead of a full API refetch. Shared by
+   * EMPLOYEE_TRADE_APPROVAL_REQUEST_APPROVED/DECLINED and
+   * ..._STATUS_CHANGE_TRADED - all of which update an *existing* row's
+   * status, not add a new one. payload is one raw approval item, same
+   * shape SearchTadeApprovals returns per-row, so it's run through the
+   * same mapper the initial fetch uses rather than guessing field names.
+   * If the row isn't currently loaded in this client (e.g. a page past
+   * what's been scrolled to), it's silently skipped rather than forcing a
+   * refetch just to patch something not on screen.
+   *
+   * `overrides` lets a specific caller correct/supply fields the generic
+   * mapper can't get right for its payload shape (see
+   * ..._STATUS_CHANGE_TRADED below, whose payload doesn't carry the
+   * approvalStatus block the mapper reads `status` from).
+   */
+  const patchEmployeeMyApprovalRow = (payload, overrides = {}) => {
+    const [updatedApproval] = mapEmployeeMyApprovalData(
+      assetTypeListingData?.Equities,
+      [payload]
+    );
+
+    if (!updatedApproval) return;
+
+    const patchedApproval = { ...updatedApproval, ...overrides };
+
+    setIsEmployeeMyApproval((prev) => {
+      const approvals = prev?.approvals || [];
+      const existingIndex = approvals.findIndex(
+        (item) => item.approvalID === patchedApproval.approvalID
+      );
+
+      if (existingIndex === -1) return prev;
+
+      const updatedApprovals = [...approvals];
+      updatedApprovals[existingIndex] = patchedApproval;
+
+      return { ...prev, approvals: updatedApprovals };
+    });
+  };
+
   const apiCallwebNotification = async () => {
     const requestdata = { sRow: 0, eRow: 10 }; // Re-fetch just the first page
     const webNotificationRequest = await GetUserWebNotificationRequest({
@@ -245,6 +303,21 @@ const Dashboard = () => {
                   break;
                 }
 
+                // ADDED (2026-08-07): was completely unhandled before (see
+                // MQTT_Message_Catalog.md) - same pattern as the Broker/
+                // Instrument cases above, currentKey "20" = Group Policies
+                // page (see sidebar/utils.jsx routeMap).
+                case "GROUP_POLICY_CREATED":
+                case "GROUP_POLICY_UPDATED": {
+                  if (currentRoleIsAdminRefLocal) {
+                    if (currentKey === "20") {
+                      setAdminGropusAndPolicyMqtt(true);
+                      return;
+                    }
+                  }
+                  break;
+                }
+
                 default:
                   console.warn("MQTT: No handler for message →", message);
               }
@@ -254,7 +327,16 @@ const Dashboard = () => {
             // Employee mqtt
             case "2": {
               switch (message) {
-                case "EMPLOYEE_USER_DASHBOARD_DATA": {
+                // ADDED (2026-08-07): EMPLOYEE_PORTFOLIO_DASHBOARD_DATA was
+                // completely unhandled before - the BE sender
+                // (NotifyEmployeeDashboardPortFolioCountAsync) sends the
+                // exact same UserRoleDashboard payload shape as
+                // EMPLOYEE_USER_DASHBOARD_DATA (just with only the Portfolio
+                // key populated), so it shares this handler rather than
+                // duplicating it - the generic key-merge below only touches
+                // whatever keys are actually present in the payload.
+                case "EMPLOYEE_USER_DASHBOARD_DATA":
+                case "EMPLOYEE_PORTFOLIO_DASHBOARD_DATA": {
                   if (currentKey === "0") {
                     setDashboardData((prev) => {
                       if (!prev?.employee) return prev;
@@ -269,8 +351,38 @@ const Dashboard = () => {
                   break;
                 }
                 case "EMPLOYEE_NEW_TRADE_APPROVAL_REQUEST": {
+                  // New row (not an update to an existing one, unlike
+                  // patchEmployeeMyApprovalRow's callers) - prepend instead
+                  // of a full API refetch, same [payload, ...prev] shape
+                  // already sketched for EMPLOYEE_CONDUCTED_TRANSACTION
+                  // below. Dedup'd against approvalID in case the
+                  // submitting client already added this optimistically on
+                  // its own submit flow before the MQTT echo arrived. Both
+                  // record-count totals bump by 1 - a real new row now
+                  // exists in the DB and is now also loaded here.
                   if (currentKey === "1") {
-                    setIsEmployeeMyApprovalMqtt(true);
+                    const [newApproval] = mapEmployeeMyApprovalData(
+                      assetTypeListingData?.Equities,
+                      [payload]
+                    );
+
+                    if (newApproval) {
+                      setIsEmployeeMyApproval((prev) => {
+                        const approvals = prev?.approvals || [];
+                        const alreadyPresent = approvals.some(
+                          (item) => item.approvalID === newApproval.approvalID
+                        );
+                        if (alreadyPresent) return prev;
+
+                        return {
+                          ...prev,
+                          approvals: [newApproval, ...approvals],
+                          totalRecordsDataBase:
+                            (prev?.totalRecordsDataBase || 0) + 1,
+                          totalRecordsTable: (prev?.totalRecordsTable || 0) + 1,
+                        };
+                      });
+                    }
                   }
                   break;
                 }
@@ -286,25 +398,24 @@ const Dashboard = () => {
                   break;
                 }
                 case "EMPLOYEE_TRADE_APPROVAL_REQUEST_STATUS_CHANGE_TRADED": {
+                  // Patches in place instead of a full API refetch - see
+                  // patchEmployeeMyApprovalRow above. Per
+                  // MQTT_Message_Catalog.md this payload is "Trade summary
+                  // + workFlowStatus block" - a different shape than the
+                  // plain "Trade summary" the other callers get, and the
+                  // mapper's `status` read (item.approvalStatus?.
+                  // approvalStatusName) won't exist here, so it'd come out
+                  // blank without an override. Reads the string status off
+                  // workFlowStatus the same way this codebase already does
+                  // elsewhere (pendingApprovals/utill.jsx,
+                  // tradesUploadViaPortfolio/utill.jsx both read
+                  // item.workFlowStatus?.workFlowStatus), falling back to
+                  // the literal "Traded" - what this message means by
+                  // definition - if that field isn't there either.
                   if (currentKey === "1") {
-                    setIsEmployeeMyApprovalMqtt(true);
-
-                    // setIsEmployeeMyApproval((prev) => {
-                    //   const approvals = prev.approvals || [];
-                    //   const existingIndex = approvals.findIndex(
-                    //     (item) => item.approvalID === payload.approvalID
-                    //   );
-
-                    //   if (existingIndex === -1) return prev;
-
-                    //   const updatedApprovals = [...approvals];
-                    //   updatedApprovals[existingIndex] = payload;
-
-                    //   return {
-                    //     ...prev,
-                    //     approvals: updatedApprovals,
-                    //   };
-                    // });
+                    patchEmployeeMyApprovalRow(payload, {
+                      status: payload?.workFlowStatus?.workFlowStatus || "Traded",
+                    });
                   }
                   break;
                 }
@@ -319,31 +430,18 @@ const Dashboard = () => {
                   break;
                 }
                 case "EMPLOYEE_TRADE_APPROVAL_REQUEST_APPROVED": {
+                  // Patches in place instead of a full API refetch - see
+                  // patchEmployeeMyApprovalRow above.
                   if (currentKey === "1") {
-                    setIsEmployeeMyApprovalMqtt(true);
-
-                    // setIsEmployeeMyApproval((prev) => {
-                    //   const approvals = prev.approvals || [];
-                    //   const existingIndex = approvals.findIndex(
-                    //     (item) => item.approvalID === payload.approvalID
-                    //   );
-
-                    //   if (existingIndex === -1) return prev;
-
-                    //   const updatedApprovals = [...approvals];
-                    //   updatedApprovals[existingIndex] = payload;
-
-                    //   return {
-                    //     ...prev,
-                    //     approvals: updatedApprovals,
-                    //   };
-                    // });
+                    patchEmployeeMyApprovalRow(payload);
                   }
                   break;
                 }
                 case "EMPLOYEE_TRADE_APPROVAL_REQUEST_DECLINED": {
+                  // Patches in place instead of a full API refetch - see
+                  // patchEmployeeMyApprovalRow above.
                   if (currentKey === "1") {
-                    setIsEmployeeMyApprovalMqtt(true);
+                    patchEmployeeMyApprovalRow(payload);
                   }
                   break;
                 }
@@ -365,14 +463,27 @@ const Dashboard = () => {
                   break;
                 }
                 case "EMPLOYEE_NEW_TRADE_APPROVAL_REQUEST_RESUBMITTED": {
+                  // Treated as an update to the existing row (a resubmit
+                  // flips the same workflow's status back to pending rather
+                  // than creating a new record) - patches in place instead
+                  // of a full API refetch, see patchEmployeeMyApprovalRow
+                  // above. If that assumption is wrong and this actually
+                  // lands under a different approvalID, the patch silently
+                  // no-ops (existingIndex === -1) rather than corrupting
+                  // anything - worst case is a stale row until next full
+                  // load, not a crash.
                   if (currentKey === "1") {
-                    setIsEmployeeMyApprovalMqtt(true);
+                    patchEmployeeMyApprovalRow(payload);
                   }
                   break;
                 }
                 case "WORKFLOW_ESCALATED_FROM_HTA": {
+                  // Same treatment as the resubmit case above - an
+                  // escalation is assumed to update the existing row's
+                  // fields (isEscalated, escalatedDate, etc.), not create a
+                  // new one.
                   if (currentKey === "1") {
-                    setIsEmployeeMyApprovalMqtt(true);
+                    patchEmployeeMyApprovalRow(payload);
                   }
                   break;
                 }
@@ -387,6 +498,46 @@ const Dashboard = () => {
                   }
                   break;
                 }
+                // ADDED (2026-08-07, per 2026-08-07_mqtt_fixes_fe_implementation.md):
+                // was completely unhandled - falling through to default and
+                // silently dropped. BE now fans this out as a second,
+                // separate message per assigned employee (RoleIDs=Employee),
+                // so if this client received it at all, it's already for
+                // them - no UserIDs-membership check needed, unlike
+                // USER_DETAILS_UPDATED's UserID check. payload is a
+                // JSON-encoded string here (PascalCase keys), not a
+                // pre-parsed object like the dashboard-tile messages, same
+                // as USER_DETAILS_UPDATED. No existing UI in this codebase
+                // reads an employee's own Group Policy assignment live, so
+                // there's nothing to silently refresh - goes with the
+                // visible-notification option the doc offered instead,
+                // mirroring how USER_DETAILS_UPDATED already handles "your
+                // account changed" (just without the forced logout - no
+                // token/session change is implied by a policy assignment).
+                case "GROUP_POLICY_CREATED":
+                case "GROUP_POLICY_UPDATED": {
+                  try {
+                    const parsedPolicyPayload = JSON.parse(payload);
+                    const isNewAssignment = message === "GROUP_POLICY_CREATED";
+                    showNotification({
+                      type: "info",
+                      title: isNewAssignment
+                        ? "Group Policy Assigned"
+                        : "Group Policy Updated",
+                      description: parsedPolicyPayload?.GroupTitle
+                        ? `Your assigned Group Policy "${parsedPolicyPayload.GroupTitle}" has been ${
+                            isNewAssignment ? "assigned to you" : "updated"
+                          }.`
+                        : "Your assigned Group Policy has changed.",
+                    });
+                  } catch (error) {
+                    console.error(
+                      "MQTT: Failed to parse GROUP_POLICY payload",
+                      error
+                    );
+                  }
+                  break;
+                }
                 default:
                   console.warn("MQTT: No handler for message →", message);
               }
@@ -398,13 +549,19 @@ const Dashboard = () => {
                 case "LINE_MANAGER_DASHBOARD_DATA": {
                   if (currentKey === "0") {
                     setDashboardData((prev) => {
-                      if (!prev?.lineManager) return prev;
-                      const updatedLineManager = { ...prev.lineManager };
+                      // FIXED (2026-08-07, per MQTT_Message_Catalog.md #2):
+                      // was reading/writing prev.lineManager (lowercase) -
+                      // dashboardContaxt.jsx's actual state key is
+                      // "LineManager" (capitalized), so the guard below
+                      // always bailed and this message never updated
+                      // dashboard state.
+                      if (!prev?.LineManager) return prev;
+                      const updatedLineManager = { ...prev.LineManager };
                       Object.keys(payload).forEach((key) => {
                         if (payload[key] !== null)
                           updatedLineManager[key] = payload[key];
                       });
-                      return { ...prev, lineManager: updatedLineManager };
+                      return { ...prev, LineManager: updatedLineManager };
                     });
                   }
                   break;
@@ -426,6 +583,30 @@ const Dashboard = () => {
                     console.log("urgentApprovals", payload);
                   }
 
+                  break;
+                }
+                // ADDED (2026-08-07): was completely unhandled before. BE
+                // sends this as an array of tiles ([{Count, Label, Type}, ...] -
+                // "TOTAL PENDING APPROVALS" and "APPROVAL REQUIRE URGENT
+                // ACTION"), not a keyed object like the sibling dashboard
+                // messages, so it's re-keyed by each tile's own Label before
+                // merging. Merges into dashboardData.LineManager (matching
+                // the actual state key casing in dashboardContaxt.jsx) - the
+                // neighboring LINE_MANAGER_DASHBOARD_DATA case above used to
+                // merge into a "lineManager" (lowercase) key that never
+                // matched this state and silently no-op'd; that's now fixed
+                // to the same casing (see MQTT_Message_Catalog.md #2).
+                case "LINE_MANAGER_DASHBOARD_URGENT_SUMMARY_UPDATE": {
+                  if (currentKey === "0" && Array.isArray(payload)) {
+                    setDashboardData((prev) => {
+                      if (!prev?.LineManager) return prev;
+                      const updated = { ...prev.LineManager };
+                      payload.forEach((tile) => {
+                        if (tile?.Label) updated[tile.Label] = tile;
+                      });
+                      return { ...prev, LineManager: updated };
+                    });
+                  }
                   break;
                 }
                 case "LINE_MANAGER_NEW_TRADE_APPROVAL_REQUEST": {
@@ -492,13 +673,19 @@ const Dashboard = () => {
                 case "COMPLIANCE_OFFICER_DASHBOARD_DATA": {
                   if (currentKey === "0") {
                     setDashboardData((prev) => {
-                      if (!prev?.complianceOfficer) return prev;
-                      const updatedEmployee = { ...prev.complianceOfficer };
+                      // FIXED (2026-08-07, per MQTT_Message_Catalog.md #2):
+                      // was reading/writing prev.complianceOfficer
+                      // (lowercase) - dashboardContaxt.jsx's actual state
+                      // key is "ComplianceOfficer" (capitalized), so the
+                      // guard below always bailed and this message never
+                      // updated dashboard state.
+                      if (!prev?.ComplianceOfficer) return prev;
+                      const updatedEmployee = { ...prev.ComplianceOfficer };
                       Object.keys(payload).forEach((key) => {
                         if (payload[key] !== null)
                           updatedEmployee[key] = payload[key];
                       });
-                      return { ...prev, complianceOfficer: updatedEmployee };
+                      return { ...prev, ComplianceOfficer: updatedEmployee };
                     });
                   }
                   break;
@@ -570,11 +757,91 @@ const Dashboard = () => {
             }
             // HTA mqtt
             case "5": {
-              // missing dashboard
               switch (message) {
+                // ADDED (2026-08-07): was completely unhandled (see the
+                // "// missing dashboard" comment this replaces) - merges into
+                // dashboardData.HeadofTradeApproval, same generic key-merge
+                // pattern already used for LM/CO dashboards, using the
+                // correct state key casing (HeadofTradeApproval, matching
+                // dashboardContaxt.jsx's initial state) - the LM/CO siblings
+                // had a lowercase-key mismatch bug of this exact shape,
+                // fixed separately (see MQTT_Message_Catalog.md #2).
+                case "HTA_DASHBOARD_DATA":
+                case "HTA_ESCALATION_DASHBOARD_STATS": {
+                  if (currentKey === "0") {
+                    setDashboardData((prev) => {
+                      if (!prev?.HeadofTradeApproval) return prev;
+                      const updated = { ...prev.HeadofTradeApproval };
+                      Object.keys(payload).forEach((key) => {
+                        if (payload[key] !== null) updated[key] = payload[key];
+                      });
+                      return { ...prev, HeadofTradeApproval: updated };
+                    });
+                  }
+                  break;
+                }
                 case "REQUEST_ESCALATED_TO_HTA": {
                   if (currentKey === "12") {
                     setHtaEscalatedApprovalDataMqtt(true);
+                  }
+                  break;
+                }
+                // ADDED (2026-08-07, per 2026-08-07_hta_escalation_
+                // resolved_notification.md): a Line Manager approving/
+                // declining a request that was escalated past them
+                // resolves the HTA's open escalation. Unlike the sibling
+                // case above (a brand new escalation, where a full
+                // refetch is the only option since there's no existing row
+                // to update), a resolution instead patches the listing in
+                // place - the resolved request no longer belongs in
+                // "Escalated Approvals" at all, so its row is removed
+                // rather than refetching the whole page. Also closes View
+                // Details if the HTA has this exact request open right
+                // now, via viewDetailsHeadOfApprovalIDRef (escalatedApprovalContext.jsx).
+                case "ESCALATED_REQUEST_RESOLVED_HTA": {
+                  if (currentKey === "12") {
+                    // payload is "a raw array containing the single
+                    // resolved workFlowID" per the doc. This table's rows
+                    // only carry approvalID (not a separate workFlowID),
+                    // so matching against approvalID assumes the two line
+                    // up - the same value this page already sends as
+                    // TradeApprovalID when fetching View Details. Not
+                    // explicitly confirmed by the doc; flagged as an
+                    // assumption.
+                    const resolvedWorkFlowID = Array.isArray(payload)
+                      ? payload[0]
+                      : payload;
+
+                    if (
+                      resolvedWorkFlowID != null &&
+                      Number(viewDetailsHeadOfApprovalIDRef?.current) ===
+                        Number(resolvedWorkFlowID)
+                    ) {
+                      setViewDetailsHeadOfApprovalModal(false);
+                    }
+
+                    setHtaEscalatedApprovalData((prev) => {
+                      const list = prev?.htaEscalatedApprovalsList || [];
+                      const remaining = list.filter(
+                        (item) =>
+                          Number(item.approvalID) !== Number(resolvedWorkFlowID)
+                      );
+
+                      if (remaining.length === list.length) return prev;
+
+                      return {
+                        ...prev,
+                        htaEscalatedApprovalsList: remaining,
+                        totalRecordsDataBase: Math.max(
+                          0,
+                          (prev?.totalRecordsDataBase || 0) - 1
+                        ),
+                        totalRecordsTable: Math.max(
+                          0,
+                          (prev?.totalRecordsTable || 0) - 1
+                        ),
+                      };
+                    });
                   }
                   break;
                 }
@@ -585,8 +852,22 @@ const Dashboard = () => {
             }
             // HOC mqtt
             case "6": {
-              // missing dashboard
               switch (message) {
+                // ADDED (2026-08-07): was completely unhandled - see the
+                // matching HTA case above for the full rationale.
+                case "HOC_ESCALATION_DASHBOARD_STATS": {
+                  if (currentKey === "0") {
+                    setDashboardData((prev) => {
+                      if (!prev?.HeadofComplianceOfficer) return prev;
+                      const updated = { ...prev.HeadofComplianceOfficer };
+                      Object.keys(payload).forEach((key) => {
+                        if (payload[key] !== null) updated[key] = payload[key];
+                      });
+                      return { ...prev, HeadofComplianceOfficer: updated };
+                    });
+                  }
+                  break;
+                }
                 case "REQUEST_ESCALATED_TO_HOC": {
                   if (currentKey === "15") {
                     if (currentactiveHCOEscalatedTabRef === "escalated") {
@@ -649,6 +930,27 @@ const Dashboard = () => {
                       description = "Please contact System Administrator.";
                       break;
                     default:
+                      // ADDED (2026-08-07, per 2026-08-07_employee_manager_
+                      // reassign_force_logout.md): UpdateEmployeeManager
+                      // (Admin reassigns an employee's Line Manager or
+                      // Compliance Officer) now also sends this same
+                      // message with status left unchanged (still Active),
+                      // landing here alongside genuine Group Policy
+                      // changes. EntityTypeID (1=Line Manager, 2=Compliance
+                      // Officer) distinguishes the two so a reassigned
+                      // employee gets a message naming what actually
+                      // changed, instead of the generic "Group Policy
+                      // and/or Status" text for something that isn't a
+                      // policy change at all. Genuine Group Policy changes
+                      // don't send EntityTypeID, so they keep the original
+                      // generic text set above.
+                      if (parsedPayload?.EntityTypeID === 1) {
+                        description =
+                          "Your Line Manager has been reassigned by the Admin. Please login again.";
+                      } else if (parsedPayload?.EntityTypeID === 2) {
+                        description =
+                          "Your Compliance Officer has been reassigned by the Admin. Please login again.";
+                      }
                       break;
                   }
 
@@ -662,6 +964,30 @@ const Dashboard = () => {
               } catch (error) {
                 console.error("error", error);
               }
+              break;
+            }
+            // ADDED (2026-08-07): was completely unhandled before - see
+            // MQTT_Message_Catalog.md. Fires from a server-side idle-session
+            // timer (SessionKillTimer_Elapsed in UserCollection.cs) that
+            // deletes the user's registered token; unlike every other
+            // message, its BE sender never sets RoleIDs at all, so
+            // hasUserRole(...) always evaluates false for it regardless of
+            // the recipient's actual role - that's exactly why it lands in
+            // this same "else" branch as USER_DETAILS_UPDATED rather than
+            // needing its own roleIDs case. Its Payload is also a bare
+            // string ("USER_lOGOUT_DUE_TO_INACTIVITY" again, not JSON), so -
+            // unlike USER_DETAILS_UPDATED - there's nothing to JSON.parse or
+            // cross-check; the message key alone is the whole signal, and
+            // this client only ever receives it on its own MQTT topic
+            // (PAD_<currentUserId>) in the first place.
+            case "USER_lOGOUT_DUE_TO_INACTIVITY": {
+              showNotification({
+                type: "warning",
+                title: "Session Expired",
+                description:
+                  "You have been logged out due to inactivity. Please login again.",
+              });
+              logout({ navigate, showLoader });
               break;
             }
 
