@@ -84,16 +84,24 @@ const Users = ({
         // this is for to run lazy loading its data comming from database of total data in db
         totalRecordsDataBase: res?.totalRecords || 0,
         // this is for to know how mush dta currently fetch from  db
+        // (was reading the outer adminGroupeAndPoliciesUsersTabData closure
+        // instead of this updater's own prev - stale under back-to-back
+        // fetches)
         totalRecordsTable: replace
           ? mapped.length
-          : adminGroupeAndPoliciesUsersTabData.totalRecordsTable +
-            mapped.length,
+          : (prev?.totalRecordsTable || 0) + mapped.length,
       }));
 
       setAdminGropusAndPolicyUsersTabSearch((prev) => {
+        // PageNumber is 1-indexed on the backend now (page 1 -> first
+        // page, ...) - this used to track a cumulative fetched-row count,
+        // which only worked with the old (broken) backend pagination
+        // (2026-08-10_search_users_by_group_policy_add_department.md). A
+        // `replace` fetch always requests page 1, so prime this for the
+        // *next* page; a lazy-scroll fetch just advances by one page.
         const next = {
           ...prev,
-          pageNumber: replace ? mapped.length : prev.pageNumber + mapped.length,
+          pageNumber: replace ? 2 : prev.pageNumber + 1,
         };
 
         // this is for check if filter value get true only on that it will false

@@ -295,6 +295,7 @@ const NotificationDropdown = () => {
                       textAlign: "center",
                       padding: "8px",
                       color: "#888",
+                      cursor: "default",
                     }}
                   >
                     No more notifications
