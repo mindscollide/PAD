@@ -83,9 +83,15 @@ const EditInstrument = () => {
         instrumentName: period.instrumentName, // ✅ Add this field for later use
         instrumentHistoryID: period.instrumentHistoryID, // ✅ Add this field for later use
         periodDays: period.periodDays,
+        // CHANGED (bug fix 2026-08-10): now also pass the time component -
+        // see formatShowOnlyDateForDateRange.
         dateRange: `${formatShowOnlyDateForDateRange(
-          period.instrumentStartDate
-        )} - ${formatShowOnlyDateForDateRange(period.instrumentEndDate)}`,
+          period.instrumentStartDate,
+          period.instrumentStartTime
+        )} - ${formatShowOnlyDateForDateRange(
+          period.instrumentEndDate,
+          period.instrumentEndTime
+        )}`,
         duration: `${period.periodDays} Days`,
       })
     );
@@ -113,9 +119,15 @@ const EditInstrument = () => {
   const mergedPreviousClosedPeriods = useMemo(() => {
     const list = adminInstrumentPreviousClosingData?.closingPeriods || [];
     const formatted = list.map((period) => ({
+      // CHANGED (bug fix 2026-08-10): now also pass the time component -
+      // see formatShowOnlyDateForDateRange.
       dateRange: `${formatShowOnlyDateForDateRange(
-        period.instrumentStartDate
-      )} - ${formatShowOnlyDateForDateRange(period.instrumentEndDate)}`,
+        period.instrumentStartDate,
+        period.instrumentStartTime
+      )} - ${formatShowOnlyDateForDateRange(
+        period.instrumentEndDate,
+        period.instrumentEndTime
+      )}`,
       duration: `${period.periodDays} Days`,
     }));
 

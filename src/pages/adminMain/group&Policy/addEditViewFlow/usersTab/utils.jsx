@@ -390,19 +390,12 @@ export const getUserColumns = ({
       render: (text, record) =>
         renderWithTooltip(text, record, currentPolicyID),
     },
-    {
-      title: withSortIcon("Designation", "designation", sortedInfo),
-      dataIndex: "designation",
-      key: "designation",
-      sorter: (a, b) => a.designation.localeCompare(b.designation),
-      sortOrder:
-        sortedInfo?.columnKey === "designation" ? sortedInfo.order : null,
-      sortDirections: ["ascend", "descend"],
-      showSorterTooltip: false,
-      sortIcon: () => null,
-      render: (text, record) =>
-        renderWithTooltip(text, record, currentPolicyID),
-    },
+    // REMOVED (2026-08-10): Designation column - per explicit decision, replaced
+    // with Department below. The backend dropped Designation from the response
+    // entirely (a user with multiple roles fanned out into duplicate rows - see
+    // CHANGELOG). The Designation *search filter* (buildApiRequest above) is
+    // unchanged - still sent, still narrows results - just no longer a
+    // displayed column.
     // Missing column - buildApiRequest above already sends DepartmentName
     // as a filter, and the response already includes it per employee
     // (confirmed live response field is "department", not "departmentName"),
