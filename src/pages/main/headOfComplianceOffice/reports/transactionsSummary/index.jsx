@@ -47,6 +47,7 @@ import CustomButton from "../../../../../components/buttons/button";
 import { DateRangePicker } from "../../../../../components";
 import { mapStatusToIds } from "../../../../../components/dropdowns/filters/utils";
 import ViewCommentHOCTransaction from "./viewDetails/viewComment/ViewComment";
+import { formatToYYYYMMDD } from "../../../../../common/funtions/rejex";
 // import ViewComment from "./viewComment/ViewComment";
 
 const HCATransactionsSummarysReports = () => {
@@ -218,7 +219,22 @@ const HCATransactionsSummarysReports = () => {
   useEffect(() => {
     if (hasFetched.current) return;
     hasFetched.current = true;
-    const requestData = buildApiRequest(hcoTransactionsSummarysReportsSearch);
+
+    const endDate = new Date();
+    const startDate = new Date();
+    startDate.setMonth(startDate.getMonth() - 6);
+    // 👇 SET dateRange state ONLY
+    setDateRange({
+      StartDate: formatToYYYYMMDD(startDate),
+      EndDate: formatToYYYYMMDD(endDate),
+    });
+    const updatedState = {
+      ...hcoTransactionsSummarysReportsSearch,
+      startDate,
+      endDate,
+    };
+
+    const requestData = buildApiRequest(updatedState);
     fetchApiCall(requestData, true, true);
   }, []);
 

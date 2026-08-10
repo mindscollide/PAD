@@ -90,7 +90,6 @@ const MytradeapprovalsReport = () => {
   const [sortedInfo, setSortedInfo] = useState({});
   const [loadingMore, setLoadingMore] = useState(false);
   const [open, setOpen] = useState(false);
-  console.log(employeeMyTradeApprovalsData, "employeeMyTradeApprovalsData4455");
 
   // -------------------- Helpers --------------------
 

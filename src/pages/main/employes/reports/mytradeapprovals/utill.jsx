@@ -48,7 +48,6 @@ export const mapEmployeeTransactions = (
   employeeTransactionsData = {}
 ) => {
   if (!employeeTransactionsData) return [];
-  console.log("assetTypeListingData", employeeTransactionsData);
 
   return employeeTransactionsData.map((item) => ({
     key: item.approvalID,
@@ -169,10 +168,7 @@ export const getBorderlessTableColumns = ({
     key: "requestDateTime",
     ellipsis: true,
     width: "10%",
-    sorter: (a, b) =>
-      formatApiDateTime(a.requestDateTime).localeCompare(
-        formatApiDateTime(b.requestDateTime)
-      ),
+    sorter: (a, b) => a.requestDateTime.localeCompare(b.requestDateTime),
     sortOrder:
       sortedInfo?.columnKey === "requestDateTime" ? sortedInfo.order : null,
     sortDirections: ["ascend", "descend"],
@@ -344,7 +340,6 @@ export const getBorderlessTableColumns = ({
       : null,
     onFilter: () => true,
     render: (status) => {
-      console.log(status, "statusstatusstatus");
       const tag = approvalStatusMap[status] || {};
       return (
         <Tag
@@ -366,10 +361,7 @@ export const getBorderlessTableColumns = ({
     key: "actionDateTime",
     ellipsis: true,
     width: "10%",
-    sorter: (a, b) =>
-      formatApiDateTime(a.actionDateTime).localeCompare(
-        formatApiDateTime(b.actionDateTime)
-      ),
+    sorter: (a, b) => a.actionDateTime.localeCompare(b.actionDateTime),
     sortDirections: ["ascend", "descend"],
     sortOrder:
       sortedInfo?.columnKey === "actionDateTime" ? sortedInfo.order : null,
