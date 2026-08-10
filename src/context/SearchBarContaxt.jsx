@@ -632,7 +632,9 @@ export const SearchBarProvider = ({ children }) => {
     departmentName: "",
     employeeID: 0,
     filterTrigger: false,
-    pageNumber: 0,
+    // SearchUsersByGroupPolicyID's PageNumber is now 1-indexed (backend
+    // fix 2026-08-10).
+    pageNumber: 1,
     pageSize: 10,
   });
 
@@ -1344,7 +1346,7 @@ export const SearchBarProvider = ({ children }) => {
       departmentName: "",
       employeeID: 0,
       filterTrigger: false,
-      pageNumber: 0,
+      pageNumber: 1,
       pageSize: 10,
     });
 
