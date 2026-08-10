@@ -12,7 +12,10 @@ export const buildApiRequest = (searchState = {}) => ({
   Designation: searchState.designation || "",
   DepartmentName: searchState.departmentName || "",
   EmployeeID: searchState.email || 0,
-  PageNumber: Number(searchState.pageNumber) || 0,
+  // SearchUsersByGroupPolicyID's PageNumber is now 1-indexed (backend fix
+  // 2026-08-10 - page 1 used to silently drop its first result via an
+  // off-by-one offset).
+  PageNumber: Number(searchState.pageNumber) || 1,
   Length: Number(searchState.pageSize) || 10,
 });
 
@@ -400,6 +403,23 @@ export const getUserColumns = ({
       render: (text, record) =>
         renderWithTooltip(text, record, currentPolicyID),
     },
+    // Missing column - buildApiRequest above already sends DepartmentName
+    // as a filter, and the response already includes it per employee
+    // (confirmed live response field is "department", not "departmentName"),
+    // just never rendered.
+    {
+      title: withSortIcon("Department", "department", sortedInfo),
+      dataIndex: "department",
+      key: "department",
+      sorter: (a, b) => (a.department || "").localeCompare(b.department || ""),
+      sortOrder:
+        sortedInfo?.columnKey === "department" ? sortedInfo.order : null,
+      sortDirections: ["ascend", "descend"],
+      showSorterTooltip: false,
+      sortIcon: () => null,
+      render: (text, record) =>
+        renderWithTooltip(text || "—", record, currentPolicyID),
+    },
     {
       title: withSortIcon("Email Address", "emailAddress", sortedInfo),
       dataIndex: "emailAddress",
@@ -418,8 +438,18 @@ export const getUserColumns = ({
       dataIndex: "policyAssignedDate",
       key: "policyAssignedDate",
       render: (date, record) => {
+        // This column is shared by both APIs behind this tab: "assign to
+        // new policy" (SearchAllEmployeesWithAssignedPolicies) sends
+        // policyAssignedDate/policyAssignedTime, but "view this policy's
+        // users" (SearchUsersByGroupPolicyID) sends assignedDate/
+        // assignedTime instead (2026-08-10_search_users_by_group_policy_
+        // add_department.md) - falls back to the latter so this doesn't
+        // silently show "—" for every row in that view.
         const dateAndTime =
-          [record?.policyAssignedDate, record?.policyAssignedTime]
+          [
+            record?.policyAssignedDate || record?.assignedDate,
+            record?.policyAssignedTime || record?.assignedTime,
+          ]
             .filter(Boolean)
             .join(" ") || "—";
         return renderWithTooltip(
