@@ -150,8 +150,11 @@ const BoxCard = ({
           gutter={[16, 16]}
         >
           {normalizedBoxes.map((box, index) => {
+            const disableTooltip = box.label === "No. of Shares";
             // Resolve colors & alignment based on `type`
-            const normalizedType = box.type?.toLowerCase().replace(/[\s-]+/g, "_");
+            const normalizedType = box.type
+              ?.toLowerCase()
+              .replace(/[\s-]+/g, "_");
             const baseTypeStyle = typeColorMap[normalizedType] || {
               bgColor: "#f0f0f0",
               textLableColor: "#000",
@@ -293,7 +296,9 @@ const BoxCard = ({
                       {locationStyle === "down" ? (
                         // Label on top, count below
                         <>
-                          <Tooltip title={box.label}>
+                          <Tooltip
+                            title={disableTooltip ? undefined : box.label}
+                          >
                             <Text
                               className={styles[`${base}label`]}
                               style={{
@@ -306,7 +311,7 @@ const BoxCard = ({
                           </Tooltip>
                           <AnimatedCount
                             className={styles[`${base}count`]}
-                            style={{ color: textCountColor }}
+                            style={{ color: textCountColor, fontSize: "40px" }}
                             flag={true}
                             value={formatNumberWithCommas(
                               convertSingleDigittoDoubble(box.count)
@@ -365,7 +370,9 @@ const BoxCard = ({
                                 />
                               </div>
 
-                              <Tooltip title={box.label}>
+                              <Tooltip
+                                title={disableTooltip ? undefined : box.label}
+                              >
                                 <Text
                                   className={
                                     styles[

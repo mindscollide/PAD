@@ -1,8 +1,8 @@
 // components/pages/employee/approval/tableColumns.js
 
-import React, { useEffect, useRef, useState } from "react";
+import React from "react";
 import { Tag, Tooltip } from "antd";
-import { Button, StatusFilterDropdown } from "../../../../components";
+import { Button } from "../../../../components";
 import style from "./approval.module.css";
 import EscalatedIcon from "../../../../assets/img/escalated.png";
 import TypeColumnTitle from "../../../../components/dropdowns/filters/typeColumnTitle";
@@ -321,7 +321,7 @@ export const getBorderlessTableColumns = ({
     title: withSortIcon("Approval ID", "tradeApprovalID", sortedInfo),
     dataIndex: "tradeApprovalID",
     key: "tradeApprovalID",
-    ellipsis: true,
+    // ellipsis: true,
     sorter: (a, b) => {
       const extractId = (id) => parseInt(id.replace(/[^\d]/g, ""), 10) || 0;
       return extractId(a.tradeApprovalID) - extractId(b.tradeApprovalID);
@@ -376,7 +376,7 @@ export const getBorderlessTableColumns = ({
     )),
     dataIndex: "type",
     key: "type",
-    ellipsis: true,
+    // ellipsis: true,
     width: 120,
     filteredValue: employeeMyApprovalSearch.type?.length
       ? employeeMyApprovalSearch.type
@@ -410,7 +410,7 @@ export const getBorderlessTableColumns = ({
     key: "requestDateTime",
     width: 200,
     align: "center",
-    ellipsis: true,
+    // ellipsis: true,
     sorter: (a, b) =>
       formatApiDateTime(a.requestDateTime).localeCompare(
         formatApiDateTime(b.requestDateTime)
@@ -479,7 +479,7 @@ export const getBorderlessTableColumns = ({
     dataIndex: "quantity",
     align: "center",
     key: "quantity",
-    ellipsis: true,
+    // ellipsis: true,
     width: 100,
     sorter: (a, b) => a.quantity - b.quantity,
     sortOrder: sortedInfo?.columnKey === "quantity" ? sortedInfo.order : null,

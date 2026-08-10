@@ -291,7 +291,6 @@ export const getBorderlessTableColumns = ({
       : null,
     onFilter: () => true,
     render: (status) => {
-      console.log(status, "statusstatusstatus");
       const tag = approvalStatusMap[status] || {};
       return (
         <Tag

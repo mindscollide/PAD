@@ -64,11 +64,6 @@ const COTransactionsSummarysReportsViewDetails = () => {
     resetCOTransactionsSummarysReportsSearch,
   } = useSearchBarContext();
 
-  console.log(
-    coTransactionSummaryReportListData,
-    "coTransactionSummaryReportListData",
-  );
-
   const { setAssetTypeListingData } = useDashboardContext();
 
   // -------------------- Local State --------------------
@@ -138,7 +133,7 @@ const COTransactionsSummarysReportsViewDetails = () => {
       setCOTransactionsSummarysReportsSearch,
       showLoader,
       showNotification,
-    ],
+    ]
   );
 
   // -------------------- Effects --------------------
@@ -172,7 +167,7 @@ const COTransactionsSummarysReportsViewDetails = () => {
       try {
         setLoadingMore(true);
         const requestData = buildApiRequest(
-          coTransactionsSummarysReportsSearch,
+          coTransactionsSummarysReportsSearch
         );
         await fetchApiCall(requestData, false, false);
       } catch (err) {
@@ -182,7 +177,7 @@ const COTransactionsSummarysReportsViewDetails = () => {
       }
     },
     0,
-    "border-less-table-blue",
+    "border-less-table-blue"
   );
 
   // -------------------- Table Columns --------------------

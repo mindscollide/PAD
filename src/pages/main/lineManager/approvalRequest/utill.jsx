@@ -2,12 +2,8 @@
 
 import React from "react";
 import { Tag, Tooltip } from "antd";
-import { Button, StatusFilterDropdown } from "../../../../components";
-import style from "./approvalRequest.module.css";
+import { Button } from "../../../../components";
 import EscalatedIcon from "../../../../assets/img/escalated.png";
-import ArrowUP from "../../../../assets/img/arrow-up-dark.png";
-import ArrowDown from "../../../../assets/img/arrow-down-dark.png";
-import DefaultColumArrow from "../../../../assets/img/default-colum-arrow.png";
 import TypeColumnTitle from "../../../../components/dropdowns/filters/typeColumnTitle";
 import StatusColumnTitle from "../../../../components/dropdowns/filters/statusColumnTitle";
 import {
@@ -94,7 +90,6 @@ export const getBorderlessLineManagerTableColumns = ({
     dataIndex: "tradeApprovalID",
     key: "tradeApprovalID",
     width: "10%",
-    ellipsis: true,
     sorter: (a, b) =>
       parseInt(a.tradeApprovalID.replace(/[^\d]/g, ""), 10) -
       parseInt(b.tradeApprovalID.replace(/[^\d]/g, ""), 10),
@@ -197,7 +192,6 @@ export const getBorderlessLineManagerTableColumns = ({
     align: "center",
     dataIndex: "requestDateTime",
     key: "requestDateTime",
-    ellipsis: true,
     sorter: (a, b) =>
       formatApiDateTime(a.requestDateTime).localeCompare(
         formatApiDateTime(b.requestDateTime)
@@ -223,7 +217,6 @@ export const getBorderlessLineManagerTableColumns = ({
     dataIndex: "type",
     key: "type",
     width: "8%",
-    ellipsis: true,
     align: "center",
 
     filteredValue: lineManagerApprovalSearch.type?.length
@@ -248,7 +241,7 @@ export const getBorderlessLineManagerTableColumns = ({
     ),
     dataIndex: "status",
     key: "status",
-    ellipsis: true,
+    // ellipsis: true,
     align: "center",
     filteredValue: lineManagerApprovalSearch.status?.length
       ? lineManagerApprovalSearch.status
@@ -283,7 +276,6 @@ export const getBorderlessLineManagerTableColumns = ({
     dataIndex: "quantity",
     key: "quantity",
     width: "8%",
-    ellipsis: true,
     sorter: (a, b) => a.quantity - b.quantity,
     sortDirections: ["ascend", "descend"],
     sortOrder: sortedInfo?.columnKey === "quantity" ? sortedInfo.order : null,

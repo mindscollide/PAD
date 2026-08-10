@@ -53,7 +53,7 @@ export const emaStatusOptionsofReportsMyHistory = [
   "Pending",
   "Approved",
   "Declined",
-  "Transaction Conducted",
+  "Traded",
   "Not Traded",
   "Resubmitted for Approval",
   "Compliant",

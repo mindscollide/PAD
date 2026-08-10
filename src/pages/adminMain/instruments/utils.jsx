@@ -6,7 +6,11 @@ import { ArrowsAltOutlined } from "@ant-design/icons";
 import { Tag, Switch, Tooltip } from "antd";
 import styles from "./Instruments.module.css";
 import StatusColumnTitle from "../../../components/dropdowns/filters/statusColumnTitle";
-import { formatApiDateTime, toYYMMDD } from "../../../common/funtions/rejex";
+import {
+  formatApiDateTime,
+  formatShowOnlyDate,
+  toYYMMDD,
+} from "../../../common/funtions/rejex";
 import { mapStatusToIds } from "../../../components/dropdowns/filters/utils";
 import DefaultColumArrow from "../../../assets/img/default-colum-arrow.png";
 import style from "./Instruments.module.css";
@@ -148,16 +152,16 @@ export const getInstrumentTableColumns = ({
       "Closed Period Start Date",
       "closedPeriodStartDate",
       sortedInfo,
-      "center",
+      "center"
     ),
     dataIndex: "closedPeriodStartDate",
     key: "closedPeriodStartDate",
     width: 150,
     align: "center",
-    ellipsis: true,
+    // ellipsis: true,
     sorter: (a, b) =>
       formatApiDateTime(a.closedPeriodStartDate).localeCompare(
-        formatApiDateTime(b.closedPeriodStartDate),
+        formatApiDateTime(b.closedPeriodStartDate)
       ),
 
     sortOrder:
@@ -168,7 +172,7 @@ export const getInstrumentTableColumns = ({
     sortIcon: () => null,
     render: (date, record) => (
       <span className={!record.status ? styles.inActiveColumnTexts : ""}>
-        {date ? formatApiDateTime(date) : "—"}
+        {date ? formatShowOnlyDate(date) : "—"}
       </span>
     ),
   },
@@ -177,16 +181,16 @@ export const getInstrumentTableColumns = ({
       " Closed Period End Date",
       "closedPeriodEndDate",
       sortedInfo,
-      "center",
+      "center"
     ),
     dataIndex: "closedPeriodEndDate",
     key: "closedPeriodEndDate",
     width: 150,
     align: "center",
-    ellipsis: true,
+    // ellipsis: true,
     sorter: (a, b) =>
       formatApiDateTime(a.closedPeriodEndDate).localeCompare(
-        formatApiDateTime(b.closedPeriodEndDate),
+        formatApiDateTime(b.closedPeriodEndDate)
       ),
 
     sortOrder:
@@ -198,7 +202,7 @@ export const getInstrumentTableColumns = ({
         className={!record.status ? styles.inActiveColumnTexts : ""}
         style={{ textAlign: "center" }}
       >
-        {date ? formatApiDateTime(date) : "—"}
+        {date ? formatShowOnlyDate(date) : "—"}
       </span>
     ),
   },

@@ -499,7 +499,7 @@
 .counterWrapper {
   display: flex;
   gap: 2px;
-  font-size: 24px;
+  font-size: 10px;
   font-weight: bold;
   line-height: 1;
 }
@@ -508,6 +508,7 @@
   position: relative;
   height: 44px; /* adjust height */
   overflow: hidden;
+  font-size: 10px !important;
 }
 
 .digitRoll {

@@ -230,8 +230,7 @@ const ViewDetailReconcileTransaction = () => {
           ...file,
           attachmentBlob: "",
           canDelete:
-            notYetActioned &&
-            String(file.fK_UserID) === String(loggedInUserID),
+            notYetActioned && String(file.fK_UserID) === String(loggedInUserID),
         }));
 
         setUploadattAchmentsFiles(updatedFiles);
