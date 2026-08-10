@@ -19,16 +19,12 @@
 
 import React, { useEffect, useRef, useCallback, useMemo } from "react";
 import { Col, Row } from "antd";
-import EmptyState from "../../../../components/emptyStates/empty-states";
 import { BoxCard } from "../../../../components";
 import { useApi } from "../../../../context/ApiContext";
 import { useGlobalLoader } from "../../../../context/LoaderContext";
 import { useNotification } from "../../../../components/NotificationProvider/NotificationProvider";
-import { Outlet, useNavigate } from "react-router-dom";
-import {
-  GetComplianceOfficerReportsDashboardStatsAPI,
-  GetHOCReportsDashboardStatsAPI,
-} from "../../../../api/myApprovalApi";
+import { useNavigate } from "react-router-dom";
+import { GetHOCReportsDashboardStatsAPI } from "../../../../api/myApprovalApi";
 import style from "./compliance.module.css";
 import { useMyApproval } from "../../../../context/myApprovalContaxt";
 
@@ -141,7 +137,7 @@ const HeadOFComplianceApprovalReportsIndex = () => {
         {/* ========== First Row Reports ========== */}
         <Row gutter={[16, 16]}>
           {/* ---- Overdue Verifications ---- */}
-          <Col xs={12} md={8} lg={8}>
+          <Col xs={12} md={12} lg={12}>
             <MemoizedBoxCard
               reportsFlag={true}
               locationStyle="up"
@@ -155,7 +151,7 @@ const HeadOFComplianceApprovalReportsIndex = () => {
             />
           </Col>
           {/* ---- Date Wise Transaction Report ---- */}
-          <Col xs={12} md={8} lg={8}>
+          <Col xs={12} md={12} lg={12}>
             <MemoizedBoxCard
               reportsFlag={true}
               locationStyle="up"
@@ -169,7 +165,7 @@ const HeadOFComplianceApprovalReportsIndex = () => {
             />
           </Col>
           {/* ---- Transaction Summary ---- */}
-          <Col xs={12} md={8} lg={8}>
+          <Col xs={12} md={12} lg={12}>
             <MemoizedBoxCard
               reportsFlag={true}
               locationStyle="up"
@@ -182,12 +178,7 @@ const HeadOFComplianceApprovalReportsIndex = () => {
               route="hca-transactions-summary-report"
             />
           </Col>
-        </Row>
-
-        {/* ========== Second Row Reports ========== */}
-        <Row gutter={[16, 16]}>
-          {/* ---- Portfolio History ---- */}
-          <Col xs={12} md={8} lg={8}>
+          <Col xs={12} md={12} lg={12}>
             <MemoizedBoxCard
               reportsFlag={true}
               locationStyle="up"

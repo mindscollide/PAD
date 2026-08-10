@@ -317,18 +317,34 @@ const SystemConfigurations = () => {
                   {/* Configuration Input */}
                   <Col span={8} className={style.column}>
                     {item.valueUnit === "text" ? (
-                      <Input
-                        value={
-                          formValues.find(
-                            (f) => f.configurationID === item.configurationID
-                          )?.configValue || ""
-                        }
-                        onChange={(e) =>
-                          handleChange(item.configurationID, e.target.value)
-                        }
-                        placeholder="Enter value"
-                        className={style.textField}
-                      />
+                      <>
+                        <span
+                          style={{
+                            fontSize: "14px",
+                            fontWeight: 500,
+                            color: "#333",
+                            minWidth: "70px",
+                            display: "inline-block",
+                            textTransform: "capitalize",
+                            marginTop: "20px",
+                          }}
+                        >
+                          {}
+                        </span>
+
+                        <Input
+                          value={
+                            formValues.find(
+                              (f) => f.configurationID === item.configurationID
+                            )?.configValue || ""
+                          }
+                          onChange={(e) =>
+                            handleChange(item.configurationID, e.target.value)
+                          }
+                          placeholder="Enter value"
+                          className={style.textField}
+                        />
+                      </>
                     ) : (
                       <>
                         <span

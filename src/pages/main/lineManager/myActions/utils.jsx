@@ -121,7 +121,7 @@ export const getMyActionsColumn = (approvalStatusMap, sortedInfo) => [
     dataIndex: "requesterName",
     key: "requesterName",
     width: "160px",
-    ellipsis: true,
+    // ellipsis: true,
     sorter: (a, b) => a.requesterName.localeCompare(b.requesterName),
     sortDirections: ["ascend", "descend"],
     sortOrder:
@@ -141,7 +141,7 @@ export const getMyActionsColumn = (approvalStatusMap, sortedInfo) => [
     key: "approvalDateTime",
     width: "280px",
     align: "center",
-    ellipsis: true,
+    // ellipsis: true,
     sorter: (a, b) => {
       const dateA = new Date(`${a.creationDate} ${a.creationTime}`).getTime();
       const dateB = new Date(`${b.creationDate} ${b.creationTime}`).getTime();
@@ -164,7 +164,7 @@ export const getMyActionsColumn = (approvalStatusMap, sortedInfo) => [
     key: "type",
     width: "100px",
     align: "left",
-    ellipsis: true,
+    // ellipsis: true,
     sorter: (a, b) => a.type.localeCompare(b.type),
     sortDirections: ["ascend", "descend"],
     sortOrder: sortedInfo?.columnKey === "type" ? sortedInfo.order : null,
@@ -178,7 +178,7 @@ export const getMyActionsColumn = (approvalStatusMap, sortedInfo) => [
     key: "quantity",
     width: "180px",
     align: "center",
-    ellipsis: true,
+    // ellipsis: true,
     sorter: (a, b) => a.quantity - b.quantity,
     sortDirections: ["ascend", "descend"],
     sortOrder: sortedInfo?.columnKey === "quantity" ? sortedInfo.order : null,
