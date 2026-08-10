@@ -22,6 +22,7 @@
  * @returns {Array} Column definitions for Ant Design Table
  */
 
+import { Tooltip } from "antd";
 import { toYYMMDD } from "../../../../../common/funtions/rejex";
 
 /**
@@ -56,55 +57,39 @@ export function getEmployeePortfolioColumns({
   UploadIcon,
   brokerOptions = [],
   Text,
-  Tag,
 }) {
   /**
-   * Resolve broker IDs into human-readable names.
+   * Resolve a row's broker info into a display string + tooltip content,
+   * matching the "single name directly / Multiple Brokers + full list on
+   * hover" convention used for broker/action-by columns elsewhere in the
+   * app. Confirmed against a real response: each row carries `brokerList`,
+   * an array of full broker objects ({brokerID, brokerName, psxCode,
+   * brokerStatusID, brokerStatus}) - not the flattened `broker`/`brokers`
+   * fields this used to guess at, which were never actually on the row
+   * (silently always showed "—"). Display is derived purely from this
+   * array's length.
    *
-   * @param {string|string[]} brokerIds - Broker ID(s) or "Multiple Brokers"
-   * @returns {string|JSX.Element[]} Broker name(s) or placeholder.
+   * @param {Array<{brokerID, brokerName}>} [brokerList]
+   * @returns {{ display: string, tooltip: string }}
    */
-  const getBrokerNames = (brokerIds) => {
-    if (!brokerIds) return "—";
+  const getBrokerNames = (brokerList) => {
+    const list = Array.isArray(brokerList) ? brokerList : [];
 
-    // Handle "Multiple Brokers"
-    if (brokerIds === "Multiple Brokers") {
-      return "Multiple Brokers";
-    }
-
-    // Handle array of broker IDs
-    if (Array.isArray(brokerIds)) {
-      return brokerIds.map((id, index) => {
-        const broker = brokerOptions.find(
-          (b) => String(b.brokerID) === String(id)
+    const names = list
+      .map((b) => {
+        if (b?.brokerName) return b.brokerName;
+        // Defensive fallback if a list item is ever missing brokerName -
+        // resolve by ID against the broker master list instead.
+        const match = brokerOptions.find(
+          (opt) => String(opt.brokerID) === String(b?.brokerID)
         );
-        const name = broker?.brokerName || broker?.label || String(id);
+        return match?.brokerName || match?.label || null;
+      })
+      .filter(Boolean);
 
-        // Use Tag component if provided, else fallback to plain text
-        return Tag ? (
-          <Tag key={id} style={{ marginRight: 4, whiteSpace: "normal" }}>
-            {name}
-          </Tag>
-        ) : (
-          <span
-            key={id}
-            style={{
-              display: "inline-block",
-              marginRight: 4,
-              whiteSpace: "normal",
-            }}
-          >
-            {name}
-          </span>
-        );
-      });
-    }
-
-    // Handle single broker ID
-    const broker = brokerOptions.find(
-      (b) => String(b.brokerID) === String(brokerIds)
-    );
-    return broker?.brokerName || broker?.label || String(brokerIds);
+    if (names.length === 0) return { display: "—", tooltip: "" };
+    if (names.length === 1) return { display: names[0], tooltip: "" };
+    return { display: "Multiple Brokers", tooltip: names.join(", ") };
   };
 
   return [
@@ -172,22 +157,31 @@ export function getEmployeePortfolioColumns({
     },
     {
       title: "Brokers",
-      dataIndex: "brokers",
-      key: "brokers",
+      dataIndex: "brokerList",
+      key: "brokerList",
       width: 150,
       align: "center",
 
-      render: (brokerIds) => (
-        <div
-          style={{
-            whiteSpace: "normal", // ✅ allows wrapping
-            wordBreak: "break-word", // ✅ breaks long words
-            maxWidth: "100%", // prevents overflow
-          }}
-        >
-          {getBrokerNames(brokerIds)}
-        </div>
-      ),
+      render: (brokerList) => {
+        const { display, tooltip } = getBrokerNames(brokerList);
+        return (
+          <div
+            style={{
+              whiteSpace: "normal", // ✅ allows wrapping
+              wordBreak: "break-word", // ✅ breaks long words
+              maxWidth: "100%", // prevents overflow
+            }}
+          >
+            {tooltip ? (
+              <Tooltip title={tooltip}>
+                <span style={{ cursor: "pointer" }}>{display}</span>
+              </Tooltip>
+            ) : (
+              display
+            )}
+          </div>
+        );
+      },
     },
     {
       title: "Verification Date & Time",
