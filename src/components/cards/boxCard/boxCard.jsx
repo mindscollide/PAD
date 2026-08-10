@@ -240,8 +240,8 @@ const BoxCard = ({
 
                       {/* Subtext (dynamic count) */}
                       <Text className={styles.urgentDescription}>
-                        {convertSingleDigittoDoubble(
-                          formatNumberWithCommas(box.count)
+                        {formatNumberWithCommas(
+                          convertSingleDigittoDoubble(box.count)
                         )}{" "}
                         Approvals Required Before Deadline
                       </Text>
@@ -308,8 +308,8 @@ const BoxCard = ({
                             className={styles[`${base}count`]}
                             style={{ color: textCountColor }}
                             flag={true}
-                            value={convertSingleDigittoDoubble(
-                              formatNumberWithCommas(box.count)
+                            value={formatNumberWithCommas(
+                              convertSingleDigittoDoubble(box.count)
                             )}
                           />
                         </>
@@ -323,8 +323,8 @@ const BoxCard = ({
                                   <AnimatedCount
                                     className={styles[`${base}count`]}
                                     style={{ color: textCountColor }}
-                                    value={convertSingleDigittoDoubble(
-                                      formatNumberWithCommas(box.count)
+                                    value={formatNumberWithCommas(
+                                      convertSingleDigittoDoubble(box.count)
                                     )}
                                   />
                                 </div>
@@ -359,8 +359,8 @@ const BoxCard = ({
                                 <AnimatedCount
                                   className={styles[`${base}count`]}
                                   style={{ color: textCountColor }}
-                                  value={convertSingleDigittoDoubble(
-                                    formatNumberWithCommas(box.count)
+                                  value={formatNumberWithCommas(
+                                    convertSingleDigittoDoubble(box.count)
                                   )}
                                 />
                               </div>
@@ -393,8 +393,8 @@ const BoxCard = ({
                             <AnimatedCount
                               className={styles[`${base}count`]}
                               style={{ color: textCountColor }}
-                              value={convertSingleDigittoDoubble(
-                                formatNumberWithCommas(box.count)
+                              value={formatNumberWithCommas(
+                                convertSingleDigittoDoubble(box.count)
                               )}
                             />
                           </Col>
@@ -454,7 +454,7 @@ const BoxCard = ({
               <AnimatedCount
                 className={styles[`${base}count`]}
                 style={{ color: "#00640A" }}
-                value={convertSingleDigittoDoubble(formatNumberWithCommas(0))}
+                value={formatNumberWithCommas(convertSingleDigittoDoubble(0))}
               />
             </div>
           </Col>
