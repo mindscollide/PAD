@@ -12,26 +12,23 @@ import {
   getBorderlessTableColumns,
   mapListData,
 } from "./utils";
-import { approvalStatusMap } from "../../../../components/tables/borderlessTable/utill";
-
 // 🔹 Styles
 import style from "./AdminPolicyBreachesReport.module.css";
 import { useMyApproval } from "../../../../context/myApprovalContaxt";
 import {
   ExportHTATradeApprovalRequestsExcelReport,
-  SearchPolicyBreachedWorkFlowsRequest,
+  GetAdminPolicyBreachesAPI,
+  GetAdminPolicyBreachDetailsAPI,
 } from "../../../../api/myApprovalApi";
 import { useNotification } from "../../../../components/NotificationProvider/NotificationProvider";
 import { useApi } from "../../../../context/ApiContext";
 import { useGlobalLoader } from "../../../../context/LoaderContext";
 import { useNavigate } from "react-router-dom";
 import { useSearchBarContext } from "../../../../context/SearchBarContaxt";
-import { useDashboardContext } from "../../../../context/dashboardContaxt";
-import { getSafeAssetTypeData } from "../../../../common/funtions/assetTypesList";
 import { useTableScrollBottom } from "../../../../common/funtions/scroll";
 import CustomButton from "../../../../components/buttons/button";
 import { toYYMMDD } from "../../../../common/funtions/rejex";
-import { useSidebarContext } from "../../../../context/sidebarContaxt";
+import PolicyBreachDetailsModal from "./PolicyBreachDetailsModal";
 
 const AdminPolicyBreachesReport = () => {
   const navigate = useNavigate();
@@ -43,13 +40,12 @@ const AdminPolicyBreachesReport = () => {
   const { showNotification } = useNotification();
   const { showLoader } = useGlobalLoader();
   const {
-    htaPolicyBreachesReportsData,
-    setHTAPolicyBreachesReportsData,
-    resetHTAPolicyBreachesReportsData,
+    adminPolicyBreachesReportData,
+    setAdminPolicyBreachesReportData,
+    resetAdminPolicyBreachesReportData,
+    adminPolicyBreachDetailsData,
+    setAdminPolicyBreachDetailsData,
   } = useMyApproval();
-
-  const { selectedKey } = useSidebarContext();
-  console.log(selectedKey, "selectedKeyselectedKey");
 
   const {
     adminPolicyBreachesReportSearch,
@@ -57,79 +53,79 @@ const AdminPolicyBreachesReport = () => {
     resetPolicyBreachesAdminReportSearch,
   } = useSearchBarContext();
 
-  const { assetTypeListingData, setAssetTypeListingData } =
-    useDashboardContext();
-
   // -------------------- Local State --------------------
   const [sortedInfo, setSortedInfo] = useState({});
   const [loadingMore, setLoadingMore] = useState(false);
   const [open, setOpen] = useState(false);
   const [policyModalVisible, setPolicyModalVisible] = useState(false);
-  const [selectedEmployee, setSelectedEmployee] = useState(null);
+  const [policyModalLoading, setPolicyModalLoading] = useState(false);
   // -------------------- Helpers --------------------
 
   /**
-   * Fetches transactions from API.
-   * @param {boolean} flag - whether to show loader
+   * Fetches the Policy Breaches list from GetAdminPolicyBreachesAPI.
+   * @param {object} requestData - API request payload
+   * @param {boolean} replace - if true, replace the table rows; else append (lazy load)
    */
   const fetchApiCall = useCallback(
     async (requestData, replace = false, showLoaderFlag = true) => {
       if (!requestData || typeof requestData !== "object") return;
-      // if (showLoaderFlag) showLoader(true);
+      if (showLoaderFlag) showLoader(true);
 
-      // const res = await SearchPolicyBreachedWorkFlowsRequest({
-      //   callApi,
-      //   showNotification,
-      //   showLoader,
-      //   requestdata: requestData,
-      //   navigate,
-      // });
-      console.log("res".res);
+      const res = await GetAdminPolicyBreachesAPI({
+        callApi,
+        showNotification,
+        showLoader,
+        requestdata: requestData,
+        navigate,
+      });
 
-      // ✅ Always get the freshest version (from memory or session)
-      const currentAssetTypeData = getSafeAssetTypeData(
-        assetTypeListingData,
-        setAssetTypeListingData
-      );
+      const mapped = mapListData(res);
+      if (!Array.isArray(mapped)) return;
 
-      const records = Array.isArray(res?.records) ? res.records : [];
-      console.log("records", records);
-      const mapped = mapListData(currentAssetTypeData?.Equities, records);
-      if (!mapped || typeof mapped !== "object") return;
-      console.log("records", mapped);
-
-      setHTAPolicyBreachesReportsData((prev) => ({
+      setAdminPolicyBreachesReportData((prev) => ({
         records: replace ? mapped : [...(prev?.records || []), ...mapped],
-        // this is for to run lazy loading its data comming from database of total data in db
         totalRecordsDataBase: res?.totalRecords || 0,
-        // this is for to know how mush dta currently fetch from  db
         totalRecordsTable: replace
           ? mapped.length
-          : htaPolicyBreachesReportsData.totalRecordsTable + mapped.length,
+          : (prev?.totalRecordsTable || 0) + mapped.length,
       }));
       setAdminPolicyBreachesReportSearch((prev) => {
         const next = {
           ...prev,
-          pageNumber: replace ? mapped.length : prev.pageNumber + mapped.length,
+          pageNumber: replace ? 2 : (prev.pageNumber || 1) + 1,
         };
-
-        // this is for check if filter value get true only on that it will false
-        if (prev.filterTrigger) {
-          next.filterTrigger = false;
-        }
-
+        if (prev.filterTrigger) next.filterTrigger = false;
         return next;
       });
     },
-    [
-      assetTypeListingData,
-      callApi,
-      navigate,
-      setAdminPolicyBreachesReportSearch,
-      showLoader,
-      showNotification,
-    ]
+    [callApi, navigate, showLoader, showNotification]
   );
+
+  /** 🔹 Open the "Policies Breached" drill-down modal for a row */
+  const handleViewPolicyBreachDetails = async (record) => {
+    setPolicyModalVisible(true);
+    setPolicyModalLoading(true);
+    const res = await GetAdminPolicyBreachDetailsAPI({
+      callApi,
+      showNotification,
+      showLoader,
+      requestdata: {
+        EmployeeID: record.employeeID,
+        InstrumentName: record.instrumentName,
+        Type: record.type,
+        Quantity: record.quantity,
+        RequestedDateTime: record.requestedDateTime,
+      },
+      navigate,
+    });
+    setAdminPolicyBreachDetailsData({ records: res?.records || [] });
+    setPolicyModalLoading(false);
+  };
+
+  const handleClosePolicyModal = () => {
+    setPolicyModalVisible(false);
+    setAdminPolicyBreachDetailsData({ records: [] });
+  };
 
   // -------------------- Effects --------------------
 
@@ -137,10 +133,7 @@ const AdminPolicyBreachesReport = () => {
   useEffect(() => {
     if (hasFetched.current) return;
     hasFetched.current = true;
-    const requestData = buildApiRequest(
-      adminPolicyBreachesReportSearch,
-      assetTypeListingData
-    );
+    const requestData = buildApiRequest(adminPolicyBreachesReportSearch);
     fetchApiCall(requestData, true, true);
   }, []);
 
@@ -149,17 +142,14 @@ const AdminPolicyBreachesReport = () => {
     return () => {
       // Reset search state for fresh load
       resetPolicyBreachesAdminReportSearch();
-      resetHTAPolicyBreachesReportsData();
+      resetAdminPolicyBreachesReportData();
     };
   }, []);
 
   // 🔹 call api on search
   useEffect(() => {
     if (adminPolicyBreachesReportSearch?.filterTrigger) {
-      const requestData = buildApiRequest(
-        adminPolicyBreachesReportSearch,
-        assetTypeListingData
-      );
+      const requestData = buildApiRequest(adminPolicyBreachesReportSearch);
       fetchApiCall(requestData, true, true);
     }
   }, [adminPolicyBreachesReportSearch?.filterTrigger]);
@@ -168,20 +158,17 @@ const AdminPolicyBreachesReport = () => {
   useTableScrollBottom(
     async () => {
       if (
-        htaPolicyBreachesReportsData?.totalRecordsDataBase <=
-        htaPolicyBreachesReportsData?.totalRecordsTable
+        adminPolicyBreachesReportData?.totalRecordsDataBase <=
+        adminPolicyBreachesReportData?.totalRecordsTable
       )
         return;
 
       try {
         setLoadingMore(true);
-        const requestData = buildApiRequest(
-          adminPolicyBreachesReportSearch,
-          assetTypeListingData
-        );
+        const requestData = buildApiRequest(adminPolicyBreachesReportSearch);
         await fetchApiCall(requestData, false, false);
       } catch (err) {
-        console.error("Error loading more approvals:", err);
+        console.error("Error loading more:", err);
       } finally {
         setLoadingMore(false);
       }
@@ -192,12 +179,10 @@ const AdminPolicyBreachesReport = () => {
 
   // -------------------- Table Columns --------------------
   const columns = getBorderlessTableColumns({
-    approvalStatusMap,
     sortedInfo,
     adminPolicyBreachesReportSearch,
     setAdminPolicyBreachesReportSearch,
-    setSelectedEmployee,
-    setPolicyModalVisible,
+    onViewPolicyBreachDetails: handleViewPolicyBreachDetails,
   });
 
   /** 🔹 Handle removing individual filter */
@@ -406,11 +391,11 @@ const AdminPolicyBreachesReport = () => {
       >
         <div className="px-4 md:px-6 lg:px-8 ">
           <BorderlessTable
-            rows={htaPolicyBreachesReportsData?.records}
+            rows={adminPolicyBreachesReportData?.records}
             columns={columns}
             classNameTable="border-less-table-blue"
             scroll={
-              htaPolicyBreachesReportsData?.records?.length
+              adminPolicyBreachesReportData?.records?.length
                 ? {
                     x: "max-content",
                     y: activeFilters.length > 0 ? 450 : 500,
@@ -423,6 +408,15 @@ const AdminPolicyBreachesReport = () => {
           />
         </div>
       </PageLayout>
+
+      {policyModalVisible && (
+        <PolicyBreachDetailsModal
+          visible={policyModalVisible}
+          onClose={handleClosePolicyModal}
+          loading={policyModalLoading}
+          records={adminPolicyBreachDetailsData?.records}
+        />
+      )}
     </>
   );
 };
