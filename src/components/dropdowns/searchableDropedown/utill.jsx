@@ -39,6 +39,7 @@ import { AdminUserActivityReportFilter } from "./AdminUserActivityReportFilter";
 import { AdminUserWiseComplianceReportFilter } from "./AdminUserWiseComplianceReportFilter";
 import { HOCTransactionReportViewDetailsFilter } from "./HOCTransactionReportViewDetailsFilter";
 import { HTATATReportsListFilter } from "./HTATATReportListFilter";
+import { AdminTradesUploadedViaPortfolioFilter } from "./AdminTradesUploadedViaPortfolioFilter";
 
 // this is used for open specific filter according to page
 export const renderFilterContent = (
@@ -529,6 +530,19 @@ export const renderFilterContent = (
          if (currentPath === "/PAD/admin-reports/admin-TAT-Request-report")
         return (
           <AdminUserWiseComplianceReportFilter
+            setVisible={setVisible}
+            clear={clear}
+            setClear={setClear}
+            maininstrumentName={searchMain}
+            setMaininstrumentName={setSearchMain}
+          />
+        );
+      if (
+        currentPath ===
+        "/PAD/admin-reports/admin-trades-uploaded-via-portfolio-report"
+      )
+        return (
+          <AdminTradesUploadedViaPortfolioFilter
             setVisible={setVisible}
             clear={clear}
             setClear={setClear}

@@ -27,6 +27,7 @@ import { Outlet, useNavigate } from "react-router-dom";
 import {
   GetComplianceOfficerReportsDashboardStatsAPI,
   GetHOCReportsDashboardStatsAPI,
+  GetAdminReportsDashboardStatsAPI,
 } from "../../../api/myApprovalApi";
 import style from "./adminReport.module.css";
 import { useMyApproval } from "../../../context/myApprovalContaxt";
@@ -64,7 +65,10 @@ const AdminReportsIndex = () => {
     try {
       showLoader(true);
 
-      const res = await GetHOCReportsDashboardStatsAPI({
+      // CHANGED (2026-08-10): was calling GetHOCReportsDashboardStatsAPI as a
+      // placeholder (this page's real endpoint didn't exist yet) - now calls the
+      // real Admin Reports Dashboard API.
+      const res = await GetAdminReportsDashboardStatsAPI({
         callApi,
         showNotification,
         showLoader,
@@ -78,7 +82,7 @@ const AdminReportsIndex = () => {
       console.error("Failed to fetch reports:", error);
       showNotification({
         title: "Error",
-        description: "Failed to fetch head of compliance officer reports.",
+        description: "Failed to fetch admin reports.",
         type: "error",
       });
     } finally {

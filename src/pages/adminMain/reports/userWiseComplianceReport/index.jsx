@@ -12,28 +12,22 @@ import {
   getBorderlessTableColumns,
   mapListData,
 } from "./utils";
-import { approvalStatusMap } from "../../../../components/tables/borderlessTable/utill";
-
 // 🔹 Styles
 import style from "./UserWiseComplianceReport.module.css";
 import { useMyApproval } from "../../../../context/myApprovalContaxt";
 import {
   ExportHTATradeApprovalRequestsExcelReport,
-  SearchPolicyBreachedWorkFlowsRequest,
+  GetAdminUserWiseComplianceReportAPI,
 } from "../../../../api/myApprovalApi";
 import { useNotification } from "../../../../components/NotificationProvider/NotificationProvider";
 import { useApi } from "../../../../context/ApiContext";
 import { useGlobalLoader } from "../../../../context/LoaderContext";
 import { useNavigate } from "react-router-dom";
 import { useSearchBarContext } from "../../../../context/SearchBarContaxt";
-import { useDashboardContext } from "../../../../context/dashboardContaxt";
-import { getSafeAssetTypeData } from "../../../../common/funtions/assetTypesList";
 import { useTableScrollBottom } from "../../../../common/funtions/scroll";
 import CustomButton from "../../../../components/buttons/button";
 import { toYYMMDD } from "../../../../common/funtions/rejex";
-import { useSidebarContext } from "../../../../context/sidebarContaxt";
 import { useGlobalModal } from "../../../../context/GlobalModalContext";
-import ViewDetails from "./viewDetails/ViewDetails";
 import ViewDetailsAdmin from "./viewDetails/ViewDetails";
 
 const UserWiseComplianceReport = () => {
@@ -45,15 +39,15 @@ const UserWiseComplianceReport = () => {
   const { callApi } = useApi();
   const { showNotification } = useNotification();
   const { showLoader } = useGlobalLoader();
-  const { htaPolicyBreachesReportsData, resetHTAPolicyBreachesReportsData } =
-    useMyApproval();
+  const {
+    adminUserWiseComplianceReportData,
+    setAdminUserWiseComplianceReportData,
+    resetAdminUserWiseComplianceReportData,
+  } = useMyApproval();
   const {
     showViewDetailOfUserwiseComplianceReportAdmin,
     setShowViewDetailOfUserwiseComplianceReportAdmin,
   } = useGlobalModal();
-
-  const { selectedKey } = useSidebarContext();
-  console.log(selectedKey, "selectedKeyselectedKey");
 
   const {
     userActivityComplianceReportAdmin,
@@ -61,79 +55,52 @@ const UserWiseComplianceReport = () => {
     resetUserWiseComplianceReportSearch,
   } = useSearchBarContext();
 
-  const { assetTypeListingData, setAssetTypeListingData } =
-    useDashboardContext();
-
   // -------------------- Local State --------------------
   const [sortedInfo, setSortedInfo] = useState({});
   const [loadingMore, setLoadingMore] = useState(false);
   const [open, setOpen] = useState(false);
-  const [policyModalVisible, setPolicyModalVisible] = useState(false);
-  const [selectedEmployee, setSelectedEmployee] = useState(null);
   // -------------------- Helpers --------------------
 
   /**
-   * Fetches transactions from API.
-   * @param {boolean} flag - whether to show loader
+   * Fetches the User-wise Compliance Report list from
+   * GetAdminUserWiseComplianceReportAPI.
+   * @param {object} requestData - API request payload
+   * @param {boolean} replace - if true, replace the table rows; else append (lazy load)
    */
-  // const fetchApiCall = useCallback(
-  //   async (requestData, replace = false, showLoaderFlag = true) => {
-  //     if (!requestData || typeof requestData !== "object") return;
-  //     // if (showLoaderFlag) showLoader(true);
+  const fetchApiCall = useCallback(
+    async (requestData, replace = false, showLoaderFlag = true) => {
+      if (!requestData || typeof requestData !== "object") return;
+      if (showLoaderFlag) showLoader(true);
 
-  //     // const res = await SearchPolicyBreachedWorkFlowsRequest({
-  //     //   callApi,
-  //     //   showNotification,
-  //     //   showLoader,
-  //     //   requestdata: requestData,
-  //     //   navigate,
-  //     // });
-  //     console.log("res".res);
+      const res = await GetAdminUserWiseComplianceReportAPI({
+        callApi,
+        showNotification,
+        showLoader,
+        requestdata: requestData,
+        navigate,
+      });
 
-  //     // ✅ Always get the freshest version (from memory or session)
-  //     const currentAssetTypeData = getSafeAssetTypeData(
-  //       assetTypeListingData,
-  //       setAssetTypeListingData
-  //     );
+      const mapped = mapListData(res);
+      if (!Array.isArray(mapped)) return;
 
-  //     const records = Array.isArray(res?.records) ? res.records : [];
-  //     console.log("records", records);
-  //     const mapped = mapListData(currentAssetTypeData?.Equities, records);
-  //     if (!mapped || typeof mapped !== "object") return;
-  //     console.log("records", mapped);
-
-  //     setHTAPolicyBreachesReportsData((prev) => ({
-  //       records: replace ? mapped : [...(prev?.records || []), ...mapped],
-  //       // this is for to run lazy loading its data comming from database of total data in db
-  //       totalRecordsDataBase: res?.totalRecords || 0,
-  //       // this is for to know how mush dta currently fetch from  db
-  //       totalRecordsTable: replace
-  //         ? mapped.length
-  //         : htaPolicyBreachesReportsData.totalRecordsTable + mapped.length,
-  //     }));
-  //     setUserActivityComplianceReportAdmin((prev) => {
-  //       const next = {
-  //         ...prev,
-  //         pageNumber: replace ? mapped.length : prev.pageNumber + mapped.length,
-  //       };
-
-  //       // this is for check if filter value get true only on that it will false
-  //       if (prev.filterTrigger) {
-  //         next.filterTrigger = false;
-  //       }
-
-  //       return next;
-  //     });
-  //   },
-  //   [
-  //     assetTypeListingData,
-  //     callApi,
-  //     navigate,
-  //     setUserActivityComplianceReportAdmin,
-  //     showLoader,
-  //     showNotification,
-  //   ]
-  // );
+      setAdminUserWiseComplianceReportData((prev) => ({
+        records: replace ? mapped : [...(prev?.records || []), ...mapped],
+        totalRecordsDataBase: res?.totalRecords || 0,
+        totalRecordsTable: replace
+          ? mapped.length
+          : (prev?.totalRecordsTable || 0) + mapped.length,
+      }));
+      setUserActivityComplianceReportAdmin((prev) => {
+        const next = {
+          ...prev,
+          pageNumber: replace ? 2 : (prev.pageNumber || 1) + 1,
+        };
+        if (prev.filterTrigger) next.filterTrigger = false;
+        return next;
+      });
+    },
+    [callApi, navigate, showLoader, showNotification]
+  );
 
   // -------------------- Effects --------------------
 
@@ -141,11 +108,8 @@ const UserWiseComplianceReport = () => {
   useEffect(() => {
     if (hasFetched.current) return;
     hasFetched.current = true;
-    const requestData = buildApiRequest(
-      userActivityComplianceReportAdmin,
-      assetTypeListingData
-    );
-    // fetchApiCall(requestData, true, true);
+    const requestData = buildApiRequest(userActivityComplianceReportAdmin);
+    fetchApiCall(requestData, true, true);
   }, []);
 
   // Reset on Unmount
@@ -153,18 +117,15 @@ const UserWiseComplianceReport = () => {
     return () => {
       // Reset search state for fresh load
       resetUserWiseComplianceReportSearch();
-      resetHTAPolicyBreachesReportsData();
+      resetAdminUserWiseComplianceReportData();
     };
   }, []);
 
   // 🔹 call api on search
   useEffect(() => {
     if (userActivityComplianceReportAdmin?.filterTrigger) {
-      const requestData = buildApiRequest(
-        userActivityComplianceReportAdmin,
-        assetTypeListingData
-      );
-      // fetchApiCall(requestData, true, true);
+      const requestData = buildApiRequest(userActivityComplianceReportAdmin);
+      fetchApiCall(requestData, true, true);
     }
   }, [userActivityComplianceReportAdmin?.filterTrigger]);
 
@@ -172,20 +133,17 @@ const UserWiseComplianceReport = () => {
   useTableScrollBottom(
     async () => {
       if (
-        htaPolicyBreachesReportsData?.totalRecordsDataBase <=
-        htaPolicyBreachesReportsData?.totalRecordsTable
+        adminUserWiseComplianceReportData?.totalRecordsDataBase <=
+        adminUserWiseComplianceReportData?.totalRecordsTable
       )
         return;
 
       try {
         setLoadingMore(true);
-        const requestData = buildApiRequest(
-          userActivityComplianceReportAdmin,
-          assetTypeListingData
-        );
-        // await fetchApiCall(requestData, false, false);
+        const requestData = buildApiRequest(userActivityComplianceReportAdmin);
+        await fetchApiCall(requestData, false, false);
       } catch (err) {
-        console.error("Error loading more approvals:", err);
+        console.error("Error loading more:", err);
       } finally {
         setLoadingMore(false);
       }
@@ -196,23 +154,15 @@ const UserWiseComplianceReport = () => {
 
   // -------------------- Table Columns --------------------
   const columns = getBorderlessTableColumns({
-    approvalStatusMap,
     sortedInfo,
-    userActivityComplianceReportAdmin,
-    setUserActivityComplianceReportAdmin,
-    setSelectedEmployee,
-    setPolicyModalVisible,
     setShowViewDetailOfUserwiseComplianceReportAdmin,
   });
 
   /** 🔹 Handle removing individual filter */
   const handleRemoveFilter = (key) => {
     const resetMap = {
-      instrumentName: { instrumentName: "" },
       employeeName: { employeeName: "" },
       departmentName: { departmentName: "" },
-      quantity: { quantity: "" },
-      dateRange: { startDate: null, endDate: null },
     };
 
     setUserActivityComplianceReportAdmin((prev) => ({
@@ -227,12 +177,8 @@ const UserWiseComplianceReport = () => {
   const handleRemoveAllFilters = () => {
     setUserActivityComplianceReportAdmin((prev) => ({
       ...prev,
-      instrumentName: "",
       employeeName: "",
       departmentName: "",
-      quantity: "",
-      startDate: null,
-      endDate: null,
       pageNumber: 0,
       filterTrigger: true,
     }));
@@ -240,25 +186,10 @@ const UserWiseComplianceReport = () => {
 
   /** 🔹 Build Active Filters */
   const activeFilters = (() => {
-    const {
-      instrumentName,
-      employeeName,
-      departmentName,
-      quantity,
-      startDate,
-      endDate,
-    } = userActivityComplianceReportAdmin || {};
+    const { employeeName, departmentName } =
+      userActivityComplianceReportAdmin || {};
 
     return [
-      instrumentName && {
-        key: "instrumentName",
-        label: "Instrument",
-        value:
-          instrumentName.length > 13
-            ? instrumentName.slice(0, 13) + "..."
-            : instrumentName,
-      },
-
       employeeName && {
         key: "employeeName",
         label: "Employee",
@@ -276,19 +207,6 @@ const UserWiseComplianceReport = () => {
             ? departmentName.slice(0, 13) + "..."
             : departmentName,
       },
-
-      quantity && {
-        key: "quantity",
-        label: "Quantity",
-        value: Number(quantity).toLocaleString("en-US"),
-      },
-
-      startDate &&
-        endDate && {
-          label: "Date",
-          key: "dateRange",
-          value: `${startDate} → ${endDate}`,
-        },
     ].filter(Boolean);
   })();
 
@@ -309,50 +227,6 @@ const UserWiseComplianceReport = () => {
       navigate,
     });
   };
-
-  //Hardcoded Data
-  const hardcodedTableData = [
-    {
-      key: "1",
-      employeeID: "EMP-1001",
-      employeeName: "Amit Sharma",
-      department: "Compliance",
-      approvalScore: 82,
-      complianceScore: 91,
-    },
-    {
-      key: "2",
-      employeeID: "EMP-1002",
-      employeeName: "Neha Verma",
-      department: "Risk Management",
-      approvalScore: 74,
-      complianceScore: 88,
-    },
-    {
-      key: "3",
-      employeeID: "EMP-1003",
-      employeeName: "Rahul Mehta",
-      department: "Trading",
-      approvalScore: 69,
-      complianceScore: 79,
-    },
-    {
-      key: "4",
-      employeeID: "EMP-1004",
-      employeeName: "Pooja Singh",
-      department: "Operations",
-      approvalScore: 90,
-      complianceScore: 95,
-    },
-    {
-      key: "5",
-      employeeID: "EMP-1005",
-      employeeName: "Karan Patel",
-      department: "IT",
-      approvalScore: 77,
-      complianceScore: 83,
-    },
-  ];
 
   // -------------------- Render --------------------
   return (
@@ -462,12 +336,11 @@ const UserWiseComplianceReport = () => {
           >
             <div className="px-4 md:px-6 lg:px-8 ">
               <BorderlessTable
-                // rows={htaPolicyBreachesReportsData?.records}
-                rows={hardcodedTableData}
+                rows={adminUserWiseComplianceReportData?.records}
                 columns={columns}
                 classNameTable="border-less-table-blue"
                 scroll={
-                  htaPolicyBreachesReportsData?.records?.length
+                  adminUserWiseComplianceReportData?.records?.length
                     ? {
                         x: "max-content",
                         y: activeFilters.length > 0 ? 450 : 500,

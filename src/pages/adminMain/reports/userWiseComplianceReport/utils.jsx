@@ -2,61 +2,45 @@ import ArrowUP from "../../../../assets/img/arrow-up-dark.png";
 import ArrowDown from "../../../../assets/img/arrow-down-dark.png";
 import DefaultColumArrow from "../../../../assets/img/default-colum-arrow.png";
 import style from "./UserWiseComplianceReport.module.css";
-
-import { formatApiDateTime, toYYMMDD } from "../../../../common/funtions/rejex";
-import { getTradeTypeById } from "../../../../common/funtions/type";
-import { mapBuySellToIds } from "../../../../components/dropdowns/filters/utils";
-import TypeColumnTitle from "../../../../components/dropdowns/filters/typeColumnTitle";
 import { Button } from "../../../../components";
 
 /**
- * Utility: Build API request payload for approval listing
+ * Utility: Build API request payload for GetAdminUserWiseComplianceReportAPI
+ * per API_Changes/2026-08-11_admin_reports_all_apis.md.
  *
  * @param {Object} searchState - Current search/filter state
- * @param {Object} assetTypeListingData - Extra request metadata (optional)
  * @returns {Object} API-ready payload
  */
-export const buildApiRequest = (searchState = {}, assetTypeListingData) => ({
-  FromDate: searchState.startDate ? toYYMMDD(searchState.startDate) : "",
-  ToDate: searchState.endDate ? toYYMMDD(searchState.endDate) : "",
-  Quantity: searchState.quantity || 0,
+export const buildApiRequest = (searchState = {}) => ({
   EmployeeName: searchState.employeeName || "",
-  InstrumentName: searchState.instrumentName || "",
-  TypeIds:
-    mapBuySellToIds?.(searchState.type, assetTypeListingData?.Equities) || [],
   DepartmentName: searchState.departmentName || "",
-  PageNumber: Number(searchState.pageNumber) || 0,
+  // (pageNumber - 1) * length on the backend - 0 (the search state's
+  // initial value) resolves to page 1 the same as 1 would, since the SP
+  // floors a negative offset to 0.
+  PageNumber: Number(searchState.pageNumber) || 1,
   Length: Number(searchState.pageSize) || 10,
 });
 
 /**
- * Maps employee transaction data into a UI-friendly format
+ * Maps GetAdminUserWiseComplianceReportAPI records into a UI-friendly
+ * format. approvalScore/complianceScore can be null (employee has zero
+ * Trade Requests / Transactions respectively) - rendered as "—".
  *
- * @param {Object} getEmployeeTransactionReport - API response containing transactions
- * @returns {Array} Mapped transaction list
+ * @param {Object|Array} res - API response ({records, totalRecords}) or a bare array
+ * @returns {Array} Mapped list
  */
-export const mapListData = (
-  assetTypeData,
-  myTradeApprovalLineManagerData = []
-) => {
-  const records = Array.isArray(myTradeApprovalLineManagerData)
-    ? myTradeApprovalLineManagerData
-    : myTradeApprovalLineManagerData?.records || [];
+export const mapListData = (res = []) => {
+  const records = Array.isArray(res) ? res : res?.records || [];
 
   if (!records.length) return [];
 
   return records.map((item) => ({
-    key: item.userID,
-    employeeID: item.userID,
-    employeeName: item.fullName || "",
+    key: item.employeeID,
+    employeeID: item.employeeID,
+    employeeName: item.employeeName || "",
     departmentName: item.departmentName || "",
-    quantity: item.quantity || 0,
-    policyCount: item.totalBreachedPolicies || 0,
-    breachedPolicies: item.breachedPolicies || 0,
-    requestDateTime:
-      `${item?.requestDate || ""} ${item?.requestTime || ""}`.trim() || "—",
-    type: getTradeTypeById(assetTypeData, item?.tradeType) || "-",
-    resubmitted: item.resubmitted || 0,
+    approvalScore: item.approvalScore,
+    complianceScore: item.complianceScore,
   }));
 };
 
@@ -106,12 +90,7 @@ const withSortIcon = (label, columnKey, sortedInfo) => (
 );
 
 export const getBorderlessTableColumns = ({
-  approvalStatusMap,
   sortedInfo,
-  htaPolicyBreachesReportSearch,
-  setHTAPolicyBreachesReportSearch,
-  setSelectedEmployee,
-  setPolicyModalVisible,
   setShowViewDetailOfUserwiseComplianceReportAdmin,
 }) => [
   {
@@ -120,9 +99,7 @@ export const getBorderlessTableColumns = ({
     key: "employeeID",
     width: "140px",
     ellipsis: true,
-    sorter: (a, b) =>
-      parseInt(a.employeeID.replace(/[^\d]/g, ""), 10) -
-      parseInt(b.employeeID.replace(/[^\d]/g, ""), 10),
+    sorter: (a, b) => Number(a.employeeID) - Number(b.employeeID),
     sortDirections: ["ascend", "descend"],
     sortOrder: sortedInfo?.columnKey === "employeeID" ? sortedInfo.order : null,
     showSorterTooltip: false,
@@ -141,37 +118,28 @@ export const getBorderlessTableColumns = ({
     key: "employeeName",
     ellipsis: true,
     width: "140px",
-    sorter: (a, b) => a.employeeName - b.employeeName,
+    sorter: (a, b) => (a.employeeName || "").localeCompare(b.employeeName || ""),
     sortDirections: ["ascend", "descend"],
     sortOrder:
       sortedInfo?.columnKey === "employeeName" ? sortedInfo.order : null,
     showSorterTooltip: false,
     sortIcon: () => null,
-    render: (text) => (
-      <span id={`cell-${text.key}-text`} className="text-gray-600">
-        {text}
-      </span>
-    ),
+    render: (text) => <span className="text-gray-600">{text}</span>,
   },
   {
-    title: withSortIcon("Department", "department", sortedInfo),
-    dataIndex: "department",
-    key: "department",
+    title: withSortIcon("Department", "departmentName", sortedInfo),
+    dataIndex: "departmentName",
+    key: "departmentName",
     width: "180px",
     ellipsis: true,
     sorter: (a, b) =>
-      formatApiDateTime(a.department).localeCompare(
-        formatApiDateTime(b.department)
-      ),
+      (a.departmentName || "").localeCompare(b.departmentName || ""),
     sortDirections: ["ascend", "descend"],
-    sortOrder: sortedInfo?.columnKey === "department" ? sortedInfo.order : null,
+    sortOrder:
+      sortedInfo?.columnKey === "departmentName" ? sortedInfo.order : null,
     showSorterTooltip: false,
     sortIcon: () => null,
-    render: (text) => (
-      <span id={`cell-${text.key}-text`} className="text-gray-600">
-        {text}
-      </span>
-    ),
+    render: (text) => <span className="text-gray-600">{text}</span>,
   },
   {
     title: withSortIcon("Approval Score", "approvalScore", sortedInfo),
@@ -179,15 +147,15 @@ export const getBorderlessTableColumns = ({
     key: "approvalScore",
     ellipsis: true,
     width: "140px",
-    sorter: (a, b) => a.approvalScore - b.approvalScore,
+    sorter: (a, b) => (a.approvalScore ?? -1) - (b.approvalScore ?? -1),
     sortDirections: ["ascend", "descend"],
     sortOrder:
       sortedInfo?.columnKey === "approvalScore" ? sortedInfo.order : null,
     showSorterTooltip: false,
     sortIcon: () => null,
-    render: (text) => (
-      <span id={`cell-${text.key}-text`} className="text-gray-600">
-        {text}
+    render: (score) => (
+      <span className="text-gray-600">
+        {score === null || score === undefined ? "—" : `${score}%`}
       </span>
     ),
   },
@@ -197,15 +165,15 @@ export const getBorderlessTableColumns = ({
     key: "complianceScore",
     ellipsis: true,
     width: "140px",
-    sorter: (a, b) => a.complianceScore - b.complianceScore,
+    sorter: (a, b) => (a.complianceScore ?? -1) - (b.complianceScore ?? -1),
     sortDirections: ["ascend", "descend"],
     sortOrder:
       sortedInfo?.columnKey === "complianceScore" ? sortedInfo.order : null,
     showSorterTooltip: false,
     sortIcon: () => null,
-    render: (text) => (
-      <span id={`cell-${text.key}-text`} className="text-gray-600">
-        {text}
+    render: (score) => (
+      <span className="text-gray-600">
+        {score === null || score === undefined ? "—" : `${score}%`}
       </span>
     ),
   },
@@ -214,7 +182,7 @@ export const getBorderlessTableColumns = ({
     key: "action",
     width: 150,
     align: "right", // 🔷 Align content to the right
-    render: (_, record) => (
+    render: () => (
       <div
         className={style.viewEditClass}
         style={{
