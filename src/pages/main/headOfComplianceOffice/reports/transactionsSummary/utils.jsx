@@ -7,7 +7,7 @@ import style from "./transactionsSummary.module.css";
 
 import {
   formatApiDateTime,
-  formatShowOnlyDate,
+  formatShowOnlyDateForDateRange,
   toYYMMDD,
 } from "../../../../../common/funtions/rejex";
 import { getTradeTypeById } from "../../../../../common/funtions/type";
@@ -154,7 +154,13 @@ export const getBorderlessTableColumns = ({
     sortIcon: () => null,
     render: (date) => (
       <span className="text-gray-600" title={date || "—"}>
-        {formatShowOnlyDate(date) || "—"}
+        {/* FIXED (2026-08-11): was formatShowOnlyDate, which only reads the
+            date portion and silently drops the time - transactionDate here
+            is the combined "YYYYMMDD HHmmss" string (date+time joined in
+            the mapping above), so this could land on the wrong calendar
+            day (same bug class already fixed for Instrument Closing
+            Periods / Member Since). */}
+        {formatShowOnlyDateForDateRange(date) || "—"}
       </span>
     ),
   },

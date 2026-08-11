@@ -130,6 +130,12 @@ export const MyAdminProvider = ({ children }) => {
     closingPeriods: [],
     totalRecordsDataBase: 0,
     totalRecordsTable: 0,
+    // FIXED (2026-08-11): real 1-indexed page number for
+    // sp_GetUpcomingClosingPeriodsByInstrumentID - lazy-load was sending
+    // totalRecordsTable (rows already loaded) as pageNumber instead of an
+    // actual page index, which skips far past the real next page once the
+    // backend converts it via (pageNumber - 1) * length.
+    pageNumber: 1,
   });
 
   // context for admin role while edit button hit for Previous Closing Data
@@ -140,6 +146,10 @@ export const MyAdminProvider = ({ children }) => {
     closingPeriods: [],
     totalRecordsDataBase: 0,
     totalRecordsTable: 0,
+    // FIXED (2026-08-11): same real-page-number fix as
+    // adminInstrumentUpcomingClosingData above, for
+    // sp_GetPreviousClosingPeriodsByInstrumentID.
+    pageNumber: 1,
   });
 
   // context for Manage User Users Tab Search criteria

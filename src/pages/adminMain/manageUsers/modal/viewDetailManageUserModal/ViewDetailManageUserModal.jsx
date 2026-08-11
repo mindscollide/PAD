@@ -695,7 +695,7 @@ import CustomButton from "../../../../../components/buttons/button";
 import { useMyAdmin } from "../../../../../context/AdminContext";
 import {
   formatApiDateTime,
-  formatShowOnlyDate,
+  formatShowOnlyDateForDateRange,
 } from "../../../../../common/funtions/rejex";
 import {
   GetComplianceOfficerOnViewDetailUserTabRequest,
@@ -1037,9 +1037,17 @@ const ViewDetailManageUserModal = () => {
                 </label>
                 <label className={styles.viewDetailSubLabels}>
                   {safeValue(
-                    formatShowOnlyDate(
+                    // FIXED (2026-08-11): was formatShowOnlyDate(memberSinceDate)
+                    // only - the backend's MemberSince is a real UTC timestamp
+                    // with a paired MemberSinceTime field that was never being
+                    // passed in, so this silently dropped the time and could
+                    // land on the wrong calendar day (same bug class already
+                    // fixed for Instrument Closing Periods).
+                    formatShowOnlyDateForDateRange(
                       manageUsersViewDetailModalData?.userDetails
-                        ?.memberSinceDate
+                        ?.memberSinceDate,
+                      manageUsersViewDetailModalData?.userDetails
+                        ?.memberSinceTime
                     ),
                     "No Member Since Date"
                   )}
