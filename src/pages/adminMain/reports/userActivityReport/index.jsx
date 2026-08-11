@@ -1,310 +1,322 @@
-import React, { useEffect, useState, useRef, useCallback } from "react";
+import React, { useEffect, useRef, useState, useCallback } from "react";
 import { Breadcrumb, Col, Row } from "antd";
-import Excel from "../../../../assets/img/xls.png";
-import { UpOutlined, DownOutlined } from "@ant-design/icons";
-// 🔹 Components
 import BorderlessTable from "../../../../components/tables/borderlessTable/borderlessTable";
 import PageLayout from "../../../../components/pageContainer/pageContainer";
+import { TextField } from "../../../../components";
+import CustomButton from "../../../../components/buttons/button";
 
-// 🔹 Table Config
 import {
-  buildApiRequest,
-  getBorderlessTableColumns,
-  mapListData,
+  buildEmployeeSearchRequest,
+  mapEmployeeListData,
+  buildSessionsRequest,
+  mapSessionListData,
+  getEmployeeListColumns,
+  getSessionListColumns,
 } from "./utils";
-import { approvalStatusMap } from "../../../../components/tables/borderlessTable/utill";
 
-// 🔹 Styles
 import style from "./UserActivityReport.module.css";
-import { useMyApproval } from "../../../../context/myApprovalContaxt";
 import {
-  ExportHTATradeApprovalRequestsExcelReport,
-  SearchPolicyBreachedWorkFlowsRequest,
-} from "../../../../api/myApprovalApi";
+  SearchManageUserListRequest,
+  GetUserSessionWiseActivity,
+  ViewUserSessionWiseActivity,
+} from "../../../../api/adminApi";
 import { useNotification } from "../../../../components/NotificationProvider/NotificationProvider";
 import { useApi } from "../../../../context/ApiContext";
 import { useGlobalLoader } from "../../../../context/LoaderContext";
 import { useNavigate } from "react-router-dom";
-import { useSearchBarContext } from "../../../../context/SearchBarContaxt";
-import { useDashboardContext } from "../../../../context/dashboardContaxt";
-import { getSafeAssetTypeData } from "../../../../common/funtions/assetTypesList";
+import { useGlobalModal } from "../../../../context/GlobalModalContext";
 import { useTableScrollBottom } from "../../../../common/funtions/scroll";
-import CustomButton from "../../../../components/buttons/button";
-import { toYYMMDD } from "../../../../common/funtions/rejex";
-import { useSidebarContext } from "../../../../context/sidebarContaxt";
+import { removeFirstSpace } from "../../../../common/funtions/rejex";
+import ViewActionSessionWiseModal from "../../manageUsers/usersTab/sessionwise/viewActionSessionWiseModal/ViewActionSessionWiseModal";
 
-const AdminUserActivityReport = () => {
+const EMPLOYEE_SEARCH_INITIAL = {
+  employeeName: "",
+  departmentName: "",
+  pageNumber: 1,
+  pageSize: 10,
+};
+
+const SESSIONS_SEARCH_INITIAL = {
+  ipAddress: "",
+  startDate: "",
+  endDate: "",
+  pageNumber: 1,
+  pageSize: 10,
+};
+
+/**
+ * Admin Reports - User Activity Report (item 1 of
+ * API_Changes/2026-08-11_admin_reports_all_apis.md, "already existed, no
+ * change" on the backend). GetUserSessionWiseActivity only ever returns
+ * one employee's sessions at a time - there's no system-wide list - so
+ * this page is: search/pick an employee, then view that employee's
+ * sessions (reusing exactly what Manage Users' own Session Wise Activity
+ * screen already uses).
+ */
+const UserActivityReport = () => {
   const navigate = useNavigate();
-  const hasFetched = useRef(false);
-  const tableScrollEmployeeTransaction = useRef(null);
-
-  // -------------------- Contexts --------------------
   const { callApi } = useApi();
   const { showNotification } = useNotification();
   const { showLoader } = useGlobalLoader();
-  const {
-    htaPolicyBreachesReportsData,
-    setHTAPolicyBreachesReportsData,
-    resetHTAPolicyBreachesReportsData,
-  } = useMyApproval();
-
-  const { selectedKey } = useSidebarContext();
-  console.log(selectedKey, "selectedKeyselectedKey");
 
   const {
-    userActivityReportAdmin,
-    setUserActivityReportAdmin,
-    resetUserActivityReportSearch,
-  } = useSearchBarContext();
+    viewActionSessionWiseModal,
+    setViewActionSessionWiseModal,
+    setViewActionSessionWiseModalData,
+  } = useGlobalModal();
 
-  const { assetTypeListingData, setAssetTypeListingData } =
-    useDashboardContext();
+  const hasFetchedEmployees = useRef(false);
+  const employeeTableScrollRef = useRef(null);
+  const sessionsTableScrollRef = useRef(null);
 
   // -------------------- Local State --------------------
-  const [sortedInfo, setSortedInfo] = useState({});
-  const [loadingMore, setLoadingMore] = useState(false);
-  const [open, setOpen] = useState(false);
-  const [policyModalVisible, setPolicyModalVisible] = useState(false);
+  const [step, setStep] = useState("search"); // "search" | "sessions"
   const [selectedEmployee, setSelectedEmployee] = useState(null);
-  // -------------------- Helpers --------------------
 
-  /**
-   * Fetches transactions from API.
-   * @param {boolean} flag - whether to show loader
-   */
-  const fetchApiCall = useCallback(
+  const [employeeSearch, setEmployeeSearch] = useState(EMPLOYEE_SEARCH_INITIAL);
+  const [employeeNameInput, setEmployeeNameInput] = useState("");
+  const [departmentNameInput, setDepartmentNameInput] = useState("");
+  const [employeeSortedInfo, setEmployeeSortedInfo] = useState({});
+  const [employeeLoadingMore, setEmployeeLoadingMore] = useState(false);
+  const [employeeData, setEmployeeData] = useState({
+    records: [],
+    totalRecordsDataBase: 0,
+    totalRecordsTable: 0,
+  });
+
+  const [sessionsSearch, setSessionsSearch] = useState(SESSIONS_SEARCH_INITIAL);
+  const [sessionsSortedInfo, setSessionsSortedInfo] = useState({});
+  const [sessionsLoadingMore, setSessionsLoadingMore] = useState(false);
+  const [sessionsData, setSessionsData] = useState({
+    records: [],
+    totalRecordsDataBase: 0,
+    totalRecordsTable: 0,
+  });
+
+  // -------------------- Employee search --------------------
+
+  const fetchEmployees = useCallback(
     async (requestData, replace = false, showLoaderFlag = true) => {
-      if (!requestData || typeof requestData !== "object") return;
-      // if (showLoaderFlag) showLoader(true);
+      if (!requestData) return;
+      if (showLoaderFlag) showLoader(true);
 
-      // const res = await SearchPolicyBreachedWorkFlowsRequest({
-      //   callApi,
-      //   showNotification,
-      //   showLoader,
-      //   requestdata: requestData,
-      //   navigate,
-      // });
-      console.log("res".res);
+      const res = await SearchManageUserListRequest({
+        callApi,
+        showNotification,
+        showLoader,
+        requestdata: requestData,
+        navigate,
+      });
 
-      // ✅ Always get the freshest version (from memory or session)
-      const currentAssetTypeData = getSafeAssetTypeData(
-        assetTypeListingData,
-        setAssetTypeListingData
-      );
+      const mapped = mapEmployeeListData(res);
+      if (!Array.isArray(mapped)) return;
 
-      const records = Array.isArray(res?.records) ? res.records : [];
-      console.log("records", records);
-      const mapped = mapListData(currentAssetTypeData?.Equities, records);
-      if (!mapped || typeof mapped !== "object") return;
-      console.log("records", mapped);
-
-      setHTAPolicyBreachesReportsData((prev) => ({
+      setEmployeeData((prev) => ({
         records: replace ? mapped : [...(prev?.records || []), ...mapped],
-        // this is for to run lazy loading its data comming from database of total data in db
         totalRecordsDataBase: res?.totalRecords || 0,
-        // this is for to know how mush dta currently fetch from  db
         totalRecordsTable: replace
           ? mapped.length
-          : htaPolicyBreachesReportsData.totalRecordsTable + mapped.length,
+          : (prev?.totalRecordsTable || 0) + mapped.length,
       }));
-      setUserActivityReportAdmin((prev) => {
-        const next = {
-          ...prev,
-          pageNumber: replace ? mapped.length : prev.pageNumber + mapped.length,
-        };
-
-        // this is for check if filter value get true only on that it will false
-        if (prev.filterTrigger) {
-          next.filterTrigger = false;
-        }
-
-        return next;
-      });
+      setEmployeeSearch((prev) => ({
+        ...prev,
+        pageNumber: replace ? 2 : (prev.pageNumber || 1) + 1,
+      }));
     },
-    [
-      assetTypeListingData,
-      callApi,
-      navigate,
-      setUserActivityReportAdmin,
-      showLoader,
-      showNotification,
-    ]
+    [callApi, navigate, showLoader, showNotification]
   );
 
-  // -------------------- Effects --------------------
-
-  // 🔹 Initial Fetch
   useEffect(() => {
-    if (hasFetched.current) return;
-    hasFetched.current = true;
-    const requestData = buildApiRequest(
-      userActivityReportAdmin,
-      assetTypeListingData
-    );
-    fetchApiCall(requestData, true, true);
+    if (hasFetchedEmployees.current) return;
+    hasFetchedEmployees.current = true;
+    fetchEmployees(buildEmployeeSearchRequest(EMPLOYEE_SEARCH_INITIAL), true, true);
   }, []);
 
-  // Reset on Unmount
-  useEffect(() => {
-    return () => {
-      // Reset search state for fresh load
-      resetUserActivityReportSearch();
-      resetHTAPolicyBreachesReportsData();
-    };
-  }, []);
-
-  // 🔹 call api on search
-  useEffect(() => {
-    if (userActivityReportAdmin?.filterTrigger) {
-      const requestData = buildApiRequest(
-        userActivityReportAdmin,
-        assetTypeListingData
-      );
-      fetchApiCall(requestData, true, true);
-    }
-  }, [userActivityReportAdmin?.filterTrigger]);
-
-  // 🔹 Infinite Scroll (lazy loading)
   useTableScrollBottom(
     async () => {
-      if (
-        htaPolicyBreachesReportsData?.totalRecordsDataBase <=
-        htaPolicyBreachesReportsData?.totalRecordsTable
-      )
-        return;
+      if (step !== "search") return;
+      if (employeeData?.totalRecordsDataBase <= employeeData?.totalRecordsTable) return;
 
       try {
-        setLoadingMore(true);
-        const requestData = buildApiRequest(
-          userActivityReportAdmin,
-          assetTypeListingData
-        );
-        await fetchApiCall(requestData, false, false);
+        setEmployeeLoadingMore(true);
+        await fetchEmployees(buildEmployeeSearchRequest(employeeSearch), false, false);
       } catch (err) {
-        console.error("Error loading more approvals:", err);
+        console.error("Error loading more employees:", err);
       } finally {
-        setLoadingMore(false);
+        setEmployeeLoadingMore(false);
       }
     },
     0,
     "border-less-table-blue"
   );
 
-  // -------------------- Table Columns --------------------
-  const columns = getBorderlessTableColumns({
-    approvalStatusMap,
-    sortedInfo,
-    userActivityReportAdmin,
-    setUserActivityReportAdmin,
-    setSelectedEmployee,
-    setPolicyModalVisible,
-  });
-
-  /** 🔹 Handle removing individual filter */
-  const handleRemoveFilter = (key) => {
-    const resetMap = {
-      instrumentName: { instrumentName: "" },
-      employeeName: { employeeName: "" },
-      departmentName: { departmentName: "" },
-      quantity: { quantity: "" },
-      dateRange: { startDate: null, endDate: null },
+  const handleEmployeeSearchClick = () => {
+    const nextSearch = {
+      ...EMPLOYEE_SEARCH_INITIAL,
+      employeeName: employeeNameInput.trim(),
+      departmentName: departmentNameInput.trim(),
     };
-
-    setUserActivityReportAdmin((prev) => ({
-      ...prev,
-      ...resetMap[key],
-      pageNumber: 0,
-      filterTrigger: true,
-    }));
+    setEmployeeSearch(nextSearch);
+    fetchEmployees(buildEmployeeSearchRequest(nextSearch), true, true);
   };
 
-  /** 🔹 Handle removing all filters */
-  const handleRemoveAllFilters = () => {
-    setUserActivityReportAdmin((prev) => ({
-      ...prev,
-      instrumentName: "",
-      employeeName: "",
-      departmentName: "",
-      quantity: "",
-      startDate: null,
-      endDate: null,
-      pageNumber: 0,
-      filterTrigger: true,
-    }));
+  const handleEmployeeSearchReset = () => {
+    setEmployeeNameInput("");
+    setDepartmentNameInput("");
+    setEmployeeSearch(EMPLOYEE_SEARCH_INITIAL);
+    fetchEmployees(buildEmployeeSearchRequest(EMPLOYEE_SEARCH_INITIAL), true, true);
   };
 
-  /** 🔹 Build Active Filters */
-  const activeFilters = (() => {
-    const {
-      instrumentName,
-      employeeName,
-      departmentName,
-      quantity,
-      startDate,
-      endDate,
-    } = userActivityReportAdmin || {};
+  // -------------------- Sessions (per selected employee) --------------------
 
-    return [
-      instrumentName && {
-        key: "instrumentName",
-        label: "Instrument",
-        value:
-          instrumentName.length > 13
-            ? instrumentName.slice(0, 13) + "..."
-            : instrumentName,
-      },
+  const fetchSessions = useCallback(
+    async (requestData, replace = false, showLoaderFlag = true) => {
+      if (!requestData) return;
+      if (showLoaderFlag) showLoader(true);
 
-      employeeName && {
-        key: "employeeName",
-        label: "Employee",
-        value:
-          employeeName.length > 13
-            ? employeeName.slice(0, 13) + "..."
-            : employeeName,
-      },
+      const res = await GetUserSessionWiseActivity({
+        callApi,
+        showNotification,
+        showLoader,
+        requestdata: requestData,
+        navigate,
+      });
 
-      departmentName && {
-        key: "departmentName",
-        label: "Department",
-        value:
-          departmentName.length > 13
-            ? departmentName.slice(0, 13) + "..."
-            : departmentName,
-      },
+      const mapped = mapSessionListData(res);
+      if (!Array.isArray(mapped)) return;
 
-      quantity && {
-        key: "quantity",
-        label: "Quantity",
-        value: Number(quantity).toLocaleString("en-US"),
-      },
+      setSessionsData((prev) => ({
+        records: replace ? mapped : [...(prev?.records || []), ...mapped],
+        totalRecordsDataBase: res?.totalRecords || 0,
+        totalRecordsTable: replace
+          ? mapped.length
+          : (prev?.totalRecordsTable || 0) + mapped.length,
+      }));
+      setSessionsSearch((prev) => ({
+        ...prev,
+        pageNumber: replace ? 2 : (prev.pageNumber || 1) + 1,
+      }));
+    },
+    [callApi, navigate, showLoader, showNotification]
+  );
 
-      startDate &&
-        endDate && {
-          key: "dateRange",
-          value: `${startDate} → ${endDate}`,
-        },
-    ].filter(Boolean);
-  })();
+  useTableScrollBottom(
+    async () => {
+      if (step !== "sessions") return;
+      if (sessionsData?.totalRecordsDataBase <= sessionsData?.totalRecordsTable) return;
 
-  // 🔷 Excel Report download Api Hit
-  const downloadMyTradeApprovalLineManagerInExcelFormat = async () => {
-    showLoader(true);
-    const requestdata = {
-      StartDate: toYYMMDD(userActivityReportAdmin.startDate) || null,
-      EndDate: toYYMMDD(userActivityReportAdmin.endDate) || null,
-      SearchEmployeeName: userActivityReportAdmin.employeeName,
-      SearchDepartmentName: userActivityReportAdmin.departmentName,
-    };
+      try {
+        setSessionsLoadingMore(true);
+        await fetchSessions(
+          buildSessionsRequest(sessionsSearch, selectedEmployee?.employeeID),
+          false,
+          false
+        );
+      } catch (err) {
+        console.error("Error loading more sessions:", err);
+      } finally {
+        setSessionsLoadingMore(false);
+      }
+    },
+    0,
+    "border-less-table-blue"
+  );
 
-    await ExportHTATradeApprovalRequestsExcelReport({
+  const handleViewSessions = (employee) => {
+    setSelectedEmployee(employee);
+    setStep("sessions");
+    setSessionsSearch(SESSIONS_SEARCH_INITIAL);
+    setSessionsData({ records: [], totalRecordsDataBase: 0, totalRecordsTable: 0 });
+    fetchSessions(buildSessionsRequest(SESSIONS_SEARCH_INITIAL, employee.employeeID), true, true);
+  };
+
+  const handleBackToSearch = () => {
+    setStep("search");
+    setSelectedEmployee(null);
+  };
+
+  const handleViewActionModal = async (session) => {
+    const res = await ViewUserSessionWiseActivity({
       callApi,
+      showNotification,
       showLoader,
-      requestdata: requestdata,
+      requestdata: { SessionID: session.sessionID },
       navigate,
     });
+
+    if (res?.result) {
+      setViewActionSessionWiseModalData(res);
+      setViewActionSessionWiseModal(true);
+    } else {
+      setViewActionSessionWiseModalData([]);
+      setViewActionSessionWiseModal(false);
+      showNotification({
+        type: "warning",
+        title: "No records found",
+        description: "Against this session.",
+      });
+    }
   };
 
   // -------------------- Render --------------------
+
+  if (step === "sessions") {
+    const sessionColumns = getSessionListColumns({
+      sortedInfo: sessionsSortedInfo,
+      onViewActions: handleViewActionModal,
+    });
+
+    return (
+      <>
+        <Row justify="start" align="middle" className={style.breadcrumbRow}>
+          <Col>
+            <Breadcrumb
+              separator=">"
+              className={style.customBreadcrumb}
+              items={[
+                {
+                  title: (
+                    <span onClick={handleBackToSearch} className={style.breadcrumbLink}>
+                      User Activity Report
+                    </span>
+                  ),
+                },
+                {
+                  title: (
+                    <span className={style.breadcrumbText}>
+                      Session wise Activity ({selectedEmployee?.employeeName})
+                    </span>
+                  ),
+                },
+              ]}
+            />
+          </Col>
+        </Row>
+
+        <PageLayout background="white" style={{ marginTop: "3px" }} className="repotsHeight">
+          <div className="px-4 md:px-6 lg:px-8 ">
+            <BorderlessTable
+              rows={sessionsData?.records}
+              columns={sessionColumns}
+              classNameTable="border-less-table-blue"
+              scroll={sessionsData?.records?.length ? { x: "max-content", y: 500 } : undefined}
+              onChange={(pagination, filters, sorter) => setSessionsSortedInfo(sorter)}
+              loading={sessionsLoadingMore}
+              ref={sessionsTableScrollRef}
+            />
+          </div>
+        </PageLayout>
+
+        {viewActionSessionWiseModal && <ViewActionSessionWiseModal />}
+      </>
+    );
+  }
+
+  const employeeColumns = getEmployeeListColumns({
+    sortedInfo: employeeSortedInfo,
+    onViewSessions: handleViewSessions,
+  });
+
   return (
     <>
       <Row justify="start" align="middle" className={style.breadcrumbRow}>
@@ -323,105 +335,64 @@ const AdminUserActivityReport = () => {
                   </span>
                 ),
               },
-              {
-                title: (
-                  <span className={style.breadcrumbText}>
-                    Users Activity Report
-                  </span>
-                ),
-              },
+              { title: <span className={style.breadcrumbText}>User Activity Report</span> },
             ]}
           />
         </Col>
+      </Row>
 
-        <Col>
-          <div className={style.headerActionsRow}>
-            <CustomButton
-              text={
-                <span className={style.exportButtonText}>
-                  Export
-                  <span className={style.iconContainer}>
-                    {open ? <UpOutlined /> : <DownOutlined />}
-                  </span>
-                </span>
-              }
-              className="small-light-button-report"
-              onClick={() => setOpen((prev) => !prev)}
-            />
-          </div>
-
-          {/* 🔷 Export Dropdown */}
-          {open && (
-            <div className={style.dropdownExport}>
-              {/* <div className={style.dropdownItem}>
-                <img src={PDF} alt="PDF" draggable={false} />
-                <span>Export PDF</span>
-              </div> */}
-              <div
-                className={style.dropdownItem}
-                onClick={downloadMyTradeApprovalLineManagerInExcelFormat}
-              >
-                <img src={Excel} alt="Excel" draggable={false} />
-                <span>Export Excel</span>
-              </div>
-            </div>
-          )}
+      <Row gutter={[12, 12]} style={{ padding: "0 32px", marginBottom: 12 }}>
+        <Col xs={24} sm={12} md={8}>
+          <TextField
+            label="Employee Name"
+            name="employeeName"
+            value={employeeNameInput}
+            onChange={(e) => setEmployeeNameInput(removeFirstSpace(e.target.value))}
+            placeholder="Employee Name"
+            size="medium"
+            classNames="Search-Field"
+          />
+        </Col>
+        <Col xs={24} sm={12} md={8}>
+          <TextField
+            label="Department Name"
+            name="departmentName"
+            value={departmentNameInput}
+            onChange={(e) => setDepartmentNameInput(removeFirstSpace(e.target.value))}
+            placeholder="Department Name"
+            size="medium"
+            classNames="Search-Field"
+          />
+        </Col>
+        <Col
+          xs={24}
+          sm={24}
+          md={8}
+          style={{ display: "flex", alignItems: "flex-end", gap: 8 }}
+        >
+          <CustomButton
+            onClick={handleEmployeeSearchReset}
+            text="Reset"
+            className="big-light-button"
+          />
+          <CustomButton
+            onClick={handleEmployeeSearchClick}
+            text="Search"
+            className="big-dark-button"
+          />
         </Col>
       </Row>
-      {/* 🔹 Active Filter Tags */}
-      {activeFilters.length > 0 && (
-        <Row gutter={[12, 12]} className={style["filter-tags-container"]}>
-          {activeFilters.map(({ key, value }) => (
-            <Col key={key}>
-              <div className={style["filter-tag"]}>
-                <span>{value}</span>
-                <span
-                  className={style["filter-tag-close"]}
-                  onClick={() => handleRemoveFilter(key)}
-                >
-                  &times;
-                </span>
-              </div>
-            </Col>
-          ))}
 
-          {/* 🔹 Show Clear All only if more than one filter */}
-          {activeFilters.length > 1 && (
-            <Col>
-              <div
-                className={`${style["filter-tag"]} ${style["clear-all-tag"]}`}
-                onClick={handleRemoveAllFilters}
-              >
-                <span>Clear All</span>
-              </div>
-            </Col>
-          )}
-        </Row>
-      )}
-      {/* 🔹 Transactions Table */}
-      <PageLayout
-        background="white"
-        style={{ marginTop: "3px" }}
-        className={
-          activeFilters.length > 0 ? "changeHeightreports" : "repotsHeight"
-        }
-      >
+      <PageLayout background="white" style={{ marginTop: "3px" }} className="repotsHeight">
         <div className="px-4 md:px-6 lg:px-8 ">
           <BorderlessTable
-            rows={htaPolicyBreachesReportsData?.records}
-            columns={columns}
+            rows={employeeData?.records}
+            columns={employeeColumns}
             classNameTable="border-less-table-blue"
-            scroll={
-              htaPolicyBreachesReportsData?.records?.length
-                ? {
-                    x: "max-content",
-                    y: activeFilters.length > 0 ? 450 : 500,
-                  }
-                : undefined
-            }
-            onChange={(pagination, filters, sorter) => setSortedInfo(sorter)}
-            loading={loadingMore}
-            ref={tableScrollEmployeeTransaction}
+            scroll={employeeData?.records?.length ? { x: "max-content", y: 500 } : undefined}
+            onChange={(pagination, filters, sorter) => setEmployeeSortedInfo(sorter)}
+            loading={employeeLoadingMore}
+            ref={employeeTableScrollRef}
           />
         </div>
       </PageLayout>
@@ -429,4 +400,4 @@ const AdminUserActivityReport = () => {
   );
 };
 
-export default AdminUserActivityReport;
+export default UserActivityReport;
