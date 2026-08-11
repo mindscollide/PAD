@@ -209,9 +209,20 @@ const Dashboard = () => {
         const currentmanageUsersTabRef = manageUsersTabRef.current;
         const { message, payload, roleIDs, action } = data;
         if (!payload) return;
-        // if (action === "WEBNOTIFICATION") {
-        //   apiCallwebNotification();
-        // }
+
+        // FIXED (2026-08-11): per API_Changes/2026-08-10_webnotification_mqtt_contract.md,
+        // WEBNOTIFICATION is NOT routed like other MQTT messages - its BE
+        // sender never sets RoleIDs (always ""), so it must be checked via
+        // data.action up front, not via the roleIDs/message switch below.
+        // The old checks for this lived *inside* the `hasUserRole(...)`
+        // branch further down, which is always false for an empty roleIDs
+        // (hasUserRole short-circuits on `!roleIDs`) - so apiCallwebNotification()
+        // was silently never firing. Handling it here, unconditionally,
+        // fixes that.
+        if (action === "WEBNOTIFICATION") {
+          apiCallwebNotification();
+          return;
+        }
 
         if (hasUserRole(Number(roleIDs))) {
           if (currentRoleIsAdminRefLocal) {
@@ -219,16 +230,10 @@ const Dashboard = () => {
             if (roleIDs !== "1") {
               // not admin MQTT → ignore completely
               return;
-            } else {
-              if (action === "WEBNOTIFICATION") {
-                apiCallwebNotification();
-              }
             }
           } else {
             if (roleIDs !== "1") {
-              if (action === "WEBNOTIFICATION") {
-                apiCallwebNotification();
-              }
+              // fall through to switch below for this user's own role
             } else {
               // its admin MQTT → ignore completely
             }
