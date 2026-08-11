@@ -70,6 +70,7 @@ import AdminReportsIndex from "../pages/adminMain/reports";
 import AdminUserActivityReport from "../pages/adminMain/reports/userActivityReport";
 import UserWiseComplianceReport from "../pages/adminMain/reports/userWiseComplianceReport";
 import AdminTradeApprovalRequestReport from "../pages/adminMain/reports/tradeApprovalRequest";
+import AdminTATRequestApprovals from "../pages/adminMain/reports/tatRequestApprovals";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -413,7 +414,7 @@ const router = createBrowserRouter(
           />
           <Route
             path="admin-tat-request-report"
-            element={<AdminPolicyBreachesReport />}
+            element={<AdminTATRequestApprovals />}
           />
           <Route
             path="admin-trades-uploaded-via-portfolio-report"
