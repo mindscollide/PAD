@@ -69,6 +69,7 @@ import AdminPolicyBreachesReport from "../pages/adminMain/reports/policyBreaches
 import AdminReportsIndex from "../pages/adminMain/reports";
 import AdminUserActivityReport from "../pages/adminMain/reports/userActivityReport";
 import UserWiseComplianceReport from "../pages/adminMain/reports/userWiseComplianceReport";
+import AdminTradeApprovalRequestReport from "../pages/adminMain/reports/tradeApprovalRequest";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -399,7 +400,7 @@ const router = createBrowserRouter(
           />
           <Route
             path="admin-trade-approval-report"
-            element={<AdminPolicyBreachesReport />}
+            element={<AdminTradeApprovalRequestReport />}
           />
 
           <Route

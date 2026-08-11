@@ -2943,6 +2943,685 @@ export const GetAdminReportsDashboardStatsAPI = async ({
   }
 };
 
+// =====================================================================
+// Admin Reports - all 8 report APIs (2026-08-11), per
+// API_Changes/2026-08-11_admin_reports_all_apis.md. All live in the
+// Admin service (VITE_API_ADMIN), not Trade. Export endpoints for all
+// 8 reports are explicitly out of scope per that doc.
+// =====================================================================
+
+// GetAdminUserWiseComplianceReportAPI - list only (View Details screen
+// was not built on the backend - see doc).
+export const GetAdminUserWiseComplianceReportAPI = async ({
+  callApi,
+  showNotification,
+  showLoader,
+  requestdata,
+  navigate,
+}) => {
+  try {
+    const res = await callApi({
+      requestMethod: import.meta.env
+        .VITE_GET_ADMIN_USER_WISE_COMPLIANCE_REPORT_API_METHOD,
+      endpoint: import.meta.env.VITE_API_ADMIN,
+      requestData: requestdata,
+      navigate,
+    });
+
+    if (handleExpiredSession(res, navigate, showLoader)) return null;
+
+    if (!res?.result?.isExecuted) {
+      showNotification({
+        type: "error",
+        title: "Error",
+        description:
+          "Something went wrong while fetching Admin User-wise Compliance Report.",
+      });
+      return null;
+    }
+
+    if (res.success) {
+      const { responseMessage, records, totalRecords } = res.result;
+      const message = getMessage(responseMessage);
+
+      if (responseMessage === "PAD_Admin_GetAdminUserWiseComplianceReportAPI_01") {
+        return { records: records || [], totalRecords: totalRecords || 0 };
+      }
+
+      if (responseMessage === "PAD_Admin_GetAdminUserWiseComplianceReportAPI_02") {
+        return { records: [], totalRecords: 0 };
+      }
+
+      if (message) {
+        showNotification({ type: "warning", title: message, description: message });
+      }
+
+      return null;
+    }
+
+    showNotification({
+      type: "error",
+      title: "Fetch Failed",
+      description: getMessage(res.message),
+    });
+    return null;
+  } catch (error) {
+    showNotification({
+      type: "error",
+      title: "Error",
+      description:
+        "An unexpected error occurred while fetching Admin User-wise Compliance Report.",
+    });
+    return null;
+  } finally {
+    showLoader(false);
+  }
+};
+
+// GetAdminPolicyBreachesAPI - list
+export const GetAdminPolicyBreachesAPI = async ({
+  callApi,
+  showNotification,
+  showLoader,
+  requestdata,
+  navigate,
+}) => {
+  try {
+    const res = await callApi({
+      requestMethod: import.meta.env.VITE_GET_ADMIN_POLICY_BREACHES_API_METHOD,
+      endpoint: import.meta.env.VITE_API_ADMIN,
+      requestData: requestdata,
+      navigate,
+    });
+
+    if (handleExpiredSession(res, navigate, showLoader)) return null;
+
+    if (!res?.result?.isExecuted) {
+      showNotification({
+        type: "error",
+        title: "Error",
+        description: "Something went wrong while fetching Admin Policy Breaches Report.",
+      });
+      return null;
+    }
+
+    if (res.success) {
+      const { responseMessage, records, totalRecords } = res.result;
+      const message = getMessage(responseMessage);
+
+      if (responseMessage === "PAD_Admin_GetAdminPolicyBreachesAPI_01") {
+        return { records: records || [], totalRecords: totalRecords || 0 };
+      }
+
+      if (responseMessage === "PAD_Admin_GetAdminPolicyBreachesAPI_02") {
+        return { records: [], totalRecords: 0 };
+      }
+
+      if (message) {
+        showNotification({ type: "warning", title: message, description: message });
+      }
+
+      return null;
+    }
+
+    showNotification({
+      type: "error",
+      title: "Fetch Failed",
+      description: getMessage(res.message),
+    });
+    return null;
+  } catch (error) {
+    showNotification({
+      type: "error",
+      title: "Error",
+      description:
+        "An unexpected error occurred while fetching Admin Policy Breaches Report.",
+    });
+    return null;
+  } finally {
+    showLoader(false);
+  }
+};
+
+// GetAdminPolicyBreachDetailsAPI - "Policies Breached" drill-down modal,
+// opened by clicking a row's Policy Count. No pagination - a single row's
+// full breach list.
+export const GetAdminPolicyBreachDetailsAPI = async ({
+  callApi,
+  showNotification,
+  showLoader,
+  requestdata,
+  navigate,
+}) => {
+  try {
+    const res = await callApi({
+      requestMethod: import.meta.env.VITE_GET_ADMIN_POLICY_BREACH_DETAILS_API_METHOD,
+      endpoint: import.meta.env.VITE_API_ADMIN,
+      requestData: requestdata,
+      navigate,
+    });
+
+    if (handleExpiredSession(res, navigate, showLoader)) return null;
+
+    if (!res?.result?.isExecuted) {
+      showNotification({
+        type: "error",
+        title: "Error",
+        description: "Something went wrong while fetching Policy Breach Details.",
+      });
+      return null;
+    }
+
+    if (res.success) {
+      const { responseMessage, records } = res.result;
+      const message = getMessage(responseMessage);
+
+      if (responseMessage === "PAD_Admin_GetAdminPolicyBreachDetailsAPI_01") {
+        return { records: records || [] };
+      }
+
+      if (responseMessage === "PAD_Admin_GetAdminPolicyBreachDetailsAPI_02") {
+        return { records: [] };
+      }
+
+      if (message) {
+        showNotification({ type: "warning", title: message, description: message });
+      }
+
+      return null;
+    }
+
+    showNotification({
+      type: "error",
+      title: "Fetch Failed",
+      description: getMessage(res.message),
+    });
+    return null;
+  } catch (error) {
+    showNotification({
+      type: "error",
+      title: "Error",
+      description: "An unexpected error occurred while fetching Policy Breach Details.",
+    });
+    return null;
+  } finally {
+    showLoader(false);
+  }
+};
+
+// GetAdminTradeApprovalRequestSummaryAPI - per-employee summary list
+export const GetAdminTradeApprovalRequestSummaryAPI = async ({
+  callApi,
+  showNotification,
+  showLoader,
+  requestdata,
+  navigate,
+}) => {
+  try {
+    const res = await callApi({
+      requestMethod: import.meta.env
+        .VITE_GET_ADMIN_TRADE_APPROVAL_REQUEST_SUMMARY_API_METHOD,
+      endpoint: import.meta.env.VITE_API_ADMIN,
+      requestData: requestdata,
+      navigate,
+    });
+
+    if (handleExpiredSession(res, navigate, showLoader)) return null;
+
+    if (!res?.result?.isExecuted) {
+      showNotification({
+        type: "error",
+        title: "Error",
+        description:
+          "Something went wrong while fetching Admin Trade Approval Request Summary Report.",
+      });
+      return null;
+    }
+
+    if (res.success) {
+      const { responseMessage, records, totalRecords } = res.result;
+      const message = getMessage(responseMessage);
+
+      if (responseMessage === "PAD_Admin_GetAdminTradeApprovalRequestSummaryAPI_01") {
+        return { records: records || [], totalRecords: totalRecords || 0 };
+      }
+
+      if (responseMessage === "PAD_Admin_GetAdminTradeApprovalRequestSummaryAPI_02") {
+        return { records: [], totalRecords: 0 };
+      }
+
+      if (message) {
+        showNotification({ type: "warning", title: message, description: message });
+      }
+
+      return null;
+    }
+
+    showNotification({
+      type: "error",
+      title: "Fetch Failed",
+      description: getMessage(res.message),
+    });
+    return null;
+  } catch (error) {
+    showNotification({
+      type: "error",
+      title: "Error",
+      description:
+        "An unexpected error occurred while fetching Admin Trade Approval Request Summary Report.",
+    });
+    return null;
+  } finally {
+    showLoader(false);
+  }
+};
+
+// GetAdminDateWiseTransactionReportAPI - system-wide, no CO/hierarchy
+// scoping. New Admin-service wrapper that reuses HOC's underlying SP.
+export const GetAdminDateWiseTransactionReportAPI = async ({
+  callApi,
+  showNotification,
+  showLoader,
+  requestdata,
+  navigate,
+}) => {
+  try {
+    const res = await callApi({
+      requestMethod: import.meta.env
+        .VITE_GET_ADMIN_DATE_WISE_TRANSACTION_REPORT_API_METHOD,
+      endpoint: import.meta.env.VITE_API_ADMIN,
+      requestData: requestdata,
+      navigate,
+    });
+
+    if (handleExpiredSession(res, navigate, showLoader)) return null;
+
+    if (!res?.result?.isExecuted) {
+      showNotification({
+        type: "error",
+        title: "Error",
+        description:
+          "Something went wrong while fetching Admin Date-wise Transaction Report.",
+      });
+      return null;
+    }
+
+    if (res.success) {
+      const { responseMessage, records, totalRecords } = res.result;
+      const message = getMessage(responseMessage);
+
+      if (responseMessage === "PAD_Admin_GetAdminDateWiseTransactionReportAPI_01") {
+        return { records: records || [], totalRecords: totalRecords || 0 };
+      }
+
+      if (responseMessage === "PAD_Admin_GetAdminDateWiseTransactionReportAPI_02") {
+        return { records: [], totalRecords: 0 };
+      }
+
+      if (message) {
+        showNotification({ type: "warning", title: message, description: message });
+      }
+
+      return null;
+    }
+
+    showNotification({
+      type: "error",
+      title: "Fetch Failed",
+      description: getMessage(res.message),
+    });
+    return null;
+  } catch (error) {
+    showNotification({
+      type: "error",
+      title: "Error",
+      description:
+        "An unexpected error occurred while fetching Admin Date-wise Transaction Report.",
+    });
+    return null;
+  } finally {
+    showLoader(false);
+  }
+};
+
+// GetAdminTransactionSummaryReportAPI - list (one row per calendar date)
+export const GetAdminTransactionSummaryReportAPI = async ({
+  callApi,
+  showNotification,
+  showLoader,
+  requestdata,
+  navigate,
+}) => {
+  try {
+    const res = await callApi({
+      requestMethod: import.meta.env.VITE_GET_ADMIN_TRANSACTION_SUMMARY_REPORT_API_METHOD,
+      endpoint: import.meta.env.VITE_API_ADMIN,
+      requestData: requestdata,
+      navigate,
+    });
+
+    if (handleExpiredSession(res, navigate, showLoader)) return null;
+
+    if (!res?.result?.isExecuted) {
+      showNotification({
+        type: "error",
+        title: "Error",
+        description:
+          "Something went wrong while fetching Admin Transactions Summary Report.",
+      });
+      return null;
+    }
+
+    if (res.success) {
+      const { responseMessage, records, totalRecords } = res.result;
+      const message = getMessage(responseMessage);
+
+      if (responseMessage === "PAD_Admin_GetAdminTransactionSummaryReportAPI_01") {
+        return { records: records || [], totalRecords: totalRecords || 0 };
+      }
+
+      if (responseMessage === "PAD_Admin_GetAdminTransactionSummaryReportAPI_02") {
+        return { records: [], totalRecords: 0 };
+      }
+
+      if (message) {
+        showNotification({ type: "warning", title: message, description: message });
+      }
+
+      return null;
+    }
+
+    showNotification({
+      type: "error",
+      title: "Fetch Failed",
+      description: getMessage(res.message),
+    });
+    return null;
+  } catch (error) {
+    showNotification({
+      type: "error",
+      title: "Error",
+      description:
+        "An unexpected error occurred while fetching Admin Transactions Summary Report.",
+    });
+    return null;
+  } finally {
+    showLoader(false);
+  }
+};
+
+// GetAdminTransactionSummaryViewDetailsAPI - per-date drill-down. Per SRS,
+// Admin's View Details has 2 extra columns vs CO/HOC (Action By, Action
+// Date) - actionByJson is a JSON string, needs a second parse on the FE.
+export const GetAdminTransactionSummaryViewDetailsAPI = async ({
+  callApi,
+  showNotification,
+  showLoader,
+  requestdata,
+  navigate,
+}) => {
+  try {
+    const res = await callApi({
+      requestMethod: import.meta.env
+        .VITE_GET_ADMIN_TRANSACTION_SUMMARY_VIEW_DETAILS_API_METHOD,
+      endpoint: import.meta.env.VITE_API_ADMIN,
+      requestData: requestdata,
+      navigate,
+    });
+
+    if (handleExpiredSession(res, navigate, showLoader)) return null;
+
+    if (!res?.result?.isExecuted) {
+      showNotification({
+        type: "error",
+        title: "Error",
+        description:
+          "Something went wrong while fetching Admin Transactions Summary View Details.",
+      });
+      return null;
+    }
+
+    if (res.success) {
+      const { responseMessage, records, totalRecords } = res.result;
+      const message = getMessage(responseMessage);
+
+      if (responseMessage === "PAD_Admin_GetAdminTransactionSummaryViewDetailsAPI_01") {
+        return { records: records || [], totalRecords: totalRecords || 0 };
+      }
+
+      if (responseMessage === "PAD_Admin_GetAdminTransactionSummaryViewDetailsAPI_02") {
+        return { records: [], totalRecords: 0 };
+      }
+
+      if (message) {
+        showNotification({ type: "warning", title: message, description: message });
+      }
+
+      return null;
+    }
+
+    showNotification({
+      type: "error",
+      title: "Fetch Failed",
+      description: getMessage(res.message),
+    });
+    return null;
+  } catch (error) {
+    showNotification({
+      type: "error",
+      title: "Error",
+      description:
+        "An unexpected error occurred while fetching Admin Transactions Summary View Details.",
+    });
+    return null;
+  } finally {
+    showLoader(false);
+  }
+};
+
+// GetAdminTATRequestApprovalsAPI - per-employee summary list
+export const GetAdminTATRequestApprovalsAPI = async ({
+  callApi,
+  showNotification,
+  showLoader,
+  requestdata,
+  navigate,
+}) => {
+  try {
+    const res = await callApi({
+      requestMethod: import.meta.env.VITE_GET_ADMIN_TAT_REQUEST_APPROVALS_API_METHOD,
+      endpoint: import.meta.env.VITE_API_ADMIN,
+      requestData: requestdata,
+      navigate,
+    });
+
+    if (handleExpiredSession(res, navigate, showLoader)) return null;
+
+    if (!res?.result?.isExecuted) {
+      showNotification({
+        type: "error",
+        title: "Error",
+        description: "Something went wrong while fetching Admin TAT Request Approvals Report.",
+      });
+      return null;
+    }
+
+    if (res.success) {
+      const { responseMessage, records, totalRecords } = res.result;
+      const message = getMessage(responseMessage);
+
+      if (responseMessage === "PAD_Admin_GetAdminTATRequestApprovalsAPI_01") {
+        return { records: records || [], totalRecords: totalRecords || 0 };
+      }
+
+      if (responseMessage === "PAD_Admin_GetAdminTATRequestApprovalsAPI_02") {
+        return { records: [], totalRecords: 0 };
+      }
+
+      if (message) {
+        showNotification({ type: "warning", title: message, description: message });
+      }
+
+      return null;
+    }
+
+    showNotification({
+      type: "error",
+      title: "Fetch Failed",
+      description: getMessage(res.message),
+    });
+    return null;
+  } catch (error) {
+    showNotification({
+      type: "error",
+      title: "Error",
+      description:
+        "An unexpected error occurred while fetching Admin TAT Request Approvals Report.",
+    });
+    return null;
+  } finally {
+    showLoader(false);
+  }
+};
+
+// GetAdminTATRequestApprovalDetailsAPI - per-employee View Details (one
+// row per request). actionBy reflects whichever actor's bundle was the
+// last one modified on that workflow.
+export const GetAdminTATRequestApprovalDetailsAPI = async ({
+  callApi,
+  showNotification,
+  showLoader,
+  requestdata,
+  navigate,
+}) => {
+  try {
+    const res = await callApi({
+      requestMethod: import.meta.env
+        .VITE_GET_ADMIN_TAT_REQUEST_APPROVAL_DETAILS_API_METHOD,
+      endpoint: import.meta.env.VITE_API_ADMIN,
+      requestData: requestdata,
+      navigate,
+    });
+
+    if (handleExpiredSession(res, navigate, showLoader)) return null;
+
+    if (!res?.result?.isExecuted) {
+      showNotification({
+        type: "error",
+        title: "Error",
+        description:
+          "Something went wrong while fetching Admin TAT Request Approval Details.",
+      });
+      return null;
+    }
+
+    if (res.success) {
+      const { responseMessage, records, totalRecords } = res.result;
+      const message = getMessage(responseMessage);
+
+      if (responseMessage === "PAD_Admin_GetAdminTATRequestApprovalDetailsAPI_01") {
+        return { records: records || [], totalRecords: totalRecords || 0 };
+      }
+
+      if (responseMessage === "PAD_Admin_GetAdminTATRequestApprovalDetailsAPI_02") {
+        return { records: [], totalRecords: 0 };
+      }
+
+      if (message) {
+        showNotification({ type: "warning", title: message, description: message });
+      }
+
+      return null;
+    }
+
+    showNotification({
+      type: "error",
+      title: "Fetch Failed",
+      description: getMessage(res.message),
+    });
+    return null;
+  } catch (error) {
+    showNotification({
+      type: "error",
+      title: "Error",
+      description:
+        "An unexpected error occurred while fetching Admin TAT Request Approval Details.",
+    });
+    return null;
+  } finally {
+    showLoader(false);
+  }
+};
+
+// GetAdminTradesUploadedViaPortfolioAPI - list. Status filters on the raw
+// WorkFlowStatusID (1=Pending, 8=Compliant, 9=Non-Compliant for Portfolio
+// uploads).
+export const GetAdminTradesUploadedViaPortfolioAPI = async ({
+  callApi,
+  showNotification,
+  showLoader,
+  requestdata,
+  navigate,
+}) => {
+  try {
+    const res = await callApi({
+      requestMethod: import.meta.env
+        .VITE_GET_ADMIN_TRADES_UPLOADED_VIA_PORTFOLIO_API_METHOD,
+      endpoint: import.meta.env.VITE_API_ADMIN,
+      requestData: requestdata,
+      navigate,
+    });
+
+    if (handleExpiredSession(res, navigate, showLoader)) return null;
+
+    if (!res?.result?.isExecuted) {
+      showNotification({
+        type: "error",
+        title: "Error",
+        description:
+          "Something went wrong while fetching Admin Trades Uploaded via Portfolio Report.",
+      });
+      return null;
+    }
+
+    if (res.success) {
+      const { responseMessage, records, totalRecords } = res.result;
+      const message = getMessage(responseMessage);
+
+      if (responseMessage === "PAD_Admin_GetAdminTradesUploadedViaPortfolioAPI_01") {
+        return { records: records || [], totalRecords: totalRecords || 0 };
+      }
+
+      if (responseMessage === "PAD_Admin_GetAdminTradesUploadedViaPortfolioAPI_02") {
+        return { records: [], totalRecords: 0 };
+      }
+
+      if (message) {
+        showNotification({ type: "warning", title: message, description: message });
+      }
+
+      return null;
+    }
+
+    showNotification({
+      type: "error",
+      title: "Fetch Failed",
+      description: getMessage(res.message),
+    });
+    return null;
+  } catch (error) {
+    showNotification({
+      type: "error",
+      title: "Error",
+      description:
+        "An unexpected error occurred while fetching Admin Trades Uploaded via Portfolio Report.",
+    });
+    return null;
+  } finally {
+    showLoader(false);
+  }
+};
+
 // HTA dashbord api of reports
 // GetHTAReportsDashboardStatsAPI
 export const GetHTAReportsDashboardStatsAPI = async ({

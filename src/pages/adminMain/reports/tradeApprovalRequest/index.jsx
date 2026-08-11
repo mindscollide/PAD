@@ -12,26 +12,21 @@ import {
   getBorderlessTableColumns,
   mapListData,
 } from "./utils";
-import { approvalStatusMap } from "../../../../components/tables/borderlessTable/utill";
-
 // 🔹 Styles
 import style from "./tradeApprovalRequest.module.css";
 import { useMyApproval } from "../../../../context/myApprovalContaxt";
 import {
   ExportHTATradeApprovalRequestsExcelReport,
-  SearchPolicyBreachedWorkFlowsRequest,
+  GetAdminTradeApprovalRequestSummaryAPI,
 } from "../../../../api/myApprovalApi";
 import { useNotification } from "../../../../components/NotificationProvider/NotificationProvider";
 import { useApi } from "../../../../context/ApiContext";
 import { useGlobalLoader } from "../../../../context/LoaderContext";
 import { useNavigate } from "react-router-dom";
 import { useSearchBarContext } from "../../../../context/SearchBarContaxt";
-import { useDashboardContext } from "../../../../context/dashboardContaxt";
-import { getSafeAssetTypeData } from "../../../../common/funtions/assetTypesList";
 import { useTableScrollBottom } from "../../../../common/funtions/scroll";
 import CustomButton from "../../../../components/buttons/button";
 import { toYYMMDD } from "../../../../common/funtions/rejex";
-import { useSidebarContext } from "../../../../context/sidebarContaxt";
 
 const TradeApprovalRequestReport = () => {
   const navigate = useNavigate();
@@ -43,92 +38,62 @@ const TradeApprovalRequestReport = () => {
   const { showNotification } = useNotification();
   const { showLoader } = useGlobalLoader();
   const {
-    htaPolicyBreachesReportsData,
-    setHTAPolicyBreachesReportsData,
-    resetHTAPolicyBreachesReportsData,
+    adminTradeApprovalRequestReportData,
+    setAdminTradeApprovalRequestReportData,
+    resetAdminTradeApprovalRequestReportData,
   } = useMyApproval();
 
-  const { selectedKey } = useSidebarContext();
-  console.log(selectedKey, "selectedKeyselectedKey");
-
   const {
-    htaPolicyBreachesReportSearch,
-    setHTAPolicyBreachesReportSearch,
-    resetHTAPolicyBreachesReportSearch,
+    adminTradeApprovalRequestReportSearch,
+    setAdminTradeApprovalRequestReportSearch,
+    resetAdminTradeApprovalRequestReportSearch,
   } = useSearchBarContext();
-
-  const { assetTypeListingData, setAssetTypeListingData } =
-    useDashboardContext();
 
   // -------------------- Local State --------------------
   const [sortedInfo, setSortedInfo] = useState({});
   const [loadingMore, setLoadingMore] = useState(false);
   const [open, setOpen] = useState(false);
-  const [policyModalVisible, setPolicyModalVisible] = useState(false);
-  const [selectedEmployee, setSelectedEmployee] = useState(null);
   // -------------------- Helpers --------------------
 
   /**
-   * Fetches transactions from API.
-   * @param {boolean} flag - whether to show loader
+   * Fetches the Trade Approval Request summary list from
+   * GetAdminTradeApprovalRequestSummaryAPI.
+   * @param {object} requestData - API request payload
+   * @param {boolean} replace - if true, replace the table rows; else append (lazy load)
    */
   const fetchApiCall = useCallback(
     async (requestData, replace = false, showLoaderFlag = true) => {
       if (!requestData || typeof requestData !== "object") return;
-      // if (showLoaderFlag) showLoader(true);
+      if (showLoaderFlag) showLoader(true);
 
-      // const res = await SearchPolicyBreachedWorkFlowsRequest({
-      //   callApi,
-      //   showNotification,
-      //   showLoader,
-      //   requestdata: requestData,
-      //   navigate,
-      // });
-      console.log("res".res);
+      const res = await GetAdminTradeApprovalRequestSummaryAPI({
+        callApi,
+        showNotification,
+        showLoader,
+        requestdata: requestData,
+        navigate,
+      });
 
-      // ✅ Always get the freshest version (from memory or session)
-      const currentAssetTypeData = getSafeAssetTypeData(
-        assetTypeListingData,
-        setAssetTypeListingData
-      );
+      const mapped = mapListData(res);
+      if (!Array.isArray(mapped)) return;
 
-      const records = Array.isArray(res?.records) ? res.records : [];
-      console.log("records", records);
-      const mapped = mapListData(currentAssetTypeData?.Equities, records);
-      if (!mapped || typeof mapped !== "object") return;
-      console.log("records", mapped);
-
-      setHTAPolicyBreachesReportsData((prev) => ({
+      setAdminTradeApprovalRequestReportData((prev) => ({
         records: replace ? mapped : [...(prev?.records || []), ...mapped],
-        // this is for to run lazy loading its data comming from database of total data in db
         totalRecordsDataBase: res?.totalRecords || 0,
-        // this is for to know how mush dta currently fetch from  db
         totalRecordsTable: replace
           ? mapped.length
-          : htaPolicyBreachesReportsData.totalRecordsTable + mapped.length,
+          : (prev?.totalRecordsTable || 0) + mapped.length,
       }));
-      setHTAPolicyBreachesReportSearch((prev) => {
+      setAdminTradeApprovalRequestReportSearch((prev) => {
         const next = {
           ...prev,
-          pageNumber: replace ? mapped.length : prev.pageNumber + mapped.length,
+          pageNumber: replace ? 2 : (prev.pageNumber || 1) + 1,
         };
-
-        // this is for check if filter value get true only on that it will false
-        if (prev.filterTrigger) {
-          next.filterTrigger = false;
-        }
-
+        if (prev.filterTrigger) next.filterTrigger = false;
         return next;
       });
     },
-    [
-      assetTypeListingData,
-      callApi,
-      navigate,
-      setHTAPolicyBreachesReportSearch,
-      showLoader,
-      showNotification,
-    ]
+    [callApi, navigate, showLoader, showNotification]
   );
 
   // -------------------- Effects --------------------
@@ -137,10 +102,7 @@ const TradeApprovalRequestReport = () => {
   useEffect(() => {
     if (hasFetched.current) return;
     hasFetched.current = true;
-    const requestData = buildApiRequest(
-      htaPolicyBreachesReportSearch,
-      assetTypeListingData
-    );
+    const requestData = buildApiRequest(adminTradeApprovalRequestReportSearch);
     fetchApiCall(requestData, true, true);
   }, []);
 
@@ -148,40 +110,34 @@ const TradeApprovalRequestReport = () => {
   useEffect(() => {
     return () => {
       // Reset search state for fresh load
-      resetHTAPolicyBreachesReportSearch();
-      resetHTAPolicyBreachesReportsData();
+      resetAdminTradeApprovalRequestReportSearch();
+      resetAdminTradeApprovalRequestReportData();
     };
   }, []);
 
   // 🔹 call api on search
   useEffect(() => {
-    if (htaPolicyBreachesReportSearch?.filterTrigger) {
-      const requestData = buildApiRequest(
-        htaPolicyBreachesReportSearch,
-        assetTypeListingData
-      );
+    if (adminTradeApprovalRequestReportSearch?.filterTrigger) {
+      const requestData = buildApiRequest(adminTradeApprovalRequestReportSearch);
       fetchApiCall(requestData, true, true);
     }
-  }, [htaPolicyBreachesReportSearch?.filterTrigger]);
+  }, [adminTradeApprovalRequestReportSearch?.filterTrigger]);
 
   // 🔹 Infinite Scroll (lazy loading)
   useTableScrollBottom(
     async () => {
       if (
-        htaPolicyBreachesReportsData?.totalRecordsDataBase <=
-        htaPolicyBreachesReportsData?.totalRecordsTable
+        adminTradeApprovalRequestReportData?.totalRecordsDataBase <=
+        adminTradeApprovalRequestReportData?.totalRecordsTable
       )
         return;
 
       try {
         setLoadingMore(true);
-        const requestData = buildApiRequest(
-          htaPolicyBreachesReportSearch,
-          assetTypeListingData
-        );
+        const requestData = buildApiRequest(adminTradeApprovalRequestReportSearch);
         await fetchApiCall(requestData, false, false);
       } catch (err) {
-        console.error("Error loading more approvals:", err);
+        console.error("Error loading more:", err);
       } finally {
         setLoadingMore(false);
       }
@@ -191,26 +147,16 @@ const TradeApprovalRequestReport = () => {
   );
 
   // -------------------- Table Columns --------------------
-  const columns = getBorderlessTableColumns({
-    approvalStatusMap,
-    sortedInfo,
-    htaPolicyBreachesReportSearch,
-    setHTAPolicyBreachesReportSearch,
-    setSelectedEmployee,
-    setPolicyModalVisible,
-  });
+  const columns = getBorderlessTableColumns({ sortedInfo });
 
   /** 🔹 Handle removing individual filter */
   const handleRemoveFilter = (key) => {
     const resetMap = {
-      instrumentName: { instrumentName: "" },
       employeeName: { employeeName: "" },
       departmentName: { departmentName: "" },
-      quantity: { quantity: "" },
-      dateRange: { startDate: null, endDate: null },
     };
 
-    setHTAPolicyBreachesReportSearch((prev) => ({
+    setAdminTradeApprovalRequestReportSearch((prev) => ({
       ...prev,
       ...resetMap[key],
       pageNumber: 0,
@@ -220,14 +166,10 @@ const TradeApprovalRequestReport = () => {
 
   /** 🔹 Handle removing all filters */
   const handleRemoveAllFilters = () => {
-    setHTAPolicyBreachesReportSearch((prev) => ({
+    setAdminTradeApprovalRequestReportSearch((prev) => ({
       ...prev,
-      instrumentName: "",
       employeeName: "",
       departmentName: "",
-      quantity: "",
-      startDate: null,
-      endDate: null,
       pageNumber: 0,
       filterTrigger: true,
     }));
@@ -235,25 +177,10 @@ const TradeApprovalRequestReport = () => {
 
   /** 🔹 Build Active Filters */
   const activeFilters = (() => {
-    const {
-      instrumentName,
-      employeeName,
-      departmentName,
-      quantity,
-      startDate,
-      endDate,
-    } = htaPolicyBreachesReportSearch || {};
+    const { employeeName, departmentName } =
+      adminTradeApprovalRequestReportSearch || {};
 
     return [
-      instrumentName && {
-        key: "instrumentName",
-        label: "Instrument",
-        value:
-          instrumentName.length > 13
-            ? instrumentName.slice(0, 13) + "..."
-            : instrumentName,
-      },
-
       employeeName && {
         key: "employeeName",
         label: "Employee",
@@ -271,18 +198,6 @@ const TradeApprovalRequestReport = () => {
             ? departmentName.slice(0, 13) + "..."
             : departmentName,
       },
-
-      quantity && {
-        key: "quantity",
-        label: "Quantity",
-        value: Number(quantity).toLocaleString("en-US"),
-      },
-      
-      startDate &&
-        endDate && {
-          key: "dateRange",
-          value: `${startDate} → ${endDate}`,
-        },
     ].filter(Boolean);
   })();
 
@@ -290,10 +205,12 @@ const TradeApprovalRequestReport = () => {
   const downloadMyTradeApprovalLineManagerInExcelFormat = async () => {
     showLoader(true);
     const requestdata = {
-      StartDate: toYYMMDD(htaPolicyBreachesReportSearch.startDate) || null,
-      EndDate: toYYMMDD(htaPolicyBreachesReportSearch.endDate) || null,
-      SearchEmployeeName: htaPolicyBreachesReportSearch.employeeName,
-      SearchDepartmentName: htaPolicyBreachesReportSearch.departmentName,
+      StartDate:
+        toYYMMDD(adminTradeApprovalRequestReportSearch.startDate) || null,
+      EndDate: toYYMMDD(adminTradeApprovalRequestReportSearch.endDate) || null,
+      SearchEmployeeName: adminTradeApprovalRequestReportSearch.employeeName,
+      SearchDepartmentName:
+        adminTradeApprovalRequestReportSearch.departmentName,
     };
 
     await ExportHTATradeApprovalRequestsExcelReport({
@@ -326,7 +243,7 @@ const TradeApprovalRequestReport = () => {
               {
                 title: (
                   <span className={style.breadcrumbText}>
-                    Users Activity Report
+                    Trade Approval Request Report
                   </span>
                 ),
               },
@@ -408,11 +325,11 @@ const TradeApprovalRequestReport = () => {
       >
         <div className="px-4 md:px-6 lg:px-8 ">
           <BorderlessTable
-            rows={htaPolicyBreachesReportsData?.records}
+            rows={adminTradeApprovalRequestReportData?.records}
             columns={columns}
             classNameTable="border-less-table-blue"
             scroll={
-              htaPolicyBreachesReportsData?.records?.length
+              adminTradeApprovalRequestReportData?.records?.length
                 ? {
                     x: "max-content",
                     y: activeFilters.length > 0 ? 450 : 500,
