@@ -773,26 +773,26 @@ export const SearchBarProvider = ({ children }) => {
   const employeeMyTransactionSearchRef = useRef(employeeMyTransactionSearch);
   const employeePortfolioSearchRef = useRef(employeePortfolioSearch);
   const employeePendingApprovalSearchRef = useRef(
-    employeePendingApprovalSearch,
+    employeePendingApprovalSearch
   );
   const employeeMyHistorySearchRef = useRef(employeeMyHistorySearch);
   const lineManagerApprovalSearchRef = useRef(lineManagerApprovalSearch);
   const complianceOfficerReconcileTransactionsSearchRef = useRef(
-    complianceOfficerReconcileTransactionsSearch,
+    complianceOfficerReconcileTransactionsSearch
   );
   const complianceOfficerReconcilePortfolioSearchRef = useRef(
-    complianceOfficerReconcilePortfolioSearch,
+    complianceOfficerReconcilePortfolioSearch
   );
   const headOfComplianceApprovalPortfolioSearchRef = useRef(
-    headOfComplianceApprovalPortfolioSearch,
+    headOfComplianceApprovalPortfolioSearch
   );
   const headOfComplianceApprovalEscalatedVerificationsSearchRef = useRef(
-    headOfComplianceApprovalEscalatedVerificationsSearch,
+    headOfComplianceApprovalEscalatedVerificationsSearch
   );
 
   // Head Of Trade Approval Escalated Approvals
   const headOfTradeEscalatedApprovalsSearchRef = useRef(
-    headOfTradeEscalatedApprovalsSearch,
+    headOfTradeEscalatedApprovalsSearch
   );
 
   // 🔄 Keep refs in sync with latest state
@@ -1755,7 +1755,7 @@ export const useSearchBarContext = () => {
   const context = useContext(SearchBarContext);
   if (!context) {
     throw new Error(
-      "useSearchBarContext must be used within a SearchBarProvider",
+      "useSearchBarContext must be used within a SearchBarProvider"
     );
   }
   return context;

@@ -70,13 +70,13 @@ const MyHistory = () => {
       });
       const currentAssetTypeData = getSafeAssetTypeData(
         assetTypeListingData,
-        setAssetTypeListingData,
+        setAssetTypeListingData
       );
       if (res) {
         setEmployeeMyHistoryData(res);
       }
     },
-    [callApi, navigate, showLoader, showNotification],
+    [callApi, navigate, showLoader, showNotification]
   );
 
   // Initial Fetch
@@ -85,7 +85,7 @@ const MyHistory = () => {
       hasFetched.current = true;
       const requestData = buildMyHistoryApiRequest(
         employeeMyHistorySearch,
-        assetTypeListingData,
+        assetTypeListingData
       );
 
       fetchApiCall(requestData, true, true);
@@ -98,7 +98,7 @@ const MyHistory = () => {
       hasFetched.current = true;
       const requestData = buildMyHistoryApiRequest(
         employeeMyHistorySearch,
-        assetTypeListingData,
+        assetTypeListingData
       );
 
       fetchApiCall(requestData, true, true);
@@ -114,7 +114,7 @@ const MyHistory = () => {
     approvalStatusMap,
     sortedInfo,
     employeeMyHistorySearch,
-    setEmployeeMyHistorySearch,
+    setEmployeeMyHistorySearch
   );
 
   /** 🔹 Handle removing individual filter */
@@ -216,7 +216,7 @@ const MyHistory = () => {
         // build request based on current search/filter but override pagination
         const baseRequest = buildMyHistoryApiRequest(
           employeeMyHistorySearch,
-          assetTypeListingData,
+          assetTypeListingData
         );
         const requestData = {
           ...baseRequest,
@@ -282,7 +282,7 @@ const MyHistory = () => {
   const downloadMyHistoryReportInExcelFormat = async () => {
     const { PageNumber, Length, ...requestdata } = buildMyHistoryApiRequest(
       employeeMyHistorySearch,
-      assetTypeListingData,
+      assetTypeListingData
     );
 
     await DownloadMyHistoryReportRequest({
@@ -345,7 +345,7 @@ const MyHistory = () => {
       // plain HHmmss used everywhere else — strip the colons before
       // handing it to formatApiDateTime.
       const titleDateTimeMatch = wf.title?.match(
-        /(\d{8})\s(\d{2}):(\d{2}):(\d{2})$/,
+        /(\d{8})\s(\d{2}):(\d{2}):(\d{2})$/
       );
 
       const sendForApprovalStep = {
@@ -355,13 +355,11 @@ const MyHistory = () => {
         date:
           isCreatedFromResubmit && titleDateTimeMatch
             ? formatApiDateTime(
-                `${titleDateTimeMatch[1]} ${titleDateTimeMatch[2]}${titleDateTimeMatch[3]}${titleDateTimeMatch[4]}`,
+                `${titleDateTimeMatch[1]} ${titleDateTimeMatch[2]}${titleDateTimeMatch[3]}${titleDateTimeMatch[4]}`
               )
             : formatApiDateTime(`${wf.creationDate} ${wf.creationTime}`),
         ...(isCreatedFromResubmit && {
-          requesterID: dashBetweenApprovalAssets(
-            wf.resubmitRequestTrackingID,
-          ),
+          requesterID: dashBetweenApprovalAssets(wf.resubmitRequestTrackingID),
         }),
         iconType: isCreatedFromResubmit ? "Resubmit" : "SendForApproval",
       };
@@ -373,11 +371,11 @@ const MyHistory = () => {
             b.bundleStatusState === 2
               ? "Approved"
               : b.bundleStatusState === 3
-                ? "Declined"
-                : "Pending",
+              ? "Declined"
+              : "Pending",
           user: `${b.firstName} ${b.lastName}`,
           date: formatApiDateTime(
-            `${b.bundleModifiedDate} ${b.bundleModifiedTime}`,
+            `${b.bundleModifiedDate} ${b.bundleModifiedTime}`
           ),
           iconType: getBundleIconType(b.bundleStatusState),
         })) || [];
