@@ -206,26 +206,60 @@ export const formatShowOnlyDate = (dateTimeStr) => {
   return "";
 };
 
-export const formatShowOnlyDateForDateRange = (date) => {
+// CHANGED (bug fix 2026-08-10): was parsing ONLY the date portion via
+// `new Date("YYYY-MM-DD")` (implicitly UTC midnight) and reading back LOCAL
+// getters - silently ignoring the time component entirely. Closing-period
+// timestamps routinely carry a non-midnight UTC time (e.g. "19:00:00" -
+// produced when a local midnight pick gets converted to true UTC on submit),
+// so dropping the time meant this function could land on the wrong calendar
+// day whenever the UTC->local conversion crosses a day boundary - confirmed
+// live: the Instruments listing (which correctly combines date+time via
+// formatApiDateTime) showed "2026-07-22" for an instrument whose Edit modal
+// (this function, date-only) showed "2026-07-21" for the exact same stored
+// value. Now takes an optional `time` ("HHmm"/"HHmmss") and performs the
+// same real UTC->local conversion as convertUTCToCurrentTimeZone, just
+// returning the date portion. Falls back to the old date-only behavior
+// (time defaults to 00:00:00 UTC) when no time is supplied, so any other
+// caller passing a bare date keeps working unchanged.
+export const formatShowOnlyDateForDateRange = (date, time) => {
   if (!date) return "";
 
-  // 🧠 Handle "YYYYMMDD" → "YYYY-MM-DD"
-  let formattedDate = date;
-  if (typeof date === "string" && /^\d{8}$/.test(date)) {
-    formattedDate = `${date.slice(0, 4)}-${date.slice(4, 6)}-${date.slice(
-      6,
-      8
-    )}`;
+  let datePart = String(date).trim();
+  let timePart = String(time ?? "").trim();
+
+  // Allow a single combined "YYYYMMDD HHmmss" string, same contract as
+  // convertUTCToCurrentTimeZone.
+  if (!timePart && datePart.includes(" ")) {
+    [datePart, timePart] = datePart.split(/\s+/);
   }
 
-  const d = new Date(formattedDate);
-  if (isNaN(d)) return ""; // guard against invalid input
+  // "YYYYMMDD" + optional "HHmm"/"HHmmss" - the real backend shape.
+  if (/^\d{8}$/.test(datePart)) {
+    const year = Number(datePart.slice(0, 4));
+    const month = Number(datePart.slice(4, 6)) - 1;
+    const day = Number(datePart.slice(6, 8));
 
-  const year = d.getFullYear();
-  const month = String(d.getMonth() + 1).padStart(2, "0");
-  const day = String(d.getDate()).padStart(2, "0");
+    const hasTime = /^\d{4,6}$/.test(timePart);
+    const hours = hasTime ? Number(timePart.slice(0, 2)) : 0;
+    const minutes = hasTime ? Number(timePart.slice(2, 4)) : 0;
+    const seconds = hasTime && timePart.length >= 6 ? Number(timePart.slice(4, 6)) : 0;
 
-  return `${year}-${month}-${day}`;
+    const instant = new Date(Date.UTC(year, month, day, hours, minutes, seconds));
+    if (Number.isNaN(instant.getTime())) return "";
+
+    const localYear = instant.getFullYear();
+    const localMonth = String(instant.getMonth() + 1).padStart(2, "0");
+    const localDay = String(instant.getDate()).padStart(2, "0");
+    return `${localYear}-${localMonth}-${localDay}`;
+  }
+
+  // Fallback for any already-formatted/non-standard input.
+  const d = new Date(datePart);
+  if (isNaN(d)) return "";
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(
+    2,
+    "0"
+  )}-${String(d.getDate()).padStart(2, "0")}`;
 };
 
 export const formatCode = (code = "") => {
