@@ -153,8 +153,8 @@ export const getMyHistoryColumn = (
     align: "center",
     ellipsis: true,
     sorter: (a, b) =>
-      formatApiDateTime(`${a.creationDate} ${a.creationTime}`).localeCompare(
-        formatApiDateTime(`${b.creationDate} ${b.creationTime}`)
+      `${a.creationDate} ${a.creationTime}`.localeCompare(
+        `${b.creationDate} ${b.creationTime}`
       ),
     sortDirections: ["ascend", "descend"],
     sortOrder:
