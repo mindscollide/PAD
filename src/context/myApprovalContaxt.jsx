@@ -244,6 +244,105 @@ export const MyApprovalProvider = ({ children }) => {
       totalRecords: 0,
     });
 
+  /* =========================================================
+     ADMIN — Reports (2026-08-11), per
+     API_Changes/2026-08-11_admin_reports_all_apis.md
+     ========================================================= */
+
+  // Admin User-wise Compliance Report
+  const [
+    adminUserWiseComplianceReportData,
+    setAdminUserWiseComplianceReportData,
+  ] = useState({
+    records: [],
+    totalRecordsDataBase: 0,
+    totalRecordsTable: 0,
+  });
+
+  // Admin Policy Breaches Report (list)
+  const [adminPolicyBreachesReportData, setAdminPolicyBreachesReportData] =
+    useState({
+      records: [],
+      totalRecordsDataBase: 0,
+      totalRecordsTable: 0,
+    });
+
+  // Admin Policy Breaches "Policies Breached" drill-down modal
+  const [adminPolicyBreachDetailsData, setAdminPolicyBreachDetailsData] =
+    useState({
+      records: [],
+    });
+
+  // Admin Trade Approval Request summary Report
+  const [
+    adminTradeApprovalRequestReportData,
+    setAdminTradeApprovalRequestReportData,
+  ] = useState({
+    records: [],
+    totalRecordsDataBase: 0,
+    totalRecordsTable: 0,
+  });
+
+  // Admin Date-wise Transaction Report
+  const [
+    adminDateWiseTransactionReportData,
+    setAdminDateWiseTransactionReportData,
+  ] = useState({
+    records: [],
+    totalRecordsDataBase: 0,
+    totalRecordsTable: 0,
+  });
+
+  // Admin Transactions Summary Report (list)
+  const [
+    adminTransactionSummaryReportData,
+    setAdminTransactionSummaryReportData,
+  ] = useState({
+    records: [],
+    totalRecordsDataBase: 0,
+    totalRecordsTable: 0,
+  });
+
+  // Admin Transactions Summary Report - View Details (per date)
+  const [
+    adminTransactionSummaryViewDetailsData,
+    setAdminTransactionSummaryViewDetailsData,
+  ] = useState({
+    records: [],
+    totalRecordsDataBase: 0,
+    totalRecordsTable: 0,
+  });
+
+  // Admin TAT Request Approvals Report (list)
+  const [
+    adminTATRequestApprovalsReportData,
+    setAdminTATRequestApprovalsReportData,
+  ] = useState({
+    records: [],
+    totalRecordsDataBase: 0,
+    totalRecordsTable: 0,
+  });
+
+  // Admin TAT Request Approvals Report - View Details (per employee)
+  const [
+    adminTATRequestApprovalDetailsData,
+    setAdminTATRequestApprovalDetailsData,
+  ] = useState({
+    records: [],
+    totalRecordsDataBase: 0,
+    totalRecordsTable: 0,
+  });
+
+  // Admin Trades Uploaded via Portfolio Report (list)
+  const [
+    adminTradesUploadedViaPortfolioReportData,
+    setAdminTradesUploadedViaPortfolioReportData,
+  ] = useState({
+    records: [],
+    totalRecordsDataBase: 0,
+    totalRecordsTable: 0,
+  });
+
   // Reset function to set all states back to initial values
   /* =========================================================
      RESET FUNCTIONS
@@ -330,6 +429,92 @@ export const MyApprovalProvider = ({ children }) => {
   const resetTransactionSummaryHeadOfCompliance = () => {
     setHCOTransactionSummaryReportListData({
       transactions: [],
+      totalRecordsDataBase: 0,
+      totalRecordsTable: 0,
+    });
+  };
+
+  /** Reset Admin User-wise Compliance Report */
+  const resetAdminUserWiseComplianceReportData = () => {
+    setAdminUserWiseComplianceReportData({
+      records: [],
+      totalRecordsDataBase: 0,
+      totalRecordsTable: 0,
+    });
+  };
+
+  /** Reset Admin Policy Breaches Report (list) */
+  const resetAdminPolicyBreachesReportData = () => {
+    setAdminPolicyBreachesReportData({
+      records: [],
+      totalRecordsDataBase: 0,
+      totalRecordsTable: 0,
+    });
+  };
+
+  /** Reset Admin "Policies Breached" drill-down modal */
+  const resetAdminPolicyBreachDetailsData = () => {
+    setAdminPolicyBreachDetailsData({ records: [] });
+  };
+
+  /** Reset Admin Trade Approval Request summary Report */
+  const resetAdminTradeApprovalRequestReportData = () => {
+    setAdminTradeApprovalRequestReportData({
+      records: [],
+      totalRecordsDataBase: 0,
+      totalRecordsTable: 0,
+    });
+  };
+
+  /** Reset Admin Date-wise Transaction Report */
+  const resetAdminDateWiseTransactionReportData = () => {
+    setAdminDateWiseTransactionReportData({
+      records: [],
+      totalRecordsDataBase: 0,
+      totalRecordsTable: 0,
+    });
+  };
+
+  /** Reset Admin Transactions Summary Report (list) */
+  const resetAdminTransactionSummaryReportData = () => {
+    setAdminTransactionSummaryReportData({
+      records: [],
+      totalRecordsDataBase: 0,
+      totalRecordsTable: 0,
+    });
+  };
+
+  /** Reset Admin Transactions Summary Report - View Details */
+  const resetAdminTransactionSummaryViewDetailsData = () => {
+    setAdminTransactionSummaryViewDetailsData({
+      records: [],
+      totalRecordsDataBase: 0,
+      totalRecordsTable: 0,
+    });
+  };
+
+  /** Reset Admin TAT Request Approvals Report (list) */
+  const resetAdminTATRequestApprovalsReportData = () => {
+    setAdminTATRequestApprovalsReportData({
+      records: [],
+      totalRecordsDataBase: 0,
+      totalRecordsTable: 0,
+    });
+  };
+
+  /** Reset Admin TAT Request Approvals Report - View Details */
+  const resetAdminTATRequestApprovalDetailsData = () => {
+    setAdminTATRequestApprovalDetailsData({
+      records: [],
+      totalRecordsDataBase: 0,
+      totalRecordsTable: 0,
+    });
+  };
+
+  /** Reset Admin Trades Uploaded via Portfolio Report (list) */
+  const resetAdminTradesUploadedViaPortfolioReportData = () => {
+    setAdminTradesUploadedViaPortfolioReportData({
+      records: [],
       totalRecordsDataBase: 0,
       totalRecordsTable: 0,
     });
@@ -441,6 +626,47 @@ export const MyApprovalProvider = ({ children }) => {
         htaTATViewDetailsData,
         setHTATATViewDetailsData,
         resetHTATATViewDetails,
+
+        // Admin Reports (2026-08-11)
+        adminUserWiseComplianceReportData,
+        setAdminUserWiseComplianceReportData,
+        resetAdminUserWiseComplianceReportData,
+
+        adminPolicyBreachesReportData,
+        setAdminPolicyBreachesReportData,
+        resetAdminPolicyBreachesReportData,
+
+        adminPolicyBreachDetailsData,
+        setAdminPolicyBreachDetailsData,
+        resetAdminPolicyBreachDetailsData,
+
+        adminTradeApprovalRequestReportData,
+        setAdminTradeApprovalRequestReportData,
+        resetAdminTradeApprovalRequestReportData,
+
+        adminDateWiseTransactionReportData,
+        setAdminDateWiseTransactionReportData,
+        resetAdminDateWiseTransactionReportData,
+
+        adminTransactionSummaryReportData,
+        setAdminTransactionSummaryReportData,
+        resetAdminTransactionSummaryReportData,
+
+        adminTransactionSummaryViewDetailsData,
+        setAdminTransactionSummaryViewDetailsData,
+        resetAdminTransactionSummaryViewDetailsData,
+
+        adminTATRequestApprovalsReportData,
+        setAdminTATRequestApprovalsReportData,
+        resetAdminTATRequestApprovalsReportData,
+
+        adminTATRequestApprovalDetailsData,
+        setAdminTATRequestApprovalDetailsData,
+        resetAdminTATRequestApprovalDetailsData,
+
+        adminTradesUploadedViaPortfolioReportData,
+        setAdminTradesUploadedViaPortfolioReportData,
+        resetAdminTradesUploadedViaPortfolioReportData,
 
         // compliance officer  date wise transaction report
         coDatewiseTransactionReportListData,

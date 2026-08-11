@@ -87,10 +87,10 @@ export const AdminUserWiseComplianceReportFilter = ({
     const { employeeName, departmentName } = localState;
     const searchPayload = {
       ...(currentPath === "/PAD/admin-reports/admin-user-wise-compliance-report"
-        ? adminTradeApprovalRequestReportSearch
+        ? userActivityComplianceReportAdmin
         : currentPath === "/PAD/admin-reports/admin-TAT-Request-report"
           ? adminTATApprovalRequestReportSearch
-          : userActivityComplianceReportAdmin),
+          : adminTradeApprovalRequestReportSearch),
       employeeName: employeeName?.trim() || "",
       departmentName: departmentName?.trim() || "",
       pageNumber: 0,
@@ -99,11 +99,16 @@ export const AdminUserWiseComplianceReportFilter = ({
     if (
       currentPath === "/PAD/admin-reports/admin-user-wise-compliance-report"
     ) {
-      setAdminTradeApprovalRequestReportSearch(searchPayload);
+      // FIXED (2026-08-11): was setting adminTradeApprovalRequestReportSearch
+      // here and setUserActivityComplianceReportAdmin in the else branch below
+      // (for admin-trade-approval-report) - inverted, so filtering on either
+      // page silently updated the OTHER report's search state instead of its
+      // own, and neither page's list ever actually got filtered.
+      setUserActivityComplianceReportAdmin(searchPayload);
     } else if (currentPath === "/PAD/admin-reports/admin-TAT-Request-report") {
       setAdminTATApprovalRequestReportSearch(searchPayload);
     } else {
-      setUserActivityComplianceReportAdmin(searchPayload);
+      setAdminTradeApprovalRequestReportSearch(searchPayload);
     }
     setLocalState(INITIAL_LOCAL_STATE);
     setClear(false);
@@ -114,7 +119,7 @@ export const AdminUserWiseComplianceReportFilter = ({
     if (
       currentPath === "/PAD/admin-reports/admin-user-wise-compliance-report"
     ) {
-      setAdminTradeApprovalRequestReportSearch((prev) => ({
+      setUserActivityComplianceReportAdmin((prev) => ({
         ...prev,
         employeeName: "",
         departmentName: "",
@@ -130,7 +135,7 @@ export const AdminUserWiseComplianceReportFilter = ({
         filterTrigger: true,
       }));
     } else {
-      setUserActivityComplianceReportAdmin((prev) => ({
+      setAdminTradeApprovalRequestReportSearch((prev) => ({
         ...prev,
         employeeName: "",
         departmentName: "",

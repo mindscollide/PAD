@@ -209,9 +209,20 @@ const Dashboard = () => {
         const currentmanageUsersTabRef = manageUsersTabRef.current;
         const { message, payload, roleIDs, action } = data;
         if (!payload) return;
-        // if (action === "WEBNOTIFICATION") {
-        //   apiCallwebNotification();
-        // }
+
+        // FIXED (2026-08-11): per API_Changes/2026-08-10_webnotification_mqtt_contract.md,
+        // WEBNOTIFICATION is NOT routed like other MQTT messages - its BE
+        // sender never sets RoleIDs (always ""), so it must be checked via
+        // data.action up front, not via the roleIDs/message switch below.
+        // The old checks for this lived *inside* the `hasUserRole(...)`
+        // branch further down, which is always false for an empty roleIDs
+        // (hasUserRole short-circuits on `!roleIDs`) - so apiCallwebNotification()
+        // was silently never firing. Handling it here, unconditionally,
+        // fixes that.
+        if (action === "WEBNOTIFICATION") {
+          apiCallwebNotification();
+          return;
+        }
 
         if (hasUserRole(Number(roleIDs))) {
           if (currentRoleIsAdminRefLocal) {
@@ -219,16 +230,10 @@ const Dashboard = () => {
             if (roleIDs !== "1") {
               // not admin MQTT → ignore completely
               return;
-            } else {
-              if (action === "WEBNOTIFICATION") {
-                apiCallwebNotification();
-              }
             }
           } else {
             if (roleIDs !== "1") {
-              if (action === "WEBNOTIFICATION") {
-                apiCallwebNotification();
-              }
+              // fall through to switch below for this user's own role
             } else {
               // its admin MQTT → ignore completely
             }
@@ -549,19 +554,24 @@ const Dashboard = () => {
                 case "LINE_MANAGER_DASHBOARD_DATA": {
                   if (currentKey === "0") {
                     setDashboardData((prev) => {
-                      // FIXED (2026-08-07, per MQTT_Message_Catalog.md #2):
-                      // was reading/writing prev.lineManager (lowercase) -
-                      // dashboardContaxt.jsx's actual state key is
-                      // "LineManager" (capitalized), so the guard below
-                      // always bailed and this message never updated
-                      // dashboard state.
-                      if (!prev?.LineManager) return prev;
-                      const updatedLineManager = { ...prev.LineManager };
+                      // CORRECTED (2026-08-11): the 2026-08-07 "fix" here
+                      // had it backwards. dashboardContaxt.jsx's bare
+                      // useState default does use "LineManager"
+                      // (capitalized), but that default is irrelevant -
+                      // home.jsx's fetchData always replaces the whole
+                      // dashboardData object via roleKeyMap (utills.jsx),
+                      // whose role-3 key is "lineManager" (lowercase) - and
+                      // home.jsx only ever reads dashboardData.lineManager.
+                      // Merging into "LineManager" wrote to a key nothing
+                      // reads, so this MQTT message went on silently
+                      // updating a phantom key instead of the real one.
+                      if (!prev?.lineManager) return prev;
+                      const updatedLineManager = { ...prev.lineManager };
                       Object.keys(payload).forEach((key) => {
                         if (payload[key] !== null)
                           updatedLineManager[key] = payload[key];
                       });
-                      return { ...prev, LineManager: updatedLineManager };
+                      return { ...prev, lineManager: updatedLineManager };
                     });
                   }
                   break;
@@ -590,21 +600,19 @@ const Dashboard = () => {
                 // "TOTAL PENDING APPROVALS" and "APPROVAL REQUIRE URGENT
                 // ACTION"), not a keyed object like the sibling dashboard
                 // messages, so it's re-keyed by each tile's own Label before
-                // merging. Merges into dashboardData.LineManager (matching
-                // the actual state key casing in dashboardContaxt.jsx) - the
-                // neighboring LINE_MANAGER_DASHBOARD_DATA case above used to
-                // merge into a "lineManager" (lowercase) key that never
-                // matched this state and silently no-op'd; that's now fixed
-                // to the same casing (see MQTT_Message_Catalog.md #2).
+                // merging. Merges into dashboardData.lineManager - see the
+                // CORRECTED note on LINE_MANAGER_DASHBOARD_DATA above for
+                // why this is lowercase, not the "LineManager" this
+                // originally used.
                 case "LINE_MANAGER_DASHBOARD_URGENT_SUMMARY_UPDATE": {
                   if (currentKey === "0" && Array.isArray(payload)) {
                     setDashboardData((prev) => {
-                      if (!prev?.LineManager) return prev;
-                      const updated = { ...prev.LineManager };
+                      if (!prev?.lineManager) return prev;
+                      const updated = { ...prev.lineManager };
                       payload.forEach((tile) => {
                         if (tile?.Label) updated[tile.Label] = tile;
                       });
-                      return { ...prev, LineManager: updated };
+                      return { ...prev, lineManager: updated };
                     });
                   }
                   break;
@@ -673,19 +681,23 @@ const Dashboard = () => {
                 case "COMPLIANCE_OFFICER_DASHBOARD_DATA": {
                   if (currentKey === "0") {
                     setDashboardData((prev) => {
-                      // FIXED (2026-08-07, per MQTT_Message_Catalog.md #2):
-                      // was reading/writing prev.complianceOfficer
-                      // (lowercase) - dashboardContaxt.jsx's actual state
-                      // key is "ComplianceOfficer" (capitalized), so the
-                      // guard below always bailed and this message never
-                      // updated dashboard state.
-                      if (!prev?.ComplianceOfficer) return prev;
-                      const updatedEmployee = { ...prev.ComplianceOfficer };
+                      // CORRECTED (2026-08-11): the 2026-08-07 "fix" here
+                      // had it backwards - see the note on
+                      // LINE_MANAGER_DASHBOARD_DATA above. home.jsx's
+                      // fetchData populates dashboardData via roleKeyMap
+                      // (utills.jsx), whose role-4 key is
+                      // "complianceOfficer" (lowercase), and home.jsx only
+                      // ever reads dashboardData.complianceOfficer -
+                      // dashboardContaxt.jsx's unused useState default
+                      // casing ("ComplianceOfficer") isn't what's actually
+                      // read anywhere.
+                      if (!prev?.complianceOfficer) return prev;
+                      const updatedEmployee = { ...prev.complianceOfficer };
                       Object.keys(payload).forEach((key) => {
                         if (payload[key] !== null)
                           updatedEmployee[key] = payload[key];
                       });
-                      return { ...prev, ComplianceOfficer: updatedEmployee };
+                      return { ...prev, complianceOfficer: updatedEmployee };
                     });
                   }
                   break;
@@ -760,22 +772,25 @@ const Dashboard = () => {
               switch (message) {
                 // ADDED (2026-08-07): was completely unhandled (see the
                 // "// missing dashboard" comment this replaces) - merges into
-                // dashboardData.HeadofTradeApproval, same generic key-merge
-                // pattern already used for LM/CO dashboards, using the
-                // correct state key casing (HeadofTradeApproval, matching
-                // dashboardContaxt.jsx's initial state) - the LM/CO siblings
-                // had a lowercase-key mismatch bug of this exact shape,
-                // fixed separately (see MQTT_Message_Catalog.md #2).
+                // dashboardData.headofTradeApproval, same generic key-merge
+                // pattern already used for LM/CO dashboards. CORRECTED
+                // (2026-08-11): originally used "HeadofTradeApproval"
+                // (capitalized), matching dashboardContaxt.jsx's unused
+                // useState default - but home.jsx's fetchData populates
+                // dashboardData via roleKeyMap (utills.jsx), whose role-5
+                // key is "headofTradeApproval" (lowercase 'h'), and
+                // home.jsx only ever reads that casing. Same root cause as
+                // the LM/CO fix above.
                 case "HTA_DASHBOARD_DATA":
                 case "HTA_ESCALATION_DASHBOARD_STATS": {
                   if (currentKey === "0") {
                     setDashboardData((prev) => {
-                      if (!prev?.HeadofTradeApproval) return prev;
-                      const updated = { ...prev.HeadofTradeApproval };
+                      if (!prev?.headofTradeApproval) return prev;
+                      const updated = { ...prev.headofTradeApproval };
                       Object.keys(payload).forEach((key) => {
                         if (payload[key] !== null) updated[key] = payload[key];
                       });
-                      return { ...prev, HeadofTradeApproval: updated };
+                      return { ...prev, headofTradeApproval: updated };
                     });
                   }
                   break;
@@ -854,16 +869,19 @@ const Dashboard = () => {
             case "6": {
               switch (message) {
                 // ADDED (2026-08-07): was completely unhandled - see the
-                // matching HTA case above for the full rationale.
+                // matching HTA case above for the full rationale. CORRECTED
+                // (2026-08-11): "headofComplianceOfficer" (lowercase 'h'),
+                // matching roleKeyMap's role-6 key and what home.jsx
+                // actually reads - not "HeadofComplianceOfficer".
                 case "HOC_ESCALATION_DASHBOARD_STATS": {
                   if (currentKey === "0") {
                     setDashboardData((prev) => {
-                      if (!prev?.HeadofComplianceOfficer) return prev;
-                      const updated = { ...prev.HeadofComplianceOfficer };
+                      if (!prev?.headofComplianceOfficer) return prev;
+                      const updated = { ...prev.headofComplianceOfficer };
                       Object.keys(payload).forEach((key) => {
                         if (payload[key] !== null) updated[key] = payload[key];
                       });
-                      return { ...prev, HeadofComplianceOfficer: updated };
+                      return { ...prev, headofComplianceOfficer: updated };
                     });
                   }
                   break;

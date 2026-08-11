@@ -17,7 +17,6 @@ import {
   mapBuySellToIds,
   mapStatusToIds,
 } from "../../../../components/dropdowns/filters/utils";
-import { getTradeTypeById } from "../../../../common/funtions/type";
 import { withSortIcon } from "../../../../common/funtions/tableIcon";
 
 /**
@@ -32,7 +31,9 @@ export const buildApiRequest = (searchState = {}, assetTypeListingData) => ({
   DepartmentName: searchState.departmentName || "",
   Quantity: Number(searchState.quantity) || 0,
 
-  PageNumber: Number(searchState.pageNumber) || 0,
+  // (pageNumber - 1) * length on the backend - 0 (the search state's
+  // initial value) resolves to page 1 the same as 1 would.
+  PageNumber: Number(searchState.pageNumber) || 1,
   Length: Number(searchState.pageSize) || 10,
 
   StatusIds: mapStatusToIds(searchState.status, 2),
@@ -45,41 +46,36 @@ export const buildApiRequest = (searchState = {}, assetTypeListingData) => ({
 });
 
 /**
- * Maps employee transaction data into a UI-friendly format
+ * Maps GetAdminDateWiseTransactionReportAPI records into a UI-friendly
+ * format. Per API_Changes/2026-08-11_admin_reports_all_apis.md, this is a
+ * flat row shape (unlike CO/HOC's own nested instrument/assetType/
+ * approvalStatus DTOs) - system-wide, one row per Transaction workflow.
  *
- * @param {Object} getEmployeeTransactionReport - API response containing transactions
+ * @param {Object|Array} res - API response ({records, totalRecords}) or a bare array
  * @returns {Array} Mapped transaction list
  */
-export const mappingDateWiseTransactionReport = (
-  assetTypeData,
-  myTradeApprovalLineManagerData = []
-) => {
-  const records = Array.isArray(myTradeApprovalLineManagerData)
-    ? myTradeApprovalLineManagerData
-    : myTradeApprovalLineManagerData?.records || [];
+export const mappingDateWiseTransactionReport = (res = []) => {
+  const records = Array.isArray(res) ? res : res?.records || [];
 
   if (!records.length) return [];
 
   return records.map((item) => ({
-    key: item.tradeApprovalID,
+    key: item.requestID,
     approvalID: item.approvalID,
-    tradeApprovalID: item.tradeApprovalID || "",
-    instrumentCode: item?.instrument?.instrumentCode || "—",
-    instrumentName: item?.instrument?.instrumentName || "—",
-    assetTypeShortCode: item?.assetType?.assetTypeShortCode || "—",
+    requestID: item.requestID,
+    instrumentCode: item.instrumentShortCode || "—",
+    instrumentName: item.instrumentName || "—",
+    assetTypeShortCode: item.assetShortCode || "—",
     transactionDate:
       `${item?.requestDate || ""} ${item?.requestTime || ""}`.trim() || "—",
-    department: item.departmentName,
-    type: getTradeTypeById(assetTypeData, item?.tradeType) || "-",
-    status: item.approvalStatus?.approvalStatusName || "",
+    department: item.departmentName || "",
+    type: item.typeName || "-",
+    status: item.status || "",
     quantity: item.quantity || 0,
-    timeRemainingToTrade: item.timeRemainingToTrade || "",
-    assetType: item.assetType?.assetTypeName || "",
-    assetTypeID: item.assetType?.assetTypeID || 0,
+    assetType: item.assetType || "",
+    assetTypeID: item.assetTypeID || 0,
     employeeName: item.requesterName || "",
     employeeID: item.employeeID || "",
-    approvalComment: item.approvalComment || "",
-    rejectionComment: item.rejectionComment || "",
   }));
 };
 

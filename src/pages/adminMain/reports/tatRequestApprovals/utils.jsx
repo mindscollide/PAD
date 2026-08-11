@@ -1,12 +1,11 @@
 import ArrowUP from "../../../../assets/img/arrow-up-dark.png";
 import ArrowDown from "../../../../assets/img/arrow-down-dark.png";
 import DefaultColumArrow from "../../../../assets/img/default-colum-arrow.png";
-import style from "./tradeApprovalRequest.module.css";
-
-import { toYYMMDD } from "../../../../common/funtions/rejex";
+import style from "./AdminTATRequestApprovals.module.css";
+import { Button } from "../../../../components";
 
 /**
- * Utility: Build API request payload for GetAdminTradeApprovalRequestSummaryAPI
+ * Utility: Build API request payload for GetAdminTATRequestApprovalsAPI
  * per API_Changes/2026-08-11_admin_reports_all_apis.md (dates default to
  * last 6 months on the backend if omitted).
  *
@@ -16,8 +15,8 @@ import { toYYMMDD } from "../../../../common/funtions/rejex";
 export const buildApiRequest = (searchState = {}) => ({
   EmployeeName: searchState.employeeName || "",
   DepartmentName: searchState.departmentName || "",
-  StartDate: searchState.startDate ? toYYMMDD(searchState.startDate) : "",
-  EndDate: searchState.endDate ? toYYMMDD(searchState.endDate) : "",
+  StartDate: searchState.startDate || "",
+  EndDate: searchState.endDate || "",
   // (pageNumber - 1) * length on the backend - 0 (the search state's
   // initial value) resolves to page 1 the same as 1 would.
   PageNumber: Number(searchState.pageNumber) || 1,
@@ -25,8 +24,9 @@ export const buildApiRequest = (searchState = {}) => ({
 });
 
 /**
- * Maps GetAdminTradeApprovalRequestSummaryAPI records into a UI-friendly
- * format. Per-status columns always sum exactly to totalRequests.
+ * Maps GetAdminTATRequestApprovalsAPI records into a UI-friendly format.
+ * avgHours/avgMinutes are returned as separate numbers, not a formatted
+ * string.
  *
  * @param {Object|Array} res - API response ({records, totalRecords}) or a bare array
  * @returns {Array} Mapped list
@@ -41,22 +41,14 @@ export const mapListData = (res = []) => {
     employeeID: item.employeeID,
     employeeName: item.employeeName || "",
     departmentName: item.departmentName || "",
-    totalRequests: item.totalRequests || 0,
-    pending: item.pending || 0,
-    approved: item.approved || 0,
-    declined: item.declined || 0,
-    traded: item.traded || 0,
-    notTraded: item.notTraded || 0,
-    resubmitted: item.resubmitted || 0,
+    requestCount: item.requestCount || 0,
+    avgHours: item.avgHours || 0,
+    avgMinutes: item.avgMinutes || 0,
   }));
 };
 
 /**
  * Returns the appropriate sort icon based on current sort state
- *
- * @param {string} columnKey - The column's key
- * @param {object} sortedInfo - Current sort state from the table
- * @returns {JSX.Element} The sort icon
  */
 const getSortIcon = (columnKey, sortedInfo) => {
   if (sortedInfo?.columnKey === columnKey) {
@@ -88,13 +80,15 @@ const withSortIcon = (label, columnKey, sortedInfo, align = "left") => (
 
 const numericSorter = (field) => (a, b) => Number(a[field] || 0) - Number(b[field] || 0);
 
-export const getBorderlessTableColumns = ({ sortedInfo }) => [
+export const getBorderlessTableColumns = ({
+  sortedInfo,
+  onViewDetails,
+}) => [
   {
     title: withSortIcon("Employee ID", "employeeID", sortedInfo),
     dataIndex: "employeeID",
     key: "employeeID",
-    align: "left",
-    width: "10%",
+    width: "140px",
     ellipsis: true,
     sorter: numericSorter("employeeID"),
     sortDirections: ["ascend", "descend"],
@@ -107,9 +101,8 @@ export const getBorderlessTableColumns = ({ sortedInfo }) => [
     title: withSortIcon("Employee Name", "employeeName", sortedInfo),
     dataIndex: "employeeName",
     key: "employeeName",
-    align: "left",
     ellipsis: true,
-    width: "14%",
+    width: "180px",
     sorter: (a, b) => (a.employeeName || "").localeCompare(b.employeeName || ""),
     sortDirections: ["ascend", "descend"],
     sortOrder: sortedInfo?.columnKey === "employeeName" ? sortedInfo.order : null,
@@ -121,9 +114,8 @@ export const getBorderlessTableColumns = ({ sortedInfo }) => [
     title: withSortIcon("Department", "departmentName", sortedInfo),
     dataIndex: "departmentName",
     key: "departmentName",
-    align: "left",
     ellipsis: true,
-    width: "14%",
+    width: "180px",
     sorter: (a, b) => (a.departmentName || "").localeCompare(b.departmentName || ""),
     sortDirections: ["ascend", "descend"],
     sortOrder: sortedInfo?.columnKey === "departmentName" ? sortedInfo.order : null,
@@ -132,101 +124,54 @@ export const getBorderlessTableColumns = ({ sortedInfo }) => [
     render: (text) => <span className="font-medium">{text}</span>,
   },
   {
-    title: withSortIcon("Total Requests", "totalRequests", sortedInfo, "center"),
-    dataIndex: "totalRequests",
-    key: "totalRequests",
+    title: withSortIcon("Request Count", "requestCount", sortedInfo, "center"),
+    dataIndex: "requestCount",
+    key: "requestCount",
     align: "center",
-    width: "10%",
+    width: "160px",
     ellipsis: true,
-    sorter: numericSorter("totalRequests"),
+    sorter: numericSorter("requestCount"),
     sortDirections: ["ascend", "descend"],
-    sortOrder: sortedInfo?.columnKey === "totalRequests" ? sortedInfo.order : null,
+    sortOrder: sortedInfo?.columnKey === "requestCount" ? sortedInfo.order : null,
     showSorterTooltip: false,
     sortIcon: () => null,
     render: (v) => <span className="font-medium">{v.toLocaleString()}</span>,
   },
   {
-    title: withSortIcon("Pending", "pending", sortedInfo, "center"),
-    dataIndex: "pending",
-    key: "pending",
+    title: withSortIcon("Avg TAT", "avgHours", sortedInfo, "center"),
+    key: "avgTat",
     align: "center",
-    width: "8%",
+    width: "160px",
     ellipsis: true,
-    sorter: numericSorter("pending"),
+    sorter: (a, b) =>
+      (Number(a.avgHours || 0) * 60 + Number(a.avgMinutes || 0)) -
+      (Number(b.avgHours || 0) * 60 + Number(b.avgMinutes || 0)),
     sortDirections: ["ascend", "descend"],
-    sortOrder: sortedInfo?.columnKey === "pending" ? sortedInfo.order : null,
+    sortOrder: sortedInfo?.columnKey === "avgHours" ? sortedInfo.order : null,
     showSorterTooltip: false,
     sortIcon: () => null,
-    render: (v) => <span className="font-medium">{v.toLocaleString()}</span>,
+    render: (_, record) => (
+      <span className="font-medium">
+        {record.avgHours}H, {record.avgMinutes}M
+      </span>
+    ),
   },
   {
-    title: withSortIcon("Approved", "approved", sortedInfo, "center"),
-    dataIndex: "approved",
-    key: "approved",
-    align: "center",
-    width: "8%",
-    ellipsis: true,
-    sorter: numericSorter("approved"),
-    sortDirections: ["ascend", "descend"],
-    sortOrder: sortedInfo?.columnKey === "approved" ? sortedInfo.order : null,
-    showSorterTooltip: false,
-    sortIcon: () => null,
-    render: (v) => <span className="font-medium">{v.toLocaleString()}</span>,
-  },
-  {
-    title: withSortIcon("Declined", "declined", sortedInfo, "center"),
-    dataIndex: "declined",
-    key: "declined",
-    align: "center",
-    width: "8%",
-    ellipsis: true,
-    sorter: numericSorter("declined"),
-    sortDirections: ["ascend", "descend"],
-    sortOrder: sortedInfo?.columnKey === "declined" ? sortedInfo.order : null,
-    showSorterTooltip: false,
-    sortIcon: () => null,
-    render: (v) => <span className="font-medium">{v.toLocaleString()}</span>,
-  },
-  {
-    title: withSortIcon("Traded", "traded", sortedInfo, "center"),
-    dataIndex: "traded",
-    key: "traded",
-    align: "center",
-    width: "8%",
-    ellipsis: true,
-    sorter: numericSorter("traded"),
-    sortDirections: ["ascend", "descend"],
-    sortOrder: sortedInfo?.columnKey === "traded" ? sortedInfo.order : null,
-    showSorterTooltip: false,
-    sortIcon: () => null,
-    render: (v) => <span className="font-medium">{v.toLocaleString()}</span>,
-  },
-  {
-    title: withSortIcon("Not Traded", "notTraded", sortedInfo, "center"),
-    dataIndex: "notTraded",
-    key: "notTraded",
-    align: "center",
-    width: "8%",
-    ellipsis: true,
-    sorter: numericSorter("notTraded"),
-    sortDirections: ["ascend", "descend"],
-    sortOrder: sortedInfo?.columnKey === "notTraded" ? sortedInfo.order : null,
-    showSorterTooltip: false,
-    sortIcon: () => null,
-    render: (v) => <span className="font-medium">{v.toLocaleString()}</span>,
-  },
-  {
-    title: withSortIcon("Resubmitted", "resubmitted", sortedInfo, "center"),
-    dataIndex: "resubmitted",
-    key: "resubmitted",
-    align: "center",
-    width: "10%",
-    ellipsis: true,
-    sorter: numericSorter("resubmitted"),
-    sortDirections: ["ascend", "descend"],
-    sortOrder: sortedInfo?.columnKey === "resubmitted" ? sortedInfo.order : null,
-    showSorterTooltip: false,
-    sortIcon: () => null,
-    render: (v) => <span className="font-medium">{v.toLocaleString()}</span>,
+    title: "",
+    key: "action",
+    width: 150,
+    align: "right",
+    render: (_, record) => (
+      <div
+        className={style.viewEditClass}
+        style={{ display: "flex", alignItems: "center", marginRight: "10px" }}
+      >
+        <Button
+          className="view-large-transparent-button"
+          text={"View Details"}
+          onClick={() => onViewDetails?.(record)}
+        />
+      </div>
+    ),
   },
 ];

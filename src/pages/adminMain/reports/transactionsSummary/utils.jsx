@@ -1,16 +1,9 @@
 import { Button } from "../../../../components";
 
-import TypeColumnTitle from "../../../../components/dropdowns/filters/typeColumnTitle";
-import StatusColumnTitle from "../../../../components/dropdowns/filters/statusColumnTitle";
 import { Tag, Tooltip } from "antd";
 import style from "./transactionsSummary.module.css";
 
 import { formatApiDateTime, toYYMMDD } from "../../../../common/funtions/rejex";
-import { getTradeTypeById } from "../../../../common/funtions/type";
-import {
-  mapBuySellToIds,
-  mapStatusToIds,
-} from "../../../../components/dropdowns/filters/utils";
 import { withSortIcon } from "../../../../common/funtions/tableIcon";
 
 /**
@@ -20,42 +13,35 @@ import { withSortIcon } from "../../../../common/funtions/tableIcon";
  * @returns {Object} API-ready payload
  */
 export const buildApiRequest = (searchState = {}) => ({
-  PageNumber: Number(searchState.pageNumber) || 0,
+  // (pageNumber - 1) * length on the backend - 0 (the search state's
+  // initial value) resolves to page 1 the same as 1 would.
+  PageNumber: Number(searchState.pageNumber) || 1,
   Length: Number(searchState.pageSize) || 10,
-  ToDate: searchState.endDate ? toYYMMDD(searchState.endDate) : "",
-  FromDate: searchState.startDate ? toYYMMDD(searchState.startDate) : "",
+  EndDate: searchState.endDate ? toYYMMDD(searchState.endDate) : "",
+  StartDate: searchState.startDate ? toYYMMDD(searchState.startDate) : "",
 });
 
 /**
- * Maps employee transaction data into a UI-friendly format
+ * Maps GetAdminTransactionSummaryReportAPI records into a UI-friendly
+ * format - one row per calendar date with activity, per
+ * API_Changes/2026-08-11_admin_reports_all_apis.md. transactionDate is a
+ * date only (no time component).
  *
- * @param {Object} getEmployeeTransactionReport - API response containing transactions
- * @returns {Array} Mapped transaction list
+ * @param {Object|Array} res - API response ({records, totalRecords}) or a bare array
+ * @returns {Array} Mapped list
  */
-export const mappingDateWiseTransactionReport = (
-  myTradeApprovalLineManagerData = []
-) => {
-  const records = Array.isArray(myTradeApprovalLineManagerData)
-    ? myTradeApprovalLineManagerData
-    : myTradeApprovalLineManagerData?.records || [];
+export const mappingDateWiseTransactionReport = (res = []) => {
+  const records = Array.isArray(res) ? res : res?.records || [];
 
   if (!records.length) return [];
 
   return records.map((item) => ({
-    key:
-      item.transactionDate +
-      item.totalEmployees +
-      item.compliantTransactions +
-      item.totalTransactions +
-      item.nonCompliantTransactions,
-    totalEmployees: item.totalEmployees,
+    key: item.transactionDate,
+    totalEmployees: item.totalEmployees || 0,
     totalTransactions: item.totalTransactions || 0,
     compliantTransactions: item.compliantTransactions || 0,
     nonCompliantTransactions: item.nonCompliantTransactions || 0,
-    transactionDate:
-      [item?.transactionDate, item?.transactionTime]
-        .filter(Boolean)
-        .join(" ") || "—",
+    transactionDate: item.transactionDate || "—",
   }));
 };
 
@@ -126,40 +112,6 @@ export const getBorderlessTableColumns = ({
     render: (q) => <span>{q.toLocaleString()}</span>,
   },
   {
-    title: withSortIcon("Action By", "actionName", sortedInfo),
-    dataIndex: "actionName",
-    key: "actionName",
-    ellipsis: true,
-    width: 100,
-    sorter: (a, b) => a.actionName - b.actionName,
-    sortDirections: ["ascend", "descend"],
-    sortOrder: sortedInfo?.columnKey === "actionName" ? sortedInfo.order : null,
-    showSorterTooltip: false,
-    sortIcon: () => null,
-    render: (q) => <span className="font-medium">{q.toLocaleString()}</span>,
-  },
-  {
-    title: withSortIcon("Action Date", "actionDateTime", sortedInfo),
-    dataIndex: "actionDateTime",
-    key: "actionDateTime",
-    width: 140,
-    ellipsis: true,
-    sorter: (a, b) =>
-      formatApiDateTime(a.actionDateTime).localeCompare(
-        formatApiDateTime(b.actionDateTime)
-      ),
-    sortDirections: ["ascend", "descend"],
-    sortOrder:
-      sortedInfo?.columnKey === "actionDateTime" ? sortedInfo.order : null,
-    showSorterTooltip: false,
-    sortIcon: () => null,
-    render: (date, record) => (
-      <span id={`cell-${record.key}-actionDateTime`} className="text-gray-600">
-        {formatApiDateTime(date)}
-      </span>
-    ),
-  },
-  {
     title: withSortIcon(
       "Compliant Transactions",
       "compliantTransactions",
@@ -223,54 +175,58 @@ export const getBorderlessTableColumns = ({
   },
 ];
 
-export const buildApiRequestViewDetails = (
-  searchState = {},
-  assetTypeListingData
-) => ({
-  PageNumber: Number(searchState.pageNumber) || 0,
+export const buildApiRequestViewDetails = (searchState = {}) => ({
+  // (pageNumber - 1) * length on the backend - 0 (the search state's
+  // initial value) resolves to page 1 the same as 1 would.
+  PageNumber: Number(searchState.pageNumber) || 1,
   Length: Number(searchState.pageSize) || 10,
   TransactionDate: searchState.transactionDate,
-  QuantitySearch: searchState.quantitySearch,
-  InstrumentNameSearch: searchState.instrumentNameSearch,
-  RequesterNameSearch: searchState.requesterNameSearch,
-  StatusIds: mapStatusToIds(searchState.status, 2),
-  TypeIds: mapBuySellToIds(searchState.type, assetTypeListingData?.Equities),
+  QuantitySearch: searchState.quantitySearch || "",
+  InstrumentNameSearch: searchState.instrumentNameSearch || "",
+  RequesterNameSearch: searchState.requesterNameSearch || "",
 });
 
-export const mappingDateWiseTransactionviewDetailst = (
-  assetTypeData,
-  myTradeApprovalLineManagerData = []
-) => {
-  const records = Array.isArray(myTradeApprovalLineManagerData)
-    ? myTradeApprovalLineManagerData
-    : myTradeApprovalLineManagerData?.records || [];
+/**
+ * Maps GetAdminTransactionSummaryViewDetailsAPI records into a UI-friendly
+ * format. Per SRS, Admin's View Details has 2 extra columns vs CO/HOC -
+ * Action By (parsed from actionByJson, a JSON string) and Action Date.
+ *
+ * @param {Object|Array} res - API response ({records, totalRecords}) or a bare array
+ * @returns {Array} Mapped list
+ */
+export const mappingDateWiseTransactionviewDetailst = (res = []) => {
+  const records = Array.isArray(res) ? res : res?.records || [];
 
   if (!records.length) return [];
 
-  return records.map((item) => ({
-    key: item.workFlowID,
-    actionName: item.actionName || "",
-    actionDateTime:
-      `${item?.actionDate || ""} ${item?.actionTime || ""}`.trim() || "—",
-    approvalID: item.approvalID,
-    tradeApprovalID: item.tradeApprovalID || "",
-    instrumentCode: item?.instrumentShortCode || "—",
-    instrumentName: item?.instrumentName || "—",
-    assetTypeShortCode: item?.assetShortCode || "—",
-    transactionDate:
-      `${item?.creationDate || ""} ${item?.creationTime || ""}`.trim() || "—",
-    department: item.departmentName,
-    type: getTradeTypeById(assetTypeData, item?.tradeType) || "-",
-    status: item.approvalStatus?.approvalStatusName || "",
-    quantity: item.quantity || 0,
-    timeRemainingToTrade: item.timeRemainingToTrade || "",
-    assetType: item.assetType?.assetTypeName || "",
-    assetTypeID: item.assetType?.assetTypeID || 0,
-    employeeName: item.requesterName || "",
-    employeeID: item.employeeID || "",
-    accetanceComments: item.accetanceComments || "",
-    rejectionComment: item.rejectionComment || "",
-  }));
+  return records.map((item) => {
+    let actionBy = "—";
+    try {
+      const actors = item.actionByJson ? JSON.parse(item.actionByJson) : [];
+      if (Array.isArray(actors) && actors.length) {
+        actionBy = actors.map((a) => a.fullName || a.FullName).join(", ");
+      }
+    } catch (error) {
+      console.error("Failed to parse actionByJson", error);
+    }
+
+    return {
+      key: item.requestID,
+      requestID: item.requestID,
+      approvalID: item.requestID,
+      instrumentName: item.instrumentName || "—",
+      employeeName: item.requesterName || "",
+      employeeID: item.requesterID || "",
+      type: item.tradeType || "-",
+      status: item.status || "",
+      statusID: item.statusID,
+      quantity: item.quantity || 0,
+      approvalComment: item.approvalComment || "",
+      rejectionComment: item.rejectionComment || "",
+      actionBy,
+      actionDate: item.actionDate || "—",
+    };
+  });
 };
 /**
  * Renders status tag with appropriate styling
@@ -299,20 +255,6 @@ const renderStatusTag = (status, approvalStatusMap) => {
     </Tag>
   );
 };
-const withFilterHeader = (FilterComponent) => (
-  <div
-    className={style["table-header-wrapper"]}
-    style={{
-      display: "flex",
-      alignItems: "center",
-      minHeight: "32px",
-      width: "100%",
-    }}
-  >
-    <FilterComponent />
-  </div>
-);
-
 const numberSorter = (key) => (a, b) =>
   Number(String(a[key] || 0).replace(/[^\d]/g, "")) -
   Number(String(b[key] || 0).replace(/[^\d]/g, ""));
@@ -320,9 +262,6 @@ const numberSorter = (key) => (a, b) =>
 export const getBorderlessTableColumnsViewDetails = ({
   approvalStatusMap,
   sortedInfoView,
-  coTransactionsSummarysReportsViewDetailsSearch,
-  setCOTransactionsSummarysReportsViewDetailSearch,
-  handelViewDetails,
   setIsViewComments,
 }) => [
   {
@@ -382,60 +321,71 @@ export const getBorderlessTableColumnsViewDetails = ({
         : null,
     showSorterTooltip: false,
     sortIcon: () => null,
-    render: (instrument, record) => {
-      const assetCode = record?.assetTypeShortCode;
-      const code = record?.instrumentCode || "";
-      const instrumentName = record?.instrumentName || "";
-
-      return (
-        <div
+    render: (instrumentName) => (
+      <Tooltip title={instrumentName} placement="topLeft">
+        <span
+          className="font-medium"
           style={{
-            display: "flex",
-            alignItems: "center",
-            gap: "12px",
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+            whiteSpace: "nowrap",
+            maxWidth: "200px",
+            display: "inline-block",
           }}
         >
-          <span className="custom-shortCode-asset" style={{ minWidth: 30 }}>
-            {assetCode?.substring(0, 2).toUpperCase()}
-          </span>
-          <Tooltip title={instrumentName} placement="topLeft">
-            <span
-              className="font-medium"
-              style={{
-                overflow: "hidden",
-                textOverflow: "ellipsis",
-                whiteSpace: "nowrap",
-                maxWidth: "200px",
-                display: "inline-block",
-                cursor: "pointer",
-              }}
-              title={code}
-            >
-              {code}
-            </span>
-          </Tooltip>
-        </div>
-      );
-    },
+          {instrumentName || "—"}
+        </span>
+      </Tooltip>
+    ),
+  },
+  {
+    // ADDED per SRS: Admin's View Details has 2 extra columns vs CO/HOC -
+    // Action By and Action Date - so the Admin can see which Compliance
+    // Officer took action.
+    title: withSortIcon("Action By", "actionBy", sortedInfoView),
+    dataIndex: "actionBy",
+    key: "actionBy",
+    align: "left",
+    width: 200,
+    ellipsis: true,
+    sorter: (a, b) => (a.actionBy || "").localeCompare(b.actionBy || ""),
+    sortDirections: ["ascend", "descend"],
+    sortOrder:
+      sortedInfoView?.columnKey === "actionBy" ? sortedInfoView.order : null,
+    showSorterTooltip: false,
+    sortIcon: () => null,
+    render: (text) => (
+      <Tooltip title={text} placement="topLeft">
+        <span
+          className="font-medium"
+          style={{
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+            whiteSpace: "nowrap",
+            maxWidth: "200px",
+            display: "inline-block",
+          }}
+        >
+          {text}
+        </span>
+      </Tooltip>
+    ),
   },
   {
     title: withSortIcon(
-      "Initiated at",
-      "transactionDate",
+      "Action Date",
+      "actionDate",
       sortedInfoView,
       "center"
     ),
-    dataIndex: "transactionDate",
-    key: "transactionDate",
+    dataIndex: "actionDate",
+    key: "actionDate",
     align: "center",
-    width: 200,
+    width: 180,
     ellipsis: true,
-    sorter: (a, b) =>
-      (a?.transactionDate || "").localeCompare(b?.transactionDate || ""),
+    sorter: (a, b) => (a?.actionDate || "").localeCompare(b?.actionDate || ""),
     sortOrder:
-      sortedInfoView?.columnKey === "transactionDate"
-        ? sortedInfoView.order
-        : null,
+      sortedInfoView?.columnKey === "actionDate" ? sortedInfoView.order : null,
     showSorterTooltip: false,
     sortIcon: () => null,
     render: (date) => (
@@ -445,20 +395,14 @@ export const getBorderlessTableColumnsViewDetails = ({
     ),
   },
   {
-    title: withFilterHeader(() => (
-      <TypeColumnTitle
-        state={coTransactionsSummarysReportsViewDetailsSearch}
-        setState={setCOTransactionsSummarysReportsViewDetailSearch}
-      />
-    )),
+    // NOTE: Type is not server-filterable for Admin's View Details -
+    // GetAdminTransactionSummaryViewDetailsAPI's request has no TypeIds
+    // param (unlike CO/HOC's own equivalent) - plain column, no filter.
+    title: "Type",
     dataIndex: "type",
-    width: 150,
+    width: 100,
     key: "type",
     ellipsis: true,
-    filteredValue: coTransactionsSummarysReportsViewDetailsSearch.type?.length
-      ? coTransactionsSummarysReportsViewDetailsSearch.type
-      : null,
-    onFilter: () => true, // Actual filtering handled by API
     render: (type, record) => (
       <span
         id={`cell-${record.key}-type`}
@@ -496,20 +440,14 @@ export const getBorderlessTableColumnsViewDetails = ({
     ),
   },
   {
-    title: withFilterHeader(() => (
-      <StatusColumnTitle
-        state={coTransactionsSummarysReportsViewDetailsSearch}
-        setState={setCOTransactionsSummarysReportsViewDetailSearch}
-      />
-    )),
+    // NOTE: Status is not server-filterable for Admin's View Details -
+    // GetAdminTransactionSummaryViewDetailsAPI's request has no StatusIds
+    // param (unlike CO/HOC's own equivalent) - plain column, no filter.
+    title: "Status",
     width: 200,
     dataIndex: "status",
     key: "status",
     ellipsis: true,
-    filteredValue: coTransactionsSummarysReportsViewDetailsSearch.status?.length
-      ? coTransactionsSummarysReportsViewDetailsSearch.status
-      : null,
-    onFilter: () => true,
     render: (status, record) => (
       <div id={`cell-${record.key}-status`}>
         {renderStatusTag(status, approvalStatusMap)}

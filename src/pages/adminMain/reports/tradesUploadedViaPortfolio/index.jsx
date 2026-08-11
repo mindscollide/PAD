@@ -1,24 +1,20 @@
 import React, { useEffect, useState, useRef, useCallback } from "react";
 import { Breadcrumb, Col, Row } from "antd";
-import Excel from "../../../../assets/img/xls.png";
 import { UpOutlined, DownOutlined } from "@ant-design/icons";
+import Excel from "../../../../assets/img/xls.png";
+
 // 🔹 Components
 import BorderlessTable from "../../../../components/tables/borderlessTable/borderlessTable";
 import PageLayout from "../../../../components/pageContainer/pageContainer";
 
 // 🔹 Table Config
-import {
-  buildApiRequest,
-  getBorderlessTableColumns,
-  mapListData,
-} from "./utils";
+import { buildApiRequest, getBorderlessTableColumns, mapListData } from "./utils";
+import { approvalStatusMap } from "../../../../components/tables/borderlessTable/utill";
+
 // 🔹 Styles
-import style from "./tradeApprovalRequest.module.css";
+import style from "./TradesUploadedViaPortfolio.module.css";
 import { useMyApproval } from "../../../../context/myApprovalContaxt";
-import {
-  ExportHTATradeApprovalRequestsExcelReport,
-  GetAdminTradeApprovalRequestSummaryAPI,
-} from "../../../../api/myApprovalApi";
+import { GetAdminTradesUploadedViaPortfolioAPI } from "../../../../api/myApprovalApi";
 import { useNotification } from "../../../../components/NotificationProvider/NotificationProvider";
 import { useApi } from "../../../../context/ApiContext";
 import { useGlobalLoader } from "../../../../context/LoaderContext";
@@ -26,38 +22,42 @@ import { useNavigate } from "react-router-dom";
 import { useSearchBarContext } from "../../../../context/SearchBarContaxt";
 import { useTableScrollBottom } from "../../../../common/funtions/scroll";
 import CustomButton from "../../../../components/buttons/button";
-import { toYYMMDD } from "../../../../common/funtions/rejex";
 
-const TradeApprovalRequestReport = () => {
+/**
+ * Admin Trades Uploaded via Portfolio report - list only, per
+ * API_Changes/2026-08-11_admin_reports_all_apis.md (item 8).
+ */
+const AdminTradesUploadedViaPortfolio = () => {
   const navigate = useNavigate();
   const hasFetched = useRef(false);
-  const tableScrollEmployeeTransaction = useRef(null);
+  const tableScrollRef = useRef(null);
 
   // -------------------- Contexts --------------------
   const { callApi } = useApi();
   const { showNotification } = useNotification();
   const { showLoader } = useGlobalLoader();
   const {
-    adminTradeApprovalRequestReportData,
-    setAdminTradeApprovalRequestReportData,
-    resetAdminTradeApprovalRequestReportData,
+    adminTradesUploadedViaPortfolioReportData,
+    setAdminTradesUploadedViaPortfolioReportData,
+    resetAdminTradesUploadedViaPortfolioReportData,
   } = useMyApproval();
 
   const {
-    adminTradeApprovalRequestReportSearch,
-    setAdminTradeApprovalRequestReportSearch,
-    resetAdminTradeApprovalRequestReportSearch,
+    adminTradesUploadedviaPortfolioReportSearch,
+    setAdminTradesUploadedviaPortfolioReportSearch,
+    resetAdminTradesUploadedviaPortfolioReportSearch,
   } = useSearchBarContext();
 
   // -------------------- Local State --------------------
   const [sortedInfo, setSortedInfo] = useState({});
   const [loadingMore, setLoadingMore] = useState(false);
   const [open, setOpen] = useState(false);
+
   // -------------------- Helpers --------------------
 
   /**
-   * Fetches the Trade Approval Request summary list from
-   * GetAdminTradeApprovalRequestSummaryAPI.
+   * Fetches the Trades Uploaded via Portfolio list from
+   * GetAdminTradesUploadedViaPortfolioAPI.
    * @param {object} requestData - API request payload
    * @param {boolean} replace - if true, replace the table rows; else append (lazy load)
    */
@@ -66,7 +66,7 @@ const TradeApprovalRequestReport = () => {
       if (!requestData || typeof requestData !== "object") return;
       if (showLoaderFlag) showLoader(true);
 
-      const res = await GetAdminTradeApprovalRequestSummaryAPI({
+      const res = await GetAdminTradesUploadedViaPortfolioAPI({
         callApi,
         showNotification,
         showLoader,
@@ -77,14 +77,14 @@ const TradeApprovalRequestReport = () => {
       const mapped = mapListData(res);
       if (!Array.isArray(mapped)) return;
 
-      setAdminTradeApprovalRequestReportData((prev) => ({
+      setAdminTradesUploadedViaPortfolioReportData((prev) => ({
         records: replace ? mapped : [...(prev?.records || []), ...mapped],
         totalRecordsDataBase: res?.totalRecords || 0,
         totalRecordsTable: replace
           ? mapped.length
           : (prev?.totalRecordsTable || 0) + mapped.length,
       }));
-      setAdminTradeApprovalRequestReportSearch((prev) => {
+      setAdminTradesUploadedviaPortfolioReportSearch((prev) => {
         const next = {
           ...prev,
           pageNumber: replace ? 2 : (prev.pageNumber || 1) + 1,
@@ -102,39 +102,38 @@ const TradeApprovalRequestReport = () => {
   useEffect(() => {
     if (hasFetched.current) return;
     hasFetched.current = true;
-    const requestData = buildApiRequest(adminTradeApprovalRequestReportSearch);
+    const requestData = buildApiRequest(adminTradesUploadedviaPortfolioReportSearch);
     fetchApiCall(requestData, true, true);
   }, []);
 
   // Reset on Unmount
   useEffect(() => {
     return () => {
-      // Reset search state for fresh load
-      resetAdminTradeApprovalRequestReportSearch();
-      resetAdminTradeApprovalRequestReportData();
+      resetAdminTradesUploadedviaPortfolioReportSearch();
+      resetAdminTradesUploadedViaPortfolioReportData();
     };
   }, []);
 
   // 🔹 call api on search
   useEffect(() => {
-    if (adminTradeApprovalRequestReportSearch?.filterTrigger) {
-      const requestData = buildApiRequest(adminTradeApprovalRequestReportSearch);
+    if (adminTradesUploadedviaPortfolioReportSearch?.filterTrigger) {
+      const requestData = buildApiRequest(adminTradesUploadedviaPortfolioReportSearch);
       fetchApiCall(requestData, true, true);
     }
-  }, [adminTradeApprovalRequestReportSearch?.filterTrigger]);
+  }, [adminTradesUploadedviaPortfolioReportSearch?.filterTrigger]);
 
   // 🔹 Infinite Scroll (lazy loading)
   useTableScrollBottom(
     async () => {
       if (
-        adminTradeApprovalRequestReportData?.totalRecordsDataBase <=
-        adminTradeApprovalRequestReportData?.totalRecordsTable
+        adminTradesUploadedViaPortfolioReportData?.totalRecordsDataBase <=
+        adminTradesUploadedViaPortfolioReportData?.totalRecordsTable
       )
         return;
 
       try {
         setLoadingMore(true);
-        const requestData = buildApiRequest(adminTradeApprovalRequestReportSearch);
+        const requestData = buildApiRequest(adminTradesUploadedviaPortfolioReportSearch);
         await fetchApiCall(requestData, false, false);
       } catch (err) {
         console.error("Error loading more:", err);
@@ -147,16 +146,23 @@ const TradeApprovalRequestReport = () => {
   );
 
   // -------------------- Table Columns --------------------
-  const columns = getBorderlessTableColumns({ sortedInfo });
+  const columns = getBorderlessTableColumns({
+    approvalStatusMap,
+    sortedInfo,
+    adminTradesUploadedviaPortfolioReportSearch,
+    setAdminTradesUploadedviaPortfolioReportSearch,
+  });
 
   /** 🔹 Handle removing individual filter */
   const handleRemoveFilter = (key) => {
     const resetMap = {
+      instrumentName: { instrumentName: "" },
       employeeName: { employeeName: "" },
-      departmentName: { departmentName: "" },
+      quantity: { quantity: 0 },
+      dateRange: { startDate: null, endDate: null },
     };
 
-    setAdminTradeApprovalRequestReportSearch((prev) => ({
+    setAdminTradesUploadedviaPortfolioReportSearch((prev) => ({
       ...prev,
       ...resetMap[key],
       pageNumber: 0,
@@ -166,10 +172,13 @@ const TradeApprovalRequestReport = () => {
 
   /** 🔹 Handle removing all filters */
   const handleRemoveAllFilters = () => {
-    setAdminTradeApprovalRequestReportSearch((prev) => ({
+    setAdminTradesUploadedviaPortfolioReportSearch((prev) => ({
       ...prev,
+      instrumentName: "",
       employeeName: "",
-      departmentName: "",
+      quantity: 0,
+      startDate: null,
+      endDate: null,
       pageNumber: 0,
       filterTrigger: true,
     }));
@@ -177,49 +186,34 @@ const TradeApprovalRequestReport = () => {
 
   /** 🔹 Build Active Filters */
   const activeFilters = (() => {
-    const { employeeName, departmentName } =
-      adminTradeApprovalRequestReportSearch || {};
+    const { instrumentName, employeeName, quantity, startDate, endDate } =
+      adminTradesUploadedviaPortfolioReportSearch || {};
 
     return [
+      instrumentName && {
+        key: "instrumentName",
+        label: "Instrument",
+        value:
+          instrumentName.length > 13 ? instrumentName.slice(0, 13) + "..." : instrumentName,
+      },
       employeeName && {
         key: "employeeName",
         label: "Employee",
-        value:
-          employeeName.length > 13
-            ? employeeName.slice(0, 13) + "..."
-            : employeeName,
+        value: employeeName.length > 13 ? employeeName.slice(0, 13) + "..." : employeeName,
       },
-
-      departmentName && {
-        key: "departmentName",
-        label: "Department",
-        value:
-          departmentName.length > 13
-            ? departmentName.slice(0, 13) + "..."
-            : departmentName,
+      quantity > 0 && {
+        key: "quantity",
+        label: "Quantity",
+        value: Number(quantity).toLocaleString("en-US"),
       },
+      startDate &&
+        endDate && {
+          key: "dateRange",
+          label: "Date",
+          value: `${startDate} → ${endDate}`,
+        },
     ].filter(Boolean);
   })();
-
-  // 🔷 Excel Report download Api Hit
-  const downloadMyTradeApprovalLineManagerInExcelFormat = async () => {
-    showLoader(true);
-    const requestdata = {
-      StartDate:
-        toYYMMDD(adminTradeApprovalRequestReportSearch.startDate) || null,
-      EndDate: toYYMMDD(adminTradeApprovalRequestReportSearch.endDate) || null,
-      SearchEmployeeName: adminTradeApprovalRequestReportSearch.employeeName,
-      SearchDepartmentName:
-        adminTradeApprovalRequestReportSearch.departmentName,
-    };
-
-    await ExportHTATradeApprovalRequestsExcelReport({
-      callApi,
-      showLoader,
-      requestdata: requestdata,
-      navigate,
-    });
-  };
 
   // -------------------- Render --------------------
   return (
@@ -243,7 +237,7 @@ const TradeApprovalRequestReport = () => {
               {
                 title: (
                   <span className={style.breadcrumbText}>
-                    Trade Approval Request Report
+                    Trades Uploaded via Portfolio
                   </span>
                 ),
               },
@@ -267,17 +261,10 @@ const TradeApprovalRequestReport = () => {
             />
           </div>
 
-          {/* 🔷 Export Dropdown */}
+          {/* 🔷 Export Dropdown - out of scope per doc, disabled until built */}
           {open && (
             <div className={style.dropdownExport}>
-              {/* <div className={style.dropdownItem}>
-                <img src={PDF} alt="PDF" draggable={false} />
-                <span>Export PDF</span>
-              </div> */}
-              <div
-                className={style.dropdownItem}
-                onClick={downloadMyTradeApprovalLineManagerInExcelFormat}
-              >
+              <div className={style.dropdownItem} style={{ opacity: 0.5, cursor: "not-allowed" }}>
                 <img src={Excel} alt="Excel" draggable={false} />
                 <span>Export Excel</span>
               </div>
@@ -285,6 +272,7 @@ const TradeApprovalRequestReport = () => {
           )}
         </Col>
       </Row>
+
       {/* 🔹 Active Filter Tags */}
       {activeFilters.length > 0 && (
         <Row gutter={[12, 12]} className={style["filter-tags-container"]}>
@@ -302,7 +290,6 @@ const TradeApprovalRequestReport = () => {
             </Col>
           ))}
 
-          {/* 🔹 Show Clear All only if more than one filter */}
           {activeFilters.length > 1 && (
             <Col>
               <div
@@ -315,30 +302,26 @@ const TradeApprovalRequestReport = () => {
           )}
         </Row>
       )}
-      {/* 🔹 Transactions Table */}
+
+      {/* 🔹 Table */}
       <PageLayout
         background="white"
         style={{ marginTop: "3px" }}
-        className={
-          activeFilters.length > 0 ? "changeHeightreports" : "repotsHeight"
-        }
+        className={activeFilters.length > 0 ? "changeHeightreports" : "repotsHeight"}
       >
         <div className="px-4 md:px-6 lg:px-8 ">
           <BorderlessTable
-            rows={adminTradeApprovalRequestReportData?.records}
+            rows={adminTradesUploadedViaPortfolioReportData?.records}
             columns={columns}
             classNameTable="border-less-table-blue"
             scroll={
-              adminTradeApprovalRequestReportData?.records?.length
-                ? {
-                    x: "max-content",
-                    y: activeFilters.length > 0 ? 450 : 500,
-                  }
+              adminTradesUploadedViaPortfolioReportData?.records?.length
+                ? { x: "max-content", y: activeFilters.length > 0 ? 450 : 500 }
                 : undefined
             }
             onChange={(pagination, filters, sorter) => setSortedInfo(sorter)}
             loading={loadingMore}
-            ref={tableScrollEmployeeTransaction}
+            ref={tableScrollRef}
           />
         </div>
       </PageLayout>
@@ -346,4 +329,4 @@ const TradeApprovalRequestReport = () => {
   );
 };
 
-export default TradeApprovalRequestReport;
+export default AdminTradesUploadedViaPortfolio;
