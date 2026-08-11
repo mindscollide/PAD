@@ -22,10 +22,7 @@ import style from "./dataWiseTransactionsReports.module.css";
 import { useMyApproval } from "../../../../context/myApprovalContaxt";
 import {
   DownloadComplianceOfficerDateWiseTransactionReportRequestAPI,
-  DownloadLineManagerMyTradeApprovalReportRequestAPI,
-  DownloadMyTransactionReportRequestAPI,
-  SearchComplianceOfficerDateWiseTransactionRequest,
-  SearchLineManagerTradeApprovalRequestApi,
+  GetAdminDateWiseTransactionReportAPI,
 } from "../../../../api/myApprovalApi";
 import { useNotification } from "../../../../components/NotificationProvider/NotificationProvider";
 import { useApi } from "../../../../context/ApiContext";
@@ -33,7 +30,6 @@ import { useGlobalLoader } from "../../../../context/LoaderContext";
 import { useNavigate } from "react-router-dom";
 import { useSearchBarContext } from "../../../../context/SearchBarContaxt";
 import { useDashboardContext } from "../../../../context/dashboardContaxt";
-import { getSafeAssetTypeData } from "../../../../common/funtions/assetTypesList";
 import { useTableScrollBottom } from "../../../../common/funtions/scroll";
 import CustomButton from "../../../../components/buttons/button";
 import { DateRangePicker } from "../../../../components";
@@ -52,8 +48,9 @@ const AdmindataWiseTransactionsReports = () => {
   const { showNotification } = useNotification();
   const { showLoader } = useGlobalLoader();
   const {
-    coDatewiseTransactionReportListData,
-    setCODatewiseTransactionReportListData,
+    adminDateWiseTransactionReportData,
+    setAdminDateWiseTransactionReportData,
+    resetAdminDateWiseTransactionReportData,
   } = useMyApproval();
 
   const { isViewComments, setIsViewComments, setCheckTradeApprovalID } =
@@ -65,8 +62,7 @@ const AdmindataWiseTransactionsReports = () => {
     resetComplianceOfficerDateWiseTransationReportSearch,
   } = useSearchBarContext();
 
-  const { assetTypeListingData, setAssetTypeListingData } =
-    useDashboardContext();
+  const { assetTypeListingData } = useDashboardContext();
 
   const { setReconcileTransactionViewDetailData } = useReconcileContext();
 
@@ -85,7 +81,7 @@ const AdmindataWiseTransactionsReports = () => {
     async (requestData, replace = false, showLoaderFlag = true) => {
       if (!requestData || typeof requestData !== "object") return;
       if (showLoaderFlag) showLoader(true);
-      const res = await SearchComplianceOfficerDateWiseTransactionRequest({
+      const res = await GetAdminDateWiseTransactionReportAPI({
         callApi,
         showNotification,
         showLoader,
@@ -93,39 +89,20 @@ const AdmindataWiseTransactionsReports = () => {
         navigate,
       });
 
-      // ✅ Always get the freshest version (from memory or session)
-      const currentAssetTypeData = getSafeAssetTypeData(
-        assetTypeListingData,
-        setAssetTypeListingData
-      );
+      const mapped = mappingDateWiseTransactionReport(res);
+      if (!Array.isArray(mapped)) return;
 
-      const records = Array.isArray(res?.complianceOfficerApprovals)
-        ? res.complianceOfficerApprovals
-        : [];
-      console.log("records", records);
-      const mapped = mappingDateWiseTransactionReport(
-        currentAssetTypeData?.Equities,
-        records
-      );
-      if (!mapped || typeof mapped !== "object") return;
-      console.log("records", mapped);
-
-      setCODatewiseTransactionReportListData((prev) => ({
-        complianceOfficerApprovalsList: replace
-          ? mapped
-          : [...(prev?.complianceOfficerApprovalsList || []), ...mapped],
-        // this is for to run lazy loading its data comming from database of total data in db
+      setAdminDateWiseTransactionReportData((prev) => ({
+        records: replace ? mapped : [...(prev?.records || []), ...mapped],
         totalRecordsDataBase: res?.totalRecords || 0,
-        // this is for to know how mush dta currently fetch from  db
         totalRecordsTable: replace
           ? mapped.length
-          : coDatewiseTransactionReportListData.totalRecordsTable +
-            mapped.length,
+          : (prev?.totalRecordsTable || 0) + mapped.length,
       }));
       setCODatewiseTransactionReportSearch((prev) => {
         const next = {
           ...prev,
-          pageNumber: replace ? mapped.length : prev.pageNumber + mapped.length,
+          pageNumber: replace ? 2 : (prev.pageNumber || 1) + 1,
         };
 
         // this is for check if filter value get true only on that it will false
@@ -136,14 +113,7 @@ const AdmindataWiseTransactionsReports = () => {
         return next;
       });
     },
-    [
-      assetTypeListingData,
-      callApi,
-      navigate,
-      setCODatewiseTransactionReportSearch,
-      showLoader,
-      showNotification,
-    ]
+    [callApi, navigate, showLoader, showNotification]
   );
 
 
@@ -165,6 +135,7 @@ const AdmindataWiseTransactionsReports = () => {
     return () => {
       // Reset search state for fresh load
       resetComplianceOfficerDateWiseTransationReportSearch();
+      resetAdminDateWiseTransactionReportData();
     };
   }, []);
 
@@ -183,8 +154,8 @@ const AdmindataWiseTransactionsReports = () => {
   useTableScrollBottom(
     async () => {
       if (
-        coDatewiseTransactionReportListData?.totalRecordsDataBase <=
-        coDatewiseTransactionReportListData?.totalRecordsTable
+        adminDateWiseTransactionReportData?.totalRecordsDataBase <=
+        adminDateWiseTransactionReportData?.totalRecordsTable
       )
         return;
 
@@ -460,14 +431,11 @@ const AdmindataWiseTransactionsReports = () => {
       >
         <div className="px-4 md:px-6 lg:px-8 ">
           <BorderlessTable
-            rows={
-              coDatewiseTransactionReportListData?.complianceOfficerApprovalsList
-            }
+            rows={adminDateWiseTransactionReportData?.records}
             columns={columns}
             classNameTable="border-less-table-blue"
             scroll={
-              coDatewiseTransactionReportListData
-                ?.complianceOfficerApprovalsList?.length
+              adminDateWiseTransactionReportData?.records?.length
                 ? {
                     x: "max-content",
                     y: activeFilters.length > 0 ? 450 : 500,
