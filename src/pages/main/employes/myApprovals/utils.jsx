@@ -376,7 +376,6 @@ export const getBorderlessTableColumns = ({
     )),
     dataIndex: "type",
     key: "type",
-    // ellipsis: true,
     width: 120,
     filteredValue: employeeMyApprovalSearch.type?.length
       ? employeeMyApprovalSearch.type
@@ -410,7 +409,6 @@ export const getBorderlessTableColumns = ({
     key: "requestDateTime",
     width: 200,
     align: "center",
-    // ellipsis: true,
     sorter: (a, b) =>
       formatApiDateTime(a.requestDateTime).localeCompare(
         formatApiDateTime(b.requestDateTime)
@@ -430,8 +428,8 @@ export const getBorderlessTableColumns = ({
     )),
     dataIndex: "status",
     key: "status",
-    width: 130,
-    ellipsis: true,
+    width: 150,
+    // ellipsis: true,
     filteredValue: employeeMyApprovalSearch.status?.length
       ? employeeMyApprovalSearch.status
       : null,
