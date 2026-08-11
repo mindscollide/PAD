@@ -2826,6 +2826,123 @@ export const GetHOCReportsDashboardStatsAPI = async ({
   }
 };
 
+// ADDED (2026-08-10): GetAdminReportsDashboardStatsAPI - backs the Admin Reports
+// Dashboard (pages/adminMain/reports/index.jsx), which already existed and was
+// calling GetHOCReportsDashboardStatsAPI as a placeholder before this endpoint
+// existed. This endpoint lives in the ADMIN service (not Trade) - the backend
+// already had a scaffolded (but mock/stubbed) implementation there with its own
+// property names (userActivityReport, userWiseComplianceReport, policyBreaches,
+// tradeApprovalRequest, dateWiseTransactionReport, transactionSummaryReport,
+// tATRequestApprovals, tradeUploadedViaPortfolio) - this function maps those onto
+// the flat key names the already-built page reads via useMemo
+// (adminReportsDashboardData?.<key>?.data). "tATRequestApprovals" is read
+// defensively under both possible camelCase spellings (tatRequestApprovals /
+// taTRequestApprovals) since .NET's default JSON camelCase conversion of a
+// property starting with a 3-letter acronym ("TAT") wasn't independently
+// confirmed - whichever the backend actually emits, this still picks it up.
+export const GetAdminReportsDashboardStatsAPI = async ({
+  callApi,
+  showNotification,
+  showLoader,
+  navigate,
+}) => {
+  try {
+    // 🔹 API Call
+    const res = await callApi({
+      requestMethod: import.meta.env
+        .VITE_GET_ADMIN_REPORTS_DASHBOARD_STATS_API_METHOD, // 🔑 must be defined in .env
+      endpoint: import.meta.env.VITE_API_ADMIN,
+      navigate,
+    });
+
+    // 🔹 Handle session expiry
+    if (handleExpiredSession(res, navigate, showLoader)) return null;
+
+    // 🔹 Validate execution
+    if (!res?.result?.isExecuted) {
+      showNotification({
+        type: "error",
+        title: "Error",
+        description: "Something went wrong while fetching Admin Reports Dashboard Stats Api.",
+      });
+      return null;
+    }
+
+    // 🔹 Handle success
+    if (res.success) {
+      const stats = res.result.adminReportsDashboardStats || {};
+      const {
+        userActivityReport,
+        userWiseComplianceReport,
+        policyBreaches,
+        tradeApprovalRequest,
+        dateWiseTransactionReport,
+        transactionSummaryReport,
+        tradeUploadedViaPortfolio,
+      } = stats;
+      const tatRequestApprovals =
+        stats.tatRequestApprovals || stats.taTRequestApprovals;
+      const { responseMessage } = res.result;
+      const message = getMessage(responseMessage);
+
+      // Case 1 → Data available
+      if (
+        responseMessage ===
+        "PAD_Admin_GetAdminReportsDashboardStatsAPI_01"
+      ) {
+        return {
+          userActivityCount: userActivityReport,
+          userWiseComplianceCount: userWiseComplianceReport,
+          policyBreachesCount: policyBreaches,
+          tradeApprovalRequestCount: tradeApprovalRequest,
+          userDateTransactionCount: dateWiseTransactionReport,
+          userWiseTransactionCount: transactionSummaryReport,
+          tatRequestApprovalCount: tatRequestApprovals,
+          complianceStandingTransactionCount: tradeUploadedViaPortfolio,
+        };
+      }
+
+      // Case 2 → No data
+      if (
+        responseMessage ===
+        "PAD_Admin_GetAdminReportsDashboardStatsAPI_02"
+      ) {
+        return [];
+      }
+
+      // Case 3 → Custom server messages
+      if (message) {
+        showNotification({
+          type: "warning",
+          title: message,
+          description: message,
+        });
+      }
+
+      return null;
+    }
+
+    // 🔹 Handle failure
+    showNotification({
+      type: "error",
+      title: "Fetch Failed",
+      description: getMessage(res.message),
+    });
+    return null;
+  } catch (error) {
+    // 🔹 Exception handling
+    showNotification({
+      type: "error",
+      title: "Error",
+      description: "An unexpected error occurred while requesting Admin Reports Dashboard Stats API.",
+    });
+    return null;
+  } finally {
+    // 🔹 Always hide loader
+    showLoader(false);
+  }
+};
+
 // HTA dashbord api of reports
 // GetHTAReportsDashboardStatsAPI
 export const GetHTAReportsDashboardStatsAPI = async ({
