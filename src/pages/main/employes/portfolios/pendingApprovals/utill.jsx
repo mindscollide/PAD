@@ -73,7 +73,7 @@ export const getBorderlessTableColumns = (
     dataIndex: "instrument",
     key: "instrument",
     ellipsis: true,
-    width: "10%",
+    width: 150,
     sorter: (a, b) =>
       (a?.instrumentName || "").localeCompare(b?.instrumentName || ""),
     sortDirections: ["ascend", "descend"],
@@ -128,8 +128,8 @@ export const getBorderlessTableColumns = (
     align: "left",
     dataIndex: "tradeApprovalID",
     key: "tradeApprovalID",
-    width: "10%",
-    ellipsis: true,
+    width: 150,
+
     sorter: (a, b) =>
       (a?.tradeApprovalID || "").localeCompare(b?.tradeApprovalID || ""),
     sortDirections: ["ascend", "descend"],
@@ -138,9 +138,7 @@ export const getBorderlessTableColumns = (
     showSorterTooltip: false,
     sortIcon: () => null,
     render: (text) => (
-      <span className="font-medium" title={text || "N/A"}>
-        {formatCode(text) || "—"}
-      </span>
+      <span className="font-medium">{formatCode(text) || "—"}</span>
     ),
   },
 
@@ -155,8 +153,8 @@ export const getBorderlessTableColumns = (
     align: "center",
     dataIndex: "approvalRequestDateime",
     key: "approvalRequestDateime",
-    width: "20%",
-    ellipsis: true,
+    width: 250,
+
     sorter: (a, b) =>
       (a?.approvalRequestDateime || "").localeCompare(
         b?.approvalRequestDateime || ""
@@ -169,9 +167,7 @@ export const getBorderlessTableColumns = (
     showSorterTooltip: false,
     sortIcon: () => null,
     render: (date) => (
-      <span className="text-gray-600" title={date || "N/A"}>
-        {formatApiDateTime(date) || "—"}
-      </span>
+      <span className="text-gray-600">{formatApiDateTime(date) || "—"}</span>
     ),
   },
 
@@ -181,18 +177,15 @@ export const getBorderlessTableColumns = (
     align: "center",
     dataIndex: "quantity",
     key: "quantity",
-    width: "7%",
-    ellipsis: true,
+    width: 150,
+
     sorter: (a, b) => (a?.quantity || 0) - (b?.quantity || 0),
     sortDirections: ["ascend", "descend"],
     sortOrder: sortedInfo?.columnKey === "quantity" ? sortedInfo.order : null,
     showSorterTooltip: false,
     sortIcon: () => null,
     render: (value, record) => (
-      <Text
-        style={{ color: record?.type === "Buy" ? "#00640A" : "#A50000" }}
-        title={value?.toLocaleString() || "0"}
-      >
+      <Text style={{ color: record?.type === "Buy" ? "#00640A" : "#A50000" }}>
         <span className="font-medium">{value?.toLocaleString() || "0"}</span>
       </Text>
     ),
@@ -206,14 +199,15 @@ export const getBorderlessTableColumns = (
         setState={setEmployeePendingApprovalSearch}
       />
     ),
-    dataIndex: "type",
-    key: "type",
-    ellipsis: true,
+    dataIndex: "tradeType",
+    key: "tradeType",
+    width: 150,
+
     filteredValue: employeePendingApprovalSearch?.type?.length
       ? employeePendingApprovalSearch.type
       : null,
     onFilter: () => true, // filtering handled externally
-    render: (type) => <span title={type || "N/A"}>{type || "—"}</span>,
+    render: (type) => <span>{type || "—"}</span>,
     onHeaderCell: () => ({
       style: {
         minWidth: "100px",
@@ -240,8 +234,8 @@ export const getBorderlessTableColumns = (
     align: "left",
     dataIndex: "broker",
     key: "broker",
-    width: "12%",
-    ellipsis: true,
+    width: 250,
+
     sorter: (a, b) => (a?.broker || "").localeCompare(b?.broker || ""),
     sortDirections: ["ascend", "descend"],
     sortOrder: sortedInfo?.columnKey === "broker" ? sortedInfo.order : null,
@@ -266,7 +260,8 @@ export const getBorderlessTableColumns = (
     ),
     dataIndex: "status",
     key: "status",
-    ellipsis: true,
+    width: 150,
+
     filteredValue: employeePendingApprovalSearch?.status?.length
       ? employeePendingApprovalSearch.status
       : null,
@@ -376,7 +371,7 @@ export const mapToTableRows = (assetTypeData, list = [], brokerOptions = []) =>
           item?.transactionConductedTime || ""
         }`.trim() || "—",
       quantity: item?.quantity ?? 0,
-      type: getTradeTypeById(assetTypeData, item?.tradeType) || "—",
+      tradeType: getTradeTypeById(assetTypeData, item?.tradeType) || "—",
       broker: brokerLabel || "—",
       status: item?.workFlowStatus?.workFlowStatus || "—",
     };

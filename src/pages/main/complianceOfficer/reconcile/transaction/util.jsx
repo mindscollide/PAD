@@ -221,7 +221,6 @@ export const getBorderlessTableColumns = ({
     dataIndex: "transactionDate",
     key: "transactionDate",
     align: "center",
-    ellipsis: true,
     sorter: (a, b) =>
       (a?.transactionDate || "").localeCompare(b?.transactionDate || ""),
     sortOrder:
@@ -229,9 +228,7 @@ export const getBorderlessTableColumns = ({
     showSorterTooltip: false,
     sortIcon: () => null,
     render: (date) => (
-      <span className="text-gray-600" title={date || "—"}>
-        {formatApiDateTime(date) || "—"}
-      </span>
+      <span className="text-gray-600">{formatApiDateTime(date) || "—"}</span>
     ),
   },
 
@@ -260,12 +257,11 @@ export const getBorderlessTableColumns = ({
     ),
     dataIndex: "type",
     key: "type",
-    ellipsis: true,
     filteredValue: complianceOfficerReconcileTransactionsSearch?.type?.length
       ? complianceOfficerReconcileTransactionsSearch.type
       : null,
     onFilter: () => true,
-    render: (type) => <span title={type || "—"}>{type || "—"}</span>,
+    render: (type) => <span>{type || "—"}</span>,
     onHeaderCell: () => nowrapCell(100, 100),
     onCell: () => nowrapCell(100, 100),
   },
@@ -280,7 +276,6 @@ export const getBorderlessTableColumns = ({
     ),
     dataIndex: "status",
     key: "status",
-    ellipsis: true,
     filteredValue: complianceOfficerReconcileTransactionsSearch?.status?.length
       ? complianceOfficerReconcileTransactionsSearch.status
       : null,

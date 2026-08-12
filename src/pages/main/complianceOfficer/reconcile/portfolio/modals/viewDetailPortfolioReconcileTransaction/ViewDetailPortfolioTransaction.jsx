@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef } from "react";
+import React from "react";
 import { Col, Row, Tag } from "antd";
 import { useGlobalModal } from "../../../../../../../context/GlobalModalContext";
 import { BrokerList, GlobalModal } from "../../../../../../../components";
@@ -7,11 +7,9 @@ import { Stepper, Step } from "react-form-stepper";
 import CustomButton from "../../../../../../../components/buttons/button";
 import CheckIcon from "../../../../../../../assets/img/Check.png";
 import EllipsesIcon from "../../../../../../../assets/img/Ellipses.png";
-import copyIcon from "../../../../../../../assets/img/copy-dark.png";
 import CrossIcon from "../../../../../../../assets/img/Cross.png";
 import { useDashboardContext } from "../../../../../../../context/dashboardContaxt";
 import {
-  dashBetweenApprovalAssets,
   formatApiDateTime,
   formatNumberWithCommas,
   formatTransactionId,
@@ -35,12 +33,8 @@ const ViewDetailPortfolioTransaction = () => {
   const loggedInUserID = userProfileData?.userID;
 
   //This is the Global state of Context Api
-  const { complianceOfficerReconcilePortfolioData } = useReconcileContext();
 
-  const {
-    reconcilePortfolioViewDetailData,
-    setReconcilePortfolioViewDetailData,
-  } = usePortfolioContext();
+  const { reconcilePortfolioViewDetailData } = usePortfolioContext();
 
   const { allInstrumentsData } = useDashboardContext();
   // This is the Status Which is I'm getting from the selectedViewDetail contextApi state
@@ -187,7 +181,7 @@ const ViewDetailPortfolioTransaction = () => {
                     marginTop: "10px",
                   }}
                 >
-                  <Col span={12}>
+                  <Col span={24}>
                     <div className={styles.backgrounColorOfDetail}>
                       <label className={styles.viewDetailMainLabels}>
                         Instrument
@@ -210,8 +204,11 @@ const ViewDetailPortfolioTransaction = () => {
                   </Col>
 
                   {/* status 2 is Resubmitted */}
+                </Row>
 
-                  <Col span={12}>
+                {/* Show Other Scenario's SUb Heading and Field Sceanrio's */}
+                <Row gutter={[4, 4]} style={{ marginTop: "3px" }}>
+                  <Col span={8}>
                     <div className={styles.backgrounColorOfDetail}>
                       <label className={styles.viewDetailMainLabels}>
                         Portfolio ID
@@ -224,11 +221,7 @@ const ViewDetailPortfolioTransaction = () => {
                       </label>
                     </div>
                   </Col>
-                </Row>
-
-                {/* Show Other Scenario's SUb Heading and Field Sceanrio's */}
-                <Row gutter={[4, 4]} style={{ marginTop: "3px" }}>
-                  <Col span={12}>
+                  <Col span={8}>
                     <div className={styles.backgrounColorOfDetail}>
                       <label className={styles.viewDetailMainLabels}>
                         Requester Name
@@ -238,7 +231,7 @@ const ViewDetailPortfolioTransaction = () => {
                       </label>
                     </div>
                   </Col>
-                  <Col span={12}>
+                  <Col span={8}>
                     <div
                       className={
                         statusData.label === "Traded"

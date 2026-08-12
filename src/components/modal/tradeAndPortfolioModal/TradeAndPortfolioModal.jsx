@@ -76,18 +76,17 @@ const TradeAndPortfolioModal = ({
     let { value } = e.target;
     const rawValue = value.replace(/,/g, "");
 
-    // Block 0 and leading zeros
     if (rawValue === "0") {
-      return; // ignore if exactly 0
+      return;
     }
     if (/^0\d+/.test(rawValue)) {
-      value = rawValue.replace(/^0+/, ""); // trim leading zeros
+      value = rawValue.replace(/^0+/, "");
     }
 
     if (rawValue === "" || allowOnlyNumbers(rawValue)) {
       if (rawValue.length <= 20) {
         const formattedValue = rawValue
-          ? formatNumberWithCommas(rawValue.replace(/^0+/, "")) // trim leading zeros before formatting
+          ? String(formatNumberWithCommas(rawValue.replace(/^0+/, "")) ?? "")
           : "";
         setQuantity(formattedValue);
       }
@@ -117,10 +116,14 @@ const TradeAndPortfolioModal = ({
 
   // To dont enable the button until all selected
   const isFormFilled = useMemo(() => {
+    const hasQuantity =
+      quantity !== null &&
+      quantity !== undefined &&
+      String(quantity).trim() !== "";
     return (
       selectedInstrument &&
       selectedTradeApprovalType &&
-      quantity.trim() !== "" &&
+      hasQuantity &&
       selectedBrokers.length > 0
     );
   }, [

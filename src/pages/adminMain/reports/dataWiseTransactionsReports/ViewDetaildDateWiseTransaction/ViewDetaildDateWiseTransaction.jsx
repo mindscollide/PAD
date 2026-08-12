@@ -153,7 +153,9 @@ const ViewDetaildDateWiseTransaction = () => {
      requesting user's own bundle row ("what's my status"), not "who
      actually took the last action". Same "single name / Multiple Users +
      tooltip" convention used elsewhere in the app. */
-  const actionByList = Array.isArray(reconcileTransactionViewDetailData?.actionBy)
+  const actionByList = Array.isArray(
+    reconcileTransactionViewDetailData?.actionBy
+  )
     ? reconcileTransactionViewDetailData.actionBy
     : [];
   const actionByNames = actionByList.map((u) => u?.fullName).filter(Boolean);

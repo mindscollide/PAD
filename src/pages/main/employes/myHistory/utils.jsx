@@ -151,7 +151,6 @@ export const getMyHistoryColumn = (
     key: "creationDate",
     width: "280px",
     align: "center",
-    ellipsis: true,
     sorter: (a, b) =>
       `${a.creationDate} ${a.creationTime}`.localeCompare(
         `${b.creationDate} ${b.creationTime}`
@@ -173,7 +172,6 @@ export const getMyHistoryColumn = (
     dataIndex: "nature",
     key: "nature",
     width: "160px",
-    ellipsis: true,
     sorter: (a, b) => a.nature.localeCompare(b.nature),
     sortDirections: ["ascend", "descend"],
     sortOrder: sortedInfo?.columnKey === "nature" ? sortedInfo.order : null,
@@ -191,12 +189,11 @@ export const getMyHistoryColumn = (
     dataIndex: "type",
     key: "type",
     width: 130,
-    ellipsis: true,
     filteredValue: employeeMyHistorySearch?.type?.length
       ? employeeMyHistorySearch.type
       : null,
     onFilter: () => true,
-    render: (type) => <span title={type || "—"}>{type || "—"}</span>,
+    render: (type) => <span>{type || "—"}</span>,
   },
   {
     title: withSortIcon("Quantity", "quantity", sortedInfo, "center"),
@@ -204,7 +201,6 @@ export const getMyHistoryColumn = (
     key: "quantity",
     width: 120,
     align: "center",
-    ellipsis: true,
     sorter: (a, b) => a.quantity - b.quantity,
     sortDirections: ["ascend", "descend"],
     sortOrder: sortedInfo?.columnKey === "quantity" ? sortedInfo.order : null,
@@ -221,7 +217,6 @@ export const getMyHistoryColumn = (
     ),
     dataIndex: "status",
     key: "status",
-    ellipsis: true,
     filteredValue: employeeMyHistorySearch?.status?.length
       ? employeeMyHistorySearch.status
       : null,

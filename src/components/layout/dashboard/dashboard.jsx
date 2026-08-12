@@ -419,7 +419,8 @@ const Dashboard = () => {
                   // definition - if that field isn't there either.
                   if (currentKey === "1") {
                     patchEmployeeMyApprovalRow(payload, {
-                      status: payload?.workFlowStatus?.workFlowStatus || "Traded",
+                      status:
+                        payload?.workFlowStatus?.workFlowStatus || "Traded",
                     });
                   }
                   break;
@@ -530,7 +531,9 @@ const Dashboard = () => {
                         ? "Group Policy Assigned"
                         : "Group Policy Updated",
                       description: parsedPolicyPayload?.GroupTitle
-                        ? `Your assigned Group Policy "${parsedPolicyPayload.GroupTitle}" has been ${
+                        ? `Your assigned Group Policy "${
+                            parsedPolicyPayload.GroupTitle
+                          }" has been ${
                             isNewAssignment ? "assigned to you" : "updated"
                           }.`
                         : "Your assigned Group Policy has changed.",
