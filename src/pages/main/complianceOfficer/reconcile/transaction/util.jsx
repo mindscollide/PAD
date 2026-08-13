@@ -136,7 +136,6 @@ export const getBorderlessTableColumns = ({
     title: withSortIcon("Transaction ID", "tradeApprovalID", sortedInfo),
     dataIndex: "tradeApprovalID",
     key: "tradeApprovalID",
-    ellipsis: true,
     width: 180,
     sorter: (a, b) =>
       (a?.tradeApprovalID || "").localeCompare(b?.tradeApprovalID || ""),
@@ -156,7 +155,6 @@ export const getBorderlessTableColumns = ({
     title: withSortIcon("Requester Name", "requesterName", sortedInfo),
     dataIndex: "requesterName",
     key: "requesterName",
-    ellipsis: true,
     width: 150,
     sorter: (a, b) =>
       (a?.requesterName || "").localeCompare(b?.requesterName || ""),

@@ -188,6 +188,12 @@ export const dashBetweenApprovalAssets = (id) => {
   return `${prefix}-${padded}`;
 };
 
+export const dashBetweenTrackingId = (id) => {
+  if (!id) return "";
+
+  return `${id.substring(0, 1)}-${id.substring(1)}`;
+};
+
 // Show only Date not the time
 // Extracts time part (HHmmss) from API datetime string like "20250822 101103"
 export const formatShowOnlyDate = (dateTimeStr) => {
@@ -242,9 +248,12 @@ export const formatShowOnlyDateForDateRange = (date, time) => {
     const hasTime = /^\d{4,6}$/.test(timePart);
     const hours = hasTime ? Number(timePart.slice(0, 2)) : 0;
     const minutes = hasTime ? Number(timePart.slice(2, 4)) : 0;
-    const seconds = hasTime && timePart.length >= 6 ? Number(timePart.slice(4, 6)) : 0;
+    const seconds =
+      hasTime && timePart.length >= 6 ? Number(timePart.slice(4, 6)) : 0;
 
-    const instant = new Date(Date.UTC(year, month, day, hours, minutes, seconds));
+    const instant = new Date(
+      Date.UTC(year, month, day, hours, minutes, seconds)
+    );
     if (Number.isNaN(instant.getTime())) return "";
 
     const localYear = instant.getFullYear();

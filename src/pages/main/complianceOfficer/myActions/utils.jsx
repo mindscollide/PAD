@@ -40,7 +40,6 @@ export const getMyActionsColumn = (approvalStatusMap, sortedInfo) => [
     title: withSortIcon("Transaction ID", "approvalID", sortedInfo),
     dataIndex: "approvalID",
     key: "approvalID",
-    ellipsis: true,
     align: "left",
     width: 150,
     sorter: (a, b) =>
@@ -118,7 +117,6 @@ export const getMyActionsColumn = (approvalStatusMap, sortedInfo) => [
     key: "nature",
     width: 120,
     align: "left",
-    ellipsis: true,
     sorter: (a, b) => a.nature.localeCompare(b.nature),
     sortDirections: ["ascend", "descend"],
     sortOrder: sortedInfo?.columnKey === "nature" ? sortedInfo.order : null,
@@ -132,7 +130,6 @@ export const getMyActionsColumn = (approvalStatusMap, sortedInfo) => [
     key: "requesterName",
     width: 180,
     align: "left",
-    ellipsis: true,
     sorter: (a, b) => a.requesterName.localeCompare(b.requesterName),
     sortDirections: ["ascend", "descend"],
     sortOrder:
@@ -152,7 +149,6 @@ export const getMyActionsColumn = (approvalStatusMap, sortedInfo) => [
     key: "approvalDateTime",
     width: 280,
     align: "center",
-    ellipsis: true,
     sorter: (a, b) =>
       (a?.approvalDateTime || "").localeCompare(b?.approvalDateTime || ""),
     sortOrder:
@@ -169,7 +165,6 @@ export const getMyActionsColumn = (approvalStatusMap, sortedInfo) => [
     key: "type",
     width: 100,
     align: "left",
-    ellipsis: true,
     sorter: (a, b) => a.type.localeCompare(b.type),
     sortDirections: ["ascend", "descend"],
     sortOrder: sortedInfo?.columnKey === "type" ? sortedInfo.order : null,
@@ -183,7 +178,6 @@ export const getMyActionsColumn = (approvalStatusMap, sortedInfo) => [
     key: "quantity",
     width: 120,
     align: "center",
-    ellipsis: true,
     sorter: (a, b) => a.quantity - b.quantity,
     sortDirections: ["ascend", "descend"],
     sortOrder: sortedInfo?.columnKey === "quantity" ? sortedInfo.order : null,
@@ -197,7 +191,6 @@ export const getMyActionsColumn = (approvalStatusMap, sortedInfo) => [
     key: "status",
     width: 180,
     align: "left",
-    ellipsis: true,
     sorter: (a, b) => a.status.localeCompare(b.status),
     sortDirections: ["ascend", "descend"],
     sortOrder: sortedInfo?.columnKey === "status" ? sortedInfo.order : null,

@@ -136,7 +136,6 @@ export const getBorderlessTableColumns = ({
     dataIndex: "requesterName",
     key: "requesterName",
     align: "left",
-    ellipsis: true,
     sorter: (a, b) =>
       (a?.requesterName || "").localeCompare(b?.requesterName || ""),
     sortOrder:
@@ -144,11 +143,7 @@ export const getBorderlessTableColumns = ({
     showSorterTooltip: false,
     sortIcon: () => null,
     width: 150,
-    render: (text) => (
-      <span className="font-medium" title={text || "—"}>
-        {text || "—"}
-      </span>
-    ),
+    render: (text) => <span className="font-medium">{text || "—"}</span>,
     onHeaderCell: () => nowrapCell(70, 150),
     onCell: () => nowrapCell(70, 150),
   },

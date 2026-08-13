@@ -15,9 +15,6 @@ import {
 } from "./utils";
 import { approvalStatusMap } from "../../../../../components/tables/borderlessTable/utill";
 
-// 🔹 Contexts
-import { useGlobalModal } from "../../../../../context/GlobalModalContext";
-
 // 🔹 Styles
 import style from "./MyTransactionReport.module.css";
 import { useMyApproval } from "../../../../../context/myApprovalContaxt";
