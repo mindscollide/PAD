@@ -203,7 +203,7 @@ export const getBorderlessTableColumns = ({
     align: "center",
     dataIndex: "requestDateTime",
     key: "requestDateTime",
-    width: 200,
+    width: 180,
     sorter: (a, b) =>
       formatApiDateTime(a.requestDateTime).localeCompare(
         formatApiDateTime(b.requestDateTime)
@@ -373,7 +373,7 @@ export const getBorderlessTableColumns = ({
     align: "center",
     dataIndex: "actionDateTime",
     key: "actionDateTime",
-    width: 200,
+    width: 180,
     sorter: (a, b) =>
       formatApiDateTime(a.actionDateTime).localeCompare(
         formatApiDateTime(b.actionDateTime)
@@ -398,7 +398,7 @@ export const getBorderlessTableColumns = ({
     align: "left",
     dataIndex: "actionBy",
     key: "actionBy",
-    width: 200,
+    width: 150,
     sorter: (a, b) => (a.actionBy || "").localeCompare(b.actionBy || ""),
     sortOrder: sortedInfo?.columnKey === "actionBy" ? sortedInfo.order : null,
     sortDirections: ["ascend", "descend"],
