@@ -111,6 +111,9 @@ export const GlobalModalProvider = ({ children }) => {
   const [viewDetailReconcileTransaction, setViewDetailReconcileTransaction] =
     useState(false);
 
+  const [viewDetailOverdueTransaction, setViewDetailOverdueTransaction] =
+    useState(false);
+
   //This is For Compliance Officer View Detail for Portfolio transaction modal
   const [viewDetailPortfolioTransaction, setViewDetailPortfolioTransaction] =
     useState(false);
@@ -395,6 +398,8 @@ export const GlobalModalProvider = ({ children }) => {
          */
         viewDetailReconcileTransaction,
         setViewDetailReconcileTransaction,
+        viewDetailOverdueTransaction,
+        setViewDetailOverdueTransaction,
         uploadComplianceModal,
         setUploadComplianceModal,
         viewDetailPortfolioTransaction,

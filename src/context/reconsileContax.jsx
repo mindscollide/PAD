@@ -113,6 +113,8 @@ export const ReconcileProvider = ({ children }) => {
     setSelectedReconcileTransactionData,
   ] = useState(null);
 
+  const [selectedOverdueTransactionData, setSelectedOverdueTransactionData] =
+    useState(null);
   /**
    * Aggregate total quantity across all reconcile portfolio holdings.
    *
@@ -293,6 +295,9 @@ export const ReconcileProvider = ({ children }) => {
 
         selectedReconcileTransactionData,
         setSelectedReconcileTransactionData,
+
+        selectedOverdueTransactionData,
+        setSelectedOverdueTransactionData,
 
         // Head Of Compliance (HOC) States
         isEscalatedHeadOfComplianceViewDetailData,
