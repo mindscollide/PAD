@@ -231,7 +231,10 @@ export const mappingDateWiseTransactionviewDetailst = (
     employeeName: item.requesterName || "",
     employeeID: item.employeeID || "",
     accetanceComments: item.accetanceComments || "",
-    rejectionComment: item.rejectionComment || "",
+    // FIXED (2026-08-17): was "rejectionComment" (singular) - the real API
+    // field is "rejectionComments" (plural, confirmed against a live
+    // response), so this always read undefined.
+    rejectionComments: item.rejectionComments || "",
   }));
 };
 /**
@@ -286,6 +289,12 @@ export const getBorderlessTableColumnsViewDetails = ({
   setCOTransactionsSummarysReportsViewDetailSearch,
   handelViewDetails,
   setIsViewComments,
+  // ADDED (2026-08-17): "View Comments" never actually told the modal
+  // which row it was for - onClick only flipped isViewComments to true,
+  // so ViewComment.jsx had no per-row data to read at all. Same pattern
+  // HOC's own version of this report already uses correctly
+  // (headOfComplianceOffice/reports/transactionsSummary/utils.jsx).
+  setSelectedWorkFlowViewDetaild,
 }) => [
   {
     title: withSortIcon("Employee ID", "employeeID", sortedInfoView),
@@ -486,10 +495,8 @@ export const getBorderlessTableColumnsViewDetails = ({
           text={"View Comments"}
           onClick={() => {
             // handelViewDetails(record.approvalID);
+            setSelectedWorkFlowViewDetaild(record);
             setIsViewComments(true);
-            // setCheckTradeApprovalID(record?.approvalID);
-            // setEditBrokerModal(true);
-            // setEditModalData(record);
           }}
         />
       </div>

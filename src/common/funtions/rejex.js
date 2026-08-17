@@ -176,11 +176,21 @@ export const toYYMMDD = (input) => {
 };
 
 // this regex work as a dash seperator befor REQ009 after regex REQ-009
+// FIXED (2026-08-17): the prefix was hardcoded to the first 3 characters
+// (id.substring(0, 3)) - correct for "TRX"/"REQ" IDs, but wrong for
+// Portfolio IDs, which use a single-letter "P" prefix: "P000401" came out
+// as "P00-0401" instead of "P-000401" (the "00" got eaten into the
+// prefix, and the leftover "0401" never got re-padded since it was
+// already >3 digits). This function is shared across both ID shapes -
+// callers don't (and shouldn't have to) know which one they have - so
+// detect the actual letter-prefix length instead of assuming 3.
 export const dashBetweenApprovalAssets = (id) => {
   if (!id) return "";
 
-  const prefix = id.substring(0, 3);
-  const number = id.substring(3);
+  const match = id.match(/^([A-Za-z]+)(\d+)$/);
+  if (!match) return id;
+
+  const [, prefix, number] = match;
 
   // If you want to always keep it padded to 3 digits (REQ-009)
   const padded = number.padStart(3, "0");

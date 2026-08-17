@@ -6,8 +6,16 @@ import { Stepper, Step } from "react-form-stepper";
 import CustomButton from "../../../../../../../components/buttons/button";
 import CheckIcon from "../../../../../../../assets/img/Check.png";
 import EllipsesIcon from "../../../../../../../assets/img/Ellipses.png";
+import CrossIcon from "../../../../../../../assets/img/Cross.png";
+// FIXED (2026-08-17): EscaltedOn was referenced (for the "Escalated On"
+// step icon) but never imported at all. Uses the same EscaltedOn.png
+// asset as the HTA sibling modal
+// (headOfTradeApprover/escalatedApprovals/modals/viewDetailHeadOfApprovalModal)
+// so the icon matches exactly.
+import EscaltedOn from "../../../../../../../assets/img/EscaltedOn.png";
 import { useDashboardContext } from "../../../../../../../context/dashboardContaxt";
 import {
+  convertUTCToCurrentTimeZone,
   dashBetweenApprovalAssets,
   formatApiDateTime,
   formatNumberWithCommas,
@@ -149,13 +157,85 @@ const ViewDetailHeadOfComplianceReconcileTransaction = () => {
     statusData.label === "Pending" &&
     isEscalatedHeadOfComplianceViewDetailData?.ticketUploaded === false;
 
-  // need to extract and escalatedFrom ID from escalation
+  // REWORKED (2026-08-17): rebuilt to match the HTA sibling screen's
+  // hierarchy handling exactly
+  // (headOfTradeApprover/escalatedApprovals/modals/viewDetailHeadOfApprovalModal) -
+  // this screen only ever shows requests that have been escalated at
+  // least once, so the stepper is built entirely from escalations[]
+  // rather than filtering/guessing off the raw hierarchyDetails array
+  // (the old approach here: filter the logged-in user out of
+  // hierarchyDetails, cross-reference escalations[0] only, guess the
+  // active step index). Each escalation contributes exactly two steps -
+  // an "Escalated On" step, then either who closed it
+  // (escalationClosedBy/escalationClosedByName set) or a "waiting"
+  // step while it's still open.
+  const escalations = Array.isArray(
+    isEscalatedHeadOfComplianceViewDetailData?.escalations
+  )
+    ? isEscalatedHeadOfComplianceViewDetailData.escalations
+    : [];
 
-  const escalatedFromID =
-    isEscalatedHeadOfComplianceViewDetailData?.escalations?.[0]
-      ?.escalatedFromID;
+  // Escalation closure doesn't carry its own compliant/non-compliant
+  // outcome (EscalationDetail only has EscalationClosedBy/ClosedByName),
+  // unlike HTA where every closure just means "approved". Cross-reference
+  // the closer's own hierarchyDetails entry for their real bundleStatusID
+  // so the closure step can still show Compliant vs Non-Compliant
+  // correctly instead of collapsing both into one generic "closed" step.
+  const hierarchyByUserID = new Map(
+    (isEscalatedHeadOfComplianceViewDetailData?.hierarchyDetails || []).map(
+      (person) => [person.userID, person]
+    )
+  );
 
-  console.log(escalatedFromID, "escalatedFromIDescalatedFromID");
+  const escalationSteps = escalations.flatMap((esc) => {
+    const escalatedStep = {
+      key: `${esc?.escalationID}-escalated`,
+      iconSrc: EscaltedOn,
+      title:
+        esc?.escalatedFromID === loggedInUserID
+          ? "Escalated by You"
+          : `Escalated by ${esc?.escalatedFrom}`,
+      desc: formatApiDateTime(
+        `${esc?.escalatedOnDate} ${esc?.escalatedOnTime}`
+      ),
+    };
+
+    // escalatedClosedOn is a combined ISO string ("YYYY-MM-DDTHH:mm:ss"),
+    // unlike the split yyyyMMdd/HHmmss fields used elsewhere - reshape it
+    // into the same two-part UTC format before converting for display.
+    const [closedDatePart, closedTimePart] = (
+      esc?.escalatedClosedOn || ""
+    ).split("T");
+
+    const closerBundleStatusID = hierarchyByUserID.get(
+      esc?.escalationClosedBy
+    )?.bundleStatusID;
+    const isNonCompliant = closerBundleStatusID === 3;
+
+    const closureStep = esc?.escalationClosedBy
+      ? {
+          key: `${esc?.escalationID}-closed`,
+          iconSrc: isNonCompliant ? CrossIcon : CheckIcon,
+          title:
+            esc?.escalationClosedBy === loggedInUserID
+              ? isNonCompliant
+                ? "Marked Non-Compliant by You"
+                : "Marked Compliant by You"
+              : esc?.escalationClosedByName,
+          desc: convertUTCToCurrentTimeZone(
+            closedDatePart?.replace(/-/g, ""),
+            closedTimePart?.replace(/:/g, "")
+          ),
+        }
+      : {
+          key: `${esc?.escalationID}-waiting`,
+          iconSrc: EllipsesIcon,
+          title: "Waiting for Your Action",
+          desc: "",
+        };
+
+    return [escalatedStep, closureStep];
+  });
 
   const complianceOfficer =
     isEscalatedHeadOfComplianceViewDetailData?.hierarchyDetails?.find(
@@ -465,31 +545,19 @@ const ViewDetailHeadOfComplianceReconcileTransaction = () => {
                 </Row>
 
                 <Row>
+                  {/* REWORKED (2026-08-17): now built entirely from
+                  escalationSteps, mirroring the HTA sibling screen's
+                  approach exactly (see escalationSteps above). */}
                   <div className={styles.mainStepperContainer}>
                     <div
                       className={`${styles.backgrounColorOfStepper} ${
-                        (isEscalatedHeadOfComplianceViewDetailData
-                          ?.hierarchyDetails?.length || 0) <= 3
+                        escalationSteps.length <= 3
                           ? styles.centerAlignStepper
                           : styles.leftAlignStepper
                       }`}
                     >
-                      {/* Agar loginUserID match krti hai hierarchyDetails ki userID sy to wo wala stepper show nahi hoga */}
                       <Stepper
-                        activeStep={Math.max(
-                          0,
-                          Array.isArray(
-                            isEscalatedHeadOfComplianceViewDetailData?.hierarchyDetails
-                          )
-                            ? (isEscalatedHeadOfComplianceViewDetailData
-                                ?.hierarchyDetails.length > 1
-                                ? isEscalatedHeadOfComplianceViewDetailData?.hierarchyDetails.filter(
-                                    (person) => person.userID !== loggedInUserID
-                                  )
-                                : isEscalatedHeadOfComplianceViewDetailData?.hierarchyDetails
-                              ).length - 1 // 🔥 fix here
-                            : 0
-                        )}
+                        activeStep={Math.max(0, escalationSteps.length - 1)}
                         connectorStyleConfig={{
                           activeColor: "#00640A",
                           completedColor: "#00640A",
@@ -503,131 +571,35 @@ const ViewDetailHeadOfComplianceReconcileTransaction = () => {
                           borderRadius: "50%",
                         }}
                       >
-                        {Array.isArray(
-                          isEscalatedHeadOfComplianceViewDetailData?.hierarchyDetails
-                        ) &&
-                          (isEscalatedHeadOfComplianceViewDetailData
-                            ?.hierarchyDetails.length > 1
-                            ? isEscalatedHeadOfComplianceViewDetailData?.hierarchyDetails.filter(
-                                (person) => person.userID !== loggedInUserID
-                              )
-                            : isEscalatedHeadOfComplianceViewDetailData?.hierarchyDetails
-                          ) // 🔥 fix here
-                            .map((person, index) => {
-                              const {
-                                fullName,
-                                bundleStatusID,
-                                modifiedDate,
-                                modifiedTime,
-                                userID,
-                              } = person;
-
-                              const formattedDateTime = formatApiDateTime(
-                                `${modifiedDate} ${modifiedTime}`
-                              );
-
-                              let iconSrc;
-                              let statusText = ""; // Initialize variable for status text
-                              let labelContent = null; // Define a variable for label content
-
-                              // 👉 Escalation condition
-                              const isEscalatedUser =
-                                userID === escalatedFromID;
-
-                              if (isEscalatedUser) {
-                                iconSrc = EscaltedOn;
-                                labelContent = (
-                                  <div className={styles.customlabel}>
-                                    <div className={styles.customtitle}>
-                                      Escalated On
-                                    </div>
+                        {escalationSteps.map((step) => (
+                          <Step
+                            key={step.key}
+                            className={styles.stepButtonActive}
+                            label={
+                              <div className={styles.stepLabelWrapper}>
+                                <div className={styles.customlabel}>
+                                  <div className={styles.customtitle}>
+                                    {step.title}
+                                  </div>
+                                  {step.desc && (
                                     <div className={styles.customdesc}>
-                                      {formattedDateTime}
+                                      {step.desc}
                                     </div>
-                                  </div>
-                                );
-                              } else {
-                                switch (bundleStatusID) {
-                                  case 1:
-                                    iconSrc = EllipsesIcon;
-                                    if (loggedInUserID === userID) {
-                                      statusText = "Waiting for Approval";
-                                    }
-                                    labelContent = (
-                                      <div className={styles.customlabel}>
-                                        <div className={styles.customtitle}>
-                                          {loggedInUserID === userID
-                                            ? ""
-                                            : fullName}
-                                        </div>
-                                        <div className={styles.customdesc}>
-                                          {loggedInUserID === userID
-                                            ? ""
-                                            : formattedDateTime}
-                                        </div>
-                                      </div>
-                                    );
-                                    break;
-
-                                  case 2:
-                                    iconSrc = CheckIcon;
-                                    labelContent = (
-                                      <div className={styles.customlabel}>
-                                        <div className={styles.customtitle}>
-                                          {loggedInUserID === userID
-                                            ? "Approved by You"
-                                            : fullName}
-                                        </div>
-                                        <div className={styles.customdesc}>
-                                          {formattedDateTime}
-                                        </div>
-                                      </div>
-                                    );
-                                    break;
-
-                                  default:
-                                    iconSrc = EllipsesIcon;
-                                    labelContent = (
-                                      <div className={styles.customlabel}>
-                                        <div className={styles.customtitle}>
-                                          {fullName}
-                                        </div>
-                                        <div className={styles.customdesc}>
-                                          {formattedDateTime}
-                                        </div>
-                                      </div>
-                                    );
-                                }
-                              }
-
-                              return (
-                                <Step
-                                  key={index}
-                                  className={styles.stepButtonActive}
-                                  label={
-                                    <div className={styles.stepLabelWrapper}>
-                                      {statusText && (
-                                        <div
-                                          className={styles.waitingApprovalText}
-                                        >
-                                          {statusText}
-                                        </div>
-                                      )}
-                                      {labelContent}
-                                    </div>
-                                  }
-                                >
-                                  <div className={styles.stepCircle}>
-                                    <img
-                                      draggable={false}
-                                      src={iconSrc}
-                                      alt="status-icon"
-                                      className={styles.circleImg}
-                                    />
-                                  </div>
-                                </Step>
-                              );
-                            })}
+                                  )}
+                                </div>
+                              </div>
+                            }
+                          >
+                            <div className={styles.stepCircle}>
+                              <img
+                                draggable={false}
+                                src={step.iconSrc}
+                                alt="status-icon"
+                                className={styles.circleImg}
+                              />
+                            </div>
+                          </Step>
+                        ))}
                       </Stepper>
                     </div>
                   </div>

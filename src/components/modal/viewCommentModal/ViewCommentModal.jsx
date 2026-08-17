@@ -11,7 +11,6 @@ const ViewCommentModal = ({
   CommentHeading,
   commentText,
   commentTypeFlag = false,
-  showClosed = false,
   acceptanceList = [],
   rejectionList = [],
   width = "951px",
@@ -36,7 +35,9 @@ const ViewCommentModal = ({
           <div className={styles.mainDivComment}>
             {commentTypeFlag && (
               <Row>
-                <Col span={36}>
+                {/* FIXED (2026-08-17): span={36} is out of AntD's 24-column
+                grid range - clamp to 24. */}
+                <Col span={24}>
                   {/* Acceptance Comments */}
                   {acceptanceList?.length > 0 && (
                     <div className={styles.commentSection}>
@@ -89,14 +90,20 @@ const ViewCommentModal = ({
                     onClick={onGoBack}
                   />
                 )}
-                {!commentTypeFlag ||
-                  (showClosed && (
-                    <CustomButton
-                      text="Close"
-                      className="big-light-button"
-                      onClick={onClose}
-                    />
-                  ))}
+                {/* FIXED (2026-08-17): was `!commentTypeFlag ||
+                (showClosed && <Button/>)` - with showClosed defaulting to
+                false and neither commentTypeFlag=true caller (CO/HOC
+                Transaction Summary Report) ever passing it, the Close
+                button silently never rendered in that mode. Always show
+                it when onClose is provided, same as the single-comment
+                mode already did unconditionally. */}
+                {onClose && (
+                  <CustomButton
+                    text="Close"
+                    className="big-light-button"
+                    onClick={onClose}
+                  />
+                )}
               </div>
             </Col>
           </Row>

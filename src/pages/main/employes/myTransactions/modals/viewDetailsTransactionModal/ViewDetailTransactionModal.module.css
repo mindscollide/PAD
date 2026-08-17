@@ -281,3 +281,24 @@
 .leftAlignStepper {
   justify-content: flex-start;
 }
+
+/* ADDED (2026-08-17): were missing entirely - the LM view detail modal's
+   stepper (lineManager/approvalRequest/modal/viewDetailLineManagerModal)
+   relies on both for the "Waiting for Approval" pending-self case and to
+   center the label under each step icon. Without these, that markup
+   rendered with no layout/typography at all. */
+.stepLabelWrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  margin-top: 8px;
+}
+
+.waitingApprovalText {
+  font-size: 14px;
+  color: #30426a;
+  font-family: "Switzer Variable";
+  font-weight: 700;
+  margin-bottom: 4px;
+}
