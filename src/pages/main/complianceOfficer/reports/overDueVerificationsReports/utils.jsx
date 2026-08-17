@@ -7,7 +7,7 @@ import { Tag, Tooltip } from "antd";
 import style from "./OverDueVerificationReports.module.css";
 
 import {
-  formatShowOnlyDate,
+  formatShowOnlyDateForDateRange,
   toYYMMDD,
 } from "../../../../../common/funtions/rejex";
 import {
@@ -65,9 +65,12 @@ export const mappingDateWiseTransactionReport = (
     instrumentShortCode: item?.instrumentShortCode || "—",
     instrumentName: item?.instrumentName || "—",
     assetTypeShortCode: item?.assetTypeShortCode || "—",
-    // Backend sends TransactionDate as a date-only "yyyyMMdd" string - there is
-    // no separate TransactionTime field on this endpoint's response.
+    // FIXED (2026-08-11, BE): TransactionTime is now sent alongside
+    // TransactionDate (API_Changes/2026-08-11_overdue_verifications_transaction_date_time_missing.md)
+    // - was date-only before, which silently dropped the real time and
+    // could land on the wrong calendar day after UTC->local conversion.
     transactionDate: item?.transactionDate || "—",
+    transactionTime: item?.transactionTime || "",
     // ✅ use typeName straight from the API response
     type:
       item?.tradeType?.typeName ||
@@ -237,7 +240,10 @@ export const getBorderlessTableColumns = ({
     sortIcon: () => null,
     render: (_, record) => (
       <span className="text-gray-600">
-        {formatShowOnlyDate(record.transactionDate)}
+        {formatShowOnlyDateForDateRange(
+          record.transactionDate,
+          record.transactionTime
+        )}
       </span>
     ),
   },

@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useGlobalModal } from "../../../../../../../context/GlobalModalContext";
 import { CommentModal } from "../../../../../../../components";
+import { useDashboardContext } from "../../../../../../../context/dashboardContaxt";
 
 const NoteHeadOfComplianceModal = () => {
   const {
@@ -9,6 +10,11 @@ const NoteHeadOfComplianceModal = () => {
     setViewDetailHeadOfComplianceEscalated,
     setDeclinedGlobalModal,
   } = useGlobalModal();
+
+  // Context Api For Reasons which is coming from the API and stored in
+  // contextApi - same shared reasonForCOAndHCO set the CO side already
+  // reads from (src/pages/main/complianceOfficer/reconcile/transaction/modals/noteModalComplianceOfficer/NoteModalComplianceOfficer.jsx).
+  const { getAllPredefineReasonData } = useDashboardContext();
 
   // 🔹 Local state upar uthao
   const [commentValue, setCommentValue] = useState("");
@@ -33,6 +39,11 @@ const NoteHeadOfComplianceModal = () => {
       visible={noteGlobalModal.visible}
       onClose={onClickClose}
       value={commentValue} // pass controlled value
+      predefinedReasons={
+        noteGlobalModal.action === "HOC-Compliant"
+          ? getAllPredefineReasonData?.reasonForCOAndHCO?.approved || []
+          : getAllPredefineReasonData?.reasonForCOAndHCO?.decline || []
+      }
       setValue={setCommentValue}
       width={"902px"}
       height={"620px"}

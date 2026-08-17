@@ -15,6 +15,7 @@ const INITIAL_LOCAL_STATE = {
   quantity: 0,
   status: [],
   type: [],
+  nature: [],
 };
 
 export const HOCMyAction = ({
@@ -97,6 +98,7 @@ export const HOCMyAction = ({
       quantity,
       status,
       type,
+      nature,
     } = localState;
 
     const searchPayload = {
@@ -109,6 +111,7 @@ export const HOCMyAction = ({
       quantity: quantity || 0,
       status: status || [],
       type: type || [],
+      nature: nature || [],
       filterTrigger: true,
       pageNumber: 0,
       pageSize: 10,
@@ -133,6 +136,7 @@ export const HOCMyAction = ({
       quantity: 0,
       status: [],
       type: [],
+      nature: [],
       filterTrigger: true,
       pageNumber: 0,
       pageSize: 10,
@@ -242,6 +246,27 @@ export const HOCMyAction = ({
           >
             <Option value={1}>Buy</Option>
             <Option value={2}>Sell</Option>
+          </Select>
+        </Col>
+      </Row>
+
+      {/* Nature - ADDED (2026-08-17): narrows HOC's mixed
+      Transaction+Portfolio list (API_Changes/2026-08-04_hta_hoc_my_actions_timeline.md) */}
+      <Row gutter={[12, 12]} className={styles.bottomGap}>
+        <Col xs={24} sm={24} md={12} lg={12}>
+          <label className={styles["typeAndStatusLabel"]}>Nature</label>
+          <Select
+            mode="multiple"
+            allowClear
+            placeholder="Select Nature"
+            size="middle"
+            className={styles.statusSelectClass}
+            value={localState.nature}
+            onChange={(values) => setFieldValue("nature", values)}
+            style={{ width: "100%" }}
+          >
+            <Option value="Transaction">Transaction</Option>
+            <Option value="Portfolio">Portfolio</Option>
           </Select>
         </Col>
       </Row>

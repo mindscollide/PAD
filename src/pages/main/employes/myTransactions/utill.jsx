@@ -3,6 +3,7 @@ import { Button } from "../../../../components";
 import TypeColumnTitle from "../../../../components/dropdowns/filters/typeColumnTitle";
 import StatusColumnTitle from "../../../../components/dropdowns/filters/statusColumnTitle";
 import { Tag, Tooltip } from "antd";
+import EscalatedIcon from "../../../../assets/img/escalated.png";
 
 import {
   dashBetweenApprovalAssets,
@@ -249,6 +250,27 @@ export const getBorderlessTableColumns = ({
         </Tag>
       );
     },
+  },
+  {
+    // ADDED: backend already sends isEscalated (SearchEmployeeTransactionsResponse.IsEscalated)
+    // and it was already being mapped in mapEmployeeTransactions above, but no
+    // column ever rendered it - same escalated-icon pattern already used on
+    // the sibling My Approvals page (employes/myApprovals/utils.jsx).
+    title: "",
+    dataIndex: "isEscalated",
+    key: "isEscalated",
+    width: 50,
+    align: "center",
+    render: (isEscalated) =>
+      isEscalated && (
+        <img
+          draggable={false}
+          src={EscalatedIcon}
+          alt="Escalated"
+          data-testid="escalated-icon"
+          style={{ display: "block", margin: "0 auto" }}
+        />
+      ),
   },
   {
     title: withSortIcon("Quantity", "quantity", sortedInfo, "center"),

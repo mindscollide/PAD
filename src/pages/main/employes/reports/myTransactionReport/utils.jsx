@@ -1,6 +1,7 @@
 import TypeColumnTitle from "../../../../../components/dropdowns/filters/typeColumnTitle";
 import StatusColumnTitle from "../../../../../components/dropdowns/filters/statusColumnTitle";
 import { Tag, Tooltip } from "antd";
+import EscalatedIcon from "../../../../../assets/img/escalated.png";
 
 import {
   dashBetweenApprovalAssets,
@@ -367,6 +368,26 @@ export const getBorderlessTableColumns = ({
         </Tag>
       );
     },
+  },
+  {
+    // ADDED: backend already sends isEscalated and it was already being
+    // mapped above, but no column ever rendered it - same gap just found
+    // and fixed on employes/myTransactions/utill.jsx.
+    title: "",
+    dataIndex: "isEscalated",
+    key: "isEscalated",
+    width: 50,
+    align: "center",
+    render: (isEscalated) =>
+      isEscalated && (
+        <img
+          draggable={false}
+          src={EscalatedIcon}
+          alt="Escalated"
+          data-testid="escalated-icon"
+          style={{ display: "block", margin: "0 auto" }}
+        />
+      ),
   },
   {
     title: withSortIcon("Action Date", "actionDateTime", sortedInfo, "center"),

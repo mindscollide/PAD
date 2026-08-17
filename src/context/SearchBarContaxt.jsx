@@ -384,6 +384,11 @@ export const SearchBarProvider = ({ children }) => {
       type: [],
       status: [],
       quantity: 0,
+      // ADDED (2026-08-17): GetHOCMyActionsWorkflowDetail's new Nature
+      // request filter (API_Changes/2026-08-04_hta_hoc_my_actions_timeline.md)
+      // - display-facing strings ("Transaction"/"Portfolio"), narrows the
+      // mixed Transaction+Portfolio list HOC otherwise sees combined.
+      nature: [],
       pageNumber: 0,
       pageSize: 10,
       filterTrigger: false,
@@ -1140,6 +1145,7 @@ export const SearchBarProvider = ({ children }) => {
       type: [],
       status: [],
       quantity: 0,
+      nature: [],
       pageNumber: 0,
       pageSize: 10,
       filterTrigger: false,
