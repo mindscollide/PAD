@@ -319,94 +319,81 @@ const MyAction = () => {
   const mapMyActionData = (data) => {
     if (!data?.requests) return [];
 
-    const getBundleIconType = (state) => {
-      switch (state) {
-        case 2:
-          return "Approved";
-        case 3:
-          return "Decline";
-        default:
-          return "Pending";
-      }
-    };
+    const userProfileData = JSON.parse(
+      sessionStorage.getItem("user_profile_data")
+    );
+    const loggedInUserID = userProfileData?.userID;
 
-    // ❗ REMOVE "Compliant" and "Declined" from workflow icon mapping
-    const getWorkFlowIconType = (id) => {
-      switch (id) {
-        case 6:
-          return "Not-Traded";
-        case 5:
-          return "Traded";
-        case 2:
-          return "Resubmit";
-        case 3:
-          return "Approved";
-        // case 4 (Declined) → removed
-        // case 8 (Compliant) → removed
-        default:
-          return "ellipsis";
-      }
+    // REWORKED (2026-08-17): trail is now built from the new timeline[]
+    // (API_Changes/2026-08-17_co_lm_my_actions_timeline.md), same concept
+    // already live on HTA/HOC's own myActions pages
+    // (API_Changes/2026-08-04_hta_hoc_my_actions_timeline.md) - replaces
+    // the flat per-actor bundleHistory[] snapshot and the
+    // workFlowStatusName-sniffing this used to detect resubmits.
+    //
+    // Per this doc's explicit callout, this timeline is NOT scoped to the
+    // viewing caller - it shows every level's resolution from submission
+    // to the current state (plain "Approved"/"Declined" event types,
+    // every "Escalated On" kept as-is, not filtered to ones the caller
+    // closed), attributed to whoever actually acted via actorName/
+    // actorUserID - "You" is substituted only when the event's own actor
+    // happens to be the viewer.
+    const buildTrail = (timeline = []) => {
+      return timeline.map((event) => {
+        const date = formatApiDateTime(`${event.eventDate} ${event.eventTime}`);
+        const actor =
+          event.actorUserID === loggedInUserID ? "You" : event.actorName;
+
+        switch (event.eventType) {
+          case "Submitted For Approval":
+            return {
+              status: "Send for Approval",
+              date,
+              iconType: "SendForApproval",
+            };
+          case "Resubmitted For Approval":
+            return {
+              status: "Resubmit for Approval",
+              date,
+              requesterID: dashBetweenApprovalAssets(
+                event.referenceApprovalID
+              ),
+              iconType: "Resubmit",
+            };
+          case "Escalated On":
+            return {
+              status: "Escalated On",
+              user: actor,
+              date,
+              iconType: "EscaltedOn",
+            };
+          case "Approved":
+            return {
+              status: "Approved",
+              user: actor,
+              date,
+              iconType: "Approved",
+            };
+          case "Declined":
+            return {
+              status: "Declined",
+              user: actor,
+              date,
+              iconType: "Decline",
+            };
+          default:
+            return {
+              status: event.eventType,
+              user: actor,
+              date,
+              iconType: "ellipsis",
+            };
+        }
+      });
     };
 
     return data.requests.map((wf) => {
-      // Step 0: Send For Approval — show the Resubmit label/icon instead
-      // when this request is itself a resubmission (workFlowStatusName is
-      // only "Resubmit" on the request that was resubmitted, not on
-      // approved/declined/traded ones).
-      const isResubmittedRequest = wf.workFlowStatusName === "Resubmit";
-      const sendForApprovalStep = {
-        status: isResubmittedRequest
-          ? "Resubmit for Approval"
-          : "Send for Approval",
-        date: formatApiDateTime(`${wf.requestedDate} ${wf.requestedTime}`),
-        iconType: isResubmittedRequest ? "Resubmit" : "SendForApproval",
-      };
-      // userID
-      const userProfileData = JSON.parse(
-        sessionStorage.getItem("user_profile_data")
-      );
-      // Step 1: Bundle hierarchy
-      const bundleSteps =
-        wf.bundleHistory?.map((b) => ({
-          status:
-            b.bundleStatus === 2
-              ? "Approved"
-              : b.bundleStatus === 3
-              ? "Declined"
-              : "Pending",
-          user:
-            userProfileData?.userID === b.assignedToUserID
-              ? "You"
-              : `${b.firstName} ${b.lastName}`,
-          date: formatApiDateTime(
-            `${b.bundleModifiedDate} ${b.bundleModifiedTime}`
-          ),
-          iconType: getBundleIconType(b.bundleStatus),
-        })) || [];
-
-      // Step 2: Final workflow status
-      const finalStepStatus = wf.workFlowStatusID;
-
-      // ❗ EXCLUDE Compliant (ID 8) and Declined (ID 4)
-      const shouldAddFinalStep = ![8, 4].includes(finalStepStatus);
-
-      let finalStep = null;
-
-      if (shouldAddFinalStep) {
-        finalStep = {
-          status: wf.workFlowStatusName,
-          date: formatApiDateTime(`${wf.requestedDate} ${wf.requestedTime}`),
-          requesterID: dashBetweenApprovalAssets(wf.approvalID),
-          iconType: getWorkFlowIconType(wf.workFlowStatusID),
-        };
-      }
-
-      // 🔥 Final ordered steps
-      const trail = [
-        sendForApprovalStep,
-        ...bundleSteps,
-        // ...(shouldAddFinalStep ? [finalStep] : []),
-      ];
+      const trail = Array.isArray(wf.timeline) ? buildTrail(wf.timeline) : [];
 
       return {
         id: String(wf.requestID),
@@ -420,7 +407,7 @@ const MyAction = () => {
         quantity: Number(wf.quantity),
         type: wf.typeName || wf.type,
         status: wf.statusState,
-        isResubmit: isResubmittedRequest,
+        isResubmit: wf.workFlowStatusName === "Resubmit",
         trail,
       };
     });

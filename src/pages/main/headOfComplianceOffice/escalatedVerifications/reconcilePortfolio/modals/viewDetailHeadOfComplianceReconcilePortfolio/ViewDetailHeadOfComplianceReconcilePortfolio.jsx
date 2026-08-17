@@ -6,8 +6,19 @@ import { Stepper, Step } from "react-form-stepper";
 import CustomButton from "../../../../../../../components/buttons/button";
 import CheckIcon from "../../../../../../../assets/img/Check.png";
 import EllipsesIcon from "../../../../../../../assets/img/Ellipses.png";
+// FIXED (2026-08-17): CrossIcon was referenced below (case 3 /
+// Non-Compliant) but never imported - a ReferenceError the moment any
+// hierarchy entry had bundleStatusID 3. Same fix category as the sibling
+// Transaction modal's missing EscaltedOn import.
+import CrossIcon from "../../../../../../../assets/img/Cross.png";
+// ADDED (2026-08-17): "Escalated On" step icon. Uses the same
+// EscaltedOn.png asset as the HTA sibling modal
+// (headOfTradeApprover/escalatedApprovals/modals/viewDetailHeadOfApprovalModal)
+// so the icon matches exactly.
+import EscaltedOn from "../../../../../../../assets/img/EscaltedOn.png";
 import { useDashboardContext } from "../../../../../../../context/dashboardContaxt";
 import {
+  convertUTCToCurrentTimeZone,
   dashBetweenApprovalAssets,
   formatApiDateTime,
   formatNumberWithCommas,
@@ -132,7 +143,83 @@ const ViewDetailHeadOfComplianceReconcilePortfolio = () => {
     isEscalatedPortfolioHeadOfComplianceViewDetailData?.ticketUploaded ===
       false;
 
-  // need to extract and escalatedFrom ID from escalation
+  // REWORKED (2026-08-17): rebuilt to match the HTA sibling screen's
+  // hierarchy handling exactly
+  // (headOfTradeApprover/escalatedApprovals/modals/viewDetailHeadOfApprovalModal) -
+  // this screen only ever shows requests that have been escalated at
+  // least once, so the stepper is built entirely from escalations[]
+  // rather than filtering/guessing off the raw hierarchyDetails array.
+  // Each escalation contributes exactly two steps - an "Escalated On"
+  // step, then either who closed it (escalationClosedBy/
+  // escalationClosedByName set) or a "waiting" step while it's still
+  // open.
+  const escalations = Array.isArray(
+    isEscalatedPortfolioHeadOfComplianceViewDetailData?.escalations
+  )
+    ? isEscalatedPortfolioHeadOfComplianceViewDetailData.escalations
+    : [];
+
+  // Escalation closure doesn't carry its own compliant/non-compliant
+  // outcome (only who closed it), so cross-reference the closer's own
+  // hierarchyDetails entry for their real bundleStatusID - lets the
+  // closure step show Compliant vs Non-Compliant correctly instead of
+  // collapsing both into one generic "closed" step.
+  const hierarchyByUserID = new Map(
+    (
+      isEscalatedPortfolioHeadOfComplianceViewDetailData?.hierarchyDetails ||
+      []
+    ).map((person) => [person.userID, person])
+  );
+
+  const escalationSteps = escalations.flatMap((esc) => {
+    const escalatedStep = {
+      key: `${esc?.escalationID}-escalated`,
+      iconSrc: EscaltedOn,
+      title:
+        esc?.escalatedFromID === loggedInUserID
+          ? "Escalated by You"
+          : `Escalated by ${esc?.escalatedFrom}`,
+      desc: formatApiDateTime(
+        `${esc?.escalatedOnDate} ${esc?.escalatedOnTime}`
+      ),
+    };
+
+    // escalatedClosedOn is a combined ISO string ("YYYY-MM-DDTHH:mm:ss"),
+    // unlike the split yyyyMMdd/HHmmss fields used elsewhere - reshape it
+    // into the same two-part UTC format before converting for display.
+    const [closedDatePart, closedTimePart] = (
+      esc?.escalatedClosedOn || ""
+    ).split("T");
+
+    const closerBundleStatusID = hierarchyByUserID.get(
+      esc?.escalationClosedBy
+    )?.bundleStatusID;
+    const isNonCompliant = closerBundleStatusID === 3;
+
+    const closureStep = esc?.escalationClosedBy
+      ? {
+          key: `${esc?.escalationID}-closed`,
+          iconSrc: isNonCompliant ? CrossIcon : CheckIcon,
+          title:
+            esc?.escalationClosedBy === loggedInUserID
+              ? isNonCompliant
+                ? "Marked Non-Compliant by You"
+                : "Marked Compliant by You"
+              : esc?.escalationClosedByName,
+          desc: convertUTCToCurrentTimeZone(
+            closedDatePart?.replace(/-/g, ""),
+            closedTimePart?.replace(/:/g, "")
+          ),
+        }
+      : {
+          key: `${esc?.escalationID}-waiting`,
+          iconSrc: EllipsesIcon,
+          title: "Waiting for Your Action",
+          desc: "",
+        };
+
+    return [escalatedStep, closureStep];
+  });
 
   const onClickFromCompliantNoteModalFromHeadOfCompliance = () => {
     setNoteGlobalModal({ visible: true, action: "HOC-Portfolio-Compliant" });
@@ -308,31 +395,19 @@ const ViewDetailHeadOfComplianceReconcilePortfolio = () => {
                 </Row>
 
                 <Row>
+                  {/* REWORKED (2026-08-17): now built entirely from
+                  escalationSteps, mirroring the HTA sibling screen's
+                  approach exactly (see escalationSteps above). */}
                   <div className={styles.mainStepperContainer}>
                     <div
                       className={`${styles.backgrounColorOfStepper} ${
-                        (isEscalatedPortfolioHeadOfComplianceViewDetailData
-                          ?.hierarchyDetails?.length || 0) <= 3
+                        escalationSteps.length <= 3
                           ? styles.centerAlignStepper
                           : styles.leftAlignStepper
                       }`}
                     >
-                      {/* Agar loginUserID match krti hai hierarchyDetails ki userID sy to wo wala stepper show nahi hoga */}
                       <Stepper
-                        activeStep={Math.max(
-                          0,
-                          Array.isArray(
-                            isEscalatedPortfolioHeadOfComplianceViewDetailData?.hierarchyDetails
-                          )
-                            ? (isEscalatedPortfolioHeadOfComplianceViewDetailData
-                                ?.hierarchyDetails.length > 1
-                                ? isEscalatedPortfolioHeadOfComplianceViewDetailData?.hierarchyDetails.filter(
-                                    (person) => person.userID !== loggedInUserID
-                                  )
-                                : isEscalatedPortfolioHeadOfComplianceViewDetailData?.hierarchyDetails
-                              ).length - 1 // 🔥 fix here
-                            : 0
-                        )}
+                        activeStep={Math.max(0, escalationSteps.length - 1)}
                         connectorStyleConfig={{
                           activeColor: "#00640A",
                           completedColor: "#00640A",
@@ -346,87 +421,33 @@ const ViewDetailHeadOfComplianceReconcilePortfolio = () => {
                           borderRadius: "50%",
                         }}
                       >
-                        {Array.isArray(
-                          isEscalatedPortfolioHeadOfComplianceViewDetailData?.hierarchyDetails
-                        ) &&
-                          (isEscalatedPortfolioHeadOfComplianceViewDetailData
-                            ?.hierarchyDetails.length > 1
-                            ? isEscalatedPortfolioHeadOfComplianceViewDetailData?.hierarchyDetails.filter(
-                                (person) => person.userID !== loggedInUserID
-                              )
-                            : isEscalatedPortfolioHeadOfComplianceViewDetailData?.hierarchyDetails
-                          ) // 🔥 fix here
-                            .map((person, index) => {
-                              const {
-                                fullName,
-                                bundleStatusID,
-                                modifiedDate,
-                                modifiedTime,
-                                userID,
-                              } = person;
-
-                              const formattedDateTime = formatApiDateTime(
-                                `${modifiedDate} ${modifiedTime}`
-                              );
-
-                              // Decide icon and text based on status
-                              let iconSrc;
-                              let displayText;
-
-                              switch (bundleStatusID) {
-                                case 2: // ✅ Compliant
-                                  iconSrc = CheckIcon;
-                                  displayText = "Marked Compliant by You";
-                                  break;
-                                case 3: // ❌ Non-Compliant
-                                  iconSrc = CrossIcon;
-                                  displayText = "Marked Non-Compliant by You";
-                                  break;
-                                case 1: // ⏳ Pending
-                                default:
-                                  iconSrc = EllipsesIcon;
-                                  displayText = fullName;
-                              }
-
-                              return (
-                                <Step
-                                  key={index}
-                                  label={
-                                    <div
-                                      className={`${styles.customlabel} ${
-                                        bundleStatusID === 2 || 3
-                                          ? styles.centerAlignLabel
-                                          : ""
-                                      }`}
-                                    >
-                                      <div className={styles.customtitle}>
-                                        {displayText}
-                                      </div>
-                                      <div
-                                        className={`${styles.customdesc} ${
-                                          bundleStatusID === 2 || 3
-                                            ? styles.centerAlignText
-                                            : ""
-                                        }`}
-                                      >
-                                        {bundleStatusID !== 1 &&
-                                          formattedDateTime}
-                                      </div>
-                                    </div>
-                                  }
-                                  children={
-                                    <div className={styles.stepCircle}>
-                                      <img
-                                        draggable={false}
-                                        src={iconSrc}
-                                        alt="status-icon"
-                                        className={styles.circleImg}
-                                      />
-                                    </div>
-                                  }
+                        {escalationSteps.map((step) => (
+                          <Step
+                            key={step.key}
+                            label={
+                              <div className={styles.customlabel}>
+                                <div className={styles.customtitle}>
+                                  {step.title}
+                                </div>
+                                {step.desc && (
+                                  <div className={styles.customdesc}>
+                                    {step.desc}
+                                  </div>
+                                )}
+                              </div>
+                            }
+                            children={
+                              <div className={styles.stepCircle}>
+                                <img
+                                  draggable={false}
+                                  src={step.iconSrc}
+                                  alt="status-icon"
+                                  className={styles.circleImg}
                                 />
-                              );
-                            })}
+                              </div>
+                            }
+                          />
+                        ))}
                       </Stepper>
                     </div>
                   </div>

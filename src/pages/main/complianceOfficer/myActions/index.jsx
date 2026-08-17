@@ -15,7 +15,10 @@ import { useNotification } from "../../../../components/NotificationProvider/Not
 import { useGlobalLoader } from "../../../../context/LoaderContext";
 import { useApi } from "../../../../context/ApiContext";
 import { useNavigate } from "react-router-dom";
-import { formatApiDateTime } from "../../../../common/funtions/rejex";
+import {
+  dashBetweenApprovalAssets,
+  formatApiDateTime,
+} from "../../../../common/funtions/rejex";
 const COMyAction = () => {
   const navigate = useNavigate();
   const hasFetched = useRef(false);
@@ -321,95 +324,80 @@ const COMyAction = () => {
     const loggedUser = JSON.parse(sessionStorage.getItem("user_profile_data"));
     const loggedUserId = loggedUser?.userID;
 
-    const getFinalWorkflowIcon = (id) => {
-      switch (id) {
-        case 9:
-          return "co-Non-Compliant";
-        case 8:
-          return "co-Compliant";
-        case 7:
-          return "Not-Traded";
-        case 6:
-          return "Traded";
-        case 1:
-          return "Pending";
-        default:
-          return "ellipsis";
-      }
-    };
+    // REWORKED (2026-08-17): trail is now built from the new timeline[]
+    // (API_Changes/2026-08-17_co_lm_my_actions_timeline.md), same concept
+    // already live on HOC (API_Changes/2026-08-04_hta_hoc_my_actions_timeline.md)
+    // - replaces the flat per-actor bundleHistory[] snapshot this used to
+    // filter by assignedToUserID.
+    //
+    // Deliberate difference from HOC's version, per this doc's explicit
+    // callout: HOC's timeline is scoped to the viewing caller only
+    // ("Approved By You"/"Declined by You", "Escalated On" filtered down
+    // to escalations *this* HOC closed). This one is NOT scoped - it shows
+    // every level's resolution from submission to the current state
+    // (plain "Approved"/"Declined" event types, every "Escalated On" kept
+    // as-is), attributed to whoever actually acted via actorName/
+    // actorUserID - so no filtering here, and "You" is substituted only
+    // when the event's own actor happens to be the viewer.
+    const buildTrail = (timeline = []) => {
+      return timeline.map((event) => {
+        const date = formatApiDateTime(`${event.eventDate} ${event.eventTime}`);
+        const actor =
+          event.actorUserID === loggedUserId ? "You" : event.actorName;
 
-    const getFinalWorkflowStatusText = (id, name) => {
-      switch (id) {
-        case 9:
-          return "Non-Compliant";
-        case 8:
-          return "Compliant";
-        case 7:
-          return "Not Traded";
-        case 6:
-          return "Traded";
-        case 1:
-          return "Pending";
-        default:
-          return name;
-      }
+        switch (event.eventType) {
+          case "Submitted For Approval":
+            // Same CO-specific relabel as the HOC fix: the first real
+            // event here is the employee's underlying transaction, not an
+            // approval request.
+            return {
+              status: "Transaction Conducted",
+              date,
+              iconType: "co-Transaction Conducted",
+            };
+          case "Resubmitted For Approval":
+            return {
+              status: "Resubmit",
+              date,
+              requesterID: dashBetweenApprovalAssets(
+                event.referenceApprovalID
+              ),
+              iconType: "Resubmit",
+            };
+          case "Escalated On":
+            return {
+              status: "Escalated On",
+              user: actor,
+              date,
+              iconType: "EscaltedOn",
+            };
+          case "Approved":
+            return {
+              status: "Marked Compliant",
+              user: actor,
+              date,
+              iconType: "co-Compliant",
+            };
+          case "Declined":
+            return {
+              status: "Marked Non-Compliant",
+              user: actor,
+              date,
+              iconType: "co-Non-Compliant",
+            };
+          default:
+            return {
+              status: event.eventType,
+              user: actor,
+              date,
+              iconType: "ellipsis",
+            };
+        }
+      });
     };
 
     return data.requests.map((wf) => {
-      // 1️⃣ Send For Approval
-      const sendForApprovalStep = {
-        stepType: "SendForApproval",
-        status: "Send for Approval",
-        date: formatApiDateTime(`${wf.requestedDate} ${wf.requestedTime}`),
-        iconType: "SendForApproval",
-      };
-
-      // 2️⃣ Bundle Steps
-      let bundleSteps = [];
-
-      if (wf.bundleHistory?.length > 0) {
-        bundleSteps = wf.bundleHistory
-          .filter((b) => b.assignedToUserID === loggedUserId)
-          .map((b) => {
-            let statusText = "";
-            let iconType = "";
-
-            if (b.bundleStatus === 2) {
-              statusText = "Marked Compliant by You";
-              iconType = "co-Compliant";
-            } else if (b.bundleStatus === 3) {
-              statusText = "Marked Non-Compliant by You";
-              iconType = "co-Non-Compliant";
-            } else return null;
-
-            return {
-              stepType: "BundleHistory",
-              status: statusText,
-              date: formatApiDateTime(
-                `${b.bundleModifiedDate} ${b.bundleModifiedTime}`
-              ),
-              iconType,
-            };
-          })
-          .filter(Boolean);
-      }
-
-      // 3️⃣ Final Workflow Status
-      const finalWorkflowStep = {
-        stepType: "WorkflowFinal",
-        status: getFinalWorkflowStatusText(
-          wf.workFlowStatusID,
-          wf.workFlowStatusName
-        ),
-        date: formatApiDateTime(`${wf.requestedDate} ${wf.requestedTime}`),
-        iconType: getFinalWorkflowIcon(wf.workFlowStatusID),
-      };
-
-      const trail = [
-        sendForApprovalStep,
-        ...bundleSteps,
-        // finalWorkflowStep
-      ];
+      const trail = Array.isArray(wf.timeline) ? buildTrail(wf.timeline) : [];
 
       return {
         id: String(wf.requestID),

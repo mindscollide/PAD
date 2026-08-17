@@ -171,6 +171,13 @@ export const GetAllTransactionViewDetails = async ({
         isEscalated,
         myActionStatusID,
         myActionStatus,
+        // FIXED (2026-08-17): the backend added this array
+        // (API_Changes/2026-08-17_employee_view_details_hierarchy_escalations.md)
+        // but this wrapper's explicit allowlist destructure never picked
+        // it up, so it silently got dropped before reaching any
+        // consumer - both the employee's own View Details modal and the
+        // CO reconcile view detail modal share this wrapper.
+        escalations,
       } = res.result;
 
       if (
@@ -189,6 +196,7 @@ export const GetAllTransactionViewDetails = async ({
           isEscalated: isEscalated || false,
           myActionStatusID: myActionStatusID ?? null,
           myActionStatus: myActionStatus || "",
+          escalations: escalations || [],
         };
       }
 
@@ -205,6 +213,7 @@ export const GetAllTransactionViewDetails = async ({
         tradedWorkFlowReqeust: [],
         ticketUploaded: false,
         reqeusterName: "",
+        escalations: [],
       };
     }
 

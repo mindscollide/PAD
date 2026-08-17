@@ -69,6 +69,11 @@ const COTransactionsSummarysReports = () => {
     coTransactionSummaryReportViewDetailsListData,
     setCOTransactionSummaryReportViewDetailsListData,
     resetCOTransactionSummaryReportViewDetailsListData,
+
+    // ADDED (2026-08-17): "which row's View Comments was clicked" - was
+    // never wired up on the CO side at all, unlike HOC's own version of
+    // this report which already uses this same state correctly.
+    setSelectedWorkFlowViewDetaild,
   } = useMyApproval();
 
   const { isViewComments, setIsViewComments, setCheckTradeApprovalID } =
@@ -346,6 +351,7 @@ const COTransactionsSummarysReports = () => {
     setCOTransactionsSummarysReportsViewDetailSearch,
     handelViewDetails,
     setIsViewComments,
+    setSelectedWorkFlowViewDetaild,
   });
 
   const handleDateChange = (dates) => {
