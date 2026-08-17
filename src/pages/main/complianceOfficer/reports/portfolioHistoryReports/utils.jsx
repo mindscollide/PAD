@@ -101,7 +101,7 @@ export const getBorderlessTableColumns = ({
     dataIndex: "employeeID",
     key: "employeeID",
     align: "left",
-    width: "80px",
+    width: 50,
     ellipsis: true,
     sortDirections: ["ascend", "descend"],
     sortOrder: sortedInfo?.columnKey === "employeeID" ? sortedInfo.order : null,
@@ -135,7 +135,7 @@ export const getBorderlessTableColumns = ({
     title: withSortIcon("Department Name", "departmentName", sortedInfo),
     dataIndex: "departmentName",
     key: "departmentName",
-    width: 200,
+    width: 150,
     align: "left",
     sorter: (a, b) =>
       a.departmentName.localeCompare(b.departmentName, undefined, {
@@ -156,7 +156,6 @@ export const getBorderlessTableColumns = ({
     key: "tradeApprovalID",
     width: 120,
     align: "left",
-    ellipsis: true,
     sorter: (a, b) => a.tradeApprovalID.localeCompare(b.tradeApprovalID),
     sortDirections: ["ascend", "descend"],
     sortOrder:
@@ -289,7 +288,7 @@ export const getBorderlessTableColumns = ({
     ),
     dataIndex: "status",
     key: "status",
-    width: 250,
+    width: 150,
     filteredValue: coPortfolioHistoryReportSearch?.status?.length
       ? coPortfolioHistoryReportSearch.status
       : null,

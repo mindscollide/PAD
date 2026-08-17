@@ -137,12 +137,11 @@ export const getBorderlessTableColumns = ({
   setEmployeeMyTradeApprovalsSearch,
 }) => [
   {
-    title: withSortIcon("Trade Request ID", "tradeApprovalID", sortedInfo),
+    title: withSortIcon("Request ID", "tradeApprovalID", sortedInfo),
     align: "left",
     dataIndex: "tradeApprovalID",
     key: "tradeApprovalID",
-    width: "12%",
-    ellipsis: true,
+    width: 110,
     sorter: (a, b) =>
       parseInt(a.tradeApprovalID.replace(/[^\d]/g, ""), 10) -
       parseInt(b.tradeApprovalID.replace(/[^\d]/g, ""), 10),
@@ -166,8 +165,7 @@ export const getBorderlessTableColumns = ({
     align: "center",
     dataIndex: "requestDateTime",
     key: "requestDateTime",
-    ellipsis: true,
-    width: "10%",
+    width: 200,
     sorter: (a, b) => a.requestDateTime.localeCompare(b.requestDateTime),
     sortOrder:
       sortedInfo?.columnKey === "requestDateTime" ? sortedInfo.order : null,
@@ -196,7 +194,8 @@ export const getBorderlessTableColumns = ({
     align: "left",
     dataIndex: "instrumentCode",
     key: "instrumentCode",
-    width: "12%",
+    width: 160,
+
     ellipsis: true,
     sorter: (a, b) =>
       (a?.instrumentCode || "").localeCompare(b?.instrumentCode || ""),
@@ -220,8 +219,8 @@ export const getBorderlessTableColumns = ({
     ),
     dataIndex: "type",
     key: "type",
-    ellipsis: true,
-    width: "8%",
+    width: 90,
+
     filteredValue: employeeMyTradeApprovalsSearch.type?.length
       ? employeeMyTradeApprovalsSearch?.type
       : null,
@@ -263,8 +262,8 @@ export const getBorderlessTableColumns = ({
     align: "center",
     dataIndex: "quantity",
     key: "quantity",
-    ellipsis: true,
-    width: "8%",
+    width: 150,
+
     sorter: (a, b) => a.quantity - b.quantity,
     sortDirections: ["ascend", "descend"],
     sortOrder: sortedInfo?.columnKey === "quantity" ? sortedInfo.order : null,
@@ -276,9 +275,8 @@ export const getBorderlessTableColumns = ({
     title: withSortIcon("Broker", "broker", sortedInfo),
     align: "left",
     dataIndex: "broker",
-    width: "13%",
+    width: 150,
     key: "broker",
-    ellipsis: true,
     sorter: (a, b) => (a.broker || "").localeCompare(b.broker || ""),
     sortDirections: ["ascend", "descend"],
     sortOrder: sortedInfo?.columnKey === "broker" ? sortedInfo.order : null,
@@ -333,8 +331,7 @@ export const getBorderlessTableColumns = ({
     ),
     dataIndex: "status",
     key: "status",
-    ellipsis: true,
-    width: "10%",
+    width: 10,
     filteredValue: employeeMyTradeApprovalsSearch.status?.length
       ? employeeMyTradeApprovalsSearch.status
       : null,
@@ -359,8 +356,7 @@ export const getBorderlessTableColumns = ({
     align: "center",
     dataIndex: "actionDateTime",
     key: "actionDateTime",
-    ellipsis: true,
-    width: "10%",
+    width: 200,
     sorter: (a, b) => a.actionDateTime.localeCompare(b.actionDateTime),
     sortDirections: ["ascend", "descend"],
     sortOrder:
@@ -389,7 +385,7 @@ export const getBorderlessTableColumns = ({
     align: "center",
     dataIndex: "actionBy",
     key: "actionBy",
-    width: "12%",
+    width: 150,
     sorter: (a, b) => (a.actionBy || "").localeCompare(b.actionBy || ""),
     sortOrder: sortedInfo?.columnKey === "actionBy" ? sortedInfo.order : null,
     sortDirections: ["ascend", "descend"],
@@ -404,7 +400,7 @@ export const getBorderlessTableColumns = ({
         .filter(Boolean);
 
       const showTooltip = !isMultiple && value.length > 11;
-      const displayText = showTooltip ? value.slice(0, 11) + "…" : value;
+      const displayText = value;
 
       const commonStyle = {
         whiteSpace: "nowrap",

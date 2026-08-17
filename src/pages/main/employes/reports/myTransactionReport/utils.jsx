@@ -175,11 +175,11 @@ export const getBorderlessTableColumns = ({
     },
   },
   {
-    title: withSortIcon("Trade Request ID", "requestID", sortedInfo),
+    title: withSortIcon("Request ID", "requestID", sortedInfo),
     align: "left",
     dataIndex: "requestID",
     key: "requestID",
-    width: 160,
+    width: 120,
     ellipsis: true,
     sorter: (a, b) =>
       parseInt(a.requestID.replace(/[^\d]/g, ""), 10) -
@@ -203,7 +203,7 @@ export const getBorderlessTableColumns = ({
     align: "center",
     dataIndex: "requestDateTime",
     key: "requestDateTime",
-    width: 100,
+    width: 200,
     sorter: (a, b) =>
       formatApiDateTime(a.requestDateTime).localeCompare(
         formatApiDateTime(b.requestDateTime)
@@ -373,8 +373,7 @@ export const getBorderlessTableColumns = ({
     align: "center",
     dataIndex: "actionDateTime",
     key: "actionDateTime",
-    ellipsis: true,
-    width: 230,
+    width: 200,
     sorter: (a, b) =>
       formatApiDateTime(a.actionDateTime).localeCompare(
         formatApiDateTime(b.actionDateTime)
@@ -399,15 +398,14 @@ export const getBorderlessTableColumns = ({
     align: "left",
     dataIndex: "actionBy",
     key: "actionBy",
-    ellipsis: true,
-    width: 150,
+    width: 200,
     sorter: (a, b) => (a.actionBy || "").localeCompare(b.actionBy || ""),
     sortOrder: sortedInfo?.columnKey === "actionBy" ? sortedInfo.order : null,
     sortDirections: ["ascend", "descend"],
     showSorterTooltip: false,
     sortIcon: () => null,
     render: (text, record) => {
-      const value = text || "-";
+      const value = text || "—";
       const isMultiple = value === "Multiple Users";
       const names = (record.actionByList || [])
         .map((u) => u.name)
