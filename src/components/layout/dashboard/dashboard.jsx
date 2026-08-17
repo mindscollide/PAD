@@ -60,10 +60,12 @@ const Dashboard = () => {
     usePortfolioContext();
 
   const {
+    setComplianceOfficerReconcileTransactionData,
     setComplianceOfficerReconcileTransactionDataMqtt,
     setComplianceOfficerReconcilePortfolioDataMqtt,
     setHeadOfComplianceApprovalEscalatedVerificationsMqtt,
     setHeadOfComplianceApprovalEscalatedVerificationsData,
+    setHeadOfComplianceApprovalPortfolioMqtt,
     activeTabRef: reconcileActiveTab,
     activeTabHCORef,
   } = useReconcileContext();
@@ -720,17 +722,69 @@ const Dashboard = () => {
                   }
                   break;
                 }
+                // CHANGED (2026-08-11): the "transactions" branch used to
+                // just set the generic refetch-trigger flag (full page-1
+                // reload). This message is sent to Compliance Officer role
+                // holders (RoleIDs=4 on the wire) whenever a transaction
+                // they're tied to gets approved - handled properly now:
+                //  - CO's own Reconcile Transactions list (currentKey "9",
+                //    "transactions" tab): patch that row's status in place
+                //    instead of a full refetch.
+                //  - HOC's Escalated Verifications list (currentKey "15"):
+                //    a dual-role CO+HOC user viewing their escalated queue
+                //    when their own approval lands should see that row
+                //    disappear (it's resolved, no longer needs HOC action).
                 case "COMPLIANCE_OFFICER_TRANSACTION_APPROVAL_REQUEST_APPROVED": {
                   if (
                     currentKey === "9" &&
                     currentreconcileActiveTab === "transactions"
                   ) {
-                    setComplianceOfficerReconcileTransactionDataMqtt(true);
+                    setComplianceOfficerReconcileTransactionData((prev) => {
+                      const rows = prev?.reconsileTransaction || [];
+                      const existingIndex = rows.findIndex(
+                        (row) =>
+                          String(row.approvalID) ===
+                          String(payload?.approvalID)
+                      );
+                      if (existingIndex === -1) return prev;
+
+                      const updatedRows = [...rows];
+                      updatedRows[existingIndex] = {
+                        ...updatedRows[existingIndex],
+                        status:
+                          payload?.approvalStatus?.approvalStatusName ||
+                          updatedRows[existingIndex].status,
+                      };
+
+                      return { ...prev, reconsileTransaction: updatedRows };
+                    });
                   } else if (
                     currentKey === "9" &&
                     currentreconcileActiveTab === "portfolio"
                   ) {
                     setComplianceOfficerReconcilePortfolioDataMqtt(true);
+                  } else if (currentKey === "15") {
+                    setHeadOfComplianceApprovalEscalatedVerificationsData(
+                      (prev) => {
+                        const rows = prev?.escalatedVerification || [];
+                        const filteredRows = rows.filter(
+                          (row) =>
+                            String(row.workflowID) !==
+                            String(payload?.approvalID)
+                        );
+                        if (filteredRows.length === rows.length) return prev;
+
+                        return {
+                          ...prev,
+                          escalatedVerification: filteredRows,
+                          totalRecordsDataBase: Math.max(
+                            0,
+                            (prev.totalRecordsDataBase || 0) - 1
+                          ),
+                          totalRecordsTable: filteredRows.length,
+                        };
+                      }
+                    );
                   }
                   break;
                 }
@@ -895,9 +949,18 @@ const Dashboard = () => {
                     } else if (
                       currentactiveHCOEscalatedTabRef === "portfolio"
                     ) {
-                      setHeadOfComplianceApprovalEscalatedVerificationsData(
-                        true
-                      );
+                      // FIXED (2026-08-11): was calling
+                      // setHeadOfComplianceApprovalEscalatedVerificationsData(true)
+                      // - the *data* setter (expects a full
+                      // {escalatedVerification, totalRecordsDataBase,
+                      // totalRecordsTable} object), not the boolean
+                      // refetch-trigger flag - this overwrote the whole list
+                      // state with the literal value `true`, so the next
+                      // `.escalatedVerification` read anywhere would be
+                      // undefined. Should have been the *Mqtt* flag setter,
+                      // matching the "escalated" tab branch above and every
+                      // other refetch-trigger case in this file.
+                      setHeadOfComplianceApprovalPortfolioMqtt(true);
                     }
                   }
                   break;

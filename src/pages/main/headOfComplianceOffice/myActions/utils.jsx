@@ -25,6 +25,12 @@ export const buildMyActionApiRequest = (searchState = {}) => ({
   Type: searchState.type || [],
   Status: searchState.status || [],
   Quantity: searchState.quantity ? Number(searchState.quantity) : 0,
+  // ADDED (2026-08-17): GetHOCMyActionsWorkflowDetail's new optional Nature
+  // filter (API_Changes/2026-08-04_hta_hoc_my_actions_timeline.md) -
+  // display-facing strings ("Transaction"/"Portfolio"), narrows HOC's
+  // otherwise-combined list. Omitting/empty keeps existing combined
+  // behavior - safe default.
+  Nature: searchState.nature || [],
   PageNumber: Number(searchState.pageNumber) || 0,
   Length: Number(searchState.pageSize) || 10,
 });
