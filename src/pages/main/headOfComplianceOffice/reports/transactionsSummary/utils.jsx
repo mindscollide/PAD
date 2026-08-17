@@ -551,7 +551,6 @@ export const getBorderlessTableColumnsViewDetails = ({
           className="small-light-button"
           text={"View Comments"}
           onClick={() => {
-            console.log(record, "tradeApprovalID");
             setSelectedWorkFlowViewDetaild(record);
             setIsViewComments(true);
           }}

@@ -21,13 +21,6 @@ const NoteModalComplianceOfficer = () => {
   // Context Api For Reasons which is coming from the API and stored in contextApi
   const { getAllPredefineReasonData } = useDashboardContext();
 
-  console.log(
-    complianceOfficerReconcileTransactionData,
-    "reconcileTransactionApprovalID"
-  );
-  console.log(selectedKey, "selectedKeyselectedKey212");
-  console.log(viewDetailReconcileTransaction, "viewDetailReconcileTransaction");
-
   // 🔹 Local state upar uthao
   const [commentValue, setCommentValue] = useState("");
 

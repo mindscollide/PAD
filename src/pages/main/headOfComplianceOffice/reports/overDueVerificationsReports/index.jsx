@@ -34,8 +34,6 @@ import { useDashboardContext } from "../../../../../context/dashboardContaxt";
 import { getSafeAssetTypeData } from "../../../../../common/funtions/assetTypesList";
 import { useTableScrollBottom } from "../../../../../common/funtions/scroll";
 import CustomButton from "../../../../../components/buttons/button";
-import { useSidebarContext } from "../../../../../context/sidebarContaxt";
-// import ViewDetailReconcileTransaction from "../../reconcile/transaction/modals/viewDetailReconcileTransaction.jsx/ViewDetailReconcileTransaction";
 import { GetAllTransactionViewDetails } from "../../../../../api/myTransactionsApi";
 import { useReconcileContext } from "../../../../../context/reconsileContax";
 import ViewDetailHeadOfComplianceReconcileTransaction from "../../escalatedVerifications/escalatedVerification/modals/viewDetailHeadOfComplianceReconcileTransactions/ViewDetailHeadOfComplianceReconcileTransaction";
@@ -438,7 +436,9 @@ const HeadCompianceOfficerOverdueVerificationReports = () => {
                 </span>
               }
               className="small-light-button-report"
-              disabled={!overdueVerificationHCOListData?.overdueVerifications?.length}
+              disabled={
+                !overdueVerificationHCOListData?.overdueVerifications?.length
+              }
               onClick={() => setOpen((prev) => !prev)}
             />
           </div>

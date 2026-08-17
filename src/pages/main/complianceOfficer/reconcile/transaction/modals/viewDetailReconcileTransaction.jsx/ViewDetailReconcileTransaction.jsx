@@ -41,7 +41,6 @@ const ViewDetailReconcileTransaction = () => {
     setUploadComplianceModal,
     setUploadattAchmentsFiles,
   } = useGlobalModal();
-  console.log(viewDetailReconcileTransaction, "viewDetailReconcileTransaction");
 
   // get data from sessionStorage
   const userProfileData = JSON.parse(
@@ -58,7 +57,6 @@ const ViewDetailReconcileTransaction = () => {
   const { allInstrumentsData } = useDashboardContext();
   // This is the Status Which is I'm getting from the selectedViewDetail contextApi state
   const getStatusStyle = (status) => {
-    console.log(status, "checkStatusessss");
     switch (status) {
       case "1":
         return {

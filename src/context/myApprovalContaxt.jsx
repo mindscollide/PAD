@@ -65,7 +65,7 @@ export const MyApprovalProvider = ({ children }) => {
 
   /** admin dashboard report summary */
   const [adminReportsDashboardData, setAdminReportsDashboardData] = useState(
-    [],
+    []
   );
 
   /** Employee Transaction Request Report API data */

@@ -10,10 +10,6 @@ const ViewCommentTransaction = () => {
 
   //This is the Global state of Context Api
   const { coTransactionSummaryReportViewDetailsListData } = useMyApproval();
-  console.log(
-    coTransactionSummaryReportViewDetailsListData,
-    "coTransactionSummaryReportViewDetailsListData"
-  );
 
   // Check workflow Id it shows comment against the workFlow ID
   const workflowStatusID = coTransactionSummaryReportViewDetailsListData?.key;

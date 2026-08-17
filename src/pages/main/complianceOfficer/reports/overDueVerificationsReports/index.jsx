@@ -70,8 +70,6 @@ const CompianceOfficerOverdueVerificationReports = () => {
     noteGlobalModal,
   } = useGlobalModal();
 
-  console.log(coOverdueVerificationListData, "coOverdueVerificationListData");
-
   const { assetTypeListingData, setAssetTypeListingData } =
     useDashboardContext();
 
@@ -109,13 +107,11 @@ const CompianceOfficerOverdueVerificationReports = () => {
       const records = Array.isArray(res?.overdueVerifications)
         ? res.overdueVerifications
         : [];
-      console.log("records", records);
       const mapped = mappingDateWiseTransactionReport(
         currentAssetTypeData?.Equities,
         records
       );
       if (!mapped || typeof mapped !== "object") return;
-      console.log("records", mapped);
 
       setCoOverdueVerificationListData((prev) => ({
         overdueVerifications: replace
@@ -152,8 +148,6 @@ const CompianceOfficerOverdueVerificationReports = () => {
       showNotification,
     ]
   );
-  console.log("records", coOverdueVerificationListData);
-  console.log("records", coOverdueVerificationReportSearch);
 
   // -------------------- Effects --------------------
 

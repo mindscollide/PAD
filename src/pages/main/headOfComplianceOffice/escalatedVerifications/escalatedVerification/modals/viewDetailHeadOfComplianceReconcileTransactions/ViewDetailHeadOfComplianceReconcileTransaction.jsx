@@ -67,7 +67,6 @@ const ViewDetailHeadOfComplianceReconcileTransaction = () => {
 
   // This is the Status Which is I'm getting from the selectedViewDetail contextApi state
   const getStatusStyle = (status) => {
-    console.log(status, "checkStatusessss");
     switch (status) {
       case "1":
         return {
@@ -203,8 +202,7 @@ const ViewDetailHeadOfComplianceReconcileTransaction = () => {
           ...file,
           attachmentBlob: "",
           canDelete:
-            notYetActioned &&
-            String(file.fK_UserID) === String(loggedInUserID),
+            notYetActioned && String(file.fK_UserID) === String(loggedInUserID),
         }));
 
         // Work only on the first file

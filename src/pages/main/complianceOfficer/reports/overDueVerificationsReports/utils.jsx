@@ -339,7 +339,6 @@ export const getBorderlessTableColumns = ({
           onClick={() => {
             setViewDetailReconcileTransaction(true);
             handleViewDetailsForReconcileTransaction(record?.workFlowID);
-            console.log(record, "tradeApprovalID");
             // setIsViewComments(true);
             // setCheckTradeApprovalID(record?.approvalID);
             // setEditBrokerModal(true);
