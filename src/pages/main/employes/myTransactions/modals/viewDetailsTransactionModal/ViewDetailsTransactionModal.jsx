@@ -32,9 +32,16 @@ import CrossIcon from "../../../../../../assets/img/Cross.png";
 import CheckIcon from "../../../../../../assets/img/Check.png";
 import EllipsesIcon from "../../../../../../assets/img/Ellipses.png";
 import EscalatedIcon from "../../../../../../assets/img/escalated.png";
+// ADDED (2026-08-17): stepper-specific "Escalated On" icon, matching the
+// convention already used on the compliance-side sibling modals (HOC's
+// escalated Transaction/Portfolio view details, HTA's escalated
+// requests) - distinct from EscalatedIcon above, which is the small
+// badge next to Approval ID, not the hierarchy stepper.
+import EscaltedOn from "../../../../../../assets/img/EscaltedOn.png";
 
 // 🔹 Utils & APIs
 import {
+  convertUTCToCurrentTimeZone,
   dashBetweenApprovalAssets,
   formatApiDateTime,
   formatNumberWithCommas,
@@ -101,6 +108,150 @@ const ViewDetailsTransactionModal = () => {
     sessionStorage.getItem("user_profile_data") || "{}"
   );
   const loggedInUserID = userProfileData?.userID;
+
+  // REWORKED (2026-08-17): "who escalated it, who approved it" needs real
+  // reconciliation between hierarchyDetails and the new escalations[]
+  // array
+  // (API_Changes/2026-08-17_employee_view_details_hierarchy_escalations.md),
+  // not just a per-row lookup - a hierarchyDetails row can be the outcome
+  // of an *on-behalf* escalation closure (e.g. an HCA closing it for a
+  // reviewer who stalled), so the row's own name is not necessarily who
+  // actually acted, and a single reviewer can escalate more than once
+  // before finally resolving it themselves. Confirmed against a real
+  // response (WF42): all 3 hierarchyDetails rows exactly match the
+  // closedOn timestamp of their *last* escalation, and 2 of those 3 were
+  // actually closed by someone else (HCA) on their behalf - a plain
+  // per-row bundleStatusID switch would have shown the wrong actor (or,
+  // as before this rework, incorrectly flagged all 3 rows as "escalated"
+  // and dropped their Compliant outcome entirely, since every one of
+  // them appears as an escalatedFromID somewhere).
+  //
+  // Built as one chronologically-sorted trail instead of one step per
+  // hierarchyDetails row:
+  //  - every escalation contributes an "Escalated by {who}" step, then
+  //    either whoever actually closed it (using the matching
+  //    hierarchyDetails row's real bundleStatusID only when this closure
+  //    IS that reviewer's own final recorded outcome - an earlier,
+  //    superseded cycle for the same reviewer has no outcome recorded
+  //    anywhere, so it defaults to a generic "resolved" Compliant step,
+  //    same simplification the HTA sibling modal's escalation closure
+  //    step already makes) or a "waiting" step while still open;
+  //  - a hierarchyDetails row that was never escalated gets its own
+  //    direct step, unchanged;
+  //  - a hierarchyDetails row that WAS escalated is already fully
+  //    represented by its escalation's closure step above, so it's not
+  //    duplicated here.
+  const buildEmployeeHierarchyTrail = () => {
+    const hierarchyDetails =
+      employeeTransactionViewDetailData?.hierarchyDetails || [];
+    const escalations = employeeTransactionViewDetailData?.escalations || [];
+
+    const rawTimestamp = (date, time) => `${date || ""}${time || ""}`;
+
+    const escalatedUserIDs = new Set(
+      escalations.map((e) => e?.escalatedFromID).filter((id) => id != null)
+    );
+
+    const steps = [];
+
+    escalations.forEach((esc) => {
+      const escalatedByYou = esc?.escalatedFromID === loggedInUserID;
+      steps.push({
+        sortKey: rawTimestamp(esc?.escalatedOnDate, esc?.escalatedOnTime),
+        iconSrc: EscaltedOn,
+        title: escalatedByYou
+          ? "Escalated by You"
+          : `Escalated by ${esc?.escalatedFrom}`,
+        date: formatApiDateTime(
+          `${esc?.escalatedOnDate} ${esc?.escalatedOnTime}`
+        ),
+      });
+
+      if (!esc?.escalationClosedBy) {
+        steps.push({
+          sortKey:
+            rawTimestamp(esc?.escalatedOnDate, esc?.escalatedOnTime) + "1",
+          iconSrc: EllipsesIcon,
+          title: "Waiting for Action",
+          date: "",
+        });
+        return;
+      }
+
+      // escalatedClosedOn is a combined ISO string
+      // ("YYYY-MM-DDTHH:mm:ss"), unlike the split yyyyMMdd/HHmmss fields
+      // used elsewhere - reshape it into the same two-part format first.
+      const [closedDatePart, closedTimePart] = (
+        esc?.escalatedClosedOn || ""
+      ).split("T");
+      const closedDate = closedDatePart?.replace(/-/g, "") || "";
+      const closedTime = closedTimePart?.replace(/:/g, "") || "";
+
+      const matchingPerson = hierarchyDetails.find(
+        (p) =>
+          p.userID === esc?.escalatedFromID &&
+          rawTimestamp(p.modifiedDate, p.modifiedTime) ===
+            `${closedDate}${closedTime}`
+      );
+      const isNonCompliant = matchingPerson?.bundleStatusID === 3;
+      const closedByYou = esc?.escalationClosedBy === loggedInUserID;
+
+      steps.push({
+        sortKey: `${closedDate}${closedTime}`,
+        iconSrc: isNonCompliant ? CrossIcon : CheckIcon,
+        title: closedByYou
+          ? isNonCompliant
+            ? "Marked Non-Compliant by You"
+            : "Marked Compliant by You"
+          : `Marked ${
+              isNonCompliant ? "Non-Compliant" : "Compliant"
+            } by ${esc?.escalationClosedByName}`,
+        date: convertUTCToCurrentTimeZone(closedDate, closedTime),
+      });
+    });
+
+    hierarchyDetails
+      .filter((person) => !escalatedUserIDs.has(person.userID))
+      .forEach((person) => {
+        const { fullName, bundleStatusID, modifiedDate, modifiedTime, userID } =
+          person;
+        const formattedDateTime = formatApiDateTime(
+          `${modifiedDate} ${modifiedTime}`
+        );
+        const isYou = userID === loggedInUserID;
+
+        if (bundleStatusID === 2) {
+          steps.push({
+            sortKey: rawTimestamp(modifiedDate, modifiedTime),
+            iconSrc: CheckIcon,
+            title: isYou ? "Marked Compliant by You" : fullName,
+            date: formattedDateTime,
+          });
+        } else if (bundleStatusID === 3) {
+          steps.push({
+            sortKey: rawTimestamp(modifiedDate, modifiedTime),
+            iconSrc: CrossIcon,
+            title: isYou ? "Marked Non-Compliant by You" : fullName,
+            date: formattedDateTime,
+          });
+        } else {
+          steps.push({
+            sortKey:
+              rawTimestamp(modifiedDate, modifiedTime) ||
+              "99999999999999",
+            iconSrc: EllipsesIcon,
+            title: isYou ? "" : fullName,
+            statusText: isYou ? "Waiting for Approval" : "",
+            date: isYou ? "" : formattedDateTime,
+          });
+        }
+      });
+
+    steps.sort((a, b) => a.sortKey.localeCompare(b.sortKey));
+    return steps;
+  };
+
+  const hierarchyTrail = buildEmployeeHierarchyTrail();
 
   // -----------------------
   // 🔹 Handlers
@@ -354,73 +505,60 @@ const ViewDetailsTransactionModal = () => {
             <div className={styles.mainStepperContainer}>
               <div
                 className={`${styles.backgrounColorOfStepper} ${
-                  (employeeTransactionViewDetailData?.hierarchyDetails
-                    ?.length || 0) <= 3
+                  hierarchyTrail.length <= 3
                     ? styles.centerAlignStepper
                     : styles.leftAlignStepper
                 }`}
               >
                 <Stepper
-                  activeStep={Math.max(
-                    0,
-                    Array.isArray(
-                      employeeTransactionViewDetailData?.hierarchyDetails
-                    )
-                      ? employeeTransactionViewDetailData.hierarchyDetails.filter(
-                          (person) => person.userID !== loggedInUserID
-                        ).length - 1
-                      : 0
-                  )}
+                  activeStep={Math.max(0, hierarchyTrail.length - 1)}
+                  connectorStyleConfig={{
+                    activeColor: "#00640A",
+                    completedColor: "#00640A",
+                    disabledColor: "#00640A",
+                    size: 1,
+                  }}
+                  styleConfig={{
+                    size: "2em",
+                    circleFontSize: "0px",
+                    labelFontSize: "17px",
+                    borderRadius: "50%",
+                  }}
                 >
-                  {Array.isArray(
-                    employeeTransactionViewDetailData?.hierarchyDetails
-                  ) &&
-                    employeeTransactionViewDetailData.hierarchyDetails
-                      .filter((person) => person.userID !== loggedInUserID)
-                      .map((person, index) => {
-                        const {
-                          fullName,
-                          bundleStatusID,
-                          modifiedDate,
-                          modifiedTime,
-                        } = person;
-                        const formattedDateTime = formatApiDateTime(
-                          `${modifiedDate} ${modifiedTime}`
-                        );
-
-                        const iconSrc =
-                          bundleStatusID === 2
-                            ? CheckIcon
-                            : bundleStatusID === 3
-                            ? CrossIcon
-                            : EllipsesIcon;
-
-                        return (
-                          <Step
-                            key={index}
-                            label={
-                              <div className={styles.customlabel}>
-                                <div className={styles.customtitle}>
-                                  {fullName}
-                                </div>
-                                <div className={styles.customdesc}>
-                                  {formattedDateTime}
-                                </div>
+                  {hierarchyTrail.map((step, index) => (
+                    <Step
+                      key={index}
+                      className={styles.stepButtonActive}
+                      label={
+                        <div className={styles.stepLabelWrapper}>
+                          {step.statusText && (
+                            <div className={styles.waitingApprovalText}>
+                              {step.statusText}
+                            </div>
+                          )}
+                          {step.title && (
+                            <div className={styles.customlabel}>
+                              <div className={styles.customtitle}>
+                                {step.title}
                               </div>
-                            }
-                            children={
-                              <div className={styles.stepCircle}>
-                                <img
-                                  draggable={false}
-                                  src={iconSrc}
-                                  alt="status-icon"
-                                  className={styles.circleImg}
-                                />
+                              <div className={styles.customdesc}>
+                                {step.date}
                               </div>
-                            }
-                          />
-                        );
-                      })}
+                            </div>
+                          )}
+                        </div>
+                      }
+                    >
+                      <div className={styles.stepCircle}>
+                        <img
+                          draggable={false}
+                          src={step.iconSrc}
+                          alt="status-icon"
+                          className={styles.circleImg}
+                        />
+                      </div>
+                    </Step>
+                  ))}
                 </Stepper>
               </div>
             </div>

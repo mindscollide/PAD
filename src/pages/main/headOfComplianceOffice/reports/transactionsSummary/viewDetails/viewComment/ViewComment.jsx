@@ -26,53 +26,6 @@ const ViewCommentHOCTransaction = () => {
   const acceptanceList = parseComments(record?.accetanceComments);
   const rejectionList = parseComments(record?.rejectionComments);
 
-  /**
-   * STEP 2: Extract required values
-   */
-  const workflowStatusID = Number(record?.workFlowStatusID);
-
-  console.log(
-    workflowStatusID,
-    typeof workflowStatusID,
-    "workflowStatusID TYPE"
-  );
-
-  const accetanceComments = record?.accetanceComments?.trim()
-    ? [record.accetanceComments]
-    : [];
-
-  const rejectionComments = record?.rejectionComments?.trim()
-    ? [record.rejectionComments]
-    : [];
-
-  /**
-   * STEP 3: Format comments
-   */
-  const formatComments = (commentsArray) => {
-    if (!commentsArray || commentsArray.length === 0) {
-      return "No comments available.";
-    }
-
-    return commentsArray
-      .map((comment, index) => `${index + 1}) ${comment}`)
-      .join("\n");
-  };
-
-  /**
-   * STEP 4: Decide which comment to show
-   */
-  const getCommentText = () => {
-    if (!record) {
-      return "No comment available.";
-    }
-
-    if (acceptanceList && rejectionList) {
-      return acceptanceList, rejectionList;
-    }
-
-    return "No comment available for this status.";
-  };
-
   // This is onClick of Go Back Functionality
   const onClickGoBack = () => {
     setIsViewComments(false);
