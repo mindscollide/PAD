@@ -1,9 +1,6 @@
 import { Button } from "../../../../../components";
 
-import ArrowUP from "../../../../../assets/img/arrow-up-dark.png";
-import ArrowDown from "../../../../../assets/img/arrow-down-dark.png";
 import EscaltedOn from "../../../../../assets/img/escalated.png";
-import DefaultColumArrow from "../../../../../assets/img/default-colum-arrow.png";
 import TypeColumnTitle from "../../../../../components/dropdowns/filters/typeColumnTitle";
 import StatusColumnTitle from "../../../../../components/dropdowns/filters/statusColumnTitle";
 import { Tag, Tooltip } from "antd";
@@ -135,7 +132,7 @@ export const getBorderlessTableColumns = ({
       />
     ),
     dataIndex: "type",
-    width: 200,
+    width: 100,
     key: "type",
     ellipsis: true,
     filteredValue: coOverdueVerificationReportSearch.type?.length
@@ -165,12 +162,17 @@ export const getBorderlessTableColumns = ({
     key: "instrumentName",
     align: "left",
     ellipsis: true,
-    width: 200,
-    sorter: (a, b) => {
-      const nameA = a?.instrumentShortCode || "";
-      const nameB = b?.instrumentShortCode || "";
-      return nameA.localeCompare(nameB);
-    },
+    width: 150,
+    // sorter: (a, b) => {
+    //   const nameA = a?.instrumentShortCode || "";
+    //   const nameB = b?.instrumentShortCode || "";
+    //   return nameA.localeCompare(nameB);
+    // },
+
+    sorter: (a, b) =>
+      a.instrumentShortCode.localeCompare(b.instrumentShortCode, undefined, {
+        sensitivity: "base",
+      }),
     sortDirections: ["ascend", "descend"],
     sortOrder:
       sortedInfo?.columnKey === "instrumentName" ? sortedInfo.order : null,
@@ -182,7 +184,13 @@ export const getBorderlessTableColumns = ({
       const instrumentName = record?.instrumentName || "";
 
       return (
-        <div>
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: "12px",
+          }}
+        >
           <span className="custom-shortCode-asset" style={{ minWidth: 30 }}>
             {assetCode?.substring(0, 2).toUpperCase()}
           </span>
@@ -215,7 +223,7 @@ export const getBorderlessTableColumns = ({
     dataIndex: "transactionDate",
     key: "transactionDate",
     align: "center",
-    width: 250,
+    width: 150,
     ellipsis: true,
     // transactionDate is a zero-padded "yyyyMMdd" string - new Date(...) can't
     // parse that format (returns Invalid Date/NaN for every row, so sorting had
@@ -241,7 +249,7 @@ export const getBorderlessTableColumns = ({
       "center"
     ),
     dataIndex: "approvedQuantity",
-    width: 200,
+    width: 180,
     key: "approvedQuantity",
     align: "center",
     ellipsis: true,
@@ -305,7 +313,7 @@ export const getBorderlessTableColumns = ({
     title: "",
     key: "isEscalationOpen",
     dataIndex: "isEscalationOpen",
-    align: "right",
+    align: "center",
     render: (_, record) => {
       return record.isEscalationOpen ? (
         <img src={EscaltedOn} width={"40px"} />
@@ -316,7 +324,7 @@ export const getBorderlessTableColumns = ({
     title: "",
     key: "action",
     width: 150,
-    align: "right", // 🔷 Align content to the right
+    align: "center", // 🔷 Align content to the right
     render: (_, record) => (
       <div className={style.viewEditClass}>
         <Button

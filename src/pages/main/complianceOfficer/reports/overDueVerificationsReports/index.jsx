@@ -34,7 +34,6 @@ import { useDashboardContext } from "../../../../../context/dashboardContaxt";
 import { getSafeAssetTypeData } from "../../../../../common/funtions/assetTypesList";
 import { useTableScrollBottom } from "../../../../../common/funtions/scroll";
 import CustomButton from "../../../../../components/buttons/button";
-import { useSidebarContext } from "../../../../../context/sidebarContaxt";
 import ViewDetailReconcileTransaction from "../../reconcile/transaction/modals/viewDetailReconcileTransaction.jsx/ViewDetailReconcileTransaction";
 import { GetAllTransactionViewDetails } from "../../../../../api/myTransactionsApi";
 import { useReconcileContext } from "../../../../../context/reconsileContax";
@@ -395,7 +394,9 @@ const CompianceOfficerOverdueVerificationReports = () => {
                 </span>
               }
               className="small-light-button-report"
-              disabled={!coOverdueVerificationListData?.overdueVerifications?.length}
+              disabled={
+                !coOverdueVerificationListData?.overdueVerifications?.length
+              }
               onClick={() => setOpen((prev) => !prev)}
             />
           </div>

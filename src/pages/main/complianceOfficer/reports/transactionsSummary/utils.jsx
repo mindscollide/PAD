@@ -10,6 +10,7 @@ import style from "./transactionsSummary.module.css";
 
 import {
   formatApiDateTime,
+  formatShowOnlyDate,
   toYYMMDD,
 } from "../../../../../common/funtions/rejex";
 import { getTradeTypeById } from "../../../../../common/funtions/type";
@@ -78,7 +79,7 @@ export const getBorderlessTableColumns = ({
     ),
     dataIndex: "transactionDate",
     key: "transactionDate",
-    width: 200,
+    width: 120,
     align: "center",
     sorter: (a, b) =>
       (a?.transactionDate || "").localeCompare(b?.transactionDate || ""),
@@ -87,7 +88,7 @@ export const getBorderlessTableColumns = ({
     showSorterTooltip: false,
     sortIcon: () => null,
     render: (date) => (
-      <span className="text-gray-600">{formatApiDateTime(date) || "—"}</span>
+      <span className="text-gray-600">{formatShowOnlyDate(date) || "—"}</span>
     ),
   },
   {
