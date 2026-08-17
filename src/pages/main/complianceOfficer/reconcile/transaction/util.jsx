@@ -77,6 +77,11 @@ export const mapToTableRows = (assetTypeData, list = []) =>
     quantity: item?.quantity,
     type: getTradeTypeById(assetTypeData, item?.tradeType),
     status: item?.approvalStatus?.approvalStatusName || "—",
+    // ADDED (2026-08-11, BE): API_Changes/2026-08-11_co_reconcile_transactions_isEscalated.md
+    // - the "Escalated Icon" column below already existed but this was
+    // never picking the field up from the response, so it always rendered
+    // undefined/nothing regardless of actual escalation status.
+    isEscalated: item?.isEscalated || false,
   }));
 
 /* ------------------------------------------------------------------ */
@@ -312,14 +317,21 @@ export const getBorderlessTableColumns = ({
     title: "",
     dataIndex: "isEscalated",
     key: "isEscalated",
+    width: 50,
+    align: "center",
     ellipsis: true,
-    render: (date) =>
-      date && (
+    // FIXED (2026-08-11): was referencing `style["escalated-icon"]` with no
+    // `style` (CSS module) ever imported in this file - would have thrown a
+    // ReferenceError the moment this actually tried to render, now that
+    // mapToTableRows above populates isEscalated for real.
+    render: (isEscalated) =>
+      isEscalated && (
         <img
           draggable={false}
           src={EscalatedIcon}
-          alt="escalated"
-          className={style["escalated-icon"]}
+          alt="Escalated"
+          data-testid="escalated-icon"
+          style={{ display: "block", margin: "0 auto" }}
         />
       ),
   },

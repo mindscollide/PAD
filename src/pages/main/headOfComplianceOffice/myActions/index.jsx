@@ -11,9 +11,7 @@ import { approvalStatusMap } from "../../../../components/tables/borderlessTable
 import { useMyApproval } from "../../../../context/myApprovalContaxt";
 import {
   DownloadMyActionsReportRequest,
-  GetComplianceOfficerMyActionsWorkflowDetail,
   GetHOCMyActionsWorkflowDetail,
-  SearchLMMyActionWorkFlowRequest,
 } from "../../../../api/myApprovalApi";
 import { useNotification } from "../../../../components/NotificationProvider/NotificationProvider";
 import { useGlobalLoader } from "../../../../context/LoaderContext";
@@ -71,7 +69,7 @@ const HOCMyActionPage = () => {
         setMyActionHOCData(res);
       }
     },
-    [callApi, navigate, showLoader, showNotification]
+    [callApi, navigate, showLoader, showNotification],
   );
 
   // Initial Fetch
@@ -79,7 +77,7 @@ const HOCMyActionPage = () => {
     if (!hasFetched.current) {
       hasFetched.current = true;
       const requestData = buildMyActionApiRequest(
-        headOfComplianceMyActionSearch
+        headOfComplianceMyActionSearch,
       );
 
       fetchApiCall(requestData, true, true);
@@ -91,7 +89,7 @@ const HOCMyActionPage = () => {
     if (headOfComplianceMyActionSearch?.filterTrigger) {
       hasFetched.current = true;
       const requestData = buildMyActionApiRequest(
-        headOfComplianceMyActionSearch
+        headOfComplianceMyActionSearch,
       );
 
       fetchApiCall(requestData, true, true);
@@ -107,7 +105,7 @@ const HOCMyActionPage = () => {
     approvalStatusMap,
     sortedInfo,
     headOfComplianceMyActionSearch,
-    setHeadOfComplianceMyActionSearch
+    setHeadOfComplianceMyActionSearch,
   );
 
   /** 🔹 Handle removing individual filter */
@@ -119,6 +117,7 @@ const HOCMyActionPage = () => {
       quantity: { quantity: 0 },
       type: { type: [] },
       status: { status: [] },
+      nature: { nature: [] },
       dateRange: { startDate: null, endDate: null },
     };
 
@@ -142,6 +141,7 @@ const HOCMyActionPage = () => {
       endDate: null,
       type: [],
       status: [],
+      nature: [],
       pageNumber: 0,
       filterTrigger: true,
     }));
@@ -158,6 +158,7 @@ const HOCMyActionPage = () => {
       quantity,
       type,
       status,
+      nature,
     } = headOfComplianceMyActionSearch || {};
 
     const typeMap = {
@@ -236,6 +237,14 @@ const HOCMyActionPage = () => {
       });
     }
 
+    // ✅ NATURE logic
+    if (Array.isArray(nature) && nature.length > 0) {
+      filters.push({
+        key: "nature",
+        value: nature.length === 1 ? nature[0] : "Multiple",
+      });
+    }
+
     return filters;
   })();
 
@@ -264,7 +273,7 @@ const HOCMyActionPage = () => {
 
         // build request based on current search/filter but override pagination
         const baseRequest = buildMyActionApiRequest(
-          headOfComplianceMyActionSearch
+          headOfComplianceMyActionSearch,
         );
         const requestData = {
           ...baseRequest,
@@ -272,7 +281,14 @@ const HOCMyActionPage = () => {
           Length: 10, // eRow (static 10)
         };
 
-        const res = await SearchLMMyActionWorkFlowRequest({
+        // FIXED (2026-08-17): was calling SearchLMMyActionWorkFlowRequest -
+        // Line Manager's own My Actions search API, not HOC's. Every
+        // scroll-triggered "load more" page past the first was fetching
+        // (or failing to fetch, depending on the viewing HOC's assigned
+        // roles) the wrong role's data entirely instead of more of this
+        // HOC's own GetHOCMyActionsWorkflowDetail results - same endpoint
+        // the initial fetch above already correctly uses.
+        const res = await GetHOCMyActionsWorkflowDetail({
           callApi,
           showNotification,
           showLoader, // you can pass showLoader or not; it won't show global loader if you manage local spinner
@@ -325,94 +341,94 @@ const HOCMyActionPage = () => {
   const mapMyActionData = (data) => {
     if (!data?.requests) return [];
 
-    const loggedUser = JSON.parse(sessionStorage.getItem("user_profile_data"));
-    const loggedUserId = loggedUser?.userID;
+    // CHANGED (2026-08-11): trail is now built from the pre-sorted
+    // timeline[] (API_Changes/2026-08-04_hta_hoc_my_actions_timeline.md) -
+    // chronological events (submitted/resubmitted, escalations this HOC
+    // personally closed, every approve/decline this HOC closed) - not the
+    // flat per-actor bundleHistory[] snapshot this used to filter by
+    // assignedToUserID.
+    //
+    // Two HOC-specific deviations from HTA's myActions.jsx (per request):
+    //  - "Submitted For Approval" is relabeled "Transaction Conducted"
+    //    (co-Transaction Conducted icon) instead of HTA's generic
+    //    "Send for Approval" - the first real event in HOC's domain is the
+    //    employee's underlying transaction, not an approval request.
+    //  - "Escalated On" is filtered down to only escalations *this* HOC
+    //    actually closed - timeline's own contract is full escalation
+    //    history (every level, regardless of who closed it), but that's
+    //    not wanted here. There's no explicit "closed by" field on the
+    //    event itself, so this pairs each escalation with the very next
+    //    timeline entry for the same workflow: if that's one of this HOC's
+    //    own Approved/Declined events, this escalation was the one that
+    //    action resolved, so it's kept; otherwise (next entry is another
+    //    escalation, or nothing follows) someone else closed it, or it's
+    //    still open, so it's dropped.
+    const buildTrail = (timeline = []) => {
+      const trail = [];
 
-    const getFinalWorkflowIcon = (id) => {
-      switch (id) {
-        case 9:
-          return "co-Non-Compliant";
-        case 8:
-          return "co-Compliant";
-        case 7:
-          return "Not-Traded";
-        case 6:
-          return "Traded";
-        case 1:
-          return "Pending";
-        default:
-          return "ellipsis";
-      }
-    };
+      timeline.forEach((event, index) => {
+        const date = formatApiDateTime(`${event.eventDate} ${event.eventTime}`);
 
-    const getFinalWorkflowStatusText = (id, name) => {
-      switch (id) {
-        case 9:
-          return "Non-Compliant";
-        case 8:
-          return "Compliant";
-        case 7:
-          return "Not Traded";
-        case 6:
-          return "Traded";
-        case 1:
-          return "Pending";
-        default:
-          return name;
-      }
+        switch (event.eventType) {
+          case "Submitted For Approval":
+            trail.push({
+              status: "Transaction Conducted",
+              date,
+              iconType: "co-Transaction Conducted",
+            });
+            break;
+          case "Resubmitted For Approval":
+            trail.push({
+              status: "Resubmit",
+              date,
+              requesterID: dashBetweenApprovalAssets(event.referenceApprovalID),
+              iconType: "Resubmit",
+            });
+            break;
+          case "Escalated On": {
+            const nextEvent = timeline[index + 1];
+            const closedByViewer =
+              nextEvent?.eventType === "Approved By You" ||
+              nextEvent?.eventType === "Declined by You";
+            if (closedByViewer) {
+              trail.push({
+                status: "Escalated On",
+                user: event.actorName,
+                date,
+                iconType: "EscaltedOn",
+              });
+            }
+            break;
+          }
+          case "Approved By You":
+            trail.push({
+              status: "Marked Compliant by You",
+              date,
+              iconType: "co-Compliant",
+            });
+            break;
+          case "Declined by You":
+            trail.push({
+              status: "Marked Non-Compliant by You",
+              date,
+              iconType: "co-Non-Compliant",
+            });
+            break;
+          default:
+            trail.push({
+              status: event.eventType,
+              user: event.actorName,
+              date,
+              iconType: "ellipsis",
+            });
+        }
+      });
+
+      return trail;
     };
 
     return data.requests.map((wf) => {
-      // 1️⃣ Send For Approval
-      const sendForApprovalStep = {
-        stepType: "SendForApproval",
-        status: "Send for Approval",
-        date: formatApiDateTime(`${wf.requestedDate} ${wf.requestedTime}`),
-        iconType: "SendForApproval",
-      };
-
-      // 2️⃣ Bundle Steps
-      let bundleSteps = [];
-
-      if (wf.bundleHistory?.length > 0) {
-        bundleSteps = wf.bundleHistory
-          .filter((b) => b.assignedToUserID === loggedUserId)
-          .map((b) => {
-            let statusText = "";
-            let iconType = "";
-
-            if (b.bundleStatus === 2) {
-              statusText = "Marked Compliant by You";
-              iconType = "co-Compliant";
-            } else if (b.bundleStatus === 3) {
-              statusText = "Marked Non-Compliant by You";
-              iconType = "co-Non-Compliant";
-            } else return null;
-
-            return {
-              stepType: "BundleHistory",
-              status: statusText,
-              date: formatApiDateTime(
-                `${b.bundleModifiedDate} ${b.bundleModifiedTime}`
-              ),
-              iconType,
-            };
-          })
-          .filter(Boolean);
-      }
-
-      // 3️⃣ Final Workflow Status
-      const finalWorkflowStep = {
-        stepType: "WorkflowFinal",
-        status: getFinalWorkflowStatusText(
-          wf.workFlowStatusID,
-          wf.workFlowStatusName
-        ),
-        date: formatApiDateTime(`${wf.requestedDate} ${wf.requestedTime}`),
-        iconType: getFinalWorkflowIcon(wf.workFlowStatusID),
-      };
-
-      const trail = [sendForApprovalStep, ...bundleSteps, finalWorkflowStep];
+      const trail = Array.isArray(wf.timeline) ? buildTrail(wf.timeline) : [];
 
       return {
         id: String(wf.requestID),
@@ -423,6 +439,7 @@ const HOCMyActionPage = () => {
         requesterName: wf.requesterName,
         creationDate: wf.requestedDate,
         creationTime: wf.requestedTime,
+        nature: wf.nature,
         creationTimeAndTime:
           [wf?.requestedDate, wf?.requestedTime].filter(Boolean).join(" ") ||
           "—",

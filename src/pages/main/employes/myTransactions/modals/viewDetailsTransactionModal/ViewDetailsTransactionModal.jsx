@@ -31,6 +31,7 @@ import { useDashboardContext } from "../../../../../../context/dashboardContaxt"
 import CrossIcon from "../../../../../../assets/img/Cross.png";
 import CheckIcon from "../../../../../../assets/img/Check.png";
 import EllipsesIcon from "../../../../../../assets/img/Ellipses.png";
+import EscalatedIcon from "../../../../../../assets/img/escalated.png";
 
 // 🔹 Utils & APIs
 import {
@@ -230,11 +231,27 @@ const ViewDetailsTransactionModal = () => {
                 <label className={styles.viewDetailMainLabels}>
                   Approval ID
                 </label>
-                <label className={styles.viewDetailSubLabels}>
-                  {dashBetweenApprovalAssets(
-                    tradedWorkFlowData?.[0]?.tradeApprovalID
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                  }}
+                >
+                  <label className={styles.viewDetailSubLabels}>
+                    {dashBetweenApprovalAssets(
+                      tradedWorkFlowData?.[0]?.tradeApprovalID
+                    )}
+                  </label>
+                  {employeeTransactionViewDetailData?.isEscalated && (
+                    <img
+                      draggable={false}
+                      src={EscalatedIcon}
+                      alt="Escalated"
+                      data-testid="escalated-icon"
+                    />
                   )}
-                </label>
+                </div>
               </div>
             </Col>
             <Col span={8}>

@@ -8,6 +8,7 @@ import CustomButton from "../../../../../../../components/buttons/button";
 import CheckIcon from "../../../../../../../assets/img/Check.png";
 import EllipsesIcon from "../../../../../../../assets/img/Ellipses.png";
 import CrossIcon from "../../../../../../../assets/img/Cross.png";
+import EscalatedIcon from "../../../../../../../assets/img/escalated.png";
 import { useDashboardContext } from "../../../../../../../context/dashboardContaxt";
 import {
   convertUTCToCurrentTimeZone,
@@ -350,12 +351,28 @@ const ViewDetailReconcileTransaction = () => {
                       <label className={styles.viewDetailMainLabels}>
                         Transaction ID
                       </label>
-                      <label className={styles.viewDetailSubLabels}>
-                        {dashBetweenApprovalAssets(
-                          reconcileTransactionViewDetailData?.details?.[0]
-                            ?.tradeApprovalID
+                      <div
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "space-between",
+                        }}
+                      >
+                        <label className={styles.viewDetailSubLabels}>
+                          {dashBetweenApprovalAssets(
+                            reconcileTransactionViewDetailData?.details?.[0]
+                              ?.tradeApprovalID
+                          )}
+                        </label>
+                        {reconcileTransactionViewDetailData?.isEscalated && (
+                          <img
+                            draggable={false}
+                            src={EscalatedIcon}
+                            alt="Escalated"
+                            data-testid="escalated-icon"
+                          />
                         )}
-                      </label>
+                      </div>
                     </div>
                   </Col>
                   <Col span={12}>

@@ -8,7 +8,7 @@ import styles from "./Instruments.module.css";
 import StatusColumnTitle from "../../../components/dropdowns/filters/statusColumnTitle";
 import {
   formatApiDateTime,
-  formatShowOnlyDate,
+  formatShowOnlyDateForDateRange,
   toYYMMDD,
 } from "../../../common/funtions/rejex";
 import { mapStatusToIds } from "../../../components/dropdowns/filters/utils";
@@ -172,7 +172,14 @@ export const getInstrumentTableColumns = ({
     sortIcon: () => null,
     render: (date, record) => (
       <span className={!record.status ? styles.inActiveColumnTexts : ""}>
-        {date ? formatShowOnlyDate(date) : "—"}
+        {/* FIXED (2026-08-11): was formatShowOnlyDate, which only looks at
+            the date portion and silently drops the time - same bug already
+            fixed once for the Edit modal's own closing-period tables (see
+            formatShowOnlyDateForDateRange). closedPeriodStartDate here is
+            the combined "YYYYMMDD HHmmss" string (date+time joined in
+            mapAdminInstrumentListData below), so this now does the same
+            real UTC->local conversion instead of a naive date-only read. */}
+        {date ? formatShowOnlyDateForDateRange(date) : "—"}
       </span>
     ),
   },
@@ -202,7 +209,7 @@ export const getInstrumentTableColumns = ({
         className={!record.status ? styles.inActiveColumnTexts : ""}
         style={{ textAlign: "center" }}
       >
-        {date ? formatShowOnlyDate(date) : "—"}
+        {date ? formatShowOnlyDateForDateRange(date) : "—"}
       </span>
     ),
   },

@@ -196,9 +196,14 @@ const EditInstrument = () => {
     try {
       console.log(totalRecordsTable, "check Its occuring");
       setLoadingMore(true);
+      // FIXED (2026-08-11): was sending totalRecordsTable (rows already
+      // loaded) as pageNumber - the backend converts pageNumber via
+      // (pageNumber - 1) * length, so that skipped far past the real next
+      // page instead of asking for it. Use the real 1-indexed page number
+      // tracked in context state instead.
       const payload = {
         InstrumentID: selectedInstrumentOnClick,
-        pageNumber: totalRecordsTable,
+        pageNumber: adminInstrumentUpcomingClosingData.pageNumber || 2,
         length: 10,
       };
 
@@ -217,6 +222,7 @@ const EditInstrument = () => {
           totalRecordsDataBase:
             response?.totalRecords || prev.totalRecordsDataBase,
           totalRecordsTable: prev.totalRecordsTable + newList.length,
+          pageNumber: (prev.pageNumber || 2) + 1,
         }));
       }
     } catch (error) {
@@ -239,9 +245,10 @@ const EditInstrument = () => {
         { totalRecordsTable, totalRecordsDataBase },
         "check Its occuring"
       );
+      // FIXED (2026-08-11): same real-page-number fix as loadUpcoming above.
       const payload = {
         InstrumentID: selectedInstrumentOnClick,
-        pageNumber: totalRecordsTable,
+        pageNumber: adminInstrumentPreviousClosingData.pageNumber || 2,
         length: 20,
       };
 
@@ -260,6 +267,7 @@ const EditInstrument = () => {
           totalRecordsDataBase:
             response?.totalRecords || prev.totalRecordsDataBase,
           totalRecordsTable: prev.totalRecordsTable + newList.length,
+          pageNumber: (prev.pageNumber || 2) + 1,
         }));
       }
     } catch (error) {
@@ -288,11 +296,13 @@ const EditInstrument = () => {
         closingPeriods: [],
         totalRecordsDataBase: 0,
         totalRecordsTable: 0,
+        pageNumber: 1,
       });
       setAdminInstrumentPreviousClosingData({
         closingPeriods: [],
         totalRecordsDataBase: 0,
         totalRecordsTable: 0,
+        pageNumber: 1,
       });
     }
   }, [editInstrumentModal]);

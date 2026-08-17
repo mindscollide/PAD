@@ -126,6 +126,9 @@ const Instruments = () => {
         closingPeriods: newList,
         totalRecordsDataBase: response?.totalRecords || 0,
         totalRecordsTable: newList.length,
+        // This just loaded page 1 - the next lazy-load fetch should ask
+        // for page 2.
+        pageNumber: 2,
       });
     }
   };
@@ -154,6 +157,9 @@ const Instruments = () => {
         closingPeriods: newList,
         totalRecordsDataBase: response?.totalRecords || 0,
         totalRecordsTable: newList.length,
+        // This just loaded page 1 - the next lazy-load fetch should ask
+        // for page 2.
+        pageNumber: 2,
       });
     }
   };
