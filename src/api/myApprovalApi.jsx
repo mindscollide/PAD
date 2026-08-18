@@ -4857,6 +4857,205 @@ export const SearchPolicyBreachedWorkFlowsRequest = async ({
   }
 };
 
+// ADDED (2026-08-18): "Policies Breached" drill-down modal for HTA's
+// Policy Breaches report - opened by clicking a row's Policy Count.
+// Same shape as GetAdminPolicyBreachDetailsAPI, but hits PAD_Trade (not
+// Admin), matching this screen's list call
+// (SearchPolicyBreachedWorkFlowsRequest above).
+// See API_Changes/2026-08-18_hta_policy_breach_details_and_export_apis.md.
+export const GetHTAPolicyBreachDetailsAPI = async ({
+  callApi,
+  showNotification,
+  showLoader,
+  requestdata,
+  navigate,
+}) => {
+  try {
+    const res = await callApi({
+      requestMethod: import.meta.env
+        .VITE_GET_HTA_POLICY_BREACH_DETAILS_API_REQUEST_METHOD,
+      endpoint: import.meta.env.VITE_API_TRADE,
+      requestData: requestdata,
+      navigate,
+    });
+
+    if (handleExpiredSession(res, navigate, showLoader)) return null;
+
+    if (!res?.result?.isExecuted) {
+      showNotification({
+        type: "error",
+        title: "Error",
+        description: "Something went wrong while fetching Policy Breach Details.",
+      });
+      return null;
+    }
+
+    if (res.success) {
+      const { responseMessage, records } = res.result;
+      const message = getMessage(responseMessage);
+
+      if (
+        responseMessage ===
+        "PAD_Trade_TradeServiceManager_GetHTAPolicyBreachDetailsAPI_01"
+      ) {
+        return { records: records || [] };
+      }
+
+      if (message) {
+        showNotification({
+          type: "warning",
+          title: message,
+          description: message,
+        });
+      }
+
+      return { records: [] };
+    }
+
+    showNotification({
+      type: "error",
+      title: "Fetch Failed",
+      description: getMessage(res.message),
+    });
+    return null;
+  } catch {
+    showNotification({
+      type: "error",
+      title: "Error",
+      description:
+        "An unexpected error occurred while fetching Policy Breach Details.",
+    });
+    return null;
+  } finally {
+    showLoader(false);
+  }
+};
+
+// ADDED (2026-08-18): modal's own Download button for the "Policies
+// Breached" drill-down - same request fields as GetHTAPolicyBreachDetailsAPI
+// above, hits the Excel export controller (VITE_API_REPORT) instead of the
+// JSON RPC endpoint, same file-download mechanics already used by every
+// other Export*Excel* wrapper in this file.
+export const ExportHTAPolicyBreachDetailsExcelReport = async ({
+  callApi,
+  showLoader,
+  requestdata,
+  navigate,
+}) => {
+  try {
+    showLoader(true);
+
+    const res = await callApi({
+      requestMethod: import.meta.env
+        .VITE_EXPORT_HTA_POLICY_BREACH_DETAILS_EXCEL_REPORT_REQUEST_METHOD,
+      endpoint: import.meta.env.VITE_API_REPORT,
+      requestData: requestdata,
+      navigate,
+      responseType: "arraybuffer", // ⚡ Required for file download
+      headers: {
+        "Content-Type":
+          "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      },
+    });
+
+    if (handleExpiredSession(res, navigate, showLoader)) return false;
+    if (!res?.result?.isExecuted) {
+      return false;
+    }
+
+    if (res.success) {
+      try {
+        const blob = new Blob([res.result?.fileData || res.data], {
+          type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        });
+
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+
+        link.setAttribute("download", "HTA-Policy-Breach-Details.xlsx");
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        return true;
+      } catch {
+        return false;
+      }
+    }
+
+    return false;
+  } catch {
+    return false;
+  } finally {
+    showLoader(false);
+  }
+};
+
+// ADDED (2026-08-18): HTA Policy Breaches list-level "Export Excel"
+// toolbar button - was wrongly wired to ExportHTATradeApprovalRequestsExcelReport
+// (a different report entirely) with no real endpoint of its own; BE has
+// since shipped this dedicated one (title block, Searching Criteria,
+// full unpaginated data set - same convention as every other list
+// export). Distinct from ExportHTAPolicyBreachDetailsExcelReport above,
+// which exports one specific row's Policy ID/Scenario/Consequences
+// breakdown. Request shape: {InstrumentName, EmployeeName,
+// DepartmentName, FromDate, ToDate, Quantity} - no TypeIds/pagination,
+// this exports the full filtered list.
+export const ExportHTAPolicyBreachesExcelReport = async ({
+  callApi,
+  showLoader,
+  requestdata,
+  navigate,
+}) => {
+  try {
+    showLoader(true);
+
+    const res = await callApi({
+      requestMethod: import.meta.env
+        .VITE_EXPORT_HTA_POLICY_BREACHES_EXCEL_REPORT_REQUEST_METHOD,
+      endpoint: import.meta.env.VITE_API_REPORT,
+      requestData: requestdata,
+      navigate,
+      responseType: "arraybuffer", // ⚡ Required for file download
+      headers: {
+        "Content-Type":
+          "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      },
+    });
+
+    if (handleExpiredSession(res, navigate, showLoader)) return false;
+    if (!res?.result?.isExecuted) {
+      return false;
+    }
+
+    if (res.success) {
+      try {
+        const blob = new Blob([res.result?.fileData || res.data], {
+          type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        });
+
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+
+        link.setAttribute("download", "HTA-Policy-Breaches-Report.xlsx");
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        return true;
+      } catch {
+        return false;
+      }
+    }
+
+    return false;
+  } catch {
+    return false;
+  } finally {
+    showLoader(false);
+  }
+};
+
 //For HTA view Policy Breached by id Flows Request API for Reports
 export const GetPoliciesByIDsAPI = async ({
   callApi,
