@@ -139,6 +139,11 @@ export const GlobalModalProvider = ({ children }) => {
   const [viewCommentReconcileModal, setViewCommentReconcileModal] =
     useState(false);
 
+  const [
+    viewCommentOverdueVerificationModal,
+    setViewCommentOverdueVerificationModal,
+  ] = useState(false);
+
   // This is for View Comment When Compliant and NonCompliant modal will be open on portfolio
   const [viewCommentPortfolioModal, setViewCommentPortfolioModal] =
     useState(false);
@@ -534,6 +539,8 @@ export const GlobalModalProvider = ({ children }) => {
         /**
          * Global States For Admin Role Modals End here
          */
+        viewCommentOverdueVerificationModal,
+        setViewCommentOverdueVerificationModal,
 
         resetModalContextState,
       }}

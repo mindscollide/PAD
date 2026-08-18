@@ -39,7 +39,7 @@ import {
   DeleteDocumentAPI,
 } from "../../../../../../../api/fileApi";
 
-const ViewTicketReconcileModal = () => {
+const ViewTicketReconcileModal = ({ previous }) => {
   // 📌 Context hooks
   const { callApi } = useApi();
   const { showNotification } = useNotification();
@@ -52,6 +52,7 @@ const ViewTicketReconcileModal = () => {
     setViewDetailReconcileTransaction,
     uploadattAchmentsFiles,
     setUploadattAchmentsFiles,
+    setViewDetailOverdueTransaction,
   } = useGlobalModal();
   // 📌 Local state
   const [selectedIndex, setSelectedIndex] = useState(null); // currently selected file index
@@ -148,7 +149,10 @@ const ViewTicketReconcileModal = () => {
           // one with a stale snapshot of the array.
           setUploadattAchmentsFiles((prevFiles) => {
             const updatedFiles = [...prevFiles];
-            updatedFiles[index] = { ...updatedFiles[index], attachmentBlob: blob };
+            updatedFiles[index] = {
+              ...updatedFiles[index],
+              attachmentBlob: blob,
+            };
             return updatedFiles;
           });
         }
@@ -317,7 +321,11 @@ const ViewTicketReconcileModal = () => {
                           </span>
 
                           <span
-                            style={{ display: "flex", alignItems: "center", gap: 8 }}
+                            style={{
+                              display: "flex",
+                              alignItems: "center",
+                              gap: 8,
+                            }}
                           >
                             {/* Download Button */}
                             <img
@@ -381,7 +389,12 @@ const ViewTicketReconcileModal = () => {
                   className="big-light-button"
                   onClick={() => {
                     setIsViewTicketTransactionModal(false);
-                    setViewDetailReconcileTransaction(true);
+                    {
+                      previous === "viewOverduaVerificationComment"
+                        ? setViewDetailOverdueTransaction(true)
+                        : setViewDetailReconcileTransaction(true);
+                    }
+                    // setViewDetailReconcileTransaction(true);
                   }}
                 />
                 <CustomButton

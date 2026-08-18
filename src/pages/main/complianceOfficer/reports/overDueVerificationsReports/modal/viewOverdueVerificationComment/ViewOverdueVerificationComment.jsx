@@ -1,0 +1,76 @@
+import React from "react";
+import { useGlobalModal } from "../../../../../../../context/GlobalModalContext";
+import { ViewCommentModal } from "../../../../../../../components";
+import { useReconcileContext } from "../../../../../../../context/reconsileContax";
+
+const ViewOverdueVerificationComment = () => {
+  // This is Global State for modal which is create in ContextApi
+  const {
+    viewCommentOverdueVerificationModal,
+    setViewCommentOverdueVerificationModal,
+    setViewDetailOverdueTransaction,
+  } = useGlobalModal();
+
+  //This is the Global state of Context Api
+  const { reconcileTransactionViewDetailData } = useReconcileContext();
+
+  console.log(
+    reconcileTransactionViewDetailData,
+    "viewCommentReconcileModalviewCommentReconcileModal"
+  );
+
+  // Gate on the CO's own action (myActionStatusID: 2 = Compliant, 3 = Non-Compliant),
+  // not the overall workFlowStatus — the overall workflow can still be Pending
+  // (awaiting other approvers) after this CO already acted on their own level.
+  const myActionStatusID = reconcileTransactionViewDetailData?.myActionStatusID;
+  const detail = reconcileTransactionViewDetailData?.details?.[0];
+
+  // GetAllViewDetailsTransactionsByTradeApprovalID returns arrays of
+  // { name, comments } objects (restructured 2026-07-23) — show just the comment text
+  const approvalComments = detail?.approvalComments || [];
+  const rejectionComments = detail?.rejectionComment || [];
+
+  const formatComments = (commentsArray) => {
+    if (!commentsArray || commentsArray.length === 0)
+      return "No comments available.";
+
+    return commentsArray.map((item) => item.comments).join("\n");
+  };
+
+  const getCommentText = () => {
+    if (myActionStatusID === 2) {
+      return formatComments(approvalComments);
+    } else if (myActionStatusID === 3) {
+      return formatComments(rejectionComments);
+    } else {
+      return "No comment available for this status.";
+    }
+  };
+
+  // This is onClick of Go Back Functionality
+  const onClickGoBack = () => {
+    setViewCommentOverdueVerificationModal(false);
+    setViewDetailOverdueTransaction(true);
+  };
+
+  //This is the onCLick of Close Comment
+  const onClickCloseComment = () => {
+    setViewDetailOverdueTransaction(false);
+    setViewCommentOverdueVerificationModal(false);
+  };
+
+  return (
+    <>
+      {/* Import View Comment Modal Which Is Create inside modal folder Component because now we can use on multiple time */}
+      <ViewCommentModal
+        visible={viewCommentOverdueVerificationModal}
+        onClose={onClickCloseComment}
+        onGoBack={onClickGoBack}
+        CommentHeading={"View Comments"}
+        commentText={getCommentText()}
+      />
+    </>
+  );
+};
+
+export default ViewOverdueVerificationComment;

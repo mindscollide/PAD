@@ -43,8 +43,9 @@ import UploadReconcileTicketModal from "../../reconcile/transaction/modals/uploa
 import CompliantApproveModal from "../../reconcile/transaction/modals/compliantApproveModal/CompliantApproveModal";
 import NonCompliantDeclineModal from "../../reconcile/transaction/modals/nonCompliantDeclineModal/nonCompliantDeclineModal";
 import NoteModalComplianceOfficer from "../../reconcile/transaction/modals/noteModalComplianceOfficer/NoteModalComplianceOfficer";
-import ViewDetailOverdueTransaction from "./modal/viewDetailReconcileTransaction.jsx/ViewDetailOverdueTransaction";
 import ViewReconcileTransactionComment from "../../reconcile/transaction/modals/viewReconcileTransactionComment/ViewReconcileTransactionComment";
+import ViewDetailOverdueTransaction from "./modal/viewOverdueTransaction.jsx/ViewDetailOverdueTransaction";
+import ViewOverdueVerificationComment from "./modal/viewOverdueVerificationComment/ViewOverdueVerificationComment";
 
 const CompianceOfficerOverdueVerificationReports = () => {
   const navigate = useNavigate();
@@ -72,7 +73,8 @@ const CompianceOfficerOverdueVerificationReports = () => {
     compliantApproveModal,
     nonCompliantDeclineModal,
     noteGlobalModal,
-    viewCommentReconcileModal,
+    // viewCommentReconcileModal,
+    viewCommentOverdueVerificationModal,
   } = useGlobalModal();
 
   const { assetTypeListingData, setAssetTypeListingData } =
@@ -481,10 +483,14 @@ const CompianceOfficerOverdueVerificationReports = () => {
       {viewDetailOverdueTransaction && <ViewDetailOverdueTransaction />}
 
       {/* To show View Comment Modal when CLick on View Comment Button */}
-      {viewCommentReconcileModal && <ViewReconcileTransactionComment />}
+      {viewCommentOverdueVerificationModal && (
+        <ViewOverdueVerificationComment />
+      )}
 
       {/* To show view Ticket Modal on click of View Ticket */}
-      {isViewTicketTransactionModal && <ViewTicketReconcileModal />}
+      {isViewTicketTransactionModal && (
+        <ViewTicketReconcileModal previous={"viewOverduaVerificationComment"} />
+      )}
 
       {/* To Show upload Ticket Modal On Add Ticket Click */}
       {uploadComplianceModal && <UploadReconcileTicketModal />}

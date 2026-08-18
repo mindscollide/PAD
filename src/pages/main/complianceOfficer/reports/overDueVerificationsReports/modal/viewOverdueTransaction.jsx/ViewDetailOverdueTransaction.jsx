@@ -36,7 +36,7 @@ const ViewDetailOverdueTransaction = () => {
     viewDetailOverdueTransaction,
     setViewDetailOverdueTransaction,
     setNoteGlobalModal,
-    setViewCommentReconcileModal,
+    setViewCommentOverdueVerificationModal,
     setIsViewTicketTransactionModal,
     setUploadComplianceModal,
     setUploadattAchmentsFiles,
@@ -52,10 +52,6 @@ const ViewDetailOverdueTransaction = () => {
   const { reconcileTransactionViewDetailData, selectedOverdueTransactionData } =
     useReconcileContext();
 
-  console.log(
-    selectedOverdueTransactionData,
-    "selectedOverdueTransactionDataselectedOverdueTransactionData"
-  );
   const { allInstrumentsData } = useDashboardContext();
   // This is the Status Which is I'm getting from the selectedViewDetail contextApi state
   const getStatusStyle = (status) => {
@@ -207,7 +203,7 @@ const ViewDetailOverdueTransaction = () => {
         showNotification,
         showLoader,
         requestData: {
-          WorkFlowID: selectedOverdueTransactionData.approvalID,
+          WorkFlowID: selectedOverdueTransactionData.workFlowID,
         },
         navigate,
       });
@@ -670,7 +666,7 @@ const ViewDetailOverdueTransaction = () => {
                           text="View Comments"
                           className="big-light-button"
                           onClick={() => {
-                            setViewCommentReconcileModal(true);
+                            setViewCommentOverdueVerificationModal(true);
                             setViewDetailOverdueTransaction(false);
                           }}
                         />{" "}
