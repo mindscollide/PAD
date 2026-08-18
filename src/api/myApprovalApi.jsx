@@ -421,8 +421,7 @@ export const DownloadMyHistoryReportRequest = async ({
     showNotification({
       type: "error",
       title: "Error",
-      description:
-        "An unexpected error occurred while exporting your history.",
+      description: "An unexpected error occurred while exporting your history.",
     });
     return false;
   } finally {
@@ -2863,7 +2862,8 @@ export const GetAdminReportsDashboardStatsAPI = async ({
       showNotification({
         type: "error",
         title: "Error",
-        description: "Something went wrong while fetching Admin Reports Dashboard Stats Api.",
+        description:
+          "Something went wrong while fetching Admin Reports Dashboard Stats Api.",
       });
       return null;
     }
@@ -2886,10 +2886,7 @@ export const GetAdminReportsDashboardStatsAPI = async ({
       const message = getMessage(responseMessage);
 
       // Case 1 → Data available
-      if (
-        responseMessage ===
-        "PAD_Admin_GetAdminReportsDashboardStatsAPI_01"
-      ) {
+      if (responseMessage === "PAD_Admin_GetAdminReportsDashboardStatsAPI_01") {
         return {
           userActivityCount: userActivityReport,
           userWiseComplianceCount: userWiseComplianceReport,
@@ -2903,10 +2900,7 @@ export const GetAdminReportsDashboardStatsAPI = async ({
       }
 
       // Case 2 → No data
-      if (
-        responseMessage ===
-        "PAD_Admin_GetAdminReportsDashboardStatsAPI_02"
-      ) {
+      if (responseMessage === "PAD_Admin_GetAdminReportsDashboardStatsAPI_02") {
         return [];
       }
 
@@ -2934,7 +2928,8 @@ export const GetAdminReportsDashboardStatsAPI = async ({
     showNotification({
       type: "error",
       title: "Error",
-      description: "An unexpected error occurred while requesting Admin Reports Dashboard Stats API.",
+      description:
+        "An unexpected error occurred while requesting Admin Reports Dashboard Stats API.",
     });
     return null;
   } finally {
@@ -2984,16 +2979,24 @@ export const GetAdminUserWiseComplianceReportAPI = async ({
       const { responseMessage, records, totalRecords } = res.result;
       const message = getMessage(responseMessage);
 
-      if (responseMessage === "PAD_Admin_GetAdminUserWiseComplianceReportAPI_01") {
+      if (
+        responseMessage === "PAD_Admin_GetAdminUserWiseComplianceReportAPI_01"
+      ) {
         return { records: records || [], totalRecords: totalRecords || 0 };
       }
 
-      if (responseMessage === "PAD_Admin_GetAdminUserWiseComplianceReportAPI_02") {
+      if (
+        responseMessage === "PAD_Admin_GetAdminUserWiseComplianceReportAPI_02"
+      ) {
         return { records: [], totalRecords: 0 };
       }
 
       if (message) {
-        showNotification({ type: "warning", title: message, description: message });
+        showNotification({
+          type: "warning",
+          title: message,
+          description: message,
+        });
       }
 
       return null;
@@ -3040,7 +3043,8 @@ export const GetAdminPolicyBreachesAPI = async ({
       showNotification({
         type: "error",
         title: "Error",
-        description: "Something went wrong while fetching Admin Policy Breaches Report.",
+        description:
+          "Something went wrong while fetching Admin Policy Breaches Report.",
       });
       return null;
     }
@@ -3058,7 +3062,11 @@ export const GetAdminPolicyBreachesAPI = async ({
       }
 
       if (message) {
-        showNotification({ type: "warning", title: message, description: message });
+        showNotification({
+          type: "warning",
+          title: message,
+          description: message,
+        });
       }
 
       return null;
@@ -3095,7 +3103,8 @@ export const GetAdminPolicyBreachDetailsAPI = async ({
 }) => {
   try {
     const res = await callApi({
-      requestMethod: import.meta.env.VITE_GET_ADMIN_POLICY_BREACH_DETAILS_API_METHOD,
+      requestMethod: import.meta.env
+        .VITE_GET_ADMIN_POLICY_BREACH_DETAILS_API_METHOD,
       endpoint: import.meta.env.VITE_API_ADMIN,
       requestData: requestdata,
       navigate,
@@ -3107,7 +3116,8 @@ export const GetAdminPolicyBreachDetailsAPI = async ({
       showNotification({
         type: "error",
         title: "Error",
-        description: "Something went wrong while fetching Policy Breach Details.",
+        description:
+          "Something went wrong while fetching Policy Breach Details.",
       });
       return null;
     }
@@ -3125,7 +3135,11 @@ export const GetAdminPolicyBreachDetailsAPI = async ({
       }
 
       if (message) {
-        showNotification({ type: "warning", title: message, description: message });
+        showNotification({
+          type: "warning",
+          title: message,
+          description: message,
+        });
       }
 
       return null;
@@ -3141,7 +3155,8 @@ export const GetAdminPolicyBreachDetailsAPI = async ({
     showNotification({
       type: "error",
       title: "Error",
-      description: "An unexpected error occurred while fetching Policy Breach Details.",
+      description:
+        "An unexpected error occurred while fetching Policy Breach Details.",
     });
     return null;
   } finally {
@@ -3182,16 +3197,26 @@ export const GetAdminTradeApprovalRequestSummaryAPI = async ({
       const { responseMessage, records, totalRecords } = res.result;
       const message = getMessage(responseMessage);
 
-      if (responseMessage === "PAD_Admin_GetAdminTradeApprovalRequestSummaryAPI_01") {
+      if (
+        responseMessage ===
+        "PAD_Admin_GetAdminTradeApprovalRequestSummaryAPI_01"
+      ) {
         return { records: records || [], totalRecords: totalRecords || 0 };
       }
 
-      if (responseMessage === "PAD_Admin_GetAdminTradeApprovalRequestSummaryAPI_02") {
+      if (
+        responseMessage ===
+        "PAD_Admin_GetAdminTradeApprovalRequestSummaryAPI_02"
+      ) {
         return { records: [], totalRecords: 0 };
       }
 
       if (message) {
-        showNotification({ type: "warning", title: message, description: message });
+        showNotification({
+          type: "warning",
+          title: message,
+          description: message,
+        });
       }
 
       return null;
@@ -3250,16 +3275,24 @@ export const GetAdminDateWiseTransactionReportAPI = async ({
       const { responseMessage, records, totalRecords } = res.result;
       const message = getMessage(responseMessage);
 
-      if (responseMessage === "PAD_Admin_GetAdminDateWiseTransactionReportAPI_01") {
+      if (
+        responseMessage === "PAD_Admin_GetAdminDateWiseTransactionReportAPI_01"
+      ) {
         return { records: records || [], totalRecords: totalRecords || 0 };
       }
 
-      if (responseMessage === "PAD_Admin_GetAdminDateWiseTransactionReportAPI_02") {
+      if (
+        responseMessage === "PAD_Admin_GetAdminDateWiseTransactionReportAPI_02"
+      ) {
         return { records: [], totalRecords: 0 };
       }
 
       if (message) {
-        showNotification({ type: "warning", title: message, description: message });
+        showNotification({
+          type: "warning",
+          title: message,
+          description: message,
+        });
       }
 
       return null;
@@ -3294,7 +3327,8 @@ export const GetAdminTransactionSummaryReportAPI = async ({
 }) => {
   try {
     const res = await callApi({
-      requestMethod: import.meta.env.VITE_GET_ADMIN_TRANSACTION_SUMMARY_REPORT_API_METHOD,
+      requestMethod: import.meta.env
+        .VITE_GET_ADMIN_TRANSACTION_SUMMARY_REPORT_API_METHOD,
       endpoint: import.meta.env.VITE_API_ADMIN,
       requestData: requestdata,
       navigate,
@@ -3316,16 +3350,24 @@ export const GetAdminTransactionSummaryReportAPI = async ({
       const { responseMessage, records, totalRecords } = res.result;
       const message = getMessage(responseMessage);
 
-      if (responseMessage === "PAD_Admin_GetAdminTransactionSummaryReportAPI_01") {
+      if (
+        responseMessage === "PAD_Admin_GetAdminTransactionSummaryReportAPI_01"
+      ) {
         return { records: records || [], totalRecords: totalRecords || 0 };
       }
 
-      if (responseMessage === "PAD_Admin_GetAdminTransactionSummaryReportAPI_02") {
+      if (
+        responseMessage === "PAD_Admin_GetAdminTransactionSummaryReportAPI_02"
+      ) {
         return { records: [], totalRecords: 0 };
       }
 
       if (message) {
-        showNotification({ type: "warning", title: message, description: message });
+        showNotification({
+          type: "warning",
+          title: message,
+          description: message,
+        });
       }
 
       return null;
@@ -3385,16 +3427,26 @@ export const GetAdminTransactionSummaryViewDetailsAPI = async ({
       const { responseMessage, records, totalRecords } = res.result;
       const message = getMessage(responseMessage);
 
-      if (responseMessage === "PAD_Admin_GetAdminTransactionSummaryViewDetailsAPI_01") {
+      if (
+        responseMessage ===
+        "PAD_Admin_GetAdminTransactionSummaryViewDetailsAPI_01"
+      ) {
         return { records: records || [], totalRecords: totalRecords || 0 };
       }
 
-      if (responseMessage === "PAD_Admin_GetAdminTransactionSummaryViewDetailsAPI_02") {
+      if (
+        responseMessage ===
+        "PAD_Admin_GetAdminTransactionSummaryViewDetailsAPI_02"
+      ) {
         return { records: [], totalRecords: 0 };
       }
 
       if (message) {
-        showNotification({ type: "warning", title: message, description: message });
+        showNotification({
+          type: "warning",
+          title: message,
+          description: message,
+        });
       }
 
       return null;
@@ -3429,7 +3481,8 @@ export const GetAdminTATRequestApprovalsAPI = async ({
 }) => {
   try {
     const res = await callApi({
-      requestMethod: import.meta.env.VITE_GET_ADMIN_TAT_REQUEST_APPROVALS_API_METHOD,
+      requestMethod: import.meta.env
+        .VITE_GET_ADMIN_TAT_REQUEST_APPROVALS_API_METHOD,
       endpoint: import.meta.env.VITE_API_ADMIN,
       requestData: requestdata,
       navigate,
@@ -3441,7 +3494,8 @@ export const GetAdminTATRequestApprovalsAPI = async ({
       showNotification({
         type: "error",
         title: "Error",
-        description: "Something went wrong while fetching Admin TAT Request Approvals Report.",
+        description:
+          "Something went wrong while fetching Admin TAT Request Approvals Report.",
       });
       return null;
     }
@@ -3459,7 +3513,11 @@ export const GetAdminTATRequestApprovalsAPI = async ({
       }
 
       if (message) {
-        showNotification({ type: "warning", title: message, description: message });
+        showNotification({
+          type: "warning",
+          title: message,
+          description: message,
+        });
       }
 
       return null;
@@ -3519,16 +3577,24 @@ export const GetAdminTATRequestApprovalDetailsAPI = async ({
       const { responseMessage, records, totalRecords } = res.result;
       const message = getMessage(responseMessage);
 
-      if (responseMessage === "PAD_Admin_GetAdminTATRequestApprovalDetailsAPI_01") {
+      if (
+        responseMessage === "PAD_Admin_GetAdminTATRequestApprovalDetailsAPI_01"
+      ) {
         return { records: records || [], totalRecords: totalRecords || 0 };
       }
 
-      if (responseMessage === "PAD_Admin_GetAdminTATRequestApprovalDetailsAPI_02") {
+      if (
+        responseMessage === "PAD_Admin_GetAdminTATRequestApprovalDetailsAPI_02"
+      ) {
         return { records: [], totalRecords: 0 };
       }
 
       if (message) {
-        showNotification({ type: "warning", title: message, description: message });
+        showNotification({
+          type: "warning",
+          title: message,
+          description: message,
+        });
       }
 
       return null;
@@ -3588,16 +3654,24 @@ export const GetAdminTradesUploadedViaPortfolioAPI = async ({
       const { responseMessage, records, totalRecords } = res.result;
       const message = getMessage(responseMessage);
 
-      if (responseMessage === "PAD_Admin_GetAdminTradesUploadedViaPortfolioAPI_01") {
+      if (
+        responseMessage === "PAD_Admin_GetAdminTradesUploadedViaPortfolioAPI_01"
+      ) {
         return { records: records || [], totalRecords: totalRecords || 0 };
       }
 
-      if (responseMessage === "PAD_Admin_GetAdminTradesUploadedViaPortfolioAPI_02") {
+      if (
+        responseMessage === "PAD_Admin_GetAdminTradesUploadedViaPortfolioAPI_02"
+      ) {
         return { records: [], totalRecords: 0 };
       }
 
       if (message) {
-        showNotification({ type: "warning", title: message, description: message });
+        showNotification({
+          type: "warning",
+          title: message,
+          description: message,
+        });
       }
 
       return null;
@@ -3755,15 +3829,12 @@ export const SearchHOCOverdueVerificationsRequestApi = async ({
       const { totalRecords, overdueVerifications, responseMessage } =
         res.result;
       const message = getMessage(responseMessage);
-      console.log("Check Console Rigt N0ow");
 
       // Case 1 → Data available
       if (
         responseMessage ===
         "PAD_Trade_TradeServiceManager_SearchHOCOverdueVerifications_01"
       ) {
-        console.log("Check Console Rigt N0ow");
-
         return {
           overdueVerifications: overdueVerifications,
           totalRecords: totalRecords,
@@ -3775,7 +3846,6 @@ export const SearchHOCOverdueVerificationsRequestApi = async ({
         responseMessage ===
         "PAD_Trade_TradeServiceManager_SearchHOCOverdueVerifications_02"
       ) {
-        console.log("Check Console Rigt N0ow");
         return {
           overdueVerifications: [],
           totalRecords: 0,
@@ -5066,15 +5136,12 @@ export const SearchOverdueVerificationsCORequestApi = async ({
       const { totalRecords, overdueVerifications, responseMessage } =
         res.result;
       const message = getMessage(responseMessage);
-      console.log("Check Console Rigt N0ow");
 
       // Case 1 → Data available
       if (
         responseMessage ===
         "PAD_Trade_TradeServiceManager_SearchComplianceOfficerOverdueVerifications_01"
       ) {
-        console.log("Check Console Rigt N0ow");
-
         return {
           overdueVerifications: overdueVerifications,
           totalRecords: totalRecords,
@@ -5086,7 +5153,6 @@ export const SearchOverdueVerificationsCORequestApi = async ({
         responseMessage ===
         "PAD_Trade_TradeServiceManager_SearchComplianceOfficerOverdueVerifications_02"
       ) {
-        console.log("Check Console Rigt N0ow");
         return {
           overdueVerifications: [],
           totalRecords: 0,

@@ -10,6 +10,7 @@ import style from "./transactionsSummary.module.css";
 
 import {
   formatApiDateTime,
+  formatShowOnlyDate,
   toYYMMDD,
 } from "../../../../../common/funtions/rejex";
 import { getTradeTypeById } from "../../../../../common/funtions/type";
@@ -78,9 +79,8 @@ export const getBorderlessTableColumns = ({
     ),
     dataIndex: "transactionDate",
     key: "transactionDate",
-    width: 200,
+    width: 120,
     align: "center",
-    ellipsis: true,
     sorter: (a, b) =>
       (a?.transactionDate || "").localeCompare(b?.transactionDate || ""),
     sortOrder:
@@ -88,9 +88,7 @@ export const getBorderlessTableColumns = ({
     showSorterTooltip: false,
     sortIcon: () => null,
     render: (date) => (
-      <span className="text-gray-600" title={date || "—"}>
-        {formatApiDateTime(date) || "—"}
-      </span>
+      <span className="text-gray-600">{formatShowOnlyDate(date) || "—"}</span>
     ),
   },
   {
@@ -102,9 +100,8 @@ export const getBorderlessTableColumns = ({
     ),
     dataIndex: "totalEmployees",
     key: "totalEmployees",
-    width: 140,
+    width: 100,
     align: "center",
-    ellipsis: true,
     sorter: (a, b) => (a?.totalEmployees ?? 0) - (b?.totalEmployees ?? 0),
     sortOrder:
       sortedInfo?.columnKey === "totalEmployees" ? sortedInfo.order : null,
@@ -123,7 +120,6 @@ export const getBorderlessTableColumns = ({
     key: "totalTransactions",
     width: 140,
     align: "center",
-    ellipsis: true,
     sorter: (a, b) => (a?.totalTransactions ?? 0) - (b?.totalTransactions ?? 0),
     sortOrder:
       sortedInfo?.columnKey === "totalTransactions" ? sortedInfo.order : null,
@@ -142,7 +138,6 @@ export const getBorderlessTableColumns = ({
     key: "compliantTransactions",
     width: 140,
     align: "center",
-    ellipsis: true,
     sorter: (a, b) =>
       (a?.compliantTransactions ?? 0) - (b?.compliantTransactions ?? 0),
     sortOrder:
@@ -164,7 +159,6 @@ export const getBorderlessTableColumns = ({
     key: "nonCompliantTransactions",
     width: 200,
     align: "center",
-    ellipsis: true,
     sorter: (a, b) =>
       (a?.nonCompliantTransactions ?? 0) - (b?.nonCompliantTransactions ?? 0),
     sortOrder:
@@ -186,7 +180,6 @@ export const getBorderlessTableColumns = ({
           className="small-light-button"
           text={"View Details"}
           onClick={() => {
-            console.log(record, "tradeApprovalID");
             handelViewDetails(record.transactionDate);
           }}
         />
@@ -308,7 +301,7 @@ export const getBorderlessTableColumnsViewDetails = ({
     dataIndex: "employeeID",
     key: "employeeID",
     align: "left",
-    width: 150,
+    width: 120,
     ellipsis: true,
     sorter: numberSorter("employeeID"),
     sortDirections: ["ascend", "descend"],
@@ -330,7 +323,6 @@ export const getBorderlessTableColumnsViewDetails = ({
     key: "employeeName",
     width: 200,
     align: "left",
-    ellipsis: true,
     sorter: (a, b) => a.employeeName.localeCompare(b.employeeName),
     sortDirections: ["ascend", "descend"],
     sortOrder:
@@ -346,7 +338,7 @@ export const getBorderlessTableColumnsViewDetails = ({
     dataIndex: "instrumentName",
     key: "instrumentName",
     align: "left",
-    width: 150,
+    width: 110,
     ellipsis: true,
     sorter: (a, b) => {
       const nameA = a?.instrumentName || "";
@@ -407,7 +399,6 @@ export const getBorderlessTableColumnsViewDetails = ({
     key: "transactionDate",
     align: "center",
     width: 200,
-    ellipsis: true,
     sorter: (a, b) =>
       (a?.transactionDate || "").localeCompare(b?.transactionDate || ""),
     sortOrder:
@@ -417,9 +408,7 @@ export const getBorderlessTableColumnsViewDetails = ({
     showSorterTooltip: false,
     sortIcon: () => null,
     render: (date) => (
-      <span className="text-gray-600" title={date || "—"}>
-        {formatApiDateTime(date) || "—"}
-      </span>
+      <span className="text-gray-600">{formatApiDateTime(date) || "—"}</span>
     ),
   },
   {
@@ -430,9 +419,9 @@ export const getBorderlessTableColumnsViewDetails = ({
       />
     )),
     dataIndex: "type",
-    width: 150,
+    width: 120,
     key: "type",
-    ellipsis: true,
+
     filteredValue: coTransactionsSummarysReportsViewDetailsSearch.type?.length
       ? coTransactionsSummarysReportsViewDetailsSearch.type
       : null,
@@ -480,7 +469,7 @@ export const getBorderlessTableColumnsViewDetails = ({
         setState={setCOTransactionsSummarysReportsViewDetailSearch}
       />
     )),
-    width: 200,
+    width: 150,
     dataIndex: "status",
     key: "status",
     ellipsis: true,
@@ -497,14 +486,15 @@ export const getBorderlessTableColumnsViewDetails = ({
   {
     title: "",
     key: "action",
-    width: 150,
-    align: "right", // 🔷 Align content to the right
+    width: 100,
+    align: "left", // 🔷 Align content to the right
     render: (_, record) => (
       <div className={style.viewEditClass}>
         <Button
           className="small-light-button"
           text={"View Comments"}
           onClick={() => {
+            // handelViewDetails(record.approvalID);
             setSelectedWorkFlowViewDetaild(record);
             setIsViewComments(true);
           }}

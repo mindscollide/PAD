@@ -109,7 +109,6 @@ export const getBorderlessTableColumns = ({
     dataIndex: "requesterName",
     key: "requesterName",
     width: 160,
-    ellipsis: true,
     sorter: (a, b) => a.requesterName.localeCompare(b.requesterName),
     sortDirections: ["ascend", "descend"],
     sortOrder:
@@ -130,7 +129,6 @@ export const getBorderlessTableColumns = ({
     dataIndex: "type",
     width: 100,
     key: "type",
-    ellipsis: true,
     filteredValue: OverdueVerificationHCOReportSearch.type?.length
       ? OverdueVerificationHCOReportSearch.type
       : null,
@@ -157,8 +155,7 @@ export const getBorderlessTableColumns = ({
     align: "left",
     dataIndex: "complianceOfficer",
     key: "complianceOfficer",
-    width: 140,
-    ellipsis: true,
+    width: 200,
     sorter: (a, b) => a.complianceOfficer.localeCompare(b.complianceOfficer),
     sortDirections: ["ascend", "descend"],
     sortOrder:
@@ -232,8 +229,7 @@ export const getBorderlessTableColumns = ({
     align: "center",
     dataIndex: "transactionDate",
     key: "transactionDate",
-    ellipsis: true,
-    width: 150,
+    width: 200,
     sorter: (a, b) =>
       (a?.transactionDate || "").localeCompare(b?.transactionDate || ""),
     sortOrder:
@@ -241,9 +237,7 @@ export const getBorderlessTableColumns = ({
     showSorterTooltip: false,
     sortIcon: () => null,
     render: (date) => (
-      <span className="text-gray-600" title={date || "—"}>
-        {formatApiDateTime(date) || "—"}
-      </span>
+      <span className="text-gray-600">{formatApiDateTime(date) || "—"}</span>
     ),
   },
   {
@@ -257,7 +251,6 @@ export const getBorderlessTableColumns = ({
     width: 180,
     align: "center",
     key: "approvedQuantity",
-    ellipsis: true,
     sorter: (a, b) => a.approvedQuantity - b.approvedQuantity,
     sortDirections: ["ascend", "descend"],
     sortOrder:
@@ -271,8 +264,7 @@ export const getBorderlessTableColumns = ({
     dataIndex: "shareTraded",
     key: "shareTraded",
     align: "center",
-    width: 100,
-    ellipsis: true,
+    width: 150,
     sorter: (a, b) => a.shareTraded - b.shareTraded,
     sortDirections: ["ascend", "descend"],
     sortOrder:
@@ -303,8 +295,7 @@ export const getBorderlessTableColumns = ({
     align: "center",
     dataIndex: "escalatedDate",
     key: "escalatedDate",
-    ellipsis: true,
-    width: 150,
+    width: 200,
     sorter: (a, b) =>
       (a?.escalatedDate || "").localeCompare(b?.escalatedDate || ""),
     sortOrder:

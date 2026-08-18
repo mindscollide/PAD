@@ -192,7 +192,6 @@ export const getMyActionsColumn = (approvalStatusMap, sortedInfo) => [
     key: "status",
     width: "160px",
     align: "left",
-    ellipsis: true,
     sorter: (a, b) => a.status.localeCompare(b.status),
     sortDirections: ["ascend", "descend"],
     sortOrder: sortedInfo?.columnKey === "status" ? sortedInfo.order : null,

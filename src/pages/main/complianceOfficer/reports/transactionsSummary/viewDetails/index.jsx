@@ -23,11 +23,7 @@ import style from "./transactionsSummary.module.css";
 import { useMyApproval } from "../../../../../context/myApprovalContaxt";
 import {
   DownloadComplianceOfficerDateWiseTransactionReportRequestAPI,
-  DownloadLineManagerMyTradeApprovalReportRequestAPI,
-  DownloadMyTransactionReportRequestAPI,
-  GetComplianceOfficerViewTransactionSummaryAPI,
   SearchComplianceOfficerTransactionSummaryReportRequest,
-  SearchLineManagerTradeApprovalRequestApi,
 } from "../../../../../api/myApprovalApi";
 import { useNotification } from "../../../../../components/NotificationProvider/NotificationProvider";
 import { useApi } from "../../../../../context/ApiContext";
@@ -35,7 +31,6 @@ import { useGlobalLoader } from "../../../../../context/LoaderContext";
 import { useNavigate } from "react-router-dom";
 import { useSearchBarContext } from "../../../../../context/SearchBarContaxt";
 import { useDashboardContext } from "../../../../../context/dashboardContaxt";
-import { getSafeAssetTypeData } from "../../../../../common/funtions/assetTypesList";
 import { useTableScrollBottom } from "../../../../../common/funtions/scroll";
 import CustomButton from "../../../../../components/buttons/button";
 import { DateRangePicker } from "../../../../../components";
@@ -55,17 +50,11 @@ const COTransactionsSummarysReportsViewDetails = () => {
     resetCOTransactionSummaryReportListData,
   } = useMyApproval();
 
-  const { isViewComments, setIsViewComments, setCheckTradeApprovalID } =
-    useGlobalModal();
-
   const {
     coTransactionsSummarysReportsSearch,
     setCOTransactionsSummarysReportsSearch,
     resetCOTransactionsSummarysReportsSearch,
   } = useSearchBarContext();
-
-  const { setAssetTypeListingData } = useDashboardContext();
-
 
   // -------------------- Local State --------------------
   const [sortedInfo, setSortedInfo] = useState({});
@@ -144,7 +133,7 @@ const COTransactionsSummarysReportsViewDetails = () => {
     return () => {
       // Reset search state for fresh load
       resetCOTransactionsSummarysReportsSearch();
-      resetCOTransactionSummaryReportListData()
+      resetCOTransactionSummaryReportListData();
     };
   }, []);
 
@@ -326,14 +315,11 @@ const COTransactionsSummarysReportsViewDetails = () => {
       >
         <div className="px-4 md:px-6 lg:px-8 ">
           <BorderlessTable
-            rows={
-              coTransactionSummaryReportListData?.transactions
-            }
+            rows={coTransactionSummaryReportListData?.transactions}
             columns={columns}
             classNameTable="border-less-table-blue"
             scroll={
-              coTransactionSummaryReportListData?.transactions
-                ?.length
+              coTransactionSummaryReportListData?.transactions?.length
                 ? {
                     x: "max-content",
                     y: 500,
@@ -346,7 +332,6 @@ const COTransactionsSummarysReportsViewDetails = () => {
           />
         </div>
       </PageLayout>
-
     </>
   );
 };

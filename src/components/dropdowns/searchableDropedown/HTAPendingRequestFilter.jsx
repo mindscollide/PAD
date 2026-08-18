@@ -207,7 +207,7 @@ export const HTAPendingRequestFilter = ({
         </Col>
       </Row>
 
-      <Row gutter={[12, 12]}>
+      <Row gutter={[12, 12]} style={{ marginBottom: "15px" }}>
         <Col xs={24} md={12}>
           <DateRangePicker
             label="Request Date Range"

@@ -34,8 +34,8 @@ import { useDashboardContext } from "../../../../../context/dashboardContaxt";
 import { getSafeAssetTypeData } from "../../../../../common/funtions/assetTypesList";
 import { useTableScrollBottom } from "../../../../../common/funtions/scroll";
 import CustomButton from "../../../../../components/buttons/button";
-import { useSidebarContext } from "../../../../../context/sidebarContaxt";
 import ViewDetailReconcileTransaction from "../../reconcile/transaction/modals/viewDetailReconcileTransaction.jsx/ViewDetailReconcileTransaction";
+
 import { GetAllTransactionViewDetails } from "../../../../../api/myTransactionsApi";
 import { useReconcileContext } from "../../../../../context/reconsileContax";
 import ViewTicketReconcileModal from "../../reconcile/transaction/modals/viewTicketReconcileModal/viewTicketReconcileModal";
@@ -43,6 +43,9 @@ import UploadReconcileTicketModal from "../../reconcile/transaction/modals/uploa
 import CompliantApproveModal from "../../reconcile/transaction/modals/compliantApproveModal/CompliantApproveModal";
 import NonCompliantDeclineModal from "../../reconcile/transaction/modals/nonCompliantDeclineModal/nonCompliantDeclineModal";
 import NoteModalComplianceOfficer from "../../reconcile/transaction/modals/noteModalComplianceOfficer/NoteModalComplianceOfficer";
+import ViewReconcileTransactionComment from "../../reconcile/transaction/modals/viewReconcileTransactionComment/ViewReconcileTransactionComment";
+import ViewDetailOverdueTransaction from "./modal/viewOverdueTransaction.jsx/ViewDetailOverdueTransaction";
+import ViewOverdueVerificationComment from "./modal/viewOverdueVerificationComment/ViewOverdueVerificationComment";
 
 const CompianceOfficerOverdueVerificationReports = () => {
   const navigate = useNavigate();
@@ -62,16 +65,17 @@ const CompianceOfficerOverdueVerificationReports = () => {
     resetComplianceOfficerOverdueVerificationReportSearch,
   } = useSearchBarContext();
   const {
-    viewDetailReconcileTransaction,
-    setViewDetailReconcileTransaction,
+    viewDetailOverdueTransaction,
+    setViewDetailOverdueTransaction,
+
     uploadComplianceModal,
     isViewTicketTransactionModal,
     compliantApproveModal,
     nonCompliantDeclineModal,
     noteGlobalModal,
+    // viewCommentReconcileModal,
+    viewCommentOverdueVerificationModal,
   } = useGlobalModal();
-
-  console.log(coOverdueVerificationListData, "coOverdueVerificationListData");
 
   const { assetTypeListingData, setAssetTypeListingData } =
     useDashboardContext();
@@ -110,13 +114,11 @@ const CompianceOfficerOverdueVerificationReports = () => {
       const records = Array.isArray(res?.overdueVerifications)
         ? res.overdueVerifications
         : [];
-      console.log("records", records);
       const mapped = mappingDateWiseTransactionReport(
         currentAssetTypeData?.Equities,
         records
       );
       if (!mapped || typeof mapped !== "object") return;
-      console.log("records", mapped);
 
       setCoOverdueVerificationListData((prev) => ({
         overdueVerifications: replace
@@ -153,8 +155,6 @@ const CompianceOfficerOverdueVerificationReports = () => {
       showNotification,
     ]
   );
-  console.log("records", coOverdueVerificationListData);
-  console.log("records", coOverdueVerificationReportSearch);
 
   // -------------------- Effects --------------------
 
@@ -239,7 +239,7 @@ const CompianceOfficerOverdueVerificationReports = () => {
     approvalStatusMap,
     coOverdueVerificationReportSearch,
     setCoOverdueVerificationReportSearch,
-    setViewDetailReconcileTransaction,
+    setViewDetailOverdueTransaction,
     handleViewDetailsForReconcileTransaction,
   });
 
@@ -395,7 +395,9 @@ const CompianceOfficerOverdueVerificationReports = () => {
                 </span>
               }
               className="small-light-button-report"
-              disabled={!coOverdueVerificationListData?.overdueVerifications?.length}
+              disabled={
+                !coOverdueVerificationListData?.overdueVerifications?.length
+              }
               onClick={() => setOpen((prev) => !prev)}
             />
           </div>
@@ -478,10 +480,17 @@ const CompianceOfficerOverdueVerificationReports = () => {
       </PageLayout>
 
       {/* To show View Detail Reconcile Transaction on View Click */}
-      {viewDetailReconcileTransaction && <ViewDetailReconcileTransaction />}
+      {viewDetailOverdueTransaction && <ViewDetailOverdueTransaction />}
+
+      {/* To show View Comment Modal when CLick on View Comment Button */}
+      {viewCommentOverdueVerificationModal && (
+        <ViewOverdueVerificationComment />
+      )}
 
       {/* To show view Ticket Modal on click of View Ticket */}
-      {isViewTicketTransactionModal && <ViewTicketReconcileModal />}
+      {isViewTicketTransactionModal && (
+        <ViewTicketReconcileModal previous={"viewOverduaVerificationComment"} />
+      )}
 
       {/* To Show upload Ticket Modal On Add Ticket Click */}
       {uploadComplianceModal && <UploadReconcileTicketModal />}

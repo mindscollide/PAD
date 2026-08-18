@@ -136,7 +136,6 @@ export const getBorderlessTableColumns = ({
     dataIndex: "requesterName",
     key: "requesterName",
     align: "left",
-    ellipsis: true,
     sorter: (a, b) =>
       (a?.requesterName || "").localeCompare(b?.requesterName || ""),
     sortOrder:
@@ -144,11 +143,7 @@ export const getBorderlessTableColumns = ({
     showSorterTooltip: false,
     sortIcon: () => null,
     width: 150,
-    render: (text) => (
-      <span className="font-medium" title={text || "—"}>
-        {text || "—"}
-      </span>
-    ),
+    render: (text) => <span className="font-medium">{text || "—"}</span>,
     onHeaderCell: () => nowrapCell(70, 150),
     onCell: () => nowrapCell(70, 150),
   },
@@ -215,7 +210,6 @@ export const getBorderlessTableColumns = ({
     dataIndex: "transactionRequestDateime",
     key: "transactionRequestDateime",
     align: "center",
-    ellipsis: true,
     sorter: (a, b) =>
       (a?.transactionRequestDateime || "").localeCompare(
         b?.transactionRequestDateime || ""
@@ -227,9 +221,7 @@ export const getBorderlessTableColumns = ({
     showSorterTooltip: false,
     sortIcon: () => null,
     render: (date) => (
-      <span className="text-gray-600" title={date || "—"}>
-        {formatApiDateTime(date) || "—"}
-      </span>
+      <span className="text-gray-600">{formatApiDateTime(date) || "—"}</span>
     ),
   },
 
@@ -258,12 +250,11 @@ export const getBorderlessTableColumns = ({
     ),
     dataIndex: "type",
     key: "type",
-    ellipsis: true,
     filteredValue: complianceOfficerReconcilePortfolioSearch?.type?.length
       ? complianceOfficerReconcilePortfolioSearch.type
       : null,
     onFilter: () => true,
-    render: (type) => <span title={type || "—"}>{type || "—"}</span>,
+    render: (type) => <span>{type || "—"}</span>,
     onHeaderCell: () => nowrapCell(100, 100),
     onCell: () => nowrapCell(100, 100),
   },
@@ -278,7 +269,6 @@ export const getBorderlessTableColumns = ({
     ),
     dataIndex: "status",
     key: "status",
-    ellipsis: true,
     filteredValue: complianceOfficerReconcilePortfolioSearch?.status?.length
       ? complianceOfficerReconcilePortfolioSearch.status
       : null,

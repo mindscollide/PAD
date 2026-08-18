@@ -58,7 +58,6 @@ const ViewDetailHeadOfComplianceReconcilePortfolio = () => {
 
   // This is the Status Which is I'm getting from the selectedViewDetail contextApi state
   const getStatusStyle = (status) => {
-    console.log(status, "checkStatusessss");
     switch (status) {
       case "1":
         return {

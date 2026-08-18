@@ -28,11 +28,6 @@ const ResubmitModal = () => {
     selectedViewDetail,
   } = useGlobalModal();
 
-  console.log(
-    selectedViewDetail,
-    "selectedViewDetailselectedViewDetailselectedViewDetail"
-  );
-
   // Context Api For Reasons which is coming from the API and stored in contextApi
   const { getAllPredefineReasonData } = useDashboardContext();
 
@@ -83,7 +78,9 @@ const ResubmitModal = () => {
       )}?`}
       // reasonForEmployeeResubmit is a flat ReasonItem[] (no approve/decline split,
       // since resubmitting isn't an approve/decline action)
-      predefinedReasons={getAllPredefineReasonData?.reasonForEmployeeResubmit || []}
+      predefinedReasons={
+        getAllPredefineReasonData?.reasonForEmployeeResubmit || []
+      }
       onSubmit={clickOnReSubmitButton}
       centered={true}
       width={"902px"}

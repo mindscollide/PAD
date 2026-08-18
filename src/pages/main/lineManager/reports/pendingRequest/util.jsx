@@ -204,7 +204,6 @@ export const getBorderlessLineManagerTableColumns = ({
     dataIndex: "requestDateTime",
     key: "requestDateTime",
     align: "center",
-    ellipsis: true,
     sorter: (a, b) =>
       formatApiDateTime(a.requestDateTime).localeCompare(
         formatApiDateTime(b.requestDateTime)
@@ -230,7 +229,6 @@ export const getBorderlessLineManagerTableColumns = ({
     dataIndex: "type",
     key: "type",
     width: "8%",
-    ellipsis: true,
     filteredValue: lMPendingApprovalReportsSearch.type?.length
       ? lMPendingApprovalReportsSearch.type
       : null,
@@ -250,7 +248,6 @@ export const getBorderlessLineManagerTableColumns = ({
     dataIndex: "quantity",
     key: "quantity",
     width: "8%",
-    ellipsis: true,
     sorter: (a, b) => a.quantity - b.quantity,
     sortDirections: ["ascend", "descend"],
     sortOrder: sortedInfo?.columnKey === "quantity" ? sortedInfo.order : null,

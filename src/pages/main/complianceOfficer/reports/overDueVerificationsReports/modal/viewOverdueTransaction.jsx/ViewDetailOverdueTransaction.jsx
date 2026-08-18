@@ -1,19 +1,14 @@
-import React, { useEffect, useMemo, useRef } from "react";
+import React from "react";
 import { Col, Row, Tag } from "antd";
 import { useGlobalModal } from "../../../../../../../context/GlobalModalContext";
 import { BrokerList, GlobalModal } from "../../../../../../../components";
-import styles from "./ViewDetailReconcileTransaction.module.css";
+import styles from "./ViewDetailOverdueTransaction.module.css";
 import { Stepper, Step } from "react-form-stepper";
 import CustomButton from "../../../../../../../components/buttons/button";
 import CheckIcon from "../../../../../../../assets/img/Check.png";
 import EllipsesIcon from "../../../../../../../assets/img/Ellipses.png";
 import CrossIcon from "../../../../../../../assets/img/Cross.png";
 import EscalatedIcon from "../../../../../../../assets/img/escalated.png";
-// ADDED (2026-08-17): stepper-specific "Escalated On" icon, matching the
-// convention used on the sibling employee/HOC/HTA hierarchy steppers -
-// distinct from EscalatedIcon above, which is the small badge next to
-// Transaction ID, not the hierarchy stepper itself.
-import EscaltedOn from "../../../../../../../assets/img/EscaltedOn.png";
 import { useDashboardContext } from "../../../../../../../context/dashboardContaxt";
 import {
   convertUTCToCurrentTimeZone,
@@ -30,7 +25,7 @@ import { useNotification } from "../../../../../../../components/NotificationPro
 import { useGlobalLoader } from "../../../../../../../context/LoaderContext";
 import { useNavigate } from "react-router-dom";
 
-const ViewDetailReconcileTransaction = () => {
+const ViewDetailOverdueTransaction = () => {
   const { callApi } = useApi();
   const { showNotification } = useNotification();
   const { showLoader } = useGlobalLoader();
@@ -38,10 +33,10 @@ const ViewDetailReconcileTransaction = () => {
 
   // This is Global State for modal which is create in ContextApi
   const {
-    viewDetailReconcileTransaction,
-    setViewDetailReconcileTransaction,
+    viewDetailOverdueTransaction,
+    setViewDetailOverdueTransaction,
     setNoteGlobalModal,
-    setViewCommentReconcileModal,
+    setViewCommentOverdueVerificationModal,
     setIsViewTicketTransactionModal,
     setUploadComplianceModal,
     setUploadattAchmentsFiles,
@@ -54,10 +49,8 @@ const ViewDetailReconcileTransaction = () => {
   const loggedInUserID = userProfileData?.userID;
 
   //This is the Global state of Context Api
-  const {
-    reconcileTransactionViewDetailData,
-    selectedReconcileTransactionData,
-  } = useReconcileContext();
+  const { reconcileTransactionViewDetailData, selectedOverdueTransactionData } =
+    useReconcileContext();
 
   const { allInstrumentsData } = useDashboardContext();
   // This is the Status Which is I'm getting from the selectedViewDetail contextApi state
@@ -155,149 +148,32 @@ const ViewDetailReconcileTransaction = () => {
   const isTicketUploaded =
     reconcileTransactionViewDetailData?.ticketUploaded === false;
 
-  // REWORKED (2026-08-17): was truncating hierarchyDetails to "up to and
-  // including the logged-in user's own step" and never touched
-  // escalations at all - "escalated by whom, approved by whom" was
-  // missing entirely, and the API wrapper this data comes from
-  // (GetAllTransactionViewDetails in api/myTransactionsApi.jsx) was
-  // separately found to be silently dropping the escalations field
-  // before it even reached this component (fixed there too). Same
-  // reconciliation as the employee's own View Details modal
-  // (employes/myTransactions/modals/viewDetailsTransactionModal) - a
-  // hierarchyDetails row can be the outcome of an on-behalf escalation
-  // closure (e.g. an HCA closing it for a stalled reviewer), so the row's
-  // own name isn't necessarily who actually acted, and a reviewer can
-  // escalate more than once before finally resolving it. Built as one
-  // chronologically-sorted trail instead of one step per hierarchyDetails
-  // row - see the employee modal's identical comment for the full
-  // reasoning.
-  const buildReconcileHierarchyTrail = () => {
-    const hierarchyDetails =
-      reconcileTransactionViewDetailData?.hierarchyDetails || [];
-    const escalations = reconcileTransactionViewDetailData?.escalations || [];
+  // Hierarchy list: show only up to (and including) the logged-in user's own
+  // step, same as ViewDetailPortfolioTransaction.jsx — the previous logic
+  // filtered the logged-in user OUT of the list entirely whenever there was
+  // more than one entry, which hid their own action and miscounted activeStep.
+  const hierarchyDetails =
+    reconcileTransactionViewDetailData?.hierarchyDetails || [];
 
-    const rawTimestamp = (date, time) => `${date || ""}${time || ""}`;
+  const currentUserIndex = hierarchyDetails.findIndex(
+    (item) => item.userID === loggedInUserID
+  );
 
-    const escalatedUserIDs = new Set(
-      escalations.map((e) => e?.escalatedFromID).filter((id) => id != null)
-    );
-
-    const steps = [];
-
-    escalations.forEach((esc) => {
-      const escalatedByYou = esc?.escalatedFromID === loggedInUserID;
-      steps.push({
-        sortKey: rawTimestamp(esc?.escalatedOnDate, esc?.escalatedOnTime),
-        iconSrc: EscaltedOn,
-        title: escalatedByYou
-          ? "Escalated by You"
-          : `Escalated by ${esc?.escalatedFrom}`,
-        date: convertUTCToCurrentTimeZone(
-          esc?.escalatedOnDate,
-          esc?.escalatedOnTime
-        ),
-      });
-
-      if (!esc?.escalationClosedBy) {
-        steps.push({
-          sortKey:
-            rawTimestamp(esc?.escalatedOnDate, esc?.escalatedOnTime) + "1",
-          iconSrc: EllipsesIcon,
-          title: "Awaiting for action",
-          date: "",
-        });
-        return;
-      }
-
-      // escalatedClosedOn is a combined ISO string
-      // ("YYYY-MM-DDTHH:mm:ss"), unlike the split yyyyMMdd/HHmmss fields
-      // used elsewhere - reshape it into the same two-part format first.
-      const [closedDatePart, closedTimePart] = (
-        esc?.escalatedClosedOn || ""
-      ).split("T");
-      const closedDate = closedDatePart?.replace(/-/g, "") || "";
-      const closedTime = closedTimePart?.replace(/:/g, "") || "";
-
-      // Only trust the Compliant/Non-Compliant outcome from
-      // hierarchyDetails when this closure is that reviewer's own final
-      // recorded outcome (timestamp match) - an earlier, superseded
-      // escalation cycle for the same reviewer has no outcome recorded
-      // anywhere, so it defaults to a generic "resolved" Compliant step.
-      const matchingPerson = hierarchyDetails.find(
-        (p) =>
-          p.userID === esc?.escalatedFromID &&
-          rawTimestamp(p.modifiedDate, p.modifiedTime) ===
-            `${closedDate}${closedTime}`
-      );
-      const isNonCompliant = matchingPerson?.bundleStatusID === 3;
-      const closedByYou = esc?.escalationClosedBy === loggedInUserID;
-
-      steps.push({
-        sortKey: `${closedDate}${closedTime}`,
-        iconSrc: isNonCompliant ? CrossIcon : CheckIcon,
-        title: closedByYou
-          ? isNonCompliant
-            ? "Marked Non-Compliant by You"
-            : "Marked Compliant by You"
-          : `Marked ${
-              isNonCompliant ? "Non-Compliant" : "Compliant"
-            } by ${esc?.escalationClosedByName}`,
-        date: convertUTCToCurrentTimeZone(closedDate, closedTime),
-      });
-    });
-
-    hierarchyDetails
-      .filter((person) => !escalatedUserIDs.has(person.userID))
-      .forEach((person) => {
-        const { fullName, bundleStatusID, modifiedDate, modifiedTime, userID } =
-          person;
-        const formattedDateTime = convertUTCToCurrentTimeZone(
-          modifiedDate,
-          modifiedTime
-        );
-        const isYou = userID === loggedInUserID;
-
-        if (bundleStatusID === 2) {
-          steps.push({
-            sortKey: rawTimestamp(modifiedDate, modifiedTime),
-            iconSrc: CheckIcon,
-            title: isYou ? "Marked Compliant by You" : fullName,
-            date: formattedDateTime,
-          });
-        } else if (bundleStatusID === 3) {
-          steps.push({
-            sortKey: rawTimestamp(modifiedDate, modifiedTime),
-            iconSrc: CrossIcon,
-            title: isYou ? "Marked Non-Compliant by You" : fullName,
-            date: formattedDateTime,
-          });
-        } else {
-          steps.push({
-            sortKey:
-              rawTimestamp(modifiedDate, modifiedTime) || "99999999999999",
-            iconSrc: EllipsesIcon,
-            title: "Awaiting for action",
-            date: "",
-          });
-        }
-      });
-
-    steps.sort((a, b) => a.sortKey.localeCompare(b.sortKey));
-    return steps;
-  };
-
-  const hierarchyTrail = buildReconcileHierarchyTrail();
+  const visibleHierarchy =
+    currentUserIndex !== -1
+      ? hierarchyDetails.slice(0, currentUserIndex + 1)
+      : hierarchyDetails;
 
   // To Show Note Modal When Click on Compliant Click
   const openNoteModalOnCompliantClick = () => {
     setNoteGlobalModal({ visible: true, action: "Compliant" });
-    setViewDetailReconcileTransaction(false);
+    setViewDetailOverdueTransaction(false);
   };
 
   // To Show Note Modal When Click on Non-Compliant Click
   const openNoteModalOnNonCompliantClick = () => {
     setNoteGlobalModal({ visible: true, action: "Non-Compliant" });
-    setViewDetailReconcileTransaction(false);
+    setViewDetailOverdueTransaction(false);
   };
   // const handleViewTicket = async () => {
   //   showLoader(true);
@@ -327,7 +203,7 @@ const ViewDetailReconcileTransaction = () => {
         showNotification,
         showLoader,
         requestData: {
-          WorkFlowID: selectedReconcileTransactionData.approvalID,
+          WorkFlowID: selectedOverdueTransactionData.workFlowID,
         },
         navigate,
       });
@@ -355,7 +231,7 @@ const ViewDetailReconcileTransaction = () => {
         }));
 
         setUploadattAchmentsFiles(updatedFiles);
-        setViewDetailReconcileTransaction(false);
+        setViewDetailOverdueTransaction(false);
         setIsViewTicketTransactionModal(true);
       } else {
         showNotification({
@@ -378,11 +254,11 @@ const ViewDetailReconcileTransaction = () => {
   return (
     <>
       <GlobalModal
-        visible={viewDetailReconcileTransaction}
+        visible={viewDetailOverdueTransaction}
         width={"942px"}
         centered={true}
         onCancel={() => {
-          setViewDetailReconcileTransaction(false);
+          setViewDetailOverdueTransaction(false);
           setNoteGlobalModal({ visible: false, action: null });
         }}
         modalHeader={<></>}
@@ -556,7 +432,7 @@ const ViewDetailReconcileTransaction = () => {
                       <label className={styles.viewDetailSubLabels}>
                         {/* Row value is a combined UTC "YYYYMMDD HHmmss" string */}
                         {convertUTCToCurrentTimeZone(
-                          selectedReconcileTransactionData?.transactionDate
+                          selectedOverdueTransactionData?.transactionDate
                         )}
                       </label>
                     </div>
@@ -598,13 +474,13 @@ const ViewDetailReconcileTransaction = () => {
                   <div className={styles.mainStepperContainer}>
                     <div
                       className={`${styles.backgrounColorOfStepper} ${
-                        hierarchyTrail.length <= 3
+                        visibleHierarchy.length <= 3
                           ? styles.centerAlignStepper
                           : styles.leftAlignStepper
                       }`}
                     >
                       <Stepper
-                        activeStep={Math.max(0, hierarchyTrail.length - 1)}
+                        activeStep={Math.max(0, visibleHierarchy.length - 1)}
                         connectorStyleConfig={{
                           activeColor: "#00640A",
                           completedColor: "#00640A",
@@ -618,39 +494,89 @@ const ViewDetailReconcileTransaction = () => {
                           borderRadius: "50%",
                         }}
                       >
-                        {hierarchyTrail.map((step, index) => (
-                          <Step
-                            key={index}
-                            label={
-                              <div
-                                className={`${styles.customlabel} ${
-                                  step.date ? styles.centerAlignLabel : ""
-                                }`}
-                              >
-                                <div className={styles.customtitle}>
-                                  {step.title}
-                                </div>
-                                <div
-                                  className={`${styles.customdesc} ${
-                                    step.date ? styles.centerAlignText : ""
-                                  }`}
-                                >
-                                  {step.date}
-                                </div>
-                              </div>
+                        {Array.isArray(visibleHierarchy) &&
+                          visibleHierarchy.map((person, index) => {
+                            const {
+                              fullName,
+                              bundleStatusID,
+                              modifiedDate,
+                              modifiedTime,
+                              userID,
+                            } = person;
+
+                            // BE sends these in UTC — convert for display only
+                            const formattedDateTime =
+                              convertUTCToCurrentTimeZone(
+                                modifiedDate,
+                                modifiedTime
+                              );
+
+                            // Decide icon and text based on status
+                            let iconSrc;
+                            let displayText;
+                            let isApprovedOrDeclined = false;
+
+                            if (bundleStatusID === 2) {
+                              // ✅ Compliant
+                              iconSrc = CheckIcon;
+                              displayText =
+                                loggedInUserID === userID
+                                  ? "Marked Compliant by You"
+                                  : `${fullName}`;
+                              isApprovedOrDeclined = true;
+                            } else if (bundleStatusID === 3) {
+                              // ❌ Non-Compliant
+                              iconSrc = CrossIcon;
+                              displayText =
+                                loggedInUserID === userID
+                                  ? "Marked Non-Compliant by You"
+                                  : `${fullName}`;
+                              isApprovedOrDeclined = true;
+                            } else {
+                              // ⏳ Pending
+                              iconSrc = EllipsesIcon;
+                              displayText = "Awaiting for action";
                             }
-                            children={
-                              <div className={styles.stepCircle}>
-                                <img
-                                  draggable={false}
-                                  src={step.iconSrc}
-                                  alt="status-icon"
-                                  className={styles.circleImg}
-                                />
-                              </div>
-                            }
-                          />
-                        ))}
+
+                            return (
+                              <Step
+                                key={index}
+                                label={
+                                  <div
+                                    className={`${styles.customlabel} ${
+                                      isApprovedOrDeclined
+                                        ? styles.centerAlignLabel
+                                        : ""
+                                    }`}
+                                  >
+                                    <div className={styles.customtitle}>
+                                      {displayText}
+                                    </div>
+                                    <div
+                                      className={`${styles.customdesc} ${
+                                        isApprovedOrDeclined
+                                          ? styles.centerAlignText
+                                          : ""
+                                      }`}
+                                    >
+                                      {bundleStatusID !== 1 &&
+                                        formattedDateTime}
+                                    </div>
+                                  </div>
+                                }
+                                children={
+                                  <div className={styles.stepCircle}>
+                                    <img
+                                      draggable={false}
+                                      src={iconSrc}
+                                      alt="status-icon"
+                                      className={styles.circleImg}
+                                    />
+                                  </div>
+                                }
+                              />
+                            );
+                          })}
                       </Stepper>
                     </div>
                   </div>
@@ -671,7 +597,7 @@ const ViewDetailReconcileTransaction = () => {
                             text={"Add Ticket"}
                             onClick={() => {
                               setUploadComplianceModal(true);
-                              setViewDetailReconcileTransaction(false);
+                              setViewDetailOverdueTransaction(false);
                             }}
                             className="big-ViewTicket-dark-button"
                           />
@@ -710,21 +636,21 @@ const ViewDetailReconcileTransaction = () => {
                           className="big-light-button"
                           onClick={() => {
                             setIsViewTicketTransactionModal(true);
-                            setViewDetailReconcileTransaction(false);
+                            setViewDetailOverdueTransaction(false);
                           }}
                         />{" "}
                         <CustomButton
                           text="View Comments"
                           className="big-light-button"
                           onClick={() => {
-                            setViewCommentReconcileModal(true);
-                            setViewDetailReconcileTransaction(false);
+                            setViewCommentOverdueModal(true);
+                            setViewDetailOverdueTransaction(false);
                           }}
                         />{" "}
                         <CustomButton
                           text="Close"
                           onClick={() => {
-                            setViewDetailReconcileTransaction(false);
+                            setViewDetailOverdueTransaction(false);
                           }}
                           className="big-light-button"
                         />
@@ -740,14 +666,14 @@ const ViewDetailReconcileTransaction = () => {
                           text="View Comments"
                           className="big-light-button"
                           onClick={() => {
-                            setViewCommentReconcileModal(true);
-                            setViewDetailReconcileTransaction(false);
+                            setViewCommentOverdueVerificationModal(true);
+                            setViewDetailOverdueTransaction(false);
                           }}
                         />{" "}
                         <CustomButton
                           text="Close"
                           onClick={() => {
-                            setViewDetailReconcileTransaction(false);
+                            setViewDetailOverdueTransaction(false);
                           }}
                           className="big-light-button"
                         />
@@ -764,4 +690,4 @@ const ViewDetailReconcileTransaction = () => {
   );
 };
 
-export default ViewDetailReconcileTransaction;
+export default ViewDetailOverdueTransaction;

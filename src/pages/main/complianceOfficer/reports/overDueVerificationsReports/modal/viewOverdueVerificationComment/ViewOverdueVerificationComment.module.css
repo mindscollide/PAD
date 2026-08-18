@@ -1,0 +1,24 @@
+.ViewCommentHeading {
+  font-size: 26px;
+  color: #30426a;
+  font-weight: 700;
+  font-family: "Switzer Variable";
+}
+
+.ViewCommentParagraph {
+  font-size: 26px;
+  color: #424242;
+  font-weight: 400;
+  font-family: "Switzer Variable";
+}
+
+.mainDivComment {
+  padding: 25px 50px !important;
+}
+
+.CommentsButtonClass {
+  display: flex;
+  justify-content: end;
+  align-items: center;
+  gap: 20px !important;
+}

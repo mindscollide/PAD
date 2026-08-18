@@ -100,7 +100,7 @@ export function getEmployeePortfolioColumns({
       width: 100,
 
       render: (text, record) => (
-        <span className="font-medium flex items-center" title={text || "N/A"}>
+        <span className="font-medium flex items-center">
           {formatCode?.(text) || "—"}
           {record?.uploadPortFolioTranaction && (
             <img

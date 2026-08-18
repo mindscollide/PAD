@@ -111,6 +111,9 @@ export const GlobalModalProvider = ({ children }) => {
   const [viewDetailReconcileTransaction, setViewDetailReconcileTransaction] =
     useState(false);
 
+  const [viewDetailOverdueTransaction, setViewDetailOverdueTransaction] =
+    useState(false);
+
   //This is For Compliance Officer View Detail for Portfolio transaction modal
   const [viewDetailPortfolioTransaction, setViewDetailPortfolioTransaction] =
     useState(false);
@@ -135,6 +138,11 @@ export const GlobalModalProvider = ({ children }) => {
   // This is for View Comment When Compliant and NonCompliant modal will be open
   const [viewCommentReconcileModal, setViewCommentReconcileModal] =
     useState(false);
+
+  const [
+    viewCommentOverdueVerificationModal,
+    setViewCommentOverdueVerificationModal,
+  ] = useState(false);
 
   // This is for View Comment When Compliant and NonCompliant modal will be open on portfolio
   const [viewCommentPortfolioModal, setViewCommentPortfolioModal] =
@@ -395,6 +403,8 @@ export const GlobalModalProvider = ({ children }) => {
          */
         viewDetailReconcileTransaction,
         setViewDetailReconcileTransaction,
+        viewDetailOverdueTransaction,
+        setViewDetailOverdueTransaction,
         uploadComplianceModal,
         setUploadComplianceModal,
         viewDetailPortfolioTransaction,
@@ -529,6 +539,8 @@ export const GlobalModalProvider = ({ children }) => {
         /**
          * Global States For Admin Role Modals End here
          */
+        viewCommentOverdueVerificationModal,
+        setViewCommentOverdueVerificationModal,
 
         resetModalContextState,
       }}

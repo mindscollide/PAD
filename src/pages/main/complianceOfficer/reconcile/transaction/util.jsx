@@ -141,8 +141,7 @@ export const getBorderlessTableColumns = ({
     title: withSortIcon("Transaction ID", "tradeApprovalID", sortedInfo),
     dataIndex: "tradeApprovalID",
     key: "tradeApprovalID",
-    ellipsis: true,
-    width: 180,
+    width: 150,
     sorter: (a, b) =>
       (a?.tradeApprovalID || "").localeCompare(b?.tradeApprovalID || ""),
     sortOrder:
@@ -161,19 +160,14 @@ export const getBorderlessTableColumns = ({
     title: withSortIcon("Requester Name", "requesterName", sortedInfo),
     dataIndex: "requesterName",
     key: "requesterName",
-    ellipsis: true,
-    width: 150,
+    width: 200,
     sorter: (a, b) =>
       (a?.requesterName || "").localeCompare(b?.requesterName || ""),
     sortOrder:
       sortedInfo?.columnKey === "requesterName" ? sortedInfo.order : null,
     showSorterTooltip: false,
     sortIcon: () => null,
-    render: (text) => (
-      <span className="font-medium" title={text || "—"}>
-        {text || "—"}
-      </span>
-    ),
+    render: (text) => <span className="font-medium">{text || "—"}</span>,
   },
 
   /* --------------------- Instrument --------------------- */
@@ -182,6 +176,7 @@ export const getBorderlessTableColumns = ({
     dataIndex: "instrumentCode",
     key: "instrumentCode",
     ellipsis: true,
+    width: 150,
     sorter: (a, b) =>
       (a?.instrumentCode || "").localeCompare(b?.instrumentCode || ""),
     sortOrder:
@@ -226,7 +221,7 @@ export const getBorderlessTableColumns = ({
     dataIndex: "transactionDate",
     key: "transactionDate",
     align: "center",
-    ellipsis: true,
+    width: 200,
     sorter: (a, b) =>
       (a?.transactionDate || "").localeCompare(b?.transactionDate || ""),
     sortOrder:
@@ -234,9 +229,7 @@ export const getBorderlessTableColumns = ({
     showSorterTooltip: false,
     sortIcon: () => null,
     render: (date) => (
-      <span className="text-gray-600" title={date || "—"}>
-        {formatApiDateTime(date) || "—"}
-      </span>
+      <span className="text-gray-600">{formatApiDateTime(date) || "—"}</span>
     ),
   },
 
@@ -246,6 +239,7 @@ export const getBorderlessTableColumns = ({
     dataIndex: "quantity",
     key: "quantity",
     align: "center",
+    width: 120,
     sorter: (a, b) => (a?.quantity ?? 0) - (b?.quantity ?? 0),
     sortOrder: sortedInfo?.columnKey === "quantity" ? sortedInfo.order : null,
     showSorterTooltip: false,
@@ -265,12 +259,13 @@ export const getBorderlessTableColumns = ({
     ),
     dataIndex: "type",
     key: "type",
-    ellipsis: true,
+    width: 100,
+    align: "center",
     filteredValue: complianceOfficerReconcileTransactionsSearch?.type?.length
       ? complianceOfficerReconcileTransactionsSearch.type
       : null,
     onFilter: () => true,
-    render: (type) => <span title={type || "—"}>{type || "—"}</span>,
+    render: (type) => <span>{type || "—"}</span>,
     onHeaderCell: () => nowrapCell(100, 100),
     onCell: () => nowrapCell(100, 100),
   },
@@ -285,7 +280,7 @@ export const getBorderlessTableColumns = ({
     ),
     dataIndex: "status",
     key: "status",
-    ellipsis: true,
+    width: 100,
     filteredValue: complianceOfficerReconcileTransactionsSearch?.status?.length
       ? complianceOfficerReconcileTransactionsSearch.status
       : null,
@@ -317,7 +312,7 @@ export const getBorderlessTableColumns = ({
     title: "",
     dataIndex: "isEscalated",
     key: "isEscalated",
-    width: 50,
+    width: 100,
     align: "center",
     ellipsis: true,
     // FIXED (2026-08-11): was referencing `style["escalated-icon"]` with no
@@ -340,9 +335,8 @@ export const getBorderlessTableColumns = ({
   {
     title: "",
     key: "actions",
-    align: "center",
+    align: "right",
     render: (text, record) => {
-      console.log(record, "Checekcneceucyv");
       const { setViewDetailReconcileTransaction } = useGlobalModal();
       const { setSelectedReconcileTransactionData } = useReconcileContext();
       return (

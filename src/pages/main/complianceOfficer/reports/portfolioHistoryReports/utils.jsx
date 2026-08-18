@@ -1,16 +1,10 @@
-import { Button } from "../../../../../components";
-
-import ArrowUP from "../../../../../assets/img/arrow-up-dark.png";
-import ArrowDown from "../../../../../assets/img/arrow-down-dark.png";
-import EscaltedOn from "../../../../../assets/img/escalated.png";
-import DefaultColumArrow from "../../../../../assets/img/default-colum-arrow.png";
 import TypeColumnTitle from "../../../../../components/dropdowns/filters/typeColumnTitle";
 import { Tag, Tooltip } from "antd";
 import style from "./PortfolioHistoryReports.module.css";
 
 import {
+  dashBetweenTrackingId,
   formatApiDateTime,
-  toYYMMDD,
 } from "../../../../../common/funtions/rejex";
 import {
   mapBuySellToIds,
@@ -107,7 +101,7 @@ export const getBorderlessTableColumns = ({
     dataIndex: "employeeID",
     key: "employeeID",
     align: "left",
-    width: "80px",
+    width: 50,
     ellipsis: true,
     sortDirections: ["ascend", "descend"],
     sortOrder: sortedInfo?.columnKey === "employeeID" ? sortedInfo.order : null,
@@ -124,7 +118,6 @@ export const getBorderlessTableColumns = ({
     key: "requesterName",
     width: 150,
     align: "left",
-    ellipsis: true,
     sorter: (a, b) =>
       a.requesterName.localeCompare(b.requesterName, undefined, {
         sensitivity: "base",
@@ -144,7 +137,6 @@ export const getBorderlessTableColumns = ({
     key: "departmentName",
     width: 200,
     align: "left",
-    ellipsis: true,
     sorter: (a, b) =>
       a.departmentName.localeCompare(b.departmentName, undefined, {
         sensitivity: "base",
@@ -162,9 +154,8 @@ export const getBorderlessTableColumns = ({
     title: withSortIcon("Tracking ID", "tradeApprovalID", sortedInfo),
     dataIndex: "tradeApprovalID",
     key: "tradeApprovalID",
-    width: "120px",
+    width: 120,
     align: "left",
-    ellipsis: true,
     sorter: (a, b) => a.tradeApprovalID.localeCompare(b.tradeApprovalID),
     sortDirections: ["ascend", "descend"],
     sortOrder:
@@ -172,23 +163,25 @@ export const getBorderlessTableColumns = ({
     showSorterTooltip: false,
     sortIcon: () => null,
     render: (text) => (
-      <span className={`${style["cell-text"]} font-medium`}>{text}</span>
+      <span className={`${style["cell-text"]} font-medium`}>
+        {dashBetweenTrackingId(text)}
+      </span>
     ),
   },
   {
-    title: withSortIcon("Instrument", "instrumentName", sortedInfo),
-    dataIndex: "instrumentName",
-    key: "instrumentName",
-    width: "150px",
+    title: withSortIcon("Instrument", "instrumentCode", sortedInfo),
+    dataIndex: "instrumentCode",
+    key: "instrumentCode",
+    width: 150,
     align: "left",
     ellipsis: true,
     sorter: (a, b) =>
-      a.instrumentName.localeCompare(b.instrumentName, undefined, {
+      a.instrumentCode.localeCompare(b.instrumentCode, undefined, {
         sensitivity: "base",
       }),
     sortDirections: ["ascend", "descend"],
     sortOrder:
-      sortedInfo?.columnKey === "instrumentName" ? sortedInfo.order : null,
+      sortedInfo?.columnKey === "instrumentCode" ? sortedInfo.order : null,
     showSorterTooltip: false,
     sortIcon: () => null,
     render: (instrument, record) => {
@@ -236,12 +229,13 @@ export const getBorderlessTableColumns = ({
     ),
     dataIndex: "type",
     key: "type",
-    ellipsis: true,
+    width: 50,
+
     filteredValue: coPortfolioHistoryReportSearch?.type?.length
       ? coPortfolioHistoryReportSearch.type
       : null,
     onFilter: () => true,
-    render: (type) => <span title={type || "—"}>{type || "—"}</span>,
+    render: (type) => <span>{type || "—"}</span>,
     onHeaderCell: () => nowrapCell(100, 100),
     onCell: () => nowrapCell(100, 100),
   },
@@ -249,10 +243,9 @@ export const getBorderlessTableColumns = ({
   {
     title: withSortIcon("Quantity", "quantity", sortedInfo, "center"),
     dataIndex: "quantity",
-    width: "140px",
+    width: 100,
     key: "quantity",
     align: "center",
-    ellipsis: true,
     sorter: (a, b) => a.quantity - b.quantity,
     sortDirections: ["ascend", "descend"],
     sortOrder: sortedInfo?.columnKey === "quantity" ? sortedInfo.order : null,
@@ -268,9 +261,8 @@ export const getBorderlessTableColumns = ({
     title: withSortIcon("Date & Time", "requestDate", sortedInfo, "center"),
     dataIndex: "requestDate",
     key: "requestDate",
-    width: "140px",
+    width: 200,
     align: "center",
-    ellipsis: true,
     sorter: (a, b) =>
       formatApiDateTime(a.requestDate).localeCompare(
         formatApiDateTime(b.requestDate)
@@ -296,7 +288,7 @@ export const getBorderlessTableColumns = ({
     ),
     dataIndex: "status",
     key: "status",
-    ellipsis: true,
+    width: 150,
     filteredValue: coPortfolioHistoryReportSearch?.status?.length
       ? coPortfolioHistoryReportSearch.status
       : null,

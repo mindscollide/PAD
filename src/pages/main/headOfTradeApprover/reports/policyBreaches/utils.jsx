@@ -57,7 +57,7 @@ export const mapListData = (
     breachedPolicies: item.breachedPolicies || 0,
     requestDateTime:
       `${item?.requestDate || ""} ${item?.requestTime || ""}`.trim() || "—",
-    type: getTradeTypeById(assetTypeData, item?.tradeType) || "-",
+    tradeType: getTradeTypeById(assetTypeData, item?.tradeType) || "-",
     resubmitted: item.resubmitted || 0,
   }));
 };
@@ -122,7 +122,6 @@ export const getBorderlessTableColumns = ({
     key: "employeeID",
     align: "left",
     width: "140px",
-    ellipsis: true,
     sorter: (a, b) =>
       parseInt(a.employeeID.replace(/[^\d]/g, ""), 10) -
       parseInt(b.employeeID.replace(/[^\d]/g, ""), 10),
@@ -143,7 +142,6 @@ export const getBorderlessTableColumns = ({
     dataIndex: "employeeName",
     key: "employeeName",
     align: "left",
-    ellipsis: true,
     width: "140px",
     sorter: (a, b) => a.employeeName - b.employeeName,
     sortDirections: ["ascend", "descend"],
@@ -158,7 +156,6 @@ export const getBorderlessTableColumns = ({
     dataIndex: "departmentName",
     key: "departmentName",
     align: "left",
-    ellipsis: true,
     width: "140px",
     sorter: (a, b) => a.departmentName - b.departmentName,
     sortDirections: ["ascend", "descend"],
@@ -179,7 +176,6 @@ export const getBorderlessTableColumns = ({
     key: "requestDateTime",
     align: "center",
     width: "140px",
-    ellipsis: true,
     sorter: (a, b) =>
       formatApiDateTime(a.requestDateTime).localeCompare(
         formatApiDateTime(b.requestDateTime)
@@ -201,7 +197,6 @@ export const getBorderlessTableColumns = ({
     key: "quantity",
     align: "center",
     width: "140px",
-    ellipsis: true,
     sorter: (a, b) => Number(a.quantity || 0) - Number(b.quantity || 0),
     sortDirections: ["ascend", "descend"],
     sortOrder: sortedInfo?.columnKey === "quantity" ? sortedInfo.order : null,
@@ -222,30 +217,32 @@ export const getBorderlessTableColumns = ({
         setState={setHTAPolicyBreachesReportSearch}
       />
     ),
-    dataIndex: "type",
-    key: "type",
-    ellipsis: true,
+    dataIndex: "tradeType",
+    key: "tradeType",
     width: "140px",
     filteredValue: htaPolicyBreachesReportSearch.type?.length
       ? htaPolicyBreachesReportSearch?.type
       : null,
     onFilter: () => true,
-    render: (type, record) => (
-      <span
-        id={`cell-${record.key}-type`}
-        className={type === "Buy" ? "text-green-600" : "text-red-600"}
-        data-testid={`trade-type-${type}`}
-        style={{
-          display: "inline-block",
-          width: "100%",
-          overflow: "hidden",
-          textOverflow: "ellipsis",
-          whiteSpace: "nowrap",
-        }}
-      >
-        {type}
-      </span>
-    ),
+    render: (type) => <span>{type || "—"}</span>,
+    onHeaderCell: () => ({
+      style: {
+        minWidth: "100px",
+        maxWidth: "100px",
+        whiteSpace: "nowrap",
+        overflow: "hidden",
+        textOverflow: "ellipsis",
+      },
+    }),
+    onCell: () => ({
+      style: {
+        minWidth: "100px",
+        maxWidth: "100px",
+        whiteSpace: "nowrap",
+        overflow: "hidden",
+        textOverflow: "ellipsis",
+      },
+    }),
   },
   {
     title: withSortIcon("Policy Count", "policyCount", sortedInfo, "center"),
@@ -253,7 +250,6 @@ export const getBorderlessTableColumns = ({
     key: "policyCount",
     align: "center",
     width: "140px",
-    ellipsis: true,
     sorter: (a, b) => a.policyCount - b.policyCount,
     sortDirections: ["ascend", "descend"],
     sortOrder:
@@ -262,7 +258,7 @@ export const getBorderlessTableColumns = ({
     sortIcon: () => null,
     render: (text, record) => (
       <span
-        className={`${style["cell-text"]} font-medium cursor-pointer text-primary`}
+        className={`${style["cell-text"]} font-medium text-primary`}
         onClick={() => {
           setSelectedEmployee(record);
           setPolicyModalVisible(true);

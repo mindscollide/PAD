@@ -185,6 +185,7 @@
 
 .viewDetailSubLabelsForInstrument {
   flex: 1; /* let it shrink inside flex */
+
   font-size: 20px !important;
   color: #424242 !important;
   font-weight: 500;
@@ -243,7 +244,8 @@
   display: inline-flex; /* keep children in a row */
   flex-direction: row !important; /* force horizontal */
   margin-top: 10px;
-  border-radius: 8px !important;
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
   gap: 20px; /* space between steps */
   width: 100%;
   overflow: hidden !important;
@@ -317,7 +319,7 @@
   gap: 20px !important;
 }
 
-.compliantNonCompliant {
+.noncompliantButtonClass {
   display: flex;
   justify-content: end;
   align-items: center;
@@ -329,7 +331,7 @@
   display: flex;
   justify-content: space-around;
   align-items: center;
-  padding-bottom: 10px;
+  padding-bottom: 30px;
 }
 
 .buttonWrapper {
@@ -395,7 +397,7 @@
 }
 
 .modalBodyContentScroller {
-  height: 61vh;
+  height: 70vh;
   overflow: hidden;
   overflow-y: auto;
   scrollbar-width: thin;

@@ -565,7 +565,7 @@ const HCATransactionsSummarysReports = () => {
 
         <Col>
           <div className={style.headerActionsRow}>
-            {!coTransactionSummaryReportViewDetailsFlag && (
+            {!coTransactionSummaryReportViewDetailsFlag ? (
               <DateRangePicker
                 size="medium"
                 className={style.dateRangePickerClass}
@@ -573,6 +573,15 @@ const HCATransactionsSummarysReports = () => {
                 onChange={handleDateChange}
                 onClear={handleClearDates}
               />
+            ) : (
+              <div className={style.readonlyDateRange}>
+                <span className={style.readonlyDateRangeLabel}>
+                  Start date - End date
+                </span>
+                <span className={style.readonlyDateRangeValue}>
+                  {dateRange.StartDate} - {dateRange.EndDate}
+                </span>
+              </div>
             )}
             <CustomButton
               disabled={

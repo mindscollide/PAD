@@ -176,11 +176,11 @@ export const getBorderlessTableColumns = ({
     },
   },
   {
-    title: withSortIcon("Trade Request ID", "requestID", sortedInfo),
+    title: withSortIcon("Request ID", "requestID", sortedInfo),
     align: "left",
     dataIndex: "requestID",
     key: "requestID",
-    width: 160,
+    width: 120,
     ellipsis: true,
     sorter: (a, b) =>
       parseInt(a.requestID.replace(/[^\d]/g, ""), 10) -
@@ -204,8 +204,7 @@ export const getBorderlessTableColumns = ({
     align: "center",
     dataIndex: "requestDateTime",
     key: "requestDateTime",
-    ellipsis: true,
-    width: 100,
+    width: 180,
     sorter: (a, b) =>
       formatApiDateTime(a.requestDateTime).localeCompare(
         formatApiDateTime(b.requestDateTime)
@@ -253,7 +252,6 @@ export const getBorderlessTableColumns = ({
     ),
     dataIndex: "type",
     key: "type",
-    ellipsis: true,
     width: 100,
     align: "center",
     filteredValue: employeeMyTransactionReportSearch.type?.length
@@ -282,7 +280,6 @@ export const getBorderlessTableColumns = ({
     align: "center",
     dataIndex: "quantity",
     key: "quantity",
-    ellipsis: true,
     width: 100,
     sorter: (a, b) => a.quantity - b.quantity,
     sortDirections: ["ascend", "descend"],
@@ -352,7 +349,6 @@ export const getBorderlessTableColumns = ({
     ),
     dataIndex: "status",
     key: "status",
-    ellipsis: true,
     width: 140,
     filteredValue: employeeMyTransactionReportSearch.status?.length
       ? employeeMyTransactionReportSearch.status
@@ -398,8 +394,7 @@ export const getBorderlessTableColumns = ({
     align: "center",
     dataIndex: "actionDateTime",
     key: "actionDateTime",
-    ellipsis: true,
-    width: 230,
+    width: 180,
     sorter: (a, b) =>
       formatApiDateTime(a.actionDateTime).localeCompare(
         formatApiDateTime(b.actionDateTime)
@@ -424,7 +419,6 @@ export const getBorderlessTableColumns = ({
     align: "left",
     dataIndex: "actionBy",
     key: "actionBy",
-    ellipsis: true,
     width: 150,
     sorter: (a, b) => (a.actionBy || "").localeCompare(b.actionBy || ""),
     sortOrder: sortedInfo?.columnKey === "actionBy" ? sortedInfo.order : null,
@@ -432,7 +426,7 @@ export const getBorderlessTableColumns = ({
     showSorterTooltip: false,
     sortIcon: () => null,
     render: (text, record) => {
-      const value = text || "-";
+      const value = text || "—";
       const isMultiple = value === "Multiple Users";
       const names = (record.actionByList || [])
         .map((u) => u.name)

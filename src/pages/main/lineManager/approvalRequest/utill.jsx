@@ -150,7 +150,6 @@ export const getBorderlessLineManagerTableColumns = ({
     showSorterTooltip: false,
     sortIcon: () => null,
     render: (instrument, record) => {
-      console.log(record, "Checkerrrrr");
       const assetCode = record?.assetType?.assetTypeShortCode;
       const code = instrument?.instrumentCode || "";
       const instrumentName = instrument?.instrumentName || "";
@@ -192,10 +191,7 @@ export const getBorderlessLineManagerTableColumns = ({
     align: "center",
     dataIndex: "requestDateTime",
     key: "requestDateTime",
-    sorter: (a, b) =>
-      formatApiDateTime(a.requestDateTime).localeCompare(
-        formatApiDateTime(b.requestDateTime)
-      ),
+    sorter: (a, b) => a.requestDateTime.localeCompare(b.requestDateTime),
     sortDirections: ["ascend", "descend"],
     sortOrder:
       sortedInfo?.columnKey === "requestDateTime" ? sortedInfo.order : null,

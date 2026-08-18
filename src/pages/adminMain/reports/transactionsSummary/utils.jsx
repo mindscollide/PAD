@@ -166,7 +166,6 @@ export const getBorderlessTableColumns = ({
           className="small-light-button"
           text={"View Details"}
           onClick={() => {
-            console.log(record, "tradeApprovalID");
             handelViewDetails(record.transactionDate);
           }}
         />
@@ -372,12 +371,7 @@ export const getBorderlessTableColumnsViewDetails = ({
     ),
   },
   {
-    title: withSortIcon(
-      "Action Date",
-      "actionDate",
-      sortedInfoView,
-      "center"
-    ),
+    title: withSortIcon("Action Date", "actionDate", sortedInfoView, "center"),
     dataIndex: "actionDate",
     key: "actionDate",
     align: "center",
@@ -465,7 +459,6 @@ export const getBorderlessTableColumnsViewDetails = ({
           className="small-light-button"
           text={"View Comments"}
           onClick={() => {
-            console.log(record, "tradeApprovalID");
             // handelViewDetails(record.approvalID);
             setIsViewComments(true);
             // setCheckTradeApprovalID(record?.approvalID);

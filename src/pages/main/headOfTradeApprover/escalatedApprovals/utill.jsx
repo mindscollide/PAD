@@ -320,11 +320,7 @@ export const getBorderlessTableColumns = ({
     showSorterTooltip: false,
     sortIcon: () => null,
     render: (date) => (
-      <Tooltip title={formatApiDateTime(date) || "—"}>
-        <span className="text-gray-600" title={date || "—"}>
-          {formatApiDateTime(date) || "—"}
-        </span>
-      </Tooltip>
+      <span className="text-gray-600">{formatApiDateTime(date) || "—"}</span>
     ),
   },
 
@@ -338,40 +334,17 @@ export const getBorderlessTableColumns = ({
     ),
     dataIndex: "type",
     key: "type",
-    // ellipsis: true,
     width: 100,
     filteredValue: headOfTradeEscalatedApprovalsSearch?.type?.length
       ? headOfTradeEscalatedApprovalsSearch.type
       : null,
     onFilter: () => true,
     render: (type) => (
-      <span
-        className={type === "Buy" ? "text-green-600" : "text-red-600"}
-        title={type || "—"}
-      >
+      <span className={type === "Buy" ? "text-green-600" : "text-red-600"}>
         {type || "—"}
       </span>
     ),
   },
-
-  /* --------------------- Status --------------------- */
-  // {
-  //   title: (
-  //     <StatusColumnTitle
-  //       state={headOfTradeEscalatedApprovalsSearch}
-  //       setState={setHeadOfTradeEscalatedApprovalsSearch}
-  //     />
-  //   ),
-  //   dataIndex: "status",
-  //   key: "status",
-  //   ellipsis: true,
-  //   width: 140,
-  //   filteredValue: headOfTradeEscalatedApprovalsSearch?.status?.length
-  //     ? headOfTradeEscalatedApprovalsSearch.status
-  //     : null,
-  //   onFilter: () => true,
-  //   render: (status) => renderStatusCell(status, approvalStatusMap),
-  // },
 
   /* --------------------- Status --------------------- */
   {
@@ -411,11 +384,9 @@ export const getBorderlessTableColumns = ({
     showSorterTooltip: false,
     sortIcon: () => null,
     render: (date) => (
-      <Tooltip title={formatApiDateTime(date) || "—"}>
-        <span className="text-gray-600" title={date || "—"}>
-          {formatApiDateTime(date) || "—"}
-        </span>
-      </Tooltip>
+      // <Tooltip title={formatApiDateTime(date) || "—"}>
+      <span className="text-gray-600">{formatApiDateTime(date) || "—"}</span>
+      // </Tooltip>
     ),
   },
 

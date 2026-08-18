@@ -1,14 +1,8 @@
-import ArrowUP from "../../../../../assets/img/arrow-up-dark.png";
-import ArrowDown from "../../../../../assets/img/arrow-down-dark.png";
-import DefaultColumArrow from "../../../../../assets/img/default-colum-arrow.png";
 import TypeColumnTitle from "../../../../../components/dropdowns/filters/typeColumnTitle";
 import StatusColumnTitle from "../../../../../components/dropdowns/filters/statusColumnTitle";
 import { Tag, Tooltip } from "antd";
-import style from "./tradesUploadViaPortfolio.module.css";
-import EscalatedIcon from "../../../../../assets/img/escalated.png";
 
 import {
-  dashBetweenApprovalAssets,
   formatApiDateTime,
   toYYMMDD,
 } from "../../../../../common/funtions/rejex";
@@ -57,7 +51,7 @@ export const mapEmployeeTransactions = (
     instrumentName: item?.instrumentName || "—",
     assetTypeShortCode: item?.assetType?.assetTypeShortCode || "—",
     employeeID: item?.employeeID || "",
-    employeeName: item?.employeeFirstName + item?.employeeLastName || "—",
+    employeeName: item?.employeeFirstName + " " + item?.employeeLastName || "—",
     quantity: item.quantity || 0,
     tradeApprovalID: item.tradeApprovalID || "",
     type: getTradeTypeById(assetTypeData, item?.tradeType) || "-",

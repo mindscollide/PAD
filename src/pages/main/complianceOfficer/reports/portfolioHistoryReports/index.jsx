@@ -78,6 +78,74 @@ const CompianceOfficerPortfolioHistoryReports = () => {
    * Fetches transactions from API.
    * @param {boolean} flag - whether to show loader
    */
+  // const fetchApiCall = useCallback(
+  //   async (requestData, replace = false, showLoaderFlag = true) => {
+  //     if (!requestData || typeof requestData !== "object") return;
+  //     if (showLoaderFlag) showLoader(true);
+  //     const res = await GetComplianceOfficerPortfolioHistoryRequestApi({
+  //       callApi,
+  //       showNotification,
+  //       showLoader,
+  //       navigate,
+  //       requestdata: requestData,
+  //     });
+
+  //     // ✅ Always get the freshest version (from memory or session)
+  //     const currentAssetTypeData = getSafeAssetTypeData(
+  //       assetTypeListingData,
+  //       setAssetTypeListingData
+  //     );
+
+  //     const records = Array.isArray(res?.complianceOfficerPortfolioHistory)
+  //       ? res.complianceOfficerPortfolioHistory
+  //       : [];
+  //     console.log("records", records);
+  //     const mapped = mappingDateWiseTransactionReport(
+  //       currentAssetTypeData?.Equities,
+  //       records
+  //     );
+  //     if (!mapped || typeof mapped !== "object") return;
+  //     console.log("records", mapped);
+
+  //     setCoPortfolioHistoryListData((prev) => ({
+  //       complianceOfficerPortfolioHistory: replace
+  //         ? mapped
+  //         : [...(prev?.complianceOfficerPortfolioHistory || []), ...mapped],
+  //       // this is for to run lazy loading its data comming from database of total data in db
+  //       totalRecordsDataBase: res?.totalRecords || 0,
+  //       // this is for to know how mush dta currently fetch from  db
+  //       totalRecordsTable: replace
+  //         ? mapped.length
+  //         : coPortfolioHistoryListData.totalRecordsTable + mapped.length,
+  //     }));
+  //     setCoPortfolioHistoryReportSearch((prev) => {
+  //       const next = {
+  //         ...prev,
+  //         pageNumber: replace ? mapped.length : prev.pageNumber + mapped.length,
+  //       };
+
+  //       // this is for check if filter value get true only on that it will false
+  //       if (prev.filterTrigger) {
+  //         next.filterTrigger = false;
+  //       }
+
+  //       return next;
+  //     });
+  //   },
+  //   [
+  //     assetTypeListingData,
+  //     callApi,
+  //     navigate,
+  //     setCoPortfolioHistoryReportSearch,
+  //     showLoader,
+  //     showNotification,
+  //   ]
+  // );
+
+  // -------------------- Effects --------------------
+
+  // 🔹 Initial Fetch
+
   const fetchApiCall = useCallback(
     async (requestData, replace = false, showLoaderFlag = true) => {
       if (!requestData || typeof requestData !== "object") return;
@@ -90,7 +158,6 @@ const CompianceOfficerPortfolioHistoryReports = () => {
         requestdata: requestData,
       });
 
-      // ✅ Always get the freshest version (from memory or session)
       const currentAssetTypeData = getSafeAssetTypeData(
         assetTypeListingData,
         setAssetTypeListingData
@@ -99,52 +166,42 @@ const CompianceOfficerPortfolioHistoryReports = () => {
       const records = Array.isArray(res?.complianceOfficerPortfolioHistory)
         ? res.complianceOfficerPortfolioHistory
         : [];
-      console.log("records", records);
       const mapped = mappingDateWiseTransactionReport(
         currentAssetTypeData?.Equities,
         records
       );
       if (!mapped || typeof mapped !== "object") return;
-      console.log("records", mapped);
 
       setCoPortfolioHistoryListData((prev) => ({
         complianceOfficerPortfolioHistory: replace
           ? mapped
           : [...(prev?.complianceOfficerPortfolioHistory || []), ...mapped],
-        // this is for to run lazy loading its data comming from database of total data in db
         totalRecordsDataBase: res?.totalRecords || 0,
-        // this is for to know how mush dta currently fetch from  db
         totalRecordsTable: replace
           ? mapped.length
           : coPortfolioHistoryListData.totalRecordsTable + mapped.length,
       }));
-      setCoPortfolioHistoryReportSearch((prev) => {
-        const next = {
+
+      // 🔹 no longer store a running row-count in pageNumber — that's what
+      // was breaking the offset math on scroll. Just clear filterTrigger here.
+      if (coPortfolioHistoryReportSearch?.filterTrigger) {
+        setCoPortfolioHistoryReportSearch((prev) => ({
           ...prev,
-          pageNumber: replace ? mapped.length : prev.pageNumber + mapped.length,
-        };
-
-        // this is for check if filter value get true only on that it will false
-        if (prev.filterTrigger) {
-          next.filterTrigger = false;
-        }
-
-        return next;
-      });
+          filterTrigger: false,
+        }));
+      }
     },
     [
       assetTypeListingData,
       callApi,
       navigate,
       setCoPortfolioHistoryReportSearch,
+      coPortfolioHistoryReportSearch?.filterTrigger,
       showLoader,
       showNotification,
     ]
   );
 
-  // -------------------- Effects --------------------
-
-  // 🔹 Initial Fetch
   useEffect(() => {
     if (hasFetched.current) return;
     hasFetched.current = true;
@@ -176,6 +233,30 @@ const CompianceOfficerPortfolioHistoryReports = () => {
   }, [coPortfolioHistoryReportSearch?.filterTrigger]);
 
   // 🔹 Infinite Scroll (lazy loading)
+  // useTableScrollBottom(
+  //   async () => {
+  //     if (
+  //       coPortfolioHistoryListData?.totalRecordsDataBase <=
+  //       coPortfolioHistoryListData?.totalRecordsTable
+  //     )
+  //       return;
+
+  //     try {
+  //       setLoadingMore(true);
+  //       const requestData = buildApiRequest(
+  //         coPortfolioHistoryReportSearch,
+  //         assetTypeListingData
+  //       );
+  //       await fetchApiCall(requestData, false, false);
+  //     } catch (err) {
+  //       console.error("Error loading more approvals:", err);
+  //     } finally {
+  //       setLoadingMore(false);
+  //     }
+  //   },
+  //   0,
+  //   "border-less-table-blue"
+  // );
   useTableScrollBottom(
     async () => {
       if (
@@ -186,10 +267,21 @@ const CompianceOfficerPortfolioHistoryReports = () => {
 
       try {
         setLoadingMore(true);
-        const requestData = buildApiRequest(
+        const pageSize = 10;
+        const currentLength =
+          coPortfolioHistoryListData?.totalRecordsTable || 0;
+        const nextPageNumber = Math.floor(currentLength / pageSize) + 1;
+
+        const baseRequest = buildApiRequest(
           coPortfolioHistoryReportSearch,
           assetTypeListingData
         );
+        const requestData = {
+          ...baseRequest,
+          PageNumber: nextPageNumber,
+          Length: pageSize,
+        };
+
         await fetchApiCall(requestData, false, false);
       } catch (err) {
         console.error("Error loading more approvals:", err);
@@ -200,7 +292,6 @@ const CompianceOfficerPortfolioHistoryReports = () => {
     0,
     "border-less-table-blue"
   );
-
   // -------------------- Table Columns --------------------
   const columns = getBorderlessTableColumns({
     approvalStatusMap,

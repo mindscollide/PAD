@@ -84,7 +84,7 @@ const StatusFilterDropdown = ({
       (prev) =>
         prev.includes(status)
           ? prev.filter((item) => item !== status) // Remove if already selected
-          : [...prev, status], // Add if not selected
+          : [...prev, status] // Add if not selected
     );
   };
 
@@ -221,6 +221,7 @@ const StatusFilterDropdown = ({
     switch (selectedKey) {
       case "1":
       case "2":
+      case "3":
       case "4":
       case "5":
       case "6":

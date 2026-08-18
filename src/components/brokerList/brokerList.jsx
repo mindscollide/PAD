@@ -5,8 +5,7 @@ import { useDashboardContext } from "../../context/dashboardContaxt";
 
 const BrokerList = ({ statusData, viewDetailsData, variant, type = 1 }) => {
   const { employeeBasedBrokersData, allBrokersData } = useDashboardContext();
-  console.log("allBrokersData", allBrokersData);
-  console.log("allBrokersData", viewDetailsData);
+
   const brokersArray =
     type === 1 ? viewDetailsData?.details?.[0]?.brokers : viewDetailsData;
 
