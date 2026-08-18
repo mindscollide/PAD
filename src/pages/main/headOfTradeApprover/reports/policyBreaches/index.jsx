@@ -1,11 +1,11 @@
 import React, { useEffect, useState, useRef, useCallback } from "react";
 import { Breadcrumb, Col, Row } from "antd";
-import PDF from "../../../../../assets/img/pdf.png";
 import Excel from "../../../../../assets/img/xls.png";
 import { UpOutlined, DownOutlined } from "@ant-design/icons";
 // 🔹 Components
 import BorderlessTable from "../../../../../components/tables/borderlessTable/borderlessTable";
 import PageLayout from "../../../../../components/pageContainer/pageContainer";
+import CustomButton from "../../../../../components/buttons/button";
 
 // 🔹 Table Config
 import {
@@ -20,10 +20,13 @@ import style from "./HTAPolicyBreaches.module.css";
 import { useMyApproval } from "../../../../../context/myApprovalContaxt";
 import {
   DownloadMyTransactionReportRequestAPI,
-  ExportHTATradeApprovalRequestsExcelReport,
+  ExportHTAPolicyBreachDetailsExcelReport,
+  ExportHTAPolicyBreachesExcelReport,
+  GetHTAPolicyBreachDetailsAPI,
   GetHTATradeApprovalRequestsReport,
   SearchPolicyBreachedWorkFlowsRequest,
 } from "../../../../../api/myApprovalApi";
+import PolicyBreachDetailsModal from "./PolicyBreachDetailsModal";
 import { useNotification } from "../../../../../components/NotificationProvider/NotificationProvider";
 import { useApi } from "../../../../../context/ApiContext";
 import { useGlobalLoader } from "../../../../../context/LoaderContext";
@@ -32,7 +35,6 @@ import { useSearchBarContext } from "../../../../../context/SearchBarContaxt";
 import { useDashboardContext } from "../../../../../context/dashboardContaxt";
 import { getSafeAssetTypeData } from "../../../../../common/funtions/assetTypesList";
 import { useTableScrollBottom } from "../../../../../common/funtions/scroll";
-import CustomButton from "../../../../../components/buttons/button";
 import { DateRangePicker } from "../../../../../components";
 import { toYYMMDD } from "../../../../../common/funtions/rejex";
 
@@ -66,6 +68,13 @@ const HTAPolicyBreachesReport = () => {
   const [open, setOpen] = useState(false);
   const [policyModalVisible, setPolicyModalVisible] = useState(false);
   const [selectedEmployee, setSelectedEmployee] = useState(null);
+  // ADDED (2026-08-18): "Policies Breached" drill-down modal state -
+  // API_Changes/2026-08-18_hta_policy_breach_details_and_export_apis.md.
+  // policyModalVisible/selectedEmployee already existed but nothing ever
+  // rendered a modal or fetched details for them.
+  const [policyBreachRecords, setPolicyBreachRecords] = useState([]);
+  const [policyModalLoading, setPolicyModalLoading] = useState(false);
+  const [policyDownloading, setPolicyDownloading] = useState(false);
   // -------------------- Helpers --------------------
 
   /**
@@ -190,14 +199,84 @@ const HTAPolicyBreachesReport = () => {
     "border-less-table-blue"
   );
 
+  // ADDED (2026-08-18): "Policies Breached" drill-down + export
+  // (API_Changes/2026-08-18_hta_policy_breach_details_and_export_apis.md).
+  // Same identifying fields both GetHTAPolicyBreachDetailsAPI and
+  // ExportHTAPolicyBreachDetailsExcelReport need, built from the clicked
+  // row - no extra lookup required.
+  const buildPolicyBreachDetailsRequest = (record) => ({
+    UserID: record?.employeeID,
+    InstrumentName: record?.instrumentName,
+    TradeType: record?.tradeType,
+    Quantity: record?.quantity,
+    RequestedDateTime: record?.requestedDateTime,
+  });
+
+  /** 🔹 Open the "Policies Breached" drill-down modal for a row */
+  const handleViewPolicyBreachDetails = async (record) => {
+    setSelectedEmployee(record);
+    setPolicyModalVisible(true);
+    setPolicyModalLoading(true);
+    const res = await GetHTAPolicyBreachDetailsAPI({
+      callApi,
+      showNotification,
+      showLoader,
+      requestdata: buildPolicyBreachDetailsRequest(record),
+      navigate,
+    });
+    setPolicyBreachRecords(res?.records || []);
+    setPolicyModalLoading(false);
+  };
+
+  const handleClosePolicyModal = () => {
+    setPolicyModalVisible(false);
+    setSelectedEmployee(null);
+    setPolicyBreachRecords([]);
+  };
+
+  /** 🔹 Modal's own Download button */
+  const handleDownloadPolicyBreachDetails = async () => {
+    if (!selectedEmployee) return;
+    setPolicyDownloading(true);
+    await ExportHTAPolicyBreachDetailsExcelReport({
+      callApi,
+      showLoader,
+      requestdata: buildPolicyBreachDetailsRequest(selectedEmployee),
+      navigate,
+    });
+    setPolicyDownloading(false);
+  };
+
+  // ADDED (2026-08-18): list-level "Export Excel" toolbar button, now
+  // wired to the real dedicated endpoint (ExportHTAPolicyBreachesExcelReport)
+  // instead of the wrong report (ExportHTATradeApprovalRequestsExcelReport)
+  // it was previously calling. Request shape matches
+  // PolicyBreachesListExportRequestModel exactly - unpaginated, no TypeIds.
+  const downloadPolicyBreachesReportInExcelFormat = async () => {
+    const requestdata = {
+      InstrumentName: htaPolicyBreachesReportSearch.instrumentName || "",
+      EmployeeName: htaPolicyBreachesReportSearch.employeeName || "",
+      DepartmentName: htaPolicyBreachesReportSearch.departmentName || "",
+      FromDate: toYYMMDD(htaPolicyBreachesReportSearch.startDate) || "",
+      ToDate: toYYMMDD(htaPolicyBreachesReportSearch.endDate) || "",
+      Quantity: Number(htaPolicyBreachesReportSearch.quantity) || 0,
+    };
+
+    await ExportHTAPolicyBreachesExcelReport({
+      callApi,
+      showLoader,
+      requestdata,
+      navigate,
+    });
+  };
+
   // -------------------- Table Columns --------------------
   const columns = getBorderlessTableColumns({
     approvalStatusMap,
     sortedInfo,
     htaPolicyBreachesReportSearch,
     setHTAPolicyBreachesReportSearch,
-    setSelectedEmployee,
-    setPolicyModalVisible,
+    onViewPolicyBreachDetails: handleViewPolicyBreachDetails,
   });
 
   /** 🔹 Handle removing individual filter */
@@ -287,24 +366,6 @@ const HTAPolicyBreachesReport = () => {
     ].filter(Boolean);
   })();
 
-  // 🔷 Excel Report download Api Hit
-  const downloadMyTradeApprovalLineManagerInExcelFormat = async () => {
-    showLoader(true);
-    const requestdata = {
-      StartDate: toYYMMDD(htaPolicyBreachesReportSearch.startDate) || null,
-      EndDate: toYYMMDD(htaPolicyBreachesReportSearch.endDate) || null,
-      SearchEmployeeName: htaPolicyBreachesReportSearch.employeeName,
-      SearchDepartmentName: htaPolicyBreachesReportSearch.departmentName,
-    };
-
-    await ExportHTATradeApprovalRequestsExcelReport({
-      callApi,
-      showLoader,
-      requestdata: requestdata,
-      navigate,
-    });
-  };
-
   // -------------------- Render --------------------
   return (
     <>
@@ -353,13 +414,9 @@ const HTAPolicyBreachesReport = () => {
           {/* 🔷 Export Dropdown */}
           {open && (
             <div className={style.dropdownExport}>
-              {/* <div className={style.dropdownItem}>
-                <img src={PDF} alt="PDF" draggable={false} />
-                <span>Export PDF</span>
-              </div> */}
               <div
                 className={style.dropdownItem}
-                onClick={downloadMyTradeApprovalLineManagerInExcelFormat}
+                onClick={downloadPolicyBreachesReportInExcelFormat}
               >
                 <img src={Excel} alt="Excel" draggable={false} />
                 <span>Export Excel</span>
@@ -425,6 +482,19 @@ const HTAPolicyBreachesReport = () => {
           />
         </div>
       </PageLayout>
+
+      {policyModalVisible && (
+        <PolicyBreachDetailsModal
+          visible={policyModalVisible}
+          onClose={handleClosePolicyModal}
+          loading={policyModalLoading}
+          records={policyBreachRecords}
+          employeeID={selectedEmployee?.employeeID}
+          employeeName={selectedEmployee?.employeeName}
+          onDownload={handleDownloadPolicyBreachDetails}
+          downloading={policyDownloading}
+        />
+      )}
     </>
   );
 };
