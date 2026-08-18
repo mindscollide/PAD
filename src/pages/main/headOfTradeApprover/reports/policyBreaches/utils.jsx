@@ -1,3 +1,4 @@
+import { Tooltip } from "antd";
 import ArrowUP from "../../../../../assets/img/arrow-up-dark.png";
 import ArrowDown from "../../../../../assets/img/arrow-down-dark.png";
 import DefaultColumArrow from "../../../../../assets/img/default-colum-arrow.png";
@@ -7,7 +8,6 @@ import {
   formatApiDateTime,
   toYYMMDD,
 } from "../../../../../common/funtions/rejex";
-import { getTradeTypeById } from "../../../../../common/funtions/type";
 import { mapBuySellToIds } from "../../../../../components/dropdowns/filters/utils";
 import TypeColumnTitle from "../../../../../components/dropdowns/filters/typeColumnTitle";
 
@@ -39,7 +39,7 @@ export const buildApiRequest = (searchState = {}, assetTypeListingData) => ({
  */
 export const mapListData = (
   assetTypeData,
-  myTradeApprovalLineManagerData = []
+  myTradeApprovalLineManagerData = [],
 ) => {
   const records = Array.isArray(myTradeApprovalLineManagerData)
     ? myTradeApprovalLineManagerData
@@ -57,7 +57,20 @@ export const mapListData = (
     breachedPolicies: item.breachedPolicies || 0,
     requestDateTime:
       `${item?.requestDate || ""} ${item?.requestTime || ""}`.trim() || "—",
-    tradeType: getTradeTypeById(assetTypeData, item?.tradeType) || "-",
+    // ADDED (2026-08-18): the drill-down/export APIs need requestDate+
+    // requestTime concatenated with no separator ("20260812104117"), not
+    // the space-joined display format above - see
+    // API_Changes/2026-08-18_hta_policy_breach_details_and_export_apis.md.
+    requestedDateTime: `${item?.requestDate || ""}${item?.requestTime || ""}`,
+    // FIXED (2026-08-18): this API already returns instrumentName on
+    // every record, there was just nowhere for it to go - added a column
+    // for it below, and it's also required by the drill-down/export
+    // request payload. Also this API's tradeType is already a resolved
+    // string ("Buy"/"Sell"), not the {typeID} object
+    // getTradeTypeById expects - it always fell back to "—". Both per
+    // API_Changes/2026-08-18_hta_policy_breaches_type_and_instrument_columns.md.
+    instrumentName: item.instrumentName || "",
+    tradeType: item?.tradeType || "-",
     resubmitted: item.resubmitted || 0,
   }));
 };
@@ -96,8 +109,8 @@ const withSortIcon = (label, columnKey, sortedInfo, align = "left") => (
         align === "center"
           ? "center"
           : align === "right"
-          ? "flex-end"
-          : "flex-start",
+            ? "flex-end"
+            : "flex-start",
       textAlign: align,
     }}
   >
@@ -113,8 +126,9 @@ export const getBorderlessTableColumns = ({
   sortedInfo,
   htaPolicyBreachesReportSearch,
   setHTAPolicyBreachesReportSearch,
-  setSelectedEmployee,
-  setPolicyModalVisible,
+  // ADDED (2026-08-18): fetches the drill-down details AND opens the
+  // modal - API_Changes/2026-08-18_hta_policy_breach_details_and_export_apis.md.
+  onViewPolicyBreachDetails,
 }) => [
   {
     title: withSortIcon("Employee ID", "employeeID", sortedInfo),
@@ -170,7 +184,7 @@ export const getBorderlessTableColumns = ({
       "Request Date & Time",
       "requestDateTime",
       sortedInfo,
-      "center"
+      "center",
     ),
     dataIndex: "requestDateTime",
     key: "requestDateTime",
@@ -178,7 +192,7 @@ export const getBorderlessTableColumns = ({
     width: "140px",
     sorter: (a, b) =>
       formatApiDateTime(a.requestDateTime).localeCompare(
-        formatApiDateTime(b.requestDateTime)
+        formatApiDateTime(b.requestDateTime),
       ),
     sortDirections: ["ascend", "descend"],
     sortOrder:
@@ -189,6 +203,39 @@ export const getBorderlessTableColumns = ({
       <span id={`cell-${record.key}-requestDateTime`} className="text-gray-600">
         {formatApiDateTime(date)}
       </span>
+    ),
+  },
+  {
+    // ADDED (2026-08-18): API_Changes/2026-08-18_hta_policy_breaches_type_and_instrument_columns.md -
+    // instrumentName was already in every response, this screen just never
+    // had a column for it (same shape as Admin's own Instrument column,
+    // adminMain/reports/policyBreaches/utils.jsx).
+    title: withSortIcon("Instrument", "instrumentName", sortedInfo),
+    dataIndex: "instrumentName",
+    key: "instrumentName",
+    width: "180px",
+    ellipsis: true,
+    sorter: (a, b) =>
+      (a.instrumentName || "").localeCompare(b.instrumentName || ""),
+    sortOrder:
+      sortedInfo?.columnKey === "instrumentName" ? sortedInfo.order : null,
+    showSorterTooltip: false,
+    sortIcon: () => null,
+    render: (name) => (
+      <Tooltip title={name} placement="topLeft">
+        <span
+          className="font-medium"
+          style={{
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+            whiteSpace: "nowrap",
+            maxWidth: "180px",
+            display: "inline-block",
+          }}
+        >
+          {name || "—"}
+        </span>
+      </Tooltip>
     ),
   },
   {
@@ -258,11 +305,8 @@ export const getBorderlessTableColumns = ({
     sortIcon: () => null,
     render: (text, record) => (
       <span
-        className={`${style["cell-text"]} font-medium text-primary`}
-        onClick={() => {
-          setSelectedEmployee(record);
-          setPolicyModalVisible(true);
-        }}
+        className={`${style["cell-text"]} font-medium text-primary cursor-pointer`}
+        onClick={() => onViewPolicyBreachDetails?.(record)}
       >
         {text}
       </span>
