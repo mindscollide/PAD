@@ -471,6 +471,9 @@ const Dashboard = () => {
                   break;
                 }
                 case "EMPLOYEE_NEW_TRADE_APPROVAL_REQUEST_RESUBMITTED": {
+                  console.log(
+                    "EMPLOYEE_NEW_TRADE_APPROVAL_REQUEST_RESUBMITTED_EMPLOYEE_NEW_TRADE_APPROVAL_REQUEST_RESUBMITTED"
+                  );
                   // Treated as an update to the existing row (a resubmit
                   // flips the same workflow's status back to pending rather
                   // than creating a new record) - patches in place instead
@@ -746,8 +749,7 @@ const Dashboard = () => {
                       const rows = prev?.reconsileTransaction || [];
                       const existingIndex = rows.findIndex(
                         (row) =>
-                          String(row.approvalID) ===
-                          String(payload?.approvalID)
+                          String(row.approvalID) === String(payload?.approvalID)
                       );
                       if (existingIndex === -1) return prev;
 

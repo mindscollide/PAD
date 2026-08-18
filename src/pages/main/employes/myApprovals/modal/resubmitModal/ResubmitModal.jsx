@@ -53,8 +53,6 @@ const ResubmitModal = () => {
       setResubmitIntimation,
       navigate,
     });
-
-    console.log(requestData, "CheckRequestDatahere");
   };
 
   // Call an API which inside the fetchResubmitRequest Request on Resubmit Button
