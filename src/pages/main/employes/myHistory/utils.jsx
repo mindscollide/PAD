@@ -25,7 +25,7 @@ import repeat from "../../../../assets/img/repeat.png";
 
 export const buildMyHistoryApiRequest = (
   searchState = {},
-  assetTypeListingData
+  assetTypeListingData,
 ) => ({
   RequestID: searchState.requestID || "",
   InstrumentName: searchState.instrumentName || "",
@@ -46,13 +46,13 @@ export const getMyHistoryColumn = (
   approvalStatusMap,
   sortedInfo,
   employeeMyHistorySearch,
-  setEmployeeMyHistorySearch
+  setEmployeeMyHistorySearch,
 ) => [
   {
     title: withSortIcon(
       "Request/Transaction ID",
       "tradeApprovalID",
-      sortedInfo
+      sortedInfo,
     ),
     align: "left",
     dataIndex: "tradeApprovalID",
@@ -73,7 +73,7 @@ export const getMyHistoryColumn = (
           <span className="font-medium">
             {dashBetweenApprovalAssets(tradeApprovalID)}
           </span>
-          {record?.isResubmitLinked && (
+          {record?.status !== "Resubmit" && record?.isResubmitLinked && (
             <Tooltip title="Part of a resubmit chain">
               <img
                 draggable={false}
@@ -145,7 +145,7 @@ export const getMyHistoryColumn = (
       "Date & Time of Approval Request",
       "creationDate",
       sortedInfo,
-      "center"
+      "center",
     ),
     dataIndex: "creationDate",
     key: "creationDate",
@@ -153,7 +153,7 @@ export const getMyHistoryColumn = (
     align: "center",
     sorter: (a, b) =>
       `${a.creationDate} ${a.creationTime}`.localeCompare(
-        `${b.creationDate} ${b.creationTime}`
+        `${b.creationDate} ${b.creationTime}`,
       ),
     sortDirections: ["ascend", "descend"],
     sortOrder:
@@ -168,7 +168,7 @@ export const getMyHistoryColumn = (
   },
   {
     title: withSortIcon("Nature", "nature", sortedInfo, "center"),
-    align: "left",
+    align: "center",
     dataIndex: "nature",
     key: "nature",
     width: "160px",

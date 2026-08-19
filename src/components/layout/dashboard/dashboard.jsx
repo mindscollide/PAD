@@ -1100,6 +1100,22 @@ const Dashboard = () => {
     }
   }, [topic, connectToMqtt, currentUserId]); // Removed isConnected from dependencies
 
+  // FIXED: the notification list had no initial fetch of its own anywhere
+  // - apiCallwebNotification (above) only ever ran reactively, off an
+  // incoming "WEBNOTIFICATION" MQTT push, and the only other place that
+  // ever populated webNotificationData was Home's own fetchData
+  // (GetUserDashBoardStats bundles a notifications call in with brokers/
+  // instruments/asset types/etc.), which only runs when Home itself
+  // mounts. Refreshing on any other page never mounts Home, so
+  // webNotificationData stayed at its empty default until an MQTT push
+  // happened to arrive. This is the persistent layout wrapping every
+  // /PAD/* route (mounts on every refresh regardless of which nested
+  // page is active), so fetching the first page here directly guarantees
+  // the notification list is populated no matter where the user lands.
+  useEffect(() => {
+    apiCallwebNotification();
+  }, []);
+
   // Get page-specific class based on route
   const getContentClass = () => {
     return location.pathname === "/PAD" ? "pad_content" : "pad_content";

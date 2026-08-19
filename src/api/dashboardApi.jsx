@@ -7,7 +7,7 @@ import { getMessage, handleExpiredSession } from "./utils";
 const showErrorNotification = (
   showNotification,
   title = "Error",
-  description = "An unexpected error occurred."
+  description = "An unexpected error occurred.",
 ) => {
   showNotification({
     type: "error",
@@ -142,7 +142,7 @@ export const GetUserDashBoardStats = async ({
     showErrorNotification(
       showNotification,
       "Fetch Failed",
-      getMessage(res.message)
+      getMessage(res.message),
     );
     return null;
   } catch (error) {
@@ -194,7 +194,7 @@ export const GetAllBrokers = async ({
     showErrorNotification(
       showNotification,
       "Fetch Failed",
-      getMessage(res.message)
+      getMessage(res.message),
     );
     return null;
   } catch (error) {
@@ -378,7 +378,7 @@ export const GetAllTradeApproval = async ({
     showErrorNotification(
       showNotification,
       "Fetch Failed",
-      getMessage(res.message)
+      getMessage(res.message),
     );
     return [];
   } catch (error) {
@@ -455,7 +455,7 @@ export const GetAllPredefineReassonApi = async ({
     showErrorNotification(
       showNotification,
       "Fetch Failed",
-      getMessage(res.message)
+      getMessage(res.message),
     );
     return [];
   } catch (error) {
