@@ -5,7 +5,6 @@ import { Tag, Tooltip } from "antd";
 import style from "./dataWiseTransactionsReports.module.css";
 
 import {
-  dashBetweenApprovalAssets,
   formatApiDateTime,
   toYYMMDD,
 } from "../../../../../common/funtions/rejex";

@@ -13,8 +13,6 @@
 
 import React from "react";
 import { Col, Row, Tooltip } from "antd";
-import { Stepper, Step } from "react-form-stepper";
-import { useNavigate } from "react-router-dom";
 
 /* ========================== CONTEXTS ========================== */
 import { useGlobalModal } from "../../../../../../context/GlobalModalContext";
@@ -22,20 +20,14 @@ import { useReconcileContext } from "../../../../../../context/reconsileContax";
 import { useDashboardContext } from "../../../../../../context/dashboardContaxt";
 
 /* ========================== COMPONENTS ========================== */
-import { BrokerList, GlobalModal } from "../../../../../../components";
+import { GlobalModal } from "../../../../../../components";
 import CustomButton from "../../../../../../components/buttons/button";
 
 /* ========================== HELPERS ========================== */
 import {
   dashBetweenApprovalAssets,
   formatApiDateTime,
-  formatNumberWithCommas,
 } from "../../../../../../common/funtions/rejex";
-
-/* ========================== ASSETS ========================== */
-import CheckIcon from "../../../../../../assets/img/Check.png";
-import EllipsesIcon from "../../../../../../assets/img/Ellipses.png";
-import CrossIcon from "../../../../../../assets/img/Cross.png";
 
 /* ========================== STYLES ========================== */
 import styles from "./ViewDetaildDateWiseTransaction.module.css";
@@ -51,10 +43,6 @@ const ViewDetaildDateWiseTransaction = () => {
   const { allInstrumentsData } = useDashboardContext();
 
   /* ========================== USER SESSION ========================== */
-  const userProfileData = JSON.parse(
-    sessionStorage.getItem("user_profile_data") || "{}"
-  );
-  const loggedInUserID = userProfileData?.userID;
 
   /* ================================================================
      STATUS HANDLING
@@ -153,7 +141,9 @@ const ViewDetaildDateWiseTransaction = () => {
      requesting user's own bundle row ("what's my status"), not "who
      actually took the last action". Same "single name / Multiple Users +
      tooltip" convention used elsewhere in the app. */
-  const actionByList = Array.isArray(reconcileTransactionViewDetailData?.actionBy)
+  const actionByList = Array.isArray(
+    reconcileTransactionViewDetailData?.actionBy
+  )
     ? reconcileTransactionViewDetailData.actionBy
     : [];
   const actionByNames = actionByList.map((u) => u?.fullName).filter(Boolean);
@@ -259,10 +249,12 @@ const ViewDetaildDateWiseTransaction = () => {
               <Col span={12}>
                 <div className={styles.backgrounColorOfDetail}>
                   <label className={styles.viewDetailMainLabels}>
-                    Quantity
+                    Applied Quantity
                   </label>
                   <label className={styles.viewDetailSubLabels}>
-                    {reconcileTransactionViewDetailData?.details[0]?.quantity}
+                    {Number(
+                      reconcileTransactionViewDetailData?.details[0]?.quantity
+                    ).toLocaleString("en-US")}
                   </label>
                 </div>
               </Col>
@@ -329,10 +321,10 @@ const ViewDetaildDateWiseTransaction = () => {
                     Shares Traded
                   </label>
                   <label className={styles.viewDetailSubLabels}>
-                      {
-                      reconcileTransactionViewDetailData?.complianceMappedTradeSummary[0]
-                        ?.tradeWorkFlowID
-                    }
+                    {Number(
+                      reconcileTransactionViewDetailData
+                        ?.complianceMappedTradeSummary[0]?.sharesTraded
+                    ).toLocaleString("en-US")}
                   </label>
                 </div>
               </Col>
@@ -340,9 +332,7 @@ const ViewDetaildDateWiseTransaction = () => {
             <Row gutter={[4, 4]} style={{ marginTop: 3 }}>
               <Col span={24}>
                 <div className={styles.backgrounColorOfDetail}>
-                  <label className={styles.viewDetailMainLabels}>
-                    Notes
-                  </label>
+                  <label className={styles.viewDetailMainLabels}>Notes</label>
                   <label className={styles.viewDetailSubLabels}>
                     {/* approvalComments/rejectionComment are now arrays of
                         {userID, name, comments} - every actor's note, not

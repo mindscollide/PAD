@@ -1,22 +1,11 @@
-import React, {
-  useEffect,
-  useRef,
-  useState,
-  useCallback,
-  useMemo,
-} from "react";
+import React, { useEffect, useRef, useCallback, useMemo } from "react";
 import { Col, Row } from "antd";
-import EmptyState from "../../../../components/emptyStates/empty-states";
 import { BoxCard } from "../../../../components";
 import { useApi } from "../../../../context/ApiContext";
 import { useGlobalLoader } from "../../../../context/LoaderContext";
 import { useNotification } from "../../../../components/NotificationProvider/NotificationProvider";
 import { useNavigate } from "react-router-dom";
-import {
-  GetEmployeeReportsDashboardStatsAPI,
-  GetHTAReportsDashboardStatsAPI,
-  GetLineManagerReportDashBoard,
-} from "../../../../api/myApprovalApi";
+import { GetHTAReportsDashboardStatsAPI } from "../../../../api/myApprovalApi";
 import style from "./lineManager.module.css";
 import { useMyApproval } from "../../../../context/myApprovalContaxt";
 
@@ -63,7 +52,6 @@ const HTAReportsIndex = () => {
 
       // Apply role-based filtering here if needed
       await setHTAReportsDashboardData(res || []);
-      console.log("htaReportsDashboardData", res);
     } catch (error) {
       console.error("Failed to fetch reports:", error);
       showNotification({
@@ -108,7 +96,6 @@ const HTAReportsIndex = () => {
     () => htaReportsDashboardData?.pendingRequest?.data || [],
     [htaReportsDashboardData?.pendingRequest?.data]
   );
-  console.log("tradeApprovalRequest", tradeApprovalRequest);
 
   /**
    * 🔹 Render UI
