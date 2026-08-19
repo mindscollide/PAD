@@ -3,6 +3,7 @@ import ArrowDown from "../../../../../assets/img/arrow-down-dark.png";
 import DefaultColumArrow from "../../../../../assets/img/default-colum-arrow.png";
 import style from "./HTATAT.module.css";
 import { Button } from "../../../../../components";
+import { toYYMMDD } from "../../../../../common/funtions/rejex";
 
 /**
  * Utility: Build API request payload for approval listing
@@ -14,6 +15,11 @@ import { Button } from "../../../../../components";
 export const buildApiRequest = (searchState = {}) => ({
   EmployeeName: searchState.employeeName || "",
   DepartmentName: searchState.departmentName || "",
+  // ADDED (2026-08-19): API_Changes/2026-08-19_hta_tat_summary_list_date_range.md -
+  // toYYMMDD formats in UTC internally (getUTCFullYear/Month/Date), same
+  // convention as every other date-range field in this app.
+  StartDate: searchState.startDate ? toYYMMDD(searchState.startDate) : "",
+  EndDate: searchState.endDate ? toYYMMDD(searchState.endDate) : "",
   PageNumber: Number(searchState.pageNumber) || 0,
   Length: Number(searchState.pageSize) || 10,
 });

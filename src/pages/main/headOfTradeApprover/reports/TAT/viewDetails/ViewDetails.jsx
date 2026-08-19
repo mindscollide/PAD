@@ -8,7 +8,10 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useSearchBarContext } from "../../../../../../context/SearchBarContaxt";
 import { useMyApproval } from "../../../../../../context/myApprovalContaxt";
-import { SearchHTATurnAroundTimeDetailsRequestApi } from "../../../../../../api/myApprovalApi";
+import {
+  ExportHTATurnAroundTimeRequestDetailsExcel,
+  SearchHTATurnAroundTimeDetailsRequestApi,
+} from "../../../../../../api/myApprovalApi";
 import { useNotification } from "../../../../../../components/NotificationProvider/NotificationProvider";
 import { useApi } from "../../../../../../context/ApiContext";
 import { useGlobalLoader } from "../../../../../../context/LoaderContext";
@@ -151,7 +154,8 @@ const ViewDetails = () => {
       console.log("htaTATViewDetailsSearch", htaTATViewDetailsSearch);
       const requestData = buildApiRequest(
         htaTATViewDetailsSearch,
-        showSelectedTatDataOnViewDetailHTA
+        showSelectedTatDataOnViewDetailHTA,
+        assetTypeListingData
       );
       fetchApiCall(requestData, true, true);
     }
@@ -282,6 +286,25 @@ const ViewDetails = () => {
     ].filter(Boolean);
   })();
 
+  // ADDED (2026-08-19): "Export Excel" dropdown item existed in the
+  // markup but had no onClick at all - clicking it did nothing. Same
+  // filters the live listing uses; PageNumber/Length excluded since
+  // exports return every matching row, never a page.
+  const downloadTATRequestDetailsInExcelFormat = async () => {
+    const { PageNumber, Length, ...requestdata } = buildApiRequest(
+      htaTATViewDetailsSearch,
+      showSelectedTatDataOnViewDetailHTA,
+      assetTypeListingData
+    );
+
+    await ExportHTATurnAroundTimeRequestDetailsExcel({
+      callApi,
+      showLoader,
+      requestdata,
+      navigate,
+    });
+  };
+
   return (
     <>
       <Row justify="start" align="middle" className={style.breadcrumbRow}>
@@ -341,7 +364,10 @@ const ViewDetails = () => {
           {/* 🔷 Export Dropdown */}
           {open && (
             <div className={style.dropdownExport}>
-              <div className={style.dropdownItem}>
+              <div
+                className={style.dropdownItem}
+                onClick={downloadTATRequestDetailsInExcelFormat}
+              >
                 <img src={Excel} alt="Excel" draggable={false} />
                 <span>Export Excel</span>
               </div>

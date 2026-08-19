@@ -5056,6 +5056,69 @@ export const ExportHTAPolicyBreachesExcelReport = async ({
   }
 };
 
+// ADDED (2026-08-19): TAT Request Approvals >> View Details' own "Export
+// Excel" - the dropdown item existed in the markup but had no onClick at
+// all, so it did nothing. Distinct from the TAT summary list's own
+// export (index.jsx, which has a different, separate bug - wired to
+// ExportHTATradeApprovalRequestsExcelReport, the wrong report entirely -
+// out of scope here, flagging only). Same request shape as this screen's
+// own buildApiRequest (utils.jsx), minus PageNumber/Length since exports
+// return every matching row, never a page.
+export const ExportHTATurnAroundTimeRequestDetailsExcel = async ({
+  callApi,
+  showLoader,
+  requestdata,
+  navigate,
+}) => {
+  try {
+    showLoader(true);
+
+    const res = await callApi({
+      requestMethod: import.meta.env
+        .VITE_EXPORT_HTA_TAT_REQUEST_DETAILS_EXCEL_REQUEST_METHOD,
+      endpoint: import.meta.env.VITE_API_REPORT,
+      requestData: requestdata,
+      navigate,
+      responseType: "arraybuffer", // ⚡ Required for file download
+      headers: {
+        "Content-Type":
+          "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      },
+    });
+
+    if (handleExpiredSession(res, navigate, showLoader)) return false;
+    if (!res?.result?.isExecuted) {
+      return false;
+    }
+
+    if (res.success) {
+      try {
+        const blob = new Blob([res.result?.fileData || res.data], {
+          type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        });
+
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+
+        link.setAttribute("download", "HTA-TAT-Request-Details.xlsx");
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        return true;
+      } catch {
+        return false;
+      }
+    }
+
+    return false;
+  } catch {
+    return false;
+  } finally {
+    showLoader(false);
+  }
+};
+
 //For HTA view Policy Breached by id Flows Request API for Reports
 export const GetPoliciesByIDsAPI = async ({
   callApi,
