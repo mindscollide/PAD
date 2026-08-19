@@ -102,10 +102,11 @@ export const mapListData = (assetTypeData, htaTATViewDetailsData = []) => {
       initiatedAt:
         formatApiDateTime(`${item?.requestDate} ${item?.requestTime}`) || "—",
       deadlineDateTime:
-        `${item?.deadlineDate || ""} ${item?.deadlineTime || ""}`.trim() ||
-        "—",
+        `${item?.deadlineDate || ""} ${item?.deadlineTime || ""}`.trim() || "—",
       actionBy:
-        actionByNames.length > 1 ? "Multiple Approvers" : actionByNames[0] || "—",
+        actionByNames.length > 1
+          ? "Multiple Approvers"
+          : actionByNames[0] || "—",
       actionByFullNames: actionByNames.join(", "),
       actionAt:
         item.actionDate && item.actionTime
