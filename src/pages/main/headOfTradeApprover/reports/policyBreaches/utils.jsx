@@ -8,6 +8,7 @@ import {
   formatApiDateTime,
   toYYMMDD,
 } from "../../../../../common/funtions/rejex";
+import { getTradeTypeById } from "../../../../../common/funtions/type";
 import { mapBuySellToIds } from "../../../../../components/dropdowns/filters/utils";
 import TypeColumnTitle from "../../../../../components/dropdowns/filters/typeColumnTitle";
 
@@ -47,8 +48,19 @@ export const mapListData = (
 
   if (!records.length) return [];
 
-  return records.map((item) => ({
-    key: item.userID,
+  return records.map((item, index) => ({
+    // FIXED: this report has one row per breached *request*, not one per
+    // employee - the same userID can legitimately appear on more than
+    // one row (e.g. a Buy breach and a separate Sell breach for the same
+    // employee). A bare userID key meant AntD's Table could reuse the
+    // same row's rendering across two different underlying records
+    // sharing that key, which is exactly what showed up as "the API
+    // returned fresh data but the table still shows the previous data"
+    // when filtering by Type changed *which* rows are present. Matches
+    // the composite key the Admin Policy Breaches screen's own mapListData
+    // already uses for this identical shape
+    // (adminMain/reports/policyBreaches/utils.jsx).
+    key: `${item.userID}-${item.requestDate}-${item.requestTime}-${index}`,
     employeeID: item.userID,
     employeeName: item.fullName || "",
     departmentName: item.departmentName || "",
@@ -65,12 +77,17 @@ export const mapListData = (
     // FIXED (2026-08-18): this API already returns instrumentName on
     // every record, there was just nowhere for it to go - added a column
     // for it below, and it's also required by the drill-down/export
-    // request payload. Also this API's tradeType is already a resolved
-    // string ("Buy"/"Sell"), not the {typeID} object
-    // getTradeTypeById expects - it always fell back to "—". Both per
+    // request payload, per
     // API_Changes/2026-08-18_hta_policy_breaches_type_and_instrument_columns.md.
     instrumentName: item.instrumentName || "",
-    tradeType: item?.tradeType || "-",
+    // REVERTED (2026-08-18, same doc, superseded update): that doc's
+    // first pass diagnosed this as FE-only (API sent a plain string,
+    // read it directly) - that revision was explicitly superseded same
+    // day: the backend changed tradeType to {typeID, typeName} instead,
+    // matching what getTradeTypeById was written to expect all along.
+    // Reading item?.tradeType directly now would render "[object Object]"
+    // against the new shape - back to the lookup.
+    tradeType: getTradeTypeById(assetTypeData, item?.tradeType) || "-",
     resubmitted: item.resubmitted || 0,
   }));
 };

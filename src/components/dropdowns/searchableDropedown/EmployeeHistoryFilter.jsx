@@ -208,17 +208,30 @@ export const EmployeeHistoryFilter = ({
           />
         </Col>
       </Row>
-      <Row gutter={[12, 12]}>
+      {/* Nature - CHANGED (2026-08-18): was a free-text field, but Nature
+      is now a fixed two-value vocabulary
+      (API_Changes/2026-08-18_employee_my_history_nature_vocabulary.md) -
+      the backend does exact string matching and silently returns zero
+      rows for anything else, so free text was a trap. Same labeled
+      Select pattern already used for this exact purpose elsewhere
+      (searchableDropedown/HOCMyAction.jsx's own Nature filter) - single
+      -select here since this endpoint's Nature request field is one
+      string, not an array. */}
+      <Row gutter={[12, 12]} className={styles.bottomGap}>
         <Col xs={24} sm={24} md={12} lg={12}>
-          <TextField
-            label="Nature"
-            name="nature"
-            value={localState.nature}
-            onChange={handleInputChange}
-            placeholder="Nature"
-            size="medium"
-            classNames="Search-Field"
-          />
+          <label className={styles["typeAndStatusLabel"]}>Nature</label>
+          <Select
+            allowClear
+            placeholder="Select Nature"
+            size="middle"
+            className={styles.statusSelectClass}
+            value={localState.nature || undefined}
+            onChange={(value) => setFieldValue("nature", value || "")}
+            style={{ width: "100%" }}
+          >
+            <Option value="Approval">Approval</Option>
+            <Option value="Verification">Verification</Option>
+          </Select>
         </Col>
       </Row>
       <Row gutter={[12, 12]} justify="end" style={{ marginTop: 16 }}>
