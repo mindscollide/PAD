@@ -85,6 +85,11 @@ export const mapListData = (assetTypeData, htaTATViewDetailsData = []) => {
       instrument: item?.instrument?.instrumentShortCode ?? "—",
       instrumentName: item?.instrument?.instrumentName ?? "—",
       assetTypeName: item.assetType?.assetTypeName || "—",
+      // ADDED: the Instrument column's own render already destructured an
+      // assetCode variable for the "EQ" badge shown on the hta-escalated-
+      // requests table, but nothing ever populated it here - the badge
+      // silently never rendered.
+      assetTypeShortCode: item.assetType?.assetTypeShortCode || "",
       type: getTradeTypeById(assetTypeData, item?.tradeType) || "—",
       approvalStatus: item.approvalStatus?.approvalStatusName || "—",
       employeeID: item.employeeID || "—",
@@ -198,6 +203,19 @@ export const getBorderlessTableColumns = ({
             gap: "12px",
           }}
         >
+          {/* ADDED: asset type badge (e.g. "EQ") - assetCode was already
+          destructured above but never rendered, so it silently never
+          showed. Same badge markup as the hta-escalated-requests table
+          (escalatedApprovals/utill.jsx's renderInstrumentCell). */}
+          <span
+            className="custom-shortCode-asset"
+            style={{
+              minWidth: 32,
+              flexShrink: 0,
+            }}
+          >
+            {assetCode?.substring(0, 2).toUpperCase()}
+          </span>
           <Tooltip title={`${name} - ${code}`} placement="topLeft">
             <span
               className="font-medium"
