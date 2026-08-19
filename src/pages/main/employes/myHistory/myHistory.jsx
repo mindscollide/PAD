@@ -348,10 +348,26 @@ const MyHistory = () => {
         /(\d{8})\s(\d{2}):(\d{2}):(\d{2})$/,
       );
 
+      // FIXED (2026-08-18): the previous pass renamed this step to
+      // "Transaction Conducted" for every row unconditionally - correct
+      // for CO/HOC My Actions (Transaction-only, or nature-gated), wrong
+      // here: My History mixes both natures in one list
+      // (API_Changes/2026-08-18_employee_my_history_nature_vocabulary.md
+      // - "Approval" for Trade Approval Request/REQ workflows,
+      // "Verification" for Conducted Transaction/TRX workflows). A
+      // REQ-prefixed request (e.g. REQ-000018) is a Trade Approval
+      // Request, not a transaction - it should keep "Send for Approval".
+      // Checking the ID prefix directly rather than wf.nature since that
+      // vocabulary rename's SQL script hasn't been applied yet per the
+      // doc - this works correctly either way, before or after.
+      const isTransactionNature = wf.tradeApprovalID?.startsWith("TRX");
+
       const sendForApprovalStep = {
         status: isCreatedFromResubmit
           ? "Resubmit for Approval"
-          : "Send for Approval",
+          : isTransactionNature
+            ? "Transaction Conducted"
+            : "Send for Approval",
         date:
           isCreatedFromResubmit && titleDateTimeMatch
             ? formatApiDateTime(
@@ -361,7 +377,11 @@ const MyHistory = () => {
         ...(isCreatedFromResubmit && {
           requesterID: dashBetweenApprovalAssets(wf.resubmitRequestTrackingID),
         }),
-        iconType: isCreatedFromResubmit ? "Resubmit" : "SendForApproval",
+        iconType: isCreatedFromResubmit
+          ? "Resubmit"
+          : isTransactionNature
+            ? "co-Transaction Conducted"
+            : "SendForApproval",
       };
 
       // Step 1: Bundle hierarchy
@@ -383,12 +403,41 @@ const MyHistory = () => {
       // Step 2: Final workflow status
       const finalStepStatus = wf.workFlowStatusID;
 
-      // ❗ EXCLUDE Compliant (ID 8) and Declined (ID 4)
-      const shouldAddFinalStep = ![8, 4].includes(finalStepStatus);
+      // FIXED (2026-08-18): status 1 (Pending) was NOT excluded here, so
+      // a still-pending request got a redundant final step repeating
+      // "Pending" on top of the bundle/hierarchy step(s) already showing
+      // the pending reviewer - excluded now, same reasoning as the
+      // existing Declined (4) exclusion.
+      const shouldAddFinalStep = ![1, 4].includes(finalStepStatus);
 
       let finalStep = null;
 
-      if (shouldAddFinalStep) {
+      // ADDED (2026-08-18): Compliant (8) was excluded from the final
+      // step entirely (fell out of shouldAddFinalStep above, and
+      // getWorkFlowIconType didn't handle it either), so a Compliant
+      // transaction's trail just stopped at the last bundle step with no
+      // indication it was ever actually marked Compliant. Whoever
+      // actually marked it Compliant is the CO/HOC that closed the last
+      // bundle entry, not necessarily reflected in wf.creationDate/Time
+      // (that's this request's own creation time) - attribute to that
+      // last bundle entry's actor and timestamp instead.
+      if (finalStepStatus === 8) {
+        const lastBundleEntry =
+          wf.bundleHierarchy?.[wf.bundleHierarchy.length - 1];
+
+        finalStep = {
+          status: wf.workFlowStatus,
+          user: lastBundleEntry
+            ? `${lastBundleEntry.firstName} ${lastBundleEntry.lastName}`
+            : undefined,
+          date: lastBundleEntry
+            ? formatApiDateTime(
+                `${lastBundleEntry.bundleModifiedDate} ${lastBundleEntry.bundleModifiedTime}`,
+              )
+            : formatApiDateTime(`${wf.creationDate} ${wf.creationTime}`),
+          iconType: "co-Compliant",
+        };
+      } else if (shouldAddFinalStep) {
         finalStep = {
           status: wf.workFlowStatus,
           date: formatApiDateTime(`${wf.creationDate} ${wf.creationTime}`),
@@ -411,7 +460,7 @@ const MyHistory = () => {
       const trail = [
         sendForApprovalStep,
         ...bundleSteps,
-        ...(shouldAddFinalStep ? [finalStep] : []),
+        ...(finalStep ? [finalStep] : []),
       ];
 
       return {

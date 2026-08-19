@@ -168,7 +168,7 @@ export const getMyHistoryColumn = (
   },
   {
     title: withSortIcon("Nature", "nature", sortedInfo, "center"),
-    align: "left",
+    align: "center",
     dataIndex: "nature",
     key: "nature",
     width: "160px",

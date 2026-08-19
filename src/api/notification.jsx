@@ -94,7 +94,7 @@ export const GetUserWebNotificationRequest = async ({
     return null;
   } finally {
     // 🔹 Always stop loader
-    showLoader(false);
+    // showLoader(false);
   }
 };
 
