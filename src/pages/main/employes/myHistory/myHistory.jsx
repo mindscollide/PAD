@@ -438,9 +438,24 @@ const MyHistory = () => {
           iconType: "co-Compliant",
         };
       } else if (shouldAddFinalStep) {
+        // ADDED (2026-08-19): for Not Traded (6), wf.creationDate/Time is
+        // when the request was ORIGINALLY submitted, not when the
+        // background job actually flipped it to Not Traded - that's a
+        // separate moment, only now captured as notTradedDate/notTradedTime
+        // (2026-08-19_employee_history_not_traded_datetime.md). Falls back
+        // to creationDate/Time (today's existing behavior) when those are
+        // null - per the doc this isn't retroactively backfilled, so a
+        // transition that happened before this fix shipped has no recorded
+        // moment to show instead.
+        const isNotTraded = wf.workFlowStatusID === 6;
+        const finalStepDate =
+          isNotTraded && wf.notTradedDate
+            ? formatApiDateTime(`${wf.notTradedDate} ${wf.notTradedTime}`)
+            : formatApiDateTime(`${wf.creationDate} ${wf.creationTime}`);
+
         finalStep = {
           status: wf.workFlowStatus,
-          date: formatApiDateTime(`${wf.creationDate} ${wf.creationTime}`),
+          date: finalStepDate,
           // Only show the tracking ID here when THIS request was itself
           // resubmitted (workFlowStatus === "Resubmit") — then
           // resubmitRequestTrackingID is the NEW REQ-ID it became. A
@@ -456,10 +471,33 @@ const MyHistory = () => {
         };
       }
 
+      // ADDED (2026-08-19): notTradedDate/Time stays populated even after
+      // the request moves on from status 6 - e.g. a Not Traded request that
+      // gets resubmitted flips to "Resubmit" (2), but it genuinely did sit
+      // as Not Traded before that resubmit happened, and the field still
+      // reflects that moment. The final step above only ever shows the
+      // CURRENT status now, so without this the fact it was ever Not
+      // Traded disappeared from the trail entirely for a resubmitted
+      // request. Inserted as its own step, right before the final one -
+      // skipped when the current status IS 6, since the final step already
+      // represents that directly (would otherwise show the same moment
+      // twice).
+      const notTradedStep =
+        wf.notTradedDate && finalStepStatus !== 6
+          ? {
+              status: "Not Traded",
+              date: formatApiDateTime(
+                `${wf.notTradedDate} ${wf.notTradedTime}`,
+              ),
+              iconType: "Not-Traded",
+            }
+          : null;
+
       // 🔥 Final ordered steps
       const trail = [
         sendForApprovalStep,
         ...bundleSteps,
+        ...(notTradedStep ? [notTradedStep] : []),
         ...(finalStep ? [finalStep] : []),
       ];
 

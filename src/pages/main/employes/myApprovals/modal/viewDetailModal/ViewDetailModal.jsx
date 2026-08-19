@@ -8,6 +8,8 @@ import CustomButton from "../../../../../../components/buttons/button";
 import CheckIcon from "../../../../../../assets/img/Check.png";
 import EllipsesIcon from "../../../../../../assets/img/Ellipses.png";
 import CrossIcon from "../../../../../../assets/img/Cross.png";
+import NotTradedIcon from "../../../../../../assets/img/NotTraded.png";
+import EscalatedIcon from "../../../../../../assets/img/escalated.png";
 import copyIcon from "../../../../../../assets/img/copy-dark.png";
 import { useMyApproval } from "../../../../../../context/myApprovalContaxt";
 import { useDashboardContext } from "../../../../../../context/dashboardContaxt";
@@ -508,18 +510,34 @@ const ViewDetailModal = () => {
               <Row gutter={[4, 4]} style={{ marginTop: "3px" }}>
                 <Col span={12}>
                   <div
-                    className={
+                    className={`${
                       statusData.label === "Traded"
                         ? styles.backgroundColorOfInstrumentDetailTradednoradius
                         : styles.backgrounColorOfDetail
-                    }
+                    } ${
+                      viewDetailsModalData?.isEscalated
+                        ? styles.detailWithIcon
+                        : ""
+                    }`}
                   >
-                    <label className={styles.viewDetailMainLabels}>
-                      Request Date
-                    </label>
-                    <label className={styles.viewDetailSubLabels}>
-                      {formatApiDateTime(selectedViewDetail?.requestDateTime)}
-                    </label>
+                    <div>
+                      <label className={styles.viewDetailMainLabels}>
+                        Request Date
+                      </label>
+                      <label className={styles.viewDetailSubLabels}>
+                        {formatApiDateTime(
+                          selectedViewDetail?.requestDateTime,
+                        )}
+                      </label>
+                    </div>
+                    {viewDetailsModalData?.isEscalated && (
+                      <img
+                        draggable={false}
+                        src={EscalatedIcon}
+                        alt="Escalated"
+                        className={styles.escalatedIcon}
+                      />
+                    )}
                   </div>
                 </Col>
                 <Col span={12}>
@@ -608,38 +626,64 @@ const ViewDetailModal = () => {
                         }`}
                       >
                         {/* Agar loginUserID match krti hai hierarchyDetails ki userID sy to wo wala stepper show nahi hoga */}
-                        <Stepper
-                          activeStep={Math.max(
-                            0,
-                            Array.isArray(
-                              viewDetailsModalData?.hierarchyDetails
-                            )
-                              ? viewDetailsModalData?.hierarchyDetails.filter(
-                                  (person) => person.userID !== loggedInUserID
-                                ).length - 1
-                              : 0
-                          )}
-                          connectorStyleConfig={{
-                            activeColor: "#00640A",
-                            completedColor: "#00640A",
-                            disabledColor: "#00640A",
-                            size: 1,
-                          }}
-                          styleConfig={{
-                            size: "2em",
-                            circleFontSize: "0px",
-                            labelFontSize: "17px",
-                            borderRadius: "50%",
-                          }}
-                        >
-                          {Array.isArray(
+                        {(() => {
+                          const hierarchyPeople = Array.isArray(
                             viewDetailsModalData?.hierarchyDetails
-                          ) &&
-                            viewDetailsModalData?.hierarchyDetails
-                              .filter(
+                          )
+                            ? viewDetailsModalData.hierarchyDetails.filter(
                                 (person) => person.userID !== loggedInUserID
                               )
-                              .map((person, index) => {
+                            : [];
+
+                          // ADDED: a Not Traded request already went through
+                          // its full approval chain (that's why it reached
+                          // a trade deadline in the first place) - was
+                          // falling through to the plain hierarchy stepper
+                          // above with no indication it ever actually
+                          // expired to Not Traded. Appends one more step
+                          // for that, using the same NotTraded icon the
+                          // shared ApprovalStepper (My History/My Actions
+                          // trails) already uses for this status.
+                          // notTradedDate/notTradedTime aren't exposed by
+                          // this endpoint (GetAllViewDetailsByTradeApprovalID)
+                          // yet - only GetEmployeeHistoryWorkFlowDetails has
+                          // them so far (2026-08-19_employee_history_not_
+                          // traded_datetime.md) - reads defensively and
+                          // just omits the date/time line until that's
+                          // wired through here too, rather than showing
+                          // "unknown" or blowing up on missing fields.
+                          const isNotTraded = statusData.label === "Not Traded";
+                          const notTradedDate =
+                            viewDetailsModalData?.details?.[0]?.notTradedDate;
+                          const notTradedTime =
+                            viewDetailsModalData?.details?.[0]?.notTradedTime;
+                          const notTradedDateTime =
+                            isNotTraded && notTradedDate
+                              ? formatApiDateTime(
+                                  `${notTradedDate} ${notTradedTime}`
+                                )
+                              : "";
+
+                          const totalSteps =
+                            hierarchyPeople.length + (isNotTraded ? 1 : 0);
+
+                          return (
+                            <Stepper
+                              activeStep={Math.max(0, totalSteps - 1)}
+                              connectorStyleConfig={{
+                                activeColor: "#00640A",
+                                completedColor: "#00640A",
+                                disabledColor: "#00640A",
+                                size: 1,
+                              }}
+                              styleConfig={{
+                                size: "2em",
+                                circleFontSize: "0px",
+                                labelFontSize: "17px",
+                                borderRadius: "50%",
+                              }}
+                            >
+                              {hierarchyPeople.map((person, index) => {
                                 const {
                                   fullName,
                                   bundleStatusID,
@@ -652,10 +696,6 @@ const ViewDetailModal = () => {
                                 );
 
                                 let iconSrc;
-                                console.log(
-                                  bundleStatusID,
-                                  "CheckerrrrrbundleStatusID"
-                                );
                                 switch (bundleStatusID) {
                                   case 1:
                                     iconSrc = EllipsesIcon;
@@ -697,7 +737,34 @@ const ViewDetailModal = () => {
                                   />
                                 );
                               })}
-                        </Stepper>
+                              {isNotTraded && (
+                                <Step
+                                  key="not-traded"
+                                  label={
+                                    <div className={styles.customlabel}>
+                                      <div className={styles.customtitle}>
+                                        Not Traded
+                                      </div>
+                                      <div className={styles.customdesc}>
+                                        {notTradedDateTime}
+                                      </div>
+                                    </div>
+                                  }
+                                  children={
+                                    <div className={styles.stepCircle}>
+                                      <img
+                                        draggable={false}
+                                        src={NotTradedIcon}
+                                        alt="status-icon"
+                                        className={styles.circleImg}
+                                      />
+                                    </div>
+                                  }
+                                />
+                              )}
+                            </Stepper>
+                          );
+                        })()}
                       </div>
                     </div>
                   </Row>
