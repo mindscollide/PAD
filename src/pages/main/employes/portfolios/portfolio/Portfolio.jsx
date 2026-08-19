@@ -53,6 +53,8 @@ const Portfolio = ({ className, activeFilters }) => {
     employeePortfolioData,
     setEmployeePortfolioData,
     setAggregateTotalQuantity,
+    employeePortfolioDataMqtt, // ADDED
+    setEmployeePortfolioDataMqtt, // ADDED
   } = usePortfolioContext();
   const { employeeBasedBrokersData } = useDashboardContext();
 
@@ -65,7 +67,6 @@ const Portfolio = ({ className, activeFilters }) => {
     brokerOptions,
     Text,
   });
-
 
   const fetchPortfolio = useCallback(
     async (requestData, replace = false) => {
@@ -170,6 +171,18 @@ const Portfolio = ({ className, activeFilters }) => {
     }
   }, [employeePortfolioSearch.filterTrigger]);
 
+  // ADDED — mirrors PendingApprovals.jsx's own Mqtt-flag effect
+  useEffect(() => {
+    if (employeePortfolioDataMqtt) {
+      const req = buildPortfolioRequest({
+        ...employeePortfolioSearch,
+        pageNumber: 0,
+      });
+      fetchPortfolio(req, true);
+      setEmployeePortfolioDataMqtt(false);
+    }
+  }, [employeePortfolioDataMqtt]);
+
   return (
     <div
       ref={listRef}
@@ -210,9 +223,9 @@ const Portfolio = ({ className, activeFilters }) => {
                       </span>
                     </Tooltip>
                     {/* <Tooltip title={instrument.instrumentName}> */}
-                      <span className={`${styles.longName} ${styles.textWrap}`}>
-                        {instrument.instrumentName}
-                      </span>
+                    <span className={`${styles.longName} ${styles.textWrap}`}>
+                      {instrument.instrumentName}
+                    </span>
                     {/* </Tooltip> */}
                     <span
                       className={styles.quantity}

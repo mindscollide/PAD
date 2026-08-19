@@ -56,8 +56,12 @@ const Dashboard = () => {
     viewDetailsHeadOfApprovalIDRef,
   } = useEscalatedApprovals();
   const { setViewDetailsHeadOfApprovalModal } = useGlobalModal();
-  const { setEmployeePendingApprovalsDataMqtt, activeTabRef } =
-    usePortfolioContext();
+  const {
+    setEmployeePendingApprovalsDataMqtt,
+    activeTabRef,
+    setEmployeePortfolioDataMqtt,
+    setEmployeePendingApprovalsData,
+  } = usePortfolioContext();
 
   const {
     setComplianceOfficerReconcileTransactionData,
@@ -155,6 +159,34 @@ const Dashboard = () => {
       updatedApprovals[existingIndex] = patchedApproval;
 
       return { ...prev, approvals: updatedApprovals };
+    });
+  };
+
+  /**
+   * Patches a single Pending Approvals row's status in place, instead of a
+   * full refetch - a decline (Non-Compliant) keeps the row visible on this
+   * page, it just needs its status text updated. Matches on tradeApprovalID
+   * since that's the only field confirmed present in both the MQTT payload
+   * and the row shape mapToTableRows produces (approvalID/workFlowID are not
+   * confirmed to be the same value across the two).
+   */
+  const patchEmployeePendingApprovalRowStatus = (payload, status) => {
+    const tradeApprovalID = payload?.tradeApprovalID;
+    if (!tradeApprovalID) return;
+
+    setEmployeePendingApprovalsData((prev) => {
+      const rows = prev?.pendingApprovalsData || [];
+      const existingIndex = rows.findIndex(
+        (row) => row.tradeApprovalID === tradeApprovalID
+      );
+      if (existingIndex === -1) return prev;
+
+      const updatedRows = [...rows];
+      updatedRows[existingIndex] = {
+        ...updatedRows[existingIndex],
+        status,
+      };
+      return { ...prev, pendingApprovalsData: updatedRows };
     });
   };
 
@@ -453,20 +485,54 @@ const Dashboard = () => {
                   }
                   break;
                 }
+                // case "EMPLOYEE_TRANSACTION_APPROVAL_REQUEST_APPROVED": {
+                //   if (currentKey === "2") {
+                //     setEmployeeTransactionsTableDataMqtt(true);
+                //     // setEmployeeTransactionsData((prev) => ({
+                //     //   ...prev,
+                //     //   data: [payload, ...(prev.data || [])],
+                //     //   totalRecords: (prev.totalRecords || 0) + 1,
+                //     // }));
+                //   }
+                //   break;
+                // }
+
+                // case "EMPLOYEE_TRANSACTION_APPROVAL_REQUEST_APPROVED": {
+                //   if (currentKey === "2") {
+                //     setEmployeeTransactionsTableDataMqtt(true);
+                //     setEmployeePendingApprovalsDataMqtt(true); // ADDED — refreshes Pending Approvals tab
+                //     setEmployeePortfolioDataMqtt(true); // ADDED — refreshes Portfolio tab
+                //   }
+                //   break;
+                // }
+
                 case "EMPLOYEE_TRANSACTION_APPROVAL_REQUEST_APPROVED": {
                   if (currentKey === "2") {
                     setEmployeeTransactionsTableDataMqtt(true);
-                    // setEmployeeTransactionsData((prev) => ({
-                    //   ...prev,
-                    //   data: [payload, ...(prev.data || [])],
-                    //   totalRecords: (prev.totalRecords || 0) + 1,
-                    // }));
+                  } else if (
+                    currentKey === "4" &&
+                    currentactiveTabRef === "pending"
+                  ) {
+                    setEmployeePendingApprovalsDataMqtt(true);
+                  } else if (
+                    currentKey === "4" &&
+                    currentactiveTabRef === "portfolio"
+                  ) {
+                    setEmployeePortfolioDataMqtt(true);
                   }
                   break;
                 }
                 case "EMPLOYEE_TRANSACTION_APPROVAL_REQUEST_DECLINED": {
                   if (currentKey === "2") {
                     setEmployeeTransactionsTableDataMqtt(true);
+                  } else if (
+                    currentKey === "4" &&
+                    currentactiveTabRef === "pending"
+                  ) {
+                    patchEmployeePendingApprovalRowStatus(
+                      payload,
+                      "Non-Compliant"
+                    );
                   }
                   break;
                 }
