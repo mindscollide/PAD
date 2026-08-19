@@ -235,15 +235,23 @@ const MyAction = () => {
       setLoadingMore(true);
 
       try {
-        // calculate current offset (PageNumber) as current loaded employees length
+        // sp_GetLineManagerActionsWorkflowDetail's PageNumber is a 1-indexed
+        // page number (offset = (PageNumber-1)*Length) - was sending the raw
+        // loaded-row count as PageNumber directly, which the backend reads
+        // as a *page index*: after the first 10 rows this asked for page 10
+        // (offset 90), silently skipping rows 11-90 instead of fetching
+        // page 2. Derive the next page from how many rows are already
+        // loaded instead, matching HTA/CO's own My Actions pages.
         const currentLength = myActionLineManagerData?.requests?.length || 0;
+        const pageSize = 10;
+        const nextPageNumber = Math.floor(currentLength / pageSize) + 1;
 
         // build request based on current search/filter but override pagination
         const baseRequest = buildMyActionApiRequest(lineManagerMyActionSearch);
         const requestData = {
           ...baseRequest,
-          PageNumber: currentLength, // sRow
-          Length: 10, // eRow (static 10)
+          PageNumber: nextPageNumber,
+          Length: pageSize,
         };
 
         const res = await SearchLMMyActionWorkFlowRequest({

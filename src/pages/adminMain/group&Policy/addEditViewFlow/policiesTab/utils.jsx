@@ -1,4 +1,5 @@
 import { Checkbox, Input, Select, Spin, Tooltip } from "antd";
+import { UpOutlined, DownOutlined } from "@ant-design/icons";
 import React from "react";
 import { DateRangePicker, InstrumentSelect } from "../../../../../components";
 const { Option } = Select;
@@ -72,6 +73,15 @@ const parseMinMax = (minMaxStr) => {
   }
 };
 
+const parseApplicableValues = (str) => {
+  if (!str) return [];
+  return str
+    .split(", ")
+    .map((v) => Number(v.replace(/,/g, "").trim()))
+    .filter((v) => !isNaN(v))
+    .sort((a, b) => a - b);
+};
+
 export const policyColumns = ({
   onSelectChange,
   onDurationChange,
@@ -90,7 +100,7 @@ export const policyColumns = ({
       render: (_, record = {}) => {
         const isChecked = Array.isArray(selectedPolicies)
           ? selectedPolicies.some(
-              (p) => String(p.policyID) === String(record.policyID)
+              (p) => String(p.policyID) === String(record.policyID),
             )
           : false;
 
@@ -161,13 +171,90 @@ export const policyColumns = ({
           if (!viewFlag) {
             switch (dataTypeID) {
               case 1: {
-                const [min, max] = parseMinMax(minMax);
+                // 1. Get min and max directly from minMax string
+                const [min, max] = parseMinMax(minMax); // returns [100000, 1500000]
 
+                // 2. Parse dynamic step array
+                const allowedValues = parseApplicableValues(
+                  record?.applicableValues,
+                );
+                console.log("allowedValues", record?.policyCode);
+                console.log("allowedValues", allowedValues);
+                const hasValues = allowedValues.length > 0;
+
+                // Handles stepping UP and DOWN through applicableValues
+                const handleStep = (direction) => {
+                  if (!hasValues) return;
+
+                  const currentVal = Number(record?.duration);
+
+                  // If input is empty/invalid, start at min
+                  if (isNaN(currentVal)) {
+                    onDurationChange?.(record, min ?? allowedValues[0]);
+                    return;
+                  }
+
+                  if (direction === "up") {
+                    // Find the next strictly greater value in the dynamic array
+                    const nextVal = allowedValues.find((v) => v > currentVal);
+                    if (
+                      nextVal !== undefined &&
+                      (max === null || nextVal <= max)
+                    ) {
+                      onDurationChange?.(record, nextVal);
+                    }
+                  } else if (direction === "down") {
+                    // Find the previous strictly smaller value in the dynamic array
+                    const prevVal = [...allowedValues]
+                      .reverse()
+                      .find((v) => v < currentVal);
+                    if (
+                      prevVal !== undefined &&
+                      (min === null || prevVal >= min)
+                    ) {
+                      onDurationChange?.(record, prevVal);
+                    }
+                  }
+                };
+
+                // Intercept keyboard Up/Down arrows
+                const handleKeyDown = (e) => {
+                  if (e.key === "ArrowUp") {
+                    e.preventDefault();
+                    handleStep("up");
+                  } else if (e.key === "ArrowDown") {
+                    e.preventDefault();
+                    handleStep("down");
+                  }
+                };
+
+                // Handle direct typed input
                 const handleChange = (e) => {
-                  const val = Number(e.target.value);
+                  const raw = e.target.value;
+                  if (raw === "") {
+                    onDurationChange?.(record, "");
+                    return;
+                  }
+
+                  const val = Number(raw);
                   if (isNaN(val)) return;
-                  if ((min && val < min) || (max && val > max)) return;
-                  onDurationChange?.(record, val);
+
+                  // Check against explicit min/max bounds
+                  if (
+                    (min !== null && val < min) ||
+                    (max !== null && val > max)
+                  )
+                    return;
+
+                  // Direct typing: Snap to closest applicable value if provided
+                  if (hasValues) {
+                    const closest = allowedValues.reduce((prev, curr) =>
+                      Math.abs(curr - val) < Math.abs(prev - val) ? curr : prev,
+                    );
+                    onDurationChange?.(record, closest);
+                  } else {
+                    onDurationChange?.(record, val);
+                  }
                 };
 
                 return (
@@ -178,16 +265,68 @@ export const policyColumns = ({
                       gap: "8px",
                     }}
                   >
-                    <Input
-                      type="number"
-                      min={min || 1}
-                      max={max || 100}
-                      value={Number(record.duration) || ""}
-                      placeholder="Enter number"
-                      onChange={handleChange}
-                      className={styles.inputDuration}
-                      style={{ width: "150px", textAlign: "center" }}
-                    />
+                    <div style={{ position: "relative", display: "inline-block" }}>
+                      {/* FIXED: was type="number", relying on the native
+                      browser spinner - clicking those arrows fires the
+                      browser's own +/-1 increment through onChange, which
+                      handleChange's "snap to closest applicable value"
+                      then pulls straight back to the SAME value whenever
+                      the gap between steps is bigger than 1 (e.g. the
+                      100,000-wide Shares steps) - 100,001 is still
+                      closest to 100,000, not 200,000. Keyboard
+                      ArrowUp/Down worked because handleKeyDown calls
+                      handleStep directly, bypassing that. Switched off
+                      type="number" (no native spinner left to misfire)
+                      and added explicit up/down buttons wired to the
+                      same handleStep the keyboard path already uses
+                      correctly, so click and keyboard now behave
+                      identically. */}
+                      <Input
+                        type="text"
+                        inputMode="numeric"
+                        value={record?.duration ?? ""}
+                        placeholder="Enter number"
+                        onChange={handleChange}
+                        onKeyDown={handleKeyDown}
+                        className={styles.inputDuration}
+                        style={{
+                          width: "150px",
+                          textAlign: "center",
+                          paddingRight: 22,
+                        }}
+                      />
+                      <div
+                        style={{
+                          position: "absolute",
+                          right: 6,
+                          top: 0,
+                          bottom: 0,
+                          display: "flex",
+                          flexDirection: "column",
+                          justifyContent: "center",
+                          gap: 2,
+                        }}
+                      >
+                        <UpOutlined
+                          onClick={() => handleStep("up")}
+                          style={{
+                            fontSize: 10,
+                            cursor: "pointer",
+                            color: "#666",
+                            lineHeight: 1,
+                          }}
+                        />
+                        <DownOutlined
+                          onClick={() => handleStep("down")}
+                          style={{
+                            fontSize: 10,
+                            cursor: "pointer",
+                            color: "#666",
+                            lineHeight: 1,
+                          }}
+                        />
+                      </div>
+                    </div>
                     {valueUnit && (
                       <span style={{ color: "#666", fontSize: 13 }}>
                         {"(" + valueUnit + ")"}
@@ -208,16 +347,16 @@ export const policyColumns = ({
                       record.duration === "Invalid Date"
                         ? null
                         : record.duration !== "Invalid Date"
-                        ? record.duration
-                        : null
+                          ? record.duration
+                          : null
                     }
                     onChange={handleChange}
                     modeType={
                       dataTypeID === 2
                         ? "date"
                         : dataTypeID === 3
-                        ? "time"
-                        : "datetime"
+                          ? "time"
+                          : "datetime"
                     }
                     minDate={minMax || null}
                   />

@@ -111,6 +111,18 @@
   flex-direction: column !important;
 }
 
+.detailWithIcon {
+  flex-direction: row !important;
+  align-items: center;
+  justify-content: space-between !important;
+}
+
+.escalatedIcon {
+  width: 40px;
+  height: 26px;
+  flex-shrink: 0;
+}
+
 .backgrounColorOfBrokerDetail {
   background-color: #fff1e7 !important;
   padding: 10px 20px;
