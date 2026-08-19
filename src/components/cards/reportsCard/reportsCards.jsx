@@ -269,8 +269,6 @@ const ReportCard = ({
     ),
   };
 
-  console.log("onRowButtonClick", data);
-
   return (
     <Card className={styles[base]} style={{ padding: "10px 20px" }}>
       <div className={styles[`${base}-header`]}>

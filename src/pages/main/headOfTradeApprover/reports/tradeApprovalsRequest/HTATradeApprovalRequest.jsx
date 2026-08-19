@@ -19,7 +19,6 @@ import { approvalStatusMap } from "../../../../../components/tables/borderlessTa
 import style from "./HTATradeApprovalRequest.module.css";
 import { useMyApproval } from "../../../../../context/myApprovalContaxt";
 import {
-  DownloadMyTransactionReportRequestAPI,
   ExportHTATradeApprovalRequestsExcelReport,
   GetHTATradeApprovalRequestsReport,
 } from "../../../../../api/myApprovalApi";
@@ -34,6 +33,7 @@ import { useTableScrollBottom } from "../../../../../common/funtions/scroll";
 import CustomButton from "../../../../../components/buttons/button";
 import { DateRangePicker } from "../../../../../components";
 import { toYYMMDD } from "../../../../../common/funtions/rejex";
+import dayjs from "dayjs";
 
 const HTATradeApprovalRequest = () => {
   const navigate = useNavigate();
@@ -56,15 +56,15 @@ const HTATradeApprovalRequest = () => {
   const { assetTypeListingData, setAssetTypeListingData } =
     useDashboardContext();
 
-  console.log(myTradeApprovalLineManagerData, "myTradeApprovalLineManagerData");
-
   // -------------------- Local State --------------------
   const [sortedInfo, setSortedInfo] = useState({});
   const [loadingMore, setLoadingMore] = useState(false);
   const [open, setOpen] = useState(false);
-  const [dateRange, setDateRange] = useState({
-    StartDate: null,
-    EndDate: null,
+  const [dateRange, setDateRange] = useState(() => {
+    const today = dayjs();
+    const sixMonthsAgo = dayjs().subtract(6, "month");
+
+    return { StartDate: sixMonthsAgo, EndDate: today };
   });
   // -------------------- Helpers --------------------
 
@@ -141,8 +141,23 @@ const HTATradeApprovalRequest = () => {
   useEffect(() => {
     if (hasFetched.current) return;
     hasFetched.current = true;
+
+    const today = dayjs();
+    const sixMonthsAgo = dayjs().subtract(6, "month");
+
+    setMyTradeApprovalReportLineManageSearch((prev) => ({
+      ...prev,
+      startDate: prev.startDate || sixMonthsAgo,
+      endDate: prev.endDate || today,
+    }));
+
     const requestData = buildApiRequest(
-      myTradeApprovalReportLineManageSearch,
+      {
+        ...myTradeApprovalReportLineManageSearch,
+        startDate:
+          myTradeApprovalReportLineManageSearch.startDate || sixMonthsAgo,
+        endDate: myTradeApprovalReportLineManageSearch.endDate || today,
+      },
       assetTypeListingData
     );
     fetchApiCall(requestData, true, true);
@@ -252,13 +267,21 @@ const HTATradeApprovalRequest = () => {
     ].filter(Boolean);
   })();
 
+  // Normalizes a dayjs OR native Date into whatever toYYMMDD expects (native Date),
+  // so it works regardless of which type the caller currently holds.
+  const formatDateForApi = (date) => {
+    if (!date) return null;
+    const jsDate = dayjs.isDayjs(date) ? date.toDate() : date;
+    return toYYMMDD(jsDate) || null;
+  };
+
   // 🔷 Excel Report download Api Hit
   const downloadMyTradeApprovalLineManagerInExcelFormat = async () => {
     showLoader(true);
+
     const requestdata = {
-      StartDate:
-        toYYMMDD(myTradeApprovalReportLineManageSearch.startDate) || null,
-      EndDate: toYYMMDD(myTradeApprovalReportLineManageSearch.endDate) || null,
+      StartDate: formatDateForApi(dateRange.StartDate),
+      EndDate: formatDateForApi(dateRange.EndDate),
       SearchEmployeeName: myTradeApprovalReportLineManageSearch.employeeName,
       SearchDepartmentName:
         myTradeApprovalReportLineManageSearch.departmentName,

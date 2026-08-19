@@ -101,7 +101,7 @@ export const getBorderlessTableColumns = ({
     dataIndex: "employeeID",
     key: "employeeID",
     align: "left",
-    width: 50,
+    width: 70,
     ellipsis: true,
     sortDirections: ["ascend", "descend"],
     sortOrder: sortedInfo?.columnKey === "employeeID" ? sortedInfo.order : null,
@@ -229,8 +229,7 @@ export const getBorderlessTableColumns = ({
     ),
     dataIndex: "type",
     key: "type",
-    width: 50,
-
+    width: 100,
     filteredValue: coPortfolioHistoryReportSearch?.type?.length
       ? coPortfolioHistoryReportSearch.type
       : null,
