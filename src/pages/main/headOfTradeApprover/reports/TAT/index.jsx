@@ -34,6 +34,8 @@ import { toYYMMDD } from "../../../../../common/funtions/rejex";
 import { useGlobalModal } from "../../../../../context/GlobalModalContext";
 import ViewDetails from "./viewDetails/ViewDetails";
 import { useSidebarContext } from "../../../../../context/sidebarContaxt";
+import { DateRangePicker } from "../../../../../components";
+import dayjs from "dayjs";
 
 const HTATAT = () => {
   const navigate = useNavigate();
@@ -66,6 +68,16 @@ const HTATAT = () => {
   const [open, setOpen] = useState(false);
   const [policyModalVisible, setPolicyModalVisible] = useState(false);
   const [selectedEmployee, setSelectedEmployee] = useState(null);
+  // ADDED (2026-08-19): API_Changes/2026-08-19_hta_tat_summary_list_date_range.md -
+  // "The default date range will be 6 months" per SRS. Shown/interacted
+  // with just like the sibling Trade Approval Requests report
+  // (reports/tradeApprovalsRequest/HTATradeApprovalRequest.jsx), which
+  // has no default of its own - the 6-month default is specific to this
+  // screen.
+  const [dateRange, setDateRange] = useState({
+    StartDate: dayjs().subtract(6, "month").format("YYYY-MM-DD"),
+    EndDate: dayjs().format("YYYY-MM-DD"),
+  });
   // -------------------- Helpers --------------------
 
   /**
@@ -133,14 +145,26 @@ const HTATAT = () => {
 
   // -------------------- Effects --------------------
 
-  // 🔹 Initial Fetch
+  // 🔹 Initial Fetch — seeds the SRS default 6-month range into search
+  // state AND sends it on this very first request, rather than relying
+  // on htaTATReportSearch's own (still-empty) state having updated in
+  // time - setState is async, so build the request from the computed
+  // defaults directly instead of trusting state timing.
   useEffect(() => {
     if (hasFetched.current) return;
     hasFetched.current = true;
-    const requestData = buildApiRequest(
-      htaTATReportSearch,
-      assetTypeListingData
-    );
+
+    setHTATATReportSearch((prev) => ({
+      ...prev,
+      startDate: dateRange.StartDate,
+      endDate: dateRange.EndDate,
+    }));
+
+    const requestData = buildApiRequest({
+      ...htaTATReportSearch,
+      startDate: dateRange.StartDate,
+      endDate: dateRange.EndDate,
+    });
     fetchApiCall(requestData, true, true);
   }, []);
 
@@ -307,6 +331,61 @@ const HTATAT = () => {
     });
   };
 
+  // ADDED (2026-08-19): date range picker, same interaction pattern as
+  // the sibling Trade Approval Requests report (fetch immediately on
+  // change, not via filterTrigger). Clearing returns to the SRS 6-month
+  // default rather than an unbounded query - per the SRS, 6 months back
+  // is the report's baseline view, not merely an initial placeholder.
+  const handleDateChange = (dates) => {
+    if (!dates || dates.length !== 2) return;
+
+    const newStart = dates?.[0] || null;
+    const newEnd = dates?.[1] || null;
+
+    setDateRange({ StartDate: newStart, EndDate: newEnd });
+    setHTATATReportSearch((prev) => ({
+      ...prev,
+      startDate: newStart,
+      endDate: newEnd,
+      pageNumber: 0,
+    }));
+
+    fetchApiCall(
+      buildApiRequest({
+        ...htaTATReportSearch,
+        startDate: newStart,
+        endDate: newEnd,
+        pageNumber: 0,
+      }),
+      true,
+      true
+    );
+  };
+
+  const handleClearDates = () => {
+    const defaultStartDate = dayjs().subtract(6, "month").format("YYYY-MM-DD");
+    const defaultEndDate = dayjs().format("YYYY-MM-DD");
+
+    setDateRange({ StartDate: defaultStartDate, EndDate: defaultEndDate });
+    setHTATATReportSearch((prev) => ({
+      ...prev,
+      startDate: defaultStartDate,
+      endDate: defaultEndDate,
+      pageNumber: 0,
+    }));
+
+    fetchApiCall(
+      buildApiRequest({
+        ...htaTATReportSearch,
+        startDate: defaultStartDate,
+        endDate: defaultEndDate,
+        pageNumber: 0,
+      }),
+      true,
+      true
+    );
+  };
+
   // -------------------- Render --------------------
   return (
     <>
@@ -349,6 +428,13 @@ const HTATAT = () => {
 
             <Col>
               <div className={style.headerActionsRow}>
+                <DateRangePicker
+                  size="medium"
+                  className={style.dateRangePickerClass}
+                  value={[dateRange.StartDate, dateRange.EndDate]}
+                  onChange={handleDateChange}
+                  onClear={handleClearDates}
+                />
                 <CustomButton
                   disabled={htaTATReportsData?.employees?.length === 0}
                   text={

@@ -3,9 +3,13 @@ import ArrowDown from "../../../../../../assets/img/arrow-down-dark.png";
 import DefaultColumArrow from "../../../../../../assets/img/default-colum-arrow.png";
 import style from "./ViewDetails.module.css";
 
-import { toYYMMDD } from "../../../../../../common/funtions/rejex";
+import {
+  formatApiDateTime,
+  toYYMMDD,
+} from "../../../../../../common/funtions/rejex";
 import { getTradeTypeById } from "../../../../../../common/funtions/type";
 import TypeColumnTitle from "../../../../../../components/dropdowns/filters/typeColumnTitle";
+import { mapBuySellToIds } from "../../../../../../components/dropdowns/filters/utils";
 import { Tooltip } from "antd";
 
 /**
@@ -17,7 +21,8 @@ import { Tooltip } from "antd";
  */
 export const buildApiRequest = (
   searchState = {},
-  showSelectedTatDataOnViewDetailHTA
+  showSelectedTatDataOnViewDetailHTA,
+  assetTypeListingData
 ) => ({
   EmployeeID: showSelectedTatDataOnViewDetailHTA?.employeeID || "",
   StartDate: searchState.startDate ? toYYMMDD(searchState.startDate) : "",
@@ -32,6 +37,12 @@ export const buildApiRequest = (
   ActionEndDate: searchState.actionEndDate
     ? toYYMMDD(searchState.actionEndDate)
     : "",
+  // ADDED (2026-08-19): the Type column filter already existed
+  // (TypeColumnTitle below, wired to htaTATViewDetailsSearch.type) but
+  // was never actually sent - selecting a type had no effect. Per
+  // API_Changes/2026-08-19_hta_tat_viewdetails_actionby_actionat_tat.md.
+  TypeIds:
+    mapBuySellToIds?.(searchState.type, assetTypeListingData?.Equities) || [],
   PageNumber: Number(searchState.pageNumber) || 0,
   Length: Number(searchState.pageSize) || 10,
 });
@@ -48,24 +59,56 @@ export const mapListData = (assetTypeData, htaTATViewDetailsData = []) => {
 
   if (!workFlows.length) return [];
 
-  return workFlows.map((item) => ({
-    key: item.approvalID,
+  return workFlows.map((item) => {
+    // FIXED (2026-08-19): actionBy/actionAt/Tat columns already existed
+    // (getBorderlessTableColumns below) but this mapping never populated
+    // any of the three fields they read - they rendered "—" for every
+    // row regardless of what the API sent. Per
+    // API_Changes/2026-08-19_hta_tat_viewdetails_actionby_actionat_tat.md:
+    // actionBy is an array of every distinct actor - collapse to
+    // "Multiple Approvers" with the full list on hover when more than
+    // one, same "single name direct / collapsed + hover" convention
+    // already used by the HOC Transaction Summary View Details screen
+    // (headOfComplianceOffice/reports/transactionsSummary/utils.jsx).
+    // actionDate/actionTime/tat are null while still Pending - render
+    // blank/"—", not "0".
+    const actionByNames = Array.isArray(item.actionBy)
+      ? item.actionBy.map((user) => user?.fullName).filter(Boolean)
+      : [];
 
-    approvalID: item.approvalID,
-    title: item.title || "—",
-    tradeApprovalID: item.tradeApprovalID || "—",
-    instrument: item?.instrument?.instrumentShortCode ?? "—",
-    instrumentName: item?.instrument?.instrumentName ?? "—",
-    assetTypeName: item.assetType?.assetTypeName || "—",
-    type: getTradeTypeById(assetTypeData, item?.tradeType) || "—",
-    approvalStatus: item.approvalStatus?.approvalStatusName || "—",
-    employeeID: item.employeeID || "—",
-    quantity: item.quantity ?? "—",
-    requestDateTime:
-      `${item?.requestDate || ""} ${item?.requestTime || ""}`.trim() || "—",
-    deadlineDateTime:
-      `${item?.deadlineDate || ""} ${item?.deadlineTime || ""}`.trim() || "—",
-  }));
+    return {
+      key: item.approvalID,
+
+      approvalID: item.approvalID,
+      title: item.title || "—",
+      tradeApprovalID: item.tradeApprovalID || "—",
+      instrument: item?.instrument?.instrumentShortCode ?? "—",
+      instrumentName: item?.instrument?.instrumentName ?? "—",
+      assetTypeName: item.assetType?.assetTypeName || "—",
+      type: getTradeTypeById(assetTypeData, item?.tradeType) || "—",
+      approvalStatus: item.approvalStatus?.approvalStatusName || "—",
+      employeeID: item.employeeID || "—",
+      quantity: item.quantity ?? "—",
+      requestDateTime:
+        `${item?.requestDate || ""} ${item?.requestTime || ""}`.trim() || "—",
+      // FIXED: "Initiated At" column (dataIndex initiatedAt) was never
+      // populated either - same class of gap, just not called out in
+      // the doc since it isn't one of the three named fields.
+      initiatedAt:
+        formatApiDateTime(`${item?.requestDate} ${item?.requestTime}`) || "—",
+      deadlineDateTime:
+        `${item?.deadlineDate || ""} ${item?.deadlineTime || ""}`.trim() ||
+        "—",
+      actionBy:
+        actionByNames.length > 1 ? "Multiple Approvers" : actionByNames[0] || "—",
+      actionByFullNames: actionByNames.join(", "),
+      actionAt:
+        item.actionDate && item.actionTime
+          ? formatApiDateTime(`${item.actionDate} ${item.actionTime}`)
+          : "—",
+      Tat: typeof item.tat === "number" ? item.tat : "—",
+    };
+  });
 };
 
 /**
@@ -251,7 +294,15 @@ export const getBorderlessTableColumns = ({
     showSorterTooltip: false,
     sorter: (a, b) => (a.actionBy || "").localeCompare(b.actionBy || ""),
     sortOrder: sortedInfo?.columnKey === "actionBy" ? sortedInfo.order : null,
-    render: (value) => <span className="font-medium">{value || "—"}</span>,
+    // actionBy shows a single name directly, or "Multiple Approvers" when
+    // more than one person acted on this workflow - hover reveals the
+    // full comma-separated name list either way, same convention as the
+    // HOC Transaction Summary View Details screen's own Action By column.
+    render: (value, record) => (
+      <Tooltip title={record?.actionByFullNames || value} placement="topLeft">
+        <span className="font-medium">{value || "—"}</span>
+      </Tooltip>
+    ),
   },
   {
     title: withSortIcon("Action At", "actionAt", sortedInfo, "center"),
@@ -274,9 +325,19 @@ export const getBorderlessTableColumns = ({
     width: "140px",
     ellipsis: true,
     showSorterTooltip: false,
-    sorter: (a, b) => (a.Tat || 0) - (b.Tat || 0),
+    sorter: (a, b) =>
+      (typeof a.Tat === "number" ? a.Tat : 0) -
+      (typeof b.Tat === "number" ? b.Tat : 0),
     sortIcon: () => null,
     sortOrder: sortedInfo?.columnKey === "Tat" ? sortedInfo.order : null,
-    render: (value) => <span className="font-medium">{value || "—"}</span>,
+    // FIXED: `value || "—"` treated a genuine 0-day TAT (same-day
+    // turnaround, a real and common value here) as falsy and rendered
+    // "—" instead of "0" - only render the "—" fallback when the value
+    // is actually missing (still Pending, per the API_Changes doc).
+    render: (value) => (
+      <span className="font-medium">
+        {typeof value === "number" ? value : "—"}
+      </span>
+    ),
   },
 ];
