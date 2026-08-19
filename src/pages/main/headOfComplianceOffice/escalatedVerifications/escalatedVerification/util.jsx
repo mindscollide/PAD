@@ -282,7 +282,6 @@ export const getBorderlessTableColumns = ({
     width: 120,
     fixed: "right",
     render: (text, record) => {
-      console.log(record, "checkReconsicle najsva sas");
       const { setSelectedEscalatedHeadOfComplianceData } =
         useReconcileContext();
       // Note: Using hook inside render might cause issues, consider moving this logic

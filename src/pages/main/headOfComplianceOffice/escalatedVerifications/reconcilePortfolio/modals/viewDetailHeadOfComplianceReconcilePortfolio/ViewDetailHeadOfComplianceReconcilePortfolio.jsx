@@ -165,8 +165,7 @@ const ViewDetailHeadOfComplianceReconcilePortfolio = () => {
   // collapsing both into one generic "closed" step.
   const hierarchyByUserID = new Map(
     (
-      isEscalatedPortfolioHeadOfComplianceViewDetailData?.hierarchyDetails ||
-      []
+      isEscalatedPortfolioHeadOfComplianceViewDetailData?.hierarchyDetails || []
     ).map((person) => [person.userID, person])
   );
 
@@ -461,7 +460,7 @@ const ViewDetailHeadOfComplianceReconcilePortfolio = () => {
                       <>
                         <div className={styles.approvedButtonClass}>
                           <CustomButton
-                            text="Non Compliant"
+                            text="Non-Compliant"
                             className="Decline-dark-button"
                             disabled={disableCompliantOrNonCompliantBtn}
                             onClick={
