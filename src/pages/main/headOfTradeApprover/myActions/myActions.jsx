@@ -75,7 +75,7 @@ const HTAMyAction = () => {
         setMyActionHeadOfTradeApprovalData(res);
       }
     },
-    [callApi, navigate, showLoader, showNotification]
+    [callApi, navigate, showLoader, showNotification],
   );
 
   // Initial Fetch
@@ -83,7 +83,7 @@ const HTAMyAction = () => {
     if (!hasFetched.current) {
       hasFetched.current = true;
       const requestData = buildMyActionApiRequest(
-        headOfTradeApprovalMyActionSearch
+        headOfTradeApprovalMyActionSearch,
       );
 
       fetchApiCall(requestData, true, true);
@@ -99,7 +99,7 @@ const HTAMyAction = () => {
     if (headOfTradeApprovalMyActionSearch?.filterTrigger) {
       hasFetched.current = true;
       const requestData = buildMyActionApiRequest(
-        headOfTradeApprovalMyActionSearch
+        headOfTradeApprovalMyActionSearch,
       );
 
       fetchApiCall(requestData, true, true);
@@ -119,7 +119,7 @@ const HTAMyAction = () => {
     approvalStatusMap,
     sortedInfo,
     headOfTradeApprovalMyActionSearch,
-    setHeadOfTradeApprovalMyActionSearch
+    setHeadOfTradeApprovalMyActionSearch,
   );
 
   /** 🔹 Handle removing individual filter */
@@ -260,7 +260,7 @@ const HTAMyAction = () => {
 
         // build request based on current search/filter but override pagination
         const baseRequest = buildMyActionApiRequest(
-          headOfTradeApprovalMyActionSearch
+          headOfTradeApprovalMyActionSearch,
         );
         const requestData = {
           ...baseRequest,
@@ -348,13 +348,15 @@ const HTAMyAction = () => {
 
     // eventType → trail step shape (see approvalStepper.jsx's getIcon)
     const mapTimelineEvent = (event) => {
-      const date = formatApiDateTime(
-        `${event.eventDate} ${event.eventTime}`
-      );
+      const date = formatApiDateTime(`${event.eventDate} ${event.eventTime}`);
 
       switch (event.eventType) {
         case "Submitted For Approval":
-          return { status: "Submitted For Approval", date, iconType: "SendForApproval" };
+          return {
+            status: "Submitted For Approval",
+            date,
+            iconType: "SendForApproval",
+          };
         case "Resubmitted For Approval":
           return {
             status: "Resubmit",
@@ -413,7 +415,7 @@ const HTAMyAction = () => {
         creationTime: wf.requestedTime,
         quantity: Number(wf.quantity),
         type: wf.typeName || wf.type,
-        status: wf.workFlowStatusName || wf.statusState,
+        status: wf.statusState || wf.statusState,
         trail,
       };
     });

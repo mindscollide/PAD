@@ -268,8 +268,15 @@ const HOCMyActionPage = () => {
       setLoadingMore(true);
 
       try {
-        // calculate current offset (PageNumber) as current loaded employees length
+        // GetHOCMyActionsWorkflowDetail's PageNumber is a 1-indexed page
+        // number (offset = (PageNumber-1)*Length), same as LM/HTA/CO's My
+        // Actions pages - was sending the raw loaded-row count as
+        // PageNumber, which after the first 10 rows asked for page 10
+        // (offset 90) instead of page 2. Derive the next page from how
+        // many rows are already loaded instead.
         const currentLength = myActionHOCData?.requests?.length || 0;
+        const pageSize = 10;
+        const nextPageNumber = Math.floor(currentLength / pageSize) + 1;
 
         // build request based on current search/filter but override pagination
         const baseRequest = buildMyActionApiRequest(
@@ -277,8 +284,8 @@ const HOCMyActionPage = () => {
         );
         const requestData = {
           ...baseRequest,
-          PageNumber: currentLength, // sRow
-          Length: 10, // eRow (static 10)
+          PageNumber: nextPageNumber,
+          Length: pageSize,
         };
 
         // FIXED (2026-08-17): was calling SearchLMMyActionWorkFlowRequest -

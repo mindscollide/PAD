@@ -9,7 +9,6 @@ import { useMyApproval } from "../../../../context/myApprovalContaxt";
 import {
   DownloadMyActionsReportRequest,
   GetComplianceOfficerMyActionsWorkflowDetail,
-  SearchLMMyActionWorkFlowRequest,
 } from "../../../../api/myApprovalApi";
 import { useNotification } from "../../../../components/NotificationProvider/NotificationProvider";
 import { useGlobalLoader } from "../../../../context/LoaderContext";
@@ -248,7 +247,13 @@ const COMyAction = () => {
           Length: pageSize,
         };
 
-        const res = await SearchLMMyActionWorkFlowRequest({
+        // Was calling SearchLMMyActionWorkFlowRequest - Line Manager's own
+        // My Actions search API, not CO's. Every scroll-triggered "load
+        // more" page past the first was fetching the wrong role's data
+        // entirely instead of more of this CO's own
+        // GetComplianceOfficerMyActionsWorkflowDetail results - same
+        // endpoint the initial fetch above already correctly uses.
+        const res = await GetComplianceOfficerMyActionsWorkflowDetail({
           callApi,
           showNotification,
           showLoader, // you can pass showLoader or not; it won't show global loader if you manage local spinner
