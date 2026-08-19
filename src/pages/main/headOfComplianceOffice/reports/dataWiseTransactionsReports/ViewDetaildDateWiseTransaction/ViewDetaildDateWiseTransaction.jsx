@@ -249,7 +249,7 @@ const ViewDetaildDateWiseTransaction = () => {
               <Col span={12}>
                 <div className={styles.backgrounColorOfDetail}>
                   <label className={styles.viewDetailMainLabels}>
-                    Applied Quantity
+                    Approved Quantity
                   </label>
                   <label className={styles.viewDetailSubLabels}>
                     {Number(
