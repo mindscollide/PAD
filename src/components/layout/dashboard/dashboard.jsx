@@ -507,8 +507,21 @@ const Dashboard = () => {
                 // }
 
                 case "EMPLOYEE_TRANSACTION_APPROVAL_REQUEST_APPROVED": {
+                  // Despite the name, this same message also fires for
+                  // Portfolio Compliant/Non-Compliant closures - not just
+                  // Transactions (2026-08-19_employee_portfolio_transaction_
+                  // mqtt_reliability.md). Was only refreshing the
+                  // Transactions tab (currentKey "2"); mirrors
+                  // WORKFLOW_ESCALATED_FROM_HOC's currentKey "4" branch
+                  // below so the Portfolio pending list also drops the item
+                  // live instead of only on next full reload.
                   if (currentKey === "2") {
                     setEmployeeTransactionsTableDataMqtt(true);
+                    // setEmployeeTransactionsData((prev) => ({
+                    //   ...prev,
+                    //   data: [payload, ...(prev.data || [])],
+                    //   totalRecords: (prev.totalRecords || 0) + 1,
+                    // }));
                   } else if (
                     currentKey === "4" &&
                     currentactiveTabRef === "pending"
@@ -523,6 +536,8 @@ const Dashboard = () => {
                   break;
                 }
                 case "EMPLOYEE_TRANSACTION_APPROVAL_REQUEST_DECLINED": {
+                  // Same Portfolio/Transaction dual-purpose message as the
+                  // Approved case above - see comment there.
                   if (currentKey === "2") {
                     setEmployeeTransactionsTableDataMqtt(true);
                   } else if (
@@ -533,6 +548,7 @@ const Dashboard = () => {
                       payload,
                       "Non-Compliant"
                     );
+                    setEmployeePendingApprovalsDataMqtt(true);
                   }
                   break;
                 }

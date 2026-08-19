@@ -38,8 +38,8 @@ const withSortIcon = (label, columnKey, sortedInfo, align = "left") => (
         align === "center"
           ? "center"
           : align === "right"
-          ? "flex-end"
-          : "flex-start",
+            ? "flex-end"
+            : "flex-start",
       textAlign: align,
     }}
   >
@@ -168,7 +168,7 @@ export const getMyActionsColumn = (approvalStatusMap, sortedInfo) => [
       "Date & Time of Approval Request",
       "approvalDateTime",
       sortedInfo,
-      "center"
+      "center",
     ),
     dataIndex: "approvalDateTime",
     key: "approvalDateTime",

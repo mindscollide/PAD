@@ -199,6 +199,7 @@ export const GetAllViewDetailsByTradeApprovalID = async ({
         details,
         hierarchyDetails,
         workFlowStatus,
+        isEscalated,
       } = res.result;
 
       if (
@@ -211,6 +212,12 @@ export const GetAllViewDetailsByTradeApprovalID = async ({
           details: details || [],
           hierarchyDetails: hierarchyDetails || [],
           workFlowStatus: workFlowStatus || {},
+          // Was being destructured straight off res.result and dropped -
+          // the backend already sends this (TradeServiceManager.cs:1148),
+          // but it never survived this wrapper, so ViewDetailModal's
+          // `viewDetailsModalData?.isEscalated` read was always undefined
+          // regardless of what the API actually returned.
+          isEscalated: Boolean(isEscalated),
         };
       }
 

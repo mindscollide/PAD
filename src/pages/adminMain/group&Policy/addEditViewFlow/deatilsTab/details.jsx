@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Row, Col, Input, Spin, Flex } from "antd";
 import { LoadingOutlined } from "@ant-design/icons";
 import styles from "./details.module.css";
@@ -33,6 +33,13 @@ const Details = ({
   const [isTitleValid, setIsTitleValid] = useState(null);
   const [isDescValid, setIsDescValid] = useState(null);
   const [isCheckingTitle, setIsCheckingTitle] = useState(false);
+  // sp_CheckGroupTitleExists only takes the title (no GroupPolicyID to
+  // exclude) - in Edit mode blurring the title unchanged would find it
+  // "already in use" by this very group and show a false-positive error.
+  // Capture the title as it was first loaded from ViewGroupPolicyDetails
+  // so the uniqueness check can be skipped when it hasn't actually changed.
+  const initialTitleRef = useRef(null);
+  const hasCapturedInitialTitle = useRef(false);
 
   const groupTitle = tabesFormDataofAdminGropusAndPolicy?.details?.groupTitle;
   console.log("groupDescription", groupTitle);
@@ -66,6 +73,19 @@ const Details = ({
       setIsTitleValid(false);
       return;
     }
+
+    // Editing an existing group without changing its title: skip the
+    // uniqueness call entirely, otherwise it always comes back "in use"
+    // (it's this group's own saved title).
+    if (
+      pageTypeForAdminGropusAndPolicy === 1 &&
+      trimmedTitle === initialTitleRef.current?.trim()
+    ) {
+      setTitleError("");
+      setIsTitleValid(true);
+      return;
+    }
+
     setIsCheckingTitle(true);
     const isUnique = await checkGroupTitleUnique(trimmedTitle);
     setIsCheckingTitle(false);
@@ -105,6 +125,19 @@ const Details = ({
       setPageTypeForAdminGropusAndPolicy(1);
     }
   }, [clickEditFromView]);
+
+  // 🔹 Capture the title exactly as it was loaded for this existing group
+  // (once), so handleTitleBlur can tell "unchanged" apart from "edited".
+  useEffect(() => {
+    if (
+      !hasCapturedInitialTitle.current &&
+      pageTypeForAdminGropusAndPolicy === 1 &&
+      groupTitle
+    ) {
+      initialTitleRef.current = groupTitle;
+      hasCapturedInitialTitle.current = true;
+    }
+  }, [groupTitle, pageTypeForAdminGropusAndPolicy]);
   // 🔹 Watch for validation trigger from parent
   useEffect(() => {
     if (errorDeatilsTabSwitch) {
