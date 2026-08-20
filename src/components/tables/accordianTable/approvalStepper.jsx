@@ -77,6 +77,19 @@ const ApprovalStepper = ({ trail }) => {
         {trail.map((step, index) => (
           <Step
             key={index}
+            // react-form-stepper's own default circle shows the step's
+            // plain numeric index (e.g. "4") unless something is passed
+            // as children to override it - circleFontSize: "0px" above
+            // was meant to hide that number but doesn't reliably suppress
+            // it, so a stray step number was showing through behind the
+            // custom icon (which is only overlaid via the stepCircle
+            // div's negative margin inside `label`, not an actual circle
+            // override). ViewDetailModal.jsx already does this correctly
+            // elsewhere in the app - passing children here the same way,
+            // as an empty placeholder, is enough to make the library skip
+            // its own numbered circle without touching the existing
+            // icon-in-label overlay/CSS.
+            children={<span />}
             label={
               <div className={styles.customLabel}>
                 <div className={styles.stepCircle}>

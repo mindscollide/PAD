@@ -30,6 +30,20 @@ const MyHistory = () => {
   const navigate = useNavigate();
   const hasFetched = useRef(false);
   const containerRef = useRef(null);
+  // Bumped on every replace-style fetch (initial load, Status/Type/any
+  // filter change) - handleScroll's "load more" checks this hasn't moved
+  // since it started before merging its response in, so a slow scroll
+  // fetch that was still in flight when the user changed a filter can't
+  // land afterwards and append stale/wrong-filter rows onto the fresh
+  // filtered list.
+  const requestIdRef = useRef(0);
+  // Synchronous re-entrancy lock for handleScroll - the `loadingMore`
+  // state guard alone isn't enough: rapid native scroll events can fire
+  // handleScroll again before React has committed the loadingMore=true
+  // state update, so multiple overlapping "load more" calls for the same
+  // next page could both go through and duplicate rows. A ref updates
+  // immediately, closing that window.
+  const isFetchingMoreRef = useRef(false);
 
   // -------------------- Contexts --------------------
   const { callApi } = useApi();
@@ -60,6 +74,10 @@ const MyHistory = () => {
     async (requestData, replace = false, showLoaderFlag = true) => {
       if (!requestData || typeof requestData !== "object") return;
       if (showLoaderFlag) showLoader(true);
+      // New replace-style fetch (initial load or a filter change) -
+      // invalidates any "load more" fetch already in flight, see
+      // handleScroll below.
+      requestIdRef.current += 1;
 
       const res = await SearchEmployeeHistoryDetailRequest({
         callApi,
@@ -96,6 +114,12 @@ const MyHistory = () => {
   useEffect(() => {
     if (employeeMyHistorySearch?.filterTrigger) {
       hasFetched.current = true;
+      // Clear the table immediately on Type/Status (or any filter) OK -
+      // don't leave the previous filter's rows sitting on screen for the
+      // full round-trip until the new response replaces them. Same empty
+      // shape already used on unmount below.
+      setEmployeeMyHistoryData([]);
+
       const requestData = buildMyHistoryApiRequest(
         employeeMyHistorySearch,
         assetTypeListingData,
@@ -195,14 +219,26 @@ const MyHistory = () => {
   // Scroll handler for lazy loading
   const handleScroll = async () => {
     if (!containerRef.current) return;
-    if (loadingMore) return;
+    if (loadingMore || isFetchingMoreRef.current) return;
     if (!hasMore) return;
 
     const { scrollTop, scrollHeight, clientHeight } = containerRef.current;
 
     // if reached bottom (small offset to be safe)
     if (scrollTop + clientHeight >= scrollHeight - 10) {
+      // Set synchronously first - closes the window where rapid scroll
+      // events fire this again before React commits loadingMore=true,
+      // which would otherwise let two "load more" calls for the same
+      // next page both go through and duplicate rows.
+      isFetchingMoreRef.current = true;
       setLoadingMore(true);
+
+      // Snapshot which replace-generation is current before the request
+      // goes out - if a filter change (or the initial fetch) starts a new
+      // one while this is in flight, requestIdRef.current will have moved
+      // by the time this resolves, and the stale result below is
+      // discarded instead of being appended onto the now-different list.
+      const requestIdAtStart = requestIdRef.current;
 
       try {
         // GetEmployeeHistoryWorkFlowDetails's PageNumber is now a real
@@ -232,6 +268,11 @@ const MyHistory = () => {
           navigate,
         });
 
+        // A filter/initial fetch replaced the list while this "load more"
+        // was in flight - this page belongs to the old filter/list, drop
+        // it rather than appending mismatched rows onto the fresh one.
+        if (requestIdRef.current !== requestIdAtStart) return;
+
         const newEmployees = res?.workFlows || [];
 
         if (newEmployees.length > 0) {
@@ -247,6 +288,7 @@ const MyHistory = () => {
       } catch (err) {
         console.error("Error fetching more users:", err);
       } finally {
+        isFetchingMoreRef.current = false;
         setLoadingMore(false);
       }
     }
@@ -385,13 +427,25 @@ const MyHistory = () => {
       };
 
       // Step 1: Bundle hierarchy
+      // ADDED (2026-08-20): bundleStatusState 3 was labeled "Declined"
+      // unconditionally - correct wording for a Trade Approval Request
+      // reviewer, but wrong for a Transaction/Portfolio workflow the CO
+      // marked Non-Compliant (same bundleStatusState value, different
+      // vocabulary - workFlowStatusID 9 is the actual outcome here, see
+      // the shouldAddFinalStep exclusion above). Only relabels the entry
+      // that's genuinely part of a Non-Compliant-outcome workflow, so a
+      // real Declined Trade Approval Request keeps saying "Declined".
+      const isNonCompliantOutcome = wf.workFlowStatusID === 9;
+
       const bundleSteps =
         wf.bundleHierarchy?.map((b) => ({
           status:
             b.bundleStatusState === 2
               ? "Approved"
               : b.bundleStatusState === 3
-                ? "Declined"
+                ? isNonCompliantOutcome
+                  ? "Non-Compliant"
+                  : "Declined"
                 : "Pending",
           user: `${b.firstName} ${b.lastName}`,
           date: formatApiDateTime(
@@ -408,36 +462,33 @@ const MyHistory = () => {
       // "Pending" on top of the bundle/hierarchy step(s) already showing
       // the pending reviewer - excluded now, same reasoning as the
       // existing Declined (4) exclusion.
-      const shouldAddFinalStep = ![1, 4].includes(finalStepStatus);
+      //
+      // FIXED (2026-08-20): status 9 (Non-Compliant) fell through to the
+      // generic path below and got its own final step too - genuinely
+      // redundant AND mistimed: the CO's bundle entry (bundleStatusState
+      // 3, generic "Declined" label + actual actor/timestamp) already
+      // represents this exact outcome accurately, while the generic final
+      // step used wf.creationDate/Time (the transaction's own conduct
+      // time, not when it was actually marked Non-Compliant) - showing an
+      // extra "Non-Compliant" step with an earlier, wrong timestamp after
+      // the real "Declined by <CO name>" step.
+      //
+      // FIXED (2026-08-20): status 8 (Compliant) had its OWN dedicated
+      // branch below that added a second final step attributed to the
+      // same lastBundleEntry actor/timestamp already shown on the bundle
+      // step above it - e.g. "Approved by Kamil Shah 12:18pm" followed by
+      // a redundant "Compliant by Kamil Shah 12:18pm" repeating the exact
+      // same actor and exact same timestamp. Per explicit confirmation,
+      // the bundle step's existing wording ("Approved by <name>") is kept
+      // as the one and only last step - excluded here the same way
+      // Declined (4) and Non-Compliant (9) already are, and the
+      // now-dead special branch that used to build that second step is
+      // removed below.
+      const shouldAddFinalStep = ![1, 4, 8, 9].includes(finalStepStatus);
 
       let finalStep = null;
 
-      // ADDED (2026-08-18): Compliant (8) was excluded from the final
-      // step entirely (fell out of shouldAddFinalStep above, and
-      // getWorkFlowIconType didn't handle it either), so a Compliant
-      // transaction's trail just stopped at the last bundle step with no
-      // indication it was ever actually marked Compliant. Whoever
-      // actually marked it Compliant is the CO/HOC that closed the last
-      // bundle entry, not necessarily reflected in wf.creationDate/Time
-      // (that's this request's own creation time) - attribute to that
-      // last bundle entry's actor and timestamp instead.
-      if (finalStepStatus === 8) {
-        const lastBundleEntry =
-          wf.bundleHierarchy?.[wf.bundleHierarchy.length - 1];
-
-        finalStep = {
-          status: wf.workFlowStatus,
-          user: lastBundleEntry
-            ? `${lastBundleEntry.firstName} ${lastBundleEntry.lastName}`
-            : undefined,
-          date: lastBundleEntry
-            ? formatApiDateTime(
-                `${lastBundleEntry.bundleModifiedDate} ${lastBundleEntry.bundleModifiedTime}`,
-              )
-            : formatApiDateTime(`${wf.creationDate} ${wf.creationTime}`),
-          iconType: "co-Compliant",
-        };
-      } else if (shouldAddFinalStep) {
+      if (shouldAddFinalStep) {
         // ADDED (2026-08-19): for Not Traded (6), wf.creationDate/Time is
         // when the request was ORIGINALLY submitted, not when the
         // background job actually flipped it to Not Traded - that's a
