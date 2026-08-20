@@ -22,7 +22,7 @@ import { useNotification } from "../../NotificationProvider/NotificationProvider
 import { useApi } from "../../../context/ApiContext";
 import { useGlobalLoader } from "../../../context/LoaderContext";
 import { useMyAdmin } from "../../../context/AdminContext";
-import { ManageBrokerModal } from "../../../pages";
+import { ManageBrokerModal, MyProfileModal, NotificationSettingsModal } from "../../../pages";
 import { logout } from "../../../api/loginApi";
 import { mapEmployeeMyApprovalData } from "../../../pages/main/employes/myApprovals/utils";
 const { Content } = Layout;
@@ -1162,6 +1162,8 @@ const Dashboard = () => {
         open={manageBrokersModalOpen}
         onClose={() => setManageBrokersModalOpen(false)}
       />
+      <MyProfileModal />
+      <NotificationSettingsModal />
     </Layout>
   );
 };

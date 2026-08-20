@@ -125,6 +125,11 @@ const config = {
     subheading: "Your changes have been saved successfully.",
     image: ApprovedImg,
   },
+  savedNotificationSettings: {
+    heading: "Changes Saved",
+    subheading: "Your notification settings have been saved successfully.",
+    image: ApprovedImg,
+  },
 };
 
 const ModalImgStates = ({

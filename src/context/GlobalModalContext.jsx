@@ -65,6 +65,16 @@ export const GlobalModalProvider = ({ children }) => {
   const [addTradeApprovalIntimationModal, setAddTradeApprovalIntimationModal] =
     useState(false);
 
+  // To show save-success Modal on Notification Settings
+  const [showSavedNotificationSettingsModal, setShowSavedNotificationSettingsModal] =
+    useState(false);
+
+  // To show Cancel/discard-changes confirmation Modal on Notification Settings
+  const [
+    discardNotificationSettingsModal,
+    setDiscardNotificationSettingsModal,
+  ] = useState(false);
+
   /**
    * Global States For Employee Modals End here
    */
@@ -376,6 +386,11 @@ export const GlobalModalProvider = ({ children }) => {
         setDiscardChangesBrokerModal,
         addTradeApprovalIntimationModal,
         setAddTradeApprovalIntimationModal,
+
+        showSavedNotificationSettingsModal,
+        setShowSavedNotificationSettingsModal,
+        discardNotificationSettingsModal,
+        setDiscardNotificationSettingsModal,
         /**
          * Global States For Line Manager Modals
          */

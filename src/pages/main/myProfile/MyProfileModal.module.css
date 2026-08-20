@@ -1,0 +1,66 @@
+.mainContainer {
+  padding: 20px;
+}
+
+.heading {
+  font-family: "Switzer Variable", sans-serif;
+  font-weight: 700;
+  font-size: 26px;
+  line-height: 100%;
+  color: #30426a;
+  margin-bottom: 20px;
+}
+
+.avatarRow {
+  margin-bottom: 20px;
+}
+
+.avatarCol {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.fullName {
+  font-family: "Switzer Variable", sans-serif;
+  font-weight: 700;
+  font-size: 18px;
+  color: #30426a;
+}
+
+.detailsRow {
+  margin-top: 4px;
+}
+
+.detailBox {
+  background-color: #fff1e7;
+  padding: 10px 20px;
+  display: flex;
+  flex-direction: column;
+  border-radius: 6px;
+  height: 100%;
+}
+
+.label {
+  font-family: "Switzer Variable", sans-serif;
+  font-weight: 500;
+  font-size: 12px;
+  color: #7a7a7a;
+  text-transform: uppercase;
+}
+
+.value {
+  font-family: "Switzer Variable", sans-serif;
+  font-weight: 600;
+  font-size: 15px;
+  color: #30426a;
+  word-break: break-word;
+}
+
+.mainButtonDiv {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 10px;
+}

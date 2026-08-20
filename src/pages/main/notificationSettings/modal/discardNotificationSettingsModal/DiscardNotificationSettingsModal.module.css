@@ -1,0 +1,12 @@
+.SubmittedCenteralized {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 30px 10px;
+}
+
+.mainButtonDiv {
+  margin-top: 30px !important;
+}
