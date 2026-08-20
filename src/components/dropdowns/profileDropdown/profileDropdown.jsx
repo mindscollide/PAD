@@ -19,6 +19,8 @@ const ProfileDropdown = () => {
     setCurrentRoleIsAdmin,
     setRoleChanegFlag,
     setManageBrokersModalOpen,
+    setMyProfileModalOpen,
+    setNotificationSettingsModalOpen,
   } = useDashboardContext();
 
   const navigate = useNavigate();
@@ -70,7 +72,9 @@ const ProfileDropdown = () => {
     style,
     handleLogout,
     setCurrentRoleIsAdmin,
-    setManageBrokersModalOpen
+    setManageBrokersModalOpen,
+    setMyProfileModalOpen,
+    setNotificationSettingsModalOpen
   );
 
   return (

@@ -533,3 +533,62 @@ export const SaveUserBrokers = async ({
     return null;
   }
 };
+
+/**
+ * 🔹 GetMyProfile - read-only profile info for the logged-in user
+ * (2026-08-19_my_profile_and_notification_settings.md). Always resolves to
+ * the calling user via the JWT - no request payload.
+ */
+export const GetMyProfileRequest = async ({
+  callApi,
+  showNotification,
+  showLoader,
+  navigate,
+}) => {
+  try {
+    const res = await callApi({
+      requestMethod: import.meta.env.VITE_GET_MY_PROFILE_REQUEST_METHOD,
+      endpoint: import.meta.env.VITE_API_TRADE,
+      requestData: {},
+      navigate,
+    });
+
+    if (handleExpiredSession(res, navigate, showLoader)) return null;
+
+    if (!res?.result?.isExecuted) {
+      showErrorNotification(
+        showNotification,
+        "Error",
+        "Something went wrong while fetching your profile.",
+      );
+      return null;
+    }
+
+    const { success, result } = res;
+    const { responseMessage, profile } = result;
+
+    if (success) {
+      if (
+        responseMessage === "PAD_Trade_TradeServiceManager_GetMyProfile_01"
+      ) {
+        return profile || null;
+      }
+      // _02 (no data) - genuinely nothing to show, not an error.
+      return null;
+    }
+
+    showErrorNotification(
+      showNotification,
+      "Fetch Failed",
+      getMessage(res.message),
+    );
+    return null;
+  } catch {
+    showErrorNotification(
+      showNotification,
+      "Error",
+      "An unexpected error occurred while fetching your profile.",
+    );
+    return null;
+  }
+};
