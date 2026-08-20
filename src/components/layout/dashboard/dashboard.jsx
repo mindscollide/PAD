@@ -22,7 +22,11 @@ import { useNotification } from "../../NotificationProvider/NotificationProvider
 import { useApi } from "../../../context/ApiContext";
 import { useGlobalLoader } from "../../../context/LoaderContext";
 import { useMyAdmin } from "../../../context/AdminContext";
-import { ManageBrokerModal, MyProfileModal, NotificationSettingsModal } from "../../../pages";
+import {
+  ManageBrokerModal,
+  MyProfileModal,
+  NotificationSettingsModal,
+} from "../../../pages";
 import { logout } from "../../../api/loginApi";
 import { mapEmployeeMyApprovalData } from "../../../pages/main/employes/myApprovals/utils";
 const { Content } = Layout;
@@ -55,7 +59,11 @@ const Dashboard = () => {
     setHtaEscalatedApprovalData,
     viewDetailsHeadOfApprovalIDRef,
   } = useEscalatedApprovals();
-  const { setViewDetailsHeadOfApprovalModal } = useGlobalModal();
+  const {
+    setViewDetailsHeadOfApprovalModal,
+    setIsViewDetail,
+    setIsConductedTransaction,
+  } = useGlobalModal();
   const {
     setEmployeePendingApprovalsDataMqtt,
     activeTabRef,
@@ -85,6 +93,8 @@ const Dashboard = () => {
     setManageBrokersModalOpen,
     assetTypeListingData,
   } = useDashboardContext();
+
+  const { setUploadPortfolioModal } = usePortfolioContext();
 
   const { setEmployeeTransactionsTableDataMqtt } = useTransaction();
   const { setWebNotificationData } = useWebNotification();
@@ -456,6 +466,8 @@ const Dashboard = () => {
                       status:
                         payload?.workFlowStatus?.workFlowStatus || "Traded",
                     });
+                    setIsViewDetail(false);
+                    setIsConductedTransaction(false);
                   }
                   break;
                 }
@@ -467,14 +479,17 @@ const Dashboard = () => {
                     // });
                     setEmployeePendingApprovalsDataMqtt(true);
                   }
+                  setUploadPortfolioModal(false);
                   break;
                 }
                 case "EMPLOYEE_TRADE_APPROVAL_REQUEST_APPROVED": {
+                  // Testtest
                   // Patches in place instead of a full API refetch - see
                   // patchEmployeeMyApprovalRow above.
                   if (currentKey === "1") {
                     patchEmployeeMyApprovalRow(payload);
                   }
+                  // setUploadPortfolioModal(false);
                   break;
                 }
                 case "EMPLOYEE_TRADE_APPROVAL_REQUEST_DECLINED": {
@@ -566,7 +581,20 @@ const Dashboard = () => {
                   // anything - worst case is a stale row until next full
                   // load, not a crash.
                   if (currentKey === "1") {
-                    patchEmployeeMyApprovalRow(payload);
+                    // Payload has no approvalStatus block (workFlowStatus is null too),
+                    // same gap STATUS_CHANGE_TRADED has above - the generic mapper's
+                    // `item.approvalStatus?.approvalStatusName` read comes back blank
+                    // without an override. Falls back to the literal "Resubmit" - the
+                    // actual approvalStatusName the API uses for this state, per a real
+                    // SearchTradeApprovals response - if a future payload shape ever
+                    // does include the block.
+                    // patchEmployeeMyApprovalRow(payload);
+
+                    patchEmployeeMyApprovalRow(payload, {
+                      status:
+                        payload?.approvalStatus?.approvalStatusName ||
+                        "Resubmit",
+                    });
                   }
                   break;
                 }
@@ -799,6 +827,7 @@ const Dashboard = () => {
                   ) {
                     setComplianceOfficerReconcilePortfolioDataMqtt(true);
                   }
+
                   break;
                 }
                 case "COMPLIANCE_OFFICER_CONDUCTED_TRANSACTION": {

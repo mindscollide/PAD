@@ -1,7 +1,3 @@
-.mainContainer {
-  padding: 20px 24px;
-}
-
 .heading {
   font-family: "Switzer Variable", sans-serif;
   font-weight: 700;
@@ -20,6 +16,21 @@
 .collapse {
   background-color: transparent;
 }
+/* Only affects Panels inside this FAQ Collapse */
+.collapse :global(.ant-collapse-item) {
+  background-color: aliceblue;
+  border: 1px solid #e5e5e5;
+  border-radius: 8px;
+  margin-bottom: 12px;
+  overflow: hidden;
+}
+
+.collapse :global(.ant-collapse-header) {
+  align-items: center !important;
+}
+/* .collapse :global(.ant-collapse-expand-icon) {
+  align-items: center;
+} */
 
 .panel {
   background-color: #fff;
@@ -38,9 +49,9 @@
 
 .description {
   font-family: "Switzer Variable", sans-serif;
-  font-weight: 400;
+  font-weight: 500;
   font-size: 14px;
-  color: #424242;
+  color: #000;
   line-height: 1.5;
 }
 

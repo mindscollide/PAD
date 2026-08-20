@@ -8,7 +8,7 @@
   font-size: 26px;
   line-height: 100%;
   color: #30426a;
-  margin-bottom: 16px;
+  padding-bottom: 16px !important;
 }
 
 .settingsScrollArea {
@@ -30,22 +30,31 @@
 }
 
 .columnHeaderRow {
-  padding: 0 12px 4px;
+  /* padding: 0 12px 4px; */
+  padding-bottom: 12px;
 }
 
 .columnHeaderLabel {
   font-family: "Switzer Variable", sans-serif;
   font-weight: 600;
   font-size: 13px;
-  color: #7a7a7a;
+  color: #30426a;
   text-align: center;
+  padding-right: 16px;
 }
 
+.columnHeaderLabelLeft {
+  font-family: "Switzer Variable", sans-serif;
+  font-weight: 600;
+  font-size: 13px;
+  color: #30426a;
+  text-align: left;
+}
 .settingRow {
   align-items: center;
   padding: 10px 12px;
   margin-bottom: 6px;
-  border: 1px solid #b4b4b4;
+  /* border: 1px solid #b4b4b4; */
   border-radius: 4px;
   background-color: #fff;
 }
@@ -73,4 +82,10 @@
   justify-content: flex-end;
   gap: 12px;
   margin-top: 20px;
+}
+.settingRow:nth-of-type(odd) {
+  background-color: #fff;
+}
+.settingRow:nth-of-type(even) {
+  background-color: #edf3ff;
 }

@@ -19,6 +19,13 @@ import { GetMyProfileRequest } from "../../../api/dashboardApi";
  * Department name, Line manager name/email, Compliance officer name/email.
  * On click "Close", closes the modal and returns to the previous screen.
  */
+
+// Fields that genuinely may be null (no edit UI exists yet for
+// phone/address, no upload mechanism for a picture, and no
+// manager/CO configured for some accounts) - show "—", not "unknown" or
+// an error, per 2026-08-19_my_profile_and_notification_settings.md.
+const display = (value) => value || "—";
+
 const MyProfileModal = () => {
   const navigate = useNavigate();
   const { showNotification } = useNotification();
@@ -52,105 +59,121 @@ const MyProfileModal = () => {
     setProfile(null);
   };
 
-  // Fields that genuinely may be null (no edit UI exists yet for
-  // phone/address, no upload mechanism for a picture, and no
-  // manager/CO configured for some accounts) - show "—", not "unknown" or
-  // an error, per 2026-08-19_my_profile_and_notification_settings.md.
-  const display = (value) => (value ? value : "—");
-
   return (
     <GlobalModal
       visible={myProfileModalOpen}
-      width={"600px"}
+      width={"700px"}
       centered={true}
       onCancel={handleClose}
       modalBody={
         <div className={styles.mainContainer}>
-          <Row>
-            <Col span={24}>
-              <h3 className={styles.heading}>My Profile</h3>
-            </Col>
-          </Row>
+          <span className={styles.heading}>My Profile</span>
 
           <Row className={styles.avatarRow}>
-            <Col span={24} className={styles.avatarCol}>
+            <Col span={6} className={styles.avatarCol}>
               <Avatar
                 size={80}
                 icon={<UserOutlined />}
                 src={profile?.profilePictureURL || undefined}
               />
-              <div className={styles.fullName}>{display(profile?.fullName)}</div>
             </Col>
-          </Row>
 
-          <Row gutter={[12, 12]} className={styles.detailsRow}>
-            <Col span={12}>
-              <div className={styles.detailBox}>
-                <label className={styles.label}>Employee ID</label>
-                <label className={styles.value}>
-                  {display(profile?.employeeID)}
-                </label>
-              </div>
-            </Col>
-            <Col span={12}>
-              <div className={styles.detailBox}>
-                <label className={styles.label}>Email</label>
-                <label className={styles.value}>{display(profile?.email)}</label>
-              </div>
-            </Col>
-            <Col span={12}>
-              <div className={styles.detailBox}>
-                <label className={styles.label}>Phone</label>
-                <label className={styles.value}>{display(profile?.phone)}</label>
-              </div>
-            </Col>
-            <Col span={12}>
-              <div className={styles.detailBox}>
-                <label className={styles.label}>Address</label>
-                <label className={styles.value}>
-                  {display(profile?.address)}
-                </label>
-              </div>
-            </Col>
-            <Col span={24}>
-              <div className={styles.detailBox}>
-                <label className={styles.label}>Department Name</label>
-                <label className={styles.value}>
-                  {display(profile?.departmentName)}
-                </label>
-              </div>
-            </Col>
-            <Col span={12}>
-              <div className={styles.detailBox}>
-                <label className={styles.label}>Line Manager Name</label>
-                <label className={styles.value}>
-                  {display(profile?.lineManagerName)}
-                </label>
-              </div>
-            </Col>
-            <Col span={12}>
-              <div className={styles.detailBox}>
-                <label className={styles.label}>Line Manager Email</label>
-                <label className={styles.value}>
-                  {display(profile?.lineManagerEmail)}
-                </label>
-              </div>
-            </Col>
-            <Col span={12}>
-              <div className={styles.detailBox}>
-                <label className={styles.label}>Compliance Officer Name</label>
-                <label className={styles.value}>
-                  {display(profile?.complianceOfficerName)}
-                </label>
-              </div>
-            </Col>
-            <Col span={12}>
-              <div className={styles.detailBox}>
-                <label className={styles.label}>Compliance Officer Email</label>
-                <label className={styles.value}>
-                  {display(profile?.complianceOfficerEmail)}
-                </label>
-              </div>
+            <Col span={18}>
+              <Row className={styles.boxMargin}>
+                <div className={styles.detailBox}>
+                  <div>
+                    <span className={styles.label}>Full Name: </span>
+                    <span className={styles.value}>
+                      {display(profile?.fullName)}
+                    </span>
+                  </div>
+
+                  <div>
+                    <span className={styles.label}>Employee ID: </span>
+                    <span className={styles.value}>
+                      {display(profile?.employeeID)}
+                    </span>
+                  </div>
+
+                  <div>
+                    <span className={styles.label}>Phone: </span>
+                    <span className={styles.value}>
+                      {display(profile?.phone)}
+                    </span>
+                  </div>
+
+                  <div>
+                    <span className={styles.label}>Address: </span>
+                    <span className={styles.value}>
+                      {display(profile?.address)}
+                    </span>
+                  </div>
+
+                  <div>
+                    <span className={styles.label}>Email: </span>
+                    <span className={styles.value}>
+                      {display(profile?.email)}
+                    </span>
+                  </div>
+
+                  <div>
+                    <span className={styles.label}>Department: </span>
+                    <span className={styles.value}>
+                      {display(profile?.departmentName)}
+                    </span>
+                  </div>
+                </div>
+              </Row>
+
+              <Row className={styles.boxMargin}>
+                <div className={styles.lineManagerHeading}>Line Manager</div>
+              </Row>
+
+              <Row className={styles.boxMargin}>
+                <Col span={24}>
+                  <div className={`${styles.infoBox} ${styles.lineManagerBg}`}>
+                    <div className={styles.infoBoxCol}>
+                      <div className={styles.lmLabel}>Name:</div>
+                      <div className={styles.value}>
+                        {display(profile?.lineManagerName)}
+                      </div>
+                    </div>
+
+                    <div className={styles.infoBoxCol}>
+                      <div className={styles.lmLabel}>Email:</div>
+                      <div className={styles.value}>
+                        {display(profile?.lineManagerEmail)}
+                      </div>
+                    </div>
+                  </div>
+                </Col>
+              </Row>
+
+              <Row className={styles.boxMargin}>
+                <div className={styles.ComplianceOfficerHeading}>
+                  Compliance Officer
+                </div>
+              </Row>
+
+              <Row className={styles.boxMargin}>
+                <Col span={24}>
+                  <div className={`${styles.infoBox} ${styles.complianceBg}`}>
+                    <div className={styles.infoBoxCol}>
+                      <div className={styles.lmLabel}>Name:</div>
+                      <div className={styles.value}>
+                        {display(profile?.complianceOfficerName)}
+                      </div>
+                    </div>
+
+                    <div className={styles.infoBoxCol}>
+                      <div className={styles.lmLabel}>Email:</div>
+                      <div className={styles.value}>
+                        {display(profile?.complianceOfficerEmail)}
+                      </div>
+                    </div>
+                  </div>
+                </Col>
+              </Row>
             </Col>
           </Row>
         </div>

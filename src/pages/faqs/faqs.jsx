@@ -54,7 +54,7 @@ const Faqs = () => {
       }
       showLoader(false);
     },
-    [callApi, navigate, showLoader, showNotification],
+    [callApi, navigate, showLoader, showNotification]
   );
 
   // Initial fetch
@@ -97,8 +97,12 @@ const Faqs = () => {
   }, [containerRef.current, hasMore, loadingMore, faqData]);
 
   return (
-    <PageLayout background="gray-2">
-      <div className={style.mainContainer}>
+    <PageLayout
+      background="white"
+      style={{ marginTop: "10px" }}
+      // className={activeFilters.length > 0 && "changeHeight"}
+    >
+      <div>
         <Row>
           <Col span={24}>
             <h2 className={style.heading}>FAQ</h2>
@@ -132,9 +136,7 @@ const Faqs = () => {
                       }
                       className={style.panel}
                     >
-                      <div className={style.description}>
-                        {faq.description}
-                      </div>
+                      <div className={style.description}>{faq.description}</div>
                     </Panel>
                   );
                 })}
