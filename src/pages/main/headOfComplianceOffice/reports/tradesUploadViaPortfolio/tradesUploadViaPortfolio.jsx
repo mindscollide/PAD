@@ -319,6 +319,7 @@ const TradesUploadViaPortfolio = () => {
       showLoader,
       requestdata: requestdata,
       navigate,
+      setOpen,
     });
   };
 

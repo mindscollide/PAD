@@ -4892,7 +4892,8 @@ export const GetHTAPolicyBreachDetailsAPI = async ({
       showNotification({
         type: "error",
         title: "Error",
-        description: "Something went wrong while fetching Policy Breach Details.",
+        description:
+          "Something went wrong while fetching Policy Breach Details.",
       });
       return null;
     }
@@ -5312,6 +5313,7 @@ export const ExportHOCUploadedPortfolioReportExcel = async ({
   showLoader,
   requestdata,
   navigate,
+  setOpen,
 }) => {
   try {
     showLoader(true);
