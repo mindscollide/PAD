@@ -28,6 +28,8 @@ export { default as COMyAction } from "./main/complianceOfficer/myActions/index"
 export { default as COdataWiseTransactionsReports } from "./main/complianceOfficer/reports/dataWiseTransactionsReports/index";
 export { default as UserSessionWiseActivity } from "./adminMain/manageUsers/usersTab/sessionwise/index";
 export { default as ManageBrokerModal } from "./main/employes/manageBroker/index";
+export { default as MyProfileModal } from "./main/myProfile/MyProfileModal";
+export { default as NotificationSettingsModal } from "./main/notificationSettings/NotificationSettingsModal";
 export { default as COTransactionsSummarysReports } from "./main/complianceOfficer/reports/transactionsSummary/index";
 export { default as TradesUploadViaPortfolio } from "./main/headOfComplianceOffice/reports/tradesUploadViaPortfolio/tradesUploadViaPortfolio";
 export { default as HOCMyActionPage } from "./main/headOfComplianceOffice/myActions/index";

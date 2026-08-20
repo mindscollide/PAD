@@ -184,3 +184,149 @@ export const MarkNotificationAsReadRequest = async ({
     showLoader(false);
   }
 };
+
+// 🔹 GetNotificationSettings - one row per notification type applicable to
+// any role the calling user holds (2026-08-19_my_profile_and_notification_
+// settings.md). Empty request body, resolves to the calling user's own
+// role(s).
+export const GetNotificationSettingsRequest = async ({
+  callApi,
+  showNotification,
+  showLoader,
+  navigate,
+}) => {
+  try {
+    const res = await callApi({
+      requestMethod: import.meta.env
+        .VITE_GET_NOTIFICATION_SETTINGS_REQUEST_METHOD,
+      endpoint: import.meta.env.VITE_API_SETTINGS,
+      requestData: {},
+      navigate,
+    });
+
+    if (handleExpiredSession(res, navigate, showLoader)) return null;
+
+    if (!res?.result?.isExecuted) {
+      showNotification({
+        type: "error",
+        title: "Error",
+        description: "Something went wrong while fetching notification settings.",
+      });
+      return null;
+    }
+
+    if (res.success) {
+      const { responseMessage, settings } = res.result;
+
+      // Case 1 → Data available
+      if (
+        responseMessage ===
+        "Settings_SettingsServiceManager_GetNotificationSettings_01"
+      ) {
+        return settings || [];
+      }
+
+      // Case 2 → No data (everything still defaults to on - see SRS)
+      if (
+        responseMessage ===
+        "Settings_SettingsServiceManager_GetNotificationSettings_02"
+      ) {
+        return [];
+      }
+
+      const message = getMessage(responseMessage);
+      if (message) {
+        showNotification({
+          type: "warning",
+          title: message,
+          description: "No notification settings available.",
+        });
+      }
+      return [];
+    }
+
+    showNotification({
+      type: "error",
+      title: "Fetch Failed",
+      description: getMessage(res.message),
+    });
+    return null;
+  } catch {
+    showNotification({
+      type: "error",
+      title: "Error",
+      description:
+        "An unexpected error occurred while fetching notification settings.",
+    });
+    return null;
+  } finally {
+    showLoader(false);
+  }
+};
+
+// 🔹 SaveNotificationSettings - only the types the user actually changed
+// need to be sent (unlisted types are left untouched, per the doc).
+export const SaveNotificationSettingsRequest = async ({
+  callApi,
+  showNotification,
+  showLoader,
+  requestdata,
+  navigate,
+}) => {
+  try {
+    showLoader(true);
+    const res = await callApi({
+      requestMethod: import.meta.env
+        .VITE_SAVE_NOTIFICATION_SETTINGS_REQUEST_METHOD,
+      endpoint: import.meta.env.VITE_API_SETTINGS,
+      requestData: requestdata,
+      navigate,
+    });
+
+    if (handleExpiredSession(res, navigate, showLoader)) return null;
+
+    if (!res?.result?.isExecuted) {
+      showNotification({
+        type: "error",
+        title: "Error",
+        description: "Something went wrong while saving notification settings.",
+      });
+      return false;
+    }
+
+    if (res.success) {
+      const { responseMessage } = res.result;
+
+      if (
+        responseMessage ===
+        "Settings_SettingsServiceManager_SaveNotificationSettings_01"
+      ) {
+        return true;
+      }
+
+      showNotification({
+        type: "warning",
+        title: getMessage(responseMessage),
+        description: "Notification settings were not saved.",
+      });
+      return false;
+    }
+
+    showNotification({
+      type: "error",
+      title: "Save Failed",
+      description: getMessage(res.message),
+    });
+    return false;
+  } catch {
+    showNotification({
+      type: "error",
+      title: "Error",
+      description:
+        "An unexpected error occurred while saving notification settings.",
+    });
+    return false;
+  } finally {
+    showLoader(false);
+  }
+};

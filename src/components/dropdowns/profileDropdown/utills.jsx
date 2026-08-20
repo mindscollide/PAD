@@ -1,5 +1,4 @@
 import React from "react";
-import { Link } from "react-router-dom";
 import {
   UserOutlined,
   TeamOutlined,
@@ -15,18 +14,23 @@ export const getMenuItems = (
   style,
   handleLogout,
   setCurrentRoleIsAdmin,
-  setManageBrokersModalOpen
+  setManageBrokersModalOpen,
+  setMyProfileModalOpen,
+  setNotificationSettingsModalOpen
 ) => {
   const baseItems = [
     {
       key: "1",
       label: (
-        <Link className={style["dropdown-menu-item"]}>
+        <span
+          className={style["dropdown-menu-item"]}
+          onClick={() => setMyProfileModalOpen(true)}
+        >
           <UserOutlined className={style["dropdown-menu-icon"]} />
           <span className={style["dropdown-menu-options-title"]}>
             My Profile
           </span>
-        </Link>
+        </span>
       ),
     },
     hasEmployee && {
@@ -46,12 +50,15 @@ export const getMenuItems = (
     {
       key: "3",
       label: (
-        <Link className={style["dropdown-menu-item"]}>
+        <span
+          className={style["dropdown-menu-item"]}
+          onClick={() => setNotificationSettingsModalOpen(true)}
+        >
           <SettingOutlined className={style["dropdown-menu-icon"]} />
           <span className={style["dropdown-menu-options-title"]}>
             Notification Settings
           </span>
-        </Link>
+        </span>
       ),
     },
     {

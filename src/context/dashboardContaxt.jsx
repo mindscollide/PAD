@@ -77,6 +77,16 @@ export const DashboardProvider = ({ children }) => {
 
   /**
    * ------------------------------------------------------
+   * My Profile / Notification Settings modals (profile dropdown)
+   * ------------------------------------------------------
+   * Same open/close pattern as manageBrokersModalOpen above.
+   */
+  const [myProfileModalOpen, setMyProfileModalOpen] = useState(false);
+  const [notificationSettingsModalOpen, setNotificationSettingsModalOpen] =
+    useState(false);
+
+  /**
+   * ------------------------------------------------------
    * Instruments List (All Tradable Instruments)
    * ------------------------------------------------------
    */
@@ -170,6 +180,8 @@ export const DashboardProvider = ({ children }) => {
       reasonForEmployeeResubmit: [],
     });
     setManageBrokersModalOpen(false);
+    setMyProfileModalOpen(false);
+    setNotificationSettingsModalOpen(false);
   };
 
   /**
@@ -219,6 +231,12 @@ export const DashboardProvider = ({ children }) => {
         // manage Broker modal
         manageBrokersModalOpen,
         setManageBrokersModalOpen,
+
+        // My Profile / Notification Settings modals
+        myProfileModalOpen,
+        setMyProfileModalOpen,
+        notificationSettingsModalOpen,
+        setNotificationSettingsModalOpen,
       }}
     >
       {children}
