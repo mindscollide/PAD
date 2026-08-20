@@ -134,12 +134,7 @@ const MyHistory = () => {
   }, [employeeMyHistorySearch]);
 
   // -------------------- Table Columns --------------------
-  const columns = getMyHistoryColumn(
-    approvalStatusMap,
-    sortedInfo,
-    employeeMyHistorySearch,
-    setEmployeeMyHistorySearch,
-  );
+  const columns = getMyHistoryColumn(approvalStatusMap, sortedInfo);
 
   /** 🔹 Handle removing individual filter */
   const handleRemoveFilter = (key) => {
@@ -149,6 +144,8 @@ const MyHistory = () => {
       quantity: { quantity: 0 },
       dateRange: { startDate: null, endDate: null },
       nature: { nature: "" },
+      type: { type: [] },
+      status: { status: [] },
     };
 
     setEmployeeMyHistorySearch((prev) => ({
@@ -169,6 +166,8 @@ const MyHistory = () => {
       startDate: null,
       endDate: null,
       nature: "",
+      type: [],
+      status: [],
       pageNumber: 1,
       filterTrigger: true,
     }));
@@ -176,8 +175,19 @@ const MyHistory = () => {
 
   /** 🔹 Build Active Filters */
   const activeFilters = (() => {
-    const { requestID, instrumentName, startDate, endDate, quantity, nature } =
-      employeeMyHistorySearch || {};
+    const {
+      requestID,
+      instrumentName,
+      startDate,
+      endDate,
+      quantity,
+      nature,
+      type,
+      status,
+    } = employeeMyHistorySearch || {};
+
+    const truncate = (val) =>
+      val?.length > 13 ? `${val.slice(0, 13)}...` : val;
 
     return [
       requestID && {
@@ -205,6 +215,14 @@ const MyHistory = () => {
       nature && {
         key: "nature",
         value: nature.length > 13 ? nature.slice(0, 13) + "..." : nature,
+      },
+      type?.length > 0 && {
+        key: "type",
+        value: truncate(type.join(", ")),
+      },
+      status?.length > 0 && {
+        key: "status",
+        value: truncate(status.join(", ")),
       },
     ].filter(Boolean);
   })();
