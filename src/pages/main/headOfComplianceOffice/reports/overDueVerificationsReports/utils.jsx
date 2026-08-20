@@ -319,7 +319,7 @@ export const getBorderlessTableColumns = ({
           className="small-dark-button"
           text={"View Details"}
           onClick={() => {
-            handleViewDetailsForReconcileTransaction(record?.workFlowID);
+            handleViewDetailsForReconcileTransaction(record);
           }}
         />
       </div>

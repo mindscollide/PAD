@@ -230,6 +230,35 @@
 
 .customlabel {
   text-align: center;
+  /* Every step's label div had a natural width driven purely by its own
+     title text ("Escalated by You" is much narrower than "Marked
+     Non-Compliant by <full name>") while .customdesc below is pinned to a
+     fixed 165px - react-form-stepper's connector line is positioned with
+     percentages relative to its own step's container width, so a step
+     noticeably narrower than its neighbors (like the short "Escalated by
+     You" title) throws that math off and visually breaks the connector
+     right before/after it. Matching .customdesc's fixed width here keeps
+     every step's footprint consistent regardless of title length. */
+  width: 165px;
+}
+
+/* react-form-stepper's own per-step wrapper (id="RFS-StepContainer",
+   shared verbatim by every Stepper instance across the app, hence scoped
+   under .backgrounColorOfStepper here so this only ever touches this
+   page's own stepper) defaults to flex: 1 1 0% - every step SHRINKS to
+   divide the visible width equally instead of keeping its natural size,
+   so .backgrounColorOfStepper's overflow-x: auto below never actually
+   triggers (there's nothing to overflow, flexbox just keeps cramming
+   steps into whatever width is available) and the fixed-width label
+   above instead overflows its own now-too-narrow shrunk container,
+   visually overlapping the next step. flex: 0 0 auto with a width
+   matching the label keeps every step uniformly sized (so the
+   connector's percentage math stays correct) and lets the row grow past
+   the visible width once there are enough steps - which is what actually
+   makes the horizontal scrollbar engage. */
+.backgrounColorOfStepper :global([id="RFS-StepContainer"]) {
+  flex: 0 0 auto !important;
+  width: 165px !important;
 }
 
 .customtitle {
@@ -237,6 +266,16 @@
   color: #30426a;
   font-weight: 700;
   font-size: 14px;
+  /* .backgrounColorOfStepper below sets white-space: nowrap !important on
+     the outer row so the row itself can scroll horizontally instead of
+     wrapping onto a new line - but white-space inherits, so without this
+     override a long title ("Marked Non-Compliant by Firstname Lastname")
+     couldn't wrap within its own fixed-width step either, and spilled
+     out sideways over the next step instead. Explicitly re-enabling
+     wrapping here keeps the outer row's nowrap intact while letting each
+     step's own title text wrap inside its box like normal. */
+  white-space: normal;
+  word-break: break-word;
 }
 .backgrounColorOfStepper {
   background-color: #edf3ff !important;
@@ -262,6 +301,9 @@
   color: #30426a;
   font-weight: 500;
   width: 165px !important;
+  /* Same nowrap-inheritance override as .customtitle above. */
+  white-space: normal;
+  word-break: break-word;
 }
 
 .customellipsis {

@@ -204,6 +204,28 @@ const ViewTicketEscalatedModal = () => {
     }
   };
 
+  /**
+   * 🔹 Blob URL for the currently selected file's preview.
+   * Was being built inline in the iframe's `src` on every render -
+   * URL.createObjectURL() returns a brand-new unique URL each call even
+   * for identical blob bytes, so any unrelated re-render of this modal
+   * (hovering a Popconfirm, another file's loadingIndex flipping, any
+   * context update) changed the iframe's src and made the browser reload
+   * the whole PDF from scratch - the visible "flickery" reload. Memoized
+   * so it's only recomputed when the actual selected file's blob changes,
+   * and revoked on cleanup so blob URLs don't leak.
+   */
+  const previewUrl = useMemo(() => {
+    if (!selectedFile?.attachmentBlob) return null;
+    return base64ToBlobUrl(selectedFile.attachmentBlob);
+  }, [selectedFile?.attachmentBlob]);
+
+  useEffect(() => {
+    return () => {
+      if (previewUrl) URL.revokeObjectURL(previewUrl);
+    };
+  }, [previewUrl]);
+
   return (
     <GlobalModal
       visible={isViewTicketTransactionModal}
@@ -227,10 +249,8 @@ const ViewTicketEscalatedModal = () => {
                 {selectedFile ? (
                   <iframe
                     src={
-                      selectedFile.attachmentBlob
-                        ? `${base64ToBlobUrl(
-                            selectedFile.attachmentBlob
-                          )}#toolbar=0&navpanes=0&scrollbar=0`
+                      previewUrl
+                        ? `${previewUrl}#toolbar=0&navpanes=0&scrollbar=0`
                         : ""
                     }
                     width="99%"

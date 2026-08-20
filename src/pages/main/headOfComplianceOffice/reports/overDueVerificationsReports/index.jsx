@@ -78,8 +78,10 @@ const HeadCompianceOfficerOverdueVerificationReports = () => {
   const { assetTypeListingData, setAssetTypeListingData } =
     useDashboardContext();
 
-  const { setIsEscalatedHeadOfComplianceViewDetailData } =
-    useReconcileContext();
+  const {
+    setIsEscalatedHeadOfComplianceViewDetailData,
+    setSelectedEscalatedHeadOfComplianceData,
+  } = useReconcileContext();
 
   // -------------------- Local State --------------------
   const [sortedInfo, setSortedInfo] = useState({});
@@ -216,9 +218,9 @@ const HeadCompianceOfficerOverdueVerificationReports = () => {
 
   // This Api is for the getAllViewDetailModal For myTransaction in Emp role
   // GETALLVIEWDETAIL OF Transaction API FUNCTION
-  const handleViewDetailsForReconcileTransaction = async (workFlowID) => {
+  const handleViewDetailsForReconcileTransaction = async (record) => {
     await showLoader(true);
-    const requestdata = { TradeApprovalID: workFlowID };
+    const requestdata = { TradeApprovalID: record?.workFlowID };
 
     const responseData =
       await GetAllComplianceOfficerReconcileTransactionAndPortfolioRequest({
@@ -231,6 +233,21 @@ const HeadCompianceOfficerOverdueVerificationReports = () => {
 
     if (responseData) {
       setIsEscalatedHeadOfComplianceViewDetailData(responseData);
+      // The shared ViewDetailHeadOfComplianceReconcileTransaction modal's
+      // "Get Files" call (handleViewTicket) reads WorkFlowID off
+      // selectedEscalatedHeadOfComplianceData?.workflowID (lowercase "flow"
+      // - matches the Escalated Verifications page's own row field, see
+      // escalatedVerification/util.jsx) - this report's row data uses
+      // workFlowID (capital F) instead, and this page never set that
+      // context value at all, so opening "View Details" from here always
+      // sent WorkFlowID: undefined to GetWorkFlowFilesAPI, causing
+      // "Get Files Failed - Something went wrong while fetching workflow
+      // files." every time. Set it here too, normalized to the casing the
+      // shared modal actually reads.
+      setSelectedEscalatedHeadOfComplianceData({
+        ...record,
+        workflowID: record?.workFlowID,
+      });
       setViewDetailHeadOfComplianceEscalated(true);
     }
   };

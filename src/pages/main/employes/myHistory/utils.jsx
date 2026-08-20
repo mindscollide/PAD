@@ -1,7 +1,5 @@
 // columns.js
 import React from "react";
-import TypeColumnTitle from "../../../../components/dropdowns/filters/typeColumnTitle";
-import StatusColumnTitle from "../../../../components/dropdowns/filters/statusColumnTitle";
 import { Tag, Tooltip } from "antd";
 import {
   dashBetweenApprovalAssets,
@@ -42,12 +40,7 @@ export const buildMyHistoryApiRequest = (
   Length: Number(searchState.pageSize) || 10,
 });
 
-export const getMyHistoryColumn = (
-  approvalStatusMap,
-  sortedInfo,
-  employeeMyHistorySearch,
-  setEmployeeMyHistorySearch,
-) => [
+export const getMyHistoryColumn = (approvalStatusMap, sortedInfo) => [
   {
     title: withSortIcon(
       "Request/Transaction ID",
@@ -180,19 +173,21 @@ export const getMyHistoryColumn = (
     render: (text) => <span className="font-medium">{text}</span>,
   },
   {
-    title: (
-      <TypeColumnTitle
-        state={employeeMyHistorySearch}
-        setState={setEmployeeMyHistorySearch}
-      />
-    ),
+    // CHANGED (2026-08-20): was an inline table-header dropdown
+    // (TypeColumnTitle) doing its own client-side filtering - filtering
+    // now lives in the search bar (EmployeeHistoryFilter) as a proper
+    // server-side filter alongside the rest, so this column is just a
+    // plain sortable header now, same pattern as every other column here.
+    title: withSortIcon("Type", "type", sortedInfo, "center"),
+    align: "center",
     dataIndex: "type",
     key: "type",
     width: 130,
-    filteredValue: employeeMyHistorySearch?.type?.length
-      ? employeeMyHistorySearch.type
-      : null,
-    onFilter: () => true,
+    sorter: (a, b) => (a?.type || "").localeCompare(b?.type || ""),
+    sortDirections: ["ascend", "descend"],
+    sortOrder: sortedInfo?.columnKey === "type" ? sortedInfo.order : null,
+    showSorterTooltip: false,
+    sortIcon: () => null,
     render: (type) => <span>{type || "—"}</span>,
   },
   {
@@ -209,19 +204,19 @@ export const getMyHistoryColumn = (
     render: (q) => <span className="font-medium">{q.toLocaleString()}</span>,
   },
   {
-    title: (
-      <StatusColumnTitle
-        state={employeeMyHistorySearch}
-        setState={setEmployeeMyHistorySearch}
-      />
-    ),
+    // CHANGED (2026-08-20): same as the Type column above - was an inline
+    // table-header dropdown (StatusColumnTitle), moved to the search bar
+    // as a proper filter; this is now just a plain sortable header.
+    title: withSortIcon("Status", "status", sortedInfo, "center"),
+    align: "center",
     dataIndex: "status",
     key: "status",
-    filteredValue: employeeMyHistorySearch?.status?.length
-      ? employeeMyHistorySearch.status
-      : null,
-    onFilter: () => true,
     width: 220,
+    sorter: (a, b) => (a?.status || "").localeCompare(b?.status || ""),
+    sortDirections: ["ascend", "descend"],
+    sortOrder: sortedInfo?.columnKey === "status" ? sortedInfo.order : null,
+    showSorterTooltip: false,
+    sortIcon: () => null,
     render: (status) => {
       const tag = approvalStatusMap?.[status] || {};
       return (
