@@ -868,7 +868,9 @@ const Dashboard = () => {
                       updatedRows[existingIndex] = {
                         ...updatedRows[existingIndex],
                         status:
-                          payload?.approvalStatus?.approvalStatusName ||
+                          (payload?.approvalStatus?.approvalStatusName ===
+                            "Approved" &&
+                            "Compliant") ||
                           updatedRows[existingIndex].status,
                       };
 

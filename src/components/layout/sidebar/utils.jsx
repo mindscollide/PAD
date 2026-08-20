@@ -467,7 +467,7 @@ const sidebarItems = (
     icon: (
       <img
         draggable={false}
-        src={getIcon("faq", FaqLightIcon, FaqDarkIcon)}
+        src={getIcon("50", FaqLightIcon, FaqDarkIcon)}
         alt="FAQ"
         className={getIconClasses()}
       />
