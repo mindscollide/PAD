@@ -454,7 +454,13 @@ const MyHistory = () => {
             : formatApiDateTime(`${wf.creationDate} ${wf.creationTime}`);
 
         finalStep = {
-          status: wf.workFlowStatus,
+          // Display-only relabel: "Resubmit" -> "Resubmitted" for this
+          // final step (it's reporting a completed action, not an
+          // instruction) - the raw wf.workFlowStatus value below is left
+          // untouched for the requesterID check right after, so that
+          // comparison keeps matching the backend's actual string.
+          status:
+            wf.workFlowStatus === "Resubmit" ? "Resubmitted" : wf.workFlowStatus,
           date: finalStepDate,
           // Only show the tracking ID here when THIS request was itself
           // resubmitted (workFlowStatus === "Resubmit") — then
