@@ -1,6 +1,5 @@
 import React, { useEffect, useState, useRef, useCallback } from "react";
 import { Breadcrumb, Col, Row } from "antd";
-import PDF from "../../../../../assets/img/pdf.png";
 import Excel from "../../../../../assets/img/xls.png";
 import { UpOutlined, DownOutlined } from "@ant-design/icons";
 // 🔹 Components
@@ -15,16 +14,13 @@ import {
 } from "./utils";
 
 // 🔹 Contexts
-import { useGlobalModal } from "../../../../../context/GlobalModalContext";
 
 // 🔹 Styles
 import style from "./PortfolioHistoryReports.module.css";
 import { useMyApproval } from "../../../../../context/myApprovalContaxt";
 import {
-  ExportOverdueVerificationCOExcel,
   ExportPortfolioHistoryCOExcel,
   GetComplianceOfficerPortfolioHistoryRequestApi,
-  SearchHOCOverdueVerificationsRequestApi,
 } from "../../../../../api/myApprovalApi";
 import { useNotification } from "../../../../../components/NotificationProvider/NotificationProvider";
 import { useApi } from "../../../../../context/ApiContext";
@@ -35,7 +31,6 @@ import { useDashboardContext } from "../../../../../context/dashboardContaxt";
 import { getSafeAssetTypeData } from "../../../../../common/funtions/assetTypesList";
 import { useTableScrollBottom } from "../../../../../common/funtions/scroll";
 import CustomButton from "../../../../../components/buttons/button";
-import { useSidebarContext } from "../../../../../context/sidebarContaxt";
 import { approvalStatusMap } from "../../../../../components/tables/borderlessTable/utill";
 
 const CompianceOfficerPortfolioHistoryReports = () => {
@@ -58,11 +53,6 @@ const CompianceOfficerPortfolioHistoryReports = () => {
     setCoPortfolioHistoryReportSearch,
     resetComplianceOfficerPortfolioHistoryReportSearch,
   } = useSearchBarContext();
-
-  const { selectedKey } = useSidebarContext();
-  console.log(selectedKey, "selectedKey");
-
-  console.log(coPortfolioHistoryListData, "coPortfolioHistoryListData");
 
   const { assetTypeListingData, setAssetTypeListingData } =
     useDashboardContext();
@@ -184,12 +174,11 @@ const CompianceOfficerPortfolioHistoryReports = () => {
 
       // 🔹 no longer store a running row-count in pageNumber — that's what
       // was breaking the offset math on scroll. Just clear filterTrigger here.
-      if (coPortfolioHistoryReportSearch?.filterTrigger) {
-        setCoPortfolioHistoryReportSearch((prev) => ({
-          ...prev,
-          filterTrigger: false,
-        }));
-      }
+      setCoPortfolioHistoryReportSearch((prev) => ({
+        ...prev,
+        pageNumber: prev.pageNumber + 1,
+        ...(prev.filterTrigger ? { filterTrigger: false } : {}),
+      }));
     },
     [
       assetTypeListingData,
@@ -267,21 +256,10 @@ const CompianceOfficerPortfolioHistoryReports = () => {
 
       try {
         setLoadingMore(true);
-        const pageSize = 10;
-        const currentLength =
-          coPortfolioHistoryListData?.totalRecordsTable || 0;
-        const nextPageNumber = Math.floor(currentLength / pageSize) + 1;
-
-        const baseRequest = buildApiRequest(
+        const requestData = buildApiRequest(
           coPortfolioHistoryReportSearch,
           assetTypeListingData
         );
-        const requestData = {
-          ...baseRequest,
-          PageNumber: nextPageNumber,
-          Length: pageSize,
-        };
-
         await fetchApiCall(requestData, false, false);
       } catch (err) {
         console.error("Error loading more approvals:", err);
@@ -313,7 +291,7 @@ const CompianceOfficerPortfolioHistoryReports = () => {
     setCoPortfolioHistoryReportSearch((prev) => ({
       ...prev,
       ...resetMap[key], // reset only the clicked filter
-      pageNumber: 0,
+      pageNumber: 1,
       filterTrigger: true,
     }));
   };
@@ -328,7 +306,7 @@ const CompianceOfficerPortfolioHistoryReports = () => {
       quantity: 0,
       type: [],
       status: [],
-      pageNumber: 0,
+      pageNumber: 1,
       filterTrigger: true,
     }));
   };
