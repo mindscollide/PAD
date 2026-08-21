@@ -327,16 +327,15 @@ export const getBorderlessTableColumnsViewDetails = ({
   sortedInfo,
   hocTransactionsSummarysReportsViewDetailsSearch,
   setHOCTransactionsSummarysReportsViewDetailSearch,
-  handelViewDetails,
   setIsViewComments,
   setSelectedWorkFlowViewDetaild,
 }) => [
   {
-    title: withSortIcon("Employee ID", "employeeID", sortedInfo),
+    title: withSortIcon("ID", "employeeID", sortedInfo),
     dataIndex: "employeeID",
     key: "employeeID",
-    width: 150,
-    align: "left",
+    width: 60,
+    align: "center",
     ellipsis: true,
     sorter: (a, b) =>
       parseInt(a.employeeID.replace(/[^\d]/g, ""), 10) -
@@ -353,7 +352,7 @@ export const getBorderlessTableColumnsViewDetails = ({
     title: withSortIcon("Employee Name", "employeeName", sortedInfo),
     dataIndex: "employeeName",
     key: "employeeName",
-    width: 200,
+    width: 150,
     align: "left",
     ellipsis: true,
     sorter: (a, b) => a.employeeName.localeCompare(b.employeeName),
@@ -369,7 +368,7 @@ export const getBorderlessTableColumnsViewDetails = ({
     dataIndex: "instrumentName",
     key: "instrumentName",
     align: "left",
-    width: 150,
+    width: 100,
     ellipsis: true,
     sorter: (a, b) => {
       const nameA = a?.instrumentShortCode || "";
@@ -426,9 +425,8 @@ export const getBorderlessTableColumnsViewDetails = ({
     ),
     dataIndex: "transactionDate",
     key: "transactionDate",
-    width: 200,
+    width: 180,
     align: "center",
-    ellipsis: true,
     sorter: (a, b) => {
       const dateA = new Date(`${a.transactionDate}`).getTime();
       const dateB = new Date(`${b.transactionDate}`).getTime();
@@ -453,9 +451,8 @@ export const getBorderlessTableColumnsViewDetails = ({
       />
     )),
     dataIndex: "type",
-    width: 150,
+    width: 100,
     key: "type",
-    ellipsis: true,
     filteredValue: hocTransactionsSummarysReportsViewDetailsSearch.type?.length
       ? hocTransactionsSummarysReportsViewDetailsSearch.type
       : null,
@@ -485,8 +482,7 @@ export const getBorderlessTableColumnsViewDetails = ({
     align: "center",
     dataIndex: "actionDate",
     key: "actionDate",
-    width: 160,
-    ellipsis: true,
+    width: 180,
     sorter: (a, b) => (a?.actionDate || "").localeCompare(b?.actionDate || ""),
     sortOrder: sortedInfo?.columnKey === "actionDate" ? sortedInfo.order : null,
     showSorterTooltip: false,
@@ -503,7 +499,6 @@ export const getBorderlessTableColumnsViewDetails = ({
     key: "actionBy",
     width: 150,
     align: "left",
-    ellipsis: true,
     sorter: (a, b) => (a?.actionBy || "").localeCompare(b?.actionBy || ""),
     sortDirections: ["ascend", "descend"],
     sortOrder: sortedInfo?.columnKey === "actionBy" ? sortedInfo.order : null,
@@ -525,7 +520,7 @@ export const getBorderlessTableColumnsViewDetails = ({
         setState={setHOCTransactionsSummarysReportsViewDetailSearch}
       />
     )),
-    width: 200,
+    width: 150,
     dataIndex: "status",
     key: "status",
     ellipsis: true,
@@ -548,7 +543,7 @@ export const getBorderlessTableColumnsViewDetails = ({
     render: (_, record) => (
       <div className={style.viewEditClass}>
         <Button
-          className="small-light-button"
+          className="viewCommentsButton"
           text={"View Comments"}
           onClick={() => {
             setSelectedWorkFlowViewDetaild(record);
