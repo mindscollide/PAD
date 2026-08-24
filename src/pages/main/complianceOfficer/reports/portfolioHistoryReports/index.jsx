@@ -36,6 +36,34 @@ import { approvalStatusMap } from "../../../../../components/tables/borderlessTa
 const CompianceOfficerPortfolioHistoryReports = () => {
   const navigate = useNavigate();
   const hasFetched = useRef(false);
+  // Bumped ONLY by a replace-style fetch (initial load / filter change) -
+  // represents the current "filter epoch". An append (scroll "load more")
+  // fetch records this value when issued and, on completion, only merges
+  // if it's unchanged - i.e. no newer filter/initial load has started
+  // since. A replace's own response is only applied if it's still the
+  // latest epoch too (guards against two rapid filter changes racing each
+  // other). This alone isn't quite enough on its own - see
+  // replaceInFlightRef below for why.
+  const generationRef = useRef(0);
+  // True for the entire duration a replace-style fetch is in flight.
+  // generationRef alone can't stop this specific race: a scroll "load
+  // more" that gets issued WHILE a filter's replace fetch is still
+  // pending shares that same (not-yet-bumped-again) epoch, so it would
+  // pass the generation check and get applied as an APPEND onto the
+  // still-old, pre-filter list the instant it lands - even if that's
+  // before the replace's own response comes back. Blocking any append
+  // from being issued at all while a replace is in flight closes that
+  // window (this is exactly what was reported: applying a Status filter
+  // while a scroll fetch was mid-flight left the old rows in place with
+  // the new ones added on top instead of replacing them).
+  const replaceInFlightRef = useRef(false);
+  // Next page to request for a scroll "load more" - tracked explicitly
+  // instead of trusting coPortfolioHistoryReportSearch.pageNumber (whose
+  // increment step here had gone missing/inconsistent between call sites,
+  // which on its own would have kept re-requesting - and re-appending -
+  // the same page on every scroll). Reset to 2 on every replace (page 1
+  // just loaded fresh) and incremented by 1 after each successful append.
+  const nextPageRef = useRef(2);
   const tableScrollEmployeeTransaction = useRef(null);
 
   // -------------------- Contexts --------------------
@@ -62,142 +90,95 @@ const CompianceOfficerPortfolioHistoryReports = () => {
   const [loadingMore, setLoadingMore] = useState(false);
   const [open, setOpen] = useState(false);
 
-  // -------------------- Helpers --------------------
-
-  /**
-   * Fetches transactions from API.
-   * @param {boolean} flag - whether to show loader
-   */
-  // const fetchApiCall = useCallback(
-  //   async (requestData, replace = false, showLoaderFlag = true) => {
-  //     if (!requestData || typeof requestData !== "object") return;
-  //     if (showLoaderFlag) showLoader(true);
-  //     const res = await GetComplianceOfficerPortfolioHistoryRequestApi({
-  //       callApi,
-  //       showNotification,
-  //       showLoader,
-  //       navigate,
-  //       requestdata: requestData,
-  //     });
-
-  //     // ✅ Always get the freshest version (from memory or session)
-  //     const currentAssetTypeData = getSafeAssetTypeData(
-  //       assetTypeListingData,
-  //       setAssetTypeListingData
-  //     );
-
-  //     const records = Array.isArray(res?.complianceOfficerPortfolioHistory)
-  //       ? res.complianceOfficerPortfolioHistory
-  //       : [];
-  //     console.log("records", records);
-  //     const mapped = mappingDateWiseTransactionReport(
-  //       currentAssetTypeData?.Equities,
-  //       records
-  //     );
-  //     if (!mapped || typeof mapped !== "object") return;
-  //     console.log("records", mapped);
-
-  //     setCoPortfolioHistoryListData((prev) => ({
-  //       complianceOfficerPortfolioHistory: replace
-  //         ? mapped
-  //         : [...(prev?.complianceOfficerPortfolioHistory || []), ...mapped],
-  //       // this is for to run lazy loading its data comming from database of total data in db
-  //       totalRecordsDataBase: res?.totalRecords || 0,
-  //       // this is for to know how mush dta currently fetch from  db
-  //       totalRecordsTable: replace
-  //         ? mapped.length
-  //         : coPortfolioHistoryListData.totalRecordsTable + mapped.length,
-  //     }));
-  //     setCoPortfolioHistoryReportSearch((prev) => {
-  //       const next = {
-  //         ...prev,
-  //         pageNumber: replace ? mapped.length : prev.pageNumber + mapped.length,
-  //       };
-
-  //       // this is for check if filter value get true only on that it will false
-  //       if (prev.filterTrigger) {
-  //         next.filterTrigger = false;
-  //       }
-
-  //       return next;
-  //     });
-  //   },
-  //   [
-  //     assetTypeListingData,
-  //     callApi,
-  //     navigate,
-  //     setCoPortfolioHistoryReportSearch,
-  //     showLoader,
-  //     showNotification,
-  //   ]
-  // );
-
   // -------------------- Effects --------------------
 
   // 🔹 Initial Fetch
 
   const fetchApiCall = useCallback(
     async (requestData, replace = false, showLoaderFlag = true) => {
-      if (!requestData || typeof requestData !== "object") return;
+      if (!requestData || typeof requestData !== "object") return false;
+
+      // An append (scroll "load more") never gets issued while a replace
+      // (filter/initial load) is still in flight - see replaceInFlightRef
+      // above. A replace itself is always allowed through; it's what
+      // starts the block in the first place.
+      if (!replace && replaceInFlightRef.current) return false;
+
       if (showLoaderFlag) showLoader(true);
-      const res = await GetComplianceOfficerPortfolioHistoryRequestApi({
-        callApi,
-        showNotification,
-        showLoader,
-        navigate,
-        requestdata: requestData,
-      });
 
-      const currentAssetTypeData = getSafeAssetTypeData(
-        assetTypeListingData,
-        setAssetTypeListingData
-      );
+      // A replace starts a NEW epoch immediately, before the network call
+      // goes out - this instantly invalidates any append (or older
+      // replace) already in flight from a previous epoch, no matter which
+      // one's response happens to land first. An append just records
+      // which epoch it belongs to, to check against when it completes.
+      const myGeneration = replace
+        ? ++generationRef.current
+        : generationRef.current;
+      if (replace) replaceInFlightRef.current = true;
 
-      const records = Array.isArray(res?.complianceOfficerPortfolioHistory)
-        ? res.complianceOfficerPortfolioHistory
-        : [];
-      const mapped = mappingDateWiseTransactionReport(
-        currentAssetTypeData?.Equities,
-        records
-      );
-      if (!mapped || typeof mapped !== "object") return;
+      try {
+        const res = await GetComplianceOfficerPortfolioHistoryRequestApi({
+          callApi,
+          showNotification,
+          showLoader,
+          navigate,
+          requestdata: requestData,
+        });
 
-      setCoPortfolioHistoryListData((prev) => ({
-        complianceOfficerPortfolioHistory: replace
-          ? mapped
-          : [...(prev?.complianceOfficerPortfolioHistory || []), ...mapped],
-        totalRecordsDataBase: res?.totalRecords || 0,
-        totalRecordsTable: replace
-          ? mapped.length
-          : coPortfolioHistoryListData.totalRecordsTable + mapped.length,
-      }));
+        // Stale response - a newer replace has started an epoch since
+        // this one was issued. Discard rather than merge (whether this
+        // would have replaced or appended).
+        if (myGeneration !== generationRef.current) return false;
 
-      // 🔹 no longer store a running row-count in pageNumber — that's what
-      // was breaking the offset math on scroll. Just clear filterTrigger here.
-      setCoPortfolioHistoryReportSearch((prev) => ({
-        ...prev,
-        pageNumber: prev.pageNumber + 1,
-        ...(prev.filterTrigger ? { filterTrigger: false } : {}),
-      }));
+        const currentAssetTypeData = getSafeAssetTypeData(
+          assetTypeListingData,
+          setAssetTypeListingData,
+        );
+
+        const records = Array.isArray(res?.complianceOfficerPortfolioHistory)
+          ? res.complianceOfficerPortfolioHistory
+          : [];
+        const mapped = mappingDateWiseTransactionReport(
+          currentAssetTypeData?.Equities,
+          records,
+        );
+        if (!mapped || typeof mapped !== "object") return false;
+
+        setCoPortfolioHistoryListData((prev) => ({
+          complianceOfficerPortfolioHistory: replace
+            ? mapped
+            : [...(prev?.complianceOfficerPortfolioHistory || []), ...mapped],
+          totalRecordsDataBase: res?.totalRecords || 0,
+          totalRecordsTable: replace
+            ? mapped.length
+            : (prev?.totalRecordsTable || 0) + mapped.length,
+        }));
+
+        return true;
+      } finally {
+        if (replace) replaceInFlightRef.current = false;
+      }
     },
     [
       assetTypeListingData,
       callApi,
       navigate,
-      setCoPortfolioHistoryReportSearch,
-      coPortfolioHistoryReportSearch?.filterTrigger,
+      setCoPortfolioHistoryListData,
       showLoader,
       showNotification,
-    ]
+    ],
   );
 
   useEffect(() => {
     if (hasFetched.current) return;
     hasFetched.current = true;
-    const requestData = buildApiRequest(
-      coPortfolioHistoryReportSearch,
-      assetTypeListingData
-    );
+    // Page 1 is being loaded fresh here - the next scroll should ask for
+    // page 2, see nextPageRef above.
+    nextPageRef.current = 2;
+    const requestData = {
+      ...buildApiRequest(coPortfolioHistoryReportSearch, assetTypeListingData),
+      PageNumber: 1,
+    };
     fetchApiCall(requestData, true, true);
   }, []);
 
@@ -213,39 +194,25 @@ const CompianceOfficerPortfolioHistoryReports = () => {
   // 🔹 call api on search
   useEffect(() => {
     if (coPortfolioHistoryReportSearch?.filterTrigger) {
-      const requestData = buildApiRequest(
-        coPortfolioHistoryReportSearch,
-        assetTypeListingData
-      );
+      // Fresh page 1 for the new filter - same reset as the initial fetch
+      // above.
+      nextPageRef.current = 2;
+      const requestData = {
+        ...buildApiRequest(
+          coPortfolioHistoryReportSearch,
+          assetTypeListingData,
+        ),
+        PageNumber: 1,
+      };
+      setCoPortfolioHistoryReportSearch((prev) => ({
+        ...prev,
+        filterTrigger: false,
+      }));
       fetchApiCall(requestData, true, true);
     }
   }, [coPortfolioHistoryReportSearch?.filterTrigger]);
 
   // 🔹 Infinite Scroll (lazy loading)
-  // useTableScrollBottom(
-  //   async () => {
-  //     if (
-  //       coPortfolioHistoryListData?.totalRecordsDataBase <=
-  //       coPortfolioHistoryListData?.totalRecordsTable
-  //     )
-  //       return;
-
-  //     try {
-  //       setLoadingMore(true);
-  //       const requestData = buildApiRequest(
-  //         coPortfolioHistoryReportSearch,
-  //         assetTypeListingData
-  //       );
-  //       await fetchApiCall(requestData, false, false);
-  //     } catch (err) {
-  //       console.error("Error loading more approvals:", err);
-  //     } finally {
-  //       setLoadingMore(false);
-  //     }
-  //   },
-  //   0,
-  //   "border-less-table-blue"
-  // );
   useTableScrollBottom(
     async () => {
       if (
@@ -253,14 +220,25 @@ const CompianceOfficerPortfolioHistoryReports = () => {
         coPortfolioHistoryListData?.totalRecordsTable
       )
         return;
+      // Extra, cheap early-out on top of fetchApiCall's own guard - no
+      // point building a request/flipping the loader for a call we know
+      // will be rejected.
+      if (replaceInFlightRef.current) return;
 
       try {
         setLoadingMore(true);
-        const requestData = buildApiRequest(
-          coPortfolioHistoryReportSearch,
-          assetTypeListingData
-        );
-        await fetchApiCall(requestData, false, false);
+        const requestData = {
+          ...buildApiRequest(
+            coPortfolioHistoryReportSearch,
+            assetTypeListingData,
+          ),
+          PageNumber: nextPageRef.current,
+        };
+        const applied = await fetchApiCall(requestData, false, false);
+        // Only advance the page cursor if this page's rows actually made
+        // it into state - a discarded (stale/blocked) call should retry
+        // the same page next time, not skip ahead.
+        if (applied) nextPageRef.current += 1;
       } catch (err) {
         console.error("Error loading more approvals:", err);
       } finally {
@@ -268,7 +246,7 @@ const CompianceOfficerPortfolioHistoryReports = () => {
       }
     },
     0,
-    "border-less-table-blue"
+    "border-less-table-blue",
   );
   // -------------------- Table Columns --------------------
   const columns = getBorderlessTableColumns({
