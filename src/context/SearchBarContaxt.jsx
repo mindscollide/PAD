@@ -144,7 +144,12 @@ export const SearchBarProvider = ({ children }) => {
       status: [],
       brokerIDs: [],
       pageSize: 10,
-      pageNumber: 0,
+      // sp_GetEmployeeTradeApprovalReqeustReports's PageNumber is a real
+      // 1-indexed page number now that BE_API_Changes/2026-08-24_myhistory_
+      // totalrecords_now_honors_filters.md's pagination offset fix
+      // (OFFSET (PageNumber-1)*Length, not the raw PageNumber) is live -
+      // was 0, matching the old buggy raw-offset backend.
+      pageNumber: 1,
       filterTrigger: false,
     });
 
@@ -894,7 +899,7 @@ export const SearchBarProvider = ({ children }) => {
       status: [],
       brokerIDs: [],
       pageSize: 10,
-      pageNumber: 0,
+      pageNumber: 1,
       filterTrigger: false,
     });
 

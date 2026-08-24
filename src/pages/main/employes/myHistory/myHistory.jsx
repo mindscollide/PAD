@@ -44,6 +44,19 @@ const MyHistory = () => {
   // next page could both go through and duplicate rows. A ref updates
   // immediately, closing that window.
   const isFetchingMoreRef = useRef(false);
+  // Next page to request on scroll - tracked explicitly instead of derived
+  // from `Math.floor(workFlows.length / pageSize) + 1`. That derivation
+  // silently got stuck once the dedup guard below started dropping any
+  // BE-echoed duplicate row (see the "TRX-000011..014 page-boundary
+  // duplicates" bug): a deduped page adds fewer than `pageSize` rows, so
+  // workFlows.length stops landing on the next multiple of pageSize, the
+  // computed "next page" keeps re-resolving to the page just fetched, and
+  // every further scroll re-fetches and re-dedupes that same page forever
+  // - "load more" looked alive (loader flickered) but no new rows ever
+  // appeared. Reset to 2 on every replace-style fetch (page 1 just loaded
+  // fresh) and incremented by exactly 1 after each successful load-more,
+  // independent of how many of those rows turned out to be duplicates.
+  const nextPageRef = useRef(2);
 
   // -------------------- Contexts --------------------
   const { callApi } = useApi();
@@ -101,6 +114,9 @@ const MyHistory = () => {
   useEffect(() => {
     if (!hasFetched.current) {
       hasFetched.current = true;
+      // Page 1 is being loaded fresh here - the next scroll should ask for
+      // page 2, see nextPageRef above.
+      nextPageRef.current = 2;
       const requestData = buildMyHistoryApiRequest(
         employeeMyHistorySearch,
         assetTypeListingData,
@@ -119,6 +135,9 @@ const MyHistory = () => {
       // full round-trip until the new response replaces them. Same empty
       // shape already used on unmount below.
       setEmployeeMyHistoryData([]);
+      // Fresh page 1 for the new filter - same reset as the initial fetch
+      // above.
+      nextPageRef.current = 2;
 
       const requestData = buildMyHistoryApiRequest(
         employeeMyHistorySearch,
@@ -261,11 +280,12 @@ const MyHistory = () => {
       try {
         // GetEmployeeHistoryWorkFlowDetails's PageNumber is now a real
         // 1-indexed page number (backend fix 2026-08-05: OFFSET =
-        // (PageNumber-1)*Length) — derive the next page from how many
-        // rows are already loaded, not the raw row count itself.
-        const currentLength = employeeMyHistoryData?.workFlows?.length || 0;
+        // (PageNumber-1)*Length) — use the explicitly tracked next page
+        // (nextPageRef above), not a value derived from how many rows
+        // happen to be loaded, which gets stuck once the dedup guard below
+        // ever drops a duplicate row.
         const pageSize = 10;
-        const nextPageNumber = Math.floor(currentLength / pageSize) + 1;
+        const nextPageNumber = nextPageRef.current;
 
         // build request based on current search/filter but override pagination
         const baseRequest = buildMyHistoryApiRequest(
@@ -290,6 +310,12 @@ const MyHistory = () => {
         // was in flight - this page belongs to the old filter/list, drop
         // it rather than appending mismatched rows onto the fresh one.
         if (requestIdRef.current !== requestIdAtStart) return;
+
+        // This page has now been fetched (successfully or not) - move on
+        // to the next one regardless of how many of its rows turn out to
+        // be duplicates after the dedup filter below, so a boundary
+        // duplicate can never re-request the same page forever.
+        nextPageRef.current = nextPageNumber + 1;
 
         const newEmployees = res?.workFlows || [];
 
