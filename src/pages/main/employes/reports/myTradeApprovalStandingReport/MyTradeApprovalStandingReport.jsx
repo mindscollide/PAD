@@ -155,6 +155,7 @@ const MyTradeApprovalStandingReport = () => {
       pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
 
       pdf.save("MyTrade-Approval-Report.pdf");
+      setOpen(false);
     } catch (error) {
       console.error("PDF Export Failed:", error);
     }
@@ -174,6 +175,7 @@ const MyTradeApprovalStandingReport = () => {
       showLoader,
       requestdata,
       navigate,
+      setOpen,
     });
   };
 

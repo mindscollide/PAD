@@ -1751,6 +1751,7 @@ export const DownloadMyComplianceStandingRequestAPI = async ({
   showLoader,
   requestdata,
   navigate,
+  setOpen,
 }) => {
   try {
     showLoader(true);
@@ -1813,6 +1814,7 @@ export const DownloadMyTradeApprovalStandingRequestAPI = async ({
   showLoader,
   requestdata,
   navigate,
+  setOpen,
 }) => {
   try {
     showLoader(true);
@@ -1966,6 +1968,7 @@ export const DownloadMyTradeApprovalReportRequestAPI = async ({
   showLoader,
   requestdata,
   navigate,
+  setOpen,
 }) => {
   try {
     showLoader(true);

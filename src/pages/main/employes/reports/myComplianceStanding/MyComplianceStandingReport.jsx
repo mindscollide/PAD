@@ -167,6 +167,7 @@ const MyComplianceStandingReport = () => {
 
       pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
       pdf.save("My-Compliance-Report.pdf");
+      setOpen(false);
     });
   };
 
@@ -183,6 +184,7 @@ const MyComplianceStandingReport = () => {
       showLoader,
       requestdata: requestdata,
       navigate,
+      setOpen,
     });
   };
 

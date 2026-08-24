@@ -334,6 +334,7 @@ const MytradeapprovalsReport = () => {
       showLoader,
       requestdata: requestdata,
       navigate,
+      setOpen,
     });
   };
 
