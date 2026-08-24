@@ -157,6 +157,12 @@ export const MyApprovalProvider = ({ children }) => {
       totalRecordsDataBase: 0,
       totalRecordsTable: 0,
     });
+  // Refetch-trigger flag for the report above - set true on
+  // REQUEST_ESCALATED_TO_HOC (a new escalation landed while this report is
+  // open, see dashboard.jsx) so it live-refreshes instead of only updating
+  // on Compliant/Non-Compliant resolution.
+  const [overdueVerificationHCOMqtt, setOverdueVerificationHCOMqtt] =
+    useState(false);
 
   const [
     coTransactionSummaryReportListData,
@@ -682,6 +688,8 @@ export const MyApprovalProvider = ({ children }) => {
         // head of compliance officer
         overdueVerificationHCOListData,
         setOverdueVerificationHCOListData,
+        overdueVerificationHCOMqtt,
+        setOverdueVerificationHCOMqtt,
 
         //Compliance Officer Portfolio History Report
         coPortfolioHistoryListData,
