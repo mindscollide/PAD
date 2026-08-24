@@ -39,6 +39,15 @@ const Portfolio = ({ className, activeFilters }) => {
 
   const didFetchRef = useRef(false);
   const listRef = useRef(null); // ✅ scroll container ref
+  // Next page to request on scroll - tracked explicitly as a real
+  // 1-indexed page number, not derived from an accumulated row offset.
+  // BE_API_Changes/2026-08-24_same_day_date_search_now_works.md bundles a
+  // fix into sp_searchEmployeeApprovedCompliantPortfolio_FixSameDayDateFilter.sql
+  // for SearchEmployeeApprovedUploadedPortFolio's pagination: OFFSET
+  // (PageNumber-1)*Length instead of using the raw PageNumber as the
+  // offset directly. Reset to 2 on every replace-style fetch (page 1 just
+  // loaded fresh) and incremented by 1 after each load-more.
+  const nextPageRef = useRef(2);
 
   const navigate = useNavigate();
   const {
@@ -87,17 +96,28 @@ const Portfolio = ({ className, activeFilters }) => {
         const instruments = Array.isArray(res?.instruments)
           ? res.instruments
           : [];
-        if (replace) {
-          setEmployeePortfolioData(instruments);
-        } else {
-          setEmployeePortfolioData((prev) => [...prev, ...instruments]);
-        }
 
         // ✅ Save totalRecords from API
         const total = Number(res?.totalRecords || 0);
 
+        // mergedLength captured out of the updater below so hasMore can be
+        // derived from the actual merged count, not requestData.PageNumber
+        // (which is now a small page index, not a row offset - see
+        // nextPageRef above).
+        let mergedLength = 0;
+        setEmployeePortfolioData((prev) => {
+          const merged = replace ? instruments : [...prev, ...instruments];
+          mergedLength = merged.length;
+          return merged;
+        });
+
         // ✅ Disable scrolling if we've loaded everything
-        setHasMore(requestData.PageNumber + instruments.length < total);
+        setHasMore(mergedLength < total);
+
+        // Advance the explicit page cursor instead of accumulating a row
+        // offset into context's pageNumber (see nextPageRef above for why).
+        nextPageRef.current = replace ? 2 : nextPageRef.current + 1;
+
         setAggregateTotalQuantity(res?.aggregateTotalQuantity);
       } catch (err) {
         console.error("❌ Error fetching portfolio:", err);
@@ -114,7 +134,10 @@ const Portfolio = ({ className, activeFilters }) => {
     if (didFetchRef.current) return;
     didFetchRef.current = true;
 
-    const req = buildPortfolioRequest(employeePortfolioSearch);
+    // Page 1 is being loaded fresh here - the next scroll should ask for
+    // page 2, see nextPageRef above.
+    nextPageRef.current = 2;
+    const req = { ...buildPortfolioRequest(employeePortfolioSearch), PageNumber: 1 };
 
     fetchPortfolio(req, true);
 
@@ -135,20 +158,13 @@ const Portfolio = ({ className, activeFilters }) => {
     if (scrollTop + clientHeight >= scrollHeight - 10) {
       // ⬆️ Stop if we’ve reached totalRecords
       if (!hasMore) return;
-      // ⬆️ User scrolled to bottom → call API with pageNumber + 10
-      const nextPage = (employeePortfolioSearch.pageNumber || 0) + 10;
 
-      const req = buildPortfolioRequest({
-        ...employeePortfolioSearch,
-        pageNumber: nextPage,
-      });
+      const req = {
+        ...buildPortfolioRequest(employeePortfolioSearch),
+        PageNumber: nextPageRef.current,
+      };
 
       fetchPortfolio(req, false);
-
-      setEmployeePortfolioSearch((prev) => ({
-        ...prev,
-        pageNumber: nextPage,
-      }));
     }
   };
 
@@ -161,7 +177,10 @@ const Portfolio = ({ className, activeFilters }) => {
 
   useEffect(() => {
     if (employeePortfolioSearch.filterTrigger) {
-      const req = buildPortfolioRequest(employeePortfolioSearch);
+      // Fresh page 1 for the new filter - same reset as the initial fetch
+      // above.
+      nextPageRef.current = 2;
+      const req = { ...buildPortfolioRequest(employeePortfolioSearch), PageNumber: 1 };
 
       fetchPortfolio(req, true);
       setEmployeePortfolioSearch((prev) => ({
@@ -174,10 +193,13 @@ const Portfolio = ({ className, activeFilters }) => {
   // ADDED — mirrors PendingApprovals.jsx's own Mqtt-flag effect
   useEffect(() => {
     if (employeePortfolioDataMqtt) {
-      const req = buildPortfolioRequest({
-        ...employeePortfolioSearch,
-        pageNumber: 0,
-      });
+      nextPageRef.current = 2;
+      const req = {
+        ...buildPortfolioRequest(employeePortfolioSearch),
+        // Real 1-indexed page 1 - was 0, matching the old buggy
+        // raw-offset backend (see nextPageRef above).
+        PageNumber: 1,
+      };
       fetchPortfolio(req, true);
       setEmployeePortfolioDataMqtt(false);
     }
