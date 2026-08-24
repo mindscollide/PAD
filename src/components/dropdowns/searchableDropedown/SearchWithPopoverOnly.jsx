@@ -404,7 +404,7 @@ const SearchWithPopoverOnly = () => {
             quantity: "",
             type: [],
             status: [],
-            pageNumber: 0,
+            pageNumber: 1,
             filterTrigger: true,
           }));
         } else if (coTransactionSummaryReportViewDetailsFlag) {
@@ -1014,7 +1014,7 @@ const SearchWithPopoverOnly = () => {
             openNewFormForAdminGropusAndPolicy,
             pageTabesForAdminGropusAndPolicy,
             coTransactionSummaryReportViewDetailsFlag,
-            showViewDetailPageInTatOnHta,
+            showViewDetailPageInTatOnHta
           )}
           trigger="click"
           open={visible}

@@ -293,7 +293,7 @@ export const getBorderlessTableColumns = ({
     dataIndex: "broker",
     width: 280,
     key: "broker",
-    sorter: (a, b) => a.broker - b.broker,
+    sorter: (a, b) => (a?.broker || "").localeCompare(b?.broker || ""),
     sortDirections: ["ascend", "descend"],
     sortOrder: sortedInfo?.columnKey === "broker" ? sortedInfo.order : null,
     showSorterTooltip: false,

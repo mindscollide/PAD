@@ -1,24 +1,15 @@
-import React, { useEffect, useMemo, useState } from "react";
-import { Col, Row, Select, Space, Checkbox } from "antd";
+import React, { useMemo, useState } from "react";
+import { Checkbox } from "antd";
 import { useGlobalModal } from "../../../../../../context/GlobalModalContext";
-import {
-  GlobalModal,
-  InstrumentSelect,
-  TextField,
-  TradeAndPortfolioModal,
-} from "../../../../../../components";
+import { TradeAndPortfolioModal } from "../../../../../../components";
 import styles from "./EquitiesApproval.module.css";
-import CustomButton from "../../../../../../components/buttons/button";
 import { useDashboardContext } from "../../../../../../context/dashboardContaxt";
 import { AddTradeApprovalRequest } from "../../../../../../api/myApprovalApi";
 import { useNotification } from "../../../../../../components/NotificationProvider/NotificationProvider";
 import { useGlobalLoader } from "../../../../../../context/LoaderContext";
 import { useApi } from "../../../../../../context/ApiContext";
 import { useNavigate } from "react-router-dom";
-import {
-  allowOnlyNumbers,
-  formatNumberWithCommas,
-} from "../../../../../../common/funtions/rejex";
+
 import CopyToClipboard from "../../../../../../hooks/useClipboard";
 
 const EquitiesApproval = () => {
@@ -29,7 +20,6 @@ const EquitiesApproval = () => {
     setIsEquitiesModalVisible,
     setIsSubmit,
     selectedAssetTypeId,
-    addTradeApprovalIntimationModal,
     setAddTradeApprovalIntimationModal,
   } = useGlobalModal();
 
@@ -43,9 +33,6 @@ const EquitiesApproval = () => {
   const { callApi } = useApi();
 
   //For Instrument Dropdown show selected Name
-  const [selectedInstrument, setSelectedInstrument] = useState(null);
-
-  console.log(assetTypeListingData, "assetTypeListingData");
 
   // for employeeBroker state to show data in dropdown
   const [selectedBrokers, setSelectedBrokers] = useState([]);

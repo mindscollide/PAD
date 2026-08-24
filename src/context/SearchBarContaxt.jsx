@@ -461,7 +461,7 @@ export const SearchBarProvider = ({ children }) => {
       endDate: null,
       type: [],
       status: [],
-      pageNumber: 0,
+      pageNumber: 1,
       pageSize: 10,
       filterTrigger: false,
     });
@@ -1082,7 +1082,7 @@ export const SearchBarProvider = ({ children }) => {
       endDate: null,
       type: [],
       status: [],
-      pageNumber: 0,
+      pageNumber: 1,
       pageSize: 10,
       filterTrigger: false,
     });

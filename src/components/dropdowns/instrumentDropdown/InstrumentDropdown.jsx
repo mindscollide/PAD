@@ -40,26 +40,26 @@ const InstrumentSelect = ({
       >
         {data.map((item) => (
           <Option key={item.id} value={item.id} label={item.description}>
-            <Row
-              align="middle"
-              justify="space-between"
+            <div
               className={styles.inlineRow}
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+              }}
             >
-              <Col>
-                <Row
-                  align="middle"
-                  gutter={8}
-                  className={styles.inlineRowContent}
-                >
-                  <Col>
-                    <Tag className={styles.customTag}>{item.shortCode}</Tag>
-                  </Col>
-                  <Col>
-                    <Text className={styles.ItemsFirstName}>{item.name}</Text>
-                  </Col>
-                </Row>
-              </Col>
-              <Col flex="none" className={styles.rightSectionContainer}>
+              <div
+                className={styles.inlineRowContent}
+                style={{ display: "flex", alignItems: "center", gap: 8 }}
+              >
+                <Tag className={styles.customTag}>{item.shortCode}</Tag>
+                <Text className={styles.ItemsFirstName}>{item.name}</Text>
+              </div>
+
+              <div
+                className={styles.rightSectionContainer}
+                style={{ display: "flex", alignItems: "center", flexShrink: 0 }}
+              >
                 <div className={styles.rightSection} title={item.description}>
                   <Text className={styles.ItemsSecondaryName}>
                     {item.description}
@@ -74,8 +74,8 @@ const InstrumentSelect = ({
                     onAdd?.(item);
                   }}
                 />
-              </Col>
-            </Row>
+              </div>
+            </div>
           </Option>
         ))}
       </Select>

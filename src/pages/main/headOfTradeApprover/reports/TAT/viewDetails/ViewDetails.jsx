@@ -433,7 +433,13 @@ const ViewDetails = () => {
           </p>
         </Col>
         <Col span={6}>
-          <p className={style.mainTitleTextClass}>Date Range: </p>
+          <p className={style.mainTitleTextClass}>
+            Date Range:{" "}
+            <span className={style.subTitleTextClass}>
+              {showSelectedTatDataOnViewDetailHTA.filterStartDate} -{" "}
+              {showSelectedTatDataOnViewDetailHTA.filterEndDate}
+            </span>
+          </p>
         </Col>
       </Row>
 

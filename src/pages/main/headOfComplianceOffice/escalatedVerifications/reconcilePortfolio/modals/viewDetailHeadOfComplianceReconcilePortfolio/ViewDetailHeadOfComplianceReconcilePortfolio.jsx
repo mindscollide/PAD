@@ -125,6 +125,8 @@ const ViewDetailHeadOfComplianceReconcilePortfolio = () => {
     )
   );
 
+  console.log(statusData, "statusDatastatusData");
+
   // Extarct and Instrument from viewDetailsModalData context Api
   const instrumentId = Number(
     isEscalatedPortfolioHeadOfComplianceViewDetailData?.details?.[0]
@@ -462,7 +464,7 @@ const ViewDetailHeadOfComplianceReconcilePortfolio = () => {
                           <CustomButton
                             text="Non-Compliant"
                             className="Decline-dark-button"
-                            disabled={disableCompliantOrNonCompliantBtn}
+                            // disabled={disableCompliantOrNonCompliantBtn}
                             onClick={
                               onClickFromNonCompliantNoteModalFromHeadOfCompliance
                             }
@@ -470,7 +472,7 @@ const ViewDetailHeadOfComplianceReconcilePortfolio = () => {
                           <CustomButton
                             text="Compliant"
                             className="Approved-dark-button"
-                            disabled={disableCompliantOrNonCompliantBtn}
+                            // disabled={disableCompliantOrNonCompliantBtn}
                             onClick={
                               onClickFromCompliantNoteModalFromHeadOfCompliance
                             }

@@ -22,7 +22,11 @@ import { useNotification } from "../../NotificationProvider/NotificationProvider
 import { useApi } from "../../../context/ApiContext";
 import { useGlobalLoader } from "../../../context/LoaderContext";
 import { useMyAdmin } from "../../../context/AdminContext";
-import { ManageBrokerModal, MyProfileModal, NotificationSettingsModal } from "../../../pages";
+import {
+  ManageBrokerModal,
+  MyProfileModal,
+  NotificationSettingsModal,
+} from "../../../pages";
 import { logout } from "../../../api/loginApi";
 import { mapEmployeeMyApprovalData } from "../../../pages/main/employes/myApprovals/utils";
 const { Content } = Layout;
@@ -55,9 +59,17 @@ const Dashboard = () => {
     setHtaEscalatedApprovalData,
     viewDetailsHeadOfApprovalIDRef,
   } = useEscalatedApprovals();
-  const { setViewDetailsHeadOfApprovalModal } = useGlobalModal();
-  const { setEmployeePendingApprovalsDataMqtt, activeTabRef } =
-    usePortfolioContext();
+  const {
+    setViewDetailsHeadOfApprovalModal,
+    setIsViewDetail,
+    setIsConductedTransaction,
+  } = useGlobalModal();
+  const {
+    setEmployeePendingApprovalsDataMqtt,
+    activeTabRef,
+    setEmployeePortfolioDataMqtt,
+    setEmployeePendingApprovalsData,
+  } = usePortfolioContext();
 
   const {
     setComplianceOfficerReconcileTransactionData,
@@ -81,6 +93,8 @@ const Dashboard = () => {
     setManageBrokersModalOpen,
     assetTypeListingData,
   } = useDashboardContext();
+
+  const { setUploadPortfolioModal } = usePortfolioContext();
 
   const { setEmployeeTransactionsTableDataMqtt } = useTransaction();
   const { setWebNotificationData } = useWebNotification();
@@ -155,6 +169,34 @@ const Dashboard = () => {
       updatedApprovals[existingIndex] = patchedApproval;
 
       return { ...prev, approvals: updatedApprovals };
+    });
+  };
+
+  /**
+   * Patches a single Pending Approvals row's status in place, instead of a
+   * full refetch - a decline (Non-Compliant) keeps the row visible on this
+   * page, it just needs its status text updated. Matches on tradeApprovalID
+   * since that's the only field confirmed present in both the MQTT payload
+   * and the row shape mapToTableRows produces (approvalID/workFlowID are not
+   * confirmed to be the same value across the two).
+   */
+  const patchEmployeePendingApprovalRowStatus = (payload, status) => {
+    const tradeApprovalID = payload?.tradeApprovalID;
+    if (!tradeApprovalID) return;
+
+    setEmployeePendingApprovalsData((prev) => {
+      const rows = prev?.pendingApprovalsData || [];
+      const existingIndex = rows.findIndex(
+        (row) => row.tradeApprovalID === tradeApprovalID
+      );
+      if (existingIndex === -1) return prev;
+
+      const updatedRows = [...rows];
+      updatedRows[existingIndex] = {
+        ...updatedRows[existingIndex],
+        status,
+      };
+      return { ...prev, pendingApprovalsData: updatedRows };
     });
   };
 
@@ -424,6 +466,8 @@ const Dashboard = () => {
                       status:
                         payload?.workFlowStatus?.workFlowStatus || "Traded",
                     });
+                    setIsViewDetail(false);
+                    setIsConductedTransaction(false);
                   }
                   break;
                 }
@@ -435,14 +479,17 @@ const Dashboard = () => {
                     // });
                     setEmployeePendingApprovalsDataMqtt(true);
                   }
+                  setUploadPortfolioModal(false);
                   break;
                 }
                 case "EMPLOYEE_TRADE_APPROVAL_REQUEST_APPROVED": {
+                  // Testtest
                   // Patches in place instead of a full API refetch - see
                   // patchEmployeeMyApprovalRow above.
                   if (currentKey === "1") {
                     patchEmployeeMyApprovalRow(payload);
                   }
+                  // setUploadPortfolioModal(false);
                   break;
                 }
                 case "EMPLOYEE_TRADE_APPROVAL_REQUEST_DECLINED": {
@@ -453,6 +500,27 @@ const Dashboard = () => {
                   }
                   break;
                 }
+                // case "EMPLOYEE_TRANSACTION_APPROVAL_REQUEST_APPROVED": {
+                //   if (currentKey === "2") {
+                //     setEmployeeTransactionsTableDataMqtt(true);
+                //     // setEmployeeTransactionsData((prev) => ({
+                //     //   ...prev,
+                //     //   data: [payload, ...(prev.data || [])],
+                //     //   totalRecords: (prev.totalRecords || 0) + 1,
+                //     // }));
+                //   }
+                //   break;
+                // }
+
+                // case "EMPLOYEE_TRANSACTION_APPROVAL_REQUEST_APPROVED": {
+                //   if (currentKey === "2") {
+                //     setEmployeeTransactionsTableDataMqtt(true);
+                //     setEmployeePendingApprovalsDataMqtt(true); // ADDED — refreshes Pending Approvals tab
+                //     setEmployeePortfolioDataMqtt(true); // ADDED — refreshes Portfolio tab
+                //   }
+                //   break;
+                // }
+
                 case "EMPLOYEE_TRANSACTION_APPROVAL_REQUEST_APPROVED": {
                   // Despite the name, this same message also fires for
                   // Portfolio Compliant/Non-Compliant closures - not just
@@ -474,6 +542,11 @@ const Dashboard = () => {
                     currentactiveTabRef === "pending"
                   ) {
                     setEmployeePendingApprovalsDataMqtt(true);
+                  } else if (
+                    currentKey === "4" &&
+                    currentactiveTabRef === "portfolio"
+                  ) {
+                    setEmployeePortfolioDataMqtt(true);
                   }
                   break;
                 }
@@ -486,6 +559,10 @@ const Dashboard = () => {
                     currentKey === "4" &&
                     currentactiveTabRef === "pending"
                   ) {
+                    patchEmployeePendingApprovalRowStatus(
+                      payload,
+                      "Non-Compliant"
+                    );
                     setEmployeePendingApprovalsDataMqtt(true);
                   }
                   break;
@@ -504,7 +581,20 @@ const Dashboard = () => {
                   // anything - worst case is a stale row until next full
                   // load, not a crash.
                   if (currentKey === "1") {
-                    patchEmployeeMyApprovalRow(payload);
+                    // Payload has no approvalStatus block (workFlowStatus is null too),
+                    // same gap STATUS_CHANGE_TRADED has above - the generic mapper's
+                    // `item.approvalStatus?.approvalStatusName` read comes back blank
+                    // without an override. Falls back to the literal "Resubmit" - the
+                    // actual approvalStatusName the API uses for this state, per a real
+                    // SearchTradeApprovals response - if a future payload shape ever
+                    // does include the block.
+                    // patchEmployeeMyApprovalRow(payload);
+
+                    patchEmployeeMyApprovalRow(payload, {
+                      status:
+                        payload?.approvalStatus?.approvalStatusName ||
+                        "Resubmit",
+                    });
                   }
                   break;
                 }
@@ -737,6 +827,7 @@ const Dashboard = () => {
                   ) {
                     setComplianceOfficerReconcilePortfolioDataMqtt(true);
                   }
+
                   break;
                 }
                 case "COMPLIANCE_OFFICER_CONDUCTED_TRANSACTION": {
@@ -777,7 +868,9 @@ const Dashboard = () => {
                       updatedRows[existingIndex] = {
                         ...updatedRows[existingIndex],
                         status:
-                          payload?.approvalStatus?.approvalStatusName ||
+                          (payload?.approvalStatus?.approvalStatusName ===
+                            "Approved" &&
+                            "Compliant") ||
                           updatedRows[existingIndex].status,
                       };
 

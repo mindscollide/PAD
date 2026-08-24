@@ -277,7 +277,6 @@ export const getBorderlessTableColumns = ({
     width: 120,
     fixed: "right",
     render: (text, record) => {
-      console.log(record, "Checksjakhdbahsdash");
       // Note: Using hook inside render might cause issues, consider moving this logic
       const { setSelectedEscalatedPortfolioHeadOfComplianceData } =
         usePortfolioContext();

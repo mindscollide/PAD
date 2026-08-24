@@ -92,10 +92,14 @@ export const PortfolioProvider = ({ children }) => {
    *
    * @type {[{ data: Array, mqtt: boolean }, function]}
    */
-  const [employeePortfolioDataMqtt, setEmployeePortfolioDataMqtt] = useState({
-    data: [],
-    mqtt: false,
-  });
+  // const [employeePortfolioDataMqtt, setEmployeePortfolioDataMqtt] = useState({
+  //   data: [],
+  //   mqtt: false,
+  // });
+
+  // AFTER — matches employeePendingApprovalsDataMqtt / employeeTransactionsTableDataMqtt convention
+  const [employeePortfolioDataMqtt, setEmployeePortfolioDataMqtt] =
+    useState(false);
 
   /**
    * Aggregate total quantity of all portfolio holdings.
@@ -153,10 +157,11 @@ export const PortfolioProvider = ({ children }) => {
       totalRecords: 0,
       apiCall: false,
     });
-    setEmployeePortfolioDataMqtt({
-      data: [],
-      mqtt: false,
-    });
+    // setEmployeePortfolioDataMqtt({
+    //   data: [],
+    //   mqtt: false,
+    // });
+    setEmployeePortfolioDataMqtt(false);
     setAggregateTotalQuantity(0);
   };
 

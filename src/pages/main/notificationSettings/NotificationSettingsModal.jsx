@@ -41,10 +41,8 @@ const NotificationSettingsModal = () => {
   const { showLoader } = useGlobalLoader();
   const { callApi } = useApi();
 
-  const {
-    notificationSettingsModalOpen,
-    setNotificationSettingsModalOpen,
-  } = useDashboardContext();
+  const { notificationSettingsModalOpen, setNotificationSettingsModalOpen } =
+    useDashboardContext();
 
   const {
     showSavedNotificationSettingsModal,
@@ -90,8 +88,8 @@ const NotificationSettingsModal = () => {
       prev.map((item) =>
         item.notificationSettingTypeID === notificationSettingTypeID
           ? { ...item, [field]: checked }
-          : item,
-      ),
+          : item
+      )
     );
   };
 
@@ -134,66 +132,81 @@ const NotificationSettingsModal = () => {
         onCancel={handleCancel}
         modalBody={
           <div className={styles.mainContainer}>
-            <Row>
-              <Col span={24}>
-                <h3 className={styles.heading}>Notification Settings</h3>
-              </Col>
-            </Row>
+            {/* <Row>
+              <Col span={24}> */}
+            <div className={styles.heading}>
+              <span>Notification Settings</span>
+            </div>
+            {/* </Col>
+            </Row> */}
 
             <div className={styles.settingsScrollArea}>
+              <Row className={styles.columnHeaderRow}>
+                <Col span={14} className={styles.columnHeaderLabelLeft}>
+                  Notification Type
+                </Col>
+                <Col span={5} className={styles.columnHeaderLabel}>
+                  Email
+                </Col>
+                <Col span={5} className={styles.columnHeaderLabel}>
+                  Portal
+                </Col>
+              </Row>
               {Object.keys(groupedByRole).length > 0 ? (
-                Object.keys(groupedByRole).map((roleID) => (
-                  <div key={roleID} className={styles.roleSection}>
-                    <div className={styles.roleHeading}>
-                      {ROLE_LABELS[roleID] || `Role ${roleID}`}
+                (() => {
+                  let rowIndex = 0; // running counter across all roles, for continuous zebra striping
+                  return Object.keys(groupedByRole).map((roleID) => (
+                    <div key={roleID} className={styles.roleSection}>
+                      <div className={styles.roleHeading}>
+                        {ROLE_LABELS[roleID] || `Role ${roleID}`}
+                      </div>
+
+                      {groupedByRole[roleID].map((item) => {
+                        const isEven = rowIndex % 2 === 0;
+                        rowIndex += 1;
+
+                        return (
+                          <Row
+                            key={item.notificationSettingTypeID}
+                            className={`${styles.settingRow} ${
+                              isEven
+                                ? styles.settingRowEven
+                                : styles.settingRowOdd
+                            }`}
+                          >
+                            <Col span={14} className={styles.typeName}>
+                              {item.typeName}
+                            </Col>
+                            <Col span={5} className={styles.checkboxCol}>
+                              <Checkbox
+                                checked={item.isEmailEnabled}
+                                onChange={(e) =>
+                                  handleToggle(
+                                    item.notificationSettingTypeID,
+                                    "isEmailEnabled",
+                                    e.target.checked
+                                  )
+                                }
+                              />
+                            </Col>
+                            <Col span={5} className={styles.checkboxCol}>
+                              <Checkbox
+                                checked={item.isPortalEnabled}
+                                onChange={(e) =>
+                                  handleToggle(
+                                    item.notificationSettingTypeID,
+                                    "isPortalEnabled",
+                                    e.target.checked
+                                  )
+                                }
+                              />
+                            </Col>
+                          </Row>
+                        );
+                      })}
                     </div>
-
-                    <Row className={styles.columnHeaderRow}>
-                      <Col span={14} />
-                      <Col span={5} className={styles.columnHeaderLabel}>
-                        Email
-                      </Col>
-                      <Col span={5} className={styles.columnHeaderLabel}>
-                        Portal
-                      </Col>
-                    </Row>
-
-                    {groupedByRole[roleID].map((item) => (
-                      <Row
-                        key={item.notificationSettingTypeID}
-                        className={styles.settingRow}
-                      >
-                        <Col span={14} className={styles.typeName}>
-                          {item.typeName}
-                        </Col>
-                        <Col span={5} className={styles.checkboxCol}>
-                          <Checkbox
-                            checked={item.isEmailEnabled}
-                            onChange={(e) =>
-                              handleToggle(
-                                item.notificationSettingTypeID,
-                                "isEmailEnabled",
-                                e.target.checked,
-                              )
-                            }
-                          />
-                        </Col>
-                        <Col span={5} className={styles.checkboxCol}>
-                          <Checkbox
-                            checked={item.isPortalEnabled}
-                            onChange={(e) =>
-                              handleToggle(
-                                item.notificationSettingTypeID,
-                                "isPortalEnabled",
-                                e.target.checked,
-                              )
-                            }
-                          />
-                        </Col>
-                      </Row>
-                    ))}
-                  </div>
-                ))
+                  ));
+                })()
               ) : (
                 <div className={styles.emptyState}>
                   No notification types available.

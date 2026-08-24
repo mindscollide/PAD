@@ -16,7 +16,6 @@ import sidebarItems, { routeMap } from "./utils";
 
 // Styles
 import "./sidebar.css";
-import { includes } from "lodash";
 
 const { Sider } = Layout;
 const ROOT_KEY = "0"; // Default root menu key

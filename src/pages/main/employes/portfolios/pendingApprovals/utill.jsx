@@ -3,11 +3,6 @@ import React from "react";
 import { Tag, Tooltip, Typography } from "antd";
 import { Button } from "../../../../../components";
 
-// Assets (sort icons)
-import DefaultColumnArrow from "../../../../../assets/img/default-colum-arrow.png";
-import ArrowUp from "../../../../../assets/img/arrow-up-dark.png";
-import ArrowDown from "../../../../../assets/img/arrow-down-dark.png";
-
 // Filter dropdowns for headers
 import TypeColumnTitle from "../../../../../components/dropdowns/filters/typeColumnTitle";
 import StatusColumnTitle from "../../../../../components/dropdowns/filters/statusColumnTitle";
@@ -241,13 +236,17 @@ export const getBorderlessTableColumns = (
     sortOrder: sortedInfo?.columnKey === "broker" ? sortedInfo.order : null,
     showSorterTooltip: false,
     sortIcon: () => null,
-    render: (text, record) => (
-      <Tooltip
-        title={text === "Multiple Brokers" ? record.brokersListed : text || "—"}
-      >
-        {text || "—"}
-      </Tooltip>
-    ),
+    render: (broker, record) => {
+      const brokers = record?.brokers || [];
+      if (brokers.length > 1) {
+        return (
+          <Tooltip title={brokers.map((b) => b.brokerName).join(", ")}>
+            <span>{broker}</span>
+          </Tooltip>
+        );
+      }
+      return <span>{broker}</span>;
+    },
   },
 
   // 🔹 Status Column

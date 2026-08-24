@@ -224,6 +224,7 @@ const HTATAT = () => {
     setPolicyModalVisible,
     setShowViewDetailPageInTatOnHta,
     setShowSelectedTatDataOnViewDetailHTA,
+    dateRange,
   });
 
   /** 🔹 Handle removing individual filter */

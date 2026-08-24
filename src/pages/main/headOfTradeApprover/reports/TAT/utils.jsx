@@ -114,6 +114,7 @@ export const getBorderlessTableColumns = ({
   sortedInfo,
   setShowViewDetailPageInTatOnHta,
   setShowSelectedTatDataOnViewDetailHTA,
+  dateRange,
 }) => [
   {
     title: (
@@ -248,7 +249,11 @@ export const getBorderlessTableColumns = ({
               text="View Details"
               onClick={() => {
                 setShowViewDetailPageInTatOnHta(true);
-                setShowSelectedTatDataOnViewDetailHTA(record);
+                setShowSelectedTatDataOnViewDetailHTA({
+                  ...record,
+                  filterStartDate: dateRange?.StartDate,
+                  filterEndDate: dateRange?.EndDate,
+                });
               }}
             />
           </div>

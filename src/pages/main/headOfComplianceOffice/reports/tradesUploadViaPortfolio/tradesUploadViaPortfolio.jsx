@@ -1,7 +1,6 @@
 import React, { useEffect, useState, useRef, useCallback } from "react";
 import { Breadcrumb, Col, Row } from "antd";
 import { useNavigate } from "react-router-dom";
-import PDF from "../../../../../assets/img/pdf.png";
 import Excel from "../../../../../assets/img/xls.png";
 import { UpOutlined, DownOutlined } from "@ant-design/icons";
 
@@ -23,19 +22,14 @@ import { useDashboardContext } from "../../../../../context/dashboardContaxt";
 
 // 🔹 Styles
 import style from "./tradesUploadViaPortfolio.module.css";
-import { buildBrokerOptions } from "../../../../../common/funtions/brokersList";
 import { useTableScrollBottom } from "../../../../../common/funtions/scroll";
 import { getSafeAssetTypeData } from "../../../../../common/funtions/assetTypesList";
 import { BorderlessTable, PageLayout } from "../../../../../components";
 import { approvalStatusMap } from "../../../../../components/tables/borderlessTable/utill";
 import { useNotification } from "../../../../../components/NotificationProvider/NotificationProvider";
-import { GetAllTransactionViewDetails } from "../../../../../api/myTransactionsApi";
-import { useGlobalModal } from "../../../../../context/GlobalModalContext";
 import {
-  DownloadMyTradeApprovalReportRequestAPI,
   ExportHOCUploadedPortfolioReportExcel,
   SearchHOCUploadedPortFolio,
-  SearchMyTradeApprovalsReportsApi,
 } from "../../../../../api/myApprovalApi";
 import CustomButton from "../../../../../components/buttons/button";
 
@@ -325,6 +319,7 @@ const TradesUploadViaPortfolio = () => {
       showLoader,
       requestdata: requestdata,
       navigate,
+      setOpen,
     });
   };
 

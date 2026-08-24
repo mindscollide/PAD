@@ -1,6 +1,6 @@
 // src/pages/employee/approval/UploadPortfolioModal.jsx
 
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useMemo } from "react";
 import { Checkbox } from "antd";
 import { useNavigate } from "react-router-dom";
 
@@ -51,11 +51,8 @@ const UploadPortfolioModal = () => {
   const { callApi } = useApi();
   const { setIsSubmit } = useGlobalModal();
 
-  const {
-    employeeBasedBrokersData,
-    allInstrumentsData,
-    assetTypeListingData,
-  } = useDashboardContext();
+  const { employeeBasedBrokersData, allInstrumentsData, assetTypeListingData } =
+    useDashboardContext();
 
   /**
    * 🔹 Extract Line Manager details from sessionStorage

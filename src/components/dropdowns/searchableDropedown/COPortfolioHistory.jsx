@@ -13,7 +13,7 @@ const INITIAL_LOCAL_STATE = {
   departmentName: "",
   requesterName: "",
   quantity: "",
-  pageNumber: 0,
+  pageNumber: 1,
   pageSize: 10,
   filterTrigger: false,
 };
@@ -88,7 +88,7 @@ export const COPortfolioHisttory = ({
       departmentName: departmentName?.trim() || "",
       quantity: quantity ? Number(quantity) : 0,
       filterTrigger: true,
-      pageNumber: 0,
+      pageNumber: 1,
       pageSize: 10,
     };
 
@@ -106,7 +106,7 @@ export const COPortfolioHisttory = ({
       departmentName: "",
       quantity: "",
       filterTrigger: true,
-      pageNumber: 0,
+      pageNumber: 1,
       pageSize: 10,
     }));
 
@@ -137,7 +137,7 @@ export const COPortfolioHisttory = ({
         <Col xs={24} sm={24} md={12} lg={12}>
           <TextField
             label="Employee Name"
-            name="employeeName"
+            name="requesterName"
             value={localState.requesterName}
             onChange={handleInputChange}
             placeholder="Requester Name"
