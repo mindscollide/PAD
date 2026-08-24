@@ -33,7 +33,11 @@ export const buildApiRequest = (searchState = {}, assetTypeListingData) => ({
   StatusIds: mapStatusToIds?.(searchState.status, 2) || [],
   TypeIds:
     mapBuySellToIds?.(searchState.type, assetTypeListingData?.Equities) || [],
-  PageNumber: Number(searchState.pageNumber) || 0,
+  // Real 1-indexed page number (BE_API_Changes/2026-08-24_myhistory_
+  // totalrecords_now_honors_filters.md pagination offset fix - OFFSET
+  // (PageNumber-1)*Length) - was `|| 0`, matching the old buggy backend
+  // that used PageNumber as a raw row offset.
+  PageNumber: Number(searchState.pageNumber) || 1,
   Length: Number(searchState.pageSize) || 10,
 });
 

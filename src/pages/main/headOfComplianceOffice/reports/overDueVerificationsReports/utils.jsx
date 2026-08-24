@@ -16,6 +16,25 @@ import { mapBuySellToIds } from "../../../../../components/dropdowns/filters/uti
 import { getTradeTypeById } from "../../../../../common/funtions/type";
 import { withSortIcon } from "../../../../../common/funtions/tableIcon";
 
+// BE_API_Changes/2026-08-24_overdue_verifications_keeps_resolved_records.md:
+// this report used to only ever show WorkFlowStatusID 1 (Pending) - resolved
+// rows (8/Compliant, 9/Non-Compliant) were excluded server-side, so a status
+// column was never worth showing. Now that resolved rows stay listed with
+// their real status, this maps the numeric ID sp_HOCOverdueVerificationsReport
+// returns (`WorkFlowStatusID` - it doesn't also return a label string, unlike
+// the CO sibling report) to the same label vocabulary used everywhere else in
+// the app (getStatusStyle in ViewDetailHeadOfComplianceReconcileTransaction.jsx).
+const OVERDUE_WORKFLOW_STATUS_LABELS = {
+  1: "Pending",
+  2: "Resubmitted",
+  3: "Approved",
+  4: "Declined",
+  5: "Traded",
+  6: "Not Traded",
+  8: "Compliant",
+  9: "Non-Compliant",
+};
+
 /**
  * Utility: Build API request payload for approval listing
  *
@@ -49,7 +68,7 @@ export const buildApiRequest = (searchState = {}, assetTypeListingData) => ({
  */
 export const mappingDateWiseTransactionReport = (
   assetTypeData,
-  overdueVerificationHCOListData = []
+  overdueVerificationHCOListData = [],
 ) => {
   const overdueVerifications = Array.isArray(overdueVerificationHCOListData)
     ? overdueVerificationHCOListData
@@ -75,6 +94,8 @@ export const mappingDateWiseTransactionReport = (
     type: getTradeTypeById(assetTypeData, item?.tradeType) || "-",
     approvedQuantity: item.approvedQuantity || 0,
     shareTraded: item.shareTraded || 0,
+    status:
+      OVERDUE_WORKFLOW_STATUS_LABELS[Number(item?.workFlowStatusID)] || "—",
     timeRemainingToTrade: item.timeRemainingToTrade || "",
     tradeType: item.tradeType || "",
     assetType: item.assetType?.assetTypeName || "",
@@ -98,6 +119,7 @@ const withFilterHeader = (FilterComponent) => (
 );
 export const getBorderlessTableColumns = ({
   sortedInfo,
+  approvalStatusMap = {},
   OverdueVerificationHCOReportSearch,
   setOverdueVerificationHCOReportSearch,
   setViewDetailHeadOfComplianceEscalated,
@@ -224,7 +246,7 @@ export const getBorderlessTableColumns = ({
       "Transaction Date",
       "transactionDate",
       sortedInfo,
-      "center"
+      "center",
     ),
     align: "center",
     dataIndex: "transactionDate",
@@ -245,7 +267,7 @@ export const getBorderlessTableColumns = ({
       "Approved Quantity",
       "approvedQuantity",
       sortedInfo,
-      "center"
+      "center",
     ),
     dataIndex: "approvedQuantity",
     width: 180,
@@ -273,6 +295,41 @@ export const getBorderlessTableColumns = ({
     sortIcon: () => null,
     render: (q) => <span className="font-medium">{q.toLocaleString()}</span>,
   },
+  // {
+  //   // ADDED per BE_API_Changes/2026-08-24_overdue_verifications_keeps_
+  //   // resolved_records.md: resolved rows (Compliant/Non-Compliant) now stay
+  //   // in this report instead of being excluded - the status genuinely
+  //   // varies per row now, so it needs a visible column rendering all three
+  //   // states, not just an implicit "always Pending" assumption.
+  //   title: withSortIcon("Status", "status", sortedInfo, "center"),
+  //   align: "center",
+  //   dataIndex: "status",
+  //   key: "status",
+  //   width: 160,
+  //   sorter: (a, b) => (a?.status || "").localeCompare(b?.status || ""),
+  //   sortDirections: ["ascend", "descend"],
+  //   sortOrder: sortedInfo?.columnKey === "status" ? sortedInfo.order : null,
+  //   showSorterTooltip: false,
+  //   sortIcon: () => null,
+  //   render: (status) => {
+  //     const tag = approvalStatusMap?.[status] || {};
+  //     return (
+  //       <Tag
+  //         style={{
+  //           backgroundColor: tag.backgroundColor,
+  //           color: tag.textColor,
+  //           whiteSpace: "nowrap",
+  //           overflow: "hidden",
+  //           textOverflow: "ellipsis",
+  //           display: "inline-block",
+  //         }}
+  //         className="border-less-table-orange-status"
+  //       >
+  //         {tag.label || status || "—"}
+  //       </Tag>
+  //     );
+  //   },
+  // },
   {
     title: "",
     key: "isEscalationOpen",
@@ -290,7 +347,7 @@ export const getBorderlessTableColumns = ({
       "Escalated Date",
       "escalatedDate",
       sortedInfo,
-      "center"
+      "center",
     ),
     align: "center",
     dataIndex: "escalatedDate",

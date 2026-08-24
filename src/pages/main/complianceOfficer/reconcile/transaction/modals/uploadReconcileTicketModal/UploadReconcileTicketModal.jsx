@@ -130,13 +130,37 @@ const UploadReconcileTicketModal = () => {
    * 📁 Handles file selection before upload
    * Adds files to the file list without automatic upload
    *
+   * PDF-only: `accept=".pdf"` on the Dragger below is just a picker hint
+   * (the OS file dialog can still be told to show "All files", and it does
+   * nothing at all for drag-and-drop) - the actual enforcement has to
+   * happen here. Non-PDF files are rejected outright (never added to
+   * fileList) with a notification explaining why, instead of silently
+   * accepting any file type as before.
+   *
    * @param {File} file - The file to be added to upload queue
-   * @returns {boolean} false to prevent automatic upload
+   * @returns {boolean|string} false to prevent automatic upload, or
+   *   Upload.LIST_IGNORE to reject the file entirely
    */
-  const handleBeforeUpload = useCallback((file) => {
-    setFileList((prev) => [...prev, file]);
-    return false; // Prevent Ant Design's auto-upload
-  }, []);
+  const handleBeforeUpload = useCallback(
+    (file) => {
+      const isPdf =
+        file.type === "application/pdf" ||
+        file.name?.toLowerCase().endsWith(".pdf");
+
+      if (!isPdf) {
+        showNotification({
+          type: "error",
+          title: "Unsupported File Type",
+          description: `"${file.name}" is not a PDF. Only PDF files can be uploaded.`,
+        });
+        return Upload.LIST_IGNORE;
+      }
+
+      setFileList((prev) => [...prev, file]);
+      return false; // Prevent Ant Design's auto-upload
+    },
+    [showNotification]
+  );
 
   /**
    * 🗑️ Removes a file from the upload list
