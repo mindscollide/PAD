@@ -55,7 +55,7 @@ export const emaStatusOptionsofReportsMyHistory = [
   "Declined",
   "Traded",
   "Not Traded",
-  "Resubmitted for Approval",
+  "Resubmitted",
   "Compliant",
   "Non-Compliant",
 ];
