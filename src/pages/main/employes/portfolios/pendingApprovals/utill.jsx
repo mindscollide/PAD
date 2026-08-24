@@ -12,6 +12,7 @@ import {
   formatApiDateTime,
   formatCode,
   toYYMMDD,
+  toYYMMDDWithSameDayPadding,
 } from "../../../../../common/funtions/rejex";
 import {
   mapBuySellToIds,
@@ -35,9 +36,19 @@ export const buildApiRequest = (searchState = {}, assetTypeListingData) => ({
   StartDate: searchState.startDate ? toYYMMDD(searchState.startDate) : "",
   StatusIds: mapStatusToIds(searchState.status, 2),
   TypeIds: mapBuySellToIds(searchState.type, assetTypeListingData?.Equities),
-  EndDate: searchState.endDate ? toYYMMDD(searchState.endDate) : "",
+  // TEMPORARY same-day padding - see toYYMMDDWithSameDayPadding's doc
+  // comment (rejex.js). Remove once BE_API_Changes/2026-08-24_same_day_
+  // date_search_now_works.md's fix is confirmed live.
+  EndDate: searchState.endDate
+    ? toYYMMDDWithSameDayPadding(searchState.startDate, searchState.endDate)
+    : "",
   BrokerIds: Array.isArray(searchState.brokerIDs) ? searchState.brokerIDs : [],
-  PageNumber: Number(searchState.pageNumber) || 0,
+  // Real 1-indexed page number (BE_API_Changes/2026-08-24_same_day_date_
+  // search_now_works.md pagination offset fix, bundled into
+  // sp_searchEmployeePendingPortfolio_FixSameDayDateFilter.sql - OFFSET
+  // (PageNumber-1)*Length) - was `|| 0`, matching the old buggy backend
+  // that used PageNumber as a raw row offset.
+  PageNumber: Number(searchState.pageNumber) || 1,
   Length: Number(searchState.pageSize) || 10,
 });
 

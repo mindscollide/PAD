@@ -23,7 +23,10 @@
  */
 
 import { Tooltip } from "antd";
-import { toYYMMDD } from "../../../../../common/funtions/rejex";
+import {
+  toYYMMDD,
+  toYYMMDDWithSameDayPadding,
+} from "../../../../../common/funtions/rejex";
 
 /**
  * Builds the request payload for portfolio API call.
@@ -36,7 +39,12 @@ export const buildPortfolioRequest = (searchState = {}) => {
     ? toYYMMDD(searchState.startDate)
     : "";
 
-  const endDate = searchState.endDate ? toYYMMDD(searchState.endDate) : "";
+  // TEMPORARY same-day padding - see toYYMMDDWithSameDayPadding's doc
+  // comment (rejex.js). Remove once BE_API_Changes/2026-08-24_same_day_
+  // date_search_now_works.md's fix is confirmed live.
+  const endDate = searchState.endDate
+    ? toYYMMDDWithSameDayPadding(searchState.startDate, searchState.endDate)
+    : "";
 
   return {
     InstrumentName:
@@ -47,7 +55,12 @@ export const buildPortfolioRequest = (searchState = {}) => {
     BrokerIds: Array.isArray(searchState.brokerIDs)
       ? searchState.brokerIDs
       : [],
-    PageNumber: Number(searchState.pageNumber) || 0,
+    // Real 1-indexed page number (BE_API_Changes/2026-08-24_same_day_date_
+    // search_now_works.md pagination offset fix, bundled into
+    // sp_searchEmployeeApprovedCompliantPortfolio_FixSameDayDateFilter.sql
+    // - OFFSET (PageNumber-1)*Length) - was `|| 0`, matching the old buggy
+    // backend that used PageNumber as a raw row offset.
+    PageNumber: Number(searchState.pageNumber) || 1,
     Length: Number(searchState.pageSize) || 10,
   };
 };

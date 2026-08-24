@@ -81,6 +81,15 @@ const PendingApprovals = ({ activeFilters }) => {
 
   // ✅ Prevent duplicate API calls (StrictMode safeguard)
   const didFetchRef = useRef(false);
+  // Next page to request on scroll - tracked explicitly as a real 1-indexed
+  // page number, not derived from an accumulated row count. BE_API_Changes/
+  // 2026-08-24_same_day_date_search_now_works.md bundles a fix into
+  // sp_searchEmployeePendingPortfolio_FixSameDayDateFilter.sql for
+  // SearchEmployeePendingUploadedPortFolio's pagination: OFFSET
+  // (PageNumber-1)*Length instead of using the raw PageNumber as the
+  // offset directly. Reset to 2 on every replace-style fetch (page 1 just
+  // loaded fresh) and incremented by 1 after each load-more.
+  const nextPageRef = useRef(2);
 
   // ----------------------------------------------------------------
   // 🔹 API CALL: Fetch pending approvals
@@ -124,24 +133,16 @@ const PendingApprovals = ({ activeFilters }) => {
           // this is for to know how mush dta currently fetch from  db
           totalRecordsTable: replace
             ? mapped.length
-            : employeePendingApprovalsData.totalRecordsTable + mapped.length,
+            : (prev?.totalRecordsTable || 0) + mapped.length,
         }));
 
-        setEmployeePendingApprovalSearch((prev) => {
-          const next = {
-            ...prev,
-            pageNumber: replace
-              ? mapped.length
-              : prev.pageNumber + mapped.length,
-          };
+        // Advance the explicit page cursor instead of accumulating a row
+        // count into context's pageNumber (see nextPageRef above for why).
+        nextPageRef.current = replace ? 2 : nextPageRef.current + 1;
 
-          // this is for check if filter value get true only on that it will false
-          if (prev.filterTrigger) {
-            next.filterTrigger = false;
-          }
-
-          return next;
-        });
+        setEmployeePendingApprovalSearch((prev) =>
+          prev.filterTrigger ? { ...prev, filterTrigger: false } : prev
+        );
       } catch (error) {
         console.error("❌ Error fetching pending approvals:", error);
       } finally {
@@ -165,10 +166,13 @@ const PendingApprovals = ({ activeFilters }) => {
     if (didFetchRef.current) return;
     didFetchRef.current = true;
 
-    const requestData = buildApiRequest(
-      employeePendingApprovalSearch,
-      assetTypeListingData
-    );
+    // Page 1 is being loaded fresh here - the next scroll should ask for
+    // page 2, see nextPageRef above.
+    nextPageRef.current = 2;
+    const requestData = {
+      ...buildApiRequest(employeePendingApprovalSearch, assetTypeListingData),
+      PageNumber: 1,
+    };
     fetchApiCall(requestData, true, true);
 
     try {
@@ -186,13 +190,16 @@ const PendingApprovals = ({ activeFilters }) => {
   // ----------------------------------------------------------------
   useEffect(() => {
     if (employeePendingApprovalsDataMqtt) {
+      nextPageRef.current = 2;
       let requestData = buildApiRequest(
         employeePendingApprovalSearch,
         assetTypeListingData
       );
       requestData = {
         ...requestData,
-        PageNumber: 0,
+        // Real 1-indexed page 1 - was 0, matching the old buggy
+        // raw-offset backend (see nextPageRef above).
+        PageNumber: 1,
       };
       fetchApiCall(requestData, true, false);
       setEmployeePendingApprovalsDataMqtt(false);
@@ -231,10 +238,16 @@ const PendingApprovals = ({ activeFilters }) => {
   // ----------------------------------------------------------------
   useEffect(() => {
     if (employeePendingApprovalSearch?.filterTrigger) {
-      const requestData = buildApiRequest(
-        employeePendingApprovalSearch,
-        assetTypeListingData
-      );
+      // Fresh page 1 for the new filter - same reset as the initial fetch
+      // above.
+      nextPageRef.current = 2;
+      const requestData = {
+        ...buildApiRequest(
+          employeePendingApprovalSearch,
+          assetTypeListingData
+        ),
+        PageNumber: 1,
+      };
       fetchApiCall(requestData, true, true);
     }
   }, [employeePendingApprovalSearch?.filterTrigger, fetchApiCall]);
@@ -253,10 +266,13 @@ const PendingApprovals = ({ activeFilters }) => {
 
       try {
         setLoadingMore(true);
-        const requestData = buildApiRequest(
-          employeePendingApprovalSearch,
-          assetTypeListingData
-        );
+        const requestData = {
+          ...buildApiRequest(
+            employeePendingApprovalSearch,
+            assetTypeListingData
+          ),
+          PageNumber: nextPageRef.current,
+        };
 
         await fetchApiCall(requestData, false, false);
       } catch (err) {
