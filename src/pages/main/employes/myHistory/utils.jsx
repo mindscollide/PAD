@@ -23,7 +23,7 @@ import repeat from "../../../../assets/img/repeat.png";
 
 export const buildMyHistoryApiRequest = (
   searchState = {},
-  assetTypeListingData,
+  assetTypeListingData
 ) => ({
   RequestID: searchState.requestID || "",
   InstrumentName: searchState.instrumentName || "",
@@ -45,16 +45,31 @@ export const getMyHistoryColumn = (approvalStatusMap, sortedInfo) => [
     title: withSortIcon(
       "Request/Transaction ID",
       "tradeApprovalID",
-      sortedInfo,
+      sortedInfo
     ),
     align: "left",
     dataIndex: "tradeApprovalID",
     key: "tradeApprovalID",
     ellipsis: true,
     width: 250,
-    sorter: (a, b) =>
-      parseInt(a.tradeApprovalID.replace(/[^\d]/g, ""), 10) -
-      parseInt(b.tradeApprovalID.replace(/[^\d]/g, ""), 10),
+    sorter: (a, b) => {
+      const parse = (id = "") => {
+        const match = id.match(/^([A-Za-z]+)-?(\d+)$/);
+        return {
+          prefix: match?.[1] || "",
+          number: match ? parseInt(match[2], 10) : 0,
+        };
+      };
+
+      const idA = parse(a?.tradeApprovalID);
+      const idB = parse(b?.tradeApprovalID);
+
+      // Sort by prefix first (TRX vs REQ), then by number within that prefix
+      const prefixCompare = idA.prefix.localeCompare(idB.prefix);
+      if (prefixCompare !== 0) return prefixCompare;
+
+      return idA.number - idB.number;
+    },
     sortDirections: ["ascend", "descend"],
     sortOrder:
       sortedInfo?.columnKey === "tradeApprovalID" ? sortedInfo.order : null,
@@ -138,7 +153,7 @@ export const getMyHistoryColumn = (approvalStatusMap, sortedInfo) => [
       "Date & Time of Approval Request",
       "creationDate",
       sortedInfo,
-      "center",
+      "center"
     ),
     dataIndex: "creationDate",
     key: "creationDate",
@@ -146,7 +161,7 @@ export const getMyHistoryColumn = (approvalStatusMap, sortedInfo) => [
     align: "center",
     sorter: (a, b) =>
       `${a.creationDate} ${a.creationTime}`.localeCompare(
-        `${b.creationDate} ${b.creationTime}`,
+        `${b.creationDate} ${b.creationTime}`
       ),
     sortDirections: ["ascend", "descend"],
     sortOrder:

@@ -104,7 +104,7 @@ export const mapEmployeeMyApprovalData = (
  * @param {React.Component} FilterComponent - Filter component (TypeColumnTitle, StatusColumnTitle)
  * @returns {JSX.Element} Header component with filter
  */
-const withFilterHeader = (FilterComponent) => (
+const withFilterHeader = (filterElement) => (
   <div
     className={style["table-header-wrapper"]}
     style={{
@@ -114,7 +114,7 @@ const withFilterHeader = (FilterComponent) => (
       width: "100%",
     }}
   >
-    <FilterComponent />
+    {filterElement}
   </div>
 );
 
@@ -309,6 +309,7 @@ const renderTimeRemainingCell = (record) => {
  * @param {Function} params.onViewDetail - View detail handler
  * @returns {Array} Array of Ant Design column configurations
  */
+
 export const getBorderlessTableColumns = ({
   approvalStatusMap,
   sortedInfo,
@@ -368,12 +369,12 @@ export const getBorderlessTableColumns = ({
       ),
   },
   {
-    title: withFilterHeader(() => (
+    title: withFilterHeader(
       <TypeColumnTitle
         state={employeeMyApprovalSearch}
         setState={setEmployeeMyApprovalSearch}
       />
-    )),
+    ),
     dataIndex: "type",
     key: "type",
     width: 120,
@@ -420,12 +421,12 @@ export const getBorderlessTableColumns = ({
     render: (date, record) => <span>{formatApiDateTime(date)}</span>,
   },
   {
-    title: withFilterHeader(() => (
+    title: withFilterHeader(
       <StatusColumnTitle
         state={employeeMyApprovalSearch}
         setState={setEmployeeMyApprovalSearch}
       />
-    )),
+    ),
     dataIndex: "status",
     key: "status",
     width: 150,
