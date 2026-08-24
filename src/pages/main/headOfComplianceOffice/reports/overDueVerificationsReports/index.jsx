@@ -13,6 +13,7 @@ import {
   getBorderlessTableColumns,
   mappingDateWiseTransactionReport,
 } from "./utils";
+import { approvalStatusMap } from "../../../../../components/tables/borderlessTable/utill";
 
 // 🔹 Contexts
 import { useGlobalModal } from "../../../../../context/GlobalModalContext";
@@ -255,6 +256,7 @@ const HeadCompianceOfficerOverdueVerificationReports = () => {
   // -------------------- Table Columns --------------------
   const columns = getBorderlessTableColumns({
     sortedInfo,
+    approvalStatusMap,
     OverdueVerificationHCOReportSearch,
     setOverdueVerificationHCOReportSearch,
     setViewDetailHeadOfComplianceEscalated,

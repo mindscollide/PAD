@@ -204,30 +204,37 @@ const Dashboard = () => {
   };
 
   /**
-   * Removes a single row from HOC's "Overdue Verifications" report in place,
-   * instead of a full refetch - once the underlying transaction is
-   * Approved/Declined it no longer belongs in this list. Shared by
+   * REVERTED (2026-08-24, per explicit correction): this used to remove
+   * the row outright. HOC's "Overdue Verifications" report is a historical
+   * report, not an actionable queue like Escalated Verifications (currentKey
+   * "15", still removed elsewhere) - a resolved row should stay listed,
+   * just reflect its new status. Patches isEscalationOpen AND status in
+   * place instead, matching BE_API_Changes/2026-08-24_overdue_verifications_
+   * keeps_resolved_records.md (resolved rows now stay listed with their
+   * real WorkFlowStatusID - Pending/Compliant/Non-Compliant - rather than
+   * being excluded). Shared by
    * COMPLIANCE_OFFICER_TRANSACTION_APPROVAL_REQUEST_APPROVED/DECLINED, both
-   * of which resolve an overdue row the same way (row drops out either way).
-   * Matches on workFlowID (this report's row key, see
-   * mappingDateWiseTransactionReport) against payload.approvalID, the same
-   * identifying field the "15" (HOC Escalated Verifications) branch above
-   * already assumes lines up with a workflow's ID.
+   * of which resolve an overdue row, just to a different status. Matches on
+   * workFlowID (this report's row key) against payload.approvalID, the same
+   * identifying field the "15" branch above already assumes lines up with
+   * a workflow's ID.
    */
-  const removeHOCOverdueVerificationRow = (payload) => {
+  const patchHOCOverdueVerificationRow = (payload, status) => {
     setOverdueVerificationHCOListData((prev) => {
       const rows = prev?.overdueVerifications || [];
-      const filteredRows = rows.filter(
-        (row) => String(row.workFlowID) !== String(payload?.approvalID)
+      const existingIndex = rows.findIndex(
+        (row) => String(row.workFlowID) === String(payload?.approvalID)
       );
-      if (filteredRows.length === rows.length) return prev;
+      if (existingIndex === -1) return prev;
 
-      return {
-        ...prev,
-        overdueVerifications: filteredRows,
-        totalRecordsDataBase: Math.max(0, (prev.totalRecordsDataBase || 0) - 1),
-        totalRecordsTable: filteredRows.length,
+      const updatedRows = [...rows];
+      updatedRows[existingIndex] = {
+        ...updatedRows[existingIndex],
+        isEscalationOpen: false,
+        status,
       };
+
+      return { ...prev, overdueVerifications: updatedRows };
     });
   };
 
@@ -941,17 +948,17 @@ const Dashboard = () => {
                   // so path-scoped to just this one via location.pathname,
                   // same way header.jsx/searchable-dropdown already
                   // distinguish these sub-routes) was never live-updated on
-                  // this message - a row stayed listed after the underlying
-                  // transaction was actually approved, until the next full
-                  // page reload. Removed outright (not just patched), same
-                  // as the currentKey "15" branch above - an approved
-                  // transaction no longer belongs in this report.
+                  // this message - a row stayed showing Pending/"Escalated"
+                  // after the underlying transaction was actually approved,
+                  // until the next full page reload. Patched in place (row
+                  // kept, status flipped to Compliant), not removed - see
+                  // patchHOCOverdueVerificationRow above.
                   if (
                     currentKey === "17" &&
                     location.pathname ===
                       "/PAD/hca-reports/hca-overdue-verifications"
                   ) {
-                    removeHOCOverdueVerificationRow(payload);
+                    patchHOCOverdueVerificationRow(payload, "Compliant");
                   }
                   break;
                 }
@@ -968,15 +975,15 @@ const Dashboard = () => {
                     setComplianceOfficerReconcilePortfolioDataMqtt(true);
                   }
 
-                  // Same removal as the APPROVED case above - a declined
-                  // transaction is also resolved and no longer belongs in
-                  // HOC's Overdue Verifications report.
+                  // Same patch as the APPROVED case above - a declined
+                  // transaction is also resolved but stays listed in HOC's
+                  // Overdue Verifications report, flipped to Non-Compliant.
                   if (
                     currentKey === "17" &&
                     location.pathname ===
                       "/PAD/hca-reports/hca-overdue-verifications"
                   ) {
-                    removeHOCOverdueVerificationRow(payload);
+                    patchHOCOverdueVerificationRow(payload, "Non-Compliant");
                   }
                   break;
                 }

@@ -18,6 +18,22 @@ import { withSortIcon } from "../../../../../common/funtions/tableIcon";
 import { useGlobalModal } from "../../../../../context/GlobalModalContext";
 import { useReconcileContext } from "../../../../../context/reconsileContax";
 
+// BE_API_Changes/2026-08-24_overdue_verifications_keeps_resolved_records.md:
+// fallback for the rare case sp_ComplianceOfficerOverdueVerificationsReport's
+// `WorkFlowStatus` label column comes back null/empty - maps the numeric
+// WorkFlowStatusID to the same label vocabulary used everywhere else in the
+// app (getStatusStyle in ViewDetailOverdueTransaction.jsx).
+const OVERDUE_WORKFLOW_STATUS_LABELS = {
+  1: "Pending",
+  2: "Resubmitted",
+  3: "Approved",
+  4: "Declined",
+  5: "Traded",
+  6: "Not Traded",
+  8: "Compliant",
+  9: "Non-Compliant",
+};
+
 /**
  * Utility: Build API request payload for approval listing
  *
@@ -50,7 +66,7 @@ export const buildApiRequest = (searchState = {}, assetTypeListingData) => ({
  */
 export const mappingDateWiseTransactionReport = (
   assetTypeData,
-  coOverdueVerificationListData = []
+  coOverdueVerificationListData = [],
 ) => {
   const overdueVerifications = Array.isArray(coOverdueVerificationListData)
     ? coOverdueVerificationListData
@@ -79,7 +95,19 @@ export const mappingDateWiseTransactionReport = (
       "-",
     approvedQuantity: item.approvedQuantity || 0,
     shareTraded: item.shareTraded || 0,
-    status: item?.approvalStatus?.approvalStatusName || "—",
+    // FIXED: was reading item?.approvalStatus?.approvalStatusName, a field
+    // this endpoint's response never actually carries -
+    // sp_ComplianceOfficerOverdueVerificationsReport returns a flat
+    // `WorkFlowStatus` label string (WFS.Status) plus `WorkFlowStatusID`,
+    // same shape the HOC sibling report's numeric-only WorkFlowStatusID
+    // maps from. Was a dead read either way until BE_API_Changes/2026-08-24_
+    // overdue_verifications_keeps_resolved_records.md made resolved rows
+    // (Compliant/Non-Compliant) actually stay in this list instead of being
+    // excluded - this now needs to render correctly for real.
+    status:
+      item?.workFlowStatus ||
+      OVERDUE_WORKFLOW_STATUS_LABELS[Number(item?.workFlowStatusID)] ||
+      "—",
     timeRemainingToTrade: item.timeRemainingToTrade || "",
     tradeType: item.tradeType || "",
     assetType: item.assetType?.assetTypeName || "",
@@ -158,6 +186,7 @@ export const getBorderlessTableColumns = ({
       </span>
     ),
   },
+
   {
     title: withSortIcon("Instrument", "instrumentName", sortedInfo),
     dataIndex: "instrumentName",
@@ -167,7 +196,7 @@ export const getBorderlessTableColumns = ({
     width: 150,
     sorter: (a, b) =>
       (a?.instrumentShortCode || "").localeCompare(
-        b?.instrumentShortCode || ""
+        b?.instrumentShortCode || "",
       ),
 
     sortDirections: ["ascend", "descend"],
@@ -204,12 +233,13 @@ export const getBorderlessTableColumns = ({
       );
     },
   },
+
   {
     title: withSortIcon(
       "Transaction Date",
       "transactionDate",
       sortedInfo,
-      "center"
+      "center",
     ),
     dataIndex: "transactionDate",
     key: "transactionDate",
@@ -231,12 +261,13 @@ export const getBorderlessTableColumns = ({
       </span>
     ),
   },
+
   {
     title: withSortIcon(
       "Approved Quantity",
       "approvedQuantity",
       sortedInfo,
-      "center"
+      "center",
     ),
     dataIndex: "approvedQuantity",
     width: 180,
@@ -251,6 +282,7 @@ export const getBorderlessTableColumns = ({
     sortIcon: () => null,
     render: (q) => <span className="font-medium">{q.toLocaleString()}</span>,
   },
+
   {
     title: withSortIcon("Shares Traded", "shareTraded", sortedInfo, "center"),
     dataIndex: "shareTraded",
@@ -266,6 +298,43 @@ export const getBorderlessTableColumns = ({
     sortIcon: () => null,
     render: (q) => <span className="font-medium">{q.toLocaleString()}</span>,
   },
+
+  // {
+  //   // ADDED per BE_API_Changes/2026-08-24_overdue_verifications_keeps_
+  //   // resolved_records.md: resolved rows (Compliant/Non-Compliant) now stay
+  //   // in this report instead of being excluded - the status genuinely
+  //   // varies per row now, so it needs a visible column rendering all three
+  //   // states (approvalStatusMap is already threaded through from index.jsx
+  //   // but was never actually used in this columns array until now).
+  //   title: withSortIcon("Status", "status", sortedInfo, "center"),
+  //   align: "center",
+  //   dataIndex: "status",
+  //   key: "status",
+  //   width: 160,
+  //   sorter: (a, b) => (a?.status || "").localeCompare(b?.status || ""),
+  //   sortDirections: ["ascend", "descend"],
+  //   sortOrder: sortedInfo?.columnKey === "status" ? sortedInfo.order : null,
+  //   showSorterTooltip: false,
+  //   sortIcon: () => null,
+  //   render: (status) => {
+  //     const tag = approvalStatusMap?.[status] || {};
+  //     return (
+  //       <Tag
+  //         style={{
+  //           backgroundColor: tag.backgroundColor,
+  //           color: tag.textColor,
+  //           whiteSpace: "nowrap",
+  //           overflow: "hidden",
+  //           textOverflow: "ellipsis",
+  //           display: "inline-block",
+  //         }}
+  //         className="border-less-table-orange-status"
+  //       >
+  //         {tag.label || status || "—"}
+  //       </Tag>
+  //     );
+  //   },
+  // },
 
   {
     title: "",
@@ -286,13 +355,30 @@ export const getBorderlessTableColumns = ({
     align: "center", // 🔷 Align content to the right
     render: (_, record) => {
       const { setViewDetailOverdueTransaction } = useGlobalModal();
-      const { setSelectedOverdueTransactionData } = useReconcileContext();
+      const {
+        setSelectedOverdueTransactionData,
+        setSelectedReconcileTransactionData,
+      } = useReconcileContext();
       return (
         <Button
           className="small-dark-button"
           text={"View Details"}
           onClick={() => {
             setSelectedOverdueTransactionData(record);
+            // FIXED: CommentModal.jsx's Compliant/Non-Compliant submit
+            // (updateCompliantRequestData, shared with the Reconcile
+            // Transactions page) reads TradeApprovalID off
+            // selectedReconcileTransactionData?.approvalID unconditionally -
+            // this page only ever set selectedOverdueTransactionData, so
+            // that read was either stale (a leftover value from a Reconcile
+            // Transactions visit earlier in the session, sent for the WRONG
+            // record) or undefined. Setting it here too, keyed off this
+            // report's row shape (approvalID isn't present here - workFlowID
+            // is the same underlying workflow ID), keeps the submit correct.
+            setSelectedReconcileTransactionData({
+              ...record,
+              approvalID: record?.workFlowID,
+            });
             setViewDetailOverdueTransaction(true);
             handleViewDetailsForReconcileTransaction(record?.workFlowID);
             console.log(record, "tradeApprovalID");
