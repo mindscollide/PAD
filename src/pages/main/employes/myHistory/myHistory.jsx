@@ -295,10 +295,26 @@ const MyHistory = () => {
 
         if (newEmployees.length > 0) {
           // merge new employees into existing array and also update any other top-level response fields (e.g., totalRecords)
-          setEmployeeMyHistoryData((prev = {}) => ({
-            ...res, // take latest top-level fields (totalRecords etc.) from response
-            workFlows: [...(prev.workFlows || []), ...newEmployees],
-          }));
+          setEmployeeMyHistoryData((prev = {}) => {
+            const existingWorkFlows = prev.workFlows || [];
+            // Defensive dedup by workFlowID - BE's OFFSET/FETCH pagination
+            // can hand back a row already seen on an earlier page when its
+            // ORDER BY has no fully unique tiebreaker (rows tied on the
+            // sort column can land in either page depending on the call).
+            // That's a backend ordering issue to fix at the source, but
+            // this guard keeps it from rendering as duplicate rows here.
+            const existingIDs = new Set(
+              existingWorkFlows.map((wf) => wf.workFlowID),
+            );
+            const uniqueNewEmployees = newEmployees.filter(
+              (wf) => !existingIDs.has(wf.workFlowID),
+            );
+
+            return {
+              ...res, // take latest top-level fields (totalRecords etc.) from response
+              workFlows: [...existingWorkFlows, ...uniqueNewEmployees],
+            };
+          });
         } else {
           // no new data => stop further fetching
           setHasMore(false);

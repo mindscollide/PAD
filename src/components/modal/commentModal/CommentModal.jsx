@@ -13,6 +13,7 @@ import { useReconcileContext } from "../../../context/reconsileContax";
 import { useSidebarContext } from "../../../context/sidebarContaxt";
 import { UpdatedComplianceOfficerTransactionRequest } from "../../../api/reconsile";
 import { usePortfolioContext } from "../../../context/portfolioContax";
+import { useMyApproval } from "../../../context/myApprovalContaxt";
 
 const { TextArea } = Input;
 const { Text } = Typography;
@@ -53,12 +54,15 @@ const CommentModal = ({
   const {
     selectedReconcileTransactionData,
     selectedEscalatedHeadOfComplianceData,
+    setHeadOfComplianceApprovalEscalatedVerificationsData,
   } = useReconcileContext();
 
   const {
     selectedEscalatedPortfolioHeadOfComplianceData,
     selectedPortfolioTransactionData,
   } = usePortfolioContext();
+
+  const { setOverdueVerificationHCOListData } = useMyApproval();
 
   // State to get option reason while selecting any reason
   const [selectedOption, setSelectedOption] = useState(null);
@@ -209,11 +213,11 @@ const CommentModal = ({
   // For Head Of Compliance Note Api Start here
   const updateHeadOfCompliancePortfolioRequestData = async () => {
     showLoader(true);
+    const workflowID =
+      selectedEscalatedHeadOfComplianceData?.workflowID ||
+      selectedEscalatedPortfolioHeadOfComplianceData?.workflowID;
     const requestdata = {
-      TradeApprovalID: String(
-        selectedEscalatedHeadOfComplianceData?.workflowID ||
-          selectedEscalatedPortfolioHeadOfComplianceData?.workflowID
-      ),
+      TradeApprovalID: String(workflowID),
       StatusID:
         submitText === "HOC-Non-Compliant" ||
         submitText === "HOC-Portfolio-Non-Compliant"
@@ -224,7 +228,7 @@ const CommentModal = ({
 
     console.log(requestdata, "Checkechecevjcvecvhejv");
 
-    await UpdatedComplianceOfficerTransactionRequest({
+    const success = await UpdatedComplianceOfficerTransactionRequest({
       callApi,
       showNotification,
       showLoader,
@@ -238,6 +242,56 @@ const CommentModal = ({
       setValue,
       navigate,
     });
+
+    // ADDED (2026-08-24): resolving this row (Compliant/Non-Compliant)
+    // never removed it from either HOC list that can show it - this
+    // modal is shared by both the Escalated Verifications page
+    // (currentKey "15") and the Overdue Verifications report
+    // (currentKey "17", hca-reports/hca-overdue-verifications), and
+    // neither had a local update here before. A pure HOC user (no
+    // Compliance Officer role) also never receives the
+    // COMPLIANCE_OFFICER_TRANSACTION_APPROVAL_REQUEST_APPROVED MQTT
+    // message dashboard.jsx handles (it's role-gated to role 4), so
+    // without this the row just sat there until a full page reload.
+    // Removed from both lists unconditionally - each filter is a no-op
+    // if the row isn't in that particular list.
+    if (success) {
+      setHeadOfComplianceApprovalEscalatedVerificationsData((prev) => {
+        const rows = prev?.escalatedVerification || [];
+        const filteredRows = rows.filter(
+          (row) => String(row.workflowID) !== String(workflowID)
+        );
+        if (filteredRows.length === rows.length) return prev;
+
+        return {
+          ...prev,
+          escalatedVerification: filteredRows,
+          totalRecordsDataBase: Math.max(
+            0,
+            (prev?.totalRecordsDataBase || 0) - 1
+          ),
+          totalRecordsTable: filteredRows.length,
+        };
+      });
+
+      setOverdueVerificationHCOListData((prev) => {
+        const rows = prev?.overdueVerifications || [];
+        const filteredRows = rows.filter(
+          (row) => String(row.workFlowID) !== String(workflowID)
+        );
+        if (filteredRows.length === rows.length) return prev;
+
+        return {
+          ...prev,
+          overdueVerifications: filteredRows,
+          totalRecordsDataBase: Math.max(
+            0,
+            (prev?.totalRecordsDataBase || 0) - 1
+          ),
+          totalRecordsTable: filteredRows.length,
+        };
+      });
+    }
   };
   // For Head Of Compliance Note Api End here
 
