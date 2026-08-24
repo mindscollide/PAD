@@ -54,6 +54,17 @@ const MytradeapprovalsReport = () => {
   const navigate = useNavigate();
   const hasFetched = useRef(false);
   const tableScrollEmployeeTransaction = useRef(null);
+  // Next page to request on scroll, tracked explicitly as a real 1-indexed
+  // page number - not derived from an accumulated row count. BE_API_Changes/
+  // 2026-08-24_myhistory_totalrecords_now_honors_filters.md fixed
+  // sp_GetEmployeeTradeApprovalReqeustReports to compute
+  // OFFSET (PageNumber-1)*Length instead of using the raw PageNumber as the
+  // offset directly, so the old FE workaround of sending an
+  // ever-growing row count as "PageNumber" (matching that bug) would now
+  // request wildly wrong offsets. Reset to 2 on every replace-style fetch
+  // (page 1 just loaded fresh) and incremented by 1 after each load-more,
+  // same pattern as myHistory.jsx's nextPageRef.
+  const nextPageRef = useRef(2);
 
   // -------------------- Contexts --------------------
   const { callApi } = useApi();
@@ -137,19 +148,15 @@ const MytradeapprovalsReport = () => {
           ? mapped.length
           : employeeMyTradeApprovalsData.totalRecordsTable + mapped.length,
       }));
-      setEmployeeMyTradeApprovalsSearch((prev) => {
-        const next = {
-          ...prev,
-          pageNumber: replace ? mapped.length : prev.pageNumber + mapped.length,
-        };
 
-        // this is for check if filter value get true only on that it will false
-        if (prev.filterTrigger) {
-          next.filterTrigger = false;
-        }
+      // This page has now been fetched - advance the explicit page cursor
+      // instead of accumulating a row count into context's pageNumber (see
+      // nextPageRef above for why).
+      nextPageRef.current = replace ? 2 : nextPageRef.current + 1;
 
-        return next;
-      });
+      setEmployeeMyTradeApprovalsSearch((prev) =>
+        prev.filterTrigger ? { ...prev, filterTrigger: false } : prev
+      );
     },
     [
       assetTypeListingData,
@@ -167,6 +174,9 @@ const MytradeapprovalsReport = () => {
   useEffect(() => {
     if (hasFetched.current) return;
     hasFetched.current = true;
+    // Page 1 is being loaded fresh here - the next scroll should ask for
+    // page 2, see nextPageRef above.
+    nextPageRef.current = 2;
     const requestData = buildApiRequest(
       employeeMyTradeApprovalsSearch,
       assetTypeListingData
@@ -185,6 +195,9 @@ const MytradeapprovalsReport = () => {
   // 🔹 call api on search
   useEffect(() => {
     if (employeeMyTradeApprovalsSearch.filterTrigger) {
+      // Fresh page 1 for the new filter - same reset as the initial fetch
+      // above.
+      nextPageRef.current = 2;
       const requestData = buildApiRequest(
         employeeMyTradeApprovalsSearch,
         assetTypeListingData
@@ -196,13 +209,16 @@ const MytradeapprovalsReport = () => {
   // 🔹 Refresh on MQTT update
   useEffect(() => {
     if (employeeMyTradeApprovalsMqtt) {
+      nextPageRef.current = 2;
       let requestData = buildApiRequest(
         employeeMyTradeApprovalsSearch,
         assetTypeListingData
       );
       requestData = {
         ...requestData,
-        PageNumber: 0,
+        // Real 1-indexed page 1 - was 0, matching the old buggy raw-offset
+        // backend (see nextPageRef above).
+        PageNumber: 1,
       };
       fetchApiCall(requestData, true, false);
       setEmployeeMyTradeApprovalMqtt(false);
@@ -220,10 +236,19 @@ const MytradeapprovalsReport = () => {
 
       try {
         setLoadingMore(true);
-        const requestData = buildApiRequest(
+        // Override pagination with the explicitly tracked next page
+        // instead of trusting context's pageNumber (see nextPageRef
+        // above) - build the request from the current search/filter, then
+        // force PageNumber/Length onto it, same as myHistory.jsx.
+        const baseRequest = buildApiRequest(
           employeeMyTradeApprovalsSearch,
           assetTypeListingData
         );
+        const requestData = {
+          ...baseRequest,
+          PageNumber: nextPageRef.current,
+          Length: Number(employeeMyTradeApprovalsSearch.pageSize) || 10,
+        };
         await fetchApiCall(requestData, false, false);
       } catch (err) {
         console.error("Error loading more approvals:", err);
@@ -255,7 +280,7 @@ const MytradeapprovalsReport = () => {
     setEmployeeMyTradeApprovalsSearch((prev) => ({
       ...prev,
       ...resetMap[key],
-      pageNumber: 0,
+      pageNumber: 1,
       filterTrigger: true,
     }));
   };
@@ -269,7 +294,7 @@ const MytradeapprovalsReport = () => {
       endDate: null,
       quantity: 0,
       brokerIDs: [],
-      pageNumber: 0,
+      pageNumber: 1,
       filterTrigger: true,
     }));
   };

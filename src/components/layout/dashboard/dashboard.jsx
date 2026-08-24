@@ -40,8 +40,13 @@ const Dashboard = () => {
   // setIsEmployeeMyApprovalMqtt (full-refetch trigger) no longer used here -
   // every EMPLOYEE_* case that used to set it now patches
   // employeeMyApproval in place via patchEmployeeMyApprovalRow instead.
-  const { setLineManagerApprovalMQtt, setIsEmployeeMyApproval } =
-    useMyApproval();
+  const {
+    setLineManagerApprovalMQtt,
+    setLineManagerApproval,
+    setIsEmployeeMyApproval,
+    setOverdueVerificationHCOListData,
+    setOverdueVerificationHCOMqtt,
+  } = useMyApproval();
   const {
     setAdminBrokerMqtt,
     setAdminIntrumentsMqtt,
@@ -96,7 +101,8 @@ const Dashboard = () => {
 
   const { setUploadPortfolioModal } = usePortfolioContext();
 
-  const { setEmployeeTransactionsTableDataMqtt } = useTransaction();
+  const { setEmployeeTransactionsTableDataMqtt, setEmployeeTransactionsData } =
+    useTransaction();
   const { setWebNotificationData } = useWebNotification();
   const { callApi } = useApi();
   const { showNotification } = useNotification();
@@ -129,6 +135,18 @@ const Dashboard = () => {
       roleArray.includes(Number(role.roleID))
     );
   };
+
+  /**
+   * ✅ Normalizes the "list-refresh" escalation MQTT payload into a set of
+   * matchable ID strings. Per API_Changes/2026-08-24_escalation_mqtt_
+   * reference_for_fe.md, all 6 WORKFLOW_ESCALATED_FROM_x / x_ESCALATED_TO_x
+   * messages carry Payload as a bare array of WorkFlowIDs
+   * (`[<WorkFlowID>, ...]`) - not a full row object. Defensive fallback to
+   * a single-element array covers the case a sender ever sends one bare ID
+   * instead of an array.
+   */
+  const escalationWorkFlowIDs = (payload) =>
+    (Array.isArray(payload) ? payload : [payload]).map(String);
 
   /**
    * ✅ Patches a single employee "My Approvals" row in place from an MQTT
@@ -197,6 +215,41 @@ const Dashboard = () => {
         status,
       };
       return { ...prev, pendingApprovalsData: updatedRows };
+    });
+  };
+
+  /**
+   * REVERTED (2026-08-24, per explicit correction): this used to remove
+   * the row outright. HOC's "Overdue Verifications" report is a historical
+   * report, not an actionable queue like Escalated Verifications (currentKey
+   * "15", still removed elsewhere) - a resolved row should stay listed,
+   * just reflect its new status. Patches isEscalationOpen AND status in
+   * place instead, matching BE_API_Changes/2026-08-24_overdue_verifications_
+   * keeps_resolved_records.md (resolved rows now stay listed with their
+   * real WorkFlowStatusID - Pending/Compliant/Non-Compliant - rather than
+   * being excluded). Shared by
+   * COMPLIANCE_OFFICER_TRANSACTION_APPROVAL_REQUEST_APPROVED/DECLINED, both
+   * of which resolve an overdue row, just to a different status. Matches on
+   * workFlowID (this report's row key) against payload.approvalID, the same
+   * identifying field the "15" branch above already assumes lines up with
+   * a workflow's ID.
+   */
+  const patchHOCOverdueVerificationRow = (payload, status) => {
+    setOverdueVerificationHCOListData((prev) => {
+      const rows = prev?.overdueVerifications || [];
+      const existingIndex = rows.findIndex(
+        (row) => String(row.workFlowID) === String(payload?.approvalID)
+      );
+      if (existingIndex === -1) return prev;
+
+      const updatedRows = [...rows];
+      updatedRows[existingIndex] = {
+        ...updatedRows[existingIndex],
+        isEscalationOpen: false,
+        status,
+      };
+
+      return { ...prev, overdueVerifications: updatedRows };
     });
   };
 
@@ -599,22 +652,56 @@ const Dashboard = () => {
                   break;
                 }
                 case "WORKFLOW_ESCALATED_FROM_HTA": {
-                  // Same treatment as the resubmit case above - an
-                  // escalation is assumed to update the existing row's
-                  // fields (isEscalated, escalatedDate, etc.), not create a
-                  // new one.
+                  // FIXED (2026-08-24, per escalation_mqtt_reference_for_fe.md):
+                  // payload here is a bare [<WorkFlowID>, ...] array, not a
+                  // full approval row object - patchEmployeeMyApprovalRow
+                  // expects the latter (runs it through
+                  // mapEmployeeMyApprovalData([payload])), so feeding it the
+                  // raw ID array always silently no-op'd (no real row's
+                  // approvalID is ever undefined, and that's what a mapped
+                  // array-as-object comes out to). Patches isEscalated
+                  // directly by ID instead - no API call, no full refetch.
                   if (currentKey === "1") {
-                    patchEmployeeMyApprovalRow(payload);
+                    const escalatedIDs = escalationWorkFlowIDs(payload);
+                    setIsEmployeeMyApproval((prev) => {
+                      const approvals = prev?.approvals || [];
+                      const updatedApprovals = approvals.map((item) =>
+                        escalatedIDs.includes(String(item.approvalID))
+                          ? { ...item, isEscalated: true }
+                          : item
+                      );
+                      return { ...prev, approvals: updatedApprovals };
+                    });
                   }
                   break;
                 }
                 case "WORKFLOW_ESCALATED_FROM_HOC": {
                   if (currentKey === "2") {
-                    setEmployeeTransactionsTableDataMqtt(true);
+                    // CHANGED (2026-08-24): was a full refetch
+                    // (setEmployeeTransactionsTableDataMqtt) - patches
+                    // isEscalated in place instead, matching this message's
+                    // real payload shape (bare WorkFlowID array, see
+                    // escalationWorkFlowIDs above). mapEmployeeTransactions
+                    // already maps isEscalated and keys rows by workFlowID.
+                    const escalatedIDs = escalationWorkFlowIDs(payload);
+                    setEmployeeTransactionsData((prev) => {
+                      const data = prev?.data || [];
+                      const updatedData = data.map((item) =>
+                        escalatedIDs.includes(String(item.workFlowID))
+                          ? { ...item, isEscalated: true }
+                          : item
+                      );
+                      return { ...prev, data: updatedData };
+                    });
                   } else if (
                     currentKey === "4" &&
                     currentactiveTabRef === "pending"
                   ) {
+                    // Left as a refetch: Pending Approvals' row shape
+                    // (pendingApprovals/utill.jsx mapToTableRows) has no
+                    // isEscalated field or column at all to patch - there's
+                    // nothing in-place to update here without adding a new
+                    // field/column, which is out of scope of this change.
                     setEmployeePendingApprovalsDataMqtt(true);
                   }
                   break;
@@ -782,8 +869,24 @@ const Dashboard = () => {
                   break;
                 }
                 case "YOUR_REQUEST_ESCALATED_TO_HTA": {
+                  // CHANGED (2026-08-24): was a full refetch
+                  // (setLineManagerApprovalMQtt) - patches isEscalated in
+                  // place instead. mapEscalatedApprovalsToTableRows
+                  // (lineManager/approvalRequest/utill.jsx) doesn't expose
+                  // an approvalID field on the mapped row, only `key`
+                  // (set to item.approvalID at map time), so that's the
+                  // match target here.
                   if (currentKey === "6") {
-                    setLineManagerApprovalMQtt(true);
+                    const escalatedIDs = escalationWorkFlowIDs(payload);
+                    setLineManagerApproval((prev) => {
+                      const lineApprovals = prev?.lineApprovals || [];
+                      const updatedApprovals = lineApprovals.map((item) =>
+                        escalatedIDs.includes(String(item.key))
+                          ? { ...item, isEscalated: true }
+                          : item
+                      );
+                      return { ...prev, lineApprovals: updatedApprovals };
+                    });
                   }
                   break;
                 }
@@ -904,6 +1007,24 @@ const Dashboard = () => {
                       }
                     );
                   }
+
+                  // ADDED (2026-08-24): HOC's "Overdue Verifications" report
+                  // (currentKey "17" - shared by every hca-reports/* sub-page,
+                  // so path-scoped to just this one via location.pathname,
+                  // same way header.jsx/searchable-dropdown already
+                  // distinguish these sub-routes) was never live-updated on
+                  // this message - a row stayed showing Pending/"Escalated"
+                  // after the underlying transaction was actually approved,
+                  // until the next full page reload. Patched in place (row
+                  // kept, status flipped to Compliant), not removed - see
+                  // patchHOCOverdueVerificationRow above.
+                  if (
+                    currentKey === "17" &&
+                    location.pathname ===
+                      "/PAD/hca-reports/hca-overdue-verifications"
+                  ) {
+                    patchHOCOverdueVerificationRow(payload, "Compliant");
+                  }
                   break;
                 }
                 case "COMPLIANCE_OFFICER_TRANSACTION_APPROVAL_REQUEST_DECLINED": {
@@ -918,6 +1039,17 @@ const Dashboard = () => {
                   ) {
                     setComplianceOfficerReconcilePortfolioDataMqtt(true);
                   }
+
+                  // Same patch as the APPROVED case above - a declined
+                  // transaction is also resolved but stays listed in HOC's
+                  // Overdue Verifications report, flipped to Non-Compliant.
+                  if (
+                    currentKey === "17" &&
+                    location.pathname ===
+                      "/PAD/hca-reports/hca-overdue-verifications"
+                  ) {
+                    patchHOCOverdueVerificationRow(payload, "Non-Compliant");
+                  }
                   break;
                 }
                 case "YOUR_REQUEST_ESCALATED_TO_HOC": {
@@ -925,11 +1057,29 @@ const Dashboard = () => {
                     currentKey === "9" &&
                     currentreconcileActiveTab === "transactions"
                   ) {
-                    setComplianceOfficerReconcileTransactionDataMqtt(true);
+                    // CHANGED (2026-08-24): was a full refetch - patches
+                    // isEscalated in place instead. mapToTableRows
+                    // (complianceOfficer/reconcile/transaction/util.jsx)
+                    // maps both approvalID and isEscalated (API_Changes/
+                    // 2026-08-11_co_reconcile_transactions_isEscalated.md).
+                    const escalatedIDs = escalationWorkFlowIDs(payload);
+                    setComplianceOfficerReconcileTransactionData((prev) => {
+                      const rows = prev?.reconsileTransaction || [];
+                      const updatedRows = rows.map((row) =>
+                        escalatedIDs.includes(String(row.approvalID))
+                          ? { ...row, isEscalated: true }
+                          : row
+                      );
+                      return { ...prev, reconsileTransaction: updatedRows };
+                    });
                   } else if (
                     currentKey === "9" &&
                     currentreconcileActiveTab === "portfolio"
                   ) {
+                    // Left as a refetch: the Portfolio sub-tab's row shape
+                    // (reconcile/portfolio/util.jsx mapToTableRows) has no
+                    // isEscalated field/column to patch, unlike the
+                    // Transactions sub-tab above.
                     setComplianceOfficerReconcilePortfolioDataMqtt(true);
                   }
                   break;
@@ -1080,6 +1230,25 @@ const Dashboard = () => {
                       // other refetch-trigger case in this file.
                       setHeadOfComplianceApprovalPortfolioMqtt(true);
                     }
+                  }
+
+                  // ADDED (2026-08-24, per API_Changes/2026-08-24_escalation_
+                  // mqtt_reference_for_fe.md): this message only refreshed
+                  // Escalated Verifications (currentKey "15") above - HOC's
+                  // Overdue Verifications report (currentKey "17", shared by
+                  // every hca-reports/* sub-page, path-scoped via
+                  // location.pathname same as the
+                  // COMPLIANCE_OFFICER_TRANSACTION_APPROVAL_REQUEST_APPROVED/
+                  // DECLINED handling above) never live-updated when a NEW
+                  // escalation landed while it was open - only resolving an
+                  // existing row did. Full refetch (not a row patch) since
+                  // this is a brand-new row with no existing entry to patch.
+                  if (
+                    currentKey === "17" &&
+                    location.pathname ===
+                      "/PAD/hca-reports/hca-overdue-verifications"
+                  ) {
+                    setOverdueVerificationHCOMqtt(true);
                   }
                   break;
                 }

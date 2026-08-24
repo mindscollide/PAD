@@ -13,6 +13,7 @@ import {
   getBorderlessTableColumns,
   mappingDateWiseTransactionReport,
 } from "./utils";
+import { approvalStatusMap } from "../../../../../components/tables/borderlessTable/utill";
 
 // 🔹 Contexts
 import { useGlobalModal } from "../../../../../context/GlobalModalContext";
@@ -55,8 +56,12 @@ const HeadCompianceOfficerOverdueVerificationReports = () => {
   const { showNotification } = useNotification();
   const { showLoader } = useGlobalLoader();
 
-  const { overdueVerificationHCOListData, setOverdueVerificationHCOListData } =
-    useMyApproval();
+  const {
+    overdueVerificationHCOListData,
+    setOverdueVerificationHCOListData,
+    overdueVerificationHCOMqtt,
+    setOverdueVerificationHCOMqtt,
+  } = useMyApproval();
 
   const {
     OverdueVerificationHCOReportSearch,
@@ -190,6 +195,20 @@ const HeadCompianceOfficerOverdueVerificationReports = () => {
     }
   }, [OverdueVerificationHCOReportSearch?.filterTrigger]);
 
+  // 🔹 Refresh on MQTT update (REQUEST_ESCALATED_TO_HOC - a new escalation
+  // landed while this report is open, see dashboard.jsx). Full refetch
+  // since this is a brand-new row with no existing entry to patch in place.
+  useEffect(() => {
+    if (overdueVerificationHCOMqtt) {
+      const requestData = buildApiRequest(
+        OverdueVerificationHCOReportSearch,
+        assetTypeListingData
+      );
+      fetchApiCall(requestData, true, false);
+      setOverdueVerificationHCOMqtt(false);
+    }
+  }, [overdueVerificationHCOMqtt]);
+
   // 🔹 Infinite Scroll (lazy loading)
   useTableScrollBottom(
     async () => {
@@ -255,6 +274,7 @@ const HeadCompianceOfficerOverdueVerificationReports = () => {
   // -------------------- Table Columns --------------------
   const columns = getBorderlessTableColumns({
     sortedInfo,
+    approvalStatusMap,
     OverdueVerificationHCOReportSearch,
     setOverdueVerificationHCOReportSearch,
     setViewDetailHeadOfComplianceEscalated,

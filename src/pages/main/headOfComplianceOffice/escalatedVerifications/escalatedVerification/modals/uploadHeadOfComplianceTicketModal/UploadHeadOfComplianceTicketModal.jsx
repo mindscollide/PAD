@@ -135,13 +135,36 @@ const UploadHeadOfComplianceTicketModal = () => {
    * 📁 Handles file selection before upload
    * Adds files to the file list without automatic upload
    *
+   * PDF-only: unlike the CO sibling modal (UploadReconcileTicketModal),
+   * this one had no `accept` hint AND no actual type check at all - any
+   * file dragged/dropped or picked was silently accepted. Enforced here
+   * the same way: non-PDF files are rejected outright (never added to
+   * fileList) with a notification explaining why.
+   *
    * @param {File} file - The file to be added to upload queue
-   * @returns {boolean} false to prevent automatic upload
+   * @returns {boolean|string} false to prevent automatic upload, or
+   *   Upload.LIST_IGNORE to reject the file entirely
    */
-  const handleBeforeUpload = useCallback((file) => {
-    setFileList((prev) => [...prev, file]);
-    return false; // Prevent Ant Design's auto-upload
-  }, []);
+  const handleBeforeUpload = useCallback(
+    (file) => {
+      const isPdf =
+        file.type === "application/pdf" ||
+        file.name?.toLowerCase().endsWith(".pdf");
+
+      if (!isPdf) {
+        showNotification({
+          type: "error",
+          title: "Unsupported File Type",
+          description: `"${file.name}" is not a PDF. Only PDF files can be uploaded.`,
+        });
+        return Upload.LIST_IGNORE;
+      }
+
+      setFileList((prev) => [...prev, file]);
+      return false; // Prevent Ant Design's auto-upload
+    },
+    [showNotification]
+  );
 
   /**
    * 🗑️ Removes a file from the upload list
@@ -305,6 +328,7 @@ const UploadHeadOfComplianceTicketModal = () => {
       fileList: [], // Managed separately in state
       multiple: true,
       showUploadList: false, // Use custom file list
+      accept: ".pdf",
     }),
     [handleBeforeUpload]
   );
