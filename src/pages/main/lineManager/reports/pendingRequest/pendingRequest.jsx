@@ -359,6 +359,7 @@ const PendingRequest = () => {
       showLoader,
       requestdata: NewRequestData,
       navigate,
+      setOpen,
     });
   };
   return (

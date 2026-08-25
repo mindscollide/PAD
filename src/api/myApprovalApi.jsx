@@ -2126,6 +2126,7 @@ export const DownloadLineManagerMyTradeApprovalReportRequestAPI = async ({
   showLoader,
   requestdata,
   navigate,
+  setOpen,
 }) => {
   try {
     showLoader(true);
@@ -2401,6 +2402,7 @@ export const ExportLineManagerPendingTradeApprovalsExcel = async ({
   showLoader,
   requestdata,
   navigate,
+  setOpen,
 }) => {
   try {
     showLoader(true);

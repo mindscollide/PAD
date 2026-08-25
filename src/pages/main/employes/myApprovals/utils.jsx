@@ -58,9 +58,11 @@ export const buildApiRequest = (searchState = {}, assetTypeListingData) => ({
   // TEMPORARY same-day padding - see toYYMMDDWithSameDayPadding's doc
   // comment (rejex.js). Remove once BE_API_Changes/2026-08-24_same_day_
   // date_search_now_works.md's fix is confirmed live.
-  EndDate: searchState.endDate
-    ? toYYMMDDWithSameDayPadding(searchState.startDate, searchState.endDate)
-    : "",
+  // EndDate: searchState.endDate
+  //   ? toYYMMDDWithSameDayPadding(searchState.startDate, searchState.endDate)
+  //   : "",
+
+  EndDate: searchState.endDate ? toYYMMDD(searchState.endDate) : "",
   StatusIds: mapStatusToIds?.(searchState.status, 2) || [],
   TypeIds:
     mapBuySellToIds?.(searchState.type, assetTypeListingData?.Equities) || [],

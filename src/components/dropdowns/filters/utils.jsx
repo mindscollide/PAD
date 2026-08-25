@@ -1,11 +1,6 @@
 // -----------------------------------------------------------------------------
 // 📌 Imports
 // -----------------------------------------------------------------------------
-import {
-  SearchApprovalRequestLineManager,
-  SearchEmployeeHistoryDetailRequest,
-  SearchTadeApprovals,
-} from "../../../api/myApprovalApi";
 import { SearchEmployeeTransactionsDetails } from "../../../api/myTransactionsApi";
 import { toYYMMDD } from "../../../common/funtions/rejex";
 

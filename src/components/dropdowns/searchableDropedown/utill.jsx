@@ -1,8 +1,3 @@
-import {
-  SearchApprovalRequestLineManager,
-  SearchTadeApprovals,
-} from "../../../api/myApprovalApi";
-import { SearchEmployeeTransactionsDetails } from "../../../api/myTransactionsApi";
 import { AdminBrokersListFiletr } from "./AdminBrokersListFilter";
 import { AdminInstrumentsListFilter } from "./AdminInstrumentsListFilter";
 import { AdminPoliciesAndGroupUsersTabFilter } from "./AdminPoliciesAndGroupUsersTabFilter";
@@ -53,7 +48,7 @@ export const renderFilterContent = (
   openNewFormForAdminGropusAndPolicy,
   pageTabesForAdminGropusAndPolicy,
   coTransactionSummaryReportViewDetailsFlag,
-  showViewDetailPageInTatOnHta,
+  showViewDetailPageInTatOnHta
 ) => {
   switch (selectedKey) {
     case "1": // Employee → My Approval
@@ -527,7 +522,7 @@ export const renderFilterContent = (
             setMaininstrumentName={setSearchMain}
           />
         );
-         if (currentPath === "/PAD/admin-reports/admin-TAT-Request-report")
+      if (currentPath === "/PAD/admin-reports/admin-TAT-Request-report")
         return (
           <AdminUserWiseComplianceReportFilter
             setVisible={setVisible}

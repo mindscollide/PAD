@@ -165,8 +165,6 @@ const Approval = () => {
           : employeeMyApproval.totalRecordsTable + mapped.length,
       }));
 
-      console.log(mapped, "mappedmappedEMPData");
-
       setEmployeeMyApprovalSearch((prev) => {
         const next = {
           ...prev,
