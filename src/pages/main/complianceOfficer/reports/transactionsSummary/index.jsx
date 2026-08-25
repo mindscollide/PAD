@@ -407,6 +407,7 @@ const COTransactionsSummarysReports = () => {
       showLoader,
       requestdata,
       navigate,
+      setOpen,
     });
   };
 
@@ -427,6 +428,7 @@ const COTransactionsSummarysReports = () => {
         showLoader,
         requestdata,
         navigate,
+        setOpen,
       });
     };
 

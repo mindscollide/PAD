@@ -132,7 +132,7 @@ const CompianceOfficerPortfolioHistoryReports = () => {
 
         const currentAssetTypeData = getSafeAssetTypeData(
           assetTypeListingData,
-          setAssetTypeListingData,
+          setAssetTypeListingData
         );
 
         const records = Array.isArray(res?.complianceOfficerPortfolioHistory)
@@ -140,7 +140,7 @@ const CompianceOfficerPortfolioHistoryReports = () => {
           : [];
         const mapped = mappingDateWiseTransactionReport(
           currentAssetTypeData?.Equities,
-          records,
+          records
         );
         if (!mapped || typeof mapped !== "object") return false;
 
@@ -166,7 +166,7 @@ const CompianceOfficerPortfolioHistoryReports = () => {
       setCoPortfolioHistoryListData,
       showLoader,
       showNotification,
-    ],
+    ]
   );
 
   useEffect(() => {
@@ -200,7 +200,7 @@ const CompianceOfficerPortfolioHistoryReports = () => {
       const requestData = {
         ...buildApiRequest(
           coPortfolioHistoryReportSearch,
-          assetTypeListingData,
+          assetTypeListingData
         ),
         PageNumber: 1,
       };
@@ -230,7 +230,7 @@ const CompianceOfficerPortfolioHistoryReports = () => {
         const requestData = {
           ...buildApiRequest(
             coPortfolioHistoryReportSearch,
-            assetTypeListingData,
+            assetTypeListingData
           ),
           PageNumber: nextPageRef.current,
         };
@@ -246,7 +246,7 @@ const CompianceOfficerPortfolioHistoryReports = () => {
       }
     },
     0,
-    "border-less-table-blue",
+    "border-less-table-blue"
   );
   // -------------------- Table Columns --------------------
   const columns = getBorderlessTableColumns({
@@ -331,6 +331,7 @@ const CompianceOfficerPortfolioHistoryReports = () => {
       showLoader,
       requestdata: requestdata,
       navigate,
+      setOpen,
     });
   };
 

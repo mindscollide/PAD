@@ -2277,7 +2277,7 @@ export const SearchComplianceOfficerDateWiseTransactionRequest = async ({
 };
 
 export const DownloadComplianceOfficerDateWiseTransactionReportRequestAPI =
-  async ({ callApi, showLoader, requestdata, navigate }) => {
+  async ({ callApi, showLoader, requestdata, navigate, setOpen }) => {
     try {
       showLoader(true);
 
@@ -3902,6 +3902,7 @@ export const ExportOverdueVerificationCOExcel = async ({
   showLoader,
   requestdata,
   navigate,
+  setOpen,
 }) => {
   try {
     showLoader(true);
@@ -4500,6 +4501,7 @@ export const ExportPortfolioHistoryCOExcel = async ({
   showLoader,
   requestdata,
   navigate,
+  setOpen,
 }) => {
   try {
     showLoader(true);
@@ -5947,6 +5949,7 @@ export const ExportComplianceOfficerTransactionSummaryReportExcel = async ({
   showLoader,
   requestdata,
   navigate,
+  setOpen,
 }) => {
   try {
     showLoader(true);
@@ -5988,6 +5991,7 @@ export const ExportComplianceOfficerTransactionSummaryReportExcel = async ({
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
+        setOpen(false);
         return true;
       } catch {
         return false;
@@ -6013,6 +6017,7 @@ export const ExportComplianceOfficerViewTransactionSummaryReportExcel = async ({
   showLoader,
   requestdata,
   navigate,
+  setOpen,
 }) => {
   try {
     showLoader(true);
@@ -6057,6 +6062,7 @@ export const ExportComplianceOfficerViewTransactionSummaryReportExcel = async ({
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
+        setOpen(false);
         return true;
       } catch {
         return false;
