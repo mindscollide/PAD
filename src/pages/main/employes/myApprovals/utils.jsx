@@ -12,7 +12,6 @@ import {
   dashBetweenApprovalAssets,
   formatApiDateTime,
   toYYMMDD,
-  toYYMMDDWithSameDayPadding,
 } from "../../../../common/funtions/rejex";
 import {
   mapBuySellToIds,
@@ -55,12 +54,12 @@ export const buildApiRequest = (searchState = {}, assetTypeListingData) => ({
   InstrumentName: searchState.instrumentName || "",
   Quantity: searchState.quantity ? Number(searchState.quantity) : 0,
   StartDate: searchState.startDate ? toYYMMDD(searchState.startDate) : "",
-  // TEMPORARY same-day padding - see toYYMMDDWithSameDayPadding's doc
-  // comment (rejex.js). Remove once BE_API_Changes/2026-08-24_same_day_
-  // date_search_now_works.md's fix is confirmed live.
-  EndDate: searchState.endDate
-    ? toYYMMDDWithSameDayPadding(searchState.startDate, searchState.endDate)
-    : "",
+  // Plain UTC date conversion - the same-day padding workaround
+  // (toYYMMDDWithSameDayPadding) was removed 2026-08-25 now that BE's fix
+  // (API_Changes/2026-08-24_same_day_date_search_now_works.md) is
+  // confirmed live; the backend now correctly covers the full selected
+  // day on its own, so padding on top of that would double-count a day.
+  EndDate: searchState.endDate ? toYYMMDD(searchState.endDate) : "",
   StatusIds: mapStatusToIds?.(searchState.status, 2) || [],
   TypeIds:
     mapBuySellToIds?.(searchState.type, assetTypeListingData?.Equities) || [],
