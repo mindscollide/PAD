@@ -151,7 +151,6 @@ const createCellStyle = (minWidth, maxWidth = null) => {
 
   return { style: baseStyle };
 };
-console.log("cehck");
 /**
  * Renders instrument cell with asset code and tooltip
  * @param {Object} record - Table row data

@@ -824,10 +824,7 @@ const Dashboard = () => {
                 // the old message's "pending" branch above (Pending Approvals'
                 // row shape has no isEscalated field/column to patch).
                 case "WORKFLOW_ESCALATED_FROM_HOC_PORTFOLIO": {
-                  if (
-                    currentKey === "4" &&
-                    currentactiveTabRef === "pending"
-                  ) {
+                  if (currentKey === "4" && currentactiveTabRef === "pending") {
                     setEmployeePendingApprovalsDataMqtt(true);
                   }
                   break;
@@ -907,22 +904,76 @@ const Dashboard = () => {
                   }
                   break;
                 }
+                // case "YOU_HAVE_URGENT_ACTION_WHICH_REQUIRE_URGENT_ACTION": {
+                //   // Prevent multiple fetches on mount
+                //   sessionStorage.setItem(
+                //     "urgentApprovals",
+                //     JSON.stringify(payload)
+                //   );
+                //   console.log("urgentApprovals", payload);
+                //   if (payload.count > 0) {
+                //     sessionStorage.setItem("urgent_flag", true);
+                //     setUrgentAlert(true);
+                //     console.log("urgentApprovals", payload);
+                //   } else {
+                //     sessionStorage.setItem("urgent_flag", false);
+                //     setUrgentAlert(false);
+                //     console.log("urgentApprovals", payload);
+                //   }
+
+                //   break;
+                // }
+
                 case "YOU_HAVE_URGENT_ACTION_WHICH_REQUIRE_URGENT_ACTION": {
-                  // Prevent multiple fetches on mount
                   sessionStorage.setItem(
                     "urgentApprovals",
                     JSON.stringify(payload)
                   );
-                  console.log("urgentApprovals", payload);
-                  if (payload.count > 0) {
-                    sessionStorage.setItem("urgent_flag", true);
-                    setUrgentAlert(true);
-                    console.log("urgentApprovals", payload);
-                  } else {
-                    sessionStorage.setItem("urgent_flag", false);
-                    setUrgentAlert(false);
-                    console.log("urgentApprovals", payload);
-                  }
+                  const hasUrgentCount = payload?.count > 0;
+
+                  sessionStorage.setItem("urgent_flag", hasUrgentCount);
+                  setUrgentAlert(hasUrgentCount);
+
+                  // Upsert the "APPROVAL REQUIRE URGENT ACTION" tile directly from this
+                  // payload's count. This message previously only flipped urgentAlert -
+                  // BoxCard's warning UI needs BOTH warningFlag true AND a real second
+                  // tile in myApprovals.data to actually render anything (see
+                  // isWarningActive guard in BoxCard.jsx). Without this, if that tile
+                  // wasn't already present/current in dashboardData when this message
+                  // lands, warningFlag flips true but nothing visibly changes.
+                  setDashboardData((prev) => {
+                    const myApprovals = prev?.lineManager?.myApprovals;
+                    if (!myApprovals) return prev;
+
+                    const urgentLabel = "APPROVAL REQUIRE URGENT ACTION";
+                    const existingTiles = myApprovals.data || [];
+                    const existingIndex = existingTiles.findIndex(
+                      (tile) => tile.label === urgentLabel
+                    );
+
+                    const updatedTile = {
+                      label: urgentLabel,
+                      type: urgentLabel,
+                      count: payload?.count ?? 0,
+                    };
+
+                    const updatedTiles =
+                      existingIndex === -1
+                        ? [...existingTiles, updatedTile]
+                        : existingTiles.map((tile, i) =>
+                            i === existingIndex
+                              ? { ...tile, ...updatedTile }
+                              : tile
+                          );
+
+                    return {
+                      ...prev,
+                      lineManager: {
+                        ...prev.lineManager,
+                        myApprovals: { ...myApprovals, data: updatedTiles },
+                      },
+                    };
+                  });
 
                   break;
                 }
@@ -935,15 +986,45 @@ const Dashboard = () => {
                 // CORRECTED note on LINE_MANAGER_DASHBOARD_DATA above for
                 // why this is lowercase, not the "LineManager" this
                 // originally used.
+                // case "LINE_MANAGER_DASHBOARD_URGENT_SUMMARY_UPDATE": {
+                //   if (currentKey === "0" && Array.isArray(payload)) {
+                //     setDashboardData((prev) => {
+                //       if (!prev?.lineManager) return prev;
+                //       const updated = { ...prev.lineManager };
+                //       payload.forEach((tile) => {
+                //         if (tile?.Label) updated[tile.Label] = tile;
+                //       });
+                //       return { ...prev, lineManager: updated };
+                //     });
+                //   }
+                //   break;
+                // }
+
                 case "LINE_MANAGER_DASHBOARD_URGENT_SUMMARY_UPDATE": {
                   if (currentKey === "0" && Array.isArray(payload)) {
                     setDashboardData((prev) => {
-                      if (!prev?.lineManager) return prev;
-                      const updated = { ...prev.lineManager };
-                      payload.forEach((tile) => {
-                        if (tile?.Label) updated[tile.Label] = tile;
+                      const myApprovals = prev?.lineManager?.myApprovals;
+                      if (!myApprovals?.data) return prev;
+
+                      const updatedTiles = myApprovals.data.map((tile) => {
+                        const incoming = payload.find(
+                          (p) => (p?.label ?? p?.Label) === tile.label
+                        );
+                        if (!incoming) return tile;
+
+                        const newCount = incoming.count ?? incoming.Count;
+                        return newCount != null
+                          ? { ...tile, count: newCount }
+                          : tile;
                       });
-                      return { ...prev, lineManager: updated };
+
+                      return {
+                        ...prev,
+                        lineManager: {
+                          ...prev.lineManager,
+                          myApprovals: { ...myApprovals, data: updatedTiles },
+                        },
+                      };
                     });
                   }
                   break;
@@ -1592,8 +1673,7 @@ const Dashboard = () => {
                           escalatedPortfolio: [mappedRow, ...rows],
                           totalRecordsDataBase:
                             (prev?.totalRecordsDataBase || 0) + 1,
-                          totalRecordsTable:
-                            (prev?.totalRecordsTable || 0) + 1,
+                          totalRecordsTable: (prev?.totalRecordsTable || 0) + 1,
                         };
                       });
                     }
