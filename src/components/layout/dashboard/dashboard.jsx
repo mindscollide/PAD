@@ -29,6 +29,17 @@ import {
 } from "../../../pages";
 import { logout } from "../../../api/loginApi";
 import { mapEmployeeMyApprovalData } from "../../../pages/main/employes/myApprovals/utils";
+// ADDED (2026-08-24, per API_Changes/2026-08-24_escalation_mqtt_full_payload_hoc.md):
+// the 6 new HOC-path escalation MQTT messages carry a full record payload
+// (in each recipient's own listing-screen shape) instead of a bare workflow
+// ID array - these are the same row mappers each screen's own initial fetch
+// already uses, reused here so a live-arriving escalation gets mapped
+// identically to a freshly-fetched one before being merged into state.
+import { mapToTableRows as mapHOCEscalatedTransactionRow } from "../../../pages/main/headOfComplianceOffice/escalatedVerifications/escalatedVerification/util";
+import { mapToTableRows as mapHOCEscalatedPortfolioRow } from "../../../pages/main/headOfComplianceOffice/escalatedVerifications/reconcilePortfolio/util";
+import { mapToTableRows as mapCOReconcileTransactionRow } from "../../../pages/main/complianceOfficer/reconcile/transaction/util";
+import { mapToTableRows as mapCOReconcilePortfolioRow } from "../../../pages/main/complianceOfficer/reconcile/portfolio/util";
+import { mapEmployeeTransactions } from "../../../pages/main/employes/myTransactions/utill";
 const { Content } = Layout;
 
 const Dashboard = () => {
@@ -79,10 +90,12 @@ const Dashboard = () => {
   const {
     setComplianceOfficerReconcileTransactionData,
     setComplianceOfficerReconcileTransactionDataMqtt,
+    setComplianceOfficerReconcilePortfolioData,
     setComplianceOfficerReconcilePortfolioDataMqtt,
     setHeadOfComplianceApprovalEscalatedVerificationsMqtt,
     setHeadOfComplianceApprovalEscalatedVerificationsData,
     setHeadOfComplianceApprovalPortfolioMqtt,
+    setHeadOfComplianceApprovalPortfolioData,
     activeTabRef: reconcileActiveTab,
     activeTabHCORef,
   } = useReconcileContext();
@@ -250,6 +263,73 @@ const Dashboard = () => {
       };
 
       return { ...prev, overdueVerifications: updatedRows };
+    });
+  };
+
+  /**
+   * ADDED (2026-08-24): removes a resolved row from HOC's "Escalated
+   * Verifications" list (Verification Requests >> Escalated Approvals,
+   * currentKey "15", "escalated" sub-tab), for a CO's own transaction
+   * approve/decline that closes an escalation. Matches on workflowID
+   * against payload.approvalID.
+   *
+   * Extracted from the existing currentKey "15" branch under role "4"
+   * below (which only ever fires for a recipient who holds the Compliance
+   * Officer role) - per TradeServiceManager.cs's
+   * NotifyComplianceOfficerApproved/Declined, the escalated-to HOC
+   * recipient is sent this SAME message but tagged RoleIDs "6"
+   * (HeadOfComplainceApproval), not "4". A pure HOC (no CO role) never
+   * satisfies `hasUserRole(4)`, so that role-"4" branch's removal logic
+   * was structurally unreachable for the actual recipient who needs it -
+   * this is exactly why the row stayed visible until a manual refresh.
+   * Called again below under role "6" instead, which is what a pure
+   * HOC's client actually receives.
+   */
+  const removeHOCEscalatedVerificationRow = (payload) => {
+    setHeadOfComplianceApprovalEscalatedVerificationsData((prev) => {
+      const rows = prev?.escalatedVerification || [];
+      const filteredRows = rows.filter(
+        (row) => String(row.workflowID) !== String(payload?.approvalID)
+      );
+      if (filteredRows.length === rows.length) return prev;
+
+      return {
+        ...prev,
+        escalatedVerification: filteredRows,
+        totalRecordsDataBase: Math.max(0, (prev.totalRecordsDataBase || 0) - 1),
+        totalRecordsTable: filteredRows.length,
+      };
+    });
+  };
+
+  /**
+   * ADDED (2026-08-24): same fix as removeHOCEscalatedVerificationRow
+   * above, for HOC's "Escalated Portfolio" tab (Escalated Transactions >>
+   * Escalated Portfolio, currentKey "15", "portfolio" sub-tab) - a CO
+   * resolving an escalated portfolio (Compliant/Non-Compliant) never
+   * removed it from this list live either, same root cause: this message
+   * is shared between Transaction and Portfolio resolutions (per
+   * TradeServiceManager.cs - NotifyComplianceOfficerApproved/Declined is
+   * called unconditionally regardless of entity type), and the FE branch
+   * that would remove it only ever lived under role "4". Matches on
+   * workflowID (mapToTableRows in
+   * headOfComplianceOffice/escalatedVerifications/reconcilePortfolio/util.jsx)
+   * against payload.approvalID.
+   */
+  const removeHOCEscalatedPortfolioRow = (payload) => {
+    setHeadOfComplianceApprovalPortfolioData((prev) => {
+      const rows = prev?.escalatedPortfolio || [];
+      const filteredRows = rows.filter(
+        (row) => String(row.workflowID) !== String(payload?.approvalID)
+      );
+      if (filteredRows.length === rows.length) return prev;
+
+      return {
+        ...prev,
+        escalatedPortfolio: filteredRows,
+        totalRecordsDataBase: Math.max(0, (prev.totalRecordsDataBase || 0) - 1),
+        totalRecordsTable: filteredRows.length,
+      };
     });
   };
 
@@ -706,6 +786,52 @@ const Dashboard = () => {
                   }
                   break;
                 }
+                // ADDED (2026-08-24, per API_Changes/2026-08-24_escalation_
+                // mqtt_full_payload_hoc.md): replaces WORKFLOW_ESCALATED_FROM_HOC
+                // above for Transaction escalations, once BE redeploys - the old
+                // message stops firing for this path at that point (still
+                // handled above in the meantime, harmless overlap). Payload is
+                // now a single full record (SearchEmployeeTransactionsResponse
+                // shape) instead of a bare ID array, so the matching row is
+                // replaced with fresh mapped data (including isEscalated: true)
+                // instead of just flipping one field.
+                case "WORKFLOW_ESCALATED_FROM_HOC_TRANSACTION": {
+                  if (currentKey === "2") {
+                    const [mappedRow] = mapEmployeeTransactions(
+                      assetTypeListingData?.Equities,
+                      [payload]
+                    );
+                    if (mappedRow) {
+                      setEmployeeTransactionsData((prev) => {
+                        const data = prev?.data || [];
+                        const existingIndex = data.findIndex(
+                          (item) =>
+                            String(item.workFlowID) ===
+                            String(mappedRow.workFlowID)
+                        );
+                        if (existingIndex === -1) return prev;
+
+                        const updatedData = [...data];
+                        updatedData[existingIndex] = mappedRow;
+                        return { ...prev, data: updatedData };
+                      });
+                    }
+                  }
+                  break;
+                }
+                // Replaces WORKFLOW_ESCALATED_FROM_HOC above for Portfolio
+                // escalations - left as a refetch trigger, same reasoning as
+                // the old message's "pending" branch above (Pending Approvals'
+                // row shape has no isEscalated field/column to patch).
+                case "WORKFLOW_ESCALATED_FROM_HOC_PORTFOLIO": {
+                  if (
+                    currentKey === "4" &&
+                    currentactiveTabRef === "pending"
+                  ) {
+                    setEmployeePendingApprovalsDataMqtt(true);
+                  }
+                  break;
+                }
                 // ADDED (2026-08-07, per 2026-08-07_mqtt_fixes_fe_implementation.md):
                 // was completely unhandled - falling through to default and
                 // silently dropped. BE now fans this out as a second,
@@ -951,9 +1077,14 @@ const Dashboard = () => {
                 //    "transactions" tab): patch that row's status in place
                 //    instead of a full refetch.
                 //  - HOC's Escalated Verifications list (currentKey "15"):
-                //    a dual-role CO+HOC user viewing their escalated queue
-                //    when their own approval lands should see that row
-                //    disappear (it's resolved, no longer needs HOC action).
+                //    only reachable here for a dual-role CO+HOC user, since
+                //    this whole role-"4" switch never runs for a pure HOC
+                //    (hasUserRole(4) is false for them) - the real fix for
+                //    a pure HOC recipient is the role-"6" branch below,
+                //    which is what TradeServiceManager.cs's
+                //    NotifyComplianceOfficerApproved actually tags their
+                //    copy of this message with. Kept here too as a no-op-safe
+                //    harmless duplicate for the dual-role case.
                 case "COMPLIANCE_OFFICER_TRANSACTION_APPROVAL_REQUEST_APPROVED": {
                   if (
                     currentKey === "9" &&
@@ -975,6 +1106,20 @@ const Dashboard = () => {
                             "Approved" &&
                             "Compliant") ||
                           updatedRows[existingIndex].status,
+                        // FIXED (2026-08-25): this patch only ever touched
+                        // `status` - `payload.isEscalated` (correctly flipped
+                        // to false by BE once the resolving action also closes
+                        // the escalation) was silently dropped, so the row's
+                        // escalation icon stayed stuck showing "escalated"
+                        // until a manual refresh even though the status itself
+                        // updated live. Applied here too, only when the
+                        // payload actually carries a boolean (never regress to
+                        // undefined/true on some other payload shape that
+                        // doesn't include it).
+                        isEscalated:
+                          typeof payload?.isEscalated === "boolean"
+                            ? payload.isEscalated
+                            : updatedRows[existingIndex].isEscalated,
                       };
 
                       return { ...prev, reconsileTransaction: updatedRows };
@@ -985,27 +1130,7 @@ const Dashboard = () => {
                   ) {
                     setComplianceOfficerReconcilePortfolioDataMqtt(true);
                   } else if (currentKey === "15") {
-                    setHeadOfComplianceApprovalEscalatedVerificationsData(
-                      (prev) => {
-                        const rows = prev?.escalatedVerification || [];
-                        const filteredRows = rows.filter(
-                          (row) =>
-                            String(row.workflowID) !==
-                            String(payload?.approvalID)
-                        );
-                        if (filteredRows.length === rows.length) return prev;
-
-                        return {
-                          ...prev,
-                          escalatedVerification: filteredRows,
-                          totalRecordsDataBase: Math.max(
-                            0,
-                            (prev.totalRecordsDataBase || 0) - 1
-                          ),
-                          totalRecordsTable: filteredRows.length,
-                        };
-                      }
-                    );
+                    removeHOCEscalatedVerificationRow(payload);
                   }
 
                   // ADDED (2026-08-24): HOC's "Overdue Verifications" report
@@ -1038,6 +1163,10 @@ const Dashboard = () => {
                     currentreconcileActiveTab === "portfolio"
                   ) {
                     setComplianceOfficerReconcilePortfolioDataMqtt(true);
+                  } else if (currentKey === "15") {
+                    // Same dual-role-only caveat as the APPROVED case above
+                    // - real fix for a pure HOC is the role-"6" branch.
+                    removeHOCEscalatedVerificationRow(payload);
                   }
 
                   // Same patch as the APPROVED case above - a declined
@@ -1081,6 +1210,73 @@ const Dashboard = () => {
                     // isEscalated field/column to patch, unlike the
                     // Transactions sub-tab above.
                     setComplianceOfficerReconcilePortfolioDataMqtt(true);
+                  }
+                  break;
+                }
+                // ADDED (2026-08-24, per API_Changes/2026-08-24_escalation_
+                // mqtt_full_payload_hoc.md): replaces YOUR_REQUEST_ESCALATED_TO_HOC
+                // above for Transaction escalations, once BE redeploys. Payload
+                // is now a single full record
+                // (SearchComplianceOfficerReconcileTransactionResponse shape)
+                // instead of a bare ID array, so the matching row is replaced
+                // with fresh mapped data (including isEscalated: true) instead
+                // of just flipping one field.
+                case "YOUR_REQUEST_ESCALATED_TO_HOC_TRANSACTION": {
+                  if (
+                    currentKey === "9" &&
+                    currentreconcileActiveTab === "transactions"
+                  ) {
+                    const [mappedRow] = mapCOReconcileTransactionRow(
+                      assetTypeListingData?.Equities,
+                      [payload]
+                    );
+                    if (mappedRow) {
+                      setComplianceOfficerReconcileTransactionData((prev) => {
+                        const rows = prev?.reconsileTransaction || [];
+                        const existingIndex = rows.findIndex(
+                          (row) =>
+                            String(row.approvalID) ===
+                            String(mappedRow.approvalID)
+                        );
+                        if (existingIndex === -1) return prev;
+
+                        const updatedRows = [...rows];
+                        updatedRows[existingIndex] = mappedRow;
+                        return { ...prev, reconsileTransaction: updatedRows };
+                      });
+                    }
+                  }
+                  break;
+                }
+                // Replaces YOUR_REQUEST_ESCALATED_TO_HOC above for Portfolio
+                // escalations - upgraded from a full refetch to an in-place
+                // patch now that a full record is available (the old message's
+                // "portfolio" branch above was a refetch specifically because
+                // it only had a bare ID, nothing to patch with).
+                case "YOUR_REQUEST_ESCALATED_TO_HOC_PORTFOLIO": {
+                  if (
+                    currentKey === "9" &&
+                    currentreconcileActiveTab === "portfolio"
+                  ) {
+                    const [mappedRow] = mapCOReconcilePortfolioRow(
+                      assetTypeListingData?.Equities,
+                      [payload]
+                    );
+                    if (mappedRow) {
+                      setComplianceOfficerReconcilePortfolioData((prev) => {
+                        const rows = prev?.reconsilePortfolios || [];
+                        const existingIndex = rows.findIndex(
+                          (row) =>
+                            String(row.approvalID) ===
+                            String(mappedRow.approvalID)
+                        );
+                        if (existingIndex === -1) return prev;
+
+                        const updatedRows = [...rows];
+                        updatedRows[existingIndex] = mappedRow;
+                        return { ...prev, reconsilePortfolios: updatedRows };
+                      });
+                    }
                   }
                   break;
                 }
@@ -1249,6 +1445,191 @@ const Dashboard = () => {
                       "/PAD/hca-reports/hca-overdue-verifications"
                   ) {
                     setOverdueVerificationHCOMqtt(true);
+                  }
+                  break;
+                }
+                // ADDED (2026-08-25, per API_Changes/2026-08-25_transaction_
+                // escalation_full_mqtt_lifecycle_for_fe.md, "Phase 2"):
+                // previously a CO's approve/decline closing an open HCA
+                // escalation notified nobody on this side at all (the HTA/Trade
+                // Approval path has had ESCALATED_REQUEST_RESOLVED_HTA for this
+                // since 2026-08-07). Per the doc's FE checklist item 3, this is
+                // the REVERSE of REQUEST_ESCALATED_TO_HOC_TRANSACTION/_PORTFOLIO
+                // below - remove the row, not add it. Payload is still a bare
+                // [<WorkFlowID>] array (doesn't say Transaction vs Portfolio),
+                // so this removes from BOTH lists directly; whichever one
+                // actually has the row loses it, the other is a harmless
+                // no-op. Deliberately not tab-gated (unlike REQUEST_ESCALATED_
+                // TO_HOC above) - a background list the user isn't currently
+                // viewing still needs the row gone for when they switch tabs.
+                case "ESCALATED_REQUEST_RESOLVED_HOC": {
+                  const resolvedIDs = escalationWorkFlowIDs(payload);
+
+                  setHeadOfComplianceApprovalEscalatedVerificationsData(
+                    (prev) => {
+                      const rows = prev?.escalatedVerification || [];
+                      const filteredRows = rows.filter(
+                        (row) => !resolvedIDs.includes(String(row.workflowID))
+                      );
+                      if (filteredRows.length === rows.length) return prev;
+
+                      return {
+                        ...prev,
+                        escalatedVerification: filteredRows,
+                        totalRecordsDataBase: Math.max(
+                          0,
+                          (prev?.totalRecordsDataBase || 0) - 1
+                        ),
+                        totalRecordsTable: filteredRows.length,
+                      };
+                    }
+                  );
+
+                  setHeadOfComplianceApprovalPortfolioData((prev) => {
+                    const rows = prev?.escalatedPortfolio || [];
+                    const filteredRows = rows.filter(
+                      (row) => !resolvedIDs.includes(String(row.workflowID))
+                    );
+                    if (filteredRows.length === rows.length) return prev;
+
+                    return {
+                      ...prev,
+                      escalatedPortfolio: filteredRows,
+                      totalRecordsDataBase: Math.max(
+                        0,
+                        (prev?.totalRecordsDataBase || 0) - 1
+                      ),
+                      totalRecordsTable: filteredRows.length,
+                    };
+                  });
+                  break;
+                }
+                // ADDED (2026-08-24, per API_Changes/2026-08-24_escalation_
+                // mqtt_full_payload_hoc.md): replaces REQUEST_ESCALATED_TO_HOC
+                // above for Transaction escalations, once BE redeploys. Payload
+                // is now a single full record
+                // (SearchHeadOfComplianceTransactionsResponse shape) instead of
+                // a bare ID array - this is a genuinely NEW row (the old
+                // message could only trigger a full refetch, since there was no
+                // data to build a row from), so prepend the mapped row instead,
+                // deduped by workflowID in case of a duplicate delivery.
+                case "REQUEST_ESCALATED_TO_HOC_TRANSACTION": {
+                  if (
+                    currentKey === "15" &&
+                    currentactiveHCOEscalatedTabRef === "escalated"
+                  ) {
+                    const [mappedRow] = mapHOCEscalatedTransactionRow(
+                      assetTypeListingData?.Equities,
+                      [payload]
+                    );
+                    if (mappedRow) {
+                      setHeadOfComplianceApprovalEscalatedVerificationsData(
+                        (prev) => {
+                          const rows = prev?.escalatedVerification || [];
+                          const alreadyPresent = rows.some(
+                            (row) =>
+                              String(row.workflowID) ===
+                              String(mappedRow.workflowID)
+                          );
+                          if (alreadyPresent) return prev;
+
+                          return {
+                            ...prev,
+                            escalatedVerification: [mappedRow, ...rows],
+                            totalRecordsDataBase:
+                              (prev?.totalRecordsDataBase || 0) + 1,
+                            totalRecordsTable:
+                              (prev?.totalRecordsTable || 0) + 1,
+                          };
+                        }
+                      );
+                    }
+                  }
+
+                  // Same reasoning as the old message's currentKey "17" branch
+                  // above - a new Transaction escalation is, by definition, an
+                  // overdue item, so HOC's Overdue Verifications report needs
+                  // it too. Still a refetch (not a direct prepend) - that
+                  // report's row shape/mapper
+                  // (mappingDateWiseTransactionReport in
+                  // headOfComplianceOffice/reports/overDueVerificationsReports/utils.jsx)
+                  // is different enough that reusing it here isn't a clean fit;
+                  // a background refetch is a simpler, safe way to pick up the
+                  // new row.
+                  if (
+                    currentKey === "17" &&
+                    location.pathname ===
+                      "/PAD/hca-reports/hca-overdue-verifications"
+                  ) {
+                    setOverdueVerificationHCOMqtt(true);
+                  }
+                  break;
+                }
+                // Replaces REQUEST_ESCALATED_TO_HOC above for Portfolio
+                // escalations - same "prepend a genuinely new row" upgrade as
+                // the Transaction case.
+                case "REQUEST_ESCALATED_TO_HOC_PORTFOLIO": {
+                  if (
+                    currentKey === "15" &&
+                    currentactiveHCOEscalatedTabRef === "portfolio"
+                  ) {
+                    const [mappedRow] = mapHOCEscalatedPortfolioRow(
+                      assetTypeListingData?.Equities,
+                      [payload]
+                    );
+                    if (mappedRow) {
+                      setHeadOfComplianceApprovalPortfolioData((prev) => {
+                        const rows = prev?.escalatedPortfolio || [];
+                        const alreadyPresent = rows.some(
+                          (row) =>
+                            String(row.workflowID) ===
+                            String(mappedRow.workflowID)
+                        );
+                        if (alreadyPresent) return prev;
+
+                        return {
+                          ...prev,
+                          escalatedPortfolio: [mappedRow, ...rows],
+                          totalRecordsDataBase:
+                            (prev?.totalRecordsDataBase || 0) + 1,
+                          totalRecordsTable:
+                            (prev?.totalRecordsTable || 0) + 1,
+                        };
+                      });
+                    }
+                  }
+                  break;
+                }
+                // ADDED (2026-08-24): the real fix for "escalated transaction/
+                // portfolio marked Compliant/Non-Compliant by a CO keeps
+                // showing on HOC's Escalated Approvals / Escalated Portfolio
+                // tabs until manual refresh". Per TradeServiceManager.cs
+                // (NotifyComplianceOfficerApproved/Declined), this message is
+                // sent once per relevant recipient with a RoleIDs matching
+                // THEIR OWN role for this workflow - the escalated-to HOC
+                // gets RoleIDs "6" (HeadOfComplainceApproval), everyone else
+                // gets "4". The removal logic for currentKey "15" already
+                // existed, but only under role "4" above, which a pure HOC
+                // (no Compliance Officer role) never reaches at all
+                // (hasUserRole(4) is false for them) - so it was
+                // structurally unreachable for the actual recipient. Handled
+                // here under role "6" instead, which is what a pure HOC's
+                // client actually receives. Also covers the Escalated
+                // Portfolio tab (currentKey "15", "portfolio" sub-tab) -
+                // same message is shared between Transaction and Portfolio
+                // resolutions per BE (called unconditionally regardless of
+                // entity type), and that tab had no live-update path at all
+                // before this, under either role.
+                case "COMPLIANCE_OFFICER_TRANSACTION_APPROVAL_REQUEST_APPROVED":
+                case "COMPLIANCE_OFFICER_TRANSACTION_APPROVAL_REQUEST_DECLINED": {
+                  if (currentKey === "15") {
+                    if (currentactiveHCOEscalatedTabRef === "escalated") {
+                      removeHOCEscalatedVerificationRow(payload);
+                    } else if (
+                      currentactiveHCOEscalatedTabRef === "portfolio"
+                    ) {
+                      removeHOCEscalatedPortfolioRow(payload);
+                    }
                   }
                   break;
                 }
