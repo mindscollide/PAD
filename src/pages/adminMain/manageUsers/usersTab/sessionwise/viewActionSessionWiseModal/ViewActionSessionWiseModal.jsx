@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Col, Row } from "antd";
+import { Col, Row, Tooltip } from "antd";
 import { useGlobalModal } from "../../../../../../context/GlobalModalContext";
 import { BorderlessTable, GlobalModal } from "../../../../../../components";
 import CustomButton from "../../../../../../components/buttons/button";
@@ -95,12 +95,25 @@ const ViewActionSessionWiseModal = () => {
                 </p>
               </Col>
               <Col span={4} className={styles.downloadAndSessionStyle}>
-                <CustomButton
-                  text={"Download"}
-                  className={"small-light-button"}
-                  icon={<img src={PDF} />}
-                  iconPosition="start"
-                />
+                {/* SRS: "On click Download, the system will perform same
+                    functionality as it does on Export." No export/download
+                    endpoint exists for session-wise activity yet (adminApi.jsx
+                    has only DownloadBrokerReportRequest and
+                    ExportManageUsersUsersTabExcelReportRequest), so this had
+                    no onClick at all and silently did nothing when clicked.
+                    Disabled with an explanatory tooltip until the backend
+                    endpoint lands, rather than looking functional but dead. */}
+                <Tooltip title="Export is not available yet.">
+                  <span>
+                    <CustomButton
+                      text={"Download"}
+                      className={"small-light-button"}
+                      icon={<img src={PDF} />}
+                      iconPosition="start"
+                      disabled
+                    />
+                  </span>
+                </Tooltip>
               </Col>
             </Row>
 
