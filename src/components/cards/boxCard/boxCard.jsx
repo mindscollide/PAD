@@ -83,7 +83,6 @@ const BoxCard = ({
   const userRoleIDs = roles.map((r) => r.roleID);
   // Normalize boxes input (always an array)
   let normalizedBoxes = Array.isArray(boxes) ? boxes : boxes ? [boxes] : [];
-  console.log("normalizedType", normalizedBoxes);
 
   /**
    * Handles button click → navigates to the correct route
