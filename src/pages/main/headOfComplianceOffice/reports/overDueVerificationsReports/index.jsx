@@ -1,6 +1,5 @@
 import React, { useEffect, useState, useRef, useCallback } from "react";
 import { Breadcrumb, Col, Row } from "antd";
-import PDF from "../../../../../assets/img/pdf.png";
 import Excel from "../../../../../assets/img/xls.png";
 import { UpOutlined, DownOutlined } from "@ant-design/icons";
 // 🔹 Components
@@ -23,7 +22,6 @@ import style from "./OverDueVerificationReports.module.css";
 import { useMyApproval } from "../../../../../context/myApprovalContaxt";
 import {
   ExportHOCOverdueVerificationsExcelReport,
-  ExportOverdueVerificationCOExcel,
   SearchHOCOverdueVerificationsRequestApi,
 } from "../../../../../api/myApprovalApi";
 import { useNotification } from "../../../../../components/NotificationProvider/NotificationProvider";
@@ -35,7 +33,6 @@ import { useDashboardContext } from "../../../../../context/dashboardContaxt";
 import { getSafeAssetTypeData } from "../../../../../common/funtions/assetTypesList";
 import { useTableScrollBottom } from "../../../../../common/funtions/scroll";
 import CustomButton from "../../../../../components/buttons/button";
-import { GetAllTransactionViewDetails } from "../../../../../api/myTransactionsApi";
 import { useReconcileContext } from "../../../../../context/reconsileContax";
 import ViewDetailHeadOfComplianceReconcileTransaction from "../../escalatedVerifications/escalatedVerification/modals/viewDetailHeadOfComplianceReconcileTransactions/ViewDetailHeadOfComplianceReconcileTransaction";
 import { GetAllComplianceOfficerReconcileTransactionAndPortfolioRequest } from "../../../../../api/reconsile";
@@ -428,9 +425,9 @@ const HeadCompianceOfficerOverdueVerificationReports = () => {
       showLoader,
       requestdata: requestdata,
       navigate,
+      setOpen,
     });
   };
-  console.log(overdueVerificationHCOListData, columns, "Overdue Verifications");
 
   // -------------------- Render --------------------
   return (

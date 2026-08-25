@@ -25,14 +25,10 @@ import { useGlobalModal } from "../../../../../context/GlobalModalContext";
 import style from "./transactionsSummary.module.css";
 import { useMyApproval } from "../../../../../context/myApprovalContaxt";
 import {
-  DownloadComplianceOfficerDateWiseTransactionReportRequestAPI,
-  DownloadLineManagerMyTradeApprovalReportRequestAPI,
-  DownloadMyTransactionReportRequestAPI,
   ExportComplianceOfficerTransactionSummaryReportExcel,
   ExportComplianceOfficerViewTransactionSummaryReportExcel,
   GetComplianceOfficerViewTransactionSummaryAPI,
   SearchComplianceOfficerTransactionSummaryReportRequest,
-  SearchLineManagerTradeApprovalRequestApi,
 } from "../../../../../api/myApprovalApi";
 import { useNotification } from "../../../../../components/NotificationProvider/NotificationProvider";
 import { useApi } from "../../../../../context/ApiContext";
@@ -44,8 +40,8 @@ import { getSafeAssetTypeData } from "../../../../../common/funtions/assetTypesL
 import { useTableScrollBottom } from "../../../../../common/funtions/scroll";
 import CustomButton from "../../../../../components/buttons/button";
 import { DateRangePicker } from "../../../../../components";
-import ViewComment from "../../../employes/myApprovals/modal/viewComment/ViewComment";
 import ViewCommentTransaction from "./viewDetails/viewComment/ViewComment";
+import { formatToYYYYMMDD } from "../../../../../common/funtions/rejex";
 // import ViewComment from "./viewComment/ViewComment";
 
 const COTransactionsSummarysReports = () => {
@@ -76,8 +72,7 @@ const COTransactionsSummarysReports = () => {
     setSelectedWorkFlowViewDetaild,
   } = useMyApproval();
 
-  const { isViewComments, setIsViewComments, setCheckTradeApprovalID } =
-    useGlobalModal();
+  const { isViewComments, setIsViewComments } = useGlobalModal();
 
   const {
     coTransactionsSummarysReportsSearch,
@@ -217,14 +212,26 @@ const COTransactionsSummarysReports = () => {
   useEffect(() => {
     if (hasFetched.current) return;
     hasFetched.current = true;
-    const requestData = buildApiRequest(coTransactionsSummarysReportsSearch);
-    fetchApiCall(requestData, true, true);
-  }, []);
 
-  //   // Reset on Unmount
-  useEffect(() => {
+    const endDate = new Date();
+    const startDate = new Date();
+    startDate.setMonth(startDate.getMonth() - 6);
+
+    setDateRange({
+      StartDate: formatToYYYYMMDD(startDate),
+      EndDate: formatToYYYYMMDD(endDate),
+    });
+
+    const updatedState = {
+      ...coTransactionsSummarysReportsSearch,
+      startDate,
+      endDate,
+    };
+    setCOTransactionsSummarysReportsSearch(updatedState);
+    const requestData = buildApiRequest(updatedState, assetTypeListingData);
+    fetchApiCall(requestData, true, true);
+
     return () => {
-      // Reset search state for fresh load
       resetCOTransactionsSummarysReportsSearch();
       resetCOTransactionSummaryReportListData();
       setCOTransactionSummaryReportViewDetailsFlag(false);
@@ -548,7 +555,7 @@ const COTransactionsSummarysReports = () => {
 
         <Col>
           <div className={style.headerActionsRow}>
-            {!coTransactionSummaryReportViewDetailsFlag && (
+            {!coTransactionSummaryReportViewDetailsFlag ? (
               <DateRangePicker
                 size="medium"
                 className={style.dateRangePickerClass}
@@ -556,6 +563,15 @@ const COTransactionsSummarysReports = () => {
                 onChange={handleDateChange}
                 onClear={handleClearDates}
               />
+            ) : (
+              <div className={style.readonlyDateRange}>
+                <span className={style.readonlyDateRangeLabel}>
+                  Start date - End date
+                </span>
+                <span className={style.readonlyDateRangeValue}>
+                  {dateRange.StartDate} - {dateRange.EndDate}
+                </span>
+              </div>
             )}
             <CustomButton
               disabled={tableRows.length === 0}

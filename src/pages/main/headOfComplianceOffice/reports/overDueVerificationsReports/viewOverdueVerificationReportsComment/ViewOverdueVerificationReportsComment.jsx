@@ -15,12 +15,8 @@ const ViewOverDueTransactionComment = () => {
   //This is the Global state of Context Api
   const { isEscalatedHeadOfComplianceViewDetailData } = useReconcileContext();
 
-  console.log(
-    isEscalatedHeadOfComplianceViewDetailData,
-    "viewCommentReconcileModalviewCommentReconcileModal"
-  );
   const record = isEscalatedHeadOfComplianceViewDetailData?.details[0] || null;
-  console.log(record, "viewCommentReconcileModalviewCommentReconcileModal");
+
   const acceptanceList = parseComments(record?.approvalComment);
   const rejectionList = parseComments(record?.rejectionComment);
 

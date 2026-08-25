@@ -143,12 +143,11 @@ export const getBorderlessTableColumns = ({
   handelViewDetails,
 }) => [
   {
-    title: withSortIcon("Employee ID", "employeeID", sortedInfo),
-    align: "left",
+    title: withSortIcon("Employee ID", "employeeID", sortedInfo, "center"),
     dataIndex: "employeeID",
     key: "employeeID",
-    width: "10%",
-    ellipsis: true,
+    width: 130,
+    align: "center",
     sorter: (a, b) =>
       parseInt(a.employeeID.replace(/[^\d]/g, ""), 10) -
       parseInt(b.employeeID.replace(/[^\d]/g, ""), 10),
@@ -158,7 +157,14 @@ export const getBorderlessTableColumns = ({
     sortIcon: () => null,
     render: (employeeID) => {
       return (
-        <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: "12px",
+          }}
+        >
           <span className="font-medium">
             {employeeID}
             {/* {dashBetweenApprovalAssets("REQ888888")} */}
@@ -345,7 +351,7 @@ export const getBorderlessTableColumns = ({
     render: (_, record) => (
       <div className={style.viewEditClass}>
         <Button
-          className="small-light-button"
+          className="small-dark-button"
           text={"View Details"}
           onClick={() => {
             handelViewDetails(record.approvalID);

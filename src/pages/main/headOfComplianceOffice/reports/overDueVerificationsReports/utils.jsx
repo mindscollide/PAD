@@ -1,11 +1,8 @@
 import { Button } from "../../../../../components";
 
-import ArrowUP from "../../../../../assets/img/arrow-up-dark.png";
-import ArrowDown from "../../../../../assets/img/arrow-down-dark.png";
 import EscaltedOn from "../../../../../assets/img/escalated.png";
-import DefaultColumArrow from "../../../../../assets/img/default-colum-arrow.png";
 import TypeColumnTitle from "../../../../../components/dropdowns/filters/typeColumnTitle";
-import { Tag, Tooltip } from "antd";
+import { Tooltip } from "antd";
 import style from "./OverDueVerificationReports.module.css";
 
 import {
@@ -68,7 +65,7 @@ export const buildApiRequest = (searchState = {}, assetTypeListingData) => ({
  */
 export const mappingDateWiseTransactionReport = (
   assetTypeData,
-  overdueVerificationHCOListData = [],
+  overdueVerificationHCOListData = []
 ) => {
   const overdueVerifications = Array.isArray(overdueVerificationHCOListData)
     ? overdueVerificationHCOListData
@@ -119,10 +116,8 @@ const withFilterHeader = (FilterComponent) => (
 );
 export const getBorderlessTableColumns = ({
   sortedInfo,
-  approvalStatusMap = {},
   OverdueVerificationHCOReportSearch,
   setOverdueVerificationHCOReportSearch,
-  setViewDetailHeadOfComplianceEscalated,
   handleViewDetailsForReconcileTransaction,
 }) => [
   {
@@ -246,7 +241,7 @@ export const getBorderlessTableColumns = ({
       "Transaction Date",
       "transactionDate",
       sortedInfo,
-      "center",
+      "center"
     ),
     align: "center",
     dataIndex: "transactionDate",
@@ -267,7 +262,7 @@ export const getBorderlessTableColumns = ({
       "Approved Quantity",
       "approvedQuantity",
       sortedInfo,
-      "center",
+      "center"
     ),
     dataIndex: "approvedQuantity",
     width: 180,
@@ -347,7 +342,7 @@ export const getBorderlessTableColumns = ({
       "Escalated Date",
       "escalatedDate",
       sortedInfo,
-      "center",
+      "center"
     ),
     align: "center",
     dataIndex: "escalatedDate",
@@ -368,7 +363,7 @@ export const getBorderlessTableColumns = ({
   {
     title: "",
     key: "action",
-    align: "center", // 🔷 Align content to the right
+    align: "right", // 🔷 Align content to the right
     width: 50,
     render: (_, record) => (
       <div className={style.viewEditClass}>

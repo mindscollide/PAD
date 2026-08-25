@@ -139,13 +139,12 @@ export const getBorderlessTableColumns = ({
       "Transaction Date",
       "transactionDate",
       sortedInfo,
-      "left"
+      "center"
     ),
-    align: "left",
+    align: "center",
     dataIndex: "transactionDate",
     key: "transactionDate",
     width: 120,
-    ellipsis: true,
     sorter: (a, b) =>
       (a?.transactionDate || "").localeCompare(b?.transactionDate || ""),
     sortOrder:
@@ -153,7 +152,7 @@ export const getBorderlessTableColumns = ({
     showSorterTooltip: false,
     sortIcon: () => null,
     render: (date) => (
-      <span className="text-gray-600" title={date || "—"}>
+      <span className="text-gray-600">
         {/* FIXED (2026-08-11): was formatShowOnlyDate, which only reads the
             date portion and silently drops the time - transactionDate here
             is the combined "YYYYMMDD HHmmss" string (date+time joined in
@@ -254,7 +253,7 @@ export const getBorderlessTableColumns = ({
     render: (_, record) => (
       <div className={style.viewEditClass}>
         <Button
-          className="small-light-button"
+          className="small-dark-button"
           text={"View Details"}
           onClick={() => {
             handelViewDetails(record.transactionDate);
