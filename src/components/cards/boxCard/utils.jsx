@@ -271,6 +271,48 @@ export const typeColorMap = {
     textCountColor: "#30426A",
     textAlign: "center",
   },
+  active_users: {
+    bgColor: "#EDF3FF",
+    textLableColor: "#30426A",
+    textCountColor: "#30426A",
+    textAlign: "center",
+  },
+  total_logs: {
+    bgColor: "#FFF1E7",
+    textLableColor: "#F67F29", // Using var(--Blue-V1)
+    textCountColor: "#F67F29",
+    textAlign: "center",
+  },
+  buy: {
+    bgColor: "#EDF3FF",
+    textLableColor: "#30426A",
+    textCountColor: "#30426A",
+    textAlign: "center",
+  },
+  sell: {
+    bgColor: "#FFDBDB",
+    textLableColor: "#A50000",
+    textCountColor: "#A50000",
+    textAlign: "center",
+  },
+  last_30_days: {
+    bgColor: "#FFDBDB",
+    textLableColor: "#A50000",
+    textCountColor: "#A50000",
+    textAlign: "center",
+  },
+  hours: {
+    bgColor: "#C5FFC7",
+    textLableColor: "#00640A",
+    textCountColor: "#00640A",
+    textAlign: "center",
+  },
+  minutes: {
+    bgColor: "#FFF1E7",
+    textLableColor: "#F67F29", // Using var(--Blue-V1)
+    textCountColor: "#F67F29",
+    textAlign: "center",
+  },
 };
 
 // ============================
