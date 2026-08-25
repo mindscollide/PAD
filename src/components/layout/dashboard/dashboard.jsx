@@ -178,7 +178,38 @@ const Dashboard = () => {
    * ..._STATUS_CHANGE_TRADED below, whose payload doesn't carry the
    * approvalStatus block the mapper reads `status` from).
    */
-  const patchEmployeeMyApprovalRow = (payload, overrides = {}) => {
+  // const patchEmployeeMyApprovalRow = (payload, overrides = {}) => {
+  //   const [updatedApproval] = mapEmployeeMyApprovalData(
+  //     assetTypeListingData?.Equities,
+  //     [payload]
+  //   );
+
+  //   if (!updatedApproval) return;
+
+  //   const patchedApproval = { ...updatedApproval, ...overrides };
+
+  //   setIsEmployeeMyApproval((prev) => {
+  //     const approvals = prev?.approvals || [];
+  //     const existingIndex = approvals.findIndex(
+  //       (item) => item.approvalID === patchedApproval.approvalID
+  //     );
+
+  //     if (existingIndex === -1) return prev;
+
+  //     const updatedApprovals = [...approvals];
+  //     updatedApprovals[existingIndex] = patchedApproval;
+
+  //     return { ...prev, approvals: updatedApprovals };
+  //   });
+  // };
+
+  const patchEmployeeMyApprovalRow = (
+    payload,
+    overrides = {},
+    options = {}
+  ) => {
+    const { preserveInstrumentAndType = false } = options;
+
     const [updatedApproval] = mapEmployeeMyApprovalData(
       assetTypeListingData?.Equities,
       [payload]
@@ -186,15 +217,35 @@ const Dashboard = () => {
 
     if (!updatedApproval) return;
 
-    const patchedApproval = { ...updatedApproval, ...overrides };
-
     setIsEmployeeMyApproval((prev) => {
       const approvals = prev?.approvals || [];
       const existingIndex = approvals.findIndex(
-        (item) => item.approvalID === patchedApproval.approvalID
+        (item) => item.approvalID === updatedApproval.approvalID
       );
 
       if (existingIndex === -1) return prev;
+
+      const existingRow = approvals[existingIndex];
+
+      // Some MQTT payloads (e.g. EMPLOYEE_TRADE_APPROVAL_REQUEST_APPROVED)
+      // carry an empty instrument/tradeType block - BE only sends the status
+      // change, not the full instrument metadata again. Mapping that through
+      // mapEmployeeMyApprovalData as-is produces placeholder "—"/"-" values
+      // that would overwrite the correct data already in state. When
+      // preserveInstrumentAndType is set, keep those specific fields from the
+      // existing row instead of the freshly (incompletely) mapped one -
+      // everything else (status, timeRemainingToTrade, etc.) still comes
+      // from the live payload as normal.
+      const patchedApproval = {
+        ...updatedApproval,
+        ...(preserveInstrumentAndType && {
+          instrumentCode: existingRow.instrumentCode,
+          instrumentName: existingRow.instrumentName,
+          assetTypeShortCode: existingRow.assetTypeShortCode,
+          type: existingRow.type,
+        }),
+        ...overrides,
+      };
 
       const updatedApprovals = [...approvals];
       updatedApprovals[existingIndex] = patchedApproval;
@@ -620,7 +671,12 @@ const Dashboard = () => {
                   // Patches in place instead of a full API refetch - see
                   // patchEmployeeMyApprovalRow above.
                   if (currentKey === "1") {
-                    patchEmployeeMyApprovalRow(payload);
+                    // patchEmployeeMyApprovalRow(payload);
+                    patchEmployeeMyApprovalRow(
+                      payload,
+                      {},
+                      { preserveInstrumentAndType: true }
+                    );
                   }
                   // setUploadPortfolioModal(false);
                   break;
@@ -629,7 +685,11 @@ const Dashboard = () => {
                   // Patches in place instead of a full API refetch - see
                   // patchEmployeeMyApprovalRow above.
                   if (currentKey === "1") {
-                    patchEmployeeMyApprovalRow(payload);
+                    patchEmployeeMyApprovalRow(
+                      payload,
+                      {},
+                      { preserveInstrumentAndType: true }
+                    );
                   }
                   break;
                 }
