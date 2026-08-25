@@ -23,10 +23,7 @@
  */
 
 import { Tooltip } from "antd";
-import {
-  toYYMMDD,
-  toYYMMDDWithSameDayPadding,
-} from "../../../../../common/funtions/rejex";
+import { toYYMMDD } from "../../../../../common/funtions/rejex";
 
 /**
  * Builds the request payload for portfolio API call.
@@ -39,12 +36,10 @@ export const buildPortfolioRequest = (searchState = {}) => {
     ? toYYMMDD(searchState.startDate)
     : "";
 
-  // TEMPORARY same-day padding - see toYYMMDDWithSameDayPadding's doc
-  // comment (rejex.js). Remove once BE_API_Changes/2026-08-24_same_day_
-  // date_search_now_works.md's fix is confirmed live.
-  const endDate = searchState.endDate
-    ? toYYMMDDWithSameDayPadding(searchState.startDate, searchState.endDate)
-    : "";
+  // Plain UTC date conversion - the same-day padding workaround was
+  // removed 2026-08-25 now that BE's fix (API_Changes/2026-08-24_same_day_
+  // date_search_now_works.md) is confirmed live.
+  const endDate = searchState.endDate ? toYYMMDD(searchState.endDate) : "";
 
   return {
     InstrumentName:

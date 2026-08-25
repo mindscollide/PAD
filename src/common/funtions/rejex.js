@@ -175,53 +175,6 @@ export const toYYMMDD = (input) => {
   return `${year}${month}${day}`;
 };
 
-/**
- * TEMPORARY WORKAROUND (2026-08-24, per BE_API_Changes/2026-08-24_same_day_
- * date_search_now_works.md): SearchTradeApprovals,
- * SearchEmployeePendingUploadedPortFolio, and
- * SearchEmployeeApprovedUploadedPortFolio compare CreationDatetime against
- * the raw EndDate with an inclusive upper bound - a date-only string parses
- * to midnight, so a same-day search (StartDate === EndDate) collapses the
- * range to a single instant that essentially never matches a real record.
- * SQL fix scripts are written but confirmed NOT YET APPLIED to any
- * environment (checked directly in SQL_Scripts/
- * sp_searchTradeApprovals_FixSameDayDateFilter.sql and its two portfolio
- * siblings - all three still say "NOT applied yet"). Until that ships, pad
- * EndDate to the start of the NEXT calendar day whenever it's the same day
- * as StartDate, so the range covers the full selected day instead of
- * collapsing to nothing. Multi-day ranges are left untouched - per the doc
- * those already work correctly, and padding them too would silently
- * include one extra day the user never selected.
- *
- * REMOVE this padding (revert callers to plain `toYYMMDD(endDate)`) once
- * the BE fix above is confirmed live - at that point the backend already
- * covers the full day on its own, and padding on top of that would double
- * the range by an extra day.
- *
- * @param {Date|string} startDate
- * @param {Date|string} endDate
- * @returns {string} "YYYYMMDD" - endDate, or endDate+1 if same day as startDate
- */
-export const toYYMMDDWithSameDayPadding = (startDate, endDate) => {
-  if (!endDate) return "";
-  const endYMD = toYYMMDD(endDate);
-  if (!startDate) return endYMD;
-
-  const startYMD = toYYMMDD(startDate);
-  if (startYMD !== endYMD) return endYMD;
-
-  // Same calendar day (per toYYMMDD's own UTC-based formatting) - advance
-  // by exactly one day from that already-resolved YYYYMMDD string (not by
-  // re-deriving from the original Date), so this can't disagree with
-  // toYYMMDD if the input mixes local/UTC components.
-  const year = Number(endYMD.slice(0, 4));
-  const month = Number(endYMD.slice(4, 6)) - 1;
-  const day = Number(endYMD.slice(6, 8));
-  const nextDay = new Date(Date.UTC(year, month, day + 1));
-
-  return toYYMMDD(nextDay);
-};
-
 // this regex work as a dash seperator befor REQ009 after regex REQ-009
 // FIXED (2026-08-17): the prefix was hardcoded to the first 3 characters
 // (id.substring(0, 3)) - correct for "TRX"/"REQ" IDs, but wrong for
