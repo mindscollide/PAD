@@ -267,6 +267,7 @@ const HTAPolicyBreachesReport = () => {
       showLoader,
       requestdata,
       navigate,
+      setOpen,
     });
   };
 

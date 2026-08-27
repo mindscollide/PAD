@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import { Row, Col, Avatar } from "antd";
 import username from "../../../assets/img/username.png";
 import EmployeeId from "../../../assets/img/EmployeeId.png";
+import phoneIcon from "../../../assets/img/ProfilePhone.png";
+import Address from "../../../assets/img/Address.png";
 import Email from "../../../assets/img/Email.png";
 import departmentIcon from "../../../assets/img/user-dark-icon.png";
 // import Email from "../../../assets/img/Email.png";
@@ -108,7 +110,7 @@ const MyProfileModal = () => {
 
                   <div className="flex items-center gap-1">
                     <span className={styles.iconStyle}>
-                      <img src={EmployeeId} alt="User" draggable={false} />
+                      <img src={phoneIcon} alt="User" draggable={false} />
                     </span>
                     <span className={styles.label}>Phone: </span>
                     <span className={styles.value}>
@@ -118,7 +120,7 @@ const MyProfileModal = () => {
 
                   <div className="flex items-center gap-1">
                     <span className={styles.iconStyle}>
-                      <img src={EmployeeId} alt="User" draggable={false} />
+                      <img src={Address} alt="User" draggable={false} />
                     </span>
                     <span className={styles.label}>Address: </span>
                     <span className={styles.value}>

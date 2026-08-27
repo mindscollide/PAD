@@ -1,17 +1,11 @@
 // components/pages/employee/approval/tableColumns.js
 
 import React from "react";
-import { Tag, Tooltip } from "antd";
-import { Button, StatusFilterDropdown } from "../../../../../components";
-import style from "./pendingRequest.module.css";
+import { Tooltip } from "antd";
+import { Button } from "../../../../../components";
 import EscalatedIcon from "../../../../../assets/img/escalated.png";
-import ArrowUP from "../../../../../assets/img/arrow-up-dark.png";
-import ArrowDown from "../../../../../assets/img/arrow-down-dark.png";
-import DefaultColumArrow from "../../../../../assets/img/default-colum-arrow.png";
 import TypeColumnTitle from "../../../../../components/dropdowns/filters/typeColumnTitle";
-import StatusColumnTitle from "../../../../../components/dropdowns/filters/statusColumnTitle";
 import {
-  dashBetweenApprovalAssets,
   formatApiDateTime,
   toYYMMDD,
 } from "../../../../../common/funtions/rejex";
@@ -88,7 +82,6 @@ export const mapApiResopse = (assetTypeData, pendingTradeApprovals = []) =>
   );
 
 export const getBorderlessLineManagerTableColumns = ({
-  approvalStatusMap,
   sortedInfo,
   hTAPendingApprovalReportsSearch,
   setHTAPendingApprovalReportsSearch,
@@ -333,6 +326,7 @@ export const getBorderlessLineManagerTableColumns = ({
             style={{
               display: "flex",
               alignItems: "center",
+              justifyContent: "end",
               gap: "8px",
               marginRight: "10px",
             }}
@@ -341,7 +335,6 @@ export const getBorderlessLineManagerTableColumns = ({
               className="big-orange-button"
               text="View Details"
               onClick={() => {
-                console.log(record, "djasvdjavdajvasjvdj");
                 handleViewDetailsForHTA(record?.approvalID);
                 setIsSelectedViewDetailLineManager(record);
               }}

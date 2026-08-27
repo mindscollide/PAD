@@ -5023,6 +5023,7 @@ export const ExportHTAPolicyBreachesExcelReport = async ({
   showLoader,
   requestdata,
   navigate,
+  setOpen,
 }) => {
   try {
     showLoader(true);
@@ -5059,6 +5060,7 @@ export const ExportHTAPolicyBreachesExcelReport = async ({
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
+        setOpen(false);
         return true;
       } catch {
         return false;

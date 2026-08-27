@@ -429,6 +429,8 @@ const HeadCompianceOfficerOverdueVerificationReports = () => {
     });
   };
 
+  console.log(viewCommentReconcileModal, "commentModal");
+
   // -------------------- Render --------------------
   return (
     <>
@@ -558,7 +560,6 @@ const HeadCompianceOfficerOverdueVerificationReports = () => {
       {viewDetailHeadOfComplianceEscalated && (
         <ViewDetailHeadOfComplianceReconcileTransaction />
       )}
-
       {/* To show View Comment Modal when CLick on View Comment Button */}
       {viewCommentReconcileModal && <ViewOverDueTransactionComment />}
 
