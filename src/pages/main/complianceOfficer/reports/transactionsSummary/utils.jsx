@@ -230,11 +230,14 @@ export const mappingDateWiseTransactionviewDetailst = (
     assetTypeID: item.assetType?.assetTypeID || 0,
     employeeName: item.requesterName || "",
     employeeID: item.employeeID || "",
-    accetanceComments: item.accetanceComments || "",
+    // CHANGED (API_Changes/2026-08-27_hoc_transaction_summary_comments.md):
+    // now an array of {userID, name, comments} objects, not a raw string -
+    // default to [] to match.
+    accetanceComments: item.accetanceComments || [],
     // FIXED (2026-08-17): was "rejectionComment" (singular) - the real API
     // field is "rejectionComments" (plural, confirmed against a live
     // response), so this always read undefined.
-    rejectionComments: item.rejectionComments || "",
+    rejectionComments: item.rejectionComments || [],
   }));
 };
 /**

@@ -245,21 +245,6 @@
 /* FOOTER/ACTION STYLES */
 /* ============================================ */
 
-/**
- * "Mark all as read" action at bottom
- * - Centered text with top border
- * - Custom typography
- * - Pointer cursor for interaction
- */
-.mark-all {
-  text-align: center;
-  padding: 12px;
-  color: #30426a;
-  font-weight: 600;
-  cursor: pointer;
-  border-top: 1px solid #eee;
-}
-
 /* === 🔧 SCROLLBAR CUSTOMIZATION (Only show thumb, hide background) === */
 /* Limit the height of the notification list and enable scroll */
 .notification-list {

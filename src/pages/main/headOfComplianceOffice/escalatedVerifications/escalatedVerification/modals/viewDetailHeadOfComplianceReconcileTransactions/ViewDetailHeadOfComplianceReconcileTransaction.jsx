@@ -682,10 +682,14 @@ const ViewDetailHeadOfComplianceReconcileTransaction = () => {
                           text="View Comments"
                           className="big-light-button"
                           onClick={() => {
+                            // FIXED: was only closing View Details, never
+                            // actually opening the comment modal - copy-paste
+                            // gap against the Non Compliant branch above,
+                            // which does both.
                             setViewCommentReconcileModal(true);
                             setViewDetailHeadOfComplianceEscalated(false);
                           }}
-                        />{" "}
+                        />
                         <CustomButton
                           text="Close"
                           onClick={() => {

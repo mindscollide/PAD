@@ -19,6 +19,11 @@ import {
 } from "../../../../components/dropdowns/filters/utils";
 import { getTradeTypeById } from "../../../../common/funtions/type";
 import { withSortIcon } from "../../../../common/funtions/tableIcon";
+import {
+  parseDeadlineToUtcMs,
+  formatTimeRemaining,
+  estimateDeadlineFromLabel,
+} from "../../../../common/funtions/timeRemaining";
 
 // 🔹 CONSTANTS
 const COLUMN_CONFIG = {
@@ -99,6 +104,20 @@ export const mapEmployeeMyApprovalData = (
     status: item.approvalStatus?.approvalStatusName || "",
     quantity: item.quantity || 0,
     timeRemainingToTrade: item.timeRemainingToTrade || "",
+    // Not sent yet (API_Changes/2026-08-27_time_remaining_needs_raw_
+    // deadline.md) - harmless passthrough now, lets renderTimeRemainingCell
+    // prefer a precise live countdown automatically once the backend adds
+    // these.
+    deadlineDate: item.deadlineDate || "",
+    deadlineTime: item.deadlineTime || "",
+    // FE-only estimate (no BE change needed) - anchors an absolute
+    // deadline off the backend's own "Xd Yh Zm" label AT THIS MOMENT (the
+    // row's data just arrived), so renderTimeRemainingCell can tick it
+    // down live on every render instead of showing this frozen string.
+    // Deliberately computed here (mapping time), not in the cell's render -
+    // recomputing "now + label" on every render would never actually
+    // count down, it'd just re-anchor to a fresh "now" each time.
+    approxDeadlineUtcMs: estimateDeadlineFromLabel(item.timeRemainingToTrade),
     assetType: item.assetType?.assetTypeName || "",
     assetTypeID: item.assetType?.assetTypeID || 0,
   }));
@@ -262,27 +281,57 @@ const renderTimeRemainingCell = (record) => {
     return <span className="text-gray-400">-</span>;
   }
 
+  const resubmitButton = (
+    <Button
+      className="large-transparent-button"
+      text="Resubmit for Approval"
+      onClick={() => {
+        setIsResubmitted(true);
+        setSelectedViewDetail(record);
+      }}
+      data-testid="resubmit-button"
+      style={{
+        whiteSpace: "nowrap",
+        overflow: "hidden",
+        textOverflow: "ellipsis",
+        maxWidth: "100%",
+      }}
+    />
+  );
+
   if (record.status === COLUMN_CONFIG.STATUS.NOT_TRADED) {
-    return (
-      <Button
-        className="large-transparent-button"
-        text="Resubmit for Approval"
-        onClick={() => {
-          setIsResubmitted(true);
-          setSelectedViewDetail(record);
-        }}
-        data-testid="resubmit-button"
-        style={{
-          whiteSpace: "nowrap",
-          overflow: "hidden",
-          textOverflow: "ellipsis",
-          maxWidth: "100%",
-        }}
-      />
-    );
+    return resubmitButton;
   }
 
-  if (record.timeRemainingToTrade) {
+  // Live client-side countdown: prefers a real raw deadline
+  // (deadlineDate/deadlineTime - not sent by any screen yet, see
+  // API_Changes/2026-08-27_time_remaining_needs_raw_deadline.md), else
+  // falls back to the FE-only estimate anchored at fetch time
+  // (mapEmployeeMyApprovalData's approxDeadlineUtcMs). Either way,
+  // formatTimeRemaining recomputes from Date.now() on every render - the
+  // parent page calling useTimeRemainingTick() every second is what
+  // actually drives those re-renders.
+  const deadlineUtcMs =
+    parseDeadlineToUtcMs(record.deadlineDate, record.deadlineTime) ??
+    record.approxDeadlineUtcMs ??
+    null;
+  const liveTimeRemaining = formatTimeRemaining(deadlineUtcMs);
+
+  // FE-only fallback: the deadline has passed by our local clock, but no
+  // MQTT/refetch has told us the workflow is actually Not-Traded yet (BE
+  // may still be mid-flight, or never fires for some reason) - show the
+  // same Resubmit UX a real Not-Traded status gets rather than leaving
+  // "Expired" up indefinitely. Purely presentational: doesn't touch
+  // record.status or the Status column elsewhere, and a real status
+  // update landing later (any status) still takes over normally, since
+  // this only ever runs for the Approved branch to begin with.
+  if (record.status === "Approved" && liveTimeRemaining === "Expired") {
+    return resubmitButton;
+  }
+
+  const timeRemainingText = liveTimeRemaining ?? record.timeRemainingToTrade;
+
+  if (timeRemainingText) {
     return (
       <span
         className="font-medium text-gray-700"
@@ -294,7 +343,7 @@ const renderTimeRemainingCell = (record) => {
           textOverflow: "ellipsis",
         }}
       >
-        {record.timeRemainingToTrade}
+        {timeRemainingText}
       </span>
     );
   }

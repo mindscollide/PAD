@@ -118,8 +118,11 @@ export const mappingDateWiseTransactionviewDetailst = (
       assetTypeID: item.assetType?.assetTypeID || 0,
       employeeName: item.requesterName || "",
       employeeID: item.employeeID || "",
-      accetanceComments: item.accetanceComments || "",
-      rejectionComments: item.rejectionComments || "",
+      // CHANGED (API_Changes/2026-08-27_hoc_transaction_summary_comments.md):
+      // now an array of {userID, name, comments} objects, not a raw
+      // string - default to [] to match.
+      accetanceComments: item.accetanceComments || [],
+      rejectionComments: item.rejectionComments || [],
       workFlowStatusID: item.workFlowStatusID || 0,
       actionBy:
         actionByNames.length > 1 ? "Multiple Users" : actionByNames[0] || "",

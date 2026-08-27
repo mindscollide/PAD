@@ -247,7 +247,23 @@ const Dashboard = () => {
       };
 
       const updatedApprovals = [...approvals];
-      updatedApprovals[existingIndex] = patchedApproval;
+      updatedApprovals[existingIndex] = {
+        ...updatedApproval,
+        // FIXED (bug report: HTA/LM action was updating Request Date &
+        // Time on Employee > My Approvals): Request Date & Time is the
+        // request's original creation timestamp - it never legitimately
+        // changes after submission, no matter who later acts on it. BE's
+        // approve/decline MQTT payloads currently stamp RequestDate/
+        // RequestTime with the ACTING moment instead of the original
+        // creation time (NotifyEmployeeApproved in TradeServiceManager.cs
+        // - flagged for BE), so a full re-map here would silently
+        // overwrite a correct value with "now". Always keep whatever the
+        // row already had - a full page reload (which reads the real
+        // creation date straight from the DB, not the MQTT payload) is
+        // what already showed the correct value, per the report.
+        requestDateTime: approvals[existingIndex].requestDateTime,
+        ...overrides,
+      };
 
       return { ...prev, approvals: updatedApprovals };
     });
