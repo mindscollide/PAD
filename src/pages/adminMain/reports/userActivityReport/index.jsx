@@ -1,16 +1,22 @@
 import React, { useEffect, useRef, useState, useCallback } from "react";
-import { Breadcrumb, Col, Row, Tooltip } from "antd";
+import { Breadcrumb, Col, Row } from "antd";
 import { DownOutlined } from "@ant-design/icons";
 import BorderlessTable from "../../../../components/tables/borderlessTable/borderlessTable";
 import PageLayout from "../../../../components/pageContainer/pageContainer";
 import CustomButton from "../../../../components/buttons/button";
 
-import { buildApiRequest, mapListData, getSessionListColumns } from "./utils";
+import {
+  buildApiRequest,
+  buildExportRequest,
+  mapListData,
+  getSessionListColumns,
+} from "./utils";
 
 import style from "./UserActivityReport.module.css";
 import {
   GetUserSessionWiseActivity,
   ViewUserSessionWiseActivity,
+  ExportUserSessionWiseActivityRequest,
 } from "../../../../api/adminApi";
 import { useNotification } from "../../../../components/NotificationProvider/NotificationProvider";
 import { useApi } from "../../../../context/ApiContext";
@@ -229,7 +235,13 @@ const UserActivityReport = () => {
     });
 
     if (res?.result) {
-      setViewActionSessionWiseModalData(res);
+      // sessionID isn't part of ViewUserSessionWiseActivity's own response
+      // shape - attached here so the modal's Download button (below) knows
+      // which session to export without needing its own extra state.
+      setViewActionSessionWiseModalData({
+        ...res,
+        sessionID: session.sessionID,
+      });
       setViewActionSessionWiseModal(true);
     } else {
       setViewActionSessionWiseModalData([]);
@@ -248,12 +260,20 @@ const UserActivityReport = () => {
    * Session Duration / Actions Count as headers and Action Time / Action
    * Description as details.
    *
-   * No export endpoint exists for this report yet - adminApi.jsx only has
-   * DownloadBrokerReportRequest and ExportManageUsersUsersTabExcelReportRequest,
-   * neither of which covers session-wise activity. Rendered per the SRS
-   * layout but disabled until the backend endpoint lands.
+   * Wired to ExportUserSessionWiseActivity per
+   * API_Changes/2026-08-27_user_activity_report_exports.md - same filters
+   * currently applied to the on-screen list, no pagination (a full matching
+   * set in one file).
    */
-  const exportUnavailableReason = "Export is not available yet.";
+  const handleExportClick = () => {
+    ExportUserSessionWiseActivityRequest({
+      callApi,
+      showNotification,
+      showLoader,
+      requestdata: buildExportRequest(userActivityReportAdmin),
+      navigate,
+    });
+  };
 
   const columns = getSessionListColumns({
     sortedInfo,
@@ -292,22 +312,18 @@ const UserActivityReport = () => {
         </Col>
         <Col>
           <div className={style.headerActionsRow}>
-            <Tooltip title={exportUnavailableReason}>
-              <span>
-                <CustomButton
-                  text={
-                    <span className={style.exportButtonText}>
-                      Export
-                      <span className={style.iconContainer}>
-                        <DownOutlined />
-                      </span>
-                    </span>
-                  }
-                  className="small-light-button-report"
-                  disabled
-                />
-              </span>
-            </Tooltip>
+            <CustomButton
+              text={
+                <span className={style.exportButtonText}>
+                  Export
+                  <span className={style.iconContainer}>
+                    <DownOutlined />
+                  </span>
+                </span>
+              }
+              className="small-light-button-report"
+              onClick={handleExportClick}
+            />
           </div>
         </Col>
       </Row>
