@@ -30,6 +30,7 @@ import {
   mapEmployeeMyApprovalData,
 } from "./utils";
 import { approvalStatusMap } from "../../../../components/tables/borderlessTable/utill";
+import { useTimeRemainingTick } from "../../../../common/funtions/timeRemaining";
 
 // 🔹 Modals
 import EquitiesApproval from "./modal/equitiesApprovalModal/EquitiesApproval";
@@ -90,6 +91,12 @@ const Approval = () => {
   const [sortedInfo, setSortedInfo] = useState({});
   const [isEquitiesModalOpen, setIsEquitiesModalOpen] = useState(false);
   const [loadingMore, setLoadingMore] = useState(false);
+
+  // Re-renders this page every second so the Time Remaining to Trade
+  // column (renderTimeRemainingCell, utils.jsx) recomputes its live
+  // countdown instead of sitting frozen at whatever value was last
+  // fetched/patched.
+  useTimeRemainingTick();
 
   // ----------------- Dropdown -----------------
 
