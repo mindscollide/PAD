@@ -286,6 +286,7 @@ const AdminPolicyBreachesReport = () => {
       showLoader,
       requestdata: requestdata,
       navigate,
+      setOpen,
     });
   };
 

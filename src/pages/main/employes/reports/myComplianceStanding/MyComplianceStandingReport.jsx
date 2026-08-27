@@ -231,11 +231,12 @@ const MyComplianceStandingReport = () => {
           <div className={style.headerActionsRow}>
             <DateRangePicker
               size="medium"
-              className={style.dateRangePickerClass}
+              // className={style.dateRangePickerClass}
+              className={"range-picker-small"}
               onChange={handleDateChange}
               value={[dateRange.StartDate, dateRange.EndDate]}
               onClear={handleClearDates}
-              format="YYYY-MM-DD"
+              // format="YYYY-MM-DD"
             />
 
             <CustomButton
