@@ -79,7 +79,23 @@ export const mapListData = (
     // for it below, and it's also required by the drill-down/export
     // request payload, per
     // API_Changes/2026-08-18_hta_policy_breaches_type_and_instrument_columns.md.
-    instrumentName: item.instrumentName || "",
+    instrumentName: item.instrument?.instrumentName || "",
+    // FIXED (API_Changes/2026-08-27_policy_breaches_instrument_shortcode.md):
+    // now deployed - the real response nests these under `instrument`/
+    // `assetType` objects, not flat top-level fields as the doc's example
+    // showed (`instrument.instrumentCode`, not a top-level
+    // `instrumentShortCode`; `assetType.assetTypeShortCode`, not a
+    // top-level `assetShortCode` string) - confirmed against a live
+    // response. assetShortCode drives the icon lookup (same convention as
+    // every other screen's Instrument column), instrumentShortCode is the
+    // compact display text, full instrumentName stays available for the
+    // tooltip. Per that doc, the short code is BE's best-effort pick when
+    // a name matches more than one real instrument (WorkFlowUserPolicy has
+    // no InstrumentID to disambiguate) - not expected to be visibly wrong
+    // in the common case, no FE handling needed for that.
+    instrumentShortCode: item.instrument?.instrumentCode || "",
+    assetType: item.assetType?.assetTypeName || "",
+    assetShortCode: item.assetType?.assetTypeShortCode || "",
     // REVERTED (2026-08-18, same doc, superseded update): that doc's
     // first pass diagnosed this as FE-only (API sent a plain string,
     // read it directly) - that revision was explicitly superseded same
@@ -238,21 +254,34 @@ export const getBorderlessTableColumns = ({
       sortedInfo?.columnKey === "instrumentName" ? sortedInfo.order : null,
     showSorterTooltip: false,
     sortIcon: () => null,
-    render: (name) => (
-      <Tooltip title={name} placement="topLeft">
-        <span
-          className="font-medium"
-          style={{
-            overflow: "hidden",
-            textOverflow: "ellipsis",
-            whiteSpace: "nowrap",
-            maxWidth: "180px",
-            display: "inline-block",
-          }}
-        >
-          {name || "—"}
+    // Equity shortcode badge + compact instrument short code, same visual
+    // pattern as other Instrument columns (e.g. CO Reconcile, User
+    // Activity Report) - per API_Changes/2026-08-27_policy_breaches_
+    // instrument_shortcode.md. assetShortCode/instrumentShortCode are ""
+    // until that deploys, so this falls back to the hardcoded "EQ" badge
+    // (safe - this report only ever covers Equities, mapListData's
+    // tradeType lookup only ever reads assetTypeData's Equities bucket)
+    // and the full name in place of a short code, same as before that doc.
+    render: (name, record) => (
+      <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+        <span className="custom-shortCode-asset" style={{ minWidth: 30 }}>
+          {record.assetShortCode || "EQ"}
         </span>
-      </Tooltip>
+        <Tooltip title={name} placement="topLeft">
+          <span
+            className="font-medium"
+            style={{
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+              whiteSpace: "nowrap",
+              maxWidth: "140px",
+              display: "inline-block",
+            }}
+          >
+            {record.instrumentShortCode || name || "—"}
+          </span>
+        </Tooltip>
+      </div>
     ),
   },
   {
