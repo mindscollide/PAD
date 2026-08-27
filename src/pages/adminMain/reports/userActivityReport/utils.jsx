@@ -36,6 +36,19 @@ export const buildApiRequest = (searchState = {}) => ({
 });
 
 /**
+ * ExportUserSessionWiseActivity request payload - same filters as
+ * buildApiRequest above, minus PageNumber/Length (an export always returns
+ * the full matching set in one file, no pagination).
+ */
+export const buildExportRequest = (searchState = {}) => ({
+  EmployeeID: 0,
+  EmployeeName: (searchState.employeeName || "").trim(),
+  IPAddress: searchState.ipAddress || "",
+  StartDate: searchState.startDate ? toYYMMDD(searchState.startDate) : "",
+  EndDate: searchState.endDate ? toYYMMDD(searchState.endDate) : "",
+});
+
+/**
  * Splits a backend UTC date+time pair into separately-displayable local
  * date and time strings, plus a raw sortable key.
  *

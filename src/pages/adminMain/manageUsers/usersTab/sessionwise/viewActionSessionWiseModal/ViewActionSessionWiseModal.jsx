@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { Col, Row, Tooltip } from "antd";
+import { Col, Row } from "antd";
+import { useNavigate } from "react-router-dom";
 import { useGlobalModal } from "../../../../../../context/GlobalModalContext";
 import { BorderlessTable, GlobalModal } from "../../../../../../components";
 import CustomButton from "../../../../../../components/buttons/button";
@@ -7,8 +8,17 @@ import PDF from "../../../../../../assets/img/pdf.png";
 import styles from "./ViewActionSessionWiseModal.module.css";
 import { getBorderlessTableColumns } from "./utils";
 import { formatApiDateTime } from "../../../../../../common/funtions/rejex";
+import { useApi } from "../../../../../../context/ApiContext";
+import { useGlobalLoader } from "../../../../../../context/LoaderContext";
+import { useNotification } from "../../../../../../components/NotificationProvider/NotificationProvider";
+import { ExportUserSessionWiseActivityDetailsRequest } from "../../../../../../api/adminApi";
 
 const ViewActionSessionWiseModal = () => {
+  const navigate = useNavigate();
+  const { callApi } = useApi();
+  const { showLoader } = useGlobalLoader();
+  const { showNotification } = useNotification();
+
   const {
     // For Session Wise View Action Modal in Admin Role
     viewActionSessionWiseModal,
@@ -34,6 +44,22 @@ const ViewActionSessionWiseModal = () => {
   const LoginOutDateandTime =
     `${user?.logoutDate ?? ""} ${user?.logoutTime ?? ""}`.trim() || "—";
   const SessionDuration = user?.sessionDuration || "";
+
+  /**
+   * SRS: "On click Download, the system will perform same functionality as
+   * it does on Export." Wired to ExportUserSessionWiseActivityDetails per
+   * API_Changes/2026-08-27_user_activity_report_exports.md, scoped to the
+   * session currently open in this modal.
+   */
+  const handleDownloadClick = () => {
+    ExportUserSessionWiseActivityDetailsRequest({
+      callApi,
+      showNotification,
+      showLoader,
+      requestdata: { SessionID: viewActionSessionWiseModalData?.sessionID },
+      navigate,
+    });
+  };
 
   return (
     <GlobalModal
@@ -95,25 +121,13 @@ const ViewActionSessionWiseModal = () => {
                 </p>
               </Col>
               <Col span={4} className={styles.downloadAndSessionStyle}>
-                {/* SRS: "On click Download, the system will perform same
-                    functionality as it does on Export." No export/download
-                    endpoint exists for session-wise activity yet (adminApi.jsx
-                    has only DownloadBrokerReportRequest and
-                    ExportManageUsersUsersTabExcelReportRequest), so this had
-                    no onClick at all and silently did nothing when clicked.
-                    Disabled with an explanatory tooltip until the backend
-                    endpoint lands, rather than looking functional but dead. */}
-                <Tooltip title="Export is not available yet.">
-                  <span>
-                    <CustomButton
-                      text={"Download"}
-                      className={"small-light-button"}
-                      icon={<img src={PDF} />}
-                      iconPosition="start"
-                      disabled
-                    />
-                  </span>
-                </Tooltip>
+                <CustomButton
+                  text={"Download"}
+                  className={"small-light-button"}
+                  icon={<img src={PDF} />}
+                  iconPosition="start"
+                  onClick={handleDownloadClick}
+                />
               </Col>
             </Row>
 
