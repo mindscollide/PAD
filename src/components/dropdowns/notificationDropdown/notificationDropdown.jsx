@@ -40,7 +40,9 @@ import {
  * Features:
  * - Dynamic icon switching
  * - Unread notification count
- * - Mark all as read functionality
+ * - Marks all notifications read when the dropdown closes (no explicit
+ *   "Mark all as read" control - removed, closing the dropdown is the
+ *   only trigger now)
  * - Responsive design
  * - Accessibility considerations
  */
@@ -311,26 +313,6 @@ const NotificationDropdown = () => {
               </>
             )}
           </div>
-
-          {/* Explicit "Mark all as read" action — was styled (.mark-all)
-              but never rendered; previously the only way to mark
-              notifications read was implicitly, by closing the dropdown. */}
-          {notifications.length > 0 && (
-            <div
-              className={styles["mark-all"]}
-              role="button"
-              tabIndex={unreadCount ? 0 : -1}
-              aria-disabled={!unreadCount}
-              style={
-                unreadCount ? undefined : { cursor: "default", opacity: 0.5 }
-              }
-              onClick={() => {
-                if (unreadCount) markAllAsRead();
-              }}
-            >
-              Mark all as read
-            </div>
-          )}
         </>
       )}
     >

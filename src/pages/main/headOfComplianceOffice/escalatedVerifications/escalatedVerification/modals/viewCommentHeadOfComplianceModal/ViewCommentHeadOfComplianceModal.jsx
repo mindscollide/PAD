@@ -19,8 +19,8 @@ const ViewCommentHeadOfComplianceModal = () => {
   // approvalComment/rejectionComment moved from a single raw string (with a
   // leaking "CO<UserID>" code, and only the last comment surviving when
   // several were left) to an array of resolved {userID, name, comments}
-  // objects - not deployed yet, so formatCommentText below keeps the old
-  // scalar-string shape working too.
+  // objects - live as of the 2026-08-27 PAD_Trade deploy. formatCommentText
+  // below still keeps a legacy scalar-string shape working too, defensively.
   const workflowStatusID =
     isEscalatedHeadOfComplianceViewDetailData?.workFlowStatus?.workFlowStatusID;
   const detail = isEscalatedHeadOfComplianceViewDetailData?.details?.[0];
