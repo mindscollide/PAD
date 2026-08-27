@@ -29,11 +29,30 @@ const ViewReconcilePortfolioComment = () => {
   const approvalComment = detail?.approvalComment;
   const rejectionComment = detail?.rejectionComment;
 
+  // CHANGED (API_Changes/2026-08-27_escalated_view_details_comments.md):
+  // approvalComment/rejectionComment moved from a single raw string (with a
+  // leaking "CO<UserID>" code, and only the last comment surviving when
+  // several were left) to an array of resolved {userID, name, comments}
+  // objects - not deployed yet, so this keeps the old scalar-string shape
+  // working too.
+  /** Formats the new {userID, name, comments}[] shape into display text - one
+   * "Name: comment text" line per entry - while still passing a legacy
+   * scalar string straight through. */
+  const formatCommentText = (comments, emptyMessage) => {
+    if (!Array.isArray(comments)) return comments || emptyMessage;
+    return (
+      comments
+        .map((c) => `${c?.name ? `${c.name}: ` : ""}${c?.comments ?? ""}`.trim())
+        .filter(Boolean)
+        .join("\n") || emptyMessage
+    );
+  };
+
   const getCommentText = () => {
     if (workflowStatusID === 8) {
-      return approvalComment || "No approval comment available.";
+      return formatCommentText(approvalComment, "No approval comment available.");
     } else if (workflowStatusID === 9) {
-      return rejectionComment || "No rejection comment available.";
+      return formatCommentText(rejectionComment, "No rejection comment available.");
     } else {
       return "No comment available for this status.";
     }
