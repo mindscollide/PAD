@@ -246,7 +246,7 @@ export const GetWorkFlowFilesAPI = async ({
     });
     return null;
   } finally {
-    showLoader(false);
+    // showLoader(false);
   }
 };
 
@@ -330,7 +330,8 @@ export const DeleteDocumentAPI = async ({
           showNotification({
             type: "error",
             title: "Error",
-            description: "An unexpected error occurred while deleting the file.",
+            description:
+              "An unexpected error occurred while deleting the file.",
           });
       }
 
