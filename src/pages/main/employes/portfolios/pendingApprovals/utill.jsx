@@ -2,6 +2,7 @@
 import React from "react";
 import { Tag, Tooltip, Typography } from "antd";
 import { Button } from "../../../../../components";
+import EscalatedIcon from "../../../../../assets/img/escalated.png";
 
 // Filter dropdowns for headers
 import TypeColumnTitle from "../../../../../components/dropdowns/filters/typeColumnTitle";
@@ -312,6 +313,25 @@ export const getBorderlessTableColumns = (
     }),
   },
 
+  // 🔹 Escalated Icon - same pattern as CO Reconcile > Transaction/Portfolio
+  {
+    title: "",
+    dataIndex: "isEscalated",
+    key: "isEscalated",
+    width: 60,
+    align: "center",
+    render: (isEscalated) =>
+      isEscalated && (
+        <img
+          draggable={false}
+          src={EscalatedIcon}
+          alt="Escalated"
+          data-testid="escalated-icon"
+          style={{ display: "block", margin: "0 auto" }}
+        />
+      ),
+  },
+
   // 🔹 Action Column
   {
     title: "",
@@ -381,5 +401,10 @@ export const mapToTableRows = (assetTypeData, list = [], brokerOptions = []) =>
       tradeType: getTradeTypeById(assetTypeData, item?.tradeType) || "—",
       broker: brokerLabel || "—",
       status: item?.workFlowStatus?.workFlowStatus || "—",
+      // ADDED: same gap as the CO reconcile screens had (BE already sends
+      // isEscalated on SearchEmployeePendingUploadedPortFolio's response
+      // via IsEscalationOpen, just never picked up here) - no column ever
+      // rendered it either.
+      isEscalated: item?.isEscalated || false,
     };
   });
