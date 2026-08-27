@@ -682,6 +682,7 @@ const ViewDetailHeadOfComplianceReconcileTransaction = () => {
                           text="View Comments"
                           className="big-light-button"
                           onClick={() => {
+                            setViewCommentReconcileModal(true);
                             setViewDetailHeadOfComplianceEscalated(false);
                           }}
                         />{" "}

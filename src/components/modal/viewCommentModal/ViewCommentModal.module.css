@@ -47,6 +47,7 @@
   line-height: 100%;
   letter-spacing: 0%;
   max-width: 900px;
+  padding-bottom: 5px;
 }
 
 .rejectComment {

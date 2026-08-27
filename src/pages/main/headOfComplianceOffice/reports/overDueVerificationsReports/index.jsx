@@ -429,8 +429,6 @@ const HeadCompianceOfficerOverdueVerificationReports = () => {
     });
   };
 
-  console.log(viewCommentReconcileModal, "commentModal");
-
   // -------------------- Render --------------------
   return (
     <>
