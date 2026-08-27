@@ -3,76 +3,116 @@ import ArrowDown from "../../../../assets/img/arrow-down-dark.png";
 import DefaultColumArrow from "../../../../assets/img/default-colum-arrow.png";
 import style from "./UserActivityReport.module.css";
 import { Button } from "../../../../components";
-import { formatApiDateTime } from "../../../../common/funtions/rejex";
+import { formatApiDateTime, toYYMMDD } from "../../../../common/funtions/rejex";
 
 /**
- * User Activity Report (Admin Reports) - item 1 of
- * API_Changes/2026-08-11_admin_reports_all_apis.md ("already existed, no
- * change"). GetUserSessionWiseActivity is hard-scoped to a single
- * EmployeeID (sp_GetUserSessionWiseActivity: WHERE FK_UserID = p_UserID) -
- * there is no system-wide session list. This report is therefore a
- * two-step flow: search/pick an employee (reusing the same employee list
- * already used by Manage Users), then view that employee's sessions
- * (reusing the same GetUserSessionWiseActivity/ViewUserSessionWiseActivity
- * + View Actions modal Manage Users already uses).
+ * User Activity Report (Admin Reports).
+ *
+ * SRS: a single flat list of every employee's login sessions - Employee ID,
+ * Employee Name, Login Date, IP Address, Login Time, Actions, Logout Time,
+ * View Actions button - sorted Login Date descending, searchable by
+ * Employee Name / IP Address / Login Date range.
+ *
+ * GetUserSessionWiseActivity (sp_GetUserSessionWiseActivity) is now
+ * system-wide - see API_Changes/2026-08-25_user_activity_report_system_wide.md
+ * (deployed). EmployeeID: 0 means "every employee"; EmployeeName is a
+ * server-side LIKE search. Each row already carries its own
+ * EmployeeID/EmployeeName, so this is one paginated call, same shape as
+ * every other admin report list (GetAdminPolicyBreachesAPI etc.) - no more
+ * client-side employee-search-then-fan-out merge.
  */
 
-// ---------------------------------------------------------------------
-// Step 1: Employee search (reuses GetAllEmployeesWithAssignedManageUsersUserTabPolicies)
-// ---------------------------------------------------------------------
-
-export const buildEmployeeSearchRequest = (searchState = {}) => ({
+export const buildApiRequest = (searchState = {}) => ({
   EmployeeID: 0,
-  EmployeeName: searchState.employeeName || "",
-  EmailAddress: "",
-  DepartmentName: searchState.departmentName || "",
+  EmployeeName: (searchState.employeeName || "").trim(),
+  // context seeds ipAddress as 0, not "" - `|| ""` folds that back to "no filter"
+  IPAddress: searchState.ipAddress || "",
+  StartDate: searchState.startDate ? toYYMMDD(searchState.startDate) : "",
+  EndDate: searchState.endDate ? toYYMMDD(searchState.endDate) : "",
+  // (pageNumber - 1) * length on the backend - 0 (the search state's
+  // initial value) resolves to page 1 the same as 1 would.
   PageNumber: Number(searchState.pageNumber) || 1,
   Length: Number(searchState.pageSize) || 10,
 });
 
-export const mapEmployeeListData = (res = []) => {
-  const records = Array.isArray(res) ? res : res?.employees || [];
+/**
+ * ExportUserSessionWiseActivity request payload - same filters as
+ * buildApiRequest above, minus PageNumber/Length (an export always returns
+ * the full matching set in one file, no pagination).
+ */
+export const buildExportRequest = (searchState = {}) => ({
+  EmployeeID: 0,
+  EmployeeName: (searchState.employeeName || "").trim(),
+  IPAddress: searchState.ipAddress || "",
+  StartDate: searchState.startDate ? toYYMMDD(searchState.startDate) : "",
+  EndDate: searchState.endDate ? toYYMMDD(searchState.endDate) : "",
+});
 
-  if (!records.length) return [];
+/**
+ * Splits a backend UTC date+time pair into separately-displayable local
+ * date and time strings, plus a raw sortable key.
+ *
+ * The localisation must happen on the COMBINED value: formatApiDateTime
+ * converts UTC -> the viewer's local timezone, and for a timestamp near
+ * midnight that conversion can move the calendar date. Formatting the date
+ * and the time independently would produce a mismatched pair (local time
+ * from one day shown against the UTC date of another). So format once,
+ * then split the already-localised "YYYY-MM-DD | hh:mm am" result.
+ *
+ * `sortKey` is deliberately the raw pre-localisation "yyyyMMddHHmmss"
+ * string, not the localised display text - display text is 12-hour
+ * "hh:mm am/pm", which does not sort correctly as a plain string (e.g.
+ * "09:00 am" < "10:00 am" as digits, but "01:00 pm" < "09:00 am"
+ * alphabetically). The raw digits sort correctly with a plain string
+ * comparison and don't need re-parsing.
+ *
+ * @returns {{ date: string, time: string, sortKey: string }}
+ */
+const toLocalDateAndTime = (datePart, timePart) => {
+  const combined = `${datePart || ""} ${timePart || ""}`.trim();
+  const formatted = formatApiDateTime(combined);
+  const sortKey = `${datePart || ""}${timePart || ""}`;
 
-  return records.map((item) => ({
-    key: item.employeeID,
-    employeeID: item.employeeID,
-    employeeName: item.employeeName || "",
-    departmentName: item.departmentName || "",
-    emailAddress: item.emailAddress || "",
-  }));
+  if (!formatted || !formatted.includes(" | ")) {
+    return { date: "—", time: "—", sortKey };
+  }
+
+  const [localDate, localTime] = formatted.split(" | ");
+  return { date: localDate, time: localTime, sortKey };
 };
 
-// ---------------------------------------------------------------------
-// Step 2: Session list for the selected employee (GetUserSessionWiseActivity)
-// ---------------------------------------------------------------------
-
-export const buildSessionsRequest = (searchState = {}, employeeID) => ({
-  EmployeeID: Number(employeeID) || 0,
-  IPAddress: searchState.ipAddress || "",
-  StartDate: searchState.startDate || "",
-  EndDate: searchState.endDate || "",
-  // GetUserSessionWiseActivity's PageNumber is a real 1-indexed page
-  // number (backend fix 2026-08-05) - 0 (the search state's initial
-  // value) still resolves to page 1.
-  PageNumber: Number(searchState.pageNumber) || 1,
-  Length: Number(searchState.pageSize) || 10,
-});
-
-export const mapSessionListData = (res = []) => {
+/**
+ * Maps GetUserSessionWiseActivity records into flat table rows. Each record
+ * already carries its own EmployeeID/EmployeeName (the SRS list has these
+ * as per-row columns, not a section header, since a system-wide query can
+ * span many employees).
+ */
+export const mapListData = (res = []) => {
   const records = Array.isArray(res) ? res : res?.sessions || [];
 
   if (!records.length) return [];
 
-  return records.map((item) => ({
-    key: item.sessionID,
-    sessionID: item.sessionID || "",
-    ipAddress: item.ipAddress || "",
-    loginDateTime: `${item.loginDate || ""} ${item.loginTime || ""}`.trim() || "—",
-    logoutDateTime: `${item.logoutDate || ""} ${item.logoutTime || ""}`.trim() || "—",
-    totalActions: item.totalActions || 0,
-  }));
+  return records.map((item) => {
+    const login = toLocalDateAndTime(item.loginDate, item.loginTime);
+    const logout = toLocalDateAndTime(item.logoutDate, item.logoutTime);
+
+    return {
+      // Composite key: SessionID (PK_UserLoginHistoryID) should already be
+      // globally unique, but namespacing by employee too costs nothing and
+      // guards against a key collision silently dropping a row from the
+      // table.
+      key: `${item.employeeID}-${item.sessionID}`,
+      sessionID: item.sessionID || "",
+      employeeID: item.employeeID,
+      employeeName: item.employeeName || "",
+      ipAddress: item.ipAddress || "",
+      loginDate: login.date,
+      loginTime: login.time,
+      loginSortKey: login.sortKey,
+      logoutTime: logout.time,
+      totalActions: item.totalActions || 0,
+    };
+  });
 };
 
 // ---------------------------------------------------------------------
@@ -106,26 +146,31 @@ const withSortIcon = (label, columnKey, sortedInfo, align = "left") => (
   </div>
 );
 
-export const getEmployeeListColumns = ({ sortedInfo, onViewSessions }) => [
+// ---------------------------------------------------------------------
+// Columns - SRS list, exactly: Employee ID, Employee Name, Login Date,
+// IP Address, Login Time, Actions, Logout Time, View Actions button.
+// ---------------------------------------------------------------------
+
+export const getSessionListColumns = ({ sortedInfo, onViewActions }) => [
   {
     title: withSortIcon("Employee ID", "employeeID", sortedInfo),
     dataIndex: "employeeID",
     key: "employeeID",
-    width: "140px",
+    width: 130,
     ellipsis: true,
     sorter: (a, b) => Number(a.employeeID) - Number(b.employeeID),
     sortDirections: ["ascend", "descend"],
     sortOrder: sortedInfo?.columnKey === "employeeID" ? sortedInfo.order : null,
     showSorterTooltip: false,
     sortIcon: () => null,
-    render: (employeeID) => <span className="font-medium">{employeeID}</span>,
+    render: (text) => <span className="font-medium">{text}</span>,
   },
   {
     title: withSortIcon("Employee Name", "employeeName", sortedInfo),
     dataIndex: "employeeName",
     key: "employeeName",
+    width: 200,
     ellipsis: true,
-    width: "200px",
     sorter: (a, b) => (a.employeeName || "").localeCompare(b.employeeName || ""),
     sortDirections: ["ascend", "descend"],
     sortOrder: sortedInfo?.columnKey === "employeeName" ? sortedInfo.order : null,
@@ -134,41 +179,28 @@ export const getEmployeeListColumns = ({ sortedInfo, onViewSessions }) => [
     render: (text) => <span className="font-medium">{text}</span>,
   },
   {
-    title: withSortIcon("Department", "departmentName", sortedInfo),
-    dataIndex: "departmentName",
-    key: "departmentName",
+    title: withSortIcon("Login Date", "loginDate", sortedInfo, "center"),
+    dataIndex: "loginDate",
+    key: "loginDate",
+    align: "center",
+    width: 150,
     ellipsis: true,
-    width: "200px",
-    sorter: (a, b) => (a.departmentName || "").localeCompare(b.departmentName || ""),
+    sorter: (a, b) => (a.loginSortKey || "").localeCompare(b.loginSortKey || ""),
     sortDirections: ["ascend", "descend"],
-    sortOrder: sortedInfo?.columnKey === "departmentName" ? sortedInfo.order : null,
+    sortOrder: sortedInfo?.columnKey === "loginDate" ? sortedInfo.order : null,
     showSorterTooltip: false,
     sortIcon: () => null,
-    render: (text) => <span className="font-medium">{text}</span>,
-  },
-  {
-    title: "",
-    key: "action",
-    width: 180,
-    align: "right",
-    render: (_, record) => (
-      <div style={{ display: "flex", alignItems: "center", marginRight: 10 }}>
-        <Button
-          className="view-large-transparent-button"
-          text="View Sessions"
-          onClick={() => onViewSessions?.(record)}
-        />
-      </div>
+    render: (date) => (
+      <span className="text-gray-600" title={date}>
+        {date}
+      </span>
     ),
   },
-];
-
-export const getSessionListColumns = ({ sortedInfo, onViewActions }) => [
   {
     title: withSortIcon("IP Address", "ipAddress", sortedInfo),
     dataIndex: "ipAddress",
     key: "ipAddress",
-    width: 260,
+    width: 180,
     ellipsis: true,
     sorter: (a, b) => (a.ipAddress || "").localeCompare(b.ipAddress || ""),
     sortDirections: ["ascend", "descend"],
@@ -178,27 +210,29 @@ export const getSessionListColumns = ({ sortedInfo, onViewActions }) => [
     render: (text) => <span className="font-medium">{text}</span>,
   },
   {
-    title: withSortIcon("Login Date & Time", "loginDateTime", sortedInfo, "center"),
-    dataIndex: "loginDateTime",
-    key: "loginDateTime",
+    title: withSortIcon("Login Time", "loginTime", sortedInfo, "center"),
+    dataIndex: "loginTime",
+    key: "loginTime",
     align: "center",
+    width: 140,
     ellipsis: true,
-    sorter: (a, b) => (a.loginDateTime || "").localeCompare(b.loginDateTime || ""),
-    sortOrder: sortedInfo?.columnKey === "loginDateTime" ? sortedInfo.order : null,
+    sorter: (a, b) => (a.loginSortKey || "").localeCompare(b.loginSortKey || ""),
+    sortDirections: ["ascend", "descend"],
+    sortOrder: sortedInfo?.columnKey === "loginTime" ? sortedInfo.order : null,
     showSorterTooltip: false,
     sortIcon: () => null,
-    render: (date) => (
-      <span className="text-gray-600" title={date}>
-        {formatApiDateTime(date) || "—"}
+    render: (time) => (
+      <span className="text-gray-600" title={time}>
+        {time}
       </span>
     ),
   },
   {
-    title: withSortIcon("Total Actions", "totalActions", sortedInfo, "center"),
+    title: withSortIcon("Actions", "totalActions", sortedInfo, "center"),
     dataIndex: "totalActions",
     key: "totalActions",
     align: "center",
-    width: 260,
+    width: 110,
     ellipsis: true,
     sorter: (a, b) => Number(a.totalActions || 0) - Number(b.totalActions || 0),
     sortDirections: ["ascend", "descend"],
@@ -208,18 +242,20 @@ export const getSessionListColumns = ({ sortedInfo, onViewActions }) => [
     render: (q) => <span className="font-medium">{q}</span>,
   },
   {
-    title: withSortIcon("Logout Date & Time", "logoutDateTime", sortedInfo, "center"),
-    dataIndex: "logoutDateTime",
-    key: "logoutDateTime",
+    title: withSortIcon("Logout Time", "logoutTime", sortedInfo, "center"),
+    dataIndex: "logoutTime",
+    key: "logoutTime",
     align: "center",
+    width: 140,
     ellipsis: true,
-    sorter: (a, b) => (a.logoutDateTime || "").localeCompare(b.logoutDateTime || ""),
-    sortOrder: sortedInfo?.columnKey === "logoutDateTime" ? sortedInfo.order : null,
+    sorter: (a, b) => (a.logoutTime || "").localeCompare(b.logoutTime || ""),
+    sortDirections: ["ascend", "descend"],
+    sortOrder: sortedInfo?.columnKey === "logoutTime" ? sortedInfo.order : null,
     showSorterTooltip: false,
     sortIcon: () => null,
-    render: (date) => (
-      <span className="text-gray-600" title={date}>
-        {formatApiDateTime(date) || "—"}
+    render: (time) => (
+      <span className="text-gray-600" title={time}>
+        {time}
       </span>
     ),
   },

@@ -272,7 +272,11 @@ const UserSessionWiseActivity = () => {
     });
     if (res?.result) {
       setViewActionSessionWiseModal(true);
-      setViewActionSessionWiseModalData(res);
+      // sessionID isn't part of ViewUserSessionWiseActivity's own response
+      // shape - attached here so the (shared) modal's Download button
+      // knows which session to export. See
+      // API_Changes/2026-08-27_user_activity_report_exports.md.
+      setViewActionSessionWiseModalData({ ...res, sessionID: data.sessionID });
     } else {
       setViewActionSessionWiseModalData([]);
       setViewActionSessionWiseModal(false);

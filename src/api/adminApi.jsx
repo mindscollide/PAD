@@ -3097,3 +3097,182 @@ export const ViewUserSessionWiseActivity = async ({
     showLoader(false);
   }
 };
+
+/**
+ * User Activity Report - main listing "Export" button.
+ * API_Changes/2026-08-27_user_activity_report_exports.md
+ *
+ * File download (Reports service Excel controller), not a RequestMethod
+ * result to parse - same shape as ExportManageUsersUsersTabExcelReportRequest
+ * above. requestdata is the same filter shape already sent to
+ * GetUserSessionWiseActivity, minus PageNumber/Length (export always
+ * returns the full matching set, no pagination).
+ */
+export const ExportUserSessionWiseActivityRequest = async ({
+  callApi,
+  showNotification,
+  showLoader,
+  requestdata,
+  navigate,
+}) => {
+  try {
+    showLoader(true);
+
+    // 🔹 API Call
+    const res = await callApi({
+      requestMethod: import.meta.env
+        .VITE_EXPORT_USER_SESSION_WISE_ACTIVITY_REQUEST_METHOD,
+      endpoint: import.meta.env.VITE_API_REPORT,
+      requestData: requestdata,
+      navigate,
+      responseType: "arraybuffer", // ⚡ Required for file download
+      headers: {
+        "Content-Type":
+          "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      },
+    });
+
+    // 🔹 Check Session Expiry
+    if (handleExpiredSession(res, navigate, showLoader)) return false;
+
+    // 🔹 When API send isExecuted false
+    if (!res?.result?.isExecuted) {
+      showNotification({
+        type: "error",
+        title: "Export Failed",
+        description: "Something went wrong while exporting the report.",
+      });
+      return false;
+    }
+
+    // 🔹 When API Send Success Response
+    if (res.success) {
+      try {
+        const blob = new Blob([res.result?.fileData || res.data], {
+          type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        });
+
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.setAttribute("download", "User-Activity-Report.xlsx");
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        window.URL.revokeObjectURL(url);
+        return true;
+      } catch {
+        showNotification({
+          type: "error",
+          title: "Export Failed",
+          description: "Unable to prepare the exported file for download.",
+        });
+        return false;
+      }
+    }
+
+    showNotification({
+      type: "error",
+      title: "Export Failed",
+      description: getMessage(res.message),
+    });
+    return false;
+  } catch {
+    showNotification({
+      type: "error",
+      title: "Error",
+      description: "An unexpected error occurred while exporting the report.",
+    });
+    return false;
+  } finally {
+    showLoader(false);
+  }
+};
+
+/**
+ * User Activity Report - View Actions modal "Download" button.
+ * API_Changes/2026-08-27_user_activity_report_exports.md
+ *
+ * Same file-download shape as ExportUserSessionWiseActivityRequest above,
+ * scoped to one session (requestdata: { SessionID }).
+ */
+export const ExportUserSessionWiseActivityDetailsRequest = async ({
+  callApi,
+  showNotification,
+  showLoader,
+  requestdata,
+  navigate,
+}) => {
+  try {
+    showLoader(true);
+
+    // 🔹 API Call
+    const res = await callApi({
+      requestMethod: import.meta.env
+        .VITE_EXPORT_USER_SESSION_WISE_ACTIVITY_DETAILS_REQUEST_METHOD,
+      endpoint: import.meta.env.VITE_API_REPORT,
+      requestData: requestdata,
+      navigate,
+      responseType: "arraybuffer", // ⚡ Required for file download
+      headers: {
+        "Content-Type":
+          "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      },
+    });
+
+    // 🔹 Check Session Expiry
+    if (handleExpiredSession(res, navigate, showLoader)) return false;
+
+    // 🔹 When API send isExecuted false
+    if (!res?.result?.isExecuted) {
+      showNotification({
+        type: "error",
+        title: "Export Failed",
+        description: "Something went wrong while exporting this session.",
+      });
+      return false;
+    }
+
+    // 🔹 When API Send Success Response
+    if (res.success) {
+      try {
+        const blob = new Blob([res.result?.fileData || res.data], {
+          type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        });
+
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.setAttribute("download", "User-Activity-Report-Session-Details.xlsx");
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        window.URL.revokeObjectURL(url);
+        return true;
+      } catch {
+        showNotification({
+          type: "error",
+          title: "Export Failed",
+          description: "Unable to prepare the exported file for download.",
+        });
+        return false;
+      }
+    }
+
+    showNotification({
+      type: "error",
+      title: "Export Failed",
+      description: getMessage(res.message),
+    });
+    return false;
+  } catch {
+    showNotification({
+      type: "error",
+      title: "Error",
+      description: "An unexpected error occurred while exporting this session.",
+    });
+    return false;
+  } finally {
+    showLoader(false);
+  }
+};

@@ -39,7 +39,6 @@ import { mapToTableRows as mapHOCEscalatedTransactionRow } from "../../../pages/
 import { mapToTableRows as mapHOCEscalatedPortfolioRow } from "../../../pages/main/headOfComplianceOffice/escalatedVerifications/reconcilePortfolio/util";
 import { mapToTableRows as mapCOReconcileTransactionRow } from "../../../pages/main/complianceOfficer/reconcile/transaction/util";
 import { mapToTableRows as mapCOReconcilePortfolioRow } from "../../../pages/main/complianceOfficer/reconcile/portfolio/util";
-import { mapEmployeeTransactions } from "../../../pages/main/employes/myTransactions/utill";
 const { Content } = Layout;
 
 const Dashboard = () => {
@@ -821,17 +820,24 @@ const Dashboard = () => {
                     // (setEmployeeTransactionsTableDataMqtt) - patches
                     // isEscalated in place instead, matching this message's
                     // real payload shape (bare WorkFlowID array, see
-                    // escalationWorkFlowIDs above). mapEmployeeTransactions
-                    // already maps isEscalated and keys rows by workFlowID.
+                    // escalationWorkFlowIDs above). Rows are keyed by
+                    // workFlowID (mapEmployeeTransactions in
+                    // myTransactions/utill.jsx).
+                    //
+                    // FIXED: was reading/writing `prev.data` - the real
+                    // state field is `prev.transactions` (see
+                    // myTransaction.jsx's fetchApiCall) - so this was a
+                    // silent no-op, same bug as WORKFLOW_ESCALATED_FROM_HOC_TRANSACTION
+                    // below.
                     const escalatedIDs = escalationWorkFlowIDs(payload);
                     setEmployeeTransactionsData((prev) => {
-                      const data = prev?.data || [];
-                      const updatedData = data.map((item) =>
+                      const transactions = prev?.transactions || [];
+                      const updatedTransactions = transactions.map((item) =>
                         escalatedIDs.includes(String(item.workFlowID))
                           ? { ...item, isEscalated: true }
                           : item
                       );
-                      return { ...prev, data: updatedData };
+                      return { ...prev, transactions: updatedTransactions };
                     });
                   } else if (
                     currentKey === "4" &&
@@ -851,31 +857,45 @@ const Dashboard = () => {
                 // above for Transaction escalations, once BE redeploys - the old
                 // message stops firing for this path at that point (still
                 // handled above in the meantime, harmless overlap). Payload is
-                // now a single full record (SearchEmployeeTransactionsResponse
-                // shape) instead of a bare ID array, so the matching row is
-                // replaced with fresh mapped data (including isEscalated: true)
-                // instead of just flipping one field.
+                // a single record keyed by workFlowID; patched in place the
+                // same as the case above (see the FIXED note there - full-row
+                // replace was tried first but the payload is a thin
+                // "escalation event" shape missing several display fields,
+                // so only isEscalated is actually patched).
                 case "WORKFLOW_ESCALATED_FROM_HOC_TRANSACTION": {
                   if (currentKey === "2") {
-                    const [mappedRow] = mapEmployeeTransactions(
-                      assetTypeListingData?.Equities,
-                      [payload]
-                    );
-                    if (mappedRow) {
-                      setEmployeeTransactionsData((prev) => {
-                        const data = prev?.data || [];
-                        const existingIndex = data.findIndex(
-                          (item) =>
-                            String(item.workFlowID) ===
-                            String(mappedRow.workFlowID)
-                        );
-                        if (existingIndex === -1) return prev;
+                    // FIXED: this read/wrote `prev.data`, but the My
+                    // Transactions page's real state field is
+                    // `prev.transactions` (see myTransaction.jsx's
+                    // fetchApiCall) - `data` was always `[]`, so
+                    // existingIndex was always -1 and this whole handler
+                    // was a silent no-op, escalated icon never appeared.
+                    //
+                    // Also switched from a full-row replace to an in-place
+                    // patch: the MQTT payload is a thin "escalation event"
+                    // shape (no requestDate/requestTime, tradeApproval is
+                    // always null, brokers is always []), so replacing the
+                    // whole row would blank out Title/Trade Type/Broker on
+                    // an existing, fully-populated row. Only isEscalated
+                    // actually needs to change here.
+                    setEmployeeTransactionsData((prev) => {
+                      const transactions = prev?.transactions || [];
+                      const existingIndex = transactions.findIndex(
+                        (item) =>
+                          String(item.workFlowID) === String(payload?.workFlowID)
+                      );
+                      if (existingIndex === -1) return prev;
 
-                        const updatedData = [...data];
-                        updatedData[existingIndex] = mappedRow;
-                        return { ...prev, data: updatedData };
-                      });
-                    }
+                      const updatedTransactions = [...transactions];
+                      updatedTransactions[existingIndex] = {
+                        ...updatedTransactions[existingIndex],
+                        isEscalated:
+                          typeof payload?.isEscalated === "boolean"
+                            ? payload.isEscalated
+                            : updatedTransactions[existingIndex].isEscalated,
+                      };
+                      return { ...prev, transactions: updatedTransactions };
+                    });
                   }
                   break;
                 }
@@ -1298,7 +1318,37 @@ const Dashboard = () => {
                     currentKey === "9" &&
                     currentreconcileActiveTab === "transactions"
                   ) {
-                    setComplianceOfficerReconcileTransactionDataMqtt(true);
+                    // CHANGED (2026-08-27): was a full refetch trigger
+                    // (setComplianceOfficerReconcileTransactionDataMqtt) -
+                    // reported as visibly doing nothing. Matches the
+                    // APPROVED case above now instead - patches status (and
+                    // isEscalated) in place on the existing row, same
+                    // proven-working mechanism, "Non-Compliant" instead of
+                    // "Compliant" (both keys exist in approvalStatusMap).
+                    setComplianceOfficerReconcileTransactionData((prev) => {
+                      const rows = prev?.reconsileTransaction || [];
+                      const existingIndex = rows.findIndex(
+                        (row) =>
+                          String(row.approvalID) === String(payload?.approvalID)
+                      );
+                      if (existingIndex === -1) return prev;
+
+                      const updatedRows = [...rows];
+                      updatedRows[existingIndex] = {
+                        ...updatedRows[existingIndex],
+                        status:
+                          (payload?.approvalStatus?.approvalStatusName ===
+                            "Declined" &&
+                            "Non-Compliant") ||
+                          updatedRows[existingIndex].status,
+                        isEscalated:
+                          typeof payload?.isEscalated === "boolean"
+                            ? payload.isEscalated
+                            : updatedRows[existingIndex].isEscalated,
+                      };
+
+                      return { ...prev, reconsileTransaction: updatedRows };
+                    });
                   } else if (
                     currentKey === "9" &&
                     currentreconcileActiveTab === "portfolio"

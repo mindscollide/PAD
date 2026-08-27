@@ -7,6 +7,7 @@ import { Button } from "../../../../../components";
 import DefaultColumnArrow from "../../../../../assets/img/default-colum-arrow.png";
 import ArrowUp from "../../../../../assets/img/arrow-up-dark.png";
 import ArrowDown from "../../../../../assets/img/arrow-down-dark.png";
+import EscalatedIcon from "../../../../../assets/img/escalated.png";
 
 // Filter dropdowns
 import TypeColumnTitle from "../../../../../components/dropdowns/filters/typeColumnTitle";
@@ -87,6 +88,10 @@ export const mapToTableRows = (assetTypeData, list = []) =>
     quantity: item?.quantity ?? "—",
     type: getTradeTypeById(assetTypeData, item?.tradeType) ?? "—",
     status: item?.approvalStatus?.approvalStatusName ?? "—",
+    // ADDED: same gap as CO Reconcile > Transaction had (API_Changes/
+    // 2026-08-11_co_reconcile_transactions_isEscalated.md) - BE already
+    // sends isEscalated on this response too, just never picked up here.
+    isEscalated: item?.isEscalated || false,
   }));
 
 /* ------------------------------------------------------------------ */
@@ -293,6 +298,26 @@ export const getBorderlessTableColumns = ({
     },
     onHeaderCell: () => nowrapCell(150, 240),
     onCell: () => nowrapCell(150, 240),
+  },
+
+  // 🔹 Escalated Icon - same pattern as CO Reconcile > Transaction
+  {
+    title: "",
+    dataIndex: "isEscalated",
+    key: "isEscalated",
+    width: 100,
+    align: "center",
+    ellipsis: true,
+    render: (isEscalated) =>
+      isEscalated && (
+        <img
+          draggable={false}
+          src={EscalatedIcon}
+          alt="Escalated"
+          data-testid="escalated-icon"
+          style={{ display: "block", margin: "0 auto" }}
+        />
+      ),
   },
 
   // 🔹 Actions

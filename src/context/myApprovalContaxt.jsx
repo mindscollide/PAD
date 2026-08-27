@@ -265,6 +265,15 @@ export const MyApprovalProvider = ({ children }) => {
     totalRecordsTable: 0,
   });
 
+  // Admin User Activity Report (list) - GetUserSessionWiseActivity, made
+  // system-wide 2026-08-25 (API_Changes/2026-08-25_user_activity_report_system_wide.md)
+  const [adminUserActivityReportData, setAdminUserActivityReportData] =
+    useState({
+      records: [],
+      totalRecordsDataBase: 0,
+      totalRecordsTable: 0,
+    });
+
   // Admin Policy Breaches Report (list)
   const [adminPolicyBreachesReportData, setAdminPolicyBreachesReportData] =
     useState({
@@ -443,6 +452,15 @@ export const MyApprovalProvider = ({ children }) => {
   /** Reset Admin User-wise Compliance Report */
   const resetAdminUserWiseComplianceReportData = () => {
     setAdminUserWiseComplianceReportData({
+      records: [],
+      totalRecordsDataBase: 0,
+      totalRecordsTable: 0,
+    });
+  };
+
+  /** Reset Admin User Activity Report (list) */
+  const resetAdminUserActivityReportData = () => {
+    setAdminUserActivityReportData({
       records: [],
       totalRecordsDataBase: 0,
       totalRecordsTable: 0,
@@ -637,6 +655,10 @@ export const MyApprovalProvider = ({ children }) => {
         adminUserWiseComplianceReportData,
         setAdminUserWiseComplianceReportData,
         resetAdminUserWiseComplianceReportData,
+
+        adminUserActivityReportData,
+        setAdminUserActivityReportData,
+        resetAdminUserActivityReportData,
 
         adminPolicyBreachesReportData,
         setAdminPolicyBreachesReportData,
