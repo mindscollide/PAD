@@ -654,7 +654,7 @@ const ViewDetailHeadOfComplianceReconcileTransaction = () => {
                           text="View Tickets"
                           className="big-light-button"
                           onClick={handleViewTicket}
-                        />{" "}
+                        />
                         <CustomButton
                           text="View Comments"
                           className="big-light-button"
@@ -662,7 +662,7 @@ const ViewDetailHeadOfComplianceReconcileTransaction = () => {
                             setViewCommentReconcileModal(true);
                             setViewDetailHeadOfComplianceEscalated(false);
                           }}
-                        />{" "}
+                        />
                         <CustomButton
                           text="Close"
                           onClick={() => {
@@ -689,7 +689,7 @@ const ViewDetailHeadOfComplianceReconcileTransaction = () => {
                             setViewCommentReconcileModal(true);
                             setViewDetailHeadOfComplianceEscalated(false);
                           }}
-                        />{" "}
+                        />
                         <CustomButton
                           text="Close"
                           onClick={() => {

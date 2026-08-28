@@ -346,6 +346,7 @@ const COdataWiseTransactionsReports = () => {
       showLoader,
       requestdata: requestdata,
       navigate,
+      setOpen,
     });
   };
 

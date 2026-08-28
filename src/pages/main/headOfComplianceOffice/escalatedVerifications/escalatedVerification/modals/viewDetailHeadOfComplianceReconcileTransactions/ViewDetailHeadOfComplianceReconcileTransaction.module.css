@@ -446,3 +446,9 @@
   font-weight: 700;
   font-family: "Switzer Variable";
 }
+.noncompliantButtonClass {
+  display: flex;
+  justify-content: end;
+  align-items: center;
+  gap: 20px !important;
+}

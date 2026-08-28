@@ -1751,6 +1751,7 @@ export const DownloadMyComplianceStandingRequestAPI = async ({
   showLoader,
   requestdata,
   navigate,
+  setOpen,
 }) => {
   try {
     showLoader(true);
@@ -1813,6 +1814,7 @@ export const DownloadMyTradeApprovalStandingRequestAPI = async ({
   showLoader,
   requestdata,
   navigate,
+  setOpen,
 }) => {
   try {
     showLoader(true);
@@ -1966,6 +1968,7 @@ export const DownloadMyTradeApprovalReportRequestAPI = async ({
   showLoader,
   requestdata,
   navigate,
+  setOpen,
 }) => {
   try {
     showLoader(true);
@@ -2123,6 +2126,7 @@ export const DownloadLineManagerMyTradeApprovalReportRequestAPI = async ({
   showLoader,
   requestdata,
   navigate,
+  setOpen,
 }) => {
   try {
     showLoader(true);
@@ -2274,7 +2278,7 @@ export const SearchComplianceOfficerDateWiseTransactionRequest = async ({
 };
 
 export const DownloadComplianceOfficerDateWiseTransactionReportRequestAPI =
-  async ({ callApi, showLoader, requestdata, navigate }) => {
+  async ({ callApi, showLoader, requestdata, navigate, setOpen }) => {
     try {
       showLoader(true);
 
@@ -2398,6 +2402,7 @@ export const ExportLineManagerPendingTradeApprovalsExcel = async ({
   showLoader,
   requestdata,
   navigate,
+  setOpen,
 }) => {
   try {
     showLoader(true);
@@ -3899,6 +3904,7 @@ export const ExportOverdueVerificationCOExcel = async ({
   showLoader,
   requestdata,
   navigate,
+  setOpen,
 }) => {
   try {
     showLoader(true);
@@ -4152,6 +4158,7 @@ export const ExportHOCDateWiseTransactionReportExcel = async ({
   showLoader,
   requestdata,
   navigate,
+  setOpen,
 }) => {
   try {
     showLoader(true);
@@ -4497,6 +4504,7 @@ export const ExportPortfolioHistoryCOExcel = async ({
   showLoader,
   requestdata,
   navigate,
+  setOpen,
 }) => {
   try {
     showLoader(true);
@@ -4652,6 +4660,7 @@ export const ExportHTATradeApprovalRequestsExcelReport = async ({
   showLoader,
   requestdata,
   navigate,
+  setOpen,
 }) => {
   try {
     showLoader(true);
@@ -5014,6 +5023,7 @@ export const ExportHTAPolicyBreachesExcelReport = async ({
   showLoader,
   requestdata,
   navigate,
+  setOpen,
 }) => {
   try {
     showLoader(true);
@@ -5050,6 +5060,7 @@ export const ExportHTAPolicyBreachesExcelReport = async ({
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
+        setOpen(false);
         return true;
       } catch {
         return false;
@@ -5077,6 +5088,7 @@ export const ExportHTATurnAroundTimeRequestDetailsExcel = async ({
   showLoader,
   requestdata,
   navigate,
+  setOpen,
 }) => {
   try {
     showLoader(true);
@@ -5113,6 +5125,7 @@ export const ExportHTATurnAroundTimeRequestDetailsExcel = async ({
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
+        setOpen(false);
         return true;
       } catch {
         return false;
@@ -5470,6 +5483,7 @@ export const ExportHOCOverdueVerificationsExcelReport = async ({
   showLoader,
   requestdata,
   navigate,
+  setOpen,
 }) => {
   try {
     showLoader(true);
@@ -5805,6 +5819,7 @@ export const ExportHOCTransactionSummaryReportExcelApi = async ({
   showLoader,
   requestdata,
   navigate,
+  setOpen,
 }) => {
   try {
     showLoader(true);
@@ -5874,6 +5889,7 @@ export const GetHCAViewTransactionSummaryExportAPI = async ({
   showLoader,
   requestdata,
   navigate,
+  setOpen,
 }) => {
   try {
     showLoader(true);
@@ -5918,6 +5934,7 @@ export const GetHCAViewTransactionSummaryExportAPI = async ({
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
+        setOpen(false);
         return true;
       } catch {
         return false;
@@ -5944,6 +5961,7 @@ export const ExportComplianceOfficerTransactionSummaryReportExcel = async ({
   showLoader,
   requestdata,
   navigate,
+  setOpen,
 }) => {
   try {
     showLoader(true);
@@ -5985,6 +6003,7 @@ export const ExportComplianceOfficerTransactionSummaryReportExcel = async ({
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
+        setOpen(false);
         return true;
       } catch {
         return false;
@@ -6010,6 +6029,7 @@ export const ExportComplianceOfficerViewTransactionSummaryReportExcel = async ({
   showLoader,
   requestdata,
   navigate,
+  setOpen,
 }) => {
   try {
     showLoader(true);
@@ -6054,6 +6074,7 @@ export const ExportComplianceOfficerViewTransactionSummaryReportExcel = async ({
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
+        setOpen(false);
         return true;
       } catch {
         return false;

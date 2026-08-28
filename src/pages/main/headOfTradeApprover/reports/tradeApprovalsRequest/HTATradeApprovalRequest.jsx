@@ -292,6 +292,7 @@ const HTATradeApprovalRequest = () => {
       showLoader,
       requestdata: requestdata,
       navigate,
+      setOpen,
     });
   };
 

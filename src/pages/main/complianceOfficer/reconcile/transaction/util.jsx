@@ -4,9 +4,6 @@ import { Tag, Tooltip } from "antd";
 import { Button } from "../../../../../components";
 
 // Assets (sort icons)
-import DefaultColumnArrow from "../../../../../assets/img/default-colum-arrow.png";
-import ArrowUp from "../../../../../assets/img/arrow-up-dark.png";
-import ArrowDown from "../../../../../assets/img/arrow-down-dark.png";
 import EscalatedIcon from "../../../../../assets/img/escalated.png";
 
 // Helpers
@@ -280,7 +277,7 @@ export const getBorderlessTableColumns = ({
     ),
     dataIndex: "status",
     key: "status",
-    width: 100,
+    width: 150,
     filteredValue: complianceOfficerReconcileTransactionsSearch?.status?.length
       ? complianceOfficerReconcileTransactionsSearch.status
       : null,

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { Card, Typography, Row, Col, Progress, Tooltip } from "antd";
 import styles from "./boxCard.module.css";
 
@@ -75,19 +75,39 @@ const BoxCard = ({
   changeTextSize = false,
   setUrgentAlert,
 }) => {
-  const base = mainClassName || "smallShareHomeCard"; // fallback class name if none provided
+  // const base = mainClassName || "smallShareHomeCard"; // fallback class name if none provided
+  // const navigate = useNavigate();
+  // const { setSelectedKey } = useSidebarContext();
+  // const roles = JSON.parse(sessionStorage.getItem("user_assigned_roles"));
+  // // Prevent multiple fetches on mount
+  // const userRoleIDs = roles.map((r) => r.roleID);
+  // // Normalize boxes input (always an array)
+  // let normalizedBoxes = Array.isArray(boxes) ? boxes : boxes ? [boxes] : [];
+
+  // /**
+  //  * Handles button click → navigates to the correct route
+  //  * using helper `navigateToPage` (handles role-based logic).
+  //  */
+  // const handleClick = () => {
+  //   navigateToPage(userRole, route, setSelectedKey, navigate);
+  // };
+
+  const base = mainClassName || "smallShareHomeCard";
   const navigate = useNavigate();
   const { setSelectedKey } = useSidebarContext();
   const roles = JSON.parse(sessionStorage.getItem("user_assigned_roles"));
-  // Prevent multiple fetches on mount
   const userRoleIDs = roles.map((r) => r.roleID);
-  // Normalize boxes input (always an array)
   let normalizedBoxes = Array.isArray(boxes) ? boxes : boxes ? [boxes] : [];
 
-  /**
-   * Handles button click → navigates to the correct route
-   * using helper `navigateToPage` (handles role-based logic).
-   */
+  // + // Guard against `warningFlag` being true before the actual urgent tile
+  // + // (boxes[1]) has loaded — e.g. on reload, urgentAlert is set synchronously
+  // + // from sessionStorage before fetchData() resolves, leaving normalizedBoxes
+  // + // empty/short for a beat. Without this, the red warning border/scale paints
+  // + // immediately with nothing inside it. Only treat it as a real warning state
+  // // once there's a second tile to actually show.
+
+  const isWarningActive = warningFlag && normalizedBoxes.length > 1;
+
   const handleClick = () => {
     navigateToPage(userRole, route, setSelectedKey, navigate);
   };
@@ -111,7 +131,8 @@ const BoxCard = ({
   return (
     <Card
       className={`${styles[mainClassName]} ${
-        warningFlag ? styles.warning : ""
+        // warningFlag ? styles.warning : ""
+        isWarningActive ? styles.warning : ""
       }`}
       style={{
         padding: "10px 20px",
@@ -188,7 +209,8 @@ const BoxCard = ({
                 ? Math.floor(totalCols / itemsToRender.length)
                 : 24;
 
-            return warningFlag && index === 1 ? (
+            // return warningFlag && index === 1 ? (
+            return isWarningActive && index === 1 ? (
               // 🔴 Case 1: warning + first box
               <Col span={24} key={index}>
                 <div className={styles.warningBox}>
@@ -253,7 +275,8 @@ const BoxCard = ({
                 </div>
               </Col>
             ) : (
-              !warningFlag &&
+              // !warningFlag &&
+              !isWarningActive &&
                 (showProgress && index === normalizedBoxes.length - 1 ? (
                   (() => {
                     return (

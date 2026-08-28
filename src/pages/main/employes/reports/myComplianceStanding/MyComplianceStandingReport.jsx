@@ -19,7 +19,10 @@ import Excel from "../../../../../assets/img/xls.png";
 import { UpOutlined, DownOutlined } from "@ant-design/icons";
 import CustomButton from "../../../../../components/buttons/button";
 import { DateRangePicker } from "../../../../../components";
-import { toYYMMDD } from "../../../../../common/funtions/rejex";
+import {
+  formatToYYYYMMDD,
+  toYYMMDD,
+} from "../../../../../common/funtions/rejex";
 
 const statusColorMap = {
   Pending: "#717171",
@@ -35,7 +38,6 @@ const MyComplianceStandingReport = () => {
   const { getEmployeeMyComplianceReport, setGetEmployeeMyComplianceReport } =
     useMyApproval();
 
-  console.log(getEmployeeMyComplianceReport, "getEmployeeMyComplianceReport");
   const hasFetched = useRef(false);
   const componentRef = useRef(null); // Ref for PDF export
 
@@ -82,8 +84,6 @@ const MyComplianceStandingReport = () => {
           navigate,
         });
 
-        console.log(res, "checkebhdvwcec");
-
         if (res && res.summary) {
           setGetEmployeeMyComplianceReport({ summary: res.summary });
         }
@@ -106,11 +106,19 @@ const MyComplianceStandingReport = () => {
   useEffect(() => {
     if (hasFetched.current) return;
     hasFetched.current = true;
+    const endDate = new Date();
+    const startDate = new Date();
+    startDate.setMonth(startDate.getMonth() - 6);
+
+    setDateRange({
+      StartDate: formatToYYYYMMDD(startDate),
+      EndDate: formatToYYYYMMDD(endDate),
+    });
 
     const requestData = {
       // build your request payload here
-      StartDate: "",
-      EndDate: "",
+      StartDate: startDate ? toYYMMDD(startDate) : "",
+      EndDate: endDate ? toYYMMDD(endDate) : "",
     };
 
     fetchApiCall(requestData, true, true);
@@ -119,6 +127,9 @@ const MyComplianceStandingReport = () => {
   //OnCHange of date Handler
   const handleDateChange = (dates) => {
     if (dates && dates.length === 2) {
+      const start = toYYMMDD(dates[0]);
+      const end = toYYMMDD(dates[1]);
+
       setDateRange({
         StartDate: dates?.[0] || null,
         EndDate: dates?.[1] || null,
@@ -127,8 +138,8 @@ const MyComplianceStandingReport = () => {
       // Call API immediately after date change
       fetchApiCall(
         {
-          StartDate: toYYMMDD(dates[0]) || null,
-          EndDate: toYYMMDD(dates[1]) || null,
+          StartDate: start || null,
+          EndDate: end || null,
         },
         true,
         true
@@ -167,6 +178,7 @@ const MyComplianceStandingReport = () => {
 
       pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
       pdf.save("My-Compliance-Report.pdf");
+      setOpen(false);
     });
   };
 
@@ -183,6 +195,7 @@ const MyComplianceStandingReport = () => {
       showLoader,
       requestdata: requestdata,
       navigate,
+      setOpen,
     });
   };
 
@@ -218,11 +231,12 @@ const MyComplianceStandingReport = () => {
           <div className={style.headerActionsRow}>
             <DateRangePicker
               size="medium"
-              className={style.dateRangePickerClass}
+              // className={style.dateRangePickerClass}
+              className={"range-picker-small"}
               onChange={handleDateChange}
               value={[dateRange.StartDate, dateRange.EndDate]}
               onClear={handleClearDates}
-              format="YYYY-MM-DD"
+              // format="YYYY-MM-DD"
             />
 
             <CustomButton

@@ -66,8 +66,10 @@ export const GlobalModalProvider = ({ children }) => {
     useState(false);
 
   // To show save-success Modal on Notification Settings
-  const [showSavedNotificationSettingsModal, setShowSavedNotificationSettingsModal] =
-    useState(false);
+  const [
+    showSavedNotificationSettingsModal,
+    setShowSavedNotificationSettingsModal,
+  ] = useState(false);
 
   // To show Cancel/discard-changes confirmation Modal on Notification Settings
   const [

@@ -58,7 +58,7 @@ const ViewCommentModal = ({
                       {rejectionList.map((item, index) => (
                         <div
                           key={`rej-${index}`}
-                          className={styles.rejectComment}
+                          className={styles.acceptComment}
                         >
                           {item}
                         </div>

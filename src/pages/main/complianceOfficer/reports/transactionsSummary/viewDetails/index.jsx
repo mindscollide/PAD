@@ -1,6 +1,5 @@
 import React, { useEffect, useState, useRef, useCallback } from "react";
 import { Breadcrumb, Col, Row } from "antd";
-import PDF from "../../../../../assets/img/pdf.png";
 import Excel from "../../../../../assets/img/xls.png";
 import { UpOutlined, DownOutlined } from "@ant-design/icons";
 // 🔹 Components
@@ -16,7 +15,6 @@ import {
 import { approvalStatusMap } from "../../../../../components/tables/borderlessTable/utill";
 
 // 🔹 Contexts
-import { useGlobalModal } from "../../../../../context/GlobalModalContext";
 
 // 🔹 Styles
 import style from "./transactionsSummary.module.css";
@@ -30,7 +28,6 @@ import { useApi } from "../../../../../context/ApiContext";
 import { useGlobalLoader } from "../../../../../context/LoaderContext";
 import { useNavigate } from "react-router-dom";
 import { useSearchBarContext } from "../../../../../context/SearchBarContaxt";
-import { useDashboardContext } from "../../../../../context/dashboardContaxt";
 import { useTableScrollBottom } from "../../../../../common/funtions/scroll";
 import CustomButton from "../../../../../components/buttons/button";
 import { DateRangePicker } from "../../../../../components";
@@ -232,6 +229,7 @@ const COTransactionsSummarysReportsViewDetails = () => {
       showLoader,
       requestdata: requestdata,
       navigate,
+      setOpen,
     });
   };
 

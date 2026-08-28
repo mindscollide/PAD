@@ -1,6 +1,5 @@
 import React, { useEffect, useState, useRef, useCallback } from "react";
 import { Breadcrumb, Col, Row } from "antd";
-import PDF from "../../../../../assets/img/pdf.png";
 import Excel from "../../../../../assets/img/xls.png";
 import { UpOutlined, DownOutlined } from "@ant-design/icons";
 // 🔹 Components
@@ -16,26 +15,19 @@ import {
 import { approvalStatusMap } from "../../../../../components/tables/borderlessTable/utill";
 
 // 🔹 Contexts
-import { useGlobalModal } from "../../../../../context/GlobalModalContext";
 
 // 🔹 Styles
 import style from "./transactionsSummary.module.css";
 import { useMyApproval } from "../../../../../context/myApprovalContaxt";
 import {
   DownloadComplianceOfficerDateWiseTransactionReportRequestAPI,
-  DownloadLineManagerMyTradeApprovalReportRequestAPI,
-  DownloadMyTransactionReportRequestAPI,
-  GetComplianceOfficerViewTransactionSummaryAPI,
   SearchComplianceOfficerTransactionSummaryReportRequest,
-  SearchLineManagerTradeApprovalRequestApi,
 } from "../../../../../api/myApprovalApi";
 import { useNotification } from "../../../../../components/NotificationProvider/NotificationProvider";
 import { useApi } from "../../../../../context/ApiContext";
 import { useGlobalLoader } from "../../../../../context/LoaderContext";
 import { useNavigate } from "react-router-dom";
 import { useSearchBarContext } from "../../../../../context/SearchBarContaxt";
-import { useDashboardContext } from "../../../../../context/dashboardContaxt";
-import { getSafeAssetTypeData } from "../../../../../common/funtions/assetTypesList";
 import { useTableScrollBottom } from "../../../../../common/funtions/scroll";
 import CustomButton from "../../../../../components/buttons/button";
 import { DateRangePicker } from "../../../../../components";
@@ -55,16 +47,11 @@ const COTransactionsSummarysReportsViewDetails = () => {
     resetCOTransactionSummaryReportListData,
   } = useMyApproval();
 
-  const { isViewComments, setIsViewComments, setCheckTradeApprovalID } =
-    useGlobalModal();
-
   const {
     coTransactionsSummarysReportsSearch,
     setCOTransactionsSummarysReportsSearch,
     resetCOTransactionsSummarysReportsSearch,
   } = useSearchBarContext();
-
-  const { setAssetTypeListingData } = useDashboardContext();
 
   // -------------------- Local State --------------------
   const [sortedInfo, setSortedInfo] = useState({});
@@ -96,10 +83,8 @@ const COTransactionsSummarysReportsViewDetails = () => {
       const transactions = Array.isArray(res?.transactions)
         ? res.transactions
         : [];
-      console.log("records", transactions);
       const mapped = mappingDateWiseTransactionReport(transactions);
       if (!mapped || typeof mapped !== "object") return;
-      console.log("records", mapped);
 
       setCOTransactionSummaryReportListData((prev) => ({
         transactions: replace

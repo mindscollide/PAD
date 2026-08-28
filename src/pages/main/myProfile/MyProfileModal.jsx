@@ -1,5 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { Row, Col, Avatar } from "antd";
+import username from "../../../assets/img/username.png";
+import EmployeeId from "../../../assets/img/EmployeeId.png";
+import phoneIcon from "../../../assets/img/ProfilePhone.png";
+import Address from "../../../assets/img/Address.png";
+import Email from "../../../assets/img/Email.png";
+import departmentIcon from "../../../assets/img/user-dark-icon.png";
+// import Email from "../../../assets/img/Email.png";
 import { UserOutlined } from "@ant-design/icons";
 import styles from "./MyProfileModal.module.css";
 import { GlobalModal } from "../../../components";
@@ -81,42 +88,60 @@ const MyProfileModal = () => {
             <Col span={18}>
               <Row className={styles.boxMargin}>
                 <div className={styles.detailBox}>
-                  <div>
+                  <div className="flex items-center gap-1">
+                    <span className={styles.iconStyle}>
+                      <img src={username} alt="User" draggable={false} />
+                    </span>
                     <span className={styles.label}>Full Name: </span>
                     <span className={styles.value}>
                       {display(profile?.fullName)}
                     </span>
                   </div>
 
-                  <div>
+                  <div className="flex items-center gap-1">
+                    <span className={styles.iconStyle}>
+                      <img src={EmployeeId} alt="User" draggable={false} />
+                    </span>
                     <span className={styles.label}>Employee ID: </span>
                     <span className={styles.value}>
                       {display(profile?.employeeID)}
                     </span>
                   </div>
 
-                  <div>
+                  <div className="flex items-center gap-1">
+                    <span className={styles.iconStyle}>
+                      <img src={phoneIcon} alt="User" draggable={false} />
+                    </span>
                     <span className={styles.label}>Phone: </span>
                     <span className={styles.value}>
                       {display(profile?.phone)}
                     </span>
                   </div>
 
-                  <div>
+                  <div className="flex items-center gap-1">
+                    <span className={styles.iconStyle}>
+                      <img src={Address} alt="User" draggable={false} />
+                    </span>
                     <span className={styles.label}>Address: </span>
                     <span className={styles.value}>
                       {display(profile?.address)}
                     </span>
                   </div>
 
-                  <div>
+                  <div className="flex items-center gap-1">
+                    <span className={styles.iconStyle}>
+                      <img src={Email} alt="User" draggable={false} />
+                    </span>
                     <span className={styles.label}>Email: </span>
                     <span className={styles.value}>
                       {display(profile?.email)}
                     </span>
                   </div>
 
-                  <div>
+                  <div className="flex items-center gap-1">
+                    <span className={styles.iconStyle}>
+                      <img src={departmentIcon} alt="User" draggable={false} />
+                    </span>
                     <span className={styles.label}>Department: </span>
                     <span className={styles.value}>
                       {display(profile?.departmentName)}

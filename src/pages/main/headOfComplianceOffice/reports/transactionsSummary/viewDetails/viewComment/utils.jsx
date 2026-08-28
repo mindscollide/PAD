@@ -40,7 +40,7 @@ export const parseComments = (value) => {
   // line break separated
   // mixed
   return text
-    .split(/,|\n|\r\n/)   // <-- magic (comma OR new line)
+    .split(/,|\n|\r\n/) // <-- magic (comma OR new line)
     .map((item) => item.trim())
     .filter((item) => item.length > 0);
 };

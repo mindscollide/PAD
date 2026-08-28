@@ -267,6 +267,7 @@ const TradeApprovalRequest = () => {
       showLoader,
       requestdata: requestdata,
       navigate,
+      setOpen,
     });
   };
 
