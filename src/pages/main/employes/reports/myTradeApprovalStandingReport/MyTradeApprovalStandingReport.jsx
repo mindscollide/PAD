@@ -61,7 +61,14 @@ const MyTradeApprovalStandingReport = () => {
   const counts = apiSummary.map((i) => i.statusCount);
   const percentages = apiSummary.map((i) => i.percentage);
   const totalCount = counts.reduce((a, b) => a + b, 0);
-  const totalPercentage = percentages.reduce((acc, curr) => acc + curr, 0);
+  // FIXED: plain float addition of per-status percentages (e.g. 33.33 +
+  // 33.34 + 33.34) lands on binary-float noise like 100.00999999999999
+  // instead of a clean 100 - rounds to 2dp, and never displays above 100
+  // even if the underlying percentages themselves summed past it.
+  const totalPercentage = Math.min(
+    100,
+    Math.round(percentages.reduce((acc, curr) => acc + curr, 0) * 100) / 100
+  );
 
   // ---------------- FETCH API FUNCTION ----------------
   const fetchApiCall = useCallback(
@@ -143,15 +150,6 @@ const MyTradeApprovalStandingReport = () => {
     }
   };
 
-  /** "YYYY-MM-DD" - dateRange.StartDate/EndDate here are already
-   * toYYMMDD-formatted "YYYYMMDD" strings (see handleDateChange), so this
-   * just inserts dashes rather than re-running toYYMMDD (which expects a
-   * raw date/dayjs value, not an already-formatted digit string). */
-  const formatDisplayDate = (value) => {
-    if (!value || typeof value !== "string" || value.length < 8) return "";
-    return `${value.slice(0, 4)}-${value.slice(4, 6)}-${value.slice(6, 8)}`;
-  };
-
   // Function to export PDF - still generated client-side (screenshot +
   // jsPDF). Header block below mirrors the Excel export's own header
   // layout (ExportEmployeeTradeApprovalStandingSummary,
@@ -202,11 +200,16 @@ const MyTradeApprovalStandingReport = () => {
         now.getDate()
       )} | ${pad(hours)}:${pad(now.getMinutes())} ${ampm}`;
 
+      // FIXED: dateRange.StartDate/EndDate are already "YYYY-MM-DD" strings
+      // (formatToYYYYMMDD on mount, the DateRangePicker's own onChange
+      // format otherwise - see handleDateChange/dateRange.jsx) - the
+      // previous formatDisplayDate here wrongly assumed an 8-digit
+      // "YYYYMMDD" string and sliced this already-dashed value at the
+      // wrong positions, producing "2026--0-2-" instead of "2026-02-28".
+      // These are ready to use as-is.
       const dateRangeText =
         dateRange.StartDate && dateRange.EndDate
-          ? `${formatDisplayDate(dateRange.StartDate)} to ${formatDisplayDate(
-              dateRange.EndDate
-            )}`
+          ? `${dateRange.StartDate} to ${dateRange.EndDate}`
           : "All";
 
       let y = 15;
@@ -216,7 +219,7 @@ const MyTradeApprovalStandingReport = () => {
         align: "center",
       });
       y += 7;
-      pdf.text("Employee Trade Approval Standing Summary", pdfWidth / 2, y, {
+      pdf.text("My Trade Approval Standing", pdfWidth / 2, y, {
         align: "center",
       });
 

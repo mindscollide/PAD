@@ -60,6 +60,7 @@ const AdminTransactionsSummarysReports = () => {
     adminTransactionSummaryViewDetailsData,
     setAdminTransactionSummaryViewDetailsData,
     resetAdminTransactionSummaryViewDetailsData,
+    setSelectedWorkFlowViewDetaild,
   } = useMyApproval();
 
   const { isViewComments, setIsViewComments, setCheckTradeApprovalID } =
@@ -297,6 +298,7 @@ const AdminTransactionsSummarysReports = () => {
     approvalStatusMap,
     sortedInfoView,
     setIsViewComments,
+    setSelectedWorkFlowViewDetaild,
   });
 
   const handleDateChange = (dates) => {

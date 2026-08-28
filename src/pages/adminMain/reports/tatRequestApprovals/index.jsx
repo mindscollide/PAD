@@ -22,6 +22,7 @@ import { useTableScrollBottom } from "../../../../common/funtions/scroll";
 import CustomButton from "../../../../components/buttons/button";
 import { useGlobalModal } from "../../../../context/GlobalModalContext";
 import ViewDetails from "./viewDetails";
+import { DateRangePicker } from "../../../../components";
 
 /**
  * Admin TAT Request Approvals report - per-employee summary list, per
@@ -62,6 +63,14 @@ const AdminTATRequestApprovals = () => {
   const [sortedInfo, setSortedInfo] = useState({});
   const [loadingMore, setLoadingMore] = useState(false);
   const [open, setOpen] = useState(false);
+  // ADDED: date range filter, same interaction pattern as the sibling
+  // Date-wise Transaction Report / HTA's own TAT report - no default
+  // range (the backend already defaults to the last 6 months per the
+  // doc when omitted), goes through the existing filterTrigger effect.
+  const [dateRange, setDateRange] = useState({
+    StartDate: null,
+    EndDate: null,
+  });
 
   // -------------------- Helpers --------------------
 
@@ -156,7 +165,14 @@ const AdminTATRequestApprovals = () => {
   );
 
   const handleViewDetails = (record) => {
-    setShowSelectedTatDataOnViewDetailHTA(record);
+    // Snapshot the list's currently-applied date range onto the record so
+    // View Details can show it as text - same convention HTA's own TAT
+    // View Details page uses (filterStartDate/filterEndDate).
+    setShowSelectedTatDataOnViewDetailHTA({
+      ...record,
+      filterStartDate: dateRange?.StartDate,
+      filterEndDate: dateRange?.EndDate,
+    });
     setShowViewDetailPageInTatOnHta(true);
   };
 
@@ -171,7 +187,10 @@ const AdminTATRequestApprovals = () => {
     const resetMap = {
       employeeName: { employeeName: "" },
       departmentName: { departmentName: "" },
+      dateRange: { startDate: null, endDate: null },
     };
+
+    if (key === "dateRange") setDateRange({ StartDate: null, EndDate: null });
 
     setAdminTATApprovalRequestReportSearch((prev) => ({
       ...prev,
@@ -183,10 +202,13 @@ const AdminTATRequestApprovals = () => {
 
   /** 🔹 Handle removing all filters */
   const handleRemoveAllFilters = () => {
+    setDateRange({ StartDate: null, EndDate: null });
     setAdminTATApprovalRequestReportSearch((prev) => ({
       ...prev,
       employeeName: "",
       departmentName: "",
+      startDate: null,
+      endDate: null,
       pageNumber: 0,
       filterTrigger: true,
     }));
@@ -194,7 +216,8 @@ const AdminTATRequestApprovals = () => {
 
   /** 🔹 Build Active Filters */
   const activeFilters = (() => {
-    const { employeeName, departmentName } = adminTATApprovalRequestReportSearch || {};
+    const { employeeName, departmentName, startDate, endDate } =
+      adminTATApprovalRequestReportSearch || {};
 
     return [
       employeeName && {
@@ -208,8 +231,43 @@ const AdminTATRequestApprovals = () => {
         value:
           departmentName.length > 13 ? departmentName.slice(0, 13) + "..." : departmentName,
       },
+      startDate &&
+        endDate && {
+          key: "dateRange",
+          label: "Date",
+          value: `${startDate} → ${endDate}`,
+        },
     ].filter(Boolean);
   })();
+
+  // ADDED: date range now flows through the same filter state +
+  // filterTrigger effect as employeeName/departmentName, into
+  // GetAdminTATRequestApprovalsAPI via buildApiRequest, which already
+  // reads searchState.startDate/endDate.
+  const handleDateChange = (dates) => {
+    if (!dates || dates.length !== 2) return;
+
+    const [start, end] = dates;
+    setDateRange({ StartDate: start, EndDate: end });
+    setAdminTATApprovalRequestReportSearch((prev) => ({
+      ...prev,
+      startDate: start,
+      endDate: end,
+      pageNumber: 0,
+      filterTrigger: true,
+    }));
+  };
+
+  const handleClearDates = () => {
+    setDateRange({ StartDate: null, EndDate: null });
+    setAdminTATApprovalRequestReportSearch((prev) => ({
+      ...prev,
+      startDate: null,
+      endDate: null,
+      pageNumber: 0,
+      filterTrigger: true,
+    }));
+  };
 
   // -------------------- Render --------------------
   if (showViewDetailPageInTatOnHta) {
@@ -247,6 +305,13 @@ const AdminTATRequestApprovals = () => {
 
         <Col>
           <div className={style.headerActionsRow}>
+            <DateRangePicker
+              size="medium"
+              className={style.dateRangePickerClass}
+              value={[dateRange.StartDate, dateRange.EndDate]}
+              onChange={handleDateChange}
+              onClear={handleClearDates}
+            />
             <CustomButton
               text={
                 <span className={style.exportButtonText}>
@@ -261,7 +326,10 @@ const AdminTATRequestApprovals = () => {
             />
           </div>
 
-          {/* 🔷 Export Dropdown - out of scope per doc, disabled until built */}
+          {/* 🔷 Export Dropdown - no ExportAdminTATRequestApprovals endpoint
+              exists on BE yet (requested in
+              API_Changes/2026-08-28_admin_tat_request_approvals_export.md),
+              so this stays disabled until it's built. */}
           {open && (
             <div className={style.dropdownExport}>
               <div className={style.dropdownItem} style={{ opacity: 0.5, cursor: "not-allowed" }}>

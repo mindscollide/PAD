@@ -106,12 +106,17 @@ export const estimateDeadlineFromLabel = (label, asOfMs = Date.now()) => {
  * Forces a re-render every `intervalMs` (default 1s, so the final minute
  * before a deadline visibly counts down second by second - see
  * formatTimeRemaining) for as long as the owning component stays mounted.
+ * Returns the tick count, so a caller can also key its own `useEffect` off
+ * it (e.g. to sweep for newly-expired rows on the same cadence, not just
+ * re-render).
  */
 export const useTimeRemainingTick = (intervalMs = 1000) => {
-  const [, forceTick] = useState(0);
+  const [tick, forceTick] = useState(0);
 
   useEffect(() => {
     const id = setInterval(() => forceTick((t) => t + 1), intervalMs);
     return () => clearInterval(id);
   }, [intervalMs]);
+
+  return tick;
 };

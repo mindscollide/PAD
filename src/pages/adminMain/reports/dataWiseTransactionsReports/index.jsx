@@ -10,6 +10,7 @@ import PageLayout from "../../../../components/pageContainer/pageContainer";
 // 🔹 Table Config
 import {
   buildApiRequest,
+  buildExportRequest,
   getBorderlessTableColumns,
   mappingDateWiseTransactionReport,
 } from "./utils";
@@ -21,8 +22,9 @@ import { approvalStatusMap } from "../../../../components/tables/borderlessTable
 import style from "./dataWiseTransactionsReports.module.css";
 import { useMyApproval } from "../../../../context/myApprovalContaxt";
 import {
-  DownloadComplianceOfficerDateWiseTransactionReportRequestAPI,
+  ExportAdminDateWiseTransactionReport,
   GetAdminDateWiseTransactionReportAPI,
+  GetAdminDateWiseTransactionViewDetailsAPI,
 } from "../../../../api/myApprovalApi";
 import { useNotification } from "../../../../components/NotificationProvider/NotificationProvider";
 import { useApi } from "../../../../context/ApiContext";
@@ -34,7 +36,6 @@ import { useTableScrollBottom } from "../../../../common/funtions/scroll";
 import CustomButton from "../../../../components/buttons/button";
 import { DateRangePicker } from "../../../../components";
 import ViewDetaildDateWiseTransaction from "./ViewDetaildDateWiseTransaction/ViewDetaildDateWiseTransaction";
-import { DateWiseTransactionReportViewDetails } from "../../../../api/myTransactionsApi";
 import { useReconcileContext } from "../../../../context/reconsileContax";
 import { useGlobalModal } from "../../../../context/GlobalModalContext";
 
@@ -70,6 +71,10 @@ const AdmindataWiseTransactionsReports = () => {
   const [sortedInfo, setSortedInfo] = useState({});
   const [loadingMore, setLoadingMore] = useState(false);
   const [open, setOpen] = useState(false);
+  const [dateRange, setDateRange] = useState({
+    StartDate: null,
+    EndDate: null,
+  });
 
   // -------------------- Helpers --------------------
 
@@ -175,11 +180,16 @@ const AdmindataWiseTransactionsReports = () => {
     0,
     "border-less-table-blue"
   );
-  const handelViewDetails = async (workFlowID) => {
+  // FIXED (API_Changes/2026-08-28_admin_datewise_transaction_view_details.md):
+  // was calling DateWiseTransactionReportViewDetails - CO's own scoped
+  // modal endpoint, keyed by TradeApprovalID - reused here by mistake.
+  // Admin has its own endpoint now, keyed by RequestID (the workflow ID,
+  // same field the list row already returns as requestID).
+  const handelViewDetails = async (requestID) => {
     await showLoader(true);
-    const requestdata = { TradeApprovalID: workFlowID };
+    const requestdata = { RequestID: requestID };
 
-    const responseData = await DateWiseTransactionReportViewDetails({
+    const responseData = await GetAdminDateWiseTransactionViewDetailsAPI({
       callApi,
       showNotification,
       showLoader,
@@ -188,7 +198,6 @@ const AdmindataWiseTransactionsReports = () => {
     });
 
     if (responseData) {
-      console.log("responseData",responseData)
       setIsViewComments(true);
 
       setReconcileTransactionViewDetailData(responseData);
@@ -308,25 +317,65 @@ const AdmindataWiseTransactionsReports = () => {
   })();
 
   // 🔷 Excel Report download Api Hit
-  const downloadMyTradeApprovalLineManagerInExcelFormat = async () => {
-    showLoader(true);
-    const requestdata = {
-      InstrumentName: "",
-      DepartmentName: "",
-      Quantity: 0,
-      StatusIds: [],
-      TypeIds: [],
-      RequesterName: "",
-      StartDate: "",
-      EndDate: "",
-    };
-
-    await DownloadComplianceOfficerDateWiseTransactionReportRequestAPI({
+  // FIXED (API_Changes/2026-08-28_admin_datewise_transaction_and_portfolio_
+  // uploads_export.md): was calling
+  // DownloadComplianceOfficerDateWiseTransactionReportRequestAPI - CO's
+  // own scoped export, not this (system-wide) Admin report's - with a
+  // request payload that was also always hardcoded empty, ignoring
+  // whatever filters were actually active. Wired to the real endpoint now.
+  const downloadAdminDateWiseTransactionReportInExcelFormat = async () => {
+    await ExportAdminDateWiseTransactionReport({
       callApi,
       showLoader,
-      requestdata: requestdata,
+      requestdata: buildExportRequest(
+        coDatewiseTransactionReportSearch,
+        assetTypeListingData
+      ),
       navigate,
+      setOpen,
     });
+  };
+
+  // ADDED: date range now flows through the same filter state +
+  // filterTrigger effect as every other filter (merges with employeeName/
+  // department/instrument/type/status instead of overwriting them), and
+  // into GetAdminDateWiseTransactionReportAPI via buildApiRequest, which
+  // already reads searchState.startDate/endDate - same pattern as the
+  // sibling CO/HCA Date-wise Transaction Report pages.
+  const handleDateChange = (dates) => {
+    if (dates && dates.length === 2) {
+      setCODatewiseTransactionReportSearch((prev) => ({
+        ...prev,
+        startDate: dates[0],
+        endDate: dates[1],
+        pageNumber: 0,
+        filterTrigger: true,
+      }));
+
+      // Clears the picker's own input back to its placeholder once the
+      // range is applied - the selected range is still visible as the
+      // "requestDate" active-filter tag below (reads straight off
+      // coDatewiseTransactionReportSearch, set above), and still drives
+      // the API request the same way. Requested explicitly: keeping the
+      // picker showing the applied dates was fine functionally, just not
+      // wanted visually once applied.
+      setDateRange({ StartDate: null, EndDate: null });
+    }
+  };
+
+  const handleClearDates = () => {
+    setDateRange({
+      StartDate: null,
+      EndDate: null,
+    });
+
+    setCODatewiseTransactionReportSearch((prev) => ({
+      ...prev,
+      startDate: null,
+      endDate: null,
+      pageNumber: 0,
+      filterTrigger: true,
+    }));
   };
 
   // -------------------- Render --------------------
@@ -360,6 +409,13 @@ const AdmindataWiseTransactionsReports = () => {
         </Col>
         <Col>
           <div className={style.headerActionsRow}>
+            <DateRangePicker
+              size="medium"
+              className={style.dateRangePickerClass}
+              value={[dateRange.StartDate, dateRange.EndDate]}
+              onChange={handleDateChange}
+              onClear={handleClearDates}
+            />
             <CustomButton
               text={
                 <span className={style.exportButtonText}>
@@ -383,7 +439,7 @@ const AdmindataWiseTransactionsReports = () => {
               </div> */}
               <div
                 className={style.dropdownItem}
-                onClick={downloadMyTradeApprovalLineManagerInExcelFormat}
+                onClick={downloadAdminDateWiseTransactionReportInExcelFormat}
               >
                 <img src={Excel} alt="Excel" draggable={false} />
                 <span>Export Excel</span>

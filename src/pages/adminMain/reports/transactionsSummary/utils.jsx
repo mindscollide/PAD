@@ -7,6 +7,23 @@ import { formatApiDateTime, toYYMMDD } from "../../../../common/funtions/rejex";
 import { withSortIcon } from "../../../../common/funtions/tableIcon";
 
 /**
+ * Formats a raw "YYYYMMDD" (date-only, no time component) string into a
+ * display "YYYY-MM-DD". FIXED: this table's dates were previously run
+ * through formatApiDateTime, which only formats a combined
+ * "YYYYMMDD HHmm" string and silently returns the RAW unformatted input
+ * whenever there's no time part to split on - which is always the case
+ * here, so dates never actually got formatted.
+ */
+const formatDateOnly = (yyyyMMdd) => {
+  if (!yyyyMMdd || typeof yyyyMMdd !== "string" || yyyyMMdd.length < 8)
+    return "—";
+  return `${yyyyMMdd.slice(0, 4)}-${yyyyMMdd.slice(4, 6)}-${yyyyMMdd.slice(
+    6,
+    8
+  )}`;
+};
+
+/**
  * Utility: Build API request payload for approval listing
  *
  * @param {Object} searchState - Current search/filter state
@@ -69,7 +86,7 @@ export const getBorderlessTableColumns = ({
     sortIcon: () => null,
     render: (date) => (
       <span className="text-gray-600" title={date || "—"}>
-        {formatApiDateTime(date) || "—"}
+        {formatDateOnly(date)}
       </span>
     ),
   },
@@ -188,7 +205,18 @@ export const buildApiRequestViewDetails = (searchState = {}) => ({
 /**
  * Maps GetAdminTransactionSummaryViewDetailsAPI records into a UI-friendly
  * format. Per SRS, Admin's View Details has 2 extra columns vs CO/HOC -
- * Action By (parsed from actionByJson, a JSON string) and Action Date.
+ * Action By and Action Date.
+ *
+ * FIXED (API_Changes/2026-08-28_admin_transaction_summary_view_details_
+ * fix.md): actionBy used to be raw JSON text (actionByJson) parsed here by
+ * hand; approvalComment/rejectionComment used to be a single opaque
+ * string holding the raw un-parsed JSON array text, with unresolved
+ * "CO<id>" actor-tagging codes still attached. All three are now real
+ * shapes straight from the API - actionBy an array of
+ * {userID, firstName, lastName, fullName}, the comments arrays of
+ * {userID, name, comments}. actionDate/actionTime also come as two
+ * separate fields now (were one combined datetime string with no
+ * separate time), and instrumentShortCode is new.
  *
  * @param {Object|Array} res - API response ({records, totalRecords}) or a bare array
  * @returns {Array} Mapped list
@@ -199,31 +227,27 @@ export const mappingDateWiseTransactionviewDetailst = (res = []) => {
   if (!records.length) return [];
 
   return records.map((item) => {
-    let actionBy = "—";
-    try {
-      const actors = item.actionByJson ? JSON.parse(item.actionByJson) : [];
-      if (Array.isArray(actors) && actors.length) {
-        actionBy = actors.map((a) => a.fullName || a.FullName).join(", ");
-      }
-    } catch (error) {
-      console.error("Failed to parse actionByJson", error);
-    }
+    const actionByList = Array.isArray(item.actionBy) ? item.actionBy : [];
+    const actionBy =
+      actionByList.map((a) => a?.fullName).filter(Boolean).join(", ") || "—";
 
     return {
       key: item.requestID,
       requestID: item.requestID,
       approvalID: item.requestID,
       instrumentName: item.instrumentName || "—",
+      instrumentShortCode: item.instrumentShortCode || "",
       employeeName: item.requesterName || "",
       employeeID: item.requesterID || "",
       type: item.tradeType || "-",
       status: item.status || "",
       statusID: item.statusID,
       quantity: item.quantity || 0,
-      approvalComment: item.approvalComment || "",
-      rejectionComment: item.rejectionComment || "",
+      approvalComment: item.approvalComment || [],
+      rejectionComment: item.rejectionComment || [],
       actionBy,
-      actionDate: item.actionDate || "—",
+      actionDate: item.actionDate || "",
+      actionTime: item.actionTime || "",
     };
   });
 };
@@ -262,6 +286,12 @@ export const getBorderlessTableColumnsViewDetails = ({
   approvalStatusMap,
   sortedInfoView,
   setIsViewComments,
+  // ADDED (2026-08-28_admin_transaction_summary_view_details_fix.md):
+  // "View Comments" never actually told the modal which row it was for -
+  // onClick only flipped isViewComments to true, so ViewComment.jsx had
+  // no per-row data to read at all. Same pattern CO/HOC's own version of
+  // this report already uses.
+  setSelectedWorkFlowViewDetaild,
 }) => [
   {
     title: withSortIcon("Employee ID", "employeeID", sortedInfoView),
@@ -320,22 +350,30 @@ export const getBorderlessTableColumnsViewDetails = ({
         : null,
     showSorterTooltip: false,
     sortIcon: () => null,
-    render: (instrumentName) => (
-      <Tooltip title={instrumentName} placement="topLeft">
-        <span
-          className="font-medium"
-          style={{
-            overflow: "hidden",
-            textOverflow: "ellipsis",
-            whiteSpace: "nowrap",
-            maxWidth: "200px",
-            display: "inline-block",
-          }}
-        >
-          {instrumentName || "—"}
-        </span>
-      </Tooltip>
-    ),
+    render: (instrumentName, record) => {
+      // ADDED: instrumentShortCode is new on this response
+      // (2026-08-28_admin_transaction_summary_view_details_fix.md).
+      const shortCode = record?.instrumentShortCode;
+      const display = shortCode
+        ? `${shortCode} - ${instrumentName || ""}`
+        : instrumentName || "—";
+      return (
+        <Tooltip title={instrumentName} placement="topLeft">
+          <span
+            className="font-medium"
+            style={{
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+              whiteSpace: "nowrap",
+              maxWidth: "200px",
+              display: "inline-block",
+            }}
+          >
+            {display}
+          </span>
+        </Tooltip>
+      );
+    },
   },
   {
     // ADDED per SRS: Admin's View Details has 2 extra columns vs CO/HOC -
@@ -382,11 +420,17 @@ export const getBorderlessTableColumnsViewDetails = ({
       sortedInfoView?.columnKey === "actionDate" ? sortedInfoView.order : null,
     showSorterTooltip: false,
     sortIcon: () => null,
-    render: (date) => (
-      <span className="text-gray-600" title={date || "—"}>
-        {formatApiDateTime(date) || "—"}
-      </span>
-    ),
+    render: (date, record) => {
+      // FIXED: actionDate/actionTime now come as two separate fields
+      // (2026-08-28_admin_transaction_summary_view_details_fix.md) -
+      // must be localized as one combined string, never independently.
+      const combined = [date, record?.actionTime].filter(Boolean).join(" ");
+      return (
+        <span className="text-gray-600" title={combined || "—"}>
+          {formatApiDateTime(combined) || "—"}
+        </span>
+      );
+    },
   },
   {
     // NOTE: Type is not server-filterable for Admin's View Details -
@@ -459,11 +503,8 @@ export const getBorderlessTableColumnsViewDetails = ({
           className="small-light-button"
           text={"View Comments"}
           onClick={() => {
-            // handelViewDetails(record.approvalID);
+            setSelectedWorkFlowViewDetaild(record);
             setIsViewComments(true);
-            // setCheckTradeApprovalID(record?.approvalID);
-            // setEditBrokerModal(true);
-            // setEditModalData(record);
           }}
         />
       </div>

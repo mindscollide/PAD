@@ -670,6 +670,35 @@ const Dashboard = () => {
                   }
                   break;
                 }
+                // ADDED (API_Changes/2026-08-28_trade_approval_auto_expiry_fix.md):
+                // fires once, per workflow, the moment an Approved request's
+                // trade deadline passes with nothing conducted - the
+                // BE-side counterpart to the FE-only "locally expired"
+                // fallback in myApprovals/utils.jsx's renderTimeRemainingCell
+                // (which shows the same Resubmit UX from a client-side
+                // countdown estimate before this MQTT/a refetch actually
+                // confirms it). Patches in place instead of a full API
+                // refetch - see patchEmployeeMyApprovalRow above. Per the
+                // doc, payload here (unlike the sibling
+                // _STATUS_CHANGE_TRADED case above) is a real
+                // SearchTradeApprovalResponse with ApprovalStatus =
+                // {6, "Not-Traded"} populated, so mapEmployeeMyApprovalData's
+                // normal status read already works - the override below is
+                // kept anyway as a defensive fallback, same pattern as
+                // every other status-change case here. No
+                // setIsViewDetail/setIsConductedTransaction reset, unlike
+                // the Traded case - this isn't the "just conducted a
+                // transaction" flow, nothing was conducted here.
+                case "EMPLOYEE_TRADE_APPROVAL_REQUEST_STATUS_CHANGE_NOT_TRADED": {
+                  if (currentKey === "1") {
+                    patchEmployeeMyApprovalRow(payload, {
+                      status:
+                        payload?.approvalStatus?.approvalStatusName ||
+                        "Not-Traded",
+                    });
+                  }
+                  break;
+                }
                 case "EMMPLOYEE_NEW_UPLOAD_PORTFOLIO_REQUEST": {
                   if (currentKey === "4" && currentactiveTabRef === "pending") {
                     // setEmployeePendingApprovalsDataMqtt({

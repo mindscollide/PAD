@@ -30,7 +30,11 @@ import {
   mapEmployeeMyApprovalData,
 } from "./utils";
 import { approvalStatusMap } from "../../../../components/tables/borderlessTable/utill";
-import { useTimeRemainingTick } from "../../../../common/funtions/timeRemaining";
+import {
+  useTimeRemainingTick,
+  parseDeadlineToUtcMs,
+  formatTimeRemaining,
+} from "../../../../common/funtions/timeRemaining";
 
 // 🔹 Modals
 import EquitiesApproval from "./modal/equitiesApprovalModal/EquitiesApproval";
@@ -96,7 +100,40 @@ const Approval = () => {
   // column (renderTimeRemainingCell, utils.jsx) recomputes its live
   // countdown instead of sitting frozen at whatever value was last
   // fetched/patched.
-  useTimeRemainingTick();
+  const timeRemainingTick = useTimeRemainingTick();
+
+  // Sweeps for rows whose local countdown just hit zero and flips their
+  // status to Not-Traded for real (not just how the Time Remaining cell
+  // renders) - so the Status column agrees with the Resubmit button
+  // instead of still showing "Approved" next to it. Runs on the same
+  // per-second cadence as the tick above. A real EMPLOYEE_TRADE_APPROVAL_
+  // REQUEST_STATUS_CHANGE_NOT_TRADED MQTT (dashboard.jsx) or a refetch
+  // will overwrite this local guess with the server's real status/data
+  // when either arrives - this is purely a "don't sit on a status we
+  // already know is stale" bridge until then.
+  useEffect(() => {
+    setIsEmployeeMyApproval((prev) => {
+      const approvals = prev?.approvals || [];
+      let changed = false;
+
+      const updatedApprovals = approvals.map((row) => {
+        if (row.status !== "Approved") return row;
+
+        const deadlineUtcMs =
+          parseDeadlineToUtcMs(row.deadlineDate, row.deadlineTime) ??
+          row.approxDeadlineUtcMs ??
+          null;
+
+        if (formatTimeRemaining(deadlineUtcMs) !== "Expired") return row;
+
+        changed = true;
+        return { ...row, status: "Not-Traded" };
+      });
+
+      return changed ? { ...prev, approvals: updatedApprovals } : prev;
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [timeRemainingTick]);
 
   // ----------------- Dropdown -----------------
 

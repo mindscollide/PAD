@@ -56,7 +56,15 @@ const MyComplianceStandingReport = () => {
   const percentages = apiSummary.map((i) => i.percentage);
   const totalCount = counts.reduce((a, b) => a + b, 0);
 
-  const totalPercentage = percentages.reduce((acc, curr) => acc + curr, 0);
+  // FIXED: plain float addition of per-status percentages (e.g. 33.33 +
+  // 33.34 + 33.34) lands on binary-float noise like 100.00999999999999
+  // instead of a clean 100 - rounds to 2dp, and never displays above 100
+  // even if the underlying percentages themselves summed past it. Same
+  // bug/fix as the sibling My Trade Approvals Standing report.
+  const totalPercentage = Math.min(
+    100,
+    Math.round(percentages.reduce((acc, curr) => acc + curr, 0) * 100) / 100
+  );
 
   console.log(
     "labels type:",
