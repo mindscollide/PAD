@@ -3033,6 +3033,173 @@ export const GetAdminUserWiseComplianceReportAPI = async ({
   }
 };
 
+// ADDED (API_Changes/2026-08-27_admin_user_wise_compliance_report_details.md):
+// User-wise Compliance Report "View Details" screen - profile panel (left,
+// not date-scoped) + stats/graph panel (right, date-scoped). Request:
+// {EmployeeID, StartDate, EndDate} - dates optional, BE defaults to the
+// last 6 months. Response is the flat object itself, not nested under a
+// "records"-style key - returned as-is (mapping into UI shape happens in
+// viewDetails/utils.jsx).
+export const GetAdminUserWiseComplianceReportDetailsAPI = async ({
+  callApi,
+  showNotification,
+  showLoader,
+  requestdata,
+  navigate,
+}) => {
+  try {
+    const res = await callApi({
+      requestMethod: import.meta.env
+        .VITE_GET_ADMIN_USER_WISE_COMPLIANCE_REPORT_DETAILS_API_METHOD,
+      endpoint: import.meta.env.VITE_API_ADMIN,
+      requestData: requestdata,
+      navigate,
+    });
+
+    if (handleExpiredSession(res, navigate, showLoader)) return null;
+
+    if (!res?.result?.isExecuted) {
+      showNotification({
+        type: "error",
+        title: "Error",
+        description:
+          "Something went wrong while fetching this employee's compliance details.",
+      });
+      return null;
+    }
+
+    if (res.success) {
+      const { responseMessage, ...details } = res.result;
+
+      if (
+        responseMessage ===
+        "PAD_Admin_GetAdminUserWiseComplianceReportDetailsAPI_01"
+      ) {
+        return details;
+      }
+
+      if (
+        responseMessage ===
+        "PAD_Admin_GetAdminUserWiseComplianceReportDetailsAPI_02"
+      ) {
+        showNotification({
+          type: "warning",
+          title: getMessage(responseMessage),
+          description: "No details found for this employee.",
+        });
+        return null;
+      }
+
+      const message = getMessage(responseMessage);
+      if (message) {
+        showNotification({
+          type: "warning",
+          title: message,
+          description: message,
+        });
+      }
+      return null;
+    }
+
+    showNotification({
+      type: "error",
+      title: "Fetch Failed",
+      description: getMessage(res.message),
+    });
+    return null;
+  } catch (error) {
+    showNotification({
+      type: "error",
+      title: "Error",
+      description:
+        "An unexpected error occurred while fetching this employee's compliance details.",
+    });
+    return null;
+  } finally {
+    showLoader(false);
+  }
+};
+
+// ADDED (API_Changes/2026-08-27_admin_user_wise_compliance_report_details.md):
+// User-wise Compliance Report View Details' "View More" modal - full,
+// unpaginated policy assignment history. Request: {EmployeeID}. Response:
+// {currentPolicy, previouslyAssignedPolicies[]} - sort previouslyAssignedPolicies
+// client-side (no server-side sort param, per the doc).
+export const GetAdminUserWiseComplianceReportPolicyHistoryAPI = async ({
+  callApi,
+  showNotification,
+  showLoader,
+  requestdata,
+  navigate,
+}) => {
+  try {
+    const res = await callApi({
+      requestMethod: import.meta.env
+        .VITE_GET_ADMIN_USER_WISE_COMPLIANCE_REPORT_POLICY_HISTORY_API_METHOD,
+      endpoint: import.meta.env.VITE_API_ADMIN,
+      requestData: requestdata,
+      navigate,
+    });
+
+    if (handleExpiredSession(res, navigate, showLoader)) return null;
+
+    if (!res?.result?.isExecuted) {
+      showNotification({
+        type: "error",
+        title: "Error",
+        description:
+          "Something went wrong while fetching this employee's policy history.",
+      });
+      return null;
+    }
+
+    if (res.success) {
+      const {
+        responseMessage,
+        currentPolicy,
+        previouslyAssignedPolicies,
+      } = res.result;
+
+      if (
+        responseMessage ===
+        "PAD_Admin_GetAdminUserWiseComplianceReportPolicyHistoryAPI_01"
+      ) {
+        return {
+          currentPolicy: currentPolicy || null,
+          previouslyAssignedPolicies: previouslyAssignedPolicies || [],
+        };
+      }
+
+      const message = getMessage(responseMessage);
+      if (message) {
+        showNotification({
+          type: "warning",
+          title: message,
+          description: message,
+        });
+      }
+      return null;
+    }
+
+    showNotification({
+      type: "error",
+      title: "Fetch Failed",
+      description: getMessage(res.message),
+    });
+    return null;
+  } catch (error) {
+    showNotification({
+      type: "error",
+      title: "Error",
+      description:
+        "An unexpected error occurred while fetching this employee's policy history.",
+    });
+    return null;
+  } finally {
+    showLoader(false);
+  }
+};
+
 // GetAdminPolicyBreachesAPI - list
 export const GetAdminPolicyBreachesAPI = async ({
   callApi,
@@ -3176,6 +3343,128 @@ export const GetAdminPolicyBreachDetailsAPI = async ({
   }
 };
 
+// ADDED (API_Changes/2026-08-27_admin_policy_breaches_export.md): main
+// list "Export" button. Request shape mirrors buildApiRequest
+// (policyBreaches/utils.jsx) minus PageNumber/Length - exports the full
+// filtered list, not a page.
+export const ExportAdminPolicyBreaches = async ({
+  callApi,
+  showLoader,
+  requestdata,
+  navigate,
+  setOpen,
+}) => {
+  try {
+    showLoader(true);
+
+    const res = await callApi({
+      requestMethod: import.meta.env
+        .VITE_EXPORT_ADMIN_POLICY_BREACHES_REQUEST_METHOD,
+      endpoint: import.meta.env.VITE_API_REPORT,
+      requestData: requestdata,
+      navigate,
+      responseType: "arraybuffer", // ⚡ Required for file download
+      headers: {
+        "Content-Type":
+          "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      },
+    });
+
+    if (handleExpiredSession(res, navigate, showLoader)) return false;
+    if (!res?.result?.isExecuted) {
+      return false;
+    }
+
+    if (res.success) {
+      try {
+        const blob = new Blob([res.result?.fileData || res.data], {
+          type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        });
+
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+
+        link.setAttribute("download", "Admin-Policy-Breaches-Report.xlsx");
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        setOpen?.(false);
+        return true;
+      } catch {
+        return false;
+      }
+    }
+
+    return false;
+  } catch {
+    return false;
+  } finally {
+    showLoader(false);
+  }
+};
+
+// ADDED (API_Changes/2026-08-27_admin_policy_breaches_export.md):
+// "Policies Breached" drill-down modal's Download button - exports one
+// specific breach event, identified the same way
+// GetAdminPolicyBreachDetailsAPI already is (WorkFlowUserPolicy has no
+// workflow ID, so EmployeeID+InstrumentName+Type+Quantity+RequestedDateTime
+// is the natural key).
+export const ExportAdminPolicyBreachDetails = async ({
+  callApi,
+  showLoader,
+  requestdata,
+  navigate,
+}) => {
+  try {
+    showLoader(true);
+
+    const res = await callApi({
+      requestMethod: import.meta.env
+        .VITE_EXPORT_ADMIN_POLICY_BREACH_DETAILS_REQUEST_METHOD,
+      endpoint: import.meta.env.VITE_API_REPORT,
+      requestData: requestdata,
+      navigate,
+      responseType: "arraybuffer", // ⚡ Required for file download
+      headers: {
+        "Content-Type":
+          "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      },
+    });
+
+    if (handleExpiredSession(res, navigate, showLoader)) return false;
+    if (!res?.result?.isExecuted) {
+      return false;
+    }
+
+    if (res.success) {
+      try {
+        const blob = new Blob([res.result?.fileData || res.data], {
+          type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        });
+
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+
+        link.setAttribute("download", "Admin-Policy-Breach-Details.xlsx");
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        return true;
+      } catch {
+        return false;
+      }
+    }
+
+    return false;
+  } catch {
+    return false;
+  } finally {
+    showLoader(false);
+  }
+};
+
 // GetAdminTradeApprovalRequestSummaryAPI - per-employee summary list
 export const GetAdminTradeApprovalRequestSummaryAPI = async ({
   callApi,
@@ -3248,6 +3537,74 @@ export const GetAdminTradeApprovalRequestSummaryAPI = async ({
         "An unexpected error occurred while fetching Admin Trade Approval Request Summary Report.",
     });
     return null;
+  } finally {
+    showLoader(false);
+  }
+};
+
+// ADDED (API_Changes/2026-08-28_admin_trade_approval_request_report_export.md):
+// Admin > Reports > Trade Approval Request Report list-level "Export
+// Excel" - was wrongly wired to ExportHTATradeApprovalRequestsExcelReport
+// (a different report entirely, see tradeApprovalRequest/index.jsx), same
+// bug shape as the other Admin report exports fixed today. Request shape
+// per the doc: {EmployeeName, DepartmentName, StartDate, EndDate} -
+// StartDate/EndDate empty defaults to the same "last 6 months" the live
+// list uses, no pagination (exports the full filtered list).
+export const ExportAdminTradeApprovalRequestSummary = async ({
+  callApi,
+  showLoader,
+  requestdata,
+  navigate,
+  setOpen,
+}) => {
+  try {
+    showLoader(true);
+
+    const res = await callApi({
+      requestMethod: import.meta.env
+        .VITE_EXPORT_ADMIN_TRADE_APPROVAL_REQUEST_SUMMARY_REQUEST_METHOD,
+      endpoint: import.meta.env.VITE_API_REPORT,
+      requestData: requestdata,
+      navigate,
+      responseType: "arraybuffer", // ⚡ Required for file download
+      headers: {
+        "Content-Type":
+          "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      },
+    });
+
+    if (handleExpiredSession(res, navigate, showLoader)) return false;
+    if (!res?.result?.isExecuted) {
+      return false;
+    }
+
+    if (res.success) {
+      try {
+        const blob = new Blob([res.result?.fileData || res.data], {
+          type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        });
+
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+
+        link.setAttribute(
+          "download",
+          "Admin-Trade-Approval-Request-Report.xlsx"
+        );
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        setOpen?.(false);
+        return true;
+      } catch {
+        return false;
+      }
+    }
+
+    return false;
+  } catch {
+    return false;
   } finally {
     showLoader(false);
   }
@@ -5122,6 +5479,71 @@ export const ExportHTATurnAroundTimeRequestDetailsExcel = async ({
         link.href = url;
 
         link.setAttribute("download", "HTA-TAT-Request-Details.xlsx");
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        setOpen(false);
+        return true;
+      } catch {
+        return false;
+      }
+    }
+
+    return false;
+  } catch {
+    return false;
+  } finally {
+    showLoader(false);
+  }
+};
+
+// ADDED (API_Changes/2026-08-27_admin_user_wise_compliance_report_export.md):
+// Admin > Reports > User-wise Compliance Report list-level "Export Excel" -
+// was wrongly wired to ExportHTATradeApprovalRequestsExcelReport (a
+// different report entirely, see userWiseComplianceReport/index.jsx), same
+// bug shape as the HTA Policy Breaches export above before it got its own
+// endpoint. Request shape per the doc: {EmployeeName, DepartmentName} -
+// optional LIKE searches only, no date range (this report has none), no
+// pagination (exports the full filtered list).
+export const ExportAdminUserWiseComplianceReport = async ({
+  callApi,
+  showLoader,
+  requestdata,
+  navigate,
+  setOpen,
+}) => {
+  try {
+    showLoader(true);
+
+    const res = await callApi({
+      requestMethod: import.meta.env
+        .VITE_EXPORT_ADMIN_USER_WISE_COMPLIANCE_REPORT_REQUEST_METHOD,
+      endpoint: import.meta.env.VITE_API_REPORT,
+      requestData: requestdata,
+      navigate,
+      responseType: "arraybuffer", // ⚡ Required for file download
+      headers: {
+        "Content-Type":
+          "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      },
+    });
+
+    if (handleExpiredSession(res, navigate, showLoader)) return false;
+    if (!res?.result?.isExecuted) {
+      return false;
+    }
+
+    if (res.success) {
+      try {
+        const blob = new Blob([res.result?.fileData || res.data], {
+          type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        });
+
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+
+        link.setAttribute("download", "Admin-User-Wise-Compliance-Report.xlsx");
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);

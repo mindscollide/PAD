@@ -351,3 +351,24 @@
   background-color: #c5ffc7;
   color: #00640a;
 }
+
+/* 🔹 "View More" policy history modal */
+.policyHistoryHeader {
+  margin-bottom: 16px;
+}
+
+.policyHistoryHeader h3 {
+  margin: 0 0 4px;
+  color: var(--Blue-V1, #30426a);
+}
+
+.policyHistoryCurrent {
+  color: #424242;
+  margin: 0;
+}
+
+.policyHistoryFooter {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 16px;
+}

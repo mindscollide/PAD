@@ -4,7 +4,7 @@ import DefaultColumArrow from "../../../../assets/img/default-colum-arrow.png";
 import { Tooltip } from "antd";
 import style from "./AdminPolicyBreachesReport.module.css";
 
-import { toYYMMDD } from "../../../../common/funtions/rejex";
+import { toYYMMDD, formatApiDateTime } from "../../../../common/funtions/rejex";
 import TypeColumnTitle from "../../../../components/dropdowns/filters/typeColumnTitle";
 
 /**
@@ -26,6 +26,25 @@ export const buildApiRequest = (searchState = {}) => ({
   // initial value) resolves to page 1 the same as 1 would.
   PageNumber: Number(searchState.pageNumber) || 1,
   Length: Number(searchState.pageSize) || 10,
+});
+
+/**
+ * ExportAdminPolicyBreaches request payload - same filters as
+ * buildApiRequest above, minus PageNumber/Length (an export always
+ * returns the full matching set in one file, no pagination). Matches the
+ * doc's own defaults exactly: Quantity null (not 0) and Type [] (not
+ * ["Buy","Sell"]) when unset - it's ExportAdminPolicyBreaches's own SP
+ * that decides what "no filter" means for each, not necessarily the same
+ * as the live list's.
+ */
+export const buildExportRequest = (searchState = {}) => ({
+  InstrumentName: searchState.instrumentName || "",
+  EmployeeName: searchState.employeeName || "",
+  DepartmentName: searchState.departmentName || "",
+  StartDate: searchState.startDate ? toYYMMDD(searchState.startDate) : "",
+  EndDate: searchState.endDate ? toYYMMDD(searchState.endDate) : "",
+  Quantity: searchState.quantity || null,
+  Type: searchState.type?.length ? searchState.type : [],
 });
 
 /**
@@ -51,6 +70,15 @@ export const mapListData = (res = []) => {
       `${item?.requestDate || ""} ${item?.requestTime || ""}`.trim() || "—",
     requestedDateTime: `${item?.requestDate || ""}${item?.requestTime || ""}`,
     instrumentName: item.instrumentName || "",
+    // ADDED (API_Changes/2026-08-28_admin_policy_breaches_instrument_shortcode.md,
+    // not deployed yet - "" until then, column falls back to the full
+    // name only in that case, same as before): matches the instrument
+    // shortcode + asset-type badge shape already used on HCA's Overdue
+    // Verifications screen. instrumentShortCode can legitimately come
+    // back null (no matching Instruments row for the stored name) - "" is
+    // the safe fallback either way.
+    instrumentShortCode: item.instrumentShortCode || "",
+    assetTypeShortCode: item.assetTypeShortCode || "",
     type: item.type || "-",
     quantity: item.quantity || 0,
     policyCount: item.policyCount || 0,
@@ -156,6 +184,11 @@ export const getBorderlessTableColumns = ({
     key: "requestDateTime",
     width: "180px",
     ellipsis: true,
+    // FIXED: was rendering the raw "yyyyMMdd HHmmss" UTC string as-is, no
+    // localization - same fix already applied on HTA's own Policy
+    // Breaches list (headOfTradeApprover/reports/policyBreaches/utils.jsx).
+    // Sorts on the raw value still (correctly orderable as digits), only
+    // the displayed text is formatted.
     sorter: (a, b) =>
       (a.requestDateTime || "").localeCompare(b.requestDateTime || ""),
     sortDirections: ["ascend", "descend"],
@@ -163,7 +196,9 @@ export const getBorderlessTableColumns = ({
       sortedInfo?.columnKey === "requestDateTime" ? sortedInfo.order : null,
     showSorterTooltip: false,
     sortIcon: () => null,
-    render: (text) => <span className="text-gray-600">{text}</span>,
+    render: (text) => (
+      <span className="text-gray-600">{formatApiDateTime(text) || "—"}</span>
+    ),
   },
   {
     title: withSortIcon("Instrument", "instrumentName", sortedInfo),
@@ -177,21 +212,31 @@ export const getBorderlessTableColumns = ({
       sortedInfo?.columnKey === "instrumentName" ? sortedInfo.order : null,
     showSorterTooltip: false,
     sortIcon: () => null,
-    render: (name) => (
-      <Tooltip title={name} placement="topLeft">
-        <span
-          className="font-medium"
-          style={{
-            overflow: "hidden",
-            textOverflow: "ellipsis",
-            whiteSpace: "nowrap",
-            maxWidth: "180px",
-            display: "inline-block",
-          }}
-        >
-          {name || "—"}
+    // Shortcode + asset-type badge, same shape as HCA's Overdue
+    // Verifications Instrument column, per API_Changes/2026-08-28_admin_
+    // policy_breaches_instrument_shortcode.md. Falls back to "EQ" (this
+    // report only ever covers Equities per the doc) and the full name
+    // until that deploys (instrumentShortCode/assetTypeShortCode both "").
+    render: (name, record) => (
+      <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+        <span className="custom-shortCode-asset" style={{ minWidth: 30 }}>
+          {(record?.assetTypeShortCode || "EQ").substring(0, 2).toUpperCase()}
         </span>
-      </Tooltip>
+        <Tooltip title={name} placement="topLeft">
+          <span
+            className="font-medium"
+            style={{
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+              whiteSpace: "nowrap",
+              maxWidth: "140px",
+              display: "inline-block",
+            }}
+          >
+            {record?.instrumentShortCode || name || "—"}
+          </span>
+        </Tooltip>
+      </div>
     ),
   },
   {

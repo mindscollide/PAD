@@ -16,7 +16,7 @@ import {
 import style from "./UserWiseComplianceReport.module.css";
 import { useMyApproval } from "../../../../context/myApprovalContaxt";
 import {
-  ExportHTATradeApprovalRequestsExcelReport,
+  ExportAdminUserWiseComplianceReport,
   GetAdminUserWiseComplianceReportAPI,
 } from "../../../../api/myApprovalApi";
 import { useNotification } from "../../../../components/NotificationProvider/NotificationProvider";
@@ -26,7 +26,6 @@ import { useNavigate } from "react-router-dom";
 import { useSearchBarContext } from "../../../../context/SearchBarContaxt";
 import { useTableScrollBottom } from "../../../../common/funtions/scroll";
 import CustomButton from "../../../../components/buttons/button";
-import { toYYMMDD } from "../../../../common/funtions/rejex";
 import { useGlobalModal } from "../../../../context/GlobalModalContext";
 import ViewDetailsAdmin from "./viewDetails/ViewDetails";
 
@@ -47,6 +46,7 @@ const UserWiseComplianceReport = () => {
   const {
     showViewDetailOfUserwiseComplianceReportAdmin,
     setShowViewDetailOfUserwiseComplianceReportAdmin,
+    setSelectedUserwiseComplianceReportEmployee,
   } = useGlobalModal();
 
   const {
@@ -156,6 +156,7 @@ const UserWiseComplianceReport = () => {
   const columns = getBorderlessTableColumns({
     sortedInfo,
     setShowViewDetailOfUserwiseComplianceReportAdmin,
+    setSelectedUserwiseComplianceReportEmployee,
   });
 
   /** 🔹 Handle removing individual filter */
@@ -211,20 +212,24 @@ const UserWiseComplianceReport = () => {
   })();
 
   // 🔷 Excel Report download Api Hit
-  const downloadMyTradeApprovalLineManagerInExcelFormat = async () => {
-    showLoader(true);
+  // FIXED (API_Changes/2026-08-27_admin_user_wise_compliance_report_export.md):
+  // was calling ExportHTATradeApprovalRequestsExcelReport - a completely
+  // different report's export, with a request shape (StartDate/EndDate)
+  // that doesn't even apply here (this report has no date filter). Wired
+  // to the real endpoint now, request shape per the doc:
+  // {EmployeeName, DepartmentName}.
+  const downloadUserWiseComplianceReportInExcelFormat = async () => {
     const requestdata = {
-      StartDate: toYYMMDD(userActivityComplianceReportAdmin.startDate) || null,
-      EndDate: toYYMMDD(userActivityComplianceReportAdmin.endDate) || null,
-      SearchEmployeeName: userActivityComplianceReportAdmin.employeeName,
-      SearchDepartmentName: userActivityComplianceReportAdmin.departmentName,
+      EmployeeName: userActivityComplianceReportAdmin.employeeName || "",
+      DepartmentName: userActivityComplianceReportAdmin.departmentName || "",
     };
 
-    await ExportHTATradeApprovalRequestsExcelReport({
+    await ExportAdminUserWiseComplianceReport({
       callApi,
       showLoader,
-      requestdata: requestdata,
+      requestdata,
       navigate,
+      setOpen,
     });
   };
 
@@ -287,7 +292,7 @@ const UserWiseComplianceReport = () => {
               </div> */}
                   <div
                     className={style.dropdownItem}
-                    onClick={downloadMyTradeApprovalLineManagerInExcelFormat}
+                    onClick={downloadUserWiseComplianceReportInExcelFormat}
                   >
                     <img src={Excel} alt="Excel" draggable={false} />
                     <span>Export Excel</span>

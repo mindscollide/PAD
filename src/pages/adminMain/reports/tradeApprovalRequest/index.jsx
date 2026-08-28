@@ -9,6 +9,7 @@ import PageLayout from "../../../../components/pageContainer/pageContainer";
 // 🔹 Table Config
 import {
   buildApiRequest,
+  buildExportRequest,
   getBorderlessTableColumns,
   mapListData,
 } from "./utils";
@@ -16,7 +17,7 @@ import {
 import style from "./tradeApprovalRequest.module.css";
 import { useMyApproval } from "../../../../context/myApprovalContaxt";
 import {
-  ExportHTATradeApprovalRequestsExcelReport,
+  ExportAdminTradeApprovalRequestSummary,
   GetAdminTradeApprovalRequestSummaryAPI,
 } from "../../../../api/myApprovalApi";
 import { useNotification } from "../../../../components/NotificationProvider/NotificationProvider";
@@ -26,7 +27,6 @@ import { useNavigate } from "react-router-dom";
 import { useSearchBarContext } from "../../../../context/SearchBarContaxt";
 import { useTableScrollBottom } from "../../../../common/funtions/scroll";
 import CustomButton from "../../../../components/buttons/button";
-import { toYYMMDD } from "../../../../common/funtions/rejex";
 
 const TradeApprovalRequestReport = () => {
   const navigate = useNavigate();
@@ -202,22 +202,18 @@ const TradeApprovalRequestReport = () => {
   })();
 
   // 🔷 Excel Report download Api Hit
-  const downloadMyTradeApprovalLineManagerInExcelFormat = async () => {
-    showLoader(true);
-    const requestdata = {
-      StartDate:
-        toYYMMDD(adminTradeApprovalRequestReportSearch.startDate) || null,
-      EndDate: toYYMMDD(adminTradeApprovalRequestReportSearch.endDate) || null,
-      SearchEmployeeName: adminTradeApprovalRequestReportSearch.employeeName,
-      SearchDepartmentName:
-        adminTradeApprovalRequestReportSearch.departmentName,
-    };
-
-    await ExportHTATradeApprovalRequestsExcelReport({
+  // FIXED (API_Changes/2026-08-28_admin_trade_approval_request_report_export.md):
+  // was calling ExportHTATradeApprovalRequestsExcelReport - a completely
+  // different report's export, with a request shape (SearchEmployeeName/
+  // SearchDepartmentName) that doesn't even match this endpoint's own
+  // fields. Wired to the real endpoint now.
+  const downloadAdminTradeApprovalRequestReportInExcelFormat = async () => {
+    await ExportAdminTradeApprovalRequestSummary({
       callApi,
       showLoader,
-      requestdata: requestdata,
+      requestdata: buildExportRequest(adminTradeApprovalRequestReportSearch),
       navigate,
+      setOpen,
     });
   };
 
@@ -276,7 +272,7 @@ const TradeApprovalRequestReport = () => {
               </div> */}
               <div
                 className={style.dropdownItem}
-                onClick={downloadMyTradeApprovalLineManagerInExcelFormat}
+                onClick={downloadAdminTradeApprovalRequestReportInExcelFormat}
               >
                 <img src={Excel} alt="Excel" draggable={false} />
                 <span>Export Excel</span>

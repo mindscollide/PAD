@@ -9,6 +9,7 @@ import PageLayout from "../../../../components/pageContainer/pageContainer";
 // 🔹 Table Config
 import {
   buildApiRequest,
+  buildExportRequest,
   getBorderlessTableColumns,
   mapListData,
 } from "./utils";
@@ -16,7 +17,8 @@ import {
 import style from "./AdminPolicyBreachesReport.module.css";
 import { useMyApproval } from "../../../../context/myApprovalContaxt";
 import {
-  ExportHTATradeApprovalRequestsExcelReport,
+  ExportAdminPolicyBreaches,
+  ExportAdminPolicyBreachDetails,
   GetAdminPolicyBreachesAPI,
   GetAdminPolicyBreachDetailsAPI,
 } from "../../../../api/myApprovalApi";
@@ -27,7 +29,6 @@ import { useNavigate } from "react-router-dom";
 import { useSearchBarContext } from "../../../../context/SearchBarContaxt";
 import { useTableScrollBottom } from "../../../../common/funtions/scroll";
 import CustomButton from "../../../../components/buttons/button";
-import { toYYMMDD } from "../../../../common/funtions/rejex";
 import PolicyBreachDetailsModal from "./PolicyBreachDetailsModal";
 
 const AdminPolicyBreachesReport = () => {
@@ -59,6 +60,13 @@ const AdminPolicyBreachesReport = () => {
   const [open, setOpen] = useState(false);
   const [policyModalVisible, setPolicyModalVisible] = useState(false);
   const [policyModalLoading, setPolicyModalLoading] = useState(false);
+  // The list row the "Policies Breached" modal was opened for - the
+  // modal's Download button (ExportAdminPolicyBreachDetails) needs the
+  // same identifying fields GetAdminPolicyBreachDetailsAPI was called
+  // with, per API_Changes/2026-08-27_admin_policy_breaches_export.md.
+  const [selectedPolicyBreachRecord, setSelectedPolicyBreachRecord] =
+    useState(null);
+  const [policyDownloading, setPolicyDownloading] = useState(false);
   // -------------------- Helpers --------------------
 
   /**
@@ -105,6 +113,7 @@ const AdminPolicyBreachesReport = () => {
   const handleViewPolicyBreachDetails = async (record) => {
     setPolicyModalVisible(true);
     setPolicyModalLoading(true);
+    setSelectedPolicyBreachRecord(record);
     const res = await GetAdminPolicyBreachDetailsAPI({
       callApi,
       showNotification,
@@ -125,6 +134,26 @@ const AdminPolicyBreachesReport = () => {
   const handleClosePolicyModal = () => {
     setPolicyModalVisible(false);
     setAdminPolicyBreachDetailsData({ records: [] });
+    setSelectedPolicyBreachRecord(null);
+  };
+
+  /** 🔹 "Policies Breached" modal Download button */
+  const handleExportPolicyBreachDetails = async () => {
+    if (!selectedPolicyBreachRecord) return;
+    setPolicyDownloading(true);
+    await ExportAdminPolicyBreachDetails({
+      callApi,
+      showLoader,
+      requestdata: {
+        EmployeeID: selectedPolicyBreachRecord.employeeID,
+        InstrumentName: selectedPolicyBreachRecord.instrumentName,
+        Type: selectedPolicyBreachRecord.type,
+        Quantity: selectedPolicyBreachRecord.quantity,
+        RequestedDateTime: selectedPolicyBreachRecord.requestedDateTime,
+      },
+      navigate,
+    });
+    setPolicyDownloading(false);
   };
 
   // -------------------- Effects --------------------
@@ -272,19 +301,16 @@ const AdminPolicyBreachesReport = () => {
   })();
 
   // 🔷 Excel Report download Api Hit
-  const downloadMyTradeApprovalLineManagerInExcelFormat = async () => {
-    showLoader(true);
-    const requestdata = {
-      StartDate: toYYMMDD(adminPolicyBreachesReportSearch.startDate) || null,
-      EndDate: toYYMMDD(adminPolicyBreachesReportSearch.endDate) || null,
-      SearchEmployeeName: adminPolicyBreachesReportSearch.employeeName,
-      SearchDepartmentName: adminPolicyBreachesReportSearch.departmentName,
-    };
-
-    await ExportHTATradeApprovalRequestsExcelReport({
+  // FIXED (API_Changes/2026-08-27_admin_policy_breaches_export.md): was
+  // calling ExportHTATradeApprovalRequestsExcelReport - a completely
+  // different report's export, with a request shape (SearchEmployeeName/
+  // SearchDepartmentName) that doesn't even match this endpoint's own
+  // fields. Wired to the real endpoint now.
+  const downloadAdminPolicyBreachesInExcelFormat = async () => {
+    await ExportAdminPolicyBreaches({
       callApi,
       showLoader,
-      requestdata: requestdata,
+      requestdata: buildExportRequest(adminPolicyBreachesReportSearch),
       navigate,
       setOpen,
     });
@@ -343,7 +369,7 @@ const AdminPolicyBreachesReport = () => {
               </div> */}
               <div
                 className={style.dropdownItem}
-                onClick={downloadMyTradeApprovalLineManagerInExcelFormat}
+                onClick={downloadAdminPolicyBreachesInExcelFormat}
               >
                 <img src={Excel} alt="Excel" draggable={false} />
                 <span>Export Excel</span>
@@ -416,6 +442,10 @@ const AdminPolicyBreachesReport = () => {
           onClose={handleClosePolicyModal}
           loading={policyModalLoading}
           records={adminPolicyBreachDetailsData?.records}
+          employeeID={selectedPolicyBreachRecord?.employeeID}
+          employeeName={selectedPolicyBreachRecord?.employeeName}
+          onDownload={handleExportPolicyBreachDetails}
+          downloading={policyDownloading}
         />
       )}
     </>
