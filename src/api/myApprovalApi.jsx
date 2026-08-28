@@ -3686,6 +3686,73 @@ export const GetAdminDateWiseTransactionReportAPI = async ({
   }
 };
 
+// ADDED (API_Changes/2026-08-28_admin_datewise_transaction_and_portfolio_
+// uploads_export.md): Admin Date-wise Transaction Report list-level
+// "Export Excel" - was wrongly wired to
+// DownloadComplianceOfficerDateWiseTransactionReportRequestAPI (CO's own
+// scoped export, see dataWiseTransactionsReports/index.jsx), with a
+// request payload that was also always hardcoded empty regardless of any
+// active filter. Wired to the real endpoint now, filters included.
+export const ExportAdminDateWiseTransactionReport = async ({
+  callApi,
+  showLoader,
+  requestdata,
+  navigate,
+  setOpen,
+}) => {
+  try {
+    showLoader(true);
+
+    const res = await callApi({
+      requestMethod: import.meta.env
+        .VITE_EXPORT_ADMIN_DATE_WISE_TRANSACTION_REPORT_REQUEST_METHOD,
+      endpoint: import.meta.env.VITE_API_REPORT,
+      requestData: requestdata,
+      navigate,
+      responseType: "arraybuffer", // ⚡ Required for file download
+      headers: {
+        "Content-Type":
+          "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      },
+    });
+
+    if (handleExpiredSession(res, navigate, showLoader)) return false;
+    if (!res?.result?.isExecuted) {
+      return false;
+    }
+
+    if (res.success) {
+      try {
+        const blob = new Blob([res.result?.fileData || res.data], {
+          type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        });
+
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+
+        link.setAttribute(
+          "download",
+          "Admin-Date-Wise-Transaction-Report.xlsx"
+        );
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        setOpen?.(false);
+        return true;
+      } catch {
+        return false;
+      }
+    }
+
+    return false;
+  } catch {
+    return false;
+  } finally {
+    showLoader(false);
+  }
+};
+
 // GetAdminTransactionSummaryReportAPI - list (one row per calendar date)
 export const GetAdminTransactionSummaryReportAPI = async ({
   callApi,
@@ -3833,6 +3900,113 @@ export const GetAdminTransactionSummaryViewDetailsAPI = async ({
       title: "Error",
       description:
         "An unexpected error occurred while fetching Admin Transactions Summary View Details.",
+    });
+    return null;
+  } finally {
+    showLoader(false);
+  }
+};
+
+/**
+ * GetAdminDateWiseTransactionViewDetailsAPI - per
+ * API_Changes/2026-08-28_admin_datewise_transaction_view_details.md.
+ * Admin's own "View Details" endpoint for the Date-wise Transaction
+ * Report (the list's own RequestID, not the CO-scoped
+ * DateWiseTransactionReportViewDetails/TradeApprovalID used before).
+ * Reuses the same underlying SP as CO/HOC's own modal, minus
+ * hierarchyDetails (CO's own bundle-status row - not part of the SRS
+ * spec for Admin, no unscoped meaning here) and adds isEscalated.
+ */
+export const GetAdminDateWiseTransactionViewDetailsAPI = async ({
+  callApi,
+  showNotification,
+  showLoader,
+  requestdata,
+  navigate,
+}) => {
+  try {
+    const res = await callApi({
+      requestMethod: import.meta.env
+        .VITE_GET_ADMIN_DATE_WISE_TRANSACTION_VIEW_DETAILS_API_METHOD,
+      endpoint: import.meta.env.VITE_API_ADMIN,
+      requestData: requestdata,
+      navigate,
+    });
+
+    if (handleExpiredSession(res, navigate, showLoader)) return null;
+
+    if (!res?.result?.isExecuted) {
+      showNotification({
+        type: "error",
+        title: "Error",
+        description:
+          "Something went wrong while fetching this transaction's details.",
+      });
+      return null;
+    }
+
+    if (res.success) {
+      const {
+        responseMessage,
+        details,
+        assetTypes,
+        workFlowStatus,
+        complianceMappedTradeSummary,
+        ticketUploaded,
+        requesterName,
+        requesterEmployeeID,
+        transactionDate,
+        transactionTime,
+        actionBy,
+        actionDate,
+        actionTime,
+        isEscalated,
+      } = res.result;
+
+      if (
+        responseMessage ===
+        "PAD_Admin_GetAdminDateWiseTransactionViewDetailsAPI_01"
+      ) {
+        return {
+          details: details || [],
+          assetTypes: assetTypes || [],
+          workFlowStatus: workFlowStatus || {},
+          complianceMappedTradeSummary: complianceMappedTradeSummary || [],
+          ticketUploaded: ticketUploaded ?? false,
+          requesterName: requesterName || "",
+          requesterEmployeeID: requesterEmployeeID || "",
+          transactionDate: transactionDate || "",
+          transactionTime: transactionTime || "",
+          actionBy: actionBy || [],
+          actionDate: actionDate || "",
+          actionTime: actionTime || "",
+          isEscalated: isEscalated ?? false,
+        };
+      }
+
+      const message = getMessage(responseMessage);
+      if (message) {
+        showNotification({
+          type: "warning",
+          title: message,
+          description: "No details available for this transaction.",
+        });
+      }
+      return null;
+    }
+
+    showNotification({
+      type: "error",
+      title: "Fetch Failed",
+      description: getMessage(res.message),
+    });
+    return null;
+  } catch (error) {
+    showNotification({
+      type: "error",
+      title: "Error",
+      description:
+        "An unexpected error occurred while fetching this transaction's details.",
     });
     return null;
   } finally {
@@ -4060,6 +4234,70 @@ export const GetAdminTradesUploadedViaPortfolioAPI = async ({
         "An unexpected error occurred while fetching Admin Trades Uploaded via Portfolio Report.",
     });
     return null;
+  } finally {
+    showLoader(false);
+  }
+};
+
+// ADDED (API_Changes/2026-08-28_admin_datewise_transaction_and_portfolio_
+// uploads_export.md): Admin Trades Uploaded via Portfolio list-level
+// "Export Excel" - the button was already disabled with an explanatory
+// note that no endpoint existed yet. Wired to the real one now.
+export const ExportAdminTradesUploadedViaPortfolio = async ({
+  callApi,
+  showLoader,
+  requestdata,
+  navigate,
+  setOpen,
+}) => {
+  try {
+    showLoader(true);
+
+    const res = await callApi({
+      requestMethod: import.meta.env
+        .VITE_EXPORT_ADMIN_TRADES_UPLOADED_VIA_PORTFOLIO_REQUEST_METHOD,
+      endpoint: import.meta.env.VITE_API_REPORT,
+      requestData: requestdata,
+      navigate,
+      responseType: "arraybuffer", // ⚡ Required for file download
+      headers: {
+        "Content-Type":
+          "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      },
+    });
+
+    if (handleExpiredSession(res, navigate, showLoader)) return false;
+    if (!res?.result?.isExecuted) {
+      return false;
+    }
+
+    if (res.success) {
+      try {
+        const blob = new Blob([res.result?.fileData || res.data], {
+          type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        });
+
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+
+        link.setAttribute(
+          "download",
+          "Admin-Trades-Uploaded-Via-Portfolio.xlsx"
+        );
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        setOpen?.(false);
+        return true;
+      } catch {
+        return false;
+      }
+    }
+
+    return false;
+  } catch {
+    return false;
   } finally {
     showLoader(false);
   }

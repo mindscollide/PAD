@@ -30,6 +30,26 @@ export const buildApiRequest = (searchState = {}) => ({
 });
 
 /**
+ * ExportAdminTradesUploadedViaPortfolio request payload
+ * (API_Changes/2026-08-28_admin_datewise_transaction_and_portfolio_
+ * uploads_export.md) - same filters as buildApiRequest above, minus
+ * PageNumber/Length (an export always returns the full matching set in
+ * one file, no pagination). Matches the doc's own defaults exactly:
+ * Quantity null (not 0), Type/Status [] (not ["Buy","Sell"]/[8,9]) when
+ * unset - it's this export's own SP that decides what "no filter" means,
+ * not necessarily the same as the live list's.
+ */
+export const buildExportRequest = (searchState = {}) => ({
+  InstrumentName: searchState.instrumentName || "",
+  EmployeeName: searchState.employeeName || "",
+  StartDate: searchState.startDate ? toYYMMDD(searchState.startDate) : "",
+  EndDate: searchState.endDate ? toYYMMDD(searchState.endDate) : "",
+  Quantity: searchState.quantity ? Number(searchState.quantity) : null,
+  Type: searchState.type?.length ? searchState.type : [],
+  Status: searchState.status?.length ? searchState.status : [],
+});
+
+/**
  * Maps GetAdminTradesUploadedViaPortfolioAPI records into a UI-friendly
  * format.
  *

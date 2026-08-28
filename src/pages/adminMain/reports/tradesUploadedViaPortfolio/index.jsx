@@ -8,13 +8,21 @@ import BorderlessTable from "../../../../components/tables/borderlessTable/borde
 import PageLayout from "../../../../components/pageContainer/pageContainer";
 
 // 🔹 Table Config
-import { buildApiRequest, getBorderlessTableColumns, mapListData } from "./utils";
+import {
+  buildApiRequest,
+  buildExportRequest,
+  getBorderlessTableColumns,
+  mapListData,
+} from "./utils";
 import { approvalStatusMap } from "../../../../components/tables/borderlessTable/utill";
 
 // 🔹 Styles
 import style from "./TradesUploadedViaPortfolio.module.css";
 import { useMyApproval } from "../../../../context/myApprovalContaxt";
-import { GetAdminTradesUploadedViaPortfolioAPI } from "../../../../api/myApprovalApi";
+import {
+  ExportAdminTradesUploadedViaPortfolio,
+  GetAdminTradesUploadedViaPortfolioAPI,
+} from "../../../../api/myApprovalApi";
 import { useNotification } from "../../../../components/NotificationProvider/NotificationProvider";
 import { useApi } from "../../../../context/ApiContext";
 import { useGlobalLoader } from "../../../../context/LoaderContext";
@@ -24,8 +32,10 @@ import { useTableScrollBottom } from "../../../../common/funtions/scroll";
 import CustomButton from "../../../../components/buttons/button";
 
 /**
- * Admin Trades Uploaded via Portfolio report - list only, per
- * API_Changes/2026-08-11_admin_reports_all_apis.md (item 8).
+ * Admin Trades Uploaded via Portfolio report, per
+ * API_Changes/2026-08-11_admin_reports_all_apis.md (item 8) - list -
+ * and API_Changes/2026-08-28_admin_datewise_transaction_and_portfolio_
+ * uploads_export.md - Export Excel.
  */
 const AdminTradesUploadedViaPortfolio = () => {
   const navigate = useNavigate();
@@ -215,6 +225,22 @@ const AdminTradesUploadedViaPortfolio = () => {
     ].filter(Boolean);
   })();
 
+  // 🔷 Excel Report download Api Hit
+  // ADDED (API_Changes/2026-08-28_admin_datewise_transaction_and_portfolio_
+  // uploads_export.md): was disabled with an explanatory note that no
+  // endpoint existed yet - wired to the real one now.
+  const downloadAdminTradesUploadedViaPortfolioInExcelFormat = async () => {
+    await ExportAdminTradesUploadedViaPortfolio({
+      callApi,
+      showLoader,
+      requestdata: buildExportRequest(
+        adminTradesUploadedviaPortfolioReportSearch
+      ),
+      navigate,
+      setOpen,
+    });
+  };
+
   // -------------------- Render --------------------
   return (
     <>
@@ -261,10 +287,13 @@ const AdminTradesUploadedViaPortfolio = () => {
             />
           </div>
 
-          {/* 🔷 Export Dropdown - out of scope per doc, disabled until built */}
+          {/* 🔷 Export Dropdown */}
           {open && (
             <div className={style.dropdownExport}>
-              <div className={style.dropdownItem} style={{ opacity: 0.5, cursor: "not-allowed" }}>
+              <div
+                className={style.dropdownItem}
+                onClick={downloadAdminTradesUploadedViaPortfolioInExcelFormat}
+              >
                 <img src={Excel} alt="Excel" draggable={false} />
                 <span>Export Excel</span>
               </div>

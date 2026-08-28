@@ -19,7 +19,6 @@ import { useNavigate } from "react-router-dom";
 /* ========================== CONTEXTS ========================== */
 import { useGlobalModal } from "../../../../../context/GlobalModalContext";
 import { useReconcileContext } from "../../../../../context/reconsileContax";
-import { useDashboardContext } from "../../../../../context/dashboardContaxt";
 
 /* ========================== COMPONENTS ========================== */
 import { BrokerList, GlobalModal } from "../../../../../components";
@@ -47,8 +46,6 @@ const ViewDetaildDateWiseTransaction = () => {
 
   /* ========================== CONTEXT DATA ========================== */
   const { reconcileTransactionViewDetailData } = useReconcileContext();
-
-  const { allInstrumentsData } = useDashboardContext();
 
   /* ========================== USER SESSION ========================== */
   const userProfileData = JSON.parse(
@@ -123,14 +120,20 @@ const ViewDetaildDateWiseTransaction = () => {
     String(reconcileTransactionViewDetailData?.workFlowStatus?.workFlowStatusID)
   );
 
-  /* ========================== INSTRUMENT ========================== */
-  const instrumentId = Number(
-    reconcileTransactionViewDetailData?.details?.[0]?.instrumentID
-  );
-
-  const selectedInstrument = allInstrumentsData?.find(
-    (item) => item.instrumentID === instrumentId
-  );
+  /* ========================== INSTRUMENT ==========================
+     Per API_Changes/2026-08-28_admin_datewise_transaction_view_details.md,
+     the response now carries its own instrument object per detail row
+     (instrumentID/instrumentName/instrumentShortCode) - no need to cross-
+     look it up against allInstrumentsData. The asset-type badge (e.g.
+     "EQ") comes from the response's own assetTypes lookup, resolved
+     against the detail row's assetTypeID, same convention used elsewhere
+     in the app. */
+  const firstDetail = reconcileTransactionViewDetailData?.details?.[0];
+  const selectedInstrument = firstDetail?.instrument;
+  const assetTypeShortCode =
+    reconcileTransactionViewDetailData?.assetTypes?.find(
+      (a) => String(a?.assetTypeID) === String(firstDetail?.assetTypeID)
+    )?.shortCode || "EQ";
 
   /* ========================== BUTTON STATES ========================== */
   const isTicketUploaded =
@@ -207,12 +210,16 @@ const ViewDetaildDateWiseTransaction = () => {
                     Instrument
                   </label>
                   <label className={styles.viewDetailSubLabels}>
-                    <span className={styles.customTag}>EQ</span>{" "}
+                    <span className={styles.customTag}>
+                      {assetTypeShortCode}
+                    </span>{" "}
                     <span
                       title={selectedInstrument?.instrumentName}
                       className={styles.viewDetailSubLabelsForInstrument}
                     >
-                      {`${selectedInstrument?.instrumentCode} - ${selectedInstrument?.instrumentName}`}
+                      {`${selectedInstrument?.instrumentShortCode || ""} - ${
+                        selectedInstrument?.instrumentName || ""
+                      }`}
                     </span>
                   </label>
                 </div>
@@ -237,8 +244,12 @@ const ViewDetaildDateWiseTransaction = () => {
                 <div className={styles.backgrounColorOfDetail}>
                   <label className={styles.viewDetailMainLabels}>Type</label>
                   <label className={styles.viewDetailSubLabels}>
+                    {/* FIXED: was reading assetTypeID (Equities/etc.) here
+                        instead of approvalTypeID (Buy/Sell) - same
+                        convention used across every other view-details
+                        screen in the app. */}
                     {reconcileTransactionViewDetailData?.details[0]
-                      ?.assetTypeID === "1"
+                      ?.approvalTypeID === "1"
                       ? "Buy"
                       : "Sell"}
                   </label>
@@ -331,9 +342,11 @@ const ViewDetaildDateWiseTransaction = () => {
                     Shares Traded
                   </label>
                   <label className={styles.viewDetailSubLabels}>
+                    {/* FIXED: was reading tradeWorkFlowID (an ID, not a
+                        share count) here instead of sharesTraded. */}
                     {
                       reconcileTransactionViewDetailData
-                        ?.complianceMappedTradeSummary[0]?.tradeWorkFlowID
+                        ?.complianceMappedTradeSummary?.[0]?.sharesTraded
                     }
                   </label>
                 </div>

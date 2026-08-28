@@ -10,7 +10,7 @@ import { useGlobalLoader } from "../../../../../context/LoaderContext";
 import { useNavigate } from "react-router-dom";
 import { useGlobalModal } from "../../../../../context/GlobalModalContext";
 import { useTableScrollBottom } from "../../../../../common/funtions/scroll";
-import { BorderlessTable, PageLayout, DateRangePicker } from "../../../../../components";
+import { BorderlessTable, PageLayout } from "../../../../../components";
 
 /**
  * Admin TAT Request Approvals - View Details (per employee), per
@@ -19,6 +19,12 @@ import { BorderlessTable, PageLayout, DateRangePicker } from "../../../../../com
  * GetAdminTATRequestApprovalDetailsAPI, so this page keeps its own local
  * search/pagination state rather than adding to the shared search-bar
  * popover infrastructure (which has no case wired for this path anyway).
+ *
+ * FIXED: this used to have its own interactive DateRangePicker filtering
+ * the drill-down independently of the list's own applied range - removed
+ * in favor of showing the list's already-applied range as read-only text
+ * (same convention HTA's own TAT View Details page uses), so the
+ * drill-down request itself now just reuses that same snapshot.
  */
 const ViewDetails = () => {
   const navigate = useNavigate();
@@ -45,9 +51,12 @@ const ViewDetails = () => {
   // -------------------- Local State --------------------
   const [sortedInfo, setSortedInfo] = useState({});
   const [loadingMore, setLoadingMore] = useState(false);
+  // Reuses the list's already-applied date range (snapshotted onto
+  // filterStartDate/filterEndDate when "View Details" was clicked) rather
+  // than tracking its own independent picker state.
   const [search, setSearch] = useState({
-    startDate: null,
-    endDate: null,
+    startDate: showSelectedTatDataOnViewDetailHTA?.filterStartDate || null,
+    endDate: showSelectedTatDataOnViewDetailHTA?.filterEndDate || null,
     pageNumber: 1,
     pageSize: 10,
   });
@@ -121,23 +130,6 @@ const ViewDetails = () => {
     "border-less-table-blue"
   );
 
-  const handleDateChange = (dates) => {
-    if (!dates || dates.length !== 2) {
-      setSearch((prev) => ({ ...prev, startDate: null, endDate: null }));
-      const requestData = buildApiRequest(
-        { ...search, startDate: null, endDate: null, pageNumber: 1 },
-        employeeID
-      );
-      fetchApiCall(requestData, true, true);
-      return;
-    }
-
-    const [start, end] = dates;
-    const nextSearch = { ...search, startDate: start, endDate: end, pageNumber: 1 };
-    setSearch(nextSearch);
-    fetchApiCall(buildApiRequest(nextSearch, employeeID), true, true);
-  };
-
   const columns = getBorderlessTableColumns({ sortedInfo });
 
   const handleBack = () => {
@@ -154,6 +146,19 @@ const ViewDetails = () => {
             items={[
               {
                 title: (
+                  <span
+                    onClick={() => {
+                      navigate("/PAD/admin-reports");
+                      handleBack();
+                    }}
+                    className={style.breadcrumbLink}
+                  >
+                    Reports
+                  </span>
+                ),
+              },
+              {
+                title: (
                   <span onClick={handleBack} className={style.breadcrumbLink}>
                     TAT Request Approvals
                   </span>
@@ -165,18 +170,10 @@ const ViewDetails = () => {
             ]}
           />
         </Col>
-        <Col>
-          <DateRangePicker
-            size="medium"
-            value={[search.startDate, search.endDate]}
-            onChange={handleDateChange}
-            onClear={() => handleDateChange(null)}
-          />
-        </Col>
       </Row>
 
       <Row className={style.breadcrumbRowBelowData}>
-        <Col span={8}>
+        <Col span={6}>
           <p className={style.mainTitleTextClass}>
             Employee ID:{" "}
             <span className={style.subTitleTextClass}>
@@ -184,7 +181,7 @@ const ViewDetails = () => {
             </span>
           </p>
         </Col>
-        <Col span={8}>
+        <Col span={6}>
           <p className={style.mainTitleTextClass}>
             Employee Name:{" "}
             <span className={style.subTitleTextClass}>
@@ -192,11 +189,27 @@ const ViewDetails = () => {
             </span>
           </p>
         </Col>
-        <Col span={8}>
+        <Col span={6}>
           <p className={style.mainTitleTextClass}>
             Department:{" "}
             <span className={style.subTitleTextClass}>
               {showSelectedTatDataOnViewDetailHTA?.departmentName}
+            </span>
+          </p>
+        </Col>
+        <Col span={6}>
+          <p className={style.mainTitleTextClass}>
+            Date Range:{" "}
+            <span className={style.subTitleTextClass}>
+              {/* Snapshot of the list's applied date filter at the time
+                  "View Details" was clicked - same convention HTA's own
+                  TAT View Details page uses (filterStartDate/
+                  filterEndDate), not this page's own local picker below
+                  (which independently filters this drill-down list). */}
+              {showSelectedTatDataOnViewDetailHTA?.filterStartDate &&
+              showSelectedTatDataOnViewDetailHTA?.filterEndDate
+                ? `${showSelectedTatDataOnViewDetailHTA.filterStartDate} - ${showSelectedTatDataOnViewDetailHTA.filterEndDate}`
+                : "—"}
             </span>
           </p>
         </Col>

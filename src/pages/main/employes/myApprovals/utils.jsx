@@ -321,10 +321,12 @@ const renderTimeRemainingCell = (record) => {
   // MQTT/refetch has told us the workflow is actually Not-Traded yet (BE
   // may still be mid-flight, or never fires for some reason) - show the
   // same Resubmit UX a real Not-Traded status gets rather than leaving
-  // "Expired" up indefinitely. Purely presentational: doesn't touch
-  // record.status or the Status column elsewhere, and a real status
-  // update landing later (any status) still takes over normally, since
-  // this only ever runs for the Approved branch to begin with.
+  // "Expired" up indefinitely. approval.jsx's own per-second sweep effect
+  // is what actually flips record.status to "Not-Traded" for real (so the
+  // Status column agrees, not just this cell) - that update lands one
+  // render after the countdown reaches zero, so this branch only ever
+  // covers that single in-between render, avoiding a one-tick flicker
+  // back to a plain "Expired" text before the real status catches up.
   if (record.status === "Approved" && liveTimeRemaining === "Expired") {
     return resubmitButton;
   }

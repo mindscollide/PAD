@@ -46,6 +46,23 @@ export const buildApiRequest = (searchState = {}, assetTypeListingData) => ({
 });
 
 /**
+ * ExportAdminDateWiseTransactionReport request payload - same filters as
+ * buildApiRequest above, minus PageNumber/Length (an export always
+ * returns the full matching set in one file, no pagination). Matches the
+ * doc's own defaults exactly: Quantity null (not 0) when unset.
+ */
+export const buildExportRequest = (searchState = {}, assetTypeListingData) => ({
+  InstrumentName: searchState.instrumentName || "",
+  DepartmentName: searchState.departmentName || "",
+  Quantity: searchState.quantity ? Number(searchState.quantity) : null,
+  StatusIds: mapStatusToIds(searchState.status, 2),
+  TypeIds: mapBuySellToIds(searchState.type, assetTypeListingData?.Equities),
+  RequesterName: searchState.employeeName || "",
+  StartDate: searchState.startDate ? toYYMMDD(searchState.startDate) : "",
+  EndDate: searchState.endDate ? toYYMMDD(searchState.endDate) : "",
+});
+
+/**
  * Maps GetAdminDateWiseTransactionReportAPI records into a UI-friendly
  * format. Per API_Changes/2026-08-11_admin_reports_all_apis.md, this is a
  * flat row shape (unlike CO/HOC's own nested instrument/assetType/
@@ -353,11 +370,10 @@ export const getBorderlessTableColumns = ({
           className="small-light-button"
           text={"View Details"}
           onClick={() => {
-            handelViewDetails(record.approvalID);
-            // setIsViewComments(true);
-            // setCheckTradeApprovalID(record?.approvalID);
-            // setEditBrokerModal(true);
-            // setEditModalData(record);
+            // FIXED (API_Changes/2026-08-28_admin_datewise_transaction_
+            // view_details.md): the new endpoint is keyed by RequestID
+            // (the workflow ID), not approvalID.
+            handelViewDetails(record.requestID);
           }}
         />
       </div>
