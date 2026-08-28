@@ -154,18 +154,100 @@ const MyComplianceStandingReport = () => {
     );
   };
 
-  // Function to export PDF
+  /** "YYYY-MM-DD", formatted from a date/dayjs-like value via toYYMMDD's
+   * "YYYYMMDD" digits - display-only, matches the dashed style used
+   * elsewhere in the app instead of the raw digit string. */
+  const formatDisplayDate = (value) => {
+    const raw = value ? toYYMMDD(value) : "";
+    if (!raw || raw.length < 8) return "";
+    return `${raw.slice(0, 4)}-${raw.slice(4, 6)}-${raw.slice(6, 8)}`;
+  };
+
+  // Function to export PDF - still generated client-side (screenshot +
+  // jsPDF), per explicit instruction not to move this to the backend.
+  // Header block below mirrors the Excel export's own header layout
+  // (ExportEmployeeTransactionSummary, Reports/ExcelReportService.cs):
+  // title block, then Exported On directly above Exported By (Excel has
+  // these as adjacent rows, not side by side), then a "Searching Criteria"
+  // heading above the Date Range value - same fields/order, just drawn
+  // with jsPDF's text API instead of worksheet cells.
   const handleExportPDF = () => {
     const input = componentRef.current;
     html2canvas(input, { scale: 2 }).then((canvas) => {
       const imgData = canvas.toDataURL("image/png");
       const pdf = new jsPDF("p", "mm", "a4");
+      const pdfWidth = pdf.internal.pageSize.getWidth();
+
+      // "Exported By" - same sessionStorage profile the header/profile
+      // dropdown already reads the logged-in user's name from
+      // (profileDropdown.jsx) - there's no dedicated auth context for it.
+      let profile = {};
+      try {
+        profile = JSON.parse(sessionStorage.getItem("user_profile_data")) || {};
+      } catch {
+        profile = {};
+      }
+      const exportedBy =
+        [profile.firstName, profile.lastName].filter(Boolean).join(" ") ||
+        "Unknown";
+
+      // Local "now" formatted the same "YYYY-MM-DD | hh:mm am/pm" style
+      // formatApiDateTime (rejex.js) produces elsewhere in the app - no
+      // UTC conversion needed here, this moment is already the viewer's
+      // local time.
+      const now = new Date();
+      const pad = (n) => String(n).padStart(2, "0");
+      let hours = now.getHours();
+      const ampm = hours >= 12 ? "pm" : "am";
+      hours = hours % 12 || 12;
+      const exportedOn = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(
+        now.getDate()
+      )} | ${pad(hours)}:${pad(now.getMinutes())} ${ampm}`;
+
+      const dateRangeText =
+        dateRange.StartDate && dateRange.EndDate
+          ? `${formatDisplayDate(dateRange.StartDate)} to ${formatDisplayDate(
+              dateRange.EndDate
+            )}`
+          : "All";
+
+      let y = 15;
+      pdf.setFont(undefined, "bold");
+      pdf.setFontSize(14);
+      pdf.text("Personal Account Details (PAD)", pdfWidth / 2, y, {
+        align: "center",
+      });
+      y += 7;
+      pdf.text("My Compliance Standing", pdfWidth / 2, y, { align: "center" });
+
+      // Searching Criteria (left) and Exported On/By (right) sit opposite
+      // each other on the same two rows, rather than one stacked column -
+      // matches Excel's own side-by-side placement (title/criteria on the
+      // left, export metadata on the right).
+      y += 10;
+      const rowsStartY = y;
+
+      pdf.setFont(undefined, "bold");
+      pdf.setFontSize(11);
+      pdf.text("Searching Criteria", 14, rowsStartY);
+      pdf.setFont(undefined, "normal");
+      pdf.setFontSize(10);
+      pdf.text(`Date Range: ${dateRangeText}`, 14, rowsStartY + 6);
+
+      pdf.text(`Exported On: ${exportedOn}`, pdfWidth - 14, rowsStartY, {
+        align: "right",
+      });
+      pdf.text(`Exported By: ${exportedBy}`, pdfWidth - 14, rowsStartY + 6, {
+        align: "right",
+      });
+
+      y = rowsStartY + 14;
 
       const imgProps = pdf.getImageProperties(imgData);
-      const pdfWidth = pdf.internal.pageSize.getWidth();
-      const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+      const imgWidth = pdfWidth - 20;
+      const imgHeight = (imgProps.height * imgWidth) / imgProps.width;
 
-      pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
+      pdf.addImage(imgData, "PNG", 10, y, imgWidth, imgHeight);
       pdf.save("My-Compliance-Report.pdf");
     });
   };
