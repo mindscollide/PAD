@@ -25,6 +25,18 @@ export const buildApiRequest = (searchState = {}) => ({
 });
 
 /**
+ * ExportAdminTradeApprovalRequestSummary request payload - same filters
+ * as buildApiRequest above, minus PageNumber/Length (an export always
+ * returns the full matching set in one file, no pagination).
+ */
+export const buildExportRequest = (searchState = {}) => ({
+  EmployeeName: searchState.employeeName || "",
+  DepartmentName: searchState.departmentName || "",
+  StartDate: searchState.startDate ? toYYMMDD(searchState.startDate) : "",
+  EndDate: searchState.endDate ? toYYMMDD(searchState.endDate) : "",
+});
+
+/**
  * Maps GetAdminTradeApprovalRequestSummaryAPI records into a UI-friendly
  * format. Per-status columns always sum exactly to totalRequests.
  *

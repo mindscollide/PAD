@@ -1,246 +1,168 @@
-import ArrowUP from "../../../../../../assets/img/arrow-up-dark.png";
-import ArrowDown from "../../../../../../assets/img/arrow-down-dark.png";
-import DefaultColumArrow from "../../../../../../assets/img/default-colum-arrow.png";
-import style from "./ViewDetails.module.css";
-
-import { toYYMMDD } from "../../../../../../common/funtions/rejex";
-import { getTradeTypeById } from "../../../../../../common/funtions/type";
-import TypeColumnTitle from "../../../../../../components/dropdowns/filters/typeColumnTitle";
-import { Tooltip } from "antd";
-import { withSortIcon } from "../../../../../common/funtions/tableIcon";
+import { toYYMMDD, formatApiDateTime } from "../../../../../common/funtions/rejex";
 
 /**
- * Utility: Build API request payload for approval listing
+ * Utility: helpers for Admin > Reports > User-wise Compliance Report >
+ * View Details, per API_Changes/2026-08-27_admin_user_wise_compliance_report_details.md.
  *
- * @param {Object} searchState - Current search/filter state
- * @param {Object} assetTypeListingData - Extra request metadata (optional)
- * @returns {Object} API-ready payload
+ * This file previously held an unrelated, unused copy of the HTA TAT view
+ * details table config (never imported by ViewDetails.jsx, dead leftover
+ * from an earlier scaffold) - replaced with the real helpers this screen
+ * actually needs.
  */
-export const buildApiRequest = (
-  searchState = {},
-  showSelectedTatDataOnViewDetailHTA
-) => ({
-  EmployeeID: showSelectedTatDataOnViewDetailHTA?.employeeID || "",
-  StartDate: searchState.startDate ? toYYMMDD(searchState.startDate) : "",
-  EndDate: searchState.endDate ? toYYMMDD(searchState.endDate) : "",
-  PageNumber: Number(searchState.pageNumber) || 0,
-  Length: Number(searchState.pageSize) || 10,
-});
 
-/**
- * Maps employee transaction data into a UI-friendly format
- *
- * @param {Object} getEmployeeTransactionReport - API response containing transactions
- * @returns {Array} Mapped transaction list
- */
-export const mapListData = (assetTypeData, htaTATViewDetailsData = []) => {
-  const workFlows = Array.isArray(htaTATViewDetailsData)
-    ? htaTATViewDetailsData
-    : htaTATViewDetailsData?.workFlows || [];
-
-  if (!workFlows.length) return [];
-
-  return workFlows.map((item) => ({
-    key: item.approvalID,
-
-    approvalID: item.approvalID,
-    title: item.title || "—",
-    tradeApprovalID: item.tradeApprovalID || "—",
-    instrument: item?.instrument?.instrumentShortCode ?? "—",
-    instrumentName: item?.instrument?.instrumentName ?? "—",
-    assetTypeName: item.assetType?.assetTypeName || "—",
-    type: getTradeTypeById(assetTypeData, item?.tradeType) || "—",
-    approvalStatus: item.approvalStatus?.approvalStatusName || "—",
-    employeeID: item.employeeID || "—",
-    quantity: item.quantity ?? "—",
-    requestDateTime:
-      `${item?.requestDate || ""} ${item?.requestTime || ""}`.trim() || "—",
-    deadlineDateTime:
-      `${item?.deadlineDate || ""} ${item?.deadlineTime || ""}`.trim() || "—",
-  }));
+/** "YYYY-MM-DD" from a bare "yyyyMMdd" date string (no time component to
+ * localize - policy assignment dates are date-only). Avoids
+ * formatApiDateTime here on purpose: faking a "000000" time and running it
+ * through UTC->local conversion risks shifting the calendar day depending
+ * on the viewer's timezone, for a value that was never meant to carry a
+ * time at all. */
+const formatDateOnly = (yyyyMMdd) => {
+  if (!yyyyMMdd || typeof yyyyMMdd !== "string" || yyyyMMdd.length < 8)
+    return "—";
+  return `${yyyyMMdd.slice(0, 4)}-${yyyyMMdd.slice(4, 6)}-${yyyyMMdd.slice(6, 8)}`;
 };
 
-export const getBorderlessTableColumns = ({
-  approvalStatusMap,
-  sortedInfo,
-  htaTATViewDetailsSearch,
-  setHTATATViewDetailsSearch,
-}) => [
-  {
-    title: withSortIcon("Instrument", "instrumentCode", sortedInfo),
-    dataIndex: "instrumentCode",
-    key: "instrumentCode",
-    width: 200,
-    ellipsis: true,
-    sorter: (a, b) =>
-      (a?.instrumentCode || "").localeCompare(b?.instrumentCode || ""),
-    sortOrder:
-      sortedInfo?.columnKey === "instrumentCode" ? sortedInfo.order : null,
-    showSorterTooltip: false,
-    sortIcon: () => null,
-    render: (_, record) => {
-      const code = record?.instrument || "—";
-      const name = record?.instrumentName || "—";
-      const assetCode = record?.assetTypeShortCode || "";
+/** "YYYY-MM-DD | hh:mm am/pm", localized from a UTC yyyyMMdd + HHmmss
+ * pair via formatApiDateTime (rejex.js) - the combined value must be
+ * localized as one string, never date and time independently (a
+ * near-midnight timestamp can shift calendar day on conversion). */
+const formatDateTime = (datePart, timePart) => {
+  if (!datePart) return "—";
+  const combined = `${datePart} ${timePart || ""}`.trim();
+  return formatApiDateTime(combined) || "—";
+};
 
-      return (
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: "12px",
-          }}
-        >
-          <Tooltip title={`${name} - ${code}`} placement="topLeft">
-            <span
-              className="font-medium"
-              style={{
-                overflow: "hidden",
-                textOverflow: "ellipsis",
-                whiteSpace: "nowrap",
-                maxWidth: "200px",
-                display: "inline-block",
-                cursor: "pointer",
-              }}
-            >
-              {code}
-            </span>
-          </Tooltip>
-        </div>
-      );
-    },
-  },
-  {
-    title: (
-      <div style={{ marginLeft: "8px" }}>
-        {withSortIcon("Initiated At", "initiatedAt", sortedInfo)}
-      </div>
-    ),
-    dataIndex: "initiatedAt",
-    key: "initiatedAt",
-    width: "140px",
-    ellipsis: true,
-    sortDirections: ["ascend", "descend"],
-    showSorterTooltip: false,
-    sorter: (a, b) => (a.initiatedAt || "").localeCompare(b.initiatedAt || ""),
-    sortOrder:
-      sortedInfo?.columnKey === "initiatedAt" ? sortedInfo.order : null,
-    sortIcon: () => null,
+export const buildDetailsRequest = (employeeID, searchState = {}) => ({
+  EmployeeID: employeeID,
+  StartDate: searchState.startDate ? toYYMMDD(searchState.startDate) : "",
+  EndDate: searchState.endDate ? toYYMMDD(searchState.endDate) : "",
+});
 
-    render: (value) => (
-      <div style={{ marginLeft: "8px" }}>
-        <span className="font-medium">{value || "—"}</span>
-      </div>
-    ),
-  },
-  {
-    title: (
-      <TypeColumnTitle
-        state={htaTATViewDetailsSearch}
-        setState={setHTATATViewDetailsSearch}
-      />
-    ),
-    dataIndex: "type",
-    key: "type",
-    ellipsis: true,
-    width: "140px",
-    filteredValue: htaTATViewDetailsSearch.type?.length
-      ? htaTATViewDetailsSearch?.type
+export const buildPolicyHistoryRequest = (employeeID) => ({
+  EmployeeID: employeeID,
+});
+
+/** `score` is `null` (no trade approvals/transactions in scope yet) or a
+ * plain number - SRS/doc: render "N/A" for null, never "0%". */
+export const formatScore = (score) =>
+  score === null || score === undefined ? "N/A" : `${score}%`;
+
+/**
+ * Maps GetAdminUserWiseComplianceReportDetailsAPI's flat response into the
+ * left (profile, not date-scoped) / right (stats, date-scoped) shape the
+ * screen renders.
+ */
+export const mapDetailsResponse = (res = {}) => {
+  if (!res) return null;
+
+  const accountCreatedDisplay = formatDateTime(
+    res.accountCreatedDate,
+    res.accountCreatedTime
+  );
+  const lastLoginDisplay = formatDateTime(res.lastLoginDate, res.lastLoginTime);
+
+  const totalTransactionsInitiated = res.totalTransactionsInitiated || 0;
+  const totalTransactionsApproved = res.totalTransactionsApproved || 0;
+
+  return {
+    employeeID: res.employeeID,
+    fullName: res.fullName || "—",
+    status: res.status || "—",
+    departmentName: res.departmentName || "—",
+    email: res.email || "—",
+    roles: Array.isArray(res.roles) ? res.roles : [],
+
+    accountCreatedDisplay,
+    activityDays: res.activityDays ?? "—",
+    lastLoginDisplay,
+
+    currentPolicyName: res.currentPolicy?.policyName || null,
+    currentPolicyAssignedDate: res.currentPolicy?.assignedDate
+      ? formatDateOnly(res.currentPolicy.assignedDate)
       : null,
-    onFilter: () => true,
-    sortIcon: () => null,
-    showSorterTooltip: false,
-    render: (type, record) => (
-      <span
-        id={`cell-${record.key}-type`}
-        className={type === "Buy" ? "text-green-600" : "text-red-600"}
-        data-testid={`trade-type-${type}`}
-        style={{
-          display: "inline-block",
-          width: "100%",
-          overflow: "hidden",
-          textOverflow: "ellipsis",
-          whiteSpace: "nowrap",
-        }}
-      >
-        {type}
-      </span>
-    ),
-  },
-  {
-    title: withSortIcon("Quantity", "quantity", sortedInfo),
-    dataIndex: "quantity",
-    key: "quantity",
-    width: "140px",
-    ellipsis: true,
-    sortIcon: () => null,
-    showSorterTooltip: false,
-    sorter: (a, b) => Number(a.quantity) - Number(b.quantity),
-    sortOrder: sortedInfo?.columnKey === "quantity" ? sortedInfo.order : null,
-    render: (text) => (
-      <span className="font-medium">
-        {Number(text).toLocaleString("en-US")}
-      </span>
-    ),
-  },
-  {
-    title: (
-      <div style={{ marginLeft: "8px" }}>
-        {withSortIcon("Action By", "actionBy", sortedInfo)}
-      </div>
-    ),
-    dataIndex: "actionBy",
-    key: "actionBy",
-    width: "140px",
-    sortIcon: () => null,
-    ellipsis: true,
-    showSorterTooltip: false,
-    sorter: (a, b) => (a.actionBy || "").localeCompare(b.actionBy || ""),
-    sortOrder: sortedInfo?.columnKey === "actionBy" ? sortedInfo.order : null,
-    render: (value) => (
-      <div style={{ marginLeft: "8px" }}>
-        <span className="font-medium">{value || "—"}</span>
-      </div>
-    ),
-  },
-  {
-    title: (
-      <div style={{ marginLeft: "8px" }}>
-        {withSortIcon("Action At", "actionAt", sortedInfo)}
-      </div>
-    ),
-    dataIndex: "actionAt",
-    key: "actionAt",
-    width: "140px",
-    ellipsis: true,
-    showSorterTooltip: false,
-    sortIcon: () => null,
-    sorter: (a, b) => (a.actionAt || "").localeCompare(b.actionAt || ""),
-    sortOrder: sortedInfo?.columnKey === "actionAt" ? sortedInfo.order : null,
-    render: (value) => (
-      <div style={{ marginLeft: "8px" }}>
-        <span className="font-medium">{value || "—"}</span>
-      </div>
-    ),
-  },
-  {
-    title: (
-      <div style={{ marginLeft: "8px" }}>
-        {withSortIcon("TAT", "Tat", sortedInfo)}
-      </div>
-    ),
-    dataIndex: "Tat",
-    key: "Tat",
-    width: "140px",
-    ellipsis: true,
-    showSorterTooltip: false,
-    sorter: (a, b) => (a.Tat || 0) - (b.Tat || 0),
-    sortIcon: () => null,
-    sortOrder: sortedInfo?.columnKey === "Tat" ? sortedInfo.order : null,
-    render: (value) => (
-      <div style={{ marginLeft: "8px" }}>
-        <span className="font-medium">{value || "—"}</span>
-      </div>
-    ),
-  },
-];
+    lastPolicyName: res.lastPolicy?.policyName || null,
+    lastPolicyAssignedDate: res.lastPolicy?.assignedDate
+      ? formatDateOnly(res.lastPolicy.assignedDate)
+      : null,
+
+    reportStartDate: formatDateOnly(res.reportStartDate),
+    reportEndDate: formatDateOnly(res.reportEndDate),
+
+    totalTradeApprovalsInitiated: res.totalTradeApprovalsInitiated || 0,
+    totalTradeApprovalsApproved: res.totalTradeApprovalsApproved || 0,
+    totalTradeApprovalsDeclined: res.totalTradeApprovalsDeclined || 0,
+    approvalScore: res.approvalScore ?? null,
+
+    totalTransactionsInitiated,
+    totalTransactionsApproved,
+    totalTransactionsDeclined: res.totalTransactionsDeclined || 0,
+    complianceScore: res.complianceScore ?? null,
+
+    // Doughnut chart (Total vs Compliant Transactions, per SRS) - no
+    // separate field needed, built from the counts/score already above.
+    // Non-compliant = whatever's left of the initiated total.
+    transactionsDonut: {
+      labels: ["Compliant", "Non-Compliant"],
+      counts: [
+        totalTransactionsApproved,
+        Math.max(totalTransactionsInitiated - totalTransactionsApproved, 0),
+      ],
+      percentages:
+        res.complianceScore === null || res.complianceScore === undefined
+          ? [0, 0]
+          : [res.complianceScore, 100 - res.complianceScore],
+      totalCount: totalTransactionsInitiated,
+    },
+
+    // Top Policy Breaches bar chart - policyScenario is the only
+    // human-readable label the source data has (no separate short "policy
+    // name" field per the doc), used for both the axis label and hover.
+    policyBreachBar: {
+      labels: Array.isArray(res.policyBreachGraph)
+        ? res.policyBreachGraph.map(
+            (p) => p.policyCode || p.policyScenario || "—"
+          )
+        : [],
+      counts: Array.isArray(res.policyBreachGraph)
+        ? res.policyBreachGraph.map((p) => p.breachCount || 0)
+        : [],
+      scenarios: Array.isArray(res.policyBreachGraph)
+        ? res.policyBreachGraph.map((p) => p.policyScenario || "")
+        : [],
+    },
+  };
+};
+
+/**
+ * Maps GetAdminUserWiseComplianceReportPolicyHistoryAPI's response for the
+ * "View More" modal. previouslyAssignedPolicies is unpaginated - sorted
+ * assignedDate descending here (FE-side, per the doc - no server sort
+ * param), a stable default the modal's own column sorter can still
+ * override.
+ */
+export const mapPolicyHistoryResponse = (res = {}) => {
+  const currentPolicy = res?.currentPolicy
+    ? {
+        policyName: res.currentPolicy.policyName || "—",
+        assignedDate: formatDateOnly(res.currentPolicy.assignedDate),
+      }
+    : null;
+
+  const previous = Array.isArray(res?.previouslyAssignedPolicies)
+    ? res.previouslyAssignedPolicies
+    : [];
+
+  const previouslyAssignedPolicies = previous
+    .map((p, index) => ({
+      key: `${p.assignedDate || ""}-${index}`,
+      policyName: p.policyName || "—",
+      assignedDate: formatDateOnly(p.assignedDate),
+      // raw digits kept for correct chronological sort - the display
+      // string above is dashed, not directly sortable as "latest first"
+      // once localized further, so sort off this instead.
+      assignedDateRaw: p.assignedDate || "",
+    }))
+    .sort((a, b) => b.assignedDateRaw.localeCompare(a.assignedDateRaw));
+
+  return { currentPolicy, previouslyAssignedPolicies };
+};

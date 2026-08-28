@@ -33,7 +33,10 @@ const Headers = () => {
 
   const { resetEmployeeMyApprovalSearch, resetLineManagerApprovalSearch } =
     useSearchBarContext();
-  const { showViewDetailPageInTatOnHta } = useGlobalModal();
+  const {
+    showViewDetailPageInTatOnHta,
+    showViewDetailOfUserwiseComplianceReportAdmin,
+  } = useGlobalModal();
 
   const selectedKey = selectedKeyRef.current;
 
@@ -139,13 +142,22 @@ const Headers = () => {
       selectedKey === "23" &&
       ([
         "/PAD/admin-reports/admin-user-activity-report",
-        "/PAD/admin-reports/admin-user-wise-compliance-report",
         "/PAD/admin-reports/admin-policy-breaches-report",
         "/PAD/admin-reports/admin-trade-approval-report",
         "/PAD/admin-reports/admin-date-wise-transaction-report",
         "/PAD/admin-reports/admin-TAT-Request-report",
         "/PAD/admin-reports/admin-trades-uploaded-via-portfolio-report",
       ].includes(currentPath) ||
+        // User-wise Compliance Report: same header search bar as every
+        // other admin report list on its own list view, hidden once "View
+        // Details" is open (that sub-view is one specific employee's
+        // records, not a searchable list) - same convention as the
+        // Transactions Summary case just below, just the opposite
+        // direction (that one's plain list has no search of its own, so
+        // it shows the bar only once inside View Details instead).
+        (currentPath ===
+          "/PAD/admin-reports/admin-user-wise-compliance-report" &&
+          !showViewDetailOfUserwiseComplianceReportAdmin) ||
         (currentPath ===
           "/PAD/admin-reports/admin-transactions-summary-report" &&
           coTransactionSummaryReportViewDetailsFlag))

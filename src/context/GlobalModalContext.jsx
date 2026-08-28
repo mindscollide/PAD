@@ -287,6 +287,15 @@ export const GlobalModalProvider = ({ children }) => {
     setShowViewDetailOfUserwiseComplianceReportAdmin,
   ] = useState(false);
 
+  // Which employee's row "View Details" was clicked from (Admin User-wise
+  // Compliance Report) - the list's own row data (employeeID/employeeName/
+  // departmentName), set alongside the boolean above so the View Details
+  // screen knows who to fetch GetAdminUserWiseComplianceReportDetailsAPI for.
+  const [
+    selectedUserwiseComplianceReportEmployee,
+    setSelectedUserwiseComplianceReportEmployee,
+  ] = useState(null);
+
   /**
    * Global States For Admin Role Modals End here
    */
@@ -553,6 +562,8 @@ export const GlobalModalProvider = ({ children }) => {
         //User wise COmpliance Report
         showViewDetailOfUserwiseComplianceReportAdmin,
         setShowViewDetailOfUserwiseComplianceReportAdmin,
+        selectedUserwiseComplianceReportEmployee,
+        setSelectedUserwiseComplianceReportEmployee,
         /**
          * Global States For Admin Role Modals End here
          */

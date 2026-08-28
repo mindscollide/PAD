@@ -92,6 +92,7 @@ const withSortIcon = (label, columnKey, sortedInfo) => (
 export const getBorderlessTableColumns = ({
   sortedInfo,
   setShowViewDetailOfUserwiseComplianceReportAdmin,
+  setSelectedUserwiseComplianceReportEmployee,
 }) => [
   {
     title: withSortIcon("Employee ID", "employeeID", sortedInfo),
@@ -182,7 +183,7 @@ export const getBorderlessTableColumns = ({
     key: "action",
     width: 150,
     align: "right", // 🔷 Align content to the right
-    render: () => (
+    render: (_, record) => (
       <div
         className={style.viewEditClass}
         style={{
@@ -194,7 +195,10 @@ export const getBorderlessTableColumns = ({
         <Button
           className="view-large-transparent-button"
           text={"View Details"}
-          onClick={() => setShowViewDetailOfUserwiseComplianceReportAdmin(true)}
+          onClick={() => {
+            setSelectedUserwiseComplianceReportEmployee?.(record);
+            setShowViewDetailOfUserwiseComplianceReportAdmin(true);
+          }}
         />
       </div>
     ),
