@@ -40,7 +40,7 @@ export const buildApiRequest = (searchState = {}, assetTypeListingData) => ({
  */
 export const mapListData = (
   assetTypeData,
-  myTradeApprovalLineManagerData = [],
+  myTradeApprovalLineManagerData = []
 ) => {
   const records = Array.isArray(myTradeApprovalLineManagerData)
     ? myTradeApprovalLineManagerData
@@ -142,8 +142,8 @@ const withSortIcon = (label, columnKey, sortedInfo, align = "left") => (
         align === "center"
           ? "center"
           : align === "right"
-            ? "flex-end"
-            : "flex-start",
+          ? "flex-end"
+          : "flex-start",
       textAlign: align,
     }}
   >
@@ -155,7 +155,6 @@ const withSortIcon = (label, columnKey, sortedInfo, align = "left") => (
 );
 
 export const getBorderlessTableColumns = ({
-  approvalStatusMap,
   sortedInfo,
   htaPolicyBreachesReportSearch,
   setHTAPolicyBreachesReportSearch,
@@ -164,21 +163,35 @@ export const getBorderlessTableColumns = ({
   onViewPolicyBreachDetails,
 }) => [
   {
-    title: withSortIcon("Employee ID", "employeeID", sortedInfo),
+    title: (
+      <div style={{ marginLeft: "8px" }}>
+        {withSortIcon("Employee ID", "employeeID", sortedInfo, "center")}
+      </div>
+    ),
     dataIndex: "employeeID",
     key: "employeeID",
-    align: "left",
-    width: "140px",
-    sorter: (a, b) =>
-      parseInt(a.employeeID.replace(/[^\d]/g, ""), 10) -
-      parseInt(b.employeeID.replace(/[^\d]/g, ""), 10),
+    align: "center",
+    width: 140,
+    // sorter: (a, b) =>
+    //   parseInt(a.employeeID.replace(/[^\d]/g, ""), 10) -
+    //   parseInt(b.employeeID.replace(/[^\d]/g, ""), 10),
+    sorter: (a, b) => a.employeeID - b.employeeID,
     sortDirections: ["ascend", "descend"],
     sortOrder: sortedInfo?.columnKey === "employeeID" ? sortedInfo.order : null,
     showSorterTooltip: false,
     sortIcon: () => null,
     render: (employeeID) => {
       return (
-        <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+
+            gap: "12px",
+            marginLeft: "8px",
+          }}
+        >
           <span className="font-medium">{employeeID}</span>
         </div>
       );
@@ -189,7 +202,7 @@ export const getBorderlessTableColumns = ({
     dataIndex: "employeeName",
     key: "employeeName",
     align: "left",
-    width: "140px",
+    width: 160,
     sorter: (a, b) => a.employeeName - b.employeeName,
     sortDirections: ["ascend", "descend"],
     sortOrder:
@@ -199,11 +212,11 @@ export const getBorderlessTableColumns = ({
     render: (q) => <span className="font-medium">{q.toLocaleString()}</span>,
   },
   {
-    title: withSortIcon("Department", "departmentName", sortedInfo),
+    title: withSortIcon("Department", "departmentName", sortedInfo, "center"),
     dataIndex: "departmentName",
     key: "departmentName",
-    align: "left",
-    width: "140px",
+    align: "center",
+    width: 200,
     sorter: (a, b) => a.departmentName - b.departmentName,
     sortDirections: ["ascend", "descend"],
     sortOrder:
@@ -217,15 +230,15 @@ export const getBorderlessTableColumns = ({
       "Request Date & Time",
       "requestDateTime",
       sortedInfo,
-      "center",
+      "center"
     ),
     dataIndex: "requestDateTime",
     key: "requestDateTime",
     align: "center",
-    width: "140px",
+    width: 200,
     sorter: (a, b) =>
       formatApiDateTime(a.requestDateTime).localeCompare(
-        formatApiDateTime(b.requestDateTime),
+        formatApiDateTime(b.requestDateTime)
       ),
     sortDirections: ["ascend", "descend"],
     sortOrder:
@@ -246,7 +259,7 @@ export const getBorderlessTableColumns = ({
     title: withSortIcon("Instrument", "instrumentName", sortedInfo),
     dataIndex: "instrumentName",
     key: "instrumentName",
-    width: "180px",
+    width: 180,
     ellipsis: true,
     sorter: (a, b) =>
       (a.instrumentName || "").localeCompare(b.instrumentName || ""),
@@ -289,7 +302,7 @@ export const getBorderlessTableColumns = ({
     dataIndex: "quantity",
     key: "quantity",
     align: "center",
-    width: "140px",
+    width: 140,
     sorter: (a, b) => Number(a.quantity || 0) - Number(b.quantity || 0),
     sortDirections: ["ascend", "descend"],
     sortOrder: sortedInfo?.columnKey === "quantity" ? sortedInfo.order : null,
@@ -312,7 +325,7 @@ export const getBorderlessTableColumns = ({
     ),
     dataIndex: "tradeType",
     key: "tradeType",
-    width: "140px",
+    width: 140,
     filteredValue: htaPolicyBreachesReportSearch.type?.length
       ? htaPolicyBreachesReportSearch?.type
       : null,
@@ -342,7 +355,7 @@ export const getBorderlessTableColumns = ({
     dataIndex: "policyCount",
     key: "policyCount",
     align: "center",
-    width: "140px",
+    width: 140,
     sorter: (a, b) => a.policyCount - b.policyCount,
     sortDirections: ["ascend", "descend"],
     sortOrder:

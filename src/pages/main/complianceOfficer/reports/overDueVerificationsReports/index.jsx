@@ -1,6 +1,5 @@
 import React, { useEffect, useState, useRef, useCallback } from "react";
 import { Breadcrumb, Col, Row } from "antd";
-import PDF from "../../../../../assets/img/pdf.png";
 import Excel from "../../../../../assets/img/xls.png";
 import { UpOutlined, DownOutlined } from "@ant-design/icons";
 // 🔹 Components
@@ -296,8 +295,6 @@ const CompianceOfficerOverdueVerificationReports = () => {
     const formatDate = (date) =>
       date ? new Date(date).toISOString().split("T")[0] : null;
 
-    const formatArray = (arr) => (arr?.length ? arr.join(", ") : null);
-
     const formattedStart = formatDate(startDate);
     const formattedEnd = formatDate(endDate);
 
@@ -351,6 +348,7 @@ const CompianceOfficerOverdueVerificationReports = () => {
       showLoader,
       requestdata: requestdata,
       navigate,
+      setOpen,
     });
   };
 

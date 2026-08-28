@@ -1,6 +1,5 @@
 import React, { useEffect, useState, useRef, useCallback } from "react";
 import { Breadcrumb, Col, Row } from "antd";
-import PDF from "../../../../../assets/img/pdf.png";
 import Excel from "../../../../../assets/img/xls.png";
 import { UpOutlined, DownOutlined } from "@ant-design/icons";
 // 🔹 Components
@@ -25,15 +24,10 @@ import { useGlobalModal } from "../../../../../context/GlobalModalContext";
 import style from "./transactionsSummary.module.css";
 import { useMyApproval } from "../../../../../context/myApprovalContaxt";
 import {
-  DownloadComplianceOfficerDateWiseTransactionReportRequestAPI,
-  DownloadLineManagerMyTradeApprovalReportRequestAPI,
-  DownloadMyTransactionReportRequestAPI,
   ExportHOCTransactionSummaryReportExcelApi,
   GetHCAViewTransactionSummaryExportAPI,
   GetHOCTransactionSummaryViewDetailsAPI,
   GetHOCViewTransactionSummaryAPI,
-  SearchComplianceOfficerTransactionSummaryReportRequest,
-  SearchLineManagerTradeApprovalRequestApi,
 } from "../../../../../api/myApprovalApi";
 import { useNotification } from "../../../../../components/NotificationProvider/NotificationProvider";
 import { useApi } from "../../../../../context/ApiContext";
@@ -45,7 +39,6 @@ import { getSafeAssetTypeData } from "../../../../../common/funtions/assetTypesL
 import { useTableScrollBottom } from "../../../../../common/funtions/scroll";
 import CustomButton from "../../../../../components/buttons/button";
 import { DateRangePicker } from "../../../../../components";
-import { mapStatusToIds } from "../../../../../components/dropdowns/filters/utils";
 import ViewCommentHOCTransaction from "./viewDetails/viewComment/ViewComment";
 import { formatToYYYYMMDD } from "../../../../../common/funtions/rejex";
 // import ViewComment from "./viewComment/ViewComment";
@@ -71,12 +64,10 @@ const HCATransactionsSummarysReports = () => {
     coTransactionSummaryReportViewDetailsListData,
     setCOTransactionSummaryReportViewDetailsListData,
     resetCOTransactionSummaryReportViewDetailsListData,
-    selectedWorkFlowViewDetaild,
     setSelectedWorkFlowViewDetaild,
   } = useMyApproval();
 
-  const { isViewComments, setIsViewComments, setCheckTradeApprovalID } =
-    useGlobalModal();
+  const { isViewComments, setIsViewComments } = useGlobalModal();
 
   const {
     hcoTransactionsSummarysReportsSearch,
@@ -429,6 +420,7 @@ const HCATransactionsSummarysReports = () => {
       showLoader,
       requestdata: requestdata,
       navigate,
+      setOpen,
     });
   };
 
@@ -448,6 +440,7 @@ const HCATransactionsSummarysReports = () => {
       showLoader,
       requestdata,
       navigate,
+      setOpen,
     });
   };
 

@@ -302,6 +302,7 @@ const ViewDetails = () => {
       showLoader,
       requestdata,
       navigate,
+      setOpen,
     });
   };
 

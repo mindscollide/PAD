@@ -371,7 +371,7 @@ const ViewDetaildDateWiseTransaction = () => {
               <div className={styles.approvedButtonClass}>
                 <CustomButton
                   text="Close"
-                  className="small-light-button"
+                  className="small-dark-button"
                   onClick={closedModal}
                 />
               </div>

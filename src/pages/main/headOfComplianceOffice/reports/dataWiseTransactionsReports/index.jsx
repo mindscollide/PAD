@@ -351,6 +351,7 @@ const HCADateWiseTransactionsReports = () => {
       showLoader,
       requestdata: requestdata,
       navigate,
+      setOpen,
     });
   };
 

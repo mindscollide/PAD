@@ -329,6 +329,7 @@ const HTATAT = () => {
       showLoader,
       requestdata: requestdata,
       navigate,
+      setOpen,
     });
   };
 

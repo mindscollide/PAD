@@ -290,7 +290,6 @@ export const getBorderlessLineManagerTableColumns = ({
     width: "7%",
     ellipsis: true,
     render: (isEscalated, record) => {
-      console.log(record, "CheckIsEsclated");
       return isEscalated ? (
         <img
           draggable={false}

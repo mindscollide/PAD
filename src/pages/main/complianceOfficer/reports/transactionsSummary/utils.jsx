@@ -177,7 +177,7 @@ export const getBorderlessTableColumns = ({
     render: (_, record) => (
       <div className={style.viewEditClass}>
         <Button
-          className="small-light-button"
+          className="small-dark-button"
           text={"View Details"}
           onClick={() => {
             handelViewDetails(record.transactionDate);
@@ -494,7 +494,7 @@ export const getBorderlessTableColumnsViewDetails = ({
     render: (_, record) => (
       <div className={style.viewEditClass}>
         <Button
-          className="small-light-button"
+          className="small-dark-button"
           text={"View Comments"}
           onClick={() => {
             // handelViewDetails(record.approvalID);

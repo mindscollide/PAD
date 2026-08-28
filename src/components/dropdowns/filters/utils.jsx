@@ -1,11 +1,6 @@
 // -----------------------------------------------------------------------------
 // 📌 Imports
 // -----------------------------------------------------------------------------
-import {
-  SearchApprovalRequestLineManager,
-  SearchEmployeeHistoryDetailRequest,
-  SearchTadeApprovals,
-} from "../../../api/myApprovalApi";
 import { SearchEmployeeTransactionsDetails } from "../../../api/myTransactionsApi";
 import { toYYMMDD } from "../../../common/funtions/rejex";
 
@@ -55,7 +50,7 @@ export const emaStatusOptionsofReportsMyHistory = [
   "Declined",
   "Traded",
   "Not Traded",
-  "Resubmitted for Approval",
+  "Resubmitted",
   "Compliant",
   "Non-Compliant",
 ];

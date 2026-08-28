@@ -123,11 +123,11 @@ export const getBorderlessTableColumns = ({
   setHCOTradesUploadViaPortfolioSearch,
 }) => [
   {
-    title: withSortIcon("Employee ID", "employeeID", sortedInfo),
+    title: withSortIcon("Employee ID", "employeeID", sortedInfo, "center"),
     dataIndex: "employeeID",
     key: "employeeID",
-    width: "12%",
-    align: "left",
+    width: 130,
+    align: "center",
     ellipsis: true,
     sorter: (a, b) => a.employeeID - b.employeeID,
     sortDirections: ["ascend", "descend"],
@@ -136,7 +136,14 @@ export const getBorderlessTableColumns = ({
     sortIcon: () => null,
     render: (employeeID) => {
       return (
-        <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: "12px",
+          }}
+        >
           <span className="font-medium">{employeeID}</span>
         </div>
       );
@@ -146,7 +153,7 @@ export const getBorderlessTableColumns = ({
     title: withSortIcon("Employee Name", "employeeName", sortedInfo),
     dataIndex: "employeeName",
     key: "employeeName",
-    width: "12%",
+    width: 150,
     align: "left",
     ellipsis: true,
     sorter: (a, b) =>
@@ -170,7 +177,7 @@ export const getBorderlessTableColumns = ({
     title: withSortIcon("Instrument Name", "instrumentCode", sortedInfo),
     dataIndex: "instrumentCode",
     key: "instrumentCode",
-    width: "12%",
+    width: 150,
     align: "left",
     ellipsis: true,
     sorter: (a, b) =>
@@ -194,9 +201,8 @@ export const getBorderlessTableColumns = ({
     ),
     dataIndex: "type",
     key: "type",
-    ellipsis: true,
     align: "left",
-    width: "8%",
+    width: 90,
     filteredValue: hcoTradesUploadViaPortfolioSearch.type?.length
       ? hcoTradesUploadViaPortfolioSearch?.type
       : null,
@@ -227,8 +233,7 @@ export const getBorderlessTableColumns = ({
     dataIndex: "requestDateTime",
     key: "requestDateTime",
     align: "center",
-    ellipsis: true,
-    width: "13%",
+    width: 200,
     sorter: (a, b) =>
       formatApiDateTime(a.requestDateTime).localeCompare(
         formatApiDateTime(b.requestDateTime)
@@ -260,8 +265,7 @@ export const getBorderlessTableColumns = ({
     dataIndex: "quantity",
     key: "quantity",
     align: "center",
-    ellipsis: true,
-    width: "8%",
+    width: 100,
     sorter: (a, b) => a.quantity - b.quantity,
     sortDirections: ["ascend", "descend"],
     sortOrder: sortedInfo?.columnKey === "quantity" ? sortedInfo.order : null,
@@ -278,8 +282,7 @@ export const getBorderlessTableColumns = ({
     ),
     dataIndex: "status",
     key: "status",
-    ellipsis: true,
-    width: "10%",
+    width: 200,
     filteredValue: hcoTradesUploadViaPortfolioSearch.status?.length
       ? hcoTradesUploadViaPortfolioSearch.status
       : null,

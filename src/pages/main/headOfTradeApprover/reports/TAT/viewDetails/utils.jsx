@@ -104,9 +104,7 @@ export const mapListData = (assetTypeData, htaTATViewDetailsData = []) => {
       deadlineDateTime:
         `${item?.deadlineDate || ""} ${item?.deadlineTime || ""}`.trim() || "—",
       actionBy:
-        actionByNames.length > 1
-          ? "Multiple Approvers"
-          : actionByNames[0] || "—",
+        actionByNames.length > 1 ? "Multiple Users" : actionByNames[0] || "—",
       actionByFullNames: actionByNames.join(", "),
       actionAt:
         item.actionDate && item.actionTime
@@ -240,9 +238,8 @@ export const getBorderlessTableColumns = ({
     title: withSortIcon("Initiated At", "initiatedAt", sortedInfo, "center"),
     dataIndex: "initiatedAt",
     key: "initiatedAt",
-    width: 100,
+    width: 200,
     align: "center",
-    ellipsis: true,
     sortDirections: ["ascend", "descend"],
     showSorterTooltip: false,
     sorter: (a, b) => (a.initiatedAt || "").localeCompare(b.initiatedAt || ""),
@@ -260,7 +257,6 @@ export const getBorderlessTableColumns = ({
     ),
     dataIndex: "type",
     key: "type",
-    ellipsis: true,
     width: 140,
     filteredValue: htaTATViewDetailsSearch.type?.length
       ? htaTATViewDetailsSearch?.type
@@ -291,7 +287,6 @@ export const getBorderlessTableColumns = ({
     key: "quantity",
     align: "center",
     width: 150,
-    ellipsis: true,
     sortIcon: () => null,
     showSorterTooltip: false,
     sorter: (a, b) => Number(a.quantity) - Number(b.quantity),
@@ -328,8 +323,7 @@ export const getBorderlessTableColumns = ({
     dataIndex: "actionAt",
     key: "actionAt",
     align: "center",
-    width: "140px",
-    ellipsis: true,
+    width: 140,
     showSorterTooltip: false,
     sortIcon: () => null,
     sorter: (a, b) => (a.actionAt || "").localeCompare(b.actionAt || ""),

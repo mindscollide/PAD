@@ -78,8 +78,7 @@ export const getBorderlessTableColumns = (
     key: "instrument",
     ellipsis: true,
     width: 150,
-    sorter: (a, b) =>
-      (a?.instrumentName || "").localeCompare(b?.instrumentName || ""),
+    sorter: (a, b) => (a?.instrument || "").localeCompare(b?.instrument || ""),
     sortDirections: ["ascend", "descend"],
     sortOrder: sortedInfo?.columnKey === "instrument" ? sortedInfo.order : null,
     showSorterTooltip: false,

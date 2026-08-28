@@ -241,11 +241,12 @@ export const getBorderlessTableColumns = ({
             style={{
               display: "flex",
               alignItems: "center",
+              justifyContent: "end",
               marginRight: "10px",
             }}
           >
             <Button
-              className="view-large-transparent-button"
+              className="small-dark-button"
               text="View Details"
               onClick={() => {
                 setShowViewDetailPageInTatOnHta(true);

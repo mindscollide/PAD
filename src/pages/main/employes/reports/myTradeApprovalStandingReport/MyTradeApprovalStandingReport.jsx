@@ -19,7 +19,10 @@ import Excel from "../../../../../assets/img/xls.png";
 import { UpOutlined, DownOutlined } from "@ant-design/icons";
 import CustomButton from "../../../../../components/buttons/button";
 import { DateRangePicker } from "../../../../../components";
-import { toYYMMDD } from "../../../../../common/funtions/rejex";
+import {
+  formatToYYYYMMDD,
+  toYYMMDD,
+} from "../../../../../common/funtions/rejex";
 
 const statusColorMap = {
   Pending: "#717171",
@@ -46,8 +49,8 @@ const MyTradeApprovalStandingReport = () => {
   //local state
   const [open, setOpen] = useState(false);
   const [dateRange, setDateRange] = useState({
-    StartDate: "",
-    EndDate: "",
+    StartDate: null,
+    EndDate: null,
   });
 
   //Extract data from the context state and save in variable
@@ -99,11 +102,19 @@ const MyTradeApprovalStandingReport = () => {
   useEffect(() => {
     if (hasFetched.current) return;
     hasFetched.current = true;
+    const endDate = new Date();
+    const startDate = new Date();
+    startDate.setMonth(startDate.getMonth() - 6);
+
+    setDateRange({
+      StartDate: formatToYYYYMMDD(startDate),
+      EndDate: formatToYYYYMMDD(endDate),
+    });
 
     const requestData = {
       // build your request payload here
-      StartDate: "",
-      EndDate: "",
+      StartDate: startDate ? toYYMMDD(startDate) : "",
+      EndDate: endDate ? toYYMMDD(endDate) : "",
     };
 
     fetchApiCall(requestData, true, true);
@@ -116,8 +127,8 @@ const MyTradeApprovalStandingReport = () => {
       const end = toYYMMDD(dates[1]);
 
       setDateRange({
-        StartDate: start,
-        EndDate: end,
+        StartDate: dates?.[0] || null,
+        EndDate: dates?.[1] || null,
       });
 
       // Call API immediately after date change
@@ -235,6 +246,7 @@ const MyTradeApprovalStandingReport = () => {
       pdf.addImage(imgData, "PNG", 10, y, imgWidth, imgHeight);
 
       pdf.save("MyTrade-Approval-Report.pdf");
+      setOpen(false);
     } catch (error) {
       console.error("PDF Export Failed:", error);
     }
@@ -254,6 +266,7 @@ const MyTradeApprovalStandingReport = () => {
       showLoader,
       requestdata,
       navigate,
+      setOpen,
     });
   };
 
@@ -289,6 +302,7 @@ const MyTradeApprovalStandingReport = () => {
           <div className={style.headerActionsRow}>
             <DateRangePicker
               size="medium"
+              value={[dateRange.StartDate, dateRange.EndDate]}
               className={"range-picker-small"}
               onChange={handleDateChange}
             />
