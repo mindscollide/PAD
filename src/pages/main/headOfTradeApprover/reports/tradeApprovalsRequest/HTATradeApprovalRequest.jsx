@@ -189,7 +189,7 @@ const HTATradeApprovalRequest = () => {
         myTradeApprovalLineManagerData?.totalRecordsDataBase <=
         myTradeApprovalLineManagerData?.totalRecordsTable
       )
-        return;
+        return false;
 
       try {
         setLoadingMore(true);
@@ -200,6 +200,7 @@ const HTATradeApprovalRequest = () => {
         await fetchApiCall(requestData, false, false);
       } catch (err) {
         console.error("Error loading more approvals:", err);
+        return true;
       } finally {
         setLoadingMore(false);
       }

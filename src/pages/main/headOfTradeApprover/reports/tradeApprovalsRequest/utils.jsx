@@ -149,7 +149,9 @@ export const getBorderlessTableColumns = ({ sortedInfo }) => [
       sortedInfo?.columnKey === "employeeName" ? sortedInfo.order : null,
     showSorterTooltip: false,
     sortIcon: () => null,
-    render: (q) => <span className="font-medium">{q.toLocaleString("en-US")}</span>,
+    render: (q) => (
+      <span className="font-medium">{q.toLocaleString("en-US")}</span>
+    ),
   },
   {
     title: withSortIcon("Department", "department", sortedInfo),
@@ -162,7 +164,9 @@ export const getBorderlessTableColumns = ({ sortedInfo }) => [
     sortOrder: sortedInfo?.columnKey === "department" ? sortedInfo.order : null,
     showSorterTooltip: false,
     sortIcon: () => null,
-    render: (q) => <span className="font-medium">{q.toLocaleString("en-US")}</span>,
+    render: (q) => (
+      <span className="font-medium">{q.toLocaleString("en-US")}</span>
+    ),
   },
   {
     title: withSortIcon(
@@ -184,7 +188,9 @@ export const getBorderlessTableColumns = ({ sortedInfo }) => [
     sortIcon: () => null,
     render: (totalRequests) => {
       return (
-        <span className="font-medium">{totalRequests.toLocaleString("en-US")}</span>
+        <span className="font-medium">
+          {totalRequests.toLocaleString("en-US")}
+        </span>
       );
     },
   },
@@ -201,7 +207,9 @@ export const getBorderlessTableColumns = ({ sortedInfo }) => [
     showSorterTooltip: false,
     sortIcon: () => null,
     render: (pending) => {
-      return <span className="font-medium">{pending.toLocaleString("en-US")}</span>;
+      return (
+        <span className="font-medium">{pending.toLocaleString("en-US")}</span>
+      );
     },
   },
   {
@@ -217,7 +225,9 @@ export const getBorderlessTableColumns = ({ sortedInfo }) => [
     showSorterTooltip: false,
     sortIcon: () => null,
     render: (approved) => {
-      return <span className="font-medium">{approved.toLocaleString("en-US")}</span>;
+      return (
+        <span className="font-medium">{approved.toLocaleString("en-US")}</span>
+      );
     },
   },
   {
@@ -233,7 +243,9 @@ export const getBorderlessTableColumns = ({ sortedInfo }) => [
     showSorterTooltip: false,
     sortIcon: () => null,
     render: (declined) => {
-      return <span className="font-medium">{declined.toLocaleString("en-US")}</span>;
+      return (
+        <span className="font-medium">{declined.toLocaleString("en-US")}</span>
+      );
     },
   },
   {
@@ -249,7 +261,9 @@ export const getBorderlessTableColumns = ({ sortedInfo }) => [
     showSorterTooltip: false,
     sortIcon: () => null,
     render: (traded) => {
-      return <span className="font-medium">{traded.toLocaleString("en-US")}</span>;
+      return (
+        <span className="font-medium">{traded.toLocaleString("en-US")}</span>
+      );
     },
   },
   {
@@ -265,7 +279,9 @@ export const getBorderlessTableColumns = ({ sortedInfo }) => [
     showSorterTooltip: false,
     sortIcon: () => null,
     render: (notTraded) => {
-      return <span className="font-medium">{notTraded.toLocaleString("en-US")}</span>;
+      return (
+        <span className="font-medium">{notTraded.toLocaleString("en-US")}</span>
+      );
     },
   },
   {
@@ -283,7 +299,9 @@ export const getBorderlessTableColumns = ({ sortedInfo }) => [
     sortIcon: () => null,
     render: (resubmitted) => {
       return (
-        <span className="font-medium">{resubmitted.toLocaleString("en-US")}</span>
+        <span className="font-medium">
+          {resubmitted.toLocaleString("en-US")}
+        </span>
       );
     },
   },
