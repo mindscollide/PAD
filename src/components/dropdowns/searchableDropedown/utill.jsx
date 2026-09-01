@@ -522,7 +522,12 @@ export const renderFilterContent = (
             setMaininstrumentName={setSearchMain}
           />
         );
-      if (currentPath === "/PAD/admin-reports/admin-TAT-Request-report")
+      if (
+        // FIXED: was wrong-cased ("admin-TAT-Request-report") - never
+        // matched the router's actual lowercase path, so the popover's
+        // "more options" (Department Name) never rendered on this page.
+        currentPath === "/PAD/admin-reports/admin-tat-request-report"
+      )
         return (
           <AdminUserWiseComplianceReportFilter
             setVisible={setVisible}

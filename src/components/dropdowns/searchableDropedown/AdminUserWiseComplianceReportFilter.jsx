@@ -83,12 +83,18 @@ export const AdminUserWiseComplianceReportFilter = ({
     setFieldValue(name, removeFirstSpace(value));
   };
 
+  // FIXED: every "admin-tat-request-report" check below was wrong-cased
+  // ("admin-TAT-Request-report") against the router's actual lowercase
+  // path, so this component's TAT branch never matched - filtering on
+  // TAT Request Approvals silently fell into the `else` branch and wrote
+  // to adminTradeApprovalRequestReportSearch (a different report)
+  // instead, so TAT's own list never actually got filtered.
   const handleSearchClick = () => {
     const { employeeName, departmentName } = localState;
     const searchPayload = {
       ...(currentPath === "/PAD/admin-reports/admin-user-wise-compliance-report"
         ? userActivityComplianceReportAdmin
-        : currentPath === "/PAD/admin-reports/admin-TAT-Request-report"
+        : currentPath === "/PAD/admin-reports/admin-tat-request-report"
           ? adminTATApprovalRequestReportSearch
           : adminTradeApprovalRequestReportSearch),
       employeeName: employeeName?.trim() || "",
@@ -105,7 +111,7 @@ export const AdminUserWiseComplianceReportFilter = ({
       // page silently updated the OTHER report's search state instead of its
       // own, and neither page's list ever actually got filtered.
       setUserActivityComplianceReportAdmin(searchPayload);
-    } else if (currentPath === "/PAD/admin-reports/admin-TAT-Request-report") {
+    } else if (currentPath === "/PAD/admin-reports/admin-tat-request-report") {
       setAdminTATApprovalRequestReportSearch(searchPayload);
     } else {
       setAdminTradeApprovalRequestReportSearch(searchPayload);
@@ -126,7 +132,7 @@ export const AdminUserWiseComplianceReportFilter = ({
         pageNumber: 0,
         filterTrigger: true,
       }));
-    } else if (currentPath === "/PAD/admin-reports/admin-TAT-Request-report") {
+    } else if (currentPath === "/PAD/admin-reports/admin-tat-request-report") {
       setAdminTATApprovalRequestReportSearch((prev) => ({
         ...prev,
         employeeName: "",
