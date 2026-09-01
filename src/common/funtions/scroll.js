@@ -161,33 +161,32 @@ export const useTableScrollBottom = (
           cooldownRef.current = true;
           setHasReachedBottom(true);
 
-          Promise.resolve(onBottomReachRef.current?.()).finally(() => {
-            isFetchingRef.current = false;
-            setTimeout(() => {
-              cooldownRef.current = false;
-              setHasReachedBottom(false);
+          Promise.resolve(onBottomReachRef.current?.())
+            .then((result) => {
+              isFetchingRef.current = false;
+              setTimeout(() => {
+                cooldownRef.current = false;
+                setHasReachedBottom(false);
 
-              // IntersectionObserver only fires on a visibility TRANSITION
-              // (not-visible -> visible), never just "while still
-              // visible". If the page just appended still doesn't fill
-              // the viewport (a short/filtered list, or simply the next
-              // page also fits) the sentinel never actually leaves and
-              // re-enters view, so nothing would ever trigger the next
-              // page again. unobserve+observe forces IntersectionObserver
-              // to re-evaluate and redeliver the target's *current* state
-              // immediately, so this fires again (continuing the cascade,
-              // throttled to this ~1s cadence) for as long as the
-              // sentinel is still visible, and simply goes quiet once
-              // it's finally been pushed off-screen by real content.
-              if (
-                sentinelRef.current &&
-                scrollContainer.contains(sentinelRef.current)
-              ) {
-                observer.unobserve(sentinelRef.current);
-                observer.observe(sentinelRef.current);
-              }
-            }, 1000);
-          });
+                // Stop the cascade once the caller explicitly signals there's
+                // nothing left to fetch (returns `false`). Backward compatible:
+                // every other call site returns `undefined`/`true`/nothing and
+                // keeps today's always-continue cascade unchanged.
+                if (
+                  result !== false &&
+                  sentinelRef.current &&
+                  scrollContainer.contains(sentinelRef.current)
+                ) {
+                  observer.unobserve(sentinelRef.current);
+                  observer.observe(sentinelRef.current);
+                }
+              }, 1000);
+            })
+            .catch(() => {
+              // Transient fetch error - don't treat as "no more data", but also
+              // don't leave isFetchingRef stuck true forever.
+              isFetchingRef.current = false;
+            });
         },
         {
           root: scrollContainer,

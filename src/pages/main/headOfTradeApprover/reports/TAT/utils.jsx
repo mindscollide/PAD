@@ -41,7 +41,7 @@ export const mapListData = (
   if (!records.length) return [];
   console.log(records, "departmentdepartment");
   return records.map((item) => ({
-    key: item.userID,
+    key: item.employeeID,
     employeeID: item.employeeID,
     employeeName: item.employeeName || "",
     departmentName: item.department || "",

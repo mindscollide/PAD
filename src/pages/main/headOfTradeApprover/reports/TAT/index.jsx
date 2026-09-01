@@ -188,14 +188,14 @@ const HTATAT = () => {
     }
   }, [htaTATReportSearch?.filterTrigger]);
 
-  // 🔹 Infinite Scroll (lazy loading)
   useTableScrollBottom(
     async () => {
       if (
         htaTATReportsData?.totalRecordsDataBase <=
         htaTATReportsData?.totalRecordsTable
-      )
-        return;
+      ) {
+        return false; // nothing left — tell the hook to stop re-arming
+      }
 
       try {
         setLoadingMore(true);
@@ -204,8 +204,10 @@ const HTATAT = () => {
           assetTypeListingData
         );
         await fetchApiCall(requestData, false, false);
+        return true;
       } catch (err) {
         console.error("Error loading more approvals:", err);
+        return true; // keep retrying on transient errors, don't treat as "done"
       } finally {
         setLoadingMore(false);
       }

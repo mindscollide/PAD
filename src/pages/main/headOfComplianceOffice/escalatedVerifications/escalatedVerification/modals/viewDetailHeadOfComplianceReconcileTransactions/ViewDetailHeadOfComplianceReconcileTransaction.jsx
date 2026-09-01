@@ -157,6 +157,9 @@ const ViewDetailHeadOfComplianceReconcileTransaction = () => {
     statusData.label === "Pending" &&
     isEscalatedHeadOfComplianceViewDetailData?.ticketUploaded === false;
 
+  const disableViewAndAddTicketButton =
+    statusData.label === "Compliant" || statusData.label === "Non Compliant";
+
   // REWORKED (2026-08-17): rebuilt to match the HTA sibling screen's
   // hierarchy handling exactly
   // (headOfTradeApprover/escalatedApprovals/modals/viewDetailHeadOfApprovalModal) -
@@ -603,23 +606,25 @@ const ViewDetailHeadOfComplianceReconcileTransaction = () => {
                       </Stepper>
                     </div>
                   </div>
-                  <Col span={[24]}>
-                    <div className={styles.addticketBuuton}>
-                      <CustomButton
-                        text={"View Tickets"}
-                        className={"big-ViewTicket-light-button"}
-                        onClick={handleViewTicket}
-                      />
-                      <CustomButton
-                        text={"Add Ticket"}
-                        onClick={() => {
-                          setUploadComplianceModal(true);
-                          setViewDetailHeadOfComplianceEscalated(false);
-                        }}
-                        className="big-ViewTicket-dark-button"
-                      />
-                    </div>
-                  </Col>
+                  {!disableViewAndAddTicketButton && (
+                    <Col span={[24]}>
+                      <div className={styles.addticketBuuton}>
+                        <CustomButton
+                          text={"View Tickets"}
+                          className={"big-ViewTicket-light-button"}
+                          onClick={handleViewTicket}
+                        />
+                        <CustomButton
+                          text={"Add Ticket"}
+                          onClick={() => {
+                            setUploadComplianceModal(true);
+                            setViewDetailHeadOfComplianceEscalated(false);
+                          }}
+                          className="big-ViewTicket-dark-button"
+                        />
+                      </div>
+                    </Col>
+                  )}
                 </Row>
               </div>
 

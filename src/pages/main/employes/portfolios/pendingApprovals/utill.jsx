@@ -188,9 +188,9 @@ export const getBorderlessTableColumns = (
     showSorterTooltip: false,
     sortIcon: () => null,
     render: (value, record) => (
-      <Text style={{ color: record?.type === "Buy" ? "#00640A" : "#A50000" }}>
+      <span style={{ color: record?.type === "Buy" ? "#00640A" : "#A50000" }}>
         <span className="font-medium">{value?.toLocaleString() || "0"}</span>
-      </Text>
+      </span>
     ),
   },
 
