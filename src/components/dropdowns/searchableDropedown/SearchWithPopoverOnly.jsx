@@ -823,7 +823,11 @@ const SearchWithPopoverOnly = () => {
             filterTrigger: true,
           }));
         } else if (
-          currentPath === "/PAD/admin-reports/admin-TAT-Request-report"
+          // FIXED: was wrong-cased ("admin-TAT-Request-report") - the
+          // router's actual path is lowercase, so this never matched and
+          // the main search box's Enter/icon submit silently did nothing
+          // on this page.
+          currentPath === "/PAD/admin-reports/admin-tat-request-report"
         ) {
           setAdminTATApprovalRequestReportSearch((prev) => ({
             ...prev,
@@ -921,7 +925,11 @@ const SearchWithPopoverOnly = () => {
         currentPath ===
           "/PAD/admin-reports/admin-user-wise-compliance-report" ||
         currentPath === "/PAD/admin-reports/admin-trade-approval-report" ||
-        currentPath === "/PAD/admin-reports/admin-TAT-Request-report")
+        // FIXED: was wrong-cased ("admin-TAT-Request-report") - never
+        // matched the router's actual lowercase path, so this page's
+        // placeholder silently fell through to the generic "Instrument
+        // name..." default instead of the SRS's "Employee name...".
+        currentPath === "/PAD/admin-reports/admin-tat-request-report")
     ) {
       return "Employee name. Click the icon to view more options.";
     }

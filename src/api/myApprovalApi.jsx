@@ -4162,6 +4162,126 @@ export const GetAdminTATRequestApprovalDetailsAPI = async ({
   }
 };
 
+/**
+ * ExportAdminTATRequestApprovals - the list, per
+ * API_Changes/2026-08-28_admin_tat_request_approvals_export.md (1).
+ */
+export const ExportAdminTATRequestApprovals = async ({
+  callApi,
+  showLoader,
+  requestdata,
+  navigate,
+  setOpen,
+}) => {
+  try {
+    showLoader(true);
+
+    const res = await callApi({
+      requestMethod: import.meta.env
+        .VITE_EXPORT_ADMIN_TAT_REQUEST_APPROVALS_REQUEST_METHOD,
+      endpoint: import.meta.env.VITE_API_REPORT,
+      requestData: requestdata,
+      navigate,
+      responseType: "arraybuffer",
+      headers: {
+        "Content-Type":
+          "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      },
+    });
+
+    if (handleExpiredSession(res, navigate, showLoader)) return false;
+    if (!res?.result?.isExecuted) return false;
+
+    if (res.success) {
+      try {
+        const blob = new Blob([res.result?.fileData || res.data], {
+          type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        });
+
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.setAttribute("download", "Admin-TAT-Request-Approvals.xlsx");
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        setOpen?.(false);
+        return true;
+      } catch {
+        return false;
+      }
+    }
+
+    return false;
+  } catch {
+    return false;
+  } finally {
+    showLoader(false);
+  }
+};
+
+/**
+ * ExportAdminTATRequestApprovalDetails - the per-employee View Details
+ * drill-down, per
+ * API_Changes/2026-08-28_admin_tat_request_approvals_export.md (2).
+ */
+export const ExportAdminTATRequestApprovalDetails = async ({
+  callApi,
+  showLoader,
+  requestdata,
+  navigate,
+  setOpen,
+}) => {
+  try {
+    showLoader(true);
+
+    const res = await callApi({
+      requestMethod: import.meta.env
+        .VITE_EXPORT_ADMIN_TAT_REQUEST_APPROVAL_DETAILS_REQUEST_METHOD,
+      endpoint: import.meta.env.VITE_API_REPORT,
+      requestData: requestdata,
+      navigate,
+      responseType: "arraybuffer",
+      headers: {
+        "Content-Type":
+          "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      },
+    });
+
+    if (handleExpiredSession(res, navigate, showLoader)) return false;
+    if (!res?.result?.isExecuted) return false;
+
+    if (res.success) {
+      try {
+        const blob = new Blob([res.result?.fileData || res.data], {
+          type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        });
+
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.setAttribute(
+          "download",
+          "Admin-TAT-Request-Approval-Details.xlsx"
+        );
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        setOpen?.(false);
+        return true;
+      } catch {
+        return false;
+      }
+    }
+
+    return false;
+  } catch {
+    return false;
+  } finally {
+    showLoader(false);
+  }
+};
+
 // GetAdminTradesUploadedViaPortfolioAPI - list. Status filters on the raw
 // WorkFlowStatusID (1=Pending, 8=Compliant, 9=Non-Compliant for Portfolio
 // uploads).
@@ -4284,6 +4404,126 @@ export const ExportAdminTradesUploadedViaPortfolio = async ({
         link.setAttribute(
           "download",
           "Admin-Trades-Uploaded-Via-Portfolio.xlsx"
+        );
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        setOpen?.(false);
+        return true;
+      } catch {
+        return false;
+      }
+    }
+
+    return false;
+  } catch {
+    return false;
+  } finally {
+    showLoader(false);
+  }
+};
+
+/**
+ * ExportAdminTransactionSummaryReport - the date-grouped Transactions
+ * Summary list, per
+ * API_Changes/2026-08-28_admin_transaction_summary_export.md (1).
+ */
+export const ExportAdminTransactionSummaryReport = async ({
+  callApi,
+  showLoader,
+  requestdata,
+  navigate,
+  setOpen,
+}) => {
+  try {
+    showLoader(true);
+
+    const res = await callApi({
+      requestMethod: import.meta.env
+        .VITE_EXPORT_ADMIN_TRANSACTION_SUMMARY_REPORT_REQUEST_METHOD,
+      endpoint: import.meta.env.VITE_API_REPORT,
+      requestData: requestdata,
+      navigate,
+      responseType: "arraybuffer",
+      headers: {
+        "Content-Type":
+          "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      },
+    });
+
+    if (handleExpiredSession(res, navigate, showLoader)) return false;
+    if (!res?.result?.isExecuted) return false;
+
+    if (res.success) {
+      try {
+        const blob = new Blob([res.result?.fileData || res.data], {
+          type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        });
+
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.setAttribute("download", "Admin-Transaction-Summary-Report.xlsx");
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        setOpen?.(false);
+        return true;
+      } catch {
+        return false;
+      }
+    }
+
+    return false;
+  } catch {
+    return false;
+  } finally {
+    showLoader(false);
+  }
+};
+
+/**
+ * ExportAdminTransactionSummaryViewDetails - the per-date drill-down, per
+ * API_Changes/2026-08-28_admin_transaction_summary_export.md (2).
+ */
+export const ExportAdminTransactionSummaryViewDetails = async ({
+  callApi,
+  showLoader,
+  requestdata,
+  navigate,
+  setOpen,
+}) => {
+  try {
+    showLoader(true);
+
+    const res = await callApi({
+      requestMethod: import.meta.env
+        .VITE_EXPORT_ADMIN_TRANSACTION_SUMMARY_VIEW_DETAILS_REQUEST_METHOD,
+      endpoint: import.meta.env.VITE_API_REPORT,
+      requestData: requestdata,
+      navigate,
+      responseType: "arraybuffer",
+      headers: {
+        "Content-Type":
+          "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      },
+    });
+
+    if (handleExpiredSession(res, navigate, showLoader)) return false;
+    if (!res?.result?.isExecuted) return false;
+
+    if (res.success) {
+      try {
+        const blob = new Blob([res.result?.fileData || res.data], {
+          type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        });
+
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.setAttribute(
+          "download",
+          "Admin-Transaction-Summary-View-Details.xlsx"
         );
         document.body.appendChild(link);
         link.click();
