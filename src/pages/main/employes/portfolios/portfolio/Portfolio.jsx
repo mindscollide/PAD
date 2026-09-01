@@ -22,7 +22,6 @@ import { SearchEmployeeApprovedUploadedPortFolio } from "../../../../../api/prot
 import {
   formatApiDateTime,
   formatCode,
-  toYYMMDD,
 } from "../../../../../common/funtions/rejex";
 import UploadIcon from "../../../../../assets/img/upload-icon.png";
 import { buildPortfolioRequest, getEmployeePortfolioColumns } from "./utils";
@@ -137,7 +136,10 @@ const Portfolio = ({ className, activeFilters }) => {
     // Page 1 is being loaded fresh here - the next scroll should ask for
     // page 2, see nextPageRef above.
     nextPageRef.current = 2;
-    const req = { ...buildPortfolioRequest(employeePortfolioSearch), PageNumber: 1 };
+    const req = {
+      ...buildPortfolioRequest(employeePortfolioSearch),
+      PageNumber: 1,
+    };
 
     fetchPortfolio(req, true);
 
@@ -180,7 +182,10 @@ const Portfolio = ({ className, activeFilters }) => {
       // Fresh page 1 for the new filter - same reset as the initial fetch
       // above.
       nextPageRef.current = 2;
-      const req = { ...buildPortfolioRequest(employeePortfolioSearch), PageNumber: 1 };
+      const req = {
+        ...buildPortfolioRequest(employeePortfolioSearch),
+        PageNumber: 1,
+      };
 
       fetchPortfolio(req, true);
       setEmployeePortfolioSearch((prev) => ({

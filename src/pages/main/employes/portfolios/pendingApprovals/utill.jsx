@@ -245,10 +245,9 @@ export const getBorderlessTableColumns = (
     showSorterTooltip: false,
     sortIcon: () => null,
     render: (broker, record) => {
-      const brokers = record?.brokers || [];
-      if (brokers.length > 1) {
+      if (broker === "Multiple Brokers" && record?.brokersListed) {
         return (
-          <Tooltip title={brokers.map((b) => b.brokerName).join(", ")}>
+          <Tooltip title={record.brokersListed}>
             <span>{broker}</span>
           </Tooltip>
         );

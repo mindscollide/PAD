@@ -77,6 +77,16 @@ const MyComplianceStandingReport = () => {
     totalCount
   );
 
+  // Default range: 6 months back from today — shared by initial mount and
+  // by the "×" clear action on the date picker, so both land on the same
+  // baseline instead of duplicating this logic in two places.
+  const getDefaultDateRange = () => {
+    const endDate = new Date();
+    const startDate = new Date();
+    startDate.setMonth(startDate.getMonth() - 6);
+    return { startDate, endDate };
+  };
+
   // ---------------- FETCH API FUNCTION ----------------
   const fetchApiCall = useCallback(
     async (requestData, replace = false, showLoaderFlag = true) => {
@@ -114,9 +124,8 @@ const MyComplianceStandingReport = () => {
   useEffect(() => {
     if (hasFetched.current) return;
     hasFetched.current = true;
-    const endDate = new Date();
-    const startDate = new Date();
-    startDate.setMonth(startDate.getMonth() - 6);
+
+    const { startDate, endDate } = getDefaultDateRange();
 
     setDateRange({
       StartDate: formatToYYYYMMDD(startDate),
@@ -124,7 +133,6 @@ const MyComplianceStandingReport = () => {
     });
 
     const requestData = {
-      // build your request payload here
       StartDate: startDate ? toYYMMDD(startDate) : "",
       EndDate: endDate ? toYYMMDD(endDate) : "",
     };
@@ -156,17 +164,20 @@ const MyComplianceStandingReport = () => {
   };
 
   const handleClearDates = () => {
-    // Reset state
+    // The DateRangePicker wrapper calls onClear (not onChange(null)) when
+    // the "×" is clicked — reset to the same default 6-month window used
+    // on mount and refetch, instead of clearing to empty/all-time.
+    const { startDate, endDate } = getDefaultDateRange();
+
     setDateRange({
-      StartDate: null,
-      EndDate: null,
+      StartDate: formatToYYYYMMDD(startDate),
+      EndDate: formatToYYYYMMDD(endDate),
     });
 
-    // Call API with empty values
     fetchApiCall(
       {
-        StartDate: "",
-        EndDate: "",
+        StartDate: toYYMMDD(startDate),
+        EndDate: toYYMMDD(endDate),
       },
       true,
       true

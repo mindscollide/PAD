@@ -576,7 +576,7 @@ export const GetEmployeeTradeApprovalReportRequestApi = async ({
       // Case 2 → No data
       if (
         responseMessage ===
-        "PAD_Trade_TradeServiceManager_GetEmployeeTransactionReqeustReports_02"
+        "PAD_Trade_TradeServiceManager_GetEmployeeTradeApprovalStandingSummary_02"
       ) {
         return {
           summary: [],
@@ -3154,11 +3154,8 @@ export const GetAdminUserWiseComplianceReportPolicyHistoryAPI = async ({
     }
 
     if (res.success) {
-      const {
-        responseMessage,
-        currentPolicy,
-        previouslyAssignedPolicies,
-      } = res.result;
+      const { responseMessage, currentPolicy, previouslyAssignedPolicies } =
+        res.result;
 
       if (
         responseMessage ===
