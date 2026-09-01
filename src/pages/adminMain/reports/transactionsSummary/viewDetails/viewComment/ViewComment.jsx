@@ -19,8 +19,7 @@ import { parseComments } from "./utils";
 // {userID, name, comments} per the fixed endpoint.
 const ViewCommentTransaction = () => {
   // This is Global State for modal which is create in ContextApi
-  const { isViewComments, setIsViewComments, setIsViewDetail } =
-    useGlobalModal();
+  const { isViewComments, setIsViewComments } = useGlobalModal();
 
   //This is the Global state of Context Api
   const { selectedWorkFlowViewDetaild } = useMyApproval();
@@ -28,12 +27,6 @@ const ViewCommentTransaction = () => {
   const record = selectedWorkFlowViewDetaild || null;
   const acceptanceList = parseComments(record?.approvalComment);
   const rejectionList = parseComments(record?.rejectionComment);
-
-  // This is onClick of Go Back Functionality
-  const onClickGoBack = () => {
-    setIsViewComments(false);
-    setIsViewDetail(true);
-  };
 
   //This is the onCLick of Close Comment
   const onClickCloseComment = () => {
@@ -43,10 +36,13 @@ const ViewCommentTransaction = () => {
   return (
     <>
       {/* Import View Comment Modal Which Is Create inside modal folder Component because now we can use on multiple time */}
+      {/* FIXED: dropped onGoBack - this modal only opens from the View
+          Details table row's own "View Comments" button (no prior modal
+          to return to), so ViewCommentModal (which only renders "Go Back"
+          when an onGoBack prop is passed) now shows just "Close". */}
       <ViewCommentModal
         visible={isViewComments}
         onClose={onClickCloseComment}
-        onGoBack={onClickGoBack}
         CommentHeading={"View Comments"}
         commentTypeFlag={true}
         acceptanceList={acceptanceList}

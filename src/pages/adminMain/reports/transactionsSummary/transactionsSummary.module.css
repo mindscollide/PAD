@@ -130,6 +130,26 @@
   gap: 12px; /* space between items */
 }
 
+/* 🔹 Transaction Date label shown before the Export button on View
+   Details - same label/value convention as other View Details pages'
+   info rows (e.g. TAT Request Approvals' mainTitleTextClass/
+   subTitleTextClass). */
+.transactionDateLabel {
+  font-family: "Switzer Variable";
+  font-size: 16px;
+  font-weight: 700;
+  color: #424242;
+  margin: 0;
+  white-space: nowrap;
+}
+
+.transactionDateValue {
+  font-family: "Switzer Variable";
+  font-size: 16px;
+  font-weight: 500;
+  color: #424242;
+}
+
 .exportButtonText {
   display: flex;
   align-items: center;

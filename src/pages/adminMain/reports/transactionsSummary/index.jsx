@@ -11,6 +11,9 @@ import PageLayout from "../../../../components/pageContainer/pageContainer";
 import {
   buildApiRequest,
   buildApiRequestViewDetails,
+  buildExportRequest,
+  buildExportRequestViewDetails,
+  formatDateOnly,
   getBorderlessTableColumns,
   getBorderlessTableColumnsViewDetails,
   mappingDateWiseTransactionReport,
@@ -24,7 +27,8 @@ import { approvalStatusMap } from "../../../../components/tables/borderlessTable
 import style from "./transactionsSummary.module.css";
 import { useMyApproval } from "../../../../context/myApprovalContaxt";
 import {
-  DownloadComplianceOfficerDateWiseTransactionReportRequestAPI,
+  ExportAdminTransactionSummaryReport,
+  ExportAdminTransactionSummaryViewDetails,
   GetAdminTransactionSummaryReportAPI,
   GetAdminTransactionSummaryViewDetailsAPI,
 } from "../../../../api/myApprovalApi";
@@ -274,7 +278,12 @@ const AdminTransactionsSummarysReports = () => {
       TransactionDate: transactionDate.split(" ")[0],
       PageNumber: 1,
       Length: 10,
-      QuantitySearch: "",
+      // FIXED (API_Changes/2026-08-28_admin_transaction_summary_view_
+      // details_fix.md "Update"): QuantitySearch is a nullable number
+      // (`long?`) server-side now - "" fails strict System.Text.Json
+      // deserialization just like a numeric value used to, and this is
+      // the very first request fired when opening View Details.
+      QuantitySearch: null,
       InstrumentNameSearch: "",
       RequesterNameSearch: "",
     };
@@ -307,11 +316,6 @@ const AdminTransactionsSummarysReports = () => {
     const start = dates[0];
     const end = dates[1];
 
-    setDateRange({
-      StartDate: start,
-      EndDate: end,
-    });
-
     setCOTransactionsSummarysReportsSearch((prev) => ({
       ...prev,
       startDate: start,
@@ -319,6 +323,14 @@ const AdminTransactionsSummarysReports = () => {
       pageNumber: 0,
       filterTrigger: true,
     }));
+
+    // Clears the picker's own input back to its placeholder once the
+    // range is applied - the selected range is still visible as the
+    // "dateRange" active-filter tag below (reads straight off
+    // coTransactionsSummarysReportsSearch, set above), and still drives
+    // the API request the same way. Same convention as Date-wise
+    // Transaction Report's own date picker.
+    setDateRange({ StartDate: null, EndDate: null });
   };
 
   const handleClearDates = () => {
@@ -337,29 +349,50 @@ const AdminTransactionsSummarysReports = () => {
   };
 
   // 🔷 Excel Report download Api Hit
+  // FIXED (API_Changes/2026-08-28_admin_transaction_summary_export.md):
+  // was calling DownloadComplianceOfficerDateWiseTransactionReportRequestAPI
+  // - CO's own Date-wise Transaction Report export, an entirely different
+  // report - with a request payload that was also always hardcoded
+  // empty. Wired to the two real dedicated endpoints now, branching on
+  // which screen is currently showing (list vs View Details drill-down),
+  // same as the rest of this page's dual-mode logic.
   const downloadMyTradeApprovalLineManagerInExcelFormat = async () => {
-    showLoader(true);
-    const requestdata = {
-      InstrumentName: "",
-      DepartmentName: "",
-      Quantity: 0,
-      StatusIds: [],
-      TypeIds: [],
-      RequesterName: "",
-      StartDate: "",
-      EndDate: "",
-    };
+    if (coTransactionSummaryReportViewDetailsFlag) {
+      await ExportAdminTransactionSummaryViewDetails({
+        callApi,
+        showLoader,
+        requestdata: buildExportRequestViewDetails(
+          coTransactionsSummarysReportsViewDetailsSearch
+        ),
+        navigate,
+        setOpen,
+      });
+      return;
+    }
 
-    await DownloadComplianceOfficerDateWiseTransactionReportRequestAPI({
+    await ExportAdminTransactionSummaryReport({
       callApi,
       showLoader,
-      requestdata: requestdata,
+      requestdata: buildExportRequest(coTransactionsSummarysReportsSearch),
       navigate,
+      setOpen,
     });
   };
 
-  /** 🔹 Handle removing individual filter */
+  /** 🔹 Handle removing individual filter
+   * FIXED: this always reset coTransactionsSummarysReportsViewDetailSearch
+   * (the View Details drill-down's own filters), even while on the main
+   * summary list - which has no filters of its own besides the date range
+   * picker (a completely different search-state object,
+   * coTransactionsSummarysReportsSearch), so the tag never actually
+   * appeared for it in the first place. Branch on which screen is active,
+   * same as activeFilters below. */
   const handleRemoveFilter = (key) => {
+    if (key === "dateRange") {
+      handleClearDates();
+      return;
+    }
+
     const resetMap = {
       instrumentNameSearch: { instrumentNameSearch: "" },
       requesterNameSearch: { requesterNameSearch: "" },
@@ -376,42 +409,61 @@ const AdminTransactionsSummarysReports = () => {
 
   /** 🔹 Handle removing all filters */
   const handleRemoveAllFilters = () => {
-    setCOTransactionsSummarysReportsViewDetailSearch((prev) => ({
-      ...prev,
-      instrumentNameSearch: "",
-      requesterNameSearch: "",
-      quantitySearch: "",
-      pageNumber: 0,
-      filterTrigger: true,
-    }));
+    if (coTransactionSummaryReportViewDetailsFlag) {
+      setCOTransactionsSummarysReportsViewDetailSearch((prev) => ({
+        ...prev,
+        instrumentNameSearch: "",
+        requesterNameSearch: "",
+        quantitySearch: "",
+        pageNumber: 0,
+        filterTrigger: true,
+      }));
+    } else {
+      handleClearDates();
+    }
   };
 
-  /** 🔹 Build Active Filters for display */
+  /** 🔹 Build Active Filters for display
+   * FIXED: was always read off coTransactionsSummarysReportsViewDetailsSearch
+   * regardless of which screen was showing - so the main list's date range
+   * filter (the only filter it has) never produced a tag at all, since
+   * that search state doesn't even hold startDate/endDate. Now mirrors
+   * Date-wise Transaction Report's own "requestDate" tag convention for
+   * the list screen, and keeps the existing instrument/employee/quantity
+   * tags for the View Details drill-down screen.
+   */
   const activeFilters = (() => {
-    const { instrumentNameSearch, requesterNameSearch, quantitySearch } =
-      coTransactionsSummarysReportsViewDetailsSearch || {};
+    if (coTransactionSummaryReportViewDetailsFlag) {
+      const { instrumentNameSearch, requesterNameSearch, quantitySearch } =
+        coTransactionsSummarysReportsViewDetailsSearch || {};
 
-    return [
-      instrumentNameSearch && {
-        key: "instrumentNameSearch",
-        value:
-          instrumentNameSearch.length > 13
-            ? instrumentNameSearch.slice(0, 13) + "..."
-            : instrumentNameSearch,
-      },
-      requesterNameSearch && {
-        key: "requesterNameSearch",
-        value:
-          requesterNameSearch.length > 13
-            ? requesterNameSearch.slice(0, 13) + "..."
-            : requesterNameSearch,
-      },
-      quantitySearch &&
-        Number(quantitySearch) > 0 && {
-          key: "quantitySearch",
-          value: Number(quantitySearch).toLocaleString("en-US"),
+      return [
+        instrumentNameSearch && {
+          key: "instrumentNameSearch",
+          value:
+            instrumentNameSearch.length > 13
+              ? instrumentNameSearch.slice(0, 13) + "..."
+              : instrumentNameSearch,
         },
-    ].filter(Boolean);
+        requesterNameSearch && {
+          key: "requesterNameSearch",
+          value:
+            requesterNameSearch.length > 13
+              ? requesterNameSearch.slice(0, 13) + "..."
+              : requesterNameSearch,
+        },
+        quantitySearch &&
+          Number(quantitySearch) > 0 && {
+            key: "quantitySearch",
+            value: Number(quantitySearch).toLocaleString("en-US"),
+          },
+      ].filter(Boolean);
+    }
+
+    const { startDate, endDate } = coTransactionsSummarysReportsSearch || {};
+    return startDate && endDate
+      ? [{ key: "dateRange", value: `${startDate} → ${endDate}` }]
+      : [];
   })();
 
   const tableRows = coTransactionSummaryReportViewDetailsFlag
@@ -482,6 +534,16 @@ const AdminTransactionsSummarysReports = () => {
                 onChange={handleDateChange}
                 onClear={handleClearDates}
               />
+            )}
+            {coTransactionSummaryReportViewDetailsFlag && (
+              <p className={style.transactionDateLabel}>
+                Transaction Date:{" "}
+                <span className={style.transactionDateValue}>
+                  {formatDateOnly(
+                    coTransactionsSummarysReportsViewDetailsSearch?.transactionDate
+                  )}
+                </span>
+              </p>
             )}
             <CustomButton
               text={

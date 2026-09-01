@@ -145,7 +145,6 @@ const Headers = () => {
         "/PAD/admin-reports/admin-policy-breaches-report",
         "/PAD/admin-reports/admin-trade-approval-report",
         "/PAD/admin-reports/admin-date-wise-transaction-report",
-        "/PAD/admin-reports/admin-TAT-Request-report",
         "/PAD/admin-reports/admin-trades-uploaded-via-portfolio-report",
       ].includes(currentPath) ||
         // User-wise Compliance Report: same header search bar as every
@@ -160,7 +159,17 @@ const Headers = () => {
           !showViewDetailOfUserwiseComplianceReportAdmin) ||
         (currentPath ===
           "/PAD/admin-reports/admin-transactions-summary-report" &&
-          coTransactionSummaryReportViewDetailsFlag))
+          coTransactionSummaryReportViewDetailsFlag) ||
+        // TAT Request Approvals: FIXED - path was wrong-cased
+        // ("admin-TAT-Request-report" vs the router's actual lowercase
+        // "admin-tat-request-report"), so this NEVER matched and the
+        // Employee Name/Department Name search the SRS calls for never
+        // showed. List and View Details share this same URL (an in-page
+        // toggle, not a route change, same as Transactions Summary/
+        // User-wise Compliance above) - hidden on View Details, which has
+        // no search of its own per SRS.
+        (currentPath === "/PAD/admin-reports/admin-tat-request-report" &&
+          !showViewDetailPageInTatOnHta))
     ) {
       return true;
     }

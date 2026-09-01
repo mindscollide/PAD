@@ -1,9 +1,19 @@
 import React, { useEffect, useRef, useState, useCallback } from "react";
 import { Breadcrumb, Col, Row } from "antd";
-import { buildApiRequest, getBorderlessTableColumns, mapListData } from "./utils";
+import { UpOutlined, DownOutlined } from "@ant-design/icons";
+import Excel from "../../../../../assets/img/xls.png";
+import {
+  buildApiRequest,
+  buildExportRequest,
+  getBorderlessTableColumns,
+  mapListData,
+} from "./utils";
 import style from "./ViewDetails.module.css";
 import { useMyApproval } from "../../../../../context/myApprovalContaxt";
-import { GetAdminTATRequestApprovalDetailsAPI } from "../../../../../api/myApprovalApi";
+import {
+  ExportAdminTATRequestApprovalDetails,
+  GetAdminTATRequestApprovalDetailsAPI,
+} from "../../../../../api/myApprovalApi";
 import { useNotification } from "../../../../../components/NotificationProvider/NotificationProvider";
 import { useApi } from "../../../../../context/ApiContext";
 import { useGlobalLoader } from "../../../../../context/LoaderContext";
@@ -11,6 +21,7 @@ import { useNavigate } from "react-router-dom";
 import { useGlobalModal } from "../../../../../context/GlobalModalContext";
 import { useTableScrollBottom } from "../../../../../common/funtions/scroll";
 import { BorderlessTable, PageLayout } from "../../../../../components";
+import CustomButton from "../../../../../components/buttons/button";
 
 /**
  * Admin TAT Request Approvals - View Details (per employee), per
@@ -51,6 +62,7 @@ const ViewDetails = () => {
   // -------------------- Local State --------------------
   const [sortedInfo, setSortedInfo] = useState({});
   const [loadingMore, setLoadingMore] = useState(false);
+  const [open, setOpen] = useState(false);
   // Reuses the list's already-applied date range (snapshotted onto
   // filterStartDate/filterEndDate when "View Details" was clicked) rather
   // than tracking its own independent picker state.
@@ -136,6 +148,20 @@ const ViewDetails = () => {
     setShowViewDetailPageInTatOnHta(false);
   };
 
+  // 🔷 Excel Report download Api Hit
+  // ADDED (API_Changes/2026-08-28_admin_tat_request_approvals_export.md):
+  // was disabled with an explanatory note that no endpoint existed yet -
+  // wired to the real one now.
+  const downloadAdminTATRequestApprovalDetailsInExcelFormat = async () => {
+    await ExportAdminTATRequestApprovalDetails({
+      callApi,
+      showLoader,
+      requestdata: buildExportRequest(search, employeeID),
+      navigate,
+      setOpen,
+    });
+  };
+
   return (
     <>
       <Row justify="start" align="middle" className={style.breadcrumbRow}>
@@ -169,6 +195,40 @@ const ViewDetails = () => {
               },
             ]}
           />
+        </Col>
+
+        {/* ADDED per SRS ("TAT Request Approvals" > View Details):
+            "Columns to Export: Date Range, Employee ID, Employee Name,
+            Department Name, Request Count... The details will be
+            Instrument Name, Initiated At, Trade Type, Quantity, Action
+            By, Action At and TAT." */}
+        <Col>
+          <div className={style.headerActionsRow}>
+            <CustomButton
+              text={
+                <span className={style.exportButtonText}>
+                  Export
+                  <span className={style.iconContainer}>
+                    {open ? <UpOutlined /> : <DownOutlined />}
+                  </span>
+                </span>
+              }
+              className="small-light-button-report"
+              onClick={() => setOpen((prev) => !prev)}
+            />
+          </div>
+
+          {open && (
+            <div className={style.dropdownExport}>
+              <div
+                className={style.dropdownItem}
+                onClick={downloadAdminTATRequestApprovalDetailsInExcelFormat}
+              >
+                <img src={Excel} alt="Excel" draggable={false} />
+                <span>Export Excel</span>
+              </div>
+            </div>
+          )}
         </Col>
       </Row>
 

@@ -7,12 +7,20 @@ import BorderlessTable from "../../../../components/tables/borderlessTable/borde
 import PageLayout from "../../../../components/pageContainer/pageContainer";
 
 // 🔹 Table Config
-import { buildApiRequest, getBorderlessTableColumns, mapListData } from "./utils";
+import {
+  buildApiRequest,
+  buildExportRequest,
+  getBorderlessTableColumns,
+  mapListData,
+} from "./utils";
 
 // 🔹 Styles
 import style from "./AdminTATRequestApprovals.module.css";
 import { useMyApproval } from "../../../../context/myApprovalContaxt";
-import { GetAdminTATRequestApprovalsAPI } from "../../../../api/myApprovalApi";
+import {
+  ExportAdminTATRequestApprovals,
+  GetAdminTATRequestApprovalsAPI,
+} from "../../../../api/myApprovalApi";
 import { useNotification } from "../../../../components/NotificationProvider/NotificationProvider";
 import { useApi } from "../../../../context/ApiContext";
 import { useGlobalLoader } from "../../../../context/LoaderContext";
@@ -167,11 +175,14 @@ const AdminTATRequestApprovals = () => {
   const handleViewDetails = (record) => {
     // Snapshot the list's currently-applied date range onto the record so
     // View Details can show it as text - same convention HTA's own TAT
-    // View Details page uses (filterStartDate/filterEndDate).
+    // View Details page uses (filterStartDate/filterEndDate). Reads off
+    // adminTATApprovalRequestReportSearch (the actually-applied filter),
+    // not the local dateRange picker state - that one self-clears right
+    // after each apply, so it's always empty by the time this fires.
     setShowSelectedTatDataOnViewDetailHTA({
       ...record,
-      filterStartDate: dateRange?.StartDate,
-      filterEndDate: dateRange?.EndDate,
+      filterStartDate: adminTATApprovalRequestReportSearch?.startDate,
+      filterEndDate: adminTATApprovalRequestReportSearch?.endDate,
     });
     setShowViewDetailPageInTatOnHta(true);
   };
@@ -240,26 +251,36 @@ const AdminTATRequestApprovals = () => {
     ].filter(Boolean);
   })();
 
-  // ADDED: date range now flows through the same filter state +
-  // filterTrigger effect as employeeName/departmentName, into
-  // GetAdminTATRequestApprovalsAPI via buildApiRequest, which already
-  // reads searchState.startDate/endDate.
+  // Date range flows through the same filter state + filterTrigger effect
+  // as employeeName/departmentName, into GetAdminTATRequestApprovalsAPI
+  // via buildApiRequest, which already reads searchState.startDate/
+  // endDate - mirrors Date-wise Transaction Report's own handleDateChange/
+  // handleClearDates exactly (same shape, same comments).
   const handleDateChange = (dates) => {
-    if (!dates || dates.length !== 2) return;
+    if (dates && dates.length === 2) {
+      setAdminTATApprovalRequestReportSearch((prev) => ({
+        ...prev,
+        startDate: dates[0],
+        endDate: dates[1],
+        pageNumber: 0,
+        filterTrigger: true,
+      }));
 
-    const [start, end] = dates;
-    setDateRange({ StartDate: start, EndDate: end });
-    setAdminTATApprovalRequestReportSearch((prev) => ({
-      ...prev,
-      startDate: start,
-      endDate: end,
-      pageNumber: 0,
-      filterTrigger: true,
-    }));
+      // Clears the picker's own input back to its placeholder once the
+      // range is applied - the selected range is still visible as the
+      // "dateRange" active-filter tag below (reads straight off
+      // adminTATApprovalRequestReportSearch, set above), and still drives
+      // the API request the same way.
+      setDateRange({ StartDate: null, EndDate: null });
+    }
   };
 
   const handleClearDates = () => {
-    setDateRange({ StartDate: null, EndDate: null });
+    setDateRange({
+      StartDate: null,
+      EndDate: null,
+    });
+
     setAdminTATApprovalRequestReportSearch((prev) => ({
       ...prev,
       startDate: null,
@@ -267,6 +288,20 @@ const AdminTATRequestApprovals = () => {
       pageNumber: 0,
       filterTrigger: true,
     }));
+  };
+
+  // 🔷 Excel Report download Api Hit
+  // ADDED (API_Changes/2026-08-28_admin_tat_request_approvals_export.md):
+  // was disabled with an explanatory note that no endpoint existed yet -
+  // wired to the real one now.
+  const downloadAdminTATRequestApprovalsInExcelFormat = async () => {
+    await ExportAdminTATRequestApprovals({
+      callApi,
+      showLoader,
+      requestdata: buildExportRequest(adminTATApprovalRequestReportSearch),
+      navigate,
+      setOpen,
+    });
   };
 
   // -------------------- Render --------------------
@@ -326,13 +361,13 @@ const AdminTATRequestApprovals = () => {
             />
           </div>
 
-          {/* 🔷 Export Dropdown - no ExportAdminTATRequestApprovals endpoint
-              exists on BE yet (requested in
-              API_Changes/2026-08-28_admin_tat_request_approvals_export.md),
-              so this stays disabled until it's built. */}
+          {/* 🔷 Export Dropdown */}
           {open && (
             <div className={style.dropdownExport}>
-              <div className={style.dropdownItem} style={{ opacity: 0.5, cursor: "not-allowed" }}>
+              <div
+                className={style.dropdownItem}
+                onClick={downloadAdminTATRequestApprovalsInExcelFormat}
+              >
                 <img src={Excel} alt="Excel" draggable={false} />
                 <span>Export Excel</span>
               </div>

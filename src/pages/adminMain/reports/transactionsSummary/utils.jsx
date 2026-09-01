@@ -14,7 +14,7 @@ import { withSortIcon } from "../../../../common/funtions/tableIcon";
  * whenever there's no time part to split on - which is always the case
  * here, so dates never actually got formatted.
  */
-const formatDateOnly = (yyyyMMdd) => {
+export const formatDateOnly = (yyyyMMdd) => {
   if (!yyyyMMdd || typeof yyyyMMdd !== "string" || yyyyMMdd.length < 8)
     return "—";
   return `${yyyyMMdd.slice(0, 4)}-${yyyyMMdd.slice(4, 6)}-${yyyyMMdd.slice(
@@ -36,6 +36,17 @@ export const buildApiRequest = (searchState = {}) => ({
   Length: Number(searchState.pageSize) || 10,
   EndDate: searchState.endDate ? toYYMMDD(searchState.endDate) : "",
   StartDate: searchState.startDate ? toYYMMDD(searchState.startDate) : "",
+});
+
+/**
+ * ExportAdminTransactionSummaryReport request payload - same filters as
+ * buildApiRequest above, minus PageNumber/Length (an export always
+ * returns every matching row in one file, per
+ * API_Changes/2026-08-28_admin_transaction_summary_export.md).
+ */
+export const buildExportRequest = (searchState = {}) => ({
+  StartDate: searchState.startDate ? toYYMMDD(searchState.startDate) : "",
+  EndDate: searchState.endDate ? toYYMMDD(searchState.endDate) : "",
 });
 
 /**
@@ -197,7 +208,30 @@ export const buildApiRequestViewDetails = (searchState = {}) => ({
   PageNumber: Number(searchState.pageNumber) || 1,
   Length: Number(searchState.pageSize) || 10,
   TransactionDate: searchState.transactionDate,
-  QuantitySearch: searchState.quantitySearch || "",
+  // FIXED (API_Changes/2026-08-28_admin_transaction_summary_view_details_
+  // fix.md "Update"): QuantitySearch is now a nullable number
+  // (`long?`) server-side, deserialized by strict System.Text.Json - an
+  // empty string ("", the default/unset value here) fails to deserialize
+  // into it exactly like the numeric-value crash the doc fixed, just for
+  // the opposite (no filter typed) case, which is the default state of
+  // this screen. Must send null, not "", when unset.
+  QuantitySearch: searchState.quantitySearch
+    ? Number(searchState.quantitySearch)
+    : null,
+  InstrumentNameSearch: searchState.instrumentNameSearch || "",
+  RequesterNameSearch: searchState.requesterNameSearch || "",
+});
+
+/**
+ * ExportAdminTransactionSummaryViewDetails request payload - same filters
+ * as buildApiRequestViewDetails above, minus PageNumber/Length, per
+ * API_Changes/2026-08-28_admin_transaction_summary_export.md (2).
+ */
+export const buildExportRequestViewDetails = (searchState = {}) => ({
+  TransactionDate: searchState.transactionDate,
+  QuantitySearch: searchState.quantitySearch
+    ? Number(searchState.quantitySearch)
+    : null,
   InstrumentNameSearch: searchState.instrumentNameSearch || "",
   RequesterNameSearch: searchState.requesterNameSearch || "",
 });
@@ -351,27 +385,36 @@ export const getBorderlessTableColumnsViewDetails = ({
     showSorterTooltip: false,
     sortIcon: () => null,
     render: (instrumentName, record) => {
-      // ADDED: instrumentShortCode is new on this response
-      // (2026-08-28_admin_transaction_summary_view_details_fix.md).
-      const shortCode = record?.instrumentShortCode;
-      const display = shortCode
-        ? `${shortCode} - ${instrumentName || ""}`
-        : instrumentName || "—";
+      // FIXED: same badge + short-code treatment as Date-wise Transaction
+      // Report's own Instrument column - instrumentShortCode is new on
+      // this response (2026-08-28_admin_transaction_summary_view_details_
+      // fix.md). No per-row asset-type short code on this endpoint (unlike
+      // Date-wise Transaction Report's assetTypeShortCode), so the badge
+      // falls back to "EQ" - same fallback used elsewhere in the app when
+      // a real asset-type value isn't available.
+      const shortCode = record?.instrumentShortCode || "";
       return (
-        <Tooltip title={instrumentName} placement="topLeft">
-          <span
-            className="font-medium"
-            style={{
-              overflow: "hidden",
-              textOverflow: "ellipsis",
-              whiteSpace: "nowrap",
-              maxWidth: "200px",
-              display: "inline-block",
-            }}
-          >
-            {display}
+        <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+          <span className="custom-shortCode-asset" style={{ minWidth: 30 }}>
+            EQ
           </span>
-        </Tooltip>
+          <Tooltip title={instrumentName} placement="topLeft">
+            <span
+              className="font-medium"
+              style={{
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+                whiteSpace: "nowrap",
+                maxWidth: "160px",
+                display: "inline-block",
+                cursor: "pointer",
+              }}
+              title={shortCode}
+            >
+              {shortCode || instrumentName || "—"}
+            </span>
+          </Tooltip>
+        </div>
       );
     },
   },

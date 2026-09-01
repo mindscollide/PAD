@@ -25,6 +25,18 @@ export const buildApiRequest = (searchState = {}, employeeID) => ({
 });
 
 /**
+ * ExportAdminTATRequestApprovalDetails request payload - same filters as
+ * buildApiRequest above, minus PageNumber/Length (an export always
+ * returns every matching row in one file), per
+ * API_Changes/2026-08-28_admin_tat_request_approvals_export.md.
+ */
+export const buildExportRequest = (searchState = {}, employeeID) => ({
+  EmployeeID: employeeID,
+  StartDate: searchState.startDate ? toYYMMDD(searchState.startDate) : "",
+  EndDate: searchState.endDate ? toYYMMDD(searchState.endDate) : "",
+});
+
+/**
  * Maps GetAdminTATRequestApprovalDetailsAPI records into a UI-friendly
  * format - one row per request. actionBy reflects whichever actor's
  * bundle was the last one modified on that workflow.
@@ -110,11 +122,17 @@ export const getBorderlessTableColumns = ({ sortedInfo }) => [
     ),
   },
   {
-    title: "Type",
+    // FIXED per SRS ("TAT Request Approvals" > View Details): "Sorting
+    // will be applied on all columns" - this one had none.
+    title: withSortIcon("Type", "type", sortedInfo),
     dataIndex: "type",
     key: "type",
     width: 100,
     ellipsis: true,
+    sorter: (a, b) => (a.type || "").localeCompare(b.type || ""),
+    sortOrder: sortedInfo?.columnKey === "type" ? sortedInfo.order : null,
+    showSorterTooltip: false,
+    sortIcon: () => null,
     render: (type) => (
       <span className={type === "Buy" ? "text-green-600" : "text-red-600"}>{type}</span>
     ),
@@ -175,8 +193,11 @@ export const getBorderlessTableColumns = ({ sortedInfo }) => [
     showSorterTooltip: false,
     sortIcon: () => null,
     render: (_, record) => (
+      // FIXED: SRS format is "04 H, 32 M" (zero-padded, space before the
+      // unit), same convention as the list's own Avg. Turnaround Time.
       <span className="font-medium">
-        {record.tatHours}H, {record.tatMinutes}M
+        {String(record.tatHours).padStart(2, "0")} H,{" "}
+        {String(record.tatMinutes).padStart(2, "0")} M
       </span>
     ),
   },
