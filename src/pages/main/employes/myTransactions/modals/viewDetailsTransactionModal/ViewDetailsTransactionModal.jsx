@@ -105,7 +105,7 @@ const ViewDetailsTransactionModal = () => {
     }));
 
   const userProfileData = JSON.parse(
-    sessionStorage.getItem("user_profile_data") || "{}",
+    sessionStorage.getItem("user_profile_data") || "{}"
   );
   const loggedInUserID = userProfileData?.userID;
 
@@ -149,7 +149,7 @@ const ViewDetailsTransactionModal = () => {
     const rawTimestamp = (date, time) => `${date || ""}${time || ""}`;
 
     const escalatedUserIDs = new Set(
-      escalations.map((e) => e?.escalatedFromID).filter((id) => id != null),
+      escalations.map((e) => e?.escalatedFromID).filter((id) => id != null)
     );
 
     const steps = [];
@@ -160,10 +160,10 @@ const ViewDetailsTransactionModal = () => {
         sortKey: rawTimestamp(esc?.escalatedOnDate, esc?.escalatedOnTime),
         iconSrc: EscaltedOn,
         title: escalatedByYou
-          ? "Escalated by You"
-          : `Escalated by ${esc?.escalatedFrom}`,
+          ? "Escalated on You"
+          : `Escalated on ${esc?.escalatedFrom}`,
         date: formatApiDateTime(
-          `${esc?.escalatedOnDate} ${esc?.escalatedOnTime}`,
+          `${esc?.escalatedOnDate} ${esc?.escalatedOnTime}`
         ),
       });
 
@@ -191,7 +191,7 @@ const ViewDetailsTransactionModal = () => {
         (p) =>
           p.userID === esc?.escalatedFromID &&
           rawTimestamp(p.modifiedDate, p.modifiedTime) ===
-            `${closedDate}${closedTime}`,
+            `${closedDate}${closedTime}`
       );
       const isNonCompliant = matchingPerson?.bundleStatusID === 3;
       const closedByYou = esc?.escalationClosedBy === loggedInUserID;
@@ -203,9 +203,9 @@ const ViewDetailsTransactionModal = () => {
           ? isNonCompliant
             ? "Marked Non-Compliant by You"
             : "Marked Compliant by You"
-          : `Marked ${
-              isNonCompliant ? "Non-Compliant" : "Compliant"
-            } by ${esc?.escalationClosedByName}`,
+          : `Marked ${isNonCompliant ? "Non-Compliant" : "Compliant"} by ${
+              esc?.escalationClosedByName
+            }`,
         date: convertUTCToCurrentTimeZone(closedDate, closedTime),
       });
     });
@@ -216,7 +216,7 @@ const ViewDetailsTransactionModal = () => {
         const { fullName, bundleStatusID, modifiedDate, modifiedTime, userID } =
           person;
         const formattedDateTime = formatApiDateTime(
-          `${modifiedDate} ${modifiedTime}`,
+          `${modifiedDate} ${modifiedTime}`
         );
         const isYou = userID === loggedInUserID;
 
@@ -257,7 +257,7 @@ const ViewDetailsTransactionModal = () => {
   // -----------------------
   console.log(
     "employeeTransactionViewDetailData",
-    employeeTransactionViewDetailData,
+    employeeTransactionViewDetailData
   );
   /**
    * Fetch workflow files for viewing tickets and open the ticket modal
@@ -389,7 +389,7 @@ const ViewDetailsTransactionModal = () => {
                 >
                   <label className={styles.viewDetailSubLabels}>
                     {dashBetweenApprovalAssets(
-                      tradedWorkFlowData?.[0]?.tradeApprovalID,
+                      tradedWorkFlowData?.[0]?.tradeApprovalID
                     )}
                   </label>
                 </div>
@@ -402,7 +402,7 @@ const ViewDetailsTransactionModal = () => {
                 </label>
                 <label className={styles.viewDetailSubLabels}>
                   {dashBetweenApprovalAssets(
-                    variableOfDetailData?.tradeApprovalID,
+                    variableOfDetailData?.tradeApprovalID
                   )}
                 </label>
               </div>
@@ -414,8 +414,8 @@ const ViewDetailsTransactionModal = () => {
                   {variableOfDetailData?.approvalTypeID === "1"
                     ? "Buy"
                     : variableOfDetailData?.approvalTypeID === "2"
-                      ? "Sell"
-                      : "-"}
+                    ? "Sell"
+                    : "-"}
                 </label>
               </div>
             </Col>
@@ -459,7 +459,7 @@ const ViewDetailsTransactionModal = () => {
                 >
                   <label className={styles.viewDetailSubLabels}>
                     {formatApiDateTime(
-                      `${selectedViewDetailOfTransaction?.transactionConductedDate} ${selectedViewDetailOfTransaction?.transactionConductedTime}`,
+                      `${selectedViewDetailOfTransaction?.transactionConductedDate} ${selectedViewDetailOfTransaction?.transactionConductedTime}`
                     )}
                   </label>
                   {employeeTransactionViewDetailData?.isEscalated && (

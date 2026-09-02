@@ -190,8 +190,8 @@ const ViewDetailReconcileTransaction = () => {
         sortKey: rawTimestamp(esc?.escalatedOnDate, esc?.escalatedOnTime),
         iconSrc: EscaltedOn,
         title: escalatedByYou
-          ? "Escalated by You"
-          : `Escalated by ${esc?.escalatedFrom}`,
+          ? "Escalated on You"
+          : `Escalated on ${esc?.escalatedFrom}`,
         date: convertUTCToCurrentTimeZone(
           esc?.escalatedOnDate,
           esc?.escalatedOnTime
@@ -239,9 +239,9 @@ const ViewDetailReconcileTransaction = () => {
           ? isNonCompliant
             ? "Marked Non-Compliant by You"
             : "Marked Compliant by You"
-          : `Marked ${
-              isNonCompliant ? "Non-Compliant" : "Compliant"
-            } by ${esc?.escalationClosedByName}`,
+          : `Marked ${isNonCompliant ? "Non-Compliant" : "Compliant"} by ${
+              esc?.escalationClosedByName
+            }`,
         date: convertUTCToCurrentTimeZone(closedDate, closedTime),
       });
     });

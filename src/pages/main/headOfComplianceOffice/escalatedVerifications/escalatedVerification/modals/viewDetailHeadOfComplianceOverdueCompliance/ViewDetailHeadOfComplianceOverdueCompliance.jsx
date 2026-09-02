@@ -198,8 +198,8 @@ const ViewDetailHeadOfComplianceOverdueCompliance = () => {
       iconSrc: EscaltedOn,
       title:
         esc?.escalatedFromID === loggedInUserID
-          ? "Escalated by You"
-          : `Escalated by ${esc?.escalatedFrom}`,
+          ? "Escalated on You"
+          : `Escalated on ${esc?.escalatedFrom}`,
       desc: formatApiDateTime(
         `${esc?.escalatedOnDate} ${esc?.escalatedOnTime}`
       ),
