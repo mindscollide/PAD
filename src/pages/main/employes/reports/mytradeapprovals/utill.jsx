@@ -251,6 +251,7 @@ export const getBorderlessTableColumns = ({
     dataIndex: "isEscalated",
     key: "isEscalated",
     ellipsis: true,
+
     render: (date) =>
       date && (
         <img
@@ -436,9 +437,9 @@ export const getBorderlessTableColumns = ({
         );
       }
 
-      if (showTooltip) {
-        return <Tooltip title={value}>{cellContent}</Tooltip>;
-      }
+      // if (showTooltip) {
+      //   return <Tooltip title={value}>{cellContent}</Tooltip>;
+      // }
 
       return cellContent;
     },

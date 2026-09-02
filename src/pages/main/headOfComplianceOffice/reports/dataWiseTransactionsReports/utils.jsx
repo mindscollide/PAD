@@ -3,6 +3,7 @@ import TypeColumnTitle from "../../../../../components/dropdowns/filters/typeCol
 import StatusColumnTitle from "../../../../../components/dropdowns/filters/statusColumnTitle";
 import { Tag, Tooltip } from "antd";
 import style from "./dataWiseTransactionsReports.module.css";
+import EscaltedOn from "../../../../../assets/img/escalated.png";
 
 import {
   formatApiDateTime,
@@ -178,8 +179,7 @@ export const getBorderlessTableColumns = ({
     dataIndex: "employeeName",
     key: "employeeName",
     align: "left",
-    width: "160px",
-    ellipsis: true,
+    width: 160,
     sorter: (a, b) => a.employeeName.localeCompare(b.employeeName),
     sortDirections: ["ascend", "descend"],
     sortOrder:
@@ -193,8 +193,7 @@ export const getBorderlessTableColumns = ({
     dataIndex: "department",
     key: "department",
     align: "left",
-    width: 180,
-    ellipsis: true,
+    width: 200,
     sorter: (a, b) => a.department.localeCompare(b.department),
     sortDirections: ["ascend", "descend"],
     sortOrder: sortedInfo?.columnKey === "department" ? sortedInfo.order : null,
@@ -264,8 +263,7 @@ export const getBorderlessTableColumns = ({
     align: "center",
     dataIndex: "transactionDate",
     key: "transactionDate",
-    ellipsis: true,
-    width: 140,
+    width: 200,
     sorter: (a, b) =>
       (a?.transactionDate || "").localeCompare(b?.transactionDate || ""),
     sortOrder:
@@ -273,9 +271,7 @@ export const getBorderlessTableColumns = ({
     showSorterTooltip: false,
     sortIcon: () => null,
     render: (date) => (
-      <span className="text-gray-600" title={date || "—"}>
-        {formatApiDateTime(date) || "—"}
-      </span>
+      <span className="text-gray-600">{formatApiDateTime(date) || "—"}</span>
     ),
   },
   {
@@ -288,7 +284,6 @@ export const getBorderlessTableColumns = ({
     dataIndex: "type",
     width: 100,
     key: "type",
-    ellipsis: true,
     filteredValue: coDatewiseTransactionReportSearch.type?.length
       ? coDatewiseTransactionReportSearch.type
       : null,
@@ -310,13 +305,25 @@ export const getBorderlessTableColumns = ({
       </span>
     ),
   },
+
+  {
+    title: "",
+    key: "isEscalated",
+    dataIndex: "isEscalated",
+    align: "center",
+    width: 20,
+    render: (_, record) => {
+      return record.isEscalated ? (
+        <img src={EscaltedOn} width={"40px"} />
+      ) : null;
+    },
+  },
   {
     title: withSortIcon("Quantity", "quantity", sortedInfo, "center"),
     dataIndex: "quantity",
     key: "quantity",
     align: "center",
-    width: "120px",
-    ellipsis: true,
+    width: 120,
     sorter: (a, b) => a.quantity - b.quantity,
     sortDirections: ["ascend", "descend"],
     sortOrder: sortedInfo?.columnKey === "quantity" ? sortedInfo.order : null,

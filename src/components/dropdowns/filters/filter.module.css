@@ -92,20 +92,24 @@
   font-weight: 500;
   font-size: 14px;
   line-height: 1.3;
+  padding-right: 5px;
   color: var(--Blue-V1, #30426a);
   white-space: normal;
   word-break: break-word;
   /* flex: 1 1 auto; */
   flex: none;
   min-width: 0;
+  display: flex;
+  justify-items: center;
+  justify-content: center;
 }
 
-.after-selected-table-filter-headding-text{
-    font-family: "Switzer Variable";
+.after-selected-table-filter-headding-text {
+  font-family: "Switzer Variable";
   font-weight: 500;
   font-size: 14px;
   line-height: 1.3;
-  color: #FFFFFF;
+  color: #ffffff;
   white-space: normal;
   word-break: break-word;
   /* flex: 1 1 auto; */

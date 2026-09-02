@@ -1,6 +1,6 @@
 // utils.jsx (Reconcile Portfolio)
 import React from "react";
-import { Tag, Tooltip } from "antd";
+import { Tooltip } from "antd";
 import { Button } from "../../../../../components";
 
 import EscalatedIcon from "../../../../../assets/img/escalated.png";
@@ -11,7 +11,6 @@ import {
   toYYMMDD,
 } from "../../../../../common/funtions/rejex";
 import TypeColumnTitle from "../../../../../components/dropdowns/filters/typeColumnTitle";
-import StatusColumnTitle from "../../../../../components/dropdowns/filters/statusColumnTitle";
 import { useReconcileContext } from "../../../../../context/reconsileContax";
 
 import { getTradeTypeById } from "../../../../../common/funtions/type";
@@ -89,7 +88,6 @@ export const mapToTableRows = (assetTypeData, list = []) =>
  * @returns {Array<Object>} Column configurations for AntD Table.
  */
 export const getBorderlessTableColumns = ({
-  approvalStatusMap = {},
   sortedInfo = {},
   headOfComplianceApprovalEscalatedVerificationsSearch = {},
   setHeadOfComplianceApprovalEscalatedVerificationsSearch = () => {},
@@ -101,7 +99,6 @@ export const getBorderlessTableColumns = ({
     align: "left",
     dataIndex: "requesterName",
     key: "requesterName",
-    ellipsis: true,
     width: 140,
     sorter: (a, b) =>
       (a?.requesterName || "").localeCompare(b?.requesterName || ""),
@@ -109,11 +106,7 @@ export const getBorderlessTableColumns = ({
       sortedInfo?.columnKey === "requesterName" ? sortedInfo.order : null,
     showSorterTooltip: false,
     sortIcon: () => null,
-    render: (text) => (
-      <span className="font-medium" title={text || "—"}>
-        {text || "—"}
-      </span>
-    ),
+    render: (text) => <span className="font-medium">{text || "—"}</span>,
   },
 
   /* --------------------- Compliance Officer Name --------------------- */
@@ -126,7 +119,6 @@ export const getBorderlessTableColumns = ({
     align: "left",
     dataIndex: "complianceOfficerName",
     key: "complianceOfficerName",
-    ellipsis: true,
     width: 160,
     sorter: (a, b) =>
       (a?.complianceOfficerName || "").localeCompare(
@@ -138,11 +130,7 @@ export const getBorderlessTableColumns = ({
         : null,
     showSorterTooltip: false,
     sortIcon: () => null,
-    render: (text) => (
-      <span className="font-medium" title={text || "—"}>
-        {text || "—"}
-      </span>
-    ),
+    render: (text) => <span className="font-medium">{text || "—"}</span>,
   },
 
   /* --------------------- Instrument --------------------- */
@@ -202,7 +190,6 @@ export const getBorderlessTableColumns = ({
     align: "center",
     dataIndex: "transactionDate",
     key: "transactionDate",
-    ellipsis: true,
     width: 140,
     sorter: (a, b) =>
       (a?.transactionDate || "").localeCompare(b?.transactionDate || ""),
@@ -211,9 +198,7 @@ export const getBorderlessTableColumns = ({
     showSorterTooltip: false,
     sortIcon: () => null,
     render: (date) => (
-      <span className="text-gray-600" title={date || "—"}>
-        {formatApiDateTime(date) || "—"}
-      </span>
+      <span className="text-gray-600">{formatApiDateTime(date) || "—"}</span>
     ),
   },
 
@@ -243,14 +228,13 @@ export const getBorderlessTableColumns = ({
     ),
     dataIndex: "type",
     key: "type",
-    ellipsis: true,
     width: 100,
     filteredValue: headOfComplianceApprovalEscalatedVerificationsSearch?.type
       ?.length
       ? headOfComplianceApprovalEscalatedVerificationsSearch.type
       : null,
     onFilter: () => true,
-    render: (type) => <span title={type || "—"}>{type || "—"}</span>,
+    render: (type) => <span>{type || "—"}</span>,
   },
 
   /* --------------------- Escalated Date & Time --------------------- */
@@ -259,7 +243,6 @@ export const getBorderlessTableColumns = ({
     align: "center",
     dataIndex: "escalatedDate",
     key: "escalatedDate",
-    ellipsis: true,
     width: 140,
     sorter: (a, b) =>
       (a?.escalatedDate || "").localeCompare(b?.escalatedDate || ""),
@@ -268,9 +251,7 @@ export const getBorderlessTableColumns = ({
     showSorterTooltip: false,
     sortIcon: () => null,
     render: (date) => (
-      <span className="text-gray-600" title={formatApiDateTime(date) || "—"}>
-        {formatApiDateTime(date) || "—"}
-      </span>
+      <span className="text-gray-600">{formatApiDateTime(date) || "—"}</span>
     ),
   },
 

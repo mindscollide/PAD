@@ -147,7 +147,7 @@ export const getBorderlessTableColumns = ({
     align: "center",
     dataIndex: "transactionDate",
     key: "transactionDate",
-    width: 120,
+    width: 200,
     sorter: (a, b) =>
       (a?.transactionDate || "").localeCompare(b?.transactionDate || ""),
     sortOrder:
@@ -175,8 +175,8 @@ export const getBorderlessTableColumns = ({
     ),
     dataIndex: "totalEmployees",
     key: "totalEmployees",
-    width: 160,
-    ellipsis: true,
+    width: 200,
+
     align: "center",
     sorter: (a, b) => (a?.totalEmployees ?? 0) - (b?.totalEmployees ?? 0),
     sortOrder:
@@ -194,8 +194,8 @@ export const getBorderlessTableColumns = ({
     ),
     dataIndex: "totalTransactions",
     key: "totalTransactions",
-    width: 160,
-    ellipsis: true,
+    width: 200,
+
     align: "center",
     sorter: (a, b) => (a?.totalTransactions ?? 0) - (b?.totalTransactions ?? 0),
     sortOrder:
@@ -214,7 +214,6 @@ export const getBorderlessTableColumns = ({
     dataIndex: "compliantTransactions",
     key: "compliantTransactions",
     width: 200,
-    ellipsis: true,
     align: "center",
     sorter: (a, b) =>
       (a?.compliantTransactions ?? 0) - (b?.compliantTransactions ?? 0),
@@ -235,8 +234,8 @@ export const getBorderlessTableColumns = ({
     ),
     dataIndex: "nonCompliantTransactions",
     key: "nonCompliantTransactions",
-    width: 240,
-    ellipsis: true,
+    width: 200,
+
     align: "center",
     sorter: (a, b) =>
       (a?.nonCompliantTransactions ?? 0) - (b?.nonCompliantTransactions ?? 0),
@@ -310,7 +309,7 @@ const renderStatusTag = (status, approvalStatusMap) => {
   );
 };
 
-const withFilterHeader = (FilterComponent) => (
+const withFilterHeader = (element) => (
   <div
     className={style["table-header-wrapper"]}
     style={{
@@ -320,7 +319,7 @@ const withFilterHeader = (FilterComponent) => (
       width: "100%",
     }}
   >
-    <FilterComponent />
+    {element}
   </div>
 );
 
@@ -333,12 +332,12 @@ export const getBorderlessTableColumnsViewDetails = ({
   setSelectedWorkFlowViewDetaild,
 }) => [
   {
-    title: withSortIcon("ID", "employeeID", sortedInfo),
+    title: withSortIcon("ID", "employeeID", sortedInfo, "center"),
     dataIndex: "employeeID",
     key: "employeeID",
     width: 60,
     align: "center",
-    ellipsis: true,
+    justifyContent: "center",
     sorter: (a, b) =>
       parseInt(a.employeeID.replace(/[^\d]/g, ""), 10) -
       parseInt(b.employeeID.replace(/[^\d]/g, ""), 10),
@@ -356,7 +355,6 @@ export const getBorderlessTableColumnsViewDetails = ({
     key: "employeeName",
     width: 150,
     align: "left",
-    ellipsis: true,
     sorter: (a, b) => a.employeeName.localeCompare(b.employeeName),
     sortDirections: ["ascend", "descend"],
     sortOrder:
@@ -370,7 +368,7 @@ export const getBorderlessTableColumnsViewDetails = ({
     dataIndex: "instrumentName",
     key: "instrumentName",
     align: "left",
-    width: 100,
+    width: 120,
     ellipsis: true,
     sorter: (a, b) => {
       const nameA = a?.instrumentShortCode || "";
@@ -446,12 +444,12 @@ export const getBorderlessTableColumnsViewDetails = ({
     ),
   },
   {
-    title: withFilterHeader(() => (
+    title: withFilterHeader(
       <TypeColumnTitle
         state={hocTransactionsSummarysReportsViewDetailsSearch}
         setState={setHOCTransactionsSummarysReportsViewDetailSearch}
       />
-    )),
+    ),
     dataIndex: "type",
     width: 100,
     key: "type",
@@ -490,9 +488,7 @@ export const getBorderlessTableColumnsViewDetails = ({
     showSorterTooltip: false,
     sortIcon: () => null,
     render: (date) => (
-      <span className="text-gray-600" title={date || "—"}>
-        {formatApiDateTime(date) || "—"}
-      </span>
+      <span className="text-gray-600">{formatApiDateTime(date) || "—"}</span>
     ),
   },
   {
@@ -516,12 +512,12 @@ export const getBorderlessTableColumnsViewDetails = ({
     ),
   },
   {
-    title: withFilterHeader(() => (
+    title: withFilterHeader(
       <StatusColumnTitle
         state={hocTransactionsSummarysReportsViewDetailsSearch}
         setState={setHOCTransactionsSummarysReportsViewDetailSearch}
       />
-    )),
+    ),
     width: 150,
     dataIndex: "status",
     key: "status",

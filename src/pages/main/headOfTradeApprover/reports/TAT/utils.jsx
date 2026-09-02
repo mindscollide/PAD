@@ -192,7 +192,6 @@ export const getBorderlessTableColumns = ({
     key: "totalRequests",
     width: "140px",
     align: "center",
-    ellipsis: true,
     sorter: (a, b) => a.totalRequests - b.totalRequests,
     sortDirections: ["ascend", "descend"],
     sortOrder:
@@ -214,7 +213,6 @@ export const getBorderlessTableColumns = ({
     key: "totalTurnAroundDays",
     align: "center",
     width: "140px",
-    ellipsis: true,
     sorter: (a, b) =>
       Number(a.totalTurnAroundDays || 0) - Number(b.totalTurnAroundDays || 0),
     sortDirections: ["ascend", "descend"],

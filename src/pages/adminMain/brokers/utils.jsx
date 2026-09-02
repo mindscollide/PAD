@@ -2,7 +2,6 @@ import { Button } from "../../../components";
 
 import ArrowUP from "../../../assets/img/arrow-up-dark.png";
 import ArrowDown from "../../../assets/img/arrow-down-dark.png";
-import { ArrowsAltOutlined } from "@ant-design/icons";
 import { Tag, Switch } from "antd";
 import styles from "./Broker.module.css";
 import StatusColumnTitle from "../../../components/dropdowns/filters/statusColumnTitle";

@@ -67,7 +67,7 @@ const TypeColumnTitle = ({ state, setState }) => {
         }`}
         onClick={(e) => e.stopPropagation()}
       >
-        <Row gutter={[10, 10]}>
+        <Row>
           <Col
             className={`${style["table-filter-headding-text"]} ${
               selected.length
