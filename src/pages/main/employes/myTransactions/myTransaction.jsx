@@ -141,10 +141,9 @@ const MyTransaction = () => {
       setEmployeeMyTransactionSearch((prev) => {
         const next = {
           ...prev,
-          pageNumber: replace ? mapped.length : prev.pageNumber + mapped.length,
+          pageNumber: prev.pageNumber + 1,
         };
 
-        // this is for check if filter value get true only on that it will false
         if (prev.filterTrigger) {
           next.filterTrigger = false;
         }
@@ -227,7 +226,7 @@ const MyTransaction = () => {
       );
       requestData = {
         ...requestData,
-        PageNumber: 0,
+        PageNumber: 1,
       };
       fetchApiCall(requestData, true, false);
       setEmployeeTransactionsTableDataMqtt(false);
@@ -282,7 +281,7 @@ const MyTransaction = () => {
     setEmployeeMyTransactionSearch((prev) => ({
       ...prev,
       ...resetMap[key],
-      pageNumber: 0,
+      pageNumber: 1,
       filterTrigger: true,
     }));
   };
@@ -296,7 +295,7 @@ const MyTransaction = () => {
       endDate: null,
       quantity: 0,
       brokerIDs: [],
-      pageNumber: 0,
+      pageNumber: 1,
       filterTrigger: true,
     }));
   };

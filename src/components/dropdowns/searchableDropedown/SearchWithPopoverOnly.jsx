@@ -184,7 +184,7 @@ const SearchWithPopoverOnly = () => {
           startDate: null,
           endDate: null,
           brokerIDs: [],
-          pageNumber: 0,
+          pageNumber: 1,
           filterTrigger: true,
         }));
         setSearchMain("");

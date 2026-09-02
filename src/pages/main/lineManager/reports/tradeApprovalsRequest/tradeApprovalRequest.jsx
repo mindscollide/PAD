@@ -176,7 +176,7 @@ const TradeApprovalRequest = () => {
         myTradeApprovalLineManagerData?.totalRecordsDataBase <=
         myTradeApprovalLineManagerData?.totalRecordsTable
       )
-        return;
+        return false; // ⬅ tell the hook to stop re-arming, nothing left to load
 
       try {
         setLoadingMore(true);
@@ -293,21 +293,28 @@ const TradeApprovalRequest = () => {
   };
 
   const handleClearDates = () => {
-    // Reset state
+    const endDate = new Date();
+    const startDate = new Date();
+    startDate.setMonth(startDate.getMonth() - 6);
+
+    // Reset dateRange back to the 6-month default (not null) so the
+    // picker re-displays the active range instead of appearing empty.
     setDateRange({
-      StartDate: null,
-      EndDate: null,
+      StartDate: formatToYYYYMMDD(startDate),
+      EndDate: formatToYYYYMMDD(endDate),
     });
 
-    // Call API with empty values
-    fetchApiCall(
-      {
-        StartDate: "",
-        EndDate: "",
-      },
-      true,
-      true
-    );
+    const updatedState = {
+      ...myTradeApprovalReportLineManageSearch,
+      startDate,
+      endDate,
+      pageNumber: 0,
+    };
+    setMyTradeApprovalReportLineManageSearch(updatedState);
+
+    // Call API with the default 6-month range, not empty values
+    const requestData = buildApiRequest(updatedState);
+    fetchApiCall(requestData, true, true);
   };
 
   // -------------------- Render --------------------

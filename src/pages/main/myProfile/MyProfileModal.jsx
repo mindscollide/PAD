@@ -149,56 +149,68 @@ const MyProfileModal = () => {
                   </div>
                 </div>
               </Row>
-
-              <Row className={styles.boxMargin}>
-                <div className={styles.lineManagerHeading}>Line Manager</div>
-              </Row>
-
-              <Row className={styles.boxMargin}>
-                <Col span={24}>
-                  <div className={`${styles.infoBox} ${styles.lineManagerBg}`}>
-                    <div className={styles.infoBoxCol}>
-                      <div className={styles.lmLabel}>Name:</div>
-                      <div className={styles.value}>
-                        {display(profile?.lineManagerName)}
-                      </div>
+              {display(profile?.lineManagerName) !== "—" && (
+                <>
+                  <Row className={styles.boxMargin}>
+                    <div className={styles.lineManagerHeading}>
+                      Line Manager
                     </div>
+                  </Row>
 
-                    <div className={styles.infoBoxCol}>
-                      <div className={styles.lmLabel}>Email:</div>
-                      <div className={styles.value}>
-                        {display(profile?.lineManagerEmail)}
+                  <Row className={styles.boxMargin}>
+                    <Col span={24}>
+                      <div
+                        className={`${styles.infoBox} ${styles.lineManagerBg}`}
+                      >
+                        <div className={styles.infoBoxCol}>
+                          <div className={styles.lmLabel}>Name:</div>
+                          <div className={styles.value}>
+                            {display(profile?.lineManagerName)}
+                          </div>
+                        </div>
+
+                        <div className={styles.infoBoxCol}>
+                          <div className={styles.lmLabel}>Email:</div>
+                          <div className={styles.value}>
+                            {display(profile?.lineManagerEmail)}
+                          </div>
+                        </div>
                       </div>
+                    </Col>
+                  </Row>
+                </>
+              )}
+              {display(profile?.complianceOfficerName) !== "—" && (
+                <>
+                  <Row className={styles.boxMargin}>
+                    <div className={styles.ComplianceOfficerHeading}>
+                      Compliance Officer
                     </div>
-                  </div>
-                </Col>
-              </Row>
+                  </Row>
 
-              <Row className={styles.boxMargin}>
-                <div className={styles.ComplianceOfficerHeading}>
-                  Compliance Officer
-                </div>
-              </Row>
+                  <Row className={styles.boxMargin}>
+                    <Col span={24}>
+                      <div
+                        className={`${styles.infoBox} ${styles.complianceBg}`}
+                      >
+                        <div className={styles.infoBoxCol}>
+                          <div className={styles.lmLabel}>Name:</div>
+                          <div className={styles.value}>
+                            {display(profile?.complianceOfficerName)}
+                          </div>
+                        </div>
 
-              <Row className={styles.boxMargin}>
-                <Col span={24}>
-                  <div className={`${styles.infoBox} ${styles.complianceBg}`}>
-                    <div className={styles.infoBoxCol}>
-                      <div className={styles.lmLabel}>Name:</div>
-                      <div className={styles.value}>
-                        {display(profile?.complianceOfficerName)}
+                        <div className={styles.infoBoxCol}>
+                          <div className={styles.lmLabel}>Email:</div>
+                          <div className={styles.value}>
+                            {display(profile?.complianceOfficerEmail)}
+                          </div>
+                        </div>
                       </div>
-                    </div>
-
-                    <div className={styles.infoBoxCol}>
-                      <div className={styles.lmLabel}>Email:</div>
-                      <div className={styles.value}>
-                        {display(profile?.complianceOfficerEmail)}
-                      </div>
-                    </div>
-                  </div>
-                </Col>
-              </Row>
+                    </Col>
+                  </Row>
+                </>
+              )}
             </Col>
           </Row>
         </div>

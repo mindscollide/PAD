@@ -327,26 +327,31 @@ const HTATradeApprovalRequest = () => {
   };
 
   const handleClearDates = () => {
-    // Reset state
+    const defaultStart = dayjs().subtract(6, "month");
+    const defaultEnd = dayjs();
+
+    // Reset state back to the SRS 6-month default, not null,
+    // so the picker re-displays the active range instead of appearing empty.
     setDateRange({
-      StartDate: null,
-      EndDate: null,
+      StartDate: defaultStart,
+      EndDate: defaultEnd,
     });
     setMyTradeApprovalReportLineManageSearch((prev) => ({
       ...prev,
-      startDate: "",
-      endDate: "",
+      startDate: defaultStart,
+      endDate: defaultEnd,
       pageNumber: 0,
     }));
-    // Call API with empty values
+
+    // Call API with the default 6-month range, not empty values
     fetchApiCall(
       {
         EmployeeName: myTradeApprovalReportLineManageSearch.employeeName,
         DepartmentName: myTradeApprovalReportLineManageSearch.departmentName,
         PageNumber: 0,
         Length: 10,
-        StartDate: "",
-        EndDate: "",
+        StartDate: toYYMMDD(defaultStart.toDate()) || null,
+        EndDate: toYYMMDD(defaultEnd.toDate()) || null,
       },
       true,
       true

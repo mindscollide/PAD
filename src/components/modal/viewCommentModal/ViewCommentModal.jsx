@@ -46,7 +46,7 @@ const ViewCommentModal = ({
                           key={`acc-${index}`}
                           className={styles.acceptComment}
                         >
-                          {item}
+                          {`${item} (Accepted)`}
                         </div>
                       ))}
                     </div>
@@ -60,7 +60,7 @@ const ViewCommentModal = ({
                           key={`rej-${index}`}
                           className={styles.acceptComment}
                         >
-                          {item}
+                          {`${item} (Rejected)`}
                         </div>
                       ))}
                     </div>

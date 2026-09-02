@@ -62,7 +62,7 @@ export const SearchBarProvider = ({ children }) => {
       status: [],
       brokerIDs: [],
       pageSize: 10,
-      pageNumber: 0,
+      pageNumber: 1,
       filterTrigger: false,
     });
 
@@ -885,7 +885,7 @@ export const SearchBarProvider = ({ children }) => {
       status: [],
       brokerIDs: [],
       pageSize: 10,
-      pageNumber: 0,
+      pageNumber: 1,
       filterTrigger: false,
     });
   /** Reset Employee My Trade Approvals filters */

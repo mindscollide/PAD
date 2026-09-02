@@ -35,7 +35,7 @@ export const buildApiRequest = (searchState = {}, assetTypeListingData) => ({
   StatusIds: mapStatusToIds?.(searchState.status, 2) || [],
   TypeIds:
     mapBuySellToIds?.(searchState.type, assetTypeListingData?.Equities) || [],
-  PageNumber: Number(searchState.pageNumber) || 0,
+  PageNumber: Number(searchState.pageNumber) || 1,
   Length: Number(searchState.pageSize) || 10,
 });
 
