@@ -211,6 +211,12 @@ export const GlobalModalProvider = ({ children }) => {
     setViewDetailHeadOfComplianceEscalated,
   ] = useState(false);
 
+  // To show View Detail Modal of HOC in Escalated Verification
+  const [
+    viewDetailHeadOfComplianceOverdueVerifications,
+    setViewDetailHeadOfComplianceOverdueVerifications,
+  ] = useState(false);
+
   // To show View Detail Modal of HOC in Escalated Portfolio
   const [
     viewDetailHeadOfComplianceEscalatedPortfolio,
@@ -492,6 +498,9 @@ export const GlobalModalProvider = ({ children }) => {
          */
         viewDetailHeadOfComplianceEscalated,
         setViewDetailHeadOfComplianceEscalated,
+
+        viewDetailHeadOfComplianceOverdueVerifications,
+        setViewDetailHeadOfComplianceOverdueVerifications,
 
         isSelectedViewDetailOfHeadOfComplianceData,
         setIsSelectedViewDetailOfHeadOfComplianceData,

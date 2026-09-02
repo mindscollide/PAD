@@ -89,6 +89,7 @@ export const getInstrumentTableColumns = ({
     sortIcon: () => null,
     sortDirections: ["ascend", "descend"],
     sortOrder: sortedInfo?.columnKey === "instrument" ? sortedInfo.order : null,
+    showSorterTooltip: false,
     render: (text, record) => (
       <Tooltip title={text}>
         <div

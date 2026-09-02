@@ -118,7 +118,7 @@ export const getBorderlessTableColumns = ({
   sortedInfo,
   OverdueVerificationHCOReportSearch,
   setOverdueVerificationHCOReportSearch,
-  handleViewDetailsForReconcileTransaction,
+  handleViewDetailHeadOfComplianceOverdueCompliance,
 }) => [
   {
     title: withSortIcon("Requester Name", "requesterName", sortedInfo),
@@ -371,7 +371,7 @@ export const getBorderlessTableColumns = ({
           className="small-dark-button"
           text={"View Details"}
           onClick={() => {
-            handleViewDetailsForReconcileTransaction(record);
+            handleViewDetailHeadOfComplianceOverdueCompliance(record);
           }}
         />
       </div>
