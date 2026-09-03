@@ -291,7 +291,7 @@ export const getBorderlessTableColumns = ({
     title: withSortIcon("Broker", "broker", sortedInfo),
     align: "left",
     dataIndex: "broker",
-    width: 280,
+    width: 250,
     key: "broker",
     sorter: (a, b) => (a?.broker || "").localeCompare(b?.broker || ""),
     sortDirections: ["ascend", "descend"],

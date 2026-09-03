@@ -251,6 +251,8 @@ export const getBorderlessTableColumns = ({
     dataIndex: "isEscalated",
     key: "isEscalated",
     ellipsis: true,
+    width: 2,
+    align: "center",
 
     render: (date) =>
       date && (
@@ -267,7 +269,7 @@ export const getBorderlessTableColumns = ({
     align: "center",
     dataIndex: "quantity",
     key: "quantity",
-    width: 150,
+    width: 100,
 
     sorter: (a, b) => a.quantity - b.quantity,
     sortDirections: ["ascend", "descend"],
@@ -298,10 +300,10 @@ export const getBorderlessTableColumns = ({
           className="font-medium"
           style={{
             display: "inline-block",
-            overflow: "hidden",
-            textOverflow: "ellipsis",
-            whiteSpace: "nowrap",
-            maxWidth: "100%",
+            // overflow: "hidden",
+            // textOverflow: "ellipsis",
+            // whiteSpace: "nowrap",
+            // maxWidth: "100%",
           }}
         >
           {broker || "-"}
@@ -336,7 +338,7 @@ export const getBorderlessTableColumns = ({
     ),
     dataIndex: "status",
     key: "status",
-    width: 10,
+    width: 100,
     filteredValue: employeeMyTradeApprovalsSearch.status?.length
       ? employeeMyTradeApprovalsSearch.status
       : null,
@@ -408,11 +410,11 @@ export const getBorderlessTableColumns = ({
       const displayText = value;
 
       const commonStyle = {
-        whiteSpace: "nowrap",
-        overflow: "hidden",
-        textOverflow: "ellipsis",
-        display: "inline-block",
-        maxWidth: "100%",
+        // whiteSpace: "nowrap",
+        // overflow: "hidden",
+        // textOverflow: "ellipsis",
+        // display: "inline-block",
+        // maxWidth: "100%",
       };
 
       const cellContent = (

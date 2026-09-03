@@ -424,7 +424,7 @@ const ViewDetailPortfolioTransaction = () => {
                         {" "}
                         <div className={styles.approvedButtonClass}>
                           <CustomButton
-                            text={"Non Compliant"}
+                            text={"Non-Compliant"}
                             className="Decline-dark-button"
                             onClick={openNoteModalOnNonCompliantClick}
                           />
