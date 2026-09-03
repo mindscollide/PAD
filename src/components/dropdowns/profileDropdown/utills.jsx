@@ -16,7 +16,8 @@ export const getMenuItems = (
   setCurrentRoleIsAdmin,
   setManageBrokersModalOpen,
   setMyProfileModalOpen,
-  setNotificationSettingsModalOpen
+  setNotificationSettingsModalOpen,
+  hasOnlyAdminRole
 ) => {
   const baseItems = [
     {
@@ -47,7 +48,7 @@ export const getMenuItems = (
         </span>
       ),
     },
-    {
+    !hasOnlyAdminRole && {
       key: "3",
       label: (
         <span
