@@ -4,9 +4,6 @@ import { Tag, Tooltip, Typography } from "antd";
 import { Button } from "../../../../../components";
 
 // Assets (sort icons)
-import DefaultColumnArrow from "../../../../../assets/img/default-colum-arrow.png";
-import ArrowUp from "../../../../../assets/img/arrow-up-dark.png";
-import ArrowDown from "../../../../../assets/img/arrow-down-dark.png";
 import EscalatedIcon from "../../../../../assets/img/escalated.png";
 
 // Filter dropdowns
@@ -26,8 +23,6 @@ import {
   mapStatusToIds,
 } from "../../../../../components/dropdowns/filters/utils";
 import { withSortIcon } from "../../../../../common/funtions/tableIcon";
-
-const { Text } = Typography;
 
 /**
  * Build API request payload from search/filter state.
@@ -127,14 +122,43 @@ const nowrapCell = (minWidth, maxWidth) => ({
  * @param {Function} setComplianceOfficerReconcilePortfolioSearch - Setter to update filter/search state.
  * @returns {Array<Object>} AntD `Table` column configs.
  */
+
+const dashBetweenApprovalAssets = (id) => {
+  if (!id) return "";
+
+  const prefix = id.substring(0, 1);
+  const number = id.substring(1);
+
+  // If you want to always keep it padded to 3 digits (REQ-009)
+  const padded = number.padStart(1, "0");
+
+  return `${prefix}-${padded}`;
+};
 export const getBorderlessTableColumns = ({
   approvalStatusMap = {},
   sortedInfo = {},
   complianceOfficerReconcilePortfolioSearch = {},
   setComplianceOfficerReconcilePortfolioSearch = () => {},
-  setIsViewDetail,
   handleViewDetailsForReconcileTransaction,
 }) => [
+  // Portfolio ID
+  {
+    title: withSortIcon("Portfolo ID", "tradeApprovalID", sortedInfo),
+    dataIndex: "tradeApprovalID",
+    key: "tradeApprovalID",
+    width: 150,
+    sorter: (a, b) =>
+      (a?.tradeApprovalID || "").localeCompare(b?.tradeApprovalID || ""),
+    sortOrder:
+      sortedInfo?.columnKey === "tradeApprovalID" ? sortedInfo.order : null,
+    showSorterTooltip: false,
+    sortIcon: () => null,
+    render: (approvalID) => (
+      <span className="font-medium">
+        {dashBetweenApprovalAssets(approvalID)}
+      </span>
+    ),
+  },
   // 🔹 Requester Name
   {
     title: withSortIcon("Requester Name", "requesterName", sortedInfo),
