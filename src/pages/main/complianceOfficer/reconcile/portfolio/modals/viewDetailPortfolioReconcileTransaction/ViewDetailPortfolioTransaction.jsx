@@ -84,7 +84,7 @@ const ViewDetailPortfolioTransaction = () => {
         };
       case "9":
         return {
-          label: "Non Compliant",
+          label: "Non-Compliant",
           labelClassName: styles.declinedDetailHeading,
           divClassName: styles.declinedBorderClass,
         };
@@ -113,7 +113,7 @@ const ViewDetailPortfolioTransaction = () => {
       : myActionStatusID === 2
       ? "Compliant"
       : myActionStatusID === 3
-      ? "Non Compliant"
+      ? "Non-Compliant"
       : null;
 
   // Extarct and Instrument from viewDetailsModalData context Api
@@ -455,7 +455,7 @@ const ViewDetailPortfolioTransaction = () => {
                           />
                         </div>
                       </>
-                    ) : myActionLabel === "Non Compliant" ? (
+                    ) : myActionLabel === "Non-Compliant" ? (
                       <>
                         <div className={styles.compliantNonCompliant}>
                           <CustomButton

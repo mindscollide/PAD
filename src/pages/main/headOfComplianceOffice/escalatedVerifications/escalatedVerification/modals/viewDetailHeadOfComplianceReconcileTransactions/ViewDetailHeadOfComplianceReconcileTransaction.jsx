@@ -120,7 +120,7 @@ const ViewDetailHeadOfComplianceReconcileTransaction = () => {
         };
       case "9":
         return {
-          label: "Non Compliant",
+          label: "Non-Compliant",
           labelClassName: styles.declinedDetailHeading,
           divClassName: styles.declinedBorderClass,
         };
@@ -158,7 +158,7 @@ const ViewDetailHeadOfComplianceReconcileTransaction = () => {
     isEscalatedHeadOfComplianceViewDetailData?.ticketUploaded === false;
 
   const disableViewAndAddTicketButton =
-    statusData.label === "Compliant" || statusData.label === "Non Compliant";
+    statusData.label === "Compliant" || statusData.label === "Non-Compliant";
 
   // REWORKED (2026-08-17): rebuilt to match the HTA sibling screen's
   // hierarchy handling exactly
@@ -653,7 +653,7 @@ const ViewDetailHeadOfComplianceReconcileTransaction = () => {
                           />
                         </div>
                       </>
-                    ) : statusData?.label === "Non Compliant" ? (
+                    ) : statusData?.label === "Non-Compliant" ? (
                       <div className={styles.noncompliantButtonClass}>
                         <CustomButton
                           text="View Tickets"

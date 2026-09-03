@@ -102,7 +102,7 @@ const ViewDetailHeadOfComplianceReconcilePortfolio = () => {
         };
       case "9":
         return {
-          label: "Non Compliant",
+          label: "Non-Compliant",
           labelClassName: styles.declinedDetailHeading,
           divClassName: styles.declinedBorderClass,
         };
@@ -136,12 +136,6 @@ const ViewDetailHeadOfComplianceReconcilePortfolio = () => {
   const selectedInstrument = allInstrumentsData?.find(
     (item) => item.instrumentID === instrumentId
   );
-
-  //if status is Pending and ticketUpload is false then compliant and Non Compliant is disable
-  const disableCompliantOrNonCompliantBtn =
-    statusData.label === "Pending" &&
-    isEscalatedPortfolioHeadOfComplianceViewDetailData?.ticketUploaded ===
-      false;
 
   // REWORKED (2026-08-17): rebuilt to match the HTA sibling screen's
   // hierarchy handling exactly
@@ -478,7 +472,7 @@ const ViewDetailHeadOfComplianceReconcilePortfolio = () => {
                           />
                         </div>
                       </>
-                    ) : statusData?.label === "Non Compliant" ? (
+                    ) : statusData?.label === "Non-Compliant" ? (
                       <div className={styles.noncompliantButtonClass}>
                         <CustomButton
                           text="View Comments"

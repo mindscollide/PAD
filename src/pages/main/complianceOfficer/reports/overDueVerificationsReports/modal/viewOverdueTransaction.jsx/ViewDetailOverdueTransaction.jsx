@@ -100,7 +100,7 @@ const ViewDetailOverdueTransaction = () => {
         };
       case "9":
         return {
-          label: "Non Compliant",
+          label: "Non-Compliant",
           labelClassName: styles.declinedDetailHeading,
           divClassName: styles.declinedBorderClass,
         };
@@ -629,7 +629,7 @@ const ViewDetailOverdueTransaction = () => {
                           />
                         </div>
                       </>
-                    ) : myActionStatusData.label === "Non Compliant" ? (
+                    ) : myActionStatusData.label === "Non-Compliant" ? (
                       <div className={styles.noncompliantButtonClass}>
                         <CustomButton
                           text="View Tickets"
