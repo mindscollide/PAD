@@ -188,7 +188,7 @@ export const getBorderlessTableColumns = ({
   // Portfolio ID
   {
     title: withSortIcon(
-      "Transaction ID",
+      "Portfolio ID",
       "tradeApprovalID",
       sortedInfo,
       "center"
