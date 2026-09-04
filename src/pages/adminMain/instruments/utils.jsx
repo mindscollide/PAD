@@ -1,9 +1,6 @@
 import { Button } from "../../../components";
 
-import ArrowUP from "../../../assets/img/arrow-up-dark.png";
-import ArrowDown from "../../../assets/img/arrow-down-dark.png";
-import { ArrowsAltOutlined } from "@ant-design/icons";
-import { Tag, Switch, Tooltip } from "antd";
+import { Switch, Tooltip } from "antd";
 import styles from "./Instruments.module.css";
 import StatusColumnTitle from "../../../components/dropdowns/filters/statusColumnTitle";
 import {
@@ -13,7 +10,6 @@ import {
 } from "../../../common/funtions/rejex";
 import { mapStatusToIds } from "../../../components/dropdowns/filters/utils";
 import DefaultColumArrow from "../../../assets/img/default-colum-arrow.png";
-import style from "./Instruments.module.css";
 import { withSortIcon } from "../../../common/funtions/tableIcon";
 
 export const buildApiRequest = (searchState = {}) => ({
@@ -64,7 +60,6 @@ export const mapAdminInstrumentListData = (adminInstruments = []) => {
 };
 
 export const getInstrumentTableColumns = ({
-  adminIntrgetInstrumentTableColumnsumentListSearch,
   adminIntrumentListSearch,
   setAdminIntrumentListSearch,
   sortedInfo,
@@ -74,7 +69,6 @@ export const getInstrumentTableColumns = ({
   // For Previous Closing Period
   onEditPreviousClosing,
   setEditInstrumentModal,
-  setEditModalData,
   setSelectedInstrumentOnClick,
   setSelectedInstrumentNameDataOnClick,
 }) => [
@@ -83,40 +77,29 @@ export const getInstrumentTableColumns = ({
     dataIndex: "instrument",
     key: "instrument",
     align: "left",
-    width: 400,
+    width: 390,
     ellipsis: true,
     sorter: (a, b) => a.instrument.localeCompare(b.instrument),
     sortIcon: () => null,
     sortDirections: ["ascend", "descend"],
     sortOrder: sortedInfo?.columnKey === "instrument" ? sortedInfo.order : null,
-    render: (text, record) => (
-      <Tooltip title={text}>
-        <div
-          style={{
-            maxWidth: "380px", // 🔴 important
-            overflow: "hidden",
-            whiteSpace: "nowrap",
-            textOverflow: "ellipsis",
-            display: "flex",
-            alignItems: "center",
-            gap: "12px",
-          }}
-        >
-          <span
-            className={`font-medium ${
-              !record.status ? styles.inActiveColumnTexts : ""
-            }`}
-            style={{
-              overflow: "hidden",
-              textOverflow: "ellipsis",
-              whiteSpace: "nowrap",
-            }}
-          >
-            {text}
-          </span>
-        </div>
-      </Tooltip>
-    ),
+    showSorterTooltip: false,
+
+    // render: (text) => (
+    //   <Tooltip title={text}>
+    //     <span
+    //       style={{
+    //         display: "block",
+    //         maxWidth: 300,
+    //         overflow: "hidden",
+    //         whiteSpace: "nowrap",
+    //         textOverflow: "ellipsis",
+    //       }}
+    //     >
+    //       {text}
+    //     </span>
+    //   </Tooltip>
+    // ),
   },
   {
     title: (
@@ -125,12 +108,11 @@ export const getInstrumentTableColumns = ({
         setState={setAdminIntrumentListSearch}
       />
     ),
-    width: 150,
+    width: 130,
     dataIndex: "status",
     key: "status",
     render: (status, record) => {
       const isActive = status === 1;
-      console.log("isActive", isActive);
       return (
         <div className={styles.SwitchMainDiv}>
           <Switch
@@ -158,7 +140,6 @@ export const getInstrumentTableColumns = ({
     key: "closedPeriodStartDate",
     width: 150,
     align: "center",
-    // ellipsis: true,
     sorter: (a, b) =>
       formatApiDateTime(a.closedPeriodStartDate).localeCompare(
         formatApiDateTime(b.closedPeriodStartDate)

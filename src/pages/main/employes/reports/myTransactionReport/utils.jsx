@@ -6,6 +6,7 @@ import EscalatedIcon from "../../../../../assets/img/escalated.png";
 import {
   dashBetweenApprovalAssets,
   formatApiDateTime,
+  formatShowOnlyDateForDateRange,
   toYYMMDD,
 } from "../../../../../common/funtions/rejex";
 import {
@@ -199,12 +200,14 @@ export const getBorderlessTableColumns = ({
       );
     },
   },
+  // Change Request Date Time to Request Date on Request of Sir Amir on date 3rd September 2026
+
   {
-    title: withSortIcon("Date & Time", "requestDateTime", sortedInfo, "center"),
+    title: withSortIcon("Date", "requestDateTime", sortedInfo, "center"),
     align: "center",
     dataIndex: "requestDateTime",
     key: "requestDateTime",
-    width: 180,
+    width: 100,
     sorter: (a, b) =>
       formatApiDateTime(a.requestDateTime).localeCompare(
         formatApiDateTime(b.requestDateTime)
@@ -220,7 +223,7 @@ export const getBorderlessTableColumns = ({
         className="text-gray-600"
         data-testid="formatted-date"
       >
-        {formatApiDateTime(date)}
+        {formatShowOnlyDateForDateRange(date)}
       </span>
     ),
   },
@@ -252,7 +255,7 @@ export const getBorderlessTableColumns = ({
     ),
     dataIndex: "type",
     key: "type",
-    width: 100,
+    width: 90,
     align: "center",
     filteredValue: employeeMyTransactionReportSearch.type?.length
       ? employeeMyTransactionReportSearch?.type
@@ -293,8 +296,7 @@ export const getBorderlessTableColumns = ({
     align: "left",
     dataIndex: "brokerName",
     key: "brokerName",
-    ellipsis: true,
-    width: 80,
+    width: 150,
     sorter: (a, b) => (a.brokerName || "").localeCompare(b.brokerName || ""),
     sortDirections: ["ascend", "descend"],
     sortOrder: sortedInfo?.columnKey === "brokerName" ? sortedInfo.order : null,
@@ -311,10 +313,10 @@ export const getBorderlessTableColumns = ({
           className="font-medium"
           style={{
             display: "inline-block",
-            overflow: "hidden",
-            textOverflow: "ellipsis",
-            whiteSpace: "nowrap",
-            maxWidth: "100%",
+            // overflow: "hidden",
+            // textOverflow: "ellipsis",
+            // whiteSpace: "nowrap",
+            // maxWidth: "100%",
           }}
         >
           {broker || "-"}
@@ -349,7 +351,7 @@ export const getBorderlessTableColumns = ({
     ),
     dataIndex: "status",
     key: "status",
-    width: 140,
+    width: 100,
     filteredValue: employeeMyTransactionReportSearch.status?.length
       ? employeeMyTransactionReportSearch.status
       : null,

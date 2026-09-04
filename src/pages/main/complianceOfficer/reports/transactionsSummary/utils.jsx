@@ -1,8 +1,5 @@
 import { Button } from "../../../../../components";
 
-import ArrowUP from "../../../../../assets/img/arrow-up-dark.png";
-import ArrowDown from "../../../../../assets/img/arrow-down-dark.png";
-import DefaultColumArrow from "../../../../../assets/img/default-colum-arrow.png";
 import TypeColumnTitle from "../../../../../components/dropdowns/filters/typeColumnTitle";
 import StatusColumnTitle from "../../../../../components/dropdowns/filters/statusColumnTitle";
 import { Tag, Tooltip } from "antd";
@@ -267,7 +264,7 @@ const renderStatusTag = (status, approvalStatusMap) => {
     </Tag>
   );
 };
-const withFilterHeader = (FilterComponent) => (
+const withFilterHeader = (element) => (
   <div
     className={style["table-header-wrapper"]}
     style={{
@@ -277,7 +274,7 @@ const withFilterHeader = (FilterComponent) => (
       width: "100%",
     }}
   >
-    <FilterComponent />
+    {element}
   </div>
 );
 
@@ -290,7 +287,6 @@ export const getBorderlessTableColumnsViewDetails = ({
   sortedInfoView,
   coTransactionsSummarysReportsViewDetailsSearch,
   setCOTransactionsSummarysReportsViewDetailSearch,
-  handelViewDetails,
   setIsViewComments,
   // ADDED (2026-08-17): "View Comments" never actually told the modal
   // which row it was for - onClick only flipped isViewComments to true,
@@ -300,7 +296,7 @@ export const getBorderlessTableColumnsViewDetails = ({
   setSelectedWorkFlowViewDetaild,
 }) => [
   {
-    title: withSortIcon("Employee ID", "employeeID", sortedInfoView),
+    title: withSortIcon("Employee ID", "employeeID", sortedInfoView, "center"),
     dataIndex: "employeeID",
     key: "employeeID",
     align: "left",
@@ -314,7 +310,14 @@ export const getBorderlessTableColumnsViewDetails = ({
     sortIcon: () => null,
     render: (employeeID) => {
       return (
-        <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: "12px",
+          }}
+        >
           <span className="font-medium">{employeeID}</span>
         </div>
       );
@@ -324,7 +327,7 @@ export const getBorderlessTableColumnsViewDetails = ({
     title: withSortIcon("Employee Name", "employeeName", sortedInfoView),
     dataIndex: "employeeName",
     key: "employeeName",
-    width: 200,
+    width: 150,
     align: "left",
     sorter: (a, b) => a.employeeName.localeCompare(b.employeeName),
     sortDirections: ["ascend", "descend"],
@@ -341,7 +344,7 @@ export const getBorderlessTableColumnsViewDetails = ({
     dataIndex: "instrumentName",
     key: "instrumentName",
     align: "left",
-    width: 110,
+    width: 160,
     ellipsis: true,
     sorter: (a, b) => {
       const nameA = a?.instrumentName || "";
@@ -415,12 +418,12 @@ export const getBorderlessTableColumnsViewDetails = ({
     ),
   },
   {
-    title: withFilterHeader(() => (
+    title: withFilterHeader(
       <TypeColumnTitle
         state={coTransactionsSummarysReportsViewDetailsSearch}
         setState={setCOTransactionsSummarysReportsViewDetailSearch}
       />
-    )),
+    ),
     dataIndex: "type",
     width: 120,
     key: "type",
@@ -466,12 +469,12 @@ export const getBorderlessTableColumnsViewDetails = ({
     ),
   },
   {
-    title: withFilterHeader(() => (
+    title: withFilterHeader(
       <StatusColumnTitle
         state={coTransactionsSummarysReportsViewDetailsSearch}
         setState={setCOTransactionsSummarysReportsViewDetailSearch}
       />
-    )),
+    ),
     width: 150,
     dataIndex: "status",
     key: "status",

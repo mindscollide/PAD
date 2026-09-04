@@ -248,7 +248,7 @@ const Dashboard = () => {
 
       const updatedApprovals = [...approvals];
       updatedApprovals[existingIndex] = {
-        ...updatedApproval,
+        ...patchedApproval,
         // FIXED (bug report: HTA/LM action was updating Request Date &
         // Time on Employee > My Approvals): Request Date & Time is the
         // request's original creation timestamp - it never legitimately
@@ -661,10 +661,14 @@ const Dashboard = () => {
                   // the literal "Traded" - what this message means by
                   // definition - if that field isn't there either.
                   if (currentKey === "1") {
-                    patchEmployeeMyApprovalRow(payload, {
-                      status:
-                        payload?.workFlowStatus?.workFlowStatus || "Traded",
-                    });
+                    patchEmployeeMyApprovalRow(
+                      payload,
+                      {
+                        status:
+                          payload?.workFlowStatus?.workFlowStatus || "Traded",
+                      },
+                      { preserveInstrumentAndType: true }
+                    );
                     setIsViewDetail(false);
                     setIsConductedTransaction(false);
                   }
@@ -927,7 +931,8 @@ const Dashboard = () => {
                       const transactions = prev?.transactions || [];
                       const existingIndex = transactions.findIndex(
                         (item) =>
-                          String(item.workFlowID) === String(payload?.workFlowID)
+                          String(item.workFlowID) ===
+                          String(payload?.workFlowID)
                       );
                       if (existingIndex === -1) return prev;
 

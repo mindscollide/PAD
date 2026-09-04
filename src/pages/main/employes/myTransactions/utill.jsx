@@ -35,7 +35,7 @@ export const buildApiRequest = (searchState = {}, assetTypeListingData) => ({
   StatusIds: mapStatusToIds?.(searchState.status, 2) || [],
   TypeIds:
     mapBuySellToIds?.(searchState.type, assetTypeListingData?.Equities) || [],
-  PageNumber: Number(searchState.pageNumber) || 0,
+  PageNumber: Number(searchState.pageNumber) || 1,
   Length: Number(searchState.pageSize) || 10,
 });
 
@@ -291,7 +291,7 @@ export const getBorderlessTableColumns = ({
     title: withSortIcon("Broker", "broker", sortedInfo),
     align: "left",
     dataIndex: "broker",
-    width: 280,
+    width: 250,
     key: "broker",
     sorter: (a, b) => (a?.broker || "").localeCompare(b?.broker || ""),
     sortDirections: ["ascend", "descend"],

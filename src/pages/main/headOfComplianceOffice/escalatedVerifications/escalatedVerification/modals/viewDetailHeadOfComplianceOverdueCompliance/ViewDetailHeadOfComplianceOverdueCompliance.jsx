@@ -1,7 +1,7 @@
-import { Col, Row, Tag } from "antd";
+import { Col, Row } from "antd";
 import { useGlobalModal } from "../../../../../../../context/GlobalModalContext";
 import { BrokerList, GlobalModal } from "../../../../../../../components";
-import styles from "./ViewDetailHeadOfComplianceReconcileTransaction.module.css";
+import styles from "./ViewDetailHeadOfComplianceOverdueCompliance.module.css";
 import { Stepper, Step } from "react-form-stepper";
 import CustomButton from "../../../../../../../components/buttons/button";
 import CheckIcon from "../../../../../../../assets/img/Check.png";
@@ -30,13 +30,15 @@ import { useNotification } from "../../../../../../../components/NotificationPro
 import { useApi } from "../../../../../../../context/ApiContext";
 import { useNavigate } from "react-router-dom";
 
-const ViewDetailHeadOfComplianceReconcileTransaction = () => {
+const ViewDetailHeadOfComplianceOverdueCompliance = () => {
   const navigate = useNavigate();
 
   // This is Global State for modal which is create in ContextApi
   const {
-    viewDetailHeadOfComplianceEscalated,
-    setViewDetailHeadOfComplianceEscalated,
+    // viewDetailHeadOfComplianceEscalated,
+    // setViewDetailHeadOfComplianceEscalated,
+    viewDetailHeadOfComplianceOverdueVerifications,
+    setViewDetailHeadOfComplianceOverdueVerifications,
     setViewCommentReconcileModal,
     setUploadComplianceModal,
     setNoteGlobalModal,
@@ -47,7 +49,7 @@ const ViewDetailHeadOfComplianceReconcileTransaction = () => {
   const { showLoader } = useGlobalLoader();
   const { showNotification } = useNotification();
 
-  console.log("requesterName", viewDetailHeadOfComplianceEscalated);
+  console.log("requesterName", viewDetailHeadOfComplianceOverdueVerifications);
   // get data from sessionStorage
   const userProfileData = JSON.parse(
     sessionStorage.getItem("user_profile_data") || "{}"
@@ -247,12 +249,12 @@ const ViewDetailHeadOfComplianceReconcileTransaction = () => {
 
   const onClickFromCompliantNoteModalFromHeadOfCompliance = () => {
     setNoteGlobalModal({ visible: true, action: "HOC-Compliant" });
-    setViewDetailHeadOfComplianceEscalated(false);
+    setViewDetailHeadOfComplianceOverdueVerifications(false);
   };
 
   const onClickFromNonCompliantNoteModalFromHeadOfCompliance = () => {
     setNoteGlobalModal({ visible: true, action: "HOC-Non-Compliant" });
-    setViewDetailHeadOfComplianceEscalated(false);
+    setViewDetailHeadOfComplianceOverdueVerifications(false);
   };
 
   const handleViewTicket = async () => {
@@ -308,7 +310,7 @@ const ViewDetailHeadOfComplianceReconcileTransaction = () => {
         // 🔹 Now set final files in state (with blob injected in 0th index)
         console.log("updatedFiles workflow files", updatedFiles);
         await setUploadattAchmentsFiles(updatedFiles);
-        setViewDetailHeadOfComplianceEscalated(false);
+        setViewDetailHeadOfComplianceOverdueVerifications(false);
         setIsViewTicketTransactionModal(true);
       }
     } catch (err) {
@@ -326,10 +328,12 @@ const ViewDetailHeadOfComplianceReconcileTransaction = () => {
   return (
     <>
       <GlobalModal
-        visible={viewDetailHeadOfComplianceEscalated}
+        visible={viewDetailHeadOfComplianceOverdueVerifications}
         width={"942px"}
         centered={true}
-        onCancel={() => setViewDetailHeadOfComplianceEscalated(false)}
+        onCancel={() =>
+          setViewDetailHeadOfComplianceOverdueVerifications(false)
+        }
         modalHeader={<></>}
         modalBody={
           <>
@@ -524,7 +528,7 @@ const ViewDetailHeadOfComplianceReconcileTransaction = () => {
                   </Col>
                 </Row>
 
-                <Row style={{ marginTop: "5px" }}>
+                {/* <Row style={{ marginTop: "5px" }}>
                   <Col span={12}>
                     <div className={styles.backgrounColorOfDetailCompliance}>
                       <p className={styles.Compliancelabel}>
@@ -545,7 +549,7 @@ const ViewDetailHeadOfComplianceReconcileTransaction = () => {
                       </p>
                     </div>
                   </Col>
-                </Row>
+                </Row> */}
 
                 <Row>
                   {/* REWORKED (2026-08-17): now built entirely from
@@ -618,7 +622,9 @@ const ViewDetailHeadOfComplianceReconcileTransaction = () => {
                           text={"Add Ticket"}
                           onClick={() => {
                             setUploadComplianceModal(true);
-                            setViewDetailHeadOfComplianceEscalated(false);
+                            setViewDetailHeadOfComplianceOverdueVerifications(
+                              false
+                            );
                           }}
                           className="big-ViewTicket-dark-button"
                         />
@@ -665,13 +671,17 @@ const ViewDetailHeadOfComplianceReconcileTransaction = () => {
                           className="big-light-button"
                           onClick={() => {
                             setViewCommentReconcileModal(true);
-                            setViewDetailHeadOfComplianceEscalated(false);
+                            setViewDetailHeadOfComplianceOverdueVerifications(
+                              false
+                            );
                           }}
                         />
                         <CustomButton
                           text="Close"
                           onClick={() => {
-                            setViewDetailHeadOfComplianceEscalated(false);
+                            setViewDetailHeadOfComplianceOverdueVerifications(
+                              false
+                            );
                           }}
                           className="big-light-button"
                         />
@@ -692,13 +702,17 @@ const ViewDetailHeadOfComplianceReconcileTransaction = () => {
                             // gap against the Non Compliant branch above,
                             // which does both.
                             setViewCommentReconcileModal(true);
-                            setViewDetailHeadOfComplianceEscalated(false);
+                            setViewDetailHeadOfComplianceOverdueVerifications(
+                              false
+                            );
                           }}
                         />
                         <CustomButton
                           text="Close"
                           onClick={() => {
-                            setViewDetailHeadOfComplianceEscalated(false);
+                            setViewDetailHeadOfComplianceOverdueVerifications(
+                              false
+                            );
                           }}
                           className="big-light-button"
                         />
@@ -715,4 +729,4 @@ const ViewDetailHeadOfComplianceReconcileTransaction = () => {
   );
 };
 
-export default ViewDetailHeadOfComplianceReconcileTransaction;
+export default ViewDetailHeadOfComplianceOverdueCompliance;

@@ -119,11 +119,10 @@ const numberSorter = (key) => (a, b) =>
 
 export const getBorderlessTableColumns = ({ sortedInfo }) => [
   {
-    title: withSortIcon("Employee ID", "employeeID", sortedInfo),
+    title: withSortIcon("Employee ID", "employeeID", sortedInfo, "center"),
     dataIndex: "employeeID",
     key: "employeeID",
-    width: "10%",
-    ellipsis: true,
+    width: 90,
     sorter: numberSorter("employeeID"),
     sortDirections: ["ascend", "descend"],
     sortOrder: sortedInfo?.columnKey === "employeeID" ? sortedInfo.order : null,
@@ -131,7 +130,14 @@ export const getBorderlessTableColumns = ({ sortedInfo }) => [
     sortIcon: () => null,
     render: (employeeID) => {
       return (
-        <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: "12px",
+          }}
+        >
           <span className="font-medium">{employeeID}</span>
         </div>
       );
@@ -141,28 +147,30 @@ export const getBorderlessTableColumns = ({ sortedInfo }) => [
     title: withSortIcon("Employee Name", "employeeName", sortedInfo),
     dataIndex: "employeeName",
     key: "employeeName",
-    ellipsis: true,
-    width: "12%",
+    width: 120,
     sorter: stringSorter("employeeName"),
     sortDirections: ["ascend", "descend"],
     sortOrder:
       sortedInfo?.columnKey === "employeeName" ? sortedInfo.order : null,
     showSorterTooltip: false,
     sortIcon: () => null,
-    render: (q) => <span className="font-medium">{q.toLocaleString("en-US")}</span>,
+    render: (q) => (
+      <span className="font-medium">{q.toLocaleString("en-US")}</span>
+    ),
   },
   {
     title: withSortIcon("Department", "department", sortedInfo),
     dataIndex: "department",
     key: "department",
-    ellipsis: true,
-    width: "12%",
+    width: 120,
     sorter: stringSorter("department"),
     sortDirections: ["ascend", "descend"],
     sortOrder: sortedInfo?.columnKey === "department" ? sortedInfo.order : null,
     showSorterTooltip: false,
     sortIcon: () => null,
-    render: (q) => <span className="font-medium">{q.toLocaleString("en-US")}</span>,
+    render: (q) => (
+      <span className="font-medium">{q.toLocaleString("en-US")}</span>
+    ),
   },
   {
     title: withSortIcon(
@@ -175,7 +183,6 @@ export const getBorderlessTableColumns = ({ sortedInfo }) => [
     key: "totalRequests",
     align: "center",
     width: "10%",
-    ellipsis: true,
     sorter: numberSorter("totalRequests"),
     sortDirections: ["ascend", "descend"],
     sortOrder:
@@ -184,7 +191,9 @@ export const getBorderlessTableColumns = ({ sortedInfo }) => [
     sortIcon: () => null,
     render: (totalRequests) => {
       return (
-        <span className="font-medium">{totalRequests.toLocaleString("en-US")}</span>
+        <span className="font-medium">
+          {totalRequests.toLocaleString("en-US")}
+        </span>
       );
     },
   },
@@ -194,14 +203,15 @@ export const getBorderlessTableColumns = ({ sortedInfo }) => [
     key: "pending",
     align: "center",
     width: "8%",
-    ellipsis: true,
     sorter: numberSorter("pending"),
     sortDirections: ["ascend", "descend"],
     sortOrder: sortedInfo?.columnKey === "pending" ? sortedInfo.order : null,
     showSorterTooltip: false,
     sortIcon: () => null,
     render: (pending) => {
-      return <span className="font-medium">{pending.toLocaleString("en-US")}</span>;
+      return (
+        <span className="font-medium">{pending.toLocaleString("en-US")}</span>
+      );
     },
   },
   {
@@ -210,14 +220,15 @@ export const getBorderlessTableColumns = ({ sortedInfo }) => [
     key: "approved",
     width: "8%",
     align: "center",
-    ellipsis: true,
     sorter: numberSorter("approved"),
     sortDirections: ["ascend", "descend"],
     sortOrder: sortedInfo?.columnKey === "approved" ? sortedInfo.order : null,
     showSorterTooltip: false,
     sortIcon: () => null,
     render: (approved) => {
-      return <span className="font-medium">{approved.toLocaleString("en-US")}</span>;
+      return (
+        <span className="font-medium">{approved.toLocaleString("en-US")}</span>
+      );
     },
   },
   {
@@ -226,14 +237,15 @@ export const getBorderlessTableColumns = ({ sortedInfo }) => [
     key: "declined",
     width: "8%",
     align: "center",
-    ellipsis: true,
     sorter: numberSorter("declined"),
     sortDirections: ["ascend", "descend"],
     sortOrder: sortedInfo?.columnKey === "declined" ? sortedInfo.order : null,
     showSorterTooltip: false,
     sortIcon: () => null,
     render: (declined) => {
-      return <span className="font-medium">{declined.toLocaleString("en-US")}</span>;
+      return (
+        <span className="font-medium">{declined.toLocaleString("en-US")}</span>
+      );
     },
   },
   {
@@ -242,14 +254,15 @@ export const getBorderlessTableColumns = ({ sortedInfo }) => [
     key: "traded",
     width: "8%",
     align: "center",
-    ellipsis: true,
     sorter: numberSorter("traded"),
     sortDirections: ["ascend", "descend"],
     sortOrder: sortedInfo?.columnKey === "traded" ? sortedInfo.order : null,
     showSorterTooltip: false,
     sortIcon: () => null,
     render: (traded) => {
-      return <span className="font-medium">{traded.toLocaleString("en-US")}</span>;
+      return (
+        <span className="font-medium">{traded.toLocaleString("en-US")}</span>
+      );
     },
   },
   {
@@ -257,7 +270,6 @@ export const getBorderlessTableColumns = ({ sortedInfo }) => [
     dataIndex: "notTraded",
     key: "notTraded",
     width: "8%",
-    ellipsis: true,
     align: "center",
     sorter: numberSorter("notTraded"),
     sortDirections: ["ascend", "descend"],
@@ -265,7 +277,9 @@ export const getBorderlessTableColumns = ({ sortedInfo }) => [
     showSorterTooltip: false,
     sortIcon: () => null,
     render: (notTraded) => {
-      return <span className="font-medium">{notTraded.toLocaleString("en-US")}</span>;
+      return (
+        <span className="font-medium">{notTraded.toLocaleString("en-US")}</span>
+      );
     },
   },
   {
@@ -274,7 +288,6 @@ export const getBorderlessTableColumns = ({ sortedInfo }) => [
     key: "resubmitted",
     width: "10%",
     align: "center",
-    ellipsis: true,
     sorter: numberSorter("resubmitted"),
     sortDirections: ["ascend", "descend"],
     sortOrder:
@@ -283,7 +296,9 @@ export const getBorderlessTableColumns = ({ sortedInfo }) => [
     sortIcon: () => null,
     render: (resubmitted) => {
       return (
-        <span className="font-medium">{resubmitted.toLocaleString("en-US")}</span>
+        <span className="font-medium">
+          {resubmitted.toLocaleString("en-US")}
+        </span>
       );
     },
   },

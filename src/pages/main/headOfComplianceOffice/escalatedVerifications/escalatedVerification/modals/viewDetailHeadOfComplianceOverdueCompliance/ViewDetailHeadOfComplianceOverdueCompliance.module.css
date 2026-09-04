@@ -185,6 +185,10 @@
 
 .viewDetailSubLabelsForInstrument {
   flex: 1; /* let it shrink inside flex */
+  max-width: 250px; /* 👈 critical inside flex */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
   font-size: 20px !important;
   color: #424242 !important;
   font-weight: 500;
@@ -388,7 +392,7 @@
 }
 
 .modalBodyContentScroller {
-  height: 64vh;
+  height: 70vh;
   overflow: hidden;
   overflow-y: auto;
   scrollbar-width: thin;
@@ -442,27 +446,9 @@
   font-weight: 700;
   font-family: "Switzer Variable";
 }
-
 .noncompliantButtonClass {
   display: flex;
   justify-content: end;
   align-items: center;
   gap: 20px !important;
-}
-
-.centerAlignLabel {
-  display: flex;
-  flex-direction: column;
-  align-items: center; /* sab text center ho jaye */
-}
-
-.centerAlignText {
-  text-align: center;
-  margin-top: 4px; /* thoda gap title aur date ke beech */
-}
-:global(#RFS-ConnectorContainer) {
-  top: calc(1em - 0.5px);
-  left: calc(-50% + 2em - 35px);
-  right: calc(50% + 2em - 8px);
-  position: absolute;
 }

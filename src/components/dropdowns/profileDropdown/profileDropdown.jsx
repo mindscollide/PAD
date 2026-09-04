@@ -29,6 +29,10 @@ const ProfileDropdown = () => {
   const showSwitchOption = JSON.parse(
     sessionStorage.getItem("user_has_admin_and_employees_role")
   );
+
+  const hasOnlyAdminRole = JSON.parse(
+    sessionStorage.getItem("user_has_admin_only")
+  );
   const hasEmployee =
     roles?.length > 0 && roles.some((role) => role.roleID === 2);
   const [isOpen, setIsOpen] = useState(false);
@@ -74,7 +78,8 @@ const ProfileDropdown = () => {
     setCurrentRoleIsAdmin,
     setManageBrokersModalOpen,
     setMyProfileModalOpen,
-    setNotificationSettingsModalOpen
+    setNotificationSettingsModalOpen,
+    hasOnlyAdminRole
   );
 
   return (

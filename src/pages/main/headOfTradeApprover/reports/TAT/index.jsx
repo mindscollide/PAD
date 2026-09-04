@@ -33,7 +33,6 @@ import CustomButton from "../../../../../components/buttons/button";
 import { toYYMMDD } from "../../../../../common/funtions/rejex";
 import { useGlobalModal } from "../../../../../context/GlobalModalContext";
 import ViewDetails from "./viewDetails/ViewDetails";
-import { useSidebarContext } from "../../../../../context/sidebarContaxt";
 import { DateRangePicker } from "../../../../../components";
 import dayjs from "dayjs";
 
@@ -48,7 +47,6 @@ const HTATAT = () => {
   const { showLoader } = useGlobalLoader();
   const { htaTATReportsData, setHTATATReportsData, resetHTATATReportsData } =
     useMyApproval();
-  const { selectedKey } = useSidebarContext();
 
   const { htaTATReportSearch, setHTATATReportSearch, resetHTATATReportSearch } =
     useSearchBarContext();
@@ -66,8 +64,7 @@ const HTATAT = () => {
   const [sortedInfo, setSortedInfo] = useState({});
   const [loadingMore, setLoadingMore] = useState(false);
   const [open, setOpen] = useState(false);
-  const [policyModalVisible, setPolicyModalVisible] = useState(false);
-  const [selectedEmployee, setSelectedEmployee] = useState(null);
+
   // ADDED (2026-08-19): API_Changes/2026-08-19_hta_tat_summary_list_date_range.md -
   // "The default date range will be 6 months" per SRS. Shown/interacted
   // with just like the sibling Trade Approval Requests report
@@ -188,14 +185,14 @@ const HTATAT = () => {
     }
   }, [htaTATReportSearch?.filterTrigger]);
 
-  // 🔹 Infinite Scroll (lazy loading)
   useTableScrollBottom(
     async () => {
       if (
         htaTATReportsData?.totalRecordsDataBase <=
         htaTATReportsData?.totalRecordsTable
-      )
-        return;
+      ) {
+        return false; // nothing left — tell the hook to stop re-arming
+      }
 
       try {
         setLoadingMore(true);
@@ -204,8 +201,10 @@ const HTATAT = () => {
           assetTypeListingData
         );
         await fetchApiCall(requestData, false, false);
+        return true;
       } catch (err) {
         console.error("Error loading more approvals:", err);
+        return true; // keep retrying on transient errors, don't treat as "done"
       } finally {
         setLoadingMore(false);
       }
@@ -220,8 +219,6 @@ const HTATAT = () => {
     sortedInfo,
     htaTATReportSearch,
     setHTATATReportSearch,
-    setSelectedEmployee,
-    setPolicyModalVisible,
     setShowViewDetailPageInTatOnHta,
     setShowSelectedTatDataOnViewDetailHTA,
     dateRange,
@@ -267,8 +264,8 @@ const HTATAT = () => {
       employeeName,
       departmentName,
       quantity,
-      startDate,
-      endDate,
+      // startDate,
+      // endDate,
     } = htaTATReportSearch || {};
 
     return [
@@ -305,12 +302,12 @@ const HTATAT = () => {
         value: Number(quantity).toLocaleString("en-US"),
       },
 
-      startDate &&
-        endDate && {
-          label: "Date",
-          key: "dateRange",
-          value: `${startDate} → ${endDate}`,
-        },
+      // startDate &&
+      //   endDate && {
+      //     label: "Date",
+      //     key: "dateRange",
+      //     value: `${startDate} → ${endDate}`,
+      //   },
     ].filter(Boolean);
   })();
 

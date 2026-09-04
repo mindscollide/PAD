@@ -109,9 +109,8 @@ const MyTradeApprovalStandingReport = () => {
   useEffect(() => {
     if (hasFetched.current) return;
     hasFetched.current = true;
-    const endDate = new Date();
-    const startDate = new Date();
-    startDate.setMonth(startDate.getMonth() - 6);
+
+    const { startDate, endDate } = getDefaultDateRange();
 
     setDateRange({
       StartDate: formatToYYYYMMDD(startDate),
@@ -119,7 +118,6 @@ const MyTradeApprovalStandingReport = () => {
     });
 
     const requestData = {
-      // build your request payload here
       StartDate: startDate ? toYYMMDD(startDate) : "",
       EndDate: endDate ? toYYMMDD(endDate) : "",
     };
@@ -127,7 +125,16 @@ const MyTradeApprovalStandingReport = () => {
     fetchApiCall(requestData, true, true);
   }, [fetchApiCall]);
 
-  //OnCHange of date Handler
+  // Default range: 6 months back from today — shared by initial mount and
+  // by the "×" clear action on the date picker, so both land on the same
+  // baseline instead of duplicating this logic in two places.
+  const getDefaultDateRange = () => {
+    const endDate = new Date();
+    const startDate = new Date();
+    startDate.setMonth(startDate.getMonth() - 6);
+    return { startDate, endDate };
+  };
+
   const handleDateChange = (dates) => {
     if (dates && dates.length === 2) {
       const start = toYYMMDD(dates[0]);
@@ -138,7 +145,6 @@ const MyTradeApprovalStandingReport = () => {
         EndDate: dates?.[1] || null,
       });
 
-      // Call API immediately after date change
       fetchApiCall(
         {
           StartDate: start,
@@ -148,6 +154,27 @@ const MyTradeApprovalStandingReport = () => {
         true
       );
     }
+  };
+
+  // The DateRangePicker wrapper calls onClear (not onChange(null)) when the
+  // "×" is clicked — reset to the same default 6-month window used on
+  // mount and refetch, instead of leaving stale dateRange/summary in place.
+  const handleDateClear = () => {
+    const { startDate, endDate } = getDefaultDateRange();
+
+    setDateRange({
+      StartDate: formatToYYYYMMDD(startDate),
+      EndDate: formatToYYYYMMDD(endDate),
+    });
+
+    fetchApiCall(
+      {
+        StartDate: toYYMMDD(startDate),
+        EndDate: toYYMMDD(endDate),
+      },
+      true,
+      true
+    );
   };
 
   // Function to export PDF - still generated client-side (screenshot +
@@ -308,6 +335,7 @@ const MyTradeApprovalStandingReport = () => {
               value={[dateRange.StartDate, dateRange.EndDate]}
               className={"range-picker-small"}
               onChange={handleDateChange}
+              onClear={handleDateClear}
             />
 
             <CustomButton

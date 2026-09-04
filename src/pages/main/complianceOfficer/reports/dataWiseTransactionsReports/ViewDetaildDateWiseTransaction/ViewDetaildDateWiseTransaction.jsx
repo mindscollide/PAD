@@ -106,7 +106,7 @@ const ViewDetaildDateWiseTransaction = () => {
         };
       case "9":
         return {
-          label: "Non Compliant",
+          label: "Non-Compliant",
           labelClassName: styles.declinedDetailHeading,
           divClassName: styles.declinedBorderClass,
         };
@@ -153,7 +153,9 @@ const ViewDetaildDateWiseTransaction = () => {
      requesting user's own bundle row ("what's my status"), not "who
      actually took the last action". Same "single name / Multiple Users +
      tooltip" convention used elsewhere in the app. */
-  const actionByList = Array.isArray(reconcileTransactionViewDetailData?.actionBy)
+  const actionByList = Array.isArray(
+    reconcileTransactionViewDetailData?.actionBy
+  )
     ? reconcileTransactionViewDetailData.actionBy
     : [];
   const actionByNames = actionByList.map((u) => u?.fullName).filter(Boolean);

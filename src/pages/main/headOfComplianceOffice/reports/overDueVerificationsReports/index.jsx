@@ -42,6 +42,7 @@ import NoteHeadOfComplianceModal from "../../escalatedVerifications/escalatedVer
 import ApproveHeadOfComplianceModal from "../../escalatedVerifications/escalatedVerification/modals/approveHeadOfComplianceModal/ApproveHeadOfComplianceModal";
 import DeclinedHeadOfComplianceModal from "../../escalatedVerifications/escalatedVerification/modals/declinedHeadOfComplianceModal/DeclinedHeadOfComplianceModal";
 import ViewOverDueTransactionComment from "./viewOverdueVerificationReportsComment/ViewOverdueVerificationReportsComment";
+import ViewDetailHeadOfComplianceOverdueCompliance from "../../escalatedVerifications/escalatedVerification/modals/viewDetailHeadOfComplianceOverdueCompliance/ViewDetailHeadOfComplianceOverdueCompliance";
 
 const HeadCompianceOfficerOverdueVerificationReports = () => {
   const navigate = useNavigate();
@@ -67,8 +68,10 @@ const HeadCompianceOfficerOverdueVerificationReports = () => {
   } = useSearchBarContext();
 
   const {
-    viewDetailHeadOfComplianceEscalated,
-    setViewDetailHeadOfComplianceEscalated,
+    // viewDetailHeadOfComplianceEscalated,
+    // setViewDetailHeadOfComplianceEscalated,
+    viewDetailHeadOfComplianceOverdueVerifications,
+    setViewDetailHeadOfComplianceOverdueVerifications,
     viewCommentReconcileModal,
     uploadComplianceModal,
     isViewTicketTransactionModal,
@@ -234,7 +237,7 @@ const HeadCompianceOfficerOverdueVerificationReports = () => {
 
   // This Api is for the getAllViewDetailModal For myTransaction in Emp role
   // GETALLVIEWDETAIL OF Transaction API FUNCTION
-  const handleViewDetailsForReconcileTransaction = async (record) => {
+  const handleViewDetailHeadOfComplianceOverdueCompliance = async (record) => {
     await showLoader(true);
     const requestdata = { TradeApprovalID: record?.workFlowID };
 
@@ -264,7 +267,8 @@ const HeadCompianceOfficerOverdueVerificationReports = () => {
         ...record,
         workflowID: record?.workFlowID,
       });
-      setViewDetailHeadOfComplianceEscalated(true);
+      // setViewDetailHeadOfComplianceEscalated(true);
+      setViewDetailHeadOfComplianceOverdueVerifications(true);
     }
   };
 
@@ -274,8 +278,9 @@ const HeadCompianceOfficerOverdueVerificationReports = () => {
     approvalStatusMap,
     OverdueVerificationHCOReportSearch,
     setOverdueVerificationHCOReportSearch,
-    setViewDetailHeadOfComplianceEscalated,
-    handleViewDetailsForReconcileTransaction,
+    // setViewDetailHeadOfComplianceEscalated,
+    // handleViewDetailsForReconcileTransaction,
+    handleViewDetailHeadOfComplianceOverdueCompliance,
   });
 
   /** 🔹 Handle removing individual filter */
@@ -555,8 +560,8 @@ const HeadCompianceOfficerOverdueVerificationReports = () => {
       </PageLayout>
 
       {/* To show View Detail Reconcile Transaction on View Click */}
-      {viewDetailHeadOfComplianceEscalated && (
-        <ViewDetailHeadOfComplianceReconcileTransaction />
+      {viewDetailHeadOfComplianceOverdueVerifications && (
+        <ViewDetailHeadOfComplianceOverdueCompliance />
       )}
       {/* To show View Comment Modal when CLick on View Comment Button */}
       {viewCommentReconcileModal && <ViewOverDueTransactionComment />}

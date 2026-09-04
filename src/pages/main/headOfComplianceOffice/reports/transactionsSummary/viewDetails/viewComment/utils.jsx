@@ -27,7 +27,9 @@ export const parseComments = (value) => {
       .filter(Boolean)
       .map((item) =>
         typeof item === "object"
-          ? `${item.name ? `${item.name}: ` : ""}${item.comments ?? ""}`.trim()
+          ? `${item.comments ?? ""} - ${
+              item.name ? `${item.name} ` : ""
+            }`.trim()
           : item
       );
   }

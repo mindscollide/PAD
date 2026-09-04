@@ -118,7 +118,7 @@ export const getBorderlessTableColumns = ({
   sortedInfo,
   OverdueVerificationHCOReportSearch,
   setOverdueVerificationHCOReportSearch,
-  handleViewDetailsForReconcileTransaction,
+  handleViewDetailHeadOfComplianceOverdueCompliance,
 }) => [
   {
     title: withSortIcon("Requester Name", "requesterName", sortedInfo),
@@ -144,7 +144,7 @@ export const getBorderlessTableColumns = ({
       />
     )),
     dataIndex: "type",
-    width: 100,
+    width: 90,
     key: "type",
     filteredValue: OverdueVerificationHCOReportSearch.type?.length
       ? OverdueVerificationHCOReportSearch.type
@@ -172,7 +172,8 @@ export const getBorderlessTableColumns = ({
     align: "left",
     dataIndex: "complianceOfficer",
     key: "complianceOfficer",
-    width: 200,
+    width: 130,
+    ellipses: true,
     sorter: (a, b) => a.complianceOfficer.localeCompare(b.complianceOfficer),
     sortDirections: ["ascend", "descend"],
     sortOrder:
@@ -246,7 +247,7 @@ export const getBorderlessTableColumns = ({
     align: "center",
     dataIndex: "transactionDate",
     key: "transactionDate",
-    width: 200,
+    width: 150,
     sorter: (a, b) =>
       (a?.transactionDate || "").localeCompare(b?.transactionDate || ""),
     sortOrder:
@@ -347,7 +348,7 @@ export const getBorderlessTableColumns = ({
     align: "center",
     dataIndex: "escalatedDate",
     key: "escalatedDate",
-    width: 200,
+    width: 150,
     sorter: (a, b) =>
       (a?.escalatedDate || "").localeCompare(b?.escalatedDate || ""),
     sortOrder:
@@ -371,7 +372,7 @@ export const getBorderlessTableColumns = ({
           className="small-dark-button"
           text={"View Details"}
           onClick={() => {
-            handleViewDetailsForReconcileTransaction(record);
+            handleViewDetailHeadOfComplianceOverdueCompliance(record);
           }}
         />
       </div>

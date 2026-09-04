@@ -40,7 +40,6 @@ export const getMyActionsColumn = (approvalStatusMap, sortedInfo) => [
     title: withSortIcon("Transaction ID", "approvalID", sortedInfo),
     dataIndex: "approvalID",
     key: "approvalID",
-    ellipsis: true,
     width: "160px",
     sorter: (a, b) =>
       parseInt(a.approvalID.replace(/[^\d]/g, ""), 10) -
@@ -117,7 +116,6 @@ export const getMyActionsColumn = (approvalStatusMap, sortedInfo) => [
     key: "requesterName",
     width: "160px",
     align: "left",
-    ellipsis: true,
     sorter: (a, b) => a.requesterName.localeCompare(b.requesterName),
     sortDirections: ["ascend", "descend"],
     sortOrder:
@@ -136,7 +134,6 @@ export const getMyActionsColumn = (approvalStatusMap, sortedInfo) => [
     key: "creationTimeAndTime",
     width: "250px",
     align: "center",
-    ellipsis: true,
     sorter: (a, b) =>
       (a?.creationTimeAndTime || "").localeCompare(
         b?.creationTimeAndTime || ""
@@ -147,11 +144,7 @@ export const getMyActionsColumn = (approvalStatusMap, sortedInfo) => [
     showSorterTooltip: false,
     sortIcon: () => null,
     render: (date) => (
-      <Tooltip title={formatApiDateTime(date) || "—"}>
-        <span className="text-gray-600" title={date || "—"}>
-          {formatApiDateTime(date) || "—"}
-        </span>
-      </Tooltip>
+      <span className="text-gray-600">{formatApiDateTime(date) || "—"}</span>
     ),
   },
   {
@@ -160,7 +153,6 @@ export const getMyActionsColumn = (approvalStatusMap, sortedInfo) => [
     key: "nature",
     width: "100px",
     align: "left",
-    ellipsis: true,
     sorter: (a, b) => a.nature.localeCompare(b.nature),
     sortDirections: ["ascend", "descend"],
     sortOrder: sortedInfo?.columnKey === "nature" ? sortedInfo.order : null,
@@ -174,7 +166,6 @@ export const getMyActionsColumn = (approvalStatusMap, sortedInfo) => [
     key: "type",
     width: "100px",
     align: "left",
-    ellipsis: true,
     sorter: (a, b) => a.type.localeCompare(b.type),
     sortDirections: ["ascend", "descend"],
     sortOrder: sortedInfo?.columnKey === "type" ? sortedInfo.order : null,
@@ -188,7 +179,6 @@ export const getMyActionsColumn = (approvalStatusMap, sortedInfo) => [
     key: "quantity",
     width: "180px",
     align: "center",
-    ellipsis: true,
     sorter: (a, b) => a.quantity - b.quantity,
     sortDirections: ["ascend", "descend"],
     sortOrder: sortedInfo?.columnKey === "quantity" ? sortedInfo.order : null,
@@ -202,7 +192,6 @@ export const getMyActionsColumn = (approvalStatusMap, sortedInfo) => [
     key: "status",
     width: "160px",
     align: "left",
-    ellipsis: true,
     sorter: (a, b) => a.status.localeCompare(b.status),
     sortDirections: ["ascend", "descend"],
     sortOrder: sortedInfo?.columnKey === "status" ? sortedInfo.order : null,

@@ -34,8 +34,8 @@
 .underlinePortfolio {
   position: absolute;
   bottom: -2px;
-  left: 5px;
-  width: 118px; /* match text width */
+  left: 16px;
+  width: 105px; /* match text width */
   height: 2px;
   background-color: #001848;
   border-radius: 4.34px;
@@ -47,8 +47,8 @@
 .underlinePending {
   position: absolute;
   bottom: -2px;
-  left: -79px;
-  width: 241px; /* match text width */
+  left: -60px;
+  width: 234px; /* match text width */
   height: 2px;
   background-color: #001848;
   border-radius: 4.34px;

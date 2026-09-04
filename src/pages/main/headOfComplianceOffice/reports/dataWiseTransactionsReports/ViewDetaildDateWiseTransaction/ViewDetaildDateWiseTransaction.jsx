@@ -94,7 +94,7 @@ const ViewDetaildDateWiseTransaction = () => {
         };
       case "9":
         return {
-          label: "Non Compliant",
+          label: "Non-Compliant",
           labelClassName: styles.declinedDetailHeading,
           divClassName: styles.declinedBorderClass,
         };

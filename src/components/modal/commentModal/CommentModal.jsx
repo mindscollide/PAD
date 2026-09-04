@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Col, Row, Input, Typography } from "antd";
 import { GlobalModal } from "../../../components";
 import CustomButton from "../../../components/buttons/button";
@@ -35,6 +35,8 @@ const CommentModal = ({
   const { showLoader } = useGlobalLoader();
   const { callApi } = useApi();
 
+  const textAreaRef = useRef(null);
+
   const {
     noteGlobalModal,
     setNoteGlobalModal,
@@ -62,8 +64,10 @@ const CommentModal = ({
     selectedPortfolioTransactionData,
   } = usePortfolioContext();
 
-  const { setOverdueVerificationHCOListData, setCoOverdueVerificationListData } =
-    useMyApproval();
+  const {
+    setOverdueVerificationHCOListData,
+    setCoOverdueVerificationListData,
+  } = useMyApproval();
 
   // State to get option reason while selecting any reason
   const [selectedOption, setSelectedOption] = useState(null);
@@ -168,7 +172,8 @@ const CommentModal = ({
     // status until a full page reload. No-op if the row isn't in this
     // report's list (e.g. submit came from Reconcile Transactions instead).
     if (success) {
-      const resolvedStatus = submitText === "Non-Compliant" ? "Non-Compliant" : "Compliant";
+      const resolvedStatus =
+        submitText === "Non-Compliant" ? "Non-Compliant" : "Compliant";
 
       setCoOverdueVerificationListData((prev) => {
         const rows = prev?.overdueVerifications || [];
@@ -346,6 +351,11 @@ const CommentModal = ({
       setSelectedOption(null);
       setValue("");
       setManualText(""); // 👈 add this line
+      const focusTimeout = setTimeout(() => {
+        textAreaRef.current?.focus();
+      }, 100);
+
+      return () => clearTimeout(focusTimeout);
     }
   }, [visible]);
 
@@ -368,6 +378,7 @@ const CommentModal = ({
           <Row>
             <Col span={24}>
               <TextArea
+                ref={textAreaRef}
                 rows={8}
                 value={value}
                 onChange={handleChange}

@@ -19,7 +19,6 @@ import EscaltedOn from "../../../../../../../assets/img/EscaltedOn.png";
 import { useDashboardContext } from "../../../../../../../context/dashboardContaxt";
 import {
   convertUTCToCurrentTimeZone,
-  dashBetweenApprovalAssets,
   formatApiDateTime,
   formatNumberWithCommas,
 } from "../../../../../../../common/funtions/rejex";
@@ -103,7 +102,7 @@ const ViewDetailHeadOfComplianceReconcilePortfolio = () => {
         };
       case "9":
         return {
-          label: "Non Compliant",
+          label: "Non-Compliant",
           labelClassName: styles.declinedDetailHeading,
           divClassName: styles.declinedBorderClass,
         };
@@ -138,12 +137,6 @@ const ViewDetailHeadOfComplianceReconcilePortfolio = () => {
     (item) => item.instrumentID === instrumentId
   );
 
-  //if status is Pending and ticketUpload is false then compliant and Non Compliant is disable
-  const disableCompliantOrNonCompliantBtn =
-    statusData.label === "Pending" &&
-    isEscalatedPortfolioHeadOfComplianceViewDetailData?.ticketUploaded ===
-      false;
-
   // REWORKED (2026-08-17): rebuilt to match the HTA sibling screen's
   // hierarchy handling exactly
   // (headOfTradeApprover/escalatedApprovals/modals/viewDetailHeadOfApprovalModal) -
@@ -177,8 +170,8 @@ const ViewDetailHeadOfComplianceReconcilePortfolio = () => {
       iconSrc: EscaltedOn,
       title:
         esc?.escalatedFromID === loggedInUserID
-          ? "Escalated by You"
-          : `Escalated by ${esc?.escalatedFrom}`,
+          ? "Escalated on You"
+          : `Escalated on ${esc?.escalatedFrom}`,
       desc: formatApiDateTime(
         `${esc?.escalatedOnDate} ${esc?.escalatedOnTime}`
       ),
@@ -265,7 +258,7 @@ const ViewDetailHeadOfComplianceReconcilePortfolio = () => {
                   }}
                 >
                   {/* status 2 is Resubmitted */}
-                  <Col span={12}>
+                  <Col span={24}>
                     <div className={styles.backgrounColorOfDetail}>
                       <label className={styles.viewDetailMainLabels}>
                         Instrument
@@ -286,7 +279,11 @@ const ViewDetailHeadOfComplianceReconcilePortfolio = () => {
                       </label>
                     </div>
                   </Col>
-                  <Col span={12}>
+                </Row>
+
+                {/* Show Other Scenario's SUb Heading and Field Sceanrio's */}
+                <Row gutter={[4, 4]} style={{ marginTop: "3px" }}>
+                  <Col span={8}>
                     <div className={styles.backgrounColorOfDetail}>
                       <label className={styles.viewDetailMainLabels}>
                         Portfolio ID
@@ -302,11 +299,7 @@ const ViewDetailHeadOfComplianceReconcilePortfolio = () => {
                       </label>
                     </div>
                   </Col>
-                </Row>
-
-                {/* Show Other Scenario's SUb Heading and Field Sceanrio's */}
-                <Row gutter={[4, 4]} style={{ marginTop: "3px" }}>
-                  <Col span={12}>
+                  <Col span={8}>
                     <div className={styles.backgrounColorOfDetail}>
                       <label className={styles.viewDetailMainLabels}>
                         Requester Name
@@ -318,7 +311,7 @@ const ViewDetailHeadOfComplianceReconcilePortfolio = () => {
                       </label>
                     </div>
                   </Col>
-                  <Col span={12}>
+                  <Col span={8}>
                     <div
                       className={
                         statusData.label === "Traded"
@@ -479,7 +472,7 @@ const ViewDetailHeadOfComplianceReconcilePortfolio = () => {
                           />
                         </div>
                       </>
-                    ) : statusData?.label === "Non Compliant" ? (
+                    ) : statusData?.label === "Non-Compliant" ? (
                       <div className={styles.noncompliantButtonClass}>
                         <CustomButton
                           text="View Comments"

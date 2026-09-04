@@ -404,11 +404,12 @@ const Instruments = () => {
           </Row>
 
           <BorderlessTable
+            tableLayout="fixed"
             rows={adminIntrumentsData?.instruments}
             classNameTable="border-less-table-blue"
             scroll={
               adminIntrumentsData?.instruments?.length
-                ? { x: "max-content", y: activeFilters.length > 0 ? 450 : 500 }
+                ? { x: 900, y: activeFilters.length > 0 ? 450 : 500 }
                 : undefined
             }
             columns={columns}

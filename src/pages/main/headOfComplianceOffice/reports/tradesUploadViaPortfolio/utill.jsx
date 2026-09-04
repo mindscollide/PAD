@@ -115,6 +115,17 @@ const renderInstrumentCell = (record) => {
     </div>
   );
 };
+export const dashBetweenApprovalAssets = (id) => {
+  if (!id) return "";
+
+  const prefix = id.substring(0, 1);
+  const number = id.substring(1);
+
+  // If you want to always keep it padded to 3 digits (REQ-009)
+  const padded = number.padStart(1, "0");
+
+  return `${prefix}-${padded}`;
+};
 
 export const getBorderlessTableColumns = ({
   approvalStatusMap,
@@ -172,6 +183,31 @@ export const getBorderlessTableColumns = ({
         </div>
       );
     },
+  },
+
+  // Portfolio ID
+  {
+    title: withSortIcon(
+      "Portfolio ID",
+      "tradeApprovalID",
+      sortedInfo,
+      "center"
+    ),
+    dataIndex: "tradeApprovalID",
+    key: "tradeApprovalID",
+    width: 150,
+    align: "center",
+    sorter: (a, b) =>
+      (a?.tradeApprovalID || "").localeCompare(b?.tradeApprovalID || ""),
+    sortOrder:
+      sortedInfo?.columnKey === "tradeApprovalID" ? sortedInfo.order : null,
+    showSorterTooltip: false,
+    sortIcon: () => null,
+    render: (approvalID) => (
+      <span className="font-medium justify-content-center">
+        {dashBetweenApprovalAssets(approvalID)}
+      </span>
+    ),
   },
   {
     title: withSortIcon("Instrument Name", "instrumentCode", sortedInfo),

@@ -13,8 +13,6 @@
 
 import React from "react";
 import { Col, Row, Tooltip } from "antd";
-import { Stepper, Step } from "react-form-stepper";
-import { useNavigate } from "react-router-dom";
 
 /* ========================== CONTEXTS ========================== */
 import { useGlobalModal } from "../../../../../context/GlobalModalContext";
@@ -28,13 +26,7 @@ import CustomButton from "../../../../../components/buttons/button";
 import {
   dashBetweenApprovalAssets,
   formatApiDateTime,
-  formatNumberWithCommas,
 } from "../../../../../common/funtions/rejex";
-
-/* ========================== ASSETS ========================== */
-import CheckIcon from "../../../../../assets/img/Check.png";
-import EllipsesIcon from "../../../../../assets/img/Ellipses.png";
-import CrossIcon from "../../../../../assets/img/Cross.png";
 
 /* ========================== STYLES ========================== */
 import styles from "./ViewDetaildDateWiseTransaction.module.css";
@@ -46,12 +38,6 @@ const ViewDetaildDateWiseTransaction = () => {
 
   /* ========================== CONTEXT DATA ========================== */
   const { reconcileTransactionViewDetailData } = useReconcileContext();
-
-  /* ========================== USER SESSION ========================== */
-  const userProfileData = JSON.parse(
-    sessionStorage.getItem("user_profile_data") || "{}"
-  );
-  const loggedInUserID = userProfileData?.userID;
 
   /* ================================================================
      STATUS HANDLING
@@ -103,7 +89,7 @@ const ViewDetaildDateWiseTransaction = () => {
         };
       case "9":
         return {
-          label: "Non Compliant",
+          label: "Non-Compliant",
           labelClassName: styles.declinedDetailHeading,
           divClassName: styles.declinedBorderClass,
         };
@@ -134,10 +120,6 @@ const ViewDetaildDateWiseTransaction = () => {
     reconcileTransactionViewDetailData?.assetTypes?.find(
       (a) => String(a?.assetTypeID) === String(firstDetail?.assetTypeID)
     )?.shortCode || "EQ";
-
-  /* ========================== BUTTON STATES ========================== */
-  const isTicketUploaded =
-    reconcileTransactionViewDetailData?.ticketUploaded === false;
 
   /* ========================== NOTES ==========================
      Note text can still carry a trailing internal "CO<id>" tracking

@@ -1,23 +1,16 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { Row, Col } from "antd";
-import { DownloadOutlined } from "@ant-design/icons";
 import { AcordianTable, PageLayout } from "../../../../components";
-import CustomButton from "../../../../components/buttons/button";
 import style from "./HOC-myActions.module.css";
-import Excel from "../../../../assets/img/xls.png";
 import { buildMyActionApiRequest, getMyActionsColumn } from "./utils";
 import { useSearchBarContext } from "../../../../context/SearchBarContaxt";
 import { approvalStatusMap } from "../../../../components/tables/borderlessTable/utill";
 import { useMyApproval } from "../../../../context/myApprovalContaxt";
-import {
-  DownloadMyActionsReportRequest,
-  GetHOCMyActionsWorkflowDetail,
-} from "../../../../api/myApprovalApi";
+import { GetHOCMyActionsWorkflowDetail } from "../../../../api/myApprovalApi";
 import { useNotification } from "../../../../components/NotificationProvider/NotificationProvider";
 import { useGlobalLoader } from "../../../../context/LoaderContext";
 import { useApi } from "../../../../context/ApiContext";
 import { useNavigate } from "react-router-dom";
-import { useSidebarContext } from "../../../../context/sidebarContaxt";
 import {
   dashBetweenApprovalAssets,
   formatApiDateTime,
@@ -30,23 +23,16 @@ const HOCMyActionPage = () => {
   const { callApi } = useApi();
   const { showNotification } = useNotification();
   const { showLoader } = useGlobalLoader();
-  const { selectedKey } = useSidebarContext();
 
   const [sortedInfo, setSortedInfo] = useState({});
 
   const [loadingMore, setLoadingMore] = useState(false);
   const [hasMore, setHasMore] = useState(true); // until proven otherwise
 
-  const {
-    headOfComplianceMyActionSearch,
-    setHeadOfComplianceMyActionSearch,
-    resetHeadOfComplianceOfficerMyActionSearch,
-  } = useSearchBarContext();
+  const { headOfComplianceMyActionSearch, setHeadOfComplianceMyActionSearch } =
+    useSearchBarContext();
 
   const { myActionHOCData, setMyActionHOCData } = useMyApproval();
-  console.log(selectedKey, "selectedKey");
-
-  console.log(myActionHOCData, "myActionHOCDatamyActionHOCData");
 
   /**
    * Fetches transactions from API.
@@ -69,7 +55,7 @@ const HOCMyActionPage = () => {
         setMyActionHOCData(res);
       }
     },
-    [callApi, navigate, showLoader, showNotification],
+    [callApi, navigate, showLoader, showNotification]
   );
 
   // Initial Fetch
@@ -77,7 +63,7 @@ const HOCMyActionPage = () => {
     if (!hasFetched.current) {
       hasFetched.current = true;
       const requestData = buildMyActionApiRequest(
-        headOfComplianceMyActionSearch,
+        headOfComplianceMyActionSearch
       );
 
       fetchApiCall(requestData, true, true);
@@ -89,7 +75,7 @@ const HOCMyActionPage = () => {
     if (headOfComplianceMyActionSearch?.filterTrigger) {
       hasFetched.current = true;
       const requestData = buildMyActionApiRequest(
-        headOfComplianceMyActionSearch,
+        headOfComplianceMyActionSearch
       );
 
       fetchApiCall(requestData, true, true);
@@ -105,7 +91,7 @@ const HOCMyActionPage = () => {
     approvalStatusMap,
     sortedInfo,
     headOfComplianceMyActionSearch,
-    setHeadOfComplianceMyActionSearch,
+    setHeadOfComplianceMyActionSearch
   );
 
   /** 🔹 Handle removing individual filter */
@@ -280,7 +266,7 @@ const HOCMyActionPage = () => {
 
         // build request based on current search/filter but override pagination
         const baseRequest = buildMyActionApiRequest(
-          headOfComplianceMyActionSearch,
+          headOfComplianceMyActionSearch
         );
         const requestData = {
           ...baseRequest,

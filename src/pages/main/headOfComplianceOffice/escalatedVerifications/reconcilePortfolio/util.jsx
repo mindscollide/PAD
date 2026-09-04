@@ -1,11 +1,10 @@
 // utils.jsx
 import React from "react";
-import { Tag, Tooltip, Typography } from "antd";
+import { Tooltip, Typography } from "antd";
 import { Button } from "../../../../../components";
 
 // Filter dropdowns
 import TypeColumnTitle from "../../../../../components/dropdowns/filters/typeColumnTitle";
-import StatusColumnTitle from "../../../../../components/dropdowns/filters/statusColumnTitle";
 
 // Helpers
 import {
@@ -82,16 +81,6 @@ export const mapToTableRows = (assetTypeData, list = []) =>
 /* 🔹 Reusable Style Helpers */
 /* ------------------------------------------------------------------ */
 
-const nowrapCell = (minWidth, maxWidth) => ({
-  style: {
-    minWidth,
-    maxWidth,
-    whiteSpace: "nowrap",
-    overflow: "hidden",
-    textOverflow: "ellipsis",
-  },
-});
-
 /* ------------------------------------------------------------------ */
 /* 🔹 Column Definitions */
 /* ------------------------------------------------------------------ */
@@ -105,7 +94,6 @@ const nowrapCell = (minWidth, maxWidth) => ({
  * @returns {Array<Object>} Column configurations for AntD Table.
  */
 export const getBorderlessTableColumns = ({
-  approvalStatusMap = {},
   sortedInfo = {},
   headOfComplianceApprovalPortfolioSearch = {},
   setHeadOfComplianceApprovalPortfolioSearch = () => {},
@@ -117,7 +105,6 @@ export const getBorderlessTableColumns = ({
     align: "left",
     dataIndex: "requesterName",
     key: "requesterName",
-    ellipsis: true,
     width: 140,
     sorter: (a, b) =>
       (a?.requesterName || "").localeCompare(b?.requesterName || ""),
@@ -125,11 +112,7 @@ export const getBorderlessTableColumns = ({
       sortedInfo?.columnKey === "requesterName" ? sortedInfo.order : null,
     showSorterTooltip: false,
     sortIcon: () => null,
-    render: (text) => (
-      <span className="font-medium" title={text || "—"}>
-        {text || "—"}
-      </span>
-    ),
+    render: (text) => <span className="font-medium">{text || "—"}</span>,
   },
 
   /* --------------------- Instrument --------------------- */
@@ -194,7 +177,6 @@ export const getBorderlessTableColumns = ({
     align: "center",
     dataIndex: "transactionDate",
     key: "transactionDate",
-    ellipsis: true,
     width: 140,
     sorter: (a, b) =>
       (a?.transactionDate || "").localeCompare(b?.transactionDate || ""),
@@ -204,9 +186,7 @@ export const getBorderlessTableColumns = ({
     sortIcon: () => null,
     render: (date) => (
       <Tooltip title={formatApiDateTime(date) || "—"}>
-        <span className="text-gray-600" title={date || "—"}>
-          {formatApiDateTime(date) || "—"}
-        </span>
+        <span className="text-gray-600">{formatApiDateTime(date) || "—"}</span>
       </Tooltip>
     ),
   },
@@ -237,13 +217,12 @@ export const getBorderlessTableColumns = ({
     ),
     dataIndex: "type",
     key: "type",
-    ellipsis: true,
     width: 100,
     filteredValue: headOfComplianceApprovalPortfolioSearch?.type?.length
       ? headOfComplianceApprovalPortfolioSearch.type
       : null,
     onFilter: () => true,
-    render: (type) => <span title={type || "—"}>{type || "—"}</span>,
+    render: (type) => <span>{type || "—"}</span>,
   },
 
   /* --------------------- Escalated Date & Time --------------------- */
@@ -252,7 +231,6 @@ export const getBorderlessTableColumns = ({
     align: "center",
     dataIndex: "escalatedDate",
     key: "escalatedDate",
-    ellipsis: true,
     width: 140,
     sorter: (a, b) =>
       (a?.escalatedDate || "").localeCompare(b?.escalatedDate || ""),
@@ -261,11 +239,7 @@ export const getBorderlessTableColumns = ({
     showSorterTooltip: false,
     sortIcon: () => null,
     render: (date) => (
-      <Tooltip title={formatApiDateTime(date) || "—"}>
-        <span className="text-gray-600" title={date || "—"}>
-          {formatApiDateTime(date) || "—"}
-        </span>
-      </Tooltip>
+      <span className="text-gray-600">{formatApiDateTime(date) || "—"}</span>
     ),
   },
 

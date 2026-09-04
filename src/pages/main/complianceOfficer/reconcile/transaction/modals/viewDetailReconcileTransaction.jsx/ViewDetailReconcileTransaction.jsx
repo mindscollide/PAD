@@ -107,7 +107,7 @@ const ViewDetailReconcileTransaction = () => {
         };
       case "9":
         return {
-          label: "Non Compliant",
+          label: "Non-Compliant",
           labelClassName: styles.declinedDetailHeading,
           divClassName: styles.declinedBorderClass,
         };
@@ -190,8 +190,8 @@ const ViewDetailReconcileTransaction = () => {
         sortKey: rawTimestamp(esc?.escalatedOnDate, esc?.escalatedOnTime),
         iconSrc: EscaltedOn,
         title: escalatedByYou
-          ? "Escalated by You"
-          : `Escalated by ${esc?.escalatedFrom}`,
+          ? "Escalated on You"
+          : `Escalated on ${esc?.escalatedFrom}`,
         date: convertUTCToCurrentTimeZone(
           esc?.escalatedOnDate,
           esc?.escalatedOnTime
@@ -239,9 +239,9 @@ const ViewDetailReconcileTransaction = () => {
           ? isNonCompliant
             ? "Marked Non-Compliant by You"
             : "Marked Compliant by You"
-          : `Marked ${
-              isNonCompliant ? "Non-Compliant" : "Compliant"
-            } by ${esc?.escalationClosedByName}`,
+          : `Marked ${isNonCompliant ? "Non-Compliant" : "Compliant"} by ${
+              esc?.escalationClosedByName
+            }`,
         date: convertUTCToCurrentTimeZone(closedDate, closedTime),
       });
     });
@@ -703,16 +703,8 @@ const ViewDetailReconcileTransaction = () => {
                           />
                         </div>
                       </>
-                    ) : myActionStatusData.label === "Non Compliant" ? (
+                    ) : myActionStatusData.label === "Non-Compliant" ? (
                       <div className={styles.noncompliantButtonClass}>
-                        <CustomButton
-                          text="View Tickets"
-                          className="big-light-button"
-                          onClick={() => {
-                            setIsViewTicketTransactionModal(true);
-                            setViewDetailReconcileTransaction(false);
-                          }}
-                        />{" "}
                         <CustomButton
                           text="View Comments"
                           className="big-light-button"
@@ -720,7 +712,16 @@ const ViewDetailReconcileTransaction = () => {
                             setViewCommentReconcileModal(true);
                             setViewDetailReconcileTransaction(false);
                           }}
-                        />{" "}
+                        />
+
+                        <CustomButton
+                          text="View Tickets"
+                          className="big-light-button"
+                          onClick={() => {
+                            setIsViewTicketTransactionModal(true);
+                            setViewDetailReconcileTransaction(false);
+                          }}
+                        />
                         <CustomButton
                           text="Close"
                           onClick={() => {
@@ -732,18 +733,19 @@ const ViewDetailReconcileTransaction = () => {
                     ) : myActionStatusData.label === "Compliant" ? (
                       <div className={styles.noncompliantButtonClass}>
                         <CustomButton
-                          text="View Tickets"
-                          className="big-light-button"
-                          onClick={() => handleViewTicket()} // no disabled check
-                        />
-                        <CustomButton
                           text="View Comments"
                           className="big-light-button"
                           onClick={() => {
                             setViewCommentReconcileModal(true);
                             setViewDetailReconcileTransaction(false);
                           }}
-                        />{" "}
+                        />
+
+                        <CustomButton
+                          text="View Tickets"
+                          className="big-light-button"
+                          onClick={() => handleViewTicket()} // no disabled check
+                        />
                         <CustomButton
                           text="Close"
                           onClick={() => {
