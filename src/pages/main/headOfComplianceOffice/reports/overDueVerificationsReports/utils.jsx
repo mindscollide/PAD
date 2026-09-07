@@ -7,6 +7,7 @@ import style from "./OverDueVerificationReports.module.css";
 
 import {
   formatApiDateTime,
+  formatShowOnlyDate,
   toYYMMDD,
 } from "../../../../../common/funtions/rejex";
 import { mapBuySellToIds } from "../../../../../components/dropdowns/filters/utils";
@@ -132,9 +133,7 @@ export const getBorderlessTableColumns = ({
       sortedInfo?.columnKey === "requesterName" ? sortedInfo.order : null,
     showSorterTooltip: false,
     sortIcon: () => null,
-    render: (text) => (
-      <span className={`${style["cell-text"]} font-medium`}>{text}</span>
-    ),
+    render: (text) => <span className={`font-medium`}>{text}</span>,
   },
   {
     title: withFilterHeader(() => (
@@ -172,7 +171,7 @@ export const getBorderlessTableColumns = ({
     align: "left",
     dataIndex: "complianceOfficer",
     key: "complianceOfficer",
-    width: 130,
+    width: 120,
     ellipses: true,
     sorter: (a, b) => a.complianceOfficer.localeCompare(b.complianceOfficer),
     sortDirections: ["ascend", "descend"],
@@ -180,9 +179,7 @@ export const getBorderlessTableColumns = ({
       sortedInfo?.columnKey === "complianceOfficer" ? sortedInfo.order : null,
     showSorterTooltip: false,
     sortIcon: () => null,
-    render: (text) => (
-      <span className={`${style["cell-text"]} font-medium`}>{text}</span>
-    ),
+    render: (text) => <span className={`font-medium`}>{text}</span>,
   },
   {
     title: withSortIcon("Instrument", "instrumentName", sortedInfo),
@@ -224,7 +221,7 @@ export const getBorderlessTableColumns = ({
                 overflow: "hidden",
                 textOverflow: "ellipsis",
                 whiteSpace: "nowrap",
-                maxWidth: "200px",
+                width: 100,
                 display: "inline-block",
                 cursor: "pointer",
               }}
@@ -247,7 +244,7 @@ export const getBorderlessTableColumns = ({
     align: "center",
     dataIndex: "transactionDate",
     key: "transactionDate",
-    width: 150,
+    width: 140,
     sorter: (a, b) =>
       (a?.transactionDate || "").localeCompare(b?.transactionDate || ""),
     sortOrder:
@@ -255,18 +252,13 @@ export const getBorderlessTableColumns = ({
     showSorterTooltip: false,
     sortIcon: () => null,
     render: (date) => (
-      <span className="text-gray-600">{formatApiDateTime(date) || "—"}</span>
+      <span className="font-medium">{formatShowOnlyDate(date) || "—"}</span>
     ),
   },
   {
-    title: withSortIcon(
-      "Approved Quantity",
-      "approvedQuantity",
-      sortedInfo,
-      "center"
-    ),
+    title: withSortIcon("App. Qty.", "approvedQuantity", sortedInfo, "center"),
     dataIndex: "approvedQuantity",
-    width: 180,
+    width: 110,
     align: "center",
     key: "approvedQuantity",
     sorter: (a, b) => a.approvedQuantity - b.approvedQuantity,
@@ -282,7 +274,7 @@ export const getBorderlessTableColumns = ({
     dataIndex: "shareTraded",
     key: "shareTraded",
     align: "center",
-    width: 150,
+    width: 140,
     sorter: (a, b) => a.shareTraded - b.shareTraded,
     sortDirections: ["ascend", "descend"],
     sortOrder:
@@ -331,24 +323,41 @@ export const getBorderlessTableColumns = ({
     key: "isEscalationOpen",
     dataIndex: "isEscalationOpen",
     align: "center",
-    width: 20,
+    width: 40, // 🔹 was 20 — smaller than the 40px icon itself, causing
+    // clipping on any screen where the table enforces this
+    // column width instead of just treating it as a hint
     render: (_, record) => {
-      return record.isEscalationOpen ? (
-        <img src={EscaltedOn} width={"40px"} />
-      ) : null;
+      if (!record.isEscalationOpen) return null;
+      return (
+        <div
+          style={{
+            width: 40,
+            height: 40,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            flexShrink: 0, // 🔹 never let this shrink below icon size
+          }}
+        >
+          <img
+            src={EscaltedOn}
+            alt="Escalated"
+            style={{
+              width: "100%",
+              height: "100%",
+              objectFit: "contain",
+            }}
+          />
+        </div>
+      );
     },
   },
   {
-    title: withSortIcon(
-      "Escalated Date",
-      "escalatedDate",
-      sortedInfo,
-      "center"
-    ),
+    title: withSortIcon("Escalated On", "escalatedDate", sortedInfo, "center"),
     align: "center",
     dataIndex: "escalatedDate",
     key: "escalatedDate",
-    width: 150,
+    width: 120,
     sorter: (a, b) =>
       (a?.escalatedDate || "").localeCompare(b?.escalatedDate || ""),
     sortOrder:
@@ -356,9 +365,7 @@ export const getBorderlessTableColumns = ({
     showSorterTooltip: false,
     sortIcon: () => null,
     render: (date) => (
-      <span className="text-gray-600" title={date || "—"}>
-        {formatApiDateTime(date) || "—"}
-      </span>
+      <span className="font-medium">{formatShowOnlyDate(date) || "—"}</span>
     ),
   },
   {
