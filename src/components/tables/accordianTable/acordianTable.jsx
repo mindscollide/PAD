@@ -146,6 +146,7 @@ const AcordianTable = ({
   return (
     <div className={styles.accordianTableMainDiv} ref={refClass}>
       <Table
+        className={className}
         columns={columns}
         dataSource={sortedData}
         rowKey="id"

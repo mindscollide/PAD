@@ -40,7 +40,7 @@ export const getMyActionsColumn = (approvalStatusMap, sortedInfo) => [
     title: withSortIcon("Transaction ID", "approvalID", sortedInfo),
     dataIndex: "approvalID",
     key: "approvalID",
-    width: 140,
+    width: 150,
     sorter: (a, b) =>
       parseInt(a.approvalID.replace(/[^\d]/g, ""), 10) -
       parseInt(b.approvalID.replace(/[^\d]/g, ""), 10),
@@ -114,7 +114,7 @@ export const getMyActionsColumn = (approvalStatusMap, sortedInfo) => [
     title: withSortIcon("Requester Name", "requesterName", sortedInfo),
     dataIndex: "requesterName",
     key: "requesterName",
-    width: "160px",
+    width: 165,
     align: "left",
     sorter: (a, b) => a.requesterName.localeCompare(b.requesterName),
     sortDirections: ["ascend", "descend"],
@@ -132,7 +132,7 @@ export const getMyActionsColumn = (approvalStatusMap, sortedInfo) => [
     ),
     dataIndex: "creationTimeAndTime",
     key: "creationTimeAndTime",
-    width: 260,
+    width: 265,
     align: "center",
     sorter: (a, b) =>
       (a?.creationTimeAndTime || "").localeCompare(
@@ -164,7 +164,7 @@ export const getMyActionsColumn = (approvalStatusMap, sortedInfo) => [
     title: withSortIcon("Type", "type", sortedInfo),
     dataIndex: "type",
     key: "type",
-    width: 80,
+    width: 90,
     align: "left",
     sorter: (a, b) => a.type.localeCompare(b.type),
     sortDirections: ["ascend", "descend"],

@@ -44,16 +44,14 @@ body {
 :where(.css-dev-only-do-not-override-1rfzxih).ant-layout-header {
   background: transparent !important;
 }
-
-:where(.css-dev-only-do-not-override-1rfzxih).ant-table-wrapper .ant-table {
+/* :where(.css-dev-only-do-not-override-1rfzxih).ant-table-wrapper .ant-table {
   padding: 0px 6px;
   color: #424242;
   font-family: "Switzer Variable";
   font-weight: 500;
   font-size: 16px;
   line-height: 100%;
-}
-
+} */
 /* Main content scrollable areas */
 .pad_content,
 .home-content {
