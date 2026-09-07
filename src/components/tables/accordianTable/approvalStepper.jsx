@@ -101,7 +101,7 @@ const ApprovalStepper = ({ trail }) => {
                   {step.status}{" "}
                   {step.user && (
                     <>
-                      {"by"}
+                      {/* {"by"} */}
                       <Tooltip title={step.user}>
                         <span className={styles.stepTileStrongText}>
                           {step.user}

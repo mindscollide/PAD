@@ -45,6 +45,15 @@ body {
   background: transparent !important;
 }
 
+:where(.css-dev-only-do-not-override-1rfzxih).ant-table-wrapper .ant-table {
+  padding: 0px 6px;
+  color: #424242;
+  font-family: "Switzer Variable";
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 100%;
+}
+
 /* Main content scrollable areas */
 .pad_content,
 .home-content {
@@ -710,9 +719,9 @@ Specificity: (0,1,1)
   scrollbar-gutter: stable;
 }
 
-
-:where(.css-dev-only-do-not-override-1rfzxih).border-less-table-blue-wrapper .border-less-table-blue-cell-scrollbar:not([rowspan]) {
-    box-shadow: none !important;
+:where(.css-dev-only-do-not-override-1rfzxih).border-less-table-blue-wrapper
+  .border-less-table-blue-cell-scrollbar:not([rowspan]) {
+  box-shadow: none !important;
 }
 
 /* ===============================
