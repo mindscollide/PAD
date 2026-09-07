@@ -251,7 +251,7 @@ export const getBorderlessTableColumns = ({
     dataIndex: "isEscalated",
     key: "isEscalated",
     ellipsis: true,
-    width: 2,
+    width: 100,
     align: "center",
 
     render: (date) =>

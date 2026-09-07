@@ -692,7 +692,7 @@ const ViewDetailHeadOfComplianceOverdueCompliance = () => {
                           text="View Tickets"
                           className="big-light-button"
                           onClick={handleViewTicket}
-                        />{" "}
+                        />
                         <CustomButton
                           text="View Comments"
                           className="big-light-button"
