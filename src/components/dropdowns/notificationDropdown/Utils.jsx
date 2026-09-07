@@ -32,11 +32,20 @@ const NOTIFICATION_TITLES = {
     "Trade Approval Request escalated to HTA",
   Trade_Approval_Escalated_HTA: "Trade Approval Request escalated",
   Transaction_Escalated_Employee: "Transaction escalated",
-  Transaction_Escalated_ComplianceOfficer: "Transaction escalated to HCA",
-  Transaction_Escalated_HCA: "Transaction escalated",
+  // FIXED (API_Changes/2026-09-07_notification_title_hca_to_hco_fe_fix.md):
+  // the ComplianceOfficer-facing title was a hardcoded "...to HCA" literal
+  // with no link to the backend enum at all, so the 2026-08-28 backend
+  // rename (HCA -> HCO) never reached it. The HCA-facing keys below
+  // (Transaction_Escalated_HCA/Portfolio_Escalated_HCA) were literal key
+  // matches against that same renamed enum, so post-rename they stopped
+  // matching anything the backend sends and silently fell through to the
+  // generic humanizer instead ("Transaction Escalated HCO", raw/wrong
+  // casing) - a real regression from that rename, not present before it.
+  Transaction_Escalated_ComplianceOfficer: "Transaction escalated to HCO",
+  Transaction_Escalated_HCO: "Transaction escalated",
   Portfolio_Escalated_Employee: "Portfolio escalated",
-  Portfolio_Escalated_ComplianceOfficer: "Portfolio escalated to HCA",
-  Portfolio_Escalated_HCA: "Portfolio escalated",
+  Portfolio_Escalated_ComplianceOfficer: "Portfolio escalated to HCO",
+  Portfolio_Escalated_HCO: "Portfolio escalated",
   New_Signup_Request: "New Signup Request",
 };
 
