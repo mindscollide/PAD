@@ -6,7 +6,6 @@ import { Tooltip } from "antd";
 import style from "./OverDueVerificationReports.module.css";
 
 import {
-  formatApiDateTime,
   formatShowOnlyDate,
   toYYMMDD,
 } from "../../../../../common/funtions/rejex";
@@ -274,7 +273,7 @@ export const getBorderlessTableColumns = ({
     dataIndex: "shareTraded",
     key: "shareTraded",
     align: "center",
-    width: 140,
+    width: 130,
     sorter: (a, b) => a.shareTraded - b.shareTraded,
     sortDirections: ["ascend", "descend"],
     sortOrder:
@@ -283,41 +282,7 @@ export const getBorderlessTableColumns = ({
     sortIcon: () => null,
     render: (q) => <span className="font-medium">{q.toLocaleString()}</span>,
   },
-  // {
-  //   // ADDED per BE_API_Changes/2026-08-24_overdue_verifications_keeps_
-  //   // resolved_records.md: resolved rows (Compliant/Non-Compliant) now stay
-  //   // in this report instead of being excluded - the status genuinely
-  //   // varies per row now, so it needs a visible column rendering all three
-  //   // states, not just an implicit "always Pending" assumption.
-  //   title: withSortIcon("Status", "status", sortedInfo, "center"),
-  //   align: "center",
-  //   dataIndex: "status",
-  //   key: "status",
-  //   width: 160,
-  //   sorter: (a, b) => (a?.status || "").localeCompare(b?.status || ""),
-  //   sortDirections: ["ascend", "descend"],
-  //   sortOrder: sortedInfo?.columnKey === "status" ? sortedInfo.order : null,
-  //   showSorterTooltip: false,
-  //   sortIcon: () => null,
-  //   render: (status) => {
-  //     const tag = approvalStatusMap?.[status] || {};
-  //     return (
-  //       <Tag
-  //         style={{
-  //           backgroundColor: tag.backgroundColor,
-  //           color: tag.textColor,
-  //           whiteSpace: "nowrap",
-  //           overflow: "hidden",
-  //           textOverflow: "ellipsis",
-  //           display: "inline-block",
-  //         }}
-  //         className="border-less-table-orange-status"
-  //       >
-  //         {tag.label || status || "—"}
-  //       </Tag>
-  //     );
-  //   },
-  // },
+
   {
     title: "",
     key: "isEscalationOpen",

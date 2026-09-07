@@ -138,11 +138,46 @@ export const getBorderlessTableColumns = ({
       sortedInfo?.columnKey === "instrumentName" ? sortedInfo.order : null,
     showSorterTooltip: false,
     sortIcon: () => null,
+    // render: (instrument, record) => {
+    //   const assetCode = record?.assetShortCode;
+    //   const code = record?.instrumentShortCode || "";
+    //   const instrumentName = record?.instrumentName || "";
+
+    //   return (
+    //     <div
+    //       style={{
+    //         display: "flex",
+    //         alignItems: "center",
+    //         gap: "12px",
+    //       }}
+    //     >
+    //       <span className="custom-shortCode-asset" style={{ minWidth: 30 }}>
+    //         {assetCode?.substring(0, 2).toUpperCase()}
+    //       </span>
+    //       <Tooltip title={instrumentName} placement="topLeft">
+    //         <span
+    //           className="font-medium"
+    //           style={{
+    //             overflow: "hidden",
+    //             textOverflow: "ellipsis",
+    //             whiteSpace: "nowrap",
+    //             // maxWidth: "200px",
+    //             display: "inline-block",
+    //             cursor: "pointer",
+    //           }}
+    //           title={code}
+    //         >
+    //           {code}
+    //         </span>
+    //       </Tooltip>
+    //     </div>
+    //   );
+    // },
+
     render: (instrument, record) => {
       const assetCode = record?.assetShortCode;
       const code = record?.instrumentShortCode || "";
       const instrumentName = record?.instrumentName || "";
-
       return (
         <div
           style={{
@@ -161,7 +196,7 @@ export const getBorderlessTableColumns = ({
                 overflow: "hidden",
                 textOverflow: "ellipsis",
                 whiteSpace: "nowrap",
-                maxWidth: "200px",
+                width: 100,
                 display: "inline-block",
                 cursor: "pointer",
               }}
@@ -278,7 +313,7 @@ export const getBorderlessTableColumns = ({
     dataIndex: "quantity",
     key: "quantity",
     // ellipsis: true,
-    width: 150,
+    width: 130,
     sorter: (a, b) => a.quantity - b.quantity,
     sortDirections: ["ascend", "descend"],
     sortOrder: sortedInfo?.columnKey === "quantity" ? sortedInfo.order : null,

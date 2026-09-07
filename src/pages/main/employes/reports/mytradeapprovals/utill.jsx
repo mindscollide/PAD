@@ -169,7 +169,7 @@ export const getBorderlessTableColumns = ({
     align: "center",
     dataIndex: "requestDateTime",
     key: "requestDateTime",
-    width: 200,
+    width: 225,
     sorter: (a, b) => a.requestDateTime.localeCompare(b.requestDateTime),
     sortOrder:
       sortedInfo?.columnKey === "requestDateTime" ? sortedInfo.order : null,
@@ -246,22 +246,38 @@ export const getBorderlessTableColumns = ({
       </span>
     ),
   },
+
   {
     title: "",
-    dataIndex: "isEscalated",
     key: "isEscalated",
-    ellipsis: true,
-    width: 100,
+    dataIndex: "isEscalated",
     align: "center",
+    width: 40, // 🔹 was 20 — smaller than the 40px icon itself, causing
+    // clipping on any screen where the table enforces this
+    // column width instead of just treating it as a hint
 
     render: (date) =>
       date && (
-        <img
-          draggable={false}
-          src={EscalatedIcon}
-          alt="escalated"
-          className={style["escalated-icon"]}
-        />
+        <div
+          style={{
+            width: 40,
+            height: 40,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            flexShrink: 0, // 🔹 never let this shrink below icon size
+          }}
+        >
+          <img
+            src={EscalatedIcon}
+            alt="Escalated"
+            style={{
+              width: "100%",
+              height: "100%",
+              objectFit: "contain",
+            }}
+          />
+        </div>
       ),
   },
   {
@@ -363,7 +379,7 @@ export const getBorderlessTableColumns = ({
     align: "center",
     dataIndex: "actionDateTime",
     key: "actionDateTime",
-    width: 200,
+    width: 225,
     sorter: (a, b) => a.actionDateTime.localeCompare(b.actionDateTime),
     sortDirections: ["ascend", "descend"],
     sortOrder:
