@@ -165,13 +165,14 @@ export const getBorderlessTableColumns = ({
     dataIndex: "requesterName",
     key: "requesterName",
     align: "left",
+    width: 150,
+
     sorter: (a, b) =>
       (a?.requesterName || "").localeCompare(b?.requesterName || ""),
     sortOrder:
       sortedInfo?.columnKey === "requesterName" ? sortedInfo.order : null,
     showSorterTooltip: false,
     sortIcon: () => null,
-    width: 150,
     render: (text) => <span className="font-medium">{text || "—"}</span>,
     onHeaderCell: () => nowrapCell(70, 150),
     onCell: () => nowrapCell(70, 150),
@@ -184,6 +185,7 @@ export const getBorderlessTableColumns = ({
     key: "instrumentCode",
     align: "left",
     ellipsis: true,
+    width: 200,
     sorter: (a, b) =>
       (a?.instrumentCode || "").localeCompare(b?.instrumentCode || ""),
     sortOrder:
@@ -329,6 +331,25 @@ export const getBorderlessTableColumns = ({
     title: "",
     dataIndex: "isEscalated",
     key: "isEscalated",
+    width: 100,
+    align: "center",
+    ellipsis: true,
+    render: (isEscalated) =>
+      isEscalated && (
+        <img
+          draggable={false}
+          src={EscalatedIcon}
+          alt="Escalated"
+          data-testid="escalated-icon"
+          style={{ display: "block", margin: "0 auto" }}
+        />
+      ),
+  },
+
+  {
+    title: "",
+    key: "isEscalated",
+    dataIndex: "isEscalated",
     width: 100,
     align: "center",
     ellipsis: true,

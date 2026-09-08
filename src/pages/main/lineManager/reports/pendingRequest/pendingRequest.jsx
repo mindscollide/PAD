@@ -24,11 +24,13 @@ import { useDashboardContext } from "../../../../../context/dashboardContaxt";
 import { useTableScrollBottom } from "../../../../../common/funtions/scroll";
 import { getSafeAssetTypeData } from "../../../../../common/funtions/assetTypesList";
 import { BorderlessTable } from "../../../../../components";
-import PDF from "../../../../../assets/img/pdf.png";
 import Excel from "../../../../../assets/img/xls.png";
 import CustomButton from "../../../../../components/buttons/button";
 import { UpOutlined, DownOutlined } from "@ant-design/icons";
 import ViewDetailModal from "../../approvalRequest/modal/viewDetailLineManagerModal/ViewDetailModal";
+import ApprovedLineManagerModal from "../../approvalRequest/modal/approvedLineManagerModal/ApprovedLineManagerModal";
+import DeclinedLineManagerModal from "../../approvalRequest/modal/declinedLineManagerModal/DeclinedLineManagerModal";
+import NoteLineManagerModal from "../../approvalRequest/modal/noteLineManagerModal/NoteLineManagerModal";
 
 const PendingRequest = () => {
   const navigate = useNavigate();
@@ -41,6 +43,9 @@ const PendingRequest = () => {
     setViewDetailLineManagerModal,
     setNoteGlobalModal,
     setIsSelectedViewDetailLineManager,
+    approvedGlobalModal,
+    declinedGlobalModal,
+    noteGlobalModal,
   } = useGlobalModal();
 
   const { showNotification } = useNotification();
@@ -487,6 +492,15 @@ const PendingRequest = () => {
       </PageLayout>
       {/* To Show Line Manager View Detail Modal */}
       {viewDetailLineManagerModal && <ViewDetailModal />}
+
+      {/* To Show Line Manager Note Modal */}
+      {noteGlobalModal && <NoteLineManagerModal />}
+
+      {/* To Show Line Manager Approved Modal */}
+      {approvedGlobalModal && <ApprovedLineManagerModal />}
+
+      {/* To Show Line Manager Declined Modal */}
+      {declinedGlobalModal && <DeclinedLineManagerModal />}
     </>
   );
 };

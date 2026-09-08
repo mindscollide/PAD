@@ -187,16 +187,10 @@ export const getBorderlessTableColumns = ({
 
   // Portfolio ID
   {
-    title: withSortIcon(
-      "Portfolio ID",
-      "tradeApprovalID",
-      sortedInfo,
-      "center"
-    ),
+    title: withSortIcon("Portfolio ID", "tradeApprovalID", sortedInfo),
     dataIndex: "tradeApprovalID",
     key: "tradeApprovalID",
-    width: 150,
-    align: "center",
+    width: 130,
     sorter: (a, b) =>
       (a?.tradeApprovalID || "").localeCompare(b?.tradeApprovalID || ""),
     sortOrder:

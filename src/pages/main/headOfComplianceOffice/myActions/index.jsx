@@ -381,7 +381,7 @@ const HOCMyActionPage = () => {
           case "Escalated On": {
             const nextEvent = timeline[index + 1];
             const closedByViewer =
-              nextEvent?.eventType === "Approved By You" ||
+              nextEvent?.eventType === "Approved by You" ||
               nextEvent?.eventType === "Declined by You";
             if (closedByViewer) {
               trail.push({

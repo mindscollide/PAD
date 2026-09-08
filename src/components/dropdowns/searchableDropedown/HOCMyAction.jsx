@@ -154,7 +154,7 @@ export const HOCMyAction = ({
       <Row gutter={[12, 12]}>
         <Col xs={24} sm={24} md={12} lg={12}>
           <TextField
-            label="Transaction ID"
+            label="Transaction ID (Search without -)"
             name="requestID"
             value={localState.requestID}
             onChange={handleInputChange}
