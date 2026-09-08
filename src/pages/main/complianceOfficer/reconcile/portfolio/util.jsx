@@ -165,7 +165,7 @@ export const getBorderlessTableColumns = ({
     dataIndex: "requesterName",
     key: "requesterName",
     align: "left",
-    width: 150,
+    width: 200,
 
     sorter: (a, b) =>
       (a?.requesterName || "").localeCompare(b?.requesterName || ""),
@@ -241,6 +241,7 @@ export const getBorderlessTableColumns = ({
     dataIndex: "transactionRequestDateime",
     key: "transactionRequestDateime",
     align: "center",
+    width: 250,
     sorter: (a, b) =>
       (a?.transactionRequestDateime || "").localeCompare(
         b?.transactionRequestDateime || ""
@@ -262,6 +263,7 @@ export const getBorderlessTableColumns = ({
     dataIndex: "quantity",
     key: "quantity",
     align: "center",
+    width: 120,
     sorter: (a, b) => (a?.quantity ?? 0) - (b?.quantity ?? 0),
     sortOrder: sortedInfo?.columnKey === "quantity" ? sortedInfo.order : null,
     showSorterTooltip: false,
@@ -281,6 +283,7 @@ export const getBorderlessTableColumns = ({
     ),
     dataIndex: "type",
     key: "type",
+    align: "center",
     filteredValue: complianceOfficerReconcilePortfolioSearch?.type?.length
       ? complianceOfficerReconcilePortfolioSearch.type
       : null,
@@ -331,25 +334,6 @@ export const getBorderlessTableColumns = ({
     title: "",
     dataIndex: "isEscalated",
     key: "isEscalated",
-    width: 100,
-    align: "center",
-    ellipsis: true,
-    render: (isEscalated) =>
-      isEscalated && (
-        <img
-          draggable={false}
-          src={EscalatedIcon}
-          alt="Escalated"
-          data-testid="escalated-icon"
-          style={{ display: "block", margin: "0 auto" }}
-        />
-      ),
-  },
-
-  {
-    title: "",
-    key: "isEscalated",
-    dataIndex: "isEscalated",
     width: 100,
     align: "center",
     ellipsis: true,

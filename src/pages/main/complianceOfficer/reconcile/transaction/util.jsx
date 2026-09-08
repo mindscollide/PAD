@@ -173,7 +173,7 @@ export const getBorderlessTableColumns = ({
     dataIndex: "instrumentCode",
     key: "instrumentCode",
     ellipsis: true,
-    width: 150,
+    width: 200,
     sorter: (a, b) =>
       (a?.instrumentCode || "").localeCompare(b?.instrumentCode || ""),
     sortOrder:
@@ -218,7 +218,7 @@ export const getBorderlessTableColumns = ({
     dataIndex: "transactionDate",
     key: "transactionDate",
     align: "center",
-    width: 200,
+    width: 230,
     sorter: (a, b) =>
       (a?.transactionDate || "").localeCompare(b?.transactionDate || ""),
     sortOrder:
@@ -332,7 +332,7 @@ export const getBorderlessTableColumns = ({
   {
     title: "",
     key: "actions",
-    align: "right",
+    align: "center",
     render: (text, record) => {
       const { setViewDetailReconcileTransaction } = useGlobalModal();
       const { setSelectedReconcileTransactionData } = useReconcileContext();

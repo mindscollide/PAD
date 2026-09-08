@@ -177,20 +177,7 @@ export const getBorderlessTableColumns = ({
     showSorterTooltip: false,
     sortIcon: () => null,
     render: (date, record) => (
-      <span
-        id={`cell-${record.key}-requestDateTime`}
-        className="text-gray-600"
-        data-testid="formatted-date"
-        style={{
-          display: "inline-block",
-          width: "100%",
-          overflow: "hidden",
-          textOverflow: "ellipsis",
-          whiteSpace: "nowrap",
-        }}
-      >
-        {formatApiDateTime(date)}
-      </span>
+      <span className="font-medium">{formatApiDateTime(date)}</span>
     ),
   },
   {
@@ -198,7 +185,7 @@ export const getBorderlessTableColumns = ({
     align: "left",
     dataIndex: "instrumentCode",
     key: "instrumentCode",
-    width: 160,
+    width: 150,
 
     ellipsis: true,
     sorter: (a, b) =>
@@ -354,7 +341,7 @@ export const getBorderlessTableColumns = ({
     ),
     dataIndex: "status",
     key: "status",
-    width: 100,
+    width: 110,
     filteredValue: employeeMyTradeApprovalsSearch.status?.length
       ? employeeMyTradeApprovalsSearch.status
       : null,
@@ -387,20 +374,7 @@ export const getBorderlessTableColumns = ({
     showSorterTooltip: false,
     sortIcon: () => null,
     render: (date, record) => (
-      <span
-        id={`cell-${record.key}-requestDateTime`}
-        className="text-gray-600"
-        data-testid="formatted-date"
-        style={{
-          display: "inline-block",
-          width: "100%",
-          overflow: "hidden",
-          textOverflow: "ellipsis",
-          whiteSpace: "nowrap",
-        }}
-      >
-        {formatApiDateTime(date)}
-      </span>
+      <span className="font-medium">{formatApiDateTime(date)}</span>
     ),
   },
   {
