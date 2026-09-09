@@ -242,10 +242,7 @@ const PendingApprovals = ({ activeFilters }) => {
       // above.
       nextPageRef.current = 2;
       const requestData = {
-        ...buildApiRequest(
-          employeePendingApprovalSearch,
-          assetTypeListingData
-        ),
+        ...buildApiRequest(employeePendingApprovalSearch, assetTypeListingData),
         PageNumber: 1,
       };
       fetchApiCall(requestData, true, true);
@@ -311,7 +308,7 @@ const PendingApprovals = ({ activeFilters }) => {
       classNameTable="border-less-table-blue"
       scroll={
         employeePendingApprovalsData?.pendingApprovalsData?.length
-          ? { x: "max-content", y: activeFilters.length > 0 ? 450 : 500 }
+          ? { x: 1300, y: activeFilters.length > 0 ? 450 : 500 }
           : undefined
       }
       onChange={(_, __, sorter) => setSortedInfo(sorter || {})}
