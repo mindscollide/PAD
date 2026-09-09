@@ -306,6 +306,7 @@ export const getBorderlessTableColumns = ({
     filteredValue: complianceOfficerReconcilePortfolioSearch?.status?.length
       ? complianceOfficerReconcilePortfolioSearch.status
       : null,
+    width: 150,
     onFilter: () => true,
     render: (status) => {
       const tag = approvalStatusMap?.[status] || {};
