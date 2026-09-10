@@ -96,20 +96,27 @@ const ApprovalStepper = ({ trail }) => {
                   {getIcon(step.iconType, step.status)}
                 </div>
 
-                {/* 🔹 Top line: status + "by" + user */}
-                <div className={styles.stepTitle}>
-                  {step.status}{" "}
-                  {step.user && (
-                    <>
-                      {/* {"by"} */}
-                      <Tooltip title={step.user}>
-                        <span className={styles.stepTileStrongText}>
-                          {step.user}
-                        </span>
-                      </Tooltip>
-                    </>
-                  )}
-                </div>
+                {/* 🔹 Line 1: status only */}
+                <div className={styles.stepTitle}>{step.status}</div>
+
+                {/* 🔹 Line 2: "by" + the actor's full name - own line,
+                    wrapped (not truncated) so the complete name is always
+                    visible without needing the Tooltip hover, per Kamil's
+                    request (API_Changes/2026-09-11_co_myactions_expand_
+                    panel_full_names.md): "display complete names of
+                    whoever has taken action. Bring it in two lines." -
+                    same fix applies to every role's My Actions panel,
+                    since they all share this component. */}
+                {step.user && (
+                  <div className={styles.stepActor}>
+                    {"by "}
+                    <Tooltip title={step.user}>
+                      <span className={styles.stepTileStrongText}>
+                        {step.user}
+                      </span>
+                    </Tooltip>
+                  </div>
+                )}
 
                 {/* 🔹 Bottom line: date only */}
                 <div className={styles.stepDesc}>{step.date}</div>
