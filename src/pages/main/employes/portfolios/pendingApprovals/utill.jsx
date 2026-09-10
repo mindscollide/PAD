@@ -77,7 +77,7 @@ export const getBorderlessTableColumns = (
     dataIndex: "instrument",
     key: "instrument",
     ellipsis: true,
-    width: 150,
+    width: 250,
     sorter: (a, b) => (a?.instrument || "").localeCompare(b?.instrument || ""),
     sortDirections: ["ascend", "descend"],
     sortOrder: sortedInfo?.columnKey === "instrument" ? sortedInfo.order : null,
@@ -131,8 +131,7 @@ export const getBorderlessTableColumns = (
     align: "left",
     dataIndex: "tradeApprovalID",
     key: "tradeApprovalID",
-    width: 150,
-
+    width: 120,
     sorter: (a, b) =>
       (a?.tradeApprovalID || "").localeCompare(b?.tradeApprovalID || ""),
     sortDirections: ["ascend", "descend"],
@@ -148,7 +147,7 @@ export const getBorderlessTableColumns = (
   // 🔹 Approval Request Date & Time Column
   {
     title: withSortIcon(
-      "Approval Request Date & Time",
+      "Request Date & Time",
       "approvalRequestDateime",
       sortedInfo,
       "center"
@@ -156,7 +155,7 @@ export const getBorderlessTableColumns = (
     align: "center",
     dataIndex: "approvalRequestDateime",
     key: "approvalRequestDateime",
-    width: 250,
+    width: 180,
 
     sorter: (a, b) =>
       (a?.approvalRequestDateime || "").localeCompare(
@@ -180,8 +179,7 @@ export const getBorderlessTableColumns = (
     align: "center",
     dataIndex: "quantity",
     key: "quantity",
-    width: 150,
-
+    width: 100,
     sorter: (a, b) => (a?.quantity || 0) - (b?.quantity || 0),
     sortDirections: ["ascend", "descend"],
     sortOrder: sortedInfo?.columnKey === "quantity" ? sortedInfo.order : null,
@@ -204,8 +202,7 @@ export const getBorderlessTableColumns = (
     ),
     dataIndex: "tradeType",
     key: "tradeType",
-    width: 150,
-
+    width: 100,
     filteredValue: employeePendingApprovalSearch?.type?.length
       ? employeePendingApprovalSearch.type
       : null,
@@ -237,7 +234,7 @@ export const getBorderlessTableColumns = (
     align: "left",
     dataIndex: "broker",
     key: "broker",
-    width: 250,
+    width: 150,
 
     sorter: (a, b) => (a?.broker || "").localeCompare(b?.broker || ""),
     sortDirections: ["ascend", "descend"],
@@ -334,10 +331,10 @@ export const getBorderlessTableColumns = (
   {
     title: "",
     key: "actions",
-    width: "15%",
+    width: 100,
     render: (record) =>
-      record?.status === "Non Compliant" ? (
-        <Button className="big-white-button" text="Comments" />
+      record?.status === "Non-Compliant" ? (
+        <Button className="small-white-button" text="Comments" />
       ) : null,
   },
 ];
