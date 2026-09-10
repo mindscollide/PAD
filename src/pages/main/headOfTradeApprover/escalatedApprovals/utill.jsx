@@ -1,13 +1,12 @@
 // utils.jsx (Head of Trade Approval - Escalated Approvals)
 import React from "react";
-import { Tag, Tooltip } from "antd";
+import { Tooltip } from "antd";
 import { Button } from "../../../../components";
 
 // Assets (sort icons)
 import DefaultColumArrow from "../../../../assets/img/default-colum-arrow.png";
 import ArrowUP from "../../../../assets/img/arrow-up-dark.png";
 import ArrowDown from "../../../../assets/img/arrow-down-dark.png";
-import EscalatedIcon from "../../../../assets/img/escalated.png";
 import style from "./escalatedApprovals.module.css";
 
 // Helpers
@@ -16,10 +15,7 @@ import TypeColumnTitle from "../../../../components/dropdowns/filters/typeColumn
 import StatusColumnTitle from "../../../../components/dropdowns/filters/statusColumnTitle";
 import { useGlobalModal } from "../../../../context/GlobalModalContext";
 import { getTradeTypeById } from "../../../../common/funtions/type";
-import {
-  mapBuySellToIds,
-  mapStatusToIds,
-} from "../../../../components/dropdowns/filters/utils";
+import { mapBuySellToIds } from "../../../../components/dropdowns/filters/utils";
 
 // ===========================================================================
 // 🎯 CONSTANTS & CONFIGURATION
@@ -171,7 +167,7 @@ const renderInstrumentCell = (record) => {
             overflow: "hidden",
             textOverflow: "ellipsis",
             whiteSpace: "nowrap",
-            maxWidth: "100px",
+            maxWidth: "200px",
             display: "inline-block",
             cursor: "pointer",
             flex: 1,
@@ -241,7 +237,6 @@ const renderActionCell = (
  * @returns {Array<Object>} Column configurations for AntD Table.
  */
 export const getBorderlessTableColumns = ({
-  approvalStatusMap = {},
   sortedInfo = {},
   headOfTradeEscalatedApprovalsSearch = {},
   setHeadOfTradeEscalatedApprovalsSearch = () => {},
@@ -254,7 +249,6 @@ export const getBorderlessTableColumns = ({
     dataIndex: "requesterName",
     key: "requesterName",
     align: "left",
-    ellipsis: true,
     width: 140,
     sorter: (a, b) =>
       (a?.requesterName || "").localeCompare(b?.requesterName || ""),
@@ -274,8 +268,7 @@ export const getBorderlessTableColumns = ({
     title: withSortIcon("Line Manager", "lineManagerName", sortedInfo),
     dataIndex: "lineManagerName",
     key: "lineManagerName",
-    ellipsis: true,
-    width: 160,
+    width: 140,
     sorter: (a, b) =>
       (a?.lineManagerName || "").localeCompare(b?.lineManagerName || ""),
     sortOrder:
@@ -294,8 +287,7 @@ export const getBorderlessTableColumns = ({
     title: withSortIcon("Instrument", "instrumentCode", sortedInfo),
     dataIndex: "instrumentCode",
     key: "instrumentCode",
-    ellipsis: true,
-    width: 150,
+    width: 210,
     sorter: (a, b) =>
       (a?.instrumentCode || "").localeCompare(b?.instrumentCode || ""),
     sortOrder:
@@ -310,9 +302,8 @@ export const getBorderlessTableColumns = ({
     title: withSortIcon("Date & Time", "requestDateTime", sortedInfo, "center"),
     dataIndex: "requestDateTime",
     key: "requestDateTime",
-    // ellipsis: true,
     align: "center",
-    width: 140,
+    width: 180,
     sorter: (a, b) =>
       (a?.requestDateTime || "").localeCompare(b?.requestDateTime || ""),
     sortOrder:
@@ -334,7 +325,7 @@ export const getBorderlessTableColumns = ({
     ),
     dataIndex: "type",
     key: "type",
-    width: 100,
+    width: 120,
     filteredValue: headOfTradeEscalatedApprovalsSearch?.type?.length
       ? headOfTradeEscalatedApprovalsSearch.type
       : null,
@@ -352,7 +343,7 @@ export const getBorderlessTableColumns = ({
     dataIndex: "quantity",
     key: "quantity",
     align: "center",
-    width: 100,
+    width: 120,
     // ellipsis: true,
     sortIcon: () => null,
     showSorterTooltip: false,
@@ -375,7 +366,7 @@ export const getBorderlessTableColumns = ({
     dataIndex: "escalatedDateTime",
     key: "escalatedDateTime",
     // ellipsis: true,
-    width: 140,
+    width: 180,
     align: "center",
     sorter: (a, b) =>
       (a?.escalatedDateTime || "").localeCompare(b?.escalatedDateTime || ""),
