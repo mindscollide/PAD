@@ -1,6 +1,5 @@
 import React, { useEffect, useState, useRef, useCallback } from "react";
 import { Breadcrumb, Col, Row } from "antd";
-import PDF from "../../../../../assets/img/pdf.png";
 import Excel from "../../../../../assets/img/xls.png";
 import { UpOutlined, DownOutlined } from "@ant-design/icons";
 // 🔹 Components
@@ -371,15 +370,20 @@ const COdataWiseTransactionsReports = () => {
   };
 
   const handleClearDates = () => {
+    const endDate = new Date();
+    const startDate = new Date();
+    startDate.setMonth(startDate.getMonth() - 6);
+
     setDateRange({
-      StartDate: null,
-      EndDate: null,
+      StartDate: formatToYYYYMMDD(startDate),
+      EndDate: formatToYYYYMMDD(endDate),
     });
 
+    // ✅ Use consistent filter trigger mechanism
     setCODatewiseTransactionReportSearch((prev) => ({
       ...prev,
-      startDate: null,
-      endDate: null,
+      startDate,
+      endDate,
       pageNumber: 0,
       filterTrigger: true,
     }));
@@ -509,7 +513,7 @@ const COdataWiseTransactionsReports = () => {
               coDatewiseTransactionReportListData
                 ?.complianceOfficerApprovalsList?.length
                 ? {
-                    x: "max-content",
+                    x: 1300,
                     y: activeFilters.length > 0 ? 450 : 500,
                   }
                 : undefined

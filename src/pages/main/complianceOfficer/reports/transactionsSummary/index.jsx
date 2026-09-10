@@ -1,6 +1,5 @@
 import React, { useEffect, useState, useRef, useCallback } from "react";
 import { Breadcrumb, Col, Row } from "antd";
-import PDF from "../../../../../assets/img/pdf.png";
 import Excel from "../../../../../assets/img/xls.png";
 import { UpOutlined, DownOutlined } from "@ant-design/icons";
 // 🔹 Components
@@ -382,18 +381,26 @@ const COTransactionsSummarysReports = () => {
   };
 
   const handleClearDates = () => {
+    const endDate = new Date();
+    const startDate = new Date();
+    startDate.setMonth(startDate.getMonth() - 6);
+
     setDateRange({
-      StartDate: null,
-      EndDate: null,
+      StartDate: formatToYYYYMMDD(startDate),
+      EndDate: formatToYYYYMMDD(endDate),
     });
 
-    setCOTransactionsSummarysReportsSearch((prev) => ({
-      ...prev,
-      startDate: null,
-      endDate: null,
+    const updatedState = {
+      ...coTransactionsSummarysReportsSearch,
+      startDate,
+      endDate,
       pageNumber: 0,
-      filterTrigger: true,
-    }));
+    };
+
+    setCOTransactionsSummarysReportsSearch(updatedState);
+    // Call API with the default 6-month range, not empty values
+    const requestData = buildApiRequest(updatedState);
+    fetchApiCall(requestData, true, true);
   };
 
   // 🔷 Excel Report download Api Hit — summary list (date groups)

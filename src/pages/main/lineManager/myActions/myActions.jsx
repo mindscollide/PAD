@@ -47,11 +47,8 @@ const MyAction = () => {
   const [loadingMore, setLoadingMore] = useState(false);
   const [hasMore, setHasMore] = useState(true); // until proven otherwise
 
-  const {
-    lineManagerMyActionSearch,
-    setLineManagerMyActionSearch,
-    resetEmployeeMyHistorySearch,
-  } = useSearchBarContext();
+  const { lineManagerMyActionSearch, setLineManagerMyActionSearch } =
+    useSearchBarContext();
 
   const { setMyActionLineManagerData, myActionLineManagerData } =
     useMyApproval();
@@ -363,9 +360,7 @@ const MyAction = () => {
             return {
               status: "Resubmit for Approval",
               date,
-              requesterID: dashBetweenApprovalAssets(
-                event.referenceApprovalID
-              ),
+              requesterID: dashBetweenApprovalAssets(event.referenceApprovalID),
               iconType: "Resubmit",
             };
           case "Escalated On":

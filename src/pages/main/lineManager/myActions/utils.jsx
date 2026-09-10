@@ -34,8 +34,7 @@ export const getMyActionsColumn = (approvalStatusMap, sortedInfo) => [
     align: "left",
     dataIndex: "approvalID",
     key: "approvalID",
-    ellipsis: true,
-    width: "220px",
+    width: 150,
     sorter: (a, b) =>
       parseInt(a.approvalID.replace(/[^\d]/g, ""), 10) -
       parseInt(b.approvalID.replace(/[^\d]/g, ""), 10),
@@ -67,8 +66,7 @@ export const getMyActionsColumn = (approvalStatusMap, sortedInfo) => [
     align: "left",
     dataIndex: "instrumentName",
     key: "instrumentName",
-    width: "140px",
-    ellipsis: true,
+    width: 250,
     sorter: (a, b) => {
       const nameA = a?.instrumentShortCode || "";
       const nameB = b?.instrumentShortCode || "";
@@ -132,7 +130,7 @@ export const getMyActionsColumn = (approvalStatusMap, sortedInfo) => [
   },
   {
     title: withSortIcon(
-      "Date & Time of Approval Request",
+      "Request Date & Time",
       "approvalDateTime",
       sortedInfo,
       "center"

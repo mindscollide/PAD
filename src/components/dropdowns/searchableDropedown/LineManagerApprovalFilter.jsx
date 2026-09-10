@@ -218,7 +218,7 @@ export const LineManagerApprovalFilter = ({
             classNames="Search-Field"
           />
         </Col>
-        <Col xs={24} sm={24} md={12} lg={12} style={{ marginTop: "6px" }}>
+        <Col xs={24} sm={24} md={12} lg={12}>
           <DateRangePicker
             label="Date Range"
             size="medium"
