@@ -353,7 +353,7 @@ const ReconcilePortfolio = ({ activeFilters }) => {
         classNameTable="border-less-table-blue"
         scroll={
           complianceOfficerReconcilePortfolioData?.reconsilePortfolios?.length
-            ? { x: "max-content", y: activeFilters.length > 0 ? 450 : 500 }
+            ? { x: 1300, y: activeFilters.length > 0 ? 450 : 500 }
             : undefined
         }
         onChange={(_, __, sorter) => setSortedInfo(sorter || {})}

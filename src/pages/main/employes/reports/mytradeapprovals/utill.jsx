@@ -1,7 +1,7 @@
 import TypeColumnTitle from "../../../../../components/dropdowns/filters/typeColumnTitle";
 import StatusColumnTitle from "../../../../../components/dropdowns/filters/statusColumnTitle";
 import { Tag, Tooltip } from "antd";
-import style from "./mytradeapprovals.module.css";
+import styles from "./mytradeapprovals.module.css";
 import EscalatedIcon from "../../../../../assets/img/escalated.png";
 
 import {
@@ -169,7 +169,7 @@ export const getBorderlessTableColumns = ({
     align: "center",
     dataIndex: "requestDateTime",
     key: "requestDateTime",
-    width: 225,
+    width: 180,
     sorter: (a, b) => a.requestDateTime.localeCompare(b.requestDateTime),
     sortOrder:
       sortedInfo?.columnKey === "requestDateTime" ? sortedInfo.order : null,
@@ -177,20 +177,7 @@ export const getBorderlessTableColumns = ({
     showSorterTooltip: false,
     sortIcon: () => null,
     render: (date, record) => (
-      <span
-        id={`cell-${record.key}-requestDateTime`}
-        className="text-gray-600"
-        data-testid="formatted-date"
-        style={{
-          display: "inline-block",
-          width: "100%",
-          overflow: "hidden",
-          textOverflow: "ellipsis",
-          whiteSpace: "nowrap",
-        }}
-      >
-        {formatApiDateTime(date)}
-      </span>
+      <span className="font-medium">{formatApiDateTime(date)}</span>
     ),
   },
   {
@@ -198,8 +185,7 @@ export const getBorderlessTableColumns = ({
     align: "left",
     dataIndex: "instrumentCode",
     key: "instrumentCode",
-    width: 160,
-
+    width: 185,
     ellipsis: true,
     sorter: (a, b) =>
       (a?.instrumentCode || "").localeCompare(b?.instrumentCode || ""),
@@ -208,7 +194,10 @@ export const getBorderlessTableColumns = ({
     showSorterTooltip: false,
     sortIcon: () => null,
     render: (_, record) => (
-      <div id={`cell-${record.key}-instrumentCode`}>
+      <div
+        id={`cell-${record.key}-instrumentCode`}
+        className={styles.instrumentName}
+      >
         {renderInstrumentCell(record)}
       </div>
     ),
@@ -265,6 +254,7 @@ export const getBorderlessTableColumns = ({
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
+            justifyItems: "center",
             flexShrink: 0, // 🔹 never let this shrink below icon size
           }}
         >
@@ -354,7 +344,7 @@ export const getBorderlessTableColumns = ({
     ),
     dataIndex: "status",
     key: "status",
-    width: 100,
+    width: 120,
     filteredValue: employeeMyTradeApprovalsSearch.status?.length
       ? employeeMyTradeApprovalsSearch.status
       : null,
@@ -379,7 +369,7 @@ export const getBorderlessTableColumns = ({
     align: "center",
     dataIndex: "actionDateTime",
     key: "actionDateTime",
-    width: 225,
+    width: 180,
     sorter: (a, b) => a.actionDateTime.localeCompare(b.actionDateTime),
     sortDirections: ["ascend", "descend"],
     sortOrder:
@@ -387,20 +377,7 @@ export const getBorderlessTableColumns = ({
     showSorterTooltip: false,
     sortIcon: () => null,
     render: (date, record) => (
-      <span
-        id={`cell-${record.key}-requestDateTime`}
-        className="text-gray-600"
-        data-testid="formatted-date"
-        style={{
-          display: "inline-block",
-          width: "100%",
-          overflow: "hidden",
-          textOverflow: "ellipsis",
-          whiteSpace: "nowrap",
-        }}
-      >
-        {formatApiDateTime(date)}
-      </span>
+      <span className="font-medium">{formatApiDateTime(date)}</span>
     ),
   },
   {
@@ -408,7 +385,7 @@ export const getBorderlessTableColumns = ({
     align: "center",
     dataIndex: "actionBy",
     key: "actionBy",
-    width: 150,
+    width: 145,
     sorter: (a, b) => (a.actionBy || "").localeCompare(b.actionBy || ""),
     sortOrder: sortedInfo?.columnKey === "actionBy" ? sortedInfo.order : null,
     sortDirections: ["ascend", "descend"],

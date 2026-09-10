@@ -61,7 +61,7 @@ export const getMyActionsColumn = (approvalStatusMap, sortedInfo) => [
     dataIndex: "instrumentName",
     key: "instrumentName",
     align: "left",
-    width: 150,
+    width: 210,
     ellipsis: true,
     sorter: (a, b) => {
       const nameA = a?.instrumentShortCode || "";
@@ -137,14 +137,14 @@ export const getMyActionsColumn = (approvalStatusMap, sortedInfo) => [
   },
   {
     title: withSortIcon(
-      "Date & Time of Approval Request",
+      "Request Date & Time",
       "approvalDateTime",
       sortedInfo,
       "center"
     ),
     dataIndex: "approvalDateTime",
     key: "approvalDateTime",
-    width: 280,
+    width: 200,
     align: "center",
     sorter: (a, b) =>
       (a?.approvalDateTime || "").localeCompare(b?.approvalDateTime || ""),

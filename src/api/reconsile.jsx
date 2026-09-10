@@ -230,6 +230,13 @@ export const GetAllReconcilePortfolioTransactionRequest = async ({
         workFlowStatus,
         myActionStatusID,
         myActionStatus,
+        // ADDED (API_Changes/2026-09-11_co_viewdetails_escalated_flag_
+        // added.md): the response already returns this (the SP's 4th
+        // result set), this wrapper's own allowlist destructure just
+        // never picked it up - same class of drop as the sibling
+        // GetAllTransactionViewDetails wrapper had before its own
+        // 2026-08-17 fix.
+        isEscalated,
       } = res.result;
 
       if (
@@ -245,6 +252,7 @@ export const GetAllReconcilePortfolioTransactionRequest = async ({
           workFlowStatus: workFlowStatus || {},
           myActionStatusID: myActionStatusID ?? null,
           myActionStatus: myActionStatus || "",
+          isEscalated: isEscalated || false,
         };
       }
 
@@ -261,6 +269,7 @@ export const GetAllReconcilePortfolioTransactionRequest = async ({
         workFlowStatus: {},
         myActionStatusID: null,
         myActionStatus: "",
+        isEscalated: false,
       };
     }
 

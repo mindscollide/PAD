@@ -8,6 +8,7 @@ import CustomButton from "../../../../../../../components/buttons/button";
 import CheckIcon from "../../../../../../../assets/img/Check.png";
 import EllipsesIcon from "../../../../../../../assets/img/Ellipses.png";
 import CrossIcon from "../../../../../../../assets/img/Cross.png";
+import EscalatedIcon from "../../../../../../../assets/img/escalated.png";
 import { useDashboardContext } from "../../../../../../../context/dashboardContaxt";
 import {
   formatApiDateTime,
@@ -213,12 +214,32 @@ const ViewDetailPortfolioTransaction = () => {
                       <label className={styles.viewDetailMainLabels}>
                         Portfolio ID
                       </label>
-                      <label className={styles.viewDetailSubLabels}>
-                        {formatTransactionId(
-                          reconcilePortfolioViewDetailData?.details?.[0]
-                            ?.tradeApprovalID
+                      <div
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "space-between",
+                        }}
+                      >
+                        <label className={styles.viewDetailSubLabels}>
+                          {formatTransactionId(
+                            reconcilePortfolioViewDetailData?.details?.[0]
+                              ?.tradeApprovalID
+                          )}
+                        </label>
+                        {/* ADDED (API_Changes/2026-09-11_co_viewdetails_
+                            escalated_flag_added.md) - same escalation
+                            badge convention already used on the sibling
+                            Reconcile Transaction View Details modal. */}
+                        {reconcilePortfolioViewDetailData?.isEscalated && (
+                          <img
+                            draggable={false}
+                            src={EscalatedIcon}
+                            alt="Escalated"
+                            data-testid="escalated-icon"
+                          />
                         )}
-                      </label>
+                      </div>
                     </div>
                   </Col>
                   <Col span={8}>

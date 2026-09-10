@@ -114,7 +114,7 @@ td.border-less-table-orange-cell:hover {
 .border-less-table-orange-status {
   border: none !important;
   border-radius: 3.47px;
-  padding: 6px 10px;
+  padding: 6px 6px;
   font-family: "Switzer Variable";
   font-size: 16px;
   font-weight: 400;

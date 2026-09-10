@@ -127,7 +127,7 @@ export const getBorderlessTableColumns = (
 
   // 🔹 Transaction ID Column
   {
-    title: withSortIcon("Transaction ID", "tradeApprovalID", sortedInfo),
+    title: withSortIcon("Portfolio ID", "tradeApprovalID", sortedInfo),
     align: "left",
     dataIndex: "tradeApprovalID",
     key: "tradeApprovalID",
@@ -179,7 +179,8 @@ export const getBorderlessTableColumns = (
     align: "center",
     dataIndex: "quantity",
     key: "quantity",
-    width: 100,
+    width: 95,
+
     sorter: (a, b) => (a?.quantity || 0) - (b?.quantity || 0),
     sortDirections: ["ascend", "descend"],
     sortOrder: sortedInfo?.columnKey === "quantity" ? sortedInfo.order : null,
@@ -202,7 +203,8 @@ export const getBorderlessTableColumns = (
     ),
     dataIndex: "tradeType",
     key: "tradeType",
-    width: 100,
+    width: 90,
+
     filteredValue: employeePendingApprovalSearch?.type?.length
       ? employeePendingApprovalSearch.type
       : null,
@@ -263,7 +265,7 @@ export const getBorderlessTableColumns = (
     ),
     dataIndex: "status",
     key: "status",
-    width: 150,
+    width: 120,
 
     filteredValue: employeePendingApprovalSearch?.status?.length
       ? employeePendingApprovalSearch.status
@@ -334,7 +336,12 @@ export const getBorderlessTableColumns = (
     width: 100,
     render: (record) =>
       record?.status === "Non-Compliant" ? (
-        <Button className="small-white-button" text="Comments" />
+        <Button
+          className="small-white-button"
+          text="Comments"
+
+          // onClick={}
+        />
       ) : null,
   },
 ];

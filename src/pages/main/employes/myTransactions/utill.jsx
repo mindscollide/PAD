@@ -126,7 +126,7 @@ export const getBorderlessTableColumns = ({
     align: "left",
     dataIndex: "Instrument",
     key: "instrumentName",
-    width: 120,
+    width: 250,
     ellipsis: true,
     sorter: (a, b) => {
       const nameA = a?.instrumentShortCode || "";
@@ -138,41 +138,6 @@ export const getBorderlessTableColumns = ({
       sortedInfo?.columnKey === "instrumentName" ? sortedInfo.order : null,
     showSorterTooltip: false,
     sortIcon: () => null,
-    // render: (instrument, record) => {
-    //   const assetCode = record?.assetShortCode;
-    //   const code = record?.instrumentShortCode || "";
-    //   const instrumentName = record?.instrumentName || "";
-
-    //   return (
-    //     <div
-    //       style={{
-    //         display: "flex",
-    //         alignItems: "center",
-    //         gap: "12px",
-    //       }}
-    //     >
-    //       <span className="custom-shortCode-asset" style={{ minWidth: 30 }}>
-    //         {assetCode?.substring(0, 2).toUpperCase()}
-    //       </span>
-    //       <Tooltip title={instrumentName} placement="topLeft">
-    //         <span
-    //           className="font-medium"
-    //           style={{
-    //             overflow: "hidden",
-    //             textOverflow: "ellipsis",
-    //             whiteSpace: "nowrap",
-    //             // maxWidth: "200px",
-    //             display: "inline-block",
-    //             cursor: "pointer",
-    //           }}
-    //           title={code}
-    //         >
-    //           {code}
-    //         </span>
-    //       </Tooltip>
-    //     </div>
-    //   );
-    // },
 
     render: (instrument, record) => {
       const assetCode = record?.assetShortCode;
@@ -193,12 +158,11 @@ export const getBorderlessTableColumns = ({
             <span
               className="font-medium"
               style={{
-                overflow: "hidden",
-                textOverflow: "ellipsis",
-                whiteSpace: "nowrap",
-                width: 100,
+                width: "120px",
                 display: "inline-block",
                 cursor: "pointer",
+                overflowWrap: "anywhere",
+                textWrap: "auto",
               }}
               title={code}
             >
@@ -209,6 +173,7 @@ export const getBorderlessTableColumns = ({
       );
     },
   },
+
   {
     title: (
       <TypeColumnTitle
@@ -326,7 +291,7 @@ export const getBorderlessTableColumns = ({
     title: withSortIcon("Broker", "broker", sortedInfo),
     align: "left",
     dataIndex: "broker",
-    width: 250,
+    width: 210,
     key: "broker",
     sorter: (a, b) => (a?.broker || "").localeCompare(b?.broker || ""),
     sortDirections: ["ascend", "descend"],
@@ -353,7 +318,7 @@ export const getBorderlessTableColumns = ({
       const { setSelectedViewDetailOfTransaction } = useGlobalModal();
       return (
         <Button
-          className="small-dark-button"
+          className="small-dark-button_lesser-padding"
           text={"View Details"}
           onClick={() => {
             handleViewDetailsForTransaction(record?.workFlowID);

@@ -385,7 +385,7 @@ export const getBorderlessTableColumns = ({
     sortOrder:
       sortedInfo?.columnKey === "tradeApprovalID" ? sortedInfo.order : null,
     showSorterTooltip: false,
-    width: 150,
+    width: 140,
     align: "left",
     sortIcon: () => null,
     render: (tradeApprovalID) => (
@@ -399,7 +399,7 @@ export const getBorderlessTableColumns = ({
     dataIndex: "instrumentCode",
     key: "instrumentCode",
     ellipsis: true,
-    width: 150,
+    width: 250,
     align: "left",
     sorter: (a, b) =>
       (a?.instrumentCode || "").localeCompare(b?.instrumentCode || ""),
@@ -432,7 +432,7 @@ export const getBorderlessTableColumns = ({
     ),
     dataIndex: "type",
     key: "type",
-    width: 120,
+    width: 100,
     filteredValue: employeeMyApprovalSearch.type?.length
       ? employeeMyApprovalSearch.type
       : null,
@@ -484,7 +484,7 @@ export const getBorderlessTableColumns = ({
     ),
     dataIndex: "status",
     key: "status",
-    width: 150,
+    width: 160,
     // ellipsis: true,
     filteredValue: employeeMyApprovalSearch.status?.length
       ? employeeMyApprovalSearch.status
@@ -510,7 +510,7 @@ export const getBorderlessTableColumns = ({
     title: "",
     dataIndex: "isEscalated",
     key: "isEscalated",
-    width: 50,
+    width: 70,
     align: "center",
     ellipsis: true,
     render: (isEscalated) =>
@@ -562,6 +562,7 @@ export const getBorderlessTableColumns = ({
     title: "",
     key: "actions",
     align: "center",
+    width: 150,
     render: (text, record) => {
       const { setSelectedViewDetail } = useGlobalModal();
 
