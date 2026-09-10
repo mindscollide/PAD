@@ -32,11 +32,26 @@
 
 /* Shared layout for Line Manager / Compliance Officer boxes;
    only the background color differs between the two. */
-.infoBox {
+/* .infoBox {
   padding: 10px 20px;
   display: flex;
   border-radius: 6px;
   height: 100%;
+} */
+
+.infoBox {
+  padding: 10px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  border-radius: 6px;
+  /* height: 100%; */
+}
+.infoBoxCol {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  width: 100%;
 }
 
 .lineManagerBg {
@@ -47,9 +62,9 @@
   background-color: #edf3ff;
 }
 
-.infoBoxCol {
+/* .infoBoxCol {
   width: 50%;
-}
+} */
 
 .lineManagerHeading {
   font-family: "Switzer Variable", sans-serif;

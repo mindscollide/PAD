@@ -209,10 +209,20 @@ const MyTransaction = () => {
   // 🔹 call api on search
   useEffect(() => {
     if (employeeMyTransactionSearch.filterTrigger) {
-      const requestData = buildApiRequest(
-        employeeMyTransactionSearch,
-        assetTypeListingData
-      );
+      const requestData = {
+        ...buildApiRequest(employeeMyTransactionSearch, assetTypeListingData),
+        PageNumber: 1, // FIXED: pageNumber may already be several pages deep
+        // from prior lazy-loading; a new filter must always start at page 1,
+        // not continue from wherever scrolling had left off.
+      };
+
+      setEmployeeMyTransactionSearch((prev) => ({
+        ...prev,
+        pageNumber: 1, // keep state's own pageNumber in sync too, so the
+        // fetchApiCall success handler's `prev.pageNumber + 1` continues
+        // correctly from 1→2 instead of from the old stale value.
+      }));
+
       fetchApiCall(requestData, true, true);
     }
   }, [employeeMyTransactionSearch.filterTrigger]);

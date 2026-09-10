@@ -1,7 +1,4 @@
 // columns.js
-import ArrowUP from "../../../../assets/img/arrow-up-dark.png";
-import ArrowDown from "../../../../assets/img/arrow-down-dark.png";
-import DefaultColumArrow from "../../../../assets/img/default-colum-arrow.png";
 import React from "react";
 import { Tag, Tooltip } from "antd";
 import style from "./co-myActions.module.css";

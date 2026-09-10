@@ -9,6 +9,7 @@ const NoteHeadOfComplianceModal = () => {
     setNoteGlobalModal,
     setViewDetailHeadOfComplianceEscalated,
     setDeclinedGlobalModal,
+    setViewDetailHeadOfComplianceOverdueVerifications,
   } = useGlobalModal();
 
   // Context Api For Reasons which is coming from the API and stored in
@@ -22,8 +23,13 @@ const NoteHeadOfComplianceModal = () => {
   //onClose button Handler
   const onClickClose = () => {
     setNoteGlobalModal({ visible: false, action: null });
-    setViewDetailHeadOfComplianceEscalated(true);
     setCommentValue("");
+    {
+      noteGlobalModal.action === "HOC-Compliant" ||
+      noteGlobalModal.action === "HOC-Non-Compliant"
+        ? setViewDetailHeadOfComplianceOverdueVerifications(true)
+        : setViewDetailHeadOfComplianceEscalated(true);
+    }
   };
 
   //submit click to open Declined Modal
@@ -53,7 +59,10 @@ const NoteHeadOfComplianceModal = () => {
           ? "HOC-Compliant"
           : "HOC-Non-Compliant"
       }
-      onCancel={() => setNoteGlobalModal({ visible: false, action: null })}
+      onCancel={() => {
+        setNoteGlobalModal({ visible: false, action: null });
+        setViewDetailHeadOfComplianceOverdueVerifications(true);
+      }}
       title={"Write Notes"}
       onSubmit={onClickOpenDeclinedModal}
     />

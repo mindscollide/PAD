@@ -185,9 +185,7 @@ export const getBorderlessTableColumns = ({
     showSorterTooltip: false,
     sortIcon: () => null,
     render: (date) => (
-      <Tooltip title={formatApiDateTime(date) || "—"}>
-        <span className="text-gray-600">{formatApiDateTime(date) || "—"}</span>
-      </Tooltip>
+      <span className="font-medium">{formatApiDateTime(date) || "—"}</span>
     ),
   },
 
