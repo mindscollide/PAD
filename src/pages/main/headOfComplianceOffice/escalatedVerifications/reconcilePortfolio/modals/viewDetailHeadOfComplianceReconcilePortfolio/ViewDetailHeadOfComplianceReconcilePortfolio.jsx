@@ -283,7 +283,19 @@ const ViewDetailHeadOfComplianceReconcilePortfolio = () => {
 
                 {/* Show Other Scenario's SUb Heading and Field Sceanrio's */}
                 <Row gutter={[4, 4]} style={{ marginTop: "3px" }}>
-                  <Col span={8}>
+                  <Col span={12}>
+                    <div className={styles.backgrounColorOfDetail}>
+                      <label className={styles.viewDetailMainLabels}>
+                        Requester Name
+                      </label>
+                      <label className={styles.viewDetailSubLabels}>
+                        {
+                          isEscalatedPortfolioHeadOfComplianceViewDetailData?.requesterName
+                        }
+                      </label>
+                    </div>
+                  </Col>
+                  <Col span={12}>
                     <div className={styles.backgrounColorOfDetail}>
                       <label className={styles.viewDetailMainLabels}>
                         Portfolio ID
@@ -299,19 +311,10 @@ const ViewDetailHeadOfComplianceReconcilePortfolio = () => {
                       </label>
                     </div>
                   </Col>
-                  <Col span={8}>
-                    <div className={styles.backgrounColorOfDetail}>
-                      <label className={styles.viewDetailMainLabels}>
-                        Requester Name
-                      </label>
-                      <label className={styles.viewDetailSubLabels}>
-                        {
-                          isEscalatedPortfolioHeadOfComplianceViewDetailData?.requesterName
-                        }
-                      </label>
-                    </div>
-                  </Col>
-                  <Col span={8}>
+                </Row>
+
+                <Row gutter={[4, 4]} style={{ marginTop: "3px" }}>
+                  <Col span={12}>
                     <div
                       className={
                         statusData.label === "Traded"
@@ -336,9 +339,6 @@ const ViewDetailHeadOfComplianceReconcilePortfolio = () => {
                       </label>
                     </div>
                   </Col>
-                </Row>
-
-                <Row gutter={[4, 4]} style={{ marginTop: "3px" }}>
                   <Col span={12}>
                     <div className={styles.backgrounColorOfDetail}>
                       <label className={styles.viewDetailMainLabels}>
@@ -352,6 +352,27 @@ const ViewDetailHeadOfComplianceReconcilePortfolio = () => {
                       </label>
                     </div>
                   </Col>
+                </Row>
+
+                <Row gutter={[4, 4]} style={{ marginTop: "3px" }}>
+                  <Col span={12}>
+                    <div
+                      className={
+                        statusData.label === "Traded"
+                          ? styles.backgroundColorOfInstrumentDetailTradednoradius
+                          : styles.backgrounColorOfDetail
+                      }
+                    >
+                      <label className={styles.viewDetailMainLabels}>
+                        Upload Date
+                      </label>
+
+                      <label className={styles.viewDetailSubLabels}>
+                        to be provided by BE
+                      </label>
+                    </div>
+                  </Col>
+
                   <Col span={12}>
                     <div
                       className={

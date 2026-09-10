@@ -123,7 +123,7 @@ const renderStatusTag = (status, approvalStatusMap) => {
   );
 };
 
-const withFilterHeader = (FilterComponent) => (
+const withFilterHeader = (node) => (
   <div
     className={style["table-header-wrapper"]}
     style={{
@@ -133,7 +133,7 @@ const withFilterHeader = (FilterComponent) => (
       width: "100%",
     }}
   >
-    <FilterComponent />
+    {node}
   </div>
 );
 export const getBorderlessTableColumns = ({
@@ -204,8 +204,8 @@ export const getBorderlessTableColumns = ({
     align: "left",
     width: 250,
     sorter: (a, b) => {
-      const nameA = a?.instrumentName || "";
-      const nameB = b?.instrumentName || "";
+      const nameA = a?.instrumentCode || "";
+      const nameB = b?.instrumentCode || "";
       return nameA.localeCompare(nameB);
     },
     sortDirections: ["ascend", "descend"],
@@ -273,15 +273,16 @@ export const getBorderlessTableColumns = ({
     ),
   },
   {
-    title: withFilterHeader(() => (
+    title: withFilterHeader(
       <TypeColumnTitle
         state={coDatewiseTransactionReportSearch}
         setState={setCODatewiseTransactionReportSearch}
       />
-    )),
+    ),
     dataIndex: "type",
     width: 90,
     key: "type",
+
     filteredValue: coDatewiseTransactionReportSearch.type?.length
       ? coDatewiseTransactionReportSearch.type
       : null,
@@ -317,12 +318,12 @@ export const getBorderlessTableColumns = ({
     render: (q) => <span className="font-medium">{q.toLocaleString()}</span>,
   },
   {
-    title: withFilterHeader(() => (
+    title: withFilterHeader(
       <StatusColumnTitle
         state={coDatewiseTransactionReportSearch}
         setState={setCODatewiseTransactionReportSearch}
       />
-    )),
+    ),
     dataIndex: "status",
     key: "status",
     width: 150,

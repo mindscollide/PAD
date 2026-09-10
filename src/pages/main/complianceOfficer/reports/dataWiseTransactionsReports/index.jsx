@@ -294,14 +294,12 @@ const COdataWiseTransactionsReports = () => {
       departmentName,
       instrumentName,
       quantity,
-      type,
-      status,
+      // type,
+      // status,
     } = coDatewiseTransactionReportSearch || {};
 
     const truncate = (val) =>
       val.length > 13 ? val.slice(0, 13) + "..." : val;
-
-    const formatArray = (arr) => (arr?.length ? arr.join(", ") : null);
 
     return [
       employeeID ? { key: "employeeID", value: employeeID } : null,
@@ -319,10 +317,6 @@ const COdataWiseTransactionsReports = () => {
         : null,
 
       quantity ? { key: "quantity", value: quantity } : null,
-
-      type?.length ? { key: "type", value: formatArray(type) } : null,
-
-      status?.length ? { key: "status", value: formatArray(status) } : null,
     ].filter(Boolean);
   })();
 

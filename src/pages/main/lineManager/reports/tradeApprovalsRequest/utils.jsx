@@ -55,10 +55,10 @@ export const mapEmployeeTransactionsReport = (
 
 export const getBorderlessTableColumns = ({ sortedInfo }) => [
   {
-    title: withSortIcon("Employee ID", "employeeID", sortedInfo),
+    title: withSortIcon("Employee ID", "employeeID", sortedInfo, "center"),
     dataIndex: "employeeID",
     key: "employeeID",
-    align: "left",
+    align: "center",
     width: "10%",
     sorter: (a, b) =>
       parseInt(a.employeeID.replace(/[^\d]/g, ""), 10) -
