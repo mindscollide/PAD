@@ -81,12 +81,28 @@
   font-weight: 500;
 }
 
+/* Actor name line ("by <name>") - own line beneath the status, per
+   API_Changes/2026-09-11_co_myactions_expand_panel_full_names.md. */
+.stepActor {
+  font-size: 14px;
+  color: #717171;
+  font-family: "Switzer Variable" !important;
+  font-weight: 500;
+  text-align: center;
+}
+
 .stepTileStrongText {
   margin-left: 3px;
+  /* FIXED: was a single-line ellipsis truncation (max-width: 90px,
+     white-space: nowrap) that hid most names behind a hover-only
+     Tooltip. Now wraps naturally within the step label's own width
+     (.stepTitle's 230px), showing the complete name across as many
+     lines as it needs (typically two for a first + last name) instead
+     of truncating it. */
   display: inline-block;
-  max-width: 90px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  max-width: 200px;
+  overflow-wrap: break-word;
+  word-break: break-word;
+  white-space: normal;
   vertical-align: bottom;
 }
