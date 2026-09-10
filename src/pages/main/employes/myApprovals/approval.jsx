@@ -464,7 +464,7 @@ const Approval = () => {
             columns={columns}
             scroll={
               employeeMyApproval?.approvals?.length
-                ? { x: "max-content", y: activeFilters.length > 0 ? 450 : 500 }
+                ? { x: 1300, y: activeFilters.length > 0 ? 450 : 500 }
                 : undefined
             }
             classNameTable="border-less-table-orange"

@@ -364,9 +364,7 @@ const COMyAction = () => {
             return {
               status: "Resubmit",
               date,
-              requesterID: dashBetweenApprovalAssets(
-                event.referenceApprovalID
-              ),
+              requesterID: dashBetweenApprovalAssets(event.referenceApprovalID),
               iconType: "Resubmit",
             };
           case "Escalated On":
@@ -378,14 +376,14 @@ const COMyAction = () => {
             };
           case "Approved":
             return {
-              status: "Marked Compliant",
+              status: "Marked Compliant By",
               user: actor,
               date,
               iconType: "co-Compliant",
             };
           case "Declined":
             return {
-              status: "Marked Non-Compliant",
+              status: "Marked Non-Compliant By",
               user: actor,
               date,
               iconType: "co-Non-Compliant",
