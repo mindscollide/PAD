@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Row, Col, Space } from "antd";
+import { Row, Col, Space, Select, Checkbox } from "antd";
 import { Button, DateRangePicker, TextField } from "../..";
 import { useSearchBarContext } from "../../../context/SearchBarContaxt";
 import {
@@ -7,6 +7,8 @@ import {
   removeFirstSpace,
 } from "../../../common/funtions/rejex";
 import styles from "./SearchWithPopoverOnly.module.css";
+import { useDashboardContext } from "../../../context/dashboardContaxt";
+import { buildBrokerOptions } from "../../../common/funtions/brokersList";
 
 // 🔹 Initial default state
 const INITIAL_LOCAL_STATE = {
@@ -14,7 +16,7 @@ const INITIAL_LOCAL_STATE = {
   startDate: null,
   endDate: null,
   quantity: 0,
-  broker: "",
+  brokerIDs: [],
   actionStartDate: null,
   actionEndDate: null,
   actionBy: "",
@@ -32,6 +34,8 @@ export const EmployeeTransactionReportFilter = ({
     employeeMyTransactionReportSearch,
     setEmployeeMyTransactionReportSearch,
   } = useSearchBarContext();
+
+  const { employeeBasedBrokersData } = useDashboardContext();
 
   // Local form state
   const [localState, setLocalState] = useState(INITIAL_LOCAL_STATE);
@@ -99,6 +103,14 @@ export const EmployeeTransactionReportFilter = ({
     });
   };
 
+  /** Brokers dropdown */
+  const brokerOptions = buildBrokerOptions(employeeBasedBrokersData);
+
+  // 🔹 Handle selection
+  const handleBrokerChange = (selectedIDs) => {
+    setLocalState((prev) => ({ ...prev, brokerIDs: selectedIDs }));
+  };
+
   /** Date change For Action Date Range */
   const handlerForActionDateChange = (dates) => {
     setLocalState({
@@ -133,7 +145,7 @@ export const EmployeeTransactionReportFilter = ({
       quantity,
       startDate,
       endDate,
-      broker,
+      brokerIDs,
       actionStartDate,
       actionEndDate,
       actionBy,
@@ -145,7 +157,7 @@ export const EmployeeTransactionReportFilter = ({
       quantity: quantity ? Number(quantity) : 0,
       startDate: startDate || null,
       endDate: endDate || null,
-      broker: broker?.trim() || "",
+      brokerIDs: brokerIDs || [],
       actionStartDate: actionStartDate || null,
       actionEndDate: actionEndDate || null,
       actionBy: actionBy?.trim() || "",
@@ -169,7 +181,7 @@ export const EmployeeTransactionReportFilter = ({
       endDate: null,
       status: [],
       type: [],
-      broker: "",
+      brokerIDs: [],
       actionBy: "",
       actionStartDate: null,
       actionEndDate: null,
@@ -227,15 +239,36 @@ export const EmployeeTransactionReportFilter = ({
             classNames="Search-Field"
           />
         </Col>
-        <Col xs={24} sm={24} md={12} lg={12}>
-          <TextField
-            label="Brokers"
-            name="broker"
-            value={localState.broker}
-            onChange={handleInputChange}
-            placeholder="Brokers"
-            size="medium"
-            classNames="Search-Field"
+        <Col span={12} className={styles.brokersOptionData}>
+          <label className={styles.instrumentLabel}>Brokers</label>
+          <Select
+            mode="multiple"
+            placeholder="Select Brokers"
+            value={localState.brokerIDs}
+            onChange={handleBrokerChange}
+            options={brokerOptions}
+            maxTagCount={0}
+            maxTagPlaceholder={(omittedValues) =>
+              `${omittedValues.length} selected`
+            }
+            prefixCls="EquitiesBrokerSelectPrefix"
+            optionLabelProp="label"
+            disabled={!brokerOptions || brokerOptions.length === 0}
+            showSearch
+            filterOption={(input, option) =>
+              option?.label?.toLowerCase().includes(input.toLowerCase()) ||
+              option?.raw?.psxCode?.toLowerCase().includes(input.toLowerCase())
+            }
+            optionRender={(option) => (
+              <div style={{ display: "flex", alignItems: "center" }}>
+                <Checkbox
+                  checked={localState.brokerIDs.includes(option.value)} // ✅ sync with state
+                  style={{ marginRight: 8 }}
+                  className="custom-broker-option"
+                />
+                {option.data.raw.brokerName}
+              </div>
+            )}
           />
         </Col>
       </Row>
