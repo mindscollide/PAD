@@ -300,8 +300,7 @@ export const getBorderlessTableColumnsViewDetails = ({
     dataIndex: "employeeID",
     key: "employeeID",
     align: "left",
-    width: 120,
-    ellipsis: true,
+    width: 150,
     sorter: numberSorter("employeeID"),
     sortDirections: ["ascend", "descend"],
     sortOrder:
@@ -327,7 +326,7 @@ export const getBorderlessTableColumnsViewDetails = ({
     title: withSortIcon("Employee Name", "employeeName", sortedInfoView),
     dataIndex: "employeeName",
     key: "employeeName",
-    width: 150,
+    width: 170,
     align: "left",
     sorter: (a, b) => a.employeeName.localeCompare(b.employeeName),
     sortDirections: ["ascend", "descend"],
@@ -344,8 +343,7 @@ export const getBorderlessTableColumnsViewDetails = ({
     dataIndex: "instrumentName",
     key: "instrumentName",
     align: "left",
-    width: 160,
-    ellipsis: true,
+    width: 250,
     sorter: (a, b) => {
       const nameA = a?.instrumentName || "";
       const nameB = b?.instrumentName || "";
@@ -425,7 +423,7 @@ export const getBorderlessTableColumnsViewDetails = ({
       />
     ),
     dataIndex: "type",
-    width: 120,
+    width: 150,
     key: "type",
 
     filteredValue: coTransactionsSummarysReportsViewDetailsSearch.type?.length
@@ -454,7 +452,7 @@ export const getBorderlessTableColumnsViewDetails = ({
     dataIndex: "quantity",
     key: "quantity",
     align: "center",
-    width: 100,
+    width: 120,
     sorter: (a, b) => (a?.quantity ?? 0) - (b?.quantity ?? 0),
     sortOrder:
       sortedInfoView?.columnKey === "quantity" ? sortedInfoView.order : null,
@@ -478,7 +476,6 @@ export const getBorderlessTableColumnsViewDetails = ({
     width: 150,
     dataIndex: "status",
     key: "status",
-    ellipsis: true,
     filteredValue: coTransactionsSummarysReportsViewDetailsSearch.status?.length
       ? coTransactionsSummarysReportsViewDetailsSearch.status
       : null,
@@ -492,8 +489,7 @@ export const getBorderlessTableColumnsViewDetails = ({
   {
     title: "",
     key: "action",
-    width: 100,
-    align: "left", // 🔷 Align content to the right
+    align: "right", // 🔷 Align content to the right
     render: (_, record) => (
       <div className={style.viewEditClass}>
         <Button

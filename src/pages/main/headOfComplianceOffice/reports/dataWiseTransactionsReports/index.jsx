@@ -37,6 +37,8 @@ import CustomButton from "../../../../../components/buttons/button";
 import ViewDetaildDateWiseTransaction from "./ViewDetaildDateWiseTransaction/ViewDetaildDateWiseTransaction";
 import { DateWiseTransactionReportViewDetails } from "../../../../../api/myTransactionsApi";
 import { useReconcileContext } from "../../../../../context/reconsileContax";
+import { formatToYYYYMMDD } from "../../../../../common/funtions/rejex";
+import { DateRangePicker } from "../../../../../components";
 
 const HCADateWiseTransactionsReports = () => {
   const navigate = useNavigate();
@@ -70,6 +72,10 @@ const HCADateWiseTransactionsReports = () => {
   const [sortedInfo, setSortedInfo] = useState({});
   const [loadingMore, setLoadingMore] = useState(false);
   const [open, setOpen] = useState(false);
+  const [dateRange, setDateRange] = useState({
+    StartDate: null,
+    EndDate: null,
+  });
 
   // -------------------- Helpers --------------------
 
@@ -149,18 +155,29 @@ const HCADateWiseTransactionsReports = () => {
   useEffect(() => {
     if (hasFetched.current) return;
     hasFetched.current = true;
-    const requestData = buildApiRequest(
-      coDatewiseTransactionReportSearch,
-      assetTypeListingData
-    );
-    fetchApiCall(requestData, true, true);
-  }, []);
 
-  //   // Reset on Unmount
-  useEffect(() => {
+    const endDate = new Date();
+    const startDate = new Date();
+    startDate.setMonth(startDate.getMonth() - 6);
+
+    setDateRange({
+      StartDate: formatToYYYYMMDD(startDate),
+      EndDate: formatToYYYYMMDD(endDate),
+    });
+
+    const updatedState = {
+      ...coDatewiseTransactionReportSearch,
+      startDate,
+      endDate,
+    };
+
+    setCODatewiseTransactionReportSearch(updatedState);
+    const requestData = buildApiRequest(updatedState, assetTypeListingData);
+    fetchApiCall(requestData, true, true);
+
     return () => {
-      // Reset search state for fresh load
       resetComplianceOfficerDateWiseTransationReportSearch();
+      hasFetched.current = false; // allow a genuine remount to fully re-init
     };
   }, []);
 
@@ -174,6 +191,44 @@ const HCADateWiseTransactionsReports = () => {
       fetchApiCall(requestData, true, true);
     }
   }, [coDatewiseTransactionReportSearch?.filterTrigger]);
+
+  // 🔹 Date range flows through the same filter state + filterTrigger effect as
+  // every other filter, merging with employeeName/department/instrument/type/status.
+  const handleDateChange = (dates) => {
+    if (dates && dates.length === 2) {
+      setDateRange({
+        StartDate: dates?.[0] || null,
+        EndDate: dates?.[1] || null,
+      });
+
+      setCODatewiseTransactionReportSearch((prev) => ({
+        ...prev,
+        startDate: dates[0],
+        endDate: dates[1],
+        pageNumber: 0,
+        filterTrigger: true,
+      }));
+    }
+  };
+
+  const handleClearDates = () => {
+    const endDate = new Date();
+    const startDate = new Date();
+    startDate.setMonth(startDate.getMonth() - 6);
+
+    setDateRange({
+      StartDate: formatToYYYYMMDD(startDate),
+      EndDate: formatToYYYYMMDD(endDate),
+    });
+
+    setCODatewiseTransactionReportSearch((prev) => ({
+      ...prev,
+      startDate,
+      endDate,
+      pageNumber: 0,
+      filterTrigger: true,
+    }));
+  };
 
   // 🔹 Infinite Scroll (lazy loading)
   useTableScrollBottom(
@@ -238,17 +293,13 @@ const HCADateWiseTransactionsReports = () => {
       departmentName: { departmentName: "" },
       instrumentName: { instrumentName: "" },
       quantity: { quantity: 0 },
-
-      // requestDate resets startDate + endDate
-      requestDate: { startDate: null, endDate: null },
-
       type: { type: [] },
       status: { status: [] },
     };
 
     setCODatewiseTransactionReportSearch((prev) => ({
       ...prev,
-      ...resetMap[key], // reset only the clicked filter
+      ...resetMap[key],
       pageNumber: 0,
       filterTrigger: true,
     }));
@@ -263,8 +314,6 @@ const HCADateWiseTransactionsReports = () => {
       departmentName: "",
       instrumentName: "",
       quantity: 0,
-      startDate: null,
-      endDate: null,
       type: [],
       status: [],
       pageNumber: 0,
@@ -280,55 +329,29 @@ const HCADateWiseTransactionsReports = () => {
       departmentName,
       instrumentName,
       quantity,
-      startDate,
-      endDate,
-      type,
-      status,
+      // type,
+      // status,
     } = coDatewiseTransactionReportSearch || {};
 
     const truncate = (val) =>
       val.length > 13 ? val.slice(0, 13) + "..." : val;
 
-    const formatDate = (date) =>
-      date ? new Date(date).toISOString().split("T")[0] : null;
-
     const formatArray = (arr) => (arr?.length ? arr.join(", ") : null);
-
-    const formattedStart = formatDate(startDate);
-    const formattedEnd = formatDate(endDate);
-
-    // 🔹 Combine into requestDate
-    let requestDate = null;
-    if (formattedStart && formattedEnd) {
-      requestDate = `${formattedStart} to ${formattedEnd}`;
-    } else if (formattedStart) {
-      requestDate = `From ${formattedStart}`;
-    } else if (formattedEnd) {
-      requestDate = `Till ${formattedEnd}`;
-    }
 
     return [
       employeeID ? { key: "employeeID", value: employeeID } : null,
-
       employeeName
         ? { key: "employeeName", value: truncate(employeeName) }
         : null,
-
       departmentName
         ? { key: "departmentName", value: truncate(departmentName) }
         : null,
-
       instrumentName
         ? { key: "instrumentName", value: truncate(instrumentName) }
         : null,
-
       quantity ? { key: "quantity", value: quantity } : null,
-
-      requestDate ? { key: "requestDate", value: requestDate } : null,
-
-      type?.length ? { key: "type", value: formatArray(type) } : null,
-
-      status?.length ? { key: "status", value: formatArray(status) } : null,
+      // type?.length ? { key: "type", value: formatArray(type) } : null,
+      // status?.length ? { key: "status", value: formatArray(status) } : null,
     ].filter(Boolean);
   })();
 
@@ -386,6 +409,13 @@ const HCADateWiseTransactionsReports = () => {
         </Col>
         <Col>
           <div className={style.headerActionsRow}>
+            <DateRangePicker
+              size="medium"
+              className={style.dateRangePickerClass}
+              value={[dateRange.StartDate, dateRange.EndDate]}
+              onChange={handleDateChange}
+              onClear={handleClearDates}
+            />
             <CustomButton
               disabled={
                 coDatewiseTransactionReportListData
@@ -403,6 +433,25 @@ const HCADateWiseTransactionsReports = () => {
               onClick={() => setOpen((prev) => !prev)}
             />
           </div>
+
+          {/* <div className={style.headerActionsRow}>
+            <CustomButton
+              disabled={
+                coDatewiseTransactionReportListData
+                  ?.complianceOfficerApprovalsList?.length === 0
+              }
+              text={
+                <span className={style.exportButtonText}>
+                  Export
+                  <span className={style.iconContainer}>
+                    {open ? <UpOutlined /> : <DownOutlined />}
+                  </span>
+                </span>
+              }
+              className="small-light-button-report"
+              onClick={() => setOpen((prev) => !prev)}
+            />
+          </div> */}
 
           {/* 🔷 Export Dropdown */}
           {open && (
@@ -471,7 +520,7 @@ const HCADateWiseTransactionsReports = () => {
               coDatewiseTransactionReportListData
                 ?.complianceOfficerApprovalsList?.length
                 ? {
-                    x: "max-content",
+                    x: 1300,
                     y: activeFilters.length > 0 ? 450 : 500,
                   }
                 : undefined

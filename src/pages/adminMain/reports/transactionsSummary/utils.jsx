@@ -263,7 +263,10 @@ export const mappingDateWiseTransactionviewDetailst = (res = []) => {
   return records.map((item) => {
     const actionByList = Array.isArray(item.actionBy) ? item.actionBy : [];
     const actionBy =
-      actionByList.map((a) => a?.fullName).filter(Boolean).join(", ") || "—";
+      actionByList
+        .map((a) => a?.fullName)
+        .filter(Boolean)
+        .join(", ") || "—";
 
     return {
       key: item.requestID,
@@ -328,12 +331,11 @@ export const getBorderlessTableColumnsViewDetails = ({
   setSelectedWorkFlowViewDetaild,
 }) => [
   {
-    title: withSortIcon("Employee ID", "employeeID", sortedInfoView),
+    title: withSortIcon("Employee ID", "employeeID", sortedInfoView, "center"),
     dataIndex: "employeeID",
     key: "employeeID",
-    align: "left",
-    width: 150,
-    ellipsis: true,
+    align: "center",
+    width: 120,
     sorter: numberSorter("employeeID"),
     sortDirections: ["ascend", "descend"],
     sortOrder:
@@ -342,7 +344,14 @@ export const getBorderlessTableColumnsViewDetails = ({
     sortIcon: () => null,
     render: (employeeID) => {
       return (
-        <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: "12px",
+          }}
+        >
           <span className="font-medium">{employeeID}</span>
         </div>
       );
@@ -352,9 +361,8 @@ export const getBorderlessTableColumnsViewDetails = ({
     title: withSortIcon("Employee Name", "employeeName", sortedInfoView),
     dataIndex: "employeeName",
     key: "employeeName",
-    width: 200,
+    width: 150,
     align: "left",
-    ellipsis: true,
     sorter: (a, b) => a.employeeName.localeCompare(b.employeeName),
     sortDirections: ["ascend", "descend"],
     sortOrder:
@@ -370,8 +378,7 @@ export const getBorderlessTableColumnsViewDetails = ({
     dataIndex: "instrumentName",
     key: "instrumentName",
     align: "left",
-    width: 150,
-    ellipsis: true,
+    width: 210,
     sorter: (a, b) => {
       const nameA = a?.instrumentName || "";
       const nameB = b?.instrumentName || "";
@@ -427,7 +434,6 @@ export const getBorderlessTableColumnsViewDetails = ({
     key: "actionBy",
     align: "left",
     width: 200,
-    ellipsis: true,
     sorter: (a, b) => (a.actionBy || "").localeCompare(b.actionBy || ""),
     sortDirections: ["ascend", "descend"],
     sortOrder:
@@ -439,9 +445,9 @@ export const getBorderlessTableColumnsViewDetails = ({
         <span
           className="font-medium"
           style={{
-            overflow: "hidden",
-            textOverflow: "ellipsis",
-            whiteSpace: "nowrap",
+            // overflow: "hidden",
+            // textOverflow: "ellipsis",
+            // whiteSpace: "nowrap",
             maxWidth: "200px",
             display: "inline-block",
           }}
@@ -457,7 +463,6 @@ export const getBorderlessTableColumnsViewDetails = ({
     key: "actionDate",
     align: "center",
     width: 180,
-    ellipsis: true,
     sorter: (a, b) => (a?.actionDate || "").localeCompare(b?.actionDate || ""),
     sortOrder:
       sortedInfoView?.columnKey === "actionDate" ? sortedInfoView.order : null,
@@ -483,7 +488,6 @@ export const getBorderlessTableColumnsViewDetails = ({
     dataIndex: "type",
     width: 100,
     key: "type",
-    ellipsis: true,
     render: (type, record) => (
       <span
         id={`cell-${record.key}-type`}
@@ -538,12 +542,11 @@ export const getBorderlessTableColumnsViewDetails = ({
   {
     title: "",
     key: "action",
-    width: 150,
     align: "right", // 🔷 Align content to the right
     render: (_, record) => (
       <div className={style.viewEditClass}>
         <Button
-          className="small-light-button"
+          className="small-white-button"
           text={"View Comments"}
           onClick={() => {
             setSelectedWorkFlowViewDetaild(record);

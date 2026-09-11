@@ -133,7 +133,7 @@ const withFilterHeader = (FilterComponent) => (
       width: "100%",
     }}
   >
-    <FilterComponent />
+    {FilterComponent}
   </div>
 );
 export const getBorderlessTableColumns = ({
@@ -147,7 +147,7 @@ export const getBorderlessTableColumns = ({
     title: withSortIcon("Employee ID", "employeeID", sortedInfo, "center"),
     dataIndex: "employeeID",
     key: "employeeID",
-    width: 130,
+    width: 120,
     align: "center",
     sorter: (a, b) =>
       parseInt(a.employeeID.replace(/[^\d]/g, ""), 10) -
@@ -193,7 +193,7 @@ export const getBorderlessTableColumns = ({
     dataIndex: "department",
     key: "department",
     align: "left",
-    width: 200,
+    width: 160,
     sorter: (a, b) => a.department.localeCompare(b.department),
     sortDirections: ["ascend", "descend"],
     sortOrder: sortedInfo?.columnKey === "department" ? sortedInfo.order : null,
@@ -205,11 +205,10 @@ export const getBorderlessTableColumns = ({
     title: withSortIcon("Instrument", "instrumentName", sortedInfo),
     dataIndex: "instrumentName",
     key: "instrumentName",
-    width: "140px",
-    ellipsis: true,
+    width: 210,
     sorter: (a, b) => {
-      const nameA = a?.instrumentName || "";
-      const nameB = b?.instrumentName || "";
+      const nameA = a?.instrumentCode || "";
+      const nameB = b?.instrumentCode || "";
       return nameA.localeCompare(nameB);
     },
     sortDirections: ["ascend", "descend"],
@@ -263,7 +262,7 @@ export const getBorderlessTableColumns = ({
     align: "center",
     dataIndex: "transactionDate",
     key: "transactionDate",
-    width: 200,
+    width: 180,
     sorter: (a, b) =>
       (a?.transactionDate || "").localeCompare(b?.transactionDate || ""),
     sortOrder:
@@ -271,16 +270,16 @@ export const getBorderlessTableColumns = ({
     showSorterTooltip: false,
     sortIcon: () => null,
     render: (date) => (
-      <span className="text-gray-600">{formatApiDateTime(date) || "—"}</span>
+      <span className="font-medium">{formatApiDateTime(date) || "—"}</span>
     ),
   },
   {
-    title: withFilterHeader(() => (
+    title: withFilterHeader(
       <TypeColumnTitle
         state={coDatewiseTransactionReportSearch}
         setState={setCODatewiseTransactionReportSearch}
       />
-    )),
+    ),
     dataIndex: "type",
     width: 100,
     key: "type",
@@ -323,7 +322,7 @@ export const getBorderlessTableColumns = ({
     dataIndex: "quantity",
     key: "quantity",
     align: "center",
-    width: 120,
+    width: 110,
     sorter: (a, b) => a.quantity - b.quantity,
     sortDirections: ["ascend", "descend"],
     sortOrder: sortedInfo?.columnKey === "quantity" ? sortedInfo.order : null,
@@ -332,15 +331,14 @@ export const getBorderlessTableColumns = ({
     render: (q) => <span className="font-medium">{q.toLocaleString()}</span>,
   },
   {
-    title: withFilterHeader(() => (
+    title: withFilterHeader(
       <StatusColumnTitle
         state={coDatewiseTransactionReportSearch}
         setState={setCODatewiseTransactionReportSearch}
       />
-    )),
+    ),
     dataIndex: "status",
     key: "status",
-    ellipsis: true,
     filteredValue: coDatewiseTransactionReportSearch.status?.length
       ? coDatewiseTransactionReportSearch.status
       : null,
