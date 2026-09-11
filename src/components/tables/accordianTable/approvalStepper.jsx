@@ -52,6 +52,31 @@ const ApprovalStepper = ({ trail }) => {
       case "co-Transaction Conducted":
         return <img src={Dollar} alt={altText} width={50} height={50} />;
 
+      // ADDED: "Approved by You" gets the same tick shape as the plain
+      // green "Approved" icon, just recolored to #f67f29 (icon + text,
+      // see the step.textColor handling in the label below) - no PNG
+      // asset exists in that color, so this one's drawn inline instead.
+      case "ApprovedByYou":
+        return (
+          <svg
+            width="50"
+            height="50"
+            viewBox="0 0 50 50"
+            role="img"
+            aria-label={altText}
+          >
+            <circle cx="25" cy="25" r="25" fill="#fff1e7" />
+            <path
+              d="M15 26 L22 33 L35 18"
+              fill="none"
+              stroke="#f67f29"
+              strokeWidth="4"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </svg>
+        );
+
       default:
         return null;
     }
@@ -97,7 +122,12 @@ const ApprovalStepper = ({ trail }) => {
                 </div>
 
                 {/* 🔹 Line 1: status only */}
-                <div className={styles.stepTitle}>{step.status}</div>
+                <div
+                  className={styles.stepTitle}
+                  style={step.textColor ? { color: step.textColor } : undefined}
+                >
+                  {step.status}
+                </div>
 
                 {/* 🔹 Line 2: "by" + the actor's full name - own line,
                     wrapped (not truncated) so the complete name is always
@@ -106,12 +136,25 @@ const ApprovalStepper = ({ trail }) => {
                     panel_full_names.md): "display complete names of
                     whoever has taken action. Bring it in two lines." -
                     same fix applies to every role's My Actions panel,
-                    since they all share this component. */}
+                    since they all share this component.
+                    step.textColor (e.g. "Approved by You") overrides the
+                    default color on both this line and the status line
+                    above. */}
                 {step.user && (
-                  <div className={styles.stepActor}>
+                  <div
+                    className={styles.stepActor}
+                    style={
+                      step.textColor ? { color: step.textColor } : undefined
+                    }
+                  >
                     {"by "}
                     <Tooltip title={step.user}>
-                      <span className={styles.stepTileStrongText}>
+                      <span
+                        className={styles.stepTileStrongText}
+                        style={
+                          step.textColor ? { color: step.textColor } : undefined
+                        }
+                      >
                         {step.user}
                       </span>
                     </Tooltip>

@@ -16,7 +16,13 @@ import repeat from "../../../../assets/img/repeat.png";
  */
 
 export const buildMyActionApiRequest = (searchState = {}) => ({
-  RequestID: searchState.requestID || "",
+  // FIXED (same issue as HOC My Actions): the search field/active-filter
+  // chip show the user-facing dashed form ("REQ-000101", same as the
+  // table's own Transaction/RequestID column via dashBetweenApprovalAssets),
+  // but the API expects it undashed ("REQ000101") - strip the dash only
+  // here, at request-build time, so the stored search state (and its
+  // chip) keeps showing the dash.
+  RequestID: (searchState.requestID || "").replace(/-/g, ""),
   InstrumentName: searchState.instrumentName || "",
   RequesterName: searchState.requesterName || "",
   StartDate: searchState.startDate ? toYYMMDD(searchState.startDate) : null,

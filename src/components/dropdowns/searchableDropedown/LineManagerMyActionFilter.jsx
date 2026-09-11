@@ -169,7 +169,7 @@ export const LineManagerMyAction = ({
       <Row gutter={[12, 12]}>
         <Col xs={24} sm={24} md={12} lg={12}>
           <TextField
-            label="Request ID (Search without -)"
+            label="Request ID"
             name="requestID"
             value={localState.requestID}
             onChange={handleInputChange}
