@@ -631,7 +631,7 @@ const AdminTransactionsSummarysReports = () => {
             scroll={
               tableRows && tableRows.length > 0
                 ? {
-                    x: "max-content",
+                    x: 1300,
                     y: 470,
                   }
                 : undefined

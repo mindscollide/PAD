@@ -12,6 +12,7 @@ import {
   buildApiRequest,
   buildExportRequest,
   getBorderlessTableColumns,
+  getDefaultDateRange,
   mappingDateWiseTransactionReport,
 } from "./utils";
 import { approvalStatusMap } from "../../../../components/tables/borderlessTable/utill";
@@ -38,6 +39,7 @@ import { DateRangePicker } from "../../../../components";
 import ViewDetaildDateWiseTransaction from "./ViewDetaildDateWiseTransaction/ViewDetaildDateWiseTransaction";
 import { useReconcileContext } from "../../../../context/reconsileContax";
 import { useGlobalModal } from "../../../../context/GlobalModalContext";
+import { formatToYYYYMMDD } from "../../../../common/funtions/rejex";
 
 const AdmindataWiseTransactionsReports = () => {
   const navigate = useNavigate();
@@ -127,19 +129,30 @@ const AdmindataWiseTransactionsReports = () => {
   useEffect(() => {
     if (hasFetched.current) return;
     hasFetched.current = true;
-    const requestData = buildApiRequest(
-      coDatewiseTransactionReportSearch,
-      assetTypeListingData
-    );
-    fetchApiCall(requestData, true, true);
-  }, []);
 
-  //   // Reset on Unmount
-  useEffect(() => {
+    const endDate = new Date();
+    const startDate = new Date();
+    startDate.setMonth(startDate.getMonth() - 6);
+
+    setDateRange({
+      StartDate: formatToYYYYMMDD(startDate),
+      EndDate: formatToYYYYMMDD(endDate),
+    });
+
+    const updatedState = {
+      ...coDatewiseTransactionReportSearch,
+      startDate,
+      endDate,
+    };
+
+    setCODatewiseTransactionReportSearch(updatedState);
+    const requestData = buildApiRequest(updatedState, assetTypeListingData);
+    fetchApiCall(requestData, true, true);
+
     return () => {
-      // Reset search state for fresh load
       resetComplianceOfficerDateWiseTransationReportSearch();
       resetAdminDateWiseTransactionReportData();
+      hasFetched.current = false; // allow a genuine remount to fully re-init
     };
   }, []);
 
@@ -221,17 +234,13 @@ const AdmindataWiseTransactionsReports = () => {
       departmentName: { departmentName: "" },
       instrumentName: { instrumentName: "" },
       quantity: { quantity: 0 },
-
-      // requestDate resets startDate + endDate
-      requestDate: { startDate: null, endDate: null },
-
       type: { type: [] },
       status: { status: [] },
     };
 
     setCODatewiseTransactionReportSearch((prev) => ({
       ...prev,
-      ...resetMap[key], // reset only the clicked filter
+      ...resetMap[key],
       pageNumber: 0,
       filterTrigger: true,
     }));
@@ -263,8 +272,6 @@ const AdmindataWiseTransactionsReports = () => {
       departmentName,
       instrumentName,
       quantity,
-      startDate,
-      endDate,
       type,
       status,
     } = coDatewiseTransactionReportSearch || {};
@@ -272,45 +279,24 @@ const AdmindataWiseTransactionsReports = () => {
     const truncate = (val) =>
       val.length > 13 ? val.slice(0, 13) + "..." : val;
 
-    const formatDate = (date) =>
-      date ? new Date(date).toISOString().split("T")[0] : null;
-
     const formatArray = (arr) => (arr?.length ? arr.join(", ") : null);
 
-    const formattedStart = formatDate(startDate);
-    const formattedEnd = formatDate(endDate);
-
-    // 🔹 Combine into requestDate
-    let requestDate = null;
-    if (formattedStart && formattedEnd) {
-      requestDate = `${formattedStart} to ${formattedEnd}`;
-    } else if (formattedStart) {
-      requestDate = `From ${formattedStart}`;
-    } else if (formattedEnd) {
-      requestDate = `Till ${formattedEnd}`;
-    }
-
+    // REMOVED: requestDate is no longer surfaced as an active-filter tag -
+    // the date range is always applied (default or user-picked) but stays
+    // invisible in this tag row.
     return [
       employeeID ? { key: "employeeID", value: employeeID } : null,
-
       employeeName
         ? { key: "employeeName", value: truncate(employeeName) }
         : null,
-
       departmentName
         ? { key: "departmentName", value: truncate(departmentName) }
         : null,
-
       instrumentName
         ? { key: "instrumentName", value: truncate(instrumentName) }
         : null,
-
       quantity ? { key: "quantity", value: quantity } : null,
-
-      requestDate ? { key: "requestDate", value: requestDate } : null,
-
       type?.length ? { key: "type", value: formatArray(type) } : null,
-
       status?.length ? { key: "status", value: formatArray(status) } : null,
     ].filter(Boolean);
   })();
@@ -343,6 +329,11 @@ const AdmindataWiseTransactionsReports = () => {
   // sibling CO/HCA Date-wise Transaction Report pages.
   const handleDateChange = (dates) => {
     if (dates && dates.length === 2) {
+      setDateRange({
+        StartDate: dates?.[0] || null,
+        EndDate: dates?.[1] || null,
+      });
+
       setCODatewiseTransactionReportSearch((prev) => ({
         ...prev,
         startDate: dates[0],
@@ -350,33 +341,26 @@ const AdmindataWiseTransactionsReports = () => {
         pageNumber: 0,
         filterTrigger: true,
       }));
-
-      // Clears the picker's own input back to its placeholder once the
-      // range is applied - the selected range is still visible as the
-      // "requestDate" active-filter tag below (reads straight off
-      // coDatewiseTransactionReportSearch, set above), and still drives
-      // the API request the same way. Requested explicitly: keeping the
-      // picker showing the applied dates was fine functionally, just not
-      // wanted visually once applied.
-      setDateRange({ StartDate: null, EndDate: null });
     }
   };
-
   const handleClearDates = () => {
+    const endDate = new Date();
+    const startDate = new Date();
+    startDate.setMonth(startDate.getMonth() - 6);
+
     setDateRange({
-      StartDate: null,
-      EndDate: null,
+      StartDate: formatToYYYYMMDD(startDate),
+      EndDate: formatToYYYYMMDD(endDate),
     });
 
     setCODatewiseTransactionReportSearch((prev) => ({
       ...prev,
-      startDate: null,
-      endDate: null,
+      startDate,
+      endDate,
       pageNumber: 0,
       filterTrigger: true,
     }));
   };
-
   // -------------------- Render --------------------
   return (
     <>

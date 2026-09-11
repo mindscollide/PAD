@@ -337,17 +337,25 @@ export const getBorderlessTableColumnsViewDetails = ({
     key: "employeeID",
     width: 60,
     align: "center",
-    justifyContent: "center",
-    sorter: (a, b) =>
-      parseInt(a.employeeID.replace(/[^\d]/g, ""), 10) -
-      parseInt(b.employeeID.replace(/[^\d]/g, ""), 10),
+    sorter: (a, b) => {
+      const employeeIDA = Number(a?.employeeID ?? 0);
+      const employeeIDB = Number(b?.employeeID ?? 0);
+
+      // Primary sort: Employee ID
+      const idDifference = employeeIDA - employeeIDB;
+
+      if (idDifference !== 0) {
+        return idDifference;
+      }
+
+      // Secondary sort when Employee IDs are the same
+      return Number(b?.key ?? 0) - Number(a?.key ?? 0);
+    },
     sortDirections: ["ascend", "descend"],
     sortOrder: sortedInfo?.columnKey === "employeeID" ? sortedInfo.order : null,
     showSorterTooltip: false,
     sortIcon: () => null,
-    render: (employeeID) => {
-      return <span className="font-medium">{employeeID}</span>;
-    },
+    render: (employeeID) => <span className="font-medium">{employeeID}</span>,
   },
   {
     title: withSortIcon("Employee Name", "employeeName", sortedInfo),
@@ -368,8 +376,7 @@ export const getBorderlessTableColumnsViewDetails = ({
     dataIndex: "instrumentName",
     key: "instrumentName",
     align: "left",
-    width: 120,
-    ellipsis: true,
+    width: 210,
     sorter: (a, b) => {
       const nameA = a?.instrumentShortCode || "";
       const nameB = b?.instrumentShortCode || "";
@@ -427,11 +434,9 @@ export const getBorderlessTableColumnsViewDetails = ({
     key: "transactionDate",
     width: 180,
     align: "center",
-    sorter: (a, b) => {
-      const dateA = new Date(`${a.transactionDate}`).getTime();
-      const dateB = new Date(`${b.transactionDate}`).getTime();
-      return dateA - dateB;
-    },
+
+    sorter: (a, b) =>
+      (a?.transactionDate || "").localeCompare(b?.transactionDate || ""),
     sortDirections: ["ascend", "descend"],
     sortOrder:
       sortedInfo?.columnKey === "transactionDate" ? sortedInfo.order : null,
@@ -484,6 +489,8 @@ export const getBorderlessTableColumnsViewDetails = ({
     key: "actionDate",
     width: 180,
     sorter: (a, b) => (a?.actionDate || "").localeCompare(b?.actionDate || ""),
+    sortDirections: ["ascend", "descend"],
+
     sortOrder: sortedInfo?.columnKey === "actionDate" ? sortedInfo.order : null,
     showSorterTooltip: false,
     sortIcon: () => null,
@@ -536,7 +543,7 @@ export const getBorderlessTableColumnsViewDetails = ({
   {
     title: "",
     key: "action",
-    width: 150,
+
     align: "right", // 🔷 Align content to the right
     render: (_, record) => (
       <div className={style.viewEditClass}>

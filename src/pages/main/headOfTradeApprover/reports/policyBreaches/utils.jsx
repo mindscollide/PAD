@@ -171,10 +171,7 @@ export const getBorderlessTableColumns = ({
     dataIndex: "employeeID",
     key: "employeeID",
     align: "center",
-    width: 140,
-    // sorter: (a, b) =>
-    //   parseInt(a.employeeID.replace(/[^\d]/g, ""), 10) -
-    //   parseInt(b.employeeID.replace(/[^\d]/g, ""), 10),
+    width: 120,
     sorter: (a, b) => a.employeeID - b.employeeID,
     sortDirections: ["ascend", "descend"],
     sortOrder: sortedInfo?.columnKey === "employeeID" ? sortedInfo.order : null,
@@ -202,7 +199,7 @@ export const getBorderlessTableColumns = ({
     dataIndex: "employeeName",
     key: "employeeName",
     align: "left",
-    width: 160,
+    width: 140,
     sorter: (a, b) => a.employeeName - b.employeeName,
     sortDirections: ["ascend", "descend"],
     sortOrder:
@@ -216,7 +213,7 @@ export const getBorderlessTableColumns = ({
     dataIndex: "departmentName",
     key: "departmentName",
     align: "center",
-    width: 200,
+    width: 160,
     sorter: (a, b) => a.departmentName - b.departmentName,
     sortDirections: ["ascend", "descend"],
     sortOrder:
@@ -235,7 +232,7 @@ export const getBorderlessTableColumns = ({
     dataIndex: "requestDateTime",
     key: "requestDateTime",
     align: "center",
-    width: 200,
+    width: 180,
     sorter: (a, b) =>
       formatApiDateTime(a.requestDateTime).localeCompare(
         formatApiDateTime(b.requestDateTime)
@@ -259,7 +256,7 @@ export const getBorderlessTableColumns = ({
     title: withSortIcon("Instrument", "instrumentName", sortedInfo),
     dataIndex: "instrumentName",
     key: "instrumentName",
-    width: 180,
+    width: 210,
     ellipsis: true,
     sorter: (a, b) =>
       (a.instrumentName || "").localeCompare(b.instrumentName || ""),
@@ -276,7 +273,13 @@ export const getBorderlessTableColumns = ({
     // tradeType lookup only ever reads assetTypeData's Equities bucket)
     // and the full name in place of a short code, same as before that doc.
     render: (name, record) => (
-      <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          gap: "12px",
+        }}
+      >
         <span className="custom-shortCode-asset" style={{ minWidth: 30 }}>
           {record.assetShortCode || "EQ"}
         </span>
@@ -289,6 +292,7 @@ export const getBorderlessTableColumns = ({
               whiteSpace: "nowrap",
               maxWidth: "140px",
               display: "inline-block",
+              cursor: "pointer",
             }}
           >
             {record.instrumentShortCode || name || "—"}
@@ -325,7 +329,7 @@ export const getBorderlessTableColumns = ({
     ),
     dataIndex: "tradeType",
     key: "tradeType",
-    width: 140,
+    width: 100,
     filteredValue: htaPolicyBreachesReportSearch.type?.length
       ? htaPolicyBreachesReportSearch?.type
       : null,
@@ -355,7 +359,7 @@ export const getBorderlessTableColumns = ({
     dataIndex: "policyCount",
     key: "policyCount",
     align: "center",
-    width: 140,
+    width: 100,
     sorter: (a, b) => a.policyCount - b.policyCount,
     sortDirections: ["ascend", "descend"],
     sortOrder:

@@ -66,7 +66,7 @@ export const buildApiRequest = (searchState = {}, assetTypeListingData) => ({
  */
 export const mappingDateWiseTransactionReport = (
   assetTypeData,
-  coOverdueVerificationListData = [],
+  coOverdueVerificationListData = []
 ) => {
   const overdueVerifications = Array.isArray(coOverdueVerificationListData)
     ? coOverdueVerificationListData
@@ -132,10 +132,8 @@ const withFilterHeader = (FilterComponent) => (
 
 export const getBorderlessTableColumns = ({
   sortedInfo,
-  approvalStatusMap = {},
   coOverdueVerificationReportSearch,
   setCoOverdueVerificationReportSearch,
-  setViewDetailOverdueTransaction,
   handleViewDetailsForReconcileTransaction,
 }) => [
   {
@@ -143,7 +141,7 @@ export const getBorderlessTableColumns = ({
     dataIndex: "requesterName",
     key: "requesterName",
     align: "left",
-    width: 200,
+    width: 160,
     sorter: (a, b) => a.requesterName.localeCompare(b.requesterName),
     sortDirections: ["ascend", "descend"],
     sortOrder:
@@ -163,7 +161,7 @@ export const getBorderlessTableColumns = ({
       />
     ),
     dataIndex: "type",
-    width: 100,
+    width: 120,
     key: "type",
     filteredValue: coOverdueVerificationReportSearch.type?.length
       ? coOverdueVerificationReportSearch.type
@@ -192,11 +190,10 @@ export const getBorderlessTableColumns = ({
     dataIndex: "instrumentName",
     key: "instrumentName",
     align: "left",
-    ellipsis: true,
-    width: 150,
+    width: 210,
     sorter: (a, b) =>
       (a?.instrumentShortCode || "").localeCompare(
-        b?.instrumentShortCode || "",
+        b?.instrumentShortCode || ""
       ),
 
     sortDirections: ["ascend", "descend"],
@@ -239,7 +236,7 @@ export const getBorderlessTableColumns = ({
       "Transaction Date",
       "transactionDate",
       sortedInfo,
-      "center",
+      "center"
     ),
     dataIndex: "transactionDate",
     key: "transactionDate",
@@ -267,13 +264,12 @@ export const getBorderlessTableColumns = ({
       "Approved Quantity",
       "approvedQuantity",
       sortedInfo,
-      "center",
+      "center"
     ),
     dataIndex: "approvedQuantity",
     width: 180,
     key: "approvedQuantity",
     align: "center",
-    ellipsis: true,
     sorter: (a, b) => a.approvedQuantity - b.approvedQuantity,
     sortDirections: ["ascend", "descend"],
     sortOrder:
@@ -287,9 +283,8 @@ export const getBorderlessTableColumns = ({
     title: withSortIcon("Shares Traded", "shareTraded", sortedInfo, "center"),
     dataIndex: "shareTraded",
     key: "shareTraded",
-    width: 200,
+    width: 160,
     align: "center",
-    ellipsis: true,
     sorter: (a, b) => a.shareTraded - b.shareTraded,
     sortDirections: ["ascend", "descend"],
     sortOrder:
@@ -298,43 +293,6 @@ export const getBorderlessTableColumns = ({
     sortIcon: () => null,
     render: (q) => <span className="font-medium">{q.toLocaleString()}</span>,
   },
-
-  // {
-  //   // ADDED per BE_API_Changes/2026-08-24_overdue_verifications_keeps_
-  //   // resolved_records.md: resolved rows (Compliant/Non-Compliant) now stay
-  //   // in this report instead of being excluded - the status genuinely
-  //   // varies per row now, so it needs a visible column rendering all three
-  //   // states (approvalStatusMap is already threaded through from index.jsx
-  //   // but was never actually used in this columns array until now).
-  //   title: withSortIcon("Status", "status", sortedInfo, "center"),
-  //   align: "center",
-  //   dataIndex: "status",
-  //   key: "status",
-  //   width: 160,
-  //   sorter: (a, b) => (a?.status || "").localeCompare(b?.status || ""),
-  //   sortDirections: ["ascend", "descend"],
-  //   sortOrder: sortedInfo?.columnKey === "status" ? sortedInfo.order : null,
-  //   showSorterTooltip: false,
-  //   sortIcon: () => null,
-  //   render: (status) => {
-  //     const tag = approvalStatusMap?.[status] || {};
-  //     return (
-  //       <Tag
-  //         style={{
-  //           backgroundColor: tag.backgroundColor,
-  //           color: tag.textColor,
-  //           whiteSpace: "nowrap",
-  //           overflow: "hidden",
-  //           textOverflow: "ellipsis",
-  //           display: "inline-block",
-  //         }}
-  //         className="border-less-table-orange-status"
-  //       >
-  //         {tag.label || status || "—"}
-  //       </Tag>
-  //     );
-  //   },
-  // },
 
   {
     title: "",
