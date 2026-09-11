@@ -28,6 +28,14 @@ export const buildApiRequest = (searchState = {}, assetTypeListingData) => ({
   Quantity: Number(searchState.quantity) || 0,
   StatusIds: mapStatusToIds(searchState.status, 2),
   TypeIds: mapBuySellToIds(searchState.type, assetTypeListingData?.Equities),
+  // ADDED (API_Changes/2026-09-11_co_portfoliohistory_daterange_added.md):
+  // filters on the portfolio's upload date. The picker's own onChange
+  // already gives "YYYY-MM-DD" - the endpoint wants "YYYY-MM-DD
+  // HH:mm:ss", and per the doc EndDate is inclusive of its whole day
+  // server-side, so a plain midnight timestamp for both ends is enough -
+  // no need to compute end-of-day here.
+  StartDate: searchState.startDate ? `${searchState.startDate} 00:00:00` : "",
+  EndDate: searchState.endDate ? `${searchState.endDate} 00:00:00` : "",
   PageNumber: Number(searchState.pageNumber) || 0,
   Length: Number(searchState.pageSize) || 10,
 });

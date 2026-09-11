@@ -32,6 +32,8 @@ import { getSafeAssetTypeData } from "../../../../../common/funtions/assetTypesL
 import { useTableScrollBottom } from "../../../../../common/funtions/scroll";
 import CustomButton from "../../../../../components/buttons/button";
 import { approvalStatusMap } from "../../../../../components/tables/borderlessTable/utill";
+import { DateRangePicker } from "../../../../../components";
+import { formatToYYYYMMDD } from "../../../../../common/funtions/rejex";
 
 const CompianceOfficerPortfolioHistoryReports = () => {
   const navigate = useNavigate();
@@ -89,6 +91,13 @@ const CompianceOfficerPortfolioHistoryReports = () => {
   const [sortedInfo, setSortedInfo] = useState({});
   const [loadingMore, setLoadingMore] = useState(false);
   const [open, setOpen] = useState(false);
+  // ADDED (API_Changes/2026-09-11_co_portfoliohistory_daterange_added.md):
+  // date range filter, goes through the existing filterTrigger effect.
+  // Defaulted to the last 6 months on initial load below.
+  const [dateRange, setDateRange] = useState({
+    StartDate: null,
+    EndDate: null,
+  });
 
   // -------------------- Effects --------------------
 
@@ -169,14 +178,36 @@ const CompianceOfficerPortfolioHistoryReports = () => {
     ]
   );
 
+  // 🔹 Initial Fetch - defaults the date range to the last 6 months
+  // (current day back to 6 months prior), shown pre-filled in the picker
+  // itself, same default-range convention as the sibling Date-wise
+  // Transaction Report page. Only the initial load defaults this way -
+  // a user-applied change afterwards still clears the picker's own input
+  // per handleDateChange below.
   useEffect(() => {
     if (hasFetched.current) return;
     hasFetched.current = true;
     // Page 1 is being loaded fresh here - the next scroll should ask for
     // page 2, see nextPageRef above.
     nextPageRef.current = 2;
+
+    const endDate = new Date();
+    const startDate = new Date();
+    startDate.setMonth(startDate.getMonth() - 6);
+    const defaultStart = formatToYYYYMMDD(startDate);
+    const defaultEnd = formatToYYYYMMDD(endDate);
+
+    setDateRange({ StartDate: defaultStart, EndDate: defaultEnd });
+
+    const updatedState = {
+      ...coPortfolioHistoryReportSearch,
+      startDate: defaultStart,
+      endDate: defaultEnd,
+    };
+    setCoPortfolioHistoryReportSearch(updatedState);
+
     const requestData = {
-      ...buildApiRequest(coPortfolioHistoryReportSearch, assetTypeListingData),
+      ...buildApiRequest(updatedState, assetTypeListingData),
       PageNumber: 1,
     };
     fetchApiCall(requestData, true, true);
@@ -264,7 +295,10 @@ const CompianceOfficerPortfolioHistoryReports = () => {
       departmentName: { departmentName: "" },
       quantity: { quantity: 0 },
       // requestDate resets startDate + endDate
+      requestDate: { startDate: null, endDate: null },
     };
+
+    if (key === "requestDate") setDateRange({ StartDate: null, EndDate: null });
 
     setCoPortfolioHistoryReportSearch((prev) => ({
       ...prev,
@@ -276,12 +310,15 @@ const CompianceOfficerPortfolioHistoryReports = () => {
 
   /** 🔹 Handle removing all filters */
   const handleRemoveAllFilters = () => {
+    setDateRange({ StartDate: null, EndDate: null });
     setCoPortfolioHistoryReportSearch((prev) => ({
       ...prev,
       instrumentName: "",
       requesterName: "",
       departmentName: "",
       quantity: 0,
+      startDate: null,
+      endDate: null,
       type: [],
       status: [],
       pageNumber: 1,
@@ -291,8 +328,14 @@ const CompianceOfficerPortfolioHistoryReports = () => {
 
   /** 🔹 Build Active Filters */
   const activeFilters = (() => {
-    const { instrumentName, requesterName, departmentName, quantity } =
-      coPortfolioHistoryReportSearch || {};
+    const {
+      instrumentName,
+      requesterName,
+      departmentName,
+      quantity,
+      startDate,
+      endDate,
+    } = coPortfolioHistoryReportSearch || {};
 
     const truncate = (val) =>
       val.length > 13 ? val.slice(0, 13) + "..." : val;
@@ -311,8 +354,45 @@ const CompianceOfficerPortfolioHistoryReports = () => {
         : null,
 
       quantity ? { key: "quantity", value: quantity } : null,
+
+      startDate &&
+        endDate && {
+          key: "requestDate",
+          value: `${startDate} → ${endDate}`,
+        },
     ].filter(Boolean);
   })();
+
+  // 🔹 Date range flows through the same filter state + filterTrigger
+  // effect as every other filter here.
+  const handleDateChange = (dates) => {
+    if (dates && dates.length === 2) {
+      setCoPortfolioHistoryReportSearch((prev) => ({
+        ...prev,
+        startDate: dates[0],
+        endDate: dates[1],
+        pageNumber: 1,
+        filterTrigger: true,
+      }));
+
+      // Clears the picker's own input back to its placeholder once the
+      // range is applied - the selected range is still visible as the
+      // "requestDate" active-filter tag above.
+      setDateRange({ StartDate: null, EndDate: null });
+    }
+  };
+
+  const handleClearDates = () => {
+    setDateRange({ StartDate: null, EndDate: null });
+
+    setCoPortfolioHistoryReportSearch((prev) => ({
+      ...prev,
+      startDate: null,
+      endDate: null,
+      pageNumber: 1,
+      filterTrigger: true,
+    }));
+  };
 
   // 🔷 Excel Report download Api Hit
   const downloadPortfolioHistoryExport = async () => {
@@ -366,6 +446,12 @@ const CompianceOfficerPortfolioHistoryReports = () => {
         </Col>
         <Col>
           <div className={style.headerActionsRow}>
+            <DateRangePicker
+              size="medium"
+              value={[dateRange.StartDate, dateRange.EndDate]}
+              onChange={handleDateChange}
+              onClear={handleClearDates}
+            />
             <CustomButton
               disabled={
                 coPortfolioHistoryListData?.complianceOfficerPortfolioHistory

@@ -17,7 +17,12 @@ import { withSortIcon } from "../../../../common/funtions/tableIcon";
  */
 
 export const buildMyActionApiRequest = (searchState = {}) => ({
-  RequestID: searchState.requestID || "",
+  // FIXED: the search field/active-filter chip show the user-facing
+  // dashed form ("TRX-000014", same as the table's own Transaction ID
+  // column), but the API expects it undashed ("TRX000014") - strip the
+  // dash only here, at request-build time, so the stored search state
+  // (and its chip) keeps showing the dash.
+  RequestID: (searchState.requestID || "").replace(/-/g, ""),
   InstrumentName: searchState.instrumentName || "",
   RequesterName: searchState.requesterName || "",
   StartDate: searchState.startDate ? toYYMMDD(searchState.startDate) : null,
