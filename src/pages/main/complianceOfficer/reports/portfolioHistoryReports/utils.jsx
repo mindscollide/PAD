@@ -159,7 +159,7 @@ export const getBorderlessTableColumns = ({
     ),
   },
   {
-    title: withSortIcon("Tracking ID", "tradeApprovalID", sortedInfo),
+    title: withSortIcon("Portfolio ID", "tradeApprovalID", sortedInfo),
     dataIndex: "tradeApprovalID",
     key: "tradeApprovalID",
     width: 120,

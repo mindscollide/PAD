@@ -125,8 +125,8 @@ export const CODateWiseTransactionReportFilter = ({
       departmentName: "",
       instrumentName: "",
       quantity: "",
-      type: [],
-      status: [],
+      // type: [],
+      // status: [],
       pageNumber: 0,
       filterTrigger: true,
     }));

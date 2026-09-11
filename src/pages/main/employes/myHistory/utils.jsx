@@ -51,7 +51,7 @@ export const getMyHistoryColumn = (approvalStatusMap, sortedInfo) => [
     dataIndex: "tradeApprovalID",
     key: "tradeApprovalID",
     ellipsis: true,
-    width: 250,
+    width: 210,
     sorter: (a, b) => {
       const parse = (id = "") => {
         const match = id.match(/^([A-Za-z]+)-?(\d+)$/);
@@ -101,7 +101,7 @@ export const getMyHistoryColumn = (approvalStatusMap, sortedInfo) => [
     align: "left",
     dataIndex: "instrumentName",
     key: "instrumentName",
-    width: 140,
+    width: 230,
     ellipsis: true,
     sorter: (a, b) => {
       const nameA = a?.instrumentShortCode || "";
@@ -150,14 +150,14 @@ export const getMyHistoryColumn = (approvalStatusMap, sortedInfo) => [
   },
   {
     title: withSortIcon(
-      "Date & Time of Approval Request",
+      "Request Date & Time",
       "creationDate",
       sortedInfo,
       "center"
     ),
     dataIndex: "creationDate",
     key: "creationDate",
-    width: "280px",
+    width: 200,
     align: "center",
     sorter: (a, b) =>
       `${a.creationDate} ${a.creationTime}`.localeCompare(
@@ -179,7 +179,7 @@ export const getMyHistoryColumn = (approvalStatusMap, sortedInfo) => [
     align: "center",
     dataIndex: "nature",
     key: "nature",
-    width: "160px",
+    width: 150,
     sorter: (a, b) => a.nature.localeCompare(b.nature),
     sortDirections: ["ascend", "descend"],
     sortOrder: sortedInfo?.columnKey === "nature" ? sortedInfo.order : null,
@@ -226,7 +226,7 @@ export const getMyHistoryColumn = (approvalStatusMap, sortedInfo) => [
     align: "center",
     dataIndex: "status",
     key: "status",
-    width: 220,
+    width: 200,
     sorter: (a, b) => (a?.status || "").localeCompare(b?.status || ""),
     sortDirections: ["ascend", "descend"],
     sortOrder: sortedInfo?.columnKey === "status" ? sortedInfo.order : null,

@@ -233,19 +233,21 @@ export const HTAMyActionFilter = ({
         <Col xs={24} sm={24} md={12} lg={12}>
           <div className={styles["search-field-wrapper"]}>
             <label className={styles["typeAndStatusLabel"]}>Type</label>
-            <Select
-              mode="multiple"
-              allowClear
-              placeholder="Select Type"
-              size="middle"
-              className={styles.statusSelectClass}
-              value={localState.type}
-              onChange={(values) => setFieldValue("type", values)}
-              style={{ width: "100%" }}
-            >
-              <Option value={1}>Buy</Option>
-              <Option value={2}>Sell</Option>
-            </Select>
+            <div className={styles.typeStatusInputBoxPadding}>
+              <Select
+                mode="multiple"
+                allowClear
+                placeholder="Select Type"
+                size="middle"
+                className={styles.statusSelectClass}
+                value={localState.type}
+                onChange={(values) => setFieldValue("type", values)}
+                style={{ width: "100%" }}
+              >
+                <Option value={1}>Buy</Option>
+                <Option value={2}>Sell</Option>
+              </Select>
+            </div>
           </div>
         </Col>
       </Row>
@@ -253,37 +255,22 @@ export const HTAMyActionFilter = ({
         <Col xs={24} sm={24} md={12} lg={12}>
           <div className={styles["search-field-wrapper"]}>
             <label className={styles["typeAndStatusLabel"]}>Status</label>
-            <Select
-              mode="multiple"
-              allowClear
-              placeholder="Select Status"
-              className={styles.statusSelectClass}
-              size="middle"
-              value={localState.status}
-              onChange={(values) => setFieldValue("status", values)}
-              style={{ width: "100%" }}
-            >
-              {/* <Option value={1}>Pending</Option>
-              <Option value={2}>Resubmit</Option> */}
-              <Option value={3}>Approved</Option>
-              <Option value={4}>Declined</Option>
-              {/* <Option value={5}>Traded</Option>
-              <Option value={6}>Not-Traded</Option>
-              <Option value={7}>Compliant</Option>
-              <Option value={8}>Non-Compliant</Option> */}
-            </Select>
+            <div className={styles.typeStatusInputBoxPadding}>
+              <Select
+                mode="multiple"
+                allowClear
+                placeholder="Select Status"
+                className={styles.statusSelectClass}
+                size="middle"
+                value={localState.status}
+                onChange={(values) => setFieldValue("status", values)}
+                style={{ width: "100%" }}
+              >
+                <Option value={3}>Approved</Option>
+                <Option value={4}>Declined</Option>
+              </Select>
+            </div>
           </div>
-        </Col>
-        <Col xs={24} sm={24} md={12} lg={12}>
-          {/* <TextField
-                  label="Type"
-                  name="type"
-                  value={localState.type}
-                  onChange={handleInputChange}
-                  placeholder="Type"
-                  size="medium"
-                  classNames="Search-Field"
-                /> */}
         </Col>
       </Row>
       <Row gutter={[12, 12]} justify="end" style={{ marginTop: 16 }}>

@@ -125,7 +125,7 @@ export const getBorderlessTableColumns = ({
     align: "left",
     dataIndex: "requesterName",
     key: "requesterName",
-    width: 160,
+    width: 180,
     sorter: (a, b) => a.requesterName.localeCompare(b.requesterName),
     sortDirections: ["ascend", "descend"],
     sortOrder:
@@ -142,7 +142,7 @@ export const getBorderlessTableColumns = ({
       />
     )),
     dataIndex: "type",
-    width: 90,
+    width: 120,
     key: "type",
     filteredValue: OverdueVerificationHCOReportSearch.type?.length
       ? OverdueVerificationHCOReportSearch.type
@@ -170,8 +170,7 @@ export const getBorderlessTableColumns = ({
     align: "left",
     dataIndex: "complianceOfficer",
     key: "complianceOfficer",
-    width: 120,
-    ellipses: true,
+    width: 180,
     sorter: (a, b) => a.complianceOfficer.localeCompare(b.complianceOfficer),
     sortDirections: ["ascend", "descend"],
     sortOrder:
@@ -185,8 +184,7 @@ export const getBorderlessTableColumns = ({
     dataIndex: "instrumentName",
     key: "instrumentName",
     align: "left",
-    ellipsis: true,
-    width: 120,
+    width: 210,
     sorter: (a, b) => {
       const nameA = a?.instrumentShortCode || "";
       const nameB = b?.instrumentShortCode || "";
@@ -220,7 +218,7 @@ export const getBorderlessTableColumns = ({
                 overflow: "hidden",
                 textOverflow: "ellipsis",
                 whiteSpace: "nowrap",
-                width: 100,
+                maxWidth: "200px",
                 display: "inline-block",
                 cursor: "pointer",
               }}
@@ -243,7 +241,7 @@ export const getBorderlessTableColumns = ({
     align: "center",
     dataIndex: "transactionDate",
     key: "transactionDate",
-    width: 140,
+    width: 150,
     sorter: (a, b) =>
       (a?.transactionDate || "").localeCompare(b?.transactionDate || ""),
     sortOrder:
@@ -257,7 +255,7 @@ export const getBorderlessTableColumns = ({
   {
     title: withSortIcon("App. Qty.", "approvedQuantity", sortedInfo, "center"),
     dataIndex: "approvedQuantity",
-    width: 110,
+    width: 100,
     align: "center",
     key: "approvedQuantity",
     sorter: (a, b) => a.approvedQuantity - b.approvedQuantity,
@@ -273,7 +271,7 @@ export const getBorderlessTableColumns = ({
     dataIndex: "shareTraded",
     key: "shareTraded",
     align: "center",
-    width: 130,
+    width: 135,
     sorter: (a, b) => a.shareTraded - b.shareTraded,
     sortDirections: ["ascend", "descend"],
     sortOrder:
@@ -282,7 +280,6 @@ export const getBorderlessTableColumns = ({
     sortIcon: () => null,
     render: (q) => <span className="font-medium">{q.toLocaleString()}</span>,
   },
-
   {
     title: "",
     key: "isEscalationOpen",
@@ -322,7 +319,7 @@ export const getBorderlessTableColumns = ({
     align: "center",
     dataIndex: "escalatedDate",
     key: "escalatedDate",
-    width: 120,
+    width: 130,
     sorter: (a, b) =>
       (a?.escalatedDate || "").localeCompare(b?.escalatedDate || ""),
     sortOrder:
@@ -337,11 +334,11 @@ export const getBorderlessTableColumns = ({
     title: "",
     key: "action",
     align: "right", // 🔷 Align content to the right
-    width: 50,
+
     render: (_, record) => (
       <div className={style.viewEditClass}>
         <Button
-          className="small-dark-button"
+          className="small-dark-button_lesser-padding"
           text={"View Details"}
           onClick={() => {
             handleViewDetailHeadOfComplianceOverdueCompliance(record);

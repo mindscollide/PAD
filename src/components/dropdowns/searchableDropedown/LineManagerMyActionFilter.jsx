@@ -231,19 +231,21 @@ export const LineManagerMyAction = ({
         <Col xs={24} sm={24} md={12} lg={12}>
           <div className={styles["search-field-wrapper"]}>
             <label className={styles["typeAndStatusLabel"]}>Type</label>
-            <Select
-              mode="multiple"
-              allowClear
-              placeholder="Select Type"
-              size="middle"
-              className={styles.statusSelectClass}
-              value={localState.type}
-              onChange={(values) => setFieldValue("type", values)}
-              style={{ width: "100%" }}
-            >
-              <Option value={1}>Buy</Option>
-              <Option value={2}>Sell</Option>
-            </Select>
+            <div className={styles.typeStatusInputBoxPadding}>
+              <Select
+                mode="multiple"
+                allowClear
+                placeholder="Select Type"
+                size="middle"
+                className={styles.statusSelectClass}
+                value={localState.type}
+                onChange={(values) => setFieldValue("type", values)}
+                style={{ width: "100%" }}
+              >
+                <Option value={1}>Buy</Option>
+                <Option value={2}>Sell</Option>
+              </Select>
+            </div>
           </div>
         </Col>
       </Row>
