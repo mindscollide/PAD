@@ -106,4 +106,10 @@
   word-break: break-word;
   white-space: normal;
   vertical-align: bottom;
+  /* ADDED (API_Changes/2026-09-11_hoc_myactions_status_filter_and_bold_
+     name_fe_notes.md): "display 'by <Name>' also as bold" - bolds just
+     the name span (the "by " prefix stays regular weight), same fix
+     applies everywhere this trail step renders (CO/HOC/LM/HTA/Employee
+     My Actions and My History all share this component). */
+  font-weight: 700;
 }

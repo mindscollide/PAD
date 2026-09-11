@@ -287,6 +287,14 @@ export const DateWiseTransactionReportViewDetails = async ({
         actionBy,
         actionDate,
         actionTime,
+        // ADDED (API_Changes/2026-09-11_dateWise_viewdetails_escalation_
+        // history_added.md): the sibling GetAllTransactionViewDetails
+        // wrapper (Reconcile Transactions > View Details) already returns
+        // these - this one never picked them up, so the "Escalated On"
+        // hierarchy step this endpoint's own data supports had nothing to
+        // render off.
+        isEscalated,
+        escalations,
       } = res.result;
 
       if (
@@ -310,6 +318,8 @@ export const DateWiseTransactionReportViewDetails = async ({
           actionBy: actionBy || [],
           actionDate: actionDate || "",
           actionTime: actionTime || "",
+          isEscalated: isEscalated || false,
+          escalations: escalations || [],
         };
       }
 
@@ -334,6 +344,8 @@ export const DateWiseTransactionReportViewDetails = async ({
           actionBy: [],
           actionDate: "",
           actionTime: "",
+          isEscalated: false,
+          escalations: [],
       };
     }
 

@@ -371,7 +371,12 @@ const HTAMyAction = () => {
             date,
             iconType: "EscaltedOn",
           };
-        case "Approved By You":
+        // FIXED: was "Approved By You" (capital "By") - the sibling
+        // "Declined by You" case (and the real backend event type) uses
+        // lowercase "by", so this never matched and fell through to
+        // default, showing the raw event type with the Ellipses
+        // "awaiting" icon instead of the intended green check.
+        case "Approved by You":
           // actorName here is always the viewing HTA themselves (per the
           // event's own name) — show "Approved by You" literally instead
           // of the name a second time.

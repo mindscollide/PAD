@@ -154,7 +154,7 @@ export const HOCMyAction = ({
       <Row gutter={[12, 12]}>
         <Col xs={24} sm={24} md={12} lg={12}>
           <TextField
-            label="Transaction ID (Search without -)"
+            label="Transaction ID"
             name="requestID"
             value={localState.requestID}
             onChange={handleInputChange}
@@ -227,8 +227,14 @@ export const HOCMyAction = ({
             <Option value={4}>Declined</Option>
             <Option value={5}>Traded</Option>
             <Option value={6}>Not-Traded</Option> */}
-            <Option value={7}>Compliant</Option>
-            <Option value={8}>Non-Compliant</Option>
+            {/* FIXED (API_Changes/2026-09-11_hoc_myactions_status_filter_
+            and_bold_name_fe_notes.md): were sending 7/8 - the backend's
+            real WorkFlowStatus vocabulary for these is 8/9 (there is no
+            status 7 at all), so filtering by Compliant returned nothing
+            and filtering by Non-Compliant returned the real Compliant
+            rows. */}
+            <Option value={8}>Compliant</Option>
+            <Option value={9}>Non-Compliant</Option>
           </Select>
         </Col>
 

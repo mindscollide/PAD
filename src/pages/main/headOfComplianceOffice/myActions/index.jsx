@@ -152,6 +152,11 @@ const HOCMyActionPage = () => {
       2: "Sell",
     };
 
+    // FIXED (API_Changes/2026-09-11_hoc_myactions_status_filter_and_
+    // bold_name_fe_notes.md): 7/8 never matched the backend's real
+    // WorkFlowStatus codes (8/9) - the status Select's own options below
+    // are fixed to send 8/9 now, so this display-label lookup has to
+    // agree or the active-filter chip would show the wrong word.
     const statusMap = {
       1: "Pending",
       2: "Resubmit",
@@ -159,8 +164,8 @@ const HOCMyActionPage = () => {
       4: "Declined",
       5: "Traded",
       6: "Not-Traded",
-      7: "Compliant",
-      8: "Non-Compliant",
+      8: "Compliant",
+      9: "Non-Compliant",
     };
 
     const filters = [];
@@ -393,11 +398,21 @@ const HOCMyActionPage = () => {
             }
             break;
           }
-          case "Approved By You":
+          // FIXED: was "Approved By You" (capital "By") - the backend's
+          // real event type string uses lowercase "by" (confirmed by the
+          // "Escalated On" check above, which already compares against
+          // "Approved by You" lowercase) - this case never matched, so
+          // every viewer's own Compliant action fell through to default
+          // below, showing the raw "Approved by You" text with the
+          // Ellipses "awaiting" icon instead of a proper Compliant step.
+          // Also switched the icon from the blue "co-Compliant" circle to
+          // the plain green check ("Compliant") used for this outcome
+          // elsewhere.
+          case "Approved by You":
             trail.push({
               status: "Marked Compliant by You",
               date,
-              iconType: "co-Compliant",
+              iconType: "Compliant",
             });
             break;
           case "Declined by You":
