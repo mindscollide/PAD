@@ -202,7 +202,7 @@ export const getBorderlessTableColumns = ({
     ),
     dataIndex: "transactionConductedDateandTime",
     key: "transactionConductedDateandTime",
-    width: 250,
+    width: 230,
     align: "center",
     // ellipsis: true,
     sorter: (a, b) =>
@@ -231,7 +231,7 @@ export const getBorderlessTableColumns = ({
     ),
     dataIndex: "workFlowStatus",
     key: "workFlowStatus",
-    width: 140,
+    width: 170,
     filteredValue: employeeMyTransactionSearch.status?.length
       ? employeeMyTransactionSearch.status
       : null,
@@ -291,7 +291,7 @@ export const getBorderlessTableColumns = ({
     title: withSortIcon("Broker", "broker", sortedInfo),
     align: "left",
     dataIndex: "broker",
-    width: 210,
+    width: 200,
     key: "broker",
     sorter: (a, b) => (a?.broker || "").localeCompare(b?.broker || ""),
     sortDirections: ["ascend", "descend"],

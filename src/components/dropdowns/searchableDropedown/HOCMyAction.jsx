@@ -211,48 +211,52 @@ export const HOCMyAction = ({
       <Row gutter={[12, 12]} className={styles.bottomGap}>
         <Col xs={24} sm={24} md={12} lg={12}>
           <label className={styles["typeAndStatusLabel"]}>Status</label>
-          <Select
-            mode="multiple"
-            allowClear
-            placeholder="Select Status"
-            size="middle"
-            value={localState.status}
-            onChange={(values) => setFieldValue("status", values)}
-            className={styles.statusSelectClass}
-            style={{ width: "100%" }}
-          >
-            {/* <Option value={1}>Pending</Option>
+          <div className={styles.typeStatusInputBoxPadding}>
+            <Select
+              mode="multiple"
+              allowClear
+              placeholder="Select Status"
+              size="middle"
+              value={localState.status}
+              onChange={(values) => setFieldValue("status", values)}
+              className={styles.statusSelectClass}
+              style={{ width: "100%" }}
+            >
+              {/* <Option value={1}>Pending</Option>
             <Option value={2}>Resubmit</Option>
             <Option value={3}>Approved</Option>
             <Option value={4}>Declined</Option>
             <Option value={5}>Traded</Option>
             <Option value={6}>Not-Traded</Option> */}
-            {/* FIXED (API_Changes/2026-09-11_hoc_myactions_status_filter_
-            and_bold_name_fe_notes.md): were sending 7/8 - the backend's
-            real WorkFlowStatus vocabulary for these is 8/9 (there is no
-            status 7 at all), so filtering by Compliant returned nothing
-            and filtering by Non-Compliant returned the real Compliant
-            rows. */}
-            <Option value={8}>Compliant</Option>
-            <Option value={9}>Non-Compliant</Option>
-          </Select>
+              {/* FIXED (API_Changes/2026-09-11_hoc_myactions_status_filter_
+              and_bold_name_fe_notes.md): were sending 7/8 - the backend's
+              real WorkFlowStatus vocabulary for these is 8/9 (there is no
+              status 7 at all), so filtering by Compliant returned nothing
+              and filtering by Non-Compliant returned the real Compliant
+              rows. */}
+              <Option value={8}>Compliant</Option>
+              <Option value={9}>Non-Compliant</Option>
+            </Select>
+          </div>
         </Col>
 
         <Col xs={24} sm={24} md={12} lg={12}>
           <label className={styles["typeAndStatusLabel"]}>Type</label>
-          <Select
-            mode="multiple"
-            allowClear
-            placeholder="Select Type"
-            size="middle"
-            className={styles.statusSelectClass}
-            value={localState.type}
-            onChange={(values) => setFieldValue("type", values)}
-            style={{ width: "100%" }}
-          >
-            <Option value={1}>Buy</Option>
-            <Option value={2}>Sell</Option>
-          </Select>
+          <div className={styles.typeStatusInputBoxPadding}>
+            <Select
+              mode="multiple"
+              allowClear
+              placeholder="Select Type"
+              size="middle"
+              className={styles.statusSelectClass}
+              value={localState.type}
+              onChange={(values) => setFieldValue("type", values)}
+              style={{ width: "100%" }}
+            >
+              <Option value={1}>Buy</Option>
+              <Option value={2}>Sell</Option>
+            </Select>
+          </div>
         </Col>
       </Row>
 
@@ -261,19 +265,21 @@ export const HOCMyAction = ({
       <Row gutter={[12, 12]} className={styles.bottomGap}>
         <Col xs={24} sm={24} md={12} lg={12}>
           <label className={styles["typeAndStatusLabel"]}>Nature</label>
-          <Select
-            mode="multiple"
-            allowClear
-            placeholder="Select Nature"
-            size="middle"
-            className={styles.statusSelectClass}
-            value={localState.nature}
-            onChange={(values) => setFieldValue("nature", values)}
-            style={{ width: "100%" }}
-          >
-            <Option value="Transaction">Transaction</Option>
-            <Option value="Portfolio">Portfolio</Option>
-          </Select>
+          <div className={styles.typeStatusInputBoxPadding}>
+            <Select
+              mode="multiple"
+              allowClear
+              placeholder="Select Nature"
+              size="middle"
+              className={styles.statusSelectClass}
+              value={localState.nature}
+              onChange={(values) => setFieldValue("nature", values)}
+              style={{ width: "100%" }}
+            >
+              <Option value="Transaction">Transaction</Option>
+              <Option value="Portfolio">Portfolio</Option>
+            </Select>
+          </div>
         </Col>
       </Row>
       {/* Date Range */}

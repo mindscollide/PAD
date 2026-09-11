@@ -547,7 +547,7 @@ const HeadCompianceOfficerOverdueVerificationReports = () => {
             scroll={
               overdueVerificationHCOListData?.overdueVerifications?.length
                 ? {
-                    x: "max-content",
+                    x: 1300,
                     y: activeFilters.length > 0 ? 400 : 450,
                   }
                 : undefined

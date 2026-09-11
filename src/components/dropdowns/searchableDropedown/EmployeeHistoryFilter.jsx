@@ -233,42 +233,46 @@ export const EmployeeHistoryFilter = ({
       <Row gutter={[12, 12]} className={styles.bottomGap}>
         <Col xs={24} sm={24} md={12} lg={12}>
           <label className={styles["typeAndStatusLabel"]}>Type</label>
-          <Select
-            mode="multiple"
-            allowClear
-            placeholder="Select Type"
-            size="middle"
-            className={styles.statusSelectClass}
-            value={localState.type}
-            onChange={(values) => setFieldValue("type", values)}
-            style={{ width: "100%" }}
-          >
-            {typeOptions.map((opt) => (
-              <Option key={opt.label} value={opt.label}>
-                {opt.label}
-              </Option>
-            ))}
-          </Select>
+          <div className={styles.typeStatusInputBoxPadding}>
+            <Select
+              mode="multiple"
+              allowClear
+              placeholder="Select Type"
+              size="middle"
+              className={styles.statusSelectClass}
+              value={localState.type}
+              onChange={(values) => setFieldValue("type", values)}
+              style={{ width: "100%" }}
+            >
+              {typeOptions.map((opt) => (
+                <Option key={opt.label} value={opt.label}>
+                  {opt.label}
+                </Option>
+              ))}
+            </Select>
+          </div>
         </Col>
 
         <Col xs={24} sm={24} md={12} lg={12}>
           <label className={styles["typeAndStatusLabel"]}>Status</label>
-          <Select
-            mode="multiple"
-            allowClear
-            placeholder="Select Status"
-            size="middle"
-            className={styles.statusSelectClass}
-            value={localState.status}
-            onChange={(values) => setFieldValue("status", values)}
-            style={{ width: "100%" }}
-          >
-            {emaStatusOptionsofReportsMyHistory.map((label) => (
-              <Option key={label} value={label}>
-                {label}
-              </Option>
-            ))}
-          </Select>
+          <div className={styles.typeStatusInputBoxPadding}>
+            <Select
+              mode="multiple"
+              allowClear
+              placeholder="Select Status"
+              size="middle"
+              className={styles.statusSelectClass}
+              value={localState.status}
+              onChange={(values) => setFieldValue("status", values)}
+              style={{ width: "100%" }}
+            >
+              {emaStatusOptionsofReportsMyHistory.map((label) => (
+                <Option key={label} value={label}>
+                  {label}
+                </Option>
+              ))}
+            </Select>
+          </div>
         </Col>
       </Row>
 
@@ -284,18 +288,20 @@ export const EmployeeHistoryFilter = ({
       <Row gutter={[12, 12]} className={styles.bottomGap}>
         <Col xs={24} sm={24} md={12} lg={12}>
           <label className={styles["typeAndStatusLabel"]}>Nature</label>
-          <Select
-            allowClear
-            placeholder="Select Nature"
-            size="middle"
-            className={styles.statusSelectClass}
-            value={localState.nature || undefined}
-            onChange={(value) => setFieldValue("nature", value || "")}
-            style={{ width: "100%" }}
-          >
-            <Option value="Approval">Approval</Option>
-            <Option value="Verification">Verification</Option>
-          </Select>
+          <div className={styles.typeStatusInputBoxPadding}>
+            <Select
+              allowClear
+              placeholder="Select Nature"
+              size="middle"
+              className={styles.statusSelectClass}
+              value={localState.nature || undefined}
+              onChange={(value) => setFieldValue("nature", value || "")}
+              style={{ width: "100%" }}
+            >
+              <Option value="Approval">Approval</Option>
+              <Option value="Verification">Verification</Option>
+            </Select>
+          </div>
         </Col>
       </Row>
       <Row gutter={[12, 12]} justify="end" style={{ marginTop: 16 }}>

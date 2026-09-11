@@ -132,7 +132,6 @@ export const getBorderlessTableColumns = (
     dataIndex: "tradeApprovalID",
     key: "tradeApprovalID",
     width: 120,
-
     sorter: (a, b) =>
       (a?.tradeApprovalID || "").localeCompare(b?.tradeApprovalID || ""),
     sortDirections: ["ascend", "descend"],

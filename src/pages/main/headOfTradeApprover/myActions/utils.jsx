@@ -38,8 +38,8 @@ const withSortIcon = (label, columnKey, sortedInfo, align = "left") => (
         align === "center"
           ? "center"
           : align === "right"
-            ? "flex-end"
-            : "flex-start",
+          ? "flex-end"
+          : "flex-start",
       textAlign: align,
     }}
   >
@@ -77,8 +77,7 @@ export const getMyActionsColumn = (approvalStatusMap, sortedInfo) => [
     dataIndex: "approvalID",
     key: "approvalID",
     align: "left",
-    ellipsis: true,
-    width: "220px",
+    width: 150,
     sorter: (a, b) =>
       parseInt(a.approvalID.replace(/[^\d]/g, ""), 10) -
       parseInt(b.approvalID.replace(/[^\d]/g, ""), 10),
@@ -101,8 +100,7 @@ export const getMyActionsColumn = (approvalStatusMap, sortedInfo) => [
     dataIndex: "instrumentName",
     key: "instrumentName",
     align: "left",
-    width: "140px",
-    ellipsis: true,
+    width: 210,
     sorter: (a, b) => {
       const nameA = a?.instrumentShortCode || "";
       const nameB = b?.instrumentShortCode || "";
@@ -153,7 +151,7 @@ export const getMyActionsColumn = (approvalStatusMap, sortedInfo) => [
     title: withSortIcon("Requester Name", "requesterName", sortedInfo),
     dataIndex: "requesterName",
     key: "requesterName",
-    width: "160px",
+    width: 180,
     align: "left",
     sorter: (a, b) => a.requesterName.localeCompare(b.requesterName),
     sortDirections: ["ascend", "descend"],
@@ -165,14 +163,14 @@ export const getMyActionsColumn = (approvalStatusMap, sortedInfo) => [
   },
   {
     title: withSortIcon(
-      "Date & Time of Approval Request",
+      "Reuqest Date & Time",
       "approvalDateTime",
       sortedInfo,
-      "center",
+      "center"
     ),
     dataIndex: "approvalDateTime",
     key: "approvalDateTime",
-    width: "280px",
+    width: 200,
     align: "center",
     sorter: (a, b) => {
       const dateA = new Date(`${a.creationDate} ${a.creationTime}`).getTime();
@@ -194,7 +192,7 @@ export const getMyActionsColumn = (approvalStatusMap, sortedInfo) => [
     title: withSortIcon("Type", "type", sortedInfo),
     dataIndex: "type",
     key: "type",
-    width: "100px",
+    width: 120,
     align: "left",
     sorter: (a, b) => a.type.localeCompare(b.type),
     sortDirections: ["ascend", "descend"],
@@ -207,7 +205,7 @@ export const getMyActionsColumn = (approvalStatusMap, sortedInfo) => [
     title: withSortIcon("Quantity", "quantity", sortedInfo, "center"),
     dataIndex: "quantity",
     key: "quantity",
-    width: "180px",
+    width: 150,
     align: "center",
     sorter: (a, b) => a.quantity - b.quantity,
     sortDirections: ["ascend", "descend"],
@@ -220,7 +218,7 @@ export const getMyActionsColumn = (approvalStatusMap, sortedInfo) => [
     title: withSortIcon("Status", "status", sortedInfo),
     dataIndex: "status",
     key: "status",
-    width: "160px",
+    width: 180,
     align: "left",
     sorter: (a, b) => a.status.localeCompare(b.status),
     sortDirections: ["ascend", "descend"],

@@ -127,6 +127,9 @@
   font-weight: 700 !important;
   margin-bottom: 25px !important;
 }
+.typeStatusInputBoxPadding {
+  margin-top: 4px !important;
+}
 
 .brokersOptionData {
   margin-top: 0 !important;
@@ -174,6 +177,6 @@
   color: #424242;
 }
 
-.bottomGap{
+.bottomGap {
   margin-bottom: 14px;
 }
