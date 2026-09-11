@@ -23,7 +23,12 @@ import { withSortIcon } from "../../../../../common/funtions/tableIcon";
 export const buildApiRequest = (searchState = {}, assetTypeListingData) => ({
   InstrumentName: searchState.instrumentName || "",
   Quantity: searchState.quantity ? Number(searchState.quantity) : 0,
-  EmployeeName: searchState.quantity ? Number(searchState.employeeName) : "",
+  // FIXED (bug fix 2026-09-11): was `searchState.quantity ? Number(searchState.employeeName) : ""`
+  // - a copy-paste bug that checked `quantity` instead of `employeeName`, and ran the typed
+  // name through Number() (always NaN for a real name), so EmployeeName was sent as "" in the
+  // common case and as a JSON number the rest of the time - see
+  // API_Changes/2026-09-11_hoc_uploaded_portfolio_employeename_fe_bug.md.
+  EmployeeName: searchState.employeeName || "",
   StartDate: searchState.startDate ? toYYMMDD(searchState.startDate) : "",
   EndDate: searchState.endDate ? toYYMMDD(searchState.endDate) : "",
   StatusIds: mapStatusToIds(searchState.status, 2) || [],
