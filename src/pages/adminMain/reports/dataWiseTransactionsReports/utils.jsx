@@ -93,6 +93,19 @@ export const mappingDateWiseTransactionReport = (res = []) => {
 };
 
 /**
+ * ADDED: Default date range for Date Wise Transaction Report - present
+ * date back 6 months to present date. Applied on initial load and
+ * re-applied on "Clear" (instead of falling back to null), so the
+ * report is never actually unfiltered by date - same pattern used
+ * elsewhere for this report family.
+ */
+export const getDefaultDateRange = () => {
+  const end = new Date();
+  const start = new Date();
+  start.setMonth(start.getMonth() - 6);
+  return { startDate: start, endDate: end };
+};
+/**
  * Renders status tag with appropriate styling
  * @param {string} status - Approval status
  * @param {Object} approvalStatusMap - Status to style mapping
