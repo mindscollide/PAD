@@ -669,7 +669,7 @@ const HCATransactionsSummarysReports = () => {
             scroll={
               hcoTransactionSummaryReportListData?.transactions?.length
                 ? {
-                    x: "max-content",
+                    x: 1300,
                     y: 500,
                   }
                 : undefined

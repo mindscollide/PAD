@@ -19,11 +19,9 @@ import { approvalStatusMap } from "../../../../../components/tables/borderlessTa
 import style from "./HTAPolicyBreaches.module.css";
 import { useMyApproval } from "../../../../../context/myApprovalContaxt";
 import {
-  DownloadMyTransactionReportRequestAPI,
   ExportHTAPolicyBreachDetailsExcelReport,
   ExportHTAPolicyBreachesExcelReport,
   GetHTAPolicyBreachDetailsAPI,
-  GetHTATradeApprovalRequestsReport,
   SearchPolicyBreachedWorkFlowsRequest,
 } from "../../../../../api/myApprovalApi";
 import PolicyBreachDetailsModal from "./PolicyBreachDetailsModal";
@@ -35,7 +33,6 @@ import { useSearchBarContext } from "../../../../../context/SearchBarContaxt";
 import { useDashboardContext } from "../../../../../context/dashboardContaxt";
 import { getSafeAssetTypeData } from "../../../../../common/funtions/assetTypesList";
 import { useTableScrollBottom } from "../../../../../common/funtions/scroll";
-import { DateRangePicker } from "../../../../../components";
 import { toYYMMDD } from "../../../../../common/funtions/rejex";
 
 const HTAPolicyBreachesReport = () => {
@@ -472,7 +469,7 @@ const HTAPolicyBreachesReport = () => {
             scroll={
               htaPolicyBreachesReportsData?.records?.length
                 ? {
-                    x: "max-content",
+                    x: 1300,
                     y: activeFilters.length > 0 ? 450 : 500,
                   }
                 : undefined
