@@ -36,8 +36,19 @@ export const LineManagerMyTradeApprovalsReports = ({
   // -----------------------------------------------------
 
   /**
-   * Prefill instrument name if passed from parent (maininstrumentName).
-   * Useful for quick search-to-filter transition.
+   * Prefill employee name if passed from parent (maininstrumentName - a
+   * generic prop name reused across this app's screens, most of which
+   * search on instrument name; this screen repurposes it for employee
+   * name instead).
+   *
+   * FIXED (API_Changes/2026-09-11_lm_trade_approval_report_search_bar_
+   * not_triggering_fe_notes.md): this used to only pre-fill the modal's
+   * own employeeName field, with no call to
+   * setMyTradeApprovalReportLineManageSearch and no filterTrigger - so
+   * typing in the top search bar produced no visible change in the list
+   * at all until the user separately opened this modal and clicked its
+   * own Search button. Now fires the same search
+   * handleSearchClick would, immediately.
    */
   useEffect(() => {
     if (maininstrumentName) {
@@ -45,6 +56,14 @@ export const LineManagerMyTradeApprovalsReports = ({
         ...prev,
         employeeName: maininstrumentName,
       }));
+
+      setMyTradeApprovalReportLineManageSearch((prev) => ({
+        ...prev,
+        employeeName: maininstrumentName,
+        pageNumber: 0,
+        filterTrigger: true,
+      }));
+
       setClear(false); // Reset external clear flag
       setMaininstrumentName(""); // Clear parent’s prefill value
     }
