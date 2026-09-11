@@ -6,6 +6,7 @@ import { Button, DateRangePicker, TextField } from "../..";
 import { useSearchBarContext } from "../../../context/SearchBarContaxt";
 import {
   allowOnlyAlphabets,
+  allowOnlyNumbers,
   removeFirstSpace,
 } from "../../../common/funtions/rejex";
 
@@ -77,6 +78,24 @@ export const HeadOfTradeEscalatedFilter = ({
     if (name === "requesterName" || name === "lineManagerName") {
       if (allowOnlyAlphabets(value)) {
         setFieldValue(name, removeFirstSpace(value));
+      }
+    } else if (name === "Quantity") {
+      // FIXED (API_Changes/2026-09-11_hta_escalated_approvals_quantity_
+      // nan_fe_notes.md): Quantity is displayed through
+      // toLocaleString("en-US"), which inserts a thousands separator once
+      // the value reaches 4 digits (e.g. "1,234") - but this branch used
+      // to fall into the generic `else` below with no comma-stripping or
+      // numeric validation at all, so typing a 5th digit appended it to
+      // the already-comma-formatted text ("1,234" + "5" -> "1,2345"),
+      // which Number() turns into NaN on the next render. Same
+      // strip-commas + digits-only pattern already used by the sibling
+      // Quantity handler on LM's "Trade Approval Requests" search.
+      const rawValue = value.replace(/,/g, "");
+      if (
+        (rawValue === "" || allowOnlyNumbers(rawValue)) &&
+        rawValue.length <= 12
+      ) {
+        setFieldValue(name, rawValue);
       }
     } else {
       setFieldValue(name, removeFirstSpace(value));

@@ -343,60 +343,134 @@ const MyAction = () => {
     // closed), attributed to whoever actually acted via actorName/
     // actorUserID - "You" is substituted only when the event's own actor
     // happens to be the viewer.
-    const buildTrail = (timeline = []) => {
-      return timeline.map((event) => {
+
+    // Pulls the numeric suffix out of an approval ID like "REQ000096" ->
+    // 96, so a workflow's own approvalID can be compared against a
+    // "Resubmitted For Approval" event's referenceApprovalID - see
+    // buildTrail below.
+    const extractApprovalNumber = (id) => {
+      if (!id) return null;
+      const digits = String(id).replace(/\D/g, "");
+      return digits ? parseInt(digits, 10) : null;
+    };
+
+    // FIXED (reported on REQ-000096/REQ-000097): a workflow's own
+    // timeline can carry up to two "Resubmitted For Approval" entries -
+    // one describing how THIS workflow came to exist (its
+    // referenceApprovalID is numerically LOWER than this workflow's own
+    // approvalID - an "incoming" resubmit, e.g. REQ-000097's own trail
+    // references REQ-000096) and, if this workflow was itself later
+    // resubmitted, one describing what it became (referenceApprovalID
+    // numerically HIGHER - "outgoing", e.g. REQ-000097's trail also
+    // references REQ-000098). Both used to render in their raw array
+    // position (both near the very start, before any approvals) - the
+    // outgoing one reads as if the resubmission happened before this
+    // workflow was even acted on, when it actually happens after, so
+    // it's held back and appended once the rest of the trail is built.
+    // A workflow with only ONE resubmit entry and it's outgoing (e.g.
+    // REQ-000096, the first link in its own chain) has no real
+    // "Submitted For Approval" event in its timeline at all - a
+    // synthesized "Send for Approval" step (dated off the workflow's own
+    // requestedDate/requestedTime) is added at the front for it instead.
+    const buildTrail = (timeline = [], wf) => {
+      const ownNum = extractApprovalNumber(wf?.approvalID);
+      const steps = [];
+      const trailingResubmits = [];
+
+      timeline.forEach((event) => {
         const date = formatApiDateTime(`${event.eventDate} ${event.eventTime}`);
-        const actor =
-          event.actorUserID === loggedInUserID ? "You" : event.actorName;
+        const isYou = event.actorUserID === loggedInUserID;
+        const actor = isYou ? "You" : event.actorName;
 
         switch (event.eventType) {
           case "Submitted For Approval":
-            return {
+            steps.push({
               status: "Send for Approval",
               date,
               iconType: "SendForApproval",
-            };
-          case "Resubmitted For Approval":
-            return {
-              status: "Resubmit for Approval",
+            });
+            break;
+          case "Resubmitted For Approval": {
+            const refNum = extractApprovalNumber(event.referenceApprovalID);
+            const isOutgoing =
+              refNum != null && ownNum != null && refNum > ownNum;
+
+            const step = {
+              status: isOutgoing ? "Resubmitted" : "Resubmit for Approval",
               date,
-              requesterID: dashBetweenApprovalAssets(event.referenceApprovalID),
+              requesterID: dashBetweenApprovalAssets(
+                event.referenceApprovalID
+              ),
               iconType: "Resubmit",
             };
+
+            if (isOutgoing) {
+              trailingResubmits.push(step);
+            } else {
+              steps.push(step);
+            }
+            break;
+          }
           case "Escalated On":
-            return {
+            steps.push({
               status: "Escalated On",
               user: actor,
               date,
               iconType: "EscaltedOn",
-            };
+            });
+            break;
           case "Approved":
-            return {
+            steps.push({
               status: "Approved",
               user: actor,
               date,
-              iconType: "Approved",
-            };
+              // ADDED: the viewer's own "Approved by You" step gets a
+              // distinct color (#f67f29) on both the icon and text -
+              // same green-tick shape as every other Approved step,
+              // just recolored.
+              iconType: isYou ? "ApprovedByYou" : "Approved",
+              textColor: isYou ? "#f67f29" : undefined,
+            });
+            break;
           case "Declined":
-            return {
+            steps.push({
               status: "Declined",
               user: actor,
               date,
               iconType: "Decline",
-            };
+            });
+            break;
           default:
-            return {
+            steps.push({
               status: event.eventType,
               user: actor,
               date,
               iconType: "ellipsis",
-            };
+            });
         }
       });
+
+      const hasLeadingOrigin =
+        steps[0]?.iconType === "SendForApproval" ||
+        steps[0]?.iconType === "Resubmit";
+
+      if (!hasLeadingOrigin) {
+        steps.unshift({
+          status: "Send for Approval",
+          date: formatApiDateTime(
+            `${wf?.requestedDate} ${wf?.requestedTime}`
+          ),
+          iconType: "SendForApproval",
+        });
+      }
+
+      return [...steps, ...trailingResubmits];
     };
 
     return data.requests.map((wf) => {
-      const trail = Array.isArray(wf.timeline) ? buildTrail(wf.timeline) : [];
+      const trail = Array.isArray(wf.timeline)
+        ? buildTrail(wf.timeline, wf)
+        : [];
 
       return {
         id: String(wf.requestID),
