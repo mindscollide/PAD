@@ -121,7 +121,6 @@ const AdmindataWiseTransactionsReports = () => {
     [callApi, navigate, showLoader, showNotification]
   );
 
-
   // -------------------- Effects --------------------
 
   // 🔹 Initial Fetch
@@ -482,7 +481,9 @@ const AdmindataWiseTransactionsReports = () => {
       <PageLayout
         background="white"
         className={
-          activeFilters.length > 0 ? "TATHTAchangeHeightreports2" : "repotsHeightHOC"
+          activeFilters.length > 0
+            ? "TATHTAchangeHeightreports2"
+            : "repotsHeightHOC"
         }
       >
         <div className="px-4 md:px-6 lg:px-8 ">
@@ -493,7 +494,7 @@ const AdmindataWiseTransactionsReports = () => {
             scroll={
               adminDateWiseTransactionReportData?.records?.length
                 ? {
-                    x: "max-content",
+                    x: 1300,
                     y: activeFilters.length > 0 ? 450 : 500,
                   }
                 : undefined
