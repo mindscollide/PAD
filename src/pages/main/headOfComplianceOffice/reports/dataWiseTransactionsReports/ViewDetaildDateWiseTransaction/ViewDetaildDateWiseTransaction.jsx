@@ -13,6 +13,7 @@
 
 import React from "react";
 import { Col, Row, Tooltip } from "antd";
+import { Stepper, Step } from "react-form-stepper";
 
 /* ========================== CONTEXTS ========================== */
 import { useGlobalModal } from "../../../../../../context/GlobalModalContext";
@@ -27,7 +28,14 @@ import CustomButton from "../../../../../../components/buttons/button";
 import {
   dashBetweenApprovalAssets,
   formatApiDateTime,
+  convertUTCToCurrentTimeZone,
 } from "../../../../../../common/funtions/rejex";
+
+/* ========================== ASSETS ========================== */
+import CheckIcon from "../../../../../../assets/img/Check.png";
+import EllipsesIcon from "../../../../../../assets/img/Ellipses.png";
+import CrossIcon from "../../../../../../assets/img/Cross.png";
+import EscaltedOn from "../../../../../../assets/img/EscaltedOn.png";
 
 /* ========================== STYLES ========================== */
 import styles from "./ViewDetaildDateWiseTransaction.module.css";
@@ -43,6 +51,10 @@ const ViewDetaildDateWiseTransaction = () => {
   const { allInstrumentsData } = useDashboardContext();
 
   /* ========================== USER SESSION ========================== */
+  const userProfileData = JSON.parse(
+    sessionStorage.getItem("user_profile_data") || "{}"
+  );
+  const loggedInUserID = userProfileData?.userID;
 
   /* ================================================================
      STATUS HANDLING
@@ -150,6 +162,127 @@ const ViewDetaildDateWiseTransaction = () => {
   const actionByDisplay =
     actionByNames.length > 1 ? "Multiple Users" : actionByNames[0] || "—";
   const actionByFullNames = actionByNames.join(", ");
+
+  /* ========================== HIERARCHY / ESCALATION TRAIL ==========================
+     ADDED (API_Changes/2026-09-11_dateWise_viewdetails_escalation_history_
+     added.md): mirrors CO's own sibling modal (same doc, same underlying
+     endpoint via DateWiseTransactionReportViewDetails) - one
+     chronologically-sorted trail built from escalations[] (each entry
+     contributing an "Escalated on X" step, then either "Awaiting for
+     action" if still open or a "Marked Compliant/Non-Compliant by X"
+     resolution step) plus any hierarchyDetails rows not already covered
+     by an escalation. */
+  const buildHierarchyTrail = () => {
+    const hierarchyDetails =
+      reconcileTransactionViewDetailData?.hierarchyDetails || [];
+    const escalations = reconcileTransactionViewDetailData?.escalations || [];
+
+    const rawTimestamp = (date, time) => `${date || ""}${time || ""}`;
+
+    const escalatedUserIDs = new Set(
+      escalations.map((e) => e?.escalatedFromID).filter((id) => id != null)
+    );
+
+    const steps = [];
+
+    escalations.forEach((esc) => {
+      const escalatedByYou = esc?.escalatedFromID === loggedInUserID;
+      steps.push({
+        sortKey: rawTimestamp(esc?.escalatedOnDate, esc?.escalatedOnTime),
+        iconSrc: EscaltedOn,
+        title: escalatedByYou
+          ? "Escalated on You"
+          : `Escalated on ${esc?.escalatedFrom}`,
+        date: convertUTCToCurrentTimeZone(
+          esc?.escalatedOnDate,
+          esc?.escalatedOnTime
+        ),
+      });
+
+      if (!esc?.escalationClosedBy) {
+        steps.push({
+          sortKey:
+            rawTimestamp(esc?.escalatedOnDate, esc?.escalatedOnTime) + "1",
+          iconSrc: EllipsesIcon,
+          title: "Awaiting for action",
+          date: "",
+        });
+        return;
+      }
+
+      // escalatedClosedOn is a combined ISO string
+      // ("YYYY-MM-DDTHH:mm:ss"), unlike the split yyyyMMdd/HHmmss fields
+      // used elsewhere - reshape it into the same two-part format first.
+      const [closedDatePart, closedTimePart] = (
+        esc?.escalatedClosedOn || ""
+      ).split("T");
+      const closedDate = closedDatePart?.replace(/-/g, "") || "";
+      const closedTime = closedTimePart?.replace(/:/g, "") || "";
+
+      const matchingPerson = hierarchyDetails.find(
+        (p) =>
+          p.userID === esc?.escalatedFromID &&
+          rawTimestamp(p.modifiedDate, p.modifiedTime) ===
+            `${closedDate}${closedTime}`
+      );
+      const isNonCompliant = matchingPerson?.bundleStatusID === 3;
+      const closedByYou = esc?.escalationClosedBy === loggedInUserID;
+
+      steps.push({
+        sortKey: `${closedDate}${closedTime}`,
+        iconSrc: isNonCompliant ? CrossIcon : CheckIcon,
+        title: closedByYou
+          ? isNonCompliant
+            ? "Marked Non-Compliant by You"
+            : "Marked Compliant by You"
+          : `Marked ${isNonCompliant ? "Non-Compliant" : "Compliant"} by ${
+              esc?.escalationClosedByName
+            }`,
+        date: convertUTCToCurrentTimeZone(closedDate, closedTime),
+      });
+    });
+
+    hierarchyDetails
+      .filter((person) => !escalatedUserIDs.has(person.userID))
+      .forEach((person) => {
+        const { fullName, bundleStatusID, modifiedDate, modifiedTime, userID } =
+          person;
+        const formattedDateTime = convertUTCToCurrentTimeZone(
+          modifiedDate,
+          modifiedTime
+        );
+        const isYou = userID === loggedInUserID;
+
+        if (bundleStatusID === 2) {
+          steps.push({
+            sortKey: rawTimestamp(modifiedDate, modifiedTime),
+            iconSrc: CheckIcon,
+            title: isYou ? "Marked Compliant by You" : fullName,
+            date: formattedDateTime,
+          });
+        } else if (bundleStatusID === 3) {
+          steps.push({
+            sortKey: rawTimestamp(modifiedDate, modifiedTime),
+            iconSrc: CrossIcon,
+            title: isYou ? "Marked Non-Compliant by You" : fullName,
+            date: formattedDateTime,
+          });
+        } else {
+          steps.push({
+            sortKey:
+              rawTimestamp(modifiedDate, modifiedTime) || "99999999999999",
+            iconSrc: EllipsesIcon,
+            title: "Awaiting for action",
+            date: "",
+          });
+        }
+      });
+
+    steps.sort((a, b) => a.sortKey.localeCompare(b.sortKey));
+    return steps;
+  };
+
+  const hierarchyTrail = buildHierarchyTrail();
 
   /* ========================== ACTION HANDLERS ========================== */
   const closedModal = () => {
@@ -363,6 +496,71 @@ const ViewDetaildDateWiseTransaction = () => {
                 </div>
               </Col>
             </Row>
+
+            {/* ========================== HIERARCHY / ESCALATION TRAIL ========================== */}
+            {hierarchyTrail.length > 0 && (
+              <Row>
+                <div className={styles.mainStepperContainer}>
+                  <div
+                    className={`${styles.backgrounColorOfStepper} ${
+                      hierarchyTrail.length <= 3
+                        ? styles.centerAlignStepper
+                        : styles.leftAlignStepper
+                    }`}
+                  >
+                    <Stepper
+                      activeStep={Math.max(0, hierarchyTrail.length - 1)}
+                      connectorStyleConfig={{
+                        activeColor: "#00640A",
+                        completedColor: "#00640A",
+                        disabledColor: "#00640A",
+                        size: 1,
+                      }}
+                      styleConfig={{
+                        size: "2em",
+                        circleFontSize: "0px",
+                        labelFontSize: "17px",
+                        borderRadius: "50%",
+                      }}
+                    >
+                      {hierarchyTrail.map((step, index) => (
+                        <Step
+                          key={index}
+                          label={
+                            <div
+                              className={`${styles.customlabel} ${
+                                step.date ? styles.centerAlignLabel : ""
+                              }`}
+                            >
+                              <div className={styles.customtitle}>
+                                {step.title}
+                              </div>
+                              <div
+                                className={`${styles.customdesc} ${
+                                  step.date ? styles.centerAlignText : ""
+                                }`}
+                              >
+                                {step.date}
+                              </div>
+                            </div>
+                          }
+                          children={
+                            <div className={styles.stepCircle}>
+                              <img
+                                draggable={false}
+                                src={step.iconSrc}
+                                alt="status-icon"
+                                className={styles.circleImg}
+                              />
+                            </div>
+                          }
+                        />
+                      ))}
+                    </Stepper>
+                  </div>
+                </div>
+              </Row>
+            )}
           </div>
 
           {/* ========================== FOOTER ACTIONS ========================== */}
