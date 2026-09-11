@@ -334,59 +334,130 @@ const HTAMyAction = () => {
   const mapMyActionData = (data) => {
     if (!data?.requests) return [];
 
-    // eventType → trail step shape (see approvalStepper.jsx's getIcon)
-    const mapTimelineEvent = (event) => {
-      const date = formatApiDateTime(`${event.eventDate} ${event.eventTime}`);
+    // Pulls the numeric suffix out of an approval ID like "REQ000096" ->
+    // 96, so a workflow's own approvalID can be compared against a
+    // "Resubmitted For Approval" event's referenceApprovalID - see
+    // buildTrail below.
+    const extractApprovalNumber = (id) => {
+      if (!id) return null;
+      const digits = String(id).replace(/\D/g, "");
+      return digits ? parseInt(digits, 10) : null;
+    };
 
-      switch (event.eventType) {
-        case "Submitted For Approval":
-          return {
-            status: "Submitted For Approval",
-            date,
-            iconType: "SendForApproval",
-          };
-        case "Resubmitted For Approval":
-          return {
-            status: "Resubmit",
-            date,
-            requesterID: dashBetweenApprovalAssets(event.referenceApprovalID),
-            iconType: "Resubmit",
-          };
-        case "Escalated On":
-          return {
-            status: "Escalated On",
-            user: event.actorName,
-            date,
-            iconType: "EscaltedOn",
-          };
-        // FIXED: was "Approved By You" (capital "By") - the sibling
-        // "Declined by You" case (and the real backend event type) uses
-        // lowercase "by", so this never matched and fell through to
-        // default, showing the raw event type with the Ellipses
-        // "awaiting" icon instead of the intended green check.
-        case "Approved by You":
-          // actorName here is always the viewing HTA themselves (per the
-          // event's own name) — show "Approved by You" literally instead
-          // of the name a second time.
-          return {
-            status: "Approved by You",
-            date,
-            iconType: "Approved",
-          };
-        case "Declined by You":
-          return {
-            status: "Declined by You",
-            date,
-            iconType: "Decline",
-          };
-        default:
-          return {
-            status: event.eventType,
-            user: event.actorName,
-            date,
-            iconType: "ellipsis",
-          };
+    // eventType → trail step shape (see approvalStepper.jsx's getIcon)
+    //
+    // FIXED (same issue reported/fixed on LM's own My Actions page, e.g.
+    // REQ-000096/REQ-000097): a workflow's own timeline can carry up to
+    // two "Resubmitted For Approval" entries - one describing how THIS
+    // workflow came to exist (its referenceApprovalID is numerically
+    // LOWER than this workflow's own approvalID - an "incoming" resubmit)
+    // and, if this workflow was itself later resubmitted, one describing
+    // what it became (referenceApprovalID numerically HIGHER -
+    // "outgoing"). Both used to render in raw array order (both near the
+    // very start, before any approvals) - the outgoing one reads as if
+    // the resubmission happened before this workflow was even acted on,
+    // when it actually happens after, so it's held back and appended
+    // once the rest of the trail is built. A workflow whose only resubmit
+    // entry is outgoing (the first link in its own chain) has no real
+    // "Submitted For Approval" event in its timeline at all - a
+    // synthesized one (dated off the workflow's own requestedDate/
+    // requestedTime) is added at the front for it instead.
+    const buildTrail = (timeline = [], wf) => {
+      const ownNum = extractApprovalNumber(wf?.approvalID);
+      const steps = [];
+      const trailingResubmits = [];
+
+      timeline.forEach((event) => {
+        const date = formatApiDateTime(`${event.eventDate} ${event.eventTime}`);
+
+        switch (event.eventType) {
+          case "Submitted For Approval":
+            steps.push({
+              status: "Submitted For Approval",
+              date,
+              iconType: "SendForApproval",
+            });
+            break;
+          case "Resubmitted For Approval": {
+            const refNum = extractApprovalNumber(event.referenceApprovalID);
+            const isOutgoing =
+              refNum != null && ownNum != null && refNum > ownNum;
+
+            const step = {
+              status: isOutgoing ? "Resubmitted" : "Resubmit",
+              date,
+              requesterID: dashBetweenApprovalAssets(
+                event.referenceApprovalID
+              ),
+              iconType: "Resubmit",
+            };
+
+            if (isOutgoing) {
+              trailingResubmits.push(step);
+            } else {
+              steps.push(step);
+            }
+            break;
+          }
+          case "Escalated On":
+            steps.push({
+              status: "Escalated On",
+              user: event.actorName,
+              date,
+              iconType: "EscaltedOn",
+            });
+            break;
+          // FIXED: was "Approved By You" (capital "By") - the sibling
+          // "Declined by You" case (and the real backend event type)
+          // uses lowercase "by", so this never matched and fell through
+          // to default, showing the raw event type with the Ellipses
+          // "awaiting" icon instead of the intended green check.
+          case "Approved by You":
+            // actorName here is always the viewing HTA themselves (per
+            // the event's own name) — show "Approved by You" literally
+            // instead of the name a second time.
+            // ADDED: same orange highlight as LM's own My Actions page
+            // for the viewer's own approval - same tick shape as the
+            // plain green "Approved" icon, just recolored (icon + text).
+            steps.push({
+              status: "Approved by You",
+              date,
+              iconType: "ApprovedByYou",
+              textColor: "#f67f29",
+            });
+            break;
+          case "Declined by You":
+            steps.push({
+              status: "Declined by You",
+              date,
+              iconType: "Decline",
+            });
+            break;
+          default:
+            steps.push({
+              status: event.eventType,
+              user: event.actorName,
+              date,
+              iconType: "ellipsis",
+            });
+        }
+      });
+
+      const hasLeadingOrigin =
+        steps[0]?.iconType === "SendForApproval" ||
+        steps[0]?.iconType === "Resubmit";
+
+      if (!hasLeadingOrigin) {
+        steps.unshift({
+          status: "Submitted For Approval",
+          date: formatApiDateTime(
+            `${wf?.requestedDate} ${wf?.requestedTime}`
+          ),
+          iconType: "SendForApproval",
+        });
       }
+
+      return [...steps, ...trailingResubmits];
     };
 
     return data.requests.map((wf) => {
@@ -394,7 +465,7 @@ const HTAMyAction = () => {
       // events: submitted/resubmitted, each escalation, each approve/decline
       // this HTA closed), not the flat per-actor bundleHistory[] snapshot.
       const trail = Array.isArray(wf.timeline)
-        ? wf.timeline.map(mapTimelineEvent)
+        ? buildTrail(wf.timeline, wf)
         : [];
 
       return {
@@ -409,6 +480,9 @@ const HTAMyAction = () => {
         quantity: Number(wf.quantity),
         type: wf.typeName || wf.type,
         status: wf.statusState || wf.statusState,
+        // ADDED: same "Resubmit" marker convention already used on LM's
+        // own My Actions page (wf.workFlowStatusName, not statusState).
+        isResubmit: wf.workFlowStatusName === "Resubmit",
         trail,
       };
     });

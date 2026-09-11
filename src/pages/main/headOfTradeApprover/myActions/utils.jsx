@@ -10,6 +10,7 @@ import {
   formatApiDateTime,
   toYYMMDD,
 } from "../../../../common/funtions/rejex";
+import repeat from "../../../../assets/img/repeat.png";
 
 const getSortIcon = (columnKey, sortedInfo) => {
   if (sortedInfo?.columnKey === columnKey) {
@@ -59,7 +60,13 @@ const withSortIcon = (label, columnKey, sortedInfo, align = "left") => (
  */
 
 export const buildMyActionApiRequest = (searchState = {}) => ({
-  RequestID: searchState.requestID || "",
+  // FIXED (same issue as HOC/LM My Actions): the search field/active-
+  // filter chip show the user-facing dashed form ("REQ-000102", same as
+  // the table's own Transaction/RequestID column), but the API expects
+  // it undashed ("REQ000102") - strip the dash only here, at
+  // request-build time, so the stored search state (and its chip) keeps
+  // showing the dash.
+  RequestID: (searchState.requestID || "").replace(/-/g, ""),
   InstrumentName: searchState.instrumentName || "",
   RequesterName: searchState.requesterName || "",
   StartDate: searchState.startDate ? toYYMMDD(searchState.startDate) : "",
@@ -85,12 +92,24 @@ export const getMyActionsColumn = (approvalStatusMap, sortedInfo) => [
     sortOrder: sortedInfo?.columnKey === "approvalID" ? sortedInfo.order : null,
     showSorterTooltip: false,
     sortIcon: () => null,
-    render: (approvalID) => {
+    render: (approvalID, record) => {
       return (
-        <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
           <span className="font-medium">
             {dashBetweenApprovalAssets(approvalID)}
           </span>
+          {/* ADDED: same small "Resubmit" marker already shown on LM's
+              own My Actions page, next to the RequestID when the
+              workflow's own status is "Resubmit". */}
+          {record?.isResubmit && (
+            <img
+              draggable={false}
+              src={repeat}
+              alt="Resubmit"
+              width={16}
+              height={16}
+            />
+          )}
         </div>
       );
     },
