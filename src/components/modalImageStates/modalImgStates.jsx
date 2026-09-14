@@ -138,6 +138,10 @@ const ModalImgStates = ({
   headingClassName = "",
   subheadingClassName = "",
   containerClassName = "",
+  // ADDED (SRS 11.2.1): lets a caller override the static config subheading
+  // with per-instance dynamic content (e.g. the actual violated policies for
+  // the "TradeRestricted" state) without needing a separate config entry.
+  subheadingOverride,
 }) => {
   const state = config[type];
 
@@ -150,7 +154,7 @@ const ModalImgStates = ({
       {image && <img draggable={false} src={image} alt={type} />}
       <div className={`${styles.heading} ${headingClassName}`}>{heading}</div>
       <div className={`${styles.subheading} ${subheadingClassName}`}>
-        {subheading}
+        {subheadingOverride ?? subheading}
       </div>
     </div>
   );

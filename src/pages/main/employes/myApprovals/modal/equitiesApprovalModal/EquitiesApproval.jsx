@@ -21,6 +21,10 @@ const EquitiesApproval = () => {
     setIsSubmit,
     selectedAssetTypeId,
     setAddTradeApprovalIntimationModal,
+    // ADDED (SRS 11.2.1): to show the "Trade Request Restricted" modal with
+    // the real violated policies when AddTradeApprovalRequest reports one.
+    setIsTradeRequestRestricted,
+    setViolatedPolicies,
   } = useGlobalModal();
 
   const { employeeBasedBrokersData, allInstrumentsData, assetTypeListingData } =
@@ -133,6 +137,8 @@ const EquitiesApproval = () => {
       requestdata,
       setIsEquitiesModalVisible,
       setIsSubmit,
+      setIsTradeRequestRestricted,
+      setViolatedPolicies,
       navigate,
     });
   };
