@@ -358,6 +358,12 @@ export const MyApprovalProvider = ({ children }) => {
     totalRecordsTable: 0,
   });
 
+  // Employee Add Approval Request Data
+  const [addApprovalRequestData, setAddApprovalRequestData] = useState({
+    tradeAction: "",
+    instrumentName: "",
+  });
+
   // Reset function to set all states back to initial values
   /* =========================================================
      RESET FUNCTIONS
@@ -750,6 +756,10 @@ export const MyApprovalProvider = ({ children }) => {
         hTAPendingApprovalsData,
         setHTAPendingApprovalsData,
         resetHtaPendingRequestApprovalData,
+
+        //Employee Trade Approval Request
+        addApprovalRequestData,
+        setAddApprovalRequestData,
       }}
     >
       {children}

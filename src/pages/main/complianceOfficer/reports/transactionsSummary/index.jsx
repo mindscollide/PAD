@@ -141,7 +141,7 @@ const COTransactionsSummarysReports = () => {
       setCOTransactionsSummarysReportsSearch((prev) => {
         const next = {
           ...prev,
-          pageNumber: replace ? mapped.length : prev.pageNumber + mapped.length,
+          pageNumber: prev.pageNumber + 1,
         };
 
         // this is for check if filter value get true only on that it will false

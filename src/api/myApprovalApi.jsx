@@ -81,6 +81,7 @@ export const AddTradeApprovalRequest = async ({
   setIsTradeRequestRestricted,
   setViolatedPolicies,
   navigate,
+  setAddApprovalRequestData,
 }) => {
   console.log("Check APi");
 
@@ -148,6 +149,10 @@ export const AddTradeApprovalRequest = async ({
         );
         setIsEquitiesModalVisible?.(false);
         setIsTradeRequestRestricted?.(true);
+        setAddApprovalRequestData?.({
+          tradeAction: requestdata.ApprovalType,
+          instrumentName: requestdata.InstrumentName,
+        });
 
         return false;
       } else {

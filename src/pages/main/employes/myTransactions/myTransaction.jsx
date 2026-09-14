@@ -406,7 +406,10 @@ const MyTransaction = () => {
                     x: 1300,
                     y: activeFilters.length > 0 ? 450 : 500,
                   }
-                : undefined
+                : {
+                    x: 1300,
+                    y: activeFilters.length > 0 ? 450 : 500,
+                  }
             }
             onChange={(pagination, filters, sorter) => setSortedInfo(sorter)}
             loading={loadingMore}

@@ -147,7 +147,7 @@ const COTransactionsSummarysReportsViewDetails = () => {
         coTransactionSummaryReportListData?.totalRecordsDataBase <=
         coTransactionSummaryReportListData?.totalRecordsTable
       )
-        return;
+        return false;
 
       try {
         setLoadingMore(true);
