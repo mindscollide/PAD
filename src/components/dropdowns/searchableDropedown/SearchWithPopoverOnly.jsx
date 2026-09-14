@@ -480,7 +480,7 @@ const SearchWithPopoverOnly = () => {
             departmentName: "",
             startDate: null,
             endDate: null,
-            pageNumber: 0,
+            pageNumber: 1,
             filterTrigger: true,
           }));
         } else if (currentPath === "/PAD/hta-reports/hta-pending-requests") {

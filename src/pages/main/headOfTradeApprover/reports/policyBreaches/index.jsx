@@ -116,7 +116,7 @@ const HTAPolicyBreachesReport = () => {
       setHTAPolicyBreachesReportSearch((prev) => {
         const next = {
           ...prev,
-          pageNumber: replace ? mapped.length : prev.pageNumber + mapped.length,
+          pageNumber: prev.pageNumber + 1,
         };
 
         // this is for check if filter value get true only on that it will false
@@ -290,7 +290,7 @@ const HTAPolicyBreachesReport = () => {
     setHTAPolicyBreachesReportSearch((prev) => ({
       ...prev,
       ...resetMap[key],
-      pageNumber: 0,
+      pageNumber: 1,
       filterTrigger: true,
     }));
   };
@@ -305,7 +305,7 @@ const HTAPolicyBreachesReport = () => {
       quantity: "",
       startDate: null,
       endDate: null,
-      pageNumber: 0,
+      pageNumber: 1,
       filterTrigger: true,
     }));
   };
