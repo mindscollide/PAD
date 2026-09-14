@@ -124,10 +124,18 @@ const COTransactionsSummarysReports = () => {
         // this is for to run lazy loading its data comming from database of total data in db
         totalRecordsDataBase: res?.totalRecords || 0,
         // this is for to know how mush dta currently fetch from  db
+        // FIXED (pagination state bug): was reading `coTransactionSummaryReportListData`
+        // from the outer render scope instead of this setter's own `prev`. Since
+        // fetchApiCall is memoized with a deps array that never includes that
+        // variable, the closure stayed frozen at its initial value (0) forever -
+        // every subsequent lazy-load page recomputed totalRecordsTable as just
+        // `0 + mapped.length` instead of the true running total, so the infinite
+        // scroll's "loaded everything" check (totalRecordsDataBase <=
+        // totalRecordsTable) never tripped once real data existed - extra fetches
+        // kept firing past the end of the data instead of stopping.
         totalRecordsTable: replace
           ? mapped.length
-          : coTransactionSummaryReportListData.totalRecordsTable +
-            mapped.length,
+          : prev.totalRecordsTable + mapped.length,
       }));
 
       setCOTransactionsSummarysReportsSearch((prev) => {
@@ -181,10 +189,13 @@ const COTransactionsSummarysReports = () => {
         // this is for to run lazy loading its data comming from database of total data in db
         totalRecordsDataBase: res?.totalRecords || 0,
         // this is for to know how mush dta currently fetch from  db
+        // FIXED (same pagination state bug as fetchApiCall above): was reading
+        // coTransactionSummaryReportViewDetailsListData from the outer render
+        // scope (frozen at its initial value by this callback's useCallback deps)
+        // instead of prev - use prev's own totalRecordsTable.
         totalRecordsTable: replace
           ? mapped.length
-          : coTransactionSummaryReportViewDetailsListData.totalRecordsTable +
-            mapped.length,
+          : prev.totalRecordsTable + mapped.length,
       }));
 
       setCOTransactionsSummarysReportsViewDetailSearch((prev) => {
@@ -221,10 +232,22 @@ const COTransactionsSummarysReports = () => {
       EndDate: formatToYYYYMMDD(endDate),
     });
 
+    // FIXED (pagination state bug): was spreading the raw, possibly-leftover
+    // `coTransactionsSummarysReportsSearch` from context as-is - if this page
+    // is remounted (navigate away to Reports Dashboard, then back) before the
+    // unmount cleanup's reset below has actually taken effect, the previous
+    // visit's accumulated `pageNumber` (e.g. 4, from earlier scrolling) got
+    // sent straight into this very first request instead of starting fresh at
+    // page 0 - reproduced live: {"PageNumber":4,...} sent on what should be a
+    // brand-new page load. Force pageNumber/filterTrigger back to a clean
+    // baseline explicitly here instead of relying on the reset-on-unmount
+    // timing, same as handleClearDates already does below.
     const updatedState = {
       ...coTransactionsSummarysReportsSearch,
       startDate,
       endDate,
+      pageNumber: 0,
+      filterTrigger: false,
     };
     setCOTransactionsSummarysReportsSearch(updatedState);
     const requestData = buildApiRequest(updatedState, assetTypeListingData);

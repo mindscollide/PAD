@@ -75,6 +75,11 @@ export const AddTradeApprovalRequest = async ({
   setIsSubmit,
   setIsResubmitted,
   setResubmitIntimation,
+  // ADDED (SRS 11.2.1, API_Changes/2026-09-14_add_trade_approval_policy_
+  // violation_detail_not_shown_fe_bug.md): to surface the "Trade Request
+  // Restricted" modal with real violation detail instead of a generic toast.
+  setIsTradeRequestRestricted,
+  setViolatedPolicies,
   navigate,
 }) => {
   console.log("Check APi");
@@ -125,6 +130,26 @@ export const AddTradeApprovalRequest = async ({
         setResubmitIntimation(true);
 
         return true;
+      } else if (
+        responseMessage ===
+        "PAD_Trade_TradeServiceManager_AddTradeApprovalRequest_10"
+      ) {
+        // FIXED (SRS 11.2.1 gap): this case used to fall into the generic
+        // `else` below and show nothing but a one-line "Policy Violated"
+        // toast - res.result.violatedPolicies was never read at all, so the
+        // user had no way to know which policy failed or why, contradicting
+        // SRS 11.2.1's "inform the user about every violation in detail."
+        // Surface the full violatedPolicies list via the already-built
+        // "Trade Request Restricted" modal instead.
+        setViolatedPolicies?.(
+          Array.isArray(res.result?.violatedPolicies)
+            ? res.result.violatedPolicies
+            : []
+        );
+        setIsEquitiesModalVisible?.(false);
+        setIsTradeRequestRestricted?.(true);
+
+        return false;
       } else {
         showNotification({
           type: "warning",
