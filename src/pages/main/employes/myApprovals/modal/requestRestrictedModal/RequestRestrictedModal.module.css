@@ -36,6 +36,30 @@
   justify-content: center !important; /* center them */
 }
 
+/* ADDED (SRS 11.2.1): per-violation rows - policy code tag + its detailed
+   consequence text, one per violated policy. */
+.violationList {
+  margin-top: 30px;
+  display: flex;
+  flex-wrap: wrap; /* ADD: allow rows to wrap */
+  justify-content: center; /* optional: centers wrapped tags like tagContainer does */
+  gap: 16px;
+  width: 100%;
+  max-width: 100%;
+  max-height: 220px;
+  overflow-y: auto;
+  text-align: left;
+}
+
+.violationRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  flex: 0 1 auto; /* ADD: don't force-stretch, let it size to content and wrap */
+  max-width: 100%;
+}
+
 .tagClasses {
   font-size: 14px !important;
   font-weight: 500 !important;
@@ -47,26 +71,8 @@
   padding: 10px 20px !important;
   display: inline-flex !important;
   align-items: center;
-}
-
-/* ADDED (SRS 11.2.1): per-violation rows - policy code tag + its detailed
-   consequence text, one per violated policy. */
-.violationList {
-  margin-top: 30px;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  width: 100%;
-  max-height: 220px;
-  overflow-y: auto;
-  text-align: left;
-}
-
-.violationRow {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  flex-wrap: wrap;
+  white-space: normal; /* ADD: allow long scenario text to break inside a single tag too */
+  max-width: 100%;
 }
 
 .violationConsequence {
