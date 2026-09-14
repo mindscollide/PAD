@@ -214,16 +214,23 @@ const HCATransactionsSummarysReports = () => {
     const endDate = new Date();
     const startDate = new Date();
     startDate.setMonth(startDate.getMonth() - 6);
-    // 👇 SET dateRange state ONLY
+
     setDateRange({
       StartDate: formatToYYYYMMDD(startDate),
       EndDate: formatToYYYYMMDD(endDate),
     });
+
     const updatedState = {
       ...hcoTransactionsSummarysReportsSearch,
       startDate,
       endDate,
     };
+
+    // ADDED: persist the seeded dates into search state too - previously
+    // only the local `updatedState` var (used for this one request) had
+    // them, so any later filter action would rebuild the payload from
+    // context state still missing startDate/endDate.
+    setHCOTransactionsSummarysReportsSearch(updatedState);
 
     const requestData = buildApiRequest(updatedState);
     fetchApiCall(requestData, true, true);
@@ -280,29 +287,33 @@ const HCATransactionsSummarysReports = () => {
           coTransactionSummaryReportViewDetailsListData?.totalRecordsDataBase <=
           coTransactionSummaryReportViewDetailsListData?.totalRecordsTable
         ) {
-          return;
+          return false;
         }
 
         try {
           setLoadingMore(true);
-          console.log(
-            "StatusFilterDropdown handleOk",
-            hocTransactionsSummarysReportsViewDetailsSearch
-          );
 
           const requestData = buildApiRequestViewDetails(
             hocTransactionsSummarysReportsViewDetailsSearch,
             assetTypeListingData
           );
 
-          await fetchApiCall(requestData, false, false);
+          // FIXED: was calling fetchApiCall (the summary-list fetcher) with
+          // a view-details-shaped payload - silently hitting
+          // GetHOCViewTransactionSummaryAPI and updating the summary page's
+          // own state/list instead of the view-details one, while scrolled
+          // within view-details. fetchApiCallViewDetails is the one that
+          // actually calls GetHOCTransactionSummaryViewDetailsAPI and
+          // updates coTransactionSummaryReportViewDetailsListData /
+          // hocTransactionsSummarysReportsViewDetailsSearch.
+          await fetchApiCallViewDetails(requestData, false, false);
         } catch (error) {
           console.error("Error loading view details:", error);
         } finally {
           setLoadingMore(false);
         }
 
-        return; // 🔴 VERY IMPORTANT
+        return;
       }
 
       // -------------------------------
@@ -312,7 +323,7 @@ const HCATransactionsSummarysReports = () => {
         hcoTransactionSummaryReportListData?.totalRecordsDataBase <=
         hcoTransactionSummaryReportListData?.totalRecordsTable
       ) {
-        return;
+        return false;
       }
 
       try {
@@ -393,15 +404,19 @@ const HCATransactionsSummarysReports = () => {
   };
 
   const handleClearDates = () => {
+    const endDate = new Date();
+    const startDate = new Date();
+    startDate.setMonth(startDate.getMonth() - 6);
+
     setDateRange({
-      StartDate: null,
-      EndDate: null,
+      StartDate: formatToYYYYMMDD(startDate),
+      EndDate: formatToYYYYMMDD(endDate),
     });
 
     setHCOTransactionsSummarysReportsSearch((prev) => ({
       ...prev,
-      startDate: null,
-      endDate: null,
+      startDate,
+      endDate,
       pageNumber: 0,
       filterTrigger: true,
     }));

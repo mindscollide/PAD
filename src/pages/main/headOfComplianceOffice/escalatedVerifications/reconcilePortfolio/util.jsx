@@ -114,15 +114,36 @@ export const getBorderlessTableColumns = ({
     sortIcon: () => null,
     render: (text) => <span className="font-medium">{text || "—"}</span>,
   },
-
+  // complianceOfficerName
+  {
+    title: withSortIcon(
+      "Compliance Officer Name",
+      "complianceOfficerName",
+      sortedInfo
+    ),
+    align: "left",
+    dataIndex: "complianceOfficerName",
+    key: "complianceOfficerName",
+    width: 180,
+    sorter: (a, b) =>
+      (a?.complianceOfficerName || "").localeCompare(
+        b?.complianceOfficerName || ""
+      ),
+    sortOrder:
+      sortedInfo?.columnKey === "complianceOfficerName"
+        ? sortedInfo.order
+        : null,
+    showSorterTooltip: false,
+    sortIcon: () => null,
+    render: (text) => <span className="font-medium">{text || "—"}</span>,
+  },
   /* --------------------- Instrument --------------------- */
   {
     title: withSortIcon("Instrument", "instrumentCode", sortedInfo),
     align: "left",
     dataIndex: "instrumentCode",
     key: "instrumentCode",
-    ellipsis: true,
-    width: 150,
+    width: 210,
     sorter: (a, b) =>
       (a?.instrumentCode || "").localeCompare(b?.instrumentCode || ""),
     sortOrder:
@@ -177,7 +198,7 @@ export const getBorderlessTableColumns = ({
     align: "center",
     dataIndex: "transactionDate",
     key: "transactionDate",
-    width: 140,
+    width: 180,
     sorter: (a, b) =>
       (a?.transactionDate || "").localeCompare(b?.transactionDate || ""),
     sortOrder:
@@ -229,7 +250,7 @@ export const getBorderlessTableColumns = ({
     align: "center",
     dataIndex: "escalatedDate",
     key: "escalatedDate",
-    width: 140,
+    width: 180,
     sorter: (a, b) =>
       (a?.escalatedDate || "").localeCompare(b?.escalatedDate || ""),
     sortOrder:

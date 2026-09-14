@@ -202,7 +202,7 @@ border-  bottom-bottom-right-radius: 6.94px !important;
 /* For blue */
 
 .border-less-table-blue-body {
-  overflow-x: auto !important;
+  /* overflow-x: auto !important; */
   overflow-y: auto !important;
   max-height: 60vh !important;
 }
@@ -325,7 +325,7 @@ td.border-less-table-blue-cell:hover {
 
   .border-less-table-blue-status {
     font-size: 14px;
-    padding: 5px 8px;
+    /* padding: 5px 8px; */
   }
 
   .border-less-table-blue-wrapper .border-less-table-blue-thead > tr > th {

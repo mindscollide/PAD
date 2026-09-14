@@ -378,8 +378,8 @@ export const getBorderlessTableColumnsViewDetails = ({
     align: "left",
     width: 210,
     sorter: (a, b) => {
-      const nameA = a?.instrumentShortCode || "";
-      const nameB = b?.instrumentShortCode || "";
+      const nameA = a?.instrumentCode || "";
+      const nameB = b?.instrumentCode || "";
       return nameA.localeCompare(nameB);
     },
     sortDirections: ["ascend", "descend"],
@@ -502,7 +502,7 @@ export const getBorderlessTableColumnsViewDetails = ({
     title: withSortIcon("Action By", "actionBy", sortedInfo),
     dataIndex: "actionBy",
     key: "actionBy",
-    width: 150,
+    width: 140,
     align: "left",
     sorter: (a, b) => (a?.actionBy || "").localeCompare(b?.actionBy || ""),
     sortDirections: ["ascend", "descend"],
