@@ -17,6 +17,14 @@ export const GlobalModalProvider = ({ children }) => {
   const [isTradeRequestRestricted, setIsTradeRequestRestricted] =
     useState(false);
 
+  // ADDED (SRS 11.2.1, API_Changes/2026-09-14_add_trade_approval_policy_
+  // violation_detail_not_shown_fe_bug.md): the violated policies for the
+  // currently-shown Restricted modal - populated from AddTradeApprovalRequest's
+  // `violatedPolicies` response array alongside setIsTradeRequestRestricted(true),
+  // so the modal can list every violation "in detail" per SRS, not just a
+  // generic message.
+  const [violatedPolicies, setViolatedPolicies] = useState([]);
+
   // To Show View Modal on ViewDetail Button on add approval listing
   const [isViewDetail, setIsViewDetail] = useState(false);
 
@@ -312,6 +320,7 @@ export const GlobalModalProvider = ({ children }) => {
     setIsEquitiesModalVisible(false);
     setIsSubmit(false);
     setIsTradeRequestRestricted(false);
+    setViolatedPolicies([]);
     setIsViewDetail(false);
     setSelectedViewDetail(null);
     setIsViewComments(false);
@@ -370,6 +379,8 @@ export const GlobalModalProvider = ({ children }) => {
         setIsEquitiesModalVisible,
         isTradeRequestRestricted,
         setIsTradeRequestRestricted,
+        violatedPolicies,
+        setViolatedPolicies,
         isSubmit,
         setIsSubmit,
         isViewDetail,
