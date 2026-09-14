@@ -10,6 +10,11 @@ import EllipsesIcon from "../../../../../../assets/img/Ellipses.png";
 import CrossIcon from "../../../../../../assets/img/Cross.png";
 import NotTradedIcon from "../../../../../../assets/img/NotTraded.png";
 import EscalatedIcon from "../../../../../../assets/img/escalated.png";
+// Same "Escalated On" stepper icon used by ViewDetailHeadOfApprovalModal.jsx
+// (HTA) and the LM ViewDetailModal.jsx - escalated.png above is a different,
+// square badge used elsewhere on this page for the Request-Date flag, not
+// the stepper step.
+import EscalatedStepIcon from "../../../../../../assets/img/EscaltedOn.png";
 import copyIcon from "../../../../../../assets/img/copy-dark.png";
 import { useMyApproval } from "../../../../../../context/myApprovalContaxt";
 import { useDashboardContext } from "../../../../../../context/dashboardContaxt";
@@ -664,8 +669,186 @@ const ViewDetailModal = () => {
                                 )
                               : "";
 
+                          // Employee is never a hierarchy actor (just the
+                          // requester watching), so unlike HTA's/LM's own
+                          // screens - where the viewer usually IS the
+                          // relevant actor and "your approval" reads
+                          // naturally - "Waiting for your approval" would be
+                          // meaningless here. Show the originally-escalating
+                          // person's name instead (same name in both the
+                          // "Escalated On" step and the still-open "Waiting
+                          // for" step) - escalations[] carries this
+                          // (escalatedFrom/escalatedFromID), hierarchyDetails
+                          // doesn't, so correlate each escalated
+                          // hierarchyDetails entry with its escalations[]
+                          // record via the shared escalatedOnDate/
+                          // escalatedOnTime pair (present, identical, on
+                          // both).
+                          const escalationRecords = Array.isArray(
+                            viewDetailsModalData?.escalations
+                          )
+                            ? viewDetailsModalData.escalations
+                            : [];
+
+                          const findEscalationRecord = (person) =>
+                            escalationRecords.find(
+                              (esc) =>
+                                esc?.escalatedOnDate ===
+                                  person?.escalatedOnDate &&
+                                esc?.escalatedOnTime === person?.escalatedOnTime
+                            );
+
+                          // ADDED ("proper hierarchy", matching
+                          // ViewDetailHeadOfApprovalModal.jsx's (HTA) and
+                          // the LM ViewDetailModal.jsx's escalation-aware
+                          // stepper): hierarchyDetails alone collapses an
+                          // escalated level straight to its resolution (or,
+                          // while still open, to a plain "Waiting for
+                          // Approval" that never says it's actually sitting
+                          // with someone else now) - it never surfaces the
+                          // escalation event itself.
+                          const hierarchySteps = hierarchyPeople.flatMap(
+                            (person, index) => {
+                              const {
+                                fullName,
+                                bundleStatusID,
+                                modifiedDate,
+                                modifiedTime,
+                                isEscalated,
+                                escalatedOnDate,
+                                escalatedOnTime,
+                                escalationStillOpen,
+                              } = person;
+
+                              const formattedDateTime = formatApiDateTime(
+                                `${modifiedDate} ${modifiedTime}`
+                              );
+
+                              const escalationRecord = isEscalated
+                                ? findEscalationRecord(person)
+                                : null;
+                              const escalatedFromName =
+                                escalationRecord?.escalatedFrom;
+
+                              const escalatedStep = isEscalated
+                                ? {
+                                    key: `${index}-escalated`,
+                                    iconSrc: EscalatedStepIcon,
+                                    labelContent: (
+                                      <div className={styles.customlabel}>
+                                        <div className={styles.customtitle}>
+                                          Escalated On
+                                        </div>
+                                        {escalatedFromName && (
+                                          <div className={styles.customdesc}>
+                                            by {escalatedFromName}
+                                          </div>
+                                        )}
+                                        <div className={styles.customdesc}>
+                                          {formatApiDateTime(
+                                            `${escalatedOnDate} ${escalatedOnTime}`
+                                          )}
+                                        </div>
+                                      </div>
+                                    ),
+                                  }
+                                : null;
+
+                              let iconSrc;
+                              let labelContent;
+
+                              if (isEscalated && escalationStillOpen) {
+                                iconSrc = EllipsesIcon;
+                                // Same multi-vs-single-LM rule as the plain
+                                // pending case below: with more than one LM
+                                // in the chain, name who it's currently
+                                // parked with (still the original LM this
+                                // level belongs to - it hasn't been resolved
+                                // yet, only escalated) instead of the
+                                // generic text.
+                                const waitingLabel =
+                                  hierarchyPeople.length <= 1
+                                    ? "Waiting for approval"
+                                    : fullName;
+                                labelContent = (
+                                  <div className={styles.customlabel}>
+                                    <div className={styles.customtitle}>
+                                      {waitingLabel}
+                                    </div>
+                                  </div>
+                                );
+                              } else if (bundleStatusID === 2) {
+                                iconSrc = CheckIcon;
+                                labelContent = (
+                                  <div className={styles.customlabel}>
+                                    <div className={styles.customtitle}>
+                                      Approved by
+                                    </div>
+                                    <div className={styles.customdesc}>
+                                      {fullName}
+                                    </div>
+                                    <div className={styles.customdesc}>
+                                      {formattedDateTime}
+                                    </div>
+                                  </div>
+                                );
+                              } else if (bundleStatusID === 3) {
+                                iconSrc = CrossIcon;
+                                labelContent = (
+                                  <div className={styles.customlabel}>
+                                    <div className={styles.customtitle}>
+                                      Declined by
+                                    </div>
+                                    <div className={styles.customdesc}>
+                                      {fullName}
+                                    </div>
+                                    <div className={styles.customdesc}>
+                                      {formattedDateTime}
+                                    </div>
+                                  </div>
+                                );
+                              } else {
+                                iconSrc = EllipsesIcon;
+                                // ADDED: for a still-pending, non-escalated
+                                // level, show WHICH LM it's currently
+                                // parked with only when the chain actually
+                                // has more than one LM level (so the name
+                                // is meaningful context) - a single-LM
+                                // hierarchy just says "Waiting for
+                                // approval", same generic text used
+                                // elsewhere for this state.
+                                const pendingLabel =
+                                  bundleStatusID === 1 &&
+                                  hierarchyPeople.length <= 1
+                                    ? "Waiting for approval"
+                                    : fullName;
+                                labelContent = (
+                                  <div className={styles.customlabel}>
+                                    <div className={styles.customtitle}>
+                                      {pendingLabel}
+                                    </div>
+                                    <div className={styles.customdesc}>
+                                      {bundleStatusID !== 1 &&
+                                        formattedDateTime}
+                                    </div>
+                                  </div>
+                                );
+                              }
+
+                              const resolutionStep = {
+                                key: `${index}-resolution`,
+                                iconSrc,
+                                labelContent,
+                              };
+
+                              return escalatedStep
+                                ? [escalatedStep, resolutionStep]
+                                : [resolutionStep];
+                            }
+                          );
+
                           const totalSteps =
-                            hierarchyPeople.length + (isNotTraded ? 1 : 0);
+                            hierarchySteps.length + (isNotTraded ? 1 : 0);
 
                           return (
                             <Stepper
@@ -683,60 +866,22 @@ const ViewDetailModal = () => {
                                 borderRadius: "50%",
                               }}
                             >
-                              {hierarchyPeople.map((person, index) => {
-                                const {
-                                  fullName,
-                                  bundleStatusID,
-                                  modifiedDate,
-                                  modifiedTime,
-                                } = person;
-
-                                const formattedDateTime = formatApiDateTime(
-                                  `${modifiedDate} ${modifiedTime}`
-                                );
-
-                                let iconSrc;
-                                switch (bundleStatusID) {
-                                  case 1:
-                                    iconSrc = EllipsesIcon;
-                                    break;
-                                  case 2:
-                                    iconSrc = CheckIcon;
-                                    break;
-                                  case 3:
-                                    iconSrc = CrossIcon;
-                                    break;
-                                  default:
-                                    iconSrc = EllipsesIcon;
-                                }
-
-                                return (
-                                  <Step
-                                    key={index}
-                                    label={
-                                      <div className={styles.customlabel}>
-                                        <div className={styles.customtitle}>
-                                          {fullName}
-                                        </div>
-                                        <div className={styles.customdesc}>
-                                          {bundleStatusID !== 1 &&
-                                            formattedDateTime}
-                                        </div>
-                                      </div>
-                                    }
-                                    children={
-                                      <div className={styles.stepCircle}>
-                                        <img
-                                          draggable={false}
-                                          src={iconSrc}
-                                          alt="status-icon"
-                                          className={styles.circleImg}
-                                        />
-                                      </div>
-                                    }
-                                  />
-                                );
-                              })}
+                              {hierarchySteps.map((step) => (
+                                <Step
+                                  key={step.key}
+                                  label={step.labelContent}
+                                  children={
+                                    <div className={styles.stepCircle}>
+                                      <img
+                                        draggable={false}
+                                        src={step.iconSrc}
+                                        alt="status-icon"
+                                        className={styles.circleImg}
+                                      />
+                                    </div>
+                                  }
+                                />
+                              ))}
                               {isNotTraded && (
                                 <Step
                                   key="not-traded"

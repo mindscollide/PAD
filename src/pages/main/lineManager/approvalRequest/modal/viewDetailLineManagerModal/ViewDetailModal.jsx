@@ -12,6 +12,11 @@ import repeat from "../../../../../../assets/img/repeat.png";
 import ApprovedResubmit from "../../../../../../assets/img/ApprovedResubmit.png";
 import DeclinedResubmit from "../../../../../../assets/img/DeclinedResubmite.png";
 import EscaltedOn from "../../../../../../assets/img/escalated.png";
+// Same "Escalated On" stepper icon used by
+// ViewDetailHeadOfApprovalModal.jsx (HTA's own View Details screen) - a
+// different file than the "escalated.png" badge above, which this page
+// uses elsewhere for the plain Request-Date flag, not the stepper step.
+import EscalatedStepIcon from "../../../../../../assets/img/EscaltedOn.png";
 
 import {
   dashBetweenApprovalAssets,
@@ -143,6 +148,184 @@ const ViewDetailModal = () => {
     viewDetailsLineManagerData?.hierarchyDetails?.some(
       (item) => item.userID === loggedInUserID && item.bundleStatusID === 2 // 2 is approved
     );
+
+  // ADDED ("proper hierarchy", matching ViewDetailHeadOfApprovalModal.jsx's
+  // escalations[]-driven stepper - API_Changes/2026-09-14_lm_hierarchy_
+  // escalation_resolver_identity_fix.md): hierarchyDetails alone collapses
+  // an escalated level straight to its resolution (or, while still open,
+  // to a bare "Waiting for Approval" that never says it's actually sitting
+  // with someone else now) - it never surfaces the escalation event itself.
+  // HTA's own View Details screen already shows a dedicated "Escalated On"
+  // step for this; unlike that screen (which only ever shows requests that
+  // were escalated, so it can build its stepper entirely from escalations[]),
+  // most levels here were never escalated at all, so this inserts the extra
+  // step per-level instead of replacing the whole hierarchyDetails-driven
+  // structure.
+  const hierarchyDetailsList = Array.isArray(
+    viewDetailsLineManagerData?.hierarchyDetails
+  )
+    ? viewDetailsLineManagerData.hierarchyDetails
+    : [];
+
+  const sortedHierarchyDetails = [...hierarchyDetailsList].sort((a, b) => {
+    if (a.bundleStatusID === 1 && b.bundleStatusID !== 1) return 1;
+    if (a.bundleStatusID !== 1 && b.bundleStatusID === 1) return -1;
+    return 0;
+  });
+
+  // escalations[] carries who a level was escalated FROM (escalatedFrom) -
+  // hierarchyDetails doesn't. Correlate each escalated hierarchyDetails
+  // entry with its escalations[] record via the shared escalatedOnDate/
+  // escalatedOnTime pair (present, identical, on both).
+  const escalationRecords = Array.isArray(
+    viewDetailsLineManagerData?.escalations
+  )
+    ? viewDetailsLineManagerData.escalations
+    : [];
+
+  const findEscalationRecord = (person) =>
+    escalationRecords.find(
+      (esc) =>
+        esc?.escalatedOnDate === person?.escalatedOnDate &&
+        esc?.escalatedOnTime === person?.escalatedOnTime
+    );
+
+  const hierarchySteps = sortedHierarchyDetails.flatMap((person, index) => {
+    const {
+      fullName,
+      bundleStatusID,
+      modifiedDate,
+      modifiedTime,
+      userID,
+      isEscalated,
+      escalatedOnDate,
+      escalatedOnTime,
+      escalationStillOpen,
+    } = person;
+
+    const formattedDateTime = formatApiDateTime(
+      `${modifiedDate} ${modifiedTime}`
+    );
+
+    const escalatedFromName = isEscalated
+      ? findEscalationRecord(person)?.escalatedFrom
+      : null;
+
+    // Same text/icon as ViewDetailHeadOfApprovalModal.jsx's (HTA's) own
+    // "Escalated On" step, plus the "by {name}" line already shown on the
+    // Employee's own View Details screen.
+    const escalatedStep = isEscalated
+      ? {
+          key: `${index}-escalated`,
+          iconSrc: EscalatedStepIcon,
+          statusText: "",
+          labelContent: (
+            <div className={styles.customlabel}>
+              <div className={styles.customtitle}>Escalated On</div>
+              {escalatedFromName && (
+                <div className={styles.customdesc}>
+                  by {escalatedFromName}
+                </div>
+              )}
+              <div className={styles.customdesc}>
+                {formatApiDateTime(`${escalatedOnDate} ${escalatedOnTime}`)}
+              </div>
+            </div>
+          ),
+        }
+      : null;
+
+    let iconSrc;
+    let statusText = "";
+    let labelContent = null;
+
+    // Still escalated and unresolved: same "Waiting for your approval" text
+    // HTA's own View Details screen shows for this case.
+    if (isEscalated && escalationStillOpen) {
+      iconSrc = EllipsesIcon;
+      labelContent = (
+        <div className={styles.customlabel}>
+          <div className={styles.customtitle}>Waiting for your approval</div>
+        </div>
+      );
+    } else {
+      switch (bundleStatusID) {
+        case 1:
+          // Check if the logged-in user is the same as this person
+          if (loggedInUserID === userID) {
+            iconSrc = EllipsesIcon; // Set the ellipses icon for waiting
+            statusText = "Waiting for Approval"; // Add the status text
+            labelContent = null; // Don't show name and date when loggedInUserID matches
+          } else {
+            iconSrc = EllipsesIcon; // Default icon for case 1
+            labelContent = (
+              <div className={styles.customlabel}>
+                <div className={styles.customtitle}>{fullName}</div>
+                <div className={styles.customdesc}>
+                  {bundleStatusID !== 1 && formattedDateTime}
+                </div>
+              </div>
+            );
+          }
+          break;
+        case 2:
+          iconSrc = CheckIcon;
+          // FIXED: was a single "Approved by {fullName}" title string that
+          // just visually wrapped onto 2 lines at narrow widths - now a
+          // real 3-line layout (title / name / date), matching the
+          // Employee View Details screen's own "Approved by" step.
+          labelContent =
+            loggedInUserID === userID ? (
+              <div className={styles.customlabel}>
+                <div className={styles.customtitle}>Approved by You</div>
+                <div className={styles.customdesc}>{formattedDateTime}</div>
+              </div>
+            ) : (
+              <div className={styles.customlabel}>
+                <div className={styles.customtitle}>Approved by</div>
+                <div className={styles.customdesc}>{fullName}</div>
+                <div className={styles.customdesc}>{formattedDateTime}</div>
+              </div>
+            );
+          break;
+        case 3:
+          iconSrc = CrossIcon; // Cross icon for declined
+          // FIXED: same "Declined by {fullName}" single-string-wrap gap
+          // as case 2 above.
+          labelContent =
+            loggedInUserID === userID ? (
+              <div className={styles.customlabel}>
+                <div className={styles.customtitle}>Declined by You</div>
+                <div className={styles.customdesc}>{formattedDateTime}</div>
+              </div>
+            ) : (
+              <div className={styles.customlabel}>
+                <div className={styles.customtitle}>Declined by</div>
+                <div className={styles.customdesc}>{fullName}</div>
+                <div className={styles.customdesc}>{formattedDateTime}</div>
+              </div>
+            );
+          break;
+        default:
+          iconSrc = EllipsesIcon; // Default icon for other cases
+          labelContent = (
+            <div className={styles.customlabel}>
+              <div className={styles.customtitle}>{fullName}</div>
+              <div className={styles.customdesc}>{formattedDateTime}</div>
+            </div>
+          );
+      }
+    }
+
+    const resolutionStep = {
+      key: `${index}-resolution`,
+      iconSrc,
+      statusText,
+      labelContent,
+    };
+
+    return escalatedStep ? [escalatedStep, resolutionStep] : [resolutionStep];
+  });
 
   // To open Approved Modal when Click on Approved Button in ViewDetailLineManager Modal
   const onClickToOpenApprovedModal = () => {
@@ -420,23 +603,14 @@ const ViewDetailModal = () => {
                         ? styles.TradedbackgrounColorOfStepper
                         : styles.backgrounColorOfStepper
                     } ${
-                      (viewDetailsLineManagerData?.hierarchyDetails?.length ||
-                        0) <= 3
+                      hierarchySteps.length <= 3
                         ? styles.centerAlignStepper
                         : styles.leftAlignStepper
                     }`}
                   >
                     {/* Agar loginUserID match krti hai hierarchyDetails ki userID sy to wo wala stepper show nahi hoga */}
                     <Stepper
-                      activeStep={Math.max(
-                        0,
-                        Array.isArray(
-                          viewDetailsLineManagerData?.hierarchyDetails
-                        )
-                          ? viewDetailsLineManagerData.hierarchyDetails.length -
-                              1
-                          : 0
-                      )}
+                      activeStep={Math.max(0, hierarchySteps.length - 1)}
                       connectorStyleConfig={{
                         activeColor: "#00640A",
                         completedColor: "#00640A",
@@ -450,158 +624,31 @@ const ViewDetailModal = () => {
                         borderRadius: "50%",
                       }}
                     >
-                      {Array.isArray(
-                        viewDetailsLineManagerData?.hierarchyDetails
-                      ) &&
-                        [...viewDetailsLineManagerData.hierarchyDetails]
-                          .sort((a, b) => {
-                            if (
-                              a.bundleStatusID === 1 &&
-                              b.bundleStatusID !== 1
-                            )
-                              return 1;
-                            if (
-                              a.bundleStatusID !== 1 &&
-                              b.bundleStatusID === 1
-                            )
-                              return -1;
-                            return 0;
-                          })
-                          .map((person, index) => {
-                            const {
-                              fullName,
-                              bundleStatusID,
-                              modifiedDate,
-                              modifiedTime,
-                              userID,
-                            } = person;
-
-                            const formattedDateTime = formatApiDateTime(
-                              `${modifiedDate} ${modifiedTime}`
-                            );
-
-                            let iconSrc;
-                            let statusText = ""; // Initialize variable for status text
-                            let labelContent = null; // Define a variable for label content
-
-                            switch (bundleStatusID) {
-                              case 1:
-                                // Check if the logged-in user is the same as this person
-                                if (loggedInUserID === userID) {
-                                  console.log("Check is waiting fro approval");
-                                  iconSrc = EllipsesIcon; // Set the ellipses icon for waiting
-                                  statusText = "Waiting for Approval"; // Add the status text
-                                  labelContent = null; // Don't show name and date when loggedInUserID matches
-                                } else {
-                                  console.log("Check is waiting fro approval");
-                                  iconSrc = EllipsesIcon; // Default icon for case 1
-                                  labelContent = (
-                                    <div className={styles.customlabel}>
-                                      <div className={styles.customtitle}>
-                                        {fullName}
-                                      </div>
-                                      <div className={styles.customdesc}>
-                                        {bundleStatusID !== 1 &&
-                                          formattedDateTime}
-                                      </div>
-                                    </div>
-                                  );
-                                }
-                                break;
-                              case 2:
-                                iconSrc = CheckIcon;
-                                if (loggedInUserID === userID) {
-                                  labelContent = (
-                                    <div className={styles.customlabel}>
-                                      <div className={styles.customtitle}>
-                                        Approved by You
-                                      </div>
-                                      <div className={styles.customdesc}>
-                                        {formattedDateTime}
-                                      </div>
-                                    </div>
-                                  );
-                                } else {
-                                  labelContent = (
-                                    <div className={styles.customlabel}>
-                                      <div className={styles.customtitle}>
-                                        {fullName}
-                                      </div>
-                                      <div className={styles.customdesc}>
-                                        {formattedDateTime}
-                                      </div>
-                                    </div>
-                                  );
-                                }
-                                break;
-                              case 3:
-                                iconSrc = CrossIcon; // Cross icon for declined
-                                if (loggedInUserID === userID) {
-                                  labelContent = (
-                                    <div className={styles.customlabel}>
-                                      <div className={styles.customtitle}>
-                                        Declined by You
-                                      </div>
-                                      <div className={styles.customdesc}>
-                                        {formattedDateTime}
-                                      </div>
-                                    </div>
-                                  );
-                                } else {
-                                  labelContent = (
-                                    <div className={styles.customlabel}>
-                                      <div className={styles.customtitle}>
-                                        {fullName}
-                                      </div>
-                                      <div className={styles.customdesc}>
-                                        {formattedDateTime}
-                                      </div>
-                                    </div>
-                                  );
-                                }
-                                break;
-                              default:
-                                iconSrc = EllipsesIcon; // Default icon for other cases
-                                labelContent = (
-                                  <div className={styles.customlabel}>
-                                    <div className={styles.customtitle}>
-                                      {fullName}
-                                    </div>
-                                    <div className={styles.customdesc}>
-                                      {formattedDateTime}
-                                    </div>
-                                  </div>
-                                );
-                            }
-
-                            return (
-                              <Step
-                                key={index}
-                                className={styles.stepButtonActive}
-                                label={
-                                  <div className={styles.stepLabelWrapper}>
-                                    {statusText && (
-                                      <div
-                                        className={styles.waitingApprovalText}
-                                      >
-                                        {statusText}
-                                      </div>
-                                    )}
-                                    {labelContent}
-                                  </div>
-                                }
-                              >
-                                <div className={styles.stepCircle}>
-                                  <img
-                                    draggable={false}
-                                    src={iconSrc}
-                                    alt="status-icon"
-                                    className={styles.circleImg}
-                                  />
+                      {hierarchySteps.map((step) => (
+                        <Step
+                          key={step.key}
+                          className={styles.stepButtonActive}
+                          label={
+                            <div className={styles.stepLabelWrapper}>
+                              {step.statusText && (
+                                <div className={styles.waitingApprovalText}>
+                                  {step.statusText}
                                 </div>
-                              </Step>
-                            );
-                          })}
+                              )}
+                              {step.labelContent}
+                            </div>
+                          }
+                        >
+                          <div className={styles.stepCircle}>
+                            <img
+                              draggable={false}
+                              src={step.iconSrc}
+                              alt="status-icon"
+                              className={styles.circleImg}
+                            />
+                          </div>
+                        </Step>
+                      ))}
                     </Stepper>
                   </div>
                 </div>

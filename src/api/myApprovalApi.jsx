@@ -225,6 +225,7 @@ export const GetAllViewDetailsByTradeApprovalID = async ({
         hierarchyDetails,
         workFlowStatus,
         isEscalated,
+        escalations,
       } = res.result;
 
       if (
@@ -243,6 +244,13 @@ export const GetAllViewDetailsByTradeApprovalID = async ({
           // `viewDetailsModalData?.isEscalated` read was always undefined
           // regardless of what the API actually returned.
           isEscalated: Boolean(isEscalated),
+          // FIXED (same drop-on-the-floor bug as isEscalated above): the
+          // backend already sends this too, but it wasn't destructured/
+          // returned here, so ViewDetailModal's escalation-aware stepper
+          // (escalatedFrom name lookup) could never find a match -
+          // escalations was always undefined regardless of what the API
+          // actually sent.
+          escalations: escalations || [],
         };
       }
 
@@ -927,6 +935,7 @@ export const GetAllLineManagerViewDetailRequest = async ({
         myActionStatusID,
         myActionStatus,
         isEscalated,
+        escalations,
       } = res.result;
 
       if (
@@ -943,6 +952,13 @@ export const GetAllLineManagerViewDetailRequest = async ({
           myActionStatusID: myActionStatusID ?? null,
           myActionStatus: myActionStatus || "",
           isEscalated: isEscalated || false,
+          // FIXED (same drop-on-the-floor bug as GetAllViewDetailsByTradeApprovalID's
+          // wrapper above): the backend already sends this, but it wasn't
+          // destructured/returned here, so ViewDetailModal's (LM's own)
+          // escalation-aware stepper could never resolve an "Escalated by
+          // {name}" line - escalations was always undefined regardless of
+          // what the API actually sent.
+          escalations: escalations || [],
         };
       }
 

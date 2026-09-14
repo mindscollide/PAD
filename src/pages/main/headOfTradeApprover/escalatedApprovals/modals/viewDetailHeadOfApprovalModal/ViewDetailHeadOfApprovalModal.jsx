@@ -123,12 +123,6 @@ const ViewDetailHeadOfApprovalModal = () => {
     String(viewDetailsHeadOfApprovalData?.workFlowStatus?.workFlowStatusID)
   );
 
-  // When its already approve or ddecline by you then button should be disabled
-  const hasAlreadyApprovedOrDeclined =
-    viewDetailsHeadOfApprovalData?.hierarchyDetails?.some(
-      (item) => item.userID === loggedInUserID && item.bundleStatusID === 2 // 2 is approved
-    );
-
   // The HTA "View Details" screen only ever shows requests that have
   // actually been escalated, so the stepper is built entirely from
   // escalations[] rather than the per-approver hierarchyDetails: each
@@ -139,11 +133,34 @@ const ViewDetailHeadOfApprovalModal = () => {
     ? viewDetailsHeadOfApprovalData.escalations
     : [];
 
+  // FIXED: was `hierarchyDetails?.some(item => item.userID === loggedInUserID
+  // && item.bundleStatusID === 2)` - checking for ANY hierarchy level this
+  // HTA had ever approved. A single workflow can carry multiple escalations
+  // across its levels (e.g. level 1 escalates to this HTA and gets closed by
+  // them, then later level 2 escalates fresh to the same HTA) - that old
+  // check matched the EARLIER, already-closed escalation's resolution and
+  // wrongly hid the Approve/Decline buttons for a brand-new, still-open
+  // escalation on a later level of the SAME workflow. Reproduced live:
+  // REQ-000105 (WorkFlow 215) - Huzeifa HTA already closed level 1's
+  // escalation (escalationID 240, hierarchyDetails[0].bundleStatusID: 2),
+  // but level 2's escalation (241) is freshly open and awaiting their
+  // action - buttons never showed. Base this on whether there's currently
+  // an open escalation instead - that's what this screen is actually for.
+  const hasAlreadyApprovedOrDeclined = !escalations.some(
+    (esc) => esc?.isEscalationOpen
+  );
+
   const escalationSteps = escalations.flatMap((esc) => {
     const escalatedStep = {
       key: `${esc?.escalationID}-escalated`,
       iconSrc: EscaltedOn,
       title: "Escalated On",
+      // ADDED: same "by {name}" line the LM and Employee View Details
+      // screens show - escalations[] already carries escalatedFrom
+      // directly here (this screen's own steps are built entirely from
+      // escalations[], unlike those two screens which have to correlate
+      // it in from hierarchyDetails).
+      subtitle: esc?.escalatedFrom ? `by ${esc.escalatedFrom}` : "",
       desc: formatApiDateTime(
         `${esc?.escalatedOnDate} ${esc?.escalatedOnTime}`
       ),
@@ -434,6 +451,11 @@ const ViewDetailHeadOfApprovalModal = () => {
                                   <div className={styles.customtitle}>
                                     {step.title}
                                   </div>
+                                  {step.subtitle && (
+                                    <div className={styles.customdesc}>
+                                      {step.subtitle}
+                                    </div>
+                                  )}
                                   {step.desc && (
                                     <div className={styles.customdesc}>
                                       {step.desc}
