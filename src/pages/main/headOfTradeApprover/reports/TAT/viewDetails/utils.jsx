@@ -172,7 +172,6 @@ const withSortIcon = (label, columnKey, sortedInfo, align = "left") => (
 );
 
 export const getBorderlessTableColumns = ({
-  approvalStatusMap,
   sortedInfo,
   htaTATViewDetailsSearch,
   setHTATATViewDetailsSearch,
@@ -183,8 +182,7 @@ export const getBorderlessTableColumns = ({
     key: "instrumentCode",
     width: 150,
     ellipsis: true,
-    sorter: (a, b) =>
-      (a?.instrumentCode || "").localeCompare(b?.instrumentCode || ""),
+    sorter: (a, b) => (a?.instrument || "").localeCompare(b?.instrument || ""),
     sortOrder:
       sortedInfo?.columnKey === "instrumentCode" ? sortedInfo.order : null,
     showSorterTooltip: false,

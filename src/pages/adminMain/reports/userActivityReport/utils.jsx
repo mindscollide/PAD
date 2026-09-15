@@ -122,27 +122,58 @@ export const mapListData = (res = []) => {
 const getSortIcon = (columnKey, sortedInfo) => {
   if (sortedInfo?.columnKey === columnKey) {
     return sortedInfo.order === "ascend" ? (
-      <img draggable={false} src={ArrowDown} alt="Asc" className="custom-sort-icon" />
+      <img
+        draggable={false}
+        src={ArrowDown}
+        alt="Asc"
+        className="custom-sort-icon"
+      />
     ) : (
-      <img draggable={false} src={ArrowUP} alt="Desc" className="custom-sort-icon" />
+      <img
+        draggable={false}
+        src={ArrowUP}
+        alt="Desc"
+        className="custom-sort-icon"
+      />
     );
   }
   return (
-    <img draggable={false} src={DefaultColumArrow} alt="Default" className="custom-sort-icon" />
+    <img
+      draggable={false}
+      src={DefaultColumArrow}
+      alt="Default"
+      className="custom-sort-icon"
+    />
   );
 };
-
+// ---------------------------------------------------------------------
+// Stable-sort helper: whenever the primary comparator ties, fall back to
+// sessionID (unique per row) so tied rows keep a deterministic order
+// instead of swapping/jumping between re-sorts (which read as
+// "duplicate" rows when two ties look visually identical).
+// ---------------------------------------------------------------------
+const withTiebreaker = (compareFn) => (a, b) => {
+  const primary = compareFn(a, b);
+  if (primary !== 0) return primary;
+  return Number(a.sessionID) - Number(b.sessionID);
+};
 const withSortIcon = (label, columnKey, sortedInfo, align = "left") => (
   <div
     className={style["table-header-wrapper"]}
     style={{
       justifyContent:
-        align === "center" ? "center" : align === "right" ? "flex-end" : "flex-start",
+        align === "center"
+          ? "center"
+          : align === "right"
+          ? "flex-end"
+          : "flex-start",
       textAlign: align,
     }}
   >
     <span className={style["table-header-text"]}>{label}</span>
-    <span className={style["table-header-icon"]}>{getSortIcon(columnKey, sortedInfo)}</span>
+    <span className={style["table-header-icon"]}>
+      {getSortIcon(columnKey, sortedInfo)}
+    </span>
   </div>
 );
 
@@ -153,12 +184,14 @@ const withSortIcon = (label, columnKey, sortedInfo, align = "left") => (
 
 export const getSessionListColumns = ({ sortedInfo, onViewActions }) => [
   {
-    title: withSortIcon("Employee ID", "employeeID", sortedInfo),
+    title: withSortIcon("Employee ID", "employeeID", sortedInfo, "center"),
     dataIndex: "employeeID",
     key: "employeeID",
     width: 130,
-    ellipsis: true,
-    sorter: (a, b) => Number(a.employeeID) - Number(b.employeeID),
+    align: "center",
+    sorter: withTiebreaker(
+      (a, b) => Number(a.employeeID) - Number(b.employeeID)
+    ),
     sortDirections: ["ascend", "descend"],
     sortOrder: sortedInfo?.columnKey === "employeeID" ? sortedInfo.order : null,
     showSorterTooltip: false,
@@ -170,10 +203,12 @@ export const getSessionListColumns = ({ sortedInfo, onViewActions }) => [
     dataIndex: "employeeName",
     key: "employeeName",
     width: 200,
-    ellipsis: true,
-    sorter: (a, b) => (a.employeeName || "").localeCompare(b.employeeName || ""),
+    sorter: withTiebreaker((a, b) =>
+      (a.employeeName || "").localeCompare(b.employeeName || "")
+    ),
     sortDirections: ["ascend", "descend"],
-    sortOrder: sortedInfo?.columnKey === "employeeName" ? sortedInfo.order : null,
+    sortOrder:
+      sortedInfo?.columnKey === "employeeName" ? sortedInfo.order : null,
     showSorterTooltip: false,
     sortIcon: () => null,
     render: (text) => <span className="font-medium">{text}</span>,
@@ -184,25 +219,23 @@ export const getSessionListColumns = ({ sortedInfo, onViewActions }) => [
     key: "loginDate",
     align: "center",
     width: 150,
-    ellipsis: true,
-    sorter: (a, b) => (a.loginSortKey || "").localeCompare(b.loginSortKey || ""),
+    sorter: withTiebreaker((a, b) =>
+      (a.loginSortKey || "").localeCompare(b.loginSortKey || "")
+    ),
     sortDirections: ["ascend", "descend"],
     sortOrder: sortedInfo?.columnKey === "loginDate" ? sortedInfo.order : null,
     showSorterTooltip: false,
     sortIcon: () => null,
-    render: (date) => (
-      <span className="text-gray-600" title={date}>
-        {date}
-      </span>
-    ),
+    render: (date) => <span className="text-gray-600">{date}</span>,
   },
   {
     title: withSortIcon("IP Address", "ipAddress", sortedInfo),
     dataIndex: "ipAddress",
     key: "ipAddress",
     width: 180,
-    ellipsis: true,
-    sorter: (a, b) => (a.ipAddress || "").localeCompare(b.ipAddress || ""),
+    sorter: withTiebreaker((a, b) =>
+      (a.ipAddress || "").localeCompare(b.ipAddress || "")
+    ),
     sortDirections: ["ascend", "descend"],
     sortOrder: sortedInfo?.columnKey === "ipAddress" ? sortedInfo.order : null,
     showSorterTooltip: false,
@@ -215,17 +248,14 @@ export const getSessionListColumns = ({ sortedInfo, onViewActions }) => [
     key: "loginTime",
     align: "center",
     width: 140,
-    ellipsis: true,
-    sorter: (a, b) => (a.loginSortKey || "").localeCompare(b.loginSortKey || ""),
+    sorter: withTiebreaker((a, b) =>
+      (a.loginSortKey || "").localeCompare(b.loginSortKey || "")
+    ), // Login Time column
     sortDirections: ["ascend", "descend"],
     sortOrder: sortedInfo?.columnKey === "loginTime" ? sortedInfo.order : null,
     showSorterTooltip: false,
     sortIcon: () => null,
-    render: (time) => (
-      <span className="text-gray-600" title={time}>
-        {time}
-      </span>
-    ),
+    render: (time) => <span className="text-gray-600">{time}</span>,
   },
   {
     title: withSortIcon("Actions", "totalActions", sortedInfo, "center"),
@@ -233,10 +263,12 @@ export const getSessionListColumns = ({ sortedInfo, onViewActions }) => [
     key: "totalActions",
     align: "center",
     width: 110,
-    ellipsis: true,
-    sorter: (a, b) => Number(a.totalActions || 0) - Number(b.totalActions || 0),
+    sorter: withTiebreaker(
+      (a, b) => Number(a.totalActions || 0) - Number(b.totalActions || 0)
+    ),
     sortDirections: ["ascend", "descend"],
-    sortOrder: sortedInfo?.columnKey === "totalActions" ? sortedInfo.order : null,
+    sortOrder:
+      sortedInfo?.columnKey === "totalActions" ? sortedInfo.order : null,
     showSorterTooltip: false,
     sortIcon: () => null,
     render: (q) => <span className="font-medium">{q}</span>,
@@ -247,17 +279,14 @@ export const getSessionListColumns = ({ sortedInfo, onViewActions }) => [
     key: "logoutTime",
     align: "center",
     width: 140,
-    ellipsis: true,
-    sorter: (a, b) => (a.logoutTime || "").localeCompare(b.logoutTime || ""),
+    sorter: withTiebreaker((a, b) =>
+      (a.logoutTime || "").localeCompare(b.logoutTime || "")
+    ),
     sortDirections: ["ascend", "descend"],
     sortOrder: sortedInfo?.columnKey === "logoutTime" ? sortedInfo.order : null,
     showSorterTooltip: false,
     sortIcon: () => null,
-    render: (time) => (
-      <span className="text-gray-600" title={time}>
-        {time}
-      </span>
-    ),
+    render: (time) => <span className="text-gray-600">{time}</span>,
   },
   {
     title: "",

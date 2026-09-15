@@ -69,11 +69,8 @@ const MyHistory = () => {
   const [loadingMore, setLoadingMore] = useState(false);
   const [hasMore, setHasMore] = useState(true); // until proven otherwise
 
-  const {
-    employeeMyHistorySearch,
-    setEmployeeMyHistorySearch,
-    resetEmployeeMyHistorySearch,
-  } = useSearchBarContext();
+  const { employeeMyHistorySearch, setEmployeeMyHistorySearch } =
+    useSearchBarContext();
   const { assetTypeListingData, setAssetTypeListingData } =
     useDashboardContext();
 
@@ -101,13 +98,13 @@ const MyHistory = () => {
       });
       const currentAssetTypeData = getSafeAssetTypeData(
         assetTypeListingData,
-        setAssetTypeListingData,
+        setAssetTypeListingData
       );
       if (res) {
         setEmployeeMyHistoryData(res);
       }
     },
-    [callApi, navigate, showLoader, showNotification],
+    [callApi, navigate, showLoader, showNotification]
   );
 
   // Initial Fetch
@@ -119,7 +116,7 @@ const MyHistory = () => {
       nextPageRef.current = 2;
       const requestData = buildMyHistoryApiRequest(
         employeeMyHistorySearch,
-        assetTypeListingData,
+        assetTypeListingData
       );
 
       fetchApiCall(requestData, true, true);
@@ -141,7 +138,7 @@ const MyHistory = () => {
 
       const requestData = buildMyHistoryApiRequest(
         employeeMyHistorySearch,
-        assetTypeListingData,
+        assetTypeListingData
       );
 
       fetchApiCall(requestData, true, true);
@@ -290,7 +287,7 @@ const MyHistory = () => {
         // build request based on current search/filter but override pagination
         const baseRequest = buildMyHistoryApiRequest(
           employeeMyHistorySearch,
-          assetTypeListingData,
+          assetTypeListingData
         );
         const requestData = {
           ...baseRequest,
@@ -330,10 +327,10 @@ const MyHistory = () => {
             // That's a backend ordering issue to fix at the source, but
             // this guard keeps it from rendering as duplicate rows here.
             const existingIDs = new Set(
-              existingWorkFlows.map((wf) => wf.workFlowID),
+              existingWorkFlows.map((wf) => wf.workFlowID)
             );
             const uniqueNewEmployees = newEmployees.filter(
-              (wf) => !existingIDs.has(wf.workFlowID),
+              (wf) => !existingIDs.has(wf.workFlowID)
             );
 
             return {
@@ -384,7 +381,7 @@ const MyHistory = () => {
   const downloadMyHistoryReportInExcelFormat = async () => {
     const { PageNumber, Length, ...requestdata } = buildMyHistoryApiRequest(
       employeeMyHistorySearch,
-      assetTypeListingData,
+      assetTypeListingData
     );
 
     await DownloadMyHistoryReportRequest({
@@ -447,7 +444,7 @@ const MyHistory = () => {
       // plain HHmmss used everywhere else — strip the colons before
       // handing it to formatApiDateTime.
       const titleDateTimeMatch = wf.title?.match(
-        /(\d{8})\s(\d{2}):(\d{2}):(\d{2})$/,
+        /(\d{8})\s(\d{2}):(\d{2}):(\d{2})$/
       );
 
       // FIXED (2026-08-18): the previous pass renamed this step to
@@ -468,12 +465,12 @@ const MyHistory = () => {
         status: isCreatedFromResubmit
           ? "Resubmit for Approval"
           : isTransactionNature
-            ? "Transaction Conducted"
-            : "Send for Approval",
+          ? "Transaction Conducted"
+          : "Send for Approval",
         date:
           isCreatedFromResubmit && titleDateTimeMatch
             ? formatApiDateTime(
-                `${titleDateTimeMatch[1]} ${titleDateTimeMatch[2]}${titleDateTimeMatch[3]}${titleDateTimeMatch[4]}`,
+                `${titleDateTimeMatch[1]} ${titleDateTimeMatch[2]}${titleDateTimeMatch[3]}${titleDateTimeMatch[4]}`
               )
             : formatApiDateTime(`${wf.creationDate} ${wf.creationTime}`),
         ...(isCreatedFromResubmit && {
@@ -482,8 +479,8 @@ const MyHistory = () => {
         iconType: isCreatedFromResubmit
           ? "Resubmit"
           : isTransactionNature
-            ? "co-Transaction Conducted"
-            : "SendForApproval",
+          ? "co-Transaction Conducted"
+          : "SendForApproval",
       };
 
       // Step 1: Bundle hierarchy
@@ -503,13 +500,13 @@ const MyHistory = () => {
             b.bundleStatusState === 2
               ? "Approved"
               : b.bundleStatusState === 3
-                ? isNonCompliantOutcome
-                  ? "Non-Compliant"
-                  : "Declined"
-                : "Pending",
+              ? isNonCompliantOutcome
+                ? "Non-Compliant"
+                : "Declined"
+              : "Pending",
           user: `${b.firstName} ${b.lastName}`,
           date: formatApiDateTime(
-            `${b.bundleModifiedDate} ${b.bundleModifiedTime}`,
+            `${b.bundleModifiedDate} ${b.bundleModifiedTime}`
           ),
           iconType: getBundleIconType(b.bundleStatusState),
         })) || [];
@@ -571,7 +568,9 @@ const MyHistory = () => {
           // untouched for the requesterID check right after, so that
           // comparison keeps matching the backend's actual string.
           status:
-            wf.workFlowStatus === "Resubmit" ? "Resubmitted" : wf.workFlowStatus,
+            wf.workFlowStatus === "Resubmit"
+              ? "Resubmitted"
+              : wf.workFlowStatus,
           date: finalStepDate,
           // Only show the tracking ID here when THIS request was itself
           // resubmitted (workFlowStatus === "Resubmit") — then
@@ -581,7 +580,7 @@ const MyHistory = () => {
           // belongs on the "Resubmit for Approval" step above, not here.
           ...(wf.workFlowStatus === "Resubmit" && {
             requesterID: dashBetweenApprovalAssets(
-              wf.resubmitRequestTrackingID,
+              wf.resubmitRequestTrackingID
             ),
           }),
           iconType: getWorkFlowIconType(wf.workFlowStatusID),
@@ -604,7 +603,7 @@ const MyHistory = () => {
           ? {
               status: "Not Traded",
               date: formatApiDateTime(
-                `${wf.notTradedDate} ${wf.notTradedTime}`,
+                `${wf.notTradedDate} ${wf.notTradedTime}`
               ),
               iconType: "Not-Traded",
             }

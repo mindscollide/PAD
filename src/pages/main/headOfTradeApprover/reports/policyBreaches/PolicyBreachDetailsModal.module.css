@@ -24,8 +24,6 @@
 }
 
 .employeeInfo {
-  display: flex;
-  flex-direction: column;
   gap: 2px;
 }
 
@@ -44,7 +42,7 @@
 
 .downloadButtonText {
   display: inline-flex;
-  align-items: center;
+  align-items: right;
   gap: 8px;
 }
 
@@ -59,10 +57,10 @@
   border: 1px solid #eaeaea;
   border-radius: 6px;
 }
-
 .table {
   width: 100%;
   border-collapse: collapse;
+  table-layout: fixed;
   font-family: "Switzer Variable";
   font-size: 14px;
 }
@@ -78,11 +76,26 @@
   z-index: 1;
 }
 
+/* Specific column widths */
+.policyIdColumn {
+  width: 120px;
+}
+
+.scenarioColumn {
+  width: 280px;
+}
+
+.consequencesColumn {
+  width: 360px;
+}
+
+/* Wrap long text inside the columns */
 .table tbody td {
   padding: 10px 12px;
   border-top: 1px solid #eaeaea;
   color: #424242;
   vertical-align: top;
+  overflow-wrap: break-word;
 }
 
 .emptyText {

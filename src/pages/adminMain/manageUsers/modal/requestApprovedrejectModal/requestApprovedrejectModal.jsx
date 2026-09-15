@@ -176,7 +176,7 @@ const RequestApprovedRejeectedModal = ({ currentUserData = [] }) => {
                           </span>
                         </div>
                       </Col>
-                      <Col span={12}>
+                      {/* <Col span={12}>
                         <div className={styles.infoItem}>
                           <img
                             draggable={false}
@@ -193,7 +193,7 @@ const RequestApprovedRejeectedModal = ({ currentUserData = [] }) => {
                             </span>
                           </span>
                         </div>
-                      </Col>
+                      </Col> */}
                     </Row>
 
                     <Row style={{ marginBottom: "20px" }}>

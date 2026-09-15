@@ -294,31 +294,23 @@ const CompianceOfficerPortfolioHistoryReports = () => {
       requesterName: { requesterName: "" },
       departmentName: { departmentName: "" },
       quantity: { quantity: 0 },
-      // requestDate resets startDate + endDate
-      requestDate: { startDate: null, endDate: null },
     };
-
-    if (key === "requestDate") setDateRange({ StartDate: null, EndDate: null });
 
     setCoPortfolioHistoryReportSearch((prev) => ({
       ...prev,
-      ...resetMap[key], // reset only the clicked filter
+      ...resetMap[key],
       pageNumber: 1,
       filterTrigger: true,
     }));
   };
-
   /** 🔹 Handle removing all filters */
   const handleRemoveAllFilters = () => {
-    setDateRange({ StartDate: null, EndDate: null });
     setCoPortfolioHistoryReportSearch((prev) => ({
       ...prev,
       instrumentName: "",
       requesterName: "",
       departmentName: "",
       quantity: 0,
-      startDate: null,
-      endDate: null,
       type: [],
       status: [],
       pageNumber: 1,
@@ -328,18 +320,15 @@ const CompianceOfficerPortfolioHistoryReports = () => {
 
   /** 🔹 Build Active Filters */
   const activeFilters = (() => {
-    const {
-      instrumentName,
-      requesterName,
-      departmentName,
-      quantity,
-      startDate,
-      endDate,
-    } = coPortfolioHistoryReportSearch || {};
+    const { instrumentName, requesterName, departmentName, quantity } =
+      coPortfolioHistoryReportSearch || {};
 
     const truncate = (val) =>
       val.length > 13 ? val.slice(0, 13) + "..." : val;
 
+    // REMOVED: requestDate tag - date range is always applied (default or
+    // user-picked) but no longer surfaced as a removable tag; the picker
+    // box itself shows the current range.
     return [
       instrumentName
         ? { key: "instrumentName", value: truncate(instrumentName) }
@@ -354,12 +343,6 @@ const CompianceOfficerPortfolioHistoryReports = () => {
         : null,
 
       quantity ? { key: "quantity", value: quantity } : null,
-
-      startDate &&
-        endDate && {
-          key: "requestDate",
-          value: `${startDate} → ${endDate}`,
-        },
     ].filter(Boolean);
   })();
 
@@ -375,20 +358,31 @@ const CompianceOfficerPortfolioHistoryReports = () => {
         filterTrigger: true,
       }));
 
-      // Clears the picker's own input back to its placeholder once the
-      // range is applied - the selected range is still visible as the
-      // "requestDate" active-filter tag above.
-      setDateRange({ StartDate: null, EndDate: null });
+      // CHANGED: previously blanked back to placeholder here, relying on
+      // the "requestDate" active-filter tag to show the applied range
+      // instead - that tag is being removed (see activeFilters below), so
+      // the picker box is now the only place the range is visible. Keep it
+      // showing what was actually picked.
+      setDateRange({ StartDate: dates[0], EndDate: dates[1] });
     }
   };
 
   const handleClearDates = () => {
-    setDateRange({ StartDate: null, EndDate: null });
+    const endDate = new Date();
+    const startDate = new Date();
+    startDate.setMonth(startDate.getMonth() - 6);
+    const defaultStart = formatToYYYYMMDD(startDate);
+    const defaultEnd = formatToYYYYMMDD(endDate);
+
+    // CHANGED: was resetting to null (no date filter at all) - now
+    // re-applies the same 6-month default used on initial load, matching
+    // the sibling Date-wise Transaction Report pages' Clear behavior.
+    setDateRange({ StartDate: defaultStart, EndDate: defaultEnd });
 
     setCoPortfolioHistoryReportSearch((prev) => ({
       ...prev,
-      startDate: null,
-      endDate: null,
+      startDate: defaultStart,
+      endDate: defaultEnd,
       pageNumber: 1,
       filterTrigger: true,
     }));

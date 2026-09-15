@@ -124,7 +124,7 @@ export const HTAPolicyBreachesReportFilter = ({
       quantity: quantity || "",
       startDate,
       endDate,
-      pageNumber: 0,
+      pageNumber: 1,
       filterTrigger: true,
     });
 
@@ -143,7 +143,7 @@ export const HTAPolicyBreachesReportFilter = ({
       startDate: null,
       endDate: null,
       type: [],
-      pageNumber: 0,
+      pageNumber: 1,
       pageSize: 10,
       filterTrigger: true,
     });

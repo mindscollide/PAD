@@ -1,13 +1,9 @@
 // components/pages/employee/approval/tableColumns.js
 
 import React from "react";
-import { Tag, Tooltip } from "antd";
-import { Button, StatusFilterDropdown } from "../../../../../components";
-import style from "./pendingRequest.module.css";
+import { Tooltip } from "antd";
+import { Button } from "../../../../../components";
 import EscalatedIcon from "../../../../../assets/img/escalated.png";
-import ArrowUP from "../../../../../assets/img/arrow-up-dark.png";
-import ArrowDown from "../../../../../assets/img/arrow-down-dark.png";
-import DefaultColumArrow from "../../../../../assets/img/default-colum-arrow.png";
 import TypeColumnTitle from "../../../../../components/dropdowns/filters/typeColumnTitle";
 import StatusColumnTitle from "../../../../../components/dropdowns/filters/statusColumnTitle";
 import {
@@ -15,10 +11,7 @@ import {
   formatApiDateTime,
   toYYMMDD,
 } from "../../../../../common/funtions/rejex";
-import {
-  mapBuySellToIds,
-  mapStatusToIds,
-} from "../../../../../components/dropdowns/filters/utils";
+import { mapBuySellToIds } from "../../../../../components/dropdowns/filters/utils";
 import { getTradeTypeById } from "../../../../../common/funtions/type";
 import { withSortIcon } from "../../../../../common/funtions/tableIcon";
 // import TypeColumnTitle from "./typeFilter";
@@ -151,10 +144,8 @@ export const getBorderlessLineManagerTableColumns = ({
     align: "left",
     dataIndex: "instrumentCode",
     key: "instrumentCode",
-    width: 200,
-    ellipsis: true,
-    sorter: (a, b) =>
-      (a?.instrumentCode || "").localeCompare(b?.instrumentCode || ""),
+    width: 220,
+    sorter: (a, b) => (a?.instrument || "").localeCompare(b?.instrument || ""),
     sortOrder:
       sortedInfo?.columnKey === "instrumentCode" ? sortedInfo.order : null,
     showSorterTooltip: false,

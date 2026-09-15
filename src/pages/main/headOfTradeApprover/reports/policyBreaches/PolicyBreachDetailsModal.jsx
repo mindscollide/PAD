@@ -29,7 +29,7 @@ const PolicyBreachDetailsModal = ({
   return (
     <GlobalModal
       visible={visible}
-      width="800px"
+      width="1000px"
       onCancel={onClose}
       closable={false}
       maskClosable
@@ -43,14 +43,12 @@ const PolicyBreachDetailsModal = ({
         <div>
           <div className={style.employeeRow}>
             <div className={style.employeeInfo}>
-              <span className={style.employeeLabel}>Employee ID</span>
+              <span className={style.employeeLabel}>Employee ID: </span>
               <span className={style.employeeValue}>{employeeID ?? "—"}</span>
             </div>
             <div className={style.employeeInfo}>
-              <span className={style.employeeLabel}>Employee Name</span>
-              <span className={style.employeeValue}>
-                {employeeName || "—"}
-              </span>
+              <span className={style.employeeLabel}>Employee Name: </span>
+              <span className={style.employeeValue}>{employeeName || "—"}</span>
             </div>
             <CustomButton
               text={
@@ -76,17 +74,24 @@ const PolicyBreachDetailsModal = ({
               <table className={style.table}>
                 <thead>
                   <tr>
-                    <th>Policy ID</th>
-                    <th>Scenario</th>
-                    <th>Consequences</th>
+                    <th className={style.policyIdColumn}>Policy ID</th>
+                    <th className={style.scenarioColumn}>Scenario</th>
+                    <th className={style.consequencesColumn}>Consequences</th>
                   </tr>
                 </thead>
+
                 <tbody>
                   {records.map((record, index) => (
                     <tr key={record.policyID || index}>
-                      <td>{record.policyID || "—"}</td>
-                      <td>{record.scenario || "—"}</td>
-                      <td>{record.consequence || "—"}</td>
+                      <td className={style.policyIdColumn}>
+                        {record.policyID || "—"}
+                      </td>
+                      <td className={style.scenarioColumn}>
+                        {record.scenario || "—"}
+                      </td>
+                      <td className={style.consequencesColumn}>
+                        {record.consequence || "—"}
+                      </td>
                     </tr>
                   ))}
                 </tbody>

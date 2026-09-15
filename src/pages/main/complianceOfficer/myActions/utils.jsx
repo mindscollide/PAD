@@ -18,7 +18,9 @@ import { withSortIcon } from "../../../../common/funtions/tableIcon";
  */
 
 export const buildMyActionApiRequest = (searchState = {}) => ({
-  RequestID: searchState.requestID || "",
+  RequestID: searchState.transactionID
+    ? searchState.transactionID.replace(/-/g, "") // "T-000089" -> "T000089"
+    : "",
   InstrumentName: searchState.instrumentName || "",
   RequesterName: searchState.requesterName || "",
   StartDate: searchState.startDate ? toYYMMDD(searchState.startDate) : null,
@@ -26,8 +28,6 @@ export const buildMyActionApiRequest = (searchState = {}) => ({
   Type: searchState.type || [],
   Status: searchState.status || [],
   Quantity: searchState.quantity ? Number(searchState.quantity) : 0,
-  // GetComplianceOfficerMyActionsWorkflowDetail's PageNumber is now a
-  // real 1-indexed page number (backend fix 2026-08-05).
   PageNumber: Number(searchState.pageNumber) || 1,
   Length: Number(searchState.pageSize) || 10,
 });
