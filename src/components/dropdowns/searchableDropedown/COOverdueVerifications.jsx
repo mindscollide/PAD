@@ -72,8 +72,10 @@ export const COOverdueVerifications = ({
     const rawValue = value.replace(/,/g, "");
 
     if (name === "approvedQuantity" || name === "sharesTraded") {
-      // Allow empty or numbers only
-      if (rawValue === "" || allowOnlyNumbers(rawValue)) {
+      if (
+        rawValue === "" ||
+        (allowOnlyNumbers(rawValue) && rawValue.length <= 12)
+      ) {
         setFieldValue(name, rawValue);
       }
       return;
@@ -196,7 +198,8 @@ export const COOverdueVerifications = ({
             name="approvedQuantity"
             value={
               localState.approvedQuantity !== "" &&
-              !isNaN(localState.approvedQuantity)
+              !isNaN(localState.approvedQuantity) &&
+              Number(localState.approvedQuantity) !== 0
                 ? Number(localState.approvedQuantity).toLocaleString("en-US")
                 : ""
             }
@@ -215,7 +218,9 @@ export const COOverdueVerifications = ({
             label="Shares Traded"
             name="sharesTraded"
             value={
-              localState.sharesTraded !== "" && !isNaN(localState.sharesTraded)
+              localState.sharesTraded !== "" &&
+              !isNaN(localState.sharesTraded) &&
+              Number(localState.sharesTraded) !== 0
                 ? Number(localState.sharesTraded).toLocaleString("en-US")
                 : ""
             }

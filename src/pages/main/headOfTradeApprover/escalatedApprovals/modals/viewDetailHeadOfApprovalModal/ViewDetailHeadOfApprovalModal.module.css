@@ -215,7 +215,7 @@
 }
 
 .customtitle {
-  white-space: normal;
+  /* white-space: normal; */
   font-family: "Switzer Variable";
   color: #30426a;
   font-weight: 700;
