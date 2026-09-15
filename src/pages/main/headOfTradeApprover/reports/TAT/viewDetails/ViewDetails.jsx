@@ -105,7 +105,7 @@ const ViewDetails = () => {
       setHTATATViewDetailsSearch((prev) => {
         const next = {
           ...prev,
-          pageNumber: replace ? mapped.length : prev.pageNumber + mapped.length,
+          pageNumber: prev.pageNumber + 1,
         };
 
         // this is for check if filter value get true only on that it will false
@@ -209,7 +209,7 @@ const ViewDetails = () => {
     setHTATATViewDetailsSearch((prev) => ({
       ...prev,
       ...resetMap[key],
-      pageNumber: 0,
+      pageNumber: 1,
       filterTrigger: true,
     }));
   };
@@ -226,7 +226,7 @@ const ViewDetails = () => {
       actionEndDate: null,
       actionBy: "",
       tat: 0,
-      pageNumber: 0,
+      pageNumber: 1,
       filterTrigger: true,
     }));
   };

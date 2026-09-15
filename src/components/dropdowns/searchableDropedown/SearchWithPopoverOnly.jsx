@@ -510,7 +510,7 @@ const SearchWithPopoverOnly = () => {
             actionEndDate: "",
             actionBy: "",
             tat: "",
-            pageNumber: 0,
+            pageNumber: 1,
             filterTrigger: true,
           }));
         } else if (

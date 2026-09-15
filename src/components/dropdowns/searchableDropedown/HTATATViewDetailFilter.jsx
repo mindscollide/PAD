@@ -204,7 +204,7 @@ export const HTATATViewDetailFilter = ({
 
       actionBy: actionBy?.trim() || "",
       tat: tat ? Number(tat) : 0,
-      pageNumber: 0,
+      pageNumber: 1,
       filterTrigger: true,
     });
 
@@ -226,7 +226,7 @@ export const HTATATViewDetailFilter = ({
       actionEndDate: null,
       actionBy: "",
       tat: 0,
-      pageNumber: 0,
+      pageNumber: 1,
       pageSize: 10,
     });
 
@@ -303,7 +303,7 @@ export const HTATATViewDetailFilter = ({
       <Row gutter={[12, 12]}>
         <Col xs={24} md={12}>
           <DateRangePicker
-            label="Request Date Range"
+            label="Initiated At Date Range"
             size="medium"
             value={[localState.startDate, localState.endDate]}
             onChange={handleDateChange}
@@ -313,7 +313,7 @@ export const HTATATViewDetailFilter = ({
 
         <Col xs={24} md={12}>
           <DateRangePicker
-            label="Escalated Date Range"
+            label="Action At Date Range"
             size="medium"
             value={[localState.actionStartDate, localState.actionEndDate]}
             onChange={handleDateChangeAction}
