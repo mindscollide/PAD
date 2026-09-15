@@ -172,7 +172,6 @@ const withSortIcon = (label, columnKey, sortedInfo, align = "left") => (
 );
 
 export const getBorderlessTableColumns = ({
-  approvalStatusMap,
   sortedInfo,
   htaTATViewDetailsSearch,
   setHTATATViewDetailsSearch,

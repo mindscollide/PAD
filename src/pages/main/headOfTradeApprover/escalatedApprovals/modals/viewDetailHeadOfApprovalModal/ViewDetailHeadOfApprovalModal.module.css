@@ -215,10 +215,14 @@
 }
 
 .customtitle {
+  white-space: normal;
   font-family: "Switzer Variable";
   color: #30426a;
   font-weight: 700;
   font-size: 14px;
+  max-width: 200px;
+  overflow-wrap: break-word;
+  word-break: break-word;
 }
 .backgrounColorOfStepper {
   background-color: #fff1e7 !important;

@@ -248,7 +248,6 @@ export const getBorderlessLineManagerTableColumns = ({
     align: "center",
     width: 100,
 
-    ellipsis: true,
     sorter: (a, b) => a.quantity - b.quantity,
     sortDirections: ["ascend", "descend"],
     sortOrder: sortedInfo?.columnKey === "quantity" ? sortedInfo.order : null,
@@ -266,14 +265,13 @@ export const getBorderlessLineManagerTableColumns = ({
     key: "isEscalated",
     width: 50,
 
-    ellipsis: true,
     render: (isEscalated, record) => {
       return isEscalated ? (
         <img
           draggable={false}
           src={EscalatedIcon}
           alt="Escalated"
-          title="Escalated"
+          data-testid="escalated-icon"
         />
       ) : null;
     },
@@ -288,7 +286,6 @@ export const getBorderlessLineManagerTableColumns = ({
     dataIndex: "escalatedDateTime",
     key: "escalatedDateTime",
     align: "center",
-    ellipsis: true,
     width: 200,
 
     sorter: (a, b) =>
