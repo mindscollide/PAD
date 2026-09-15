@@ -25,7 +25,9 @@ export const buildMyHistoryApiRequest = (
   searchState = {},
   assetTypeListingData
 ) => ({
-  RequestID: searchState.requestID || "",
+  RequestID: searchState.requestID
+    ? searchState.requestID.replace(/-/g, "") // "REQ-000018" -> "REQ000018"
+    : "",
   InstrumentName: searchState.instrumentName || "",
   Quantity: searchState.quantity ? Number(searchState.quantity) : 0,
   StartDate: searchState.startDate ? toYYMMDD(searchState.startDate) : null,

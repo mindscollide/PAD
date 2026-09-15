@@ -119,7 +119,7 @@
 
 .reasonTag {
   width: 199px;
-  height: 38px;
+  height: max-content;
   border-radius: 6.95px;
   padding: 2px 0px;
   background-color: #edf3ff;

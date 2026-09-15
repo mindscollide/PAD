@@ -18,7 +18,7 @@ const INITIAL_LOCAL_USER_STATE = {
 
 const INITIAL_LOCAL_PENDING_STATE = {
   employeeName: "",
-  employeeID: "",
+  // employeeID: "",
   emailAddress: "",
   departmentName: "",
   startDate: null,
@@ -263,7 +263,7 @@ export const AdminUsersTabFilter = ({
                 classNames="Search-Field"
               />
             </Col>
-            <Col xs={24} md={12}>
+            {/* <Col xs={24} md={12}>
               <TextField
                 label="Employee ID"
                 name="employeeID"
@@ -272,7 +272,7 @@ export const AdminUsersTabFilter = ({
                 placeholder="Employee ID"
                 classNames="Search-Field"
               />
-            </Col>
+            </Col> */}
             <Col xs={24} md={12}>
               <TextField
                 label="Email Address"
@@ -315,11 +315,11 @@ export const AdminUsersTabFilter = ({
           <>
             <Col xs={24} md={12}>
               <TextField
-                label="Employee Name"
+                label="Requestee Name"
                 name="employeeName"
                 value={localState.employeeName}
                 onChange={handleInputChange}
-                placeholder="Employee Name"
+                placeholder="Requestee Name"
                 classNames="Search-Field"
               />
             </Col>

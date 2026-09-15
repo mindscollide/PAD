@@ -86,39 +86,38 @@ export const getPendingUserColumns = ({
   handleViewNoteDetail,
 }) => [
   // 🧱 Employee ID
-  {
-    title: (
-      <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-        Employee ID {getSortIcon("userRegistrationRequestID", sortedInfo)}
-      </div>
-    ),
-    dataIndex: "userRegistrationRequestID",
-    key: "userRegistrationRequestID",
-    width: 100,
-    ellipsis: true,
-    sorter: (a, b) =>
-      (a.userRegistrationRequestID || 0) - (b.userRegistrationRequestID || 0),
-    sortDirections: ["ascend", "descend"],
-    sortOrder:
-      sortedInfo.columnKey === "userRegistrationRequestID"
-        ? sortedInfo.order
-        : null,
-    showSorterTooltip: false,
-    sortIcon: () => null,
-    render: (text) => <Tooltip title={text || "—"}>{text || "—"}</Tooltip>,
-  },
+  // {
+  //   title: (
+  //     <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+  //       Employee ID {getSortIcon("userRegistrationRequestID", sortedInfo)}
+  //     </div>
+  //   ),
+  //   dataIndex: "userRegistrationRequestID",
+  //   key: "userRegistrationRequestID",
+  //   width: 100,
+  //   ellipsis: true,
+  //   sorter: (a, b) =>
+  //     (a.userRegistrationRequestID || 0) - (b.userRegistrationRequestID || 0),
+  //   sortDirections: ["ascend", "descend"],
+  //   sortOrder:
+  //     sortedInfo.columnKey === "userRegistrationRequestID"
+  //       ? sortedInfo.order
+  //       : null,
+  //   showSorterTooltip: false,
+  //   sortIcon: () => null,
+  //   render: (text) => <Tooltip title={text || "—"}>{text || "—"}</Tooltip>,
+  // },
 
   // 🧱 Employee Name
   {
     title: (
       <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-        Employee Name {getSortIcon("fullName", sortedInfo)}
+        Requestee Name {getSortIcon("fullName", sortedInfo)}
       </div>
     ),
     dataIndex: "fullName",
     key: "fullName",
     width: 120,
-    ellipsis: true,
     sorter: (a, b) => (a.fullName || "").localeCompare(b.fullName || ""),
     sortDirections: ["ascend", "descend"],
     sortOrder: sortedInfo.columnKey === "fullName" ? sortedInfo.order : null,
@@ -136,8 +135,7 @@ export const getPendingUserColumns = ({
     ),
     dataIndex: "email",
     key: "email",
-    width: 120,
-    ellipsis: true,
+    width: 160,
     sorter: (a, b) => (a.email || "").localeCompare(b.email || ""),
     sortDirections: ["ascend", "descend"],
     sortOrder: sortedInfo.columnKey === "email" ? sortedInfo.order : null,
@@ -158,7 +156,6 @@ export const getPendingUserColumns = ({
     dataIndex: "departmentName",
     key: "departmentName",
     width: 160,
-    ellipsis: true,
     sorter: (a, b) =>
       (a.departmentName || "").localeCompare(b.departmentName || ""),
     sortDirections: ["ascend", "descend"],
@@ -189,7 +186,7 @@ export const getPendingUserColumns = ({
     key: "lastReqeustedDateandtime",
     width: 160,
     align: "center",
-    ellipsis: true,
+
     sorter: (a, b) => {
       const parseToDate = (val) => {
         if (!val) return new Date(0);
@@ -220,11 +217,7 @@ export const getPendingUserColumns = ({
     sortIcon: () => null,
     render: (_, record) => {
       const formatted = formatApiDateTime(record.lastReqeustedDateandtime);
-      return (
-        <Tooltip title={formatted}>
-          <div style={{ textAlign: "center" }}>{formatted || "—"}</div>
-        </Tooltip>
-      );
+      return <span className="text-gray-600">{formatted || "—"}</span>;
     },
   },
 
@@ -245,9 +238,8 @@ export const getPendingUserColumns = ({
     ),
     dataIndex: "lastRejectionDateandtime",
     key: "lastRejectionDateandtime",
-    width: 160,
+    width: 180,
     align: "center",
-    ellipsis: true,
     sorter: (a, b) => {
       const parseToDate = (val) => {
         if (!val) return new Date(0);
@@ -278,11 +270,7 @@ export const getPendingUserColumns = ({
     sortIcon: () => null,
     render: (_, record) => {
       const formatted = formatApiDateTime(record.lastRejectionDateandtime);
-      return (
-        <Tooltip title={formatted}>
-          <div style={{ textAlign: "center" }}>{formatted || "—"}</div>
-        </Tooltip>
-      );
+      return <span className="text-gray-600">{formatted || "—"}</span>;
     },
   },
 
@@ -304,7 +292,6 @@ export const getPendingUserColumns = ({
     key: "rejectedCount",
     width: 120,
     align: "center",
-    ellipsis: true,
     sorter: (a, b) => (a.rejectedCount || 0) - (b.rejectedCount || 0),
     sortDirections: ["ascend", "descend"],
     sortOrder:
@@ -314,11 +301,7 @@ export const getPendingUserColumns = ({
     render: (text) => {
       const value =
         typeof text === "number" ? String(text).padStart(2, "0") : text ?? "—";
-      return (
-        <Tooltip title={value}>
-          <div style={{ textAlign: "center" }}>{value}</div>
-        </Tooltip>
-      );
+      return <span className="text-gray-600">{value || "—"}</span>;
     },
   },
 
@@ -343,7 +326,7 @@ export const getPendingUserColumns = ({
     render: (_, record) => (
       <div style={{ textAlign: "center" }}>
         <Button
-          className="small-light-button"
+          className="small-dark-button"
           text="View Notes"
           onClick={() => handleViewNoteDetail(record)}
         />
