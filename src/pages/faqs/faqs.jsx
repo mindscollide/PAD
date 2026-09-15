@@ -9,6 +9,7 @@ import { useNotification } from "../../components/NotificationProvider/Notificat
 import { useGlobalLoader } from "../../context/LoaderContext";
 import { useApi } from "../../context/ApiContext";
 import { useNavigate } from "react-router-dom";
+import { formatApiDateTime } from "../../common/funtions/rejex";
 
 const { Panel } = Collapse;
 const PAGE_SIZE = 10;
@@ -29,7 +30,12 @@ const Faqs = () => {
   const { showLoader } = useGlobalLoader();
   const { callApi } = useApi();
 
-  const [faqData, setFaqData] = useState({ faqs: [], totalRecords: 0 });
+  const [faqData, setFaqData] = useState({
+    faqs: [],
+    totalRecords: 0,
+    lastUpdatedDate: "",
+    lastUpdatedTime: "",
+  });
   const [activeKeys, setActiveKeys] = useState([]);
   const [loadingMore, setLoadingMore] = useState(false);
   const [hasMore, setHasMore] = useState(true);
@@ -50,6 +56,10 @@ const Faqs = () => {
         setFaqData((prev) => ({
           faqs: replace ? res.faqs : [...(prev.faqs || []), ...res.faqs],
           totalRecords: res.totalRecords,
+          // Top-level, same across every page - just take whatever the
+          // latest response says.
+          lastUpdatedDate: res.lastUpdatedDate || prev.lastUpdatedDate,
+          lastUpdatedTime: res.lastUpdatedTime || prev.lastUpdatedTime,
         }));
       }
       showLoader(false);
@@ -103,10 +113,20 @@ const Faqs = () => {
       // className={activeFilters.length > 0 && "changeHeight"}
     >
       <div>
-        <Row>
-          <Col span={24}>
+        <Row justify="space-between" align="middle">
+          <Col>
             <h2 className={style.heading}>FAQ</h2>
           </Col>
+          {faqData.lastUpdatedDate && (
+            <Col>
+              <span className={style.lastUpdated}>
+                Last Updated:{" "}
+                {formatApiDateTime(
+                  `${faqData.lastUpdatedDate} ${faqData.lastUpdatedTime}`
+                )}
+              </span>
+            </Col>
+          )}
         </Row>
 
         <div ref={containerRef} className={style.scrollArea}>
@@ -128,6 +148,19 @@ const Faqs = () => {
               >
                 {faqData.faqs.map((faq) => {
                   const faqKey = String(faq.faqId ?? faq.faqID);
+                  // FIXED (contract change): render the backend's own
+                  // pre-split `descriptionPoints` instead of parsing bullets
+                  // out of the flat `description` text ourselves - present
+                  // uniformly on every FAQ now, even non-bulleted ones
+                  // (single-element array), so no special-casing needed
+                  // here. Falls back to the flat description only if an
+                  // older/unexpected response shape omits it.
+                  const points = Array.isArray(faq.descriptionPoints)
+                    ? faq.descriptionPoints
+                    : faq.description
+                    ? [faq.description]
+                    : [];
+
                   return (
                     <Panel
                       key={faqKey}
@@ -136,7 +169,15 @@ const Faqs = () => {
                       }
                       className={style.panel}
                     >
-                      <div className={style.description}>{faq.description}</div>
+                      {points.length > 1 ? (
+                        <ul className={style.description}>
+                          {points.map((point, idx) => (
+                            <li key={idx}>{point}</li>
+                          ))}
+                        </ul>
+                      ) : (
+                        <div className={style.description}>{points[0]}</div>
+                      )}
                     </Panel>
                   );
                 })}
