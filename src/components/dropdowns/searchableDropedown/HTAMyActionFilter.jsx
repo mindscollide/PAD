@@ -266,8 +266,15 @@ export const HTAMyActionFilter = ({
                 onChange={(values) => setFieldValue("status", values)}
                 style={{ width: "100%" }}
               >
-                <Option value={3}>Approved</Option>
-                <Option value={4}>Declined</Option>
+                {/* FIXED (API_Changes/2026-09-15_hta_myactions_status_
+                filter_matches_own_action.md): Status now matches
+                ActionableBundleStatusState (what the HTA actually did),
+                same convention as CO/LM My Actions - was the
+                WorkFlowStatus convention (3=Approved/4=Declined
+                overall status), which filtered on an almost-always-empty
+                transient state and returned 0 rows for "Approved". */}
+                <Option value={2}>Approved</Option>
+                <Option value={3}>Declined</Option>
               </Select>
             </div>
           </div>
