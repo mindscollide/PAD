@@ -68,7 +68,10 @@ export const getBorderlessTableColumns = (
   approvalStatusMap = {},
   sortedInfo = {},
   employeePendingApprovalSearch = {},
-  setEmployeePendingApprovalSearch = () => {}
+  setEmployeePendingApprovalSearch = () => {},
+  // ADDED (API_Changes/2026-09-15_get_all_view_details_portfolio_by_
+  // tradeapprovalid.md): wires the previously-dead "Comments" button below.
+  onCommentsClick = () => {}
 ) => [
   // 🔹 Instrument Column
   {
@@ -339,8 +342,7 @@ export const getBorderlessTableColumns = (
         <Button
           className="small-white-button"
           text="Comments"
-
-          // onClick={}
+          onClick={() => onCommentsClick(record?.workFlowID)}
         />
       ) : null,
   },
@@ -390,6 +392,12 @@ export const mapToTableRows = (assetTypeData, list = [], brokerOptions = []) =>
 
     return {
       key: item?.workFlowID || `row-${Math.random()}`, // fallback unique key
+      // ADDED (API_Changes/2026-09-15_get_all_view_details_portfolio_by_
+      // tradeapprovalid.md): the Comments button needs the raw numeric
+      // workFlowID to call GetAllViewDetailsPortfolioByTradeApprovalID -
+      // it was only ever used for `key` above, never kept as its own
+      // field on the mapped row.
+      workFlowID: item?.workFlowID,
       instrument: item?.instrumentShortCode || "—",
       instrumentName: item?.instrumentName || "—",
       assetTypeShortCode: item?.assetType?.assetTypeShortCode || "—",

@@ -72,12 +72,16 @@ const UserSessionWiseActivity = () => {
   const {
     adminSessionWiseActivityListData,
     setAdminSessionWiseActivityListData,
+    resetAdminSessionWiseActivityListData,
     sessionWiseViewActionModal,
     setSessionWiseViewActionModal,
   } = useMyAdmin();
 
-  const { adminSessionWiseActivitySearch, setAdminSessionWiseActivitySearch } =
-    useSearchBarContext();
+  const {
+    adminSessionWiseActivitySearch,
+    setAdminSessionWiseActivitySearch,
+    resetAdminSessionWiseActivitySearch,
+  } = useSearchBarContext();
 
   // For Session Wise View Action Modal in Admin Role
   const {
@@ -161,6 +165,26 @@ const UserSessionWiseActivity = () => {
     let requestData = [];
     const navigationEntries = performance.getEntriesByType("navigation");
 
+    // FIXED (duplicate-sessionID / lazy-load investigation, 2026-09-15):
+    // was spreading the raw, possibly-leftover `adminSessionWiseActivitySearch`
+    // as-is into every branch below. This context state was never reset
+    // when leaving this page (see the unmount cleanup added below), so
+    // navigating away from one employee's session list and into another's
+    // (or back into the same one) carried the previous visit's pageNumber
+    // and IP/date-range filters straight into this brand-new employee's
+    // very first request. Force a clean baseline here explicitly instead
+    // of relying on the reset-on-unmount timing - employeeID is the one
+    // field intentionally carried over/re-derived below, since it's what
+    // actually identifies which employee this page is for.
+    const cleanBaseSearch = {
+      ...adminSessionWiseActivitySearch,
+      ipAddress: "",
+      startDate: null,
+      endDate: null,
+      pageNumber: 1,
+      filterTrigger: false,
+    };
+
     if (navigationEntries.length > 0) {
       const navigationType = navigationEntries[0].type;
 
@@ -180,26 +204,31 @@ const UserSessionWiseActivity = () => {
           }));
         }
 
-        console.log("savedName", savedName);
-        console.log("savedName", savedID);
         // Call your API function
         if (savedID) {
           requestData = buildApiRequest({
-            ...adminSessionWiseActivitySearch,
-            ...(savedID && { employeeID: savedID }),
+            ...cleanBaseSearch,
+            employeeID: savedID,
           });
         } else {
-          requestData = buildApiRequest(adminSessionWiseActivitySearch);
+          requestData = buildApiRequest(cleanBaseSearch);
         }
       } else {
-        requestData = buildApiRequest(adminSessionWiseActivitySearch);
-        console.log("savedName", adminSessionWiseActivityListData);
-        console.log("savedName", adminSessionWiseActivitySearch);
+        requestData = buildApiRequest(cleanBaseSearch);
       }
     } else {
-      requestData = buildApiRequest(adminSessionWiseActivitySearch);
+      requestData = buildApiRequest(cleanBaseSearch);
     }
     fetchApiCall(requestData, true, true);
+
+    // ADDED: this state is shared/global (SearchBarContaxt, AdminContext),
+    // not scoped to this page's own lifetime - without resetting it here,
+    // the next visit (this employee or a different one) starts from
+    // whatever pageNumber/filters/rows this visit ended on.
+    return () => {
+      resetAdminSessionWiseActivitySearch();
+      resetAdminSessionWiseActivityListData();
+    };
   }, []);
 
   // Reload Detection

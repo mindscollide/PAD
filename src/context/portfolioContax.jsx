@@ -120,6 +120,19 @@ export const PortfolioProvider = ({ children }) => {
     workFlowStatus: {},
   });
 
+  // ADDED (API_Changes/2026-09-15_get_all_view_details_portfolio_by_
+  // tradeapprovalid.md): holds GetAllViewDetailsPortfolioByTradeApprovalID's
+  // response for Employee > View Portfolio > Pending Approvals' Comments
+  // button - mirrors employeeTransactionViewDetailData (myTransaction.jsx)
+  // field-for-field.
+  const [
+    employeePendingPortfolioViewDetailData,
+    setEmployeePendingPortfolioViewDetailData,
+  ] = useState({
+    details: [],
+    workFlowStatus: {},
+  });
+
   // Head Of Compliance (HOC) view detail data state Start here
   const [
     isEscalatedPortfolioHeadOfComplianceViewDetailData,
@@ -201,6 +214,8 @@ export const PortfolioProvider = ({ children }) => {
         resetPendingApprovalTab,
         reconcilePortfolioViewDetailData,
         setReconcilePortfolioViewDetailData,
+        employeePendingPortfolioViewDetailData,
+        setEmployeePendingPortfolioViewDetailData,
         selectedPortfolioTransactionData,
         setSelectedPortfolioTransactionData,
 

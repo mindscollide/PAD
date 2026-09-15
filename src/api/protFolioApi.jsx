@@ -131,6 +131,91 @@ export const SearchEmployeePendingUploadedPortFolio = async ({
   }
 };
 
+// ADDED (API_Changes/2026-09-15_get_all_view_details_portfolio_by_
+// tradeapprovalid.md): brand new endpoint - powers the "Comments" button
+// on Employee > View Portfolio > Pending Approvals (Non-Compliant rows),
+// which previously did nothing since nothing existed to call. Mirrors
+// GetAllTransactionViewDetails (myTransactionsApi.jsx) field-for-field -
+// the response shape was deliberately built to match it
+// (approvalComments plural, rejectionComment singular, each entry
+// {userID, name, comments}) so the same read/render pattern applies here.
+export const GetAllViewDetailsPortfolioByTradeApprovalID = async ({
+  callApi,
+  showNotification,
+  showLoader,
+  requestdata,
+  navigate,
+}) => {
+  try {
+    const res = await callApi({
+      requestMethod: import.meta.env
+        .VITE_GET_ALL_VIEW_DETAILS_PORTFOLIO_REQUEST_METHOD,
+      endpoint: import.meta.env.VITE_API_TRADE,
+      requestData: requestdata,
+      navigate,
+    });
+
+    if (handleExpiredSession(res, navigate, showLoader)) return null;
+
+    if (!res?.result?.isExecuted) {
+      showNotification({
+        type: "error",
+        title: "Error",
+        description: "Something went wrong. Please try again.",
+      });
+      return null;
+    }
+
+    if (res.success) {
+      const { responseMessage, details, workFlowStatus } = res.result;
+
+      if (
+        responseMessage ===
+        "PAD_Trade_TradeServiceManager_GetAllViewDetailsPortfolioByTradeApprovalID_01"
+      ) {
+        return {
+          details: details || [],
+          workFlowStatus: workFlowStatus || {},
+        };
+      }
+
+      // Case 2 → No data
+      if (
+        responseMessage ===
+        "PAD_Trade_TradeServiceManager_GetAllViewDetailsPortfolioByTradeApprovalID_02"
+      ) {
+        return { details: [], workFlowStatus: {} };
+      }
+
+      const message = getMessage(responseMessage);
+      if (message) {
+        showNotification({
+          type: "warning",
+          title: message,
+          description: "No details available for this Trade Approval ID.",
+        });
+      }
+      return { details: [], workFlowStatus: {} };
+    }
+
+    showNotification({
+      type: "error",
+      title: "Fetch Failed",
+      description: getMessage(res.message),
+    });
+    return null;
+  } catch {
+    showNotification({
+      type: "error",
+      title: "Error",
+      description: "An unexpected error occurred.",
+    });
+    return null;
+  } finally {
+    showLoader(false);
+  }
+};
+
 export const UploadPortFolioRequest = async ({
   callApi,
   showNotification,

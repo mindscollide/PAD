@@ -21,12 +21,16 @@ import { useApi } from "../../../../../context/ApiContext";
 import { useGlobalLoader } from "../../../../../context/LoaderContext";
 import { usePortfolioContext } from "../../../../../context/portfolioContax";
 import { useDashboardContext } from "../../../../../context/dashboardContaxt";
+import { useGlobalModal } from "../../../../../context/GlobalModalContext";
 
 // Hooks
 import { useNotification } from "../../../../../components/NotificationProvider/NotificationProvider";
 
 // API
-import { SearchEmployeePendingUploadedPortFolio } from "../../../../../api/protFolioApi";
+import {
+  SearchEmployeePendingUploadedPortFolio,
+  GetAllViewDetailsPortfolioByTradeApprovalID,
+} from "../../../../../api/protFolioApi";
 import { useTableScrollBottom } from "../../../../../common/funtions/scroll";
 import { getSafeAssetTypeData } from "../../../../../common/funtions/assetTypesList";
 
@@ -58,7 +62,10 @@ const PendingApprovals = ({ activeFilters }) => {
     setEmployeePendingApprovalsData,
     employeePendingApprovalsDataMqtt,
     setEmployeePendingApprovalsDataMqtt,
+    setEmployeePendingPortfolioViewDetailData,
   } = usePortfolioContext();
+
+  const { setViewPortfolioPendingApprovalCommentModal } = useGlobalModal();
 
   console.log(employeePendingApprovalsData, "employeePendingApprovalsData");
 
@@ -72,11 +79,34 @@ const PendingApprovals = ({ activeFilters }) => {
   // ✅ Derived values
   // -------------------------
   const brokerOptions = formatBrokerOptions(allBrokersData || []);
+
+  // ADDED (API_Changes/2026-09-15_get_all_view_details_portfolio_by_
+  // tradeapprovalid.md): the "Comments" button's onClick was left
+  // commented out since nothing existed to call - fetches the CO's
+  // Non-Compliant reason for this row and opens the Comments modal.
+  const handleCommentsClick = async (workFlowID) => {
+    if (!workFlowID) return;
+    showLoader(true);
+    const responseData = await GetAllViewDetailsPortfolioByTradeApprovalID({
+      callApi,
+      showNotification,
+      showLoader,
+      requestdata: { TradeApprovalID: workFlowID },
+      navigate,
+    });
+
+    if (responseData) {
+      setEmployeePendingPortfolioViewDetailData(responseData);
+      setViewPortfolioPendingApprovalCommentModal(true);
+    }
+  };
+
   const columns = getBorderlessTableColumns(
     approvalStatusMap,
     sortedInfo,
     employeePendingApprovalSearch,
-    setEmployeePendingApprovalSearch
+    setEmployeePendingApprovalSearch,
+    handleCommentsClick
   );
 
   // ✅ Prevent duplicate API calls (StrictMode safeguard)
