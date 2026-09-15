@@ -34,6 +34,8 @@ const ViewDetailsOfRejectedRequestModal = () => {
     manageUsersViewDetailModalData,
     currentID,
     setCurrentID,
+    currentEmail,
+    setCurrentEmail,
     resetIDofUserRejectedViewDetails,
   } = useMyAdmin();
   const [detailsData, setDetailsData] = useState([]);
@@ -71,13 +73,20 @@ const ViewDetailsOfRejectedRequestModal = () => {
     if (!hasFetched.current) {
       if (currentID) {
         hasFetched.current = true;
+        // FIXED (API_Changes/2026-09-15_get_user_registration_history_by_
+        // loginid_email.md): LoginID alone isn't reliably unique - a
+        // data-seeding issue left 5 real LoginID values shared by two
+        // different people, so LoginID-only could pull in a different
+        // person's rejection history. Email (from the same row) is now
+        // sent to disambiguate; omitted/empty behaves exactly as before.
         const requestdata = {
           LoginID: currentID,
+          Email: currentEmail || "",
         };
         fetchApiCall(requestdata);
       }
     }
-  }, [fetchApiCall, currentID]);
+  }, [fetchApiCall, currentID, currentEmail]);
 
   useEffect(() => {
     // 🔹 Mount logic (runs when component loads)
@@ -186,6 +195,7 @@ const ViewDetailsOfRejectedRequestModal = () => {
                   setViewDetailRejectedModal(false);
                   setDetailsData([]);
                   setCurrentID(-1);
+                  setCurrentEmail("");
                 }}
               />
             </Col>
