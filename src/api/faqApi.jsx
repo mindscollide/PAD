@@ -31,19 +31,34 @@ export const GetPadFaqsRequest = async ({
     }
 
     if (res.success) {
-      const { responseMessage, faqs, totalRecords } = res.result;
+      const { responseMessage, faqs, totalRecords, lastUpdatedDate, lastUpdatedTime } =
+        res.result;
 
       // Case 1 → Data available
       if (responseMessage === "PAD_Admin_AdminServiceManager_GetPadFaqs_01") {
         return {
+          // FIXED (2026-09-14 contract change, API_Changes/2026-09-14_get_pad_
+          // faqs_contract_change.md):
+          // - "Need More Help?" no longer appears in `faqs` at all (backend
+          //   side change, nothing to filter here).
+          // - `descriptionPoints` is new - the same answer pre-split into an
+          //   array (uniformly, even single-bullet answers), so the FE
+          //   doesn't parse the flat `description` text itself.
           faqs: faqs || [],
           totalRecords: totalRecords || 0,
+          lastUpdatedDate: lastUpdatedDate || "",
+          lastUpdatedTime: lastUpdatedTime || "",
         };
       }
 
       // Case 2 → No data
       if (responseMessage === "PAD_Admin_AdminServiceManager_GetPadFaqs_02") {
-        return { faqs: [], totalRecords: 0 };
+        return {
+          faqs: [],
+          totalRecords: 0,
+          lastUpdatedDate: "",
+          lastUpdatedTime: "",
+        };
       }
 
       const message = getMessage(responseMessage);
@@ -54,7 +69,12 @@ export const GetPadFaqsRequest = async ({
           description: "No FAQs available.",
         });
       }
-      return { faqs: [], totalRecords: 0 };
+      return {
+        faqs: [],
+        totalRecords: 0,
+        lastUpdatedDate: "",
+        lastUpdatedTime: "",
+      };
     }
 
     showNotification({
