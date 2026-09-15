@@ -55,6 +55,16 @@ export const GlobalModalProvider = ({ children }) => {
   const [viewCommentTransactionModal, setViewCommentTransactionModal] =
     useState(false);
 
+  // ADDED (API_Changes/2026-09-15_get_all_view_details_portfolio_by_
+  // tradeapprovalid.md): to show the Comments modal for Employee > View
+  // Portfolio > Pending Approvals (Non-Compliant rows) - opens directly
+  // from the list row, no View Details step first, unlike
+  // viewCommentTransactionModal above.
+  const [
+    viewPortfolioPendingApprovalCommentModal,
+    setViewPortfolioPendingApprovalCommentModal,
+  ] = useState(false);
+
   // To  show view Ticket Modal on Transaction View Detail Modal
   const [isViewTicketTransactionModal, setIsViewTicketTransactionModal] =
     useState(false);
@@ -326,6 +336,7 @@ export const GlobalModalProvider = ({ children }) => {
     setIsViewComments(false);
     setViewDetailTransactionModal(false);
     setViewCommentTransactionModal(false);
+    setViewPortfolioPendingApprovalCommentModal(false);
     setSelectedViewDetailOfTransaction(null);
     setIsViewTicketTransactionModal(false);
     setIsResubmitted(false);
@@ -401,6 +412,8 @@ export const GlobalModalProvider = ({ children }) => {
         setSelectedViewDetailOfTransaction,
         viewCommentTransactionModal,
         setViewCommentTransactionModal,
+        viewPortfolioPendingApprovalCommentModal,
+        setViewPortfolioPendingApprovalCommentModal,
         isViewTicketTransactionModal,
         setIsViewTicketTransactionModal,
 

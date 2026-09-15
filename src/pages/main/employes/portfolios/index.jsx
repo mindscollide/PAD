@@ -8,6 +8,7 @@ import Portfolio from "./portfolio/Portfolio";
 import { usePortfolioContext } from "../../../../context/portfolioContax";
 import { useSearchBarContext } from "../../../../context/SearchBarContaxt";
 import UploadPortfolioModal from "./modal/uploadPortfolioModal/UploadPortfolioModal";
+import ViewPortfolioCommentModal from "./pendingApprovals/modals/viewPortfolioCommentModal/ViewPortfolioCommentModal";
 import { useGlobalModal } from "../../../../context/GlobalModalContext";
 import { buildBrokerOptions } from "../../../../common/funtions/brokersList";
 import { useDashboardContext } from "../../../../context/dashboardContaxt";
@@ -34,7 +35,8 @@ const PortfolioIndex = () => {
     resetEmployeePendingApprovalSearch,
   } = useSearchBarContext();
 
-  const { isSubmit } = useGlobalModal();
+  const { isSubmit, viewPortfolioPendingApprovalCommentModal } =
+    useGlobalModal();
 
   const isPortfolio = activeTab === "portfolio";
 
@@ -292,6 +294,9 @@ const PortfolioIndex = () => {
 
       {/* Upload Portfolio Modal */}
       {uploadPortfolioModal && <UploadPortfolioModal />}
+
+      {/* Pending Approvals > Comments Modal */}
+      {viewPortfolioPendingApprovalCommentModal && <ViewPortfolioCommentModal />}
     </>
   );
 };
