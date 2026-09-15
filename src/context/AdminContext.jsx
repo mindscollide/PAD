@@ -242,6 +242,13 @@ export const MyAdminProvider = ({ children }) => {
   // rejected request user data view id set in this
   const [currentID, setCurrentID] = useState(-1);
 
+  // ADDED (API_Changes/2026-09-15_get_user_registration_history_by_
+  // loginid_email.md): LoginID alone isn't reliably unique (data-seeding
+  // collisions found - two different people sharing the same LoginID),
+  // which could pull in a different person's rejection history. Email
+  // disambiguates it - carried alongside currentID from the same row.
+  const [currentEmail, setCurrentEmail] = useState("");
+
   // Role And Policy On View Detail Modal in Manager User Users Tab context State
   const [roleAndPolicyViewDetailData, setRoleAndPolicyViewDetailData] =
     useState({
@@ -378,6 +385,7 @@ export const MyAdminProvider = ({ children }) => {
 
   const resetIDofUserRejectedViewDetails = () => {
     setCurrentID(-1);
+    setCurrentEmail("");
   };
   // rest Contaxt of manager tab data
   const resetmanageUsersContextState = () => {
@@ -539,6 +547,8 @@ export const MyAdminProvider = ({ children }) => {
 
         setCurrentID,
         currentID,
+        setCurrentEmail,
+        currentEmail,
         resetIDofUserRejectedViewDetails,
       }}
     >

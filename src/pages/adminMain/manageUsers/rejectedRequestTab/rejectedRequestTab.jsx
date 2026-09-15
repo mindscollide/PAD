@@ -62,6 +62,7 @@ const RejectedRequestTab = ({ activeFilters }) => {
     manageUsersRejectedRequestTabMQTT,
     setManageUsersRejectedRequestTabMQTT,
     setCurrentID,
+    setCurrentEmail,
 
   } = useMyAdmin();
 
@@ -75,6 +76,11 @@ const RejectedRequestTab = ({ activeFilters }) => {
     console.log("handleViewNoteDetail", record);
     if (record) {
       setCurrentID(record.loginID);
+      // ADDED (API_Changes/2026-09-15_get_user_registration_history_by_
+      // loginid_email.md): LoginID alone can collide across two different
+      // people (data-seeding issue) - Email disambiguates it, and is
+      // already present on this same row.
+      setCurrentEmail(record.email || "");
       setViewDetailRejectedModal(true);
     }
   };
