@@ -62,10 +62,11 @@
   background-color: var(--Blue-V1, #30426a);
   border-radius: 7.09px;
   height: 35px;
-  width: 100%;
+  width: max-content;
   color: #fff;
   display: flex;
   justify-content: center;
+  padding: 0 10px;
 }
 
 /* Icon base style */

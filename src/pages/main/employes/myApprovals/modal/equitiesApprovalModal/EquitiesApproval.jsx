@@ -11,6 +11,7 @@ import { useApi } from "../../../../../../context/ApiContext";
 import { useNavigate } from "react-router-dom";
 
 import CopyToClipboard from "../../../../../../hooks/useClipboard";
+import { useMyApproval } from "../../../../../../context/myApprovalContaxt";
 
 const EquitiesApproval = () => {
   const navigate = useNavigate();
@@ -26,6 +27,8 @@ const EquitiesApproval = () => {
     setIsTradeRequestRestricted,
     setViolatedPolicies,
   } = useGlobalModal();
+
+  const { addApprovalRequestData, setAddApprovalRequestData } = useMyApproval();
 
   const { employeeBasedBrokersData, allInstrumentsData, assetTypeListingData } =
     useDashboardContext();
@@ -140,6 +143,7 @@ const EquitiesApproval = () => {
       setIsTradeRequestRestricted,
       setViolatedPolicies,
       navigate,
+      setAddApprovalRequestData,
     });
   };
 

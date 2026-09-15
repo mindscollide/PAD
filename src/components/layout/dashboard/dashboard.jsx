@@ -123,10 +123,10 @@ const Dashboard = () => {
 
   // User info from session storage
   const userProfileData = JSON.parse(
-    sessionStorage.getItem("user_profile_data")
+    sessionStorage.getItem("user_profile_data"),
   );
   const userAssignedRolesData = JSON.parse(
-    sessionStorage.getItem("user_assigned_roles")
+    sessionStorage.getItem("user_assigned_roles"),
   );
   const currentUserId = userProfileData?.userID;
 
@@ -144,7 +144,7 @@ const Dashboard = () => {
     const roleArray = Array.isArray(roleIDs) ? roleIDs : [roleIDs];
 
     return userAssignedRolesData.some((role) =>
-      roleArray.includes(Number(role.roleID))
+      roleArray.includes(Number(role.roleID)),
     );
   };
 
@@ -205,13 +205,13 @@ const Dashboard = () => {
   const patchEmployeeMyApprovalRow = (
     payload,
     overrides = {},
-    options = {}
+    options = {},
   ) => {
     const { preserveInstrumentAndType = false } = options;
 
     const [updatedApproval] = mapEmployeeMyApprovalData(
       assetTypeListingData?.Equities,
-      [payload]
+      [payload],
     );
 
     if (!updatedApproval) return;
@@ -219,7 +219,7 @@ const Dashboard = () => {
     setIsEmployeeMyApproval((prev) => {
       const approvals = prev?.approvals || [];
       const existingIndex = approvals.findIndex(
-        (item) => item.approvalID === updatedApproval.approvalID
+        (item) => item.approvalID === updatedApproval.approvalID,
       );
 
       if (existingIndex === -1) return prev;
@@ -284,7 +284,7 @@ const Dashboard = () => {
     setEmployeePendingApprovalsData((prev) => {
       const rows = prev?.pendingApprovalsData || [];
       const existingIndex = rows.findIndex(
-        (row) => row.tradeApprovalID === tradeApprovalID
+        (row) => row.tradeApprovalID === tradeApprovalID,
       );
       if (existingIndex === -1) return prev;
 
@@ -317,7 +317,7 @@ const Dashboard = () => {
     setOverdueVerificationHCOListData((prev) => {
       const rows = prev?.overdueVerifications || [];
       const existingIndex = rows.findIndex(
-        (row) => String(row.workFlowID) === String(payload?.approvalID)
+        (row) => String(row.workFlowID) === String(payload?.approvalID),
       );
       if (existingIndex === -1) return prev;
 
@@ -355,7 +355,7 @@ const Dashboard = () => {
     setHeadOfComplianceApprovalEscalatedVerificationsData((prev) => {
       const rows = prev?.escalatedVerification || [];
       const filteredRows = rows.filter(
-        (row) => String(row.workflowID) !== String(payload?.approvalID)
+        (row) => String(row.workflowID) !== String(payload?.approvalID),
       );
       if (filteredRows.length === rows.length) return prev;
 
@@ -386,7 +386,7 @@ const Dashboard = () => {
     setHeadOfComplianceApprovalPortfolioData((prev) => {
       const rows = prev?.escalatedPortfolio || [];
       const filteredRows = rows.filter(
-        (row) => String(row.workflowID) !== String(payload?.approvalID)
+        (row) => String(row.workflowID) !== String(payload?.approvalID),
       );
       if (filteredRows.length === rows.length) return prev;
 
@@ -611,14 +611,14 @@ const Dashboard = () => {
                   if (currentKey === "1") {
                     const [newApproval] = mapEmployeeMyApprovalData(
                       assetTypeListingData?.Equities,
-                      [payload]
+                      [payload],
                     );
 
                     if (newApproval) {
                       setIsEmployeeMyApproval((prev) => {
                         const approvals = prev?.approvals || [];
                         const alreadyPresent = approvals.some(
-                          (item) => item.approvalID === newApproval.approvalID
+                          (item) => item.approvalID === newApproval.approvalID,
                         );
                         if (alreadyPresent) return prev;
 
@@ -667,7 +667,7 @@ const Dashboard = () => {
                         status:
                           payload?.workFlowStatus?.workFlowStatus || "Traded",
                       },
-                      { preserveInstrumentAndType: true }
+                      { preserveInstrumentAndType: true },
                     );
                     setIsViewDetail(false);
                     setIsConductedTransaction(false);
@@ -723,7 +723,7 @@ const Dashboard = () => {
                     patchEmployeeMyApprovalRow(
                       payload,
                       {},
-                      { preserveInstrumentAndType: true }
+                      { preserveInstrumentAndType: true },
                     );
                   }
                   // setUploadPortfolioModal(false);
@@ -736,7 +736,7 @@ const Dashboard = () => {
                     patchEmployeeMyApprovalRow(
                       payload,
                       {},
-                      { preserveInstrumentAndType: true }
+                      { preserveInstrumentAndType: true },
                     );
                   }
                   break;
@@ -802,7 +802,7 @@ const Dashboard = () => {
                   ) {
                     patchEmployeePendingApprovalRowStatus(
                       payload,
-                      "Non-Compliant"
+                      "Non-Compliant",
                     );
                     setEmployeePendingApprovalsDataMqtt(true);
                   }
@@ -810,7 +810,7 @@ const Dashboard = () => {
                 }
                 case "EMPLOYEE_NEW_TRADE_APPROVAL_REQUEST_RESUBMITTED": {
                   console.log(
-                    "EMPLOYEE_NEW_TRADE_APPROVAL_REQUEST_RESUBMITTED_EMPLOYEE_NEW_TRADE_APPROVAL_REQUEST_RESUBMITTED"
+                    "EMPLOYEE_NEW_TRADE_APPROVAL_REQUEST_RESUBMITTED_EMPLOYEE_NEW_TRADE_APPROVAL_REQUEST_RESUBMITTED",
                   );
                   // Treated as an update to the existing row (a resubmit
                   // flips the same workflow's status back to pending rather
@@ -856,7 +856,7 @@ const Dashboard = () => {
                       const updatedApprovals = approvals.map((item) =>
                         escalatedIDs.includes(String(item.approvalID))
                           ? { ...item, isEscalated: true }
-                          : item
+                          : item,
                       );
                       return { ...prev, approvals: updatedApprovals };
                     });
@@ -884,7 +884,7 @@ const Dashboard = () => {
                       const updatedTransactions = transactions.map((item) =>
                         escalatedIDs.includes(String(item.workFlowID))
                           ? { ...item, isEscalated: true }
-                          : item
+                          : item,
                       );
                       return { ...prev, transactions: updatedTransactions };
                     });
@@ -932,7 +932,7 @@ const Dashboard = () => {
                       const existingIndex = transactions.findIndex(
                         (item) =>
                           String(item.workFlowID) ===
-                          String(payload?.workFlowID)
+                          String(payload?.workFlowID),
                       );
                       if (existingIndex === -1) return prev;
 
@@ -996,7 +996,7 @@ const Dashboard = () => {
                   } catch (error) {
                     console.error(
                       "MQTT: Failed to parse GROUP_POLICY payload",
-                      error
+                      error,
                     );
                   }
                   break;
@@ -1057,14 +1057,14 @@ const Dashboard = () => {
                 case "YOU_HAVE_URGENT_ACTION_WHICH_REQUIRE_URGENT_ACTION": {
                   sessionStorage.setItem(
                     "urgentApprovals",
-                    JSON.stringify(payload)
+                    JSON.stringify(payload),
                   );
                   const hasUrgentCount = payload?.count > 0;
 
                   sessionStorage.setItem("urgent_flag", hasUrgentCount);
                   setUrgentAlert(hasUrgentCount);
 
-                  // Upsert the "APPROVAL REQUIRE URGENT ACTION" tile directly from this
+                  // Upsert the "REQUIRE URGENT ACTION" tile directly from this
                   // payload's count. This message previously only flipped urgentAlert -
                   // BoxCard's warning UI needs BOTH warningFlag true AND a real second
                   // tile in myApprovals.data to actually render anything (see
@@ -1075,10 +1075,16 @@ const Dashboard = () => {
                     const myApprovals = prev?.lineManager?.myApprovals;
                     if (!myApprovals) return prev;
 
-                    const urgentLabel = "APPROVAL REQUIRE URGENT ACTION";
+                    // FIXED (2026-09-14): backend renamed this tile's Label/Type from
+                    // "APPROVAL REQUIRE URGENT ACTION" to "REQUIRE URGENT ACTION"
+                    // (GetUserDashBoardStats) - this hardcoded matching key must follow
+                    // or the findIndex below never matches and a duplicate tile gets
+                    // inserted instead of updating the existing one - see
+                    // API_Changes/2026-09-14_lm_urgent_action_tile_label_rename_fe_followup.md.
+                    const urgentLabel = "REQUIRE URGENT ACTION";
                     const existingTiles = myApprovals.data || [];
                     const existingIndex = existingTiles.findIndex(
-                      (tile) => tile.label === urgentLabel
+                      (tile) => tile.label === urgentLabel,
                     );
 
                     const updatedTile = {
@@ -1093,7 +1099,7 @@ const Dashboard = () => {
                         : existingTiles.map((tile, i) =>
                             i === existingIndex
                               ? { ...tile, ...updatedTile }
-                              : tile
+                              : tile,
                           );
 
                     return {
@@ -1138,7 +1144,7 @@ const Dashboard = () => {
 
                       const updatedTiles = myApprovals.data.map((tile) => {
                         const incoming = payload.find(
-                          (p) => (p?.label ?? p?.Label) === tile.label
+                          (p) => (p?.label ?? p?.Label) === tile.label,
                         );
                         if (!incoming) return tile;
 
@@ -1220,7 +1226,7 @@ const Dashboard = () => {
                       const updatedApprovals = lineApprovals.map((item) =>
                         escalatedIDs.includes(String(item.key))
                           ? { ...item, isEscalated: true }
-                          : item
+                          : item,
                       );
                       return { ...prev, lineApprovals: updatedApprovals };
                     });
@@ -1305,7 +1311,8 @@ const Dashboard = () => {
                       const rows = prev?.reconsileTransaction || [];
                       const existingIndex = rows.findIndex(
                         (row) =>
-                          String(row.approvalID) === String(payload?.approvalID)
+                          String(row.approvalID) ===
+                          String(payload?.approvalID),
                       );
                       if (existingIndex === -1) return prev;
 
@@ -1379,7 +1386,8 @@ const Dashboard = () => {
                       const rows = prev?.reconsileTransaction || [];
                       const existingIndex = rows.findIndex(
                         (row) =>
-                          String(row.approvalID) === String(payload?.approvalID)
+                          String(row.approvalID) ===
+                          String(payload?.approvalID),
                       );
                       if (existingIndex === -1) return prev;
 
@@ -1438,7 +1446,7 @@ const Dashboard = () => {
                       const updatedRows = rows.map((row) =>
                         escalatedIDs.includes(String(row.approvalID))
                           ? { ...row, isEscalated: true }
-                          : row
+                          : row,
                       );
                       return { ...prev, reconsileTransaction: updatedRows };
                     });
@@ -1469,7 +1477,7 @@ const Dashboard = () => {
                   ) {
                     const [mappedRow] = mapCOReconcileTransactionRow(
                       assetTypeListingData?.Equities,
-                      [payload]
+                      [payload],
                     );
                     if (mappedRow) {
                       setComplianceOfficerReconcileTransactionData((prev) => {
@@ -1477,7 +1485,7 @@ const Dashboard = () => {
                         const existingIndex = rows.findIndex(
                           (row) =>
                             String(row.approvalID) ===
-                            String(mappedRow.approvalID)
+                            String(mappedRow.approvalID),
                         );
                         if (existingIndex === -1) return prev;
 
@@ -1501,7 +1509,7 @@ const Dashboard = () => {
                   ) {
                     const [mappedRow] = mapCOReconcilePortfolioRow(
                       assetTypeListingData?.Equities,
-                      [payload]
+                      [payload],
                     );
                     if (mappedRow) {
                       setComplianceOfficerReconcilePortfolioData((prev) => {
@@ -1509,7 +1517,7 @@ const Dashboard = () => {
                         const existingIndex = rows.findIndex(
                           (row) =>
                             String(row.approvalID) ===
-                            String(mappedRow.approvalID)
+                            String(mappedRow.approvalID),
                         );
                         if (existingIndex === -1) return prev;
 
@@ -1598,7 +1606,8 @@ const Dashboard = () => {
                       const list = prev?.htaEscalatedApprovalsList || [];
                       const remaining = list.filter(
                         (item) =>
-                          Number(item.approvalID) !== Number(resolvedWorkFlowID)
+                          Number(item.approvalID) !==
+                          Number(resolvedWorkFlowID),
                       );
 
                       if (remaining.length === list.length) return prev;
@@ -1608,11 +1617,11 @@ const Dashboard = () => {
                         htaEscalatedApprovalsList: remaining,
                         totalRecordsDataBase: Math.max(
                           0,
-                          (prev?.totalRecordsDataBase || 0) - 1
+                          (prev?.totalRecordsDataBase || 0) - 1,
                         ),
                         totalRecordsTable: Math.max(
                           0,
-                          (prev?.totalRecordsTable || 0) - 1
+                          (prev?.totalRecordsTable || 0) - 1,
                         ),
                       };
                     });
@@ -1649,7 +1658,7 @@ const Dashboard = () => {
                   if (currentKey === "15") {
                     if (currentactiveHCOEscalatedTabRef === "escalated") {
                       setHeadOfComplianceApprovalEscalatedVerificationsMqtt(
-                        true
+                        true,
                       );
                     } else if (
                       currentactiveHCOEscalatedTabRef === "portfolio"
@@ -1710,7 +1719,7 @@ const Dashboard = () => {
                     (prev) => {
                       const rows = prev?.escalatedVerification || [];
                       const filteredRows = rows.filter(
-                        (row) => !resolvedIDs.includes(String(row.workflowID))
+                        (row) => !resolvedIDs.includes(String(row.workflowID)),
                       );
                       if (filteredRows.length === rows.length) return prev;
 
@@ -1719,17 +1728,17 @@ const Dashboard = () => {
                         escalatedVerification: filteredRows,
                         totalRecordsDataBase: Math.max(
                           0,
-                          (prev?.totalRecordsDataBase || 0) - 1
+                          (prev?.totalRecordsDataBase || 0) - 1,
                         ),
                         totalRecordsTable: filteredRows.length,
                       };
-                    }
+                    },
                   );
 
                   setHeadOfComplianceApprovalPortfolioData((prev) => {
                     const rows = prev?.escalatedPortfolio || [];
                     const filteredRows = rows.filter(
-                      (row) => !resolvedIDs.includes(String(row.workflowID))
+                      (row) => !resolvedIDs.includes(String(row.workflowID)),
                     );
                     if (filteredRows.length === rows.length) return prev;
 
@@ -1738,7 +1747,7 @@ const Dashboard = () => {
                       escalatedPortfolio: filteredRows,
                       totalRecordsDataBase: Math.max(
                         0,
-                        (prev?.totalRecordsDataBase || 0) - 1
+                        (prev?.totalRecordsDataBase || 0) - 1,
                       ),
                       totalRecordsTable: filteredRows.length,
                     };
@@ -1761,7 +1770,7 @@ const Dashboard = () => {
                   ) {
                     const [mappedRow] = mapHOCEscalatedTransactionRow(
                       assetTypeListingData?.Equities,
-                      [payload]
+                      [payload],
                     );
                     if (mappedRow) {
                       setHeadOfComplianceApprovalEscalatedVerificationsData(
@@ -1770,7 +1779,7 @@ const Dashboard = () => {
                           const alreadyPresent = rows.some(
                             (row) =>
                               String(row.workflowID) ===
-                              String(mappedRow.workflowID)
+                              String(mappedRow.workflowID),
                           );
                           if (alreadyPresent) return prev;
 
@@ -1782,7 +1791,7 @@ const Dashboard = () => {
                             totalRecordsTable:
                               (prev?.totalRecordsTable || 0) + 1,
                           };
-                        }
+                        },
                       );
                     }
                   }
@@ -1816,7 +1825,7 @@ const Dashboard = () => {
                   ) {
                     const [mappedRow] = mapHOCEscalatedPortfolioRow(
                       assetTypeListingData?.Equities,
-                      [payload]
+                      [payload],
                     );
                     if (mappedRow) {
                       setHeadOfComplianceApprovalPortfolioData((prev) => {
@@ -1824,7 +1833,7 @@ const Dashboard = () => {
                         const alreadyPresent = rows.some(
                           (row) =>
                             String(row.workflowID) ===
-                            String(mappedRow.workflowID)
+                            String(mappedRow.workflowID),
                         );
                         if (alreadyPresent) return prev;
 

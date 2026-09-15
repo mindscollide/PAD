@@ -5,6 +5,7 @@ import { GlobalModal, ModalImgStates } from "../../../../../../components";
 import styles from "./RequestRestrictedModal.module.css";
 import CustomButton from "../../../../../../components/buttons/button";
 import { ExclamationCircleOutlined } from "@ant-design/icons";
+import { useMyApproval } from "../../../../../../context/myApprovalContaxt";
 
 const RequestRestrictedModal = () => {
   // This is the Global States for modal which is made in Context Api
@@ -23,6 +24,13 @@ const RequestRestrictedModal = () => {
     setViolatedPolicies,
   } = useGlobalModal();
 
+  const { addApprovalRequestData, setAddApprovalRequestData } = useMyApproval();
+
+  console.log(
+    addApprovalRequestData,
+    "addApprovalRequestDataaddApprovalRequestData"
+  );
+
   const policies = Array.isArray(violatedPolicies) ? violatedPolicies : [];
 
   //This is Onclick func of close button
@@ -34,6 +42,10 @@ const RequestRestrictedModal = () => {
     setIsTradeRequestRestricted(false);
     setViolatedPolicies([]);
     setIsEquitiesModalVisible(true);
+    setAddApprovalRequestData({
+      tradeAction: "",
+      instrumentName: "",
+    });
   };
 
   // SRS 11.2.1: "system will inform the user about every violation in
@@ -41,8 +53,9 @@ const RequestRestrictedModal = () => {
   const subheadingOverride =
     policies.length > 0 ? (
       <>
-        Your request cannot be processed due to the violation of the
-        following polic{policies.length > 1 ? "ies" : "y"}:
+        Your request to {addApprovalRequestData?.tradeAction} shares of{" "}
+        {addApprovalRequestData?.instrumentName} cannot be processed due to the
+        violation of polic{policies.length > 1 ? "ies" : "y"}
       </>
     ) : undefined;
 
@@ -55,6 +68,7 @@ const RequestRestrictedModal = () => {
       onCancel={() => {
         setIsTradeRequestRestricted(false);
         setViolatedPolicies([]);
+        setAddApprovalRequestData({ tradeAction: "", instrumentName: "" });
       }}
       modalBody={
         <>
@@ -83,13 +97,13 @@ const RequestRestrictedModal = () => {
                           color="warning"
                           className={styles.tagClasses}
                         >
-                          {policy?.policyCode || `Policy ${idx + 1}`}
+                          {policy?.scenario}
                         </Tag>
-                        <span className={styles.violationConsequence}>
+                        {/* <span className={styles.violationConsequence}>
                           {policy?.consequence ||
                             policy?.scenario ||
                             "This request breaches this policy."}
-                        </span>
+                        </span> */}
                       </div>
                     ))
                   ) : (

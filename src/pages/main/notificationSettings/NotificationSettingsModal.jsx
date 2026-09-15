@@ -67,7 +67,14 @@ const NotificationSettingsModal = () => {
         showLoader,
         navigate,
       });
-      setSettings(res || []);
+      // ADDED: emails aren't being sent at all yet (any role) - force every
+      // row's Email flag off regardless of what the backend returns, so the
+      // checkbox state (and whatever gets saved back) can never end up
+      // "on" for a channel that doesn't actually fire. Combined with the
+      // disabled Email checkbox below.
+      setSettings(
+        (res || []).map((item) => ({ ...item, isEmailEnabled: false }))
+      );
       showLoader(false);
     };
 
@@ -178,8 +185,12 @@ const NotificationSettingsModal = () => {
                               {item.typeName}
                             </Col>
                             <Col span={5} className={styles.checkboxCol}>
+                              {/* DISABLED: no email is actually sent for any
+                                  role yet - see the forced isEmailEnabled:
+                                  false above. */}
                               <Checkbox
                                 checked={item.isEmailEnabled}
+                                disabled
                                 onChange={(e) =>
                                   handleToggle(
                                     item.notificationSettingTypeID,

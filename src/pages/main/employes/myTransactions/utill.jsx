@@ -231,7 +231,7 @@ export const getBorderlessTableColumns = ({
     ),
     dataIndex: "workFlowStatus",
     key: "workFlowStatus",
-    width: 170,
+    width: 180,
     filteredValue: employeeMyTransactionSearch.status?.length
       ? employeeMyTransactionSearch.status
       : null,

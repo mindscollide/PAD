@@ -50,10 +50,11 @@ const MyTransactionReport = () => {
     resetEmployeeMyTransactionReportSearch,
   } = useSearchBarContext();
 
-  const { assetTypeListingData, setAssetTypeListingData } =
-    useDashboardContext();
-
-  console.log(getEmployeeTransactionReport, "getEmployeeTransactionReport");
+  const {
+    assetTypeListingData,
+    setAssetTypeListingData,
+    employeeBasedBrokersData,
+  } = useDashboardContext();
 
   // -------------------- Local State --------------------
   const [sortedInfo, setSortedInfo] = useState({});
@@ -210,13 +211,12 @@ const MyTransactionReport = () => {
 
   /** 🔹 Handle removing individual filter */
   const handleRemoveFilter = (key) => {
-    console.log(key, "checkCheclebdkjbkwbcdjh");
     const resetMap = {
       instrumentName: { instrumentName: "" },
       dateRange: { startDate: null, endDate: null },
       quantity: { quantity: 0 },
       actionDateRange: { actionStartDate: null, actionEndDate: null },
-      broker: { broker: "" },
+      broker: { brokerIDs: [] }, // key stays "broker" to match the tag, value now resets the real field
       actionBy: { actionBy: "" },
     };
 
@@ -237,7 +237,7 @@ const MyTransactionReport = () => {
       endDate: null,
       quantity: 0,
       actionBy: "",
-      broker: "",
+      brokerIDs: [], // CHANGED: was `broker: ""`
       actionStartDate: null,
       actionEndDate: null,
       pageNumber: 1,
@@ -252,11 +252,23 @@ const MyTransactionReport = () => {
       startDate,
       endDate,
       quantity,
-      broker,
+      brokerIDs,
       actionBy,
       actionStartDate,
       actionEndDate,
     } = employeeMyTransactionReportSearch || {};
+
+    // CHANGED: single broker shows its actual name; 2+ shows "Multiple
+    // brokers" instead of a comma-joined (and possibly truncated) list.
+    const selectedBrokerCount = (brokerIDs || []).length;
+    const brokerTagValue =
+      selectedBrokerCount === 1
+        ? (employeeBasedBrokersData || []).find(
+            (b) => b.brokerID === brokerIDs[0]
+          )?.brokerName
+        : selectedBrokerCount > 1
+        ? "Multiple brokers"
+        : null;
 
     return [
       instrumentName && {
@@ -281,9 +293,12 @@ const MyTransactionReport = () => {
           key: "actionDateRange",
           value: `${actionStartDate} → ${actionEndDate}`,
         },
-      broker && {
+      brokerTagValue && {
         key: "broker",
-        value: broker.length > 13 ? broker.slice(0, 13) + "..." : broker,
+        value:
+          brokerTagValue.length > 13
+            ? brokerTagValue.slice(0, 13) + "..."
+            : brokerTagValue,
       },
       actionBy && {
         key: "actionBy",
