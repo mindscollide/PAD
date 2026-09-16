@@ -93,7 +93,6 @@ export const getBorderlessLineManagerTableColumns = ({
     dataIndex: "requesterName",
     key: "requesterName",
     align: "left",
-    ellipsis: true,
     width: 200,
     sorter: (a, b) => a.requesterName.localeCompare(b.requesterName),
     sortDirections: ["ascend", "descend"],
@@ -116,7 +115,6 @@ export const getBorderlessLineManagerTableColumns = ({
     title: withSortIcon("Line Manager", "lineManagerName", sortedInfo),
     dataIndex: "lineManagerName",
     key: "lineManagerName",
-    ellipsis: true,
     align: "left",
     width: 150,
 
@@ -139,8 +137,7 @@ export const getBorderlessLineManagerTableColumns = ({
     dataIndex: "instrumentCode",
     key: "instrumentCode",
     align: "left",
-    width: 140,
-    ellipsis: true,
+    width: 210,
     sorter: (a, b) => {
       const nameA = a?.instrumentCode || "";
       const nameB = b?.instrumentCode || "";
@@ -199,7 +196,6 @@ export const getBorderlessLineManagerTableColumns = ({
     align: "center",
     width: 220,
 
-    ellipsis: true,
     sorter: (a, b) =>
       formatApiDateTime(a.requestDateTime).localeCompare(
         formatApiDateTime(b.requestDateTime)
@@ -227,7 +223,6 @@ export const getBorderlessLineManagerTableColumns = ({
     key: "type",
     width: 120,
 
-    ellipsis: true,
     filteredValue: hTAPendingApprovalReportsSearch?.type?.length
       ? hTAPendingApprovalReportsSearch?.type
       : null,
@@ -248,7 +243,6 @@ export const getBorderlessLineManagerTableColumns = ({
     align: "center",
     width: 100,
 
-    ellipsis: true,
     sorter: (a, b) => a.quantity - b.quantity,
     sortDirections: ["ascend", "descend"],
     sortOrder: sortedInfo?.columnKey === "quantity" ? sortedInfo.order : null,
@@ -266,14 +260,13 @@ export const getBorderlessLineManagerTableColumns = ({
     key: "isEscalated",
     width: 50,
 
-    ellipsis: true,
     render: (isEscalated, record) => {
       return isEscalated ? (
         <img
           draggable={false}
           src={EscalatedIcon}
           alt="Escalated"
-          title="Escalated"
+          data-testid="escalated-icon"
         />
       ) : null;
     },
@@ -288,7 +281,6 @@ export const getBorderlessLineManagerTableColumns = ({
     dataIndex: "escalatedDateTime",
     key: "escalatedDateTime",
     align: "center",
-    ellipsis: true,
     width: 200,
 
     sorter: (a, b) =>

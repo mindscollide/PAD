@@ -66,13 +66,13 @@ export const AdminPolicyBreachesReportFilter = ({
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-
-    // Remove commas first
     const rawValue = value.replace(/,/g, "");
 
     if (name === "quantity") {
-      // Allow empty or numbers only
-      if (rawValue === "" || allowOnlyNumbers(rawValue)) {
+      if (
+        rawValue === "" ||
+        (allowOnlyNumbers(rawValue) && rawValue.length <= 12)
+      ) {
         setFieldValue(name, rawValue);
       }
       return;
@@ -207,7 +207,9 @@ export const AdminPolicyBreachesReportFilter = ({
             label="Quantity"
             name="quantity"
             value={
-              localState.quantity !== "" && !isNaN(localState.quantity)
+              localState.quantity !== "" &&
+              !isNaN(localState.quantity) &&
+              Number(localState.quantity) !== 0
                 ? Number(localState.quantity).toLocaleString("en-US")
                 : ""
             }

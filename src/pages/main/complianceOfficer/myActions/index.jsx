@@ -103,7 +103,7 @@ const COMyAction = () => {
   /** 🔹 Handle removing individual filter */
   const handleRemoveFilter = (key) => {
     const resetMap = {
-      requestID: { requestID: "" },
+      transactionID: { transactionID: "" },
       instrumentName: { instrumentName: "" },
       requesterName: { requesterName: "" },
       quantity: { quantity: 0 },
@@ -124,7 +124,7 @@ const COMyAction = () => {
   const handleRemoveAllFilters = () => {
     setComplianceOfficerMyActionSearch((prev) => ({
       ...prev,
-      requestID: "",
+      transactionID: "",
       instrumentName: "",
       requesterName: "",
       quantity: 0,
@@ -140,7 +140,7 @@ const COMyAction = () => {
   /** 🔹 Build Active Filters */
   const activeFilters = (() => {
     const {
-      requestID,
+      transactionID,
       instrumentName,
       requesterName,
       startDate,
@@ -166,10 +166,12 @@ const COMyAction = () => {
       8: "Non-Compliant",
     };
     return [
-      requestID && {
-        key: "requestID",
+      transactionID && {
+        key: "transactionID",
         value:
-          requestID.length > 13 ? requestID.slice(0, 13) + "..." : requestID,
+          transactionID.length > 13
+            ? transactionID.slice(0, 13) + "..."
+            : transactionID,
       },
       instrumentName && {
         key: "instrumentName",
@@ -403,7 +405,7 @@ const COMyAction = () => {
       const trail = Array.isArray(wf.timeline) ? buildTrail(wf.timeline) : [];
 
       return {
-        id: String(wf.requestID),
+        id: String(wf.transactionID),
         approvalID: wf.approvalID,
         instrumentName: wf.instrumentName,
         instrumentShortCode: wf.instrumentShortCode,

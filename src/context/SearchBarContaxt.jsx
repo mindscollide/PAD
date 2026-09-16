@@ -270,7 +270,7 @@ export const SearchBarProvider = ({ children }) => {
       startDate: null,
       endDate: null,
       type: [],
-      pageNumber: 0,
+      pageNumber: 1,
       pageSize: 10,
       filterTrigger: false,
     });
@@ -295,7 +295,7 @@ export const SearchBarProvider = ({ children }) => {
     actionEndDate: null,
     actionBy: "",
     tat: 0,
-    pageNumber: 0,
+    pageNumber: 1,
     pageSize: 10,
     filterTrigger: false,
   });
@@ -1250,7 +1250,7 @@ export const SearchBarProvider = ({ children }) => {
       startDate: null,
       endDate: null,
       type: [],
-      pageNumber: 0,
+      pageNumber: 1,
       pageSize: 10,
       filterTrigger: false,
     });
@@ -1277,7 +1277,7 @@ export const SearchBarProvider = ({ children }) => {
       actionEndDate: null,
       actionBy: "",
       tat: 0,
-      pageNumber: 0,
+      pageNumber: 1,
       pageSize: 10,
       filterTrigger: false,
     });

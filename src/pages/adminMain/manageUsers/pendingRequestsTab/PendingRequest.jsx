@@ -166,7 +166,7 @@ const PendingRequest = ({ currentUserData, setCurrentUserData }) => {
                 </Row>
 
                 <Row>
-                  <Col span={8}>
+                  <Col span={16}>
                     <div className={styles.infoItem}>
                       <img
                         draggable={false}
@@ -175,13 +175,13 @@ const PendingRequest = ({ currentUserData, setCurrentUserData }) => {
                         className={styles.icon}
                       />
                       <span className={styles.text}>
-                        <span className={styles.InitialName}>Email ID:</span>{" "}
+                        <span className={styles.InitialName}>Email ID: </span>
                         {data.email}
                       </span>
                     </div>
                   </Col>
 
-                  <Col span={8}>
+                  {/* <Col span={8}>
                     <div className={styles.infoItem}>
                       <img
                         draggable={false}
@@ -194,7 +194,7 @@ const PendingRequest = ({ currentUserData, setCurrentUserData }) => {
                         {data.userRegistrationRequestID}
                       </span>
                     </div>
-                  </Col>
+                  </Col> */}
 
                   <Col span={8}>
                     <div className={styles.infoItem}>

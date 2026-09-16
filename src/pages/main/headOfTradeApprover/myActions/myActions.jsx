@@ -167,7 +167,7 @@ const HTAMyAction = () => {
 
     const statusMap = {
       1: "Pending",
-      2: "Resubmit",
+      2: "Approved",
       3: "Approved",
       4: "Declined",
       5: "Traded",
@@ -386,9 +386,7 @@ const HTAMyAction = () => {
             const step = {
               status: isOutgoing ? "Resubmitted" : "Resubmit",
               date,
-              requesterID: dashBetweenApprovalAssets(
-                event.referenceApprovalID
-              ),
+              requesterID: dashBetweenApprovalAssets(event.referenceApprovalID),
               iconType: "Resubmit",
             };
 
@@ -450,9 +448,7 @@ const HTAMyAction = () => {
       if (!hasLeadingOrigin) {
         steps.unshift({
           status: "Submitted For Approval",
-          date: formatApiDateTime(
-            `${wf?.requestedDate} ${wf?.requestedTime}`
-          ),
+          date: formatApiDateTime(`${wf?.requestedDate} ${wf?.requestedTime}`),
           iconType: "SendForApproval",
         });
       }

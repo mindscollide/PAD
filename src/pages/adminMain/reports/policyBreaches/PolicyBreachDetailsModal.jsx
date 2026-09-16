@@ -30,7 +30,7 @@ const PolicyBreachDetailsModal = ({
   return (
     <GlobalModal
       visible={visible}
-      width="800px"
+      width="1500px"
       onCancel={onClose}
       closable={false}
       maskClosable
@@ -49,9 +49,7 @@ const PolicyBreachDetailsModal = ({
             </div>
             <div className={style.employeeInfo}>
               <span className={style.employeeLabel}>Employee Name</span>
-              <span className={style.employeeValue}>
-                {employeeName || "—"}
-              </span>
+              <span className={style.employeeValue}>{employeeName || "—"}</span>
             </div>
             <CustomButton
               text={

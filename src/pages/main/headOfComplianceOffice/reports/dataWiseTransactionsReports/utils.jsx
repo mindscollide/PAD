@@ -144,10 +144,10 @@ export const getBorderlessTableColumns = ({
   handelViewDetails,
 }) => [
   {
-    title: withSortIcon("Employee ID", "employeeID", sortedInfo, "center"),
+    title: withSortIcon("ID", "employeeID", sortedInfo, "center"),
     dataIndex: "employeeID",
     key: "employeeID",
-    width: 120,
+    width: 90,
     align: "center",
     sorter: (a, b) =>
       parseInt(a.employeeID.replace(/[^\d]/g, ""), 10) -
@@ -243,7 +243,6 @@ export const getBorderlessTableColumns = ({
                 display: "inline-block",
                 cursor: "pointer",
               }}
-              title={code}
             >
               {code}
             </span>
@@ -356,7 +355,7 @@ export const getBorderlessTableColumns = ({
     render: (_, record) => (
       <div className={style.viewEditClass}>
         <Button
-          className="small-dark-button"
+          className="small-dark-button_lesser-padding"
           text={"View Details"}
           onClick={() => {
             handelViewDetails(record.approvalID);

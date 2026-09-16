@@ -177,9 +177,9 @@ const BoxCard = ({
               ?.toLowerCase()
               .replace(/[\s-]+/g, "_");
             const baseTypeStyle = typeColorMap[normalizedType] || {
-              bgColor: "#f0f0f0",
-              textLableColor: "#000",
-              textCountColor: "#000",
+              bgColor: "#ffdbdb",
+              textLableColor: "#a50101",
+              textCountColor: "#a50101",
               textAlign: "center",
             };
             // Employee Portfolio tile's "Shares" count is now a net share balance
@@ -266,7 +266,7 @@ const BoxCard = ({
                       {/* Subtext (dynamic count) */}
                       <Text className={styles.urgentDescription}>
                         {formatNumberWithCommas(
-                          convertSingleDigittoDoubble(box.count),
+                          convertSingleDigittoDoubble(box.count)
                         )}{" "}
                         Approvals Required Before Deadline
                       </Text>
@@ -337,7 +337,7 @@ const BoxCard = ({
                             style={{ color: textCountColor, fontSize: "40px" }}
                             flag={true}
                             value={formatNumberWithCommas(
-                              convertSingleDigittoDoubble(box.count),
+                              convertSingleDigittoDoubble(box.count)
                             )}
                           />
                         </>
@@ -352,7 +352,7 @@ const BoxCard = ({
                                     className={styles[`${base}count`]}
                                     style={{ color: textCountColor }}
                                     value={formatNumberWithCommas(
-                                      convertSingleDigittoDoubble(box.count),
+                                      convertSingleDigittoDoubble(box.count)
                                     )}
                                   />
                                 </div>
@@ -388,7 +388,7 @@ const BoxCard = ({
                                   className={styles[`${base}count`]}
                                   style={{ color: textCountColor }}
                                   value={formatNumberWithCommas(
-                                    convertSingleDigittoDoubble(box.count),
+                                    convertSingleDigittoDoubble(box.count)
                                   )}
                                 />
                               </div>
@@ -424,7 +424,7 @@ const BoxCard = ({
                               className={styles[`${base}count`]}
                               style={{ color: textCountColor }}
                               value={formatNumberWithCommas(
-                                convertSingleDigittoDoubble(box.count),
+                                convertSingleDigittoDoubble(box.count)
                               )}
                             />
                           </Col>

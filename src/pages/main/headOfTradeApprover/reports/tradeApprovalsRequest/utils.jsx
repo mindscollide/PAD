@@ -163,7 +163,12 @@ export const getBorderlessTableColumns = ({ sortedInfo }) => [
     dataIndex: "department",
     key: "department",
     width: 120,
-    sorter: stringSorter("department"),
+    sorter: (a, b) =>
+      (a.departmentName || "").localeCompare(
+        b.departmentName || "",
+        undefined,
+        { sensitivity: "base" }
+      ),
     sortDirections: ["ascend", "descend"],
     sortOrder: sortedInfo?.columnKey === "department" ? sortedInfo.order : null,
     showSorterTooltip: false,
