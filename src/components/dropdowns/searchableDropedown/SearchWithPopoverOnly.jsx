@@ -704,7 +704,7 @@ const SearchWithPopoverOnly = () => {
         if (currentPath === "/PAD/admin-users/session-wise-activity") {
           setAdminSessionWiseActivitySearch((prev) => ({
             ...prev,
-            ipAddress: searchMain,
+            employeeName: searchMain,
             startDate: null,
             endDate: null,
             filterTrigger: true,
@@ -753,7 +753,7 @@ const SearchWithPopoverOnly = () => {
         if (currentPath === "/PAD/admin-reports/admin-user-activity-report") {
           setUserActivityReportAdmin((prev) => ({
             ...prev,
-            ipAddress: searchMain,
+            employeeName: searchMain,
             startDate: null,
             endDate: null,
             filterTrigger: true,

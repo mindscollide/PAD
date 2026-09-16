@@ -255,7 +255,7 @@ export const getBorderlessTableColumns = ({
     ),
     dataIndex: "type",
     key: "type",
-    width: 90,
+    width: 100,
     align: "center",
     filteredValue: employeeMyTransactionReportSearch.type?.length
       ? employeeMyTransactionReportSearch?.type
@@ -351,7 +351,7 @@ export const getBorderlessTableColumns = ({
     ),
     dataIndex: "status",
     key: "status",
-    width: 100,
+    width: 130,
     filteredValue: employeeMyTransactionReportSearch.status?.length
       ? employeeMyTransactionReportSearch.status
       : null,
@@ -396,7 +396,7 @@ export const getBorderlessTableColumns = ({
     align: "center",
     dataIndex: "actionDateTime",
     key: "actionDateTime",
-    width: 180,
+    width: 110,
     sorter: (a, b) =>
       formatApiDateTime(a.actionDateTime).localeCompare(
         formatApiDateTime(b.actionDateTime)
@@ -412,7 +412,7 @@ export const getBorderlessTableColumns = ({
         className="text-gray-600"
         data-testid="formatted-date"
       >
-        {formatApiDateTime(date)}
+        {formatShowOnlyDateForDateRange(date)}
       </span>
     ),
   },

@@ -89,7 +89,10 @@ export const HCOOverdueVerifications = ({
 
     // Numeric fields
     if (["approvedQuantity", "sharesTraded"].includes(name)) {
-      if (rawValue === "" || allowOnlyNumbers(rawValue)) {
+      if (
+        rawValue === "" ||
+        (allowOnlyNumbers(rawValue) && rawValue.length <= 12)
+      ) {
         setFieldValue(name, rawValue);
       }
       return;
@@ -256,7 +259,9 @@ export const HCOOverdueVerifications = ({
             placeholder="Shares Traded"
             name="sharesTraded"
             value={
-              localState.sharesTraded
+              localState.sharesTraded !== "" &&
+              !isNaN(localState.sharesTraded) &&
+              Number(localState.sharesTraded) !== 0
                 ? Number(localState.sharesTraded).toLocaleString("en-US")
                 : ""
             }
@@ -270,7 +275,9 @@ export const HCOOverdueVerifications = ({
             placeholder="Approved Quantity"
             name="approvedQuantity"
             value={
-              localState.approvedQuantity
+              localState.approvedQuantity !== "" &&
+              !isNaN(localState.approvedQuantity) &&
+              Number(localState.approvedQuantity) !== 0
                 ? Number(localState.approvedQuantity).toLocaleString("en-US")
                 : ""
             }
