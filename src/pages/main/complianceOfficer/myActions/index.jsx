@@ -405,7 +405,7 @@ const COMyAction = () => {
       const trail = Array.isArray(wf.timeline) ? buildTrail(wf.timeline) : [];
 
       return {
-        id: String(wf.transactionID),
+        id: String(wf.requestID),
         approvalID: wf.approvalID,
         instrumentName: wf.instrumentName,
         instrumentShortCode: wf.instrumentShortCode,

@@ -176,7 +176,10 @@ const Details = ({
         {/* 🔹 Group Title */}
         <Col span={24}>
           <label className={styles.label}>
-            Group Title <span className={styles["required"]}>*</span>
+            Group Title
+            {pageTypeForAdminGropusAndPolicy !== 2 && (
+              <span className={styles["required"]}>*</span>
+            )}
           </label>
           {pageTypeForAdminGropusAndPolicy !== 2 ? (
             <>
@@ -234,7 +237,10 @@ const Details = ({
         {/* 🔹 Group Description */}
         <Col span={24}>
           <label className={styles.label}>
-            Group Description <span className={styles["required"]}>*</span>
+            Group Description{" "}
+            {pageTypeForAdminGropusAndPolicy !== 2 && (
+              <span className={styles["required"]}>*</span>
+            )}
           </label>
           {pageTypeForAdminGropusAndPolicy !== 2 ? (
             <>

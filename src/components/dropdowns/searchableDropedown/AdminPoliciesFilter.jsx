@@ -64,6 +64,14 @@ export const AdminPoliciesFilter = ({
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFieldValue(name, removeFirstSpace(value));
+    if (name === "policyId" && value.length < 11) {
+      setFieldValue(name, removeFirstSpace(value));
+    } else if (
+      (name === "scenario" || name === "consequence") &&
+      value.length < 201
+    ) {
+      setFieldValue(name, removeFirstSpace(value));
+    }
   };
 
   // 🔹 Search Click

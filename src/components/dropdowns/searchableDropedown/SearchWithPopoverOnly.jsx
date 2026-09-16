@@ -663,8 +663,8 @@ const SearchWithPopoverOnly = () => {
         ) {
           setAdminGropusAndPolicyPoliciesTabSearch((prev) => ({
             ...prev,
-            policyId: searchMain,
-            scenario: "",
+            policyId: "",
+            scenario: searchMain,
             duration: "",
             consequence: "",
             pageNumber: 0,
