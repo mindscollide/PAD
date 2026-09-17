@@ -4,6 +4,7 @@ import { Row, Col } from "antd";
 import styles from "./CancelGroupModal.module.css";
 import CustomButton from "../../../../../../components/buttons/button";
 import { GlobalModal, ModalImgStates } from "../../../../../../components";
+import { useMyAdmin } from "../../../../../../context/AdminContext";
 
 const CancelGroupModal = ({
   visible,
@@ -11,6 +12,7 @@ const CancelGroupModal = ({
   onContinueEditing,
   onConfirmCancel,
 }) => {
+  const { pageTypeForAdminGropusAndPolicy } = useMyAdmin();
   return (
     <GlobalModal
       visible={visible}
@@ -22,7 +24,13 @@ const CancelGroupModal = ({
         <div className={styles.SubmittedCenteralized}>
           <Row>
             <Col>
-              <ModalImgStates type="Cancelgroupcreation" />
+              <ModalImgStates
+                type={
+                  pageTypeForAdminGropusAndPolicy === 0
+                    ? "Cancelgroupcreation"
+                    : "CancelgroupUpdate"
+                }
+              />
             </Col>
           </Row>
 

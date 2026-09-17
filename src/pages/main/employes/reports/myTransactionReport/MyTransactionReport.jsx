@@ -440,7 +440,7 @@ const MyTransactionReport = () => {
             scroll={
               getEmployeeTransactionReport?.transactions?.length
                 ? {
-                    x: "max-content",
+                    x: 1300,
                     y: activeFilters.length > 0 ? 450 : 500,
                   }
                 : undefined

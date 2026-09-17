@@ -77,6 +77,13 @@ const config = {
       "If you cancel now, all selected policies and entered details for this policy group will be lost. Are you sure you want to cancel?",
     image: GropusICanclImg,
   },
+
+  CancelgroupUpdate: {
+    heading: "Cancel Group Modification",
+    subheading:
+      "If you cancel now, all your changes for this policy group will be lost. Are you sure you want to cancel?",
+    image: GropusICanclImg,
+  },
   GroupCreatedSuccess: {
     heading: "Created!",
     subheading: "Your group has been created successfully.",

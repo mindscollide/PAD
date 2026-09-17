@@ -154,7 +154,8 @@ const ViewDetailsAdmin = () => {
       tooltip: {
         callbacks: {
           label: (context) => {
-            const scenario = details?.policyBreachBar?.scenarios?.[context.dataIndex];
+            const scenario =
+              details?.policyBreachBar?.scenarios?.[context.dataIndex];
             return scenario
               ? `${scenario}: ${context.parsed.y}`
               : `${context.parsed.y}`;
@@ -169,7 +170,12 @@ const ViewDetailsAdmin = () => {
       },
       y: {
         beginAtZero: true,
-        grid: { display: true, drawBorder: false, color: "#E0E0E0", lineWidth: 1 },
+        grid: {
+          display: true,
+          drawBorder: false,
+          color: "#E0E0E0",
+          lineWidth: 1,
+        },
         ticks: { color: "#424242" },
       },
     },
@@ -475,7 +481,9 @@ const ViewDetailsAdmin = () => {
                     <DonutChart
                       labels={details?.transactionsDonut?.labels || []}
                       counts={details?.transactionsDonut?.counts || []}
-                      percentages={details?.transactionsDonut?.percentages || []}
+                      percentages={
+                        details?.transactionsDonut?.percentages || []
+                      }
                       totalCount={details?.transactionsDonut?.totalCount || 0}
                     />
                   </div>
@@ -491,7 +499,9 @@ const ViewDetailsAdmin = () => {
           open={policyHistoryOpen}
           onClose={() => setPolicyHistoryOpen(false)}
           currentPolicy={policyHistory?.currentPolicy}
-          previouslyAssignedPolicies={policyHistory?.previouslyAssignedPolicies || []}
+          previouslyAssignedPolicies={
+            policyHistory?.previouslyAssignedPolicies || []
+          }
         />
       )}
     </>

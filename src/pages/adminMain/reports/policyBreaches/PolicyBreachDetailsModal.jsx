@@ -17,6 +17,18 @@ import style from "./PolicyBreachDetailsModal.module.css";
  * (headOfTradeApprover/reports/policyBreaches/PolicyBreachDetailsModal.jsx),
  * which was already built to the real SRS spec.
  */
+
+const convertCode = (code) => {
+  const [prefix, number] = code.split("_"); // "PL", "00000001"
+
+  // Take first 2 digits for the middle part
+  const mid = number.slice(0, 2); // "00"
+
+  // Remaining digits for the last part
+  const last = number.slice(2); // "000001"
+
+  return `${prefix}_${mid}_${last}`;
+};
 const PolicyBreachDetailsModal = ({
   visible,
   onClose,
@@ -30,7 +42,7 @@ const PolicyBreachDetailsModal = ({
   return (
     <GlobalModal
       visible={visible}
-      width="1500px"
+      width="1200px"
       onCancel={onClose}
       closable={false}
       maskClosable
@@ -44,11 +56,11 @@ const PolicyBreachDetailsModal = ({
         <div>
           <div className={style.employeeRow}>
             <div className={style.employeeInfo}>
-              <span className={style.employeeLabel}>Employee ID</span>
+              <span className={style.employeeLabel}>Employee ID: </span>
               <span className={style.employeeValue}>{employeeID ?? "—"}</span>
             </div>
             <div className={style.employeeInfo}>
-              <span className={style.employeeLabel}>Employee Name</span>
+              <span className={style.employeeLabel}>Employee Name: </span>
               <span className={style.employeeValue}>{employeeName || "—"}</span>
             </div>
             <CustomButton
@@ -83,7 +95,7 @@ const PolicyBreachDetailsModal = ({
                 <tbody>
                   {records.map((record, index) => (
                     <tr key={record.policyID || index}>
-                      <td>{record.policyID || "—"}</td>
+                      <td>{convertCode(record.policyID) || "—"}</td>
                       <td>{record.scenario || "—"}</td>
                       <td>{record.consequence || "—"}</td>
                     </tr>

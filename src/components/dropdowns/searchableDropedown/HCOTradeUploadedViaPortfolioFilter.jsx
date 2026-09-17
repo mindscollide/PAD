@@ -72,7 +72,10 @@ export const HCOTradeUploadedViaPortfolioFilter = ({
     // Quantity → numbers only
     if (name === "quantity") {
       const rawValue = value.replace(/,/g, "");
-      if (rawValue === "" || allowOnlyNumbers(rawValue)) {
+      if (
+        rawValue === "" ||
+        (allowOnlyNumbers(rawValue) && rawValue.length <= 12)
+      ) {
         setFieldValue(name, rawValue);
       }
       return;

@@ -77,7 +77,8 @@ const EditRoleAndPoliciesModal = () => {
   const groupPolicyOptions =
     editRoleAndPolicyGroupDropdownData?.groupPolicies
       ?.filter(
-        (policy) => policy.groupPolicyID !== assignedGroupPolicies?.groupPolicyID
+        (policy) =>
+          policy.groupPolicyID !== assignedGroupPolicies?.groupPolicyID
       )
       ?.map((policy) => ({
         label: policy.groupTitle,
@@ -125,7 +126,8 @@ const EditRoleAndPoliciesModal = () => {
   // it wouldn't be found there); otherwise the admin picked something new
   // from the (filtered) dropdown.
   const selectedPolicyData =
-    assignedGroupPolicies && selectedPolicy === assignedGroupPolicies.groupPolicyID
+    assignedGroupPolicies &&
+    selectedPolicy === assignedGroupPolicies.groupPolicyID
       ? {
           label: assignedGroupPolicies.groupTitle,
           value: assignedGroupPolicies.groupPolicyID,

@@ -73,8 +73,6 @@ const UserSessionWiseActivity = () => {
     adminSessionWiseActivityListData,
     setAdminSessionWiseActivityListData,
     resetAdminSessionWiseActivityListData,
-    sessionWiseViewActionModal,
-    setSessionWiseViewActionModal,
   } = useMyAdmin();
 
   const {
@@ -107,6 +105,11 @@ const UserSessionWiseActivity = () => {
    * @param {boolean} replace - if true → replace table data
    * @param {boolean} showLoaderFlag - true → show loader
    */
+
+  console.log(
+    adminSessionWiseActivityListData,
+    "adminSessionWiseActivityListDataadminSessionWiseActivityListData"
+  );
   const fetchApiCall = useCallback(
     async (requestData, replace = false, showLoaderFlag = true) => {
       if (!requestData || typeof requestData !== "object") return;
@@ -316,7 +319,7 @@ const UserSessionWiseActivity = () => {
       });
     }
   };
-  
+
   useEffect(() => {
     try {
       if (!viewActionSessionWiseModal) {
@@ -457,9 +460,7 @@ const UserSessionWiseActivity = () => {
       <PageLayout
         background="white"
         className={
-          activeFilters.length > 0
-            ? "repotsHeightHOC"
-            : "sessionwiseHeight"
+          activeFilters.length > 0 ? "repotsHeightHOC" : "sessionwiseHeight"
         }
       >
         <div className="px-4 md:px-6 lg:px-8">

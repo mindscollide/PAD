@@ -1,15 +1,11 @@
 import { Checkbox, Input, Select, Spin, Tooltip } from "antd";
 import { UpOutlined, DownOutlined } from "@ant-design/icons";
 import React from "react";
-import { DateRangePicker, InstrumentSelect } from "../../../../../components";
+
 const { Option } = Select;
 import styles from "./policies.module.css";
 import CustomDatePicker from "../../../../../components/dateSelector/datePicker/datePicker";
-import {
-  convertUTCToLocalTime,
-  formatApiDateTime,
-  toYYMMDD,
-} from "../../../../../common/funtions/rejex";
+
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
@@ -100,7 +96,7 @@ export const policyColumns = ({
       render: (_, record = {}) => {
         const isChecked = Array.isArray(selectedPolicies)
           ? selectedPolicies.some(
-              (p) => String(p.policyID) === String(record.policyID),
+              (p) => String(p.policyID) === String(record.policyID)
             )
           : false;
 
@@ -176,7 +172,7 @@ export const policyColumns = ({
 
                 // 2. Parse dynamic step array
                 const allowedValues = parseApplicableValues(
-                  record?.applicableValues,
+                  record?.applicableValues
                 );
                 console.log("allowedValues", record?.policyCode);
                 console.log("allowedValues", allowedValues);
@@ -249,7 +245,7 @@ export const policyColumns = ({
                   // Direct typing: Snap to closest applicable value if provided
                   if (hasValues) {
                     const closest = allowedValues.reduce((prev, curr) =>
-                      Math.abs(curr - val) < Math.abs(prev - val) ? curr : prev,
+                      Math.abs(curr - val) < Math.abs(prev - val) ? curr : prev
                     );
                     onDurationChange?.(record, closest);
                   } else {
@@ -265,7 +261,9 @@ export const policyColumns = ({
                       gap: "8px",
                     }}
                   >
-                    <div style={{ position: "relative", display: "inline-block" }}>
+                    <div
+                      style={{ position: "relative", display: "inline-block" }}
+                    >
                       {/* FIXED: was type="number", relying on the native
                       browser spinner - clicking those arrows fires the
                       browser's own +/-1 increment through onChange, which
@@ -347,16 +345,16 @@ export const policyColumns = ({
                       record.duration === "Invalid Date"
                         ? null
                         : record.duration !== "Invalid Date"
-                          ? record.duration
-                          : null
+                        ? record.duration
+                        : null
                     }
                     onChange={handleChange}
                     modeType={
                       dataTypeID === 2
                         ? "date"
                         : dataTypeID === 3
-                          ? "time"
-                          : "datetime"
+                        ? "time"
+                        : "datetime"
                     }
                     minDate={minMax || null}
                   />
