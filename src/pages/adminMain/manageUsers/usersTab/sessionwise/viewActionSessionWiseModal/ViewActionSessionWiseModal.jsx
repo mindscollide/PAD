@@ -45,6 +45,9 @@ const ViewActionSessionWiseModal = () => {
     `${user?.logoutDate ?? ""} ${user?.logoutTime ?? ""}`.trim() || "—";
   const SessionDuration = user?.sessionDuration || "";
 
+  const Timestamp =
+    `${user?.actionTime ?? ""} ${user?.actionTime ?? ""}`.trim() || "—";
+
   /**
    * SRS: "On click Download, the system will perform same functionality as
    * it does on Export." Wired to ExportUserSessionWiseActivityDetails per
