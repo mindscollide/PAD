@@ -110,6 +110,8 @@ const UserWiseComplianceReport = () => {
     hasFetched.current = true;
     const requestData = buildApiRequest(userActivityComplianceReportAdmin);
     fetchApiCall(requestData, true, true);
+    setShowViewDetailOfUserwiseComplianceReportAdmin(false);
+    setSelectedUserwiseComplianceReportEmployee(null);
   }, []);
 
   // Reset on Unmount

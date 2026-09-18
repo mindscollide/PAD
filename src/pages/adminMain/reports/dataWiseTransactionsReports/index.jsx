@@ -12,7 +12,6 @@ import {
   buildApiRequest,
   buildExportRequest,
   getBorderlessTableColumns,
-  getDefaultDateRange,
   mappingDateWiseTransactionReport,
 } from "./utils";
 import { approvalStatusMap } from "../../../../components/tables/borderlessTable/utill";
@@ -272,14 +271,12 @@ const AdmindataWiseTransactionsReports = () => {
       departmentName,
       instrumentName,
       quantity,
-      type,
-      status,
+      // type,
+      // status,
     } = coDatewiseTransactionReportSearch || {};
 
     const truncate = (val) =>
       val.length > 13 ? val.slice(0, 13) + "..." : val;
-
-    const formatArray = (arr) => (arr?.length ? arr.join(", ") : null);
 
     // REMOVED: requestDate is no longer surfaced as an active-filter tag -
     // the date range is always applied (default or user-picked) but stays
@@ -296,8 +293,8 @@ const AdmindataWiseTransactionsReports = () => {
         ? { key: "instrumentName", value: truncate(instrumentName) }
         : null,
       quantity ? { key: "quantity", value: quantity } : null,
-      type?.length ? { key: "type", value: formatArray(type) } : null,
-      status?.length ? { key: "status", value: formatArray(status) } : null,
+      // type?.length ? { key: "type", value: formatArray(type) } : null,
+      // status?.length ? { key: "status", value: formatArray(status) } : null,
     ].filter(Boolean);
   })();
 
