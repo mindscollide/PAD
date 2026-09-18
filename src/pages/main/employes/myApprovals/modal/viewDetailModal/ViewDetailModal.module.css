@@ -256,7 +256,7 @@
 .backgrounColorOfStepper {
   background-color: #fff1e7 !important;
   padding: 5px 0px;
-  display: inline-flex; /* keep children in a row */
+  /* display: inline-flex; keep children in a row */
   flex-direction: row !important; /* force horizontal */
   margin-top: 10px;
   border-radius: 8px !important;

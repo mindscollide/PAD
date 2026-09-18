@@ -43,7 +43,7 @@ export const buildApiRequest = (
   // API_Changes/2026-08-19_hta_tat_viewdetails_actionby_actionat_tat.md.
   TypeIds:
     mapBuySellToIds?.(searchState.type, assetTypeListingData?.Equities) || [],
-  PageNumber: Number(searchState.pageNumber) || 0,
+  PageNumber: Number(searchState.pageNumber) || 1,
   Length: Number(searchState.pageSize) || 10,
 });
 /**

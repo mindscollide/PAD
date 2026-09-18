@@ -15,7 +15,7 @@ import {
   formatNumberWithCommas,
   formatTransactionId,
 } from "../../../../../../../common/funtions/rejex";
-import { useReconcileContext } from "../../../../../../../context/reconsileContax";
+
 import { usePortfolioContext } from "../../../../../../../context/portfolioContax";
 
 const ViewDetailPortfolioTransaction = () => {
@@ -101,7 +101,7 @@ const ViewDetailPortfolioTransaction = () => {
 
   //This is how I can pass the status in statusData Variables
   const statusData = getStatusStyle(
-    String(reconcilePortfolioViewDetailData?.workFlowStatus?.workFlowStatusID)
+    String(reconcilePortfolioViewDetailData?.approvalStatus)
   );
 
   // Action buttons must gate on the CO's own action (myActionStatusID), not the
@@ -145,7 +145,7 @@ const ViewDetailPortfolioTransaction = () => {
   const currentUserIndex = hierarchyDetails.findIndex(
     (item) => item.userID === loggedInUserID
   );
-
+  // approvalStatus
   // show only previous + current user
   const visibleHierarchy =
     currentUserIndex !== -1

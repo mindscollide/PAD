@@ -281,7 +281,15 @@ const withFilterHeader = (element) => (
 const numberSorter = (key) => (a, b) =>
   Number(String(a[key] || 0).replace(/[^\d]/g, "")) -
   Number(String(b[key] || 0).replace(/[^\d]/g, ""));
-
+const nowrapCell = (minWidth, maxWidth) => ({
+  style: {
+    minWidth,
+    maxWidth,
+    whiteSpace: "nowrap",
+    overflow: "hidden",
+    textOverflow: "ellipsis",
+  },
+});
 export const getBorderlessTableColumnsViewDetails = ({
   approvalStatusMap,
   sortedInfoView,
@@ -416,36 +424,30 @@ export const getBorderlessTableColumnsViewDetails = ({
     ),
   },
   {
-    title: withFilterHeader(
+    // title: withFilterHeader(
+    //   <TypeColumnTitle
+    //     state={coTransactionsSummarysReportsViewDetailsSearch}
+    //     setState={setCOTransactionsSummarysReportsViewDetailSearch}
+    //   />
+    // ),
+
+    title: (
       <TypeColumnTitle
         state={coTransactionsSummarysReportsViewDetailsSearch}
         setState={setCOTransactionsSummarysReportsViewDetailSearch}
       />
     ),
     dataIndex: "type",
-    width: 150,
+    width: 100,
     key: "type",
-
+    align: "center",
     filteredValue: coTransactionsSummarysReportsViewDetailsSearch.type?.length
       ? coTransactionsSummarysReportsViewDetailsSearch.type
       : null,
     onFilter: () => true, // Actual filtering handled by API
-    render: (type, record) => (
-      <span
-        id={`cell-${record.key}-type`}
-        className={type === "Buy" ? "text-green-600" : "text-red-600"}
-        data-testid={`trade-type-${type}`}
-        style={{
-          display: "inline-block",
-          width: "100%",
-          overflow: "hidden",
-          textOverflow: "ellipsis",
-          whiteSpace: "nowrap",
-        }}
-      >
-        {type}
-      </span>
-    ),
+    render: (type) => <span>{type || "—"}</span>,
+    onHeaderCell: () => nowrapCell(100, 100),
+    onCell: () => nowrapCell(100, 100),
   },
   {
     title: withSortIcon("Quantity", "quantity", sortedInfoView, "center"),
@@ -467,7 +469,14 @@ export const getBorderlessTableColumnsViewDetails = ({
     ),
   },
   {
-    title: withFilterHeader(
+    // title: withFilterHeader(
+    //   <StatusColumnTitle
+    //     state={coTransactionsSummarysReportsViewDetailsSearch}
+    //     setState={setCOTransactionsSummarysReportsViewDetailSearch}
+    //   />
+    // ),
+
+    title: (
       <StatusColumnTitle
         state={coTransactionsSummarysReportsViewDetailsSearch}
         setState={setCOTransactionsSummarysReportsViewDetailSearch}
@@ -480,11 +489,24 @@ export const getBorderlessTableColumnsViewDetails = ({
       ? coTransactionsSummarysReportsViewDetailsSearch.status
       : null,
     onFilter: () => true,
-    render: (status, record) => (
-      <div id={`cell-${record.key}-status`}>
-        {renderStatusTag(status, approvalStatusMap)}
-      </div>
-    ),
+    render: (status) => {
+      const tag = approvalStatusMap?.[status] || {};
+      return (
+        <Tag
+          style={{
+            backgroundColor: tag.backgroundColor,
+            color: tag.textColor,
+            whiteSpace: "nowrap",
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+            display: "inline-block",
+          }}
+          className="border-less-table-orange-status"
+        >
+          {tag.label || status || "—"}
+        </Tag>
+      );
+    },
   },
   {
     title: "",

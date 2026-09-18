@@ -25,7 +25,6 @@ import { useTableScrollBottom } from "../../../../../../common/funtions/scroll";
 import { approvalStatusMap } from "../../../../../../components/tables/borderlessTable/utill";
 import { BorderlessTable, PageLayout } from "../../../../../../components";
 import { getSafeAssetTypeData } from "../../../../../../common/funtions/assetTypesList";
-import { useSidebarContext } from "../../../../../../context/sidebarContaxt";
 
 const ViewDetails = () => {
   const navigate = useNavigate();
@@ -134,7 +133,8 @@ const ViewDetails = () => {
     hasFetched.current = true;
     const requestData = buildApiRequest(
       htaTATViewDetailsSearch,
-      showSelectedTatDataOnViewDetailHTA
+      showSelectedTatDataOnViewDetailHTA,
+      assetTypeListingData // ← added, matches reference page's initial-fetch call
     );
     fetchApiCall(requestData, true, true);
   }, []);
@@ -174,7 +174,8 @@ const ViewDetails = () => {
         setLoadingMore(true);
         const requestData = buildApiRequest(
           htaTATViewDetailsSearch,
-          showSelectedTatDataOnViewDetailHTA
+          showSelectedTatDataOnViewDetailHTA,
+          assetTypeListingData // ← was missing, same as the reference page
         );
         await fetchApiCall(requestData, false, false);
       } catch (err) {

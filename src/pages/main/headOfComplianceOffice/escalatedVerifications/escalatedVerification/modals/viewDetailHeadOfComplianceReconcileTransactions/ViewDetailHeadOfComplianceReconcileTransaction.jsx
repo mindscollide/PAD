@@ -160,6 +160,8 @@ const ViewDetailHeadOfComplianceReconcileTransaction = () => {
   const disableViewAndAddTicketButton =
     statusData.label === "Compliant" || statusData.label === "Non-Compliant";
 
+  const disabledViewTicketsButton =
+    isEscalatedHeadOfComplianceViewDetailData?.ticketUploaded === false;
   // REWORKED (2026-08-17): rebuilt to match the HTA sibling screen's
   // hierarchy handling exactly
   // (headOfTradeApprover/escalatedApprovals/modals/viewDetailHeadOfApprovalModal) -
@@ -609,11 +611,13 @@ const ViewDetailHeadOfComplianceReconcileTransaction = () => {
                   {!disableViewAndAddTicketButton && (
                     <Col span={[24]}>
                       <div className={styles.addticketBuuton}>
-                        <CustomButton
-                          text={"View Tickets"}
-                          className={"big-ViewTicket-light-button"}
-                          onClick={handleViewTicket}
-                        />
+                        {!disabledViewTicketsButton && (
+                          <CustomButton
+                            text={"View Tickets"}
+                            className={"big-ViewTicket-light-button"}
+                            onClick={handleViewTicket}
+                          />
+                        )}
                         <CustomButton
                           text={"Add Ticket"}
                           onClick={() => {
