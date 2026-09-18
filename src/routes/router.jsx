@@ -428,8 +428,8 @@ const router = createBrowserRouter(
 
       {/* Redirect all unknown routes to login */}
       <Route path="*" element={<Navigate to="/" replace />} />
-    </Route>,
-  ),
+    </Route>
+  )
 );
 
 export default router;

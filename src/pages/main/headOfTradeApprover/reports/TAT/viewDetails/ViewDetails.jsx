@@ -412,7 +412,7 @@ const ViewDetails = () => {
       <Row className={style.breadcrumbRowBelowData}>
         <Col span={6}>
           <p className={style.mainTitleTextClass}>
-            Employee ID:{" "}
+            Employee ID:
             <span className={style.subTitleTextClass}>
               {showSelectedTatDataOnViewDetailHTA.employeeID}
             </span>
@@ -420,15 +420,15 @@ const ViewDetails = () => {
         </Col>
         <Col span={6}>
           <p className={style.mainTitleTextClass}>
-            Employee Name:{" "}
+            Employee Name:
             <span className={style.subTitleTextClass}>
               {showSelectedTatDataOnViewDetailHTA.employeeName}
             </span>
           </p>
-        </Col>{" "}
+        </Col>
         <Col span={6}>
           <p className={style.mainTitleTextClass}>
-            Department:{" "}
+            Department:
             <span className={style.subTitleTextClass}>
               {showSelectedTatDataOnViewDetailHTA.departmentName}
             </span>
@@ -436,7 +436,7 @@ const ViewDetails = () => {
         </Col>
         <Col span={6}>
           <p className={style.mainTitleTextClass}>
-            Date Range:{" "}
+            Date Range:
             <span className={style.subTitleTextClass}>
               {showSelectedTatDataOnViewDetailHTA.filterStartDate} -{" "}
               {showSelectedTatDataOnViewDetailHTA.filterEndDate}

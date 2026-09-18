@@ -73,6 +73,59 @@ const ViewDetails = () => {
     pageSize: 10,
   });
 
+  const activeFilters = (() => {
+    const {
+      instrumentName,
+      quantity,
+      startDate,
+      endDate,
+      actionStartDate,
+      actionEndDate,
+      actionBy,
+      tat,
+    } = {};
+
+    return [
+      instrumentName && {
+        key: "instrumentName",
+        label: "Instrument",
+        value:
+          instrumentName.length > 13
+            ? instrumentName.slice(0, 13) + "..."
+            : instrumentName,
+      },
+
+      quantity > 0 && {
+        key: "quantity",
+        label: "Quantity",
+        value: Number(quantity).toLocaleString("en-US"),
+      },
+
+      actionBy && {
+        key: "actionBy",
+        label: "Action By",
+        value: actionBy.length > 13 ? actionBy.slice(0, 13) + "..." : actionBy,
+      },
+
+      tat > 0 && {
+        key: "tat",
+        label: "TAT",
+        value: Number(tat).toLocaleString("en-US"),
+      },
+
+      startDate &&
+        endDate && {
+          key: "requestDateRange",
+          value: `${startDate} → ${endDate}`,
+        },
+
+      actionStartDate &&
+        actionEndDate && {
+          key: "actionDateRange",
+          value: `${actionStartDate} → ${actionEndDate}`,
+        },
+    ].filter(Boolean);
+  })();
   const fetchApiCall = useCallback(
     async (requestData, replace = false, showLoaderFlag = true) => {
       if (!requestData || typeof requestData !== "object") return;
@@ -191,7 +244,9 @@ const ViewDetails = () => {
                 ),
               },
               {
-                title: <span className={style.breadcrumbText}>View Details</span>,
+                title: (
+                  <span className={style.breadcrumbText}>View Details</span>
+                ),
               },
             ]}
           />
@@ -235,7 +290,7 @@ const ViewDetails = () => {
       <Row className={style.breadcrumbRowBelowData}>
         <Col span={6}>
           <p className={style.mainTitleTextClass}>
-            Employee ID:{" "}
+            Employee ID:
             <span className={style.subTitleTextClass}>
               {showSelectedTatDataOnViewDetailHTA?.employeeID}
             </span>
@@ -243,7 +298,7 @@ const ViewDetails = () => {
         </Col>
         <Col span={6}>
           <p className={style.mainTitleTextClass}>
-            Employee Name:{" "}
+            Employee Name:
             <span className={style.subTitleTextClass}>
               {showSelectedTatDataOnViewDetailHTA?.employeeName}
             </span>
@@ -251,7 +306,7 @@ const ViewDetails = () => {
         </Col>
         <Col span={6}>
           <p className={style.mainTitleTextClass}>
-            Department:{" "}
+            Department:
             <span className={style.subTitleTextClass}>
               {showSelectedTatDataOnViewDetailHTA?.departmentName}
             </span>
@@ -259,7 +314,7 @@ const ViewDetails = () => {
         </Col>
         <Col span={6}>
           <p className={style.mainTitleTextClass}>
-            Date Range:{" "}
+            Date Range:
             <span className={style.subTitleTextClass}>
               {/* Snapshot of the list's applied date filter at the time
                   "View Details" was clicked - same convention HTA's own
@@ -275,7 +330,15 @@ const ViewDetails = () => {
         </Col>
       </Row>
 
-      <PageLayout background="white" style={{ marginTop: "3px" }} className="repotsHeight">
+      <PageLayout
+        background="white"
+        style={{ marginTop: "3px" }}
+        className={
+          activeFilters.length > 0
+            ? "TATHTAchangeHeightreports2"
+            : "TATHTArepotsHeight"
+        }
+      >
         <div className="px-4 md:px-6 lg:px-8 ">
           <BorderlessTable
             rows={adminTATRequestApprovalDetailsData?.records}
