@@ -333,21 +333,25 @@ const MytradeapprovalsReport = () => {
   })();
 
   // 🔷 Excel Report download Api Hit
+  // FIXED (API_Changes/2026-09-22_my_trade_approvals_excel_export_ignores_
+  // filters.md): was always sending a hardcoded, blank request regardless
+  // of whatever Date Range/Quantity/Type/Status/etc. was currently applied
+  // on-screen - confirmed backend-side that the endpoint itself correctly
+  // narrows results when given real filter values, so the export always
+  // matching "everything" traced entirely to this. Now built from the
+  // same employeeMyTradeApprovalsSearch state (and the same buildApiRequest)
+  // the on-screen list itself uses, dropping only the pagination fields
+  // (the export has no pagination).
   const downloadMyTransactionInExcelFormat = async () => {
     showLoader(true);
-    const requestdata = {
-      InstrumentName: "",
-      Quantity: 0,
-      StartDate: "",
-      EndDate: "",
-      StatusIds: [],
-      TypeIds: [],
-      Broker: "",
-    };
+    const { PageNumber, Length, ...requestdata } = buildApiRequest(
+      employeeMyTradeApprovalsSearch,
+      assetTypeListingData
+    );
     await DownloadMyTradeApprovalReportRequestAPI({
       callApi,
       showLoader,
-      requestdata: requestdata,
+      requestdata,
       navigate,
       setOpen,
     });

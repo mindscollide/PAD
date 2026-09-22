@@ -246,7 +246,10 @@ const MyTradeApprovalStandingReport = () => {
         align: "center",
       });
       y += 7;
-      pdf.text("My Trade Approval Standing", pdfWidth / 2, y, {
+      // FIXED (API_Changes/2026-09-22_my_trade_approvals_standing_pdf_is_
+      // fe_rendered.md): was "My Trade Approval Standing" (missing the
+      // plural "s") - matches the page's own breadcrumb text exactly now.
+      pdf.text("My Trade Approvals Standing", pdfWidth / 2, y, {
         align: "center",
       });
 
