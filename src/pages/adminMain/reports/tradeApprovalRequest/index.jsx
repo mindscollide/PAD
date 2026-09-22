@@ -1,4 +1,10 @@
-import React, { useEffect, useState, useRef, useCallback } from "react";
+import React, {
+  useEffect,
+  useState,
+  useRef,
+  useCallback,
+  useMemo,
+} from "react";
 import { Breadcrumb, Col, Row } from "antd";
 import Excel from "../../../../assets/img/xls.png";
 import { UpOutlined, DownOutlined } from "@ant-design/icons";
@@ -58,11 +64,17 @@ const TradeApprovalRequestReport = () => {
   const [sortedInfo, setSortedInfo] = useState({});
   const [loadingMore, setLoadingMore] = useState(false);
   const [open, setOpen] = useState(false);
+
+  const endDate = new Date();
+  const startDate = new Date();
+  startDate.setMonth(startDate.getMonth() - 6);
+
   const [dateRange, setDateRange] = useState({
-    StartDate: null,
-    EndDate: null,
+    StartDate: formatToYYYYMMDD(startDate),
+    EndDate: formatToYYYYMMDD(endDate),
   });
 
+  const [pickerVersion, setPickerVersion] = useState(0);
   // -------------------- Helpers --------------------
 
   /**
@@ -258,23 +270,31 @@ const TradeApprovalRequestReport = () => {
     });
   };
 
-  const handleDateChange = (dates) => {
-    if (dates && dates.length === 2) {
-      setDateRange({
-        StartDate: dates?.[0] || null,
-        EndDate: dates?.[1] || null,
-      });
+  // FIXED: stable callback identity, and now also advances pickerVersion
+  // on every real interaction so the memoized DateRangePicker is
+  // guaranteed a re-render even when the resulting dates match before.
+  const handleDateChange = useCallback(
+    (dates) => {
+      if (dates && dates.length === 2) {
+        setDateRange({
+          StartDate: dates?.[0] || null,
+          EndDate: dates?.[1] || null,
+        });
+        setPickerVersion((v) => v + 1);
 
-      setAdminTradeApprovalRequestReportSearch((prev) => ({
-        ...prev,
-        startDate: dates[0],
-        endDate: dates[1],
-        pageNumber: 0,
-        filterTrigger: true,
-      }));
-    }
-  };
-  const handleClearDates = () => {
+        setAdminTradeApprovalRequestReportSearch((prev) => ({
+          ...prev,
+          startDate: dates[0],
+          endDate: dates[1],
+          pageNumber: 0,
+          filterTrigger: true,
+        }));
+      }
+    },
+    [setAdminTradeApprovalRequestReportSearch]
+  );
+
+  const handleClearDates = useCallback(() => {
     const endDate = new Date();
     const startDate = new Date();
     startDate.setMonth(startDate.getMonth() - 6);
@@ -283,6 +303,7 @@ const TradeApprovalRequestReport = () => {
       StartDate: formatToYYYYMMDD(startDate),
       EndDate: formatToYYYYMMDD(endDate),
     });
+    setPickerVersion((v) => v + 1);
 
     setAdminTradeApprovalRequestReportSearch((prev) => ({
       ...prev,
@@ -291,7 +312,15 @@ const TradeApprovalRequestReport = () => {
       pageNumber: 0,
       filterTrigger: true,
     }));
-  };
+  }, [setAdminTradeApprovalRequestReportSearch]);
+
+  // FIXED: dependency is now pickerVersion, not the date strings
+  // themselves — reference changes exactly when a real interaction
+  // happened, regardless of whether the resulting values repeat.
+  const rangeValue = useMemo(
+    () => [dateRange.StartDate, dateRange.EndDate],
+    [pickerVersion]
+  );
 
   // -------------------- Render --------------------
   return (
@@ -328,7 +357,7 @@ const TradeApprovalRequestReport = () => {
             <DateRangePicker
               size="medium"
               className={style.dateRangePickerClass}
-              value={[dateRange.StartDate, dateRange.EndDate]}
+              value={rangeValue}
               onChange={handleDateChange}
               onClear={handleClearDates}
             />
