@@ -321,23 +321,25 @@ const COdataWiseTransactionsReports = () => {
   })();
 
   // 🔷 Excel Report download Api Hit
+  // FIXED (API_Changes/2026-09-22_co_date_wise_transactions_excel_export_
+  // ignores_filters.md): was a hardcoded blank request, never reading
+  // coDatewiseTransactionReportSearch (the live search/filter state this
+  // screen already maintains) - confirmed backend-side that the SP
+  // already applies every one of these filters correctly. Now built the
+  // same way the on-screen listing itself is, via buildApiRequest;
+  // PageNumber/Length dropped since export always returns every matching
+  // row.
   const downloadMyTradeApprovalLineManagerInExcelFormat = async () => {
     showLoader(true);
-    const requestdata = {
-      InstrumentName: "",
-      DepartmentName: "",
-      Quantity: 0,
-      StatusIds: [],
-      TypeIds: [],
-      RequesterName: "",
-      StartDate: "",
-      EndDate: "",
-    };
+    const { PageNumber, Length, ...requestdata } = buildApiRequest(
+      coDatewiseTransactionReportSearch,
+      assetTypeListingData
+    );
 
     await DownloadComplianceOfficerDateWiseTransactionReportRequestAPI({
       callApi,
       showLoader,
-      requestdata: requestdata,
+      requestdata,
       navigate,
       setOpen,
     });
