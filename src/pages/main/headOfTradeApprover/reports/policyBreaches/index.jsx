@@ -34,6 +34,7 @@ import { useDashboardContext } from "../../../../../context/dashboardContaxt";
 import { getSafeAssetTypeData } from "../../../../../common/funtions/assetTypesList";
 import { useTableScrollBottom } from "../../../../../common/funtions/scroll";
 import { toYYMMDD } from "../../../../../common/funtions/rejex";
+import { mapBuySellToIds } from "../../../../../components/dropdowns/filters/utils";
 
 const HTAPolicyBreachesReport = () => {
   const navigate = useNavigate();
@@ -247,7 +248,12 @@ const HTAPolicyBreachesReport = () => {
   // wired to the real dedicated endpoint (ExportHTAPolicyBreachesExcelReport)
   // instead of the wrong report (ExportHTATradeApprovalRequestsExcelReport)
   // it was previously calling. Request shape matches
-  // PolicyBreachesListExportRequestModel exactly - unpaginated, no TypeIds.
+  // PolicyBreachesListExportRequestModel.
+  // FIXED (API_Changes/2026-09-22_hta_policy_breaches_excel_export_ignores_
+  // type_filter.md): the comment above used to (incorrectly) claim this
+  // model has "no TypeIds" - it does, and it's a real, working filter on
+  // this endpoint (confirmed backend-side) - TypeIds was just never wired
+  // up here, so the on-screen Type filter was silently dropped on export.
   const downloadPolicyBreachesReportInExcelFormat = async () => {
     const requestdata = {
       InstrumentName: htaPolicyBreachesReportSearch.instrumentName || "",
@@ -256,6 +262,11 @@ const HTAPolicyBreachesReport = () => {
       FromDate: toYYMMDD(htaPolicyBreachesReportSearch.startDate) || "",
       ToDate: toYYMMDD(htaPolicyBreachesReportSearch.endDate) || "",
       Quantity: Number(htaPolicyBreachesReportSearch.quantity) || 0,
+      TypeIds:
+        mapBuySellToIds?.(
+          htaPolicyBreachesReportSearch.type,
+          assetTypeListingData?.Equities
+        ) || [],
     };
 
     await ExportHTAPolicyBreachesExcelReport({
