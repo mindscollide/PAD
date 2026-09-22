@@ -147,6 +147,9 @@ const StatusFilterDropdown = ({
         console.log("adminIntrumentListSearch");
         setFilterOptions(adminBrokersStatus);
         break;
+      case "23":
+        setFilterOptions(emtStatusOptions);
+        break;
 
       default:
         setFilterOptions([]);
@@ -174,6 +177,7 @@ const StatusFilterDropdown = ({
       case "17":
       case "18":
       case "19":
+      case "23":
         console.log("StatusFilterDropdown handleOk", tempSelected);
         setState((prev) => ({
           ...prev,
@@ -233,6 +237,7 @@ const StatusFilterDropdown = ({
       case "17":
       case "18":
       case "19":
+      case "23":
         console.log("StatusFilterDropdown handleReset");
         setState((prev) => ({
           ...prev,

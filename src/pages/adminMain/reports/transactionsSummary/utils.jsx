@@ -5,6 +5,8 @@ import style from "./transactionsSummary.module.css";
 
 import { formatApiDateTime, toYYMMDD } from "../../../../common/funtions/rejex";
 import { withSortIcon } from "../../../../common/funtions/tableIcon";
+import StatusColumnTitle from "../../../../components/dropdowns/filters/statusColumnTitle";
+import TypeColumnTitle from "../../../../components/dropdowns/filters/typeColumnTitle";
 
 /**
  * Formats a raw "YYYYMMDD" (date-only, no time component) string into a
@@ -72,6 +74,20 @@ export const mappingDateWiseTransactionReport = (res = []) => {
     transactionDate: item.transactionDate || "—",
   }));
 };
+
+const withFilterHeader = (element) => (
+  <div
+    className={style["table-header-wrapper"]}
+    style={{
+      display: "flex",
+      alignItems: "center",
+      minHeight: "32px",
+      width: "100%",
+    }}
+  >
+    {element}
+  </div>
+);
 
 export const getBorderlessTableColumns = ({
   sortedInfo,
@@ -323,6 +339,9 @@ export const getBorderlessTableColumnsViewDetails = ({
   approvalStatusMap,
   sortedInfoView,
   setIsViewComments,
+
+  coTransactionsSummarysReportsViewDetailsSearch,
+  setCOTransactionsSummarysReportsViewDetailSearch,
   // ADDED (2026-08-28_admin_transaction_summary_view_details_fix.md):
   // "View Comments" never actually told the modal which row it was for -
   // onClick only flipped isViewComments to true, so ViewComment.jsx had
@@ -474,7 +493,7 @@ export const getBorderlessTableColumnsViewDetails = ({
       // must be localized as one combined string, never independently.
       const combined = [date, record?.actionTime].filter(Boolean).join(" ");
       return (
-        <span className="text-gray-600" title={combined || "—"}>
+        <span className="text-gray-600">
           {formatApiDateTime(combined) || "—"}
         </span>
       );
@@ -484,10 +503,21 @@ export const getBorderlessTableColumnsViewDetails = ({
     // NOTE: Type is not server-filterable for Admin's View Details -
     // GetAdminTransactionSummaryViewDetailsAPI's request has no TypeIds
     // param (unlike CO/HOC's own equivalent) - plain column, no filter.
-    title: "Type",
+    // title: "Type",
+    title: withFilterHeader(
+      <TypeColumnTitle
+        state={coTransactionsSummarysReportsViewDetailsSearch}
+        setState={setCOTransactionsSummarysReportsViewDetailSearch}
+      />
+    ),
     dataIndex: "type",
     width: 100,
     key: "type",
+    filteredValue: coTransactionsSummarysReportsViewDetailsSearch.type?.length
+      ? coTransactionsSummarysReportsViewDetailsSearch.type
+      : null,
+    onFilter: () => true, // Actual filtering handled by API
+
     render: (type, record) => (
       <span
         id={`cell-${record.key}-type`}
@@ -528,11 +558,20 @@ export const getBorderlessTableColumnsViewDetails = ({
     // NOTE: Status is not server-filterable for Admin's View Details -
     // GetAdminTransactionSummaryViewDetailsAPI's request has no StatusIds
     // param (unlike CO/HOC's own equivalent) - plain column, no filter.
-    title: "Status",
+    // title: "Status",
+    title: withFilterHeader(
+      <StatusColumnTitle
+        state={coTransactionsSummarysReportsViewDetailsSearch}
+        setState={setCOTransactionsSummarysReportsViewDetailSearch}
+      />
+    ),
     width: 200,
     dataIndex: "status",
     key: "status",
-    ellipsis: true,
+    filteredValue: coTransactionsSummarysReportsViewDetailsSearch.status?.length
+      ? coTransactionsSummarysReportsViewDetailsSearch.status
+      : null,
+    onFilter: () => true,
     render: (status, record) => (
       <div id={`cell-${record.key}-status`}>
         {renderStatusTag(status, approvalStatusMap)}

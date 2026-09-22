@@ -351,6 +351,8 @@ export const GlobalModalProvider = ({ children }) => {
     setViewCommentGlobalModal(false);
     setUploadattAchmentsFiles([]);
     setViewActionSessionWiseModalData([]);
+    setShowViewDetailOfUserwiseComplianceReportAdmin(false);
+    setSelectedUserwiseComplianceReportEmployee(null);
   };
 
   const resetForLineManagerModal = () => {

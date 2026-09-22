@@ -1,8 +1,5 @@
 import { Button } from "../../../../components";
 
-import ArrowUP from "../../../../assets/img/arrow-up-dark.png";
-import ArrowDown from "../../../../assets/img/arrow-down-dark.png";
-import DefaultColumArrow from "../../../../assets/img/default-colum-arrow.png";
 import TypeColumnTitle from "../../../../components/dropdowns/filters/typeColumnTitle";
 import StatusColumnTitle from "../../../../components/dropdowns/filters/statusColumnTitle";
 import { Tag, Tooltip } from "antd";
@@ -27,8 +24,6 @@ export const buildApiRequest = (searchState = {}, assetTypeListingData) => ({
   DepartmentName: searchState.departmentName || "",
   Quantity: Number(searchState.quantity) || 0,
 
-  // (pageNumber - 1) * length on the backend - 0 (the search state's
-  // initial value) resolves to page 1 the same as 1 would.
   PageNumber: Number(searchState.pageNumber) || 1,
   Length: Number(searchState.pageSize) || 10,
 
@@ -41,12 +36,6 @@ export const buildApiRequest = (searchState = {}, assetTypeListingData) => ({
   EndDate: searchState.endDate ? toYYMMDD(searchState.endDate) : "",
 });
 
-/**
- * ExportAdminDateWiseTransactionReport request payload - same filters as
- * buildApiRequest above, minus PageNumber/Length (an export always
- * returns the full matching set in one file, no pagination). Matches the
- * doc's own defaults exactly: Quantity null (not 0) when unset.
- */
 export const buildExportRequest = (searchState = {}, assetTypeListingData) => ({
   InstrumentName: searchState.instrumentName || "",
   DepartmentName: searchState.departmentName || "",
@@ -57,6 +46,23 @@ export const buildExportRequest = (searchState = {}, assetTypeListingData) => ({
   StartDate: searchState.startDate ? toYYMMDD(searchState.startDate) : "",
   EndDate: searchState.endDate ? toYYMMDD(searchState.endDate) : "",
 });
+
+/**
+ * ExportAdminDateWiseTransactionReport request payload - same filters as
+ * buildApiRequest above, minus PageNumber/Length (an export always
+ * returns the full matching set in one file, no pagination). Matches the
+ * doc's own defaults exactly: Quantity null (not 0) when unset.
+ */
+// export const buildExportRequest = (searchState = {}, assetTypeListingData) => ({
+//   InstrumentName: searchState.instrumentName || "",
+//   DepartmentName: searchState.departmentName || "",
+//   Quantity: searchState.quantity ? Number(searchState.quantity) : null,
+//   StatusIds: mapStatusToIds(searchState.status, 2),
+//   TypeIds: mapBuySellToIds(searchState.type, assetTypeListingData?.Equities),
+//   RequesterName: searchState.employeeName || "",
+//   StartDate: searchState.startDate ? toYYMMDD(searchState.startDate) : "",
+//   EndDate: searchState.endDate ? toYYMMDD(searchState.endDate) : "",
+// });
 
 /**
  * Maps GetAdminDateWiseTransactionReportAPI records into a UI-friendly
@@ -148,8 +154,7 @@ const renderStatusTag = (status, approvalStatusMap) => {
     </Tag>
   );
 };
-
-const withFilterHeader = (FilterComponent) => (
+const withFilterHeader = (node) => (
   <div
     className={style["table-header-wrapper"]}
     style={{
@@ -159,7 +164,7 @@ const withFilterHeader = (FilterComponent) => (
       width: "100%",
     }}
   >
-    <FilterComponent />
+    {node}
   </div>
 );
 export const getBorderlessTableColumns = ({
@@ -300,14 +305,14 @@ export const getBorderlessTableColumns = ({
     ),
   },
   {
-    title: withFilterHeader(() => (
+    title: withFilterHeader(
       <TypeColumnTitle
         state={coDatewiseTransactionReportSearch}
         setState={setCODatewiseTransactionReportSearch}
       />
-    )),
+    ),
     dataIndex: "type",
-    width: 100,
+    width: 110,
     key: "type",
     filteredValue: coDatewiseTransactionReportSearch.type?.length
       ? coDatewiseTransactionReportSearch.type
@@ -344,12 +349,13 @@ export const getBorderlessTableColumns = ({
     render: (q) => <span className="font-medium">{q.toLocaleString()}</span>,
   },
   {
-    title: withFilterHeader(() => (
+    title: withFilterHeader(
       <StatusColumnTitle
         state={coDatewiseTransactionReportSearch}
         setState={setCODatewiseTransactionReportSearch}
       />
-    )),
+    ),
+    width: 160,
     dataIndex: "status",
     key: "status",
     filteredValue: coDatewiseTransactionReportSearch.status?.length

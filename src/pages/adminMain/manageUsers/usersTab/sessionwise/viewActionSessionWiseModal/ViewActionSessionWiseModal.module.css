@@ -28,7 +28,31 @@
 /* table container outer box look */
 .tableContainer {
   margin-top: 30px;
-  padding: 0px 24px ;
+  padding: 0px 24px;
   border: 1px solid #717171;
   border-radius: 8px;
+}
+.table-header-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 6px; /* controls title-to-icon spacing */
+}
+
+.table-header-text {
+  display: inline-flex;
+  align-items: center;
+  line-height: 1;
+}
+
+.table-header-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+}
+
+.table-header-icon img {
+  display: block; /* kills the baseline gap inline images get */
+  width: 10px;
+  height: auto;
 }

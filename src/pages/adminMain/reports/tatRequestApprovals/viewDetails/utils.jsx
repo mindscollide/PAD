@@ -2,7 +2,11 @@ import ArrowUP from "../../../../../assets/img/arrow-up-dark.png";
 import ArrowDown from "../../../../../assets/img/arrow-down-dark.png";
 import DefaultColumArrow from "../../../../../assets/img/default-colum-arrow.png";
 import style from "./ViewDetails.module.css";
-import { toYYMMDD, formatApiDateTime } from "../../../../../common/funtions/rejex";
+import {
+  toYYMMDD,
+  formatApiDateTime,
+} from "../../../../../common/funtions/rejex";
+import { Tooltip } from "antd";
 
 /**
  * Utility: Build API request payload for GetAdminTATRequestApprovalDetailsAPI
@@ -58,7 +62,8 @@ export const mapListData = (res = []) => {
     type: item.tradeType || "-",
     quantity: item.quantity || 0,
     actionBy: item.actionBy || "—",
-    actionAt: `${item?.actionDate || ""} ${item?.actionTime || ""}`.trim() || "—",
+    actionAt:
+      `${item?.actionDate || ""} ${item?.actionTime || ""}`.trim() || "—",
     tatHours: item.tatHours || 0,
     tatMinutes: item.tatMinutes || 0,
   }));
@@ -67,13 +72,28 @@ export const mapListData = (res = []) => {
 const getSortIcon = (columnKey, sortedInfo) => {
   if (sortedInfo?.columnKey === columnKey) {
     return sortedInfo.order === "ascend" ? (
-      <img draggable={false} src={ArrowDown} alt="Asc" className="custom-sort-icon" />
+      <img
+        draggable={false}
+        src={ArrowDown}
+        alt="Asc"
+        className="custom-sort-icon"
+      />
     ) : (
-      <img draggable={false} src={ArrowUP} alt="Desc" className="custom-sort-icon" />
+      <img
+        draggable={false}
+        src={ArrowUP}
+        alt="Desc"
+        className="custom-sort-icon"
+      />
     );
   }
   return (
-    <img draggable={false} src={DefaultColumArrow} alt="Default" className="custom-sort-icon" />
+    <img
+      draggable={false}
+      src={DefaultColumArrow}
+      alt="Default"
+      className="custom-sort-icon"
+    />
   );
 };
 
@@ -82,12 +102,18 @@ const withSortIcon = (label, columnKey, sortedInfo, align = "left") => (
     className={style["table-header-wrapper"]}
     style={{
       justifyContent:
-        align === "center" ? "center" : align === "right" ? "flex-end" : "flex-start",
+        align === "center"
+          ? "center"
+          : align === "right"
+          ? "flex-end"
+          : "flex-start",
       textAlign: align,
     }}
   >
     <span className={style["table-header-text"]}>{label}</span>
-    <span className={style["table-header-icon"]}>{getSortIcon(columnKey, sortedInfo)}</span>
+    <span className={style["table-header-icon"]}>
+      {getSortIcon(columnKey, sortedInfo)}
+    </span>
   </div>
 );
 
@@ -96,13 +122,35 @@ export const getBorderlessTableColumns = ({ sortedInfo }) => [
     title: withSortIcon("Instrument", "instrumentName", sortedInfo),
     dataIndex: "instrumentName",
     key: "instrumentName",
-    width: 200,
-    ellipsis: true,
-    sorter: (a, b) => (a.instrumentName || "").localeCompare(b.instrumentName || ""),
-    sortOrder: sortedInfo?.columnKey === "instrumentName" ? sortedInfo.order : null,
+    width: 210,
+    sorter: (a, b) =>
+      (a.instrumentName || "").localeCompare(b.instrumentName || ""),
+    sortOrder:
+      sortedInfo?.columnKey === "instrumentName" ? sortedInfo.order : null,
     showSorterTooltip: false,
     sortIcon: () => null,
-    render: (name) => <span className="font-medium">{name}</span>,
+    render: (name, record) => (
+      <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+        <span className="custom-shortCode-asset" style={{ minWidth: 30 }}>
+          {(record?.assetTypeShortCode || "EQ").substring(0, 2).toUpperCase()}
+        </span>
+        <Tooltip title={name} placement="topLeft">
+          <span
+            className="font-medium"
+            style={{
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+              whiteSpace: "nowrap",
+              maxWidth: "200px",
+              display: "inline-block",
+              cursor: "pointer",
+            }}
+          >
+            {record?.instrumentShortCode || name || "—"}
+          </span>
+        </Tooltip>
+      </div>
+    ),
   },
   {
     title: withSortIcon("Initiated At", "initiatedAt", sortedInfo, "center"),
@@ -110,15 +158,13 @@ export const getBorderlessTableColumns = ({ sortedInfo }) => [
     key: "initiatedAt",
     width: 180,
     align: "center",
-    ellipsis: true,
     sorter: (a, b) => (a.initiatedAt || "").localeCompare(b.initiatedAt || ""),
-    sortOrder: sortedInfo?.columnKey === "initiatedAt" ? sortedInfo.order : null,
+    sortOrder:
+      sortedInfo?.columnKey === "initiatedAt" ? sortedInfo.order : null,
     showSorterTooltip: false,
     sortIcon: () => null,
     render: (v) => (
-      <span className="text-gray-600" title={v}>
-        {formatApiDateTime(v) || v}
-      </span>
+      <span className="text-gray-600">{formatApiDateTime(v) || v}</span>
     ),
   },
   {
@@ -128,13 +174,14 @@ export const getBorderlessTableColumns = ({ sortedInfo }) => [
     dataIndex: "type",
     key: "type",
     width: 100,
-    ellipsis: true,
     sorter: (a, b) => (a.type || "").localeCompare(b.type || ""),
     sortOrder: sortedInfo?.columnKey === "type" ? sortedInfo.order : null,
     showSorterTooltip: false,
     sortIcon: () => null,
     render: (type) => (
-      <span className={type === "Buy" ? "text-green-600" : "text-red-600"}>{type}</span>
+      <span className={type === "Buy" ? "text-green-600" : "text-red-600"}>
+        {type}
+      </span>
     ),
   },
   {
@@ -143,12 +190,13 @@ export const getBorderlessTableColumns = ({ sortedInfo }) => [
     key: "quantity",
     align: "center",
     width: 140,
-    ellipsis: true,
     sorter: (a, b) => Number(a.quantity || 0) - Number(b.quantity || 0),
     sortOrder: sortedInfo?.columnKey === "quantity" ? sortedInfo.order : null,
     showSorterTooltip: false,
     sortIcon: () => null,
-    render: (v) => <span className="font-medium">{Number(v).toLocaleString("en-US")}</span>,
+    render: (v) => (
+      <span className="font-medium">{Number(v).toLocaleString("en-US")}</span>
+    ),
   },
   {
     title: withSortIcon("Action By", "actionBy", sortedInfo),
@@ -168,33 +216,31 @@ export const getBorderlessTableColumns = ({ sortedInfo }) => [
     key: "actionAt",
     width: 180,
     align: "center",
-    ellipsis: true,
     sorter: (a, b) => (a.actionAt || "").localeCompare(b.actionAt || ""),
     sortOrder: sortedInfo?.columnKey === "actionAt" ? sortedInfo.order : null,
     showSorterTooltip: false,
     sortIcon: () => null,
     render: (v) => (
-      <span className="text-gray-600" title={v}>
-        {formatApiDateTime(v) || v}
-      </span>
+      <span className="text-gray-600">{formatApiDateTime(v) || v}</span>
     ),
   },
   {
     title: withSortIcon("TAT", "tatHours", sortedInfo, "center"),
-    key: "tat",
+    key: "tatHours",
     align: "center",
     width: 140,
-    ellipsis: true,
+
     sorter: (a, b) =>
       Number(a.tatHours || 0) * 60 +
       Number(a.tatMinutes || 0) -
       (Number(b.tatHours || 0) * 60 + Number(b.tatMinutes || 0)),
+
     sortOrder: sortedInfo?.columnKey === "tatHours" ? sortedInfo.order : null,
+
     showSorterTooltip: false,
     sortIcon: () => null,
+
     render: (_, record) => (
-      // FIXED: SRS format is "04 H, 32 M" (zero-padded, space before the
-      // unit), same convention as the list's own Avg. Turnaround Time.
       <span className="font-medium">
         {String(record.tatHours).padStart(2, "0")} H,{" "}
         {String(record.tatMinutes).padStart(2, "0")} M

@@ -154,6 +154,7 @@ export const DashboardProvider = ({ children }) => {
    * ------------------------------------------------------
    */
   const resetDashboardContextState = () => {
+    console.log("resetDashboardContextState Called");
     setDashboardData({
       title: "",
       subTitle: "",

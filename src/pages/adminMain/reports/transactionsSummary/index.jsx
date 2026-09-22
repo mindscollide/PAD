@@ -44,6 +44,9 @@ import { DateRangePicker } from "../../../../components";
 import ViewCommentTransaction from "./viewDetails/viewComment/ViewComment";
 import { useGlobalModal } from "../../../../context/GlobalModalContext";
 // import ViewComment from "./viewComment/ViewComment";
+// ADDED: needed to seed the display-only date-range picker value on
+// initial load and to keep it showing the selected range after a change.
+import { formatToYYYYMMDD } from "../../../../common/funtions/rejex";
 
 const AdminTransactionsSummarysReports = () => {
   const navigate = useNavigate();
@@ -67,8 +70,7 @@ const AdminTransactionsSummarysReports = () => {
     setSelectedWorkFlowViewDetaild,
   } = useMyApproval();
 
-  const { isViewComments, setIsViewComments, setCheckTradeApprovalID } =
-    useGlobalModal();
+  const { isViewComments, setIsViewComments } = useGlobalModal();
 
   const {
     coTransactionsSummarysReportsSearch,
@@ -173,10 +175,33 @@ const AdminTransactionsSummarysReports = () => {
   // -------------------- Effects --------------------
 
   // 🔹 Initial Fetch
+  // Seeds a default 6-month date range (today - 6mo → today) on first
+  // load, same pattern as CO's Date-wise Transaction Report - the
+  // picker's own display value comes from dateRange, and the actual
+  // request comes from startDate/endDate pushed into the search state
+  // before buildApiRequest reads them.
   useEffect(() => {
     if (hasFetched.current) return;
     hasFetched.current = true;
-    const requestData = buildApiRequest(coTransactionsSummarysReportsSearch);
+
+    const endDate = new Date();
+    const startDate = new Date();
+    startDate.setMonth(startDate.getMonth() - 6);
+
+    setDateRange({
+      StartDate: formatToYYYYMMDD(startDate),
+      EndDate: formatToYYYYMMDD(endDate),
+    });
+
+    const updatedState = {
+      ...coTransactionsSummarysReportsSearch,
+      startDate,
+      endDate,
+    };
+
+    setCOTransactionsSummarysReportsSearch(updatedState);
+
+    const requestData = buildApiRequest(updatedState);
     fetchApiCall(requestData, true, true);
   }, []);
 
@@ -306,15 +331,29 @@ const AdminTransactionsSummarysReports = () => {
   const columnsViewDetails = getBorderlessTableColumnsViewDetails({
     approvalStatusMap,
     sortedInfoView,
+    coTransactionsSummarysReportsViewDetailsSearch,
+    setCOTransactionsSummarysReportsViewDetailSearch,
+    handelViewDetails,
     setIsViewComments,
     setSelectedWorkFlowViewDetaild,
   });
 
+  // 🔹 Date range change
+  // CHANGED: previously reset dateRange back to {null, null} after every
+  // selection (picker fell back to its placeholder), relying solely on
+  // the "dateRange" active-filter tag to show the applied range. Now
+  // keeps the picker itself showing the selected range, same convention
+  // as CO's Date-wise Transaction Report.
   const handleDateChange = (dates) => {
     if (!dates || dates.length !== 2) return;
 
     const start = dates[0];
     const end = dates[1];
+
+    setDateRange({
+      StartDate: formatToYYYYMMDD(start),
+      EndDate: formatToYYYYMMDD(end),
+    });
 
     setCOTransactionsSummarysReportsSearch((prev) => ({
       ...prev,
@@ -323,26 +362,26 @@ const AdminTransactionsSummarysReports = () => {
       pageNumber: 0,
       filterTrigger: true,
     }));
-
-    // Clears the picker's own input back to its placeholder once the
-    // range is applied - the selected range is still visible as the
-    // "dateRange" active-filter tag below (reads straight off
-    // coTransactionsSummarysReportsSearch, set above), and still drives
-    // the API request the same way. Same convention as Date-wise
-    // Transaction Report's own date picker.
-    setDateRange({ StartDate: null, EndDate: null });
   };
 
   const handleClearDates = () => {
+    // Clearing resets to the same default 6-month range used on first
+    // load, rather than wiping the filter out entirely - matches CO's
+    // Date-wise Transaction Report, where StartDate/EndDate always
+    // reflect a real range rather than "no filter".
+    const endDate = new Date();
+    const startDate = new Date();
+    startDate.setMonth(startDate.getMonth() - 6);
+
     setDateRange({
-      StartDate: null,
-      EndDate: null,
+      StartDate: formatToYYYYMMDD(startDate),
+      EndDate: formatToYYYYMMDD(endDate),
     });
 
     setCOTransactionsSummarysReportsSearch((prev) => ({
       ...prev,
-      startDate: null,
-      endDate: null,
+      startDate,
+      endDate,
       pageNumber: 0,
       filterTrigger: true,
     }));
@@ -379,49 +418,7 @@ const AdminTransactionsSummarysReports = () => {
     });
   };
 
-  /** 🔹 Handle removing individual filter
-   * FIXED: this always reset coTransactionsSummarysReportsViewDetailSearch
-   * (the View Details drill-down's own filters), even while on the main
-   * summary list - which has no filters of its own besides the date range
-   * picker (a completely different search-state object,
-   * coTransactionsSummarysReportsSearch), so the tag never actually
-   * appeared for it in the first place. Branch on which screen is active,
-   * same as activeFilters below. */
-  const handleRemoveFilter = (key) => {
-    if (key === "dateRange") {
-      handleClearDates();
-      return;
-    }
-
-    const resetMap = {
-      instrumentNameSearch: { instrumentNameSearch: "" },
-      requesterNameSearch: { requesterNameSearch: "" },
-      quantitySearch: { quantitySearch: "" },
-    };
-
-    setCOTransactionsSummarysReportsViewDetailSearch((prev) => ({
-      ...prev,
-      ...resetMap[key],
-      pageNumber: 0,
-      filterTrigger: true,
-    }));
-  };
-
   /** 🔹 Handle removing all filters */
-  const handleRemoveAllFilters = () => {
-    if (coTransactionSummaryReportViewDetailsFlag) {
-      setCOTransactionsSummarysReportsViewDetailSearch((prev) => ({
-        ...prev,
-        instrumentNameSearch: "",
-        requesterNameSearch: "",
-        quantitySearch: "",
-        pageNumber: 0,
-        filterTrigger: true,
-      }));
-    } else {
-      handleClearDates();
-    }
-  };
 
   /** 🔹 Build Active Filters for display
    * FIXED: was always read off coTransactionsSummarysReportsViewDetailsSearch
@@ -526,7 +523,7 @@ const AdminTransactionsSummarysReports = () => {
 
         <Col>
           <div className={style.headerActionsRow}>
-            {!coTransactionSummaryReportViewDetailsFlag && (
+            {!coTransactionSummaryReportViewDetailsFlag ? (
               <DateRangePicker
                 size="medium"
                 className={style.dateRangePickerClass}
@@ -534,17 +531,17 @@ const AdminTransactionsSummarysReports = () => {
                 onChange={handleDateChange}
                 onClear={handleClearDates}
               />
-            )}
-            {coTransactionSummaryReportViewDetailsFlag && (
-              <p className={style.transactionDateLabel}>
-                Transaction Date:{" "}
-                <span className={style.transactionDateValue}>
-                  {formatDateOnly(
-                    coTransactionsSummarysReportsViewDetailsSearch?.transactionDate
-                  )}
+            ) : (
+              <div className={style.readonlyDateRange}>
+                <span className={style.readonlyDateRangeLabel}>
+                  Start date - End date
                 </span>
-              </p>
+                <span className={style.readonlyDateRangeValue}>
+                  {dateRange.StartDate} - {dateRange.EndDate}
+                </span>
+              </div>
             )}
+
             <CustomButton
               text={
                 <span className={style.exportButtonText}>
@@ -577,36 +574,7 @@ const AdminTransactionsSummarysReports = () => {
           )}
         </Col>
       </Row>
-      {/* 🔹 Active Filter Tags */}
-      {activeFilters.length > 0 && (
-        <Row gutter={[12, 12]} className={style["filter-tags-container"]}>
-          {activeFilters.map(({ key, value }) => (
-            <Col key={key}>
-              <div className={style["filter-tag"]}>
-                <span>{value}</span>
-                <span
-                  className={style["filter-tag-close"]}
-                  onClick={() => handleRemoveFilter(key)}
-                >
-                  &times;
-                </span>
-              </div>
-            </Col>
-          ))}
 
-          {/* 🔹 Show Clear All only if more than one filter */}
-          {activeFilters.length > 1 && (
-            <Col>
-              <div
-                className={`${style["filter-tag"]} ${style["clear-all-tag"]}`}
-                onClick={handleRemoveAllFilters}
-              >
-                <span>Clear All</span>
-              </div>
-            </Col>
-          )}
-        </Row>
-      )}
       {/* 🔹 Transactions Table */}
       <PageLayout
         background="white"

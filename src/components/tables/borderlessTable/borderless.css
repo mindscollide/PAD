@@ -1469,22 +1469,17 @@ border-  bottom-bottom-right-radius: 6.94px !important;
 }
 
 /* Target the first and last <td> inside each <tr> */
-td.border-less-table-noColorTable-cell:first-child {
-  /* Your styles here */
-  /* background-color: #edf3ff; */
+/* td.border-less-table-noColorTable-cell:first-child {
   border-bottom-left-radius: 6.94px;
   border-top-left-radius: 6.94px;
 
-  /* Example: add padding, border, etc. */
 }
 td.border-less-table-noColorTable-cell:last-child {
-  /* Your styles here */
-  /* background-color: #edf3ff; */
+
   border-bottom-right-radius: 6.94px;
   border-top-right-radius: 6.94px;
 
-  /* Example: add padding, border, etc. */
-}
+} */
 
 .border-less-table-noColorTable .ant-table-body {
   overflow-x: hidden !important; /* kill horizontal scrollbar */
@@ -1532,7 +1527,7 @@ td.border-less-table-noColorTable-cell:hover {
   font-weight: 500;
   padding: 12px 8px;
   background: transparent !important;
-  border-bottom: none;
+  border-bottom: 1px solid #d4d4d4 !important;
 }
 
 /* Optional Sticky Header */
@@ -1628,3 +1623,28 @@ border-  bottom-bottom-right-radius: 6.94px !important;
 /* body rows */
 
 /* scrollbar styling is optional, but you can keep default */
+/* Kill antd's default grey highlight on sorted/hovered column */
+.border-less-table-noColorTable-wrapper
+  .border-less-table-noColorTable-tbody
+  > tr
+  > td.ant-table-column-sort {
+  background: transparent !important;
+}
+
+.border-less-table-noColorTable-wrapper
+  .ant-table-thead
+  th.ant-table-column-sort,
+.border-less-table-noColorTable-wrapper
+  .ant-table-thead
+  th.ant-table-column-has-sorters:hover {
+  background: transparent !important;
+}
+
+:where(
+    .css-dev-only-do-not-override-1rfzxih
+  ).border-less-table-noColorTable-wrapper
+  .border-less-table-noColorTable-tbody
+  > tr
+  > td.ant-table-column-sort {
+  background: transparent !important;
+}
