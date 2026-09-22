@@ -122,11 +122,11 @@ const numericSorter = (field) => (a, b) =>
 
 export const getBorderlessTableColumns = ({ sortedInfo, onViewDetails }) => [
   {
-    title: withSortIcon("Employee ID", "employeeID", sortedInfo),
+    title: withSortIcon("Employee ID", "employeeID", sortedInfo, "center"),
     dataIndex: "employeeID",
     key: "employeeID",
-    width: "140px",
-    ellipsis: true,
+    width: 100,
+    align: "center",
     sorter: numericSorter("employeeID"),
     sortDirections: ["ascend", "descend"],
     sortOrder: sortedInfo?.columnKey === "employeeID" ? sortedInfo.order : null,
@@ -138,8 +138,7 @@ export const getBorderlessTableColumns = ({ sortedInfo, onViewDetails }) => [
     title: withSortIcon("Employee Name", "employeeName", sortedInfo),
     dataIndex: "employeeName",
     key: "employeeName",
-    ellipsis: true,
-    width: "180px",
+    width: 180,
     sorter: (a, b) =>
       (a.employeeName || "").localeCompare(b.employeeName || ""),
     sortDirections: ["ascend", "descend"],
@@ -153,8 +152,7 @@ export const getBorderlessTableColumns = ({ sortedInfo, onViewDetails }) => [
     title: withSortIcon("Department", "departmentName", sortedInfo),
     dataIndex: "departmentName",
     key: "departmentName",
-    ellipsis: true,
-    width: "180px",
+    width: 180,
     sorter: (a, b) =>
       (a.departmentName || "").localeCompare(b.departmentName || ""),
     sortDirections: ["ascend", "descend"],
@@ -169,8 +167,7 @@ export const getBorderlessTableColumns = ({ sortedInfo, onViewDetails }) => [
     dataIndex: "requestCount",
     key: "requestCount",
     align: "center",
-    width: "160px",
-    ellipsis: true,
+    width: 160,
     sorter: numericSorter("requestCount"),
     sortDirections: ["ascend", "descend"],
     sortOrder:
@@ -187,8 +184,7 @@ export const getBorderlessTableColumns = ({ sortedInfo, onViewDetails }) => [
     title: "Avg. Turnaround Time",
     key: "avgTat",
     align: "center",
-    width: "160px",
-    ellipsis: true,
+    width: 160,
     render: (_, record) => (
       // FIXED: SRS format is "04 H, 32 M" (zero-padded, space before the
       // unit) - was rendering unpadded with no space (e.g. "4H, 5M").

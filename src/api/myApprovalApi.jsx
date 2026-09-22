@@ -231,6 +231,7 @@ export const GetAllViewDetailsByTradeApprovalID = async ({
         workFlowStatus,
         isEscalated,
         escalations,
+        sharesTraded,
       } = res.result;
 
       if (
@@ -256,6 +257,7 @@ export const GetAllViewDetailsByTradeApprovalID = async ({
           // escalations was always undefined regardless of what the API
           // actually sent.
           escalations: escalations || [],
+          sharesTraded: sharesTraded || "",
         };
       }
 

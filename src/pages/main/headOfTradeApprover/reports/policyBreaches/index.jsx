@@ -90,7 +90,6 @@ const HTAPolicyBreachesReport = () => {
         requestdata: requestData,
         navigate,
       });
-      console.log("res".res);
 
       // ✅ Always get the freshest version (from memory or session)
       const currentAssetTypeData = getSafeAssetTypeData(

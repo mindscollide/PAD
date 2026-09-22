@@ -60,6 +60,9 @@ const ViewDetails = () => {
   const [loadingMore, setLoadingMore] = useState(false);
   const [open, setOpen] = useState(false);
 
+  const handleBack = () => {
+    setShowViewDetailPageInTatOnHta(false);
+  };
   // -------------------- Helpers --------------------
 
   /**
@@ -151,7 +154,6 @@ const ViewDetails = () => {
   // 🔹 call api on search
   useEffect(() => {
     if (htaTATViewDetailsSearch?.filterTrigger) {
-      console.log("htaTATViewDetailsSearch", htaTATViewDetailsSearch);
       const requestData = buildApiRequest(
         htaTATViewDetailsSearch,
         showSelectedTatDataOnViewDetailHTA,
@@ -320,7 +322,7 @@ const ViewDetails = () => {
                   <span
                     onClick={() => {
                       navigate("/PAD/hta-reports");
-                      setShowViewDetailPageInTatOnHta(false);
+                      handleBack();
                     }}
                     className={style.breadcrumbLink}
                   >
@@ -330,10 +332,7 @@ const ViewDetails = () => {
               },
               {
                 title: (
-                  <span
-                    onClick={() => setShowViewDetailPageInTatOnHta(false)}
-                    className={style.breadcrumbLink}
-                  >
+                  <span onClick={handleBack} className={style.breadcrumbLink}>
                     TAT Request Approvals
                   </span>
                 ),

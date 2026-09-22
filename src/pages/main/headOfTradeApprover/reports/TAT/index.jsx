@@ -171,6 +171,8 @@ const HTATAT = () => {
       // Reset search state for fresh load
       resetHTATATReportSearch();
       resetHTATATReportsData();
+      setShowViewDetailPageInTatOnHta(false);
+      hasFetched.current = false; // allow a genuine remount to fully re-init
     };
   }, []);
 

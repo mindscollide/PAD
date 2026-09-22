@@ -141,7 +141,6 @@ export const getBorderlessTableColumns = ({
     dataIndex: "employeeID",
     key: "employeeID",
     width: "120px",
-    ellipsis: true,
     sorter: (a, b) => Number(a.employeeID) - Number(b.employeeID),
     sortDirections: ["ascend", "descend"],
     sortOrder: sortedInfo?.columnKey === "employeeID" ? sortedInfo.order : null,
@@ -153,7 +152,6 @@ export const getBorderlessTableColumns = ({
     title: withSortIcon("Name", "employeeName", sortedInfo),
     dataIndex: "employeeName",
     key: "employeeName",
-    ellipsis: true,
     width: "140px",
     sorter: (a, b) =>
       (a.employeeName || "").localeCompare(b.employeeName || ""),
@@ -168,7 +166,6 @@ export const getBorderlessTableColumns = ({
     title: withSortIcon("Department", "departmentName", sortedInfo),
     dataIndex: "departmentName",
     key: "departmentName",
-    ellipsis: true,
     width: "140px",
     sorter: (a, b) =>
       (a.departmentName || "").localeCompare(b.departmentName || ""),
@@ -184,7 +181,6 @@ export const getBorderlessTableColumns = ({
     dataIndex: "requestDateTime",
     key: "requestDateTime",
     width: "180px",
-    ellipsis: true,
     // FIXED: was rendering the raw "yyyyMMdd HHmmss" UTC string as-is, no
     // localization - same fix already applied on HTA's own Policy
     // Breaches list (headOfTradeApprover/reports/policyBreaches/utils.jsx).
@@ -248,7 +244,6 @@ export const getBorderlessTableColumns = ({
     ),
     dataIndex: "type",
     key: "type",
-    ellipsis: true,
     width: "120px",
     filteredValue: adminPolicyBreachesReportSearch?.type?.length
       ? adminPolicyBreachesReportSearch?.type
@@ -275,7 +270,6 @@ export const getBorderlessTableColumns = ({
     dataIndex: "quantity",
     key: "quantity",
     width: "120px",
-    ellipsis: true,
     sorter: (a, b) => Number(a.quantity || 0) - Number(b.quantity || 0),
     sortDirections: ["ascend", "descend"],
     sortOrder: sortedInfo?.columnKey === "quantity" ? sortedInfo.order : null,
@@ -294,7 +288,6 @@ export const getBorderlessTableColumns = ({
     dataIndex: "policyCount",
     key: "policyCount",
     width: "120px",
-    ellipsis: true,
     sorter: (a, b) => Number(a.policyCount || 0) - Number(b.policyCount || 0),
     sortDirections: ["ascend", "descend"],
     sortOrder:

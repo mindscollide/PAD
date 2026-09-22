@@ -73,13 +73,28 @@ export const mapListData = (res = []) => {
 const getSortIcon = (columnKey, sortedInfo) => {
   if (sortedInfo?.columnKey === columnKey) {
     return sortedInfo.order === "ascend" ? (
-      <img draggable={false} src={ArrowDown} alt="Asc" className="custom-sort-icon" />
+      <img
+        draggable={false}
+        src={ArrowDown}
+        alt="Asc"
+        className="custom-sort-icon"
+      />
     ) : (
-      <img draggable={false} src={ArrowUP} alt="Desc" className="custom-sort-icon" />
+      <img
+        draggable={false}
+        src={ArrowUP}
+        alt="Desc"
+        className="custom-sort-icon"
+      />
     );
   }
   return (
-    <img draggable={false} src={DefaultColumArrow} alt="Default" className="custom-sort-icon" />
+    <img
+      draggable={false}
+      src={DefaultColumArrow}
+      alt="Default"
+      className="custom-sort-icon"
+    />
   );
 };
 
@@ -89,25 +104,31 @@ const withSortIcon = (label, columnKey, sortedInfo, align = "left") => (
     className={style["table-header-wrapper"]}
     style={{
       justifyContent:
-        align === "center" ? "center" : align === "right" ? "flex-end" : "flex-start",
+        align === "center"
+          ? "center"
+          : align === "right"
+          ? "flex-end"
+          : "flex-start",
       textAlign: align,
     }}
   >
     <span className={style["table-header-text"]}>{label}</span>
-    <span className={style["table-header-icon"]}>{getSortIcon(columnKey, sortedInfo)}</span>
+    <span className={style["table-header-icon"]}>
+      {getSortIcon(columnKey, sortedInfo)}
+    </span>
   </div>
 );
 
-const numericSorter = (field) => (a, b) => Number(a[field] || 0) - Number(b[field] || 0);
+const numericSorter = (field) => (a, b) =>
+  Number(a[field] || 0) - Number(b[field] || 0);
 
 export const getBorderlessTableColumns = ({ sortedInfo }) => [
   {
-    title: withSortIcon("Employee ID", "employeeID", sortedInfo),
+    title: withSortIcon("Employee ID", "employeeID", sortedInfo, "center"),
     dataIndex: "employeeID",
     key: "employeeID",
-    align: "left",
-    width: "10%",
-    ellipsis: true,
+    align: "center",
+    width: 100,
     sorter: numericSorter("employeeID"),
     sortDirections: ["ascend", "descend"],
     sortOrder: sortedInfo?.columnKey === "employeeID" ? sortedInfo.order : null,
@@ -120,11 +141,12 @@ export const getBorderlessTableColumns = ({ sortedInfo }) => [
     dataIndex: "employeeName",
     key: "employeeName",
     align: "left",
-    ellipsis: true,
-    width: "14%",
-    sorter: (a, b) => (a.employeeName || "").localeCompare(b.employeeName || ""),
+    width: 120,
+    sorter: (a, b) =>
+      (a.employeeName || "").localeCompare(b.employeeName || ""),
     sortDirections: ["ascend", "descend"],
-    sortOrder: sortedInfo?.columnKey === "employeeName" ? sortedInfo.order : null,
+    sortOrder:
+      sortedInfo?.columnKey === "employeeName" ? sortedInfo.order : null,
     showSorterTooltip: false,
     sortIcon: () => null,
     render: (text) => <span className="font-medium">{text}</span>,
@@ -134,25 +156,31 @@ export const getBorderlessTableColumns = ({ sortedInfo }) => [
     dataIndex: "departmentName",
     key: "departmentName",
     align: "left",
-    ellipsis: true,
-    width: "14%",
-    sorter: (a, b) => (a.departmentName || "").localeCompare(b.departmentName || ""),
+    width: 120,
+    sorter: (a, b) =>
+      (a.departmentName || "").localeCompare(b.departmentName || ""),
     sortDirections: ["ascend", "descend"],
-    sortOrder: sortedInfo?.columnKey === "departmentName" ? sortedInfo.order : null,
+    sortOrder:
+      sortedInfo?.columnKey === "departmentName" ? sortedInfo.order : null,
     showSorterTooltip: false,
     sortIcon: () => null,
     render: (text) => <span className="font-medium">{text}</span>,
   },
   {
-    title: withSortIcon("Total Requests", "totalRequests", sortedInfo, "center"),
+    title: withSortIcon(
+      "Total Requests",
+      "totalRequests",
+      sortedInfo,
+      "center"
+    ),
     dataIndex: "totalRequests",
     key: "totalRequests",
     align: "center",
-    width: "10%",
-    ellipsis: true,
+    width: 100,
     sorter: numericSorter("totalRequests"),
     sortDirections: ["ascend", "descend"],
-    sortOrder: sortedInfo?.columnKey === "totalRequests" ? sortedInfo.order : null,
+    sortOrder:
+      sortedInfo?.columnKey === "totalRequests" ? sortedInfo.order : null,
     showSorterTooltip: false,
     sortIcon: () => null,
     render: (v) => <span className="font-medium">{v.toLocaleString()}</span>,
@@ -162,8 +190,7 @@ export const getBorderlessTableColumns = ({ sortedInfo }) => [
     dataIndex: "pending",
     key: "pending",
     align: "center",
-    width: "8%",
-    ellipsis: true,
+    width: 100,
     sorter: numericSorter("pending"),
     sortDirections: ["ascend", "descend"],
     sortOrder: sortedInfo?.columnKey === "pending" ? sortedInfo.order : null,
@@ -176,8 +203,7 @@ export const getBorderlessTableColumns = ({ sortedInfo }) => [
     dataIndex: "approved",
     key: "approved",
     align: "center",
-    width: "8%",
-    ellipsis: true,
+    width: 100,
     sorter: numericSorter("approved"),
     sortDirections: ["ascend", "descend"],
     sortOrder: sortedInfo?.columnKey === "approved" ? sortedInfo.order : null,
@@ -190,8 +216,7 @@ export const getBorderlessTableColumns = ({ sortedInfo }) => [
     dataIndex: "declined",
     key: "declined",
     align: "center",
-    width: "8%",
-    ellipsis: true,
+    width: 100,
     sorter: numericSorter("declined"),
     sortDirections: ["ascend", "descend"],
     sortOrder: sortedInfo?.columnKey === "declined" ? sortedInfo.order : null,
@@ -204,8 +229,7 @@ export const getBorderlessTableColumns = ({ sortedInfo }) => [
     dataIndex: "traded",
     key: "traded",
     align: "center",
-    width: "8%",
-    ellipsis: true,
+    width: 100,
     sorter: numericSorter("traded"),
     sortDirections: ["ascend", "descend"],
     sortOrder: sortedInfo?.columnKey === "traded" ? sortedInfo.order : null,
@@ -218,8 +242,7 @@ export const getBorderlessTableColumns = ({ sortedInfo }) => [
     dataIndex: "notTraded",
     key: "notTraded",
     align: "center",
-    width: "8%",
-    ellipsis: true,
+    width: 100,
     sorter: numericSorter("notTraded"),
     sortDirections: ["ascend", "descend"],
     sortOrder: sortedInfo?.columnKey === "notTraded" ? sortedInfo.order : null,
@@ -232,11 +255,11 @@ export const getBorderlessTableColumns = ({ sortedInfo }) => [
     dataIndex: "resubmitted",
     key: "resubmitted",
     align: "center",
-    width: "10%",
-    ellipsis: true,
+    width: 100,
     sorter: numericSorter("resubmitted"),
     sortDirections: ["ascend", "descend"],
-    sortOrder: sortedInfo?.columnKey === "resubmitted" ? sortedInfo.order : null,
+    sortOrder:
+      sortedInfo?.columnKey === "resubmitted" ? sortedInfo.order : null,
     showSorterTooltip: false,
     sortIcon: () => null,
     render: (v) => <span className="font-medium">{v.toLocaleString()}</span>,

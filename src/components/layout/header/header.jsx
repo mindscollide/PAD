@@ -168,8 +168,7 @@ const Headers = () => {
         // toggle, not a route change, same as Transactions Summary/
         // User-wise Compliance above) - hidden on View Details, which has
         // no search of its own per SRS.
-        (currentPath === "/PAD/admin-reports/admin-tat-request-report" &&
-          !showViewDetailPageInTatOnHta))
+        currentPath === "/PAD/admin-reports/admin-tat-request-report")
     ) {
       return true;
     }

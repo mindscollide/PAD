@@ -1,45 +1,73 @@
 import React, { useEffect, useState } from "react";
 import { Row, Col, Space } from "antd";
-import { Button, TextField, DateRangePicker } from "../..";
+import { Button, DateRangePicker, TextField } from "../..";
 import { useSearchBarContext } from "../../../context/SearchBarContaxt";
 import {
   allowOnlyNumbers,
   removeFirstSpace,
 } from "../../../common/funtions/rejex";
-import { useLocation } from "react-router-dom";
 
-// 🔹 Initial state matching your global state structure
+/* =============================================================================
+ * 🔹 Initial Local State
+ * -----------------------------------------------------------------------------
+ * Maintains filter input values locally before applying them
+ * to the global search state.
+ * =============================================================================
+ */
 const INITIAL_LOCAL_STATE = {
-  employeeName: "",
-  departmentName: "",
-  pageNumber: 0,
-  pageSize: 10,
-  filterTrigger: false,
+  instrumentName: "",
+  quantity: "",
+  startDate: null,
+  endDate: null,
+  actionStartDate: null,
+  actionEndDate: null,
+  actionBy: "",
+  tat: "",
 };
 
-export const AdminTATRequestApprovalReportFilter = ({
+/* =============================================================================
+ * 🔍 HTA TAT View Detail Filter
+ * -----------------------------------------------------------------------------
+ * Used for filtering HTA TAT View Detail data.
+ * Supports text, numeric, and date range filters.
+ * =============================================================================
+ */
+export const AdminTATRequestApprovalViewDetailFilter = ({
   setVisible,
-  maininstrumentName,
-  setMaininstrumentName,
   clear,
   setClear,
+  maininstrumentName,
+  setMaininstrumentName,
 }) => {
+  /* ===========================================================================
+   * 📌 Context
+   * ---------------------------------------------------------------------------
+   * Global search state for HTA TAT View Details
+   * ===========================================================================
+   */
   const {
-    userActivityComplianceReportAdmin,
-    setUserActivityComplianceReportAdmin,
-    adminTradeApprovalRequestReportSearch,
-    setAdminTradeApprovalRequestReportSearch,
-    adminTATApprovalRequestReportSearch,
-    setAdminTATApprovalRequestReportSearch,
+    HTATATViewDetailsSearch,
+    setHTATATViewDetailsSearch,
+    adminTATViewDetailsSearch,
+    setAdminTATViewDetailsSearch,
   } = useSearchBarContext();
-  const location = useLocation();
-  const currentPath = location.pathname;
+
+  /* ===========================================================================
+   * 🧠 Local State
+   * ---------------------------------------------------------------------------
+   * Holds form values until user triggers Search
+   * ===========================================================================
+   */
   const [localState, setLocalState] = useState(INITIAL_LOCAL_STATE);
 
-  // -----------------------------------------------------
-  // 🔹 Effects
-  // -----------------------------------------------------
+  /* ===========================================================================
+   * 🔄 Effects
+   * ===========================================================================
+   */
 
+  /**
+   * Prefill Instrument Name when selected from outside
+   */
   useEffect(() => {
     if (maininstrumentName) {
       setLocalState((prev) => ({
@@ -51,6 +79,9 @@ export const AdminTATRequestApprovalReportFilter = ({
     }
   }, [maininstrumentName]);
 
+  /**
+   * Handle external reset trigger
+   */
   useEffect(() => {
     if (clear && maininstrumentName === "") {
       setLocalState(INITIAL_LOCAL_STATE);
@@ -58,147 +89,257 @@ export const AdminTATRequestApprovalReportFilter = ({
     }
   }, [clear]);
 
-  // -----------------------------------------------------
-  // 🔹 Handlers
-  // -----------------------------------------------------
+  /* ===========================================================================
+   * 🛠 Handlers
+   * ===========================================================================
+   */
 
+  /**
+   * Generic field setter
+   */
   const setFieldValue = (field, value) => {
     setLocalState((prev) => ({ ...prev, [field]: value }));
   };
 
+  /**
+   * Handle text and numeric input changes
+   */
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-
-    // Remove commas first
     const rawValue = value.replace(/,/g, "");
 
-    if (name === "approvedQuantity" || name === "sharesTraded") {
-      // Allow empty or numbers only
-      if (rawValue === "" || allowOnlyNumbers(rawValue)) {
-        setFieldValue(name, rawValue);
+    // Quantity: numbers only
+    if (name === "quantity") {
+      if (
+        (rawValue === "" || allowOnlyNumbers(rawValue)) &&
+        rawValue.length <= 12
+      ) {
+        setFieldValue("quantity", rawValue);
       }
-      return;
     }
 
-    setFieldValue(name, removeFirstSpace(value));
+    // TAT: numbers only
+    else if (name === "tat") {
+      if (
+        (rawValue === "" || allowOnlyNumbers(rawValue)) &&
+        rawValue.length <= 12
+      ) {
+        setFieldValue("tat", rawValue);
+      }
+    }
+
+    // Other text inputs
+    else {
+      setFieldValue(name, removeFirstSpace(value));
+    }
   };
 
-  // FIXED: every "admin-tat-request-report" check below was wrong-cased
-  // ("admin-TAT-Request-report") against the router's actual lowercase
-  // path, so this component's TAT branch never matched - filtering on
-  // TAT Request Approvals silently fell into the `else` branch and wrote
-  // to adminTradeApprovalRequestReportSearch (a different report)
-  // instead, so TAT's own list never actually got filtered.
+  /**
+   * Request date range handler
+   */
+  const handleDateChange = (dates) => {
+    setLocalState((prev) => ({
+      ...prev,
+      startDate: dates?.[0] ?? null,
+      endDate: dates?.[1] ?? null,
+    }));
+  };
+
+  /**
+   * Clear request date range
+   */
+  const handleClearDates = () => {
+    setLocalState((prev) => ({
+      ...prev,
+      startDate: null,
+      endDate: null,
+    }));
+  };
+
+  /**
+   * Action date range handler
+   */
+  const handleDateChangeAction = (dates) => {
+    setLocalState((prev) => ({
+      ...prev,
+      actionStartDate: dates?.[0] ?? null,
+      actionEndDate: dates?.[1] ?? null,
+    }));
+  };
+
+  /**
+   * Clear action date range
+   */
+  const handleClearDatesEscalated = () => {
+    setLocalState((prev) => ({
+      ...prev,
+      actionStartDate: null,
+      actionEndDate: null,
+    }));
+  };
+
+  /**
+   * 🔍 Apply filters
+   * Pushes local state into global search context
+   */
   const handleSearchClick = () => {
-    const { employeeName, departmentName } = localState;
-    const searchPayload = {
-      ...(currentPath === "/PAD/admin-reports/admin-user-wise-compliance-report"
-        ? userActivityComplianceReportAdmin
-        : currentPath === "/PAD/admin-reports/admin-tat-request-report"
-        ? adminTATApprovalRequestReportSearch
-        : adminTradeApprovalRequestReportSearch),
-      employeeName: employeeName?.trim() || "",
-      departmentName: departmentName?.trim() || "",
-      pageNumber: 0,
+    const {
+      instrumentName,
+      quantity,
+      actionBy,
+      startDate,
+      endDate,
+      actionStartDate,
+      actionEndDate,
+      tat,
+    } = localState;
+    console.log("adminTATViewDetailsSearch", localState);
+
+    setAdminTATViewDetailsSearch({
+      ...adminTATViewDetailsSearch,
+      instrumentName: instrumentName?.trim() || "",
+      quantity: quantity ? Number(quantity) : 0,
+
+      // ✅ Dates: pass as-is (null stays null)
+      startDate,
+      endDate,
+      actionStartDate,
+      actionEndDate,
+
+      actionBy: actionBy?.trim() || "",
+      tat: tat ? Number(tat) : 0,
+      pageNumber: 1,
       filterTrigger: true,
-    };
-    if (
-      currentPath === "/PAD/admin-reports/admin-user-wise-compliance-report"
-    ) {
-      // FIXED (2026-08-11): was setting adminTradeApprovalRequestReportSearch
-      // here and setUserActivityComplianceReportAdmin in the else branch below
-      // (for admin-trade-approval-report) - inverted, so filtering on either
-      // page silently updated the OTHER report's search state instead of its
-      // own, and neither page's list ever actually got filtered.
-      setUserActivityComplianceReportAdmin(searchPayload);
-    } else if (currentPath === "/PAD/admin-reports/admin-tat-request-report") {
-      setAdminTATApprovalRequestReportSearch(searchPayload);
-    } else {
-      setAdminTradeApprovalRequestReportSearch(searchPayload);
-    }
-    setLocalState(INITIAL_LOCAL_STATE);
-    setClear(false);
+    });
+
     setVisible(false);
+    setClear(false);
   };
 
+  /**
+   * ♻️ Reset filters
+   */
   const handleResetClick = () => {
-    if (
-      currentPath === "/PAD/admin-reports/admin-user-wise-compliance-report"
-    ) {
-      setUserActivityComplianceReportAdmin((prev) => ({
-        ...prev,
-        employeeName: "",
-        departmentName: "",
-        pageNumber: 0,
-        filterTrigger: true,
-      }));
-    } else if (currentPath === "/PAD/admin-reports/admin-tat-request-report") {
-      setAdminTATApprovalRequestReportSearch((prev) => ({
-        ...prev,
-        employeeName: "",
-        departmentName: "",
-        pageNumber: 0,
-        filterTrigger: true,
-      }));
-    } else {
-      setAdminTradeApprovalRequestReportSearch((prev) => ({
-        ...prev,
-        employeeName: "",
-        departmentName: "",
-        pageNumber: 0,
-        filterTrigger: true,
-      }));
-    }
+    setAdminTATViewDetailsSearch({
+      ...adminTATViewDetailsSearch,
+      instrumentName: "",
+      quantity: 0,
+      startDate: null,
+      endDate: null,
+      actionStartDate: null,
+      actionEndDate: null,
+      actionBy: "",
+      tat: 0,
+      type: [], // clear Type too, if that column exists here
+      pageNumber: 1,
+      pageSize: 10,
+      filterTrigger: true, // ✅ add this
+    });
 
     setLocalState(INITIAL_LOCAL_STATE);
-    setClear(false);
     setVisible(false);
+    setClear(false);
   };
 
-  // -----------------------------------------------------
-  // 🔹 Render
-  // -----------------------------------------------------
+  /* ===========================================================================
+   * 🖥 Render
+   * ===========================================================================
+   */
   return (
     <>
-      {/* ROW 1: Department & Employee Name */}
+      {/* Instrument & Quantity */}
       <Row gutter={[12, 12]}>
-        <Col xs={24} sm={24} md={12} lg={12}>
+        <Col xs={24} md={12}>
           <TextField
-            label="Employee Name"
-            name="employeeName"
-            value={localState.employeeName}
+            label="Instrument Name"
+            name="instrumentName"
+            value={localState.instrumentName}
             onChange={handleInputChange}
-            placeholder="Employee Name"
+            placeholder="Instrument Name"
             size="medium"
-            classNames="Search-Field"
           />
         </Col>
 
-        <Col xs={24} sm={24} md={12} lg={12}>
+        <Col xs={24} md={12}>
           <TextField
-            label="Department Name"
-            name="departmentName"
-            value={localState.departmentName}
+            label="Quantity"
+            name="quantity"
+            value={
+              localState.quantity
+                ? Number(localState.quantity).toLocaleString("en-US")
+                : ""
+            }
             onChange={handleInputChange}
-            placeholder="Department Name"
+            placeholder="Quantity"
             size="medium"
-            classNames="Search-Field"
           />
         </Col>
       </Row>
 
-      {/* ACTION ROW */}
-      <Row gutter={[12, 12]} justify="end" style={{ marginTop: 16 }}>
+      {/* Action By & TAT */}
+      <Row gutter={[12, 12]}>
+        <Col xs={24} md={12}>
+          <TextField
+            label="Action By"
+            name="actionBy"
+            value={localState.actionBy}
+            onChange={handleInputChange}
+            placeholder="Action By"
+            size="medium"
+          />
+        </Col>
+
+        <Col xs={24} md={12}>
+          <TextField
+            label="TAT"
+            name="tat"
+            value={
+              localState.tat
+                ? Number(localState.tat).toLocaleString("en-US")
+                : ""
+            }
+            onChange={handleInputChange}
+            placeholder="TAT"
+            size="medium"
+          />
+        </Col>
+      </Row>
+
+      {/* Date Ranges */}
+      <Row gutter={[12, 12]}>
+        <Col xs={24} md={12}>
+          <DateRangePicker
+            label="Initiated At Date Range"
+            size="medium"
+            value={[localState.startDate, localState.endDate]}
+            onChange={handleDateChange}
+            onClear={handleClearDates}
+          />
+        </Col>
+
+        <Col xs={24} md={12}>
+          <DateRangePicker
+            label="Action At Date Range"
+            size="medium"
+            value={[localState.actionStartDate, localState.actionEndDate]}
+            onChange={handleDateChangeAction}
+            onClear={handleClearDatesEscalated}
+          />
+        </Col>
+      </Row>
+
+      {/* Actions */}
+      <Row justify="end" style={{ marginTop: 16 }}>
         <Col>
           <Space>
             <Button
-              onClick={handleResetClick}
               text="Reset"
+              onClick={handleResetClick}
               className="big-light-button"
             />
             <Button
-              onClick={handleSearchClick}
               text="Search"
+              onClick={handleSearchClick}
               className="big-dark-button"
             />
           </Space>

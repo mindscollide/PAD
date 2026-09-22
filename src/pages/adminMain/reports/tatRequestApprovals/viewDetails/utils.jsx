@@ -7,6 +7,7 @@ import {
   formatApiDateTime,
 } from "../../../../../common/funtions/rejex";
 import { Tooltip } from "antd";
+import { mapBuySellToIds } from "../../../../../components/dropdowns/filters/utils";
 
 /**
  * Utility: Build API request payload for GetAdminTATRequestApprovalDetailsAPI
@@ -18,12 +19,36 @@ import { Tooltip } from "antd";
  * @param {number|string} employeeID - the employee this drill-down is scoped to
  * @returns {Object} API-ready payload
  */
-export const buildApiRequest = (searchState = {}, employeeID) => ({
+// export const buildApiRequest = (searchState = {}, employeeID) => ({
+//   EmployeeID: employeeID,
+//   StartDate: searchState.startDate ? toYYMMDD(searchState.startDate) : "",
+//   EndDate: searchState.endDate ? toYYMMDD(searchState.endDate) : "",
+//   // (pageNumber - 1) * length on the backend - 0 (the search state's
+//   // initial value) resolves to page 1 the same as 1 would.
+//   PageNumber: Number(searchState.pageNumber) || 1,
+//   Length: Number(searchState.pageSize) || 10,
+// });
+
+export const buildApiRequest = (
+  searchState = {},
+  employeeID,
+  assetTypeListingData // needed for TypeIds mapping, same as HTA
+) => ({
   EmployeeID: employeeID,
   StartDate: searchState.startDate ? toYYMMDD(searchState.startDate) : "",
   EndDate: searchState.endDate ? toYYMMDD(searchState.endDate) : "",
-  // (pageNumber - 1) * length on the backend - 0 (the search state's
-  // initial value) resolves to page 1 the same as 1 would.
+  InstrumentName: searchState?.instrumentName || "",
+  Quantity: searchState?.quantity || null, // ✅ null, not 0
+  ActionBy: searchState?.actionBy || "",
+  ActionStartDate: searchState.actionStartDate
+    ? toYYMMDD(searchState.actionStartDate)
+    : "",
+  ActionEndDate: searchState.actionEndDate
+    ? toYYMMDD(searchState.actionEndDate)
+    : "",
+  TAT: searchState?.tat || null, // ✅ null, not 0
+  TypeIds:
+    mapBuySellToIds?.(searchState.type, assetTypeListingData?.Equities) || [],
   PageNumber: Number(searchState.pageNumber) || 1,
   Length: Number(searchState.pageSize) || 10,
 });
@@ -203,7 +228,6 @@ export const getBorderlessTableColumns = ({ sortedInfo }) => [
     dataIndex: "actionBy",
     key: "actionBy",
     width: 180,
-    ellipsis: true,
     sorter: (a, b) => (a.actionBy || "").localeCompare(b.actionBy || ""),
     sortOrder: sortedInfo?.columnKey === "actionBy" ? sortedInfo.order : null,
     showSorterTooltip: false,

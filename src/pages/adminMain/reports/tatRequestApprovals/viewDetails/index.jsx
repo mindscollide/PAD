@@ -22,6 +22,8 @@ import { useGlobalModal } from "../../../../../context/GlobalModalContext";
 import { useTableScrollBottom } from "../../../../../common/funtions/scroll";
 import { BorderlessTable, PageLayout } from "../../../../../components";
 import CustomButton from "../../../../../components/buttons/button";
+import { useSearchBarContext } from "../../../../../context/SearchBarContaxt";
+import { useDashboardContext } from "../../../../../context/dashboardContaxt";
 
 /**
  * Admin TAT Request Approvals - View Details (per employee), per
@@ -56,7 +58,10 @@ const ViewDetails = () => {
     setShowViewDetailPageInTatOnHta,
     showSelectedTatDataOnViewDetailHTA,
   } = useGlobalModal();
-
+  const { adminTATViewDetailsSearch, setAdminTATViewDetailsSearch } =
+    useSearchBarContext();
+  const { assetTypeListingData } = useDashboardContext(); // add this import + hook call
+  const { resetAdminTATViewDetailSearch } = useSearchBarContext();
   const employeeID = showSelectedTatDataOnViewDetailHTA?.employeeID;
 
   // -------------------- Local State --------------------
@@ -73,6 +78,35 @@ const ViewDetails = () => {
     pageSize: 10,
   });
 
+  useEffect(() => {
+    if (adminTATViewDetailsSearch?.filterTrigger) {
+      const requestData = buildApiRequest(
+        adminTATViewDetailsSearch,
+        employeeID,
+        assetTypeListingData // ✅ add here as well
+      );
+      fetchApiCall(requestData, true, true).then(() => {
+        setAdminTATViewDetailsSearch((prev) => ({
+          ...prev,
+          filterTrigger: false,
+        }));
+      });
+    }
+  }, [adminTATViewDetailsSearch?.filterTrigger]);
+
+  const formatDate = (date) => {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
+
+    return `${year}-${month}-${day}`;
+  };
+
+  const formattedDateRange = `${formatDate(
+    showSelectedTatDataOnViewDetailHTA?.filterStartDate
+  )} - ${formatDate(showSelectedTatDataOnViewDetailHTA?.filterEndDate)}`;
+
+  /** 🔹 Build Active Filters */
   const activeFilters = (() => {
     const {
       instrumentName,
@@ -83,7 +117,7 @@ const ViewDetails = () => {
       actionEndDate,
       actionBy,
       tat,
-    } = {};
+    } = adminTATViewDetailsSearch || {}; // ✅ read the real state
 
     return [
       instrumentName && {
@@ -94,31 +128,26 @@ const ViewDetails = () => {
             ? instrumentName.slice(0, 13) + "..."
             : instrumentName,
       },
-
       quantity > 0 && {
         key: "quantity",
         label: "Quantity",
         value: Number(quantity).toLocaleString("en-US"),
       },
-
       actionBy && {
         key: "actionBy",
         label: "Action By",
         value: actionBy.length > 13 ? actionBy.slice(0, 13) + "..." : actionBy,
       },
-
       tat > 0 && {
         key: "tat",
         label: "TAT",
         value: Number(tat).toLocaleString("en-US"),
       },
-
       startDate &&
         endDate && {
           key: "requestDateRange",
           value: `${startDate} → ${endDate}`,
         },
-
       actionStartDate &&
         actionEndDate && {
           key: "actionDateRange",
@@ -149,19 +178,31 @@ const ViewDetails = () => {
           ? mapped.length
           : (prev?.totalRecordsTable || 0) + mapped.length,
       }));
-      setSearch((prev) => ({
+
+      // ✅ increment pageNumber on the state that actually holds the filters
+      setAdminTATViewDetailsSearch((prev) => ({
         ...prev,
         pageNumber: replace ? 2 : (prev.pageNumber || 1) + 1,
       }));
     },
-    [callApi, navigate, showLoader, showNotification]
+    [
+      callApi,
+      navigate,
+      showLoader,
+      showNotification,
+      setAdminTATViewDetailsSearch,
+    ]
   );
 
   // 🔹 Initial Fetch
   useEffect(() => {
     if (hasFetched.current) return;
     hasFetched.current = true;
-    const requestData = buildApiRequest(search, employeeID);
+    const requestData = buildApiRequest(
+      adminTATViewDetailsSearch, // consider switching this from `search` too, for consistency
+      employeeID,
+      assetTypeListingData
+    );
     fetchApiCall(requestData, true, true);
   }, []);
 
@@ -169,10 +210,10 @@ const ViewDetails = () => {
   useEffect(() => {
     return () => {
       resetAdminTATRequestApprovalDetailsData();
+      resetAdminTATViewDetailSearch();
     };
   }, []);
 
-  // 🔹 Infinite Scroll (lazy loading)
   useTableScrollBottom(
     async () => {
       if (
@@ -183,7 +224,11 @@ const ViewDetails = () => {
 
       try {
         setLoadingMore(true);
-        const requestData = buildApiRequest(search, employeeID);
+        const requestData = buildApiRequest(
+          searchStateRef.current,
+          employeeID,
+          assetTypeListingData // ✅ now included
+        );
         await fetchApiCall(requestData, false, false);
       } catch (err) {
         console.error("Error loading more:", err);
@@ -195,6 +240,12 @@ const ViewDetails = () => {
     "border-less-table-blue"
   );
 
+  // 🔹 Infinite Scroll (lazy loading)
+  // Track the actual filter state, not the separate `search` state
+  const searchStateRef = useRef(adminTATViewDetailsSearch);
+  useEffect(() => {
+    searchStateRef.current = adminTATViewDetailsSearch;
+  }, [adminTATViewDetailsSearch]);
   const columns = getBorderlessTableColumns({ sortedInfo });
 
   const handleBack = () => {
@@ -213,6 +264,40 @@ const ViewDetails = () => {
       navigate,
       setOpen,
     });
+  };
+
+  const handleRemoveFilter = (key) => {
+    const resetMap = {
+      instrumentName: { instrumentName: "" },
+      quantity: { quantity: 0 },
+      actionBy: { actionBy: "" },
+      tat: { tat: 0 },
+      requestDateRange: { startDate: null, endDate: null },
+      actionDateRange: { actionStartDate: null, actionEndDate: null },
+    };
+
+    setAdminTATViewDetailsSearch((prev) => ({
+      ...prev,
+      ...resetMap[key],
+      pageNumber: 1,
+      filterTrigger: true,
+    }));
+  };
+
+  const handleRemoveAllFilters = () => {
+    setAdminTATViewDetailsSearch((prev) => ({
+      ...prev,
+      instrumentName: "",
+      quantity: 0,
+      startDate: null,
+      endDate: null,
+      actionStartDate: null,
+      actionEndDate: null,
+      actionBy: "",
+      tat: 0,
+      pageNumber: 1,
+      filterTrigger: true,
+    }));
   };
 
   return (
@@ -286,13 +371,42 @@ const ViewDetails = () => {
           )}
         </Col>
       </Row>
+      {/* 🔹 Active Filter Tags */}
+      {activeFilters.length > 0 && (
+        <Row className={style["filter-tags-container"]}>
+          {activeFilters.map(({ key, value }) => (
+            <Col key={key}>
+              <div className={style["filter-tag"]}>
+                <span>{value}</span>
+                <span
+                  className={style["filter-tag-close"]}
+                  onClick={() => handleRemoveFilter(key)}
+                >
+                  &times;
+                </span>
+              </div>
+            </Col>
+          ))}
+
+          {activeFilters.length > 1 && (
+            <Col>
+              <div
+                className={`${style["filter-tag"]} ${style["clear-all-tag"]}`}
+                onClick={handleRemoveAllFilters}
+              >
+                <span>Clear All</span>
+              </div>
+            </Col>
+          )}
+        </Row>
+      )}
 
       <Row className={style.breadcrumbRowBelowData}>
         <Col span={6}>
           <p className={style.mainTitleTextClass}>
             Employee ID:
             <span className={style.subTitleTextClass}>
-              {showSelectedTatDataOnViewDetailHTA?.employeeID}
+              {` ${showSelectedTatDataOnViewDetailHTA?.employeeID}`}
             </span>
           </p>
         </Col>
@@ -300,7 +414,7 @@ const ViewDetails = () => {
           <p className={style.mainTitleTextClass}>
             Employee Name:
             <span className={style.subTitleTextClass}>
-              {showSelectedTatDataOnViewDetailHTA?.employeeName}
+              {` ${showSelectedTatDataOnViewDetailHTA?.employeeName}`}
             </span>
           </p>
         </Col>
@@ -308,7 +422,7 @@ const ViewDetails = () => {
           <p className={style.mainTitleTextClass}>
             Department:
             <span className={style.subTitleTextClass}>
-              {showSelectedTatDataOnViewDetailHTA?.departmentName}
+              {` ${showSelectedTatDataOnViewDetailHTA?.departmentName}`}
             </span>
           </p>
         </Col>
@@ -316,14 +430,9 @@ const ViewDetails = () => {
           <p className={style.mainTitleTextClass}>
             Date Range:
             <span className={style.subTitleTextClass}>
-              {/* Snapshot of the list's applied date filter at the time
-                  "View Details" was clicked - same convention HTA's own
-                  TAT View Details page uses (filterStartDate/
-                  filterEndDate), not this page's own local picker below
-                  (which independently filters this drill-down list). */}
               {showSelectedTatDataOnViewDetailHTA?.filterStartDate &&
               showSelectedTatDataOnViewDetailHTA?.filterEndDate
-                ? `${showSelectedTatDataOnViewDetailHTA.filterStartDate} - ${showSelectedTatDataOnViewDetailHTA.filterEndDate}`
+                ? ` ${formattedDateRange}`
                 : "—"}
             </span>
           </p>
@@ -335,8 +444,8 @@ const ViewDetails = () => {
         style={{ marginTop: "3px" }}
         className={
           activeFilters.length > 0
-            ? "TATHTAchangeHeightreports2"
-            : "TATHTArepotsHeight"
+            ? "TATViewchangeHeightreports2"
+            : "TATViewRepotsHeight"
         }
       >
         <div className="px-4 md:px-6 lg:px-8 ">
@@ -346,7 +455,7 @@ const ViewDetails = () => {
             classNameTable="border-less-table-blue"
             scroll={
               adminTATRequestApprovalDetailsData?.records?.length
-                ? { x: "max-content", y: 500 }
+                ? { x: "max-content", y: activeFilters.length > 0 ? 450 : 500 }
                 : undefined
             }
             onChange={(pagination, filters, sorter) => setSortedInfo(sorter)}

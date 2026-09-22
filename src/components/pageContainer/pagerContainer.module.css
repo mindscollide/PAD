@@ -110,7 +110,10 @@
   height: 68vh !important;
   top: 220px !important;
 }
-
+.TATViewchangeHeightreports2 {
+  height: 68vh !important;
+  top: 243px !important;
+}
 .changeHeightlmreports {
   height: 70vh !important;
   top: 206px !important;
@@ -131,6 +134,11 @@
 
 .TATHTArepotsHeight {
   max-height: 500px !important;
+  top: 225px !important;
+}
+
+.TATViewRepotsHeight {
+  max-height: 70vh !important;
   top: 225px !important;
 }
 .repotsHeightHOC {

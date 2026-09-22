@@ -743,6 +743,8 @@ export const SearchBarProvider = ({ children }) => {
   ] = useState({
     employeeName: "",
     departmentName: "",
+    startDate: null,
+    endDate: null,
     pageNumber: 0,
     pageSize: 10,
     filterTrigger: false,
@@ -1282,6 +1284,23 @@ export const SearchBarProvider = ({ children }) => {
       filterTrigger: false,
     });
 
+  /** 🔍 Reset TAT Request Approval View Detail on Admin table filters */
+  const resetAdminTATViewDetailSearch = () =>
+    setAdminTATViewDetailsSearch({
+      instrumentName: "",
+      quantity: 0,
+      employeeID: 0,
+      startDate: null,
+      endDate: null,
+      actionStartDate: null,
+      actionEndDate: null,
+      actionBy: "",
+      tat: 0,
+      pageNumber: 1,
+      pageSize: 10,
+      filterTrigger: false,
+    });
+
   const resetHTAPendingApprovalRequestReportSearch = () => {
     setHTAPendingApprovalReportsSearch({
       // Was "InstrumentName"/"PageNumber" (wrong casing) — buildApiRequest
@@ -1468,6 +1487,8 @@ export const SearchBarProvider = ({ children }) => {
     setAdminTradeApprovalRequestReportSearch({
       employeeName: "",
       departmentName: "",
+      startDate: null,
+      endDate: null,
       pageNumber: 0,
       pageSize: 10,
       filterTrigger: false,
@@ -1497,6 +1518,22 @@ export const SearchBarProvider = ({ children }) => {
       pageSize: 10,
       filterTrigger: false,
     });
+
+  /** 🔍 TAT Request Approval View Details Search HTA table filters */
+  const [adminTATViewDetailsSearch, setAdminTATViewDetailsSearch] = useState({
+    instrumentName: "",
+    quantity: 0,
+    employeeID: 0,
+    startDate: null,
+    endDate: null,
+    actionStartDate: null,
+    actionEndDate: null,
+    actionBy: "",
+    tat: 0,
+    pageNumber: 1,
+    pageSize: 10,
+    filterTrigger: false,
+  });
 
   // ================================================================================ //
   /** Reset all filters across modules */
@@ -1637,7 +1674,10 @@ export const SearchBarProvider = ({ children }) => {
         resetHTATATReportSearch,
         htaTATViewDetailsSearch,
         setHTATATViewDetailsSearch,
+        adminTATViewDetailsSearch,
+        setAdminTATViewDetailsSearch,
         resetHTATATViewDetailSearch,
+        resetAdminTATViewDetailSearch,
 
         // Head Of Trade Pending Approval Report Request
         hTAPendingApprovalReportsSearch,

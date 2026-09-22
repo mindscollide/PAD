@@ -90,6 +90,7 @@ const SearchWithPopoverOnly = () => {
     setHeadOfTradeApprovalMyActionSearch,
     setHTATATViewDetailsSearch,
     setHTATATReportSearch,
+    setAdminTATViewDetailsSearch,
   } = useSearchBarContext();
 
   const {
@@ -100,6 +101,11 @@ const SearchWithPopoverOnly = () => {
   } = useMyAdmin();
 
   const { showViewDetailPageInTatOnHta } = useGlobalModal();
+
+  console.log(
+    showViewDetailPageInTatOnHta,
+    "showViewDetailPageInTatOnHtashowViewDetailPageInTatOnHta"
+  );
 
   // -------------------------
   // ✅ Local state
@@ -822,12 +828,44 @@ const SearchWithPopoverOnly = () => {
             pageNumber: 0,
             filterTrigger: true,
           }));
+        }
+
+        // else if (
+        //   // FIXED: was wrong-cased ("admin-TAT-Request-report") - the
+        //   // router's actual path is lowercase, so this never matched and
+        //   // the main search box's Enter/icon submit silently did nothing
+        //   // on this page.
+        //   currentPath === "/PAD/admin-reports/admin-tat-request-report"
+        // ) {
+        //   setAdminTATApprovalRequestReportSearch((prev) => ({
+        //     ...prev,
+        //     employeeName: searchMain,
+        //     departmentName: "",
+        //     pageNumber: 0,
+        //     pageSize: 10,
+        //     filterTrigger: true,
+        //   }));
+        // }
+        else if (
+          currentPath === "/PAD/admin-reports/admin-tat-request-report" && // ✅ fixed
+          showViewDetailPageInTatOnHta
+        ) {
+          setAdminTATViewDetailsSearch((prev) => ({
+            ...prev,
+            instrumentName: searchMain,
+            employeeID: 0,
+            startDate: "",
+            endDate: "",
+            actionStartDate: "",
+            actionEndDate: "",
+            actionBy: "",
+            tat: "",
+            pageNumber: 1,
+            filterTrigger: true,
+          }));
         } else if (
-          // FIXED: was wrong-cased ("admin-TAT-Request-report") - the
-          // router's actual path is lowercase, so this never matched and
-          // the main search box's Enter/icon submit silently did nothing
-          // on this page.
-          currentPath === "/PAD/admin-reports/admin-tat-request-report"
+          currentPath === "/PAD/admin-reports/admin-tat-request-report" && // ✅ fixed
+          !showViewDetailPageInTatOnHta
         ) {
           setAdminTATApprovalRequestReportSearch((prev) => ({
             ...prev,
@@ -837,7 +875,11 @@ const SearchWithPopoverOnly = () => {
             pageSize: 10,
             filterTrigger: true,
           }));
-        } else if (
+        }
+        // setSearchMain("");
+
+        // break;
+        else if (
           currentPath ===
           "/PAD/admin-reports/admin-trades-uploaded-via-portfolio-report"
         ) {
@@ -921,6 +963,7 @@ const SearchWithPopoverOnly = () => {
     }
     if (
       selectedKey === "23" &&
+      !showViewDetailPageInTatOnHta &&
       (currentPath === "/PAD/admin-reports/admin-user-activity-report" ||
         currentPath ===
           "/PAD/admin-reports/admin-user-wise-compliance-report" ||

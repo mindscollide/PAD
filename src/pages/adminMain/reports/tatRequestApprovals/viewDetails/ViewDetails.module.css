@@ -192,8 +192,6 @@
 .breadcrumbRowBelowData {
   padding: 0px 32px;
   display: flex;
-  align-items: center;
-  justify-content: space-between;
 }
 
 .mainTitleTextClass {
