@@ -12,6 +12,11 @@ import {
   getBorderlessTableColumns,
   mappingDateWiseTransactionReport,
 } from "./utils";
+// FIXED (API_Changes/2026-09-22_co_transaction_summary_view_details_excel_
+// wrong_endpoint.md): the correct request builder for this screen's own
+// export - was building a hardcoded request that matched a completely
+// different report's model instead.
+import { buildApiRequestViewDetails } from "../utils";
 import { approvalStatusMap } from "../../../../../components/tables/borderlessTable/utill";
 
 // 🔹 Contexts
@@ -20,7 +25,7 @@ import { approvalStatusMap } from "../../../../../components/tables/borderlessTa
 import style from "./transactionsSummary.module.css";
 import { useMyApproval } from "../../../../../context/myApprovalContaxt";
 import {
-  DownloadComplianceOfficerDateWiseTransactionReportRequestAPI,
+  ExportComplianceOfficerViewTransactionSummaryReportExcel,
   SearchComplianceOfficerTransactionSummaryReportRequest,
 } from "../../../../../api/myApprovalApi";
 import { useNotification } from "../../../../../components/NotificationProvider/NotificationProvider";
@@ -28,6 +33,7 @@ import { useApi } from "../../../../../context/ApiContext";
 import { useGlobalLoader } from "../../../../../context/LoaderContext";
 import { useNavigate } from "react-router-dom";
 import { useSearchBarContext } from "../../../../../context/SearchBarContaxt";
+import { useDashboardContext } from "../../../../../context/dashboardContaxt";
 import { useTableScrollBottom } from "../../../../../common/funtions/scroll";
 import CustomButton from "../../../../../components/buttons/button";
 import { DateRangePicker } from "../../../../../components";
@@ -41,6 +47,7 @@ const COTransactionsSummarysReportsViewDetails = () => {
   const { callApi } = useApi();
   const { showNotification } = useNotification();
   const { showLoader } = useGlobalLoader();
+  const { assetTypeListingData } = useDashboardContext();
   const {
     coTransactionSummaryReportListData,
     setCOTransactionSummaryReportListData,
@@ -51,6 +58,12 @@ const COTransactionsSummarysReportsViewDetails = () => {
     coTransactionsSummarysReportsSearch,
     setCOTransactionsSummarysReportsSearch,
     resetCOTransactionsSummarysReportsSearch,
+    // The actual per-transaction-date View Details filter state (Quantity/
+    // Instrument/Requester/Status/Type search on the drill-down) - was
+    // never read anywhere in this file; the export used
+    // coTransactionsSummarysReportsSearch above (the summary list's own
+    // filters) instead, which is a different screen's state entirely.
+    coTransactionsSummarysReportsViewDetailsSearch,
   } = useSearchBarContext();
 
   // -------------------- Local State --------------------
@@ -211,23 +224,32 @@ const COTransactionsSummarysReportsViewDetails = () => {
   };
 
   // 🔷 Excel Report download Api Hit
-  const downloadMyTradeApprovalLineManagerInExcelFormat = async () => {
+  // FIXED (API_Changes/2026-09-22_co_transaction_summary_view_details_
+  // excel_wrong_endpoint.md): was calling
+  // DownloadComplianceOfficerDateWiseTransactionReportRequestAPI - the
+  // unrelated "Date Wise Transactions" report's export - with a hardcoded
+  // request shape matching THAT report's model
+  // (ComplianceOfficerDateWiseTransactionRequestModel), not this screen's
+  // own (HCAViewTransactionSummaryExportRequestModel: TransactionDate/
+  // QuantitySearch/InstrumentNameSearch/RequesterNameSearch/StatusIds/
+  // TypeIds). Swapped to the correct, already-existing endpoint
+  // (ExportComplianceOfficerViewTransactionSummaryReportExcel, added
+  // 2026-08-06 for exactly this screen) and built from this screen's own
+  // View Details filter state via the same buildApiRequestViewDetails the
+  // working sibling implementation (transactionsSummary/index.jsx) uses -
+  // PageNumber/Length dropped since export always returns every matching
+  // row.
+  const downloadTransactionSummaryViewDetailsInExcelFormat = async () => {
     showLoader(true);
-    const requestdata = {
-      InstrumentName: "",
-      DepartmentName: "",
-      Quantity: 0,
-      StatusIds: [],
-      TypeIds: [],
-      RequesterName: "",
-      StartDate: "",
-      EndDate: "",
-    };
+    const { PageNumber, Length, ...requestdata } = buildApiRequestViewDetails(
+      coTransactionsSummarysReportsViewDetailsSearch,
+      assetTypeListingData
+    );
 
-    await DownloadComplianceOfficerDateWiseTransactionReportRequestAPI({
+    await ExportComplianceOfficerViewTransactionSummaryReportExcel({
       callApi,
       showLoader,
-      requestdata: requestdata,
+      requestdata,
       navigate,
       setOpen,
     });
@@ -295,7 +317,7 @@ const COTransactionsSummarysReportsViewDetails = () => {
               </div> */}
               <div
                 className={style.dropdownItem}
-                onClick={downloadMyTradeApprovalLineManagerInExcelFormat}
+                onClick={downloadTransactionSummaryViewDetailsInExcelFormat}
               >
                 <img src={Excel} alt="Excel" draggable={false} />
                 <span>Export Excel</span>

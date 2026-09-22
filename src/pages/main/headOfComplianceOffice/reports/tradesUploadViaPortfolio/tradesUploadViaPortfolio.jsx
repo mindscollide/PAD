@@ -303,21 +303,29 @@ const TradesUploadViaPortfolio = () => {
   })();
 
   // 🔷 Excel Report download Api Hit
+  // FIXED (API_Changes/2026-09-22_hoc_trades_uploaded_via_portfolio_excel_
+  // export_ignores_filters.md): was a hardcoded blank request, never
+  // reading hcoTradesUploadViaPortfolioSearch (the live search/filter
+  // state this screen already maintains) - confirmed backend-side that
+  // sp_searchEmployeeUploadedPortfolioExcelReport already applies every
+  // one of these filters correctly, including the now-working EmployeeName
+  // (this screen's on-screen buildApiRequest already sends it correctly,
+  // see the 2026-09-11 fix in ./utill.jsx). Built the same way the
+  // on-screen listing itself is, via buildApiRequest; PageNumber/Length
+  // dropped since export always returns every matching row. No BrokerIds
+  // here - the on-screen list itself has no broker filter to reuse (the
+  // doc's own mention of a Broker criteria was export-only/dead, now
+  // replaced by EmployeeName on the backend).
   const downloadMyTransactionInExcelFormat = async () => {
     showLoader(true);
-    const requestdata = {
-      InstrumentName: "",
-      Quantity: 0,
-      StartDate: "",
-      EndDate: "",
-      BrokerIds: [],
-      StatusIds: [],
-      TypeIds: [],
-    };
+    const { PageNumber, Length, ...requestdata } = buildApiRequest(
+      hcoTradesUploadViaPortfolioSearch,
+      assetTypeListingData
+    );
     await ExportHOCUploadedPortfolioReportExcel({
       callApi,
       showLoader,
-      requestdata: requestdata,
+      requestdata,
       navigate,
       setOpen,
     });
