@@ -961,6 +961,9 @@ const SearchWithPopoverOnly = () => {
     ) {
       return "Employee name. Click the icon to view more options.";
     }
+    if (currentPath === "/PAD/hta-reports/hta-trade-approval-requests") {
+      return "Employee name. Click the icon to view more options.";
+    }
     if (
       selectedKey === "23" &&
       !showViewDetailPageInTatOnHta &&

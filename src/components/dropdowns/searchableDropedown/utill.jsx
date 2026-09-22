@@ -37,6 +37,7 @@ import { HTATATReportsListFilter } from "./HTATATReportListFilter";
 import { AdminTradesUploadedViaPortfolioFilter } from "./AdminTradesUploadedViaPortfolioFilter";
 import { AdminTATRequestApprovalViewDetailFilter } from "./AdminTATRequestApprovalDetailReportFilter";
 import { AdminTATRequestApprovalReportFilter } from "./AdminTATRequestApprovalReportFilter";
+import { HTATradeApprovalsReports } from "./HTATradeApprovalRequestReportFilter";
 
 // this is used for open specific filter according to page
 export const renderFilterContent = (
@@ -256,7 +257,7 @@ export const renderFilterContent = (
     case "14": // HTA → reports pending approvals
       if (currentPath === "/PAD/hta-reports/hta-trade-approval-requests")
         return (
-          <LineManagerMyTradeApprovalsReports
+          <HTATradeApprovalsReports
             setVisible={setVisible}
             clear={clear}
             setClear={setClear}
