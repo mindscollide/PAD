@@ -8,6 +8,7 @@ import {
 } from "../../../../../common/funtions/rejex";
 import { Tooltip } from "antd";
 import { mapBuySellToIds } from "../../../../../components/dropdowns/filters/utils";
+import TypeColumnTitle from "../../../../../components/dropdowns/filters/typeColumnTitle";
 
 /**
  * Utility: Build API request payload for GetAdminTATRequestApprovalDetailsAPI
@@ -84,6 +85,8 @@ export const mapListData = (res = []) => {
     instrumentName: item.instrumentName || "—",
     initiatedAt:
       `${item?.initiatedDate || ""} ${item?.initiatedTime || ""}`.trim() || "—",
+    // FIXED (API_Changes/2026-09-23_admin_tat_view_details_type_nested.md):
+    // flat `tradeType` string replaced with a nested {typeID, typeName} object.
     type: item.tradeType?.typeName || "-",
     quantity: item.quantity || 0,
     actionBy: item.actionBy || "—",
@@ -142,7 +145,11 @@ const withSortIcon = (label, columnKey, sortedInfo, align = "left") => (
   </div>
 );
 
-export const getBorderlessTableColumns = ({ sortedInfo }) => [
+export const getBorderlessTableColumns = ({
+  sortedInfo,
+  adminTATViewDetailsSearch,
+  setAdminTATViewDetailsSearch,
+}) => [
   {
     title: withSortIcon("Instrument", "instrumentName", sortedInfo),
     dataIndex: "instrumentName",
@@ -193,16 +200,23 @@ export const getBorderlessTableColumns = ({ sortedInfo }) => [
     ),
   },
   {
-    // FIXED per SRS ("TAT Request Approvals" > View Details): "Sorting
-    // will be applied on all columns" - this one had none.
-    title: withSortIcon("Type", "type", sortedInfo),
+    // FIXED (API_Changes/2026-09-23_admin_tat_request_approvals_fe_date_picker_
+    // issues.md #3): backend's TypeIds filter was already wired end-to-end
+    // with no FE control to trigger it - added the same shared Type
+    // column-filter UI used on Policy Breaches/Trades Uploaded via Portfolio.
+    title: (
+      <TypeColumnTitle
+        state={adminTATViewDetailsSearch}
+        setState={setAdminTATViewDetailsSearch}
+      />
+    ),
     dataIndex: "type",
     key: "type",
     width: 100,
-    sorter: (a, b) => (a.type || "").localeCompare(b.type || ""),
-    sortOrder: sortedInfo?.columnKey === "type" ? sortedInfo.order : null,
-    showSorterTooltip: false,
-    sortIcon: () => null,
+    filteredValue: adminTATViewDetailsSearch?.type?.length
+      ? adminTATViewDetailsSearch?.type
+      : null,
+    onFilter: () => true,
     render: (type) => (
       <span className={type === "Buy" ? "text-green-600" : "text-red-600"}>
         {type}

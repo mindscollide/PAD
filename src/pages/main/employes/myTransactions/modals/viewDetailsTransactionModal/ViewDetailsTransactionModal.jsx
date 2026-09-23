@@ -152,6 +152,19 @@ const ViewDetailsTransactionModal = () => {
       escalations.map((e) => e?.escalatedFromID).filter((id) => id != null)
     );
 
+    // FIXED: when someone (e.g. Head of Compliance Office) closes an
+    // escalation on behalf of the originally-assigned reviewer (e.g. CO),
+    // that resolver's own action is already fully represented by the
+    // escalation-closure step pushed below (correctly attributed to them
+    // by name). hierarchyDetails can carry a *separate* row for that same
+    // resolver (distinct from the original reviewer's own row, which
+    // escalatedUserIDs already excludes) - without also excluding it here,
+    // that row slipped through the second pass below and got pushed again
+    // as a spurious duplicate step at the end of the trail.
+    const escalationResolverIDs = new Set(
+      escalations.map((e) => e?.escalationClosedBy).filter((id) => id != null)
+    );
+
     const steps = [];
 
     escalations.forEach((esc) => {
@@ -211,7 +224,11 @@ const ViewDetailsTransactionModal = () => {
     });
 
     hierarchyDetails
-      .filter((person) => !escalatedUserIDs.has(person.userID))
+      .filter(
+        (person) =>
+          !escalatedUserIDs.has(person.userID) &&
+          !escalationResolverIDs.has(person.userID)
+      )
       .forEach((person) => {
         const { fullName, bundleStatusID, modifiedDate, modifiedTime, userID } =
           person;

@@ -94,18 +94,6 @@ const ViewDetails = () => {
     }
   }, [adminTATViewDetailsSearch?.filterTrigger]);
 
-  const formatDate = (date) => {
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, "0");
-    const day = String(date.getDate()).padStart(2, "0");
-
-    return `${year}-${month}-${day}`;
-  };
-
-  const formattedDateRange = `${formatDate(
-    showSelectedTatDataOnViewDetailHTA?.filterStartDate
-  )} - ${formatDate(showSelectedTatDataOnViewDetailHTA?.filterEndDate)}`;
-
   /** 🔹 Build Active Filters */
   const activeFilters = (() => {
     const {
@@ -246,7 +234,11 @@ const ViewDetails = () => {
   useEffect(() => {
     searchStateRef.current = adminTATViewDetailsSearch;
   }, [adminTATViewDetailsSearch]);
-  const columns = getBorderlessTableColumns({ sortedInfo });
+  const columns = getBorderlessTableColumns({
+    sortedInfo,
+    adminTATViewDetailsSearch,
+    setAdminTATViewDetailsSearch,
+  });
 
   const handleBack = () => {
     setShowViewDetailPageInTatOnHta(false);
@@ -432,7 +424,7 @@ const ViewDetails = () => {
             <span className={style.subTitleTextClass}>
               {showSelectedTatDataOnViewDetailHTA?.filterStartDate &&
               showSelectedTatDataOnViewDetailHTA?.filterEndDate
-                ? ` ${formattedDateRange}`
+                ? ` ${showSelectedTatDataOnViewDetailHTA.filterStartDate} - ${showSelectedTatDataOnViewDetailHTA.filterEndDate}`
                 : "—"}
             </span>
           </p>

@@ -1,8 +1,3 @@
-import ArrowUP from "../../../../assets/img/arrow-up-dark.png";
-import ArrowDown from "../../../../assets/img/arrow-down-dark.png";
-import DefaultColumArrow from "../../../../assets/img/default-colum-arrow.png";
-import style from "./tradeApprovalRequest.module.css";
-
 import { toYYMMDD } from "../../../../common/funtions/rejex";
 import { withSortIcon } from "../../../../common/funtions/tableIcon";
 
@@ -62,41 +57,6 @@ export const mapListData = (res = []) => {
     notTraded: item.notTraded || 0,
     resubmitted: item.resubmitted || 0,
   }));
-};
-
-/**
- * Returns the appropriate sort icon based on current sort state
- *
- * @param {string} columnKey - The column's key
- * @param {object} sortedInfo - Current sort state from the table
- * @returns {JSX.Element} The sort icon
- */
-const getSortIcon = (columnKey, sortedInfo) => {
-  if (sortedInfo?.columnKey === columnKey) {
-    return sortedInfo.order === "ascend" ? (
-      <img
-        draggable={false}
-        src={ArrowDown}
-        alt="Asc"
-        className="custom-sort-icon"
-      />
-    ) : (
-      <img
-        draggable={false}
-        src={ArrowUP}
-        alt="Desc"
-        className="custom-sort-icon"
-      />
-    );
-  }
-  return (
-    <img
-      draggable={false}
-      src={DefaultColumArrow}
-      alt="Default"
-      className="custom-sort-icon"
-    />
-  );
 };
 
 const numericSorter = (field) => (a, b) =>

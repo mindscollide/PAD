@@ -88,7 +88,11 @@ export const mappingDateWiseTransactionReport = (res = []) => {
     transactionDate:
       `${item?.requestDate || ""} ${item?.requestTime || ""}`.trim() || "—",
     department: item.departmentName || "",
-    type: item.typeName || "-",
+    // FIXED (API_Changes/2026-09-23_admin_date_wise_transaction_report_
+    // type_nested.md): typeID/typeName moved from flat fields to a nested
+    // `tradeType` object, matching the shape already used for the same
+    // concept on most other reports.
+    type: item.tradeType?.typeName || "-",
     status: item.status || "",
     quantity: item.quantity || 0,
     assetType: item.assetType || "",

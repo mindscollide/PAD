@@ -1,9 +1,9 @@
 import { Tag, Tooltip } from "antd";
 import TypeColumnTitle from "../../../../components/dropdowns/filters/typeColumnTitle";
 import StatusColumnTitle from "../../../../components/dropdowns/filters/statusColumnTitle";
+import { mapBuySellToIds } from "../../../../components/dropdowns/filters/utils";
 import { withSortIcon } from "../../../../common/funtions/tableIcon";
 import { formatApiDateTime, toYYMMDD } from "../../../../common/funtions/rejex";
-import { mapStatusToIds } from "../../../../components/dropdowns/filters/utils";
 
 /**
  * Utility: Build API request payload for GetAdminTradesUploadedViaPortfolioAPI
@@ -14,16 +14,28 @@ import { mapStatusToIds } from "../../../../components/dropdowns/filters/utils";
  * stores the raw ids selected via the Status column filter).
  *
  * @param {Object} searchState - Current search/filter state
+ * @param {Object} assetTypeListingData - Extra request metadata (for TypeIds resolution)
  * @returns {Object} API-ready payload
  */
-export const buildApiRequest = (searchState = {}) => ({
+export const buildApiRequest = (searchState = {}, assetTypeListingData) => ({
   InstrumentName: searchState.instrumentName || "",
   EmployeeName: searchState.employeeName || "",
   StartDate: searchState.startDate ? toYYMMDD(searchState.startDate) : "",
   EndDate: searchState.endDate ? toYYMMDD(searchState.endDate) : "",
   Quantity: searchState.quantity ? Number(searchState.quantity) : 0,
-  Type: searchState.type?.length ? searchState.type : ["Buy", "Sell"],
-  StatusIds: mapStatusToIds?.(searchState.status, 2) || [],
+  // FIXED (API_Changes/2026-09-23_admin_type_nested_and_typeids_filter.md /
+  // CHANGELOG.md 2026-09-23): `Type` renamed to `TypeIds` for naming
+  // consistency (values unchanged, this endpoint already sent numeric IDs
+  // since 2026-09-17) - the Type filter dropdown itself still stores
+  // "Buy"/"Sell" labels in searchState.type (shared TypeColumnTitle/
+  // TypeFilterDropdown component), so resolve to IDs here. `Status` is NOT
+  // renamed per either doc - stays the raw WorkFlowStatusID array this
+  // endpoint has always used (8=Compliant/9=Non-Compliant for Portfolio
+  // uploads), not the bundle-level StatusIds scheme other reports use.
+  TypeIds: searchState.type?.length
+    ? mapBuySellToIds(searchState.type, assetTypeListingData?.Equities)
+    : [1, 2],
+  Status: searchState.status?.length ? searchState.status : [8, 9],
   // (pageNumber - 1) * length on the backend - 0 (the search state's
   // initial value) resolves to page 1 the same as 1 would.
   PageNumber: Number(searchState.pageNumber) || 1,
@@ -36,17 +48,17 @@ export const buildApiRequest = (searchState = {}) => ({
  * uploads_export.md) - same filters as buildApiRequest above, minus
  * PageNumber/Length (an export always returns the full matching set in
  * one file, no pagination). Matches the doc's own defaults exactly:
- * Quantity null (not 0), Type/Status [] (not ["Buy","Sell"]/[8,9]) when
+ * Quantity null (not 0), TypeIds/Status [] (not [1,2]/[8,9]) when
  * unset - it's this export's own SP that decides what "no filter" means,
  * not necessarily the same as the live list's.
  */
-export const buildExportRequest = (searchState = {}) => ({
+export const buildExportRequest = (searchState = {}, assetTypeListingData) => ({
   InstrumentName: searchState.instrumentName || "",
   EmployeeName: searchState.employeeName || "",
   StartDate: searchState.startDate ? toYYMMDD(searchState.startDate) : "",
   EndDate: searchState.endDate ? toYYMMDD(searchState.endDate) : "",
   Quantity: searchState.quantity ? Number(searchState.quantity) : null,
-  Type: searchState.type?.length ? searchState.type : [],
+  TypeIds: mapBuySellToIds(searchState.type, assetTypeListingData?.Equities),
   Status: searchState.status?.length ? searchState.status : [],
 });
 
@@ -71,7 +83,9 @@ export const mapListData = (res = []) => {
     instrumentShortCode: item.instrumentShortCode || "—",
     assetType: item.assetType || "",
     assetShortCode: item.assetShortCode || "",
-    type: item.type || "-",
+    // FIXED (API_Changes/2026-09-23_admin_type_nested_and_typeids_filter.md):
+    // flat `type` string replaced with a nested `tradeType` object.
+    type: item.tradeType?.typeName || "-",
     uploadedDateTime:
       `${item?.uploadedDate || ""} ${item?.uploadedTime || ""}`.trim() || "—",
     quantity: item.quantity || 0,

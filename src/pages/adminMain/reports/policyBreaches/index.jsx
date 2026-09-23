@@ -171,7 +171,7 @@ const AdminPolicyBreachesReport = () => {
     // so the Type filter has its options
     getSafeAssetTypeData(assetTypeListingData, setAssetTypeListingData);
 
-    const requestData = buildApiRequest(adminPolicyBreachesReportSearch);
+    const requestData = buildApiRequest(adminPolicyBreachesReportSearch, assetTypeListingData);
     fetchApiCall(requestData, true, true);
   }, []);
 
@@ -187,7 +187,7 @@ const AdminPolicyBreachesReport = () => {
   // 🔹 call api on search
   useEffect(() => {
     if (adminPolicyBreachesReportSearch?.filterTrigger) {
-      const requestData = buildApiRequest(adminPolicyBreachesReportSearch);
+      const requestData = buildApiRequest(adminPolicyBreachesReportSearch, assetTypeListingData);
       fetchApiCall(requestData, true, true);
     }
   }, [adminPolicyBreachesReportSearch?.filterTrigger]);
@@ -217,7 +217,7 @@ const AdminPolicyBreachesReport = () => {
 
       try {
         setLoadingMore(true);
-        const requestData = buildApiRequest(adminPolicyBreachesReportSearch);
+        const requestData = buildApiRequest(adminPolicyBreachesReportSearch, assetTypeListingData);
         await fetchApiCall(requestData, false, false);
       } catch (err) {
         console.error("Error loading more:", err);
@@ -333,7 +333,7 @@ const AdminPolicyBreachesReport = () => {
     await ExportAdminPolicyBreaches({
       callApi,
       showLoader,
-      requestdata: buildExportRequest(adminPolicyBreachesReportSearch),
+      requestdata: buildExportRequest(adminPolicyBreachesReportSearch, assetTypeListingData),
       navigate,
       setOpen,
     });
