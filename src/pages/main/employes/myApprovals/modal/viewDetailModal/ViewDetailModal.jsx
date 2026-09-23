@@ -839,11 +839,11 @@ const ViewDetailModal = () => {
                                           Escalated On
                                         </div>
                                         {escalatedFromName && (
-                                          <div className={styles.customdesc}>
-                                            by {escalatedFromName}
+                                          <div className={styles.customtitle}>
+                                            {escalatedFromName}
                                           </div>
                                         )}
-                                        <div className={styles.customdesc}>
+                                        <div className={styles.customtitle}>
                                           {formatApiDateTime(
                                             `${escalatedOnDate} ${escalatedOnTime}`
                                           )}
@@ -883,10 +883,10 @@ const ViewDetailModal = () => {
                                     <div className={styles.customtitle}>
                                       Approved by
                                     </div>
-                                    <div className={styles.customdesc}>
+                                    <div className={styles.customtitle}>
                                       {fullName}
                                     </div>
-                                    <div className={styles.customdesc}>
+                                    <div className={styles.customtitle}>
                                       {formattedDateTime}
                                     </div>
                                   </div>
@@ -898,10 +898,10 @@ const ViewDetailModal = () => {
                                     <div className={styles.customtitle}>
                                       Declined by
                                     </div>
-                                    <div className={styles.customdesc}>
+                                    <div className={styles.customtitle}>
                                       {fullName}
                                     </div>
-                                    <div className={styles.customdesc}>
+                                    <div className={styles.customtitle}>
                                       {formattedDateTime}
                                     </div>
                                   </div>
@@ -989,7 +989,7 @@ const ViewDetailModal = () => {
                                       <div className={styles.customtitle}>
                                         Not Traded
                                       </div>
-                                      <div className={styles.customdesc}>
+                                      <div className={styles.customtitle}>
                                         {notTradedDateTime}
                                       </div>
                                     </div>
