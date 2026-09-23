@@ -18,7 +18,7 @@ import { approvalStatusMap } from "../../../../../components/tables/borderlessTa
 import style from "./HTATAT.module.css";
 import { useMyApproval } from "../../../../../context/myApprovalContaxt";
 import {
-  ExportHTATradeApprovalRequestsExcelReport,
+  ExportHTATurnAroundTimeReportExcel,
   SearchHTATurnAroundTimeRequest,
 } from "../../../../../api/myApprovalApi";
 import { useNotification } from "../../../../../components/NotificationProvider/NotificationProvider";
@@ -314,16 +314,22 @@ const HTATAT = () => {
   })();
 
   // 🔷 Excel Report download Api Hit
+  // FIXED (API_Changes/2026-09-23_hta_tat_report_excel_wrong_endpoint_fe_bug.md):
+  // was wired to ExportHTATradeApprovalRequestsExcelReport - a different
+  // report entirely (Trade Approval Requests breakdown-by-status), copy-
+  // pasted and never corrected. Rewired to the correct, already-deployed
+  // ExportHTATurnAroundTimeReportExcel endpoint, whose request model uses
+  // EmployeeName/DepartmentName, not SearchEmployeeName/SearchDepartmentName.
   const downloadMyTradeApprovalLineManagerInExcelFormat = async () => {
     showLoader(true);
     const requestdata = {
       StartDate: toYYMMDD(htaTATReportSearch.startDate) || null,
       EndDate: toYYMMDD(htaTATReportSearch.endDate) || null,
-      SearchEmployeeName: htaTATReportSearch.employeeName,
-      SearchDepartmentName: htaTATReportSearch.departmentName,
+      EmployeeName: htaTATReportSearch.employeeName,
+      DepartmentName: htaTATReportSearch.departmentName,
     };
 
-    await ExportHTATradeApprovalRequestsExcelReport({
+    await ExportHTATurnAroundTimeReportExcel({
       callApi,
       showLoader,
       requestdata: requestdata,

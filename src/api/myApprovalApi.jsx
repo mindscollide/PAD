@@ -6265,6 +6265,69 @@ export const SearchHTATurnAroundTimeRequest = async ({
   }
 };
 
+// ADDED (API_Changes/2026-09-23_hta_tat_report_excel_wrong_endpoint_fe_bug.md):
+// HTA "Turn Around Time" list-level toolbar Export Excel button was wrongly
+// wired to ExportHTATradeApprovalRequestsExcelReport (a different report
+// entirely, same bug shape as ExportHTAPolicyBreachesExcelReport above before
+// its own fix). Request shape: {StartDate, EndDate, EmployeeName,
+// DepartmentName} - no pagination, this exports the full filtered list.
+export const ExportHTATurnAroundTimeReportExcel = async ({
+  callApi,
+  showLoader,
+  requestdata,
+  navigate,
+  setOpen,
+}) => {
+  try {
+    showLoader(true);
+
+    const res = await callApi({
+      requestMethod: import.meta.env
+        .VITE_EXPORT_HTA_TURN_AROUND_TIME_REPORT_EXCEL_REQUEST_METHOD,
+      endpoint: import.meta.env.VITE_API_REPORT,
+      requestData: requestdata,
+      navigate,
+      responseType: "arraybuffer", // ⚡ Required for file download
+      headers: {
+        "Content-Type":
+          "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      },
+    });
+
+    if (handleExpiredSession(res, navigate, showLoader)) return false;
+    if (!res?.result?.isExecuted) {
+      return false;
+    }
+
+    if (res.success) {
+      try {
+        const blob = new Blob([res.result?.fileData || res.data], {
+          type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        });
+
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+
+        link.setAttribute("download", "HTA-Turn-Around-Time-Report.xlsx");
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        setOpen(false);
+        return true;
+      } catch {
+        return false;
+      }
+    }
+
+    return false;
+  } catch {
+    return false;
+  } finally {
+    showLoader(false);
+  }
+};
+
 // ExportHOCUploadedPortfolioReportExcel
 export const ExportHOCUploadedPortfolioReportExcel = async ({
   callApi,
