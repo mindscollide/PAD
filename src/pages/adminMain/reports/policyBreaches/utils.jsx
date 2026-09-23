@@ -6,22 +6,32 @@ import style from "./AdminPolicyBreachesReport.module.css";
 
 import { toYYMMDD, formatApiDateTime } from "../../../../common/funtions/rejex";
 import TypeColumnTitle from "../../../../components/dropdowns/filters/typeColumnTitle";
+import { mapBuySellToIds } from "../../../../components/dropdowns/filters/utils";
 
 /**
  * Utility: Build API request payload for GetAdminPolicyBreachesAPI per
  * API_Changes/2026-08-11_admin_reports_all_apis.md.
  *
  * @param {Object} searchState - Current search/filter state
+ * @param {Object} assetTypeListingData - Extra request metadata (for TypeIds resolution)
  * @returns {Object} API-ready payload
  */
-export const buildApiRequest = (searchState = {}) => ({
+export const buildApiRequest = (searchState = {}, assetTypeListingData) => ({
   InstrumentName: searchState.instrumentName || "",
   EmployeeName: searchState.employeeName || "",
   DepartmentName: searchState.departmentName || "",
   StartDate: searchState.startDate ? toYYMMDD(searchState.startDate) : "",
   EndDate: searchState.endDate ? toYYMMDD(searchState.endDate) : "",
   Quantity: searchState.quantity || 0,
-  Type: searchState.type?.length ? searchState.type : ["Buy", "Sell"],
+  // FIXED (API_Changes/2026-09-23_admin_type_nested_and_typeids_filter.md):
+  // `Type` (array of "Buy"/"Sell" strings) renamed to `TypeIds` (array of
+  // numeric IDs) - the Type filter dropdown itself still stores labels in
+  // searchState.type (shared TypeColumnTitle/TypeFilterDropdown component),
+  // so resolve to IDs here the same way every other report on this
+  // convention already does.
+  TypeIds: searchState.type?.length
+    ? mapBuySellToIds(searchState.type, assetTypeListingData?.Equities)
+    : [1, 2],
   // (pageNumber - 1) * length on the backend - 0 (the search state's
   // initial value) resolves to page 1 the same as 1 would.
   PageNumber: Number(searchState.pageNumber) || 1,
@@ -32,19 +42,19 @@ export const buildApiRequest = (searchState = {}) => ({
  * ExportAdminPolicyBreaches request payload - same filters as
  * buildApiRequest above, minus PageNumber/Length (an export always
  * returns the full matching set in one file, no pagination). Matches the
- * doc's own defaults exactly: Quantity null (not 0) and Type [] (not
- * ["Buy","Sell"]) when unset - it's ExportAdminPolicyBreaches's own SP
- * that decides what "no filter" means for each, not necessarily the same
- * as the live list's.
+ * doc's own defaults exactly: Quantity null (not 0) and TypeIds [] (not
+ * [1,2]) when unset - it's ExportAdminPolicyBreaches's own SP that decides
+ * what "no filter" means for each, not necessarily the same as the live
+ * list's.
  */
-export const buildExportRequest = (searchState = {}) => ({
+export const buildExportRequest = (searchState = {}, assetTypeListingData) => ({
   InstrumentName: searchState.instrumentName || "",
   EmployeeName: searchState.employeeName || "",
   DepartmentName: searchState.departmentName || "",
   StartDate: searchState.startDate ? toYYMMDD(searchState.startDate) : "",
   EndDate: searchState.endDate ? toYYMMDD(searchState.endDate) : "",
   Quantity: searchState.quantity || null,
-  Type: searchState.type?.length ? searchState.type : [],
+  TypeIds: mapBuySellToIds(searchState.type, assetTypeListingData?.Equities),
 });
 
 /**
@@ -79,7 +89,9 @@ export const mapListData = (res = []) => {
     // the safe fallback either way.
     instrumentShortCode: item.instrumentShortCode || "",
     assetTypeShortCode: item.assetTypeShortCode || "",
-    type: item.type || "-",
+    // FIXED (API_Changes/2026-09-23_admin_type_nested_and_typeids_filter.md):
+    // flat `type` string replaced with a nested `tradeType` object.
+    type: item.tradeType?.typeName || "-",
     quantity: item.quantity || 0,
     policyCount: item.policyCount || 0,
   }));

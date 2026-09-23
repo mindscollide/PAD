@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { DatePicker } from "antd";
 import dayjs from "dayjs";
 import classNames from "classnames";
@@ -33,6 +33,21 @@ const DateRangePicker = ({
     ];
   };
 
+  // FIXED (API_Changes/2026-09-23_admin_tat_request_approvals_fe_date_picker_
+  // issues.md #1): parseToDayjsRange used to run fresh on every render,
+  // handing RangePicker a brand-new dayjs array reference each time even
+  // when start/end hadn't changed. AntD treats a changed `value` reference
+  // as an external update and resets its open calendar panel to it, so any
+  // unrelated re-render while the popup was open undid next/previous-month
+  // navigation. Memoizing on the underlying date strings keeps the array
+  // reference stable across renders that don't actually change the dates.
+  const valueStart = Array.isArray(value) ? value[0] : value;
+  const valueEnd = Array.isArray(value) ? value[1] : value;
+  const parsedValue = useMemo(
+    () => parseToDayjsRange(value),
+    [valueStart, valueEnd] // eslint-disable-line react-hooks/exhaustive-deps
+  );
+
   // Convert [dayjs, dayjs] to ["YYYY-MM-DD", "YYYY-MM-DD"]
   const handleChange = (dates) => {
     if (!dates) {
@@ -54,7 +69,7 @@ const DateRangePicker = ({
 
       <RangePicker
         name={name}
-        value={parseToDayjsRange(value)}
+        value={parsedValue}
         onChange={handleChange}
         onBlur={onBlur}
         placeholder={

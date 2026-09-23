@@ -37,6 +37,7 @@ import { useApi } from "../../../../context/ApiContext";
 import { useGlobalLoader } from "../../../../context/LoaderContext";
 import { useNavigate } from "react-router-dom";
 import { useSearchBarContext } from "../../../../context/SearchBarContaxt";
+import { useDashboardContext } from "../../../../context/dashboardContaxt";
 import { useTableScrollBottom } from "../../../../common/funtions/scroll";
 import CustomButton from "../../../../components/buttons/button";
 import { DateRangePicker } from "../../../../components";
@@ -81,6 +82,8 @@ const AdminTransactionsSummarysReports = () => {
     setCOTransactionsSummarysReportsViewDetailSearch,
     resetCOTransactionsSummarysReportsViewDetailsSearch,
   } = useSearchBarContext();
+
+  const { assetTypeListingData } = useDashboardContext();
 
   // -------------------- Local State --------------------
   const [sortedInfo, setSortedInfo] = useState({});
@@ -232,7 +235,8 @@ const AdminTransactionsSummarysReports = () => {
         filterTrigger: false,
       }));
       const requestData = buildApiRequestViewDetails(
-        coTransactionsSummarysReportsViewDetailsSearch
+        coTransactionsSummarysReportsViewDetailsSearch,
+        assetTypeListingData
       );
       fetchApiCallViewDetails(requestData, true, true);
     }
@@ -256,7 +260,8 @@ const AdminTransactionsSummarysReports = () => {
           setLoadingMore(true);
 
           const requestData = buildApiRequestViewDetails(
-            coTransactionsSummarysReportsViewDetailsSearch
+            coTransactionsSummarysReportsViewDetailsSearch,
+            assetTypeListingData
           );
 
           await fetchApiCallViewDetails(requestData, false, false);
@@ -311,6 +316,10 @@ const AdminTransactionsSummarysReports = () => {
       QuantitySearch: null,
       InstrumentNameSearch: "",
       RequesterNameSearch: "",
+      // ADDED (API_Changes/2026-09-23_admin_type_nested_and_typeids_filter.md):
+      // fresh drill-down, no Type/Status filter applied yet.
+      TypeIds: [],
+      StatusIds: [],
     };
     setCOTransactionsSummarysReportsViewDetailSearch((prev) => ({
       ...prev,

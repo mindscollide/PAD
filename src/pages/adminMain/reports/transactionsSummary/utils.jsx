@@ -7,6 +7,10 @@ import { formatApiDateTime, toYYMMDD } from "../../../../common/funtions/rejex";
 import { withSortIcon } from "../../../../common/funtions/tableIcon";
 import StatusColumnTitle from "../../../../components/dropdowns/filters/statusColumnTitle";
 import TypeColumnTitle from "../../../../components/dropdowns/filters/typeColumnTitle";
+import {
+  mapBuySellToIds,
+  mapStatusToIds,
+} from "../../../../components/dropdowns/filters/utils";
 
 /**
  * Formats a raw "YYYYMMDD" (date-only, no time component) string into a
@@ -218,7 +222,10 @@ export const getBorderlessTableColumns = ({
   },
 ];
 
-export const buildApiRequestViewDetails = (searchState = {}) => ({
+export const buildApiRequestViewDetails = (
+  searchState = {},
+  assetTypeListingData
+) => ({
   // (pageNumber - 1) * length on the backend - 0 (the search state's
   // initial value) resolves to page 1 the same as 1 would.
   PageNumber: Number(searchState.pageNumber) || 1,
@@ -236,6 +243,16 @@ export const buildApiRequestViewDetails = (searchState = {}) => ({
     : null,
   InstrumentNameSearch: searchState.instrumentNameSearch || "",
   RequesterNameSearch: searchState.requesterNameSearch || "",
+  // ADDED (API_Changes/2026-09-23_admin_type_nested_and_typeids_filter.md):
+  // both params are new - the Type/Status column filters already existed
+  // in the UI (reusing CO's own coTransactionsSummarysReportsViewDetailsSearch
+  // state/components) but were silently non-functional since this
+  // endpoint's request had nowhere to receive them. Status uses the
+  // workflow-level scheme (8=Compliant/9=Non-Compliant, mapStatusToIds'
+  // default), matching the doc's own StatusIds example - not the
+  // bundle-level 2/3 scheme CO's sibling screen uses.
+  TypeIds: mapBuySellToIds(searchState.type, assetTypeListingData?.Equities),
+  StatusIds: mapStatusToIds(searchState.status),
 });
 
 /**
@@ -292,7 +309,9 @@ export const mappingDateWiseTransactionviewDetailst = (res = []) => {
       instrumentShortCode: item.instrumentShortCode || "",
       employeeName: item.requesterName || "",
       employeeID: item.requesterID || "",
-      type: item.tradeType || "-",
+      // FIXED (API_Changes/2026-09-23_admin_type_nested_and_typeids_filter.md):
+      // flat `tradeType` string replaced with a nested {typeID, typeName} object.
+      type: item.tradeType?.typeName || "-",
       status: item.status || "",
       statusID: item.statusID,
       quantity: item.quantity || 0,
@@ -508,10 +527,9 @@ export const getBorderlessTableColumnsViewDetails = ({
     },
   },
   {
-    // NOTE: Type is not server-filterable for Admin's View Details -
-    // GetAdminTransactionSummaryViewDetailsAPI's request has no TypeIds
-    // param (unlike CO/HOC's own equivalent) - plain column, no filter.
-    // title: "Type",
+    // FIXED (API_Changes/2026-09-23_admin_type_nested_and_typeids_filter.md):
+    // was "not server-filterable" - GetAdminTransactionSummaryViewDetailsAPI's
+    // request now accepts TypeIds (see buildApiRequestViewDetails above).
     title: withFilterHeader(
       <TypeColumnTitle
         state={coTransactionsSummarysReportsViewDetailsSearch}
@@ -563,10 +581,9 @@ export const getBorderlessTableColumnsViewDetails = ({
     ),
   },
   {
-    // NOTE: Status is not server-filterable for Admin's View Details -
-    // GetAdminTransactionSummaryViewDetailsAPI's request has no StatusIds
-    // param (unlike CO/HOC's own equivalent) - plain column, no filter.
-    // title: "Status",
+    // FIXED (API_Changes/2026-09-23_admin_type_nested_and_typeids_filter.md):
+    // was "not server-filterable" - GetAdminTransactionSummaryViewDetailsAPI's
+    // request now accepts StatusIds (see buildApiRequestViewDetails above).
     title: withFilterHeader(
       <StatusColumnTitle
         state={coTransactionsSummarysReportsViewDetailsSearch}
