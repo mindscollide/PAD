@@ -38,6 +38,7 @@ export const MyApprovalProvider = ({ children }) => {
     details: [],
     hierarchyDetails: [],
     workFlowStatus: {},
+    sharesTraded: "",
   });
 
   /** Employee "My History" page records */
@@ -435,6 +436,7 @@ export const MyApprovalProvider = ({ children }) => {
       details: [],
       hierarchyDetails: [],
       workFlowStatus: {},
+      sharesTraded: "",
     });
   };
 

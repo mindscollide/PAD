@@ -1,5 +1,5 @@
 import React from "react";
-import { Col, Row, Tag } from "antd";
+import { Col, Row } from "antd";
 import { useGlobalModal } from "../../../../../../../context/GlobalModalContext";
 import { BrokerList, GlobalModal } from "../../../../../../../components";
 import styles from "./ViewDetailOverdueTransaction.module.css";
@@ -360,14 +360,14 @@ const ViewDetailOverdueTransaction = () => {
                               ?.tradeApprovalID
                           )}
                         </label>
-                        {reconcileTransactionViewDetailData?.isEscalated && (
+                        {/* {reconcileTransactionViewDetailData?.isEscalated && (
                           <img
                             draggable={false}
                             src={EscalatedIcon}
                             alt="Escalated"
                             data-testid="escalated-icon"
                           />
-                        )}
+                        )} */}
                       </div>
                     </div>
                   </Col>
@@ -429,12 +429,28 @@ const ViewDetailOverdueTransaction = () => {
                       <label className={styles.viewDetailMainLabels}>
                         Transaction Date
                       </label>
-                      <label className={styles.viewDetailSubLabels}>
-                        {/* Row value is a combined UTC "YYYYMMDD HHmmss" string */}
-                        {convertUTCToCurrentTimeZone(
-                          selectedOverdueTransactionData?.transactionDate
+                      <div
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "space-between",
+                        }}
+                      >
+                        <label className={styles.viewDetailSubLabels}>
+                          {/* Row value is a combined UTC "YYYYMMDD HHmmss" string */}
+                          {convertUTCToCurrentTimeZone(
+                            selectedOverdueTransactionData?.transactionDate
+                          )}
+                        </label>
+                        {reconcileTransactionViewDetailData?.isEscalated && (
+                          <img
+                            draggable={false}
+                            src={EscalatedIcon}
+                            alt="Escalated"
+                            data-testid="escalated-icon"
+                          />
                         )}
-                      </label>
+                      </div>
                     </div>
                   </Col>
                   <Col span={12}>

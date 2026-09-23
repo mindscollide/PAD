@@ -484,14 +484,14 @@ const ViewDetailReconcileTransaction = () => {
                               ?.tradeApprovalID
                           )}
                         </label>
-                        {reconcileTransactionViewDetailData?.isEscalated && (
+                        {/* {reconcileTransactionViewDetailData?.isEscalated && (
                           <img
                             draggable={false}
                             src={EscalatedIcon}
                             alt="Escalated"
                             data-testid="escalated-icon"
                           />
-                        )}
+                        )} */}
                       </div>
                     </div>
                   </Col>
@@ -549,17 +549,36 @@ const ViewDetailReconcileTransaction = () => {
 
                 <Row gutter={[4, 4]} style={{ marginTop: "3px" }}>
                   <Col span={12}>
+                    {/*  */}
                     <div className={styles.backgrounColorOfDetail}>
                       <label className={styles.viewDetailMainLabels}>
                         Transaction Date
                       </label>
-                      <label className={styles.viewDetailSubLabels}>
-                        {/* Row value is a combined UTC "YYYYMMDD HHmmss" string */}
-                        {convertUTCToCurrentTimeZone(
-                          selectedReconcileTransactionData?.transactionDate
+                      <div
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "space-between",
+                        }}
+                      >
+                        <label className={styles.viewDetailSubLabels}>
+                          {/* Row value is a combined UTC "YYYYMMDD HHmmss" string */}
+                          {convertUTCToCurrentTimeZone(
+                            selectedReconcileTransactionData?.transactionDate
+                          )}
+                        </label>
+                        {reconcileTransactionViewDetailData?.isEscalated && (
+                          <img
+                            draggable={false}
+                            src={EscalatedIcon}
+                            alt="Escalated"
+                            data-testid="escalated-icon"
+                          />
                         )}
-                      </label>
+                      </div>
                     </div>
+
+                    {/*  */}
                   </Col>
                   <Col span={12}>
                     <div

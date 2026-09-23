@@ -35,6 +35,9 @@ import { AdminUserWiseComplianceReportFilter } from "./AdminUserWiseComplianceRe
 import { HOCTransactionReportViewDetailsFilter } from "./HOCTransactionReportViewDetailsFilter";
 import { HTATATReportsListFilter } from "./HTATATReportListFilter";
 import { AdminTradesUploadedViaPortfolioFilter } from "./AdminTradesUploadedViaPortfolioFilter";
+import { AdminTATRequestApprovalViewDetailFilter } from "./AdminTATRequestApprovalDetailReportFilter";
+import { AdminTATRequestApprovalReportFilter } from "./AdminTATRequestApprovalReportFilter";
+import { HTATradeApprovalsReports } from "./HTATradeApprovalRequestReportFilter";
 
 // this is used for open specific filter according to page
 export const renderFilterContent = (
@@ -254,7 +257,7 @@ export const renderFilterContent = (
     case "14": // HTA → reports pending approvals
       if (currentPath === "/PAD/hta-reports/hta-trade-approval-requests")
         return (
-          <LineManagerMyTradeApprovalsReports
+          <HTATradeApprovalsReports
             setVisible={setVisible}
             clear={clear}
             setClear={setClear}
@@ -522,14 +525,29 @@ export const renderFilterContent = (
             setMaininstrumentName={setSearchMain}
           />
         );
+      // if (
+      //   // FIXED: was wrong-cased ("admin-TAT-Request-report") - never
+      //   // matched the router's actual lowercase path, so the popover's
+      //   // "more options" (Department Name) never rendered on this page.
+      //   currentPath === "/PAD/admin-reports/admin-tat-request-report"
+      // )
+      //   return (
+      //     <AdminUserWiseComplianceReportFilter
+      //       setVisible={setVisible}
+      //       clear={clear}
+      //       setClear={setClear}
+      //       maininstrumentName={searchMain}
+      //       setMaininstrumentName={setSearchMain}
+      //     />
+      //   );
+
+      // ✅ Details view — check this FIRST, before any unconditional check for the same path
       if (
-        // FIXED: was wrong-cased ("admin-TAT-Request-report") - never
-        // matched the router's actual lowercase path, so the popover's
-        // "more options" (Department Name) never rendered on this page.
-        currentPath === "/PAD/admin-reports/admin-tat-request-report"
+        currentPath === "/PAD/admin-reports/admin-tat-request-report" &&
+        showViewDetailPageInTatOnHta
       )
         return (
-          <AdminUserWiseComplianceReportFilter
+          <AdminTATRequestApprovalViewDetailFilter
             setVisible={setVisible}
             clear={clear}
             setClear={setClear}
@@ -537,6 +555,38 @@ export const renderFilterContent = (
             setMaininstrumentName={setSearchMain}
           />
         );
+
+      // ✅ List view — same path, opposite flag, and FIXED to "admin-reports"
+      if (
+        currentPath === "/PAD/admin-reports/admin-tat-request-report" &&
+        !showViewDetailPageInTatOnHta
+      )
+        return (
+          <AdminTATRequestApprovalReportFilter
+            setVisible={setVisible}
+            clear={clear}
+            setClear={setClear}
+            maininstrumentName={searchMain}
+            setMaininstrumentName={setSearchMain}
+          />
+        );
+
+      // if (
+      //   // FIXED: was wrong-cased ("admin-TAT-Request-report") - never
+      //   // matched the router's actual lowercase path, so the popover's
+      //   // "more options" (Department Name) never rendered on this page.
+      //   currentPath === "/PAD/admin-reports/admin-tat-request-report"
+      // )
+      //   return (
+      //     <AdminUserWiseComplianceReportFilter
+      //       setVisible={setVisible}
+      //       clear={clear}
+      //       setClear={setClear}
+      //       maininstrumentName={searchMain}
+      //       setMaininstrumentName={setSearchMain}
+      //     />
+      //   );
+
       if (
         currentPath ===
         "/PAD/admin-reports/admin-trades-uploaded-via-portfolio-report"

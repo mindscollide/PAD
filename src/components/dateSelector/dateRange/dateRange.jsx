@@ -27,7 +27,10 @@ const DateRangePicker = ({
   const parseToDayjsRange = (val) => {
     if (!Array.isArray(val) || val.length !== 2) return null;
     const [start, end] = val;
-    return [start ? dayjs(start, "YYYY-MM-DD") : null, end ? dayjs(end, "YYYY-MM-DD") : null];
+    return [
+      start ? dayjs(start, "YYYY-MM-DD") : null,
+      end ? dayjs(end, "YYYY-MM-DD") : null,
+    ];
   };
 
   // Convert [dayjs, dayjs] to ["YYYY-MM-DD", "YYYY-MM-DD"]

@@ -135,6 +135,24 @@ const ViewDetailModal = () => {
     (item) => item.instrumentID === instrumentId
   );
 
+  // ADDED: derived values for the Traded layout (Shares Traded)
+  const isTraded = statusData.label === "Traded";
+  // false for both "" and null
+  const hasResubmit = Boolean(
+    viewDetailsModalData?.details?.[0]?.resubmitRequestTrackingID
+  );
+  // sharesTraded lives at the top level of responseResult, not in details[0]
+  const sharesTraded = viewDetailsModalData?.sharesTraded;
+  const showSharesTraded =
+    isTraded && sharesTraded !== "" && sharesTraded != "";
+
+  const approvalTypeLabel =
+    viewDetailsModalData?.details?.[0]?.approvalTypeID === "1"
+      ? "Buy"
+      : viewDetailsModalData?.details?.[0]?.approvalTypeID === "2"
+      ? "Sell"
+      : "";
+
   // To Show View Comments Modal and Closed Declined Modal
   const onClickViewModal = () => {
     setIsViewDetail(false);
@@ -349,47 +367,35 @@ const ViewDetailModal = () => {
                     </Col>
                   </Row>
 
-                  {/* Approval ID / Tracking ID / Previous ID now have the freed-up row width to themselves */}
-                  <Row gutter={[4, 4]} style={{ marginTop: "3px" }}>
-                    {/* status 2 is Resubmitted */}
-                    {statusData.label === "Resubmitted" ? (
-                      <>
-                        <Col span={12}>
+                  {isTraded ? (
+                    // ADDED: Traded layout row 2 -> Approval ID | (Resubmitted ID) | Type
+                    <Row gutter={[4, 4]} style={{ marginTop: "3px" }}>
+                      <Col span={hasResubmit ? 8 : 12}>
+                        <div
+                          className={
+                            styles.backgroundColorOfInstrumentDetailTradednoradius
+                          }
+                        >
+                          <label className={styles.viewDetailMainLabels}>
+                            Approval ID
+                          </label>
+                          <label className={styles.viewDetailSubLabels}>
+                            {dashBetweenApprovalAssets(
+                              viewDetailsModalData?.details?.[0]
+                                ?.tradeApprovalID
+                            )}
+                          </label>
+                        </div>
+                      </Col>
+                      {hasResubmit && (
+                        <Col span={8}>
                           <div
                             className={
-                              // status 1 is Pending
-                              statusData.label === "Pending" ||
-                              // status 4 is Declined
-                              statusData.label === "Declined"
-                                ? styles.backgrounColorOfApprovalDetail
-                                : styles.backgrounColorOfDetail
+                              styles.backgroundColorOfInstrumentDetailTradednoradius
                             }
                           >
                             <label className={styles.viewDetailMainLabels}>
-                              Approval ID
-                            </label>
-                            <label className={styles.viewDetailSubLabels}>
-                              {dashBetweenApprovalAssets(
-                                viewDetailsModalData?.details?.[0]
-                                  ?.tradeApprovalID
-                              )}
-                            </label>
-                          </div>
-                        </Col>
-                        <Col span={12}>
-                          {/* You can render some other related info here */}
-                          <div
-                            className={
-                              // status 1 is Pending
-                              statusData.label === "1" ||
-                              // status 2 is Resubmitted
-                              statusData.label === "2"
-                                ? styles.backgrounColorOfApprovalDetail
-                                : styles.backgrounColorOfDetail
-                            }
-                          >
-                            <label className={styles.viewDetailMainLabels}>
-                              Tracking ID
+                              Resubmitted ID
                             </label>
                             <label className={styles.viewDetailSubLabels}>
                               <u>
@@ -401,43 +407,50 @@ const ViewDetailModal = () => {
                             </label>
                           </div>
                         </Col>
-                      </>
-                    ) : (
-                      <>
-                        <Col
-                          span={
-                            viewDetailsModalData?.details?.[0]
-                              ?.resubmitRequestTrackingID
-                              ? 12
-                              : 24
+                      )}
+                      <Col span={hasResubmit ? 8 : 12}>
+                        <div
+                          className={
+                            styles.backgroundColorOfInstrumentDetailTradednoradius
                           }
                         >
-                          <div
-                            className={
-                              // status 5 is Traded
-                              statusData.label === "Traded"
-                                ? styles.backgroundColorOfInstrumentDetailTradedRight
-                                : // status 1 is Pending
+                          <label className={styles.viewDetailMainLabels}>
+                            Type
+                          </label>
+                          <label className={styles.viewDetailSubLabels}>
+                            {approvalTypeLabel}
+                          </label>
+                        </div>
+                      </Col>
+                    </Row>
+                  ) : (
+                    /* Approval ID / Tracking ID / Previous ID now have the freed-up row width to themselves */
+                    <Row gutter={[4, 4]} style={{ marginTop: "3px" }}>
+                      {/* status 2 is Resubmitted */}
+                      {statusData.label === "Resubmitted" ? (
+                        <>
+                          <Col span={12}>
+                            <div
+                              className={
+                                // status 1 is Pending
                                 statusData.label === "Pending" ||
-                                  // status 6 is Not Traded
-                                  statusData.label === "Not Traded"
-                                ? styles.backgrounColorOfApprovalDetail
-                                : styles.backgrounColorOfDetail
-                            }
-                          >
-                            <label className={styles.viewDetailMainLabels}>
-                              Approval ID
-                            </label>
-                            <label className={styles.viewDetailSubLabels}>
-                              {dashBetweenApprovalAssets(
-                                viewDetailsModalData?.details?.[0]
-                                  ?.tradeApprovalID
-                              )}
-                            </label>
-                          </div>
-                        </Col>
-                        {viewDetailsModalData?.details?.[0]
-                          ?.resubmitRequestTrackingID && (
+                                // status 4 is Declined
+                                statusData.label === "Declined"
+                                  ? styles.backgrounColorOfApprovalDetail
+                                  : styles.backgrounColorOfDetail
+                              }
+                            >
+                              <label className={styles.viewDetailMainLabels}>
+                                Approval ID
+                              </label>
+                              <label className={styles.viewDetailSubLabels}>
+                                {dashBetweenApprovalAssets(
+                                  viewDetailsModalData?.details?.[0]
+                                    ?.tradeApprovalID
+                                )}
+                              </label>
+                            </div>
+                          </Col>
                           <Col span={12}>
                             {/* You can render some other related info here */}
                             <div
@@ -451,7 +464,7 @@ const ViewDetailModal = () => {
                               }
                             >
                               <label className={styles.viewDetailMainLabels}>
-                                Previous ID
+                                Tracking ID
                               </label>
                               <label className={styles.viewDetailSubLabels}>
                                 <u>
@@ -463,54 +476,142 @@ const ViewDetailModal = () => {
                               </label>
                             </div>
                           </Col>
-                        )}
-                      </>
-                    )}
-                  </Row>
+                        </>
+                      ) : (
+                        <>
+                          <Col
+                            span={
+                              viewDetailsModalData?.details?.[0]
+                                ?.resubmitRequestTrackingID
+                                ? 12
+                                : 24
+                            }
+                          >
+                            <div
+                              className={
+                                // status 1 is Pending
+                                statusData.label === "Pending" ||
+                                // status 6 is Not Traded
+                                statusData.label === "Not Traded"
+                                  ? styles.backgrounColorOfApprovalDetail
+                                  : styles.backgrounColorOfDetail
+                              }
+                            >
+                              <label className={styles.viewDetailMainLabels}>
+                                Approval ID
+                              </label>
+                              <label className={styles.viewDetailSubLabels}>
+                                {dashBetweenApprovalAssets(
+                                  viewDetailsModalData?.details?.[0]
+                                    ?.tradeApprovalID
+                                )}
+                              </label>
+                            </div>
+                          </Col>
+                          {viewDetailsModalData?.details?.[0]
+                            ?.resubmitRequestTrackingID && (
+                            <Col span={12}>
+                              {/* You can render some other related info here */}
+                              <div
+                                className={
+                                  // status 1 is Pending
+                                  statusData.label === "1" ||
+                                  // status 2 is Resubmitted
+                                  statusData.label === "2"
+                                    ? styles.backgrounColorOfApprovalDetail
+                                    : styles.backgrounColorOfDetail
+                                }
+                              >
+                                <label className={styles.viewDetailMainLabels}>
+                                  Previous ID
+                                </label>
+                                <label className={styles.viewDetailSubLabels}>
+                                  <u>
+                                    {dashBetweenApprovalAssets(
+                                      viewDetailsModalData?.details?.[0]
+                                        ?.resubmitRequestTrackingID
+                                    )}
+                                  </u>
+                                </label>
+                              </div>
+                            </Col>
+                          )}
+                        </>
+                      )}
+                    </Row>
+                  )}
                 </>
               )}
 
               {/* Show Other Scenario's SUb Heading and Field Sceanrio's */}
-              <Row gutter={[4, 4]} style={{ marginTop: "3px" }}>
-                <Col span={12}>
-                  <div
-                    className={
-                      statusData.label === "Traded"
-                        ? styles.backgroundColorOfInstrumentDetailTradednoradius
-                        : styles.backgrounColorOfDetail
-                    }
-                  >
-                    <label className={styles.viewDetailMainLabels}>Type</label>
-                    <label className={styles.viewDetailSubLabels}>
-                      {/* {selectedViewDetail?.type} */}
+              {isTraded ? (
+                // ADDED: Traded layout row 3 -> Approved Quantity | Shares Traded
+                <Row gutter={[4, 4]} style={{ marginTop: "3px" }}>
+                  <Col span={showSharesTraded ? 12 : 24}>
+                    <div
+                      className={
+                        styles.backgroundColorOfInstrumentDetailTradednoradius
+                      }
+                    >
+                      <label className={styles.viewDetailMainLabels}>
+                        Approved Quantity
+                      </label>
+                      <label className={styles.viewDetailSubLabels}>
+                        {formatNumberWithCommas(
+                          viewDetailsModalData?.details?.[0]?.quantity
+                        )}
+                      </label>
+                    </div>
+                  </Col>
+                  {showSharesTraded && (
+                    <Col span={12}>
+                      <div
+                        className={
+                          styles.backgroundColorOfInstrumentDetailTradednoradius
+                        }
+                      >
+                        <label className={styles.viewDetailMainLabels}>
+                          Shares Traded
+                        </label>
+                        <label className={styles.viewDetailSubLabels}>
+                          {formatNumberWithCommas(sharesTraded)}
+                        </label>
+                      </div>
+                    </Col>
+                  )}
+                </Row>
+              ) : (
+                <Row gutter={[4, 4]} style={{ marginTop: "3px" }}>
+                  <Col span={12}>
+                    <div className={styles.backgrounColorOfDetail}>
+                      <label className={styles.viewDetailMainLabels}>
+                        Type
+                      </label>
+                      <label className={styles.viewDetailSubLabels}>
+                        {/* {selectedViewDetail?.type} */}
 
-                      {viewDetailsModalData?.details?.[0]?.approvalTypeID ===
-                        "1" && <span>Buy</span>}
-                      {viewDetailsModalData?.details?.[0]?.approvalTypeID ===
-                        "2" && <span>Sell</span>}
-                    </label>
-                  </div>
-                </Col>
-                <Col span={12}>
-                  <div
-                    className={
-                      statusData.label === "Traded"
-                        ? styles.backgroundColorOfInstrumentDetailTradednoradius
-                        : styles.backgrounColorOfDetail
-                    }
-                  >
-                    <label className={styles.viewDetailMainLabels}>
-                      Quantity
-                    </label>
-                    <label className={styles.viewDetailSubLabels}>
-                      {/* {selectedViewDetail?.quantity} */}
-                      {formatNumberWithCommas(
-                        viewDetailsModalData?.details?.[0]?.quantity
-                      )}
-                    </label>
-                  </div>
-                </Col>
-              </Row>
+                        {viewDetailsModalData?.details?.[0]?.approvalTypeID ===
+                          "1" && <span>Buy</span>}
+                        {viewDetailsModalData?.details?.[0]?.approvalTypeID ===
+                          "2" && <span>Sell</span>}
+                      </label>
+                    </div>
+                  </Col>
+                  <Col span={12}>
+                    <div className={styles.backgrounColorOfDetail}>
+                      <label className={styles.viewDetailMainLabels}>
+                        Quantity
+                      </label>
+                      <label className={styles.viewDetailSubLabels}>
+                        {/* {selectedViewDetail?.quantity} */}
+                        {formatNumberWithCommas(
+                          viewDetailsModalData?.details?.[0]?.quantity
+                        )}
+                      </label>
+                    </div>
+                  </Col>
+                </Row>
+              )}
 
               <Row gutter={[4, 4]} style={{ marginTop: "3px" }}>
                 <Col span={12}>
@@ -530,9 +631,7 @@ const ViewDetailModal = () => {
                         Request Date
                       </label>
                       <label className={styles.viewDetailSubLabels}>
-                        {formatApiDateTime(
-                          selectedViewDetail?.requestDateTime,
-                        )}
+                        {formatApiDateTime(selectedViewDetail?.requestDateTime)}
                       </label>
                     </div>
                     {viewDetailsModalData?.isEscalated && (

@@ -31,6 +31,8 @@ import CustomButton from "../../../../components/buttons/button";
 import { useGlobalModal } from "../../../../context/GlobalModalContext";
 import ViewDetails from "./viewDetails";
 import { DateRangePicker } from "../../../../components";
+import { formatToYYYYMMDD } from "../../../../common/funtions/rejex";
+import { useDashboardContext } from "../../../../context/dashboardContaxt";
 
 /**
  * Admin TAT Request Approvals report - per-employee summary list, per
@@ -66,6 +68,8 @@ const AdminTATRequestApprovals = () => {
     setShowViewDetailPageInTatOnHta,
     setShowSelectedTatDataOnViewDetailHTA,
   } = useGlobalModal();
+
+  const { assetTypeListingData } = useDashboardContext();
 
   // -------------------- Local State --------------------
   const [sortedInfo, setSortedInfo] = useState({});
@@ -128,16 +132,31 @@ const AdminTATRequestApprovals = () => {
   useEffect(() => {
     if (hasFetched.current) return;
     hasFetched.current = true;
-    const requestData = buildApiRequest(adminTATApprovalRequestReportSearch);
-    fetchApiCall(requestData, true, true);
-  }, []);
 
-  // Reset on Unmount
-  useEffect(() => {
+    const endDate = new Date();
+    const startDate = new Date();
+    startDate.setMonth(startDate.getMonth() - 6);
+
+    setDateRange({
+      StartDate: formatToYYYYMMDD(startDate),
+      EndDate: formatToYYYYMMDD(endDate),
+    });
+
+    const updatedState = {
+      ...adminTATApprovalRequestReportSearch,
+      startDate,
+      endDate,
+    };
+    setAdminTATApprovalRequestReportSearch(updatedState);
+
+    const requestData = buildApiRequest(updatedState, assetTypeListingData);
+    fetchApiCall(requestData, true, true);
+
     return () => {
       resetAdminTATApprovalRequestReportSearch();
       resetAdminTATRequestApprovalsReportData();
       setShowViewDetailPageInTatOnHta(false);
+      hasFetched.current = false; // allow a genuine remount to fully re-init
     };
   }, []);
 
@@ -160,7 +179,9 @@ const AdminTATRequestApprovals = () => {
 
       try {
         setLoadingMore(true);
-        const requestData = buildApiRequest(adminTATApprovalRequestReportSearch);
+        const requestData = buildApiRequest(
+          adminTATApprovalRequestReportSearch
+        );
         await fetchApiCall(requestData, false, false);
       } catch (err) {
         console.error("Error loading more:", err);
@@ -227,27 +248,26 @@ const AdminTATRequestApprovals = () => {
 
   /** 🔹 Build Active Filters */
   const activeFilters = (() => {
-    const { employeeName, departmentName, startDate, endDate } =
+    const { employeeName, departmentName } =
       adminTATApprovalRequestReportSearch || {};
 
     return [
       employeeName && {
         key: "employeeName",
         label: "Employee",
-        value: employeeName.length > 13 ? employeeName.slice(0, 13) + "..." : employeeName,
+        value:
+          employeeName.length > 13
+            ? employeeName.slice(0, 13) + "..."
+            : employeeName,
       },
       departmentName && {
         key: "departmentName",
         label: "Department",
         value:
-          departmentName.length > 13 ? departmentName.slice(0, 13) + "..." : departmentName,
+          departmentName.length > 13
+            ? departmentName.slice(0, 13) + "..."
+            : departmentName,
       },
-      startDate &&
-        endDate && {
-          key: "dateRange",
-          label: "Date",
-          value: `${startDate} → ${endDate}`,
-        },
     ].filter(Boolean);
   })();
 
@@ -258,6 +278,10 @@ const AdminTATRequestApprovals = () => {
   // handleClearDates exactly (same shape, same comments).
   const handleDateChange = (dates) => {
     if (dates && dates.length === 2) {
+      setDateRange({
+        StartDate: dates?.[0] || null,
+        EndDate: dates?.[1] || null,
+      });
       setAdminTATApprovalRequestReportSearch((prev) => ({
         ...prev,
         startDate: dates[0],
@@ -271,20 +295,24 @@ const AdminTATRequestApprovals = () => {
       // "dateRange" active-filter tag below (reads straight off
       // adminTATApprovalRequestReportSearch, set above), and still drives
       // the API request the same way.
-      setDateRange({ StartDate: null, EndDate: null });
+      // setDateRange({ StartDate: null, EndDate: null });
     }
   };
 
   const handleClearDates = () => {
+    const endDate = new Date();
+    const startDate = new Date();
+    startDate.setMonth(startDate.getMonth() - 6);
+
     setDateRange({
-      StartDate: null,
-      EndDate: null,
+      StartDate: formatToYYYYMMDD(startDate),
+      EndDate: formatToYYYYMMDD(endDate),
     });
 
     setAdminTATApprovalRequestReportSearch((prev) => ({
       ...prev,
-      startDate: null,
-      endDate: null,
+      startDate,
+      endDate,
       pageNumber: 0,
       filterTrigger: true,
     }));
@@ -410,7 +438,9 @@ const AdminTATRequestApprovals = () => {
       <PageLayout
         background="white"
         style={{ marginTop: "3px" }}
-        className={activeFilters.length > 0 ? "changeHeightreports" : "repotsHeight"}
+        className={
+          activeFilters.length > 0 ? "changeHeightreports" : "repotsHeight"
+        }
       >
         <div className="px-4 md:px-6 lg:px-8 ">
           <BorderlessTable

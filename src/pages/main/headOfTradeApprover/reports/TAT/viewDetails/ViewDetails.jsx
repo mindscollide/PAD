@@ -25,7 +25,6 @@ import { useTableScrollBottom } from "../../../../../../common/funtions/scroll";
 import { approvalStatusMap } from "../../../../../../components/tables/borderlessTable/utill";
 import { BorderlessTable, PageLayout } from "../../../../../../components";
 import { getSafeAssetTypeData } from "../../../../../../common/funtions/assetTypesList";
-import { useSidebarContext } from "../../../../../../context/sidebarContaxt";
 
 const ViewDetails = () => {
   const navigate = useNavigate();
@@ -61,6 +60,9 @@ const ViewDetails = () => {
   const [loadingMore, setLoadingMore] = useState(false);
   const [open, setOpen] = useState(false);
 
+  const handleBack = () => {
+    setShowViewDetailPageInTatOnHta(false);
+  };
   // -------------------- Helpers --------------------
 
   /**
@@ -134,7 +136,8 @@ const ViewDetails = () => {
     hasFetched.current = true;
     const requestData = buildApiRequest(
       htaTATViewDetailsSearch,
-      showSelectedTatDataOnViewDetailHTA
+      showSelectedTatDataOnViewDetailHTA,
+      assetTypeListingData // ← added, matches reference page's initial-fetch call
     );
     fetchApiCall(requestData, true, true);
   }, []);
@@ -151,7 +154,6 @@ const ViewDetails = () => {
   // 🔹 call api on search
   useEffect(() => {
     if (htaTATViewDetailsSearch?.filterTrigger) {
-      console.log("htaTATViewDetailsSearch", htaTATViewDetailsSearch);
       const requestData = buildApiRequest(
         htaTATViewDetailsSearch,
         showSelectedTatDataOnViewDetailHTA,
@@ -174,7 +176,8 @@ const ViewDetails = () => {
         setLoadingMore(true);
         const requestData = buildApiRequest(
           htaTATViewDetailsSearch,
-          showSelectedTatDataOnViewDetailHTA
+          showSelectedTatDataOnViewDetailHTA,
+          assetTypeListingData // ← was missing, same as the reference page
         );
         await fetchApiCall(requestData, false, false);
       } catch (err) {
@@ -319,7 +322,7 @@ const ViewDetails = () => {
                   <span
                     onClick={() => {
                       navigate("/PAD/hta-reports");
-                      setShowViewDetailPageInTatOnHta(false);
+                      handleBack();
                     }}
                     className={style.breadcrumbLink}
                   >
@@ -329,10 +332,7 @@ const ViewDetails = () => {
               },
               {
                 title: (
-                  <span
-                    onClick={() => setShowViewDetailPageInTatOnHta(false)}
-                    className={style.breadcrumbLink}
-                  >
+                  <span onClick={handleBack} className={style.breadcrumbLink}>
                     TAT Request Approvals
                   </span>
                 ),
@@ -411,7 +411,7 @@ const ViewDetails = () => {
       <Row className={style.breadcrumbRowBelowData}>
         <Col span={6}>
           <p className={style.mainTitleTextClass}>
-            Employee ID:{" "}
+            Employee ID:
             <span className={style.subTitleTextClass}>
               {showSelectedTatDataOnViewDetailHTA.employeeID}
             </span>
@@ -419,15 +419,15 @@ const ViewDetails = () => {
         </Col>
         <Col span={6}>
           <p className={style.mainTitleTextClass}>
-            Employee Name:{" "}
+            Employee Name:
             <span className={style.subTitleTextClass}>
               {showSelectedTatDataOnViewDetailHTA.employeeName}
             </span>
           </p>
-        </Col>{" "}
+        </Col>
         <Col span={6}>
           <p className={style.mainTitleTextClass}>
-            Department:{" "}
+            Department:
             <span className={style.subTitleTextClass}>
               {showSelectedTatDataOnViewDetailHTA.departmentName}
             </span>
@@ -435,7 +435,7 @@ const ViewDetails = () => {
         </Col>
         <Col span={6}>
           <p className={style.mainTitleTextClass}>
-            Date Range:{" "}
+            Date Range:
             <span className={style.subTitleTextClass}>
               {showSelectedTatDataOnViewDetailHTA.filterStartDate} -{" "}
               {showSelectedTatDataOnViewDetailHTA.filterEndDate}

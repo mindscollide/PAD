@@ -1,4 +1,10 @@
-import React, { useEffect, useState, useRef, useCallback } from "react";
+import React, {
+  useEffect,
+  useState,
+  useRef,
+  useCallback,
+  useMemo,
+} from "react";
 import { Breadcrumb, Col, Row } from "antd";
 import Excel from "../../../../assets/img/xls.png";
 import { UpOutlined, DownOutlined } from "@ant-design/icons";
@@ -27,6 +33,9 @@ import { useNavigate } from "react-router-dom";
 import { useSearchBarContext } from "../../../../context/SearchBarContaxt";
 import { useTableScrollBottom } from "../../../../common/funtions/scroll";
 import CustomButton from "../../../../components/buttons/button";
+import { formatToYYYYMMDD } from "../../../../common/funtions/rejex";
+import { useDashboardContext } from "../../../../context/dashboardContaxt";
+import { DateRangePicker } from "../../../../components";
 
 const TradeApprovalRequestReport = () => {
   const navigate = useNavigate();
@@ -49,10 +58,23 @@ const TradeApprovalRequestReport = () => {
     resetAdminTradeApprovalRequestReportSearch,
   } = useSearchBarContext();
 
+  const { assetTypeListingData } = useDashboardContext();
+
   // -------------------- Local State --------------------
   const [sortedInfo, setSortedInfo] = useState({});
   const [loadingMore, setLoadingMore] = useState(false);
   const [open, setOpen] = useState(false);
+
+  const endDate = new Date();
+  const startDate = new Date();
+  startDate.setMonth(startDate.getMonth() - 6);
+
+  const [dateRange, setDateRange] = useState({
+    StartDate: formatToYYYYMMDD(startDate),
+    EndDate: formatToYYYYMMDD(endDate),
+  });
+
+  const [pickerVersion, setPickerVersion] = useState(0);
   // -------------------- Helpers --------------------
 
   /**
@@ -102,23 +124,49 @@ const TradeApprovalRequestReport = () => {
   useEffect(() => {
     if (hasFetched.current) return;
     hasFetched.current = true;
-    const requestData = buildApiRequest(adminTradeApprovalRequestReportSearch);
-    fetchApiCall(requestData, true, true);
-  }, []);
 
-  // Reset on Unmount
-  useEffect(() => {
+    const endDate = new Date();
+    const startDate = new Date();
+    startDate.setMonth(startDate.getMonth() - 6);
+
+    setDateRange({
+      StartDate: formatToYYYYMMDD(startDate),
+      EndDate: formatToYYYYMMDD(endDate),
+    });
+
+    const updatedState = {
+      ...adminTradeApprovalRequestReportSearch,
+      startDate,
+      endDate,
+    };
+
+    setAdminTradeApprovalRequestReportSearch(updatedState);
+    const requestData = buildApiRequest(updatedState);
+    fetchApiCall(requestData, true, true);
+
     return () => {
       // Reset search state for fresh load
       resetAdminTradeApprovalRequestReportSearch();
       resetAdminTradeApprovalRequestReportData();
+      hasFetched.current = false;
     };
   }, []);
+
+  // // Reset on Unmount
+  // useEffect(() => {
+  //   return () => {
+  //     // Reset search state for fresh load
+  //     resetAdminTradeApprovalRequestReportSearch();
+  //     resetAdminTradeApprovalRequestReportData();
+  //   };
+  // }, []);
 
   // 🔹 call api on search
   useEffect(() => {
     if (adminTradeApprovalRequestReportSearch?.filterTrigger) {
-      const requestData = buildApiRequest(adminTradeApprovalRequestReportSearch);
+      const requestData = buildApiRequest(
+        adminTradeApprovalRequestReportSearch
+      );
       fetchApiCall(requestData, true, true);
     }
   }, [adminTradeApprovalRequestReportSearch?.filterTrigger]);
@@ -134,7 +182,9 @@ const TradeApprovalRequestReport = () => {
 
       try {
         setLoadingMore(true);
-        const requestData = buildApiRequest(adminTradeApprovalRequestReportSearch);
+        const requestData = buildApiRequest(
+          adminTradeApprovalRequestReportSearch
+        );
         await fetchApiCall(requestData, false, false);
       } catch (err) {
         console.error("Error loading more:", err);
@@ -147,7 +197,10 @@ const TradeApprovalRequestReport = () => {
   );
 
   // -------------------- Table Columns --------------------
-  const columns = getBorderlessTableColumns({ sortedInfo });
+  const columns = getBorderlessTableColumns({
+    sortedInfo,
+    setAdminTradeApprovalRequestReportSearch,
+  });
 
   /** 🔹 Handle removing individual filter */
   const handleRemoveFilter = (key) => {
@@ -217,6 +270,58 @@ const TradeApprovalRequestReport = () => {
     });
   };
 
+  // FIXED: stable callback identity, and now also advances pickerVersion
+  // on every real interaction so the memoized DateRangePicker is
+  // guaranteed a re-render even when the resulting dates match before.
+  const handleDateChange = useCallback(
+    (dates) => {
+      if (dates && dates.length === 2) {
+        setDateRange({
+          StartDate: dates?.[0] || null,
+          EndDate: dates?.[1] || null,
+        });
+        setPickerVersion((v) => v + 1);
+
+        setAdminTradeApprovalRequestReportSearch((prev) => ({
+          ...prev,
+          startDate: dates[0],
+          endDate: dates[1],
+          pageNumber: 0,
+          filterTrigger: true,
+        }));
+      }
+    },
+    [setAdminTradeApprovalRequestReportSearch]
+  );
+
+  const handleClearDates = useCallback(() => {
+    const endDate = new Date();
+    const startDate = new Date();
+    startDate.setMonth(startDate.getMonth() - 6);
+
+    setDateRange({
+      StartDate: formatToYYYYMMDD(startDate),
+      EndDate: formatToYYYYMMDD(endDate),
+    });
+    setPickerVersion((v) => v + 1);
+
+    setAdminTradeApprovalRequestReportSearch((prev) => ({
+      ...prev,
+      startDate,
+      endDate,
+      pageNumber: 0,
+      filterTrigger: true,
+    }));
+  }, [setAdminTradeApprovalRequestReportSearch]);
+
+  // FIXED: dependency is now pickerVersion, not the date strings
+  // themselves — reference changes exactly when a real interaction
+  // happened, regardless of whether the resulting values repeat.
+  const rangeValue = useMemo(
+    () => [dateRange.StartDate, dateRange.EndDate],
+    [pickerVersion]
+  );
+  console.log("cehck");
   // -------------------- Render --------------------
   return (
     <>
@@ -249,6 +354,13 @@ const TradeApprovalRequestReport = () => {
 
         <Col>
           <div className={style.headerActionsRow}>
+            <DateRangePicker
+              size="medium"
+              className={style.dateRangePickerClass}
+              value={rangeValue}
+              onChange={handleDateChange}
+              onClear={handleClearDates}
+            />
             <CustomButton
               text={
                 <span className={style.exportButtonText}>
@@ -327,7 +439,7 @@ const TradeApprovalRequestReport = () => {
             scroll={
               adminTradeApprovalRequestReportData?.records?.length
                 ? {
-                    x: "max-content",
+                    x: 1300,
                     y: activeFilters.length > 0 ? 450 : 500,
                   }
                 : undefined

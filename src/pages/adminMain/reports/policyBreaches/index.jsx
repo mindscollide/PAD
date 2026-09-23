@@ -30,7 +30,8 @@ import { useSearchBarContext } from "../../../../context/SearchBarContaxt";
 import { useTableScrollBottom } from "../../../../common/funtions/scroll";
 import CustomButton from "../../../../components/buttons/button";
 import PolicyBreachDetailsModal from "./PolicyBreachDetailsModal";
-
+import { useDashboardContext } from "../../../../context/dashboardContaxt";
+import { getSafeAssetTypeData } from "../../../../common/funtions/assetTypesList";
 const AdminPolicyBreachesReport = () => {
   const navigate = useNavigate();
   const hasFetched = useRef(false);
@@ -68,7 +69,8 @@ const AdminPolicyBreachesReport = () => {
     useState(null);
   const [policyDownloading, setPolicyDownloading] = useState(false);
   // -------------------- Helpers --------------------
-
+  const { assetTypeListingData, setAssetTypeListingData } =
+    useDashboardContext();
   /**
    * Fetches the Policy Breaches list from GetAdminPolicyBreachesAPI.
    * @param {object} requestData - API request payload
@@ -86,6 +88,7 @@ const AdminPolicyBreachesReport = () => {
         requestdata: requestData,
         navigate,
       });
+      getSafeAssetTypeData(assetTypeListingData, setAssetTypeListingData);
 
       const mapped = mapListData(res);
       if (!Array.isArray(mapped)) return;
@@ -159,9 +162,15 @@ const AdminPolicyBreachesReport = () => {
   // -------------------- Effects --------------------
 
   // 🔹 Initial Fetch
+  // 🔹 Initial Fetch
   useEffect(() => {
     if (hasFetched.current) return;
     hasFetched.current = true;
+
+    // Restore asset-type data after a page reload (same as HTA screen),
+    // so the Type filter has its options
+    getSafeAssetTypeData(assetTypeListingData, setAssetTypeListingData);
+
     const requestData = buildApiRequest(adminPolicyBreachesReportSearch);
     fetchApiCall(requestData, true, true);
   }, []);
@@ -182,7 +191,21 @@ const AdminPolicyBreachesReport = () => {
       fetchApiCall(requestData, true, true);
     }
   }, [adminPolicyBreachesReportSearch?.filterTrigger]);
+  const prevType = useRef(adminPolicyBreachesReportSearch?.type);
 
+  // 🔹 Type filter changed -> trigger a fresh fetch
+  useEffect(() => {
+    const prev = JSON.stringify(prevType.current ?? []);
+    const curr = JSON.stringify(adminPolicyBreachesReportSearch?.type ?? []);
+    if (prev === curr) return;
+
+    prevType.current = adminPolicyBreachesReportSearch?.type;
+    setAdminPolicyBreachesReportSearch((p) => ({
+      ...p,
+      pageNumber: 0,
+      filterTrigger: true,
+    }));
+  }, [adminPolicyBreachesReportSearch?.type]);
   // 🔹 Infinite Scroll (lazy loading)
   useTableScrollBottom(
     async () => {
@@ -424,7 +447,7 @@ const AdminPolicyBreachesReport = () => {
             scroll={
               adminPolicyBreachesReportData?.records?.length
                 ? {
-                    x: "max-content",
+                    x: 1300,
                     y: activeFilters.length > 0 ? 450 : 500,
                   }
                 : undefined

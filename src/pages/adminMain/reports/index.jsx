@@ -113,50 +113,50 @@ const AdminReportsIndex = () => {
   /** Admin User Activity Report */
   const adminUserActivityReports = useMemo(
     () => adminReportsDashboardData?.userActivityCount?.data || [],
-    [adminReportsDashboardData?.userActivityCount?.data],
+    [adminReportsDashboardData?.userActivityCount?.data]
   );
 
   /** Admin User Wise Compliance Report */
   const adminUserWiseComplianceReport = useMemo(
     () => adminReportsDashboardData?.userWiseComplianceCount?.data || [],
-    [adminReportsDashboardData?.userWiseComplianceCount?.data],
+    [adminReportsDashboardData?.userWiseComplianceCount?.data]
   );
 
   /** Admin Policy Breaches Report */
   const adminPolicyBreachesReport = useMemo(
     () => adminReportsDashboardData?.policyBreachesCount?.data || [],
-    [adminReportsDashboardData?.policyBreachesCount?.data],
+    [adminReportsDashboardData?.policyBreachesCount?.data]
   );
 
   /** Admin Trade Approval Report*/
   const adminTradeApprovalReport = useMemo(
     () => adminReportsDashboardData?.tradeApprovalRequestCount?.data || [],
-    [adminReportsDashboardData?.tradeApprovalRequestCount?.data],
+    [adminReportsDashboardData?.tradeApprovalRequestCount?.data]
   );
 
   /** Admin User-Wise Transaction Report*/
   const adminUserWiseTransactionReport = useMemo(
     () => adminReportsDashboardData?.userWiseTransactionCount?.data || [],
-    [adminReportsDashboardData?.userWiseTransactionCount?.data],
+    [adminReportsDashboardData?.userWiseTransactionCount?.data]
   );
 
   /** Admin Date-Wise Transaction Report*/
   const adminDateWiseTransactionReport = useMemo(
     () => adminReportsDashboardData?.userDateTransactionCount?.data || [],
-    [adminReportsDashboardData?.userDateTransactionCount?.data],
+    [adminReportsDashboardData?.userDateTransactionCount?.data]
   );
 
   /** Compliance Standing Transaction Report Report*/
   const complianceStandingTransactionReport = useMemo(
     () =>
       adminReportsDashboardData?.complianceStandingTransactionCount?.data || [],
-    [adminReportsDashboardData?.complianceStandingTransactionCount?.data],
+    [adminReportsDashboardData?.complianceStandingTransactionCount?.data]
   );
 
   /** TAT Request Approval Report*/
   const adminTatRequestApprovalReport = useMemo(
     () => adminReportsDashboardData?.tatRequestApprovalCount?.data || [],
-    [adminReportsDashboardData?.tatRequestApprovalCount?.data],
+    [adminReportsDashboardData?.tatRequestApprovalCount?.data]
   );
 
   /* ---------------------------------------------------------
@@ -279,7 +279,7 @@ const AdminReportsIndex = () => {
               buttonId="Transactions-view-btn"
               buttonClassName="big-white-card-button"
               userRole="Admin"
-              route="admin-TAT-Request-report"
+              route="admin-tat-request-report"
             />
           </Col>
           {/* ---- Trades Uploaded via Portfolio ---- */}

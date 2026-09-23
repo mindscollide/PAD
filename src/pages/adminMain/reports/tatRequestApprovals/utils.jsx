@@ -71,13 +71,28 @@ export const mapListData = (res = []) => {
 const getSortIcon = (columnKey, sortedInfo) => {
   if (sortedInfo?.columnKey === columnKey) {
     return sortedInfo.order === "ascend" ? (
-      <img draggable={false} src={ArrowDown} alt="Asc" className="custom-sort-icon" />
+      <img
+        draggable={false}
+        src={ArrowDown}
+        alt="Asc"
+        className="custom-sort-icon"
+      />
     ) : (
-      <img draggable={false} src={ArrowUP} alt="Desc" className="custom-sort-icon" />
+      <img
+        draggable={false}
+        src={ArrowUP}
+        alt="Desc"
+        className="custom-sort-icon"
+      />
     );
   }
   return (
-    <img draggable={false} src={DefaultColumArrow} alt="Default" className="custom-sort-icon" />
+    <img
+      draggable={false}
+      src={DefaultColumArrow}
+      alt="Default"
+      className="custom-sort-icon"
+    />
   );
 };
 
@@ -87,27 +102,31 @@ const withSortIcon = (label, columnKey, sortedInfo, align = "left") => (
     className={style["table-header-wrapper"]}
     style={{
       justifyContent:
-        align === "center" ? "center" : align === "right" ? "flex-end" : "flex-start",
+        align === "center"
+          ? "center"
+          : align === "right"
+          ? "flex-end"
+          : "flex-start",
       textAlign: align,
     }}
   >
     <span className={style["table-header-text"]}>{label}</span>
-    <span className={style["table-header-icon"]}>{getSortIcon(columnKey, sortedInfo)}</span>
+    <span className={style["table-header-icon"]}>
+      {getSortIcon(columnKey, sortedInfo)}
+    </span>
   </div>
 );
 
-const numericSorter = (field) => (a, b) => Number(a[field] || 0) - Number(b[field] || 0);
+const numericSorter = (field) => (a, b) =>
+  Number(a[field] || 0) - Number(b[field] || 0);
 
-export const getBorderlessTableColumns = ({
-  sortedInfo,
-  onViewDetails,
-}) => [
+export const getBorderlessTableColumns = ({ sortedInfo, onViewDetails }) => [
   {
-    title: withSortIcon("Employee ID", "employeeID", sortedInfo),
+    title: withSortIcon("Employee ID", "employeeID", sortedInfo, "center"),
     dataIndex: "employeeID",
     key: "employeeID",
-    width: "140px",
-    ellipsis: true,
+    width: 100,
+    align: "center",
     sorter: numericSorter("employeeID"),
     sortDirections: ["ascend", "descend"],
     sortOrder: sortedInfo?.columnKey === "employeeID" ? sortedInfo.order : null,
@@ -119,11 +138,12 @@ export const getBorderlessTableColumns = ({
     title: withSortIcon("Employee Name", "employeeName", sortedInfo),
     dataIndex: "employeeName",
     key: "employeeName",
-    ellipsis: true,
-    width: "180px",
-    sorter: (a, b) => (a.employeeName || "").localeCompare(b.employeeName || ""),
+    width: 180,
+    sorter: (a, b) =>
+      (a.employeeName || "").localeCompare(b.employeeName || ""),
     sortDirections: ["ascend", "descend"],
-    sortOrder: sortedInfo?.columnKey === "employeeName" ? sortedInfo.order : null,
+    sortOrder:
+      sortedInfo?.columnKey === "employeeName" ? sortedInfo.order : null,
     showSorterTooltip: false,
     sortIcon: () => null,
     render: (text) => <span className="font-medium">{text}</span>,
@@ -132,11 +152,12 @@ export const getBorderlessTableColumns = ({
     title: withSortIcon("Department", "departmentName", sortedInfo),
     dataIndex: "departmentName",
     key: "departmentName",
-    ellipsis: true,
-    width: "180px",
-    sorter: (a, b) => (a.departmentName || "").localeCompare(b.departmentName || ""),
+    width: 180,
+    sorter: (a, b) =>
+      (a.departmentName || "").localeCompare(b.departmentName || ""),
     sortDirections: ["ascend", "descend"],
-    sortOrder: sortedInfo?.columnKey === "departmentName" ? sortedInfo.order : null,
+    sortOrder:
+      sortedInfo?.columnKey === "departmentName" ? sortedInfo.order : null,
     showSorterTooltip: false,
     sortIcon: () => null,
     render: (text) => <span className="font-medium">{text}</span>,
@@ -146,11 +167,11 @@ export const getBorderlessTableColumns = ({
     dataIndex: "requestCount",
     key: "requestCount",
     align: "center",
-    width: "160px",
-    ellipsis: true,
+    width: 160,
     sorter: numericSorter("requestCount"),
     sortDirections: ["ascend", "descend"],
-    sortOrder: sortedInfo?.columnKey === "requestCount" ? sortedInfo.order : null,
+    sortOrder:
+      sortedInfo?.columnKey === "requestCount" ? sortedInfo.order : null,
     showSorterTooltip: false,
     sortIcon: () => null,
     render: (v) => <span className="font-medium">{v.toLocaleString()}</span>,
@@ -163,8 +184,7 @@ export const getBorderlessTableColumns = ({
     title: "Avg. Turnaround Time",
     key: "avgTat",
     align: "center",
-    width: "160px",
-    ellipsis: true,
+    width: 160,
     render: (_, record) => (
       // FIXED: SRS format is "04 H, 32 M" (zero-padded, space before the
       // unit) - was rendering unpadded with no space (e.g. "4H, 5M").

@@ -17,7 +17,7 @@ const INITIAL_LOCAL_STATE = {
   filterTrigger: false,
 };
 
-export const AdminUserWiseComplianceReportFilter = ({
+export const AdminTATRequestApprovalReportFilter = ({
   setVisible,
   maininstrumentName,
   setMaininstrumentName,

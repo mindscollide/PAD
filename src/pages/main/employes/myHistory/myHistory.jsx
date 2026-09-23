@@ -695,10 +695,10 @@ const MyHistory = () => {
 
               {open && (
                 <div className={style.dropdownExport}>
-                  <div className={style.dropdownItem}>
+                  {/* <div className={style.dropdownItem}>
                     <img src={PDF} alt="PDF" draggable={false} />
                     <span>Export PDF</span>
-                  </div>
+                  </div> */}
                   <div
                     className={style.dropdownItem}
                     onClick={downloadMyHistoryReportInExcelFormat}

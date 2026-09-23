@@ -334,7 +334,15 @@ const renderStatusTag = (status, approvalStatusMap) => {
 const numberSorter = (key) => (a, b) =>
   Number(String(a[key] || 0).replace(/[^\d]/g, "")) -
   Number(String(b[key] || 0).replace(/[^\d]/g, ""));
-
+const nowrapCell = (minWidth, maxWidth) => ({
+  style: {
+    minWidth,
+    maxWidth,
+    whiteSpace: "nowrap",
+    overflow: "hidden",
+    textOverflow: "ellipsis",
+  },
+});
 export const getBorderlessTableColumnsViewDetails = ({
   approvalStatusMap,
   sortedInfoView,
@@ -572,11 +580,26 @@ export const getBorderlessTableColumnsViewDetails = ({
       ? coTransactionsSummarysReportsViewDetailsSearch.status
       : null,
     onFilter: () => true,
-    render: (status, record) => (
-      <div id={`cell-${record.key}-status`}>
-        {renderStatusTag(status, approvalStatusMap)}
-      </div>
-    ),
+    render: (status) => {
+      const tag = approvalStatusMap?.[status] || {};
+      return (
+        <Tag
+          style={{
+            backgroundColor: tag.backgroundColor,
+            color: tag.textColor,
+            whiteSpace: "nowrap",
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+            display: "inline-block",
+          }}
+          className="border-less-table-orange-status"
+        >
+          {tag.label || status || "—"}
+        </Tag>
+      );
+    },
+    onHeaderCell: () => nowrapCell(150, 240),
+    onCell: () => nowrapCell(150, 240),
   },
   {
     title: "",

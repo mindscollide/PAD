@@ -341,7 +341,7 @@ const COTransactionsSummarysReportsViewDetails = () => {
             scroll={
               coTransactionSummaryReportListData?.transactions?.length
                 ? {
-                    x: "max-content",
+                    x: 1300,
                     y: 500,
                   }
                 : undefined
