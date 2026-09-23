@@ -277,13 +277,9 @@ export const mappingDateWiseTransactionviewDetailst = (res = []) => {
   if (!records.length) return [];
 
   return records.map((item) => {
-    const actionByList = Array.isArray(item.actionBy) ? item.actionBy : [];
-    const actionBy =
-      actionByList
-        .map((a) => a?.fullName)
-        .filter(Boolean)
-        .join(", ") || "—";
-
+    const actionByNames = Array.isArray(item.actionBy)
+      ? item.actionBy.map((user) => user?.fullName).filter(Boolean)
+      : [];
     return {
       key: item.requestID,
       requestID: item.requestID,
@@ -292,13 +288,15 @@ export const mappingDateWiseTransactionviewDetailst = (res = []) => {
       instrumentShortCode: item.instrumentShortCode || "",
       employeeName: item.requesterName || "",
       employeeID: item.requesterID || "",
-      type: item.tradeType || "-",
+      type: item.tradeType?.typeName || "-", // ← fixed: tradeType is now {typeID, typeName}
       status: item.status || "",
       statusID: item.statusID,
       quantity: item.quantity || 0,
       approvalComment: item.approvalComment || [],
       rejectionComment: item.rejectionComment || [],
-      actionBy,
+      actionBy:
+        actionByNames.length > 1 ? "Multiple Users" : actionByNames[0] || "—",
+      actionByFullNames: actionByNames.join(", "),
       actionDate: item.actionDate || "",
       actionTime: item.actionTime || "",
     };
@@ -310,27 +308,7 @@ export const mappingDateWiseTransactionviewDetailst = (res = []) => {
  * @param {Object} approvalStatusMap - Status to style mapping
  * @returns {JSX.Element} Status tag component
  */
-const renderStatusTag = (status, approvalStatusMap) => {
-  const tagConfig = approvalStatusMap[status] || {};
 
-  return (
-    <Tag
-      style={{
-        backgroundColor: tagConfig.backgroundColor,
-        color: tagConfig.textColor,
-        whiteSpace: "nowrap",
-        display: "inline-flex",
-        alignItems: "center",
-        border: "none",
-        borderRadius: 4,
-        padding: "2px 8px",
-        fontSize: 14,
-      }}
-    >
-      {tagConfig.label || status}
-    </Tag>
-  );
-};
 const numberSorter = (key) => (a, b) =>
   Number(String(a[key] || 0).replace(/[^\d]/g, "")) -
   Number(String(b[key] || 0).replace(/[^\d]/g, ""));
@@ -362,7 +340,7 @@ export const getBorderlessTableColumnsViewDetails = ({
     dataIndex: "employeeID",
     key: "employeeID",
     align: "center",
-    width: 120,
+    width: 150,
     sorter: numberSorter("employeeID"),
     sortDirections: ["ascend", "descend"],
     sortOrder:
@@ -405,7 +383,7 @@ export const getBorderlessTableColumnsViewDetails = ({
     dataIndex: "instrumentName",
     key: "instrumentName",
     align: "left",
-    width: 210,
+    width: 220,
     sorter: (a, b) => {
       const nameA = a?.instrumentName || "";
       const nameB = b?.instrumentName || "";
@@ -467,20 +445,9 @@ export const getBorderlessTableColumnsViewDetails = ({
       sortedInfoView?.columnKey === "actionBy" ? sortedInfoView.order : null,
     showSorterTooltip: false,
     sortIcon: () => null,
-    render: (text) => (
-      <Tooltip title={text} placement="topLeft">
-        <span
-          className="font-medium"
-          style={{
-            // overflow: "hidden",
-            // textOverflow: "ellipsis",
-            // whiteSpace: "nowrap",
-            maxWidth: "200px",
-            display: "inline-block",
-          }}
-        >
-          {text}
-        </span>
+    render: (text, record) => (
+      <Tooltip title={record?.actionByFullNames || text} placement="topLeft">
+        <span className="font-medium">{text || "—"}</span>
       </Tooltip>
     ),
   },
@@ -519,7 +486,7 @@ export const getBorderlessTableColumnsViewDetails = ({
       />
     ),
     dataIndex: "type",
-    width: 100,
+    width: 150,
     key: "type",
     filteredValue: coTransactionsSummarysReportsViewDetailsSearch.type?.length
       ? coTransactionsSummarysReportsViewDetailsSearch.type
@@ -548,7 +515,7 @@ export const getBorderlessTableColumnsViewDetails = ({
     dataIndex: "quantity",
     key: "quantity",
     align: "center",
-    width: 100,
+    width: 150,
     sorter: (a, b) => (a?.quantity ?? 0) - (b?.quantity ?? 0),
     sortOrder:
       sortedInfoView?.columnKey === "quantity" ? sortedInfoView.order : null,
@@ -604,11 +571,12 @@ export const getBorderlessTableColumnsViewDetails = ({
   {
     title: "",
     key: "action",
-    align: "right", // 🔷 Align content to the right
+    align: "center", // 🔷 Align content to the right
+    width: "200",
     render: (_, record) => (
       <div className={style.viewEditClass}>
         <Button
-          className="small-white-button"
+          className="small-dark-button_lesser-padding"
           text={"View Comments"}
           onClick={() => {
             setSelectedWorkFlowViewDetaild(record);

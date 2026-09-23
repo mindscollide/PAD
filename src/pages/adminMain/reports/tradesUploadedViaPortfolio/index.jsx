@@ -112,7 +112,9 @@ const AdminTradesUploadedViaPortfolio = () => {
   useEffect(() => {
     if (hasFetched.current) return;
     hasFetched.current = true;
-    const requestData = buildApiRequest(adminTradesUploadedviaPortfolioReportSearch);
+    const requestData = buildApiRequest(
+      adminTradesUploadedviaPortfolioReportSearch
+    );
     fetchApiCall(requestData, true, true);
   }, []);
 
@@ -127,7 +129,9 @@ const AdminTradesUploadedViaPortfolio = () => {
   // 🔹 call api on search
   useEffect(() => {
     if (adminTradesUploadedviaPortfolioReportSearch?.filterTrigger) {
-      const requestData = buildApiRequest(adminTradesUploadedviaPortfolioReportSearch);
+      const requestData = buildApiRequest(
+        adminTradesUploadedviaPortfolioReportSearch
+      );
       fetchApiCall(requestData, true, true);
     }
   }, [adminTradesUploadedviaPortfolioReportSearch?.filterTrigger]);
@@ -143,7 +147,9 @@ const AdminTradesUploadedViaPortfolio = () => {
 
       try {
         setLoadingMore(true);
-        const requestData = buildApiRequest(adminTradesUploadedviaPortfolioReportSearch);
+        const requestData = buildApiRequest(
+          adminTradesUploadedviaPortfolioReportSearch
+        );
         await fetchApiCall(requestData, false, false);
       } catch (err) {
         console.error("Error loading more:", err);
@@ -204,12 +210,17 @@ const AdminTradesUploadedViaPortfolio = () => {
         key: "instrumentName",
         label: "Instrument",
         value:
-          instrumentName.length > 13 ? instrumentName.slice(0, 13) + "..." : instrumentName,
+          instrumentName.length > 13
+            ? instrumentName.slice(0, 13) + "..."
+            : instrumentName,
       },
       employeeName && {
         key: "employeeName",
         label: "Employee",
-        value: employeeName.length > 13 ? employeeName.slice(0, 13) + "..." : employeeName,
+        value:
+          employeeName.length > 13
+            ? employeeName.slice(0, 13) + "..."
+            : employeeName,
       },
       quantity > 0 && {
         key: "quantity",
@@ -336,7 +347,9 @@ const AdminTradesUploadedViaPortfolio = () => {
       <PageLayout
         background="white"
         style={{ marginTop: "3px" }}
-        className={activeFilters.length > 0 ? "changeHeightreports" : "repotsHeight"}
+        className={
+          activeFilters.length > 0 ? "changeHeightreports" : "repotsHeight"
+        }
       >
         <div className="px-4 md:px-6 lg:px-8 ">
           <BorderlessTable
@@ -345,7 +358,7 @@ const AdminTradesUploadedViaPortfolio = () => {
             classNameTable="border-less-table-blue"
             scroll={
               adminTradesUploadedViaPortfolioReportData?.records?.length
-                ? { x: "max-content", y: activeFilters.length > 0 ? 450 : 500 }
+                ? { x: 1300, y: activeFilters.length > 0 ? 450 : 500 }
                 : undefined
             }
             onChange={(pagination, filters, sorter) => setSortedInfo(sorter)}

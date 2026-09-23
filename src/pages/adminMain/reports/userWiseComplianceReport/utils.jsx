@@ -3,6 +3,7 @@ import ArrowDown from "../../../../assets/img/arrow-down-dark.png";
 import DefaultColumArrow from "../../../../assets/img/default-colum-arrow.png";
 import style from "./UserWiseComplianceReport.module.css";
 import { Button } from "../../../../components";
+import { withSortIcon } from "../../../../common/funtions/tableIcon";
 
 /**
  * Utility: Build API request payload for GetAdminUserWiseComplianceReportAPI
@@ -79,15 +80,15 @@ const getSortIcon = (columnKey, sortedInfo) => {
   );
 };
 
-// Helper for consistent column titles
-const withSortIcon = (label, columnKey, sortedInfo) => (
-  <div className={style["table-header-wrapper"]}>
-    <span className={style["table-header-text"]}>{label}</span>
-    <span className={style["table-header-icon"]}>
-      {getSortIcon(columnKey, sortedInfo)}
-    </span>
-  </div>
-);
+// // Helper for consistent column titles
+// const withSortIcon = (label, columnKey, sortedInfo) => (
+//   <div className={style["table-header-wrapper"]}>
+//     <span className={style["table-header-text"]}>{label}</span>
+//     <span className={style["table-header-icon"]}>
+//       {getSortIcon(columnKey, sortedInfo)}
+//     </span>
+//   </div>
+// );
 
 export const getBorderlessTableColumns = ({
   sortedInfo,
@@ -95,11 +96,11 @@ export const getBorderlessTableColumns = ({
   setSelectedUserwiseComplianceReportEmployee,
 }) => [
   {
-    title: withSortIcon("Employee ID", "employeeID", sortedInfo),
+    title: withSortIcon("Employee ID", "employeeID", sortedInfo, "center"),
     dataIndex: "employeeID",
     key: "employeeID",
-    width: "140px",
-    ellipsis: true,
+    width: 100,
+    align: "center",
     sorter: (a, b) => Number(a.employeeID) - Number(b.employeeID),
     sortDirections: ["ascend", "descend"],
     sortOrder: sortedInfo?.columnKey === "employeeID" ? sortedInfo.order : null,
@@ -107,7 +108,14 @@ export const getBorderlessTableColumns = ({
     sortIcon: () => null,
     render: (employeeID) => {
       return (
-        <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: "12px",
+          }}
+        >
           <span className="font-medium">{employeeID}</span>
         </div>
       );
@@ -117,9 +125,9 @@ export const getBorderlessTableColumns = ({
     title: withSortIcon("Employee Name", "employeeName", sortedInfo),
     dataIndex: "employeeName",
     key: "employeeName",
-    ellipsis: true,
-    width: "140px",
-    sorter: (a, b) => (a.employeeName || "").localeCompare(b.employeeName || ""),
+    width: 200,
+    sorter: (a, b) =>
+      (a.employeeName || "").localeCompare(b.employeeName || ""),
     sortDirections: ["ascend", "descend"],
     sortOrder:
       sortedInfo?.columnKey === "employeeName" ? sortedInfo.order : null,
@@ -131,8 +139,7 @@ export const getBorderlessTableColumns = ({
     title: withSortIcon("Department", "departmentName", sortedInfo),
     dataIndex: "departmentName",
     key: "departmentName",
-    width: "180px",
-    ellipsis: true,
+    width: 200,
     sorter: (a, b) =>
       (a.departmentName || "").localeCompare(b.departmentName || ""),
     sortDirections: ["ascend", "descend"],
@@ -143,11 +150,16 @@ export const getBorderlessTableColumns = ({
     render: (text) => <span className="text-gray-600">{text}</span>,
   },
   {
-    title: withSortIcon("Approval Score", "approvalScore", sortedInfo),
+    title: withSortIcon(
+      "Approval Score",
+      "approvalScore",
+      sortedInfo,
+      "center"
+    ),
     dataIndex: "approvalScore",
     key: "approvalScore",
-    ellipsis: true,
-    width: "140px",
+    width: 200,
+    align: "center",
     sorter: (a, b) => (a.approvalScore ?? -1) - (b.approvalScore ?? -1),
     sortDirections: ["ascend", "descend"],
     sortOrder:
@@ -161,11 +173,16 @@ export const getBorderlessTableColumns = ({
     ),
   },
   {
-    title: withSortIcon("Compliance Score", "complianceScore", sortedInfo),
+    title: withSortIcon(
+      "Compliance Score",
+      "complianceScore",
+      sortedInfo,
+      "center"
+    ),
     dataIndex: "complianceScore",
     key: "complianceScore",
-    ellipsis: true,
-    width: "140px",
+    width: 200,
+    align: "center",
     sorter: (a, b) => (a.complianceScore ?? -1) - (b.complianceScore ?? -1),
     sortDirections: ["ascend", "descend"],
     sortOrder:
@@ -182,18 +199,19 @@ export const getBorderlessTableColumns = ({
     title: "",
     key: "action",
     width: 150,
-    align: "right", // 🔷 Align content to the right
+    align: "center", // 🔷 Align content to the right
     render: (_, record) => (
       <div
         className={style.viewEditClass}
         style={{
           display: "flex",
           alignItems: "center",
+          justifyContent: "center",
           marginRight: "10px",
         }}
       >
         <Button
-          className="view-large-transparent-button"
+          className="small-dark-button_lesser-padding"
           text={"View Details"}
           onClick={() => {
             setSelectedUserwiseComplianceReportEmployee?.(record);

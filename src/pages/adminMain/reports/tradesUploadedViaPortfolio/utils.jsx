@@ -3,6 +3,7 @@ import TypeColumnTitle from "../../../../components/dropdowns/filters/typeColumn
 import StatusColumnTitle from "../../../../components/dropdowns/filters/statusColumnTitle";
 import { withSortIcon } from "../../../../common/funtions/tableIcon";
 import { formatApiDateTime, toYYMMDD } from "../../../../common/funtions/rejex";
+import { mapStatusToIds } from "../../../../components/dropdowns/filters/utils";
 
 /**
  * Utility: Build API request payload for GetAdminTradesUploadedViaPortfolioAPI
@@ -22,7 +23,7 @@ export const buildApiRequest = (searchState = {}) => ({
   EndDate: searchState.endDate ? toYYMMDD(searchState.endDate) : "",
   Quantity: searchState.quantity ? Number(searchState.quantity) : 0,
   Type: searchState.type?.length ? searchState.type : ["Buy", "Sell"],
-  Status: searchState.status?.length ? searchState.status : [8, 9],
+  StatusIds: mapStatusToIds?.(searchState.status, 2) || [],
   // (pageNumber - 1) * length on the backend - 0 (the search state's
   // initial value) resolves to page 1 the same as 1 would.
   PageNumber: Number(searchState.pageNumber) || 1,
@@ -85,7 +86,9 @@ const renderInstrumentCell = (record) => {
   const assetCode = record?.assetShortCode || "";
 
   return (
-    <div style={{ display: "flex", alignItems: "center", gap: "8px", minWidth: 0 }}>
+    <div
+      style={{ display: "flex", alignItems: "center", gap: "8px", minWidth: 0 }}
+    >
       <span
         className="custom-shortCode-asset"
         style={{
@@ -98,7 +101,11 @@ const renderInstrumentCell = (record) => {
       >
         {assetCode?.substring(0, 2).toUpperCase()}
       </span>
-      <Tooltip title={`${code} - ${name}`} placement="topLeft" overlayStyle={{ maxWidth: 300 }}>
+      <Tooltip
+        title={`${code} - ${name}`}
+        placement="topLeft"
+        overlayStyle={{ maxWidth: 300 }}
+      >
         <span
           className="font-medium"
           style={{
@@ -124,12 +131,11 @@ export const getBorderlessTableColumns = ({
   setAdminTradesUploadedviaPortfolioReportSearch,
 }) => [
   {
-    title: withSortIcon("Employee ID", "employeeID", sortedInfo),
+    title: withSortIcon("Employee ID", "employeeID", sortedInfo, "center"),
     dataIndex: "employeeID",
     key: "employeeID",
-    width: "12%",
-    align: "left",
-    ellipsis: true,
+    width: 100,
+    align: "center",
     sorter: (a, b) => Number(a.employeeID) - Number(b.employeeID),
     sortDirections: ["ascend", "descend"],
     sortOrder: sortedInfo?.columnKey === "employeeID" ? sortedInfo.order : null,
@@ -141,12 +147,12 @@ export const getBorderlessTableColumns = ({
     title: withSortIcon("Employee Name", "employeeName", sortedInfo),
     dataIndex: "employeeName",
     key: "employeeName",
-    width: "14%",
-    align: "left",
-    ellipsis: true,
-    sorter: (a, b) => (a.employeeName || "").localeCompare(b.employeeName || ""),
+    width: 200,
+    sorter: (a, b) =>
+      (a.employeeName || "").localeCompare(b.employeeName || ""),
     sortDirections: ["ascend", "descend"],
-    sortOrder: sortedInfo?.columnKey === "employeeName" ? sortedInfo.order : null,
+    sortOrder:
+      sortedInfo?.columnKey === "employeeName" ? sortedInfo.order : null,
     showSorterTooltip: false,
     sortIcon: () => null,
     render: (text) => <span className="font-medium">{text}</span>,
@@ -155,11 +161,11 @@ export const getBorderlessTableColumns = ({
     title: withSortIcon("Instrument", "instrumentShortCode", sortedInfo),
     dataIndex: "instrumentShortCode",
     key: "instrumentShortCode",
-    width: "14%",
-    align: "left",
-    ellipsis: true,
+    width: 220,
     sorter: (a, b) =>
-      (a?.instrumentShortCode || "").localeCompare(b?.instrumentShortCode || ""),
+      (a?.instrumentShortCode || "").localeCompare(
+        b?.instrumentShortCode || ""
+      ),
     sortOrder:
       sortedInfo?.columnKey === "instrumentShortCode" ? sortedInfo.order : null,
     showSorterTooltip: false,
@@ -175,9 +181,7 @@ export const getBorderlessTableColumns = ({
     ),
     dataIndex: "type",
     key: "type",
-    ellipsis: true,
-    align: "left",
-    width: "10%",
+    width: 150,
     filteredValue: adminTradesUploadedviaPortfolioReportSearch?.type?.length
       ? adminTradesUploadedviaPortfolioReportSearch?.type
       : null,
@@ -199,12 +203,16 @@ export const getBorderlessTableColumns = ({
     ),
   },
   {
-    title: withSortIcon("Uploaded Date", "uploadedDateTime", sortedInfo, "center"),
+    title: withSortIcon(
+      "Uploaded Date",
+      "uploadedDateTime",
+      sortedInfo,
+      "center"
+    ),
     dataIndex: "uploadedDateTime",
     key: "uploadedDateTime",
     align: "center",
-    ellipsis: true,
-    width: "16%",
+    width: 200,
     sorter: (a, b) =>
       (a.uploadedDateTime || "").localeCompare(b.uploadedDateTime || ""),
     sortOrder:
@@ -213,9 +221,7 @@ export const getBorderlessTableColumns = ({
     showSorterTooltip: false,
     sortIcon: () => null,
     render: (date) => (
-      <span className="text-gray-600" title={date || "—"}>
-        {formatApiDateTime(date) || "—"}
-      </span>
+      <span className="text-gray-600">{formatApiDateTime(date) || "—"}</span>
     ),
   },
   {
@@ -223,14 +229,15 @@ export const getBorderlessTableColumns = ({
     dataIndex: "quantity",
     key: "quantity",
     align: "center",
-    ellipsis: true,
-    width: "10%",
+    width: 150,
     sorter: (a, b) => Number(a.quantity || 0) - Number(b.quantity || 0),
     sortDirections: ["ascend", "descend"],
     sortOrder: sortedInfo?.columnKey === "quantity" ? sortedInfo.order : null,
     showSorterTooltip: false,
     sortIcon: () => null,
-    render: (q) => <span className="font-medium">{Number(q).toLocaleString("en-US")}</span>,
+    render: (q) => (
+      <span className="font-medium">{Number(q).toLocaleString("en-US")}</span>
+    ),
   },
   {
     title: (
@@ -241,8 +248,7 @@ export const getBorderlessTableColumns = ({
     ),
     dataIndex: "status",
     key: "status",
-    ellipsis: true,
-    width: "12%",
+    width: 150,
     filteredValue: adminTradesUploadedviaPortfolioReportSearch?.status?.length
       ? adminTradesUploadedviaPortfolioReportSearch?.status
       : null,
@@ -251,10 +257,13 @@ export const getBorderlessTableColumns = ({
       const tag = approvalStatusMap[status] || {};
       return (
         <Tag
-          style={{ backgroundColor: tag.backgroundColor, color: tag.textColor }}
+          style={{
+            backgroundColor: tag.backgroundColor,
+            color: tag.textColor,
+          }}
           className="border-less-table-orange-status"
         >
-          {tag.label || status}
+          {tag.label}
         </Tag>
       );
     },

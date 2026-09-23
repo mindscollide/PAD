@@ -6,6 +6,7 @@ import style from "./AdminPolicyBreachesReport.module.css";
 
 import { toYYMMDD, formatApiDateTime } from "../../../../common/funtions/rejex";
 import TypeColumnTitle from "../../../../components/dropdowns/filters/typeColumnTitle";
+import { withSortIcon } from "../../../../common/funtions/tableIcon";
 
 /**
  * Utility: Build API request payload for GetAdminPolicyBreachesAPI per
@@ -121,14 +122,6 @@ const getSortIcon = (columnKey, sortedInfo) => {
 };
 
 // Helper for consistent column titles
-const withSortIcon = (label, columnKey, sortedInfo) => (
-  <div className={style["table-header-wrapper"]}>
-    <span className={style["table-header-text"]}>{label}</span>
-    <span className={style["table-header-icon"]}>
-      {getSortIcon(columnKey, sortedInfo)}
-    </span>
-  </div>
-);
 
 export const getBorderlessTableColumns = ({
   sortedInfo,
@@ -137,10 +130,11 @@ export const getBorderlessTableColumns = ({
   onViewPolicyBreachDetails,
 }) => [
   {
-    title: withSortIcon("Employee ID", "employeeID", sortedInfo),
+    title: withSortIcon("Employee ID", "employeeID", sortedInfo, "center"),
     dataIndex: "employeeID",
     key: "employeeID",
-    width: "120px",
+    width: 90,
+    align: "center",
     sorter: (a, b) => Number(a.employeeID) - Number(b.employeeID),
     sortDirections: ["ascend", "descend"],
     sortOrder: sortedInfo?.columnKey === "employeeID" ? sortedInfo.order : null,
@@ -166,7 +160,7 @@ export const getBorderlessTableColumns = ({
     title: withSortIcon("Department", "departmentName", sortedInfo),
     dataIndex: "departmentName",
     key: "departmentName",
-    width: "140px",
+    width: 180,
     sorter: (a, b) =>
       (a.departmentName || "").localeCompare(b.departmentName || ""),
     sortDirections: ["ascend", "descend"],
@@ -225,8 +219,9 @@ export const getBorderlessTableColumns = ({
               overflow: "hidden",
               textOverflow: "ellipsis",
               whiteSpace: "nowrap",
-              maxWidth: "140px",
+              maxWidth: "200px",
               display: "inline-block",
+              cursor: "pointer",
             }}
           >
             {record?.instrumentShortCode || name || "—"}
@@ -245,6 +240,7 @@ export const getBorderlessTableColumns = ({
     dataIndex: "type",
     key: "type",
     width: "120px",
+    align: "center",
     filteredValue: adminPolicyBreachesReportSearch?.type?.length
       ? adminPolicyBreachesReportSearch?.type
       : null,
@@ -284,10 +280,11 @@ export const getBorderlessTableColumns = ({
     ),
   },
   {
-    title: withSortIcon("Policy Count", "policyCount", sortedInfo),
+    title: withSortIcon("Policy Count", "policyCount", sortedInfo, "center"),
     dataIndex: "policyCount",
     key: "policyCount",
     width: "120px",
+    align: "center",
     sorter: (a, b) => Number(a.policyCount || 0) - Number(b.policyCount || 0),
     sortDirections: ["ascend", "descend"],
     sortOrder:

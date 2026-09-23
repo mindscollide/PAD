@@ -218,7 +218,7 @@ export const getSessionListColumns = ({ sortedInfo, onViewActions }) => [
     dataIndex: "loginDate",
     key: "loginDate",
     align: "center",
-    width: 150,
+    width: 200,
     sorter: withTiebreaker((a, b) =>
       (a.loginSortKey || "").localeCompare(b.loginSortKey || "")
     ),
@@ -232,7 +232,7 @@ export const getSessionListColumns = ({ sortedInfo, onViewActions }) => [
     title: withSortIcon("IP Address", "ipAddress", sortedInfo),
     dataIndex: "ipAddress",
     key: "ipAddress",
-    width: 180,
+    width: 200,
     sorter: withTiebreaker((a, b) =>
       (a.ipAddress || "").localeCompare(b.ipAddress || "")
     ),
@@ -247,7 +247,7 @@ export const getSessionListColumns = ({ sortedInfo, onViewActions }) => [
     dataIndex: "loginTime",
     key: "loginTime",
     align: "center",
-    width: 140,
+    width: 200,
     sorter: withTiebreaker((a, b) =>
       (a.loginSortKey || "").localeCompare(b.loginSortKey || "")
     ), // Login Time column
@@ -262,7 +262,7 @@ export const getSessionListColumns = ({ sortedInfo, onViewActions }) => [
     dataIndex: "totalActions",
     key: "totalActions",
     align: "center",
-    width: 110,
+    width: 200,
     sorter: withTiebreaker(
       (a, b) => Number(a.totalActions || 0) - Number(b.totalActions || 0)
     ),
@@ -278,7 +278,7 @@ export const getSessionListColumns = ({ sortedInfo, onViewActions }) => [
     dataIndex: "logoutTime",
     key: "logoutTime",
     align: "center",
-    width: 140,
+    width: 200,
     sorter: withTiebreaker((a, b) =>
       (a.logoutTime || "").localeCompare(b.logoutTime || "")
     ),
@@ -291,11 +291,12 @@ export const getSessionListColumns = ({ sortedInfo, onViewActions }) => [
   {
     title: "",
     key: "action",
-    align: "right",
+    align: "center",
+    width: 200,
     render: (_, record) => (
       <div>
         <Button
-          className="small-light-button"
+          className="small-dark-button_lesser-padding"
           text="View Actions"
           onClick={() => onViewActions?.(record)}
         />

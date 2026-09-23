@@ -84,7 +84,7 @@ export const mapListData = (res = []) => {
     instrumentName: item.instrumentName || "—",
     initiatedAt:
       `${item?.initiatedDate || ""} ${item?.initiatedTime || ""}`.trim() || "—",
-    type: item.tradeType || "-",
+    type: item.tradeType?.typeName || "-",
     quantity: item.quantity || 0,
     actionBy: item.actionBy || "—",
     actionAt:
