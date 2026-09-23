@@ -93,8 +93,6 @@ export const AdminSessionWiseActivityFilter = ({
   const handleSearchClick = () => {
     const { ipAddress, startDate, endDate } = localState;
 
-    console.log(localState, "localStatelocalState");
-
     const searchPayload = {
       ...adminSessionWiseActivitySearch,
       ipAddress: ipAddress || "",
