@@ -66,6 +66,7 @@ const AdmindataWiseTransactionsReports = () => {
 
   const { assetTypeListingData } = useDashboardContext();
 
+  console.log(assetTypeListingData, "assetTypeListingDataassetTypeListingData");
   const { setReconcileTransactionViewDetailData } = useReconcileContext();
 
   // -------------------- Local State --------------------
@@ -119,7 +120,14 @@ const AdmindataWiseTransactionsReports = () => {
         return next;
       });
     },
-    [callApi, navigate, showLoader, showNotification]
+    [
+      assetTypeListingData,
+      callApi,
+      navigate,
+      setCODatewiseTransactionReportSearch,
+      showLoader,
+      showNotification,
+    ]
   );
 
   // -------------------- Effects --------------------
@@ -254,8 +262,8 @@ const AdmindataWiseTransactionsReports = () => {
       departmentName: "",
       instrumentName: "",
       quantity: 0,
-      startDate: null,
-      endDate: null,
+      // startDate: null,
+      // endDate: null,
       type: [],
       status: [],
       pageNumber: 0,

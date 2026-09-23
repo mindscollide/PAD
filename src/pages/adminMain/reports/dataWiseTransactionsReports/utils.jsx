@@ -182,7 +182,7 @@ export const getBorderlessTableColumns = ({
     title: withSortIcon("Employee ID", "employeeID", sortedInfo, "center"),
     dataIndex: "employeeID",
     key: "employeeID",
-    width: 110,
+    width: 120,
     align: "center",
     sorter: (a, b) => Number(a.employeeID) - Number(b.employeeID),
     sortDirections: ["ascend", "descend"],
@@ -275,7 +275,7 @@ export const getBorderlessTableColumns = ({
     ),
     dataIndex: "transactionDate",
     key: "transactionDate",
-    width: 160,
+    width: 180,
     align: "center",
     sorter: (a, b) =>
       (a?.transactionDate || "").localeCompare(b?.transactionDate || ""),
@@ -291,7 +291,7 @@ export const getBorderlessTableColumns = ({
     ),
   },
   {
-    title: (
+    title: withFilterHeader(
       <TypeColumnTitle
         state={coDatewiseTransactionReportSearch}
         setState={setCODatewiseTransactionReportSearch}
@@ -326,7 +326,7 @@ export const getBorderlessTableColumns = ({
     title: withSortIcon("Quantity", "quantity", sortedInfo, "center"),
     dataIndex: "quantity",
     key: "quantity",
-    width: 90,
+    width: 100,
     align: "center",
     sorter: (a, b) => a.quantity - b.quantity,
     sortDirections: ["ascend", "descend"],

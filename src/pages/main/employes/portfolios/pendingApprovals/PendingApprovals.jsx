@@ -100,6 +100,7 @@ const PendingApprovals = ({ activeFilters }) => {
       setViewPortfolioPendingApprovalCommentModal(true);
     }
   };
+  console.log(assetTypeListingData, "assetTypeListingDataassetTypeListingData");
 
   const columns = getBorderlessTableColumns(
     approvalStatusMap,
