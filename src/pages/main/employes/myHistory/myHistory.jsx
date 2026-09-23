@@ -496,9 +496,19 @@ const MyHistory = () => {
 
       const bundleSteps =
         wf.bundleHierarchy?.map((b) => ({
+          // FIXED: bundleStatusState 2 was labeled "Approved" unconditionally
+          // - correct for a Trade Approval Request reviewer, but wrong for a
+          // Transaction/Portfolio workflow the CO marked Compliant (same
+          // bundleStatusState value, different vocabulary) - same gap the
+          // Declined/Non-Compliant branch right below this already closed,
+          // just never applied here. Uses the same isTransactionNature
+          // (TRX- vs REQ- prefix) check already established above for this
+          // exact REQ/TRX vocabulary split.
           status:
             b.bundleStatusState === 2
-              ? "Approved"
+              ? isTransactionNature
+                ? "Compliant"
+                : "Approved"
               : b.bundleStatusState === 3
               ? isNonCompliantOutcome
                 ? "Non-Compliant"
