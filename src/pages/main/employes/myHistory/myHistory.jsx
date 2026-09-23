@@ -426,6 +426,37 @@ const MyHistory = () => {
       }
     };
 
+    // ADDED (API_Changes/2026-09-23_employee_my_history_audit_trail.md):
+    // maps wf.auditTrail's actionName text to ApprovalStepper's existing
+    // iconType vocabulary - no new icon assets/cases needed, per the doc.
+    // "Compliant"/"Non-Compliant" reuse the plain "Approved"/"Decline"
+    // icons rather than the "co-"-prefixed variants, matching how the old
+    // bundleSteps logic below always rendered the generic checkmark/cross
+    // regardless of nature (getBundleIconType above ignores nature too).
+    const getAuditTrailIconType = (actionName) => {
+      if (actionName?.startsWith("Escalated to")) return "EscaltedOn";
+      switch (actionName) {
+        case "Sent For Approval":
+          return "SendForApproval";
+        case "Transaction Conducted":
+          return "co-Transaction Conducted";
+        case "Resubmitted":
+          return "Resubmit";
+        case "Traded":
+          return "Traded";
+        case "Not Traded":
+          return "Not-Traded";
+        case "Approved":
+        case "Compliant":
+          return "Approved";
+        case "Declined":
+        case "Non-Compliant":
+          return "Decline";
+        default:
+          return "ellipsis";
+      }
+    };
+
     return data.workFlows.map((wf) => {
       // Step 0: Send For Approval — when this request was itself CREATED
       // by resubmitting an earlier one (resubmitRequestTrackingID set,
@@ -573,11 +604,19 @@ const MyHistory = () => {
         // tradedDate/tradedTime. Falls back to creationDate/Time when null
         // (not retroactively backfilled), same caveat as Not Traded.
         const isTraded = wf.workFlowStatusID === 5;
+        // ADDED (2026-09-23_employee_my_history_resubmitted_datetime.md): same
+        // gap again - wf.creationDate/Time is the OLD request's original
+        // submission time, not the moment it was actually resubmitted, now
+        // separately captured as resubmittedDate/resubmittedTime. Falls back
+        // to creationDate/Time when null, same caveat as Not Traded/Traded.
+        const isResubmitted = wf.workFlowStatus === "Resubmit";
         const finalStepDate =
           isNotTraded && wf.notTradedDate
             ? formatApiDateTime(`${wf.notTradedDate} ${wf.notTradedTime}`)
             : isTraded && wf.tradedDate
             ? formatApiDateTime(`${wf.tradedDate} ${wf.tradedTime}`)
+            : isResubmitted && wf.resubmittedDate
+            ? formatApiDateTime(`${wf.resubmittedDate} ${wf.resubmittedTime}`)
             : formatApiDateTime(`${wf.creationDate} ${wf.creationTime}`);
 
         finalStep = {
@@ -628,13 +667,69 @@ const MyHistory = () => {
             }
           : null;
 
+      // ADDED (API_Changes/2026-09-23_employee_my_history_audit_trail.md):
+      // when the backend actually returns a populated auditTrail, it's a
+      // complete, correctly-ordered, correctly-timestamped server-built
+      // timeline (including escalation steps, never shown before) -
+      // replaces the manual sendForApprovalStep/bundleSteps/notTradedStep/
+      // finalStep reconstruction above entirely for this workflow. Per the
+      // doc, auditTrail comes back empty for a workflow still sitting
+      // Pending at its current level with nothing terminal having
+      // happened yet - the still-pending reviewer(s) aren't in it, so
+      // append them from bundleHierarchy same as before. A workflow with
+      // NO auditTrail at all (not yet backfilled/deployed) falls through
+      // to the original manual construction unchanged, below.
+      const auditTrailSteps = wf.auditTrail?.length
+        ? wf.auditTrail.map((step, index, arr) => ({
+            status: step.actionName,
+            ...(step.actionByName && { user: step.actionByName }),
+            date:
+              step.actionDate && step.actionTime
+                ? formatApiDateTime(`${step.actionDate} ${step.actionTime}`)
+                : "",
+            iconType: getAuditTrailIconType(step.actionName),
+            // Same tracking-ID semantics as sendForApprovalStep/finalStep
+            // above, just positional: the first entry when this record
+            // was itself created by resubmitting an earlier one, or the
+            // last entry when this record's current status is the one
+            // that got resubmitted into a new one.
+            ...((index === 0 &&
+              wf.workFlowStatus !== "Resubmit" &&
+              wf.resubmitRequestTrackingID) ||
+            (index === arr.length - 1 &&
+              wf.workFlowStatus === "Resubmit" &&
+              step.actionName === "Resubmitted")
+              ? {
+                  requesterID: dashBetweenApprovalAssets(
+                    wf.resubmitRequestTrackingID
+                  ),
+                }
+              : {}),
+          }))
+        : null;
+
+      const pendingBundleSteps = auditTrailSteps
+        ? (wf.bundleHierarchy || [])
+            .filter((b) => b.bundleStatusState !== 2 && b.bundleStatusState !== 3)
+            .map((b) => ({
+              status: "Pending",
+              user: `${b.firstName} ${b.lastName}`,
+              date: formatApiDateTime(
+                `${b.bundleModifiedDate} ${b.bundleModifiedTime}`
+              ),
+              iconType: "Pending",
+            }))
+        : [];
+
       // 🔥 Final ordered steps
-      const trail = [
-        sendForApprovalStep,
-        ...bundleSteps,
-        ...(notTradedStep ? [notTradedStep] : []),
-        ...(finalStep ? [finalStep] : []),
-      ];
+      const trail = auditTrailSteps
+        ? [...auditTrailSteps, ...pendingBundleSteps]
+        : [
+            sendForApprovalStep,
+            ...bundleSteps,
+            ...(notTradedStep ? [notTradedStep] : []),
+            ...(finalStep ? [finalStep] : []),
+          ];
 
       return {
         id: wf.tradeApprovalID || wf.workFlowID,
