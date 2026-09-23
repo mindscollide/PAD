@@ -384,6 +384,7 @@ const COdataWiseTransactionsReports = () => {
       filterTrigger: true,
     }));
   };
+  console.log(assetTypeListingData, "assetTypeListingDataassetTypeListingData");
 
   // -------------------- Render --------------------
   return (

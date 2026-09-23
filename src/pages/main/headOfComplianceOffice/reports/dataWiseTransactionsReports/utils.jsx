@@ -178,7 +178,6 @@ export const getBorderlessTableColumns = ({
     title: withSortIcon("Employee Name", "employeeName", sortedInfo),
     dataIndex: "employeeName",
     key: "employeeName",
-    align: "left",
     width: 160,
     sorter: (a, b) => a.employeeName.localeCompare(b.employeeName),
     sortDirections: ["ascend", "descend"],
@@ -192,8 +191,7 @@ export const getBorderlessTableColumns = ({
     title: withSortIcon("Department Name", "department", sortedInfo),
     dataIndex: "department",
     key: "department",
-    align: "left",
-    width: 160,
+    width: 200,
     sorter: (a, b) => a.department.localeCompare(b.department),
     sortDirections: ["ascend", "descend"],
     sortOrder: sortedInfo?.columnKey === "department" ? sortedInfo.order : null,
@@ -205,7 +203,7 @@ export const getBorderlessTableColumns = ({
     title: withSortIcon("Instrument", "instrumentName", sortedInfo),
     dataIndex: "instrumentName",
     key: "instrumentName",
-    width: 210,
+    width: 230,
     sorter: (a, b) => {
       const nameA = a?.instrumentCode || "";
       const nameB = b?.instrumentCode || "";
@@ -338,6 +336,8 @@ export const getBorderlessTableColumns = ({
     ),
     dataIndex: "status",
     key: "status",
+    width: 200,
+
     filteredValue: coDatewiseTransactionReportSearch.status?.length
       ? coDatewiseTransactionReportSearch.status
       : null,
@@ -351,7 +351,8 @@ export const getBorderlessTableColumns = ({
   {
     title: "",
     key: "action",
-    align: "right", // 🔷 Align content to the right
+    align: "center", // 🔷 Align content to the right
+
     render: (_, record) => (
       <div className={style.viewEditClass}>
         <Button

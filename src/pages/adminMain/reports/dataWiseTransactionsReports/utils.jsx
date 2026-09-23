@@ -179,37 +179,23 @@ export const getBorderlessTableColumns = ({
   handelViewDetails,
 }) => [
   {
-    title: withSortIcon("Employee ID", "employeeID", sortedInfo),
+    title: withSortIcon("Employee ID", "employeeID", sortedInfo, "center"),
     dataIndex: "employeeID",
     key: "employeeID",
     width: 120,
-    align: "left",
-    sorter: (a, b) => a.employeeID - b.employeeID,
+    align: "center",
+    sorter: (a, b) => Number(a.employeeID) - Number(b.employeeID),
     sortDirections: ["ascend", "descend"],
     sortOrder: sortedInfo?.columnKey === "employeeID" ? sortedInfo.order : null,
     showSorterTooltip: false,
     sortIcon: () => null,
-    render: (employeeID) => {
-      return (
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: "12px",
-            marginLeft: "8px",
-          }}
-        >
-          <span className="font-medium">{employeeID}</span>
-        </div>
-      );
-    },
+    render: (employeeID) => <span className="font-medium">{employeeID}</span>,
   },
   {
     title: withSortIcon("Employee Name", "employeeName", sortedInfo),
     dataIndex: "employeeName",
     key: "employeeName",
     width: 160,
-    align: "left",
     sorter: (a, b) => a.employeeName.localeCompare(b.employeeName),
     sortDirections: ["ascend", "descend"],
     sortOrder:
@@ -222,8 +208,7 @@ export const getBorderlessTableColumns = ({
     title: withSortIcon("Department Name", "department", sortedInfo),
     dataIndex: "department",
     key: "department",
-    align: "left",
-    width: 200,
+    width: 220,
     sorter: (a, b) => a.department.localeCompare(b.department),
     sortDirections: ["ascend", "descend"],
     sortOrder: sortedInfo?.columnKey === "department" ? sortedInfo.order : null,
@@ -235,9 +220,7 @@ export const getBorderlessTableColumns = ({
     title: withSortIcon("Instrument", "instrumentName", sortedInfo),
     dataIndex: "instrumentName",
     key: "instrumentName",
-    align: "left",
-    width: 210,
-    ellipsis: true,
+    width: 230,
     sorter: (a, b) => {
       const nameA = a?.instrumentName || "";
       const nameB = b?.instrumentName || "";
@@ -275,7 +258,6 @@ export const getBorderlessTableColumns = ({
                 display: "inline-block",
                 cursor: "pointer",
               }}
-              title={code}
             >
               {code}
             </span>
@@ -293,7 +275,7 @@ export const getBorderlessTableColumns = ({
     ),
     dataIndex: "transactionDate",
     key: "transactionDate",
-    width: 220,
+    width: 180,
     align: "center",
     sorter: (a, b) =>
       (a?.transactionDate || "").localeCompare(b?.transactionDate || ""),
@@ -318,6 +300,7 @@ export const getBorderlessTableColumns = ({
     dataIndex: "type",
     width: 110,
     key: "type",
+    align: "center",
     filteredValue: coDatewiseTransactionReportSearch.type?.length
       ? coDatewiseTransactionReportSearch.type
       : null,
@@ -375,11 +358,13 @@ export const getBorderlessTableColumns = ({
   {
     title: "",
     key: "action",
-    align: "right", // 🔷 Align content to the right
+    width: "120px",
+
+    align: "center", // 🔷 Align content to the right
     render: (_, record) => (
       <div className={style.viewEditClass}>
         <Button
-          className="small-white-button"
+          className="small-dark-button_lesser-padding"
           text={"View Details"}
           onClick={() => {
             // FIXED (API_Changes/2026-08-28_admin_datewise_transaction_

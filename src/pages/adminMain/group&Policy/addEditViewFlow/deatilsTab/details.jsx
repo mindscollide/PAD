@@ -15,7 +15,6 @@ const Details = ({
   errorDeatilsTabSwitch,
   setErrorDeatilsTabSwitch,
   clickEditFromView,
-  setClickEditFromView,
 }) => {
   const {
     tabesFormDataofAdminGropusAndPolicy,

@@ -1,12 +1,10 @@
-import ArrowUP from "../../../../assets/img/arrow-up-dark.png";
-import ArrowDown from "../../../../assets/img/arrow-down-dark.png";
-import DefaultColumArrow from "../../../../assets/img/default-colum-arrow.png";
 import { Tooltip } from "antd";
 import style from "./AdminPolicyBreachesReport.module.css";
 
 import { toYYMMDD, formatApiDateTime } from "../../../../common/funtions/rejex";
 import TypeColumnTitle from "../../../../components/dropdowns/filters/typeColumnTitle";
 import { mapBuySellToIds } from "../../../../components/dropdowns/filters/utils";
+import { withSortIcon } from "../../../../common/funtions/tableIcon";
 
 /**
  * Utility: Build API request payload for GetAdminPolicyBreachesAPI per
@@ -97,51 +95,6 @@ export const mapListData = (res = []) => {
   }));
 };
 
-/**
- * Returns the appropriate sort icon based on current sort state
- *
- * @param {string} columnKey - The column's key
- * @param {object} sortedInfo - Current sort state from the table
- * @returns {JSX.Element} The sort icon
- */
-const getSortIcon = (columnKey, sortedInfo) => {
-  if (sortedInfo?.columnKey === columnKey) {
-    return sortedInfo.order === "ascend" ? (
-      <img
-        draggable={false}
-        src={ArrowDown}
-        alt="Asc"
-        className="custom-sort-icon"
-      />
-    ) : (
-      <img
-        draggable={false}
-        src={ArrowUP}
-        alt="Desc"
-        className="custom-sort-icon"
-      />
-    );
-  }
-  return (
-    <img
-      draggable={false}
-      src={DefaultColumArrow}
-      alt="Default"
-      className="custom-sort-icon"
-    />
-  );
-};
-
-// Helper for consistent column titles
-const withSortIcon = (label, columnKey, sortedInfo) => (
-  <div className={style["table-header-wrapper"]}>
-    <span className={style["table-header-text"]}>{label}</span>
-    <span className={style["table-header-icon"]}>
-      {getSortIcon(columnKey, sortedInfo)}
-    </span>
-  </div>
-);
-
 export const getBorderlessTableColumns = ({
   sortedInfo,
   adminPolicyBreachesReportSearch,
@@ -149,10 +102,11 @@ export const getBorderlessTableColumns = ({
   onViewPolicyBreachDetails,
 }) => [
   {
-    title: withSortIcon("Employee ID", "employeeID", sortedInfo),
+    title: withSortIcon("Employee ID", "employeeID", sortedInfo, "center"),
     dataIndex: "employeeID",
     key: "employeeID",
-    width: "120px",
+    width: 90,
+    align: "center",
     sorter: (a, b) => Number(a.employeeID) - Number(b.employeeID),
     sortDirections: ["ascend", "descend"],
     sortOrder: sortedInfo?.columnKey === "employeeID" ? sortedInfo.order : null,
@@ -178,7 +132,7 @@ export const getBorderlessTableColumns = ({
     title: withSortIcon("Department", "departmentName", sortedInfo),
     dataIndex: "departmentName",
     key: "departmentName",
-    width: "140px",
+    width: 180,
     sorter: (a, b) =>
       (a.departmentName || "").localeCompare(b.departmentName || ""),
     sortDirections: ["ascend", "descend"],
@@ -237,8 +191,9 @@ export const getBorderlessTableColumns = ({
               overflow: "hidden",
               textOverflow: "ellipsis",
               whiteSpace: "nowrap",
-              maxWidth: "140px",
+              maxWidth: "200px",
               display: "inline-block",
+              cursor: "pointer",
             }}
           >
             {record?.instrumentShortCode || name || "—"}
@@ -257,6 +212,7 @@ export const getBorderlessTableColumns = ({
     dataIndex: "type",
     key: "type",
     width: "120px",
+    align: "center",
     filteredValue: adminPolicyBreachesReportSearch?.type?.length
       ? adminPolicyBreachesReportSearch?.type
       : null,
@@ -296,10 +252,11 @@ export const getBorderlessTableColumns = ({
     ),
   },
   {
-    title: withSortIcon("Policy Count", "policyCount", sortedInfo),
+    title: withSortIcon("Policy Count", "policyCount", sortedInfo, "center"),
     dataIndex: "policyCount",
     key: "policyCount",
     width: "120px",
+    align: "center",
     sorter: (a, b) => Number(a.policyCount || 0) - Number(b.policyCount || 0),
     sortDirections: ["ascend", "descend"],
     sortOrder:

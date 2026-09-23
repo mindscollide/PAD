@@ -379,7 +379,7 @@ const ViewDetails = () => {
 
       {/* 🔹 Active Filter Tags */}
       {activeFilters.length > 0 && (
-        <Row gutter={[12, 12]} className={style["filter-tags-container"]}>
+        <Row className={style["filter-tags-container"]}>
           {activeFilters.map(({ key, value }) => (
             <Col key={key}>
               <div className={style["filter-tag"]}>
@@ -450,8 +450,8 @@ const ViewDetails = () => {
         style={{ marginTop: "3px" }}
         className={
           activeFilters.length > 0
-            ? "TATHTAchangeHeightreports2"
-            : "TATHTArepotsHeight"
+            ? "TATViewchangeHeightreports2"
+            : "TATViewRepotsHeight"
         }
       >
         <div className="px-4 md:px-6 lg:px-8 ">

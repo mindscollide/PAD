@@ -391,19 +391,27 @@ const CompianceOfficerPortfolioHistoryReports = () => {
   // 🔷 Excel Report download Api Hit
   const downloadPortfolioHistoryExport = async () => {
     showLoader(true);
+
+    const built = buildApiRequest(
+      coPortfolioHistoryReportSearch,
+      assetTypeListingData
+    );
+
     const requestdata = {
-      InstrumentName: "",
-      DepartmentName: "",
-      Quantity: 0,
-      StatusIds: [],
-      TypeIds: [],
-      RequesterName: "",
+      InstrumentName: built.InstrumentName || "",
+      DepartmentName: built.DepartmentName || "",
+      RequesterName: built.RequesterName || "",
+      Quantity: built.Quantity || 0,
+      StatusIds: built.StatusIds || [],
+      TypeIds: built.TypeIds || [],
+      StartDate: built.StartDate || "",
+      EndDate: built.EndDate || "",
     };
 
     await ExportPortfolioHistoryCOExcel({
       callApi,
       showLoader,
-      requestdata: requestdata,
+      requestdata,
       navigate,
       setOpen,
     });

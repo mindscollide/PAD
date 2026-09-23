@@ -119,6 +119,9 @@ const Policies = ({
           ? res.policyCategories
           : [];
         // ✅ Replace duration with threshold where policyID matches
+
+        const groupTitle =
+          tabesFormDataofAdminGropusAndPolicy?.details?.groupTitle;
         const savedPolicies =
           tabesFormDataofAdminGropusAndPolicy?.policies || [];
 

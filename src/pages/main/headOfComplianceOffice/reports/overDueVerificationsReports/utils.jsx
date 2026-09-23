@@ -101,7 +101,7 @@ export const mappingDateWiseTransactionReport = (
   }));
 };
 
-const withFilterHeader = (FilterComponent) => (
+const withFilterHeader = (node) => (
   <div
     className={style["table-header-wrapper"]}
     style={{
@@ -111,7 +111,7 @@ const withFilterHeader = (FilterComponent) => (
       width: "100%",
     }}
   >
-    <FilterComponent />
+    {node}
   </div>
 );
 export const getBorderlessTableColumns = ({
@@ -135,12 +135,12 @@ export const getBorderlessTableColumns = ({
     render: (text) => <span className={`font-medium`}>{text}</span>,
   },
   {
-    title: withFilterHeader(() => (
+    title: withFilterHeader(
       <TypeColumnTitle
         state={OverdueVerificationHCOReportSearch}
         setState={setOverdueVerificationHCOReportSearch}
       />
-    )),
+    ),
     dataIndex: "type",
     width: 120,
     key: "type",

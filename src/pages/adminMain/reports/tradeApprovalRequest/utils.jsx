@@ -1,9 +1,5 @@
-import ArrowUP from "../../../../assets/img/arrow-up-dark.png";
-import ArrowDown from "../../../../assets/img/arrow-down-dark.png";
-import DefaultColumArrow from "../../../../assets/img/default-colum-arrow.png";
-import style from "./tradeApprovalRequest.module.css";
-
 import { toYYMMDD } from "../../../../common/funtions/rejex";
+import { withSortIcon } from "../../../../common/funtions/tableIcon";
 
 /**
  * Utility: Build API request payload for GetAdminTradeApprovalRequestSummaryAPI
@@ -63,62 +59,6 @@ export const mapListData = (res = []) => {
   }));
 };
 
-/**
- * Returns the appropriate sort icon based on current sort state
- *
- * @param {string} columnKey - The column's key
- * @param {object} sortedInfo - Current sort state from the table
- * @returns {JSX.Element} The sort icon
- */
-const getSortIcon = (columnKey, sortedInfo) => {
-  if (sortedInfo?.columnKey === columnKey) {
-    return sortedInfo.order === "ascend" ? (
-      <img
-        draggable={false}
-        src={ArrowDown}
-        alt="Asc"
-        className="custom-sort-icon"
-      />
-    ) : (
-      <img
-        draggable={false}
-        src={ArrowUP}
-        alt="Desc"
-        className="custom-sort-icon"
-      />
-    );
-  }
-  return (
-    <img
-      draggable={false}
-      src={DefaultColumArrow}
-      alt="Default"
-      className="custom-sort-icon"
-    />
-  );
-};
-
-// Helper for consistent column titles
-const withSortIcon = (label, columnKey, sortedInfo, align = "left") => (
-  <div
-    className={style["table-header-wrapper"]}
-    style={{
-      justifyContent:
-        align === "center"
-          ? "center"
-          : align === "right"
-          ? "flex-end"
-          : "flex-start",
-      textAlign: align,
-    }}
-  >
-    <span className={style["table-header-text"]}>{label}</span>
-    <span className={style["table-header-icon"]}>
-      {getSortIcon(columnKey, sortedInfo)}
-    </span>
-  </div>
-);
-
 const numericSorter = (field) => (a, b) =>
   Number(a[field] || 0) - Number(b[field] || 0);
 
@@ -128,7 +68,7 @@ export const getBorderlessTableColumns = ({ sortedInfo }) => [
     dataIndex: "employeeID",
     key: "employeeID",
     align: "center",
-    width: 100,
+    width: 90,
     sorter: numericSorter("employeeID"),
     sortDirections: ["ascend", "descend"],
     sortOrder: sortedInfo?.columnKey === "employeeID" ? sortedInfo.order : null,
