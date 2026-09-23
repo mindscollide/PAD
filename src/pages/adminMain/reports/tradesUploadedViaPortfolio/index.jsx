@@ -28,6 +28,7 @@ import { useApi } from "../../../../context/ApiContext";
 import { useGlobalLoader } from "../../../../context/LoaderContext";
 import { useNavigate } from "react-router-dom";
 import { useSearchBarContext } from "../../../../context/SearchBarContaxt";
+import { useDashboardContext } from "../../../../context/dashboardContaxt";
 import { useTableScrollBottom } from "../../../../common/funtions/scroll";
 import CustomButton from "../../../../components/buttons/button";
 
@@ -57,6 +58,8 @@ const AdminTradesUploadedViaPortfolio = () => {
     setAdminTradesUploadedviaPortfolioReportSearch,
     resetAdminTradesUploadedviaPortfolioReportSearch,
   } = useSearchBarContext();
+
+  const { assetTypeListingData } = useDashboardContext();
 
   // -------------------- Local State --------------------
   const [sortedInfo, setSortedInfo] = useState({});
@@ -112,7 +115,7 @@ const AdminTradesUploadedViaPortfolio = () => {
   useEffect(() => {
     if (hasFetched.current) return;
     hasFetched.current = true;
-    const requestData = buildApiRequest(adminTradesUploadedviaPortfolioReportSearch);
+    const requestData = buildApiRequest(adminTradesUploadedviaPortfolioReportSearch, assetTypeListingData);
     fetchApiCall(requestData, true, true);
   }, []);
 
@@ -127,7 +130,7 @@ const AdminTradesUploadedViaPortfolio = () => {
   // 🔹 call api on search
   useEffect(() => {
     if (adminTradesUploadedviaPortfolioReportSearch?.filterTrigger) {
-      const requestData = buildApiRequest(adminTradesUploadedviaPortfolioReportSearch);
+      const requestData = buildApiRequest(adminTradesUploadedviaPortfolioReportSearch, assetTypeListingData);
       fetchApiCall(requestData, true, true);
     }
   }, [adminTradesUploadedviaPortfolioReportSearch?.filterTrigger]);
@@ -143,7 +146,7 @@ const AdminTradesUploadedViaPortfolio = () => {
 
       try {
         setLoadingMore(true);
-        const requestData = buildApiRequest(adminTradesUploadedviaPortfolioReportSearch);
+        const requestData = buildApiRequest(adminTradesUploadedviaPortfolioReportSearch, assetTypeListingData);
         await fetchApiCall(requestData, false, false);
       } catch (err) {
         console.error("Error loading more:", err);
@@ -234,7 +237,8 @@ const AdminTradesUploadedViaPortfolio = () => {
       callApi,
       showLoader,
       requestdata: buildExportRequest(
-        adminTradesUploadedviaPortfolioReportSearch
+        adminTradesUploadedviaPortfolioReportSearch,
+        assetTypeListingData
       ),
       navigate,
       setOpen,

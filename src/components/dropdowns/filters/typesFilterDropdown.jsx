@@ -44,6 +44,13 @@ const TypeFilterDropdown = ({
       case "14":
       case "15":
       case "17":
+      case "23":
+        // ADDED: "23" (Admin Reports - shared top-level key across every
+        // Admin report page) was missing from this allow-list, unlike
+        // StatusFilterDropdown's own handleOk/handleReset which already
+        // handle "23" correctly - so Status filtering already worked on
+        // these Admin pages while Type (Buy/Sell) silently did nothing on
+        // OK/Reset (fell through to the no-op default case below).
         console.log("hcoTradesUploadViaPortfolioSearch");
         setState((prev) => ({
           ...prev,
@@ -78,6 +85,7 @@ const TypeFilterDropdown = ({
       case "14":
       case "15":
       case "17":
+      case "23":
         setState((prev) => ({
           ...prev,
           type: [],
