@@ -129,7 +129,7 @@ const GroupAndPolicyAddViewEdit = ({ currentPolicyID, setCurrentPolicyID }) => {
     },
     [callApi, navigate, showLoader, showNotification]
   );
-
+  const groupTitle = tabesFormDataofAdminGropusAndPolicy?.details?.groupTitle;
   // Initial Fetch
   useEffect(() => {
     if (
@@ -164,7 +164,6 @@ const GroupAndPolicyAddViewEdit = ({ currentPolicyID, setCurrentPolicyID }) => {
     resetAdminGropusAndPolicyContextState();
   };
 
-  const [groupTitle, setGroupTitle] = useState("");
   /** 🔹 Validation for Details tab */
   const validateDetailsTab = () => {
     const { groupTitle, groupDiscription } =
@@ -177,7 +176,7 @@ const GroupAndPolicyAddViewEdit = ({ currentPolicyID, setCurrentPolicyID }) => {
       setErrorDeatilsTabSwitch(true);
       return false;
     }
-    setGroupTitle(groupTitle);
+
     return true;
   };
 
@@ -580,11 +579,16 @@ const GroupAndPolicyAddViewEdit = ({ currentPolicyID, setCurrentPolicyID }) => {
                 ),
               },
 
-              ...(getTitleByType() === "View Group" &&
+              ...((getTitleByType() === "View Group" ||
+                getTitleByType() === "Edit Group") &&
               pageTabesForAdminGropusAndPolicy !== 0
                 ? [
                     {
-                      title: <span className={styles.breadcrumbText}>{}</span>,
+                      title: (
+                        <span className={styles.breadcrumbText}>
+                          {groupTitle}
+                        </span>
+                      ),
                     },
                   ]
                 : []),

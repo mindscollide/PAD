@@ -4,13 +4,9 @@ import React, { useEffect, useRef, useState, useCallback } from "react";
 import { Col, Row } from "antd";
 import { useNavigate } from "react-router-dom";
 
-// 🔹 Components
-
 // 🔹 Contexts
 import { useGlobalLoader } from "../../../context/LoaderContext";
 import { useApi } from "../../../context/ApiContext";
-import { useGlobalModal } from "../../../context/GlobalModalContext";
-import { useDashboardContext } from "../../../context/dashboardContaxt";
 
 // 🔹 Styles
 import style from "./groups_and_policy.module.css";
@@ -42,9 +38,7 @@ const GroupsAndPolicy = () => {
     setOpenNewFormForAdminGropusAndPolicy,
     openNewFormForAdminGropusAndPolicy,
     setPageTypeForAdminGropusAndPolicy,
-    pageTypeForAdminGropusAndPolicy,
     setPageTabeForAdminGropusAndPolicy,
-    pageTabesForAdminGropusAndPolicy,
   } = useMyAdmin();
 
   const {
@@ -113,7 +107,7 @@ const GroupsAndPolicy = () => {
       setAdminGropusAndPolicyData,
       showLoader,
       showNotification,
-    ],
+    ]
   );
 
   /** 🔹 Handle "View Details" modal */
@@ -269,7 +263,7 @@ const GroupsAndPolicy = () => {
       }
     },
     0,
-    "border-less-table-white-3",
+    "border-less-table-white-3"
   );
 
   // ----------------- Render -----------------

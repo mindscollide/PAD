@@ -352,7 +352,6 @@ export const getBorderlessTableColumns = ({
     title: "",
     key: "action",
     align: "center", // 🔷 Align content to the right
-    width: 200,
 
     render: (_, record) => (
       <div className={style.viewEditClass}>
