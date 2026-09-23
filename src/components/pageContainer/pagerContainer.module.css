@@ -112,7 +112,7 @@
 }
 .TATViewchangeHeightreports2 {
   height: 68vh !important;
-  top: 243px !important;
+  top: 240px !important;
 }
 .changeHeightlmreports {
   height: 70vh !important;
@@ -138,16 +138,20 @@
 }
 
 .TATViewRepotsHeight {
-  max-height: 70vh !important;
-  top: 225px !important;
+  max-height: 68vh !important;
+  top: 240px !important;
 }
 .repotsHeightHOC {
   max-height: 550px !important;
   top: 170px !important;
 }
 .sessionwiseHeight {
-  height: 80vh !important;
-  top: 135px !important;
+  height: 73vh !important;
+  top: 143px !important;
+}
+.sessionwiseHeightWithFilter {
+  max-height: 73vh !important;
+  top: 180px !important;
 }
 .grouppolicy {
   top: 126px !important;
