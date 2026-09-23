@@ -460,7 +460,9 @@ const UserSessionWiseActivity = () => {
       <PageLayout
         background="white"
         className={
-          activeFilters.length > 0 ? "repotsHeightHOC" : "sessionwiseHeight"
+          activeFilters.length > 0
+            ? "sessionwiseHeightWithFilter"
+            : "sessionwiseHeight"
         }
       >
         <div className="px-4 md:px-6 lg:px-8">
@@ -472,7 +474,7 @@ const UserSessionWiseActivity = () => {
               adminSessionWiseActivityListData?.sessions?.length
                 ? {
                     x: "max-content",
-                    y: activeFilters.length > 0 ? 500 : 550,
+                    y: activeFilters.length > 0 ? 450 : 500,
                   }
                 : undefined
             }

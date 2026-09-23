@@ -447,7 +447,7 @@ const ViewDetails = () => {
             classNameTable="border-less-table-blue"
             scroll={
               adminTATRequestApprovalDetailsData?.records?.length
-                ? { x: "max-content", y: activeFilters.length > 0 ? 450 : 500 }
+                ? { x: "max-content", y: activeFilters.length > 0 ? 400 : 450 }
                 : undefined
             }
             onChange={(pagination, filters, sorter) => setSortedInfo(sorter)}

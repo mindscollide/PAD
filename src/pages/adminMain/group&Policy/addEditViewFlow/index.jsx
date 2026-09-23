@@ -40,7 +40,6 @@ const GroupAndPolicyAddViewEdit = ({ currentPolicyID, setCurrentPolicyID }) => {
     tabesFormDataofAdminGropusAndPolicy,
     setTabesFormDataofAdminGropusAndPolicy,
     setAdminGropusAndPolicyMqtt,
-    setPageTypeForAdminGropusAndPolicy,
   } = useMyAdmin();
   const navigate = useNavigate();
   const hasFetched = useRef(false);
@@ -165,6 +164,7 @@ const GroupAndPolicyAddViewEdit = ({ currentPolicyID, setCurrentPolicyID }) => {
     resetAdminGropusAndPolicyContextState();
   };
 
+  const [groupTitle, setGroupTitle] = useState("");
   /** 🔹 Validation for Details tab */
   const validateDetailsTab = () => {
     const { groupTitle, groupDiscription } =
@@ -177,6 +177,7 @@ const GroupAndPolicyAddViewEdit = ({ currentPolicyID, setCurrentPolicyID }) => {
       setErrorDeatilsTabSwitch(true);
       return false;
     }
+    setGroupTitle(groupTitle);
     return true;
   };
 
@@ -578,6 +579,15 @@ const GroupAndPolicyAddViewEdit = ({ currentPolicyID, setCurrentPolicyID }) => {
                   </span>
                 ),
               },
+
+              ...(getTitleByType() === "View Group" &&
+              pageTabesForAdminGropusAndPolicy !== 0
+                ? [
+                    {
+                      title: <span className={styles.breadcrumbText}>{}</span>,
+                    },
+                  ]
+                : []),
             ]}
           />
         </Col>
@@ -614,9 +624,7 @@ const GroupAndPolicyAddViewEdit = ({ currentPolicyID, setCurrentPolicyID }) => {
       )}
       {/* 🔹 Page Layout with Tabs and Actions */}
       <PageLayout
-        background={
-          activeFilters.length > 0 ? "changeblue2" : "blue2"
-        }
+        background={activeFilters.length > 0 ? "changeblue2" : "blue2"}
         className={
           activeFilters.length > 0 ? "changeGrouppolicy" : "grouppolicy"
         }

@@ -79,8 +79,7 @@ export const getBorderlessTableColumns = (
     align: "left",
     dataIndex: "instrument",
     key: "instrument",
-    ellipsis: true,
-    width: 250,
+    width: 220,
     sorter: (a, b) => (a?.instrument || "").localeCompare(b?.instrument || ""),
     sortDirections: ["ascend", "descend"],
     sortOrder: sortedInfo?.columnKey === "instrument" ? sortedInfo.order : null,
@@ -134,7 +133,7 @@ export const getBorderlessTableColumns = (
     align: "left",
     dataIndex: "tradeApprovalID",
     key: "tradeApprovalID",
-    width: 120,
+    width: 100,
     sorter: (a, b) =>
       (a?.tradeApprovalID || "").localeCompare(b?.tradeApprovalID || ""),
     sortDirections: ["ascend", "descend"],
@@ -283,7 +282,7 @@ export const getBorderlessTableColumns = (
             color: tag.textColor,
             whiteSpace: "nowrap", // prevent wrapping
             overflow: "hidden",
-            textOverflow: "ellipsis",
+            // textOverflow: "ellipsis",
             display: "inline-block",
             // maxWidth: "100%", // tag respects parent cell width
           }}
@@ -308,7 +307,7 @@ export const getBorderlessTableColumns = (
         maxWidth: "240px",
         whiteSpace: "nowrap",
         overflow: "hidden",
-        textOverflow: "ellipsis",
+        // textOverflow: "ellipsis",
       },
     }),
   },
@@ -340,8 +339,8 @@ export const getBorderlessTableColumns = (
     render: (record) =>
       record?.status === "Non-Compliant" ? (
         <Button
-          className="small-white-button"
-          text="Comments"
+          className="small-dark-button_lesser-padding"
+          text="View Comments"
           onClick={() => onCommentsClick(record?.workFlowID)}
         />
       ) : null,

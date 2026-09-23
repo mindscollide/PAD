@@ -197,7 +197,7 @@ export const getBorderlessTableColumns = ({ sortedInfo, onViewDetails }) => [
   {
     title: "",
     key: "action",
-    width: 150,
+    width: 200,
     align: "right",
     render: (_, record) => (
       <div
@@ -205,7 +205,7 @@ export const getBorderlessTableColumns = ({ sortedInfo, onViewDetails }) => [
         style={{ display: "flex", alignItems: "center", marginRight: "10px" }}
       >
         <Button
-          className="view-large-transparent-button"
+          className="small-dark-button_lesser-padding"
           text={"View Details"}
           onClick={() => onViewDetails?.(record)}
         />
