@@ -566,9 +566,18 @@ const MyHistory = () => {
         // transition that happened before this fix shipped has no recorded
         // moment to show instead.
         const isNotTraded = wf.workFlowStatusID === 6;
+        // ADDED (2026-09-23_employee_my_history_traded_datetime.md): same gap
+        // as Not Traded above - wf.creationDate/Time is the ORIGINAL
+        // submission time, not the moment the request actually reached
+        // Traded, which is now separately captured as
+        // tradedDate/tradedTime. Falls back to creationDate/Time when null
+        // (not retroactively backfilled), same caveat as Not Traded.
+        const isTraded = wf.workFlowStatusID === 5;
         const finalStepDate =
           isNotTraded && wf.notTradedDate
             ? formatApiDateTime(`${wf.notTradedDate} ${wf.notTradedTime}`)
+            : isTraded && wf.tradedDate
+            ? formatApiDateTime(`${wf.tradedDate} ${wf.tradedTime}`)
             : formatApiDateTime(`${wf.creationDate} ${wf.creationTime}`);
 
         finalStep = {
