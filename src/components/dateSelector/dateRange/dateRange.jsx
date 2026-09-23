@@ -41,9 +41,11 @@ const DateRangePicker = ({
   // unrelated re-render while the popup was open undid next/previous-month
   // navigation. Memoizing on the underlying date strings keeps the array
   // reference stable across renders that don't actually change the dates.
+  const valueStart = Array.isArray(value) ? value[0] : value;
+  const valueEnd = Array.isArray(value) ? value[1] : value;
   const parsedValue = useMemo(
     () => parseToDayjsRange(value),
-    [Array.isArray(value) ? value[0] : value, Array.isArray(value) ? value[1] : value]
+    [valueStart, valueEnd] // eslint-disable-line react-hooks/exhaustive-deps
   );
 
   // Convert [dayjs, dayjs] to ["YYYY-MM-DD", "YYYY-MM-DD"]
