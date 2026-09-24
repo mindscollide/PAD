@@ -226,9 +226,9 @@ export const buildApiRequestViewDetails = (
   searchState = {},
   assetTypeListingData
 ) => ({
-  // (pageNumber - 1) * length on the backend - 0 (the search state's
-  // initial value) resolves to page 1 the same as 1 would.
-  PageNumber: Number(searchState.pageNumber) || 1,
+  // Row offset, not a 1-based page index: 0, then the number of rows loaded
+  // so far (API_Changes/2026-09-24_admin_transaction_summary_view_details_statusids.md).
+  PageNumber: Number(searchState.pageNumber) || 0,
   Length: Number(searchState.pageSize) || 10,
   TransactionDate: searchState.transactionDate,
   // FIXED (API_Changes/2026-08-28_admin_transaction_summary_view_details_
