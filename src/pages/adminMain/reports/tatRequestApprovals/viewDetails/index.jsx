@@ -117,10 +117,11 @@ const ViewDetails = () => {
         label: "Action By",
         value: actionBy.length > 13 ? actionBy.slice(0, 13) + "..." : actionBy,
       },
-      tat > 0 && {
+      // TAT is a "197 H, 40 M" string now (API_Changes/2026-09-24_admin_tat_view_details_tat_search_format.md)
+      tat && {
         key: "tat",
         label: "TAT",
-        value: Number(tat).toLocaleString("en-US"),
+        value: String(tat),
       },
       startDate &&
         endDate && {
@@ -258,7 +259,7 @@ const ViewDetails = () => {
       instrumentName: { instrumentName: "" },
       quantity: { quantity: 0 },
       actionBy: { actionBy: "" },
-      tat: { tat: 0 },
+      tat: { tat: "" },
       requestDateRange: { startDate: null, endDate: null },
       actionDateRange: { actionStartDate: null, actionEndDate: null },
     };
@@ -281,7 +282,7 @@ const ViewDetails = () => {
       actionStartDate: null,
       actionEndDate: null,
       actionBy: "",
-      tat: 0,
+      tat: "",
       pageNumber: 1,
       filterTrigger: true,
     }));

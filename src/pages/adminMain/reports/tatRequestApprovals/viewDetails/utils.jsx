@@ -101,6 +101,9 @@ export const mapListData = (res = []) => {
       `${item?.actionDate || ""} ${item?.actionTime || ""}`.trim() || "—",
     tatHours: item.tatHours || 0,
     tatMinutes: item.tatMinutes || 0,
+    // Pending requests are listed too (API_Changes/2026-09-24_admin_tat_request_approvals_include_pending.md):
+    // empty actionDate = not actioned yet, so there is no TAT to show.
+    isPending: !item.actionDate,
   }));
 };
 
@@ -266,7 +269,9 @@ export const getBorderlessTableColumns = ({
     showSorterTooltip: false,
     sortIcon: () => null,
     render: (v) => (
-      <span className="text-gray-600">{formatApiDateTime(v) || v}</span>
+      <span className="text-gray-600">
+        {v === "—" ? v : formatApiDateTime(v) || v}
+      </span>
     ),
   },
   {
@@ -285,11 +290,14 @@ export const getBorderlessTableColumns = ({
     showSorterTooltip: false,
     sortIcon: () => null,
 
-    render: (_, record) => (
-      <span className="font-medium">
-        {String(record.tatHours).padStart(2, "0")} H,{" "}
-        {String(record.tatMinutes).padStart(2, "0")} M
-      </span>
-    ),
+    render: (_, record) =>
+      record.isPending ? (
+        <span className="font-medium">—</span>
+      ) : (
+        <span className="font-medium">
+          {String(record.tatHours).padStart(2, "0")} H,{" "}
+          {String(record.tatMinutes).padStart(2, "0")} M
+        </span>
+      ),
   },
 ];

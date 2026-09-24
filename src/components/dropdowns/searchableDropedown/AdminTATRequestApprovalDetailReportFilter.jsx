@@ -118,13 +118,13 @@ export const AdminTATRequestApprovalViewDetailFilter = ({
       }
     }
 
-    // TAT: numbers only
+    // TAT: free text in the grid's own shape, e.g. "197 H, 40 M"
+    // (API_Changes/2026-09-24_admin_tat_view_details_tat_search_format.md) -
+    // only digits, H/M, comma and space are allowed. A bare number still
+    // means total minutes server-side.
     else if (name === "tat") {
-      if (
-        (rawValue === "" || allowOnlyNumbers(rawValue)) &&
-        rawValue.length <= 12
-      ) {
-        setFieldValue("tat", rawValue);
+      if (/^[0-9hHmM, ]*$/.test(value) && value.length <= 20) {
+        setFieldValue("tat", removeFirstSpace(value));
       }
     }
 
@@ -207,7 +207,7 @@ export const AdminTATRequestApprovalViewDetailFilter = ({
       actionEndDate,
 
       actionBy: actionBy?.trim() || "",
-      tat: tat ? Number(tat) : 0,
+      tat: tat?.trim() || "",
       pageNumber: 1,
       filterTrigger: true,
     });
@@ -229,7 +229,7 @@ export const AdminTATRequestApprovalViewDetailFilter = ({
       actionStartDate: null,
       actionEndDate: null,
       actionBy: "",
-      tat: 0,
+      tat: "",
       type: [], // clear Type too, if that column exists here
       pageNumber: 1,
       pageSize: 10,
@@ -293,13 +293,9 @@ export const AdminTATRequestApprovalViewDetailFilter = ({
           <TextField
             label="TAT"
             name="tat"
-            value={
-              localState.tat
-                ? Number(localState.tat).toLocaleString("en-US")
-                : ""
-            }
+            value={localState.tat}
             onChange={handleInputChange}
-            placeholder="TAT"
+            placeholder="e.g. 197 H, 40 M"
             size="medium"
           />
         </Col>
