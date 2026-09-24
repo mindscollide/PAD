@@ -68,15 +68,6 @@ const ViewDetails = () => {
   const [sortedInfo, setSortedInfo] = useState({});
   const [loadingMore, setLoadingMore] = useState(false);
   const [open, setOpen] = useState(false);
-  // Reuses the list's already-applied date range (snapshotted onto
-  // filterStartDate/filterEndDate when "View Details" was clicked) rather
-  // than tracking its own independent picker state.
-  const [search, setSearch] = useState({
-    startDate: showSelectedTatDataOnViewDetailHTA?.filterStartDate || null,
-    endDate: showSelectedTatDataOnViewDetailHTA?.filterEndDate || null,
-    pageNumber: 1,
-    pageSize: 10,
-  });
 
   useEffect(() => {
     if (adminTATViewDetailsSearch?.filterTrigger) {
@@ -252,7 +243,11 @@ const ViewDetails = () => {
     await ExportAdminTATRequestApprovalDetails({
       callApi,
       showLoader,
-      requestdata: buildExportRequest(search, employeeID),
+      requestdata: buildExportRequest(
+        adminTATViewDetailsSearch,
+        employeeID,
+        assetTypeListingData
+      ),
       navigate,
       setOpen,
     });

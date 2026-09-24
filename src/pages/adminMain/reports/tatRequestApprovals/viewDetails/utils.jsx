@@ -55,16 +55,23 @@ export const buildApiRequest = (
 });
 
 /**
- * ExportAdminTATRequestApprovalDetails request payload - same filters as
- * buildApiRequest above, minus PageNumber/Length (an export always
- * returns every matching row in one file), per
- * API_Changes/2026-08-28_admin_tat_request_approvals_export.md.
+ * ExportAdminTATRequestApprovalDetails request payload - the same object the
+ * screen sends (buildApiRequest), so the export applies every search option
+ * exactly as on screen, per
+ * API_Changes/2026-09-24_admin_tat_request_approval_details_export_search_options.md.
+ * PageNumber/Length are ignored server-side (an export is never paged), so
+ * they are dropped here.
  */
-export const buildExportRequest = (searchState = {}, employeeID) => ({
-  EmployeeID: employeeID,
-  StartDate: searchState.startDate ? toYYMMDD(searchState.startDate) : "",
-  EndDate: searchState.endDate ? toYYMMDD(searchState.endDate) : "",
-});
+export const buildExportRequest = (
+  searchState = {},
+  employeeID,
+  assetTypeListingData
+) => {
+  const request = buildApiRequest(searchState, employeeID, assetTypeListingData);
+  delete request.PageNumber;
+  delete request.Length;
+  return request;
+};
 
 /**
  * Maps GetAdminTATRequestApprovalDetailsAPI records into a UI-friendly

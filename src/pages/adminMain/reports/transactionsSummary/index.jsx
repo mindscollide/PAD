@@ -410,7 +410,8 @@ const AdminTransactionsSummarysReports = () => {
         callApi,
         showLoader,
         requestdata: buildExportRequestViewDetails(
-          coTransactionsSummarysReportsViewDetailsSearch
+          coTransactionsSummarysReportsViewDetailsSearch,
+          assetTypeListingData
         ),
         navigate,
         setOpen,
