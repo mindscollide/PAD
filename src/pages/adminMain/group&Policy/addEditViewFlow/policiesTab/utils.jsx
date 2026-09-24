@@ -5,6 +5,7 @@ import React from "react";
 const { Option } = Select;
 import styles from "./policies.module.css";
 import CustomDatePicker from "../../../../../components/dateSelector/datePicker/datePicker";
+import { convertCode } from "../../../../../common/funtions/convertCode";
 
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
@@ -13,18 +14,6 @@ import timezone from "dayjs/plugin/timezone";
 // Enable plugins
 dayjs.extend(utc);
 dayjs.extend(timezone);
-
-function convertCode(code) {
-  const [prefix, number] = code.split("_"); // "PL", "00000001"
-
-  // Take first 2 digits for the middle part
-  const mid = number.slice(0, 2); // "00"
-
-  // Remaining digits for the last part
-  const last = number.slice(2); // "000001"
-
-  return `${prefix}_${mid}_${last}`;
-}
 
 // Helper to normalize duration into array of strings
 const getDurationParts = (duration) => {

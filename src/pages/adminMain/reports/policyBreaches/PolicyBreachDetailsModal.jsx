@@ -4,6 +4,7 @@ import { GlobalModal } from "../../../../components";
 import CustomButton from "../../../../components/buttons/button";
 import Excel from "../../../../assets/img/xls.png";
 import style from "./PolicyBreachDetailsModal.module.css";
+import { convertCode } from "../../../../common/funtions/convertCode";
 
 /**
  * "Policies Breached" drill-down modal - opened by clicking a Policy
@@ -18,17 +19,6 @@ import style from "./PolicyBreachDetailsModal.module.css";
  * which was already built to the real SRS spec.
  */
 
-const convertCode = (code) => {
-  const [prefix, number] = code.split("_"); // "PL", "00000001"
-
-  // Take first 2 digits for the middle part
-  const mid = number.slice(0, 2); // "00"
-
-  // Remaining digits for the last part
-  const last = number.slice(2); // "000001"
-
-  return `${prefix}_${mid}_${last}`;
-};
 const PolicyBreachDetailsModal = ({
   visible,
   onClose,

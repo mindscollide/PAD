@@ -55,16 +55,23 @@ export const buildApiRequest = (
 });
 
 /**
- * ExportAdminTATRequestApprovalDetails request payload - same filters as
- * buildApiRequest above, minus PageNumber/Length (an export always
- * returns every matching row in one file), per
- * API_Changes/2026-08-28_admin_tat_request_approvals_export.md.
+ * ExportAdminTATRequestApprovalDetails request payload - the same object the
+ * screen sends (buildApiRequest), so the export applies every search option
+ * exactly as on screen, per
+ * API_Changes/2026-09-24_admin_tat_request_approval_details_export_search_options.md.
+ * PageNumber/Length are ignored server-side (an export is never paged), so
+ * they are dropped here.
  */
-export const buildExportRequest = (searchState = {}, employeeID) => ({
-  EmployeeID: employeeID,
-  StartDate: searchState.startDate ? toYYMMDD(searchState.startDate) : "",
-  EndDate: searchState.endDate ? toYYMMDD(searchState.endDate) : "",
-});
+export const buildExportRequest = (
+  searchState = {},
+  employeeID,
+  assetTypeListingData
+) => {
+  const request = buildApiRequest(searchState, employeeID, assetTypeListingData);
+  delete request.PageNumber;
+  delete request.Length;
+  return request;
+};
 
 /**
  * Maps GetAdminTATRequestApprovalDetailsAPI records into a UI-friendly
@@ -94,6 +101,9 @@ export const mapListData = (res = []) => {
       `${item?.actionDate || ""} ${item?.actionTime || ""}`.trim() || "—",
     tatHours: item.tatHours || 0,
     tatMinutes: item.tatMinutes || 0,
+    // Pending requests are listed too (API_Changes/2026-09-24_admin_tat_request_approvals_include_pending.md):
+    // empty actionDate = not actioned yet, so there is no TAT to show.
+    isPending: !item.actionDate,
   }));
 };
 
@@ -259,7 +269,9 @@ export const getBorderlessTableColumns = ({
     showSorterTooltip: false,
     sortIcon: () => null,
     render: (v) => (
-      <span className="text-gray-600">{formatApiDateTime(v) || v}</span>
+      <span className="text-gray-600">
+        {v === "—" ? v : formatApiDateTime(v) || v}
+      </span>
     ),
   },
   {
@@ -278,11 +290,14 @@ export const getBorderlessTableColumns = ({
     showSorterTooltip: false,
     sortIcon: () => null,
 
-    render: (_, record) => (
-      <span className="font-medium">
-        {String(record.tatHours).padStart(2, "0")} H,{" "}
-        {String(record.tatMinutes).padStart(2, "0")} M
-      </span>
-    ),
+    render: (_, record) =>
+      record.isPending ? (
+        <span className="font-medium">—</span>
+      ) : (
+        <span className="font-medium">
+          {String(record.tatHours).padStart(2, "0")} H,{" "}
+          {String(record.tatMinutes).padStart(2, "0")} M
+        </span>
+      ),
   },
 ];

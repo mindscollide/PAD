@@ -226,9 +226,9 @@ export const buildApiRequestViewDetails = (
   searchState = {},
   assetTypeListingData
 ) => ({
-  // (pageNumber - 1) * length on the backend - 0 (the search state's
-  // initial value) resolves to page 1 the same as 1 would.
-  PageNumber: Number(searchState.pageNumber) || 1,
+  // Row offset, not a 1-based page index: 0, then the number of rows loaded
+  // so far (API_Changes/2026-09-24_admin_transaction_summary_view_details_statusids.md).
+  PageNumber: Number(searchState.pageNumber) || 0,
   Length: Number(searchState.pageSize) || 10,
   TransactionDate: searchState.transactionDate,
   // FIXED (API_Changes/2026-08-28_admin_transaction_summary_view_details_
@@ -248,11 +248,12 @@ export const buildApiRequestViewDetails = (
   // in the UI (reusing CO's own coTransactionsSummarysReportsViewDetailsSearch
   // state/components) but were silently non-functional since this
   // endpoint's request had nowhere to receive them. Status uses the
-  // workflow-level scheme (8=Compliant/9=Non-Compliant, mapStatusToIds'
-  // default), matching the doc's own StatusIds example - not the
-  // bundle-level 2/3 scheme CO's sibling screen uses.
+  // workflow-level scheme (8=Compliant/9=Non-Compliant) - must pass type 2
+  // explicitly: mapStatusToIds' default (type = 1) is the bundle-level map
+  // (Compliant=2 / Non-Compliant=3), which never matches a Transaction and
+  // returns 0 records (API_Changes/2026-09-24_fe_compliant_noncompliant_statusids.md).
   TypeIds: mapBuySellToIds(searchState.type, assetTypeListingData?.Equities),
-  StatusIds: mapStatusToIds(searchState.status),
+  StatusIds: mapStatusToIds(searchState.status, 2),
 });
 
 /**
@@ -260,14 +261,17 @@ export const buildApiRequestViewDetails = (
  * as buildApiRequestViewDetails above, minus PageNumber/Length, per
  * API_Changes/2026-08-28_admin_transaction_summary_export.md (2).
  */
-export const buildExportRequestViewDetails = (searchState = {}) => ({
-  TransactionDate: searchState.transactionDate,
-  QuantitySearch: searchState.quantitySearch
-    ? Number(searchState.quantitySearch)
-    : null,
-  InstrumentNameSearch: searchState.instrumentNameSearch || "",
-  RequesterNameSearch: searchState.requesterNameSearch || "",
-});
+export const buildExportRequestViewDetails = (
+  searchState = {},
+  assetTypeListingData
+) => {
+  // Same object the screen sends (incl. TypeIds/StatusIds), so the export
+  // matches the filtered screen; an export is never paged.
+  const request = buildApiRequestViewDetails(searchState, assetTypeListingData);
+  delete request.PageNumber;
+  delete request.Length;
+  return request;
+};
 
 /**
  * Maps GetAdminTransactionSummaryViewDetailsAPI records into a UI-friendly

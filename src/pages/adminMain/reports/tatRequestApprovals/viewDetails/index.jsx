@@ -68,15 +68,6 @@ const ViewDetails = () => {
   const [sortedInfo, setSortedInfo] = useState({});
   const [loadingMore, setLoadingMore] = useState(false);
   const [open, setOpen] = useState(false);
-  // Reuses the list's already-applied date range (snapshotted onto
-  // filterStartDate/filterEndDate when "View Details" was clicked) rather
-  // than tracking its own independent picker state.
-  const [search, setSearch] = useState({
-    startDate: showSelectedTatDataOnViewDetailHTA?.filterStartDate || null,
-    endDate: showSelectedTatDataOnViewDetailHTA?.filterEndDate || null,
-    pageNumber: 1,
-    pageSize: 10,
-  });
 
   useEffect(() => {
     if (adminTATViewDetailsSearch?.filterTrigger) {
@@ -126,10 +117,11 @@ const ViewDetails = () => {
         label: "Action By",
         value: actionBy.length > 13 ? actionBy.slice(0, 13) + "..." : actionBy,
       },
-      tat > 0 && {
+      // TAT is a "197 H, 40 M" string now (API_Changes/2026-09-24_admin_tat_view_details_tat_search_format.md)
+      tat && {
         key: "tat",
         label: "TAT",
-        value: Number(tat).toLocaleString("en-US"),
+        value: String(tat),
       },
       startDate &&
         endDate && {
@@ -252,7 +244,11 @@ const ViewDetails = () => {
     await ExportAdminTATRequestApprovalDetails({
       callApi,
       showLoader,
-      requestdata: buildExportRequest(search, employeeID),
+      requestdata: buildExportRequest(
+        adminTATViewDetailsSearch,
+        employeeID,
+        assetTypeListingData
+      ),
       navigate,
       setOpen,
     });
@@ -263,7 +259,7 @@ const ViewDetails = () => {
       instrumentName: { instrumentName: "" },
       quantity: { quantity: 0 },
       actionBy: { actionBy: "" },
-      tat: { tat: 0 },
+      tat: { tat: "" },
       requestDateRange: { startDate: null, endDate: null },
       actionDateRange: { actionStartDate: null, actionEndDate: null },
     };
@@ -286,7 +282,7 @@ const ViewDetails = () => {
       actionStartDate: null,
       actionEndDate: null,
       actionBy: "",
-      tat: 0,
+      tat: "",
       pageNumber: 1,
       filterTrigger: true,
     }));
@@ -421,6 +417,13 @@ const ViewDetails = () => {
         <Col span={6}>
           <p className={style.mainTitleTextClass}>
             Date Range:
+            {/* FIXED (API_Changes/2026-09-23_admin_tat_request_approvals_fe_
+                date_picker_issues.md #2): filterStartDate/filterEndDate are
+                already "YYYY-MM-DD" strings, not Date objects - the removed
+                formatDate() called .getFullYear()/.getMonth()/.getDate()
+                directly on them, throwing a TypeError. Rendered as-is here,
+                same convention HTA's own TAT View Details reference screen
+                uses for these same fields. */}
             <span className={style.subTitleTextClass}>
               {showSelectedTatDataOnViewDetailHTA?.filterStartDate &&
               showSelectedTatDataOnViewDetailHTA?.filterEndDate

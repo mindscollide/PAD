@@ -166,9 +166,12 @@ const AdminTransactionsSummarysReports = () => {
           : (prev?.totalRecordsTable || 0) + mapped.length,
       }));
 
+      // PageNumber is a row offset: rows loaded so far.
       setCOTransactionsSummarysReportsViewDetailSearch((prev) => ({
         ...prev,
-        pageNumber: replace ? 2 : (prev.pageNumber || 1) + 1,
+        pageNumber: replace
+          ? mapped.length
+          : (prev.pageNumber || 0) + mapped.length,
       }));
       setCOTransactionSummaryReportViewDetailsFlag(true);
     },
@@ -306,7 +309,7 @@ const AdminTransactionsSummarysReports = () => {
     await showLoader(true);
     const requestData = {
       TransactionDate: transactionDate.split(" ")[0],
-      PageNumber: 1,
+      PageNumber: 0,
       Length: 10,
       // FIXED (API_Changes/2026-08-28_admin_transaction_summary_view_
       // details_fix.md "Update"): QuantitySearch is a nullable number
@@ -410,7 +413,8 @@ const AdminTransactionsSummarysReports = () => {
         callApi,
         showLoader,
         requestdata: buildExportRequestViewDetails(
-          coTransactionsSummarysReportsViewDetailsSearch
+          coTransactionsSummarysReportsViewDetailsSearch,
+          assetTypeListingData
         ),
         navigate,
         setOpen,
@@ -427,49 +431,67 @@ const AdminTransactionsSummarysReports = () => {
     });
   };
 
+  /** 🔹 Handle removing individual filter (View Details search tags) */
+  const handleRemoveFilter = (key) => {
+    const resetMap = {
+      instrumentNameSearch: { instrumentNameSearch: "" },
+      requesterNameSearch: { requesterNameSearch: "" },
+      quantitySearch: { quantitySearch: "" },
+    };
+
+    setCOTransactionsSummarysReportsViewDetailSearch((prev) => ({
+      ...prev,
+      ...resetMap[key],
+      pageNumber: 0,
+      filterTrigger: true,
+    }));
+  };
+
   /** 🔹 Handle removing all filters */
+  const handleRemoveAllFilters = () => {
+    setCOTransactionsSummarysReportsViewDetailSearch((prev) => ({
+      ...prev,
+      instrumentNameSearch: "",
+      requesterNameSearch: "",
+      quantitySearch: "",
+      pageNumber: 0,
+      filterTrigger: true,
+    }));
+  };
 
   /** 🔹 Build Active Filters for display
-   * FIXED: was always read off coTransactionsSummarysReportsViewDetailsSearch
-   * regardless of which screen was showing - so the main list's date range
-   * filter (the only filter it has) never produced a tag at all, since
-   * that search state doesn't even hold startDate/endDate. Now mirrors
-   * Date-wise Transaction Report's own "requestDate" tag convention for
-   * the list screen, and keeps the existing instrument/employee/quantity
-   * tags for the View Details drill-down screen.
+   * Same as CO's Transactions Summary: tags only on the View Details
+   * drill-down (instrument / employee / quantity). The list screen's date
+   * range stays in the picker, and Type/Status show in their column
+   * headers.
    */
   const activeFilters = (() => {
-    if (coTransactionSummaryReportViewDetailsFlag) {
-      const { instrumentNameSearch, requesterNameSearch, quantitySearch } =
-        coTransactionsSummarysReportsViewDetailsSearch || {};
+    if (!coTransactionSummaryReportViewDetailsFlag) return [];
 
-      return [
-        instrumentNameSearch && {
-          key: "instrumentNameSearch",
-          value:
-            instrumentNameSearch.length > 13
-              ? instrumentNameSearch.slice(0, 13) + "..."
-              : instrumentNameSearch,
-        },
-        requesterNameSearch && {
-          key: "requesterNameSearch",
-          value:
-            requesterNameSearch.length > 13
-              ? requesterNameSearch.slice(0, 13) + "..."
-              : requesterNameSearch,
-        },
-        quantitySearch &&
-          Number(quantitySearch) > 0 && {
-            key: "quantitySearch",
-            value: Number(quantitySearch).toLocaleString("en-US"),
-          },
-      ].filter(Boolean);
-    }
+    const { instrumentNameSearch, requesterNameSearch, quantitySearch } =
+      coTransactionsSummarysReportsViewDetailsSearch || {};
 
-    const { startDate, endDate } = coTransactionsSummarysReportsSearch || {};
-    return startDate && endDate
-      ? [{ key: "dateRange", value: `${startDate} → ${endDate}` }]
-      : [];
+    return [
+      instrumentNameSearch && {
+        key: "instrumentNameSearch",
+        value:
+          instrumentNameSearch.length > 13
+            ? instrumentNameSearch.slice(0, 13) + "..."
+            : instrumentNameSearch,
+      },
+      requesterNameSearch && {
+        key: "requesterNameSearch",
+        value:
+          requesterNameSearch.length > 13
+            ? requesterNameSearch.slice(0, 13) + "..."
+            : requesterNameSearch,
+      },
+      quantitySearch &&
+        Number(quantitySearch) > 0 && {
+          key: "quantitySearch",
+          value: Number(quantitySearch).toLocaleString("en-US"),
+        },
+    ].filter(Boolean);
   })();
 
   const tableRows = coTransactionSummaryReportViewDetailsFlag
@@ -583,6 +605,36 @@ const AdminTransactionsSummarysReports = () => {
           )}
         </Col>
       </Row>
+      {/* 🔹 Active Filter Tags */}
+      {activeFilters.length > 0 && (
+        <Row gutter={[12, 12]} className={style["filter-tags-container"]}>
+          {activeFilters.map(({ key, value }) => (
+            <Col key={key}>
+              <div className={style["filter-tag"]}>
+                <span>{value}</span>
+                <span
+                  className={style["filter-tag-close"]}
+                  onClick={() => handleRemoveFilter(key)}
+                >
+                  &times;
+                </span>
+              </div>
+            </Col>
+          ))}
+
+          {/* 🔹 Show Clear All only if more than one filter */}
+          {activeFilters.length > 1 && (
+            <Col>
+              <div
+                className={`${style["filter-tag"]} ${style["clear-all-tag"]}`}
+                onClick={handleRemoveAllFilters}
+              >
+                <span>Clear All</span>
+              </div>
+            </Col>
+          )}
+        </Row>
+      )}
 
       {/* 🔹 Transactions Table */}
       <PageLayout

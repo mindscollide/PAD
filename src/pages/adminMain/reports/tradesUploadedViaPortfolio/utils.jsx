@@ -1,7 +1,10 @@
 import { Tag, Tooltip } from "antd";
 import TypeColumnTitle from "../../../../components/dropdowns/filters/typeColumnTitle";
 import StatusColumnTitle from "../../../../components/dropdowns/filters/statusColumnTitle";
-import { mapBuySellToIds } from "../../../../components/dropdowns/filters/utils";
+import {
+  mapBuySellToIds,
+  mapStatusToIds,
+} from "../../../../components/dropdowns/filters/utils";
 import { withSortIcon } from "../../../../common/funtions/tableIcon";
 import { formatApiDateTime, toYYMMDD } from "../../../../common/funtions/rejex";
 
@@ -9,9 +12,9 @@ import { formatApiDateTime, toYYMMDD } from "../../../../common/funtions/rejex";
  * Utility: Build API request payload for GetAdminTradesUploadedViaPortfolioAPI
  * per API_Changes/2026-08-11_admin_reports_all_apis.md. Status filters on
  * the raw WorkFlowStatusID (1=Pending, 8=Compliant, 9=Non-Compliant for
- * Portfolio uploads) - unlike other reports' StatusIds, this one is sent
- * as-is (no label-to-id mapping needed since the search state already
- * stores the raw ids selected via the Status column filter).
+ * Portfolio uploads) - unlike other reports' StatusIds, the field is named
+ * `Status`. The search state stores the labels picked in the Status column
+ * filter, which are mapped to those ids below.
  *
  * @param {Object} searchState - Current search/filter state
  * @param {Object} assetTypeListingData - Extra request metadata (for TypeIds resolution)
@@ -35,7 +38,12 @@ export const buildApiRequest = (searchState = {}, assetTypeListingData) => ({
   TypeIds: searchState.type?.length
     ? mapBuySellToIds(searchState.type, assetTypeListingData?.Equities)
     : [1, 2],
-  Status: searchState.status?.length ? searchState.status : [8, 9],
+  // The Status column filter stores labels ("Compliant"/"Non-Compliant"/
+  // "Pending"); send the preferred ids (8/9/1) via the workflow map -
+  // API_Changes/2026-09-24_admin_trades_uploaded_via_portfolio_status_labels.md.
+  Status: mapStatusToIds(searchState.status, 2).length
+    ? mapStatusToIds(searchState.status, 2)
+    : [8, 9],
   // (pageNumber - 1) * length on the backend - 0 (the search state's
   // initial value) resolves to page 1 the same as 1 would.
   PageNumber: Number(searchState.pageNumber) || 1,
@@ -59,7 +67,7 @@ export const buildExportRequest = (searchState = {}, assetTypeListingData) => ({
   EndDate: searchState.endDate ? toYYMMDD(searchState.endDate) : "",
   Quantity: searchState.quantity ? Number(searchState.quantity) : null,
   TypeIds: mapBuySellToIds(searchState.type, assetTypeListingData?.Equities),
-  Status: searchState.status?.length ? searchState.status : [],
+  Status: mapStatusToIds(searchState.status, 2),
 });
 
 /**
