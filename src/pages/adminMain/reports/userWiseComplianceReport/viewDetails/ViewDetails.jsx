@@ -108,6 +108,26 @@ const ViewDetailsAdmin = () => {
     fetchDetails(next);
   };
 
+  // Clearing the picker falls back to BE's default range (last 6 months).
+  const handleDateClear = () => {
+    const next = { startDate: null, endDate: null };
+    setDateRange(next);
+    fetchDetails(next);
+  };
+
+  // The picker shows the range the report actually used
+  // (API_Changes/2026-09-24_admin_user_wise_compliance_details_chart_and_
+  // calendar.md #2): the user's own pick if any, otherwise the BE's
+  // effective range from the response. `dateRange` itself stays empty until
+  // the user picks, so the request keeps sending empty dates (BE default).
+  const isRealDate = (d) => d && d !== "—";
+  const pickerValue = [
+    dateRange.startDate ||
+      (isRealDate(details?.reportStartDate) ? details.reportStartDate : null),
+    dateRange.endDate ||
+      (isRealDate(details?.reportEndDate) ? details.reportEndDate : null),
+  ];
+
   const handleGoBack = () => {
     setShowViewDetailOfUserwiseComplianceReportAdmin(false);
     setSelectedUserwiseComplianceReportEmployee(null);
@@ -433,7 +453,8 @@ const ViewDetailsAdmin = () => {
                   <DateRangePicker
                     size="medium"
                     onChange={handleDateChange}
-                    value={[dateRange.startDate, dateRange.endDate]}
+                    onClear={handleDateClear}
+                    value={pickerValue}
                   />
                 </Col>
               </Row>
@@ -485,6 +506,7 @@ const ViewDetailsAdmin = () => {
                         details?.transactionsDonut?.percentages || []
                       }
                       totalCount={details?.transactionsDonut?.totalCount || 0}
+                      showLegend
                     />
                   </div>
                 </Col>

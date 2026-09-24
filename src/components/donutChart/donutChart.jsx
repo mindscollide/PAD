@@ -19,7 +19,13 @@ const statusColorMap = {
   "Non-Compliant": "#A50000",
 };
 
-const DonutChart = ({ labels, counts, percentages, totalCount }) => {
+const DonutChart = ({
+  labels,
+  counts,
+  percentages,
+  totalCount,
+  showLegend = false, // opt-in: names each segment (e.g. Compliant / Non-Compliant)
+}) => {
   const backgroundColors = labels.map(
     (label) => statusColorMap[label] || "#999999"
   );
@@ -38,7 +44,13 @@ const DonutChart = ({ labels, counts, percentages, totalCount }) => {
   const options = {
     cutout: "75%",
     plugins: {
-      legend: { display: false },
+      legend: showLegend
+        ? {
+            display: true,
+            position: "bottom",
+            labels: { usePointStyle: true, boxWidth: 8, color: "#424242" },
+          }
+        : { display: false },
       tooltip: {
         callbacks: {
           label: (tooltipItem) => {
