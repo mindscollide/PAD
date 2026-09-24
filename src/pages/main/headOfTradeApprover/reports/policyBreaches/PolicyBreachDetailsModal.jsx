@@ -4,6 +4,7 @@ import { GlobalModal } from "../../../../../components";
 import CustomButton from "../../../../../components/buttons/button";
 import Excel from "../../../../../assets/img/xls.png";
 import style from "./PolicyBreachDetailsModal.module.css";
+import { convertCode } from "../../../../../common/funtions/convertCode";
 
 /**
  * "Policies Breached" drill-down modal for HTA's Policy Breaches report -
@@ -84,7 +85,7 @@ const PolicyBreachDetailsModal = ({
                   {records.map((record, index) => (
                     <tr key={record.policyID || index}>
                       <td className={style.policyIdColumn}>
-                        {record.policyID || "—"}
+                        {convertCode(record.policyID) || "—"}
                       </td>
                       <td className={style.scenarioColumn}>
                         {record.scenario || "—"}

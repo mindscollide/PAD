@@ -68,13 +68,21 @@ export const ApiProvider = ({ children }) => {
       ) {
         const { status: responseCode, data } = res;
 
+        // Reports service answers a failed export with HTTP 200 and a JSON
+        // body, not a file — treat that as a failure instead of saving it as
+        // a corrupt spreadsheet.
+        const contentType = (res.headers?.["content-type"] || "").toLowerCase();
+        const isFile =
+          !contentType.includes("json") && !contentType.includes("text/");
+        const ok = responseCode === 200 && isFile;
+
         return {
-          success: responseCode === 200 ? true : false,
-          responseMessage: "Successfull Downloaded",
+          success: ok,
+          responseMessage: ok ? "Successfull Downloaded" : "Download failed",
           result: {
-            isExecuted: responseCode === 200 ? true : false,
+            isExecuted: ok,
             fileData: data,
-            contentType: res.headers?.["content-type"] || "",
+            contentType,
           },
         };
       }
