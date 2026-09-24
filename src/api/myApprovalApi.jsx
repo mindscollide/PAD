@@ -7063,6 +7063,13 @@ export const ExportComplianceOfficerViewTransactionSummaryReportExcel = async ({
       return false;
     }
 
+    // 🔹 Reports service returns HTTP 200 with a JSON body when an export
+    // fails server-side — don't save that as a (corrupt) .xlsx.
+    const contentType = (res.result?.contentType || "").toLowerCase();
+    if (contentType.includes("json") || contentType.includes("text/")) {
+      return false;
+    }
+
     // 🔹 When API Send Success Response
     if (res.success) {
       try {

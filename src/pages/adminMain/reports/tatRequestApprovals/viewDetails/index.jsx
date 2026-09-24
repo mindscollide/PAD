@@ -421,6 +421,13 @@ const ViewDetails = () => {
         <Col span={6}>
           <p className={style.mainTitleTextClass}>
             Date Range:
+            {/* FIXED (API_Changes/2026-09-23_admin_tat_request_approvals_fe_
+                date_picker_issues.md #2): filterStartDate/filterEndDate are
+                already "YYYY-MM-DD" strings, not Date objects - the removed
+                formatDate() called .getFullYear()/.getMonth()/.getDate()
+                directly on them, throwing a TypeError. Rendered as-is here,
+                same convention HTA's own TAT View Details reference screen
+                uses for these same fields. */}
             <span className={style.subTitleTextClass}>
               {showSelectedTatDataOnViewDetailHTA?.filterStartDate &&
               showSelectedTatDataOnViewDetailHTA?.filterEndDate

@@ -74,6 +74,7 @@ export const ApiProvider = ({ children }) => {
           result: {
             isExecuted: responseCode === 200 ? true : false,
             fileData: data,
+            contentType: res.headers?.["content-type"] || "",
           },
         };
       }
