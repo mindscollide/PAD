@@ -64,9 +64,6 @@ const COTransactionsSummarysReportsViewDetails = () => {
     resetCOTransactionsSummarysReportsSearch,
   } = useSearchBarContext();
 
-  const { setAssetTypeListingData } = useDashboardContext();
-
-
   // -------------------- Local State --------------------
   const [sortedInfo, setSortedInfo] = useState({});
   const [loadingMore, setLoadingMore] = useState(false);
@@ -144,7 +141,7 @@ const COTransactionsSummarysReportsViewDetails = () => {
     return () => {
       // Reset search state for fresh load
       resetCOTransactionsSummarysReportsSearch();
-      resetCOTransactionSummaryReportListData()
+      resetCOTransactionSummaryReportListData();
     };
   }, []);
 
@@ -326,14 +323,11 @@ const COTransactionsSummarysReportsViewDetails = () => {
       >
         <div className="px-4 md:px-6 lg:px-8 ">
           <BorderlessTable
-            rows={
-              coTransactionSummaryReportListData?.transactions
-            }
+            rows={coTransactionSummaryReportListData?.transactions}
             columns={columns}
             classNameTable="border-less-table-blue"
             scroll={
-              coTransactionSummaryReportListData?.transactions
-                ?.length
+              coTransactionSummaryReportListData?.transactions?.length
                 ? {
                     x: "max-content",
                     y: 500,
@@ -346,7 +340,6 @@ const COTransactionsSummarysReportsViewDetails = () => {
           />
         </div>
       </PageLayout>
-
     </>
   );
 };

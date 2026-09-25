@@ -39,6 +39,7 @@ import ViewDetaildDateWiseTransaction from "./ViewDetaildDateWiseTransaction/Vie
 import { useReconcileContext } from "../../../../context/reconsileContax";
 import { useGlobalModal } from "../../../../context/GlobalModalContext";
 import { formatToYYYYMMDD } from "../../../../common/funtions/rejex";
+import { getSafeAssetTypeData } from "../../../../common/funtions/assetTypesList";
 
 const AdmindataWiseTransactionsReports = () => {
   const navigate = useNavigate();
@@ -64,7 +65,8 @@ const AdmindataWiseTransactionsReports = () => {
     resetComplianceOfficerDateWiseTransationReportSearch,
   } = useSearchBarContext();
 
-  const { assetTypeListingData } = useDashboardContext();
+  const { assetTypeListingData, setAssetTypeListingData } =
+    useDashboardContext();
 
   console.log(assetTypeListingData, "assetTypeListingDataassetTypeListingData");
   const { setReconcileTransactionViewDetailData } = useReconcileContext();
@@ -95,6 +97,7 @@ const AdmindataWiseTransactionsReports = () => {
         requestdata: requestData,
         navigate,
       });
+      getSafeAssetTypeData(assetTypeListingData, setAssetTypeListingData);
 
       const mapped = mappingDateWiseTransactionReport(res);
       if (!Array.isArray(mapped)) return;
