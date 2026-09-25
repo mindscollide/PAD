@@ -21,6 +21,15 @@ export const buildApiRequest = (searchState = {}) => ({
   Length: Number(searchState.pageSize) || 10,
 });
 
+// "COTT - (Colony) Thal Textile Mills Limited" from the nested instrument
+// object; tolerates the old plain-string shape too.
+const buildInstrumentLabel = (instrument) => {
+  if (!instrument) return "";
+  if (typeof instrument === "string") return instrument;
+  const { instrumentCode, instrumentName } = instrument;
+  return [instrumentCode, instrumentName].filter(Boolean).join(" - ");
+};
+
 export const mapAdminInstrumentListData = (adminInstruments = []) => {
   const instruments = Array.isArray(adminInstruments)
     ? adminInstruments
@@ -44,7 +53,15 @@ export const mapAdminInstrumentListData = (adminInstruments = []) => {
     return {
       key,
       instrumentID: item?.instrumentID,
-      instrument: item?.instrument,
+      // CHANGED (API_Changes/2026-09-25_get_instruments_with_closing_period_
+      // instrument_object_and_sort.md): `instrument` is now an object
+      // {instrumentID, instrumentName, instrumentCode}, not the old
+      // "CODE - Name" string. The column, its sorter and the Edit modal
+      // (which splits on " - " for its title) all still read the string, so
+      // rebuild that text here; the parts are kept alongside.
+      instrument: buildInstrumentLabel(item?.instrument),
+      instrumentCode: item?.instrument?.instrumentCode || "",
+      instrumentName: item?.instrument?.instrumentName || "",
       closedPeriodStartDate:
         [item?.closedPeriodStartDate, item?.closedPeriodStartTime]
           .filter((v) => v && v !== "-" && v !== "—")
@@ -73,17 +90,68 @@ export const getInstrumentTableColumns = ({
   setSelectedInstrumentNameDataOnClick,
 }) => [
   {
-    title: withSortIcon("Instrument", "instrument", sortedInfo),
-    dataIndex: "instrument",
-    key: "instrument",
+    // Same cell as the employee My Approvals Instrument column: asset badge +
+    // short code, full "CODE - Name" in the tooltip. This API has no
+    // per-row asset type, so the badge falls back to "EQ" (same fallback as
+    // Admin Transactions Summary).
+    title: withSortIcon("Instrument", "instrumentCode", sortedInfo),
+    dataIndex: "instrumentCode",
+    key: "instrumentCode",
     align: "left",
     width: 390,
     ellipsis: true,
-    sorter: (a, b) => a.instrument.localeCompare(b.instrument),
+    sorter: (a, b) =>
+      (a?.instrumentCode || "").localeCompare(b?.instrumentCode || ""),
     sortIcon: () => null,
     sortDirections: ["ascend", "descend"],
-    sortOrder: sortedInfo?.columnKey === "instrument" ? sortedInfo.order : null,
+    sortOrder:
+      sortedInfo?.columnKey === "instrumentCode" ? sortedInfo.order : null,
     showSorterTooltip: false,
+    render: (_, record) => {
+      const code = record?.instrumentCode || "—";
+      const name = record?.instrumentName || "—";
+      return (
+        <div
+          id={`cell-${record.key}-instrumentCode`}
+          className={!record.status ? styles.inActiveColumnTexts : ""}
+          style={{ display: "flex", alignItems: "center", gap: "8px", minWidth: 0 }}
+        >
+          <span
+            className="custom-shortCode-asset"
+            style={{
+              minWidth: 32,
+              flexShrink: 0,
+              display: "inline-flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+            data-testid="asset-code"
+          >
+            EQ
+          </span>
+          <Tooltip
+            title={`${code} - ${name}`}
+            placement="topLeft"
+            overlayStyle={{ maxWidth: "300px" }}
+          >
+            <span
+              className="font-medium"
+              style={{
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+                whiteSpace: "nowrap",
+                minWidth: 0,
+                flex: 1,
+                cursor: "pointer",
+              }}
+              data-testid="instrument-code"
+            >
+              {code}
+            </span>
+          </Tooltip>
+        </div>
+      );
+    },
 
     // render: (text) => (
     //   <Tooltip title={text}>
