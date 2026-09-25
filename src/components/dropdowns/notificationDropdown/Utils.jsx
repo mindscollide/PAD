@@ -23,6 +23,14 @@ const NOTIFICATION_TITLES = {
   Transaction_Recieved: "Transaction received for verification",
   Trade_Approval_Request_Approved: "Trade Approval Request approved",
   Trade_Approval_Request_Declined: "Trade Approval Request declined",
+  // ADDED (API_Changes/2026-09-25_hta_evaluated_notification_mqtt_fe_guide.md):
+  // acting-HTA self-confirmation (actions 27/28). The live push sends
+  // notificationActionName as the ready-to-show title ("Trade Approval
+  // Request Approved"), which already falls through to itself below - these
+  // keys only cover the enum-name form in case the list API returns that.
+  // Wording is identical to what the API sends.
+  Trade_Approval_Request_Approved_Actor: "Trade Approval Request Approved",
+  Trade_Approval_Request_Declined_Actor: "Trade Approval Request Declined",
   Transaction_Marked_Compliant: "Transaction marked Compliant",
   Portfolio_Marked_Compliant: "Portfolio marked Compliant",
   Portfolio_Marked_NonCompliant: "Portfolio marked Non-Compliant",
