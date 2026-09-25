@@ -89,7 +89,11 @@ export const mapListData = (res = []) => {
   return records.map((item, index) => ({
     key: item.requestID ?? index,
     requestID: item.requestID,
-    instrumentName: item.instrumentName || "—",
+    // CHANGED (API_Changes/2026-09-25_admin_tat_details_instrument_object_tat_string.md):
+    // flat `instrumentName` replaced by a nested {instrumentID, instrumentName,
+    // instrumentShortCode} object.
+    instrumentName: item.instrument?.instrumentName || "—",
+    instrumentShortCode: item.instrument?.instrumentShortCode || "",
     initiatedAt:
       `${item?.initiatedDate || ""} ${item?.initiatedTime || ""}`.trim() || "—",
     // FIXED (API_Changes/2026-09-23_admin_tat_view_details_type_nested.md):
@@ -176,7 +180,14 @@ export const getBorderlessTableColumns = ({
         <span className="custom-shortCode-asset" style={{ minWidth: 30 }}>
           {(record?.assetTypeShortCode || "EQ").substring(0, 2).toUpperCase()}
         </span>
-        <Tooltip title={name} placement="topLeft">
+        <Tooltip
+          title={
+            record?.instrumentShortCode
+              ? `${record.instrumentShortCode} - ${name}`
+              : name
+          }
+          placement="topLeft"
+        >
           <span
             className="font-medium"
             style={{
