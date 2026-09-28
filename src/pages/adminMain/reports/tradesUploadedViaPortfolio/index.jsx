@@ -31,6 +31,7 @@ import { useSearchBarContext } from "../../../../context/SearchBarContaxt";
 import { useDashboardContext } from "../../../../context/dashboardContaxt";
 import { useTableScrollBottom } from "../../../../common/funtions/scroll";
 import CustomButton from "../../../../components/buttons/button";
+import { getSafeAssetTypeData } from "../../../../common/funtions/assetTypesList";
 
 /**
  * Admin Trades Uploaded via Portfolio report, per
@@ -59,7 +60,8 @@ const AdminTradesUploadedViaPortfolio = () => {
     resetAdminTradesUploadedviaPortfolioReportSearch,
   } = useSearchBarContext();
 
-  const { assetTypeListingData } = useDashboardContext();
+  const { assetTypeListingData, setAssetTypeListingData } =
+    useDashboardContext();
 
   // -------------------- Local State --------------------
   const [sortedInfo, setSortedInfo] = useState({});
@@ -86,6 +88,7 @@ const AdminTradesUploadedViaPortfolio = () => {
         requestdata: requestData,
         navigate,
       });
+      getSafeAssetTypeData(assetTypeListingData, setAssetTypeListingData);
 
       const mapped = mapListData(res);
       if (!Array.isArray(mapped)) return;
@@ -115,6 +118,8 @@ const AdminTradesUploadedViaPortfolio = () => {
   useEffect(() => {
     if (hasFetched.current) return;
     hasFetched.current = true;
+    getSafeAssetTypeData(assetTypeListingData, setAssetTypeListingData);
+
     const requestData = buildApiRequest(
       adminTradesUploadedviaPortfolioReportSearch,
       assetTypeListingData

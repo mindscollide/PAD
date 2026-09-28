@@ -7,7 +7,7 @@ import {
 } from "../../../../components/dropdowns/filters/utils";
 import { withSortIcon } from "../../../../common/funtions/tableIcon";
 import { formatApiDateTime, toYYMMDD } from "../../../../common/funtions/rejex";
-
+import style from "./TradesUploadedViaPortfolio.module.css";
 /**
  * Utility: Build API request payload for GetAdminTradesUploadedViaPortfolioAPI
  * per API_Changes/2026-08-11_admin_reports_all_apis.md. Status filters on
@@ -145,6 +145,20 @@ const renderInstrumentCell = (record) => {
     </div>
   );
 };
+const withFilterHeader = (node) => (
+  <div
+    className={style["table-header-wrapper"]}
+    style={{
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      minHeight: "32px",
+      width: "100%",
+    }}
+  >
+    {node}
+  </div>
+);
 
 export const getBorderlessTableColumns = ({
   approvalStatusMap,
@@ -195,7 +209,7 @@ export const getBorderlessTableColumns = ({
     render: (_, record) => renderInstrumentCell(record),
   },
   {
-    title: (
+    title: withFilterHeader(
       <TypeColumnTitle
         state={adminTradesUploadedviaPortfolioReportSearch}
         setState={setAdminTradesUploadedviaPortfolioReportSearch}
@@ -203,7 +217,8 @@ export const getBorderlessTableColumns = ({
     ),
     dataIndex: "type",
     key: "type",
-    width: 150,
+    width: 120,
+    align: "center",
     filteredValue: adminTradesUploadedviaPortfolioReportSearch?.type?.length
       ? adminTradesUploadedviaPortfolioReportSearch?.type
       : null,
@@ -217,6 +232,7 @@ export const getBorderlessTableColumns = ({
           width: "100%",
           overflow: "hidden",
           textOverflow: "ellipsis",
+          justifyContent: "center",
           whiteSpace: "nowrap",
         }}
       >

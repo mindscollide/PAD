@@ -24,6 +24,7 @@ import { BorderlessTable, PageLayout } from "../../../../../components";
 import CustomButton from "../../../../../components/buttons/button";
 import { useSearchBarContext } from "../../../../../context/SearchBarContaxt";
 import { useDashboardContext } from "../../../../../context/dashboardContaxt";
+import { getSafeAssetTypeData } from "../../../../../common/funtions/assetTypesList";
 
 /**
  * Admin TAT Request Approvals - View Details (per employee), per
@@ -58,9 +59,15 @@ const ViewDetails = () => {
     setShowViewDetailPageInTatOnHta,
     showSelectedTatDataOnViewDetailHTA,
   } = useGlobalModal();
+
+  console.log(
+    showSelectedTatDataOnViewDetailHTA,
+    "showSelectedTatDataOnViewDetailHTAshowSelectedTatDataOnViewDetailHTA"
+  );
   const { adminTATViewDetailsSearch, setAdminTATViewDetailsSearch } =
     useSearchBarContext();
-  const { assetTypeListingData } = useDashboardContext(); // add this import + hook call
+  const { assetTypeListingData, setAssetTypeListingData } =
+    useDashboardContext(); // add this import + hook call
   const { resetAdminTATViewDetailSearch } = useSearchBarContext();
   const employeeID = showSelectedTatDataOnViewDetailHTA?.employeeID;
 
@@ -68,7 +75,20 @@ const ViewDetails = () => {
   const [sortedInfo, setSortedInfo] = useState({});
   const [loadingMore, setLoadingMore] = useState(false);
   const [open, setOpen] = useState(false);
+  const formatDateToYYYYMMDD = (dateValue) => {
+    if (!dateValue) return null;
 
+    const date = new Date(dateValue);
+
+    // Guard against Invalid Date
+    if (isNaN(date.getTime())) return null;
+
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
+
+    return `${year}-${month}-${day}`;
+  };
   useEffect(() => {
     if (adminTATViewDetailsSearch?.filterTrigger) {
       const requestData = buildApiRequest(
@@ -148,6 +168,8 @@ const ViewDetails = () => {
         navigate,
       });
 
+      getSafeAssetTypeData(assetTypeListingData, setAssetTypeListingData);
+
       const mapped = mapListData(res);
       if (!Array.isArray(mapped)) return;
 
@@ -178,6 +200,9 @@ const ViewDetails = () => {
   useEffect(() => {
     if (hasFetched.current) return;
     hasFetched.current = true;
+
+    getSafeAssetTypeData(assetTypeListingData, setAssetTypeListingData);
+
     const requestData = buildApiRequest(
       adminTATViewDetailsSearch, // consider switching this from `search` too, for consistency
       employeeID,
@@ -417,17 +442,16 @@ const ViewDetails = () => {
         <Col span={6}>
           <p className={style.mainTitleTextClass}>
             Date Range:
-            {/* FIXED (API_Changes/2026-09-23_admin_tat_request_approvals_fe_
-                date_picker_issues.md #2): filterStartDate/filterEndDate are
-                already "YYYY-MM-DD" strings, not Date objects - the removed
-                formatDate() called .getFullYear()/.getMonth()/.getDate()
-                directly on them, throwing a TypeError. Rendered as-is here,
-                same convention HTA's own TAT View Details reference screen
-                uses for these same fields. */}
+            {/* FIXED: filterStartDate/filterEndDate are Date objects (per console
+        log), so they need formatting to YYYY-MM-DD before display. */}
             <span className={style.subTitleTextClass}>
               {showSelectedTatDataOnViewDetailHTA?.filterStartDate &&
               showSelectedTatDataOnViewDetailHTA?.filterEndDate
-                ? ` ${showSelectedTatDataOnViewDetailHTA.filterStartDate} - ${showSelectedTatDataOnViewDetailHTA.filterEndDate}`
+                ? ` ${formatDateToYYYYMMDD(
+                    showSelectedTatDataOnViewDetailHTA.filterStartDate
+                  )} - ${formatDateToYYYYMMDD(
+                    showSelectedTatDataOnViewDetailHTA.filterEndDate
+                  )}`
                 : "—"}
             </span>
           </p>

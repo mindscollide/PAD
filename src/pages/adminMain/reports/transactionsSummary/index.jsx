@@ -13,7 +13,6 @@ import {
   buildApiRequestViewDetails,
   buildExportRequest,
   buildExportRequestViewDetails,
-  formatDateOnly,
   getBorderlessTableColumns,
   getBorderlessTableColumnsViewDetails,
   mappingDateWiseTransactionReport,
@@ -48,6 +47,7 @@ import { useGlobalModal } from "../../../../context/GlobalModalContext";
 // ADDED: needed to seed the display-only date-range picker value on
 // initial load and to keep it showing the selected range after a change.
 import { formatToYYYYMMDD } from "../../../../common/funtions/rejex";
+import { getSafeAssetTypeData } from "../../../../common/funtions/assetTypesList";
 
 const AdminTransactionsSummarysReports = () => {
   const navigate = useNavigate();
@@ -83,7 +83,8 @@ const AdminTransactionsSummarysReports = () => {
     resetCOTransactionsSummarysReportsViewDetailsSearch,
   } = useSearchBarContext();
 
-  const { assetTypeListingData } = useDashboardContext();
+  const { assetTypeListingData, setAssetTypeListingData } =
+    useDashboardContext();
 
   // -------------------- Local State --------------------
   const [sortedInfo, setSortedInfo] = useState({});
@@ -189,6 +190,7 @@ const AdminTransactionsSummarysReports = () => {
   useEffect(() => {
     if (hasFetched.current) return;
     hasFetched.current = true;
+    getSafeAssetTypeData(assetTypeListingData, setAssetTypeListingData);
 
     const endDate = new Date();
     const startDate = new Date();
@@ -207,7 +209,7 @@ const AdminTransactionsSummarysReports = () => {
 
     setCOTransactionsSummarysReportsSearch(updatedState);
 
-    const requestData = buildApiRequest(updatedState);
+    const requestData = buildApiRequest(updatedState, assetTypeListingData);
     fetchApiCall(requestData, true, true);
   }, []);
 
@@ -226,7 +228,10 @@ const AdminTransactionsSummarysReports = () => {
   // 🔹 call api on search
   useEffect(() => {
     if (coTransactionsSummarysReportsSearch?.filterTrigger) {
-      const requestData = buildApiRequest(coTransactionsSummarysReportsSearch);
+      const requestData = buildApiRequest(
+        coTransactionsSummarysReportsSearch,
+        assetTypeListingData
+      );
       fetchApiCall(requestData, true, true);
     }
   }, [coTransactionsSummarysReportsSearch?.filterTrigger]);
@@ -291,7 +296,8 @@ const AdminTransactionsSummarysReports = () => {
         setLoadingMore(true);
 
         const requestData = buildApiRequest(
-          coTransactionsSummarysReportsSearch
+          coTransactionsSummarysReportsSearch,
+          assetTypeListingData
         );
 
         await fetchApiCall(requestData, false, false);

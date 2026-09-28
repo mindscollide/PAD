@@ -164,6 +164,7 @@ const withFilterHeader = (node) => (
     style={{
       display: "flex",
       alignItems: "center",
+      justifyContent: "center",
       minHeight: "32px",
       width: "100%",
     }}
@@ -316,6 +317,7 @@ export const getBorderlessTableColumns = ({
           overflow: "hidden",
           textOverflow: "ellipsis",
           whiteSpace: "nowrap",
+          justifyContent: "center",
         }}
       >
         {type}

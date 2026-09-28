@@ -67,7 +67,11 @@ export const buildExportRequest = (
   employeeID,
   assetTypeListingData
 ) => {
-  const request = buildApiRequest(searchState, employeeID, assetTypeListingData);
+  const request = buildApiRequest(
+    searchState,
+    employeeID,
+    assetTypeListingData
+  );
   delete request.PageNumber;
   delete request.Length;
   return request;
@@ -175,7 +179,20 @@ const withSortIcon = (label, columnKey, sortedInfo, align = "left") => (
     </span>
   </div>
 );
-
+const withFilterHeader = (node) => (
+  <div
+    className={style["table-header-wrapper"]}
+    style={{
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      minHeight: "32px",
+      width: "100%",
+    }}
+  >
+    {node}
+  </div>
+);
 export const getBorderlessTableColumns = ({
   sortedInfo,
   adminTATViewDetailsSearch,
@@ -242,7 +259,7 @@ export const getBorderlessTableColumns = ({
     // issues.md #3): backend's TypeIds filter was already wired end-to-end
     // with no FE control to trigger it - added the same shared Type
     // column-filter UI used on Policy Breaches/Trades Uploaded via Portfolio.
-    title: (
+    title: withFilterHeader(
       <TypeColumnTitle
         state={adminTATViewDetailsSearch}
         setState={setAdminTATViewDetailsSearch}
@@ -251,12 +268,24 @@ export const getBorderlessTableColumns = ({
     dataIndex: "type",
     key: "type",
     width: 100,
+    align: "center",
     filteredValue: adminTATViewDetailsSearch?.type?.length
       ? adminTATViewDetailsSearch?.type
       : null,
     onFilter: () => true,
-    render: (type) => (
-      <span className={type === "Buy" ? "text-green-600" : "text-red-600"}>
+    render: (type, record) => (
+      <span
+        id={`cell-${record.key}-type`}
+        className={type === "Buy" ? "text-green-600" : "text-red-600"}
+        style={{
+          display: "inline-block",
+          width: "100%",
+          overflow: "hidden",
+          textOverflow: "ellipsis",
+          justifyContent: "center",
+          whiteSpace: "nowrap",
+        }}
+      >
         {type}
       </span>
     ),

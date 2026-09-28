@@ -85,6 +85,7 @@ const withFilterHeader = (element) => (
     style={{
       display: "flex",
       alignItems: "center",
+      justifyContent: "center",
       minHeight: "32px",
       width: "100%",
     }}
@@ -363,7 +364,7 @@ export const getBorderlessTableColumnsViewDetails = ({
     dataIndex: "employeeID",
     key: "employeeID",
     align: "center",
-    width: 150,
+    width: 120,
     sorter: numberSorter("employeeID"),
     sortDirections: ["ascend", "descend"],
     sortOrder:
@@ -461,7 +462,7 @@ export const getBorderlessTableColumnsViewDetails = ({
     dataIndex: "actionBy",
     key: "actionBy",
     align: "left",
-    width: 200,
+    width: 150,
     sorter: (a, b) => (a.actionBy || "").localeCompare(b.actionBy || ""),
     sortDirections: ["ascend", "descend"],
     sortOrder:
@@ -508,8 +509,9 @@ export const getBorderlessTableColumnsViewDetails = ({
       />
     ),
     dataIndex: "type",
-    width: 150,
+    width: 110,
     key: "type",
+    align: "center",
     filteredValue: coTransactionsSummarysReportsViewDetailsSearch.type?.length
       ? coTransactionsSummarysReportsViewDetailsSearch.type
       : null,
@@ -525,6 +527,7 @@ export const getBorderlessTableColumnsViewDetails = ({
           width: "100%",
           overflow: "hidden",
           textOverflow: "ellipsis",
+          justifyContent: "center",
           whiteSpace: "nowrap",
         }}
       >
@@ -537,7 +540,7 @@ export const getBorderlessTableColumnsViewDetails = ({
     dataIndex: "quantity",
     key: "quantity",
     align: "center",
-    width: 150,
+    width: 130,
     sorter: (a, b) => (a?.quantity ?? 0) - (b?.quantity ?? 0),
     sortOrder:
       sortedInfoView?.columnKey === "quantity" ? sortedInfoView.order : null,
@@ -555,7 +558,8 @@ export const getBorderlessTableColumnsViewDetails = ({
     // FIXED (API_Changes/2026-09-23_admin_type_nested_and_typeids_filter.md):
     // was "not server-filterable" - GetAdminTransactionSummaryViewDetailsAPI's
     // request now accepts StatusIds (see buildApiRequestViewDetails above).
-    title: withFilterHeader(
+    title: (
+      //  withFilterHeader
       <StatusColumnTitle
         state={coTransactionsSummarysReportsViewDetailsSearch}
         setState={setCOTransactionsSummarysReportsViewDetailSearch}
@@ -593,7 +597,6 @@ export const getBorderlessTableColumnsViewDetails = ({
     title: "",
     key: "action",
     align: "center", // 🔷 Align content to the right
-    width: "200",
     render: (_, record) => (
       <div className={style.viewEditClass}>
         <Button

@@ -309,7 +309,11 @@ const ViewDetailsAdmin = () => {
               of API_Changes/2026-08-27_admin_user_wise_compliance_report_*.md),
               left as a visible-but-inert placeholder same as before. */}
           {open && (
-            <div className={style.dropdownExport}>
+            <div
+              className={style.dropdownExport}
+              // onClick={
+              //   downloadAdminDateWiseTransactionReportInExcelFormat}
+            >
               <div className={style.dropdownItem}>
                 <img src={Excel} alt="Excel" draggable={false} />
                 <span>Export Excel</span>
@@ -441,12 +445,12 @@ const ViewDetailsAdmin = () => {
                 <Col span={16}>
                   <p className={style.reportDurationText}>
                     Report for the duration:
-                    {details?.reportStartDate && details?.reportEndDate && (
+                    {/* {details?.reportStartDate && details?.reportEndDate && (
                       <span className={style.infoValue}>
                         {" "}
                         ({details.reportStartDate} to {details.reportEndDate})
                       </span>
-                    )}
+                    )} */}
                   </p>
                 </Col>
                 <Col span={8}>

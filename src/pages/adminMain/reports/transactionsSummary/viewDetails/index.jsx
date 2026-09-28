@@ -63,6 +63,8 @@ const COTransactionsSummarysReportsViewDetails = () => {
     setCOTransactionsSummarysReportsSearch,
     resetCOTransactionsSummarysReportsSearch,
   } = useSearchBarContext();
+  const { assetTypeListingData, setAssetTypeListingData } =
+    useDashboardContext();
 
   // -------------------- Local State --------------------
   const [sortedInfo, setSortedInfo] = useState({});
@@ -90,6 +92,7 @@ const COTransactionsSummarysReportsViewDetails = () => {
         requestdata: requestData,
         navigate,
       });
+      getSafeAssetTypeData(assetTypeListingData, setAssetTypeListingData);
 
       const transactions = Array.isArray(res?.transactions)
         ? res.transactions
@@ -148,7 +151,10 @@ const COTransactionsSummarysReportsViewDetails = () => {
   // 🔹 call api on search
   useEffect(() => {
     if (coTransactionsSummarysReportsSearch?.filterTrigger) {
-      const requestData = buildApiRequest(coTransactionsSummarysReportsSearch);
+      const requestData = buildApiRequest(
+        coTransactionsSummarysReportsSearch,
+        assetTypeListingData
+      );
       fetchApiCall(requestData, true, true);
     }
   }, [coTransactionsSummarysReportsSearch?.filterTrigger]);
@@ -329,7 +335,7 @@ const COTransactionsSummarysReportsViewDetails = () => {
             scroll={
               coTransactionSummaryReportListData?.transactions?.length
                 ? {
-                    x: "max-content",
+                    x: 1300,
                     y: 500,
                   }
                 : undefined

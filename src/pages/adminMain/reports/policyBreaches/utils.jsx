@@ -94,7 +94,20 @@ export const mapListData = (res = []) => {
     policyCount: item.policyCount || 0,
   }));
 };
-
+const withFilterHeader = (node) => (
+  <div
+    className={style["table-header-wrapper"]}
+    style={{
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      minHeight: "32px",
+      width: "100%",
+    }}
+  >
+    {node}
+  </div>
+);
 export const getBorderlessTableColumns = ({
   sortedInfo,
   adminPolicyBreachesReportSearch,
@@ -203,7 +216,7 @@ export const getBorderlessTableColumns = ({
     ),
   },
   {
-    title: (
+    title: withFilterHeader(
       <TypeColumnTitle
         state={adminPolicyBreachesReportSearch}
         setState={setAdminPolicyBreachesReportSearch}
@@ -211,7 +224,7 @@ export const getBorderlessTableColumns = ({
     ),
     dataIndex: "type",
     key: "type",
-    width: "120px",
+    width: 110,
     align: "center",
     filteredValue: adminPolicyBreachesReportSearch?.type?.length
       ? adminPolicyBreachesReportSearch?.type
@@ -226,6 +239,7 @@ export const getBorderlessTableColumns = ({
           width: "100%",
           overflow: "hidden",
           textOverflow: "ellipsis",
+          justifyContent: "center",
           whiteSpace: "nowrap",
         }}
       >
