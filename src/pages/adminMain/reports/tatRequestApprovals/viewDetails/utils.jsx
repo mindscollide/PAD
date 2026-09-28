@@ -81,6 +81,17 @@ export const buildExportRequest = (
  * @param {Object|Array} res - API response ({records, totalRecords}) or a bare array
  * @returns {Array} Mapped list
  */
+// actionBy is an array of users [{userID, firstName, lastName, fullName}]
+// (API_Changes/2026-09-25_admin_tat_details_instrument_object_tat_string.md);
+// tolerate the old single-name string too. Never hand the objects to React.
+const getActionByNames = (actionBy) => {
+  if (Array.isArray(actionBy)) {
+    return actionBy.map((u) => u?.fullName).filter(Boolean);
+  }
+  if (typeof actionBy === "string" && actionBy) return [actionBy];
+  return [];
+};
+
 export const mapListData = (res = []) => {
   const records = Array.isArray(res) ? res : res?.records || [];
 
@@ -89,14 +100,24 @@ export const mapListData = (res = []) => {
   return records.map((item, index) => ({
     key: item.requestID ?? index,
     requestID: item.requestID,
-    instrumentName: item.instrumentName || "—",
+    // CHANGED (API_Changes/2026-09-25_admin_tat_details_instrument_object_tat_string.md):
+    // flat `instrumentName` replaced by a nested {instrumentID, instrumentName,
+    // instrumentShortCode} object.
+    instrumentName: item.instrument?.instrumentName || "—",
+    instrumentShortCode: item.instrument?.instrumentShortCode || "",
     initiatedAt:
       `${item?.initiatedDate || ""} ${item?.initiatedTime || ""}`.trim() || "—",
     // FIXED (API_Changes/2026-09-23_admin_tat_view_details_type_nested.md):
     // flat `tradeType` string replaced with a nested {typeID, typeName} object.
     type: item.tradeType?.typeName || "-",
     quantity: item.quantity || 0,
-    actionBy: item.actionBy || "—",
+    // One officer -> the name; several -> "Multiple Users" (full list in the
+    // tooltip), same as the HTA TAT View Details page.
+    actionBy:
+      getActionByNames(item.actionBy).length > 1
+        ? "Multiple Users"
+        : getActionByNames(item.actionBy)[0] || "—",
+    actionByFullNames: getActionByNames(item.actionBy).join(", "),
     actionAt:
       `${item?.actionDate || ""} ${item?.actionTime || ""}`.trim() || "—",
     tatHours: item.tatHours || 0,
@@ -176,7 +197,14 @@ export const getBorderlessTableColumns = ({
         <span className="custom-shortCode-asset" style={{ minWidth: 30 }}>
           {(record?.assetTypeShortCode || "EQ").substring(0, 2).toUpperCase()}
         </span>
-        <Tooltip title={name} placement="topLeft">
+        <Tooltip
+          title={
+            record?.instrumentShortCode
+              ? `${record.instrumentShortCode} - ${name}`
+              : name
+          }
+          placement="topLeft"
+        >
           <span
             className="font-medium"
             style={{
@@ -256,7 +284,11 @@ export const getBorderlessTableColumns = ({
     sortOrder: sortedInfo?.columnKey === "actionBy" ? sortedInfo.order : null,
     showSorterTooltip: false,
     sortIcon: () => null,
-    render: (v) => <span className="font-medium">{v}</span>,
+    render: (v, record) => (
+      <Tooltip title={record?.actionByFullNames || v} placement="topLeft">
+        <span className="font-medium">{v}</span>
+      </Tooltip>
+    ),
   },
   {
     title: withSortIcon("Action At", "actionAt", sortedInfo, "center"),
