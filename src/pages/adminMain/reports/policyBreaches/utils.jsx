@@ -105,7 +105,7 @@ export const getBorderlessTableColumns = ({
     title: withSortIcon("Employee ID", "employeeID", sortedInfo, "center"),
     dataIndex: "employeeID",
     key: "employeeID",
-    width: 90,
+    width: 110,
     align: "center",
     sorter: (a, b) => Number(a.employeeID) - Number(b.employeeID),
     sortDirections: ["ascend", "descend"],
@@ -169,7 +169,7 @@ export const getBorderlessTableColumns = ({
     key: "instrumentName",
     width: "180px",
     sorter: (a, b) =>
-      (a.instrumentName || "").localeCompare(b.instrumentName || ""),
+      (a.instrumentShortCode || "").localeCompare(b.instrumentShortCode || ""),
     sortOrder:
       sortedInfo?.columnKey === "instrumentName" ? sortedInfo.order : null,
     showSorterTooltip: false,
