@@ -171,6 +171,21 @@ const withSortIcon = (label, columnKey, sortedInfo, align = "left") => (
   </div>
 );
 
+const withFilterHeader = (node) => (
+  <div
+    className={style["table-header-wrapper"]}
+    style={{
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      minHeight: "32px",
+      width: "100%",
+    }}
+  >
+    {node}
+  </div>
+);
+
 export const getBorderlessTableColumns = ({
   sortedInfo,
   htaTATViewDetailsSearch,
@@ -247,7 +262,7 @@ export const getBorderlessTableColumns = ({
     render: (value) => <span className="font-medium">{value || "—"}</span>,
   },
   {
-    title: (
+    title: withFilterHeader(
       <TypeColumnTitle
         state={htaTATViewDetailsSearch}
         setState={setHTATATViewDetailsSearch}
@@ -256,11 +271,11 @@ export const getBorderlessTableColumns = ({
     dataIndex: "type",
     key: "type",
     width: 140,
+    align: "center",
     filteredValue: htaTATViewDetailsSearch.type?.length
       ? htaTATViewDetailsSearch?.type
       : null,
     onFilter: () => true,
-    sortIcon: () => null,
     showSorterTooltip: false,
     render: (type, record) => (
       <span
@@ -273,6 +288,7 @@ export const getBorderlessTableColumns = ({
           overflow: "hidden",
           textOverflow: "ellipsis",
           whiteSpace: "nowrap",
+          justifyContent: "center",
         }}
       >
         {type}

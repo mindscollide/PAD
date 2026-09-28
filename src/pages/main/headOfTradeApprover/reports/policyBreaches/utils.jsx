@@ -153,7 +153,20 @@ const withSortIcon = (label, columnKey, sortedInfo, align = "left") => (
     </span>
   </div>
 );
-
+const withFilterHeader = (node) => (
+  <div
+    className={style["table-header-wrapper"]}
+    style={{
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      minHeight: "32px",
+      width: "100%",
+    }}
+  >
+    {node}
+  </div>
+);
 export const getBorderlessTableColumns = ({
   sortedInfo,
   htaPolicyBreachesReportSearch,
@@ -328,7 +341,7 @@ export const getBorderlessTableColumns = ({
     ),
   },
   {
-    title: (
+    title: withFilterHeader(
       <TypeColumnTitle
         state={htaPolicyBreachesReportSearch}
         setState={setHTAPolicyBreachesReportSearch}
@@ -337,6 +350,7 @@ export const getBorderlessTableColumns = ({
     dataIndex: "tradeType",
     key: "tradeType",
     width: 100,
+    align: "center",
     filteredValue: htaPolicyBreachesReportSearch.type?.length
       ? htaPolicyBreachesReportSearch?.type
       : null,
@@ -349,6 +363,7 @@ export const getBorderlessTableColumns = ({
         whiteSpace: "nowrap",
         overflow: "hidden",
         textOverflow: "ellipsis",
+        justifyContent: "center",
       },
     }),
     onCell: () => ({

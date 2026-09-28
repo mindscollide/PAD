@@ -73,6 +73,8 @@ const HTAPolicyBreachesReport = () => {
   const [policyBreachRecords, setPolicyBreachRecords] = useState([]);
   const [policyModalLoading, setPolicyModalLoading] = useState(false);
   const [policyDownloading, setPolicyDownloading] = useState(false);
+  const searchStateRef = useRef(htaPolicyBreachesReportSearch);
+  searchStateRef.current = htaPolicyBreachesReportSearch;
   // -------------------- Helpers --------------------
 
   /**
@@ -106,17 +108,15 @@ const HTAPolicyBreachesReport = () => {
 
       setHTAPolicyBreachesReportsData((prev) => ({
         records: replace ? mapped : [...(prev?.records || []), ...mapped],
-        // this is for to run lazy loading its data comming from database of total data in db
         totalRecordsDataBase: res?.totalRecords || 0,
-        // this is for to know how mush dta currently fetch from  db
         totalRecordsTable: replace
           ? mapped.length
-          : htaPolicyBreachesReportsData.totalRecordsTable + mapped.length,
+          : (prev?.totalRecordsTable || 0) + mapped.length,
       }));
       setHTAPolicyBreachesReportSearch((prev) => {
         const next = {
           ...prev,
-          pageNumber: prev.pageNumber + 1,
+          pageNumber: replace ? 2 : (prev.pageNumber || 1) + 1,
         };
 
         // this is for check if filter value get true only on that it will false
@@ -182,7 +182,7 @@ const HTAPolicyBreachesReport = () => {
       try {
         setLoadingMore(true);
         const requestData = buildApiRequest(
-          htaPolicyBreachesReportSearch,
+          searchStateRef.current, // fresh filters, not the stale closure
           assetTypeListingData
         );
         await fetchApiCall(requestData, false, false);
@@ -195,7 +195,6 @@ const HTAPolicyBreachesReport = () => {
     0,
     "border-less-table-blue"
   );
-
   // ADDED (2026-08-18): "Policies Breached" drill-down + export
   // (API_Changes/2026-08-18_hta_policy_breach_details_and_export_apis.md).
   // Same identifying fields both GetHTAPolicyBreachDetailsAPI and

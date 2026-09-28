@@ -30,6 +30,7 @@ const ViewDetails = () => {
   const navigate = useNavigate();
   const hasFetched = useRef(false);
   const tableScrollEmployeeTransaction = useRef(null);
+
   // -------------------- Contexts --------------------
 
   const { callApi } = useApi();
@@ -59,6 +60,8 @@ const ViewDetails = () => {
   const [sortedInfo, setSortedInfo] = useState({});
   const [loadingMore, setLoadingMore] = useState(false);
   const [open, setOpen] = useState(false);
+  const searchStateRef = useRef(htaTATViewDetailsSearch);
+  searchStateRef.current = htaTATViewDetailsSearch;
 
   const handleBack = () => {
     setShowViewDetailPageInTatOnHta(false);
@@ -97,24 +100,18 @@ const ViewDetails = () => {
 
       setHTATATViewDetailsData((prev) => ({
         workFlows: replace ? mapped : [...(prev?.workFlows || []), ...mapped],
-        // this is for to run lazy loading its data comming from database of total data in db
         totalRecordsDataBase: res?.totalRecords || 0,
-        // this is for to know how mush dta currently fetch from  db
         totalRecordsTable: replace
           ? mapped.length
-          : htaTATViewDetailsData.totalRecordsTable + mapped.length,
+          : (prev?.totalRecordsTable || 0) + mapped.length,
       }));
+
       setHTATATViewDetailsSearch((prev) => {
         const next = {
           ...prev,
-          pageNumber: prev.pageNumber + 1,
+          pageNumber: replace ? 2 : (prev.pageNumber || 1) + 1,
         };
-
-        // this is for check if filter value get true only on that it will false
-        if (prev.filterTrigger) {
-          next.filterTrigger = false;
-        }
-
+        if (prev.filterTrigger) next.filterTrigger = false;
         return next;
       });
     },
@@ -134,6 +131,8 @@ const ViewDetails = () => {
   useEffect(() => {
     if (hasFetched.current) return;
     hasFetched.current = true;
+    getSafeAssetTypeData(assetTypeListingData, setAssetTypeListingData);
+
     const requestData = buildApiRequest(
       htaTATViewDetailsSearch,
       showSelectedTatDataOnViewDetailHTA,
@@ -159,7 +158,12 @@ const ViewDetails = () => {
         showSelectedTatDataOnViewDetailHTA,
         assetTypeListingData
       );
-      fetchApiCall(requestData, true, true);
+      fetchApiCall(requestData, true, true).then(() => {
+        setHTATATViewDetailsSearch((prev) => ({
+          ...prev,
+          filterTrigger: false,
+        }));
+      });
     }
   }, [htaTATViewDetailsSearch?.filterTrigger]);
 
@@ -175,9 +179,9 @@ const ViewDetails = () => {
       try {
         setLoadingMore(true);
         const requestData = buildApiRequest(
-          htaTATViewDetailsSearch,
+          searchStateRef.current, // fresh filters, not the stale closure
           showSelectedTatDataOnViewDetailHTA,
-          assetTypeListingData // ← was missing, same as the reference page
+          assetTypeListingData
         );
         await fetchApiCall(requestData, false, false);
       } catch (err) {
