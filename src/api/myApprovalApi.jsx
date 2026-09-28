@@ -2017,6 +2017,7 @@ export const DownloadMyTradeApprovalReportRequestAPI = async ({
   requestdata,
   navigate,
   setOpen,
+  showNotification,
 }) => {
   try {
     showLoader(true);
@@ -2039,6 +2040,11 @@ export const DownloadMyTradeApprovalReportRequestAPI = async ({
     if (handleExpiredSession(res, navigate, showLoader)) return false;
     // 🔹 When API send isExecuted false
     if (!res?.result?.isExecuted) {
+      showNotification({
+        type: "error",
+        title: "Export Failed",
+        description: "Something went wrong while exporting your transactions.",
+      });
       return false;
     }
 
