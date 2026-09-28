@@ -417,7 +417,7 @@ const ViewDetails = () => {
           <p className={style.mainTitleTextClass}>
             Employee ID:
             <span className={style.subTitleTextClass}>
-              {showSelectedTatDataOnViewDetailHTA.employeeID}
+              {` ${showSelectedTatDataOnViewDetailHTA.employeeID}`}
             </span>
           </p>
         </Col>
@@ -425,7 +425,7 @@ const ViewDetails = () => {
           <p className={style.mainTitleTextClass}>
             Employee Name:
             <span className={style.subTitleTextClass}>
-              {showSelectedTatDataOnViewDetailHTA.employeeName}
+              {` ${showSelectedTatDataOnViewDetailHTA.employeeName}`}
             </span>
           </p>
         </Col>
@@ -433,7 +433,7 @@ const ViewDetails = () => {
           <p className={style.mainTitleTextClass}>
             Department:
             <span className={style.subTitleTextClass}>
-              {showSelectedTatDataOnViewDetailHTA.departmentName}
+              {` ${showSelectedTatDataOnViewDetailHTA.departmentName}`}
             </span>
           </p>
         </Col>
@@ -441,8 +441,8 @@ const ViewDetails = () => {
           <p className={style.mainTitleTextClass}>
             Date Range:
             <span className={style.subTitleTextClass}>
-              {showSelectedTatDataOnViewDetailHTA.filterStartDate} -{" "}
-              {showSelectedTatDataOnViewDetailHTA.filterEndDate}
+              {` ${showSelectedTatDataOnViewDetailHTA.filterStartDate} - 
+              ${showSelectedTatDataOnViewDetailHTA.filterEndDate}`}
             </span>
           </p>
         </Col>
