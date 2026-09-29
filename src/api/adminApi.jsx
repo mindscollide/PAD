@@ -3114,6 +3114,7 @@ export const ExportUserSessionWiseActivityRequest = async ({
   showLoader,
   requestdata,
   navigate,
+  setOpen,
 }) => {
   try {
     showLoader(true);
@@ -3160,6 +3161,7 @@ export const ExportUserSessionWiseActivityRequest = async ({
         link.click();
         document.body.removeChild(link);
         window.URL.revokeObjectURL(url);
+        setOpen(false);
         return true;
       } catch {
         showNotification({
@@ -3243,7 +3245,10 @@ export const ExportUserSessionWiseActivityDetailsRequest = async ({
         const url = window.URL.createObjectURL(blob);
         const link = document.createElement("a");
         link.href = url;
-        link.setAttribute("download", "User-Activity-Report-Session-Details.xlsx");
+        link.setAttribute(
+          "download",
+          "User-Activity-Report-Session-Details.xlsx"
+        );
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);

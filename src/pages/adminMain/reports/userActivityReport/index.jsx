@@ -273,6 +273,7 @@ const UserActivityReport = () => {
       showLoader,
       requestdata: buildExportRequest(userActivityReportAdmin),
       navigate,
+      setOpen,
     });
   };
 
