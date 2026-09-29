@@ -34,6 +34,24 @@ const statusColorMap = {
   Resubmit: "#F67F29",
 };
 
+// Display order for the summary table, donut chart and legend.
+// Keys are normalised (lower-case, no spaces/hyphens) so "Not-Traded" /
+// "Not Traded" and "Resubmit" / "Resubmitted" all match.
+const normalizeStatus = (s = "") => s.toLowerCase().replace(/[\s-]/g, "");
+
+const STATUS_ORDER = {
+  pending: 0,
+  approved: 1,
+  declined: 2,
+  traded: 3,
+  nottraded: 4,
+  resubmit: 5,
+  resubmitted: 5,
+};
+
+const getStatusRank = (name) =>
+  STATUS_ORDER[normalizeStatus(name)] ?? Number.MAX_SAFE_INTEGER; // unknown statuses go last
+
 const MyTradeApprovalStandingReport = () => {
   const navigate = useNavigate();
   const { callApi } = useApi();
@@ -54,8 +72,9 @@ const MyTradeApprovalStandingReport = () => {
   });
 
   //Extract data from the context state and save in variable
-  const apiSummary = getEmployeeTradeApprovalReport?.summary || [];
-
+  const apiSummary = [...(getEmployeeTradeApprovalReport?.summary || [])].sort(
+    (a, b) => getStatusRank(a.statusName) - getStatusRank(b.statusName)
+  );
   // For donut chart
   const labels = apiSummary.map((i) => i.statusName);
   const counts = apiSummary.map((i) => i.statusCount);
