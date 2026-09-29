@@ -2,6 +2,7 @@
   width: 260px !important;
   height: 260px !important;
   position: relative !important;
+  z-index: 1;
 }
 
 .centerCountNumDonut {
@@ -14,4 +15,5 @@
   color: #424242 !important;
   font-family: "Switzer Variable";
   font-weight: 700;
+  z-index: -1;
 }

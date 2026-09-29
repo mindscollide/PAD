@@ -400,7 +400,12 @@ export const policyColumns = ({
             case 1:
               return (
                 <span>
-                  {duration ? Number(duration) : "-"} {valueUnit}
+                  {duration !== null &&
+                  duration !== undefined &&
+                  duration !== ""
+                    ? Number(duration).toLocaleString("en-US")
+                    : "-"}
+                  {valueUnit !== "text" && ` ${valueUnit}`}
                 </span>
               );
 
@@ -409,14 +414,14 @@ export const policyColumns = ({
             case 4:
               return (
                 <span>
-                  {duration || "—"} {valueUnit}
+                  {duration || "—"} {valueUnit !== "text" ? valueUnit : ""}
                 </span>
               );
 
             case 5:
               return (
                 <span>
-                  {duration || "—"} {valueUnit}
+                  {duration || "—"} {valueUnit !== "text" ? valueUnit : ""}
                 </span>
               );
 
@@ -430,7 +435,8 @@ export const policyColumns = ({
                       {parts[0]}
                       {parts.length > 1 && (
                         <span className={styles.moreCount}>
-                          +{parts.length - 1} {valueUnit}
+                          +{parts.length - 1}{" "}
+                          {valueUnit !== "text" ? valueUnit : ""}
                         </span>
                       )}
                     </div>
@@ -444,7 +450,7 @@ export const policyColumns = ({
             default:
               return (
                 <span>
-                  {duration || "—"} {valueUnit}
+                  {duration || "—"} {valueUnit !== "text" ? valueUnit : ""}
                 </span>
               );
           }

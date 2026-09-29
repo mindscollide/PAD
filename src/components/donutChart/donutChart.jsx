@@ -77,6 +77,7 @@ const DonutChart = ({
             fontWeight: 600,
             color: "#424242",
             fontFamily: "Switzer Variable",
+            zIndex: 1,
           }}
         >
           Total Requests
