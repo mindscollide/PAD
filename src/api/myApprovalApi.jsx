@@ -1,5 +1,12 @@
 // src/api/dashboardApi.js
 import { getMessage, handleExpiredSession } from "./utils";
+const now = new Date();
+
+const pad = (num) => String(num).padStart(2, "0");
+
+const dateTime = `${now.getFullYear()}${pad(now.getMonth() + 1)}${pad(
+  now.getDate()
+)}_${pad(now.getHours())}${pad(now.getMinutes())}${pad(now.getSeconds())}`;
 
 // API function
 export const SearchTadeApprovals = async ({
@@ -433,7 +440,12 @@ export const DownloadMyHistoryReportRequest = async ({
         const link = document.createElement("a");
         link.href = url;
 
-        link.setAttribute("download", "MyHistory-Report.xlsx");
+        // link.setAttribute("download", "MyHistory-Report.xlsx");
+
+        const fileName = `My_History_${dateTime}.xlsx`;
+
+        link.setAttribute("download", fileName);
+
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
