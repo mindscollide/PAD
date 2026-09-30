@@ -358,7 +358,7 @@ const ViewDetailsAdmin = () => {
         pdf.setFont(undefined, "normal");
         pdf.setFontSize(10);
         pdf.text(`Employee: ${details?.fullName || "—"}`, 14, rowsStartY + 6);
-        pdf.text(`Date Range: ${dateRangeText}`, 14, rowsStartY + 12);
+        // pdf.text(`Date Range: ${dateRangeText}`, 14, rowsStartY + 12);
 
         pdf.text(`Exported On: ${exportedOn}`, pdfWidth - 14, rowsStartY, {
           align: "right",
@@ -473,10 +473,10 @@ const ViewDetailsAdmin = () => {
                 <img src={PDF} alt="PDF" draggable={false} />
                 <span>Export PDF</span>
               </div>
-              <div className={style.dropdownItem}>
+              {/* <div className={style.dropdownItem}>
                 <img src={Excel} alt="Excel" draggable={false} />
                 <span>Export Excel</span>
-              </div>
+              </div> */}
             </div>
           )}
         </Col>
