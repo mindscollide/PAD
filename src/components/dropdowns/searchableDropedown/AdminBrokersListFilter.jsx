@@ -59,6 +59,16 @@ export const AdminBrokersListFiletr = ({
   // 🔹 Input change handler
   const handleInputChange = (e) => {
     const { name, value } = e.target;
+
+    const rawValue = value.replace(/,/g, "");
+
+    if (name === "psxCode") {
+      if (rawValue === "" || rawValue.length <= 10) {
+        setFieldValue(name, rawValue);
+      }
+      return;
+    }
+
     setFieldValue(name, removeFirstSpace(value));
   };
 

@@ -103,6 +103,12 @@ export const AdminUsersTabFilter = ({
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
+    if (name === "employeeName") {
+      if (value.length < 101) {
+        setFieldValue(name, removeFirstSpace(value));
+      }
+      return;
+    }
     setFieldValue(name, removeFirstSpace(value));
 
     // Clear email error while typing
