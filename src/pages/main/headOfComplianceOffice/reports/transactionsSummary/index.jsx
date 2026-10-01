@@ -516,7 +516,9 @@ const HCATransactionsSummarysReports = () => {
         },
     ].filter(Boolean);
   })();
-
+  const tableRecord = coTransactionSummaryReportViewDetailsFlag
+    ? coTransactionSummaryReportViewDetailsListData.record
+    : hcoTransactionSummaryReportListData?.transactions;
   // -------------------- Render --------------------
   return (
     <>
@@ -592,9 +594,7 @@ const HCATransactionsSummarysReports = () => {
               </div>
             )}
             <CustomButton
-              disabled={
-                hcoTransactionSummaryReportListData?.transactions?.length === 0
-              }
+              disabled={tableRecord && tableRecord.length === 0}
               text={
                 <span className={style.exportButtonText}>
                   Export

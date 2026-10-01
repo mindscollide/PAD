@@ -418,6 +418,9 @@ const AdmindataWiseTransactionsReports = () => {
               }
               className="small-light-button-report"
               onClick={() => setOpen((prev) => !prev)}
+              disabled={
+                adminDateWiseTransactionReportData?.records.length === 0
+              }
             />
           </div>
 

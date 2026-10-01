@@ -307,6 +307,9 @@ const AdminTradesUploadedViaPortfolio = () => {
               }
               className="small-light-button-report"
               onClick={() => setOpen((prev) => !prev)}
+              disabled={
+                adminTradesUploadedViaPortfolioReportData?.records?.length === 0
+              }
             />
           </div>
 

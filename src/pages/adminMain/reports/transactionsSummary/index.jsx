@@ -590,6 +590,7 @@ const AdminTransactionsSummarysReports = () => {
               }
               className="small-light-button-report"
               onClick={() => setOpen((prev) => !prev)}
+              disabled={tableRows && tableRows.length === 0}
             />
           </div>
 

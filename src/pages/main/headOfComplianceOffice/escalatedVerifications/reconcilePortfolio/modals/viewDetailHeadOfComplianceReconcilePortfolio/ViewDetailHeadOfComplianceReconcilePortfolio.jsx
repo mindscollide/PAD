@@ -44,17 +44,12 @@ const ViewDetailHeadOfComplianceReconcilePortfolio = () => {
   const { isEscalatedPortfolioHeadOfComplianceViewDetailData } =
     usePortfolioContext();
 
-  //This is the Global state of Context Api
-  const { headOfComplianceApprovalEscalatedVerificationsData } =
-    useReconcileContext();
-
   const { allInstrumentsData } = useDashboardContext();
 
-  console.log(
-    headOfComplianceApprovalEscalatedVerificationsData,
-    "headOfComplianceApprovalEscalatedVerificationsData"
+  const UploadDateTime = convertUTCToCurrentTimeZone(
+    isEscalatedPortfolioHeadOfComplianceViewDetailData.transactionDate,
+    isEscalatedPortfolioHeadOfComplianceViewDetailData.transactionTime
   );
-
   // This is the Status Which is I'm getting from the selectedViewDetail contextApi state
   const getStatusStyle = (status) => {
     switch (status) {
@@ -123,8 +118,6 @@ const ViewDetailHeadOfComplianceReconcilePortfolio = () => {
         ?.workFlowStatusID
     )
   );
-
-  console.log(statusData, "statusDatastatusData");
 
   // Extarct and Instrument from viewDetailsModalData context Api
   const instrumentId = Number(
@@ -368,7 +361,7 @@ const ViewDetailHeadOfComplianceReconcilePortfolio = () => {
                       </label>
 
                       <label className={styles.viewDetailSubLabels}>
-                        to be provided by BE
+                        {UploadDateTime}
                       </label>
                     </div>
                   </Col>

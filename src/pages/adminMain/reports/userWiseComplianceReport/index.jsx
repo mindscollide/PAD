@@ -282,6 +282,9 @@ const UserWiseComplianceReport = () => {
                   }
                   className="small-light-button-report"
                   onClick={() => setOpen((prev) => !prev)}
+                  disabled={
+                    adminUserWiseComplianceReportData?.records?.length === 0
+                  }
                 />
               </div>
 

@@ -325,6 +325,7 @@ const UserActivityReport = () => {
               }
               className="small-light-button-report"
               onClick={() => setOpen((prev) => !prev)}
+              disabled={adminUserActivityReportData?.records?.length === 0}
             />
           </div>
           {/* 🔷 Export Dropdown */}

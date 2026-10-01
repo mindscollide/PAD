@@ -393,16 +393,13 @@ const AdminPolicyBreachesReport = () => {
               }
               className="small-light-button-report"
               onClick={() => setOpen((prev) => !prev)}
+              disabled={adminPolicyBreachesReportData?.records?.length === 0}
             />
           </div>
 
           {/* 🔷 Export Dropdown */}
           {open && (
             <div className={style.dropdownExport}>
-              {/* <div className={style.dropdownItem}>
-                <img src={PDF} alt="PDF" draggable={false} />
-                <span>Export PDF</span>
-              </div> */}
               <div
                 className={style.dropdownItem}
                 onClick={downloadAdminPolicyBreachesInExcelFormat}

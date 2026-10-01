@@ -299,6 +299,9 @@ const COTransactionsSummarysReportsViewDetails = () => {
               }
               className="small-light-button-report"
               onClick={() => setOpen((prev) => !prev)}
+              disabled={
+                coTransactionSummaryReportListData?.transactions?.length === 0
+              }
             />
           </div>
 

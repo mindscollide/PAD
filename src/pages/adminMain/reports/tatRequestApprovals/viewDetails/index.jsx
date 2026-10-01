@@ -368,6 +368,9 @@ const ViewDetails = () => {
               }
               className="small-light-button-report"
               onClick={() => setOpen((prev) => !prev)}
+              disabled={
+                adminTATRequestApprovalDetailsData?.records?.length === 0
+              }
             />
           </div>
 

@@ -40,7 +40,10 @@ import { useTableScrollBottom } from "../../../../../common/funtions/scroll";
 import CustomButton from "../../../../../components/buttons/button";
 import { DateRangePicker } from "../../../../../components";
 import ViewCommentTransaction from "./viewDetails/viewComment/ViewComment";
-import { formatToYYYYMMDD } from "../../../../../common/funtions/rejex";
+import {
+  formatShowOnlyDate,
+  formatToYYYYMMDD,
+} from "../../../../../common/funtions/rejex";
 // import ViewComment from "./viewComment/ViewComment";
 
 const COTransactionsSummarysReports = () => {
@@ -595,11 +598,14 @@ const COTransactionsSummarysReports = () => {
               />
             ) : (
               <div className={style.readonlyDateRange}>
-                <span className={style.readonlyDateRangeLabel}>
-                  Start date - End date
-                </span>
+                <span className={style.readonlyDateRangeLabel}>Date</span>
                 <span className={style.readonlyDateRangeValue}>
-                  {dateRange.StartDate} - {dateRange.EndDate}
+                  {coTransactionsSummarysReportsViewDetailsSearch?.transactionDate
+                    ? formatShowOnlyDate(
+                        coTransactionsSummarysReportsViewDetailsSearch.transactionDate
+                      ) ||
+                      coTransactionsSummarysReportsViewDetailsSearch.transactionDate
+                    : "—"}
                 </span>
               </div>
             )}

@@ -14,6 +14,7 @@ import {
 const INITIAL_LOCAL_STATE = {
   instrumentName: "",
   requesterName: "",
+  lineManagerName: "",
   quantity: 0,
   startDate: null,
   endDate: null,
@@ -131,6 +132,7 @@ export const HTAPendingRequestFilter = ({
     const {
       instrumentName,
       requesterName,
+      lineManagerName,
       quantity,
       startDate,
       endDate,
@@ -142,6 +144,7 @@ export const HTAPendingRequestFilter = ({
       ...hTAPendingApprovalReportsSearch,
       instrumentName: instrumentName?.trim() || "",
       requesterName: requesterName?.trim() || "",
+      lineManagerName: lineManagerName.trim() || "",
       quantity: quantity || "",
       startDate,
       endDate,
@@ -206,8 +209,17 @@ export const HTAPendingRequestFilter = ({
           />
         </Col>
       </Row>
-
       <Row gutter={[12, 12]} style={{ marginBottom: "15px" }}>
+        <Col xs={24} md={12}>
+          <TextField
+            label="Line Manager Name"
+            name="lineManagerName"
+            value={localState.lineManagerName}
+            onChange={handleInputChange}
+            placeholder="Line Manager Name"
+            size="medium"
+          />
+        </Col>
         <Col xs={24} md={12}>
           <DateRangePicker
             label="Request Date Range"
@@ -217,6 +229,9 @@ export const HTAPendingRequestFilter = ({
             onClear={handleClearDates}
           />
         </Col>
+      </Row>
+
+      <Row gutter={[12, 12]} style={{ marginBottom: "15px" }}>
         <Col xs={24} md={12}>
           <DateRangePicker
             label="Escalated Date Range"
@@ -226,9 +241,7 @@ export const HTAPendingRequestFilter = ({
             onClear={handleClearDatesEscalated}
           />
         </Col>
-      </Row>
 
-      <Row gutter={[12, 12]}>
         <Col xs={24} md={12}>
           <TextField
             label="Quantity"
