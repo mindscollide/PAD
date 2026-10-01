@@ -36,6 +36,14 @@ import { getMessage, handleExpiredSession } from "./utils";
  *   console.log("Transactions:", result.transactions);
  * }
  */
+
+const now = new Date();
+
+const pad = (num) => String(num).padStart(2, "0");
+
+const dateTime = `${now.getFullYear()}${pad(now.getMonth() + 1)}${pad(
+  now.getDate()
+)}_${pad(now.getHours())}${pad(now.getMinutes())}${pad(now.getSeconds())}`;
 export const SearchBrokersAdminRequest = async ({
   callApi,
   showNotification,
@@ -3156,7 +3164,11 @@ export const ExportUserSessionWiseActivityRequest = async ({
         const url = window.URL.createObjectURL(blob);
         const link = document.createElement("a");
         link.href = url;
-        link.setAttribute("download", "User-Activity-Report.xlsx");
+
+        const fileName = `User_Activity_Report_${dateTime}.xlsx`;
+
+        link.setAttribute("download", fileName);
+
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
@@ -3245,10 +3257,10 @@ export const ExportUserSessionWiseActivityDetailsRequest = async ({
         const url = window.URL.createObjectURL(blob);
         const link = document.createElement("a");
         link.href = url;
-        link.setAttribute(
-          "download",
-          "User-Activity-Report-Session-Details.xlsx"
-        );
+
+        const fileName = `User_Activity_Session_Details_Report_${dateTime}.xlsx`;
+
+        link.setAttribute("download", fileName);
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);

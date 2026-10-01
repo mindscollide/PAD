@@ -4,6 +4,7 @@ import DefaultColumArrow from "../../../../../../assets/img/default-colum-arrow.
 import style from "./ViewDetails.module.css";
 
 import {
+  dashBetweenApprovalAssets,
   formatApiDateTime,
   toYYMMDD,
 } from "../../../../../../common/funtions/rejex";
@@ -82,6 +83,7 @@ export const mapListData = (assetTypeData, htaTATViewDetailsData = []) => {
       approvalID: item.approvalID,
       title: item.title || "—",
       tradeApprovalID: item.tradeApprovalID || "—",
+
       instrument: item?.instrument?.instrumentShortCode ?? "—",
       instrumentName: item?.instrument?.instrumentName ?? "—",
       assetTypeName: item.assetType?.assetTypeName || "—",
@@ -195,8 +197,7 @@ export const getBorderlessTableColumns = ({
     title: withSortIcon("Instrument", "instrumentCode", sortedInfo),
     dataIndex: "instrumentCode",
     key: "instrumentCode",
-    width: 150,
-    ellipsis: true,
+    width: 220,
     sorter: (a, b) => (a?.instrument || "").localeCompare(b?.instrument || ""),
     sortOrder:
       sortedInfo?.columnKey === "instrumentCode" ? sortedInfo.order : null,
@@ -247,11 +248,35 @@ export const getBorderlessTableColumns = ({
       );
     },
   },
+
+  {
+    title: withSortIcon("Request ID", "tradeApprovalID", sortedInfo),
+    dataIndex: "tradeApprovalID",
+    key: "tradeApprovalID",
+    width: 100,
+    sortDirections: ["ascend", "descend"],
+    showSorterTooltip: false,
+    sorter: (a, b) =>
+      (a.tradeApprovalID || "").localeCompare(b.tradeApprovalID || ""),
+    sortOrder:
+      sortedInfo?.columnKey === "tradeApprovalID" ? sortedInfo.order : null,
+    sortIcon: () => null,
+    render: (tradeApprovalID) => {
+      return (
+        <div style={{ display: "flex", gap: "12px" }}>
+          <span className="font-medium">
+            {dashBetweenApprovalAssets(tradeApprovalID)}
+          </span>
+        </div>
+      );
+    },
+  },
+
   {
     title: withSortIcon("Initiated At", "initiatedAt", sortedInfo, "center"),
     dataIndex: "initiatedAt",
     key: "initiatedAt",
-    width: 200,
+    width: 180,
     align: "center",
     sortDirections: ["ascend", "descend"],
     showSorterTooltip: false,
@@ -316,7 +341,7 @@ export const getBorderlessTableColumns = ({
     dataIndex: "actionBy",
     key: "actionBy",
     align: "center",
-    width: "140px",
+    width: 140,
     sortIcon: () => null,
     ellipsis: true,
     showSorterTooltip: false,
@@ -337,7 +362,7 @@ export const getBorderlessTableColumns = ({
     dataIndex: "actionAt",
     key: "actionAt",
     align: "center",
-    width: 140,
+    width: 180,
     showSorterTooltip: false,
     sortIcon: () => null,
     sorter: (a, b) => (a.actionAt || "").localeCompare(b.actionAt || ""),
@@ -349,8 +374,7 @@ export const getBorderlessTableColumns = ({
     align: "center",
     dataIndex: "Tat",
     key: "Tat",
-    width: "140px",
-    ellipsis: true,
+    width: 140,
     showSorterTooltip: false,
     sorter: (a, b) =>
       (typeof a.Tat === "number" ? a.Tat : 0) -

@@ -246,6 +246,12 @@ const MyTradeApprovalStandingReport = () => {
         now.getDate()
       )} | ${pad(hours)}:${pad(now.getMinutes())} ${ampm}`;
 
+      const dateTime = `${now.getFullYear()}${pad(now.getMonth() + 1)}${pad(
+        now.getDate()
+      )}_${pad(now.getHours())}${pad(now.getMinutes())}${pad(
+        now.getSeconds()
+      )}`;
+
       // FIXED: dateRange.StartDate/EndDate are already "YYYY-MM-DD" strings
       // (formatToYYYYMMDD on mount, the DateRangePicker's own onChange
       // format otherwise - see handleDateChange/dateRange.jsx) - the
@@ -296,8 +302,9 @@ const MyTradeApprovalStandingReport = () => {
       const imgHeight = (imgProps.height * imgWidth) / imgProps.width;
 
       pdf.addImage(imgData, "PNG", 10, y, imgWidth, imgHeight);
+      const fileName = `My_Trade_Approvals_Standing_Report_${dateTime}.pdf`;
 
-      pdf.save("MyTrade-Approval-Report.pdf");
+      pdf.save(fileName);
       setOpen(false);
     } catch (error) {
       console.error("PDF Export Failed:", error);

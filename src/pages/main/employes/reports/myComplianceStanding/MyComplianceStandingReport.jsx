@@ -278,7 +278,15 @@ const MyComplianceStandingReport = () => {
       const imgHeight = (imgProps.height * imgWidth) / imgProps.width;
 
       pdf.addImage(imgData, "PNG", 10, y, imgWidth, imgHeight);
-      pdf.save("My-Compliance-Report.pdf");
+
+      const dateTime = `${now.getFullYear()}${pad(now.getMonth() + 1)}${pad(
+        now.getDate()
+      )}_${pad(now.getHours())}${pad(now.getMinutes())}${pad(
+        now.getSeconds()
+      )}`;
+
+      const fileName = `My_Compliance_Standing_Report_${dateTime}.pdf`;
+      pdf.save(fileName);
       setOpen(false);
     });
   };
