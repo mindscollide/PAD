@@ -1,12 +1,15 @@
 // src/api/dashboardApi.js
 import { getMessage, handleExpiredSession } from "./utils";
-const now = new Date();
 
 const pad = (num) => String(num).padStart(2, "0");
 
-const dateTime = `${now.getFullYear()}${pad(now.getMonth() + 1)}${pad(
-  now.getDate()
-)}_${pad(now.getHours())}${pad(now.getMinutes())}${pad(now.getSeconds())}`;
+// Called fresh on every download so the timestamp is never stale
+const getDateTime = () => {
+  const now = new Date();
+  return `${now.getFullYear()}${pad(now.getMonth() + 1)}${pad(
+    now.getDate()
+  )}_${pad(now.getHours())}${pad(now.getMinutes())}${pad(now.getSeconds())}`;
+};
 
 // API function
 export const SearchTadeApprovals = async ({
@@ -442,7 +445,7 @@ export const DownloadMyHistoryReportRequest = async ({
 
         // link.setAttribute("download", "MyHistory-Report.xlsx");
 
-        const fileName = `My_History_${dateTime}.xlsx`;
+        const fileName = `My_History_${getDateTime()}.xlsx`;
 
         link.setAttribute("download", fileName);
 
@@ -1851,7 +1854,7 @@ export const DownloadMyComplianceStandingRequestAPI = async ({
 
         // link.setAttribute("download", "My-Compliance-Standing-Report.xlsx");
 
-        const fileName = `My_Compliance_Standing_Report_${dateTime}.xlsx`;
+        const fileName = `My_Compliance_Standing_Report_${getDateTime()}.xlsx`;
 
         link.setAttribute("download", fileName);
 
@@ -1919,7 +1922,7 @@ export const DownloadMyTradeApprovalStandingRequestAPI = async ({
 
         // link.setAttribute("download", "My-TradeApproval-Standing-Report.xlsx");
 
-        const fileName = `My_Trade_Approvals_Standing_Report_${dateTime}.xlsx`;
+        const fileName = `My_Trade_Approvals_Standing_Report_${getDateTime()}.xlsx`;
 
         link.setAttribute("download", fileName);
 
@@ -1993,7 +1996,7 @@ export const DownloadMyTransactionReportRequestAPI = async ({
 
         // link.setAttribute("download", "My-Transaction-Report.xlsx");
 
-        const fileName = `My_Transactions_Report_${dateTime}.xlsx`;
+        const fileName = `My_Transactions_Report_${getDateTime()}.xlsx`;
 
         link.setAttribute("download", fileName);
 
@@ -2089,7 +2092,7 @@ export const DownloadMyTradeApprovalReportRequestAPI = async ({
 
         // link.setAttribute("download", "My-Trade-Approval-Report.xlsx");
 
-        const fileName = `My_Trade_Approval_Report_${dateTime}.xlsx`;
+        const fileName = `My_Trade_Approval_Report_${getDateTime()}.xlsx`;
 
         link.setAttribute("download", fileName);
 
@@ -2252,7 +2255,7 @@ export const DownloadLineManagerMyTradeApprovalReportRequestAPI = async ({
 
         // link.setAttribute("download", "LM-Trade-Approval-Report.xlsx");
 
-        const fileName = `Trade_Approval_Requests_Report_${dateTime}.xlsx`;
+        const fileName = `Trade_Approval_Requests_Report_${getDateTime()}.xlsx`;
 
         link.setAttribute("download", fileName);
 
@@ -2410,7 +2413,7 @@ export const DownloadComplianceOfficerDateWiseTransactionReportRequestAPI =
           //   "download",
           //   "ComplianceOfficer-DateWise-Transaction-Report.xlsx"
           // );
-          const fileName = `Datewise_Transactions_Report_${dateTime}.xlsx`;
+          const fileName = `Datewise_Transactions_Report_${getDateTime()}.xlsx`;
 
           link.setAttribute("download", fileName);
 
@@ -2537,7 +2540,7 @@ export const ExportLineManagerPendingTradeApprovalsExcel = async ({
 
         // link.setAttribute("download", "Pending-Request-Report.xlsx");
 
-        const fileName = `Pending_Requests_Report_${dateTime}.xlsx`;
+        const fileName = `Pending_Requests_Report_${getDateTime()}.xlsx`;
 
         link.setAttribute("download", fileName);
 
@@ -3482,7 +3485,7 @@ export const ExportAdminPolicyBreaches = async ({
         const link = document.createElement("a");
         link.href = url;
 
-        const fileName = `Policy_Breaches_Report_${dateTime}.xlsx`;
+        const fileName = `Policy_Breaches_Report_${getDateTime()}.xlsx`;
 
         link.setAttribute("download", fileName);
         document.body.appendChild(link);
@@ -3546,7 +3549,7 @@ export const ExportAdminPolicyBreachDetails = async ({
         const link = document.createElement("a");
         link.href = url;
 
-        const fileName = `Policy_Breaches_Details_Report_${dateTime}.xlsx`;
+        const fileName = `Policy_Breaches_Details_Report_${getDateTime()}.xlsx`;
         link.setAttribute("download", fileName);
 
         document.body.appendChild(link);
@@ -3689,7 +3692,7 @@ export const ExportAdminTradeApprovalRequestSummary = async ({
         const link = document.createElement("a");
         link.href = url;
 
-        const fileName = `Trade_Approval_Request_Report_${dateTime}.xlsx`;
+        const fileName = `Trade_Approval_Request_Report_${getDateTime()}.xlsx`;
 
         link.setAttribute("download", fileName);
         document.body.appendChild(link);
@@ -3831,7 +3834,7 @@ export const ExportAdminDateWiseTransactionReport = async ({
         const link = document.createElement("a");
         link.href = url;
 
-        const fileName = `Date_Wise_Transaction_Report_${dateTime}.xlsx`;
+        const fileName = `Date_Wise_Transaction_Report_${getDateTime()}.xlsx`;
 
         link.setAttribute("download", fileName);
 
@@ -4302,7 +4305,7 @@ export const ExportAdminTATRequestApprovals = async ({
         const link = document.createElement("a");
         link.href = url;
 
-        const fileName = `TAT_Request_Approvals_Report_${dateTime}.xlsx`;
+        const fileName = `TAT_Request_Approvals_Report_${getDateTime()}.xlsx`;
 
         link.setAttribute("download", fileName);
 
@@ -4364,7 +4367,7 @@ export const ExportAdminTATRequestApprovalDetails = async ({
         const url = window.URL.createObjectURL(blob);
         const link = document.createElement("a");
         link.href = url;
-        const fileName = `TAT_Request_Approvals_Details_ Report_${dateTime}.xlsx`;
+        const fileName = `TAT_Request_Approvals_Details_ Report_${getDateTime()}.xlsx`;
 
         link.setAttribute("download", fileName);
 
@@ -4505,7 +4508,7 @@ export const ExportAdminTradesUploadedViaPortfolio = async ({
         const link = document.createElement("a");
         link.href = url;
 
-        const fileName = `Trades_Upload_Via_Portfolio_${dateTime}.xlsx`;
+        const fileName = `Trades_Upload_Via_Portfolio_${getDateTime()}.xlsx`;
 
         link.setAttribute("download", fileName);
         document.body.appendChild(link);
@@ -4567,7 +4570,7 @@ export const ExportAdminTransactionSummaryReport = async ({
         const link = document.createElement("a");
         link.href = url;
 
-        const fileName = `Transaction_Summary_Report_${dateTime}.xlsx`;
+        const fileName = `Transaction_Summary_Report_${getDateTime()}.xlsx`;
 
         link.setAttribute("download", fileName);
 
@@ -4630,7 +4633,7 @@ export const ExportAdminTransactionSummaryViewDetails = async ({
         const link = document.createElement("a");
         link.href = url;
 
-        const fileName = `Transaction_Summary_Details_Report_${dateTime}.xlsx`;
+        const fileName = `Transaction_Summary_Details_Report_${getDateTime()}.xlsx`;
 
         link.setAttribute("download", fileName);
 
@@ -4888,7 +4891,7 @@ export const ExportOverdueVerificationCOExcel = async ({
 
         // link.setAttribute("download", "Overdue-verification-Report.xlsx");
 
-        const fileName = `Overdue_Verifications_Report_${dateTime}.xlsx`;
+        const fileName = `Overdue_Verifications_Report_${getDateTime()}.xlsx`;
 
         link.setAttribute("download", fileName);
 
@@ -5150,7 +5153,7 @@ export const ExportHOCDateWiseTransactionReportExcel = async ({
         //   "ComplianceOfficer-DateWise-Transaction-Report.xlsx"
         // );
 
-        const fileName = `Datewise_Transaction_Report_${dateTime}.xlsx`;
+        const fileName = `Datewise_Transaction_Report_${getDateTime()}.xlsx`;
 
         link.setAttribute("download", fileName);
 
@@ -5498,7 +5501,7 @@ export const ExportPortfolioHistoryCOExcel = async ({
 
         // link.setAttribute("download", "PortfolioHistory_Report.xlsx");
 
-        const fileName = `Portfolio_History_Report_${dateTime}.xlsx`;
+        const fileName = `Portfolio_History_Report_${getDateTime()}.xlsx`;
 
         link.setAttribute("download", fileName);
 
@@ -5659,7 +5662,7 @@ export const ExportHTATradeApprovalRequestsExcelReport = async ({
 
         // link.setAttribute("download", "HTA-Trade-Approval-Report.xlsx");
 
-        const fileName = `Trade_Approval_Requests_Report_${dateTime}.xlsx`;
+        const fileName = `Trade_Approval_Requests_Report_${getDateTime()}.xlsx`;
 
         link.setAttribute("download", fileName);
         document.body.appendChild(link);
@@ -5725,7 +5728,7 @@ export const ExportHTAPendingTradeApprovalsExcel = async ({
         const link = document.createElement("a");
         link.href = url;
 
-        const fileName = `Pending_Requests_Report_${dateTime}.xlsx`;
+        const fileName = `Pending_Requests_Report_${getDateTime()}.xlsx`;
 
         link.setAttribute("download", fileName);
         document.body.appendChild(link);
@@ -6023,7 +6026,7 @@ export const ExportHTAPolicyBreachesExcelReport = async ({
 
         // link.setAttribute("download", "HTA-Policy-Breaches-Report.xlsx");
 
-        const fileName = `Policy_Breaches_Report_${dateTime}.xlsx`;
+        const fileName = `Policy_Breaches_Report_${getDateTime()}.xlsx`;
 
         link.setAttribute("download", fileName);
 
@@ -6093,7 +6096,7 @@ export const ExportHTATurnAroundTimeRequestDetailsExcel = async ({
 
         // link.setAttribute("download", "HTA-TAT-Request-Details.xlsx");
 
-        const fileName = `TAT_Request_Approvals_Details_${dateTime}.xlsx`;
+        const fileName = `TAT_Request_Approvals_Details_${getDateTime()}.xlsx`;
 
         link.setAttribute("download", fileName);
         document.body.appendChild(link);
@@ -6162,7 +6165,7 @@ export const ExportAdminUserWiseComplianceReport = async ({
 
         // link.setAttribute("download", "Admin-User-Wise-Compliance-Report.xlsx");
 
-        const fileName = `Userwise_Compliance_Report_${dateTime}.xlsx`;
+        const fileName = `Userwise_Compliance_Report_${getDateTime()}.xlsx`;
 
         link.setAttribute("download", fileName);
 
@@ -6410,7 +6413,7 @@ export const ExportHTATurnAroundTimeReportExcel = async ({
 
         // link.setAttribute("download", "HTA-Turn-Around-Time-Report.xlsx");
 
-        const fileName = `TAT_Request_Approvals_Report_${dateTime}.xlsx`;
+        const fileName = `TAT_Request_Approvals_Report_${getDateTime()}.xlsx`;
 
         link.setAttribute("download", fileName);
 
@@ -6480,7 +6483,7 @@ export const ExportHOCUploadedPortfolioReportExcel = async ({
 
         // link.setAttribute("download", "Trade-Upload-Via-Portfolio-Report.xlsx");
 
-        const fileName = `Trades_Upload_Via_Portfolio_Report_${dateTime}.xlsx`;
+        const fileName = `Trades_Upload_Via_Portfolio_Report_${getDateTime()}.xlsx`;
 
         link.setAttribute("download", fileName);
 
@@ -6640,7 +6643,7 @@ export const ExportHOCOverdueVerificationsExcelReport = async ({
         const link = document.createElement("a");
         link.href = url;
 
-        const fileName = `Overdue_Verifications_Report_${dateTime}.xlsx`;
+        const fileName = `Overdue_Verifications_Report_${getDateTime()}.xlsx`;
 
         link.setAttribute("download", fileName);
 
@@ -6976,7 +6979,7 @@ export const ExportHOCTransactionSummaryReportExcelApi = async ({
         const link = document.createElement("a");
         link.href = url;
 
-        const fileName = `Transactions_Summary_Report_${dateTime}.xlsx`;
+        const fileName = `Transactions_Summary_Report_${getDateTime()}.xlsx`;
 
         link.setAttribute("download", fileName);
         document.body.appendChild(link);
@@ -7050,7 +7053,7 @@ export const GetHCAViewTransactionSummaryExportAPI = async ({
         //   "HOC-Transaction-Summary-View-Details-Report.xlsx"
         // );
 
-        const fileName = `Transactions_Summary_View_Details_Report_${dateTime}.xlsx`;
+        const fileName = `Transactions_Summary_View_Details_Report_${getDateTime()}.xlsx`;
 
         link.setAttribute("download", fileName);
 
@@ -7122,7 +7125,7 @@ export const ExportComplianceOfficerTransactionSummaryReportExcel = async ({
         const link = document.createElement("a");
         link.href = url;
 
-        const fileName = `Transactions_Summary_Report_${dateTime}.xlsx`;
+        const fileName = `Transactions_Summary_Report_${getDateTime()}.xlsx`;
 
         link.setAttribute("download", fileName);
 
@@ -7193,7 +7196,7 @@ export const ExportComplianceOfficerViewTransactionSummaryReportExcel = async ({
         const link = document.createElement("a");
         link.href = url;
 
-        const fileName = `Transaction_Summary_View_Details_Report_${dateTime}.xlsx`;
+        const fileName = `Transaction_Summary_View_Details_Report_${getDateTime()}.xlsx`;
 
         link.setAttribute("download", fileName);
 

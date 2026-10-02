@@ -279,13 +279,17 @@ const MyComplianceStandingReport = () => {
 
       pdf.addImage(imgData, "PNG", 10, y, imgWidth, imgHeight);
 
-      const dateTime = `${now.getFullYear()}${pad(now.getMonth() + 1)}${pad(
-        now.getDate()
-      )}_${pad(now.getHours())}${pad(now.getMinutes())}${pad(
-        now.getSeconds()
-      )}`;
+      // Called fresh on every download so the timestamp is never stale
+      const getDateTime = () => {
+        const now = new Date();
+        return `${now.getFullYear()}${pad(now.getMonth() + 1)}${pad(
+          now.getDate()
+        )}_${pad(now.getHours())}${pad(now.getMinutes())}${pad(
+          now.getSeconds()
+        )}`;
+      };
 
-      const fileName = `My_Compliance_Standing_Report_${dateTime}.pdf`;
+      const fileName = `My_Compliance_Standing_Report_${getDateTime()}.pdf`;
       pdf.save(fileName);
       setOpen(false);
     });

@@ -37,13 +37,16 @@ import { getMessage, handleExpiredSession } from "./utils";
  * }
  */
 
-const now = new Date();
-
 const pad = (num) => String(num).padStart(2, "0");
 
-const dateTime = `${now.getFullYear()}${pad(now.getMonth() + 1)}${pad(
-  now.getDate()
-)}_${pad(now.getHours())}${pad(now.getMinutes())}${pad(now.getSeconds())}`;
+// Called fresh on every download so the timestamp is never stale
+const getDateTime = () => {
+  const now = new Date();
+  return `${now.getFullYear()}${pad(now.getMonth() + 1)}${pad(
+    now.getDate()
+  )}_${pad(now.getHours())}${pad(now.getMinutes())}${pad(now.getSeconds())}`;
+};
+
 export const SearchBrokersAdminRequest = async ({
   callApi,
   showNotification,
@@ -3165,7 +3168,7 @@ export const ExportUserSessionWiseActivityRequest = async ({
         const link = document.createElement("a");
         link.href = url;
 
-        const fileName = `User_Activity_Report_${dateTime}.xlsx`;
+        const fileName = `User_Activity_Report_${getDateTime()}.xlsx`;
 
         link.setAttribute("download", fileName);
 
@@ -3258,7 +3261,7 @@ export const ExportUserSessionWiseActivityDetailsRequest = async ({
         const link = document.createElement("a");
         link.href = url;
 
-        const fileName = `User_Activity_Session_Details_Report_${dateTime}.xlsx`;
+        const fileName = `User_Activity_Session_Details_Report_${getDateTime()}.xlsx`;
 
         link.setAttribute("download", fileName);
         document.body.appendChild(link);
