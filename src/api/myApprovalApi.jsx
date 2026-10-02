@@ -1338,6 +1338,7 @@ export const GetComplianceOfficerMyActionsWorkflowDetail = async ({
   navigate,
 }) => {
   try {
+    console.log(requestdata, "requestdatarequestdata");
     // 🔹 API Call
     const res = await callApi({
       requestMethod: import.meta.env
@@ -5958,7 +5959,12 @@ export const ExportHTAPolicyBreachDetailsExcelReport = async ({
         const link = document.createElement("a");
         link.href = url;
 
-        link.setAttribute("download", "HTA-Policy-Breach-Details.xlsx");
+        // link.setAttribute("download", "HTA-Policy-Breach-Details.xlsx");
+
+        const fileName = `Policy_Breaches_Details_Report_${getDateTime()}.xlsx`;
+
+        link.setAttribute("download", fileName);
+
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);

@@ -225,10 +225,9 @@ export const getBorderlessTableColumns = ({
     render: (q) => <span className="font-medium">{q.toLocaleString()}</span>,
   },
   {
-    title: withSortIcon("Department", "departmentName", sortedInfo, "center"),
+    title: withSortIcon("Department", "departmentName", sortedInfo),
     dataIndex: "departmentName",
     key: "departmentName",
-    align: "center",
     width: 160,
     sorter: (a, b) =>
       (a.departmentName || "").localeCompare(

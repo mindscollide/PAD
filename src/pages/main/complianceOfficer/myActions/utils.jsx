@@ -27,6 +27,7 @@ export const buildMyActionApiRequest = (searchState = {}) => ({
   EndDate: searchState.endDate ? toYYMMDD(searchState.endDate) : null,
   Type: searchState.type || [],
   Status: searchState.status || [],
+  Nature: searchState.nature || [],
   Quantity: searchState.quantity ? Number(searchState.quantity) : 0,
   PageNumber: Number(searchState.pageNumber) || 1,
   Length: Number(searchState.pageSize) || 10,

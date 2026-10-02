@@ -1,14 +1,18 @@
 import React, { useEffect, useState } from "react";
-import { Row, Col, Space } from "antd";
+import { Row, Col, Space, Select } from "antd";
 import { Button, TextField, DateRangePicker } from "../..";
 import { useSearchBarContext } from "../../../context/SearchBarContaxt";
 import { removeFirstSpace } from "../../../common/funtions/rejex";
-
+import styles from "./SearchWithPopoverOnly.module.css";
+const { Option } = Select;
 // 🔹 Initial Local State (Updated)
 const INITIAL_LOCAL_STATE = {
   transactionID: "",
   instrumentName: "",
   requesterName: "",
+  nature: [],
+  type: [],
+  status: [],
   startDate: null,
   endDate: null,
   quantity: 0,
@@ -93,6 +97,9 @@ export const COMyAction = ({
       startDate,
       endDate,
       quantity,
+      status,
+      type,
+      nature,
     } = localState;
 
     const searchPayload = {
@@ -103,6 +110,9 @@ export const COMyAction = ({
       startDate,
       endDate,
       quantity: quantity || 0,
+      status: status || [],
+      type: type || [],
+      nature: nature || [],
       filterTrigger: true,
       pageNumber: 0,
       pageSize: 10,
@@ -124,7 +134,11 @@ export const COMyAction = ({
       requesterName: "",
       startDate: null,
       endDate: null,
+      nature: [],
       quantity: 0,
+
+      status: [],
+      type: [],
       filterTrigger: true,
       pageNumber: 0,
       pageSize: 10,
@@ -198,15 +212,73 @@ export const COMyAction = ({
 
       {/* Date Range */}
       <Row gutter={[12, 12]}>
-        <Col xs={24} sm={24}>
+        <Col xs={24} sm={24} md={12} lg={12}>
           <DateRangePicker
             label="Date Range"
             value={[localState.startDate, localState.endDate]}
             onChange={handleDateChange}
           />
         </Col>
+        <Col xs={24} sm={24} md={12} lg={12}>
+          <div className={styles["search-field-wrapper"]}>
+            <label className={styles["typeAndStatusLabel"]}>Type</label>
+            <div className={styles.typeStatusInputBoxPadding}>
+              <Select
+                mode="multiple"
+                allowClear
+                placeholder="Select Type"
+                size="middle"
+                className={styles.statusSelectClass}
+                value={localState.type}
+                onChange={(values) => setFieldValue("type", values)}
+                style={{ width: "100%" }}
+              >
+                <Option value={1}>Buy</Option>
+                <Option value={2}>Sell</Option>
+              </Select>
+            </div>
+          </div>
+        </Col>
       </Row>
-
+      <Row gutter={[12, 12]}>
+        <Col xs={24} sm={24} md={12} lg={12}>
+          <div className={styles["statusDiv"]}>
+            <label className={styles["typeAndStatusLabel"]}>Status</label>
+            <Select
+              mode="multiple"
+              allowClear
+              placeholder="Select Status"
+              className={styles.statusSelectClass}
+              size="middle"
+              value={localState.status}
+              onChange={(values) => setFieldValue("status", values)}
+              style={{ width: "100%" }}
+            >
+              <Option value={1}>Pending</Option>
+              <Option value={7}>Compliant</Option>
+              <Option value={8}>Non-Compliant</Option>
+            </Select>
+          </div>
+        </Col>
+        <Col xs={24} sm={24} md={12} lg={12}>
+          <div className={styles["statusDiv"]}>
+            <label className={styles["typeAndStatusLabel"]}>Nature</label>
+            <Select
+              mode="multiple"
+              allowClear
+              placeholder="Select Nature"
+              className={styles.statusSelectClass}
+              size="middle"
+              value={localState.nature}
+              onChange={(values) => setFieldValue("nature", values)}
+              style={{ width: "100%" }}
+            >
+              <Option value="Transaction">Transaction</Option>
+              <Option value="Portfolio">Portfolio</Option>
+            </Select>
+          </div>
+        </Col>
+      </Row>
       {/* Buttons */}
       <Row gutter={[12, 12]} justify="end" style={{ marginTop: 16 }}>
         <Col>

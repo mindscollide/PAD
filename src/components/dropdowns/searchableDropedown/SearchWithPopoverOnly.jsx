@@ -368,6 +368,7 @@ const SearchWithPopoverOnly = () => {
           pageNumber: 0,
           type: [],
           status: [],
+          nature: "",
           filterTrigger: true,
         }));
 

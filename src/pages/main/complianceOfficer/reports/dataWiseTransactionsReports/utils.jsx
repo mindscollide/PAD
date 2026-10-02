@@ -131,6 +131,7 @@ const withFilterHeader = (node) => (
       alignItems: "center",
       minHeight: "32px",
       width: "100%",
+      justifyContent: "center",
     }}
   >
     {node}
@@ -202,7 +203,7 @@ export const getBorderlessTableColumns = ({
     dataIndex: "instrumentName",
     key: "instrumentName",
     align: "left",
-    width: 250,
+    width: 230,
     sorter: (a, b) => {
       const nameA = a?.instrumentCode || "";
       const nameB = b?.instrumentCode || "";
@@ -280,8 +281,9 @@ export const getBorderlessTableColumns = ({
       />
     ),
     dataIndex: "type",
-    width: 90,
+    width: 110,
     key: "type",
+    align: "center",
 
     filteredValue: coDatewiseTransactionReportSearch.type?.length
       ? coDatewiseTransactionReportSearch.type
@@ -298,6 +300,7 @@ export const getBorderlessTableColumns = ({
           overflow: "hidden",
           textOverflow: "ellipsis",
           whiteSpace: "nowrap",
+          justifyContent: "center",
         }}
       >
         {type}
@@ -318,7 +321,7 @@ export const getBorderlessTableColumns = ({
     render: (q) => <span className="font-medium">{q.toLocaleString()}</span>,
   },
   {
-    title: withFilterHeader(
+    title: (
       <StatusColumnTitle
         state={coDatewiseTransactionReportSearch}
         setState={setCODatewiseTransactionReportSearch}
@@ -326,7 +329,7 @@ export const getBorderlessTableColumns = ({
     ),
     dataIndex: "status",
     key: "status",
-    width: 150,
+    width: 180,
     filteredValue: coDatewiseTransactionReportSearch.status?.length
       ? coDatewiseTransactionReportSearch.status
       : null,
