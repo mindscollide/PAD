@@ -365,9 +365,11 @@ export const getUserColumns = ({
   // ✅ Then push the rest of your columns normally
   columns.push(
     {
-      title: withSortIcon("Employee ID", "employeeID", sortedInfo),
+      title: withSortIcon("Employee ID", "employeeID", sortedInfo, "center"),
       dataIndex: "employeeID",
       key: "employeeID",
+      align: "center",
+      width: 120,
       sorter: (a, b) => a.employeeID - b.employeeID,
       sortOrder:
         sortedInfo?.columnKey === "employeeID" ? sortedInfo.order : null,
@@ -381,6 +383,7 @@ export const getUserColumns = ({
       title: withSortIcon("Employee Name", "employeeName", sortedInfo),
       dataIndex: "employeeName",
       key: "employeeName",
+      width: 200,
       sorter: (a, b) => a.employeeName.localeCompare(b.employeeName),
       sortOrder:
         sortedInfo?.columnKey === "employeeName" ? sortedInfo.order : null,
@@ -404,6 +407,7 @@ export const getUserColumns = ({
       title: withSortIcon("Department", "department", sortedInfo),
       dataIndex: "department",
       key: "department",
+      width: 200,
       sorter: (a, b) => (a.department || "").localeCompare(b.department || ""),
       sortOrder:
         sortedInfo?.columnKey === "department" ? sortedInfo.order : null,

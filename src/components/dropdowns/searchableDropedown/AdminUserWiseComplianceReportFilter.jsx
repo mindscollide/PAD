@@ -72,6 +72,13 @@ export const AdminUserWiseComplianceReportFilter = ({
     // Remove commas first
     const rawValue = value.replace(/,/g, "");
 
+    if (name === "employeeName") {
+      if (rawValue && rawValue.length <= 100) {
+        setFieldValue(name, removeFirstSpace(rawValue));
+      }
+      return;
+    }
+
     if (name === "approvedQuantity" || name === "sharesTraded") {
       // Allow empty or numbers only
       if (rawValue === "" || allowOnlyNumbers(rawValue)) {

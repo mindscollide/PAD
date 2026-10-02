@@ -38,7 +38,6 @@ const Users = ({
   const {
     tabesFormDataofAdminGropusAndPolicy,
     setTabesFormDataofAdminGropusAndPolicy,
-    resetAdminGroupeAndPoliciesUsersTabDataState,
     adminGroupeAndPoliciesUsersTabData,
     setAdminGroupeAndPoliciesUsersTabData,
     pageTypeForAdminGropusAndPolicy,
@@ -47,7 +46,6 @@ const Users = ({
 
   // 🔹 Search Context
   const {
-    resetAdminGropusAndPolicyUsersTabSearch,
     adminGropusAndPolicyUsersTabSearch,
     setAdminGropusAndPolicyUsersTabSearch,
   } = useSearchBarContext();

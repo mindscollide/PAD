@@ -62,14 +62,19 @@ export const AdminBrokersListFiletr = ({
 
     const rawValue = value.replace(/,/g, "");
 
-    if (name === "psxCode") {
-      if (rawValue === "" || rawValue.length <= 10) {
-        setFieldValue(name, rawValue);
+    if (name === "brokerName") {
+      if (rawValue === "" || rawValue.length <= 75) {
+        setFieldValue(name, removeFirstSpace(value));
       }
       return;
     }
 
-    setFieldValue(name, removeFirstSpace(value));
+    if (name === "psxCode") {
+      if (rawValue === "" || rawValue.length <= 10) {
+        setFieldValue(name, removeFirstSpace(value));
+      }
+      return;
+    }
   };
 
   // 🔹 Search click

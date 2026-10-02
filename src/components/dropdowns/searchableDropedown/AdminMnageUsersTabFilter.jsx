@@ -109,6 +109,13 @@ export const AdminUsersTabFilter = ({
       }
       return;
     }
+
+    if (name === "employeeID") {
+      if (value.length < 11) {
+        setFieldValue(name, removeFirstSpace(value));
+      }
+      return;
+    }
     setFieldValue(name, removeFirstSpace(value));
 
     // Clear email error while typing

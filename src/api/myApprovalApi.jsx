@@ -2089,7 +2089,7 @@ export const DownloadMyTradeApprovalReportRequestAPI = async ({
 
         // link.setAttribute("download", "My-Trade-Approval-Report.xlsx");
 
-        const fileName = ` My_Trade_Approval_Report_${dateTime}.xlsx`;
+        const fileName = `My_Trade_Approval_Report_${dateTime}.xlsx`;
 
         link.setAttribute("download", fileName);
 
