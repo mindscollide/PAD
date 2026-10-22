@@ -337,9 +337,10 @@ export const UpdateBrokersStatusRequest = async ({
       description: "An unexpected error occurred.",
     });
     return false;
-  } finally {
-    showLoader(false);
   }
+  // finally {
+  //   showLoader(false);
+  // }
 };
 
 export const DownloadBrokerReportRequest = async ({
@@ -385,7 +386,7 @@ export const DownloadBrokerReportRequest = async ({
         const link = document.createElement("a");
         link.href = url;
 
-        link.setAttribute("download", "Broker-Report.xlsx");
+        link.setAttribute("download", `Broker_Report_${getDateTime()}.xlsx`);
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
