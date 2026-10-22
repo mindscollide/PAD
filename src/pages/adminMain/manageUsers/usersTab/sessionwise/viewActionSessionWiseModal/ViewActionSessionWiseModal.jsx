@@ -144,6 +144,7 @@ const ViewActionSessionWiseModal = () => {
                   onChange={(pagination, filters, sorter) =>
                     setSortedInfo(sorter)
                   }
+                  scroll={{ y: 450 }}
                 />
               </div>
             </div>

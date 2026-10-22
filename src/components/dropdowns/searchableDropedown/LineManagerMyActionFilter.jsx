@@ -268,17 +268,6 @@ export const LineManagerMyAction = ({
             </Select>
           </div>
         </Col>
-        <Col xs={24} sm={24} md={12} lg={12}>
-          {/* <TextField
-                  label="Type"
-                  name="type"
-                  value={localState.type}
-                  onChange={handleInputChange}
-                  placeholder="Type"
-                  size="medium"
-                  classNames="Search-Field"
-                /> */}
-        </Col>
       </Row>
       <Row gutter={[12, 12]} justify="end" style={{ marginTop: 16 }}>
         <Col>

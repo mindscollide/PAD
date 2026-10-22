@@ -224,6 +224,7 @@ const PendingApprovalRequest = () => {
     const resetMap = {
       instrumentName: { instrumentName: "" },
       requesterName: { requesterName: "" },
+      lineManagerName: { lineManagerName: "" },
       dateRange: { startDate: null, endDate: null },
       dateRange2: { escalatedStartDate: null, escalatedEndDate: null },
       quantity: { quantity: 0 },
@@ -243,6 +244,7 @@ const PendingApprovalRequest = () => {
       ...prev,
       instrumentName: "",
       requesterName: "",
+      lineManagerName: "",
       startDate: null,
       endDate: null,
       escalatedStartDate: null,
@@ -258,6 +260,7 @@ const PendingApprovalRequest = () => {
     const {
       instrumentName,
       requesterName,
+      lineManagerName,
       startDate,
       endDate,
       escalatedStartDate,
@@ -279,6 +282,14 @@ const PendingApprovalRequest = () => {
           requesterName.length > 13
             ? requesterName.slice(0, 13) + "..."
             : requesterName,
+      },
+
+      lineManagerName && {
+        key: "lineManagerName",
+        value:
+          lineManagerName.length > 13
+            ? lineManagerName.slice(0, 13) + "..."
+            : lineManagerName,
       },
       startDate &&
         endDate && {

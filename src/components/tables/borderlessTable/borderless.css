@@ -265,7 +265,7 @@ td.border-less-table-blue-cell:hover {
   font-family: "Switzer Variable";
   font-weight: 500;
   font-size: 16px;
-  line-height: 100%;
+  /* line-height: 100%; */
   vertical-align: middle;
 }
 
@@ -381,9 +381,13 @@ border-  bottom-bottom-right-radius: 6.94px !important;
   max-height: 500px !important;
   overflow-y: auto !important;
 } */
+/* .border-less-table-white-3-measure-row {
+  border: none;
+} */
 
 .border-less-table-white-3-body table {
   border-spacing: 0px 10px !important;
+  margin-top: -20px;
 }
 
 .border-less-table-white-3-wrapper table {

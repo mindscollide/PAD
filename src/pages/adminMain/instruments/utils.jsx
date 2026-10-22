@@ -114,7 +114,12 @@ export const getInstrumentTableColumns = ({
         <div
           id={`cell-${record.key}-instrumentCode`}
           className={!record.status ? styles.inActiveColumnTexts : ""}
-          style={{ display: "flex", alignItems: "center", gap: "8px", minWidth: 0 }}
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: "8px",
+            minWidth: 0,
+          }}
         >
           <span
             className="custom-shortCode-asset"
@@ -146,7 +151,7 @@ export const getInstrumentTableColumns = ({
               }}
               data-testid="instrument-code"
             >
-              {code}
+              {`${code} - ${name}`}
             </span>
           </Tooltip>
         </div>

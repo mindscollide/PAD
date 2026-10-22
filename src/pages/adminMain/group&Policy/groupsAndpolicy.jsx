@@ -75,29 +75,18 @@ const GroupsAndPolicy = () => {
         groupsAndPolicy: replace
           ? groupPolicies
           : [...(prev?.groupsAndPolicy || []), ...groupPolicies],
-        // this is for to run lazy loading its data comming from database of total data in db
-        // totalRecordsDataBase: res?.totalRecords || 0,
-        totalRecordsDataBase: 0,
-
-        // this is for to know how mush dta currently fetch from  db
+        totalRecordsDataBase: res?.totalRecords || 0,
         totalRecordsTable: replace
           ? groupPolicies.length
-          : adminGropusAndPolicyData.totalRecordsTable + groupPolicies.length,
+          : (prev?.totalRecordsTable || 0) + groupPolicies.length,
       }));
 
       setAdminGropusAndPolicySearch((prev) => {
         const next = {
           ...prev,
-          pageNumber: replace
-            ? groupPolicies.length
-            : prev.pageNumber + groupPolicies.length,
+          pageNumber: replace ? 2 : prev.pageNumber + 1,
         };
-
-        // this is for check if filter value get true only on that it will false
-        if (prev.filterTrigger) {
-          next.filterTrigger = false;
-        }
-
+        if (prev.filterTrigger) next.filterTrigger = false;
         return next;
       });
     },
@@ -157,7 +146,7 @@ const GroupsAndPolicy = () => {
     setAdminGropusAndPolicySearch((prev) => ({
       ...prev,
       ...resetMap[key],
-      pageNumber: 0,
+      pageNumber: 1,
       filterTrigger: true,
     }));
   };
@@ -225,7 +214,7 @@ const GroupsAndPolicy = () => {
       let requestData = buildApiRequest(adminGropusAndPolicySearch);
       requestData = {
         ...requestData,
-        PageNumber: 0,
+        pageNumber: 1,
       };
       fetchApiCall(requestData, true, false);
     }
@@ -316,10 +305,19 @@ const GroupsAndPolicy = () => {
               <BorderlessTable
                 rows={adminGropusAndPolicyData?.groupsAndPolicy || []}
                 columns={columns}
+                // scroll={
+                //   adminGropusAndPolicyData?.approvals?.length
+                //     ? {
+                //         x: "max-content",
+                //         y: activeFilters.length > 0 ? 450 : 500,
+                //       }
+                //     : undefined
+                // }
+
                 scroll={
-                  adminGropusAndPolicyData?.approvals?.length
+                  adminGropusAndPolicyData?.groupsAndPolicy?.length
                     ? {
-                        x: "max-content",
+                        x: 1300,
                         y: activeFilters.length > 0 ? 450 : 500,
                       }
                     : undefined

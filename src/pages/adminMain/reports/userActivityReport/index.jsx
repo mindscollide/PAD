@@ -1,10 +1,10 @@
 import React, { useEffect, useRef, useState, useCallback } from "react";
 import { Breadcrumb, Col, Row } from "antd";
-import { DownOutlined } from "@ant-design/icons";
+import { DownOutlined, UpOutlined } from "@ant-design/icons";
 import BorderlessTable from "../../../../components/tables/borderlessTable/borderlessTable";
 import PageLayout from "../../../../components/pageContainer/pageContainer";
 import CustomButton from "../../../../components/buttons/button";
-
+import Excel from "../../../../assets/img/xls.png";
 import {
   buildApiRequest,
   buildExportRequest,
@@ -53,6 +53,7 @@ const UserActivityReport = () => {
   const { callApi } = useApi();
   const { showNotification } = useNotification();
   const { showLoader } = useGlobalLoader();
+  const [open, setOpen] = useState(false);
 
   const {
     viewActionSessionWiseModal,
@@ -272,6 +273,7 @@ const UserActivityReport = () => {
       showLoader,
       requestdata: buildExportRequest(userActivityReportAdmin),
       navigate,
+      setOpen,
     });
   };
 
@@ -317,14 +319,28 @@ const UserActivityReport = () => {
                 <span className={style.exportButtonText}>
                   Export
                   <span className={style.iconContainer}>
-                    <DownOutlined />
+                    {open ? <UpOutlined /> : <DownOutlined />}
                   </span>
                 </span>
               }
               className="small-light-button-report"
-              onClick={handleExportClick}
+              onClick={() => setOpen((prev) => !prev)}
+              disabled={adminUserActivityReportData?.records?.length === 0}
             />
           </div>
+          {/* 🔷 Export Dropdown */}
+          {open && (
+            <div className={style.dropdownExport}>
+              {/* <div className={style.dropdownItem}>
+                <img src={PDF} alt="PDF" draggable={false} />
+                <span>Export PDF</span>
+              </div> */}
+              <div className={style.dropdownItem} onClick={handleExportClick}>
+                <img src={Excel} alt="Excel" draggable={false} />
+                <span>Export Excel</span>
+              </div>
+            </div>
+          )}
         </Col>
       </Row>
 
@@ -371,7 +387,7 @@ const UserActivityReport = () => {
             classNameTable="border-less-table-blue"
             scroll={
               adminUserActivityReportData?.records?.length
-                ? { x: "max-content", y: activeFilters.length > 0 ? 450 : 500 }
+                ? { x: 1300, y: activeFilters.length > 0 ? 450 : 500 }
                 : undefined
             }
             onChange={(pagination, filters, sorter) => setSortedInfo(sorter)}

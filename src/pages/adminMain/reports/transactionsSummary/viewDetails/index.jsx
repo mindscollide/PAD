@@ -63,9 +63,8 @@ const COTransactionsSummarysReportsViewDetails = () => {
     setCOTransactionsSummarysReportsSearch,
     resetCOTransactionsSummarysReportsSearch,
   } = useSearchBarContext();
-
-  const { setAssetTypeListingData } = useDashboardContext();
-
+  const { assetTypeListingData, setAssetTypeListingData } =
+    useDashboardContext();
 
   // -------------------- Local State --------------------
   const [sortedInfo, setSortedInfo] = useState({});
@@ -93,6 +92,7 @@ const COTransactionsSummarysReportsViewDetails = () => {
         requestdata: requestData,
         navigate,
       });
+      getSafeAssetTypeData(assetTypeListingData, setAssetTypeListingData);
 
       const transactions = Array.isArray(res?.transactions)
         ? res.transactions
@@ -144,14 +144,17 @@ const COTransactionsSummarysReportsViewDetails = () => {
     return () => {
       // Reset search state for fresh load
       resetCOTransactionsSummarysReportsSearch();
-      resetCOTransactionSummaryReportListData()
+      resetCOTransactionSummaryReportListData();
     };
   }, []);
 
   // 🔹 call api on search
   useEffect(() => {
     if (coTransactionsSummarysReportsSearch?.filterTrigger) {
-      const requestData = buildApiRequest(coTransactionsSummarysReportsSearch);
+      const requestData = buildApiRequest(
+        coTransactionsSummarysReportsSearch,
+        assetTypeListingData
+      );
       fetchApiCall(requestData, true, true);
     }
   }, [coTransactionsSummarysReportsSearch?.filterTrigger]);
@@ -296,6 +299,9 @@ const COTransactionsSummarysReportsViewDetails = () => {
               }
               className="small-light-button-report"
               onClick={() => setOpen((prev) => !prev)}
+              disabled={
+                coTransactionSummaryReportListData?.transactions?.length === 0
+              }
             />
           </div>
 
@@ -326,16 +332,13 @@ const COTransactionsSummarysReportsViewDetails = () => {
       >
         <div className="px-4 md:px-6 lg:px-8 ">
           <BorderlessTable
-            rows={
-              coTransactionSummaryReportListData?.transactions
-            }
+            rows={coTransactionSummaryReportListData?.transactions}
             columns={columns}
             classNameTable="border-less-table-blue"
             scroll={
-              coTransactionSummaryReportListData?.transactions
-                ?.length
+              coTransactionSummaryReportListData?.transactions?.length
                 ? {
-                    x: "max-content",
+                    x: 1300,
                     y: 500,
                   }
                 : undefined
@@ -346,7 +349,6 @@ const COTransactionsSummarysReportsViewDetails = () => {
           />
         </div>
       </PageLayout>
-
     </>
   );
 };

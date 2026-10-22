@@ -369,6 +369,7 @@ export const SearchBarProvider = ({ children }) => {
       requesterName: "",
       startDate: null,
       endDate: null,
+      nature: [],
       type: [],
       status: [],
       quantity: 0,
@@ -615,7 +616,7 @@ export const SearchBarProvider = ({ children }) => {
   const [adminGropusAndPolicySearch, setAdminGropusAndPolicySearch] = useState({
     policyName: "",
     filterTrigger: false,
-    pageNumber: 0,
+    pageNumber: 1,
     pageSize: 10,
   });
 
@@ -1135,6 +1136,7 @@ export const SearchBarProvider = ({ children }) => {
       requesterName: "",
       startDate: null,
       endDate: null,
+      nature: [],
       type: [],
       status: [],
       quantity: 0,

@@ -241,7 +241,7 @@ export const getBorderlessLineManagerTableColumns = ({
     dataIndex: "quantity",
     key: "quantity",
     align: "center",
-    width: 100,
+    width: 150,
 
     sorter: (a, b) => a.quantity - b.quantity,
     sortDirections: ["ascend", "descend"],

@@ -314,6 +314,7 @@ const MyTransactionReport = () => {
   // PageNumber/Length excluded since exports return every matching row,
   // never a page.
   const downloadMyTransactionInExcelFormat = async () => {
+    showLoader(true);
     const { PageNumber, Length, ...requestdata } = buildApiRequest(
       employeeMyTransactionReportSearch,
       assetTypeListingData
@@ -321,11 +322,11 @@ const MyTransactionReport = () => {
 
     await DownloadMyTransactionReportRequestAPI({
       callApi,
-      showNotification,
       showLoader,
+      showNotification,
       requestdata,
-      setOpen,
       navigate,
+      setOpen,
     });
   };
 

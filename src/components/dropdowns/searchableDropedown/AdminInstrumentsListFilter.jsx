@@ -2,10 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Row, Col, Space } from "antd";
 import { Button, TextField, DateRangePicker } from "../..";
 import { useSearchBarContext } from "../../../context/SearchBarContaxt";
-import {
-  allowOnlyNumbers,
-  removeFirstSpace,
-} from "../../../common/funtions/rejex";
+import { removeFirstSpace } from "../../../common/funtions/rejex";
 
 // 🔹 Initial default state for local filters
 const INITIAL_LOCAL_STATE = {

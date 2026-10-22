@@ -202,7 +202,7 @@ export const getSessionListColumns = ({ sortedInfo, onViewActions }) => [
     title: withSortIcon("Employee Name", "employeeName", sortedInfo),
     dataIndex: "employeeName",
     key: "employeeName",
-    width: 200,
+    width: 150,
     sorter: withTiebreaker((a, b) =>
       (a.employeeName || "").localeCompare(b.employeeName || "")
     ),
@@ -292,7 +292,6 @@ export const getSessionListColumns = ({ sortedInfo, onViewActions }) => [
     title: "",
     key: "action",
     align: "center",
-    width: 200,
     render: (_, record) => (
       <div>
         <Button
