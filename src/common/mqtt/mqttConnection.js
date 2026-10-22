@@ -189,7 +189,8 @@ export const useMqttClient = ({
         userName: import.meta.env.VITE_MQTT_USERNAME,
         password: import.meta.env.VITE_MQTT_PASSWORD,
         cleanSession: true,
-        useSSL: false,
+        // wss:// when VITE_MQTT_USE_SSL=true (UAT, https page); ws:// otherwise
+        useSSL: import.meta.env.VITE_MQTT_USE_SSL === "true",
         reconnect: true,
       });
     },
