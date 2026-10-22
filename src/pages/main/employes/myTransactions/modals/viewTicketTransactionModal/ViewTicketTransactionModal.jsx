@@ -204,6 +204,24 @@ const ViewTicketReconcileModal = () => {
     }
   };
 
+  /**
+   * 🔹 Blob URL for the selected file's preview, memoized on the blob data.
+   * URL.createObjectURL returns a brand-new URL on every call, so building it
+   * inline in the iframe's `src` made the iframe reload on every unrelated
+   * re-render (live notifications, MQTT pings, context updates) - the viewer
+   * kept flickering. Old URLs are revoked to avoid leaking memory.
+   */
+  const selectedFileBlobUrl = useMemo(() => {
+    if (!selectedFile?.attachmentBlob) return null;
+    return base64ToBlobUrl(selectedFile.attachmentBlob);
+  }, [selectedFile?.attachmentBlob]);
+
+  useEffect(() => {
+    return () => {
+      if (selectedFileBlobUrl) URL.revokeObjectURL(selectedFileBlobUrl);
+    };
+  }, [selectedFileBlobUrl]);
+
   return (
     <GlobalModal
       visible={isViewTicketTransactionModal}
@@ -225,18 +243,16 @@ const ViewTicketReconcileModal = () => {
             <Col span={14}>
               <div className={styles.documentContainer}>
                 {selectedFile ? (
-                  <iframe
-                    src={
-                      selectedFile.attachmentBlob
-                        ? `${base64ToBlobUrl(
-                            selectedFile.attachmentBlob
-                          )}#toolbar=0&navpanes=0&scrollbar=0`
-                        : ""
-                    }
-                    width="99%"
-                    height="500px"
-                    title={`Preview of ${selectedFile.displayFileName}`}
-                  />
+                  selectedFileBlobUrl ? (
+                    <iframe
+                      src={`${selectedFileBlobUrl}#toolbar=0&navpanes=0&scrollbar=0`}
+                      width="99%"
+                      height="500px"
+                      title={`Preview of ${selectedFile.displayFileName}`}
+                    />
+                  ) : (
+                    <div className={styles.noPreview}>Loading preview...</div>
+                  )
                 ) : (
                   <div className={styles.noPreview}>
                     Select a file to preview
