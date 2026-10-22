@@ -143,9 +143,9 @@ export function getEmployeePortfolioColumns({
       align: "center",
 
       render: (text) => (
-        <Text style={{ color: text === "Buy" ? "#00640A" : "#A50000" }}>
+        <span style={{ color: text === "Buy" ? "#00640A" : "#A50000" }}>
           {text}
-        </Text>
+        </span>
       ),
     },
     {
@@ -156,11 +156,11 @@ export function getEmployeePortfolioColumns({
       align: "center",
 
       render: (value, record) => (
-        <Text
+        <span
           style={{ color: record.tradeType === "Buy" ? "#00640A" : "#A50000" }}
         >
           {value?.toLocaleString?.() || "—"}
-        </Text>
+        </span>
       ),
     },
     {

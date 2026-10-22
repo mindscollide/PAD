@@ -386,6 +386,9 @@ const AdminTATRequestApprovals = () => {
               }
               className="small-light-button-report"
               onClick={() => setOpen((prev) => !prev)}
+              disabled={
+                adminTATRequestApprovalsReportData?.records?.length === 0
+              }
             />
           </div>
 

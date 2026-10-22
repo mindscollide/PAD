@@ -108,6 +108,7 @@ const COMyAction = () => {
       requesterName: { requesterName: "" },
       quantity: { quantity: 0 },
       type: { type: [] },
+      nature: { nature: [] },
       status: { status: [] },
       dateRange: { startDate: null, endDate: null },
     };
@@ -130,6 +131,7 @@ const COMyAction = () => {
       quantity: 0,
       startDate: null,
       endDate: null,
+      nature: [],
       type: [],
       status: [],
       pageNumber: 1,
@@ -148,6 +150,7 @@ const COMyAction = () => {
       quantity,
       type,
       status,
+      nature,
     } = complianceOfficerMyActionSearch || {};
     // 🔹 Mappings for display labels
     const typeMap = {
@@ -157,14 +160,15 @@ const COMyAction = () => {
 
     const statusMap = {
       1: "Pending",
-      2: "Resubmit",
-      3: "Approved",
-      4: "Declined",
-      5: "Traded",
-      6: "Not-Traded",
       7: "Compliant",
       8: "Non-Compliant",
     };
+
+    const natureMap = {
+      Transaction: "Transaction",
+      Portfolio: "Portfolio",
+    };
+
     return [
       transactionID && {
         key: "transactionID",
@@ -208,6 +212,12 @@ const COMyAction = () => {
         key: "status",
         value: status.map((id) => statusMap[id] || id).join(", "),
       },
+
+      // 🔹 Add Nature (multiple selection support)
+      nature?.length > 0 && {
+        key: "nature",
+        value: nature.map((id) => natureMap[id] || id).join(", "),
+      },
     ].filter(Boolean);
   })();
 
@@ -217,7 +227,10 @@ const COMyAction = () => {
     const currentLen = myActionLineManagerData?.requests?.length ?? 0;
     setHasMore(currentLen < total);
   }, [myActionLineManagerData]);
-
+  console.log(
+    complianceOfficerMyActionSearch,
+    "complianceOfficerMyActionSearchcomplianceOfficerMyActionSearch"
+  );
   // Scroll handler for lazy loading
   const handleScroll = async () => {
     if (!containerRef.current) return;
@@ -240,6 +253,7 @@ const COMyAction = () => {
         const nextPageNumber = Math.floor(currentLength / pageSize) + 1;
 
         // build request based on current search/filter but override pagination
+
         const baseRequest = buildMyActionApiRequest(
           complianceOfficerMyActionSearch
         );

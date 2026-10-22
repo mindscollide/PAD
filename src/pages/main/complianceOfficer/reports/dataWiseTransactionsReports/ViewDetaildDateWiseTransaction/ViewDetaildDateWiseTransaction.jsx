@@ -387,10 +387,14 @@ const ViewDetaildDateWiseTransaction = () => {
               <Col span={12}>
                 <div className={styles.backgrounColorOfDetail}>
                   <label className={styles.viewDetailMainLabels}>
-                    Quantity
+                    Approved Quantity
                   </label>
                   <label className={styles.viewDetailSubLabels}>
-                    {reconcileTransactionViewDetailData?.details[0]?.quantity}
+                    {reconcileTransactionViewDetailData?.details?.[0]?.quantity
+                      ? Number(
+                          reconcileTransactionViewDetailData.details[0].quantity
+                        ).toLocaleString("en-US")
+                      : 0}
                   </label>
                 </div>
               </Col>
@@ -457,10 +461,13 @@ const ViewDetaildDateWiseTransaction = () => {
                     Shares Traded
                   </label>
                   <label className={styles.viewDetailSubLabels}>
-                    {
-                      reconcileTransactionViewDetailData
-                        ?.complianceMappedTradeSummary[0]?.tradeWorkFlowID
-                    }
+                    {reconcileTransactionViewDetailData
+                      ?.complianceMappedTradeSummary[0]?.sharesTraded
+                      ? Number(
+                          reconcileTransactionViewDetailData
+                            ?.complianceMappedTradeSummary[0]?.sharesTraded
+                        ).toLocaleString("en-US")
+                      : 0}
                   </label>
                 </div>
               </Col>
@@ -572,7 +579,7 @@ const ViewDetaildDateWiseTransaction = () => {
               <div className={styles.approvedButtonClass}>
                 <CustomButton
                   text="Close"
-                  className="small-light-button"
+                  className="small-dark-button"
                   onClick={closedModal}
                 />
               </div>

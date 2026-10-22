@@ -59,7 +59,22 @@ export const AdminBrokersListFiletr = ({
   // 🔹 Input change handler
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFieldValue(name, removeFirstSpace(value));
+
+    const rawValue = value.replace(/,/g, "");
+
+    if (name === "brokerName") {
+      if (rawValue === "" || rawValue.length <= 75) {
+        setFieldValue(name, removeFirstSpace(value));
+      }
+      return;
+    }
+
+    if (name === "psxCode") {
+      if (rawValue === "" || rawValue.length <= 10) {
+        setFieldValue(name, removeFirstSpace(value));
+      }
+      return;
+    }
   };
 
   // 🔹 Search click

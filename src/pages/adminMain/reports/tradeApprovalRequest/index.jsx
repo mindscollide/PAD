@@ -372,6 +372,9 @@ const TradeApprovalRequestReport = () => {
               }
               className="small-light-button-report"
               onClick={() => setOpen((prev) => !prev)}
+              disabled={
+                adminTradeApprovalRequestReportData?.records?.length === 0
+              }
             />
           </div>
 

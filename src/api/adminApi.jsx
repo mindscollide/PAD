@@ -36,6 +36,17 @@ import { getMessage, handleExpiredSession } from "./utils";
  *   console.log("Transactions:", result.transactions);
  * }
  */
+
+const pad = (num) => String(num).padStart(2, "0");
+
+// Called fresh on every download so the timestamp is never stale
+const getDateTime = () => {
+  const now = new Date();
+  return `${now.getFullYear()}${pad(now.getMonth() + 1)}${pad(
+    now.getDate()
+  )}_${pad(now.getHours())}${pad(now.getMinutes())}${pad(now.getSeconds())}`;
+};
+
 export const SearchBrokersAdminRequest = async ({
   callApi,
   showNotification,
@@ -326,9 +337,10 @@ export const UpdateBrokersStatusRequest = async ({
       description: "An unexpected error occurred.",
     });
     return false;
-  } finally {
-    showLoader(false);
   }
+  // finally {
+  //   showLoader(false);
+  // }
 };
 
 export const DownloadBrokerReportRequest = async ({
@@ -374,7 +386,7 @@ export const DownloadBrokerReportRequest = async ({
         const link = document.createElement("a");
         link.href = url;
 
-        link.setAttribute("download", "Broker-Report.xlsx");
+        link.setAttribute("download", `Broker_Report_${getDateTime()}.xlsx`);
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
@@ -3114,6 +3126,7 @@ export const ExportUserSessionWiseActivityRequest = async ({
   showLoader,
   requestdata,
   navigate,
+  setOpen,
 }) => {
   try {
     showLoader(true);
@@ -3155,11 +3168,16 @@ export const ExportUserSessionWiseActivityRequest = async ({
         const url = window.URL.createObjectURL(blob);
         const link = document.createElement("a");
         link.href = url;
-        link.setAttribute("download", "User-Activity-Report.xlsx");
+
+        const fileName = `User_Activity_Report_${getDateTime()}.xlsx`;
+
+        link.setAttribute("download", fileName);
+
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
         window.URL.revokeObjectURL(url);
+        setOpen(false);
         return true;
       } catch {
         showNotification({
@@ -3243,7 +3261,10 @@ export const ExportUserSessionWiseActivityDetailsRequest = async ({
         const url = window.URL.createObjectURL(blob);
         const link = document.createElement("a");
         link.href = url;
-        link.setAttribute("download", "User-Activity-Report-Session-Details.xlsx");
+
+        const fileName = `User_Activity_Session_Details_Report_${getDateTime()}.xlsx`;
+
+        link.setAttribute("download", fileName);
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);

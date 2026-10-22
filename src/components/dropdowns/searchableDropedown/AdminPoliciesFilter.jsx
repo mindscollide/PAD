@@ -63,17 +63,25 @@ export const AdminPoliciesFilter = ({
   // 🔹 Input Change Handler
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFieldValue(name, removeFirstSpace(value));
-    if (name === "policyId" && value.length < 11) {
-      setFieldValue(name, removeFirstSpace(value));
-    } else if (
-      (name === "scenario" || name === "consequence") &&
-      value.length < 201
-    ) {
-      setFieldValue(name, removeFirstSpace(value));
-    }
-  };
+    const rawValue = value.replace(/,/g, "");
 
+    if (name === "policyId") {
+      if (rawValue === "" || rawValue.length <= 10) {
+        setFieldValue(name, rawValue);
+      }
+      // If length > 10, do nothing → field stays at previous value
+      return;
+    }
+
+    if (name === "scenario" || name === "consequence") {
+      if (value.length < 201) {
+        setFieldValue(name, rawValue);
+      }
+      return;
+    }
+
+    setFieldValue(name, removeFirstSpace(value));
+  };
   // 🔹 Search Click
   const handleSearchClick = () => {
     const { policyId, scenario, consequence } = localState;

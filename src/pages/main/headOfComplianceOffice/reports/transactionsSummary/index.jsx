@@ -40,7 +40,10 @@ import { useTableScrollBottom } from "../../../../../common/funtions/scroll";
 import CustomButton from "../../../../../components/buttons/button";
 import { DateRangePicker } from "../../../../../components";
 import ViewCommentHOCTransaction from "./viewDetails/viewComment/ViewComment";
-import { formatToYYYYMMDD } from "../../../../../common/funtions/rejex";
+import {
+  formatShowOnlyDate,
+  formatToYYYYMMDD,
+} from "../../../../../common/funtions/rejex";
 // import ViewComment from "./viewComment/ViewComment";
 
 const HCATransactionsSummarysReports = () => {
@@ -516,7 +519,9 @@ const HCATransactionsSummarysReports = () => {
         },
     ].filter(Boolean);
   })();
-
+  const tableRecord = coTransactionSummaryReportViewDetailsFlag
+    ? coTransactionSummaryReportViewDetailsListData.record
+    : hcoTransactionSummaryReportListData?.transactions;
   // -------------------- Render --------------------
   return (
     <>
@@ -573,7 +578,7 @@ const HCATransactionsSummarysReports = () => {
 
         <Col>
           <div className={style.headerActionsRow}>
-            {!coTransactionSummaryReportViewDetailsFlag ? (
+            {/* {!coTransactionSummaryReportViewDetailsFlag ? (
               <DateRangePicker
                 size="medium"
                 className={style.dateRangePickerClass}
@@ -590,11 +595,31 @@ const HCATransactionsSummarysReports = () => {
                   {dateRange.StartDate} - {dateRange.EndDate}
                 </span>
               </div>
+            )} */}
+
+            {!coTransactionSummaryReportViewDetailsFlag ? (
+              <DateRangePicker
+                size="medium"
+                className={style.dateRangePickerClass}
+                value={[dateRange.StartDate, dateRange.EndDate]}
+                onChange={handleDateChange}
+                onClear={handleClearDates}
+              />
+            ) : (
+              <div className={style.readonlyDateRange}>
+                <span className={style.readonlyDateRangeLabel}>Date</span>
+                <span className={style.readonlyDateRangeValue}>
+                  {hocTransactionsSummarysReportsViewDetailsSearch?.transactionDate
+                    ? formatShowOnlyDate(
+                        hocTransactionsSummarysReportsViewDetailsSearch.transactionDate
+                      ) ||
+                      hocTransactionsSummarysReportsViewDetailsSearch.transactionDate
+                    : "—"}
+                </span>
+              </div>
             )}
             <CustomButton
-              disabled={
-                hcoTransactionSummaryReportListData?.transactions?.length === 0
-              }
+              disabled={tableRecord && tableRecord.length === 0}
               text={
                 <span className={style.exportButtonText}>
                   Export

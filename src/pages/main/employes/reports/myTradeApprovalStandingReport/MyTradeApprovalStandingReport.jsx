@@ -34,6 +34,24 @@ const statusColorMap = {
   Resubmit: "#F67F29",
 };
 
+// Display order for the summary table, donut chart and legend.
+// Keys are normalised (lower-case, no spaces/hyphens) so "Not-Traded" /
+// "Not Traded" and "Resubmit" / "Resubmitted" all match.
+const normalizeStatus = (s = "") => s.toLowerCase().replace(/[\s-]/g, "");
+
+const STATUS_ORDER = {
+  pending: 0,
+  approved: 1,
+  declined: 2,
+  traded: 3,
+  nottraded: 4,
+  resubmit: 5,
+  resubmitted: 5,
+};
+
+const getStatusRank = (name) =>
+  STATUS_ORDER[normalizeStatus(name)] ?? Number.MAX_SAFE_INTEGER; // unknown statuses go last
+
 const MyTradeApprovalStandingReport = () => {
   const navigate = useNavigate();
   const { callApi } = useApi();
@@ -54,8 +72,9 @@ const MyTradeApprovalStandingReport = () => {
   });
 
   //Extract data from the context state and save in variable
-  const apiSummary = getEmployeeTradeApprovalReport?.summary || [];
-
+  const apiSummary = [...(getEmployeeTradeApprovalReport?.summary || [])].sort(
+    (a, b) => getStatusRank(a.statusName) - getStatusRank(b.statusName)
+  );
   // For donut chart
   const labels = apiSummary.map((i) => i.statusName);
   const counts = apiSummary.map((i) => i.statusCount);
@@ -227,6 +246,14 @@ const MyTradeApprovalStandingReport = () => {
         now.getDate()
       )} | ${pad(hours)}:${pad(now.getMinutes())} ${ampm}`;
 
+      const getDateTime = () => {
+        const now = new Date();
+        return `${now.getFullYear()}${pad(now.getMonth() + 1)}${pad(
+          now.getDate()
+        )}_${pad(now.getHours())}${pad(now.getMinutes())}${pad(
+          now.getSeconds()
+        )}`;
+      };
       // FIXED: dateRange.StartDate/EndDate are already "YYYY-MM-DD" strings
       // (formatToYYYYMMDD on mount, the DateRangePicker's own onChange
       // format otherwise - see handleDateChange/dateRange.jsx) - the
@@ -278,7 +305,9 @@ const MyTradeApprovalStandingReport = () => {
 
       pdf.addImage(imgData, "PNG", 10, y, imgWidth, imgHeight);
 
-      pdf.save("MyTrade-Approval-Report.pdf");
+      const fileName = `My_Trade_Approvals_Standing_Report_${getDateTime()}.pdf`;
+
+      pdf.save(fileName);
       setOpen(false);
     } catch (error) {
       console.error("PDF Export Failed:", error);
