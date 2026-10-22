@@ -7,6 +7,7 @@ import style from "./transactionsSummary.module.css";
 
 import {
   formatApiDateTime,
+  formatShowOnlyDate,
   formatShowOnlyDateForDateRange,
   toYYMMDD,
 } from "../../../../../common/funtions/rejex";
@@ -107,6 +108,8 @@ export const mappingDateWiseTransactionviewDetailst = (
       instrumentCode: item?.instrumentShortCode || "—",
       instrumentName: item?.instrumentName || "—",
       assetTypeShortCode: item?.assetShortCode || "—",
+      // transactionDateTime:
+      //   `${item?.creationDate || ""} ${item?.creationTime || ""}`.trim() || "—",
       transactionDate:
         `${item?.creationDate || ""} ${item?.creationTime || ""}`.trim() || "—",
       department: item.departmentName,
@@ -432,7 +435,7 @@ export const getBorderlessTableColumnsViewDetails = ({
     ),
     dataIndex: "transactionDate",
     key: "transactionDate",
-    width: 180,
+    width: 150,
     align: "center",
 
     sorter: (a, b) =>
@@ -444,7 +447,7 @@ export const getBorderlessTableColumnsViewDetails = ({
     sortIcon: () => null,
     render: (_, record) => (
       <span className="text-gray-600">
-        {formatApiDateTime(`${record.transactionDate}`)}
+        {formatShowOnlyDateForDateRange(`${record.transactionDate}`)}
       </span>
     ),
   },
@@ -471,7 +474,7 @@ export const getBorderlessTableColumnsViewDetails = ({
     align: "center",
     dataIndex: "quantity",
     key: "quantity",
-    width: 100,
+    width: 140,
     sorter: (a, b) => (a?.quantity ?? 0) - (b?.quantity ?? 0),
     sortOrder: sortedInfo?.columnKey === "quantity" ? sortedInfo.order : null,
     showSorterTooltip: false,

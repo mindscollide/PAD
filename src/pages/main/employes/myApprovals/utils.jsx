@@ -385,7 +385,7 @@ export const getBorderlessTableColumns = ({
     sortOrder:
       sortedInfo?.columnKey === "tradeApprovalID" ? sortedInfo.order : null,
     showSorterTooltip: false,
-    width: 140,
+    width: 130,
     align: "left",
     sortIcon: () => null,
     render: (tradeApprovalID) => (
@@ -399,7 +399,7 @@ export const getBorderlessTableColumns = ({
     dataIndex: "instrumentCode",
     key: "instrumentCode",
     ellipsis: true,
-    width: 250,
+    width: 230,
     align: "left",
     sorter: (a, b) =>
       (a?.instrumentCode || "").localeCompare(b?.instrumentCode || ""),
@@ -534,7 +534,7 @@ export const getBorderlessTableColumns = ({
     align: "center",
     key: "quantity",
     // ellipsis: true,
-    width: 100,
+    width: 140,
     sorter: (a, b) => a.quantity - b.quantity,
     sortOrder: sortedInfo?.columnKey === "quantity" ? sortedInfo.order : null,
     showSorterTooltip: false,

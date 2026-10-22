@@ -79,7 +79,7 @@ export const getBorderlessTableColumns = (
     align: "left",
     dataIndex: "instrument",
     key: "instrument",
-    width: 250,
+    width: 220,
     sorter: (a, b) => (a?.instrument || "").localeCompare(b?.instrument || ""),
     sortDirections: ["ascend", "descend"],
     sortOrder: sortedInfo?.columnKey === "instrument" ? sortedInfo.order : null,
@@ -181,7 +181,7 @@ export const getBorderlessTableColumns = (
     align: "center",
     dataIndex: "quantity",
     key: "quantity",
-    width: 120,
+    width: 150,
 
     sorter: (a, b) => (a?.quantity || 0) - (b?.quantity || 0),
     sortDirections: ["ascend", "descend"],

@@ -124,7 +124,7 @@ export const getBorderlessTableColumns = ({
     align: "left",
     dataIndex: "complianceOfficerName",
     key: "complianceOfficerName",
-    width: 180,
+    width: 200,
     sorter: (a, b) =>
       (a?.complianceOfficerName || "").localeCompare(
         b?.complianceOfficerName || ""
@@ -216,7 +216,7 @@ export const getBorderlessTableColumns = ({
     align: "center",
     dataIndex: "quantity",
     key: "quantity",
-    width: 100,
+    width: 140,
     sorter: (a, b) => (a?.quantity ?? 0) - (b?.quantity ?? 0),
     sortOrder: sortedInfo?.columnKey === "quantity" ? sortedInfo.order : null,
     showSorterTooltip: false,

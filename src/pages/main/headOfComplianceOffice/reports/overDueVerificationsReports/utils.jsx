@@ -255,7 +255,7 @@ export const getBorderlessTableColumns = ({
   {
     title: withSortIcon("App. Qty.", "approvedQuantity", sortedInfo, "center"),
     dataIndex: "approvedQuantity",
-    width: 100,
+    width: 140,
     align: "center",
     key: "approvedQuantity",
     sorter: (a, b) => a.approvedQuantity - b.approvedQuantity,

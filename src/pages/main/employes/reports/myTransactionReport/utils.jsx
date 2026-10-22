@@ -283,7 +283,7 @@ export const getBorderlessTableColumns = ({
     align: "center",
     dataIndex: "quantity",
     key: "quantity",
-    width: 100,
+    width: 140,
     sorter: (a, b) => a.quantity - b.quantity,
     sortDirections: ["ascend", "descend"],
     sortOrder: sortedInfo?.columnKey === "quantity" ? sortedInfo.order : null,
