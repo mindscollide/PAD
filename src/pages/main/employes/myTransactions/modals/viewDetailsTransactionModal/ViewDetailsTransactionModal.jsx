@@ -445,17 +445,17 @@ const ViewDetailsTransactionModal = () => {
                   Approved Quantity
                 </label>
                 <label className={styles.viewDetailSubLabels}>
-                  {formatNumberWithCommas(variableOfDetailData?.quantity)}
+                  {formatNumberWithCommas(tradedWorkFlowData?.[0]?.quantity)}
                 </label>
               </div>
             </Col>
             <Col span={12}>
               <div className={styles.backgrounColorOfDetail}>
                 <label className={styles.viewDetailMainLabels}>
-                  Shared Traded
+                  Shares Traded
                 </label>
                 <label className={styles.viewDetailSubLabels}>
-                  {formatNumberWithCommas(tradedWorkFlowData?.[0]?.quantity)}
+                  {formatNumberWithCommas(variableOfDetailData?.quantity)}
                 </label>
               </div>
             </Col>

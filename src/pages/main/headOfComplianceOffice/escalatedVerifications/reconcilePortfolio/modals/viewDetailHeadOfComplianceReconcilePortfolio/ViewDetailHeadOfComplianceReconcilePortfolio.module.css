@@ -414,7 +414,20 @@
 
 .stepButtonActive {
   background: none !important; /* Remove background for active state */
-  /* You can add any other styles you need */
+  width: 2em;
+  border-width: medium;
+  border-style: none;
+  border-color: currentcolor;
+  border-image: none;
+  cursor: pointer;
+  height: 2em;
+  margin: 0px;
+  display: flex;
+  padding: 0px;
+  font-size: 1em;
+  align-items: center;
+  border-radius: 50%;
+  justify-content: center;
 }
 
 .backgrounColorOfDetailCompliance {

@@ -223,9 +223,7 @@ const ViewDetailModal = () => {
             <div className={styles.customlabel}>
               <div className={styles.customtitle}>Escalated On</div>
               {escalatedFromName && (
-                <div className={styles.customdesc}>
-                  by {escalatedFromName}
-                </div>
+                <div className={styles.customdesc}> {escalatedFromName}</div>
               )}
               <div className={styles.customdesc}>
                 {formatApiDateTime(`${escalatedOnDate} ${escalatedOnTime}`)}
@@ -610,6 +608,7 @@ const ViewDetailModal = () => {
                   >
                     {/* Agar loginUserID match krti hai hierarchyDetails ki userID sy to wo wala stepper show nahi hoga */}
                     <Stepper
+                      // key={`${viewDetailsLineManagerData?.details?.[0]?.tradeApprovalID}-${hierarchySteps.length}`}
                       activeStep={Math.max(0, hierarchySteps.length - 1)}
                       connectorStyleConfig={{
                         activeColor: "#00640A",

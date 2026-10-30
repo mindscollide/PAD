@@ -160,7 +160,7 @@ const ViewDetailHeadOfApprovalModal = () => {
       // directly here (this screen's own steps are built entirely from
       // escalations[], unlike those two screens which have to correlate
       // it in from hierarchyDetails).
-      subtitle: esc?.escalatedFrom ? `by ${esc.escalatedFrom}` : "",
+      subtitle: esc?.escalatedFrom ? `${esc.escalatedFrom}` : "",
       desc: formatApiDateTime(
         `${esc?.escalatedOnDate} ${esc?.escalatedOnTime}`
       ),
