@@ -11,6 +11,7 @@ import CrossIcon from "../../../../../../../assets/img/Cross.png";
 import EscalatedIcon from "../../../../../../../assets/img/escalated.png";
 import { useDashboardContext } from "../../../../../../../context/dashboardContaxt";
 import {
+  convertUTCToCurrentTimeZone,
   formatApiDateTime,
   formatNumberWithCommas,
   formatTransactionId,
@@ -35,7 +36,8 @@ const ViewDetailPortfolioTransaction = () => {
 
   //This is the Global state of Context Api
 
-  const { reconcilePortfolioViewDetailData } = usePortfolioContext();
+  const { reconcilePortfolioViewDetailData, selectedPortfolioTransactionData } =
+    usePortfolioContext();
 
   const { allInstrumentsData } = useDashboardContext();
   // This is the Status Which is I'm getting from the selectedViewDetail contextApi state
@@ -176,6 +178,7 @@ const ViewDetailPortfolioTransaction = () => {
 
               <div className={styles.modalBodyContentScroller}>
                 {/* Show Resubmit,Pending,Declined and Not Traded status Sceanrios */}
+                {/* Display Instrument in 1st row. */}
                 <Row
                   gutter={[4, 4]}
                   style={{
@@ -209,7 +212,7 @@ const ViewDetailPortfolioTransaction = () => {
 
                 {/* Show Other Scenario's SUb Heading and Field Sceanrio's */}
                 <Row gutter={[4, 4]} style={{ marginTop: "3px" }}>
-                  <Col span={8}>
+                  <Col span={12}>
                     <div className={styles.backgrounColorOfDetail}>
                       <label className={styles.viewDetailMainLabels}>
                         Portfolio ID
@@ -227,10 +230,39 @@ const ViewDetailPortfolioTransaction = () => {
                               ?.tradeApprovalID
                           )}
                         </label>
-                        {/* ADDED (API_Changes/2026-09-11_co_viewdetails_
-                            escalated_flag_added.md) - same escalation
-                            badge convention already used on the sibling
-                            Reconcile Transaction View Details modal. */}
+                      </div>
+                    </div>
+                  </Col>
+                  <Col span={12}>
+                    <div className={styles.backgrounColorOfDetail}>
+                      <label className={styles.viewDetailMainLabels}>
+                        Requester Name
+                      </label>
+                      <label className={styles.viewDetailSubLabels}>
+                        {reconcilePortfolioViewDetailData?.requesterName}
+                      </label>
+                    </div>
+                  </Col>
+                </Row>
+                <Row gutter={[4, 4]} style={{ marginTop: "3px" }}>
+                  <Col span={12}>
+                    <div className={styles.backgrounColorOfDetail}>
+                      <label className={styles.viewDetailMainLabels}>
+                        Upload Date
+                      </label>
+                      <div
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "space-between",
+                        }}
+                      >
+                        <label className={styles.viewDetailSubLabels}>
+                          {/* Row value is a combined UTC "YYYYMMDD HHmmss" string */}
+                          {convertUTCToCurrentTimeZone(
+                            selectedPortfolioTransactionData?.transactionRequestDateime
+                          )}
+                        </label>
                         {reconcilePortfolioViewDetailData?.isEscalated && (
                           <img
                             draggable={false}
@@ -241,18 +273,11 @@ const ViewDetailPortfolioTransaction = () => {
                         )}
                       </div>
                     </div>
+
+                    {/*  */}
                   </Col>
-                  <Col span={8}>
-                    <div className={styles.backgrounColorOfDetail}>
-                      <label className={styles.viewDetailMainLabels}>
-                        Requester Name
-                      </label>
-                      <label className={styles.viewDetailSubLabels}>
-                        {reconcilePortfolioViewDetailData?.requesterName}
-                      </label>
-                    </div>
-                  </Col>
-                  <Col span={8}>
+
+                  <Col span={12}>
                     <div
                       className={
                         statusData.label === "Traded"

@@ -59,6 +59,11 @@ const ViewDetailReconcileTransaction = () => {
     selectedReconcileTransactionData,
   } = useReconcileContext();
 
+  console.log(
+    selectedReconcileTransactionData,
+    "selectedReconcileTransactionDataselectedReconcileTransactionData"
+  );
+
   const { allInstrumentsData } = useDashboardContext();
   // This is the Status Which is I'm getting from the selectedViewDetail contextApi state
   const getStatusStyle = (status) => {
