@@ -5,6 +5,7 @@ import styles from "./PendingRequest.module.css";
 // ✅ Imported icons
 import UsernameIcon from "../../../../assets/img/username.png";
 import EmailIcon from "../../../../assets/img/Email.png";
+import CalenderIcon from "../../../../assets/img/calendar2.png";
 import EmployeeIdIcon from "../../../../assets/img/EmployeeId.png";
 import DepartmentIcon from "../../../../assets/img/user-dark-icon.png";
 import { Col, Row } from "antd";
@@ -17,6 +18,10 @@ import { useMyAdmin } from "../../../../context/AdminContext";
 import { useSearchBarContext } from "../../../../context/SearchBarContaxt";
 import { buildApiRequest } from "./utils";
 import EmptyState from "../../../../components/emptyStates/empty-states";
+import {
+  formatShowOnlyDate,
+  toYYMMDD,
+} from "../../../../common/funtions/rejex";
 
 const PendingRequest = ({ currentUserData, setCurrentUserData }) => {
   const { callApi } = useApi();
@@ -136,7 +141,7 @@ const PendingRequest = ({ currentUserData, setCurrentUserData }) => {
       setManageUsersPendingTabMqtt(false);
     }
   }, [manageUsersPendingTabMqtt]);
-
+  // const formatDate = (date) => (date ? toYYMMDD(date) : "");
   return (
     <div className={styles.scrollContainer}>
       {manageUsersPendingTabData?.length > 0 ? (
@@ -145,11 +150,10 @@ const PendingRequest = ({ currentUserData, setCurrentUserData }) => {
             <div key={index} className={styles.mainPendingRequestDiv}>
               {/* Left Side: User Details */}
               <div className={styles.detailsContainer}>
-                <Row style={{ marginBottom: "20px" }}>
-                  <Col span={16}>
+                <Row>
+                  <Col lg={14} md={14} sm={24}>
                     <h4 className={styles.userName}>{data.fullName}</h4>
-                  </Col>
-                  <Col span={8}>
+
                     <div className={styles.infoItem}>
                       <img
                         draggable={false}
@@ -162,11 +166,32 @@ const PendingRequest = ({ currentUserData, setCurrentUserData }) => {
                         {data.loginID}
                       </span>
                     </div>
-                  </Col>
-                </Row>
+                    {/* <Row style={{ marginBottom: "20px" }}> */}
+                    {/* <Col span={16}> */}
 
-                <Row>
-                  <Col span={16}>
+                    {/* </Col> */}
+                    {/* <Col span={8}>
+                      
+                    </Col> */}
+                    {/* </Row> */}
+                  </Col>
+                  <Col lg={10} md={10} sm={24}>
+                    <div className={styles.infoItemDate}>
+                      <img
+                        draggable={false}
+                        src={CalenderIcon}
+                        alt="Date"
+                        className={styles.icon}
+                      />
+                      <span className={styles.text}>
+                        <span className={styles.InitialName}>
+                          Request Date:{" "}
+                        </span>
+                        {data.requestDate
+                          ? formatShowOnlyDate(data.requestDate)
+                          : ""}
+                      </span>
+                    </div>
                     <div className={styles.infoItem}>
                       <img
                         draggable={false}
@@ -179,9 +204,21 @@ const PendingRequest = ({ currentUserData, setCurrentUserData }) => {
                         {data.email}
                       </span>
                     </div>
-                  </Col>
 
-                  {/* <Col span={8}>
+                    <div className={styles.infoItem}>
+                      <img
+                        draggable={false}
+                        src={DepartmentIcon}
+                        alt="Department"
+                        className={styles.icon}
+                      />
+                      <span className={styles.text}>
+                        <span className={styles.InitialName}>Department:</span>{" "}
+                        {data.departmentName}
+                      </span>
+                    </div>
+                    <Row>
+                      {/* <Col span={8}>
                     <div className={styles.infoItem}>
                       <img
                         draggable={false}
@@ -195,20 +232,7 @@ const PendingRequest = ({ currentUserData, setCurrentUserData }) => {
                       </span>
                     </div>
                   </Col> */}
-
-                  <Col span={8}>
-                    <div className={styles.infoItem}>
-                      <img
-                        draggable={false}
-                        src={DepartmentIcon}
-                        alt="Department"
-                        className={styles.icon}
-                      />
-                      <span className={styles.text}>
-                        <span className={styles.InitialName}>Department:</span>{" "}
-                        {data.departmentName}
-                      </span>
-                    </div>
+                    </Row>
                   </Col>
                 </Row>
               </div>

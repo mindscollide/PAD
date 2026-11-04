@@ -7,12 +7,11 @@ import { useMyAdmin } from "../../../../../context/AdminContext";
 import { useDashboardContext } from "../../../../../context/dashboardContaxt";
 
 // 🔹 Icons
+import CalenderIcon from "../../../../../assets/img/calendar2.png";
 import UsernameIcon from "../../../../../assets/img/username.png";
 import EmailIcon from "../../../../../assets/img/Email.png";
-import EmployeeIdIcon from "../../../../../assets/img/EmployeeId.png";
 import DepartmentIcon from "../../../../../assets/img/user-dark-icon.png";
 import AvatarIcon from "../../../../../assets/img/avatar-half-name-icon.png";
-
 // 🔹 Styles
 import styles from "./requestApprovedRejeectedModal.module.css";
 import CustomButton from "../../../../../components/buttons/button";
@@ -22,6 +21,7 @@ import { useApi } from "../../../../../context/ApiContext";
 import { useGlobalLoader } from "../../../../../context/LoaderContext";
 import { useNotification } from "../../../../../components/NotificationProvider/NotificationProvider";
 import { useNavigate } from "react-router-dom";
+import { formatShowOnlyDate } from "../../../../../common/funtions/rejex";
 
 const RequestApprovedRejeectedModal = ({ currentUserData = [] }) => {
   const { callApi } = useApi();
@@ -176,24 +176,28 @@ const RequestApprovedRejeectedModal = ({ currentUserData = [] }) => {
                           </span>
                         </div>
                       </Col>
-                      {/* <Col span={12}>
+                      <Col span={12}>
                         <div className={styles.infoItem}>
                           <img
                             draggable={false}
-                            src={EmployeeIdIcon}
-                            alt="Employee ID"
+                            src={CalenderIcon}
+                            alt="Date"
                             className={styles.icon}
                           />
                           <span>
                             <span className={styles.InitialHeading}>
-                              Employee ID:
+                              Request Date:
                             </span>{" "}
                             <span className={styles.mainTextType}>
-                              {currentUserData.userRegistrationRequestID}
+                              {currentUserData.requestDate
+                                ? formatShowOnlyDate(
+                                    currentUserData.requestDate
+                                  )
+                                : ""}
                             </span>
                           </span>
                         </div>
-                      </Col> */}
+                      </Col>
                     </Row>
 
                     <Row style={{ marginBottom: "20px" }}>

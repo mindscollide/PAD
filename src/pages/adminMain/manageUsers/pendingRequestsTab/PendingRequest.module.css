@@ -8,8 +8,8 @@
   padding: 20px 24px;
   margin-bottom: 20px;
   transition: box-shadow 0.3s ease; /* smooth hover animation */
- border: 1px solid #B4B4B4; 
- /* cursor: pointer; */
+  border: 1px solid #b4b4b4;
+  /* cursor: pointer; */
 }
 
 /* ✅ show shadow on hover */
@@ -36,17 +36,31 @@
   align-items: center;
   margin-bottom: 6px;
 }
-
+.infoItemDate {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
 .infoItem {
   display: flex;
   align-items: center;
   gap: 8px;
+  margin-top: 20px;
+}
+.textStyle {
+  font-size: 16px;
 }
 
 .icon {
   width: 22px;
   height: 22px;
   object-fit: contain;
+}
+.iconCalender {
+  /* width: 22px;
+  height: 22px; */
+  object-fit: contain;
+  color: #30426a;
 }
 
 .text {

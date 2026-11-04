@@ -86,6 +86,7 @@ export const mapListData = (res = []) => {
     key: item.requestID,
     requestID: item.requestID,
     employeeID: item.employeeID,
+    portfolioID: item.portfolioID,
     employeeName: item.employeeName || "",
     instrumentName: item.instrumentName || "—",
     instrumentShortCode: item.instrumentShortCode || "—",
@@ -167,10 +168,10 @@ export const getBorderlessTableColumns = ({
   setAdminTradesUploadedviaPortfolioReportSearch,
 }) => [
   {
-    title: withSortIcon("Employee ID", "employeeID", sortedInfo, "center"),
+    title: withSortIcon("ID", "employeeID", sortedInfo, "center"),
     dataIndex: "employeeID",
     key: "employeeID",
-    width: 100,
+    width: 60,
     align: "center",
     sorter: (a, b) => Number(a.employeeID) - Number(b.employeeID),
     sortDirections: ["ascend", "descend"],
@@ -192,6 +193,26 @@ export const getBorderlessTableColumns = ({
     showSorterTooltip: false,
     sortIcon: () => null,
     render: (text) => <span className="font-medium">{text}</span>,
+  },
+
+  {
+    title: withSortIcon("Portfolio ID", "portfolioID", sortedInfo),
+    dataIndex: "portfolioID",
+    key: "portfolioID",
+    width: 100,
+    sorter: (a, b) => (a.portfolioID || "").localeCompare(b.portfolioID || ""),
+    sortDirections: ["ascend", "descend"],
+    sortOrder:
+      sortedInfo?.columnKey === "portfolioID" ? sortedInfo.order : null,
+    showSorterTooltip: false,
+    sortIcon: () => null,
+    render: (text) => (
+      <span className="font-medium">
+        {/* {text} */}
+
+        {text.replace(/^P/, "P-")}
+      </span>
+    ),
   },
   {
     title: withSortIcon("Instrument", "instrumentShortCode", sortedInfo),
