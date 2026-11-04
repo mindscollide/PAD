@@ -85,6 +85,8 @@ const ApprovalStepper = ({ trail }) => {
     const s = String(status).trim().toLowerCase();
     if (s === "escalated on") return ""; // API already says "On"
     if (s.startsWith("escalated")) return "on "; // "Escalated", "Escalated to X"
+    if (s.startsWith("pending")) return "on "; // "Pending to"
+
     return "by ";
   };
 
