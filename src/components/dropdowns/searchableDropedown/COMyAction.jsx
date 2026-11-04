@@ -255,8 +255,8 @@ export const COMyAction = ({
               style={{ width: "100%" }}
             >
               <Option value={1}>Pending</Option>
-              <Option value={7}>Compliant</Option>
-              <Option value={8}>Non-Compliant</Option>
+              <Option value={8}>Compliant</Option>
+              <Option value={9}>Non-Compliant</Option>
             </Select>
           </div>
         </Col>
