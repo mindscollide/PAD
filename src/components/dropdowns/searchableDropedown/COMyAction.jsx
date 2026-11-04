@@ -254,7 +254,7 @@ export const COMyAction = ({
               onChange={(values) => setFieldValue("status", values)}
               style={{ width: "100%" }}
             >
-              <Option value={1}>Pending</Option>
+              {/* <Option value={1}>Pending</Option> */}
               <Option value={8}>Compliant</Option>
               <Option value={9}>Non-Compliant</Option>
             </Select>

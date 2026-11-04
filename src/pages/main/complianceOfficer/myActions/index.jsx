@@ -159,9 +159,9 @@ const COMyAction = () => {
     };
 
     const statusMap = {
-      1: "Pending",
-      7: "Compliant",
-      8: "Non-Compliant",
+      // 1: "Pending",
+      8: "Compliant",
+      9: "Non-Compliant",
     };
 
     const natureMap = {
