@@ -133,6 +133,8 @@ const ViewDetailHeadOfApprovalModal = () => {
     ? viewDetailsHeadOfApprovalData.escalations
     : [];
 
+  console.log(escalations, "escalationsescalations");
+
   // FIXED: was `hierarchyDetails?.some(item => item.userID === loggedInUserID
   // && item.bundleStatusID === 2)` - checking for ANY hierarchy level this
   // HTA had ever approved. A single workflow can carry multiple escalations
@@ -148,6 +150,11 @@ const ViewDetailHeadOfApprovalModal = () => {
   // an open escalation instead - that's what this screen is actually for.
   const hasAlreadyApprovedOrDeclined = !escalations.some(
     (esc) => esc?.isEscalationOpen
+  );
+
+  console.log(
+    hasAlreadyApprovedOrDeclined,
+    "escalationsescalationsescalationsescalations"
   );
 
   const escalationSteps = escalations.flatMap((esc) => {
@@ -178,9 +185,14 @@ const ViewDetailHeadOfApprovalModal = () => {
           key: `${esc?.escalationID}-closed`,
           iconSrc: CheckIcon,
           title:
-            esc?.escalationClosedBy === loggedInUserID
-              ? "Approved by You"
-              : esc?.escalationClosedByName,
+            esc?.escalationClosedBy === loggedInUserID ? (
+              "Approved by You"
+            ) : (
+              <>
+                Approved by <br />
+                {esc?.escalationClosedByName}
+              </>
+            ),
           desc: convertUTCToCurrentTimeZone(
             closedDatePart?.replace(/-/g, ""),
             closedTimePart?.replace(/:/g, "")
@@ -195,6 +207,8 @@ const ViewDetailHeadOfApprovalModal = () => {
 
     return [escalatedStep, closureStep];
   });
+
+  console.log(escalationSteps, "escalationStepsescalationSteps");
 
   // To open Approved Modal when Click on Approved Button in ViewDetailLineManager Modal
   const onClickToOpenApprovedModal = () => {
@@ -452,7 +466,7 @@ const ViewDetailHeadOfApprovalModal = () => {
                                     {step.title}
                                   </div>
                                   {step.subtitle && (
-                                    <div className={styles.customdesc}>
+                                    <div className={styles.customtitle}>
                                       {step.subtitle}
                                     </div>
                                   )}
