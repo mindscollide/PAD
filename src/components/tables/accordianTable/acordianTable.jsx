@@ -152,7 +152,7 @@ const AcordianTable = ({
         rowKey="id"
         pagination={false}
         onChange={onChange}
-        scroll={{ x: 1300 }}
+        // scroll={{ x: 1300 }}
         expandable={{
           expandedRowKeys,
           expandedRowRender: (record) =>

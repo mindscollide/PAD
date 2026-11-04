@@ -81,6 +81,12 @@ const ApprovalStepper = ({ trail }) => {
         return null;
     }
   };
+  const getActorPrefix = (status = "") => {
+    const s = String(status).trim().toLowerCase();
+    if (s === "escalated on") return ""; // API already says "On"
+    if (s.startsWith("escalated")) return "on "; // "Escalated", "Escalated to X"
+    return "by ";
+  };
 
   return (
     <div className={styles.stepperContainer}>
@@ -140,7 +146,7 @@ const ApprovalStepper = ({ trail }) => {
                     step.textColor (e.g. "Approved by You") overrides the
                     default color on both this line and the status line
                     above. */}
-                {step.user && (
+                {/* {step.user && (
                   <div
                     className={styles.stepActor}
                     style={
@@ -156,6 +162,27 @@ const ApprovalStepper = ({ trail }) => {
                         }
                       >
                         {step.user}
+                      </span>
+                    </Tooltip>
+                  </div>
+                )} */}
+
+                {step.user && (
+                  <div
+                    className={styles.stepActor}
+                    style={
+                      step.textColor ? { color: step.textColor } : undefined
+                    }
+                  >
+                    {/* {getActorPrefix(step.status)} */}
+                    <Tooltip title={step.user}>
+                      <span
+                        className={styles.stepTileStrongText}
+                        style={
+                          step.textColor ? { color: step.textColor } : undefined
+                        }
+                      >
+                        {`${getActorPrefix(step.status)} ${step.user}`}
                       </span>
                     </Tooltip>
                   </div>

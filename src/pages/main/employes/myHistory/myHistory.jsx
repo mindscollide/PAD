@@ -710,7 +710,9 @@ const MyHistory = () => {
 
       const pendingBundleSteps = auditTrailSteps
         ? (wf.bundleHierarchy || [])
-            .filter((b) => b.bundleStatusState !== 2 && b.bundleStatusState !== 3)
+            .filter(
+              (b) => b.bundleStatusState !== 2 && b.bundleStatusState !== 3
+            )
             .map((b) => ({
               status: "Pending",
               user: `${b.firstName} ${b.lastName}`,
