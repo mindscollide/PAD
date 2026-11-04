@@ -166,14 +166,14 @@ const HTAMyAction = () => {
     };
 
     const statusMap = {
-      1: "Pending",
+      // 1: "Pending",
       2: "Approved",
-      3: "Approved",
-      4: "Declined",
-      5: "Traded",
-      6: "Not-Traded",
-      7: "Compliant",
-      8: "Non-Compliant",
+      3: "Declined",
+      // 4: "Declined",
+      // 5: "Traded",
+      // 6: "Not-Traded",
+      // 7: "Compliant",
+      // 8: "Non-Compliant",
     };
     return [
       requestID && {
