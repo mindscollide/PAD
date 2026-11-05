@@ -192,7 +192,10 @@ const ViewDetailHeadOfComplianceReconcileTransaction = () => {
     )
   );
 
-  const escalationSteps = escalations.flatMap((esc) => {
+  // Fallback only (hierarchyDetails missing, i.e. before the BE's
+  // sp_GetUserBundleStatusByWorkFlowID_CapAtViewerLevel.sql is applied):
+  // the old escalations[]-only stepper, which starts at the escalation.
+  const legacyEscalationSteps = escalations.flatMap((esc) => {
     const escalatedStep = {
       key: `${esc?.escalationID}-escalated`,
       iconSrc: EscaltedOn,
@@ -241,6 +244,102 @@ const ViewDetailHeadOfComplianceReconcileTransaction = () => {
 
     return [escalatedStep, closureStep];
   });
+
+  // CHANGED (API_Changes/2026-11-05_escalated_view_details_hierarchy_from_start.md):
+  // the stepper now starts at level 1 and runs up to the current step, built
+  // from hierarchyDetails (level order, capped at the current step by the
+  // BE) the same way the Employee My Approvals View Details does it. An
+  // escalated level gets an "Escalated on {person}" step (name taken from
+  // escalations[] via the shared escalatedOnDate/Time pair), then either
+  // "Waiting for Your Action" (still open) or its Compliant/Non-Compliant
+  // resolution.
+  const hierarchyDetails = Array.isArray(
+    isEscalatedHeadOfComplianceViewDetailData?.hierarchyDetails
+  )
+    ? isEscalatedHeadOfComplianceViewDetailData.hierarchyDetails
+    : [];
+
+  const findEscalationRecord = (person) =>
+    escalations.find(
+      (esc) =>
+        esc?.escalatedOnDate === person?.escalatedOnDate &&
+        esc?.escalatedOnTime === person?.escalatedOnTime
+    );
+
+  const hierarchySteps = hierarchyDetails.flatMap((person, index) => {
+    const {
+      userID,
+      fullName,
+      bundleStatusID,
+      modifiedDate,
+      modifiedTime,
+      isEscalated,
+      escalatedOnDate,
+      escalatedOnTime,
+      escalationStillOpen,
+    } = person || {};
+
+    const escalationRecord = isEscalated ? findEscalationRecord(person) : null;
+
+    const escalatedStep = isEscalated
+      ? {
+          key: `${index}-escalated`,
+          iconSrc: EscaltedOn,
+          title:
+            escalationRecord?.escalatedFromID === loggedInUserID
+              ? "Escalated on You"
+              : `Escalated on ${escalationRecord?.escalatedFrom || fullName || ""}`.trim(),
+          desc: formatApiDateTime(`${escalatedOnDate} ${escalatedOnTime}`),
+        }
+      : null;
+
+    const actedAt =
+      modifiedDate && modifiedTime
+        ? formatApiDateTime(`${modifiedDate} ${modifiedTime}`)
+        : "";
+    const isYou = userID === loggedInUserID;
+
+    let resolutionStep;
+    if (isEscalated && escalationStillOpen) {
+      resolutionStep = {
+        key: `${index}-waiting`,
+        iconSrc: EllipsesIcon,
+        title: "Waiting for Your Action",
+        desc: "",
+      };
+    } else if (bundleStatusID === 2) {
+      resolutionStep = {
+        key: `${index}-compliant`,
+        iconSrc: CheckIcon,
+        title: isYou
+          ? "Marked Compliant by You"
+          : `Compliant by ${fullName || ""}`.trim(),
+        desc: actedAt,
+      };
+    } else if (bundleStatusID === 3) {
+      resolutionStep = {
+        key: `${index}-noncompliant`,
+        iconSrc: CrossIcon,
+        title: isYou
+          ? "Marked Non-Compliant by You"
+          : `Non-Compliant by ${fullName || ""}`.trim(),
+        desc: actedAt,
+      };
+    } else {
+      resolutionStep = {
+        key: `${index}-pending`,
+        iconSrc: EllipsesIcon,
+        title: fullName || "Waiting for verification",
+        desc: "",
+      };
+    }
+
+    return escalatedStep ? [escalatedStep, resolutionStep] : [resolutionStep];
+  });
+
+  const escalationSteps = hierarchySteps.length
+    ? hierarchySteps
+    : legacyEscalationSteps;
 
   const complianceOfficer =
     isEscalatedHeadOfComplianceViewDetailData?.hierarchyDetails?.find(
