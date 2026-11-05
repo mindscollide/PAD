@@ -134,8 +134,6 @@ const ViewDetailHeadOfApprovalModal = () => {
     ? viewDetailsHeadOfApprovalData.escalations
     : [];
 
-  console.log(escalations, "escalationsescalations");
-
   // FIXED: was `hierarchyDetails?.some(item => item.userID === loggedInUserID
   // && item.bundleStatusID === 2)` - checking for ANY hierarchy level this
   // HTA had ever approved. A single workflow can carry multiple escalations
@@ -166,7 +164,7 @@ const ViewDetailHeadOfApprovalModal = () => {
       // directly here (this screen's own steps are built entirely from
       // escalations[], unlike those two screens which have to correlate
       // it in from hierarchyDetails).
-      subtitle: esc?.escalatedFrom ? `${esc.escalatedFrom}` : "",
+      subtitle: esc?.escalatedFrom ? `by ${esc.escalatedFrom}` : "",
       desc: formatApiDateTime(
         `${esc?.escalatedOnDate} ${esc?.escalatedOnTime}`
       ),
@@ -184,14 +182,9 @@ const ViewDetailHeadOfApprovalModal = () => {
           key: `${esc?.escalationID}-closed`,
           iconSrc: CheckIcon,
           title:
-            esc?.escalationClosedBy === loggedInUserID ? (
-              "Approved by You"
-            ) : (
-              <>
-                Approved by <br />
-                {esc?.escalationClosedByName}
-              </>
-            ),
+            esc?.escalationClosedBy === loggedInUserID
+              ? "Approved by You"
+              : esc?.escalationClosedByName,
           desc: convertUTCToCurrentTimeZone(
             closedDatePart?.replace(/-/g, ""),
             closedTimePart?.replace(/:/g, "")
@@ -557,7 +550,7 @@ const ViewDetailHeadOfApprovalModal = () => {
                                     {step.title}
                                   </div>
                                   {step.subtitle && (
-                                    <div className={styles.customtitle}>
+                                    <div className={styles.customdesc}>
                                       {step.subtitle}
                                     </div>
                                   )}
