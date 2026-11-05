@@ -215,12 +215,12 @@
 }
 
 .customtitle {
-  /* white-space: normal; */
+  white-space: normal;
   font-family: "Switzer Variable";
   color: #30426a;
   font-weight: 700;
   font-size: 14px;
-  max-width: 200px;
+  width: 170px;
   overflow-wrap: break-word;
   word-break: break-word;
 }
