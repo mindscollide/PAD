@@ -6,6 +6,7 @@ import styles from "./ViewDetailHeadOfApprovalModal.module.css";
 import { Stepper, Step } from "react-form-stepper";
 import CustomButton from "../../../../../../components/buttons/button";
 import CheckIcon from "../../../../../../assets/img/Check.png";
+import CrossIcon from "../../../../../../assets/img/Cross.png";
 import EllipsesIcon from "../../../../../../assets/img/Ellipses.png";
 import EscaltedOn from "../../../../../../assets/img/EscaltedOn.png";
 import repeat from "../../../../../../assets/img/repeat.png";
@@ -150,7 +151,10 @@ const ViewDetailHeadOfApprovalModal = () => {
     (esc) => esc?.isEscalationOpen
   );
 
-  const escalationSteps = escalations.flatMap((esc) => {
+  // Fallback only (hierarchyDetails missing, i.e. before the BE's
+  // sp_GetUserBundleStatusByWorkFlowID_CapAtViewerLevel.sql is applied):
+  // the old escalations[]-only stepper, which starts at the escalation.
+  const legacyEscalationSteps = escalations.flatMap((esc) => {
     const escalatedStep = {
       key: `${esc?.escalationID}-escalated`,
       iconSrc: EscaltedOn,
@@ -195,6 +199,100 @@ const ViewDetailHeadOfApprovalModal = () => {
 
     return [escalatedStep, closureStep];
   });
+
+  // CHANGED (API_Changes/2026-11-05_escalated_view_details_hierarchy_from_start.md):
+  // the stepper now starts at level 1 and runs up to the current step, built
+  // from hierarchyDetails (level order, capped at the current step by the
+  // BE) the same way the Employee My Approvals View Details does it. An
+  // escalated level gets an "Escalated On" step (escalating person's name
+  // taken from escalations[] via the shared escalatedOnDate/Time pair), then
+  // either "Waiting for your approval" (still open) or its resolution.
+  const hierarchyDetails = Array.isArray(
+    viewDetailsHeadOfApprovalData?.hierarchyDetails
+  )
+    ? viewDetailsHeadOfApprovalData.hierarchyDetails
+    : [];
+
+  const findEscalationRecord = (person) =>
+    escalations.find(
+      (esc) =>
+        esc?.escalatedOnDate === person?.escalatedOnDate &&
+        esc?.escalatedOnTime === person?.escalatedOnTime
+    );
+
+  const hierarchySteps = hierarchyDetails.flatMap((person, index) => {
+    const {
+      userID,
+      fullName,
+      bundleStatusID,
+      modifiedDate,
+      modifiedTime,
+      isEscalated,
+      escalatedOnDate,
+      escalatedOnTime,
+      escalationStillOpen,
+    } = person || {};
+
+    const escalatedFromName = isEscalated
+      ? findEscalationRecord(person)?.escalatedFrom
+      : "";
+
+    const escalatedStep = isEscalated
+      ? {
+          key: `${index}-escalated`,
+          iconSrc: EscaltedOn,
+          // "Escalated on {person escalating}", per the 2026-11-05 note
+          // (same wording as the Head of Compliance screen).
+          title: escalatedFromName
+            ? `Escalated on ${escalatedFromName}`
+            : "Escalated On",
+          desc: formatApiDateTime(`${escalatedOnDate} ${escalatedOnTime}`),
+        }
+      : null;
+
+    const actedAt =
+      modifiedDate && modifiedTime
+        ? formatApiDateTime(`${modifiedDate} ${modifiedTime}`)
+        : "";
+    const byName = userID === loggedInUserID ? "You" : fullName;
+
+    let resolutionStep;
+    if (isEscalated && escalationStillOpen) {
+      resolutionStep = {
+        key: `${index}-waiting`,
+        iconSrc: EllipsesIcon,
+        title: "Waiting for your approval",
+        desc: "",
+      };
+    } else if (bundleStatusID === 2) {
+      resolutionStep = {
+        key: `${index}-approved`,
+        iconSrc: CheckIcon,
+        title: `Approved by ${byName || ""}`.trim(),
+        desc: actedAt,
+      };
+    } else if (bundleStatusID === 3) {
+      resolutionStep = {
+        key: `${index}-declined`,
+        iconSrc: CrossIcon,
+        title: `Declined by ${byName || ""}`.trim(),
+        desc: actedAt,
+      };
+    } else {
+      resolutionStep = {
+        key: `${index}-pending`,
+        iconSrc: EllipsesIcon,
+        title: fullName || "Waiting for approval",
+        desc: "",
+      };
+    }
+
+    return escalatedStep ? [escalatedStep, resolutionStep] : [resolutionStep];
+  });
+
+  const escalationSteps = hierarchySteps.length
+    ? hierarchySteps
+    : legacyEscalationSteps;
 
   // To open Approved Modal when Click on Approved Button in ViewDetailLineManager Modal
   const onClickToOpenApprovedModal = () => {
