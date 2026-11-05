@@ -146,7 +146,7 @@ export const getBorderlessTableColumns = ({
     title: withSortIcon("Portfolo ID", "tradeApprovalID", sortedInfo),
     dataIndex: "tradeApprovalID",
     key: "tradeApprovalID",
-    width: 150,
+    width: 120,
     sorter: (a, b) =>
       (a?.tradeApprovalID || "").localeCompare(b?.tradeApprovalID || ""),
     sortOrder:
@@ -165,7 +165,7 @@ export const getBorderlessTableColumns = ({
     dataIndex: "requesterName",
     key: "requesterName",
     align: "left",
-    width: 200,
+    width: 180,
 
     sorter: (a, b) =>
       (a?.requesterName || "").localeCompare(b?.requesterName || ""),
@@ -184,7 +184,7 @@ export const getBorderlessTableColumns = ({
     dataIndex: "instrumentCode",
     key: "instrumentCode",
     align: "left",
-    width: 200,
+    width: 220,
     sorter: (a, b) => (a?.instrument || "").localeCompare(b?.instrument || ""),
     sortOrder:
       sortedInfo?.columnKey === "instrumentCode" ? sortedInfo.order : null,
@@ -239,7 +239,7 @@ export const getBorderlessTableColumns = ({
     dataIndex: "transactionRequestDateime",
     key: "transactionRequestDateime",
     align: "center",
-    width: 250,
+    width: 220,
     sorter: (a, b) =>
       (a?.transactionRequestDateime || "").localeCompare(
         b?.transactionRequestDateime || ""
@@ -282,6 +282,7 @@ export const getBorderlessTableColumns = ({
     dataIndex: "type",
     key: "type",
     align: "center",
+    width: 100,
     filteredValue: complianceOfficerReconcilePortfolioSearch?.type?.length
       ? complianceOfficerReconcilePortfolioSearch.type
       : null,
@@ -335,7 +336,6 @@ export const getBorderlessTableColumns = ({
     key: "isEscalated",
     width: 100,
     align: "center",
-    ellipsis: true,
     render: (isEscalated) =>
       isEscalated && (
         <img
@@ -353,6 +353,8 @@ export const getBorderlessTableColumns = ({
     title: "",
     key: "actions",
     align: "center",
+    width: 100,
+
     render: (text, record) => {
       //Global State to selected data to show in ViewDetailModal
       const { setViewDetailPortfolioTransaction } = useGlobalModal();
