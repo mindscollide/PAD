@@ -183,9 +183,17 @@ const ViewDetailReconcileTransaction = () => {
 
     const rawTimestamp = (date, time) => `${date || ""}${time || ""}`;
 
+    // const escalatedUserIDs = new Set(
+    //   escalations.map((e) => e?.escalatedFromID).filter((id) => id != null)
+    // );
+
     const escalatedUserIDs = new Set(
       escalations.map((e) => e?.escalatedFromID).filter((id) => id != null)
     );
+
+    // hierarchyDetails rows already represented by an escalation-closure step
+    // (e.g. the HCA who closed on behalf of a stalled reviewer)
+    const closureRowKeys = new Set();
 
     const steps = [];
 
@@ -223,6 +231,10 @@ const ViewDetailReconcileTransaction = () => {
       const closedDate = closedDatePart?.replace(/-/g, "") || "";
       const closedTime = closedTimePart?.replace(/:/g, "") || "";
 
+      closureRowKeys.add(
+        `${esc?.escalationClosedBy}|${closedDate}${closedTime}`
+      );
+
       // Only trust the Compliant/Non-Compliant outcome from
       // hierarchyDetails when this closure is that reviewer's own final
       // recorded outcome (timestamp match) - an earlier, superseded
@@ -252,7 +264,16 @@ const ViewDetailReconcileTransaction = () => {
     });
 
     hierarchyDetails
-      .filter((person) => !escalatedUserIDs.has(person.userID))
+      .filter(
+        (person) =>
+          !escalatedUserIDs.has(person.userID) &&
+          !closureRowKeys.has(
+            `${person.userID}|${rawTimestamp(
+              person.modifiedDate,
+              person.modifiedTime
+            )}`
+          )
+      )
       .forEach((person) => {
         const { fullName, bundleStatusID, modifiedDate, modifiedTime, userID } =
           person;
