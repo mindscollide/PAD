@@ -365,6 +365,7 @@ const HOCMyActionPage = () => {
       const trail = [];
 
       timeline.forEach((event, index) => {
+        console.log(event, "eventeventevent");
         const date = formatApiDateTime(`${event.eventDate} ${event.eventTime}`);
 
         switch (event.eventType) {
@@ -420,6 +421,14 @@ const HOCMyActionPage = () => {
               status: "Marked Non-Compliant by You",
               date,
               iconType: "co-Non-Compliant",
+            });
+            break;
+          case "Approved":
+            trail.push({
+              status: event.eventType,
+              user: event.actorName,
+              date,
+              iconType: "Compliant",
             });
             break;
           default:
