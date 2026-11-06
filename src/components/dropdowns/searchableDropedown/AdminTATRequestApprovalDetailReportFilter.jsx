@@ -289,7 +289,7 @@ export const AdminTATRequestApprovalViewDetailFilter = ({
           />
         </Col>
 
-        <Col xs={24} md={12}>
+        {/* <Col xs={24} md={12}>
           <TextField
             label="TAT"
             name="tat"
@@ -298,7 +298,7 @@ export const AdminTATRequestApprovalViewDetailFilter = ({
             placeholder="e.g. 197 H, 40 M"
             size="medium"
           />
-        </Col>
+        </Col> */}
       </Row>
 
       {/* Date Ranges */}
