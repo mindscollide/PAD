@@ -21,6 +21,7 @@ import {
   formatNumberWithCommas,
 } from "../../../../../../../common/funtions/rejex";
 import { useReconcileContext } from "../../../../../../../context/reconsileContax";
+import { mapHierarchySteps } from "../../../../../../../common/funtions/hierarchySteps";
 import {
   GetAnnotationOfFilesAttachementAPI,
   GetWorkFlowFilesAPI,
@@ -261,14 +262,18 @@ const ViewDetailReconcileTransaction = () => {
           steps.push({
             sortKey: rawTimestamp(modifiedDate, modifiedTime),
             iconSrc: CheckIcon,
-            title: isYou ? "Marked Compliant by You" : fullName,
+            title: isYou
+              ? "Marked Compliant by You"
+              : `Marked Compliant by ${fullName}`,
             date: formattedDateTime,
           });
         } else if (bundleStatusID === 3) {
           steps.push({
             sortKey: rawTimestamp(modifiedDate, modifiedTime),
             iconSrc: CrossIcon,
-            title: isYou ? "Marked Non-Compliant by You" : fullName,
+            title: isYou
+              ? "Marked Non-Compliant by You"
+              : `Marked Non-Compliant by ${fullName}`,
             date: formattedDateTime,
           });
         } else {
@@ -286,7 +291,16 @@ const ViewDetailReconcileTransaction = () => {
     return steps;
   };
 
-  const hierarchyTrail = buildReconcileHierarchyTrail();
+  // CHANGED (API_Changes/2026-11-13_co_reconcile_view_details_escalation_and_
+  // marked_compliant_by.md): when the backend sends the ready-made
+  // hierarchySteps[] (final titles, escalation steps included), render that
+  // as-is; otherwise fall back to the trail built above.
+  const hierarchyTrail = reconcileTransactionViewDetailData?.hierarchySteps
+    ?.length
+    ? mapHierarchySteps(reconcileTransactionViewDetailData.hierarchySteps).map(
+        (step) => ({ ...step, date: step.dateTime })
+      )
+    : buildReconcileHierarchyTrail();
 
   // To Show Note Modal When Click on Compliant Click
   const openNoteModalOnCompliantClick = () => {

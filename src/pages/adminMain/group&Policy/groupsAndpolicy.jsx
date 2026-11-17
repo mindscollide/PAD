@@ -212,9 +212,14 @@ const GroupsAndPolicy = () => {
     if (adminGropusAndPolicyMqtt) {
       setAdminGropusAndPolicyMqtt(false);
       let requestData = buildApiRequest(adminGropusAndPolicySearch);
+      // Key must be `PageNumber` (what buildApiRequest emits, and the
+      // backend is case-sensitive): the old lower-case `pageNumber` was
+      // ignored, so the refresh kept the next page (2) -> empty offset ->
+      // the list got replaced with nothing. See
+      // API_Changes/2026-11-16_admin_group_policy_refresh_closing_period_refresh_roles_save.md
       requestData = {
         ...requestData,
-        pageNumber: 1,
+        PageNumber: 1,
       };
       fetchApiCall(requestData, true, false);
     }

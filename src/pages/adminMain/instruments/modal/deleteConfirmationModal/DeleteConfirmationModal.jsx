@@ -9,12 +9,14 @@ import { useNavigate } from "react-router-dom";
 import { useNotification } from "../../../../../components/NotificationProvider/NotificationProvider";
 import { useGlobalLoader } from "../../../../../context/LoaderContext";
 import { useApi } from "../../../../../context/ApiContext";
+import { useMyAdmin } from "../../../../../context/AdminContext";
 
 const DeleteConfirmationModal = () => {
   const navigate = useNavigate();
   const { showNotification } = useNotification();
   const { showLoader } = useGlobalLoader();
   const { callApi } = useApi();
+  const { setAdminIntrumentsMqtt } = useMyAdmin();
 
   //This is the ContextApi Global States for Resubmit Intimation modal
   const {
@@ -30,7 +32,7 @@ const DeleteConfirmationModal = () => {
       InstrumentID: deleteEditModalData?.instrumentHistoryID,
     };
 
-    await DeleteUpcomingInstrumentCosingPeriodRequest({
+    const deleted = await DeleteUpcomingInstrumentCosingPeriodRequest({
       callApi,
       showNotification,
       showLoader,
@@ -38,6 +40,10 @@ const DeleteConfirmationModal = () => {
       setDeleteConfirmationEditModal,
       navigate,
     });
+
+    // Reload the Instruments list behind the modals so the removed closing
+    // period disappears without a browser refresh (not relying on MQTT).
+    if (deleted) setAdminIntrumentsMqtt(true);
   };
 
   return (

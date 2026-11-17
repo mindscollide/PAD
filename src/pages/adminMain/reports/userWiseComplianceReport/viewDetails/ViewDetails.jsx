@@ -295,6 +295,12 @@ const ViewDetailsAdmin = () => {
         clonedDoc
           .querySelectorAll("[data-pdf-hide]")
           .forEach((el) => (el.style.display = "none"));
+        // The panels scroll internally on screen; let them grow to full
+        // content height here so the PDF is not clipped to the visible box.
+        clonedDoc.querySelectorAll("[data-pdf-expand]").forEach((el) => {
+          el.style.height = "auto";
+          el.style.overflow = "visible";
+        });
         clonedDoc
           .querySelectorAll("[data-pdf-only]")
           .forEach((el) => (el.style.display = "inline"));
@@ -484,7 +490,7 @@ const ViewDetailsAdmin = () => {
       <div ref={componentRef}>
         <Row>
           <Col span={8}>
-            <div className={style.ViewDetailAdminLeftCol}>
+            <div className={style.ViewDetailAdminLeftCol} data-pdf-expand>
               {/* 🔹 User Basic Info */}
               <div className={style.userInfoSection}>
                 <div className={style.infoRow}>
@@ -600,7 +606,7 @@ const ViewDetailsAdmin = () => {
             </div>
           </Col>
           <Col span={16}>
-            <div className={style.ViewDetailAdminRightCol}>
+            <div className={style.ViewDetailAdminRightCol} data-pdf-expand>
               <div className={style.durationDivClass}>
                 <Row>
                   <Col span={16}>

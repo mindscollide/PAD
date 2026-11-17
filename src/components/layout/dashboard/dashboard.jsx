@@ -531,6 +531,10 @@ const Dashboard = () => {
                     //admin Edit Modal Add and Delete Mqtt
                     if (currentKey === "18") {
                       setAdminAddDeleteClosingInstrument(true);
+                      // Also reload the Instruments list itself so another
+                      // admin's list follows the change (the modal's own
+                      // Upcoming/Previous tables were already covered).
+                      setAdminIntrumentsMqtt(true);
                       return;
                     }
                   }
