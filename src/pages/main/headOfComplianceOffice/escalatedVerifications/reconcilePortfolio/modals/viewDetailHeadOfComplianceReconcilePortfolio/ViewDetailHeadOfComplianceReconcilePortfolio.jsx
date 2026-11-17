@@ -25,6 +25,7 @@ import {
 import { useReconcileContext } from "../../../../../../../context/reconsileContax";
 
 import { usePortfolioContext } from "../../../../../../../context/portfolioContax";
+import { mapHierarchySteps } from "../../../../../../../common/funtions/hierarchySteps";
 
 const ViewDetailHeadOfComplianceReconcilePortfolio = () => {
   // This is Global State for modal which is create in ContextApi
@@ -157,7 +158,9 @@ const ViewDetailHeadOfComplianceReconcilePortfolio = () => {
     ).map((person) => [person.userID, person])
   );
 
-  const escalationSteps = escalations.flatMap((esc) => {
+  // Fallback only (older PAD_Trade build without hierarchySteps[]): the
+  // escalations[]-only steps, which start at the escalation.
+  const legacyEscalationSteps = escalations.flatMap((esc) => {
     const escalatedStep = {
       key: `${esc?.escalationID}-escalated`,
       iconSrc: EscaltedOn,
@@ -191,7 +194,9 @@ const ViewDetailHeadOfComplianceReconcilePortfolio = () => {
               ? isNonCompliant
                 ? "Marked Non-Compliant by You"
                 : "Marked Compliant by You"
-              : esc?.escalationClosedByName,
+              : `Marked ${isNonCompliant ? "Non-Compliant" : "Compliant"} by ${
+                  esc?.escalationClosedByName
+                }`,
           desc: convertUTCToCurrentTimeZone(
             closedDatePart?.replace(/-/g, ""),
             closedTimePart?.replace(/:/g, "")
@@ -206,6 +211,16 @@ const ViewDetailHeadOfComplianceReconcilePortfolio = () => {
 
     return [escalatedStep, closureStep];
   });
+
+  // CHANGED (API_Changes/2026-11-16_hoc_reconcile_view_details_hierarchy_steps.md):
+  // render the backend's ready-made hierarchySteps[] (level 1 up to the
+  // viewer, escalation steps included, final titles) as-is.
+  const escalationSteps = isEscalatedPortfolioHeadOfComplianceViewDetailData
+    ?.hierarchySteps?.length
+    ? mapHierarchySteps(
+        isEscalatedPortfolioHeadOfComplianceViewDetailData.hierarchySteps
+      ).map((step) => ({ ...step, desc: step.dateTime }))
+    : legacyEscalationSteps;
 
   const onClickFromCompliantNoteModalFromHeadOfCompliance = () => {
     setNoteGlobalModal({ visible: true, action: "HOC-Portfolio-Compliant" });

@@ -178,6 +178,9 @@ export const GetAllTransactionViewDetails = async ({
         // consumer - both the employee's own View Details modal and the
         // CO reconcile view detail modal share this wrapper.
         escalations,
+        // Ready-made stepper (2026-11-13 CO reconcile note) - passed through
+        // when the backend sends it; [] otherwise.
+        hierarchySteps,
       } = res.result;
 
       if (
@@ -197,6 +200,7 @@ export const GetAllTransactionViewDetails = async ({
           myActionStatusID: myActionStatusID ?? null,
           myActionStatus: myActionStatus || "",
           escalations: escalations || [],
+          hierarchySteps: hierarchySteps || [],
         };
       }
 
@@ -214,6 +218,7 @@ export const GetAllTransactionViewDetails = async ({
         ticketUploaded: false,
         reqeusterName: "",
         escalations: [],
+        hierarchySteps: [],
       };
     }
 

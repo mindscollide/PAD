@@ -17,6 +17,7 @@ import {
 } from "../../../../../../../common/funtions/rejex";
 
 import { usePortfolioContext } from "../../../../../../../context/portfolioContax";
+import { mapHierarchySteps } from "../../../../../../../common/funtions/hierarchySteps";
 
 const ViewDetailPortfolioTransaction = () => {
   // This is Global State for modal which is create in ContextApi
@@ -35,7 +36,17 @@ const ViewDetailPortfolioTransaction = () => {
 
   //This is the Global state of Context Api
 
-  const { reconcilePortfolioViewDetailData } = usePortfolioContext();
+  const { reconcilePortfolioViewDetailData, selectedPortfolioTransactionData } =
+    usePortfolioContext();
+
+  // Upload Date & Time: the list row that opened this modal carries it as a
+  // combined UTC "yyyyMMdd HHmmss" string (transactionRequestDateime) - same
+  // value the list's own "Upload Date & Time" column shows. View Details
+  // itself returns no upload date, so read it off the selected row.
+  const uploadDateTime =
+    formatApiDateTime(
+      selectedPortfolioTransactionData?.transactionRequestDateime
+    ) || "—";
 
   const { allInstrumentsData } = useDashboardContext();
   // This is the Status Which is I'm getting from the selectedViewDetail contextApi state
@@ -112,10 +123,10 @@ const ViewDetailPortfolioTransaction = () => {
     myActionStatusID === 1
       ? "Pending"
       : myActionStatusID === 2
-      ? "Compliant"
-      : myActionStatusID === 3
-      ? "Non-Compliant"
-      : null;
+        ? "Compliant"
+        : myActionStatusID === 3
+          ? "Non-Compliant"
+          : null;
 
   // Extarct and Instrument from viewDetailsModalData context Api
   const instrumentId = Number(
@@ -151,6 +162,55 @@ const ViewDetailPortfolioTransaction = () => {
     currentUserIndex !== -1
       ? hierarchyDetails.slice(0, currentUserIndex + 1)
       : hierarchyDetails;
+
+  // CHANGED (API_Changes/2026-11-13_co_reconcile_view_details_escalation_and_
+  // marked_compliant_by.md): the backend now sends the stepper ready-made in
+  // hierarchySteps[] (level 1 up to the viewer, escalation steps included,
+  // final titles) - render that as-is. Fallback while PAD_Trade is still the
+  // old build: the previous hierarchyDetails steps, with "Marked
+  // Compliant/Non-Compliant by {name}" for someone else's step (was just the
+  // name).
+  const stepItems = reconcilePortfolioViewDetailData?.hierarchySteps?.length
+    ? mapHierarchySteps(reconcilePortfolioViewDetailData.hierarchySteps)
+    : visibleHierarchy.map((person, index) => {
+        const { fullName, bundleStatusID, modifiedDate, modifiedTime, userID } =
+          person;
+        const isYou = loggedInUserID === userID;
+        const dateTime =
+          bundleStatusID !== 1
+            ? formatApiDateTime(`${modifiedDate} ${modifiedTime}`)
+            : "";
+
+        if (bundleStatusID === 2) {
+          return {
+            key: index,
+            iconSrc: CheckIcon,
+            title: isYou
+              ? "Marked Compliant by You"
+              : `Marked Compliant by ${fullName}`,
+            dateTime,
+            isResolved: true,
+          };
+        }
+        if (bundleStatusID === 3) {
+          return {
+            key: index,
+            iconSrc: CrossIcon,
+            title: isYou
+              ? "Marked Non-Compliant by You"
+              : `Marked Non-Compliant by ${fullName}`,
+            dateTime,
+            isResolved: true,
+          };
+        }
+        return {
+          key: index,
+          iconSrc: EllipsesIcon,
+          title: "Awaiting for action",
+          dateTime: "",
+          isResolved: false,
+        };
+      });
 
   return (
     <>
@@ -207,12 +267,39 @@ const ViewDetailPortfolioTransaction = () => {
                   {/* status 2 is Resubmitted */}
                 </Row>
 
-                {/* Show Other Scenario's SUb Heading and Field Sceanrio's */}
+                {/* Row 2: Portfolio ID | Requester Name */}
                 <Row gutter={[4, 4]} style={{ marginTop: "3px" }}>
-                  <Col span={8}>
+                  <Col span={12}>
                     <div className={styles.backgrounColorOfDetail}>
                       <label className={styles.viewDetailMainLabels}>
                         Portfolio ID
+                      </label>
+                      <label className={styles.viewDetailSubLabels}>
+                        {formatTransactionId(
+                          reconcilePortfolioViewDetailData?.details?.[0]
+                            ?.tradeApprovalID
+                        )}
+                      </label>
+                    </div>
+                  </Col>
+                  <Col span={12}>
+                    <div className={styles.backgrounColorOfDetail}>
+                      <label className={styles.viewDetailMainLabels}>
+                        Requester Name
+                      </label>
+                      <label className={styles.viewDetailSubLabels}>
+                        {reconcilePortfolioViewDetailData?.requesterName}
+                      </label>
+                    </div>
+                  </Col>
+                </Row>
+
+                {/* Row 3: Upload Date (escalation icon here) | Type */}
+                <Row gutter={[4, 4]} style={{ marginTop: "3px" }}>
+                  <Col span={12}>
+                    <div className={styles.backgrounColorOfDetail}>
+                      <label className={styles.viewDetailMainLabels}>
+                        Upload Date
                       </label>
                       <div
                         style={{
@@ -222,15 +309,8 @@ const ViewDetailPortfolioTransaction = () => {
                         }}
                       >
                         <label className={styles.viewDetailSubLabels}>
-                          {formatTransactionId(
-                            reconcilePortfolioViewDetailData?.details?.[0]
-                              ?.tradeApprovalID
-                          )}
+                          {uploadDateTime}
                         </label>
-                        {/* ADDED (API_Changes/2026-09-11_co_viewdetails_
-                            escalated_flag_added.md) - same escalation
-                            badge convention already used on the sibling
-                            Reconcile Transaction View Details modal. */}
                         {reconcilePortfolioViewDetailData?.isEscalated && (
                           <img
                             draggable={false}
@@ -242,17 +322,7 @@ const ViewDetailPortfolioTransaction = () => {
                       </div>
                     </div>
                   </Col>
-                  <Col span={8}>
-                    <div className={styles.backgrounColorOfDetail}>
-                      <label className={styles.viewDetailMainLabels}>
-                        Requester Name
-                      </label>
-                      <label className={styles.viewDetailSubLabels}>
-                        {reconcilePortfolioViewDetailData?.requesterName}
-                      </label>
-                    </div>
-                  </Col>
-                  <Col span={8}>
+                  <Col span={12}>
                     <div
                       className={
                         statusData.label === "Traded"
@@ -264,8 +334,6 @@ const ViewDetailPortfolioTransaction = () => {
                         Type
                       </label>
                       <label className={styles.viewDetailSubLabels}>
-                        {/* {selectedViewDetail?.type} */}
-
                         {reconcilePortfolioViewDetailData?.details?.[0]
                           ?.approvalTypeID === "1" && <span>Buy</span>}
                         {reconcilePortfolioViewDetailData?.details?.[0]
@@ -275,6 +343,7 @@ const ViewDetailPortfolioTransaction = () => {
                   </Col>
                 </Row>
 
+                {/* Row 4: Quantity | Asset Class */}
                 <Row gutter={[4, 4]} style={{ marginTop: "3px" }}>
                   <Col span={12}>
                     <div className={styles.backgrounColorOfDetail}>
@@ -289,7 +358,6 @@ const ViewDetailPortfolioTransaction = () => {
                       </label>
                     </div>
                   </Col>
-
                   <Col span={12}>
                     <div
                       className={
@@ -310,6 +378,8 @@ const ViewDetailPortfolioTransaction = () => {
                     </div>
                   </Col>
                 </Row>
+
+                {/* Row 5: Brokers (full row) */}
                 <Row>
                   <Col span={24}>
                     <BrokerList
@@ -327,8 +397,7 @@ const ViewDetailPortfolioTransaction = () => {
                   <div className={styles.mainStepperContainer}>
                     <div
                       className={`${styles.backgrounColorOfStepper} ${
-                        (reconcilePortfolioViewDetailData?.hierarchyDetails
-                          ?.length || 0) <= 3
+                        stepItems.length <= 3
                           ? styles.centerAlignStepper
                           : styles.leftAlignStepper
                       }`}
@@ -340,7 +409,7 @@ const ViewDetailPortfolioTransaction = () => {
                         //   (reconcilePortfolioViewDetailData?.hierarchyDetails
                         //     ?.length || 1) - 1
                         // )}
-                        activeStep={Math.max(0, visibleHierarchy.length - 1)}
+                        activeStep={Math.max(0, stepItems.length - 1)}
                         connectorStyleConfig={{
                           activeColor: "#00640A",
                           completedColor: "#00640A",
@@ -354,82 +423,40 @@ const ViewDetailPortfolioTransaction = () => {
                           borderRadius: "50%",
                         }}
                       >
-                        {Array.isArray(visibleHierarchy) &&
-                          visibleHierarchy.map((person, index) => {
-                            const {
-                              fullName,
-                              bundleStatusID,
-                              modifiedDate,
-                              modifiedTime,
-                              userID,
-                            } = person;
-
-                            const formattedDateTime = formatApiDateTime(
-                              `${modifiedDate} ${modifiedTime}`
-                            );
-
-                            // Decide icon and label
-                            let iconSrc;
-                            let displayText;
-                            let isApprovedOrDeclined = false;
-
-                            if (bundleStatusID === 2) {
-                              iconSrc = CheckIcon;
-                              displayText =
-                                loggedInUserID === userID
-                                  ? "Marked Compliant by You"
-                                  : `${fullName} `;
-                              isApprovedOrDeclined = true;
-                            } else if (bundleStatusID === 3) {
-                              iconSrc = CrossIcon;
-                              displayText =
-                                loggedInUserID === userID
-                                  ? "Marked Non-Compliant by You"
-                                  : `${fullName}`;
-                              isApprovedOrDeclined = true;
-                            } else {
-                              iconSrc = EllipsesIcon;
-                              displayText = "Awaiting for action";
-                            }
-
-                            return (
-                              <Step
-                                key={index}
-                                label={
-                                  <div
-                                    className={`${styles.customlabel} ${
-                                      isApprovedOrDeclined
-                                        ? styles.centerAlignLabel
-                                        : ""
-                                    }`}
-                                  >
-                                    <div className={styles.customtitle}>
-                                      {displayText}
-                                    </div>
-                                    <div
-                                      className={`${styles.customdesc} ${
-                                        isApprovedOrDeclined
-                                          ? styles.centerAlignText
-                                          : ""
-                                      }`}
-                                    >
-                                      {bundleStatusID !== 1 &&
-                                        formattedDateTime}
-                                    </div>
-                                  </div>
-                                }
+                        {stepItems.map((step) => (
+                          <Step
+                            key={step.key}
+                            label={
+                              <div
+                                className={`${styles.customlabel} ${
+                                  step.isResolved ? styles.centerAlignLabel : ""
+                                }`}
                               >
-                                <div className={styles.stepCircle}>
-                                  <img
-                                    draggable={false}
-                                    src={iconSrc}
-                                    alt="status-icon"
-                                    className={styles.circleImg}
-                                  />
+                                <div className={styles.customtitle}>
+                                  {step.title}
                                 </div>
-                              </Step>
-                            );
-                          })}
+                                <div
+                                  className={`${styles.customdesc} ${
+                                    step.isResolved
+                                      ? styles.centerAlignText
+                                      : ""
+                                  }`}
+                                >
+                                  {step.dateTime}
+                                </div>
+                              </div>
+                            }
+                          >
+                            <div className={styles.stepCircle}>
+                              <img
+                                draggable={false}
+                                src={step.iconSrc}
+                                alt="status-icon"
+                                className={styles.circleImg}
+                              />
+                            </div>
+                          </Step>
+                        ))}
                       </Stepper>
                     </div>
                   </div>

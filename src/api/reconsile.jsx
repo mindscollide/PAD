@@ -237,6 +237,10 @@ export const GetAllReconcilePortfolioTransactionRequest = async ({
         // GetAllTransactionViewDetails wrapper had before its own
         // 2026-08-17 fix.
         isEscalated,
+        // ADDED (API_Changes/2026-11-13_co_reconcile_view_details_escalation_
+        // and_marked_compliant_by.md): ready-made stepper + escalation list.
+        hierarchySteps,
+        escalations,
       } = res.result;
 
       if (
@@ -253,6 +257,8 @@ export const GetAllReconcilePortfolioTransactionRequest = async ({
           myActionStatusID: myActionStatusID ?? null,
           myActionStatus: myActionStatus || "",
           isEscalated: isEscalated || false,
+          hierarchySteps: hierarchySteps || [],
+          escalations: escalations || [],
         };
       }
 
@@ -270,6 +276,8 @@ export const GetAllReconcilePortfolioTransactionRequest = async ({
         myActionStatusID: null,
         myActionStatus: "",
         isEscalated: false,
+        hierarchySteps: [],
+        escalations: [],
       };
     }
 
@@ -671,6 +679,9 @@ export const GetAllComplianceOfficerReconcileTransactionAndPortfolioRequest =
           escalations,
           transactionDate,
           transactionTime,
+          // ADDED (API_Changes/2026-11-16_hoc_reconcile_view_details_hierarchy_steps.md):
+          // ready-made stepper - the allow-list dropped it otherwise.
+          hierarchySteps,
         } = res.result;
 
         if (
@@ -692,6 +703,7 @@ export const GetAllComplianceOfficerReconcileTransactionAndPortfolioRequest =
             escalations: escalations || [],
             transactionDate: transactionDate || "",
             transactionTime: transactionTime || "",
+            hierarchySteps: hierarchySteps || [],
           };
         }
 
@@ -711,6 +723,7 @@ export const GetAllComplianceOfficerReconcileTransactionAndPortfolioRequest =
           escalations: [],
           transactionDate: "",
           transactionTime: "",
+          hierarchySteps: [],
         };
       }
 
