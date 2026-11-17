@@ -20,6 +20,7 @@ import {
   formatApiDateTime,
   formatNumberWithCommas,
 } from "../../../../../../../common/funtions/rejex";
+import { mapHierarchySteps } from "../../../../../../../common/funtions/hierarchySteps";
 import { useReconcileContext } from "../../../../../../../context/reconsileContax";
 import {
   GetAnnotationOfFilesAttachementAPI,
@@ -313,7 +314,7 @@ const ViewDetailHeadOfComplianceReconcileTransaction = () => {
         iconSrc: CheckIcon,
         title: isYou
           ? "Marked Compliant by You"
-          : `Compliant by ${fullName || ""}`.trim(),
+          : `Marked Compliant by ${fullName || ""}`.trim(),
         desc: actedAt,
       };
     } else if (bundleStatusID === 3) {
@@ -322,7 +323,7 @@ const ViewDetailHeadOfComplianceReconcileTransaction = () => {
         iconSrc: CrossIcon,
         title: isYou
           ? "Marked Non-Compliant by You"
-          : `Non-Compliant by ${fullName || ""}`.trim(),
+          : `Marked Non-Compliant by ${fullName || ""}`.trim(),
         desc: actedAt,
       };
     } else {
@@ -337,7 +338,17 @@ const ViewDetailHeadOfComplianceReconcileTransaction = () => {
     return escalatedStep ? [escalatedStep, resolutionStep] : [resolutionStep];
   });
 
-  const escalationSteps = hierarchySteps.length
+  // CHANGED (API_Changes/2026-11-16_hoc_reconcile_view_details_hierarchy_steps.md):
+  // prefer the backend's ready-made hierarchySteps[] (final titles, "Marked
+  // Compliant by ..."); otherwise the hierarchyDetails-built steps above,
+  // then the escalations-only ones.
+  const backendSteps = isEscalatedHeadOfComplianceViewDetailData?.hierarchySteps;
+  const escalationSteps = backendSteps?.length
+    ? mapHierarchySteps(backendSteps).map((step) => ({
+        ...step,
+        desc: step.dateTime,
+      }))
+    : hierarchySteps.length
     ? hierarchySteps
     : legacyEscalationSteps;
 

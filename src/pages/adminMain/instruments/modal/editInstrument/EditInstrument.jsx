@@ -44,6 +44,7 @@ const EditInstrument = () => {
     setAdminInstrumentPreviousClosingData,
     selectedInstrumentOnClick,
     selectedInstrumentNameDataOnClick,
+    setAdminIntrumentsMqtt,
   } = useMyAdmin();
 
   const {
@@ -181,6 +182,10 @@ const EditInstrument = () => {
     if (response) {
       setStartDate(null);
       setEndDate(null);
+      // Reload the Instruments list behind the modal so the new closing
+      // period shows without a browser refresh. Done here on success rather
+      // than waiting for an MQTT push (not reliable on every environment).
+      setAdminIntrumentsMqtt(true);
     }
   };
 
