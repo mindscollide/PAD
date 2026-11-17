@@ -424,6 +424,22 @@ const HTAMyAction = () => {
               textColor: "#f67f29",
             });
             break;
+
+          case "Approved":
+            // actorName here is always the viewing HTA themselves (per
+            // the event's own name) — show "Approved" literally
+            // instead of the name a second time.
+            // ADDED: same orange highlight as LM's own My Actions page
+            // for the viewer's own approval - same tick shape as the
+            // plain green "Approved" icon, just recolored (icon + text).
+            steps.push({
+              status: "Approved",
+              user: event.actorName,
+              date,
+              iconType: "Approved",
+              // textColor: "#f67f29",
+            });
+            break;
           case "Declined by You":
             steps.push({
               status: "Declined by You",
